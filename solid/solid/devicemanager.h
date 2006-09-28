@@ -20,20 +20,15 @@
 #ifndef SOLID_DEVICEMANAGER_H
 #define SOLID_DEVICEMANAGER_H
 
-#include <QObject>
 #include <QList>
 
 #include <kdelibs_export.h>
 
-#include <kstaticdeleter.h>
+#include <solid/managerbase.h>
 #include <solid/predicate.h>
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class DeviceManager;
-    }
     class Device;
     typedef QList<Device> DeviceList;
 
@@ -48,43 +43,12 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT DeviceManager : public QObject
+    class KDE_EXPORT DeviceManager : public ManagerBase
     {
         Q_OBJECT
+        SOLID_SINGLETON( DeviceManager )
 
     public:
-        /**
-         * Retrieves the unique instance of this class.
-         *
-         * @return unique instance of the class
-         */
-        static DeviceManager &self();
-
-        /**
-         * Retrieves the unique instance of this class and forces the registration of
-         * the given backend.
-         * The DeviceManager will use this backend. The parameter will be ignored if an
-         * instance of DeviceManager already exists.
-         *
-         * Use this method at your own risks. It's primarily available to easier tests
-         * writing. If you need to test the DeviceManager, use a call to this method, and
-         * then use self() as usual.
-         *
-         * @param backend the in the application
-         * @return unique instance of the class
-         * @see self()
-         */
-        static DeviceManager &selfForceBackend( Ifaces::DeviceManager *backend );
-
-        /**
-         * Returns a text describing the error that occured while loading
-         * the backend.
-         *
-         * @return the error description, or QString() if the backend loaded successfully
-         */
-        const QString &errorText() const;
-
-
         /**
          * Retrieves all the devices available in the underlying system.
          *
@@ -138,13 +102,6 @@ namespace Solid
                                          const Capability::Type &capability,
                                          const QString &predicate ) const;
 
-        /**
-         * Retrieves a reference to the loaded backend.
-         *
-         * @return a pointer to the backend, or 0 if no backend is loaded
-         */
-        Ifaces::DeviceManager *backend() const;
-
     Q_SIGNALS:
         /**
          * This signal is emitted when a new device appear in the underlying system.
@@ -170,7 +127,7 @@ namespace Solid
 
     private:
         DeviceManager();
-        DeviceManager( Ifaces::DeviceManager *backend );
+        DeviceManager( QObject *backend );
         ~DeviceManager();
 
     private Q_SLOTS:
@@ -180,11 +137,8 @@ namespace Solid
         void slotDestroyed( QObject *object );
 
     private:
-        static DeviceManager *s_self;
         class Private;
         Private *d;
-
-        friend void ::KStaticDeleter<DeviceManager>::destructObject();
     };
 }
 

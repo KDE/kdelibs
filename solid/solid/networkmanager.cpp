@@ -18,20 +18,15 @@
 
 */
 
-#include <QFile>
+#include <QMap>
 #include <QPair>
-
-#include <kservicetypetrader.h>
-#include <kservice.h>
-#include <klibloader.h>
-
-#include <klocale.h>
-#include <kdebug.h>
 
 #include "ifaces/networkmanager.h"
 #include "ifaces/networkdevice.h"
 
+#include "soliddefs_p.h"
 #include "networkdevice.h"
+
 #include "networkmanager.h"
 
 namespace Solid
@@ -39,14 +34,12 @@ namespace Solid
     class NetworkManager::Private
     {
     public:
-        Private( NetworkManager *manager ) : q( manager ), backend( 0 ) {}
+        Private( NetworkManager *manager ) : q( manager ) {}
 
         QPair<NetworkDevice*, Ifaces::NetworkDevice*> findRegisteredNetworkDevice( const QString &uni );
-        void registerBackend( Ifaces::NetworkManager * newBackend );
-        void unregisterBackend();
+        void registerBackend( QObject *newBackend );
 
         NetworkManager *q;
-        Ifaces::NetworkManager *backend;
         QMap<QString, QPair<NetworkDevice*, Ifaces::NetworkDevice*> > networkDeviceMap;
         NetworkDevice invalidDevice;
 
@@ -54,111 +47,51 @@ namespace Solid
     };
 }
 
-static ::KStaticDeleter<Solid::NetworkManager> sd;
+SOLID_SINGLETON_IMPLEMENTATION( Solid::NetworkManager )
 
-Solid::NetworkManager *Solid::NetworkManager::s_self = 0;
-
-
-Solid::NetworkManager &Solid::NetworkManager::self()
-{
-    if( !s_self )
-    {
-        s_self = new Solid::NetworkManager();
-        sd.setObject( s_self, s_self );
-    }
-
-    return *s_self;
-}
-
-Solid::NetworkManager &Solid::NetworkManager::selfForceBackend( Ifaces::NetworkManager *backend )
-{
-    if( !s_self )
-    {
-        s_self = new Solid::NetworkManager( backend );
-        sd.setObject( s_self, s_self );
-    }
-
-    return *s_self;
-}
 
 Solid::NetworkManager::NetworkManager()
-    : QObject(), d( new Private( this ) )
+    : ManagerBase("Network Management", "SolidNetworkManager", "Solid::Ifaces::NetworkManager"),
+      d( new Private( this ) )
 {
-    QStringList error_msg;
-
-    Ifaces::NetworkManager *backend = 0;
-
-    KService::List offers = KServiceTypeTrader::self()->query( "SolidNetworkManager", "(Type == 'Service')" );
-
-    foreach ( KService::Ptr ptr, offers )
+    if ( managerBackend() != 0 )
     {
-        KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
-
-        if ( factory )
-        {
-            backend = (Ifaces::NetworkManager*)factory->create( 0, "Solid::Ifaces::NetworkManager" );
-
-            if( backend != 0 )
-            {
-                d->registerBackend( backend );
-                kDebug() << "Using network management backend: " << ptr->name() << endl;
-            }
-            else
-            {
-                kDebug() << "Error loading network management backend'" << ptr->name() << "', factory's create method returned 0" << endl;
-                error_msg.append( i18n("Factory's create method failed") );
-            }
-        }
-        else
-        {
-            kDebug() << "Error loading network management backend'" << ptr->name() << "', factory creation failed" << endl;
-            error_msg.append( i18n("Factory creation failed") );
-        }
-    }
-
-    if ( backend == 0 )
-    {
-        if ( offers.size() == 0 )
-        {
-            d->errorText = i18n( "No Network Management Backend found" );
-        }
-        else
-        {
-            d->errorText = "<qt>";
-            d->errorText+= i18n( "Unable to use any of the Network Management Backends" );
-            d->errorText+= "<table>";
-
-            QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
-
-            for ( int i = 0; i< offers.size(); i++ )
-            {
-                d->errorText+= line.arg( offers[i]->name() ).arg( error_msg[i] );
-            }
-
-            d->errorText+= "</table></qt>";
-        }
+        d->registerBackend( managerBackend() );
     }
 }
 
-Solid::NetworkManager::NetworkManager( Ifaces::NetworkManager *backend )
-    : QObject(), d( new Private( this ) )
+Solid::NetworkManager::NetworkManager( QObject *backend )
+    : ManagerBase( backend ), d( new Private( this ) )
 {
-    if ( backend != 0 )
+    if ( managerBackend() != 0 )
     {
-        d->registerBackend( backend );
+        d->registerBackend( managerBackend() );
     }
 }
 
 Solid::NetworkManager::~NetworkManager()
 {
-    d->unregisterBackend();
+    // Delete all the devices, they are now outdated
+    typedef QPair<NetworkDevice*, Ifaces::NetworkDevice*> NetworkDeviceIfacePair;
+
+    // Delete all the devices, they are now outdated
+    foreach( NetworkDeviceIfacePair pair, d->networkDeviceMap.values() )
+    {
+        delete pair.first;
+        delete pair.second;
+    }
+
+    d->networkDeviceMap.clear();
+
+    delete d;
 }
 
 Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & uniList ) const
 {
     NetworkDeviceList list;
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( managerBackend() );
 
-    if ( d->backend == 0 ) return list;
+    if ( backend == 0 ) return list;
 
     foreach( QString uni, uniList )
     {
@@ -175,47 +108,62 @@ Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringLi
 
 Solid::NetworkDeviceList Solid::NetworkManager::networkDevices() const
 {
-    return buildDeviceList( d->backend->networkDevices() );
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( managerBackend() );
+
+    if ( backend!= 0 )
+    {
+        return buildDeviceList( backend->networkDevices() );
+    }
+    else
+    {
+        return NetworkDeviceList();
+    }
 }
 
 Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices() const
 {
-    return buildDeviceList( d->backend->activeNetworkDevices() );
-}
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( managerBackend() );
 
-Solid::Ifaces::NetworkManager *Solid::NetworkManager::backend() const
-{
-    return d->backend;
+    if ( backend!= 0 )
+    {
+        return buildDeviceList( backend->activeNetworkDevices() );
+    }
+    else
+    {
+        return NetworkDeviceList();
+    }
 }
 
 void Solid::NetworkManager::activate( const QString & net )
 {
-    d->backend->activate( net );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), activate( net ) );
 }
 
 void Solid::NetworkManager::deactivate( const QString & net )
 {
-    d->backend->deactivate( net );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), deactivate( net ) );
 }
 
 void Solid::NetworkManager::enableWireless( bool enabled )
 {
-    d->backend->enableWireless( enabled );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), enableWireless( enabled ) );
 }
 
 void Solid::NetworkManager::enableNetworking( bool enabled )
 {
-    d->backend->enableNetworking( enabled );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), enableNetworking( enabled ) );
 }
 
 void Solid::NetworkManager::notifyHiddenNetwork( const QString & essid )
 {
-    d->backend->notifyHiddenNetwork( essid );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), notifyHiddenNetwork( essid ) );
 }
 
 const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QString &uni ) const
 {
-    if ( d->backend == 0 ) return d->invalidDevice;
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( managerBackend() );
+
+    if ( backend == 0 ) return d->invalidDevice;
 
     QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->findRegisteredNetworkDevice( uni );
 
@@ -272,36 +220,14 @@ void Solid::NetworkManager::slotDestroyed( QObject *object )
 
 /***************************************************************************/
 
-void Solid::NetworkManager::Private::registerBackend( Ifaces::NetworkManager *newBackend )
+void Solid::NetworkManager::Private::registerBackend( QObject *newBackend )
 {
-    unregisterBackend();
-    backend = newBackend;
+    q->setManagerBackend( newBackend );
 
-    QObject::connect( backend, SIGNAL( added( const QString & ) ),
+    QObject::connect( newBackend, SIGNAL( added( const QString & ) ),
                       q, SLOT( slotAdded( const QString & ) ) );
-    QObject::connect( backend, SIGNAL( removed( const QString & ) ),
+    QObject::connect( newBackend, SIGNAL( removed( const QString & ) ),
                       q, SLOT( slotRemoved( const QString & ) ) );
-}
-
-void Solid::NetworkManager::Private::unregisterBackend()
-{
-    if ( backend != 0 )
-    {
-        // Delete all the devices, they are now outdated
-        typedef QPair<NetworkDevice*, Ifaces::NetworkDevice*> NetworkDeviceIfacePair;
-
-        // Delete all the devices, they are now outdated
-        foreach( NetworkDeviceIfacePair pair, networkDeviceMap.values() )
-        {
-            delete pair.first;
-            delete pair.second;
-        }
-
-        networkDeviceMap.clear();
-
-        delete backend;
-        backend = 0;
-    }
 }
 
 QPair<Solid::NetworkDevice*, Solid::Ifaces::NetworkDevice*> Solid::NetworkManager::Private::findRegisteredNetworkDevice( const QString &uni )
@@ -312,7 +238,13 @@ QPair<Solid::NetworkDevice*, Solid::Ifaces::NetworkDevice*> Solid::NetworkManage
     }
     else
     {
-        Ifaces::NetworkDevice *iface = qobject_cast<Ifaces::NetworkDevice*>( backend->createNetworkDevice( uni ) );
+        Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( q->managerBackend() );
+        Ifaces::NetworkDevice *iface = 0;
+
+        if ( backend!=0 )
+        {
+            iface = qobject_cast<Ifaces::NetworkDevice*>( backend->createNetworkDevice( uni ) );
+        }
 
         if ( iface!=0 )
         {

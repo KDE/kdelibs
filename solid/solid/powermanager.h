@@ -20,23 +20,15 @@
 #ifndef SOLID_POWERMANAGER_H
 #define SOLID_POWERMANAGER_H
 
-#include <QObject>
-
 #include <kdelibs_export.h>
 
-#include <kstaticdeleter.h>
-
+#include <solid/managerbase.h>
 #include <solid/ifaces/enums.h>
 
 class KJob;
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class PowerManager;
-    }
-
     /**
      * This class allow to query the underlying system to obtain information
      * about the hardware available.
@@ -48,43 +40,12 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT PowerManager : public QObject, public Ifaces::Enums::PowerManager
+    class KDE_EXPORT PowerManager : public ManagerBase, public Ifaces::Enums::PowerManager
     {
         Q_OBJECT
+        SOLID_SINGLETON( PowerManager )
 
     public:
-        /**
-         * Retrieves the unique instance of this class.
-         *
-         * @return unique instance of the class
-         */
-        static PowerManager &self();
-
-        /**
-         * Retrieves the unique instance of this class and forces the registration of
-         * the given backend.
-         * The PowerManager will use this backend. The parameter will be ignored if an
-         * instance of PowerManager already exists.
-         *
-         * Use this method at your own risks. It's primarily available to easier tests
-         * writing. If you need to test the PowerManager, use a call to this method, and
-         * then use self() as usual.
-         *
-         * @param backend the in the application
-         * @return unique instance of the class
-         * @see self()
-         */
-        static PowerManager &selfForceBackend( Ifaces::PowerManager *backend );
-
-        /**
-         * Returns a text describing the error that occured while loading
-         * the backend.
-         *
-         * @return the error description, or QString() if the backend loaded successfully
-         */
-        const QString &errorText() const;
-
-
         /**
          * Retrieves the list of power management schemes available on this system.
          *
@@ -195,14 +156,6 @@ namespace Solid
          */
         bool setCpuEnabled( int cpuNum, bool enabled );
 
-
-        /**
-         * Retrieves a reference to the loaded backend.
-         *
-         * @return a pointer to the backend, or 0 if no backend is loaded
-         */
-        const Ifaces::PowerManager *backend() const;
-
     Q_SIGNALS:
         /**
          * This signal is emitted when the power management scheme has changed.
@@ -237,15 +190,12 @@ namespace Solid
 
     private:
         PowerManager();
-        PowerManager( Ifaces::PowerManager *backend );
+        PowerManager( QObject *backend );
         ~PowerManager();
 
     private:
-        static PowerManager *s_self;
         class Private;
         Private *d;
-
-        friend void ::KStaticDeleter<PowerManager>::destructObject();
     };
 }
 

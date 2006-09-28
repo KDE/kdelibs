@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class ManagerBase;
+
     class KDE_EXPORT FrontendObject : public QObject
     {
         Q_OBJECT
@@ -45,6 +47,8 @@ namespace Solid
     private:
         class Private;
         Private *d;
+
+        friend class ManagerBase;
     };
 }
 

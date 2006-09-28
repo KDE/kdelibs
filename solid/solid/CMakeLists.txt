@@ -8,6 +8,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 ########### next target ###############
 
 set(solid_LIB_SRCS 
+   managerbase.cpp 
    frontendobject.cpp 
    device.cpp 
    devicemanager.cpp 
@@ -52,7 +53,7 @@ install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES  soliddevicemanager.desktop solidpowermanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
-install( FILES frontendobject.h device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h networkdevice.h network.h wirelessnetwork.h authentication.h sysstatistics.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES managerbase.h frontendobject.h device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h networkdevice.h network.h wirelessnetwork.h authentication.h sysstatistics.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

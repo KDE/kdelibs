@@ -16,7 +16,12 @@ namespace Solid
 Solid::AuthenticationValidator::AuthenticationValidator()
     : d( new Private )
 {
-    d->backendObject = NetworkManager::self().backend()->createAuthenticationValidator();
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( NetworkManager::self().managerBackend() );
+
+    if ( backend )
+    {
+        d->backendObject = backend->createAuthenticationValidator();
+    }
 }
 
 Solid::AuthenticationValidator::~AuthenticationValidator()

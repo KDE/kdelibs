@@ -19,258 +19,125 @@
 
 #include "powermanager.h"
 
-#include <QFile>
-
-#include <kservicetypetrader.h>
-#include <kservice.h>
-#include <klibloader.h>
-
-#include <klocale.h>
-#include <kdebug.h>
-
+#include "soliddefs_p.h"
 #include "ifaces/powermanager.h"
-
 
 namespace Solid
 {
     class PowerManager::Private
     {
     public:
-        Private( PowerManager *manager ) : q( manager ), backend( 0 ) {}
+        Private( PowerManager *manager ) : q( manager ) {}
 
-        void registerBackend( Ifaces::PowerManager *newBackend );
-        void unregisterBackend();
+        void registerBackend( QObject *newBackend );
 
         PowerManager *q;
-        Ifaces::PowerManager *backend;
-
-        QString errorText;
     };
 }
 
-static ::KStaticDeleter<Solid::PowerManager> sd;
-
-Solid::PowerManager *Solid::PowerManager::s_self = 0;
-
-
-Solid::PowerManager &Solid::PowerManager::self()
-{
-    if( !s_self )
-    {
-        s_self = new Solid::PowerManager();
-        sd.setObject( s_self, s_self );
-    }
-
-    return *s_self;
-}
-
-Solid::PowerManager &Solid::PowerManager::selfForceBackend( Ifaces::PowerManager *backend )
-{
-    if( !s_self )
-    {
-        s_self = new Solid::PowerManager( backend );
-        sd.setObject( s_self, s_self );
-    }
-
-    return *s_self;
-}
+SOLID_SINGLETON_IMPLEMENTATION( Solid::PowerManager )
 
 Solid::PowerManager::PowerManager()
-    : QObject(), d( new Private( this ) )
+    : ManagerBase( "Power Management", "SolidPowerManager", "Solid::Ifaces::PowerManager" ),
+      d( new Private( this ) )
 {
-    QStringList error_msg;
-
-    Ifaces::PowerManager *backend = 0;
-
-    KService::List offers = KServiceTypeTrader::self()->query( "SolidPowerManager", "(Type == 'Service')" );
-
-    foreach ( KService::Ptr ptr, offers )
+    if ( managerBackend() != 0 )
     {
-        KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
-
-        if ( factory )
-        {
-            backend = (Ifaces::PowerManager*)factory->create( 0, "Solid::Ifaces::PowerManager" );
-
-            if( backend != 0 )
-            {
-                d->registerBackend( backend );
-                kDebug() << "Using backend: " << ptr->name() << endl;
-            }
-            else
-            {
-                kDebug() << "Error loading '" << ptr->name() << "', factory's create method returned 0" << endl;
-                error_msg.append( i18n("Factory's create method failed") );
-            }
-        }
-        else
-        {
-            kDebug() << "Error loading '" << ptr->name() << "', factory creation failed" << endl;
-            error_msg.append( i18n("Factory creation failed") );
-        }
-    }
-
-    if ( backend == 0 )
-    {
-        if ( offers.size() == 0 )
-        {
-            d->errorText = i18n( "No Power Management Backend found" );
-        }
-        else
-        {
-            d->errorText = "<qt>";
-            d->errorText+= i18n( "Unable to use any of the Power Management Backends" );
-            d->errorText+= "<table>";
-
-            QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
-
-            for ( int i = 0; i< offers.size(); i++ )
-            {
-                d->errorText+= line.arg( offers[i]->name() ).arg( error_msg[i] );
-            }
-
-            d->errorText+= "</table></qt>";
-        }
+        d->registerBackend( managerBackend() );
     }
 }
 
-Solid::PowerManager::PowerManager( Ifaces::PowerManager *backend )
-    : QObject(), d( new Private( this ) )
+Solid::PowerManager::PowerManager( QObject *backend )
+    : ManagerBase( backend ), d( new Private( this ) )
 {
-    if ( backend != 0 )
+    if ( managerBackend() != 0 )
     {
-        d->registerBackend( backend );
+        d->registerBackend( managerBackend() );
     }
 }
 
 Solid::PowerManager::~PowerManager()
 {
-    d->unregisterBackend();
-}
-
-const QString &Solid::PowerManager::errorText() const
-{
-    return d->errorText;
+    delete d;
 }
 
 QStringList Solid::PowerManager::supportedSchemes() const
 {
-    if ( d->backend == 0 ) return QStringList();
-
-    return d->backend->supportedSchemes();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), QStringList(), supportedSchemes() );
 }
 
 QString Solid::PowerManager::schemeDescription( const QString &schemeName ) const
 {
-    if ( d->backend == 0 ) return QString();
-
-    return d->backend->schemeDescription( schemeName );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), QString(), schemeDescription( schemeName ) );
 }
 
 QString Solid::PowerManager::scheme() const
 {
-    if ( d->backend == 0 ) return QString();
-
-    return d->backend->scheme();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), QString(), scheme() );
 }
 
 bool Solid::PowerManager::setScheme( const QString &name )
 {
-    if ( d->backend == 0 ) return false;
-
-    return d->backend->setScheme( name );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), false, setScheme( name ) );
 }
 
 Solid::PowerManager::BatteryState Solid::PowerManager::batteryState() const
 {
-    if ( d->backend == 0 ) return NoBatteryState;
-
-    return d->backend->batteryState();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), NoBatteryState, batteryState() );
 }
 
 Solid::PowerManager::AcAdapterState Solid::PowerManager::acAdapterState() const
 {
-    if ( d->backend == 0 ) return Plugged;
-
-    return d->backend->acAdapterState();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), Plugged, acAdapterState() );
 }
 
 Solid::PowerManager::SuspendMethods Solid::PowerManager::supportedSuspendMethods() const
 {
-    if ( d->backend == 0 ) return UnknownSuspendMethod;
-
-    return d->backend->supportedSuspendMethods();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), UnknownSuspendMethod, supportedSuspendMethods() );
 }
 
-KJob * Solid::PowerManager::suspend( SuspendMethod method ) const
+KJob *Solid::PowerManager::suspend( SuspendMethod method ) const
 {
-    if ( d->backend == 0 ) return 0;
-
-    return d->backend->suspend( method );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), 0, suspend( method ) );
 }
 
 Solid::PowerManager::CpuFreqPolicies Solid::PowerManager::supportedCpuFreqPolicies() const
 {
-    if ( d->backend == 0 ) return UnknownCpuFreqPolicy;
-
-    return d->backend->supportedCpuFreqPolicies();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), UnknownCpuFreqPolicy, supportedCpuFreqPolicies() );
 }
 
 Solid::PowerManager::CpuFreqPolicy Solid::PowerManager::cpuFreqPolicy() const
 {
-    if ( d->backend == 0 ) return UnknownCpuFreqPolicy;
-
-    return d->backend->cpuFreqPolicy();
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), UnknownCpuFreqPolicy, cpuFreqPolicy() );
 }
 
 bool Solid::PowerManager::setCpuFreqPolicy( CpuFreqPolicy newPolicy )
 {
-    if ( d->backend == 0 ) return false;
-
-    return d->backend->setCpuFreqPolicy( newPolicy );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), false, setCpuFreqPolicy( newPolicy ) );
 }
 
 bool Solid::PowerManager::canDisableCpu( int cpuNum ) const
 {
-    if ( d->backend == 0 ) return false;
-
-    return d->backend->canDisableCpu( cpuNum );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), false, canDisableCpu( cpuNum ) );
 }
 
 bool Solid::PowerManager::setCpuEnabled( int cpuNum, bool enabled )
 {
-    if ( d->backend == 0 ) return false;
-
-    return d->backend->setCpuEnabled( cpuNum, enabled );
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), false, setCpuEnabled( cpuNum, enabled ) );
 }
 
-const Solid::Ifaces::PowerManager *Solid::PowerManager::backend() const
+void Solid::PowerManager::Private::registerBackend( QObject *newBackend )
 {
-    return d->backend;
-}
+    q->setManagerBackend( newBackend );
 
-void Solid::PowerManager::Private::registerBackend( Ifaces::PowerManager *newBackend )
-{
-    unregisterBackend();
-    backend = newBackend;
-
-    QObject::connect( backend, SIGNAL( schemeChanged( QString ) ),
+    QObject::connect( newBackend, SIGNAL( schemeChanged( QString ) ),
                       q, SIGNAL( schemeChanged( QString ) ) );
-    QObject::connect( backend, SIGNAL( acAdapterStateChanged( int ) ),
+    QObject::connect( newBackend, SIGNAL( acAdapterStateChanged( int ) ),
                       q, SIGNAL( acAdapterStateChanged( int ) ) );
-    QObject::connect( backend, SIGNAL( batteryStateChanged( int ) ),
+    QObject::connect( newBackend, SIGNAL( batteryStateChanged( int ) ),
                       q, SIGNAL( batteryStateChanged( int ) ) );
-    QObject::connect( backend, SIGNAL( buttonPressed( int ) ),
+    QObject::connect( newBackend, SIGNAL( buttonPressed( int ) ),
                       q, SIGNAL( buttonPressed( int ) ) );
-}
-
-void Solid::PowerManager::Private::unregisterBackend()
-{
-    if ( backend!=0 )
-    {
-        delete backend;
-        backend = 0;
-    }
 }
 
 #include "powermanager.moc"

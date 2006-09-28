@@ -1,6 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
-    Copyright (C) 2006 Kévin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,9 +21,8 @@
 #ifndef SOLID_NETWORKMANAGER
 #define SOLID_NETWORKMANAGER
 
-#include <QObject>
+#include <solid/managerbase.h>
 #include <kdelibs_export.h>
-#include <kstaticdeleter.h>
 
 namespace Solid
 {
@@ -35,34 +34,15 @@ namespace Solid
     class NetworkDevice;
     typedef QList<NetworkDevice> NetworkDeviceList;
 
-/**
- * Main class for listing and activating network devices and controlling the backend's network status
- */
-class KDE_EXPORT NetworkManager : public QObject
-{
-Q_OBJECT
+    /**
+     * Main class for listing and activating network devices and controlling the backend's network status
+     */
+    class KDE_EXPORT NetworkManager : public ManagerBase
+    {
+        Q_OBJECT
+        SOLID_SINGLETON( NetworkManager )
+
     public:
-         /**
-         * Retrieves the unique instance of this class.
-         *
-         * @return unique instance of the class
-         */
-        static NetworkManager &self();
-        /**
-         * Retrieves the unique instance of this class and forces the registration of
-         * the given backend.
-         * The NetworkManager will use this backend. The parameter will be ignored if an
-         * instance of NetworkManager already exists.
-         *
-         * Use this method at your own risks. It's primarily available to easier tests
-         * writing. If you need to test the NetworkManager, use a call to this method, and
-         * then use self() as usual.
-         *
-         * @param backend the in the application
-         * @return unique instance of the class
-         * @see self()
-         */
-        static NetworkManager &selfForceBackend( Ifaces::NetworkManager *backend );
         /**
          * Get a list of all network devices in the system
          * Note: includes getDeviceList and getDialupList from knm
@@ -78,13 +58,6 @@ Q_OBJECT
          * Access a given device instance
          */
         const NetworkDevice &findNetworkDevice( const QString & udi ) const;
-
-        /**
-         * Retrieves a reference to the loaded backend.
-         *
-         * @return a pointer to the backend, or 0 if no backend is loaded
-         */
-        Ifaces::NetworkManager *backend() const;
 
     public Q_SLOTS:
         /**
@@ -118,9 +91,10 @@ Q_OBJECT
          * Emitted when the system notices a device was removed
          */
         void removed( const QString & );
+
     private:
         NetworkManager();
-        NetworkManager( Ifaces::NetworkManager *backend );
+        NetworkManager( QObject *backend );
         virtual ~NetworkManager();
         NetworkDeviceList buildDeviceList( const QStringList & udiList ) const;
 
@@ -130,10 +104,8 @@ Q_OBJECT
         void slotDestroyed( QObject *object );
 
     private:
-        static NetworkManager * s_self;
         class Private;
         Private * d;
-        friend void ::KStaticDeleter<NetworkManager>::destructObject();
 };
 
 } // Solid
