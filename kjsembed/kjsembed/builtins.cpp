@@ -80,9 +80,14 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
 	if ( !qualifiedFilename.isEmpty() )
 	    Engine::runFile( exec->dynamicInterpreter(), qualifiedFilename );
 	else {
-	    // Throw file not found exception
+	    QString msg = i18n( "File %1 not found.", filename.qstring() );
+	    return throwError( exec, KJS::URIError, msg );
 	}
     }
+    else {
+
+    }
+
     return KJS::Null();
 }
 
