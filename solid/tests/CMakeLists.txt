@@ -17,7 +17,7 @@ kde4_automoc(${solidtest_SRCS})
 kde4_add_executable(solidtest RUN_UNINSTALLED ${solidtest_SRCS})
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_SOURCE_DIR}/backends/fake/fakecomputer.xml\\"")
 
-target_link_libraries(solidtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fake_static)
+target_link_libraries(solidtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakehw_static)
 
 add_test(solidtest ${EXECUTABLE_OUTPUT_PATH}/solidtest)
 
