@@ -69,7 +69,8 @@ function write_ctor( compoundDef, compoundEnums )
 
         ctor += '    }\n';
     }
-    ctor += '}';
+    ctor += '    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compoundName + '");\n'
+    + '}';
     return ctor;
 }
 
@@ -224,18 +225,25 @@ function write_binding_new( class_doc )
                     {
                         var methodType = memberElement.firstChildElement('type').toElement().toString();
                         var methodArgs = memberElement.firstChildElement('argsstring').toElement().toString();
+                        // Handle arguments
+                        var methodArgList = memberElement.elementsByTagName('param');
+
                         methods +=
                             '// ' + methodType + ' ' + memberName + methodArgs + '\n' +
                             'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
-                            '{ \n' +
+                            '{ \n';
+
+                        if (methodArgList.count() == 0)
+                            methods +=
+                                '    Q_UNUSED(args); \n';
+
+                        methods +=
                             '    KJS::JSValue *result = KJS::Null(); \n' +
                             '    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
                             '    if( imp ) \n' +
                             '    { \n' +
                             '        ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
 
-                        // Handle arguments
-                        var methodArgList = memberElement.elementsByTagName('param');
                         if ( methodArgList.count() == 0 )
                         {
                             if (methodType == "void")
@@ -265,20 +273,26 @@ function write_binding_new( class_doc )
                             }
                         }
 
+                        var tmpArgs = '';
                         for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
                         {
                             var param = methodArgList.item(paramIdx).toElement();
-                            var paramVar = param.firstChildElement('declname').toElement().toString();
                             var paramVarElement = param.firstChildElement('declname').toElement();
+                            var paramVar = paramVarElement.toString();
+                            if (paramVarElement.isNull())
+                                paramVar = 'arg' + paramIdx;
                             var paramDefault = param.firstChildElement('defval').toElement();
                             methods += extract_parameter(param, paramIdx, compoundEnums);
+
+                            tmpArgs += paramVar + ', ';
                         }
-                        if ( memberName.indexOf('set') != -1 )
-                        {   // setter, we can handle this for now
-                            if ( paramVarElement.isNull() )
-                                methods += '        value.' + memberName + '(arg0);\n';
-                            else
-                                methods += '        value.' + memberName + '(' + paramVar + ');\n';
+
+                        if (tmpArgs != '') 
+                        {
+                            var tmpIdx = tmpArgs.lastIndexOf(',');
+                            tmpArgs = tmpArgs.substr(0, tmpIdx);
+                            var tmpIdx =
+                                    methods += '        value.' + memberName + '(' + tmpArgs + ');\n';
                         }
 
                         methods +=
@@ -354,19 +368,26 @@ function write_binding_new( class_doc )
 
 // Regular expression used to spot const & type args (i.e. 'const QString &').
 const_ref_rx = /const\s+(\w+)\s*&/;
+ptr_rx = /(\w+)\s*\*/;
 
 function findCoreParamType(paramType)
 {
     var coreParamTypeMatch = const_ref_rx.exec(paramType);
 
     // We want the core parameter type
-    var coreParamType;
-    if (coreParamTypeMatch == null)
-        coreParamType = paramType;
-    else
-        coreParamType = coreParamTypeMatch[1];
+    if (coreParamTypeMatch != null)
+        return coreParamTypeMatch[1];
 
-    return coreParamType;
+//    coreParamTypeMatch = ptr_rx.exec(paramType);
+//    if (coreParamTypeMatch != null)
+//        return coreParamTypeMatch[1];
+
+    return paramType;
+}
+
+function isPointer(paramType)
+{
+   return (ptr_rx.exec(paramType) != null);
 }
 
 // An array of primitive Qt types, this is annoying but seems to be necessary
@@ -389,7 +410,7 @@ var data_types = {
      "qreal" : 3, "qint8" : 4, "quint8" : 4, "qint16" : 4, "quint16" : 4, 
      "qint32" : 4, "quint32" : 4, "qint64" : 4, "quint64" : 4, 
      "qulonglong" : 4,
-     "uchar" : 4, "ushort" : 4, "ulong" : 4
+     "char" : 4, "uchar" : 4, "ushort" : 4, "ulong" : 4
     
 };
 
@@ -449,7 +470,19 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
 
     coreParamType = findCoreParamType(paramType);
 
-    if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
+    if ( isBool(coreParamType) || isNumber(coreParamType) )  // integral value
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
+    else if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
         extracted +=
             '        ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
