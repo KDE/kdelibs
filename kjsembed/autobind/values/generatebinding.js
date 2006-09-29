@@ -189,9 +189,9 @@ function write_binding_new( class_doc )
         '\n' +
         'using namespace KJSEmbed;\n' +
         '\n' +
-        "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &ValueBinding::info, 0, 0 };\n" +
+        "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &VariantBinding::info, 0, 0 };\n" +
         compoundName + 'Binding::' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
-        '   : ValueBinding(exec, value)\n' +
+        '   : VariantBinding(exec, value)\n' +
         '{\n' +
         '    StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
         '    StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
@@ -239,7 +239,7 @@ function write_binding_new( class_doc )
 
                         methods +=
                             '    KJS::JSValue *result = KJS::Null(); \n' +
-                            '    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
+                            '    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); \n' +
                             '    if( imp ) \n' +
                             '    { \n' +
                             '        ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
@@ -254,7 +254,7 @@ function write_binding_new( class_doc )
                                 methods +=
                                 '       ' + compoundEnums[methodType] + '::' + methodType + ' tmp = value.' + memberName + '();\n';
                                 methods += 
-                                '        result = KJS::Number( tmp );\n';
+                                '         result = KJS::Number( tmp );\n';
                             }
                             else
                             {
@@ -263,12 +263,12 @@ function write_binding_new( class_doc )
                                 if ( methodType.indexOf('Qt::') != -1 ) // Enum Value
                                 {
                                     methods += 
-                                    '       result = KJS::Number( tmp );\n';
+                                    '        result = KJS::Number( tmp );\n';
                                 }
                                 else
                                 {
                                     methods +=
-                                    "       result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
+                                    "        result = KJSEmbed::createVariant( exec, \"" + methodType + "\", tmp );\n";
                                 }
                             }
                         }
@@ -473,7 +473,7 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
     if ( isBool(coreParamType) || isNumber(coreParamType) )  // integral value
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -509,7 +509,7 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
     else if ( isVariant(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else    // It's an object, or something else?

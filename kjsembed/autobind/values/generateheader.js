@@ -12,14 +12,14 @@ function write_header( classDoc )
         '#ifndef BIND_' + compoundName + '_H\n' +
         '#define BIND_' + compoundName + '_H\n' +
         '\n' +
-        '#include <value_binding.h>\n' +
+        '#include <variant_binding.h>\n' +
         '#include <static_binding.h>\n' +
         '\n' +
         'class ' + compoundName + ';\n' +
         '\n' +
         'namespace KJSEmbed\n' +
         '{\n' +
-        '   class ' + compoundName + 'Binding : public ValueBinding\n' +
+        '   class ' + compoundName + 'Binding : public VariantBinding\n' +
         '   {\n' +
         '       public:\n' +
         '           ' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName + ' &value );\n' +
