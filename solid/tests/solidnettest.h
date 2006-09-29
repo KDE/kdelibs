@@ -29,6 +29,10 @@ class SolidNetTest : public QObject
     Q_OBJECT
 private slots:
     void initTestCase();
+    void testNetworkInterfaces();
+    void testFindNetworkInterface();
+    void testManagerBasicFeatures();
+    void testInterfaceBasicFeatures();
 
 private:
     FakeNetworkManager *fakeManager;
