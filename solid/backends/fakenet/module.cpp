@@ -23,5 +23,5 @@
 #include <kgenericfactory.h>
 
 typedef KGenericFactory<FakeNetworkManager, Solid::Ifaces::NetworkManager> FakeNetBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) );
+K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) )
 

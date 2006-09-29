@@ -97,6 +97,6 @@ namespace Solid
          */
         QStringList playlistFormats() const;
     };
-};
+}
 
 #endif

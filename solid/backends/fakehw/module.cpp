@@ -22,5 +22,5 @@
 #include <kgenericfactory.h>
 
 typedef KGenericFactory<FakeManager, Solid::Ifaces::DeviceManager> FakeBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fakehw, FakeBackendFactory( "fakehwbackend" ) );
+K_EXPORT_COMPONENT_FACTORY( solid_fakehw, FakeBackendFactory( "fakehwbackend" ) )
 
