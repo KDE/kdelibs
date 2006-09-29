@@ -82,7 +82,6 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 # list the subdirectories
 
 add_subdirectory( cmake )
-add_subdirectory( libltdl )
 add_subdirectory( kdefx )
 add_subdirectory( kdecore )
 add_subdirectory( kdeui )
