@@ -447,10 +447,10 @@ namespace Enums
                           SupportsWirelessScan = 0x4 };
         /**
          * Device medium types
-         * - IEEE802_3: wired ethernet
-         * - IEEE802_11: the popular family of wireless networks
+         * - Ieee8023: wired ethernet
+         * - Ieee80211: the popular family of wireless networks
          */
-        enum Type { UnknownType, IEEE802_3, IEEE802_11 };
+        enum Type { UnknownType, Ieee8023, Ieee80211 };
 
         Q_DECLARE_FLAGS( Capabilities, Capability )
     };
