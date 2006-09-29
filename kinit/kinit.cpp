@@ -67,7 +67,6 @@
 
 #include <kdeversion.h>
 
-#include "ltdl.h"
 #include "klauncher_cmds.h"
 
 #ifdef Q_WS_X11
@@ -75,20 +74,6 @@
 #include <X11/Xatom.h>
 #include <fixx11h.h>
 #include <kstartupinfo.h>
-#endif
-
-#ifdef HAVE_DLFCN_H
-# include <dlfcn.h>
-#endif
-
-#ifdef RTLD_GLOBAL
-# define LTDL_GLOBAL	RTLD_GLOBAL
-#else
-# ifdef DL_GLOBAL
-#  define LTDL_GLOBAL	DL_GLOBAL
-# else
-#  define LTDL_GLOBAL	0
-# endif
 #endif
 
 #if KDE_IS_VERSION( 3, 90, 0 )
