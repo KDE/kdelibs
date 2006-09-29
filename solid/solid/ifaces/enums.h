@@ -80,7 +80,7 @@ namespace Enums
         /**
          * This type stores an OR combination of Type values.
          */
-        Q_DECLARE_FLAGS( Types, Type );
+        Q_DECLARE_FLAGS( Types, Type )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( Capability::Types )
 
@@ -143,7 +143,7 @@ namespace Enums
         /**
          * This type stores an OR combination of MediumType values.
          */
-        Q_DECLARE_FLAGS( MediumTypes, MediumType );
+        Q_DECLARE_FLAGS( MediumTypes, MediumType )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( Cdrom::MediumTypes )
 
