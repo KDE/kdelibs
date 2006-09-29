@@ -94,7 +94,7 @@ namespace ThreadWeaver {
             There is an important gotcha: When a Job object is deleted, it
             will always resolve it's dependencies. If dependent jobs should
             not be executed after a failure, it is important to dequeue those
-            befor deleting the failed Job.
+            before deleting the failed Job.
 
             A JobSequence may be helpful for that purpose.
         */

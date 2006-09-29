@@ -21,8 +21,6 @@
 #include "DebuggingAids.h"
 #include "ResourceRestrictionPolicy.h"
 
-class Job;
-
 using namespace ThreadWeaver;
 
 class ResourceRestrictionPolicy::Private
