@@ -22,9 +22,8 @@
 #include <qstringlist.h>
 #include <qhash.h>
 #include <kglobal.h>
+#include <QLibrary>
 #include <qplugin.h>
-
-#include <stdlib.h> // For backwards compatibility
 
 class QString;
 class QTimer;
@@ -64,13 +63,10 @@ class KDECORE_EXPORT KLibrary : public QObject
     friend class KLibLoader;
     friend class KLibraryPrivate;
 
+    KLibrary( const QString& libname, const QString& filename, QLibrary * handle );
+
     Q_OBJECT
 public:
-    /**
-     * Don't create KLibrary objects on your own. Instead use KLibLoader.
-     */
-    KLibrary( const QString& libname, const QString& filename, void * handle );
-
     /**
      * Returns the name of the library.
      * @return The name of the library like "libkspread".
@@ -101,7 +97,8 @@ public:
      * @return the address of the symbol, or 0 if it does not exist
      * @see hasSymbol
      */
-    void* symbol( const char* name ) const;
+    void* resolve( const char* name ) const;
+    void* symbol( const char* name ) const { return resolve(name); }
 
     /**
      * Looks up a symbol from the library. This is a very low level
@@ -338,7 +335,7 @@ public:
      *
      * @see factory
      */
-    virtual KLibrary* library( const char* libname );
+    virtual KLibrary* library( const char* libname, QLibrary::LoadHints loadHint = 0 );
 
     /**
      * Loads and initializes a library. Loading a library multiple times is
@@ -361,6 +358,7 @@ public:
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
      * @see factory
+     * @deprecated use library() with QLibrary::ExportExternalSymbolsHint hint
      */
     KLibrary* globalLibrary( const char *name );
 

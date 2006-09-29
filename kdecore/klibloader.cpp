@@ -23,6 +23,7 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtimer.h>
+#include <qlibrary.h>
 #include <QStack>
 #include <qapplication.h>
 
@@ -30,25 +31,9 @@
 #include "kinstance.h"
 #include "kdebug.h"
 #include "klocale.h"
-#include "ltdl.h"
 
 #include <stdlib.h> //getenv
 
-
-#if HAVE_DLFCN_H
-#  include <dlfcn.h>
-#endif
-
-#ifdef RTLD_GLOBAL
-#  define LT_GLOBAL             RTLD_GLOBAL
-#else
-#  ifdef DL_GLOBAL
-#    define LT_GLOBAL           DL_GLOBAL
-#  endif
-#endif /* !RTLD_GLOBAL */
-#ifndef LT_GLOBAL
-#  define LT_GLOBAL             0
-#endif /* !LT_GLOBAL */
 
 namespace KLibLoader_cpp {
 enum UnloadMode {UNKNOWN, UNLOAD, DONT_UNLOAD};
@@ -60,12 +45,12 @@ enum UnloadMode {UNKNOWN, UNLOAD, DONT_UNLOAD};
 class KLibWrapPrivate
 {
 public:
-    KLibWrapPrivate(KLibrary *l, lt_dlhandle h);
+    KLibWrapPrivate(KLibrary *l, QLibrary* h);
 
     KLibrary *lib;
+    QLibrary* handle;
     KLibLoader_cpp::UnloadMode unload_mode;
     int ref_count;
-    lt_dlhandle handle;
     QString name;
     QString filename;
 };
@@ -117,7 +102,7 @@ public:
     QString libname;
     QString filename;
     QHash<QByteArray, KLibFactory*> factories;
-    void* handle;
+    QLibrary* handle;
     QList<QObject*> objs;
     QTimer* timer;
 
@@ -125,7 +110,7 @@ public:
     KLibFactory *kde4Factory();
 };
 
-KLibrary::KLibrary( const QString& libname, const QString& filename, void * handle )
+KLibrary::KLibrary( const QString& libname, const QString& filename, QLibrary * handle )
 {
     /* Make sure, we have a KLibLoader */
     (void) KLibLoader::self();
@@ -252,12 +237,12 @@ KLibFactory* KLibrary::factory(const char* factoryname)
     return factory;
 }
 
-void* KLibrary::symbol( const char* symname ) const
+void* KLibrary::resolve( const char* symname ) const
 {
-    void* sym = lt_dlsym( (lt_dlhandle) d->handle, symname );
-    if ( !sym )
+    void* sym = d->handle->resolve( symname );
+    if ( !d->handle->isLoaded() || !sym )
     {
-        KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QString::fromLocal8Bit( lt_dlerror() );
+        KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -267,7 +252,7 @@ void* KLibrary::symbol( const char* symname ) const
 
 bool KLibrary::hasSymbol( const char* symname ) const
 {
-    void* sym = lt_dlsym( (lt_dlhandle) d->handle, symname );
+    void* sym = d->handle->resolve(symname);
     return (sym != 0L );
 }
 
@@ -333,14 +318,14 @@ void KLibrary::slotTimeout()
 
 // -------------------------------------------------
 
-KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
+KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, QLibrary* h)
  : lib(l), ref_count(1), handle(h), name(l->name()), filename(l->fileName())
 {
     unload_mode = KLibLoader_cpp::UNKNOWN;
-    if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
+    if (handle->resolve("__kde_do_not_unload") != 0) {
 //        kDebug(150) << "Will not unload " << name << endl;
         unload_mode = KLibLoader_cpp::DONT_UNLOAD;
-    } else if (lt_dlsym(handle, "__kde_do_unload") != 0) {
+    } else if (handle->resolve("__kde_do_unload") != 0) {
         unload_mode = KLibLoader_cpp::UNLOAD;
     }
 }
@@ -365,7 +350,6 @@ KLibLoader::KLibLoader( QObject* _parent )
     : QObject( _parent ), d(new Private)
 {
     s_self = this;
-    lt_dlinit();
     d->unload_mode = KLibLoader_cpp::UNKNOWN;
     if (getenv("KDE_NOUNLOAD") != 0)
         d->unload_mode = KLibLoader_cpp::DONT_UNLOAD;
@@ -393,14 +377,16 @@ KLibLoader::~KLibLoader()
 static inline QByteArray makeLibName( const char* name )
 {
     QByteArray libname(name);
-    // only append ".la" if there is no extension
-    // this allows to load non-libtool libraries as well
-    // (mhk, 20000228)
     int pos = libname.lastIndexOf('/');
     if (pos < 0)
       pos = 0;
-    if (libname.indexOf('.', pos) < 0)
-      libname += ".la";
+    if (libname.indexOf('.', pos) < 0) {
+        const char* const extList[] = { ".dylib", ".bundle", ".so", ".dll", ".sl" };
+        for (int i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
+           if (QLibrary::isLibrary(libname + extList[i]))
+               return libname + extList[i];
+        }
+    }
     return libname;
 }
 
@@ -412,8 +398,9 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
     QString libfile;
-    if (!QDir::isRelativePath(libname))
+    if (!QDir::isRelativePath(libname)) {
       libfile = QFile::decodeName( libname );
+    }
     else
     {
       libfile = instance->dirs()->findResource( "module", libname );
@@ -432,21 +419,11 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 
 KLibrary* KLibLoader::globalLibrary( const char *_name )
 {
-KLibrary *tmp;
-int olt_dlopen_flag = lt_dlopen_flag;
-
-   lt_dlopen_flag |= LT_GLOBAL;
-   kDebug(150) << "Loading the next library global with flag "
-                << lt_dlopen_flag
-                << "." << endl;
-   tmp = library(_name);
-   lt_dlopen_flag = olt_dlopen_flag;
-
-return tmp;
+    return library(_name, QLibrary::ExportExternalSymbolsHint);
 }
 
 
-KLibrary* KLibLoader::library( const char *_name )
+KLibrary* KLibLoader::library( const char *_name, QLibrary::LoadHints hint )
 {
     if (!_name)
         return 0;
@@ -477,7 +454,7 @@ KLibrary* KLibLoader::library( const char *_name )
       QString libfile = findLibrary( _name );
       if ( libfile.isEmpty() )
       {
-        const QByteArray libname = makeLibName( _name );
+        const QByteArray libname ( _name );
 #ifndef NDEBUG
         kDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
 #endif
@@ -485,21 +462,17 @@ KLibrary* KLibLoader::library( const char *_name )
         return 0;
       }
 
-      lt_dlhandle handle = lt_dlopen( QFile::encodeName(libfile) );
-      if ( !handle )
+      QLibrary* handle = new QLibrary(libfile);
+      handle->setLoadHints(hint);
+      if ( !handle->load() || !handle->isLoaded() )
       {
-        const char* errmsg = lt_dlerror();
-        qDebug( "lt_dlopen %s failed: %s", QFile::encodeName(libfile).data(), errmsg );
-        if(errmsg)
-            d->errorMessage = QString::fromLocal8Bit(errmsg);
-        else
-            d->errorMessage.clear();
+        d->errorMessage = handle->errorString();
         return 0;
       }
       else
         d->errorMessage.clear();
 
-      KLibrary *lib = new KLibrary( QLatin1String(_name), libfile, handle );
+      KLibrary *lib = new KLibrary( QLatin1String(_name), libfile, handle);
       wrap = new KLibWrapPrivate(lib, handle);
       d->loaded_stack.push(wrap);
     }
@@ -625,7 +598,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     }
 
     deleted_one = true;
-    lt_dlclose(wrap->handle);
+    delete wrap->handle;
     d->pending_close.removeAll(wrap);
     delete d->loaded_stack.pop();
   }
