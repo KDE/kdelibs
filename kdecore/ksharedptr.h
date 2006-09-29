@@ -34,10 +34,15 @@ typedef QSharedData KShared;
 
 /**
  * Can be used to control the lifetime of an object that has derived
- * KShared. As long a someone holds a KSharedPtr on some QSharedData
- * object it won't become deleted but is deleted once its reference
- * count is 0.  This struct emulates C++ pointers virtually perfectly.
+ * KShared (which is the same as QSharedData). As long a someone holds
+ * a KSharedPtr on some QSharedData object it won't become deleted but
+ * is deleted once its reference count is 0.
+ * This struct emulates C++ pointers virtually perfectly.
  * So just use it like a simple C++ pointer.
+ *
+ * The difference with using QSharedDataPointer is that QSharedDataPointer is
+ * a building block for implementing a value class with implicit sharing (like QString),
+ * whereas KSharedPtr provides refcounting to code that uses pointers.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
