@@ -7,7 +7,6 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 include(network/ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
-include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 # hack for kacceleratormanager
 include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
 
@@ -229,7 +228,6 @@ set(kdecore_LIB_SRCS
    kservice/yacc.c
    kservice/lex.c
    kservice/kplugininfo.cpp
-   ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )
 
 kde4_automoc(${kdecore_LIB_SRCS})
