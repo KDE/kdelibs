@@ -1,0 +1,68 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+
+#ifndef FAKEVOLUME_H
+#define FAKEVOLUME_H
+
+#include "fakeblock.h"
+#include <solid/ifaces/volume.h>
+
+class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::Volume
+{
+    Q_OBJECT
+    Q_INTERFACES( Solid::Ifaces::Volume )
+    Q_PROPERTY( bool ignored READ isIgnored )
+    Q_PROPERTY( bool mounted READ isMounted )
+    Q_PROPERTY( QString mountPoint READ mountPoint )
+    Q_PROPERTY( UsageType usage READ usage )
+    Q_PROPERTY( QString fsType READ fsType )
+    Q_PROPERTY( QString label READ label )
+    Q_PROPERTY( QString uuid READ uuid )
+    Q_PROPERTY( qulonglong size READ size )
+    Q_ENUMS( UsageType )
+
+public:
+    FakeVolume( FakeDevice *device );
+    virtual ~FakeVolume();
+
+public Q_SLOTS:
+    virtual bool isIgnored() const;
+    virtual bool isMounted() const;
+    virtual QString mountPoint() const;
+    virtual UsageType usage() const;
+    virtual QString fsType() const;
+    virtual QString label() const;
+    virtual QString uuid() const;
+    virtual qulonglong size() const;
+
+public:
+    virtual KJob *mount();
+    virtual KJob *unmount();
+    virtual KJob *eject();
+
+public Q_SLOTS:
+    QString createMountJob();
+    QString createUnmountJob();
+    QString createEjectJob();
+
+Q_SIGNALS:
+    void mountStateChanged( bool newState );
+};
+
+#endif

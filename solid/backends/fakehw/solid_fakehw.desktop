@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+ServiceTypes=SolidDeviceManager
+X-KDE-Library=solid_fakehw
+InitialPreference=100
+Name=FakeHw
+Comment=Fake Hardware discovery

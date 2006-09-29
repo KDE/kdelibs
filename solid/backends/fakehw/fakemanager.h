@@ -1,0 +1,85 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2006 Michaël Larouche <michael.larouche@kdemail.net>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+#ifndef FAKEMANAGER_H
+#define FAKEMANAGER_H
+
+#include <kdemacros.h>
+
+#include <solid/ifaces/devicemanager.h>
+
+class FakeDevice;
+class QDomElement;
+
+using namespace Solid::Ifaces;
+
+/**
+ * @brief a Fake manager that read a device list from a XML file.
+ * This fake manager is used for unit tests and developers.
+ *
+ * @author Michaël Larouche <michael.larouche@kdemail.net>
+ */
+class KDE_EXPORT FakeManager : public Solid::Ifaces::DeviceManager
+{
+    Q_OBJECT
+public:
+    FakeManager(QObject *parent, const QStringList &args);
+    FakeManager(QObject *parent, const QStringList &args, const QString &xmlFile);
+    virtual ~FakeManager();
+
+    /**
+     * Return the list of UDI of all available devices.
+     */
+    virtual QStringList allDevices();
+
+    /**
+     * Check if the device exists.
+     */
+    virtual bool deviceExists(const QString &udi);
+
+    virtual QStringList devicesFromQuery(const QString &parentUdi, Capability::Type capability);
+
+    virtual QObject *createDevice( const QString &udi );
+    virtual FakeDevice *findDevice( const QString &udi );
+
+    void raiseCapabilityAdded( const QString &udi, Capability::Type capability );
+
+public Q_SLOTS:
+    void plug( const QString &udi );
+    void unplug( const QString &udi );
+
+private Q_SLOTS:
+    /**
+     * @internal
+     * Parse the XML file that represent the fake machine.
+     */
+    void parseMachineFile();
+    /**
+     * @internal
+     * Parse a device node and the return the device.
+     */
+    FakeDevice *parseDeviceElement(const QDomElement &element);
+
+private:
+    virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
+    virtual QStringList findDeviceByCapability( const Capability::Type &capability );
+
+    class Private;
+    Private *d;
+};
+#endif

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+ServiceTypes=SolidNetworkManager
+X-KDE-Library=solid_fakenet
+InitialPreference=100
+Name=Fake Net
+Comment=Fake Network Management

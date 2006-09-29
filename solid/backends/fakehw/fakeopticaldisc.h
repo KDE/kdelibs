@@ -1,0 +1,51 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+
+#ifndef FAKEOPTICALDISC_H
+#define FAKEOPTICALDISC_H
+
+#include "fakevolume.h"
+#include <solid/ifaces/opticaldisc.h>
+
+class FakeOpticalDisc : public FakeVolume, virtual public Solid::Ifaces::OpticalDisc
+{
+    Q_OBJECT
+    Q_INTERFACES( Solid::Ifaces::OpticalDisc )
+    Q_PROPERTY( ContentTypes availableContent READ availableContent )
+    Q_PROPERTY( DiscType discType READ discType )
+    Q_PROPERTY( bool appendable READ isAppendable )
+    Q_PROPERTY( bool blank READ isBlank )
+    Q_PROPERTY( bool rewritable READ isRewritable )
+    Q_PROPERTY( qulonglong capacity READ capacity )
+    Q_ENUMS( ContentType DiscType )
+
+public:
+    FakeOpticalDisc( FakeDevice *device );
+    virtual ~FakeOpticalDisc();
+
+public Q_SLOTS:
+    virtual ContentTypes availableContent() const;
+    virtual DiscType discType() const;
+    virtual bool isAppendable() const;
+    virtual bool isBlank() const;
+    virtual bool isRewritable() const;
+    virtual qulonglong capacity() const;
+};
+
+#endif
