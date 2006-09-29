@@ -12,10 +12,9 @@ set(solidhwtest_SRCS
 kde4_automoc(${solidhwtest_SRCS})
 
 kde4_add_executable(solidhwtest RUN_UNINSTALLED ${solidhwtest_SRCS})
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_SOURCE_DIR}/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakehw/fakecomputer.xml\\"")
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
-                     ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/backends/fakehw )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakehw )
 
 target_link_libraries(solidhwtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakehw_static)
 
@@ -29,10 +28,9 @@ set(solidnettest_SRCS
 kde4_automoc(${solidnettest_SRCS})
 
 kde4_add_executable(solidnettest RUN_UNINSTALLED ${solidnettest_SRCS})
-add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_SOURCE_DIR}/backends/fakenet/fakenetworking.xml\\"")
+add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet/fakenetworking.xml\\"")
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
-                     ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/backends/fakenet )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet )
 
 target_link_libraries(solidnettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakenet_static)
 

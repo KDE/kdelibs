@@ -2,9 +2,6 @@
 
 add_subdirectory( ifaces )
 
-include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
-
-
 ########### next target ###############
 
 set(solid_LIB_SRCS 
@@ -43,7 +40,7 @@ kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid  ${KDE4_KIO_LIBS} solidifaces )
+target_link_libraries(solid ${KDE4_KDECORE_LIBS} solidifaces )
 
 set_target_properties(solid PROPERTIES VERSION 4.2.0 SOVERSION 4 )
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
