@@ -245,7 +245,34 @@ namespace KJSEmbed
     KJS::JSValue* createQByteArray( KJS::ExecState *exec, const QByteArray &value );
 
 
-    /**
+   /**
+    * Extracts a number from an arguments list. If the argument is not present, or is not convertable to a number
+    * the defaultValue is returned.
+    */
+    template<typename T>
+    T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, const KJS::List &args, int idx, T defaultValue = 0)
+    {
+        if( args.size() >= idx )
+        {
+           return extractNumber<T>( exec, args[idx], defaultValue );
+        }
+        else
+           return defaultValue;
+    }
+
+   /**
+     * Extract a number from a value. If the value cannot convert to an integer or is not present defaultValue is returned
+     */
+    template<typename T>
+    T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, KJS::JSValue *value, T defaultValue = 0)
+    {
+        if (!value || !value->isNumber())
+            return defaultValue;
+
+        return static_cast<T>(value->toNumber(exec));
+    }
+
+     /**
     * Extracts an integer from an argument list.  If the argument is not present, or is not convertable to an integer
     * the defaultValue is returned.
     */
