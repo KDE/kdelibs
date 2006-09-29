@@ -27,10 +27,10 @@ set(ThreadWeaver_LIB_SRCS
 
 QT4_AUTOMOC(${ThreadWeaver_LIB_SRCS})
 
-add_library(ThreadWeaver SHARED ${ThreadWeaver_LIB_SRCS})
-target_link_libraries(ThreadWeaver ${QT_QTCORE_LIBRARY})
-set_target_properties(ThreadWeaver PROPERTIES VERSION 0.6.0 SOVERSION 0)
-install(TARGETS ThreadWeaver DESTINATION ${LIB_INSTALL_DIR})
+add_library(threadweaver SHARED ${ThreadWeaver_LIB_SRCS})
+target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
+set_target_properties(threadweaver PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+install(TARGETS threadweaver DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
     WeaverInterface.h
