@@ -52,8 +52,6 @@ namespace Solid
         /**
          * Indicates if two WirelessNetwork objects describe in fact the same network.
          *
-         * TODO: compare method would look for identical ESSID and at least one AP in common
-         *
          * @param other the network to compare
          * @return true if other and this wireless network are the same network, false otherwise
          */
@@ -136,8 +134,6 @@ namespace Solid
 
         /**
          * Retrieves the current authentication scheme used by this network.
-         *
-         * TODO decide how to handle these objects - pass by value?
          *
          * @return the current authentication object, or 0 if none is used for now
          */

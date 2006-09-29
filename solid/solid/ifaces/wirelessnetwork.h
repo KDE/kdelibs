@@ -128,8 +128,6 @@ namespace Ifaces
         /**
          * Retrieves the current authentication scheme used by this network.
          *
-         * TODO decide how to handle these objects - pass by value?
-         *
          * @return the current authentication object, or 0 if none is used for now
          */
         virtual Authentication *authentication() const = 0;
