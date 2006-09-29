@@ -33,7 +33,7 @@ kde4_add_library(solidifaces SHARED ${solidifaces_LIB_SRCS})
 
 target_link_libraries(solidifaces  ${KDE4_KDECORE_LIBS} )
 
-set_target_properties(solidifaces PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+set_target_properties(solidifaces PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 
