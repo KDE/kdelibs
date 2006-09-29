@@ -30,7 +30,7 @@ Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
         connect( backendObject, SIGNAL( signalStrengthChanged( int ) ),
                  this, SIGNAL( signalStrengthChanged( int ) ) );
         connect( backendObject, SIGNAL( bitrateChanged( int ) ),
-                 this, SIGNAL( lbitrateChanged( int ) ) );
+                 this, SIGNAL( bitrateChanged( int ) ) );
         connect( backendObject, SIGNAL( associationChanged( bool ) ),
                  this, SIGNAL( associationChanged( bool ) ) );
         connect( backendObject, SIGNAL( authenticationNeeded() ),
