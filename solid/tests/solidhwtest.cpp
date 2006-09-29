@@ -17,7 +17,7 @@
 
 */
 
-#include "solidtest.h"
+#include "solidhwtest.h"
 
 #include <qtest_kde.h>
 
@@ -36,15 +36,15 @@
     #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
 #endif
 
-QTEST_KDEMAIN( SolidTest, NoGUI )
+QTEST_KDEMAIN( SolidHwTest, NoGUI )
 
-void SolidTest::initTestCase()
+void SolidHwTest::initTestCase()
 {
     fakeManager = new FakeManager(0, QStringList(), FAKE_COMPUTER_XML);
     Solid::DeviceManager::selfForceBackend( fakeManager );
 }
 
-void SolidTest::testAllDevices()
+void SolidHwTest::testAllDevices()
 {
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
@@ -64,7 +64,7 @@ void SolidTest::testAllDevices()
     QCOMPARE( expected_udis, received_udis );
 }
 
-void SolidTest::testDeviceExists()
+void SolidHwTest::testDeviceExists()
 {
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
@@ -77,7 +77,7 @@ void SolidTest::testDeviceExists()
     QCOMPARE( manager.deviceExists( QString() ), false );
 }
 
-void SolidTest::testDeviceBasicFeatures()
+void SolidHwTest::testDeviceBasicFeatures()
 {
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
@@ -144,7 +144,7 @@ void SolidTest::testDeviceBasicFeatures()
     QCOMPARE( invalid_dev.product(), QString() );
 }
 
-void SolidTest::testDeviceLocking()
+void SolidHwTest::testDeviceLocking()
 {
     Solid::Device device( "/org/kde/solid/fakehw/computer" );
 
@@ -185,7 +185,7 @@ void SolidTest::testDeviceLocking()
     QCOMPARE( device.unlock(), false );
 }
 
-void SolidTest::testManagerSignals()
+void SolidHwTest::testManagerSignals()
 {
     fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
 
@@ -226,7 +226,7 @@ void SolidTest::testManagerSignals()
     fakeManager->plug( "/org/kde/solid/fakehw/acpi_CPU0" );
 }
 
-void SolidTest::testDeviceSignals()
+void SolidHwTest::testDeviceSignals()
 {
     // A button is a nice device for testing state changes, isn't it?
     FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fakehw/acpi_LID0" );
@@ -275,7 +275,7 @@ void SolidTest::testDeviceSignals()
     QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
 }
 
-void SolidTest::testDeviceCapabilities()
+void SolidHwTest::testDeviceCapabilities()
 {
     Solid::Device cpu( "/org/kde/solid/fakehw/acpi_CPU0" );
 
@@ -287,7 +287,7 @@ void SolidTest::testDeviceCapabilities()
     QCOMPARE( iface, processor );
 }
 
-void SolidTest::testPredicate()
+void SolidHwTest::testPredicate()
 {
     Solid::Device dev( "/org/kde/solid/fakehw/acpi_CPU0" );
 
@@ -371,10 +371,10 @@ void SolidTest::testPredicate()
     QCOMPARE( list.size(), 0 );
 }
 
-void SolidTest::slotPropertyChanged( const QMap<QString,int> &changes )
+void SolidHwTest::slotPropertyChanged( const QMap<QString,int> &changes )
 {
     m_changesList << changes;
 }
 
-#include "solidtest.moc"
+#include "solidhwtest.moc"
 

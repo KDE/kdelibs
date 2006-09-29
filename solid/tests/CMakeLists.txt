@@ -2,28 +2,43 @@
 
 if(KDE4_BUILD_TESTS)
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
+########### solidhwtest ###############
+
+set(solidhwtest_SRCS 
+   solidhwtest.cpp )
+
+kde4_automoc(${solidhwtest_SRCS})
+
+kde4_add_executable(solidhwtest RUN_UNINSTALLED ${solidhwtest_SRCS})
+add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_SOURCE_DIR}/backends/fakehw/fakecomputer.xml\\"")
+
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
                      ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/backends/fakehw )
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+target_link_libraries(solidhwtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakehw_static)
 
-########### next target ###############
+add_test(solidhwtest ${EXECUTABLE_OUTPUT_PATH}/solidhwtest)
 
-set(solidtest_SRCS 
-   solidtest.cpp )
+########### solidnettest ###############
 
-kde4_automoc(${solidtest_SRCS})
+set(solidnettest_SRCS 
+   solidnettest.cpp )
 
-kde4_add_executable(solidtest RUN_UNINSTALLED ${solidtest_SRCS})
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_SOURCE_DIR}/backends/fakehw/fakecomputer.xml\\"")
+kde4_automoc(${solidnettest_SRCS})
 
-target_link_libraries(solidtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakehw_static)
+kde4_add_executable(solidnettest RUN_UNINSTALLED ${solidnettest_SRCS})
+add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_SOURCE_DIR}/backends/fakenet/fakenetworking.xml\\"")
 
-add_test(solidtest ${EXECUTABLE_OUTPUT_PATH}/solidtest)
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}
+                     ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/backends/fakenet )
 
-endif(KDE4_BUILD_TESTS)
+target_link_libraries(solidnettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakenet_static)
+
+add_test(solidnettest ${EXECUTABLE_OUTPUT_PATH}/solidnettest)
 
 ########### install files ###############
 
-
+endif(KDE4_BUILD_TESTS)
 

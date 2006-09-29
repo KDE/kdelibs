@@ -17,32 +17,25 @@
 
 */
 
-#ifndef SOLIDTEST_H
-#define SOLIDTEST_H
+#include "solidnettest.h"
 
-#include <QObject>
-#include <QMap>
+#include <qtest_kde.h>
 
-class FakeManager;
+#include <solid/networkmanager.h>
 
-class SolidTest : public QObject
-{
-    Q_OBJECT
-private slots:
-    void initTestCase();
-    void testAllDevices();
-    void testDeviceExists();
-    void testDeviceBasicFeatures();
-    void testDeviceLocking();
-    void testManagerSignals();
-    void testDeviceSignals();
-    void testDeviceCapabilities();
-    void testPredicate();
+#include <fakenetworkmanager.h>
 
-    void slotPropertyChanged( const QMap<QString,int> &changes );
-private:
-    FakeManager *fakeManager;
-    QList< QMap<QString,int> > m_changesList;
-};
-
+#ifndef FAKE_NETWORKING_XML
+    #error "FAKE_NETWORKING_XML not set. An XML file describing a networking context is required for this test"
 #endif
+
+QTEST_KDEMAIN( SolidNetTest, NoGUI )
+
+void SolidNetTest::initTestCase()
+{
+    fakeManager = new FakeNetworkManager(0, QStringList(), FAKE_NETWORKING_XML);
+    Solid::NetworkManager::selfForceBackend( fakeManager );
+}
+
+#include "solidnettest.moc"
+
