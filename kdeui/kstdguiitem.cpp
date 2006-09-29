@@ -49,6 +49,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Reset    : return reset();
   case Delete   : return del();
   case Insert   : return insert();
+  case Configure: return configure();
   case Find     : return find();
   case Stop     : return stop();
   case Add      : return add();
@@ -84,6 +85,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case AdminMode: return QLatin1String("adminMode");
   case Delete   : return QLatin1String("delete");
   case Insert   : return QLatin1String("insert");
+  case Configure: return QLatin1String("configure");
   case Find     : return QLatin1String("find");
   case Stop     : return QLatin1String("stop");
   case Add      : return QLatin1String("add");
