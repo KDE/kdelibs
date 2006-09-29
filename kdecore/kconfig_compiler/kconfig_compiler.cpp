@@ -450,9 +450,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString maxValue;
   int paramMax = 0;
 
-  QDomNode n;
-  for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-    QDomElement e = n.toElement();
+  for ( QDomElement e = element.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) {
     QString tag = e.tagName();
     if ( tag == "label" ) label = e.text();
     else if ( tag == "whatsthis" ) whatsThis = e.text();
@@ -484,14 +482,10 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       }
       else if (paramType == "Enum")
       {
-         QDomNode n2;
-         for ( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
-           QDomElement e2 = n2.toElement();
+         for ( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
            if (e2.tagName() == "values")
            {
-             QDomNode n3;
-             for ( n3 = e2.firstChild(); !n3.isNull(); n3 = n3.nextSibling() ) {
-               QDomElement e3 = n3.toElement();
+             for ( QDomElement e3 = e2.firstChildElement(); !e3.isNull(); e3 = e3.nextSiblingElement() ) {
                if (e3.tagName() == "value")
                {
                   paramValues.append( e3.text() );
@@ -525,18 +519,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       }
     }
     else if ( tag == "choices" ) {
-      QDomNode n2;
-      for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
-        QDomElement e2 = n2.toElement();
+      for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() == "choice" ) {
-          QDomNode n3;
           CfgEntry::Choice choice;
           choice.name = e2.attribute( "name" );
           if ( choice.name.isEmpty() ) {
             std::cerr << "Tag <choice> requires attribute 'name'." << std::endl;
           }
-          for( n3 = e2.firstChild(); !n3.isNull(); n3 = n3.nextSibling() ) {
-            QDomElement e3 = n3.toElement();
+          for( QDomElement e3 = e2.firstChildElement(); !e3.isNull(); e3 = e3.nextSiblingElement() ) {
             if ( e3.tagName() == "label" ) choice.label = e3.text();
             if ( e3.tagName() == "whatsthis" ) choice.whatsThis = e3.text();
           }
@@ -605,9 +595,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       paramDefaultValues.append(QString::null);
     }
 
-    QDomNode n;
-    for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-      QDomElement e = n.toElement();
+    for ( QDomElement e = element.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) {
       QString tag = e.tagName();
       if ( tag == "default" )
       {
@@ -1119,10 +1107,7 @@ int main( int argc, char **argv )
 
   QList<CfgEntry*> entries;
 
-  QDomNode n;
-  for ( n = cfgElement.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-    QDomElement e = n.toElement();
-
+  for ( QDomElement e = cfgElement.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) {
     QString tag = e.tagName();
 
     if ( tag == "include" ) {
@@ -1133,9 +1118,7 @@ int main( int argc, char **argv )
     } else if ( tag == "kcfgfile" ) {
       cfgFileName = e.attribute( "name" );
       cfgFileNameArg = e.attribute( "arg" ).toLower() == "true";
-      QDomNode n2;
-      for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
-        QDomElement e2 = n2.toElement();
+      for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() == "parameter" ) {
           Param p;
           p.name = e2.attribute( "name" );
@@ -1152,9 +1135,7 @@ int main( int argc, char **argv )
         std::cerr << "Group without name" << std::endl;
         return 1;
       }
-      QDomNode n2;
-      for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
-        QDomElement e2 = n2.toElement();
+      for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() != "entry" ) continue;
         CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
@@ -1173,9 +1154,7 @@ int main( int argc, char **argv )
      Signal theSignal;
      theSignal.name = signalName;
 
-     QDomNode n2;
-     for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
-       QDomElement e2 = n2.toElement();
+     for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
        if ( e2.tagName() == "argument") {
          SignalArguments argument;
          argument.type = e2.attribute("type");
