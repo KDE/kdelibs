@@ -31,11 +31,20 @@ namespace Solid
     using Ifaces::AuthenticationWpaPersonal;
     using Ifaces::AuthenticationWpaEnterprise;
 
+    /**
+     * Utility class
+     * Contains a backend specific validator instance to validate authentication
+     * Can be used for example to authenticate user input as they type
+     */
     class AuthenticationValidator
     {
         public:
             AuthenticationValidator();
             virtual ~AuthenticationValidator();
+            /**
+             * Call this to check if an authentication is valid
+             * (All secrets present, passphrase length correct
+             */
             bool validate( const Ifaces::Authentication * );
         private:
             class Private;
