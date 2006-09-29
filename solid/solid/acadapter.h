@@ -29,7 +29,7 @@ namespace Solid
     /**
      * This capability is available on A/C adapters.
      */
-    class KDE_EXPORT AcAdapter : public Capability
+    class SOLID_EXPORT AcAdapter : public Capability
     {
         Q_OBJECT
     public:

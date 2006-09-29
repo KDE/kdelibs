@@ -52,7 +52,7 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT Device : public FrontendObject, public Ifaces::Enums::Device
+    class SOLID_EXPORT Device : public FrontendObject, public Ifaces::Enums::Device
     {
         Q_OBJECT
     public:

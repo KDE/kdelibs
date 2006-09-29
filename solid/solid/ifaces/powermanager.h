@@ -40,7 +40,7 @@ namespace Ifaces
      * A power manager allows to control or query the power management features
      * or the underlying platform.
      */
-    class KDE_EXPORT PowerManager : public QObject, public Enums::PowerManager
+    class SOLIDIFACES_EXPORT PowerManager : public QObject, public Enums::PowerManager
     {
         Q_OBJECT
 

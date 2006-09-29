@@ -33,7 +33,7 @@ namespace Solid
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class KDE_EXPORT Storage : public Block, public Ifaces::Enums::Storage
+    class SOLID_EXPORT Storage : public Block, public Ifaces::Enums::Storage
     {
         Q_OBJECT
     public:

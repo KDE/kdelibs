@@ -33,7 +33,7 @@ namespace Solid
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class KDE_EXPORT Cdrom : public Storage, public Ifaces::Enums::Cdrom
+    class SOLID_EXPORT Cdrom : public Storage, public Ifaces::Enums::Cdrom
     {
         Q_OBJECT
     public:

@@ -37,7 +37,7 @@ namespace Ifaces
      * For non network specific hardware details,
      * @see Solid::Ifaces::NetworkHw
      */
-    class KDE_EXPORT NetworkInterface : public QObject, public Enums::NetworkInterface
+    class SOLIDIFACES_EXPORT NetworkInterface : public QObject, public Enums::NetworkInterface
     {
         Q_OBJECT
     public:

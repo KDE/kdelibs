@@ -270,7 +270,7 @@ namespace Ifaces
      * Specifies a backend specific validator class to validate authentication
      * Can be used for example to authenticate user input as they type
      */
-    class KDE_EXPORT AuthenticationValidator
+    class SOLIDIFACES_EXPORT AuthenticationValidator
     {
         public:
             virtual ~AuthenticationValidator();

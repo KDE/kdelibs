@@ -35,7 +35,7 @@ namespace Solid
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class KDE_EXPORT Volume : public Block, public Ifaces::Enums::Volume
+    class SOLID_EXPORT Volume : public Block, public Ifaces::Enums::Volume
     {
         Q_OBJECT
     public:

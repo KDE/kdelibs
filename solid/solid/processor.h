@@ -29,7 +29,7 @@ namespace Solid
     /**
      * This capability is available on processors.
      */
-    class KDE_EXPORT Processor : public Capability
+    class SOLID_EXPORT Processor : public Capability
     {
         Q_OBJECT
     public:

@@ -43,7 +43,7 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT DeviceManager : public ManagerBase
+    class SOLID_EXPORT DeviceManager : public ManagerBase
     {
         Q_OBJECT
         SOLID_SINGLETON( DeviceManager )

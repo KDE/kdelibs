@@ -33,7 +33,7 @@ namespace Solid
     /**
      * This type of networks is used by wifi network interfaces.
      */
-    class KDE_EXPORT WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
+    class SOLID_EXPORT WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
     {
         Q_OBJECT
     public:

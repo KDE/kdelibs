@@ -31,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on batteries.
      */
-    class KDE_EXPORT Battery : virtual public Capability, public Enums::Battery
+    class SOLIDIFACES_EXPORT Battery : virtual public Capability, public Enums::Battery
     {
 //         Q_ENUMS( BatteryType ChargeState )
 //         Q_PROPERTY( bool plugged READ isPlugged )

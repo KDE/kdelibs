@@ -32,7 +32,7 @@ namespace Solid
      * For non network specific hardware details,
      * @see Solid::NetworkHw
      */
-    class KDE_EXPORT NetworkInterface : public FrontendObject, public Ifaces::Enums::NetworkInterface
+    class SOLID_EXPORT NetworkInterface : public FrontendObject, public Ifaces::Enums::NetworkInterface
     {
         Q_OBJECT
     public:

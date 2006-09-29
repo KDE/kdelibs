@@ -40,7 +40,7 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT PowerManager : public ManagerBase, public Ifaces::Enums::PowerManager
+    class SOLID_EXPORT PowerManager : public ManagerBase, public Ifaces::Enums::PowerManager
     {
         Q_OBJECT
         SOLID_SINGLETON( PowerManager )

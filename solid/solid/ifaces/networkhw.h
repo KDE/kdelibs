@@ -31,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on network interfaces.
      */
-    class KDE_EXPORT NetworkHw : virtual public Capability
+    class SOLIDIFACES_EXPORT NetworkHw : virtual public Capability
     {
 //         Q_PROPERTY( QString ifaceName READ ifaceName )
 //         Q_PROPERTY( bool wireless READ isWireless )

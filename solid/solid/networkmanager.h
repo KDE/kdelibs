@@ -44,7 +44,7 @@ namespace Solid
      *
      * Note that it's implemented as a singleton and encapsulates the backend logic.
      */
-    class KDE_EXPORT NetworkManager : public ManagerBase
+    class SOLID_EXPORT NetworkManager : public ManagerBase
     {
         Q_OBJECT
         SOLID_SINGLETON( NetworkManager )

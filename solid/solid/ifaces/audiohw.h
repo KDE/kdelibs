@@ -32,7 +32,7 @@ namespace Ifaces
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
-    class KDE_EXPORT AudioHw : virtual public Capability, public Enums::AudioHw
+    class SOLIDIFACES_EXPORT AudioHw : virtual public Capability, public Enums::AudioHw
     {
 //         Q_PROPERTY( AudioDriver driver READ driver )
 //         Q_PROPERTY( QString driverHandler READ driverHandler )

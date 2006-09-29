@@ -36,7 +36,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT Button : virtual public Capability, public Enums::Button
+    class SOLIDIFACES_EXPORT Button : virtual public Capability, public Enums::Button
     {
 //         Q_PROPERTY( ButtonType type READ type )
 //         Q_PROPERTY( bool hasState READ hasState )

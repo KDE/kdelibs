@@ -34,7 +34,7 @@ namespace Solid
      *
      * TODO what about QNetworkAddressEntry
      */
-    class KDE_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
+    class SOLID_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
     {
         Q_OBJECT
     public:

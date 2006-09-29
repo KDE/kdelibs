@@ -40,7 +40,7 @@ namespace Solid
      *
      * FIXME: Add an example.
      */
-    class KDE_EXPORT Predicate
+    class SOLID_EXPORT Predicate
     {
     public:
         /**

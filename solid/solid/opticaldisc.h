@@ -31,7 +31,7 @@ namespace Solid
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class KDE_EXPORT OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
+    class SOLID_EXPORT OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
     {
         Q_OBJECT
     public:

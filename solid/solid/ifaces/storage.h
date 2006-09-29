@@ -35,7 +35,7 @@ namespace Ifaces
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class KDE_EXPORT Storage : virtual public Block, public Enums::Storage
+    class SOLIDIFACES_EXPORT Storage : virtual public Block, public Enums::Storage
     {
 //         Q_PROPERTY( Bus bus READ bus )
 //         Q_PROPERTY( DriveType driveType READ driveType )

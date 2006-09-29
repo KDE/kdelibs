@@ -366,6 +366,22 @@
 # endif
 #endif
 
+#ifndef SOLID_EXPORT
+# ifdef MAKE_SOLID_LIB
+#  define SOLID_EXPORT KDE_EXPORT
+# else
+#  define SOLID_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef SOLIDIFACES_EXPORT
+# ifdef MAKE_SOLIDIFACES_LIB
+#  define SOLIDIFACES_EXPORT KDE_EXPORT
+# else
+#  define SOLIDIFACES_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KNOTIFYCONFIG_EXPORT
 # ifdef MAKE_KNOTIFYCONFIG_LIB
 #  define KNOTIFYCONFIG_EXPORT KDE_EXPORT

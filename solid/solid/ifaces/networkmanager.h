@@ -35,7 +35,7 @@ namespace Ifaces
      * available network interfaces and reachable network. It has also the
      * responsibility to notify when a network interface or a network appear or disappear.
      */
-    class KDE_EXPORT NetworkManager : public QObject
+    class SOLIDIFACES_EXPORT NetworkManager : public QObject
     {
         Q_OBJECT
     public:

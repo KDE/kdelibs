@@ -34,7 +34,7 @@ namespace Solid
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT Button : public Capability, public Ifaces::Enums::Button
+    class SOLID_EXPORT Button : public Capability, public Ifaces::Enums::Button
     {
         Q_OBJECT
     public:

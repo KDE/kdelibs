@@ -31,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on processors.
      */
-    class KDE_EXPORT Processor : virtual public Capability
+    class SOLIDIFACES_EXPORT Processor : virtual public Capability
     {
 //         Q_PROPERTY( int number READ number )
 //         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )

@@ -30,7 +30,7 @@ namespace Solid
 {
     class FrontendObject;
 
-    class KDE_EXPORT ManagerBase : public QObject
+    class SOLID_EXPORT ManagerBase : public QObject
     {
         Q_OBJECT
 

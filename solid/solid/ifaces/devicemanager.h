@@ -41,7 +41,7 @@ namespace Ifaces
      * available devices. It has also the responsibility to notify when a device
      * appear or disappear.
      */
-    class KDE_EXPORT DeviceManager : public QObject
+    class SOLIDIFACES_EXPORT DeviceManager : public QObject
     {
         Q_OBJECT
 

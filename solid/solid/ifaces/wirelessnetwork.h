@@ -41,7 +41,7 @@ namespace Ifaces
     /**
      * This type of networks is used by wifi network interfaces.
      */
-    class KDE_EXPORT WirelessNetwork : virtual public Network, public Enums::WirelessNetwork
+    class SOLIDIFACES_EXPORT WirelessNetwork : virtual public Network, public Enums::WirelessNetwork
     {
     public:
         /**

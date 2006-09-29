@@ -35,7 +35,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT Display : virtual public Capability, public Enums::Display
+    class SOLIDIFACES_EXPORT Display : virtual public Capability, public Enums::Display
     {
 //         Q_PROPERTY( DisplayType type READ type )
 //         Q_PROPERTY( int lcdBrightness READ lcdBrightness )

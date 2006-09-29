@@ -30,7 +30,7 @@ namespace Solid
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
-    class KDE_EXPORT AudioHw : public Capability, public Ifaces::Enums::AudioHw
+    class SOLID_EXPORT AudioHw : public Capability, public Ifaces::Enums::AudioHw
     {
         Q_OBJECT
     public:

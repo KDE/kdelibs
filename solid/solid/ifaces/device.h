@@ -43,7 +43,7 @@ namespace Ifaces
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT Device : public QObject, public Enums::Device
+    class SOLIDIFACES_EXPORT Device : public QObject, public Enums::Device
     {
         Q_OBJECT
 

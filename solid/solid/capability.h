@@ -39,7 +39,7 @@ namespace Solid
      * A capability describes what a device can do. A device generally has
      * a set of capabilities.
      */
-    class KDE_EXPORT Capability : public FrontendObject, public Ifaces::Enums::Capability
+    class SOLID_EXPORT Capability : public FrontendObject, public Ifaces::Enums::Capability
     {
         Q_OBJECT
     public:

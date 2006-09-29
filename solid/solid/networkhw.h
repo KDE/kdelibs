@@ -29,7 +29,7 @@ namespace Solid
     /**
      * This capability is available on network interfaces.
      */
-    class KDE_EXPORT NetworkHw : public Capability
+    class SOLID_EXPORT NetworkHw : public Capability
     {
         Q_OBJECT
     public:

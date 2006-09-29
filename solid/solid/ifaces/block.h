@@ -35,7 +35,7 @@ namespace Ifaces
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class KDE_EXPORT Block : virtual public Capability
+    class SOLIDIFACES_EXPORT Block : virtual public Capability
     {
 //         Q_PROPERTY( int major READ major )
 //         Q_PROPERTY( int minor READ minor )

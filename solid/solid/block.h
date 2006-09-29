@@ -33,7 +33,7 @@ namespace Solid
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class KDE_EXPORT Block : public Capability
+    class SOLID_EXPORT Block : public Capability
     {
         Q_OBJECT
     public:

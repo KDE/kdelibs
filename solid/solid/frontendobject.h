@@ -34,7 +34,7 @@ namespace Solid
      * Provides the needed logic to keep a reference on a backend object,
      * and be notified when it got deleted.
      */
-    class KDE_EXPORT FrontendObject : public QObject
+    class SOLID_EXPORT FrontendObject : public QObject
     {
         Q_OBJECT
     public:

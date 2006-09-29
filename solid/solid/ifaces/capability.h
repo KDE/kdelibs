@@ -39,7 +39,7 @@ namespace Ifaces
      *
      * @see Solid::Ifaces::AbstractCapability
      */
-    class KDE_EXPORT Capability : public Enums::Capability
+    class SOLIDIFACES_EXPORT Capability : public Enums::Capability
     {
     public:
         /**

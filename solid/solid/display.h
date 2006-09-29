@@ -33,7 +33,7 @@ namespace Solid
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT Display : public Capability, public Ifaces::Enums::Display
+    class SOLID_EXPORT Display : public Capability, public Ifaces::Enums::Display
     {
         Q_OBJECT
     public:

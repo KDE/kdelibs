@@ -36,7 +36,7 @@ namespace Ifaces
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class KDE_EXPORT Cdrom : virtual public Storage, public Enums::Cdrom
+    class SOLIDIFACES_EXPORT Cdrom : virtual public Storage, public Enums::Cdrom
     {
 //         Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
 //         Q_PROPERTY( int readSpeed READ readSpeed )

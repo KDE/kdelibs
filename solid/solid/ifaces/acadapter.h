@@ -31,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on A/C adapters.
      */
-    class KDE_EXPORT AcAdapter : virtual public Capability
+    class SOLIDIFACES_EXPORT AcAdapter : virtual public Capability
     {
 //         Q_PROPERTY( bool plugged READ isPlugged )
 

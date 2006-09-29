@@ -36,7 +36,7 @@ namespace Ifaces
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
+    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
     {
 //        Q_PROPERTY( AccessType accessMethod READ accessMethod )
 //        Q_PROPERTY( QStringList outputFormats READ outputFormats )

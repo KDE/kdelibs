@@ -37,7 +37,7 @@ namespace Solid
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class KDE_EXPORT Camera : public Capability, public Ifaces::Enums::Camera
+    class SOLID_EXPORT Camera : public Capability, public Ifaces::Enums::Camera
     {
         Q_OBJECT
     public:

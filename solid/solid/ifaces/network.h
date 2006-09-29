@@ -36,7 +36,7 @@ namespace Ifaces
      *
      * TODO what about QNetworkAddressEntry
      */
-    class KDE_EXPORT Network : public Enums::Network
+    class SOLIDIFACES_EXPORT Network : public Enums::Network
     {
     public:
         /**

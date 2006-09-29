@@ -36,7 +36,7 @@ namespace Solid
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class KDE_EXPORT PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
+    class SOLID_EXPORT PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
     {
         Q_OBJECT
     public:

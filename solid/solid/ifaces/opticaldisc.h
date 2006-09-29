@@ -33,7 +33,7 @@ namespace Ifaces
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class KDE_EXPORT OpticalDisc : virtual public Volume, public Enums::OpticalDisc
+    class SOLIDIFACES_EXPORT OpticalDisc : virtual public Volume, public Enums::OpticalDisc
     {
 //         Q_PROPERTY( ContentTypes availableContent READ availableContent )
 //         Q_PROPERTY( DisctType discType READ discType )

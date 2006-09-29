@@ -39,7 +39,7 @@ namespace Ifaces
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class KDE_EXPORT Camera : virtual public Capability, public Enums::Camera
+    class SOLIDIFACES_EXPORT Camera : virtual public Capability, public Enums::Camera
     {
 //         Q_PROPERTY( AccessType accessMethod READ accessMethod )
 //         Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )

@@ -30,7 +30,7 @@ namespace Solid
     /**
      * This capability is available on batteries.
      */
-    class KDE_EXPORT Battery : public Capability, public Ifaces::Enums::Battery
+    class SOLID_EXPORT Battery : public Capability, public Ifaces::Enums::Battery
     {
         Q_OBJECT
     public:
