@@ -46,7 +46,6 @@ bool Solid::WirelessNetwork::isSameAs( const WirelessNetwork & other) const
 {
     if ( other.essid() == essid() )
     {
-        QStringList intersection;
         QStringListIterator it( bssList() );
         const QStringList otherBSSList = other.bssList();
         while ( it.hasNext() )
