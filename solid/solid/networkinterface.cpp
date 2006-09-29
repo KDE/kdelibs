@@ -226,11 +226,11 @@ Solid::Network *Solid::NetworkInterface::findRegisteredNetwork( const QString &u
 
             if ( qobject_cast<Ifaces::WirelessNetwork *>( iface )!=0 )
             {
-                network = new WirelessNetwork( network );
+                network = new WirelessNetwork( iface );
             }
             else if ( qobject_cast<Ifaces::Network *>( iface )!=0 )
             {
-                network = new Network( network );
+                network = new Network( iface );
             }
 
             if ( network != 0 )

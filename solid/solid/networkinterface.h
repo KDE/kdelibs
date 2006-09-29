@@ -147,7 +147,7 @@ namespace Solid
          * Finds Network object given its UNI.
          *
          * @param uni the identifier of the network to find from this network interface
-         * @returns a Network object if there's a network having the given UNI for this device, 0 otherwise
+         * @returns a valid Network object if there's a network having the given UNI for this device, an invalid Network object otherwise
          */
         Network *findNetwork( const QString & uni ) const;
 
