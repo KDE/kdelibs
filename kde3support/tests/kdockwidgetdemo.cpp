@@ -96,7 +96,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   }
 
   QStringList bookmark;
-  bookmark = config->readListEntry( "Bookmarks" );
+  bookmark = config->readEntry( "Bookmarks",QStringList() );
 
   dockManager = new K3DockManager(this);
 
