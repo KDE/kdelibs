@@ -740,7 +740,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
 
   const int len = textLine->length();
 
-  if (cursorCol < 0 || cursorCol > len)
+  if (cursorCol < 0)
     cursorCol = len;
 
   KateFontStruct *fs = config()->fontStruct();
