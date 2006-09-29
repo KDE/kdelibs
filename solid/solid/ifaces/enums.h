@@ -464,9 +464,9 @@ namespace Enums
     {
         enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
         // corresponding to 802.11 capabilities defined in NetworkManager.h
-        enum Capability { WEP = 0x1, WPA = 0x2, WPA2 = 0x4, PSK = 0x8,
-                          IEEE8021X = 0x10, WEP40 = 0x20, WEP104 = 0x40, WEP192 = 0x80, WEP256 = 0x100,
-                          WEP_OTHER = 0x200, TKIP = 0x400, CCMP = 0x800 };
+        enum Capability { Wep = 0x1, Wpa = 0x2, Wpa2 = 0x4, Psk = 0x8,
+                          Ieee8021x = 0x10, Wep40 = 0x20, Wep104 = 0x40, Wep192 = 0x80, Wep256 = 0x100,
+                          WepOther = 0x200, Tkip = 0x400, Ccmp = 0x800 };
         Q_DECLARE_FLAGS( Capabilities, Capability )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( WirelessNetwork::Capabilities )
