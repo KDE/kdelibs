@@ -62,7 +62,6 @@ endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      ${CMAKE_SOURCE_DIR}/libltdl/ltdl_win.c
       kapplication_win.cpp 
       ktoolinvocation_win.cpp 
       )
