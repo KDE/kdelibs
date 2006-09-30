@@ -44,8 +44,11 @@ bool PrintcapReader::nextLine(QString& line)
 	else
 		line = m_stream.readLine().trimmed();
 	// strip any '\' at the end
-	if (line[line.length()-1] == '\\')
-		line = line.left(line.length()-1).trimmed();
+	if ( line.endsWith('\\') )
+	{
+		line.chop(1);
+		line = line.trimmed();
+	}
 	return true;
 }
 
