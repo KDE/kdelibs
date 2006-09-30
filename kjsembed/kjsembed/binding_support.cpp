@@ -80,7 +80,7 @@ int KJSEmbed::extractInt( KJS::ExecState *exec, KJS::JSValue *value, int default
 {
     if( !value )
         return defaultValue;
-    return (int) value->toNumber(exec);
+    return int( value->toInteger(exec) );
 }
 
 KJS::JSValue *KJSEmbed::createQString( KJS::ExecState *exec, const QString &value )

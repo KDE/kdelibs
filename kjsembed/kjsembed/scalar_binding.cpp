@@ -26,6 +26,7 @@ const KJS::ClassInfo ScalarBinding::info = { "ScalarBinding", 0, 0, 0 };
 
 KJS::JSValue *callScalarType( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
+    Q_UNUSED(args);
     KJSEmbed::ScalarBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ScalarBinding>(exec,  self );
     if( imp )
     {
@@ -49,6 +50,7 @@ const Method *ScalarFactory::methods()
 
 KJS::UString ScalarBinding::toString(KJS::ExecState *exec) const
 {
+    Q_UNUSED(exec);
     return m_value->type().name();
 }
 

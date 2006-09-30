@@ -20,7 +20,7 @@
 
 # include "global.h"
 
-#if QT_ONLY
+#ifdef QT_ONLY
 # include <QObject>
 # include <cstdio>
 #endif

@@ -50,6 +50,8 @@ KJS::JSValue * callDebug( KJS::ExecState *exec, KJS::JSObject */*self*/, const K
 
 KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
 {
+    Q_UNUSED(exec);
+    Q_UNUSED(args);
     QString line = conin()->readLine();
     return KJS::String( line );
 }

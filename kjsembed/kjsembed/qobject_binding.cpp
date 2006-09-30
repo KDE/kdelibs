@@ -322,7 +322,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case KJS::NumberType:
             if( types[idx] == "int" )
-                return new Scalar<int>( args[idx]->toNumber(exec) );
+                return new Scalar<int>( int( args[idx]->toInteger(exec) ) );
             else if ( types[idx] == "double" )
                 return new Scalar<double>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "float" )
@@ -330,7 +330,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             else if ( types[idx] == "qreal" )
                 return new Scalar<qreal>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "uint" )
-                return new Scalar<uint>( args[idx]->toNumber(exec) );
+                return new Scalar<uint>( uint( args[idx]->toInteger(exec) ) );
             else
                 return new NullPtr();
             break;

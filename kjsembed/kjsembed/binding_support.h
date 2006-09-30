@@ -246,11 +246,23 @@ namespace KJSEmbed
 
 
    /**
+     * Extract a number from a value. If the value cannot convert to an integer or is not present defaultValue is returned
+     */
+    template<typename T>
+    inline T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, KJS::JSValue *value, T defaultValue = T(0))
+    {
+        if (!value || !value->isNumber())
+            return defaultValue;
+
+        return static_cast<T>(value->toNumber(exec));
+    }
+
+   /**
     * Extracts a number from an arguments list. If the argument is not present, or is not convertable to a number
     * the defaultValue is returned.
     */
     template<typename T>
-    T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, const KJS::List &args, int idx, T defaultValue = 0)
+    inline T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, const KJS::List &args, int idx, T defaultValue = T(0))
     {
         if( args.size() >= idx )
         {
@@ -261,15 +273,60 @@ namespace KJSEmbed
     }
 
    /**
-     * Extract a number from a value. If the value cannot convert to an integer or is not present defaultValue is returned
+     * Extract an integer from a value. If the value cannot convert to an integer or is not present defaultValue is returned
      */
     template<typename T>
-    T KJSEMBED_EXPORT extractNumber(KJS::ExecState *exec, KJS::JSValue *value, T defaultValue = 0)
+    inline T KJSEMBED_EXPORT extractInteger(KJS::ExecState *exec, KJS::JSValue *value, T defaultValue)
     {
         if (!value || !value->isNumber())
             return defaultValue;
 
-        return static_cast<T>(value->toNumber(exec));
+        return T(value->toInteger(exec));
+    }
+
+    // extractInteger specialization
+    template<>
+    inline qint32 KJSEMBED_EXPORT extractInteger<qint32>(KJS::ExecState *exec, KJS::JSValue *value, qint32 defaultValue)
+    {
+        if (!value || !value->isNumber())
+            return defaultValue;
+
+        return static_cast<qint32>(value->toInt32(exec));
+    }
+
+    // extractInteger specialization
+    template<>
+    inline quint32 KJSEMBED_EXPORT extractInteger<quint32>(KJS::ExecState *exec, KJS::JSValue *value, quint32 defaultValue)
+    {
+        if (!value || !value->isNumber())
+            return defaultValue;
+
+        return static_cast<quint32>(value->toUInt32(exec));
+    }
+
+    // extractInteger specialization
+    template<>
+    inline quint16 KJSEMBED_EXPORT extractInteger<quint16>(KJS::ExecState *exec, KJS::JSValue *value, quint16 defaultValue)
+    {
+        if (!value || !value->isNumber())
+            return defaultValue;
+
+        return static_cast<quint16>(value->toUInt16(exec));
+    }
+
+   /**
+    * Extracts an integer from an arguments list. If the argument is not present, or is not convertable to a number
+    * the defaultValue is returned.
+    */
+    template<typename T>
+    inline T KJSEMBED_EXPORT extractInteger(KJS::ExecState *exec, const KJS::List &args, int idx, T defaultValue = T(0))
+    {
+        if( args.size() >= idx )
+        {
+           return extractInteger<T>( exec, args[idx], defaultValue );
+        }
+        else
+           return defaultValue;
     }
 
      /**

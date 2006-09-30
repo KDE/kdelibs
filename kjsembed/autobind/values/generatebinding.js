@@ -2,10 +2,10 @@ function write_ctor( compoundDef, compoundEnums )
 {
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var ctor =
-        'const Constructor ' + compoundData + '::p_constructor = \n' +
+        'const Constructor KJSEmbed::' + compoundData + '::p_constructor = \n' +
         '{'+
-        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundData + '::ctorMethod, p_statics, p_enums, p_methods };\n' +
-        'KJS::JSObject *' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
+        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundData + '::ctorMethod, p_statics, p_enums, KJSEmbed::' + compoundData + '::p_methods };\n' +
+        'KJS::JSObject *KJSEmbed::' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
         '{\n';
 
     // Generate the ctor bindings
@@ -61,10 +61,11 @@ function write_ctor( compoundDef, compoundEnums )
 
             var tmpIdx = tmpArgs.lastIndexOf(',');
             tmpArgs = tmpArgs.substr(0, tmpIdx);
-            var funcCall =
-            'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '));\n';
+//            var funcCall = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '));\n';
+            var funcCallStart = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '('; 
+            var funcCallEnd = '));\n';
 
-            ctor += construct_parameters(methodListList[idx], idx, funcCall, compoundEnums);
+            ctor += construct_parameters(methodListList[idx], idx, funcCallStart, funcCallEnd, compoundEnums);
         }
 
         ctor += '    }\n';
@@ -74,7 +75,7 @@ function write_ctor( compoundDef, compoundEnums )
     return ctor;
 }
 
-function construct_parameters(methodList, numArgs, funcCall, compoundEnums)
+function construct_parameters(methodList, numArgs, funcCallStart, funcCallEnd, compoundEnums)
 {
     var params = '';
     for(var argIdx = 0; argIdx < numArgs; ++argIdx)
@@ -87,31 +88,52 @@ function construct_parameters(methodList, numArgs, funcCall, compoundEnums)
         var memberArgList = methodList[idx].elementsByTagName('param');
         var variables = '';
         params += '        if(';
+        var tmpArgs = '';
         for(var argIdx = 0; argIdx < numArgs; ++argIdx)
         {
-            var parameter = memberArgList.item(argIdx).toElement();
-            var paramType = parameter.firstChildElement('type').toElement().toString();
-	    var coreParamType = findCoreParamType(paramType);
-debug('paramType: "' + paramType + '" coreParamType = "' + coreParamType + '"');
+            var param = memberArgList.item(argIdx).toElement();
+            var paramVarElement = param.firstChildElement('declname').toElement();
+            var paramVar = paramVarElement.toString();
+            if (paramVarElement.isNull())
+                paramVar = 'arg' + paramIdx;
+
+            tmpArgs += paramVar + ', ';
+            var paramType = param.firstChildElement('type').toElement().toString();
+            var coreParamType = findCoreParamType(paramType);
+//debug('paramType: "' + paramType + '" coreParamType = "' + coreParamType + '"');
+            var paramDefault = param.firstChildElement('defval').toElement();
+
+            if (!paramDefault.isNull())
+                params += '( ( ';
+
             if (isBool(coreParamType))
                 params += 'object'+argIdx+' && object'+argIdx+'->isBoolean()';
             else if ( isNumber(coreParamType) || 
-                 isEnum(coreParamType, compoundEnums ) )
+                      isEnum(coreParamType, compoundEnums ) )
                 params += 'object'+argIdx+' && object'+argIdx+'->isNumber()';
             else if (coreParamType == 'QString')
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
-           else //if(isVariant(paramType))
+            else //if(isVariant(paramType))
                 params += 'object'+argIdx+' && object'+argIdx+'->inherits(&' + coreParamType + 'Binding::info)';
 //            else
 //                params += 'isBasic(value'+argIdx+')';
+
+            if (!paramDefault.isNull())
+                params += ' ) || !object'+argIdx+' )';
+
             if(argIdx < numArgs-1)
                 params += ' && ';
-            variables += '    ' + extract_parameter(parameter, argIdx, compoundEnums);
+
+            variables += '    ' + extract_parameter(param, argIdx, compoundEnums);
         }
+
+        var tmpIdx = tmpArgs.lastIndexOf(',');
+        tmpArgs = tmpArgs.substr(0, tmpIdx);
+
         params += ')\n';
         params += '        {\n';
         params += variables;
-	params += '            ' + funcCall;
+        params += '            ' + funcCallStart + tmpArgs + funcCallEnd;
         params += '        }\n';
     }
     return params;
@@ -122,7 +144,7 @@ function write_method_lut( compoundDef )
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var lut_template =
         '\n' +
-        'const Method ' + compoundData + '::p_methods[] = \n' +
+        'const Method KJSEmbed::' + compoundData + '::p_methods[] = \n' +
         '{\n';
 
     // Generate the binding for each method
@@ -204,7 +226,7 @@ function write_binding_new( class_doc )
 
     enums +=
         '\n' +
-        'const Enumerator ' + compoundData + '::p_enums[] = {\n';
+        'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {\n';
 
     var hasEnums = false;
     var memberList = class_doc.elementsByTagName( "memberdef" );
@@ -224,6 +246,7 @@ function write_binding_new( class_doc )
                     if ( memberName.indexOf(compoundName) == -1 ) // Not a ctor
                     {
                         var methodType = memberElement.firstChildElement('type').toElement().toString();
+                        var coreMethodType = findCoreParamType(methodType);
                         var methodArgs = memberElement.firstChildElement('argsstring').toElement().toString();
                         // Handle arguments
                         var methodArgList = memberElement.elementsByTagName('param');
@@ -249,10 +272,10 @@ function write_binding_new( class_doc )
                             if (methodType == "void")
                             {
                             }
-                            else if (compoundEnums[methodType]) 
+                            else if (compoundEnums[coreMethodType]) 
                             {
                                 methods +=
-                                '       ' + compoundEnums[methodType] + '::' + methodType + ' tmp = value.' + memberName + '();\n';
+                                '       ' + compoundEnums[coreMethodType] + '::' + coreMethodType + ' tmp = value.' + memberName + '();\n';
                                 methods += 
                                 '         result = KJS::Number( tmp );\n';
                             }
@@ -260,15 +283,20 @@ function write_binding_new( class_doc )
                             {
                                 methods +=
                                 '        ' + methodType + ' tmp = value.' + memberName + '();\n';
-                                if ( methodType.indexOf('Qt::') != -1 ) // Enum Value
+                                if ( coreMethodType.indexOf('Qt::') != -1 ) // Enum Value
                                 {
                                     methods += 
                                     '        result = KJS::Number( tmp );\n';
                                 }
+                                else if (isVariant(coreMethodType))
+                                {
+                                    methods +=
+                                    "        result = KJSEmbed::createVariant( exec, \"" + coreMethodType + "\", tmp );\n";
+                                }
                                 else
                                 {
                                     methods +=
-                                    "        result = KJSEmbed::createVariant( exec, \"" + methodType + "\", tmp );\n";
+                                    "        result = KJSEmbed::createObject( exec, \"" + coreMethodType + "\", tmp );\n";
                                 }
                             }
                         }
@@ -336,12 +364,12 @@ function write_binding_new( class_doc )
             '};\n';
     }
     else {
-        enums = 'const Enumerator ' + compoundData + '::p_enums[] = {{0, 0 }};\n';
+        enums = 'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {{0, 0 }};\n';
     }
 
 
     // Statics
-    statics += 'NO_STATICS( ' + compoundData + ' )';
+    statics += 'NO_STATICS( KJSEmbed::' + compoundData + ' )';
 
     // Ctor
     ctor = write_ctor( compoundDef, compoundEnums );
@@ -395,7 +423,7 @@ var data_types = {
     // Actual variant types
     "QBitArray" : 1, "QBitmap" : 1, "bool" : 2, "QBrush" : 1,
     "QByteArray" : 1, "QChar" : 1, "QColor" : 1, "QCursor" : 1,
-    "QDate" : 1, "QDateTime" : 1, "double" : 3, "QFont" : 1,
+    "QDate" : 1, "QDateTime" : 1, "double" : 4, "QFont" : 1,
     "QIcon" : 1, "QImage" : 1, "int" : 3, "QKeySequence" : 1,
     "QLine" : 1, "QLineF" : 1, "QVariantList" : 1, "QLocale" : 1,
     "qlonglong" : 3, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
@@ -407,17 +435,17 @@ var data_types = {
     "QUrl" : 1, 
 
      // Other necessary qglobal.h types.
-     "qreal" : 3, "qint8" : 4, "quint8" : 4, "qint16" : 4, "quint16" : 4, 
-     "qint32" : 4, "quint32" : 4, "qint64" : 4, "quint64" : 4, 
-     "qulonglong" : 4,
-     "char" : 4, "uchar" : 4, "ushort" : 4, "ulong" : 4
+     "qreal" : 5, "float" : 5, "qint8" : 6, "quint8" : 6, "qint16" : 6, "quint16" : 6, 
+     "qint32" : 6, "quint32" : 6, "qint64" : 6, "quint64" : 6, 
+     "qulonglong" : 6,
+     "char" : 6, "uchar" : 6, "ushort" : 6, "ulong" : 6
     
 };
 
 function isVariant( variable )
 {
 //    debug(variable + " isVariant " + data_types[variable]);
-    if ((data_types[variable] >= 1) || (data_types[variable] <= 3))
+    if ((data_types[variable] >= 1) || (data_types[variable] <= 4))
       return true;
     else
       return false;
@@ -426,7 +454,16 @@ function isVariant( variable )
 function isNumber( variable )
 {
 //    debug(variable + " isNumber " + data_types[variable]);
-    if ((data_types[variable] > 2) && data_types[variable] < 5)
+    if ((data_types[variable] >= 3) && data_types[variable] <= 6)
+      return true;
+    else
+      return false;
+}
+
+function isInteger( variable )
+{
+//    debug(variable + " isInteger " + data_types[variable]);
+    if ((data_types[variable] == 3) || data_types[variable] == 6)
       return true;
     else
       return false;
@@ -461,19 +498,42 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
 {
     var extracted = '';
     var paramType = parameter.firstChildElement('type').toElement().toString();
-    var paramVar = parameter.firstChildElement('declname').toElement().toString();
     var paramVarElement = parameter.firstChildElement('declname').toElement();
+    var paramVar = paramVarElement.toString();
     var paramDefault = parameter.firstChildElement('defval').toElement();
 
     if (paramVarElement.isNull())
         paramVar = 'arg' + paramIdx;
 
     coreParamType = findCoreParamType(paramType);
-
-    if ( isBool(coreParamType) || isNumber(coreParamType) )  // integral value
+    if ( isBool(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx;
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
+    else if ( isInteger(coreParamType) )  // integral value
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
+    else if ( isNumber(coreParamType) )  // integral value
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -485,24 +545,24 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
     else if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
         extracted +=
-            '        ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+            '        ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
-            extracted += paramDefault.toString() + '));\n';
+            extracted += ', ' + paramDefault.toString() + ');\n';
         else
-            extracted += '0));\n';
+            extracted += ');\n';
 
         return extracted;
     }
     else if ( compoundEnums[paramType] )  // Enum Value
     {
         extracted +=
-            '       ' + compoundEnums[paramType] + '::' + paramType + ' ' + paramVar + ' = static_cast<' + compoundEnums[paramType] + '::' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+            '       ' + compoundEnums[paramType] + '::' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + compoundEnums[paramType] + '::' + paramType + '>(exec, args, ' + paramIdx + ', ';
 
         if (!paramDefault.isNull())
-            extracted += compoundEnums[paramType] + '::' + paramDefault.toString() + '));\n';
+            extracted += compoundEnums[paramType] + '::' + paramDefault.toString() + ');\n';
         else
-            extracted += '0));\n';
+            extracted += '0);\n';
 
         return extracted;
     }
