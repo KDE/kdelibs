@@ -824,11 +824,21 @@ JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const Lis
 
 static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, int second)
 {
+    // in which case is the floor() needed? breaks day value of
+    // "new Date('Thu Nov 5 2065 18:15:30 GMT+0500')"
+#if 0
     double days = (day - 32075)
         + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
         + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
         - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
         - 2440588;
+#else
+    double days = (day - 32075)
+            + 1461 * (year + 4800 + (mon - 14) / 12) / 4
+            + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
+            - 3 * ((year + 4900 + (mon - 14) / 12) / 100) / 4
+            - 2440588;
+#endif
     return ((days * hoursPerDay + hour) * minutesPerHour + minute) * secondsPerMinute + second;
 }
 
