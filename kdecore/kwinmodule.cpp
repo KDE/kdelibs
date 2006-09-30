@@ -109,8 +109,8 @@ public:
     void updateStackingOrder();
     bool removeStrutWindow( WId );
 
-    int numberOfViewports(int desktop) const;
-    int currentViewport(int desktop) const;
+    QSize numberOfViewports(int desktop) const;
+    QPoint currentViewport(int desktop) const;
 };
 
 KWinModule::KWinModule( QObject* parent )
@@ -180,18 +180,20 @@ const QValueList<WId>& KWinModule::systemTrayWindows() const
     return d->systemTrayWindows;
 }
 
-int KWinModulePrivate::numberOfViewports(int desktop) const
+QSize KWinModulePrivate::numberOfViewports(int desktop) const
 {
     NETSize netdesktop = desktopGeometry(desktop);
 
-    return netdesktop.width / QApplication::desktop()->screenGeometry().width();
+    return QSize(netdesktop.width / QApplication::desktop()->width(),
+            netdesktop.height / QApplication::desktop()->height());
 }
 
-int KWinModulePrivate::currentViewport(int desktop) const
+QPoint KWinModulePrivate::currentViewport(int desktop) const
 {
     NETPoint netviewport = desktopViewport(desktop);
 
-    return 1+(netviewport.x / QApplication::desktop()->screenGeometry().width());
+    return QPoint(1+(netviewport.x / QApplication::desktop()->width()),
+            1+(netviewport.y / QApplication::desktop()->height()));
 }
 
 bool KWinModulePrivate::x11Event( XEvent * ev )
@@ -215,6 +217,10 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 		emit (*mit)->currentDesktopViewportChanged(currentDesktop(),
                         currentViewport(currentDesktop()));
         }
+	if ( m[ PROTOCOLS ] & DesktopGeometry ) {
+	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
+		emit (*mit)->desktopGeometryChanged(currentDesktop());
+	}
 	if ( m[ PROTOCOLS ] & DesktopNames )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->desktopNamesChanged();
@@ -348,12 +354,12 @@ int KWinModule::numberOfDesktops() const
     return d->numberOfDesktops();
 }
 
-int KWinModule::numberOfViewports(int desktop) const
+QSize KWinModule::numberOfViewports(int desktop) const
 {
     return d->numberOfViewports(desktop);
 }
 
-int KWinModule::currentViewport(int desktop) const
+QPoint KWinModule::currentViewport(int desktop) const
 {
     return d->currentViewport(desktop);
 }

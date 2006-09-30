@@ -152,18 +152,19 @@ public:
     int numberOfDesktops() const;
 
     /**
-     * Returns the number of viewports on the virtual desktop
+     * Returns the number of viewports in x and y direction
+     * on the virtual desktop.
      * @return the number of virtual desktops
      * @since 3.5.5
      **/
-    int numberOfViewports(int desktop) const;
+    QSize numberOfViewports(int desktop) const;
 
     /**
-     * Returns the number of viewports on the virtual desktop
+     * Returns the current viewport on the given virtual desktop
      * @return the number of virtual desktops
      * @since 3.5.5
      **/
-    int currentViewport(int desktop) const;
+    QPoint currentViewport(int desktop) const;
 
     /**
      * Returns the currently active window, or 0 if no window is active.
@@ -330,10 +331,16 @@ signals:
     void showingDesktopChanged( bool showing );
 
     /**
+     * The state of showing the desktop has changed.
+     * @since 3.5.5
+     */
+    void desktopGeometryChanged(int desktop);
+
+    /**
      * The viewport position has changed
      * @since 3.5
      */
-    void currentDesktopViewportChanged(int desktop, int viewport);
+    void currentDesktopViewportChanged(int desktop, const QPoint& viewport);
 
 protected:
     virtual void connectNotify( const char* signal );
