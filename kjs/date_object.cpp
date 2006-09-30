@@ -683,8 +683,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
 // ------------------------------ DateObjectImp --------------------------------
 
-// TODO: MakeTime (15.9.11.1) etc. ?
-
 DateObjectImp::DateObjectImp(ExecState *exec,
                              FunctionPrototype *funcProto,
                              DatePrototype *dateProto)
@@ -889,7 +887,7 @@ static double makeTime(tm *t, double ms, bool utc)
     }
 
     double yearOffset = 0.0;
-    if (t->tm_year < (1970 - 1900) || t->tm_year > (2038 - 1900)) {
+    if (t->tm_year < (1971 - 1900) || t->tm_year > (2037 - 1900)) {
         // we'll fool mktime() into believing that this year is within
         // its normal, portable range (1970-2038) by setting tm_year to
         // 2000 or 2001 and adding the difference in milliseconds later.
