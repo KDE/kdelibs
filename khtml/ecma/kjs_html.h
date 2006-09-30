@@ -171,7 +171,8 @@ namespace KJS {
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
+    HTMLCollection(ExecState *exec,  const DOM::HTMLCollection& c);
+    HTMLCollection(const KJS::Object& proto, const DOM::HTMLCollection& c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
@@ -193,10 +194,15 @@ namespace KJS {
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
-      : HTMLCollection(exec, c), element(e) { }
+    enum { Add };
+    HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
+    
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    
+    DOM::HTMLSelectElement toElement() const { return element; }
   private:
     DOM::HTMLSelectElement element;
   };

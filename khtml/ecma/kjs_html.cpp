@@ -33,6 +33,7 @@
 // ### HACK
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_formimpl.h"
 #include "html/html_imageimpl.h"
 #include "html/html_miscimpl.h"
 #include "xml/dom2_eventsimpl.h"
@@ -3089,6 +3090,9 @@ const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
   : DOMObject(HTMLCollectionProto::self(exec)), collection(c), hidden(false) {}
+  
+KJS::HTMLCollection::HTMLCollection(const KJS::Object& proto, const DOM::HTMLCollection& c)
+  : DOMObject(proto), collection(c), hidden(false) {}
 
 KJS::HTMLCollection::~HTMLCollection()
 {
@@ -3330,6 +3334,22 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   }
 }
 
+// -------------------------------------------------------------------------
+/* Source for HTMLSelectCollectionProtoTable.
+@begin HTMLSelectCollectionProtoTable 1
+  add		HTMLSelectCollection::Add		DontDelete|Function 2
+@end
+*/
+DEFINE_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto)
+IMPLEMENT_PROTOFUNC_DOM(HTMLSelectCollectionProtoFunc)
+IMPLEMENT_PROTOTYPE(HTMLSelectCollectionProto,HTMLSelectCollectionProtoFunc)
+
+const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
+
+KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, 
+                                                const DOM::HTMLSelectElement& e)
+      : HTMLCollection(HTMLSelectCollectionProto::self(exec), c), element(e) { }
+
 Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "selectedIndex")
@@ -3404,6 +3424,61 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const Identifier &proper
   // finally add the new element
   element.add(option, before);
 }
+
+
+Value KJS::HTMLSelectCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::HTMLSelectCollection, thisObj );
+  DOM::HTMLSelectElement element = static_cast<KJS::HTMLSelectCollection *>(thisObj.imp())->toElement();
+
+  switch (id) {
+  case KJS::HTMLSelectCollection::Add:
+  {
+    //Non-standard select.options.add. 
+    //The first argument is the item, 2nd is offset.
+    //IE and Mozilla are both quite picky here, too...
+    DOM::Node node = KJS::toNode(args[0]);
+    if (node.isNull() || node.elementId() != ID_OPTION) {
+      Object err = Error::create(exec, GeneralError, "Invalid argument to HTMLOptionsCollection::add");
+      exec->setException(err);
+      return Undefined();
+    }
+
+    DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
+    if ( option.ownerDocument() != element.ownerDocument() ) //### remove this once auto-adopt works...
+      option = static_cast<DOM::HTMLOptionElement>(element.ownerDocument().importNode(option, true));
+
+    int  pos = 0;
+    //By default append, if not specified or null..
+    if (args[1].isA(UndefinedType))
+      pos = element.length();
+    else
+      pos = (int)args[1].toNumber(exec);
+      
+    if (pos < 0) {
+      Object err = Error::create(exec, GeneralError, "Invalid index argument to HTMLOptionsCollection::add");
+      exec->setException(err);
+      return Undefined();
+    }
+    
+    if (pos >= element.length()) {
+      //Append
+      element.add(option, DOM::Node()); 
+    } else {
+      //Find what to prepend before..
+      DOM::HTMLSelectElementImpl* impl = static_cast<HTMLSelectElementImpl*>(element.handle());
+      QMemArray<HTMLGenericFormElementImpl*> items = impl->listItems();
+      int dummy;
+      impl->insertBefore(option.handle(), items.at(pos), dummy);
+    }
+    return Undefined();
+    break;
+  }
+  default:
+    return Undefined();
+  }
+}
+
 
 ////////////////////// Option Object ////////////////////////
 
