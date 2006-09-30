@@ -932,7 +932,10 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,doc.documentElement());
   case CharacterSet: {
     DOM::DocumentImpl* docImpl = static_cast<DOM::DocumentImpl*>(doc.handle());
-    return String(docImpl->part()->encoding());
+    if (docImpl->part())
+      return String(docImpl->part()->encoding());
+    else
+      return Undefined();
   }
   case StyleSheets:
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
