@@ -50,7 +50,7 @@ START_OBJECT_METHOD( callFileReadAll, QFile )
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileWriteLine, QFile )
-    result = KJS::Number( (long int)object->write(KJSEmbed::extractQByteArray(exec, args, 0) + "\n") );
+    result = KJS::Number( (long int)object->write(KJSEmbed::extractQByteArray(exec, args, 0) + '\n') );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileAtEnd, QFile )
