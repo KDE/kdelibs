@@ -135,5 +135,7 @@ public:
   virtual void doSomething( QString method, void* arguments ) = 0;
 };
 
+Q_DECLARE_INTERFACE(KRegExpEditorInterface, "org.kde.KRegExpEditorInterface/1.0")
+
 #endif
 
