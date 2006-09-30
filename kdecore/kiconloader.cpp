@@ -1418,3 +1418,5 @@ void KIconLoaderPrivate::reconfigure()
 {
   q->reconfigure(appname, mpDirs);
 }
+
+#include "kiconloader_p.moc"
