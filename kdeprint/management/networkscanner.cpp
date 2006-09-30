@@ -195,7 +195,7 @@ void NetworkScanner::slotNext()
 		return;
 
 	d->timer->stop();
-	d->socket->connect( d->prefixaddress + "." + QString::number( d->currentaddress ), QString::number(d->port) );
+	d->socket->connect( d->prefixaddress + '.' + QString::number( d->currentaddress ), QString::number(d->port) );
 	kDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
   d->timer->setSingleShot(true);
 	d->timer->start( d->timeout );

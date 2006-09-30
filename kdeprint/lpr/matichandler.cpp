@@ -137,7 +137,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 		{
 			url = "socket://" + args[ 1 ];
 			if ( args.count() > 2 )
-				url += ":" + args[ 2 ];
+				url += ':' + args[ 2 ];
 			else
 				url += ":9100";
 		}
@@ -190,9 +190,9 @@ QString MaticHandler::createPostpipe(const QString& _url)
 	if (prot == "socket")
 	{
 		str += ("| " + m_ncpath);
-		str += (" " + url.host());
+		str += (' ' + url.host());
 		if (url.port() > 0)
-			str += (" " + QString::number(url.port()));
+			str += (' ' + QString::number(url.port()));
 	}
 	else if (prot == "lpd")
 	{
@@ -208,7 +208,7 @@ QString MaticHandler::createPostpipe(const QString& _url)
 			str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + m_smbpath);
 			str += (" \\\"//" + server + "/" + printer + "\\\"");
 			if (!passwd.isEmpty())
-				str += (" " + passwd);
+				str += (' ' + passwd);
 			if (!user.isEmpty())
 				str += (" -U " + user);
 			if (!work.isEmpty())
@@ -330,7 +330,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + KProcess::quote(tmpFile.fileName()) + " " + KProcess::quote(outFile);
+		QString	cmd = "mv " + KProcess::quote(tmpFile.fileName()) + ' ' + KProcess::quote(outFile);
 		int	status = ::system(QFile::encodeName(cmd).data());
 		QFile::remove(tmpFile.fileName());
 		result = (status != -1 && WEXITSTATUS(status) == 0);
@@ -378,7 +378,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 					DrBase	*opt = (optname.isEmpty() ? NULL : driver->findOption(optname));
 					if (opt)
 					{
-						line.replace(foo2, "'"+opt->valueText()+"',");
+						line.replace(foo2, '\''+opt->valueText()+"',");
 					}
 				}
 				else if (foo.indexIn(line) != -1)
@@ -469,7 +469,7 @@ QString MaticHandler::printOptions(KPrinter *printer)
 	{
 		if (it.key().startsWith("kde-") || it.key().startsWith("_kde-") || it.key().startsWith( "app-" ))
 			continue;
-		str += (" " + it.key() + "=" + (*it));
+		str += (' ' + it.key() + '=' + (*it));
 	}
 	if (!str.isEmpty())
 		str.prepend("-J '").append("'");

@@ -61,7 +61,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 	{
 		QMap<QString,QString>	opts = parseXferOptions(entry->field("xfer_options"));
 		QString	user, pass;
-		loadAuthFile(LprSettings::self()->baseSpoolDir() + "/" + entry->name + "/" + opts["authfile"], user, pass);
+		loadAuthFile(LprSettings::self()->baseSpoolDir() + '/' + entry->name + '/' + opts["authfile"], user, pass);
 		QString uri = buildSmbURI(
 				opts[ "workgroup" ],
 				opts[ "host" ],
@@ -296,7 +296,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 	{
 		comment.append("QUEUE ");
 		KUrl url( prt->device() );
-		lp = url.path().mid(1) + "@" + url.host();
+		lp = url.path().mid(1) + '@' + url.host();
 	}
 	else if (prot == "smb")
 	{
@@ -306,7 +306,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 		if ( splitSmbURI( prt->device(), work, server, printer, user, passwd ) )
 		{
 			entry->addField("xfer_options", Field::String, QString::fromLatin1("authfile=\"auth\" crlf=\"0\" hostip=\"\" host=\"%1\" printer=\"%2\" remote_mode=\"SMB\" share=\"//%3/%4\" workgroup=\"%5\"").arg(server).arg(printer).arg(server).arg(printer).arg(work));
-			QFile	authfile(LprSettings::self()->baseSpoolDir() + "/" + prt->printerName() + "/auth");
+			QFile	authfile(LprSettings::self()->baseSpoolDir() + '/' + prt->printerName() + "/auth");
 			if (authfile.open(QIODevice::WriteOnly))
 			{
 				QTextStream	t(&authfile);

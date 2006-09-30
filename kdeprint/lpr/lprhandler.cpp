@@ -67,7 +67,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 			prt->setLocation(i18n("Remote queue (%1) on %2", val.left(p), val.mid(p+1)));
 			uri.setProtocol("lpd");
 			uri.setHost(val.mid(p+1));
-			uri.setPath("/" + val.left(p));
+			uri.setPath('/' + val.left(p));
 		}
 		else if ((p = val.indexOf('%')) != -1)
 		{
@@ -91,7 +91,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 		prt->setLocation(i18n("Remote queue (%1) on %2", val, rm));
 		uri.setProtocol("lpd");
 		uri.setHost(rm);
-		uri.setPath("/" + val);
+		uri.setPath('/' + val);
 	}
 	else
 		prt->setLocation(i18n("Unknown (unrecognized entry)"));
@@ -259,7 +259,7 @@ QString LprHandler::locateDir(const QString& dirname, const QString& paths)
 	QStringList	pathlist = paths.split(':', QString::SkipEmptyParts);
 	for (QStringList::ConstIterator it=pathlist.begin(); it!=pathlist.end(); ++it)
 	{
-		QString	testpath = *it + "/" + dirname;
+		QString	testpath = *it + '/' + dirname;
 		if (::access(QFile::encodeName(testpath), F_OK) == 0)
 			return testpath;
 	}

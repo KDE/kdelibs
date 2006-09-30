@@ -72,8 +72,8 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 		if (prt->device().isEmpty())
 		{
 			QString prot;
-			QString	smbname(sysconfDir() + "/" + prt->printerName() + "/smbclient.conf");
-			QString	ncpname(sysconfDir() + "/" + prt->printerName() + "/netware.conf");
+			QString	smbname(sysconfDir() + '/' + prt->printerName() + "/smbclient.conf");
+			QString	ncpname(sysconfDir() + '/' + prt->printerName() + "/netware.conf");
 			if (QFile::exists(smbname))
 			{
 				QMap<QString,QString>	opts = loadVarFile(smbname);
@@ -133,7 +133,7 @@ QString ApsHandler::driverDirInternal()
 
 QMap<QString,QString> ApsHandler::loadResources(PrintcapEntry *entry)
 {
-	return loadVarFile(sysconfDir() + "/" + (entry ? entry->name : QString()) + "/apsfilterrc");
+	return loadVarFile(sysconfDir() + '/' + (entry ? entry->name : QString()) + "/apsfilterrc");
 }
 
 QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)
@@ -215,7 +215,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 		manager()->setErrorMsg(i18n("Unsupported backend: %1.", prot));
 		return NULL;
 	}
-	QString	path = sysconfDir() + "/" + prt->printerName();
+	QString	path = sysconfDir() + '/' + prt->printerName();
 	if (!KStandardDirs::makeDir(path, 0755))
 	{
 		manager()->setErrorMsg(i18n("Unable to create directory %1.", path));
@@ -305,7 +305,7 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 		entry = new PrintcapEntry;
 		entry->addField("lp", Field::String, "/dev/null");
 	}
-	QString	sd = LprSettings::self()->baseSpoolDir() + "/" + prt->printerName();
+	QString	sd = LprSettings::self()->baseSpoolDir() + '/' + prt->printerName();
 	entry->addField("af", Field::String, sd + "/acct");
 	entry->addField("lf", Field::String, sd + "/log");
 	entry->addField("if", Field::String, sysconfDir() + "/basedir/bin/apsfilter");
@@ -322,7 +322,7 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry*, DrMain *drive
 		manager()->setErrorMsg(i18n("The APS driver is not defined."));
 		return false;
 	}
-	QFile	f(sysconfDir() + "/" + prt->printerName() + "/apsfilterrc");
+	QFile	f(sysconfDir() + '/' + prt->printerName() + "/apsfilterrc");
 	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
@@ -369,7 +369,7 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry*, DrMain *drive
 
 bool ApsHandler::removePrinter(KMPrinter*, PrintcapEntry *entry)
 {
-	QString	path(sysconfDir() + "/" + entry->name);
+	QString	path(sysconfDir() + '/' + entry->name);
 	QFile::remove(path + "/smbclient.conf");
 	QFile::remove(path + "/netware.conf");
 	QFile::remove(path + "/apsfilterrc");

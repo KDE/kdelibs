@@ -183,7 +183,7 @@ bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 		bar->setRange(0, n);
 	for (int i=0; i<n; i++)
 	{
-		QString	IPstr = root_ + "." + QString::number(i);
+		QString	IPstr = root_ + '.' + QString::number(i);
 		QString	hostname;
 		if (checkPrinter(IPstr, port_, &hostname))
 		{ // we found a printer at this address, create SocketInfo entry in printer list

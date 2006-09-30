@@ -44,7 +44,7 @@ bool KLprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	cmd = QString::fromLatin1("%1 -P %1 '-#%1'").arg(m_exepath).arg(quote(printer->printerName())).arg( printer->numCopies() );
 	QString	opts = static_cast<KMLprManager*>(KMManager::self())->printOptions(printer);
 	if (!opts.isEmpty())
-		cmd += (" " + opts);
+		cmd += (' ' + opts);
 	return true;
 }
 

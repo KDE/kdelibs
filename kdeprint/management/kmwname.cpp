@@ -82,7 +82,7 @@ void KMWName::initPrinter(KMPrinter *p)
 		if (p->option("kde-driver") == "raw")
 			setText(2,i18n("Raw printer"));
 		else
-			setText(2,p->manufacturer() + " " + p->model());
+			setText(2,p->manufacturer() + ' ' + p->model());
 
 	setCurrent(0);
 }

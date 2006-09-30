@@ -806,7 +806,7 @@ void KXmlCommandAdvancedDlg::recreateGroup(Q3ListViewItem *item, DrGroup *grp)
 			}
 			else
 			{
-				opt->setName("_kde-"+m_xmlcmd->name()+"-"+opt->name());
+				opt->setName("_kde-"+m_xmlcmd->name()+'-'+opt->name());
 				grp->addOption(opt);
 			}
 			m_opts.remove(child->text(1));

@@ -60,9 +60,9 @@ void KMIconViewItem::calcRect(const QString&)
 	if (m_state & 0x2) f.setItalic(true);
 	QFontMetrics	fm(f);
 	if (m_mode == Qt::DockBottom)
-		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, Qt::AlignHCenter|Qt::AlignTop|Qt::TextWordWrap|Qt::TextWrapAnywhere, text()+"X");
+		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, Qt::AlignHCenter|Qt::AlignTop|Qt::TextWordWrap|Qt::TextWrapAnywhere, text()+'X');
 	else
-		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, Qt::AlignLeft|Qt::AlignTop, text()+"X");
+		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, Qt::AlignLeft|Qt::AlignTop, text()+'X');
 
 	// item rect
 	if (m_mode == Qt::DockBottom)

@@ -25,14 +25,14 @@ QString Field::toString() const
 	switch (type)
 	{
 		case String:
-			s += ("=" + value);
+			s += ('=' + value);
 			break;
 		case Integer:
-			s += ("#" + value);
+			s += ('#' + value);
 			break;
 		case Boolean:
 			if (!value.toInt())
-				s += "@";
+				s += '@';
 			break;
 	}
 	return s;

@@ -475,7 +475,7 @@ bool CupsAddSmb::startProcess()
 	if (m_passwded->text().isEmpty())
 		m_proc << m_logined->text();
 	else
-		m_proc << m_logined->text()+"%"+m_passwded->text();
+		m_proc << m_logined->text()+'%'+m_passwded->text();
 	m_state = Start;
 	m_actionindex = 0;
 	m_buffer.clear();
