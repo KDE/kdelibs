@@ -223,15 +223,22 @@ void RenderBlock::updateFirstLetter()
         // punctuation and white-space
         if(oldText->l >= 1) {
             oldText->ref();
-            unsigned int length = 0;
+            // begin: we need skip leading whitespace so that RenderBlock::findNextLineBreak
+            // won't think we're continuing from a previous run 
+            unsigned int begin = 0; // the position that first-letter begins
+            unsigned int length = 0; // the position that "the rest" begins
+            while ( length < oldText->l && (oldText->s+length)->isSpace() )
+                length++;
+            begin = length;
             while ( length < oldText->l &&
-                    ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct()) )
+                    ( (oldText->s+length)->isPunct()) || (oldText->s+length)->isSpace() )
                 length++;
             if ( length < oldText->l &&
                     !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
             while ( length < oldText->l && (oldText->s+length)->isMark() )
                 length++;
+
             // we need to generated a remainingText object even if no text is left
             // because it holds the place and style for the old textObj
             RenderTextFragment* remainingText =
@@ -246,7 +253,7 @@ void RenderBlock::updateFirstLetter()
             firstLetterContainer->addChild(remainingText, nextObj);
 
             RenderTextFragment* letter =
-                new (renderArena()) RenderTextFragment(remainingText->node(), oldText, 0, length);
+                new (renderArena()) RenderTextFragment(remainingText->node(), oldText, begin, length-begin);
             letter->setIsAnonymous( remainingText->isAnonymous() );
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom(pseudoStyle);
