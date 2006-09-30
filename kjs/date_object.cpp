@@ -1108,7 +1108,7 @@ static double parseDate(const UString &date)
 
         hour = strtol(dateString, &newPosStr, 10);
         // Do not check for errno here since we want to continue
-        // even if errno was set becasue we are still looking
+        // even if errno was set because we are still looking
         // for the timezone!
 
         // Read a number? If not, this might be a timezone name.
@@ -1176,7 +1176,8 @@ static double parseDate(const UString &date)
     // Don't fail if the time zone is missing.
     // Some websites omit the time zone (4275206).
     if (*dateString) {
-        if (strncasecmp(dateString, "GMT", 3) == 0 || strncasecmp(dateString, "UTC", 3) == 0) {
+        if (strncasecmp(dateString, "GMT", 3) == 0 ||
+            strncasecmp(dateString, "UTC", 3) == 0) {
             dateString += 3;
             haveTZ = true;
         }
@@ -1195,6 +1196,7 @@ static double parseDate(const UString &date)
             if (*dateString != ':') {
                 offset = ((o / 100) * 60 + (o % 100)) * sgn;
             } else { // GMT+05:00
+                dateString++;
                 long o2 = strtol(dateString, &newPosStr, 10);
                 if (errno)
                     return NaN;
