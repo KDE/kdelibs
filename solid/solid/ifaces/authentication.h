@@ -126,7 +126,7 @@ namespace Ifaces
 
     /**
      * AuthenticationWpa contains functionality shared by both Personal and Enterprise
-     * authentication flavours
+     * authentication flavors
      */
     class AuthenticationWpa : public Authentication
     {

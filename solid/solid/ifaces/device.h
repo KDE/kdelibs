@@ -95,7 +95,7 @@ namespace Ifaces
          *
          * @param key the property name
          * @param value the new value of this property
-         * @returns true if the operation succeded, false otherwise
+         * @returns true if the operation succeeded, false otherwise
          */
         virtual bool setProperty( const QString &key, const QVariant &value );
 
@@ -118,7 +118,7 @@ namespace Ifaces
          * Removes a property.
          *
          * @param key the property name
-         * @returns true if the operation succeded, false otherwise
+         * @returns true if the operation succeeded, false otherwise
          */
         virtual bool removeProperty( const QString &key );
 
@@ -134,7 +134,7 @@ namespace Ifaces
          * Adds a capability to this device.
          *
          * @param capability the capability type
-         * @returns true if the operation succeded, false otherwise
+         * @returns true if the operation succeeded, false otherwise
          */
         virtual bool addCapability( const Capability::Type &capability );
 
@@ -160,14 +160,14 @@ namespace Ifaces
          * A localized version of the provided reason can be displayed to the user.
          *
          * @param reason a message explaining why we locked the device
-         * @returns true if the operation succeded, false otherwise
+         * @returns true if the operation succeeded, false otherwise
          */
         virtual bool lock(const QString &reason);
 
         /**
          * Unlocks a previously locked device.
          *
-         * @returns true if the operation succeded, false otherwise
+         * @returns true if the operation succeeded, false otherwise
          */
         virtual bool unlock();
 
@@ -197,7 +197,7 @@ namespace Ifaces
         void propertyChanged( const QMap<QString,int> &changes );
 
         /**
-         * This signal is emitted when an event occured in the device.
+         * This signal is emitted when an event occurred in the device.
          * For example when a button is pressed.
          *
          * @param condition the condition name

@@ -152,7 +152,7 @@ namespace Solid
          *
          * @param cpuNum the number of the CPU we want to enable or disable
          * @param enabled the new state of the CPU
-         * @return true if the state change succeded, false otherwise
+         * @return true if the state change succeeded, false otherwise
          */
         bool setCpuEnabled( int cpuNum, bool enabled );
 

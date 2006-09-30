@@ -242,7 +242,7 @@ void SolidHwTest::testDeviceSignals()
     fake->setProperty( "hactar", 42 ); // We add a property
     fake->removeProperty( "hactar" ); // We remove a property
 
-    // 3 property changes occured in the device
+    // 3 property changes occurred in the device
     QCOMPARE( m_changesList.count(), 3 );
 
     QMap<QString,int> changes;

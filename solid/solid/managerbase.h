@@ -36,7 +36,7 @@ namespace Solid
 
     public:
         /**
-         * Returns a text describing the error that occured while loading
+         * Returns a text describing the error that occurred while loading
          * the backend.
          *
          * @return the error description, or QString() if the backend loaded successfully

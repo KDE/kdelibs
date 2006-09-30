@@ -80,7 +80,7 @@ namespace Solid
         /**
          * Retrieves the state of the button.
          * A button can have two states (Enabled/Disabled, On/Off ...).
-         * Avaible only if hasState is true.
+         * Available only if hasState is true.
          *
          * @return true if the button is enabled, false otherwise.
          * @see hasState()

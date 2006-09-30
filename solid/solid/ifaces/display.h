@@ -57,7 +57,7 @@ namespace Ifaces
 
         /**
          * Retrieves the brightness level in percent.
-         * Avaible only if displayType is lcd.
+         * Available only if displayType is lcd.
          *
          * @return the brightness level in percent. If displayType is different from lcd, return 100.
          */

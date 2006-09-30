@@ -272,14 +272,14 @@ namespace Solid
          * This signal is emitted when a property is changed in the device.
          *
          * @param changes the map describing the property changes that
-         * occured in the device, keys are property name and values
+         * occurred in the device, keys are property name and values
          * describe the kind of change done on the device property
          * (added/removed/modified), it's one of the type Solid::PropertyChange
          */
         void propertyChanged( const QMap<QString,int> &changes );
 
         /**
-         * This signal is emitted when an event occured in the device.
+         * This signal is emitted when an event occurred in the device.
          * For example when a button is pressed.
          *
          * @param condition the condition name
