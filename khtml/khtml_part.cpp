@@ -4314,12 +4314,19 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-      QVariant res = executeScript( DOM::Node(frame->element()), KURL::decode_string( url.right( url.length() - 11) ) );
-      KURL myurl;
-      myurl.setProtocol("javascript");
-      if ( res.type() == QVariant::String )
-	myurl.setPath(res.asString());
-      return processObjectRequest(*it, myurl, QString("text/html") );
+    if ( processObjectRequest(*it, KURL("about:blank"), QString("text/html") ) ) {
+      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
+      
+      // See if we want to replace content with javascript: output..
+      QVariant res = p->executeScript( DOM::Node(), KURL::decode_string( url.right( url.length() - 11) ) );
+      if ( res.type() == QVariant::String ) {
+        p->begin();
+        p->write( res.asString() );
+        p->end();
+      }
+      return true;
+    }
+    return false;
   }
   KURL u = url.isEmpty() ? KURL() : completeURL( url );
   return requestObject( *it, u );
