@@ -3342,7 +3342,7 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
 */
 DEFINE_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLSelectCollectionProtoFunc)
-IMPLEMENT_PROTOTYPE(HTMLSelectCollectionProto,HTMLSelectCollectionProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(HTMLSelectCollectionProto,HTMLSelectCollectionProtoFunc,HTMLCollectionProto)
 
 const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
 
