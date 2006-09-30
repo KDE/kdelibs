@@ -206,7 +206,7 @@ static QString lprngAnswer(const QString& result, const QString& printer)
 {
 	int	p, q;
 
-	p = result.indexOf("\n" + printer);
+	p = result.indexOf('\n' + printer);
 	if (p != -1)
 	{
 		q = result.indexOf(':', p)+2;
@@ -235,7 +235,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
 		return false;
 	}
-	QString	result = execute(m_exepath + " " + op + " " + KProcess::quote(printer));
+	QString	result = execute(m_exepath + ' ' + op + ' ' + KProcess::quote(printer));
 	int	status;
 
 	switch (LprSettings::self()->mode())
@@ -273,7 +273,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lprm"));
 		return false;
 	}
-	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
+	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + ' ' + QString::number(job->id()));
 	if (result.indexOf("dequeued") != -1)
 		return true;
 	else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
@@ -291,7 +291,7 @@ bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
 		return false;
 	}
-	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
+	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + KProcess::quote(job->printer()) + ' ' + QString::number(job->id()));
 	QString	answer = lprngAnswer(result, job->printer());
 	if (answer == "no")
 	{
