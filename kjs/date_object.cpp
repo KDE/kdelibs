@@ -284,7 +284,7 @@ static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int m
     double milliseconds = 0;
     int idx = 0;
     int numArgs = args.size();
-    
+
     // JS allows extra trailing arguments -- ignore them
     if (numArgs > maxArgs)
         numArgs = maxArgs;
@@ -300,20 +300,20 @@ static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int m
         t->tm_min = 0;
         milliseconds += args[idx++]->toInt32(exec) * msPerMinute;
     }
-    
+
     // seconds
     if (maxArgs >= 2 && idx < numArgs) {
         t->tm_sec = 0;
         milliseconds += args[idx++]->toInt32(exec) * msPerSecond;
     }
-    
+
     // milliseconds
     if (idx < numArgs) {
         milliseconds += roundValue(exec, args[idx]);
     } else {
         milliseconds += *ms;
     }
-    
+
     *ms = milliseconds;
 }
 
@@ -325,19 +325,19 @@ static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int m
 {
     int idx = 0;
     int numArgs = args.size();
-  
+
     // JS allows extra trailing arguments -- ignore them
     if (numArgs > maxArgs)
         numArgs = maxArgs;
-  
+
     // years
     if (maxArgs >= 3 && idx < numArgs)
         t->tm_year = args[idx++]->toInt32(exec) - 1900;
-  
+
     // months
     if (maxArgs >= 2 && idx < numArgs)
         t->tm_mon = args[idx++]->toInt32(exec);
-  
+
     // days
     if (idx < numArgs) {
         t->tm_mday = 0;
@@ -359,7 +359,7 @@ bool DateInstance::getTime(tm &t, int &offset) const
     double milli = internalValue()->getNumber();
     if (isNaN(milli))
         return false;
-    
+
     millisecondsToTM(milli, false, &t);
     offset = gmtoffset(t);
     return true;
@@ -370,7 +370,7 @@ bool DateInstance::getUTCTime(tm &t) const
     double milli = internalValue()->getNumber();
     if (isNaN(milli))
         return false;
-    
+
     millisecondsToTM(milli, true, &t);
     return true;
 }
@@ -380,7 +380,7 @@ bool DateInstance::getTime(double &milli, int &offset) const
     milli = internalValue()->getNumber();
     if (isNaN(milli))
         return false;
-    
+
     tm t;
     millisecondsToTM(milli, false, &t);
     offset = gmtoffset(t);
@@ -392,7 +392,7 @@ bool DateInstance::getUTCTime(double &milli) const
     milli = internalValue()->getNumber();
     if (isNaN(milli))
         return false;
-    
+
     return true;
 }
 
@@ -436,7 +436,7 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
       m += gmtoffset(*t) * msPerSecond;
     t->tm_wday = weekDay(m);
   }
-}    
+}
 
 
 // ------------------------------ DatePrototype -----------------------------
@@ -522,7 +522,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   if (!thisObj->inherits(&DateInstance::info))
     return throwError(exec, TypeError);
 
-  DateInstance* thisDateObj = static_cast<DateInstance*>(thisObj); 
+  DateInstance* thisDateObj = static_cast<DateInstance*>(thisObj);
 
   JSValue *result = 0;
   UString s;
@@ -570,7 +570,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
         return jsNaN();
     }
   }
-  
+
   double secs = floor(milli / msPerSecond);
   double ms = milli - secs * msPerSecond;
 
@@ -661,7 +661,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     fillStructuresUsingDateArgs(exec, args, 1, &ms, &t);
     break;
   case SetMonth:
-    fillStructuresUsingDateArgs(exec, args, 2, &ms, &t);    
+    fillStructuresUsingDateArgs(exec, args, 2, &ms, &t);
     break;
   case SetFullYear:
     fillStructuresUsingDateArgs(exec, args, 3, &ms, &t);
@@ -677,7 +677,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     result = jsNumber(makeTime(&t, ms, utc));
     thisDateObj->setInternalValue(result);
   }
-  
+
   return result;
 }
 
@@ -764,7 +764,7 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
       value = makeTime(&t, ms, false);
     }
   }
-  
+
   DateInstance *ret = new DateInstance(exec->lexicalInterpreter()->builtinDatePrototype());
   ret->setInternalValue(jsNumber(timeClip(value)));
   return ret;
@@ -894,15 +894,20 @@ static double makeTime(tm *t, double ms, bool utc)
 
     // Determine whether DST is in effect. mktime() can't do this for us because
     // it doesn't know about ms and yearOffset.
-    // NOTE: Casting values of large magnitude to time_t (long) will 
+    // NOTE: Casting values of large magnitude to time_t (long) will
     // produce incorrect results, but there's no other option when calling localtime_r().
-    if (!utc) { 
-        time_t tval = mktime(t) + (time_t)((ms + yearOffset) / 1000);  
-        tm t3 = *localtime(&tval);  
-        t->tm_isdst = t3.tm_isdst;  
+    if (!utc) {
+        time_t tval = mktime(t) + (time_t)((ms + yearOffset) / 1000);
+        tm t3 = *localtime(&tval);
+        t->tm_isdst = t3.tm_isdst;
     }
 
     return (mktime(t) + utcOffset) * msPerSecond + ms + yearOffset;
+}
+
+inline static bool isSpaceLike(char c)
+{
+    return isspace(c) || c == ',' || c == ':' || c == '-';
 }
 
 inline static void skipSpacesAndComments(const char *&s)
@@ -910,7 +915,7 @@ inline static void skipSpacesAndComments(const char *&s)
     int nesting = 0;
     char ch;
     while ((ch = *s)) {
-        if (!isspace(ch)) {
+        if (!isSpaceLike(ch)) {
             if (ch == '(')
                 nesting++;
             else if (ch == ')' && nesting > 0)
@@ -961,7 +966,7 @@ static double parseDate(const UString &date)
 
     CString dateCString = date.UTF8String();
     const char *dateString = dateCString.c_str();
-     
+
     // Skip leading space
     skipSpacesAndComments(dateString);
 
@@ -1070,7 +1075,7 @@ static double parseDate(const UString &date)
         if (errno)
             return NaN;
     }
-    
+
     // Don't fail if the time is missing.
     long hour = 0;
     long minute = 0;
@@ -1079,15 +1084,16 @@ static double parseDate(const UString &date)
         dateString = newPosStr;
     else {
         // ' 23:12:40 GMT'
-        if (!isspace(*newPosStr)) {
-            if (*newPosStr != ':')
-                return NaN;
+        if (*newPosStr == ':') {
             // There was no year; the number was the hour.
             year = -1;
-        } else {
-            // in the normal case (we parsed the year), advance to the next number
+        } else if (isSpaceLike(*newPosStr)) {
+            // in the normal case (we parsed the year), advance to the
+            // next number
             dateString = ++newPosStr;
             skipSpacesAndComments(dateString);
+        } else {
+            return NaN;
         }
 
         hour = strtol(dateString, &newPosStr, 10);
@@ -1129,7 +1135,7 @@ static double parseDate(const UString &date)
                 if (errno)
                     return NaN;
                 dateString = newPosStr;
-            
+
                 if (second < 0 || second > 59)
                     return NaN;
             }
@@ -1157,7 +1163,7 @@ static double parseDate(const UString &date)
     bool haveTZ = false;
     int offset = 0;
 
-    // Don't fail if the time zone is missing. 
+    // Don't fail if the time zone is missing.
     // Some websites omit the time zone (4275206).
     if (*dateString) {
         if (strncasecmp(dateString, "GMT", 3) == 0 || strncasecmp(dateString, "UTC", 3) == 0) {
@@ -1206,9 +1212,9 @@ static double parseDate(const UString &date)
             return NaN;
         dateString = newPosStr;
     }
-     
+
     skipSpacesAndComments(dateString);
-     
+
     // Trailing garbage
     if (*dateString)
         return NaN;
