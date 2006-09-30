@@ -58,7 +58,7 @@ namespace Solid
          * @param serviceName the name of the service type we're looking for
          * @param backendClassName the fully qualified name of the type of the backend
          */
-        ManagerBase( QString description, const char *serviceName, const char *backendClassName );
+        ManagerBase( const QString &description, const char *serviceName, const char *backendClassName );
 
         /**
          * Constructs a new manager from an already loaded backend.
@@ -91,7 +91,7 @@ namespace Solid
          * @param backendClassName the fully qualified name of the type of the backend
          * @return the loaded backend
          */
-        QObject *loadBackend( QString description, const char *serviceName, const char *backendClassName );
+        QObject *loadBackend( const QString &description, const char *serviceName, const char *backendClassName );
 
     private:
         class Private;

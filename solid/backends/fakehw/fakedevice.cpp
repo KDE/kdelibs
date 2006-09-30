@@ -255,7 +255,7 @@ QObject *FakeDevice::createCapability(const Capability::Type &capability)
 
     if(iface)
     {
-        QDBusConnection::sessionBus().registerObject( d->udi+"/"+FakeCapability::toString( capability ), iface,
+        QDBusConnection::sessionBus().registerObject( d->udi+'/'+FakeCapability::toString( capability ), iface,
                                                       QDBusConnection::ExportNonScriptableSlots );
     }
 

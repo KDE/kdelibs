@@ -47,7 +47,7 @@ namespace Solid
     };
 }
 
-Solid::ManagerBase::ManagerBase( QString description, const char *serviceName, const char *backendClassName )
+Solid::ManagerBase::ManagerBase( const QString &description, const char *serviceName, const char *backendClassName )
     : QObject(), d( new Private )
 {
     QObject *backend = loadBackend( description, serviceName, backendClassName );
@@ -94,7 +94,7 @@ void Solid::ManagerBase::setManagerBackend( QObject *backend )
     d->backend = backend;
 }
 
-QObject *Solid::ManagerBase::loadBackend( QString description, const char *serviceName, const char *backendClassName )
+QObject *Solid::ManagerBase::loadBackend( const QString &description, const char *serviceName, const char *backendClassName )
 {
     QStringList error_msg;
 

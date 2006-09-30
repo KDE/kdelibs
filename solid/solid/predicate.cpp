@@ -268,7 +268,7 @@ QString Solid::Predicate::toString() const
 
             for ( ; it!=end; ++it )
             {
-                value+= "'"+*it+"'";
+                value+= '\''+*it+'\'';
 
                 if ( it+1!=end )
                 {
@@ -276,7 +276,7 @@ QString Solid::Predicate::toString() const
                 }
             }
 
-            value+= "}";
+            value+= '}';
             break;
         }
         case QVariant::Bool:
@@ -289,11 +289,11 @@ QString Solid::Predicate::toString() const
             value = d->value.toString();
             break;
         default:
-            value = "'"+d->value.toString()+"'";
+            value = '\''+d->value.toString()+'\'';
             break;
         }
 
-        return capability+"."+d->property+" == "+value;
+        return capability+'.'+d->property+" == "+value;
     }
 }
 
