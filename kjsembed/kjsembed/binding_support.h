@@ -281,7 +281,12 @@ namespace KJSEmbed
         if (!value || !value->isNumber())
             return defaultValue;
 
-        return T(value->toInteger(exec));
+// deal with MSVC annoyances
+#if COMPILER(MSVC)
+        return static_cast<T>(static_cast<int>(value->toInteger(exec)));
+#else
+        return static_cast<T>(value->toInteger(exec));
+#endif
     }
 
     // extractInteger specialization
