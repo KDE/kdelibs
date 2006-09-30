@@ -62,8 +62,19 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     if( args.size() == 1)
     {
         KJS::UString filename = args[0]->toString(exec);
-        Engine::runFile( exec->dynamicInterpreter(), filename );
+        qDebug() << "include: " << filename.qstring();
+        KJS::Completion c = Engine::runFile( exec->dynamicInterpreter(), filename );
+        qDebug("\tCompletionType: %d", c.complType());
+
+        if (c.isValueCompletion())
+            return c.value();
     }
+    else
+    {
+        return throwError(exec, KJS::URIError, 
+                          i18n("include only takes 1 argument, not %1.", args.size()));
+    }
+
     return KJS::Null();
 }
 
@@ -75,16 +86,16 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     if( args.size() == 1)
     {
         KJS::UString filename = args[0]->toString(exec);
-	QString qualifiedFilename = KStandardDirs::locate( "scripts", filename.qstring() );
-	if ( !qualifiedFilename.isEmpty() )
-	    Engine::runFile( exec->dynamicInterpreter(), qualifiedFilename );
-	else {
-	    QString msg = i18n( "File %1 not found.", filename.qstring() );
-	    return throwError( exec, KJS::URIError, msg );
-	}
+        QString qualifiedFilename = KStandardDirs::locate( "scripts", filename.qstring() );
+        if ( !qualifiedFilename.isEmpty() )
+            Engine::runFile( exec->dynamicInterpreter(), qualifiedFilename );
+        else {
+            QString msg = i18n( "File %1 not found.", filename.qstring() );
+            return throwError( exec, KJS::URIError, msg );
+        }
     }
     else {
-
+        
     }
 
     return KJS::Null();

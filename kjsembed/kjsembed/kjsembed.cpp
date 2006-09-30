@@ -189,6 +189,7 @@ KJS::Interpreter *Engine::interpreter() const
 
 KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UString &fileName )
 {
+//    qDebug() << "runFile: " << fileName.qstring();
     KJS::UString code;
     QFile file( fileName.qstring() );
     if( file.open( QFile::ReadOnly ) )
@@ -208,6 +209,8 @@ KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UStri
         code = "println('Could not open file.');";
         qWarning() << "Could not open file " << fileName.qstring();
     }
+
+//    qDebug() << "Loaded code: " << code.qstring();
     
     return interpreter->evaluate( KJS::UString(""), 0, code, 0 );
 }
