@@ -32,7 +32,7 @@ class CJanusWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	CJanusWidget(QWidget *parent);
+	explicit CJanusWidget(QWidget *parent);
 	~CJanusWidget();
 
 	void addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix);

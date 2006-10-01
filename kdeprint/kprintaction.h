@@ -30,7 +30,7 @@ class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 public:
 	enum PrinterType { All, Regular, Specials };
 
-	KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	explicit KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
 	KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
 	virtual ~KPrintAction();
 

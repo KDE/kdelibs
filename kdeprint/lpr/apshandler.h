@@ -27,7 +27,7 @@
 class ApsHandler : public LprHandler
 {
 public:
-	ApsHandler(KMManager*);
+	explicit ApsHandler(KMManager*);
 
 	bool validate(PrintcapEntry*);
 	KMPrinter* createPrinter(PrintcapEntry*);

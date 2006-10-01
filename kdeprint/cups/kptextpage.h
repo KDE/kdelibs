@@ -32,7 +32,7 @@ class KPTextPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KPTextPage(DrMain *driver, QWidget *parent = 0);
+	explicit KPTextPage(DrMain *driver, QWidget *parent = 0);
 	~KPTextPage();
 
 	void setOptions(const QMap<QString,QString>& opts);

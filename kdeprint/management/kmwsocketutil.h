@@ -42,7 +42,7 @@ class SocketConfig : public KDialog
 	friend class KMWSocketUtil;
 	Q_OBJECT
 public:
-	SocketConfig(KMWSocketUtil *util, QWidget *parent = 0, const char *name = 0);
+	explicit SocketConfig(KMWSocketUtil *util, QWidget *parent = 0, const char *name = 0);
 	~SocketConfig();
 
 protected Q_SLOTS:

@@ -31,7 +31,7 @@ class DrMain;
 class KMSpecialManager : public QObject
 {
 public:
-	KMSpecialManager(KMManager *parent);
+	explicit KMSpecialManager(KMManager *parent);
 
 	bool loadPrinters();
 	bool savePrinters();

@@ -98,7 +98,7 @@ public:
 	/**
 	 * Modified constructor. For internal use only.
 	 */
-	KPrintDialogPage(KMPrinter *pr, DrMain *dr = 0, QWidget *parent = 0);
+	explicit KPrintDialogPage(KMPrinter *pr, DrMain *dr = 0, QWidget *parent = 0);
 	/**
 	 * Destructor
 	 */

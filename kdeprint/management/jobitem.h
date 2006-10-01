@@ -28,7 +28,7 @@ class KMJob;
 class JobItem : public QTreeWidgetItem, public KMObject
 {
 public:
-	JobItem(QTreeWidget *parent, KMJob *job = 0);
+	explicit JobItem(QTreeWidget *parent, KMJob *job = 0);
 	~JobItem();
 	void init(KMJob *job);
 	virtual bool operator <(const QTreeWidgetItem &other) const;
