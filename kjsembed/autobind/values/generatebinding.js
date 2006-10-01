@@ -367,6 +367,8 @@ function write_methods(compoundName, compoundData, memberList, compoundEnums)
 
     methods +=
         '}\n';
+
+    return methods;
 }
 
 // function write_method_lut( compoundDef)
