@@ -825,6 +825,10 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
     }
   }
 
+  // treat beginning of document as anchor position
+  if (cur.line() == 0 && cur.col() == 0)
+    found = true;
+
   if (!found)
     return 0;
 
