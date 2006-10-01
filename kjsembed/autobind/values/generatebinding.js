@@ -106,13 +106,13 @@ function extract_parameter( param, paramIdx, compoundEnums )
     else    // It's an object, or something else?
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ', ';
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
     }
 
     if (!paramDefault.isNull())
-        extracted += paramDefault.toString() + ');\n';
+        extracted +=  ', ' + paramDefault.toString() + ');\n';
     else
-        extracted += '0);\n';
+        extracted += ');\n';
 
     return extracted;
 }
@@ -145,7 +145,7 @@ function construct_parameters(methodList, numArgs, funcCallStart, funcCallEnd, c
             var paramVarElement = param.firstChildElement('declname').toElement();
             var paramVar = paramVarElement.toString();
             if (paramVarElement.isNull())
-                paramVar = 'arg' + paramIdx;
+                paramVar = 'arg' + argIdx;
 
             tmpArgs += paramVar + ', ';
             var paramType = param.firstChildElement('type').toElement().toString();
@@ -243,6 +243,144 @@ function write_enums(compoundName, compoundData, memberList, compoundEnums)
     return enums;
 }
 
+function find_method_overloads(memberList, startIdx, name)
+{
+    var overloadList = new Array;
+
+    // Process Methods
+    for( mIdx = startIdx; mIdx < memberList.length(); ++mIdx )
+    {
+        var memberElement = memberList.item(mIdx).toElement();
+        var memberKind = memberElement.attribute('kind');
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+        if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
+             ( memberProt == 'public' ) &&
+             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
+             ( memberName == name ) )  // matching name
+        {
+            var methodArgList = memberElement.elementsByTagName('param');
+            var args = methodArgList.count();
+            if(!overloadList[args]) {
+                // println('          Adding overload ' + overloadList.length + ' array for ' + args );
+                overloadList[args] = new Array;
+            }
+            overloadList[args].push( memberElement );
+
+            //            println( '          Found ' + overloadList[args].length + ' override with ' + args + ' arguments' );
+        }
+    }
+     
+    return overloadList;
+}
+
+function write_method(compoundName, memberName, overloadList, compoundEnums)
+{
+    // Handle arguments
+    var method =
+        '//  ' + memberName  + '\n' +
+        'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
+        '{ \n';
+    
+    method += '    Q_UNUSED(args); \n';
+            
+    method +=
+        '    KJS::JSValue *result = KJS::Null(); \n' +
+        '    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); \n' +
+        '    if( !imp ) \n' +
+        '        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
+        '\n' +
+        '    ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
+        
+    for (var idx = 0; idx < overloadList.length; ++idx)
+    {
+        if (!overloadList[idx])
+            continue;
+
+        println( '      writing method with ' + idx + ' args, overrides = ' + overloadList[idx].length );
+
+        var memberElement = overloadList[idx][0];
+        var methodType = memberElement.firstChildElement('type').toElement().toString();
+        var coreMethodType = findCoreParamType(methodType);
+        var methodArgList = memberElement.elementsByTagName('param');
+        method += '    if (args.size() == ' + methodArgList.count() + ' )\n' +
+        '    {\n';
+
+        var funcCallStart = '';
+        var funcCallEnd = ');\n';
+        if (methodType == "void")
+        {
+            funcCallStart = 
+                'value.' + memberName + '(';
+        }
+        else if (compoundEnums[coreMethodType]) 
+        {
+            funcCallStart +=
+                compoundEnums[coreMethodType] + '::' + coreMethodType + ' tmp = value.' + memberName + '(';
+            funcCallEnd += 
+                '           result = KJS::Number( tmp );\n';
+        }
+        else
+        {
+            funcCallStart +=
+                methodType + ' tmp = value.' + memberName + '(';
+            if ( coreMethodType.indexOf('Qt::') != -1 ) // Enum Value
+            {
+                funcCallEnd += 
+                    '            result = KJS::Number( tmp );\n';
+            }
+            else if (isVariant(coreMethodType))
+            {
+                funcCallEnd +=
+                    "            result = KJSEmbed::createVariant( exec, \"" + coreMethodType + "\", tmp );\n";
+            }
+            else
+            {
+                funcCallEnd +=
+                    "            result = KJSEmbed::createObject( exec, \"" + coreMethodType + "\", tmp );\n";
+            }
+        }
+        funcCallEnd += 
+            '            imp->setValue(qVariantFromValue(value)); \n' +
+            '            return result; \n';
+
+        if (methodArgList.count() != 0)
+        {
+            var tmpArgs = '';
+            for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
+            {
+                var param = methodArgList.item(paramIdx).toElement();
+                var paramVarElement = param.firstChildElement('declname').toElement();
+                var paramVar = paramVarElement.toString();
+                if (paramVarElement.isNull())
+                    paramVar = 'arg' + paramIdx;
+                tmpArgs += paramVar + ', ';
+            }
+        
+            if (tmpArgs != '') 
+            {
+                var tmpIdx = tmpArgs.lastIndexOf(',');
+                tmpArgs = tmpArgs.substr(0, tmpIdx);
+            }
+        
+            method += construct_parameters(overloadList[idx], idx, funcCallStart, funcCallEnd, compoundEnums);
+        }
+        else
+        {
+            method += '            ' + funcCallStart + funcCallEnd;
+        }
+
+        method += 
+                '    }\n';
+    }
+
+    method +=
+        '\n' +
+        '    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compoundName + '.' + memberName + '"); \n' +
+        '}\n\n';
+
+    return method;
+}
 
 // function write_enums(compoundName, compoundData, memberList, compoundEnums)
 //   compoundName  - The name of the compound object
@@ -256,6 +394,8 @@ function write_methods(compoundName, compoundData, memberList, compoundEnums)
     var methods = 'namespace ' + compoundName + 'NS\n' +
         '{\n';
 
+    var processed = {};
+
     // Process Methods
     for( idx = 0; idx < memberList.length(); ++idx )
     {
@@ -264,104 +404,23 @@ function write_methods(compoundName, compoundData, memberList, compoundEnums)
         var memberProt = memberElement.attribute('prot');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
 
-        if ( memberKind == 'function' ) // Make sure we're working with a function here
+        if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
+             ( memberProt == 'public' ) &&
+             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
+             ( memberName.indexOf(compoundName) == -1 ) ) // Not a ctor
         {
-            if ( memberProt == 'public' )
+            if (processed[memberName])
             {
-                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
-                {
-                    if ( memberName.indexOf(compoundName) == -1 ) // Not a ctor
-                    {
-                        var methodType = memberElement.firstChildElement('type').toElement().toString();
-                        var coreMethodType = findCoreParamType(methodType);
-                        var methodArgs = memberElement.firstChildElement('argsstring').toElement().toString();
-                        // Handle arguments
-                        var methodArgList = memberElement.elementsByTagName('param');
-
-                        methods +=
-                            '// ' + methodType + ' ' + memberName + methodArgs + '\n' +
-                            'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
-                            '{ \n';
-
-                        if (methodArgList.count() == 0)
-                            methods +=
-                                '    Q_UNUSED(args); \n';
-
-                        methods +=
-                            '    KJS::JSValue *result = KJS::Null(); \n' +
-                            '    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); \n' +
-                            '    if( imp ) \n' +
-                            '    { \n' +
-                            '        ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
-
-                        if ( methodArgList.count() == 0 )
-                        {
-                            if (methodType == "void")
-                            {
-                            }
-                            else if (compoundEnums[coreMethodType]) 
-                            {
-                                methods +=
-                                '       ' + compoundEnums[coreMethodType] + '::' + coreMethodType + ' tmp = value.' + memberName + '();\n';
-                                methods += 
-                                '         result = KJS::Number( tmp );\n';
-                            }
-                            else
-                            {
-                                methods +=
-                                '        ' + methodType + ' tmp = value.' + memberName + '();\n';
-                                if ( coreMethodType.indexOf('Qt::') != -1 ) // Enum Value
-                                {
-                                    methods += 
-                                    '        result = KJS::Number( tmp );\n';
-                                }
-                                else if (isVariant(coreMethodType))
-                                {
-                                    methods +=
-                                    "        result = KJSEmbed::createVariant( exec, \"" + coreMethodType + "\", tmp );\n";
-                                }
-                                else
-                                {
-                                    methods +=
-                                    "        result = KJSEmbed::createObject( exec, \"" + coreMethodType + "\", tmp );\n";
-                                }
-                            }
-                        }
-
-                        var tmpArgs = '';
-                        for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
-                        {
-                            var param = methodArgList.item(paramIdx).toElement();
-                            var paramVarElement = param.firstChildElement('declname').toElement();
-                            var paramVar = paramVarElement.toString();
-                            if (paramVarElement.isNull())
-                                paramVar = 'arg' + paramIdx;
-                            var paramDefault = param.firstChildElement('defval').toElement();
-                            methods += extract_parameter(param, paramIdx, compoundEnums);
-
-                            tmpArgs += paramVar + ', ';
-                        }
-
-                        if (tmpArgs != '') 
-                        {
-                            var tmpIdx = tmpArgs.lastIndexOf(',');
-                            tmpArgs = tmpArgs.substr(0, tmpIdx);
-                            var tmpIdx =
-                                    methods += '        value.' + memberName + '(' + tmpArgs + ');\n';
-                        }
-
-                        methods +=
-                        '        imp->setValue(qVariantFromValue(value)); \n' +
-                        '    }\n' +
-                        '    else \n' +
-                        '    {\n' +
-                        "        KJS::throwError(exec, KJS::GeneralError, \"We have a problem baby\");\n" +
-                        '    }\n\n' +
-                        '    return result; \n' +
-                        '}\n\n';
-                    }
-                }
+                println( '      Skipping method overload ' + memberName );
+                continue;
             }
+            
+            println( '      Processing method ' + memberName );
+            processed[memberName] = true;
+            
+            var overloadList = find_method_overloads(memberList, idx, memberName);
+
+            methods += write_method(compoundName, memberName, overloadList, compoundEnums);
         }
     }
 
@@ -382,6 +441,8 @@ function write_method_lut( compoundDef )
         'const Method KJSEmbed::' + compoundData + '::p_methods[] = \n' +
         '{\n';
 
+    var processed = {};
+
     // Generate the binding for each method
     var methodList = compoundDef.elementsByTagName( "memberdef" );
     for( var idx = 0; idx < methodList.length(); ++idx )
@@ -392,18 +453,17 @@ function write_method_lut( compoundDef )
         var memberName = memberElement.firstChildElement('name').toElement().toString();
 
         var numParams = memberElement.elementsByTagName("param").count();
-        if ( memberKind == 'function' )
+        if ( ( memberKind == 'function' ) &&
+             ( memberProt == 'public' ) &&
+             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
+             ( memberName.indexOf(compoundName) == -1 ) ) // Make sure this is not a ctor or dtor
         {
-            if ( memberProt == 'public' )
-            {
-                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
-                {
-                    if ( memberName.indexOf(compoundName) == -1 ) // Make sure this is not a ctor or dtor
-                    {
-                    lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
-                    }
-                }
-            }
+            // make sure only one lut entry per member
+            if (processed[memberName])
+                continue;
+            processed[memberName] = true;
+
+            lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
         }
     }
 
@@ -429,7 +489,7 @@ function write_ctor( compoundDef, compoundEnums )
         'KJS::JSObject *KJSEmbed::' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
         '{\n';
 
-    // Generate the ctor bindings
+    // find the ctors
     var methodList = compoundDef.elementsByTagName( "memberdef" );
     var methodListList = new Array;
     for( var idx = 0; idx < methodList.length(); ++idx )
@@ -438,13 +498,13 @@ function write_ctor( compoundDef, compoundEnums )
         var memberKind = memberElement.attribute( 'kind' );
         var memberProt = memberElement.attribute('prot');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
-        var memberArgList = memberElement.elementsByTagName('param');
         if (( memberKind == 'function' ) && // Constructor is a function
             ( memberProt == 'public' ) && // Make sure it is public
             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
             ( memberName.indexOf(compoundName) != -1 ) && // This _is_ a ctor
             ( memberName.indexOf('~') == -1 )) // This is _not_ a dtor
         {
+            var memberArgList = memberElement.elementsByTagName('param');
             var args = memberArgList.count();
             if(!methodListList[args]) {
                 methodListList[args] = new Array;
@@ -453,6 +513,7 @@ function write_ctor( compoundDef, compoundEnums )
         }
     }
 
+    // Generate the ctor bindings
     for(var idx = 0; idx < methodListList.length; ++idx)
     {
         if(!methodListList[idx]) continue;
@@ -470,13 +531,13 @@ function write_ctor( compoundDef, compoundEnums )
         }
         else
         {
-            for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+            for ( var argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
             {
                 var param = memberArgList.item(argIdx).toElement();
                 var paramVarElement = param.firstChildElement('declname').toElement();
                 var paramVar = paramVarElement.toString();
                 if (paramVarElement.isNull())
-                    paramVar = 'arg' + paramIdx;
+                    paramVar = 'arg' + argIdx;
 
                 tmpArgs += paramVar + ', ';
             }
@@ -524,6 +585,7 @@ function write_binding_new( class_doc )
 //    println ( "compoundIncludes: " + compoundIncludes );
     includes += '#include "' + compoundName + '_bind.h"\n';
     includes += "#include <" + compoundIncludes + ">\n";
+    includes += "#include <value_binding.h>\n";
     includes += "#include <object_binding.h>\n";
 
     // Binding Ctor
@@ -536,7 +598,7 @@ function write_binding_new( class_doc )
         '   : VariantBinding(exec, value)\n' +
         '{\n' +
         '    StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
-        '    StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
+        '    StaticBinding::publish(exec, this, VariantFactory::methods() );\n' +
         '}\n\n';
 
     var memberList = class_doc.elementsByTagName( "memberdef" );

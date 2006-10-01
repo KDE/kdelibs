@@ -1,9 +1,10 @@
 #include "QBrush_bind.h"
 #include <qbrush.h>
+#include <value_binding.h>
 #include <object_binding.h>
 
-using namespace KJSEmbed;
 
+using namespace KJSEmbed;
 // Temp - for building
 class QColorBinding { public: static const KJS::ClassInfo info; };
 class QPixmapBinding { public: static const KJS::ClassInfo info; };
@@ -12,6 +13,7 @@ class QGradientBinding { public: static const KJS::ClassInfo info; };
 const KJS::ClassInfo QColorBinding::info = { "QColor", &VariantBinding::info, 0, 0 };
 const KJS::ClassInfo QPixmapBinding::info = { "QPixmap", &VariantBinding::info, 0, 0 };
 const KJS::ClassInfo QGradientBinding::info = { "QGradient", &ObjectBinding::info, 0, 0 };
+
 
 const KJS::ClassInfo QBrushBinding::info = { "QBrush", &VariantBinding::info, 0, 0 };
 QBrushBinding::QBrushBinding( KJS::ExecState *exec, const QBrush &value )
@@ -24,209 +26,194 @@ QBrushBinding::QBrushBinding( KJS::ExecState *exec, const QBrush &value )
 
 namespace QBrushNS
 {
-// Qt::BrushStyle style() const 
+//  style
 KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        Qt::BrushStyle tmp = value.style();
-        result = KJS::Number( tmp );
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 0 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+            Qt::BrushStyle tmp = value.style();
+            result = KJS::Number( tmp );
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.style"); 
 }
 
-// void setStyle(Qt::BrushStyle)
+//  setStyle
 KJS::JSValue *setStyle( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
+    Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        Qt::BrushStyle arg0 = KJSEmbed::extractInteger<Qt::BrushStyle>(exec, args, 0);
-        value.setStyle(arg0);
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 1 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+        KJS::JSValue* value0=args[0];
+        KJS::JSObject* object0=value0->toObject(exec);
+        if(object0 && object0->isNumber())
+        {
+            Qt::BrushStyle arg0 = KJSEmbed::extractInteger<Qt::BrushStyle>(exec, args, 0);
+            value.setStyle(arg0);
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
+        }
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.setStyle"); 
 }
 
-// QPixmap texture() const 
+//  texture
 KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        QPixmap tmp = value.texture();
-        result = KJSEmbed::createVariant( exec, "QPixmap", tmp );
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 0 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+            QPixmap tmp = value.texture();
+            result = KJSEmbed::createVariant( exec, "QPixmap", tmp );
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.texture"); 
 }
 
-// void setTexture(const QPixmap &pixmap)
+//  setTexture
 KJS::JSValue *setTexture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
+    Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        QPixmap pixmap = KJSEmbed::extractVariant<QPixmap>(exec, args, 0);
-        value.setTexture(pixmap);
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 1 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+        KJS::JSValue* value0=args[0];
+        KJS::JSObject* object0=value0->toObject(exec);
+        if(object0 && object0->inherits(&QPixmapBinding::info))
+        {
+            QPixmap pixmap = KJSEmbed::extractVariant<QPixmap>(exec, args, 0);
+            value.setTexture(pixmap);
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
+        }
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.setTexture"); 
 }
 
-// const QColor & color() const 
+//  color
 KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        const QColor & tmp = value.color();
-        result = KJSEmbed::createVariant( exec, "QColor", tmp );
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 0 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+            const QColor & tmp = value.color();
+            result = KJSEmbed::createVariant( exec, "QColor", tmp );
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.color"); 
 }
-// void setColor(const QColor &color)
+
+//  setColor
 KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
+    Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        if (args.size() == 1 )
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 1 )
+    {
+        KJS::JSValue* value0=args[0];
+        KJS::JSObject* object0=value0->toObject(exec);
+        if(object0 && object0->inherits(&QColorBinding::info))
         {
-            KJS::JSValue* value0=args[0];
-            KJS::JSObject* object0=value0->toObject(exec);
-            if (object0 && object0->inherits(&QColorBinding::info))
-            {
-                QBrush value = imp->value<QBrush>();
-                QColor color = KJSEmbed::extractVariant<QColor>(exec, args, 0);
-                value.setColor(color);
-                imp->setValue(qVariantFromValue(value)); 
-            }
-            else if (value0->isNumber())
-            {
-                QBrush value = imp->value<QBrush>();
-                Qt::GlobalColor color = KJSEmbed::extractInteger<Qt::GlobalColor>(exec, args, 0);
-                value.setColor(color);
-                imp->setValue(qVariantFromValue(value)); 
-            }
-            else
-                return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.setColor()");
+            QColor color = KJSEmbed::extractVariant<QColor>(exec, args, 0);
+            value.setColor(color);
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
         }
-        else
-            return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.setColor()");
-    }
-    else 
-    {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+        if(object0 && object0->isNumber())
+        {
+            Qt::GlobalColor color = KJSEmbed::extractInteger<Qt::GlobalColor>(exec, args, 0);
+            value.setColor(color);
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
+        }
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.setColor"); 
 }
 
-#if 0
-// void setColor(Qt::GlobalColor color)
-KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
-{ 
-    KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        Qt::GlobalColor color = KJSEmbed::extractInteger<Qt::GlobalColor>(exec, args, 0);
-        value.setColor(color);
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
-    {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
-    }
-
-    return result; 
-}
-#endif
-
-// const QGradient * gradient() const 
+//  gradient
 KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        const QGradient * tmp = value.gradient();
-        result = KJSEmbed::createObject( exec, "const QGradient *", tmp );
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 0 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+            const QGradient * tmp = value.gradient();
+            result = KJSEmbed::createObject( exec, "const QGradient *", tmp );
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.gradient"); 
 }
 
-// bool isOpaque() const 
+//  isOpaque
 KJS::JSValue *isOpaque( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
     KJS::JSValue *result = KJS::Null(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
-    if( imp ) 
-    { 
-        QBrush value = imp->value<QBrush>();
-        bool tmp = value.isOpaque();
-        result = KJSEmbed::createVariant( exec, "bool", tmp );
-        imp->setValue(qVariantFromValue(value)); 
-    }
-    else 
+    if( !imp ) 
+        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
+
+    QBrush value = imp->value<QBrush>();
+    if (args.size() == 0 )
     {
-        KJS::throwError(exec, KJS::GeneralError, "We have a problem baby");
+            bool tmp = value.isOpaque();
+            result = KJSEmbed::createVariant( exec, "bool", tmp );
+            imp->setValue(qVariantFromValue(value)); 
+            return result; 
     }
 
-    return result; 
+    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.isOpaque"); 
 }
 
 }
@@ -263,8 +250,8 @@ KJS::JSObject *KJSEmbed::QBrushData::ctorMethod( KJS::ExecState *exec, const KJS
         }
         if(object0 && object0->inherits(&QGradientBinding::info))
         {
-            QGradient* gradient = KJSEmbed::extractObject<QGradient>(exec, args, 0, 0);
-            return new KJSEmbed::QBrushBinding(exec, QBrush(*gradient));
+            QGradient gradient = KJSEmbed::extractValue<QGradient>(exec, args, 0);
+            return new KJSEmbed::QBrushBinding(exec, QBrush(gradient));
         }
     }
     if (args.size() == 2 )
@@ -308,7 +295,6 @@ const Method KJSEmbed::QBrushData::p_methods[] =
     { "texture", 0, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::texture },
     { "setTexture", 1, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::setTexture },
     { "color", 0, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::color },
-    { "setColor", 1, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::setColor },
     { "setColor", 1, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::setColor },
     { "gradient", 0, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::gradient },
     { "isOpaque", 0, KJS::DontDelete|KJS::ReadOnly, &QBrushNS::isOpaque },
