@@ -711,20 +711,18 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
-    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
+    if ( hasOverhangingFloats() && !style()->scrollsOverflow() && (isFloatingOrPositioned() || flowAroundFloats()) )
         m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
     calcHeight();
     if (oldHeight != m_height) {
-        // If the block got expanded in size, then increase our overflowheight to match.
-        if (m_overflowHeight > m_height) {
-            if (style()->scrollsOverflow())
-                // overflow-height only includes padding-bottom when it scrolls
-                m_overflowHeight -= borderBottom();
-            else
-                m_overflowHeight -= (borderBottom()+paddingBottom());
+        m_overflowHeight -= toAdd;
+        if (m_layer && style()->scrollsOverflow()) {
+            // overflow-height only includes padding-bottom when it scrolls
+            m_overflowHeight += paddingBottom();
         }
+        // If the block got expanded in size, then increase our overflowheight to match.
         if (m_overflowHeight < m_height)
             m_overflowHeight = m_height;
     }
@@ -1352,7 +1350,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
     int top = borderTop() + paddingTop();
     int bottom = borderBottom() + paddingBottom();
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         bottom += m_layer->horizontalScrollbarHeight();
 
     m_height = m_overflowHeight = top;

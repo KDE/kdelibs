@@ -720,12 +720,12 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
 
 void RenderLayer::checkScrollbarsAfterLayout()
 {
-    int rightPos = m_object->rightmostPosition(true, false);
-    int bottomPos = m_object->lowestPosition(true, false);
+    int rightPos = m_object->rightmostPosition(true);
+    int bottomPos = m_object->lowestPosition(true);
     
 /*  TODO
-    m_scrollLeft = m_object->leftmostPosition(true, false);
-    m_scrollTop = m_object->highestPosition(true, false);
+    m_scrollLeft = m_object->leftmostPosition(true);
+    m_scrollTop = m_object->highestPosition(true);
 */
 
     int clientWidth = m_object->clientWidth();

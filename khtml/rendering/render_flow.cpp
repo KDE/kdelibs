@@ -320,7 +320,7 @@ RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int lp = c->yPos() + c->lowestPosition(false);
             bottom = kMax(bottom, lp);
         }
@@ -345,7 +345,7 @@ int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int rp = c->xPos() + c->rightmostPosition(false);
             right = kMax(right, rp);
         }
@@ -370,7 +370,7 @@ int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf)
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int lp = c->xPos() + c->leftmostPosition(false);
             left = kMin(left, lp);
         }
@@ -395,7 +395,7 @@ int RenderFlow::highestPosition(bool includeOverflowInterior, bool includeSelf) 
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int hp = c->yPos() + c->highestPosition(false);
             top = kMin(top, hp);
         }
