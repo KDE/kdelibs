@@ -17,17 +17,17 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include "scalar_binding.h"
+#include "value_binding.h"
 #include "static_binding.h"
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo ScalarBinding::info = { "ScalarBinding", 0, 0, 0 };
+const KJS::ClassInfo ValueBinding::info = { "ValueBinding", 0, 0, 0 };
 
-KJS::JSValue *callScalarType( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+KJS::JSValue *callValueType( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
     Q_UNUSED(args);
-    KJSEmbed::ScalarBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ScalarBinding>(exec,  self );
+    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
     if( imp )
     {
         return KJS::String( imp->className().ascii() );
@@ -35,20 +35,20 @@ KJS::JSValue *callScalarType( KJS::ExecState *exec, KJS::JSObject *self, const K
     return KJS::Null();
 }
 
-const Method ScalarFactory::ScalarMethods[] =
+const Method ValueFactory::ValueMethods[] =
 {
-    {"type", 0, KJS::DontDelete|KJS::ReadOnly, &callScalarType },
+    {"type", 0, KJS::DontDelete|KJS::ReadOnly, &callValueType },
     //{"cast", 1, KJS::DontDelete|KJS::ReadOnly, &callPointerCast },
     //{"toString", 0, KJS::DontDelete|KJS::ReadOnly, &callPointerToString },
     {0, 0, 0, 0 }
 };
 
-const Method *ScalarFactory::methods()
+const Method *ValueFactory::methods()
 {
-    return ScalarMethods;
+    return ValueMethods;
 }
 
-KJS::UString ScalarBinding::toString(KJS::ExecState *exec) const
+KJS::UString ValueBinding::toString(KJS::ExecState *exec) const
 {
     Q_UNUSED(exec);
     return m_value->type().name();

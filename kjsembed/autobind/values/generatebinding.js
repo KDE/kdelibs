@@ -189,186 +189,74 @@ function construct_parameters(methodList, numArgs, funcCallStart, funcCallEnd, c
     return params;
 }
 
-// function write_ctor( compoundDef, compoundEnums )
-//   compoundDef   - The base element of the compound objects definition
-// Constructs the method look-up-table (lut) for the compound object
-function write_method_lut( compoundDef )
-{
-    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
-    var lut_template =
-        '\n' +
-        'const Method KJSEmbed::' + compoundData + '::p_methods[] = \n' +
-        '{\n';
-
-    // Generate the binding for each method
-    var methodList = compoundDef.elementsByTagName( "memberdef" );
-    for( var idx = 0; idx < methodList.length(); ++idx )
-    {
-        var memberElement = methodList.item(idx).toElement();
-        var memberKind = memberElement.attribute('kind');
-        var memberProt = memberElement.attribute('prot');
-        var memberName = memberElement.firstChildElement('name').toElement().toString();
-
-        var numParams = memberElement.elementsByTagName("param").count();
-        if ( memberKind == 'function' )
-        {
-            if ( memberProt == 'public' )
-            {
-                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
-                {
-                    if ( memberName.indexOf(compoundName) == -1 ) // Make sure this is not a ctor or dtor
-                    {
-                    lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
-                    }
-                }
-            }
-        }
-    }
-
-    lut_template +=
-    '    {0, 0, 0, 0 }\n' +
-    '};\n';
-
-    return lut_template;
-}
-
-// function write_ctor( compoundDef, compoundEnums )
+// function write_enums(compoundName, compoundData, memberList, compoundEnums)
+//   compoundName  - The name of the compound object
+//   compoundData  - The data object to use for the compound object
 //   compoundDef   - The base element of the compound objects definition
 //   compoundEnums - An associative array of enums defined within the 
 //                   compound object.
-// Constructs the constructor for handling the creation of the object
-function write_ctor( compoundDef, compoundEnums )
+// Constructs and fills out the enums
+function write_enums(compoundName, compoundData, memberList, compoundEnums)
 {
-    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
-    var ctor =
-        'const Constructor KJSEmbed::' + compoundData + '::p_constructor = \n' +
-        '{'+
-        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundData + '::ctorMethod, p_statics, p_enums, KJSEmbed::' + compoundData + '::p_methods };\n' +
-        'KJS::JSObject *KJSEmbed::' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
-        '{\n';
-
-    // Generate the ctor bindings
-    var methodList = compoundDef.elementsByTagName( "memberdef" );
-    var methodListList = new Array;
-    for( var idx = 0; idx < methodList.length(); ++idx )
-    {
-        var memberElement = methodList.item(idx).toElement();
-        var memberKind = memberElement.attribute( 'kind' );
-        var memberProt = memberElement.attribute('prot');
-        var memberName = memberElement.firstChildElement('name').toElement().toString();
-        var memberArgList = memberElement.elementsByTagName('param');
-        if (( memberKind == 'function' ) && // Constructor is a function
-            ( memberProt == 'public' ) && // Make sure it is public
-            ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
-            ( memberName.indexOf(compoundName) != -1 ) && // This _is_ a ctor
-            ( memberName.indexOf('~') == -1 )) // This is _not_ a dtor
-        {
-            var args = memberArgList.count();
-            if(!methodListList[args]) {
-                methodListList[args] = new Array;
-            }
-            methodListList[args].push( memberElement );
-        }
-    }
-    for(var idx = 0; idx < methodListList.length; ++idx)
-    {
-        if(!methodListList[idx]) continue;
-        var memberElement = methodListList[idx][0];
-        var memberArgList = memberElement.elementsByTagName('param');
-        ctor += '    if (args.size() == ' + memberArgList.count() + ' )\n' +
-        '    {\n';
-
-        var tmpArgs = '';
-        if ( memberArgList.count() == 0 )
-        {
-            tmpArgs =  + '()';
-            ctor += 
-            '        return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '());\n';
-        }
-        else
-        {
-            for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
-            {
-                var param = memberArgList.item(argIdx).toElement();
-                var paramVarElement = param.firstChildElement('declname').toElement();
-                var paramVar = paramVarElement.toString();
-                if (paramVarElement.isNull())
-                    paramVar = 'arg' + paramIdx;
-
-                tmpArgs += paramVar + ', ';
-            }
-
-            var tmpIdx = tmpArgs.lastIndexOf(',');
-            tmpArgs = tmpArgs.substr(0, tmpIdx);
-//            var funcCall = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '));\n';
-            var funcCallStart = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '('; 
-            var funcCallEnd = '));\n';
-
-            ctor += construct_parameters(methodListList[idx], idx, funcCallStart, funcCallEnd, compoundEnums);
-        }
-
-        ctor += '    }\n';
-    }
-    ctor += '    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compoundName + '");\n'
-    + '}';
-    return ctor;
-}
-
-// function write_binding_new( class_doc )
-//   class_doc - The root element of the class DOM document.
-// Writes the binding for the class described in class_doc to a file
-// with a name composed as '{ClassName}_bind.cpp'.
-function write_binding_new( class_doc )
-{
-    // This is just looking at brush.cpp and determining the order of the source..
-    var includes = '';
-    var bindingCtor = '';
-    var methods = '';
     var enums = '';
-    var statics = '';
-    var ctor = '';
-    var methodLut = '';
 
-    // Eventually all of these should be moved to their own functions, but once again
-    // lets get it working first..
-
-    // These are vars we need for all of this to work correctly
-    var compoundDef = class_doc.firstChild().toElement();
-    var compoundIncludes = compoundDef.firstChildElement('includes').toElement().toString();
-    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
-    var compoundEnums = {};
-
-    compoundData = compoundName + "Data";
-
-//    println ( "compoundIncludes: " + compoundIncludes );
-    includes += '#include "' + compoundName + '_bind.h"\n';
-    includes += "#include <" + compoundIncludes + ">\n";
-    includes += "#include <object_binding.h>\n";
-
-    // Binding Ctor
-    bindingCtor +=
-        '\n' +
-        'using namespace KJSEmbed;\n' +
-        '\n' +
-        "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &VariantBinding::info, 0, 0 };\n" +
-        compoundName + 'Binding::' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
-        '   : VariantBinding(exec, value)\n' +
-        '{\n' +
-        '    StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
-        '    StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
-        '}\n\n';
-
-    // Methods
-    methods +=
-        'namespace ' + compoundName + 'NS\n' +
-        '{\n';
-
+    // Process the enums
     enums +=
         '\n' +
         'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {\n';
 
     var hasEnums = false;
-    var memberList = class_doc.elementsByTagName( "memberdef" );
+    for( idx = 0; idx < memberList.length(); ++idx )
+    {
+        var memberElement = memberList.item(idx).toElement();
+        var memberKind = memberElement.attribute('kind');
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+        if ( memberKind == 'enum' )
+        {
+            if ( memberProt == 'public' )
+            {
+                println( '      Processing enum ' + memberName );
+                hasEnums = true;
+                compoundEnums[memberName] = compoundName;
+                var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
+                for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
+                {
+                    var valueName = enumValueList.item( enumidx ).toElement().firstChildElement('name').toElement().toString();
+                    println( '        ' + valueName );
+                    enums += '    {"' + valueName + '", ' + compoundName + '::' + valueName + ' },\n';
+                }
+            }
+        }
+    }
+
+    if ( hasEnums )
+    {
+        enums +=
+            '    {0, 0}\n' +
+            '};\n';
+    }
+    else {
+        enums = 'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {{0, 0 }};\n';
+    }
+
+    return enums;
+}
+
+
+// function write_enums(compoundName, compoundData, memberList, compoundEnums)
+//   compoundName  - The name of the compound object
+//   compoundData  - The data object to use for the compound object
+//   compoundDef   - The base element of the compound objects definition
+//   compoundEnums - An associative array of enums defined within the 
+//                   compound object.
+// Constructs and fills out the enums
+function write_methods(compoundName, compoundData, memberList, compoundEnums)
+{
+    var methods = 'namespace ' + compoundName + 'NS\n' +
+        '{\n';
+
+    // Process Methods
     for( idx = 0; idx < memberList.length(); ++idx )
     {
         var memberElement = memberList.item(idx).toElement();
@@ -475,37 +363,185 @@ function write_binding_new( class_doc )
                 }
             }
         }
-        else if ( memberKind == 'enum' )
+    }
+
+    methods +=
+        '}\n';
+}
+
+// function write_method_lut( compoundDef)
+//   compoundDef   - The base element of the compound objects definition
+// Constructs the method look-up-table (lut) for the compound object
+function write_method_lut( compoundDef )
+{
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var lut_template =
+        '\n' +
+        'const Method KJSEmbed::' + compoundData + '::p_methods[] = \n' +
+        '{\n';
+
+    // Generate the binding for each method
+    var methodList = compoundDef.elementsByTagName( "memberdef" );
+    for( var idx = 0; idx < methodList.length(); ++idx )
+    {
+        var memberElement = methodList.item(idx).toElement();
+        var memberKind = memberElement.attribute('kind');
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+
+        var numParams = memberElement.elementsByTagName("param").count();
+        if ( memberKind == 'function' )
         {
             if ( memberProt == 'public' )
             {
-                println( '      Processing enum ' + memberName );
-                hasEnums = true;
-                compoundEnums[memberName] = compoundName;
-                var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
-                for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
+                if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
                 {
-                    var valueName = enumValueList.item( enumidx ).toElement().firstChildElement('name').toElement().toString();
-                    println( '        ' + valueName );
-                    enums += '    {"' + valueName + '", ' + compoundName + '::' + valueName + ' },\n';
+                    if ( memberName.indexOf(compoundName) == -1 ) // Make sure this is not a ctor or dtor
+                    {
+                    lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
+                    }
                 }
             }
         }
     }
 
-    methods +=
-        '}\n';
+    lut_template +=
+    '    {0, 0, 0, 0 }\n' +
+    '};\n';
 
-    if ( hasEnums )
+    return lut_template;
+}
+
+// function write_ctor( compoundDef, compoundEnums )
+//   compoundDef   - The base element of the compound objects definition
+//   compoundEnums - An associative array of enums defined within the 
+//                   compound object.
+// Constructs the constructor for handling the creation of the object
+function write_ctor( compoundDef, compoundEnums )
+{
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var ctor =
+        'const Constructor KJSEmbed::' + compoundData + '::p_constructor = \n' +
+        '{'+
+        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundData + '::ctorMethod, p_statics, p_enums, KJSEmbed::' + compoundData + '::p_methods };\n' +
+        'KJS::JSObject *KJSEmbed::' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
+        '{\n';
+
+    // Generate the ctor bindings
+    var methodList = compoundDef.elementsByTagName( "memberdef" );
+    var methodListList = new Array;
+    for( var idx = 0; idx < methodList.length(); ++idx )
     {
-        enums +=
-            '    {0, 0}\n' +
-            '};\n';
-    }
-    else {
-        enums = 'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {{0, 0 }};\n';
+        var memberElement = methodList.item(idx).toElement();
+        var memberKind = memberElement.attribute( 'kind' );
+        var memberProt = memberElement.attribute('prot');
+        var memberName = memberElement.firstChildElement('name').toElement().toString();
+        var memberArgList = memberElement.elementsByTagName('param');
+        if (( memberKind == 'function' ) && // Constructor is a function
+            ( memberProt == 'public' ) && // Make sure it is public
+            ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
+            ( memberName.indexOf(compoundName) != -1 ) && // This _is_ a ctor
+            ( memberName.indexOf('~') == -1 )) // This is _not_ a dtor
+        {
+            var args = memberArgList.count();
+            if(!methodListList[args]) {
+                methodListList[args] = new Array;
+            }
+            methodListList[args].push( memberElement );
+        }
     }
 
+    for(var idx = 0; idx < methodListList.length; ++idx)
+    {
+        if(!methodListList[idx]) continue;
+        var memberElement = methodListList[idx][0];
+        var memberArgList = memberElement.elementsByTagName('param');
+        ctor += '    if (args.size() == ' + memberArgList.count() + ' )\n' +
+        '    {\n';
+
+        var tmpArgs = '';
+        if ( memberArgList.count() == 0 )
+        {
+            tmpArgs =  + '()';
+            ctor += 
+            '        return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '());\n';
+        }
+        else
+        {
+            for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+            {
+                var param = memberArgList.item(argIdx).toElement();
+                var paramVarElement = param.firstChildElement('declname').toElement();
+                var paramVar = paramVarElement.toString();
+                if (paramVarElement.isNull())
+                    paramVar = 'arg' + paramIdx;
+
+                tmpArgs += paramVar + ', ';
+            }
+
+            var tmpIdx = tmpArgs.lastIndexOf(',');
+            tmpArgs = tmpArgs.substr(0, tmpIdx);
+//            var funcCall = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '));\n';
+            var funcCallStart = 'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '('; 
+            var funcCallEnd = '));\n';
+
+            ctor += construct_parameters(methodListList[idx], idx, funcCallStart, funcCallEnd, compoundEnums);
+        }
+
+        ctor += '    }\n';
+    }
+    ctor += '    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compoundName + '");\n'
+    + '}';
+    return ctor;
+}
+
+// function write_binding_new( class_doc )
+//   class_doc - The root element of the class DOM document.
+// Writes the binding for the class described in class_doc to a file
+// with a name composed as '{ClassName}_bind.cpp'.
+function write_binding_new( class_doc )
+{
+    // This is just looking at brush.cpp and determining the order of the source..
+    var includes = '';
+    var bindingCtor = '';
+    var statics = '';
+    var ctor = '';
+    var methodLut = '';
+
+    // Eventually all of these should be moved to their own functions, but once again
+    // lets get it working first..
+
+    // These are vars we need for all of this to work correctly
+    var compoundDef = class_doc.firstChild().toElement();
+    var compoundIncludes = compoundDef.firstChildElement('includes').toElement().toString();
+    var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var compoundEnums = {};
+    
+    compoundData = compoundName + "Data";
+
+//    println ( "compoundIncludes: " + compoundIncludes );
+    includes += '#include "' + compoundName + '_bind.h"\n';
+    includes += "#include <" + compoundIncludes + ">\n";
+    includes += "#include <object_binding.h>\n";
+
+    // Binding Ctor
+    bindingCtor +=
+        '\n' +
+        'using namespace KJSEmbed;\n' +
+        '\n' +
+        "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &VariantBinding::info, 0, 0 };\n" +
+        compoundName + 'Binding::' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
+        '   : VariantBinding(exec, value)\n' +
+        '{\n' +
+        '    StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
+        '    StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
+        '}\n\n';
+
+    var memberList = class_doc.elementsByTagName( "memberdef" );
+
+    var enums = write_enums(compoundName, compoundData, memberList, compoundEnums);
+
+    var methods = write_methods(compoundName, compoundData, memberList, compoundEnums);
 
     // Statics
     statics += 'NO_STATICS( KJSEmbed::' + compoundData + ' )';

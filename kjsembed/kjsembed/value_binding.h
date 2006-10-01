@@ -19,8 +19,8 @@
 */
 
 
-#ifndef SCALAR_BINDING_H
-#define SCALAR_BINDING_H
+#ifndef VALUE_BINDING_H
+#define VALUE_BINDING_H
 
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
@@ -34,25 +34,25 @@
 * Any data that should be returned from this method should be placed into "result";
 *
 */
-#define START_SCALAR_METHOD( METHODNAME, TYPE) \
+#define START_VALUE_METHOD( METHODNAME, TYPE) \
 KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \
 { \
         Q_UNUSED(exec);\
         Q_UNUSED(self);\
         Q_UNUSED(args);\
         KJS::JSValue *result = KJS::Null(); \
-        KJSEmbed::ScalarBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ScalarBinding>(exec, self ); \
+        KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self ); \
         if( imp ) \
         { \
                 TYPE value = imp->value<TYPE>();
 /**
-* End a variant method started by START_SCALAR_METHOD
+* End a variant method started by START_VALUE_METHOD
 */
-#define END_SCALAR_METHOD \
+#define END_VALUE_METHOD \
                 imp->setValue(value); \
         } \
         else { \
-            KJS::throwError(exec, KJS::GeneralError, "Problem in ScalarBinding here");\
+            KJS::throwError(exec, KJS::GeneralError, "Problem in ValueBinding here");\
         }\
         return result; \
 }
@@ -60,30 +60,30 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 namespace KJSEmbed
 {
    /**
-    * The Bindings for the KJSEmbed::ScalarBinding
+    * The Bindings for the KJSEmbed::ValueBinding
     */
-    class ScalarFactory
+    class ValueFactory
     {
         public:
-            static const Method ScalarMethods[];
+            static const Method ValueMethods[];
             static const Method *methods();
     };
 
    /**
     * QVariant bindinging implementation.
     */
-    class ScalarBinding : public ProxyBinding
+    class ValueBinding : public ProxyBinding
     {
         public:
             template <typename T>
-            ScalarBinding( KJS::ExecState *exec, const char *typeName, T val )
+            ValueBinding( KJS::ExecState *exec, const char *typeName, T val )
                 : ProxyBinding( exec ),
                   m_name(typeName)
             {
-                m_value = new Scalar<T>(val);
-                StaticBinding::publish( exec, this, ScalarFactory::methods() );
+                m_value = new Value<T>(val);
+                StaticBinding::publish( exec, this, ValueFactory::methods() );
             }
-            virtual ~ScalarBinding() {delete m_value;}
+            virtual ~ValueBinding() {delete m_value;}
 
             KJS::UString toString(KJS::ExecState *exec) const;
             KJS::UString className() const { return m_name; }
@@ -108,11 +108,11 @@ namespace KJSEmbed
             void setValue( const T &val )
             {
                 delete m_value;
-                m_value = new Scalar<T>(val);
+                m_value = new Value<T>(val);
             }
 
             template< typename T>
-            static T castValue( ScalarBinding *imp)
+            static T castValue( ValueBinding *imp)
             {
                 const T *ptr = reinterpret_cast<const T*>( imp->m_value->voidStar() );
                 if( ptr )
@@ -135,14 +135,14 @@ namespace KJSEmbed
     * is not used with KJSEmbed::ObjectBinding objects because the cast will fail.
     */
     template< typename T>
-    T extractScalar( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    T extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
         if( arg )
         {
-            KJSEmbed::ScalarBinding *imp =
-                    KJSEmbed::extractBindingImp<KJSEmbed::ScalarBinding>(exec, arg );
+            KJSEmbed::ValueBinding *imp =
+                    KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, arg );
             if( imp )
-                return ScalarBinding::castValue<T>( imp );
+                return ValueBinding::castValue<T>( imp );
         }
         return defaultValue;
     }
@@ -152,26 +152,26 @@ namespace KJSEmbed
     * is returned.
     */
     template< typename T>
-    T extractScalar( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
+    T extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
     {
         if( args.size() > idx )
         {
-            return extractScalar<T>( exec, args[idx], defaultValue );
+            return extractValue<T>( exec, args[idx], defaultValue );
         }
         else
             return defaultValue;
     }
 
     template< typename T>
-    KJS::JSValue *createScalar(KJS::ExecState *exec, const KJS::UString &className, const T &value)
+    KJS::JSValue *createValue(KJS::ExecState *exec, const KJS::UString &className, const T &value)
     {
         KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         if( returnValue )
         {
             // If its a value type setValue
-            KJSEmbed::ScalarBinding *imp =
-                    extractBindingImp<KJSEmbed::ScalarBinding>(exec, returnValue );
+            KJSEmbed::ValueBinding *imp =
+                    extractBindingImp<KJSEmbed::ValueBinding>(exec, returnValue );
             if( imp )
                 imp->setValue( value );
             else
