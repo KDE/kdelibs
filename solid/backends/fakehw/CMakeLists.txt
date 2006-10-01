@@ -31,7 +31,6 @@ target_link_libraries(solid_fakehw_static solidifaces ${QT_QTXML_LIBRARY} )
 
 kde4_add_plugin(solid_fakehw module.cpp ${solid_fakehw_PART_SRCS})
 
-kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} solid_fakehw )
 
 target_link_libraries(solid_fakehw solidifaces ${QT_QTXML_LIBRARY} )
 

@@ -17,7 +17,6 @@ target_link_libraries(solid_fakenet_static solidifaces ${QT_QTXML_LIBRARY} )
 
 kde4_add_plugin(solid_fakenet module.cpp ${solid_fakenet_PART_SRCS})
 
-kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} solid_fakenet )
 
 target_link_libraries(solid_fakenet solidifaces ${QT_QTXML_LIBRARY} )
 

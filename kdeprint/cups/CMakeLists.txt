@@ -50,7 +50,6 @@ kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 
 target_link_libraries(kdeprint_cups  ${KDE4_KDECORE_LIBS} kdeprint_management kio ${KDEFAKES_LIB} ${CUPS_LIBRARIES} )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_cups )
 install(TARGETS kdeprint_cups  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

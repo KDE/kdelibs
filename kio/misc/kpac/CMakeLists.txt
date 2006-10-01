@@ -23,7 +23,6 @@ if (HAVE_RESOLV_LIBRARY)
    target_link_libraries(kded_proxyscout resolv)
 endif (HAVE_RESOLV_LIBRARY)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_proxyscout )
 install(TARGETS kded_proxyscout  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

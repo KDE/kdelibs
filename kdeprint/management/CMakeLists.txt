@@ -83,7 +83,6 @@ kde4_add_plugin(kdeprint_management_module WITH_PREFIX ${kdeprint_management_mod
 
 target_link_libraries(kdeprint_management_module  ${KDE4_KDECORE_LIBS} kdeprint_management)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_management_module )
 install(TARGETS kdeprint_management_module  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

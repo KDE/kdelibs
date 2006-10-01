@@ -596,7 +596,6 @@ target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIB
 
 # hack - we don't really want to install this module [it would break later runs when the module is modified locally]
 # so we do the .la by hand
-#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 #install(TARGETS klibloadertestmodule  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
    set(_laname klibloadertestmodule)
@@ -621,7 +620,6 @@ target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 
 # hack - we don't really want to install this module [it would break later runs when the module is modified locally]
 # so we do the .la by hand
-#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} klibloadertestmodule )
 #install(TARGETS klibloadertestmodule  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
    set(_laname klibloadertestmodule4)

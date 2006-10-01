@@ -19,7 +19,6 @@ kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 
 target_link_libraries(kdeprint_lpd  ${KDE4_KDECORE_LIBS} kdeprint_management )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_lpd )
 install(TARGETS kdeprint_lpd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

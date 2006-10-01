@@ -15,7 +15,6 @@ kde4_add_plugin(highcontrast ${highcontrast_PART_SRCS})
 
 target_link_libraries(highcontrast  ${KDE4_KDECORE_LIBS} kdefx )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} highcontrast )
 install(TARGETS highcontrast  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

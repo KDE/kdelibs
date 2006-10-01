@@ -12,7 +12,6 @@ kde4_add_plugin(kspell_aspell ${kspell_aspell_PART_SRCS})
 
 target_link_libraries(kspell_aspell  ${KDE4_KDECORE_LIBS} kspell2 ${ASPELL_LIBRARIES} )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kspell_aspell )
 install(TARGETS kspell_aspell  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

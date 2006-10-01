@@ -26,7 +26,6 @@ kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
 target_link_libraries(kjavaappletviewer  ${KDE4_KDECORE_LIBS} kparts )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kjavaappletviewer )
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )

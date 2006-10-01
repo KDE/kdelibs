@@ -335,7 +335,6 @@ kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
 target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlpart )
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
@@ -345,7 +344,6 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 # Only the entry point is separated into khtmlimage_init.cpp
 kde4_add_plugin(khtmlimagepart khtmlimage_init.cpp)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
 target_link_libraries(khtmlimagepart khtml)
 

@@ -61,7 +61,6 @@ kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
 target_link_libraries(spellcheckplugin  ${KDE4_KDECORE_LIBS} kparts )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} spellcheckplugin )
 install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
@@ -75,7 +74,6 @@ kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
 target_link_libraries(notepadpart  ${KDE4_KDECORE_LIBS} kparts )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} notepadpart )
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

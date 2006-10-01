@@ -45,7 +45,6 @@ kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
 target_link_libraries(kdewidgets  ${KDE4_KDECORE_LIBS} kio)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )
 install(TARGETS kdewidgets  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
 

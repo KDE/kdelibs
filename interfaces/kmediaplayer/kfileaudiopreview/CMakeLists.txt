@@ -15,7 +15,6 @@ kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 
 target_link_libraries(kfileaudiopreview  ${KDE4_KDECORE_LIBS} phononui kio )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kfileaudiopreview )
 install(TARGETS kfileaudiopreview  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

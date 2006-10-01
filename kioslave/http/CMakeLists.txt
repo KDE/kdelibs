@@ -63,7 +63,6 @@ if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_http )
 install(TARGETS  kio_http  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

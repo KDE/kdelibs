@@ -17,7 +17,6 @@ kde4_add_plugin(light ${light_PART_SRCS})
 
 target_link_libraries(light  ${KDE4_KDECORE_LIBS} kdefx )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} light )
 install(TARGETS light  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

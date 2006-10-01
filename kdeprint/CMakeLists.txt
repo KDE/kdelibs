@@ -42,7 +42,6 @@ kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
 target_link_libraries(kded_kdeprintd  ${KDE4_KDECORE_LIBS} kio )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 install(TARGETS kded_kdeprintd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 

@@ -15,7 +15,6 @@
 #
 # target_link_libraries(kded_test  ${KDE4_KDECORE_LIBS} )
 #
-# kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_test )
 install(TARGETS kded_test  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
