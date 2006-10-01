@@ -53,7 +53,8 @@ namespace KJS {
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
-
+    virtual bool implementsHasInstance() const { return true; }
+    virtual Boolean hasInstance(ExecState *exec, const Value &value);
     virtual void put(ExecState *exec, const Identifier &propertyName,
                      const Value &value, int attr = None);
     virtual void tryPut(ExecState *exec, const Identifier &propertyName,

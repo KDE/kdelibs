@@ -92,6 +92,28 @@ UString DOMObject::toString(ExecState *) const
   return "[object " + className() + "]";
 }
 
+Boolean DOMObject::hasInstance(ExecState *exec, const Value &value)
+{
+  if (value.type() != ObjectType)
+    return Boolean(false);
+
+  Value prot = get(exec,prototypePropertyName);
+  if (prot.type() != ObjectType && prot.type() != NullType) {
+    Object err = Error::create(exec, TypeError, "Invalid prototype encountered "
+                               "in instanceof operation.");
+    exec->setException(err);
+    return Boolean(false);
+  }
+
+  Object v = Object(static_cast<ObjectImp*>(value.imp()));
+  while ((v = Object::dynamicCast(v.prototype())).imp()) {
+    if (v.imp() == prot.imp())
+      return Boolean(true);
+  }
+  return Boolean(false);
+}
+
+
 Value DOMFunction::get(ExecState *exec, const Identifier &propertyName) const
 {
   try {
