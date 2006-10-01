@@ -26,7 +26,7 @@ set(kjsembed_LIB_SRCS
    jseventutils.cpp
    qobject_binding.cpp
    kjsembed.cpp
-   scalar_binding.cpp
+   value_binding.cpp
    iosupport.cpp
    qwidget_binding.cpp
    qformbuilder_binding.cpp

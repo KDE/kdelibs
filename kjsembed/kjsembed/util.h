@@ -24,9 +24,9 @@ namespace KJSEmbed
         return object->inherits(&VariantBinding::info);
     }
 
-    /*bool isScalar(KJS::JSObject *object)
+    /*bool isValue(KJS::JSObject *object)
     {
-        return object->inherits(&ScalarBinding::info);
+        return object->inherits(&ValueBinding::info);
 }*/
 
     bool isObject(KJS::JSObject *object)
@@ -56,9 +56,9 @@ So this might be how the val checking would go:
     else
     {
         JSObject *object = arg->toObject(exec);
-        if (isScalar(object))
+        if (isValue(object))
         {
-            extractScalar...
+            extractValue...
         }
         else if (isObject(object))
         {

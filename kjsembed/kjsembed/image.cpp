@@ -32,7 +32,7 @@ const KJS::ClassInfo ImageBinding::info = { "QImage", &VariantBinding::info, 0, 
 ImageBinding::ImageBinding( KJS::ExecState *exec, const QImage &value )
     : VariantBinding(exec, value )
 {
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
     StaticBinding::publish( exec, this, Image::methods() );
 }
 

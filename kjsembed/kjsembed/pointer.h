@@ -68,14 +68,14 @@ public:
 };
 
 template<typename ValueType>
-struct Scalar : public PointerBase
+struct Value : public PointerBase
 {
 public:
-    Scalar( ValueType val) : value(val)
+    Value( ValueType val) : value(val)
     {
             //qDebug("new value %s", typeid(ValueType).name());
     }
-    ~Scalar( )
+    ~Value( )
     {
             //qDebug("delete value");
     }

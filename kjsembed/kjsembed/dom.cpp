@@ -27,245 +27,245 @@
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo DomNodeBinding::info = { "QDomNode", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomNodeBinding::info = { "QDomNode", &ValueBinding::info, 0, 0 };
 DomNodeBinding::DomNodeBinding( KJS::ExecState *exec, const QDomNode &value )
-    : ScalarBinding(exec, "QDomNode", value )
+    : ValueBinding(exec, "QDomNode", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
 }
 
 namespace DomNodeNS
 {
-START_SCALAR_METHOD( nodeType, QDomNode )
+START_VALUE_METHOD( nodeType, QDomNode )
     result = KJS::Number((int)value.nodeType());
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( nodeName, QDomNode )
+START_VALUE_METHOD( nodeName, QDomNode )
     result = KJS::String( value.nodeName());
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( nodeValue, QDomNode )
+START_VALUE_METHOD( nodeValue, QDomNode )
     result = KJS::String( value.nodeValue());
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( appendChild, QDomNode )
-    QDomNode newNode = KJSEmbed::extractScalar<QDomNode>( exec, args, 0);
+START_VALUE_METHOD( appendChild, QDomNode )
+    QDomNode newNode = KJSEmbed::extractValue<QDomNode>( exec, args, 0);
     QDomNode node = value.appendChild(newNode);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( attributes, QDomNode )
+START_VALUE_METHOD( attributes, QDomNode )
     QDomNamedNodeMap map = value.attributes();
-    result = KJSEmbed::createScalar(exec, "QDomNamedNodeMap", map);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNamedNodeMap", map);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( childNodes, QDomNode )
+START_VALUE_METHOD( childNodes, QDomNode )
     QDomNodeList nodes = value.childNodes();
-    result = KJSEmbed::createScalar(exec, "QDomNodeList", nodes);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNodeList", nodes);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( clear, QDomNode )
+START_VALUE_METHOD( clear, QDomNode )
     value.clear();
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( cloneNode, QDomNode )
+START_VALUE_METHOD( cloneNode, QDomNode )
     bool deep = KJSEmbed::extractBool( exec, args, 0, true);
     QDomNode node = value.cloneNode(deep);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( firstChild, QDomNode )
+START_VALUE_METHOD( firstChild, QDomNode )
     QDomNode node = value.firstChild();
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( firstChildElement, QDomNode )
+START_VALUE_METHOD( firstChildElement, QDomNode )
     QString name = KJSEmbed::extractQString(exec, args, 0);
     QDomElement node = value.firstChildElement( name );
-    result = KJSEmbed::createScalar( exec, "QDomElement", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue( exec, "QDomElement", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( hasAttributes, QDomNode )
+START_VALUE_METHOD( hasAttributes, QDomNode )
     result = KJS::Boolean( value.hasAttributes() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( hasChildNodes, QDomNode )
+START_VALUE_METHOD( hasChildNodes, QDomNode )
     result = KJS::Boolean( value.hasChildNodes() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( insertBefore, QDomNode )
-    QDomNode first = KJSEmbed::extractScalar<QDomNode>(exec, args, 0);
-    QDomNode second = KJSEmbed::extractScalar<QDomNode>(exec, args, 1);
+START_VALUE_METHOD( insertBefore, QDomNode )
+    QDomNode first = KJSEmbed::extractValue<QDomNode>(exec, args, 0);
+    QDomNode second = KJSEmbed::extractValue<QDomNode>(exec, args, 1);
     QDomNode node = value.insertBefore( first, second );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( insertAfter, QDomNode )
-    QDomNode first = KJSEmbed::extractScalar<QDomNode>(exec, args, 0);
-    QDomNode second = KJSEmbed::extractScalar<QDomNode>(exec, args, 1);
+START_VALUE_METHOD( insertAfter, QDomNode )
+    QDomNode first = KJSEmbed::extractValue<QDomNode>(exec, args, 0);
+    QDomNode second = KJSEmbed::extractValue<QDomNode>(exec, args, 1);
     QDomNode node = value.insertAfter( first, second );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isAttr, QDomNode )
+START_VALUE_METHOD( isAttr, QDomNode )
     result = KJS::Boolean( value.isAttr() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isCDATASection, QDomNode )
+START_VALUE_METHOD( isCDATASection, QDomNode )
     result = KJS::Boolean( value.isCDATASection() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isCharacterData, QDomNode )
+START_VALUE_METHOD( isCharacterData, QDomNode )
     result = KJS::Boolean( value.isCharacterData() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isComment, QDomNode )
+START_VALUE_METHOD( isComment, QDomNode )
     result = KJS::Boolean( value.isComment() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isDocument, QDomNode )
+START_VALUE_METHOD( isDocument, QDomNode )
     result = KJS::Boolean( value.isDocument() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isDocumentFragment, QDomNode )
+START_VALUE_METHOD( isDocumentFragment, QDomNode )
     result = KJS::Boolean( value.isDocumentFragment() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isDocumentType, QDomNode )
+START_VALUE_METHOD( isDocumentType, QDomNode )
     result = KJS::Boolean( value.isDocumentType() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isElement, QDomNode )
+START_VALUE_METHOD( isElement, QDomNode )
     result = KJS::Boolean( value.isElement() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isEntity, QDomNode )
+START_VALUE_METHOD( isEntity, QDomNode )
     result = KJS::Boolean( value.isEntity() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isEntityReference, QDomNode )
+START_VALUE_METHOD( isEntityReference, QDomNode )
     result = KJS::Boolean( value.isEntityReference() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isNotation, QDomNode )
+START_VALUE_METHOD( isNotation, QDomNode )
     result = KJS::Boolean( value.isNotation() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isNull, QDomNode )
+START_VALUE_METHOD( isNull, QDomNode )
     result = KJS::Boolean( value.isNull() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isProcessingInstruction, QDomNode )
+START_VALUE_METHOD( isProcessingInstruction, QDomNode )
     result = KJS::Boolean( value.isProcessingInstruction() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isSupported, QDomNode )
+START_VALUE_METHOD( isSupported, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QString arg1 = KJSEmbed::extractQString(exec, args, 1);
     result = KJS::Boolean( value.isSupported( arg0, arg1 ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( isText, QDomNode )
+START_VALUE_METHOD( isText, QDomNode )
     result = KJS::Boolean( value.isText() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( lastChild, QDomNode )
+START_VALUE_METHOD( lastChild, QDomNode )
     QDomNode node = value.lastChild();
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( lastChildElement, QDomNode )
+START_VALUE_METHOD( lastChildElement, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QDomElement node = value.lastChildElement( arg0 );
-    result = KJSEmbed::createScalar(exec, "QDomElement", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( localName, QDomNode )
+START_VALUE_METHOD( localName, QDomNode )
     result = KJS::String( value.localName() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( namedItem, QDomNode )
+START_VALUE_METHOD( namedItem, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QDomNode node = value.namedItem( arg0 );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( namespaceURI, QDomNode )
+START_VALUE_METHOD( namespaceURI, QDomNode )
     result = KJS::String( value.namespaceURI() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( nextSibling, QDomNode )
+START_VALUE_METHOD( nextSibling, QDomNode )
     QDomNode node = value.nextSibling();
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( nextSiblingElement, QDomNode )
+START_VALUE_METHOD( nextSiblingElement, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QDomElement node = value.nextSiblingElement( arg0 );
-    result = KJSEmbed::createScalar(exec, "QDomElement", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( normalize, QDomNode )
+START_VALUE_METHOD( normalize, QDomNode )
     value.normalize();
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( ownerDocument, QDomNode )
+START_VALUE_METHOD( ownerDocument, QDomNode )
     QDomDocument doc = value.ownerDocument();
-    result = KJSEmbed::createScalar( exec, "QDomDocument", doc);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue( exec, "QDomDocument", doc);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( parentNode, QDomNode )
+START_VALUE_METHOD( parentNode, QDomNode )
     QDomNode parent = value.parentNode();
-    result = KJSEmbed::createScalar(exec, "QDomNode", parent );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", parent );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( prefix, QDomNode )
+START_VALUE_METHOD( prefix, QDomNode )
     result = KJS::String( value.prefix() );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( previousSibling, QDomNode )
+START_VALUE_METHOD( previousSibling, QDomNode )
     QDomNode node = value.previousSibling();
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( previousSiblingElement, QDomNode )
+START_VALUE_METHOD( previousSiblingElement, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QDomNode node = value.previousSiblingElement( arg0 );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeChild, QDomNode )
-    QDomNode arg0 = KJSEmbed::extractScalar<QDomNode>(exec, args, 0);
+START_VALUE_METHOD( removeChild, QDomNode )
+    QDomNode arg0 = KJSEmbed::extractValue<QDomNode>(exec, args, 0);
     QDomNode node = value.removeChild( arg0 );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( replaceChild, QDomNode )
-    QDomNode arg0 = KJSEmbed::extractScalar<QDomNode>(exec, args, 0);
-    QDomNode arg1 =KJSEmbed::extractScalar<QDomNode>(exec, args, 1);
+START_VALUE_METHOD( replaceChild, QDomNode )
+    QDomNode arg0 = KJSEmbed::extractValue<QDomNode>(exec, args, 0);
+    QDomNode arg1 =KJSEmbed::extractValue<QDomNode>(exec, args, 1);
     QDomNode node = value.replaceChild(arg0,arg1);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setPrefix, QDomNode )
+START_VALUE_METHOD( setPrefix, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     value.setPrefix(arg0);
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setNodeValue, QDomNode )
+START_VALUE_METHOD( setNodeValue, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     value.setNodeValue(arg0);
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( toAttr, QDomNode )
+START_VALUE_METHOD( toAttr, QDomNode )
     QDomAttr attr = value.toAttr(  );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", attr );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", attr );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( toElement, QDomNode )
+START_VALUE_METHOD( toElement, QDomNode )
     QDomElement elem = value.toElement(  );
-    result = KJSEmbed::createScalar(exec, "QDomElement", elem );
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", elem );
+END_VALUE_METHOD
 }
 
 START_METHOD_LUT( DomNode )
@@ -342,9 +342,9 @@ START_CTOR( DomNode, QDomNode, 0 )
     return new KJSEmbed::DomNodeBinding(exec, QDomNode( ) );
 END_CTOR
 
-const KJS::ClassInfo DomDocumentBinding::info = { "QDomDocument", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomDocumentBinding::info = { "QDomDocument", &ValueBinding::info, 0, 0 };
 DomDocumentBinding::DomDocumentBinding( KJS::ExecState *exec, const QDomDocument &value )
-    : ScalarBinding(exec, "QDomDocument", value )
+    : ValueBinding(exec, "QDomDocument", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
     StaticBinding::publish( exec, this, DomDocument::methods() );
@@ -354,7 +354,7 @@ namespace DomDocumentNS
 {
 QString parserErrorTemplate = "XML Parse error '%1' at %2,%3";
 
-START_SCALAR_METHOD( setContent, QDomDocument )
+START_VALUE_METHOD( setContent, QDomDocument )
     QString xml = KJSEmbed::extractQString( exec, args, 0);
     QString message;
     int row = 0;
@@ -365,92 +365,92 @@ START_SCALAR_METHOD( setContent, QDomDocument )
     {
         KJS::throwError(exec, KJS::SyntaxError, parserErrorTemplate.arg(message).arg(row).arg(col) );
     }
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( toString, QDomDocument )
+START_VALUE_METHOD( toString, QDomDocument )
     int indent = KJSEmbed::extractInt( exec, args, 0, 1);
     result = KJS::String(value.toString(indent));
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( documentElement, QDomDocument )
+START_VALUE_METHOD( documentElement, QDomDocument )
     QDomElement elem = value.documentElement();
-    result = KJSEmbed::createScalar(exec, "QDomElement", elem);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", elem);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( elementById, QDomDocument )
+START_VALUE_METHOD( elementById, QDomDocument )
     QString id = KJSEmbed::extractQString(exec, args, 0);
     QDomElement elem = value.elementById(id);
-    result = KJSEmbed::createScalar(exec, "QDomElement", elem);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", elem);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createAttribute, QDomDocument )
+START_VALUE_METHOD( createAttribute, QDomDocument )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     QDomAttr attr = value.createAttribute( name );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", attr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", attr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createAttributeNS, QDomDocument )
+START_VALUE_METHOD( createAttributeNS, QDomDocument )
     QString nsURI = KJSEmbed::extractQString( exec, args, 0);
     QString qName = KJSEmbed::extractQString( exec, args, 1);
     QDomAttr attr = value.createAttributeNS( nsURI, qName );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", attr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", attr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createCDATASection, QDomDocument )
+START_VALUE_METHOD( createCDATASection, QDomDocument )
     QString cdatatxt = KJSEmbed::extractQString( exec, args, 0);
     QDomCDATASection  cdata = value.createCDATASection( cdatatxt );
-    result = KJSEmbed::createScalar(exec, "QDomCDATASection", cdata);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomCDATASection", cdata);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createComment, QDomDocument )
+START_VALUE_METHOD( createComment, QDomDocument )
     QString commenttxt = KJSEmbed::extractQString( exec, args, 0);
     QDomComment comment = value.createComment( commenttxt );
-    result = KJSEmbed::createScalar(exec, "QDomComment", comment);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomComment", comment);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createDocumentFragment, QDomDocument )
+START_VALUE_METHOD( createDocumentFragment, QDomDocument )
     QDomDocumentFragment fragment = value.createDocumentFragment();
-    result = KJSEmbed::createScalar(exec, "QDomDocumentFragment", fragment);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomDocumentFragment", fragment);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createElement, QDomDocument )
+START_VALUE_METHOD( createElement, QDomDocument )
     QString tagName = KJSEmbed::extractQString( exec, args, 0);
     QDomElement elem = value.createElement( tagName );
-    result = KJSEmbed::createScalar(exec, "QDomElement", elem);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", elem);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createElementNS, QDomDocument )
+START_VALUE_METHOD( createElementNS, QDomDocument )
     QString nsURI = KJSEmbed::extractQString( exec, args, 0);
     QString qName = KJSEmbed::extractQString( exec, args, 1);
     QDomElement elem = value.createElementNS( nsURI, qName );
-    result = KJSEmbed::createScalar(exec, "QDomElement", elem);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", elem);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createEntityReference, QDomDocument )
+START_VALUE_METHOD( createEntityReference, QDomDocument )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     QDomEntityReference ref = value.createEntityReference( name );
-    result = KJSEmbed::createScalar(exec, "QDomEntityReference", ref);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomEntityReference", ref);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createProcessingInstruction, QDomDocument )
+START_VALUE_METHOD( createProcessingInstruction, QDomDocument )
     QString target = KJSEmbed::extractQString( exec, args, 0);
     QString data = KJSEmbed::extractQString( exec, args, 1);
     QDomProcessingInstruction inst = value.createProcessingInstruction(target, data );
-    result = KJSEmbed::createScalar(exec, "QDomProcessingInstruction", inst);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomProcessingInstruction", inst);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( createTextNode, QDomDocument )
+START_VALUE_METHOD( createTextNode, QDomDocument )
     QString texttext = KJSEmbed::extractQString( exec, args, 0);
     QDomText text = value.createTextNode( texttext );
-    result = KJSEmbed::createScalar(exec, "QDomText", text);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomText", text);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( importNode, QDomDocument )
-    QDomNode import = KJSEmbed::extractScalar<QDomNode>(exec, args, 0);
+START_VALUE_METHOD( importNode, QDomDocument )
+    QDomNode import = KJSEmbed::extractValue<QDomNode>(exec, args, 0);
     bool deep = KJSEmbed::extractBool( exec, args, 1);
     QDomNode node = value.importNode( import, deep );
-    result = KJSEmbed::createScalar(exec, "QDomNode",  node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode",  node);
+END_VALUE_METHOD
 
 }
 
@@ -480,119 +480,119 @@ START_CTOR( DomDocument, QDomDocument, 1 )
     return new KJSEmbed::DomDocumentBinding(exec, QDomDocument(name) );
 END_CTOR
 
-const KJS::ClassInfo DomElementBinding::info = { "QDomElement", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomElementBinding::info = { "QDomElement", &ValueBinding::info, 0, 0 };
 DomElementBinding::DomElementBinding( KJS::ExecState *exec, const QDomElement &value )
-    : ScalarBinding(exec, "QDomElement", value )
+    : ValueBinding(exec, "QDomElement", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
     StaticBinding::publish( exec, this, DomElement::methods() );
 }
 
 namespace DomElementNS {
-START_SCALAR_METHOD( toString, QDomElement )
+START_VALUE_METHOD( toString, QDomElement )
     result = KJS::String( value.text( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( tagName, QDomElement )
+START_VALUE_METHOD( tagName, QDomElement )
     result = KJS::String( value.tagName( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setTagName, QDomElement )
+START_VALUE_METHOD( setTagName, QDomElement )
     QString tag = KJSEmbed::extractQString(exec, args, 0);
     value.setTagName(tag);
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( attribute, QDomElement )
+START_VALUE_METHOD( attribute, QDomElement )
     QString tag = KJSEmbed::extractQString(exec, args, 0);
     QString defaultValue = KJSEmbed::extractQString(exec, args, 1, QString::null);
     result = KJS::String( value.attribute(tag,defaultValue) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setAttribute, QDomElement )
+START_VALUE_METHOD( setAttribute, QDomElement )
     QString tag = KJSEmbed::extractQString(exec, args, 0);
     QString newValue = KJSEmbed::extractQString(exec, args, 1);
     value.setAttribute(tag,newValue);
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( hasAttribute, QDomElement )
+START_VALUE_METHOD( hasAttribute, QDomElement )
     QString attr = KJSEmbed::extractQString(exec, args, 0);
     result = KJS::Boolean( value.hasAttribute(attr) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeAttribute, QDomElement )
+START_VALUE_METHOD( removeAttribute, QDomElement )
     QString attr = KJSEmbed::extractQString(exec, args, 0);
     value.removeAttribute( attr );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setAttributeNS, QDomElement )
+START_VALUE_METHOD( setAttributeNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString attr = KJSEmbed::extractQString(exec, args, 1);
     QString val = KJSEmbed::extractQString(exec, args, 3);
     value.setAttributeNS( ns, attr, val );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( attributeNS, QDomElement )
+START_VALUE_METHOD( attributeNS, QDomElement )
     QString nsURI = KJSEmbed::extractQString(exec, args, 0);
     QString localName = KJSEmbed::extractQString(exec, args, 1);
     QString defValue = KJSEmbed::extractQString( exec, args, 1, QString::null );
     result = KJS::String( value.attributeNS( nsURI, localName, defValue ));
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( hasAttributeNS, QDomElement )
+START_VALUE_METHOD( hasAttributeNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString attr = KJSEmbed::extractQString(exec, args, 1);
     result = KJS::Boolean( value.hasAttributeNS(ns, attr) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeAttributeNS, QDomElement )
+START_VALUE_METHOD( removeAttributeNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString attr = KJSEmbed::extractQString(exec, args, 1);
     value.removeAttributeNS( ns, attr );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( elementsByTagName, QDomElement )
+START_VALUE_METHOD( elementsByTagName, QDomElement )
     QString name = KJSEmbed::extractQString(exec, args, 0);
     QDomNodeList nodes = value.elementsByTagName(name);
-    result = KJSEmbed::createScalar(exec, "QDomNodeList", nodes);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNodeList", nodes);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( elementsByTagNameNS, QDomElement )
+START_VALUE_METHOD( elementsByTagNameNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString name = KJSEmbed::extractQString(exec, args, 1);
     QDomNodeList nodes = value.elementsByTagNameNS( ns, name );
-    result = KJSEmbed::createScalar(exec, "QDomNodeList", nodes);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNodeList", nodes);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( attributeNode, QDomElement )
+START_VALUE_METHOD( attributeNode, QDomElement )
     QString name = KJSEmbed::extractQString(exec, args, 0);
     QDomAttr attr = value.attributeNode( name );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", attr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", attr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( attributeNodeNS, QDomElement )
+START_VALUE_METHOD( attributeNodeNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString name = KJSEmbed::extractQString(exec, args, 1);
     QDomAttr attr = value.attributeNodeNS( ns, name );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", attr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", attr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeAttributeNode, QDomElement )
-    QDomAttr attr = KJSEmbed::extractScalar<QDomAttr>( exec, args, 0);
+START_VALUE_METHOD( removeAttributeNode, QDomElement )
+    QDomAttr attr = KJSEmbed::extractValue<QDomAttr>( exec, args, 0);
     QDomAttr newAttr = value.removeAttributeNode( attr );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", newAttr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", newAttr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setAttributeNode, QDomElement )
-    QDomAttr attr = KJSEmbed::extractScalar<QDomAttr>( exec, args, 0);
+START_VALUE_METHOD( setAttributeNode, QDomElement )
+    QDomAttr attr = KJSEmbed::extractValue<QDomAttr>( exec, args, 0);
     QDomAttr newAttr = value.setAttributeNode( attr );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", newAttr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", newAttr);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setAttributeNodeNS, QDomElement )
-    QDomAttr attr = KJSEmbed::extractScalar<QDomAttr>( exec, args, 0);
+START_VALUE_METHOD( setAttributeNodeNS, QDomElement )
+    QDomAttr attr = KJSEmbed::extractValue<QDomAttr>( exec, args, 0);
     QDomAttr newAttr = value.setAttributeNodeNS( attr );
-    result = KJSEmbed::createScalar(exec, "QDomAttr", newAttr);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomAttr", newAttr);
+END_VALUE_METHOD
 }
 
 NO_ENUMS( DomElement )
@@ -624,36 +624,36 @@ START_CTOR( DomElement, QDomElement, 0 )
     return new KJSEmbed::DomElementBinding(exec, QDomElement( ) );
 END_CTOR
 
-const KJS::ClassInfo DomAttrBinding::info = { "QDomAttr", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomAttrBinding::info = { "QDomAttr", &ValueBinding::info, 0, 0 };
 DomAttrBinding::DomAttrBinding( KJS::ExecState *exec, const QDomAttr &value )
-    : ScalarBinding(exec, "QDomAttr", value )
+    : ValueBinding(exec, "QDomAttr", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
     StaticBinding::publish( exec, this, DomAttr::methods() );
 }
 
 namespace AttrElementNS {
-START_SCALAR_METHOD( name, QDomAttr )
+START_VALUE_METHOD( name, QDomAttr )
     result = KJS::String( value.value( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( specified, QDomAttr )
+START_VALUE_METHOD( specified, QDomAttr )
     result = KJS::Boolean( value.specified( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( ownerElement, QDomAttr )
+START_VALUE_METHOD( ownerElement, QDomAttr )
     QDomElement owner = value.ownerElement();
-    result = KJSEmbed::createScalar(exec, "QDomElement", owner);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomElement", owner);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( value, QDomAttr )
+START_VALUE_METHOD( value, QDomAttr )
     result = KJS::String( value.value( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setValue, QDomAttr )
+START_VALUE_METHOD( setValue, QDomAttr )
     QString newValue = KJSEmbed::extractQString(exec, args, 0);
     value.setValue( newValue );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
 }
 
@@ -672,27 +672,27 @@ START_CTOR( DomAttr, QDomAttr, 0 )
     return new KJSEmbed::DomAttrBinding(exec, QDomAttr( ) );
 END_CTOR
 
-const KJS::ClassInfo DomNodeListBinding::info = { "QDomNodeList", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomNodeListBinding::info = { "QDomNodeList", &ValueBinding::info, 0, 0 };
 DomNodeListBinding::DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList &value )
-    : ScalarBinding(exec, "QDomNodeList", value )
+    : ValueBinding(exec, "QDomNodeList", value )
 {
     StaticBinding::publish( exec, this, DomNodeList::methods() );
 }
 
 namespace NodeListNS {
-START_SCALAR_METHOD( count, QDomNodeList )
+START_VALUE_METHOD( count, QDomNodeList )
     result = KJS::Number( value.count( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( length, QDomNodeList )
+START_VALUE_METHOD( length, QDomNodeList )
     result = KJS::Number( value.length( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( item, QDomNodeList )
+START_VALUE_METHOD( item, QDomNodeList )
     int idx = KJSEmbed::extractInt( exec, args, 0);
     QDomNode node = value.item(idx);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
 }
 
@@ -709,38 +709,38 @@ START_CTOR( DomNodeList, QDomNodeList, 0 )
     return new KJSEmbed::DomNodeListBinding(exec, QDomNodeList( ) );
 END_CTOR
 
-const KJS::ClassInfo DomDocumentTypeBinding::info = { "QDomDocumentType", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomDocumentTypeBinding::info = { "QDomDocumentType", &ValueBinding::info, 0, 0 };
 DomDocumentTypeBinding::DomDocumentTypeBinding( KJS::ExecState *exec, const QDomDocumentType &value )
-    : ScalarBinding(exec, "QDomDocumentType", value )
+    : ValueBinding(exec, "QDomDocumentType", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
     StaticBinding::publish( exec, this, DomDocumentType::methods() );
 }
 
 namespace DomDocumentTypeNS {
-START_SCALAR_METHOD( internalSubset, QDomDocumentType )
+START_VALUE_METHOD( internalSubset, QDomDocumentType )
     result = KJS::String( value.internalSubset( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( name, QDomDocumentType )
+START_VALUE_METHOD( name, QDomDocumentType )
     result = KJS::String( value.name( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( publicId, QDomDocumentType )
+START_VALUE_METHOD( publicId, QDomDocumentType )
     result = KJS::String( value.publicId( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( systemId, QDomDocumentType )
+START_VALUE_METHOD( systemId, QDomDocumentType )
     result = KJS::String( value.systemId( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( entities, QDomDocumentType )
-    result = KJSEmbed::createScalar(exec, "QDomNamedNodeMap", value.entities( ) );
-END_SCALAR_METHOD
+START_VALUE_METHOD( entities, QDomDocumentType )
+    result = KJSEmbed::createValue(exec, "QDomNamedNodeMap", value.entities( ) );
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( notations, QDomDocumentType )
-    result = KJSEmbed::createScalar(exec, "QDomNamedNodeMap", value.notations( ) );
-END_SCALAR_METHOD
+START_VALUE_METHOD( notations, QDomDocumentType )
+    result = KJSEmbed::createValue(exec, "QDomNamedNodeMap", value.notations( ) );
+END_VALUE_METHOD
 }
 
 NO_ENUMS( DomDocumentType )
@@ -759,70 +759,70 @@ START_CTOR( DomDocumentType, QDomDocumentType, 0 )
     return new KJSEmbed::DomDocumentTypeBinding(exec, QDomDocumentType( ) );
 END_CTOR
 
-const KJS::ClassInfo DomNamedNodeMapBinding::info = { "QDomNamedNodeMap", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomNamedNodeMapBinding::info = { "QDomNamedNodeMap", &ValueBinding::info, 0, 0 };
 DomNamedNodeMapBinding::DomNamedNodeMapBinding( KJS::ExecState *exec, const QDomNamedNodeMap &value )
-    : ScalarBinding(exec, "QDomNamedNodeMap", value )
+    : ValueBinding(exec, "QDomNamedNodeMap", value )
 {
     StaticBinding::publish( exec, this, DomNamedNodeMap::methods() );
 }
 
 namespace NamedNodeMapNS {
-START_SCALAR_METHOD( contains, QDomNamedNodeMap )
+START_VALUE_METHOD( contains, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     result = KJS::Boolean( value.contains(name) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( count, QDomNamedNodeMap )
+START_VALUE_METHOD( count, QDomNamedNodeMap )
     result = KJS::Number(value.count());
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( item, QDomNamedNodeMap )
+START_VALUE_METHOD( item, QDomNamedNodeMap )
     int idx = KJSEmbed::extractInt( exec, args, 0);
     QDomNode node = value.item(idx);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( length, QDomNamedNodeMap )
+START_VALUE_METHOD( length, QDomNamedNodeMap )
     result = KJS::Number( value.length( ) );
-END_SCALAR_METHOD
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( namedItem, QDomNamedNodeMap )
+START_VALUE_METHOD( namedItem, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     QDomNode node = value.namedItem(name);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( namedItemNS, QDomNamedNodeMap )
+START_VALUE_METHOD( namedItemNS, QDomNamedNodeMap )
     QString nsuri = KJSEmbed::extractQString( exec, args, 0);
     QString localName = KJSEmbed::extractQString( exec, args, 1);
     QDomNode node = value.namedItemNS(nsuri, localName);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeNamedItem, QDomNamedNodeMap )
+START_VALUE_METHOD( removeNamedItem, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
     QDomNode node = value.removeNamedItem( name );
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( removeNamedItemNS, QDomNamedNodeMap )
+START_VALUE_METHOD( removeNamedItemNS, QDomNamedNodeMap )
     QString nsuri = KJSEmbed::extractQString( exec, args, 0);
     QString localName = KJSEmbed::extractQString( exec, args, 1);
     QDomNode node = value.removeNamedItemNS(nsuri, localName);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setNamedItem, QDomNamedNodeMap )
-    QDomNode newNode = KJSEmbed::extractScalar<QDomNode>(exec,args,0);
+START_VALUE_METHOD( setNamedItem, QDomNamedNodeMap )
+    QDomNode newNode = KJSEmbed::extractValue<QDomNode>(exec,args,0);
     QDomNode node = value.setNamedItem(newNode);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
-START_SCALAR_METHOD( setNamedItemNS, QDomNamedNodeMap )
-    QDomNode newNode = KJSEmbed::extractScalar<QDomNode>(exec,args,0);
+START_VALUE_METHOD( setNamedItemNS, QDomNamedNodeMap )
+    QDomNode newNode = KJSEmbed::extractValue<QDomNode>(exec,args,0);
     QDomNode node = value.setNamedItemNS(newNode);
-    result = KJSEmbed::createScalar(exec, "QDomNode", node);
-END_SCALAR_METHOD
+    result = KJSEmbed::createValue(exec, "QDomNode", node);
+END_VALUE_METHOD
 
 }
 
@@ -846,9 +846,9 @@ START_CTOR( DomNamedNodeMap, QDomNamedNodeMap, 0 )
     return new KJSEmbed::DomNamedNodeMapBinding(exec, QDomNamedNodeMap( ) );
 END_CTOR
 
-const KJS::ClassInfo DomTextBinding::info = { "QDomText", &ScalarBinding::info, 0, 0 };
+const KJS::ClassInfo DomTextBinding::info = { "QDomText", &ValueBinding::info, 0, 0 };
 DomTextBinding::DomTextBinding( KJS::ExecState *exec, const QDomText &value )
-    : ScalarBinding(exec, "QDomText", value )
+    : ValueBinding(exec, "QDomText", value )
 {
     StaticBinding::publish( exec, this, DomNode::methods() );
     StaticBinding::publish( exec, this, DomText::methods() );

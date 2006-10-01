@@ -29,7 +29,7 @@ PointBinding::PointBinding( KJS::ExecState *exec, const QPoint &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Point::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace PointNS

@@ -34,7 +34,7 @@ PixmapBinding::PixmapBinding( KJS::ExecState *exec, const QPixmap &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Pixmap::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace PixmapNS

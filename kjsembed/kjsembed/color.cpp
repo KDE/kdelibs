@@ -29,7 +29,7 @@ ColorBinding::ColorBinding( KJS::ExecState *exec, const QColor &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Color::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 START_VARIANT_METHOD( callSetAlpha, QColor )

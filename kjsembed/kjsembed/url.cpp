@@ -28,7 +28,7 @@ const KJS::ClassInfo UrlBinding::info = { "QUrl", &VariantBinding::info, 0, 0 };
 UrlBinding::UrlBinding( KJS::ExecState *exec, const QUrl &value )
     : VariantBinding(exec, value )
 {
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
     StaticBinding::publish( exec, this, Url::methods() );
 }
 

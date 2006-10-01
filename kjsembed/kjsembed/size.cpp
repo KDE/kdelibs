@@ -29,7 +29,7 @@ SizeBinding::SizeBinding( KJS::ExecState *exec, const QSize &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Size::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace SizeNS

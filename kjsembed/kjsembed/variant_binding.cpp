@@ -37,7 +37,7 @@ const KJS::ClassInfo VariantBinding::info = { "VariantBinding", 0, 0, 0 };
 VariantBinding::VariantBinding( KJS::ExecState *exec, const QVariant &value )
     : ProxyBinding(exec), m_value(value)
 {
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 void *VariantBinding::pointer()
@@ -118,7 +118,7 @@ KJS::JSValue *callToString( KJS::ExecState *exec, KJS::JSObject *self, const KJS
     return KJS::Null();
 }
 
-const Method ValueFactory::ValueMethods[] =
+const Method VariantFactory::VariantMethods[] =
 {
     {"cast", 1, KJS::DontDelete|KJS::ReadOnly|KJS::DontEnum, &callCast },
     {"toString", 0, KJS::DontDelete|KJS::ReadOnly|KJS::DontEnum, &callToString },

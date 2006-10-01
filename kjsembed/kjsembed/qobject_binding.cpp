@@ -318,34 +318,34 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
     switch( args[idx]->type() )
     {
         case KJS::StringType:
-            return new Scalar<QString>( args[idx]->toString(exec).qstring() );
+            return new Value<QString>( args[idx]->toString(exec).qstring() );
             break;
         case KJS::NumberType:
             if( types[idx] == "int" )
-                return new Scalar<int>( int( args[idx]->toInteger(exec) ) );
+                return new Value<int>( int( args[idx]->toInteger(exec) ) );
             else if ( types[idx] == "double" )
-                return new Scalar<double>( args[idx]->toNumber(exec) );
+                return new Value<double>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "float" )
-                return new Scalar<float>( args[idx]->toNumber(exec) );
+                return new Value<float>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "qreal" )
-                return new Scalar<qreal>( args[idx]->toNumber(exec) );
+                return new Value<qreal>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "uint" )
-                return new Scalar<uint>( uint( args[idx]->toInteger(exec) ) );
+                return new Value<uint>( uint( args[idx]->toInteger(exec) ) );
             else
                 return new NullPtr();
             break;
         case KJS::BooleanType:
-            return new Scalar<bool>( args[idx]->toBoolean(exec) );
+            return new Value<bool>( args[idx]->toBoolean(exec) );
             break;
         case KJS::ObjectType:
             {
                 if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
-                    return new Scalar<void*>(objImp->voidStar());
+                    return new Value<void*>(objImp->voidStar());
                 }
                 else if(VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]))
                 {
-                    return new Scalar<void*>(valImp->variant().data());
+                    return new Value<void*>(valImp->variant().data());
                 }
             }
             break;

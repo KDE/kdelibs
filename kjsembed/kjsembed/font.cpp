@@ -29,7 +29,7 @@ FontBinding::FontBinding( KJS::ExecState *exec, const QFont &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Font::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace FontNS

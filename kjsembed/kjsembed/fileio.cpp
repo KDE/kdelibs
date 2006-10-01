@@ -30,7 +30,7 @@ FileIOBinding::FileIOBinding( KJS::ExecState *exec,  QFile *value )
 {
     StaticBinding::publish( exec, this, FileIO::methods() );
     StaticBinding::publish( exec, this, ObjectFactory::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 START_OBJECT_METHOD( callFileOpen, QFile )

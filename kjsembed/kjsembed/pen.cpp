@@ -31,7 +31,7 @@ PenBinding::PenBinding( KJS::ExecState *exec, const QPen &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Pen::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace PenNS

@@ -229,11 +229,11 @@ namespace KJSEmbed
     * The Bindings for the KJSEmbed::VariantBinding
     */
     struct Method;
-    class KJSEMBED_EXPORT ValueFactory
+    class KJSEMBED_EXPORT VariantFactory
     {
         public:
-        static const Method ValueMethods[];
-        static const Method *methods(){ return ValueMethods;}
+        static const Method VariantMethods[];
+        static const Method *methods(){ return VariantMethods;}
     };
 
 }

@@ -35,7 +35,7 @@ BrushBinding::BrushBinding( KJS::ExecState *exec, const QBrush &value )
     : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Brush::methods() );
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
+    StaticBinding::publish( exec, this, VariantFactory::methods() );
 }
 
 namespace BrushNS

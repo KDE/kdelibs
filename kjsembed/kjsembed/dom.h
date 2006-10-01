@@ -31,12 +31,12 @@ class QDomNodeList;
 class QDomNamedNodeMap;
 class QDomText;
 
-#include "scalar_binding.h"
+#include "value_binding.h"
 #include "static_binding.h"
 
 namespace KJSEmbed
 {
-    class DomNodeBinding : public ScalarBinding
+    class DomNodeBinding : public ValueBinding
     {
         public:
             DomNodeBinding( KJS::ExecState *exec, const QDomNode &value );
@@ -45,7 +45,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomDocumentBinding : public ScalarBinding
+    class DomDocumentBinding : public ValueBinding
     {
         public:
             DomDocumentBinding( KJS::ExecState *exec, const QDomDocument &value );
@@ -54,7 +54,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomElementBinding : public ScalarBinding
+    class DomElementBinding : public ValueBinding
     {
         public:
             DomElementBinding( KJS::ExecState *exec, const QDomElement &value );
@@ -63,7 +63,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomAttrBinding : public ScalarBinding
+    class DomAttrBinding : public ValueBinding
     {
         public:
             DomAttrBinding( KJS::ExecState *exec, const QDomAttr &value );
@@ -72,7 +72,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomDocumentTypeBinding : public ScalarBinding
+    class DomDocumentTypeBinding : public ValueBinding
     {
         public:
             DomDocumentTypeBinding( KJS::ExecState *exec, const QDomDocumentType &value );
@@ -81,7 +81,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomNodeListBinding : public ScalarBinding
+    class DomNodeListBinding : public ValueBinding
     {
         public:
             DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList &value );
@@ -90,7 +90,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomNamedNodeMapBinding : public ScalarBinding
+    class DomNamedNodeMapBinding : public ValueBinding
     {
         public:
             DomNamedNodeMapBinding( KJS::ExecState *exec, const QDomNamedNodeMap &value );
@@ -99,7 +99,7 @@ namespace KJSEmbed
             static const KJS::ClassInfo info;
     };
 
-    class DomTextBinding : public ScalarBinding
+    class DomTextBinding : public ValueBinding
     {
         public:
             DomTextBinding( KJS::ExecState *exec, const QDomText &value );
