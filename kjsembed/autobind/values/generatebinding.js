@@ -239,10 +239,16 @@ function write_enums(compoundName, compoundData, memberList, compoundEnums)
     else {
         enums = 'const Enumerator KJSEmbed::' + compoundData + '::p_enums[] = {{0, 0 }};\n';
     }
-
+ 
     return enums;
 }
 
+// function find_method_overloads(memberList, startIdx, name)
+//   memberList - The DOM list of all memberdef XML elements.
+//   startIdx   - The index to start searching for dups at.
+//   name       - The name of the method overloads to search for.
+// Finds all the method overloads named name in the memberList starting at 
+// startIdx
 function find_method_overloads(memberList, startIdx, name)
 {
     var overloadList = new Array;
@@ -254,6 +260,7 @@ function find_method_overloads(memberList, startIdx, name)
         var memberKind = memberElement.attribute('kind');
         var memberProt = memberElement.attribute('prot');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
+
         if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
              ( memberProt == 'public' ) &&
              ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
@@ -274,6 +281,16 @@ function find_method_overloads(memberList, startIdx, name)
     return overloadList;
 }
 
+// function write_method(compoundName, memberName, overloadList, compoundEnums)
+//   compoundName  - The name of the compound object
+//   memberName    - The name of the method/member being processed.
+//   overloadList  - An array of arrays of method overloads, with outter
+//                   array indexed by parameter count, and the inner ones
+//                   containg the member elements of the members with that 
+//                   parameter count.
+//   compoundEnums - An associative array of enums defined within the 
+//                   compound object.
+// Generates the code to handle all the overloads of an individual method
 function write_method(compoundName, memberName, overloadList, compoundEnums)
 {
     // Handle arguments
@@ -297,12 +314,17 @@ function write_method(compoundName, memberName, overloadList, compoundEnums)
         if (!overloadList[idx])
             continue;
 
-        println( '      writing method with ' + idx + ' args, overrides = ' + overloadList[idx].length );
 
         var memberElement = overloadList[idx][0];
         var methodType = memberElement.firstChildElement('type').toElement().toString();
         var coreMethodType = findCoreParamType(methodType);
         var methodArgList = memberElement.elementsByTagName('param');
+        var indent = '';
+        if (methodArgList.count() != 0)
+            indent = '    ';
+
+        println( '      writing method with ' + idx + ' args, overrides = ' + overloadList[idx].length + '"' + indent + '"');
+
         method += '    if (args.size() == ' + methodArgList.count() + ' )\n' +
         '    {\n';
 
@@ -326,23 +348,23 @@ function write_method(compoundName, memberName, overloadList, compoundEnums)
                 methodType + ' tmp = value.' + memberName + '(';
             if ( coreMethodType.indexOf('Qt::') != -1 ) // Enum Value
             {
-                funcCallEnd += 
-                    '            result = KJS::Number( tmp );\n';
+                funcCallEnd += indent +
+                    '        result = KJS::Number( tmp );\n';
             }
             else if (isVariant(coreMethodType))
             {
-                funcCallEnd +=
-                    "            result = KJSEmbed::createVariant( exec, \"" + coreMethodType + "\", tmp );\n";
+                funcCallEnd += indent +
+                    '        result = KJSEmbed::createVariant( exec, "' + coreMethodType + '", tmp );\n';
             }
             else
             {
-                funcCallEnd +=
-                    "            result = KJSEmbed::createObject( exec, \"" + coreMethodType + "\", tmp );\n";
+                funcCallEnd += indent +
+                    '        result = KJSEmbed::createValue( exec, "' + coreMethodType + '", tmp );\n';
             }
         }
         funcCallEnd += 
-            '            imp->setValue(qVariantFromValue(value)); \n' +
-            '            return result; \n';
+            indent + '        imp->setValue(qVariantFromValue(value)); \n' +
+            indent + '        return result; \n';
 
         if (methodArgList.count() != 0)
         {
@@ -367,7 +389,7 @@ function write_method(compoundName, memberName, overloadList, compoundEnums)
         }
         else
         {
-            method += '            ' + funcCallStart + funcCallEnd;
+            method += '        ' + funcCallStart + funcCallEnd;
         }
 
         method += 
@@ -382,14 +404,13 @@ function write_method(compoundName, memberName, overloadList, compoundEnums)
     return method;
 }
 
-// function write_enums(compoundName, compoundData, memberList, compoundEnums)
+// function write_methods(compoundName, memberList, compoundEnums)
 //   compoundName  - The name of the compound object
-//   compoundData  - The data object to use for the compound object
 //   compoundDef   - The base element of the compound objects definition
 //   compoundEnums - An associative array of enums defined within the 
 //                   compound object.
-// Constructs and fills out the enums
-function write_methods(compoundName, compoundData, memberList, compoundEnums)
+// Iterates over and generates all the method implementations
+function write_methods(compoundName, memberList, compoundEnums)
 {
     var methods = 'namespace ' + compoundName + 'NS\n' +
         '{\n';
@@ -605,7 +626,7 @@ function write_binding_new( class_doc )
 
     var enums = write_enums(compoundName, compoundData, memberList, compoundEnums);
 
-    var methods = write_methods(compoundName, compoundData, memberList, compoundEnums);
+    var methods = write_methods(compoundName, memberList, compoundEnums);
 
     // Statics
     statics += 'NO_STATICS( KJSEmbed::' + compoundData + ' )';

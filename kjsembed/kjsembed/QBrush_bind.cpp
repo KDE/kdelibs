@@ -5,6 +5,7 @@
 
 
 using namespace KJSEmbed;
+
 // Temp - for building
 class QColorBinding { public: static const KJS::ClassInfo info; };
 class QPixmapBinding { public: static const KJS::ClassInfo info; };
@@ -13,7 +14,6 @@ class QGradientBinding { public: static const KJS::ClassInfo info; };
 const KJS::ClassInfo QColorBinding::info = { "QColor", &VariantBinding::info, 0, 0 };
 const KJS::ClassInfo QPixmapBinding::info = { "QPixmap", &VariantBinding::info, 0, 0 };
 const KJS::ClassInfo QGradientBinding::info = { "QGradient", &ObjectBinding::info, 0, 0 };
-
 
 const KJS::ClassInfo QBrushBinding::info = { "QBrush", &VariantBinding::info, 0, 0 };
 QBrushBinding::QBrushBinding( KJS::ExecState *exec, const QBrush &value )
@@ -38,10 +38,10 @@ KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
     QBrush value = imp->value<QBrush>();
     if (args.size() == 0 )
     {
-            Qt::BrushStyle tmp = value.style();
-            result = KJS::Number( tmp );
-            imp->setValue(qVariantFromValue(value)); 
-            return result; 
+        Qt::BrushStyle tmp = value.style();
+        result = KJS::Number( tmp );
+        imp->setValue(qVariantFromValue(value)); 
+        return result; 
     }
 
     return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.style"); 
@@ -85,10 +85,10 @@ KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Lis
     QBrush value = imp->value<QBrush>();
     if (args.size() == 0 )
     {
-            QPixmap tmp = value.texture();
-            result = KJSEmbed::createVariant( exec, "QPixmap", tmp );
-            imp->setValue(qVariantFromValue(value)); 
-            return result; 
+        QPixmap tmp = value.texture();
+        result = KJSEmbed::createVariant( exec, "QPixmap", tmp );
+        imp->setValue(qVariantFromValue(value)); 
+        return result; 
     }
 
     return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.texture"); 
@@ -132,10 +132,10 @@ KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
     QBrush value = imp->value<QBrush>();
     if (args.size() == 0 )
     {
-            const QColor & tmp = value.color();
-            result = KJSEmbed::createVariant( exec, "QColor", tmp );
-            imp->setValue(qVariantFromValue(value)); 
-            return result; 
+        const QColor & tmp = value.color();
+        result = KJSEmbed::createVariant( exec, "QColor", tmp );
+        imp->setValue(qVariantFromValue(value)); 
+        return result; 
     }
 
     return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.color"); 
@@ -186,10 +186,10 @@ KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
     QBrush value = imp->value<QBrush>();
     if (args.size() == 0 )
     {
-            const QGradient * tmp = value.gradient();
-            result = KJSEmbed::createObject( exec, "const QGradient *", tmp );
-            imp->setValue(qVariantFromValue(value)); 
-            return result; 
+        const QGradient * tmp = value.gradient();
+        result = KJSEmbed::createValue( exec, "const QGradient *", tmp );
+        imp->setValue(qVariantFromValue(value)); 
+        return result; 
     }
 
     return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.gradient"); 
@@ -207,10 +207,10 @@ KJS::JSValue *isOpaque( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
     QBrush value = imp->value<QBrush>();
     if (args.size() == 0 )
     {
-            bool tmp = value.isOpaque();
-            result = KJSEmbed::createVariant( exec, "bool", tmp );
-            imp->setValue(qVariantFromValue(value)); 
-            return result; 
+        bool tmp = value.isOpaque();
+        result = KJSEmbed::createVariant( exec, "bool", tmp );
+        imp->setValue(qVariantFromValue(value)); 
+        return result; 
     }
 
     return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for QBrush.isOpaque"); 
