@@ -117,7 +117,7 @@ KServiceType::init( KDesktopFile *config)
 }
 
 KServiceType::KServiceType( QDataStream& _str, int offset )
- : KSycocaEntry( _str, offset ), d(0)
+ : KSycocaEntry( _str, offset ), m_parentTypeLoaded(false), d(0)
 {
   load( _str);
 }
