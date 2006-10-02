@@ -2,6 +2,29 @@
 install( FILES 
   KNotifyConfigWidget
   KIMProxy
+  KHTMLSettings
+  KHTMLPart
+  KHTMLView
+  KMTimer
+  KMJobViewer
+  KMMainView
+  KMJob
+  KMJobManager
+  DrBooleanOption
+  DrListOption
+  DrFloatOption
+  DrIntegerOption
+  DrStringOption
+  DrMain
+  DrGroup
+  DrBase
+  KPrintDialog
+  KMPrinter
+  KMManager
+  KPReloadObject
+  KPrintDialogPage
+  KPrintAction
+  KPrinter
   KCModuleContainer
   KPluginSelector
   KCModuleProxy
@@ -10,6 +33,9 @@ install( FILES
   KMultiTabBar
   KCModuleLoader
   KCModuleInfo
+  KNewStuffSecure
+  KNewStuff
+  KNewStuffGeneric
   K3BookmarkDrag
   K3Wizard
   K3DictSpellingHighlighter
@@ -29,6 +55,53 @@ install( FILES
   K3MultipleDrag
   K3URLDrag
   KNTLM
+  UIServer
+  ProgressItem
+  ListProgress
+  KCustomMenuEditor
+  KDesktopPropsPlugin
+  KDevicePropsPlugin
+  KBindingPropsPlugin
+  KUrlPropsPlugin
+  KFilePermissionsPropsPlugin
+  KFilePropsPlugin
+  KPropsDlgPlugin
+  KPropertiesDialog
+  KUrlBarItemDialog
+  KUrlBarListBox
+  KUrlBar
+  KUrlBarItem
+  KDirSelectDialog
+  KFileTreeBranch
+  KFileTreeViewItem
+  KFileTreeView
+  KFileSharePropsPlugin
+  KImageFilePreview
+  KPreviewWidgetBase
+  KDirSize
+  KIconButton
+  KIconDialog
+  KIconCanvas
+  KOpenWithDlg
+  KUrlRequesterDlg
+  KUrlComboBox
+  KFile
+  KFilePreview
+  KUrlComboRequester
+  KUrlRequester
+  KRecentDocument
+  KFileIconView
+  KFileIconViewItem
+  KDiskFreeSp
+  KCombiView
+  KFileDetailView
+  KFileListViewItem
+  KFileFilterCombo
+  KFileView
+  KFileViewSignaler
+  KDirOperator
+  KEncodingFileDialog
+  KFileDialog
   KBookmarkDomBuilder
   KBookmarkImporter
   KNSBookmarkExporterImpl
@@ -51,6 +124,64 @@ install( FILES
   KBookmarkGroupTraverser
   KBookmarkGroup
   KBookmark
+  KDirModel
+  KBuildSycocaProgressDialog
+  KDEDesktopMimeType
+  KACL
+  KMimeTypeChooserDialog
+  KMimeTypeChooser
+  KRemoteEncoding
+  KDBusServiceStarter
+  KMimeTypeResolverHelper
+  KMimeTypeResolverBase
+  KFileMetaInfoProvider
+  KFilePlugin
+  KFileMetaInfo
+  KFileMetaInfoGroup
+  KFileMetaInfoItem
+  KFileMimeTypeInfo
+  KSimpleFileFilter
+  KFileFilter
+  KArchiveDirectory
+  KArchiveFile
+  KArchiveEntry
+  KArchive
+  KDataTool
+  KDataToolAction
+  KDataToolInfo
+  KOCRDialogFactory
+  KOCRDialog
+  KScanDialogFactory
+  KScanDialog
+  KEMailSettings
+  KProtocolManager
+  KUrlPixmapProvider
+  OrgKdeKDirNotifyInterface
+  KServiceSeparator
+  KServiceGroup
+  KDirLister
+  KNFSShare
+  KSambaShare
+  KFileShare
+  KFileItemList
+  KFileItem
+  KShellCompletion
+  KUrlCompletion
+  KUriFilter
+  KUriFilterPluginList
+  KUriFilterPlugin
+  KUriFilterData
+  KZipFileEntry
+  KZip
+  KTar
+  KAr
+  KDirWatch
+  KProcessRunner
+  KRun
+  KImageIO
+  KMimeTypeTrader
+  KFolderType
+  KMimeType
   Observer
   KSMIMECrypto
   KSSLX509Map
@@ -177,12 +308,157 @@ install( FILES
   KFindDialog
   KReplace
   KFind
+  KMessageBoxMessageHandler
+  KToolBarLabelAction
+  KPixmapRegionSelectorWidget
+  KLanguageButton
+  KActionSelector
+  KSplashScreen
+  KStdGuiItem
+  KGuiItem
+  KArrowButton
+  KAnimatedButton
+  KEditToolbarWidget
+  KEditToolbar
+  KXMLGUIFactory
+  KXMLGUIBuilder
+  KXMLGUIClient
+  KCModule
+  KHelpMenu
+  KPasteTextAction
+  KToggleFullScreenAction
+  KToggleToolBarAction
+  KToolBarPopupAction
+  KActionMenu
+  KFontSizeAction
+  KFontAction
+  KRecentFilesAction
+  KSelectAction
+  KToggleAction
+  KSeparatorAction
+  KActionCollection
+  KAction
+  KTextBrowser
+  KMessageBox
+  KPageWidgetItem
+  KPageModel
+  KRuler
+  KRestrictedLine
+  KSeparator
+  KMenuBar
+  KMainWindow
+  KStatusBar
+  KStatusBarLabel
+  KDateTable
+  KDateValidator
+  KPopupFrame
+  KDateInternalYearSelector
+  KDateInternalMonthPicker
+  KDateInternalWeekSelector
   KPluginInfo
   KServiceOffer
   KServiceTypeTrader
   KServiceTypeProfile
   KServiceType
   KService
+  KProtocolInfo
+  KAutostart
+  KDEDModule
+  KDateTime
+  KFilterDev
+  KFilterBase
+  KTzfileTimeZoneSource
+  KTzfileTimeZone
+  KSystemTimeZoneSource
+  KSystemTimeZone
+  KSystemTimeZones
+  KTimeZoneData
+  KTimeZoneSource
+  KTimeZone
+  KTimeZones
+  KTempDir
+  KLockFile
+  KUserGroup
+  KUser
+  KMountPoint
+  KCharMacroExpander
+  KWordMacroExpander
+  KMacroExpanderBase
+  KCalendarSystemFactory
+  KCalendarSystem
+  KClipboardSynchronizer
+  KStartupInfoData
+  KStartupInfoId
+  KStartupInfo
+  KSycocaEntry
+  KSycoca
+  KMD4
+  KMD5
+  KCodecs
+  K3MimeSourceFactory
+  KRandom
+  KProcIO
+  KStaticDeleterBase
+  KPixmapProvider
+  NET
+  KAcceleratorManager
+  KIconEffect
+  KRandomSequence
+  KSaveFile
+  KTemporaryFile
+  KLibLoader
+  KLibFactory
+  KLibrary
+  KPalette
+  KInstance
+  KCrash
+  KVMAllocator
+  KZoneAllocator
+  KGlobalSettings
+  KGlobal
+  KStandardDirs
+  KStringHandler
+  KCatalog
+  KShortcut
+  KWinModule
+  kndbgstream
+  kdbgstream
+  KSvgRenderer
+  KIconLoader
+  KIconTheme
+  K3Icon
+  KLocalizedString
+  KLocale
+  KProcessController
+  KShellProcess
+  KProcess
+  KCharsets
+  KUniqueApplication
+  KToolInvocation
+  KAuthorized
+  KSessionManaged
+  KApplication
+  KConfigINIBackEnd
+  KConfigBackEnd
+  KCmdLineArgs
+  KCmdLineOptions
+  KJobUiDelegate
+  KCompositeJob
+  KJob
+  KAboutData
+  KAboutTranslator
+  KAboutPerson
+  KUrl
+  KDesktopFile
+  KConfigGroup
+  KConfigBase
+  KSimpleConfig
+  KEntryKey
+  KEntry
+  KConfigSkeleton
+  KConfigSkeletonItem
+  KSharedConfig
+  KConfig
   KCPUInfo
   KStyle
   KImageEffect
@@ -408,6 +684,69 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS/KJS/UString )
 
 
 install( FILES 
+  KMediaPlayer/View
+  KMediaPlayer/Player
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
+
+
+install( FILES 
+  KNS/ProviderLoader
+  KNS/Provider
+  KNS/Entry
+  KNS/Engine
+  KNS/DownloadDialog
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
+
+
+install( FILES 
+  KNetwork/KBufferedSocket
+  KNetwork/KSocksSocketDevice
+  KNetwork/KHttpProxySocketDevice
+  KNetwork/KNetworkInterface
+  KNetwork/KMulticastSocket
+  KNetwork/KDatagramSocket
+  KNetwork/KDatagramPacket
+  KNetwork/KServerSocket
+  KNetwork/KStreamSocket
+  KNetwork/KClientSocketBase
+  KNetwork/KSocketDevice
+  KNetwork/KPassiveSocketBase
+  KNetwork/KActiveSocketBase
+  KNetwork/KSocketBase
+  KNetwork/KUnixSocketAddress
+  KNetwork/KInetSocketAddress
+  KNetwork/KSocketAddress
+  KNetwork/KIpAddress
+  KNetwork/KReverseResolver
+  KNetwork/KResolver
+  KNetwork/KResolverResults
+  KNetwork/KResolverEntry
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
+
+
+install( FILES 
+  KParts/StatusBarExtension
+  KParts/BrowserRun
+  KParts/BrowserInterface
+  KParts/HistoryProvider
+  KParts/Factory
+  KParts/LiveConnectExtension
+  KParts/BrowserHostExtension
+  KParts/BrowserExtension
+  KParts/OpenURLEvent
+  KParts/WindowArgs
+  KParts/URLArgs
+  KParts/PartSelectEvent
+  KParts/PartActivateEvent
+  KParts/GUIActivateEvent
+  KParts/Event
+  KParts/MainWindow
+  KParts/PartManager
+  KParts/Plugin
+  KParts/ReadWritePart
+  KParts/ReadOnlyPart
+  KParts/Part
+  KParts/PartBase
   KParts/DockMainWindow3
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts )
 
@@ -425,6 +764,11 @@ install( FILES
   KSpell2/ConfigDialog
   KSpell2/Highlighter
   KSpell2/Dialog
+  KSpell2/Speller
+  KSpell2/Loader
+  KSpell2/Settings
+  KSpell2/Filter
+  KSpell2/BackgroundChecker
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSpell2 )
 
 
@@ -513,6 +857,34 @@ install( FILES
   SafeSite/Report
   SafeSite/ServiceInfo
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/SafeSite )
+
+
+install( FILES 
+  Solid/WirelessNetwork
+  Solid/Network
+  Solid/NetworkInterface
+  Solid/PowerManager
+  Solid/Predicate
+  Solid/AudioHw
+  Solid/Display
+  Solid/Button
+  Solid/Battery
+  Solid/AcAdapter
+  Solid/NetworkHw
+  Solid/PortableMediaPlayer
+  Solid/Camera
+  Solid/OpticalDisc
+  Solid/Volume
+  Solid/Cdrom
+  Solid/Storage
+  Solid/Block
+  Solid/Processor
+  Solid/Capability
+  Solid/DeviceManager
+  Solid/Device
+  Solid/FrontendObject
+  Solid/ManagerBase
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
 
 
 install( FILES 
