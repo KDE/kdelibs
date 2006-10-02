@@ -195,23 +195,23 @@ public:
 
   /**
    * Usual constructor, to construct from a string.
-   * @param url A encoded URL or a path.
+   * @param urlOrPath An encoded URL or a path.
    */
-  KUrl( const QString& url );
+  KUrl( const QString& urlOrPath );
   /**
-   * Constructor taking a char * @p url, which is an _encoded_ representation
+   * Constructor taking a char * @p urlOrPath, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL, or a path.
+   * @param urlOrPath An encoded URL, or a path.
    */
-  explicit KUrl( const char * url );
+  explicit KUrl( const char * urlOrPath );
   /**
-   * Constructor taking a QByteArray @p url, which is an _encoded_ representation
+   * Constructor taking a QByteArray @p urlOrPath, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL, or a path.
+   * @param urlOrPath An encoded URL, or a path.
    */
-  explicit KUrl( const QByteArray& url );
+  explicit KUrl( const QByteArray& urlOrPath );
 
   /**
    * Copy constructor.
