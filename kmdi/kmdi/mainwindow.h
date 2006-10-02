@@ -107,6 +107,10 @@ class KMDI_EXPORT MainWindow : public KParts::DockMainWindow
      * as toplevel and stay-on-top on the application's main widget.
      * @param pWnd widget for the toolview
      * @param pos docking position
+     * @param pTargetWnd
+     * @param percent
+     * @param tabToolTip
+     * @param tabCaption
      * @return created toolview
      */
     KMDI::ToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);

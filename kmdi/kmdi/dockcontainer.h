@@ -50,7 +50,7 @@ class DockContainer: public QWidget, public KDockContainer
     /**
      * Add a widget to this container.
      * \param w the KDockWidget object to add
-     * \TODO Remove the extra parameters that we don't use?
+     * \todo Remove the extra parameters that we don't use?
      */
     virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
 
@@ -63,7 +63,7 @@ class DockContainer: public QWidget, public KDockContainer
     /**
      * Set a tooltip for a widget
      *
-     * \TODO Actually implement it? Right now, it looks just it
+     * \todo Actually implement it? Right now, it looks just it
      * does exactly nothing
      */
     virtual void setToolTip (KDockWidget *, QString &);
