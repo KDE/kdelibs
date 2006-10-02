@@ -37,7 +37,7 @@ public:
 
 	/**
 	  * Sets the internal Arts::PlayObject
-	  * to @playObject
+	  * to @a playObject
 	  */
 	void setObject(Arts::PlayObject playObject);
 	
