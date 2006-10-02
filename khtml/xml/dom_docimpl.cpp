@@ -547,8 +547,10 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
     }
     else
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	
+    //### FIXME: This should handle DocumentFragment, Attributes, and a few other things
 
-    if(deep)
+    if(deep && result)
     {
 	for(Node n = importedNode->firstChild(); !n.isNull(); n = n.nextSibling())
 	    result->appendChild(importNode(n.handle(), true, exceptioncode), exceptioncode);
