@@ -80,7 +80,7 @@ public:
      * @internal
      */
     bool process(const QCString &fun, const QByteArray &data,
-		 QCString &replyType, QByteArray &reply);
+		 QCString &replyType, QByteArray &replyData);
 
 signals:
     /**

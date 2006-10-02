@@ -208,7 +208,7 @@ class KEditToolbarWidgetPrivate
 {
 public:
     /**
-     *
+     * @param instance The instance.
      * @param collection In a non-KParts application, this is the collection passed
      * to the KEditToolbar constructor.
      * In a KParts application we let create a KXMLGUIClient create a dummy one,

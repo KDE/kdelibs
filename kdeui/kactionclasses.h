@@ -940,7 +940,7 @@ public:
         return currentText();
     }
 
-    int plug( QWidget*, int index = -1 );
+    int plug( QWidget*widget, int index = -1 );
 
 public slots:
     void setFont( const QString &family );
