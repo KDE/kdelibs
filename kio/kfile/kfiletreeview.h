@@ -214,9 +214,9 @@ signals:
    // The drop event allows to differentiate between move and copy
    void dropped( QWidget*, QDropEvent*, KURL::List&, KURL& );
 
-   void dropped( QDropEvent *, QListViewItem * );
+   void dropped( QDropEvent *e, QListViewItem * after);
    void dropped(KFileTreeView *, QDropEvent *, QListViewItem *);
-   void dropped(QDropEvent *, QListViewItem *, QListViewItem *);
+   void dropped(QDropEvent *e, QListViewItem * parent, QListViewItem * after);
    void dropped(KFileTreeView *, QDropEvent *, QListViewItem *, QListViewItem *);
 
 protected:

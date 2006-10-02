@@ -447,19 +447,21 @@ public:
 
    QStringList groupList() const { return QStringList(); }
 
-   QMap<QString,QString> entryMap(const QString &) const
-      { return QMap<QString,QString>(); }
+   QMap<QString,QString> entryMap(const QString &group) const
+      { Q_UNUSED(group); return QMap<QString,QString>(); }
 
    void reparseConfiguration() { }
 
-   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
+   KEntryMap internalEntryMap( const QString &pGroup) const 
+   { Q_UNUSED(pGroup); return KEntryMap(); }
 
    KEntryMap internalEntryMap() const { return KEntryMap(); }
 
-   void putData(const KEntryKey &, const KEntry&, bool) { }
+   void putData(const KEntryKey &_key, const KEntry& _data, bool _checkGroup) 
+   { Q_UNUSED(_key); Q_UNUSED(_data); Q_UNUSED(_checkGroup); }
 
-   KEntry lookupData(const KEntryKey &) const
-   { KEntry entry; entry.mValue = value; return entry; }
+   KEntry lookupData(const KEntryKey &_key) const
+   { Q_UNUSED(_key); KEntry entry; entry.mValue = value; return entry; }
 protected:
    QString key;
    QCString value;

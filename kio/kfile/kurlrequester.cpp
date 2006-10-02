@@ -306,7 +306,7 @@ void KURLRequester::slotOpenDialog()
     emit urlSelected( d->url() );
 }
 
-void KURLRequester::setMode(unsigned int mode)
+void KURLRequester::setMode(uint mode)
 {
     Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;

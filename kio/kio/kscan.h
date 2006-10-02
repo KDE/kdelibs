@@ -339,7 +339,7 @@ protected:
     KOCRDialogFactory( QObject *parent=0, const char *name=0 );
 
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
-                                   const char* classname = "QObject",
+                                   const char* className = "QObject",
                                    const QStringList &args = QStringList() );
 
 

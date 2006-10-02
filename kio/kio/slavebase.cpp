@@ -85,21 +85,22 @@ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
-   QMap<QString,QString> entryMap(const QString &) const
-      { return QMap<QString,QString>(); }
+   QMap<QString,QString> entryMap(const QString &group) const
+      { Q_UNUSED(group); return QMap<QString,QString>(); }
 
    void reparseConfiguration() { }
 
-   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
+   KEntryMap internalEntryMap( const QString &pGroup) const { Q_UNUSED(pGroup); return KEntryMap(); }
 
    KEntryMap internalEntryMap() const { return KEntryMap(); }
 
-   void putData(const KEntryKey &, const KEntry&, bool) { }
+   void putData(const KEntryKey &_key, const KEntry&_data, bool _checkGroup) 
+   { Q_UNUSED(_key); Q_UNUSED(_data); Q_UNUSED(_checkGroup); }
 
-   KEntry lookupData(const KEntryKey &key) const
+   KEntry lookupData(const KEntryKey &_key) const
    {
      KEntry entry;
-     QString value = slave->metaData(key.c_key);
+     QString value = slave->metaData(_key.c_key);
      if (!value.isNull())
         entry.mValue = value.utf8();
      return entry;
