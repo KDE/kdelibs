@@ -160,7 +160,7 @@ public:
             const char *slot, QObject *parent, const char *name );
     virtual ~KHTMLZoomFactorAction();
 
-    virtual int plug( QWidget *w, int index );
+    virtual int plug( QWidget *widget, int index );
 
 private slots:
     void slotActivated( int );
