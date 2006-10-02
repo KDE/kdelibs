@@ -9,7 +9,7 @@ class KGlobalAccelPrivate
 public:
 	KGlobalAccelPrivate();
 
-	virtual void setEnabled( bool );
+	virtual void setEnabled( bool bEnabled );
 
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );

@@ -14,16 +14,16 @@ public:
     {}
 
     // reimplemented pure virtuals
-    void setEnabled( bool )
-    {}
-    bool emitSignal( Signal )
-    { return false; }
-    bool connectKey( KAccelAction&, const KKeyServer::Key& )
-    { return false; }
-    bool connectKey( const KKeyServer::Key& )
-    { return false; }
-    bool disconnectKey( KAccelAction&, const KKeyServer::Key& )
-    { return false; }
+    void setEnabled( bool bEnabled )
+    { Q_UNUSED(bEnabled); }
+    bool emitSignal( Signal signal )
+    { Q_UNUSED(signal); return false; }
+    bool connectKey( KAccelAction& action, const KKeyServer::Key& key)
+    { Q_UNUSED(action); Q_UNUSED(key); return false; }
+    bool connectKey( const KKeyServer::Key& key)
+    { Q_UNUSED(key); return false; }
+    bool disconnectKey( KAccelAction&, const KKeyServer::Key& key)
+    { Q_UNUSED(key); return false; }
     bool disconnectKey( const KKeyServer::Key& )
     { return false; }
 };

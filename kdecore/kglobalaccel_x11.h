@@ -38,13 +38,13 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	KGlobalAccelPrivate();
 	virtual ~KGlobalAccelPrivate();
 
-	virtual void setEnabled( bool );
+	virtual void setEnabled( bool bEnabled );
 
-	virtual bool emitSignal( Signal );
-	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& );
-	virtual bool connectKey( const KKeyServer::Key& );
-	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& );
-	virtual bool disconnectKey( const KKeyServer::Key& );
+	virtual bool emitSignal( Signal signal );
+	virtual bool connectKey( KAccelAction& action, const KKeyServer::Key& key );
+	virtual bool connectKey( const KKeyServer::Key& key );
+	virtual bool disconnectKey( KAccelAction& action, const KKeyServer::Key& key );
+	virtual bool disconnectKey( const KKeyServer::Key& key );
 
  protected:
 	/**
