@@ -1,18 +1,20 @@
 /****************************************************************************
 **
-** Copyright (C) 1992-2005 Trolltech AS. All rights reserved.
+** Copyright (C) 1992-2006 Trolltech ASA. All rights reserved.
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Licensees holding a valid Qt License Agreement may use this file in
-** accordance with the rights, responsibilities and obligations
-** contained therein.  Please consult your licensing agreement or
-** contact sales@trolltech.com if any conditions of this licensing
-** agreement are not clear to you.
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
 **
-** Further information about Qt licensing is available at:
-** http://www.trolltech.com/products/qt/licensing.html or by
-** contacting info@trolltech.com.
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -28,6 +30,8 @@
 #ifdef topLeft
 #error qrect.h must be included before any header file that defines topLeft
 #endif
+
+QT_BEGIN_HEADER
 
 QT_MODULE(Core)
 
@@ -128,13 +132,15 @@ public:
     bool contains(const QPoint &p, bool proper=false) const;
     bool contains(int x, int y) const; // inline methods, _don't_ merge these
     bool contains(int x, int y, bool proper) const;
-    bool contains(const QRect &r, bool proper=false) const;
-    QRect unite(const QRect &r) const;
-    QRect intersect(const QRect &r) const;
+    bool contains(const QRect &r, bool proper = false) const;
+    QRect unite(const QRect &r) const;  // ### Qt 5: make QT4_SUPPORT
+    QRect united(const QRect &other) const;
+    QRect intersect(const QRect &r) const;  // ### Qt 5: make QT4_SUPPORT
+    QRect intersected(const QRect &other) const;
     bool intersects(const QRect &r) const;
 
-    friend Q_CORE_EXPORT inline bool operator==(const QRect &, const QRect &);
-    friend Q_CORE_EXPORT inline bool operator!=(const QRect &, const QRect &);
+    friend Q_CORE_EXPORT_INLINE bool operator==(const QRect &, const QRect &);
+    friend Q_CORE_EXPORT_INLINE bool operator!=(const QRect &, const QRect &);
 
 #ifdef QT3_SUPPORT
     inline QT3_SUPPORT void rect(int *x, int *y, int *w, int *h) const { getRect(x, y, w, h); }
@@ -161,8 +167,8 @@ private:
 };
 Q_DECLARE_TYPEINFO(QRect, Q_MOVABLE_TYPE);
 
-Q_CORE_EXPORT inline bool operator==(const QRect &, const QRect &);
-Q_CORE_EXPORT inline bool operator!=(const QRect &, const QRect &);
+Q_CORE_EXPORT_INLINE bool operator==(const QRect &, const QRect &);
+Q_CORE_EXPORT_INLINE bool operator!=(const QRect &, const QRect &);
 
 
 /*****************************************************************************
@@ -450,9 +456,20 @@ inline QRect QRect::intersect(const QRect &r) const
 {
     return *this & r;
 }
+
+inline QRect QRect::intersected(const QRect &other) const 
+{ 
+    return intersect(other); 
+}
+
 inline QRect QRect::unite(const QRect &r) const
 {
     return *this | r;
+}
+
+inline QRect QRect::united(const QRect &r) const
+{ 
+     return unite(r); 
 }
 
 inline bool operator==(const QRect &r1, const QRect &r2)
@@ -551,12 +568,14 @@ public:
     bool contains(const QPointF &p) const;
     bool contains(qreal x, qreal y) const;
     bool contains(const QRectF &r) const;
-    QRectF unite(const QRectF &r) const;
-    QRectF intersect(const QRectF &r) const;
+    QRectF unite(const QRectF &r) const;  // ### Qt 5: make QT4_SUPPORT
+    QRectF united(const QRectF &other) const;
+    QRectF intersect(const QRectF &r) const;  // ### Qt 5: make QT4_SUPPORT
+    QRectF intersected(const QRectF &other) const;
     bool intersects(const QRectF &r) const;
 
-    friend Q_CORE_EXPORT inline bool operator==(const QRectF &, const QRectF &);
-    friend Q_CORE_EXPORT inline bool operator!=(const QRectF &, const QRectF &);
+    friend Q_CORE_EXPORT_INLINE bool operator==(const QRectF &, const QRectF &);
+    friend Q_CORE_EXPORT_INLINE bool operator!=(const QRectF &, const QRectF &);
 
     QRect toRect() const;
 
@@ -568,8 +587,8 @@ private:
 };
 Q_DECLARE_TYPEINFO(QRectF, Q_MOVABLE_TYPE);
 
-Q_CORE_EXPORT inline bool operator==(const QRectF &, const QRectF &);
-Q_CORE_EXPORT inline bool operator!=(const QRectF &, const QRectF &);
+Q_CORE_EXPORT_INLINE bool operator==(const QRectF &, const QRectF &);
+Q_CORE_EXPORT_INLINE bool operator!=(const QRectF &, const QRectF &);
 
 
 /*****************************************************************************
@@ -764,9 +783,20 @@ inline QRectF QRectF::intersect(const QRectF &r) const
 {
     return *this & r;
 }
+
+inline QRectF QRectF::intersected(const QRectF &r) const
+{ 
+    return intersect(r); 
+}
+
 inline QRectF QRectF::unite(const QRectF &r) const
 {
     return *this | r;
+}
+
+inline QRectF QRectF::united(const QRectF &r) const
+{
+    return unite(r);
 }
 
 inline bool operator==(const QRectF &r1, const QRectF &r2)
@@ -789,5 +819,7 @@ inline QRect QRectF::toRect() const
 #ifndef QT_NO_DEBUG_STREAM
 Q_CORE_EXPORT QDebug operator<<(QDebug, const QRectF &);
 #endif
+
+QT_END_HEADER
 
 #endif // QRECT_H

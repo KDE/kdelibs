@@ -1,18 +1,20 @@
 /****************************************************************************
 **
-** Copyright (C) 1992-2005 Trolltech AS. All rights reserved.
+** Copyright (C) 1992-2006 Trolltech ASA. All rights reserved.
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** Licensees holding a valid Qt License Agreement may use this file in
-** accordance with the rights, responsibilities and obligations
-** contained therein.  Please consult your licensing agreement or
-** contact sales@trolltech.com if any conditions of this licensing
-** agreement are not clear to you.
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
 **
-** Further information about Qt licensing is available at:
-** http://www.trolltech.com/products/qt/licensing.html or by
-** contacting info@trolltech.com.
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -24,6 +26,8 @@
 
 #include <QtGui/qwindowdefs.h>
 #include <QtCore/qstring.h>
+
+QT_BEGIN_HEADER
 
 QT_MODULE(Gui)
 
@@ -54,7 +58,8 @@ public:
         PreferQuality    = 0x0040,
         PreferAntialias  = 0x0080,
         NoAntialias      = 0x0100,
-        OpenGLCompatible = 0x0200
+        OpenGLCompatible = 0x0200,
+        NoFontMerging    = 0x8000
     };
 
     enum Weight {
@@ -201,7 +206,6 @@ private:
 
 #if defined(Q_WS_MAC)
     void macSetFont(QPaintDevice *);
-    friend class QQuickDrawPaintEngine;
 #elif defined(Q_WS_X11)
     void x11SetScreen(int screen = -1);
     int x11Screen() const;
@@ -218,11 +222,13 @@ private:
     friend class Q3TextFormatCollection;
     friend class QTextLayout;
     friend class QTextEngine;
+    friend class QStackTextEngine;
     friend class QTextLine;
     friend struct QScriptLine;
     friend class QGLContext;
     friend class QWin32PaintEngine;
     friend class QPainterPath;
+    friend class QTextItemInt;
 
 #ifndef QT_NO_DATASTREAM
     friend Q_GUI_EXPORT QDataStream &operator<<(QDataStream &, const QFont &);
@@ -259,5 +265,7 @@ inline void QFont::setItalic(bool b) {
 Q_GUI_EXPORT QDataStream &operator<<(QDataStream &, const QFont &);
 Q_GUI_EXPORT QDataStream &operator>>(QDataStream &, QFont &);
 #endif
+
+QT_END_HEADER
 
 #endif // QFONT_H

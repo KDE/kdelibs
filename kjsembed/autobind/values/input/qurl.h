@@ -1,18 +1,20 @@
 /****************************************************************************
 **
-** Copyright (C) 1992-2005 Trolltech AS. All rights reserved.
+** Copyright (C) 1992-2006 Trolltech ASA. All rights reserved.
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Licensees holding a valid Qt License Agreement may use this file in
-** accordance with the rights, responsibilities and obligations
-** contained therein.  Please consult your licensing agreement or
-** contact sales@trolltech.com if any conditions of this licensing
-** agreement are not clear to you.
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
 **
-** Further information about Qt licensing is available at:
-** http://www.trolltech.com/products/qt/licensing.html or by
-** contacting info@trolltech.com.
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -25,6 +27,8 @@
 #include <QtCore/qobjectdefs.h>
 #include <QtCore/qpair.h>
 #include <QtCore/qstring.h>
+
+QT_BEGIN_HEADER
 
 QT_MODULE(Core)
 
@@ -104,6 +108,8 @@ public:
     void setPath(const QString &path);
     QString path() const;
 
+    bool hasQuery() const;
+
     void setEncodedQuery(const QByteArray &query);
     QByteArray encodedQuery() const;
 
@@ -122,6 +128,7 @@ public:
 
     void setFragment(const QString &fragment);
     QString fragment() const;
+    bool hasFragment() const;
 
     QUrl resolved(const QUrl &relative) const;
 
@@ -151,6 +158,10 @@ public:
                                         const QByteArray &include = QByteArray());
     static QString fromPunycode(const QByteArray &);
     static QByteArray toPunycode(const QString &);
+    static QString fromAce(const QByteArray &);
+    static QByteArray toAce(const QString &);
+    static QStringList idnWhitelist();
+    static void setIdnWhitelist(const QStringList &);
 
 #if defined QT3_SUPPORT
     inline QT3_SUPPORT QString protocol() const { return scheme(); }
@@ -197,6 +208,8 @@ public:
     }
 #endif
 
+    QString errorString() const;
+
 protected:
 #if defined (QT3_SUPPORT)
     inline QT3_SUPPORT void reset() { clear(); }
@@ -218,5 +231,7 @@ Q_CORE_EXPORT QDataStream &operator>>(QDataStream &, QUrl &);
 #ifndef QT_NO_DEBUG_STREAM
 Q_CORE_EXPORT QDebug operator<<(QDebug, const QUrl &);
 #endif
+
+QT_END_HEADER
 
 #endif // QURL_H
