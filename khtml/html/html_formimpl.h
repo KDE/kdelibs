@@ -289,7 +289,7 @@ public:
 
     virtual bool maintainsState() { return true; }
     virtual QString state();
-    virtual void restoreState(const QString &);
+    virtual void restoreState(const QString &state);
 
     void select();
     void click();
@@ -410,7 +410,7 @@ public:
 
     virtual bool maintainsState() { return true; }
     virtual QString state();
-    virtual void restoreState(const QString &);
+    virtual void restoreState(const QString &state);
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual void      replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
@@ -547,7 +547,7 @@ public:
 
     virtual bool maintainsState() { return true; }
     virtual QString state();
-    virtual void restoreState(const QString &);
+    virtual void restoreState(const QString &state);
 
     void select (  );
 
