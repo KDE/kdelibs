@@ -608,8 +608,11 @@ function write_binding_new( compound )
 //    println ( "compoundIncludes: " + compoundIncludes );
     includes += '#include "' + compound.name + '_bind.h"\n';
     includes += '#include <' + compoundIncludes + '>\n';
-    includes += '#include <value_binding.h>\n';
     includes += '#include <object_binding.h>\n';
+    if (compound.isVariant)
+        includes += '#include <value_binding.h>\n';
+    else
+        includes += '#include <variant_binding.h>\n';
 
     // Binding Ctor
     bindingCtor +=

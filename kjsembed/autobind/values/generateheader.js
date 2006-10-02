@@ -28,8 +28,14 @@ function write_header( compound )
     var template =
         '#ifndef BIND_' + compound.name + '_H\n' +
         '#define BIND_' + compound.name + '_H\n' +
-        '\n' +
-        '#include <variant_binding.h>\n' +
+        '\n';
+
+    if (compound.isVariant)
+	template += '#include <variant_binding.h>\n';
+    else
+	template += '#include <value_binding.h>\n';
+
+    template +=
         '#include <static_binding.h>\n' +
         '\n' +
         'class ' + compound.name + ';\n' +
