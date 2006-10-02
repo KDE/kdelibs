@@ -32,7 +32,7 @@ class KDEPRINT_EXPORT KPrinterPropertyDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0);
+	explicit KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0);
 	~KPrinterPropertyDialog();
 
 	KMPrinter* printer() 		{ return m_printer; }

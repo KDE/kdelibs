@@ -27,7 +27,7 @@ class DriverView;
 class KDEPRINT_EXPORT KPDriverPage : public KPrintDialogPage
 {
 public:
-	KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0);
+	explicit KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0);
 	~KPDriverPage();
 
 	bool isValid(QString &msg);
