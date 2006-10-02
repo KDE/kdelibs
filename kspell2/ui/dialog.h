@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  * dialog.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>

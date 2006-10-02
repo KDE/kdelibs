@@ -1,4 +1,4 @@
-/**
+/*
  * dialog.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
