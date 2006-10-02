@@ -460,7 +460,7 @@ KTimeZoneSource *KTimeZonePrivate::utcSource()
 }
 
 
-#if SIZEOF_TIME_T == 64
+#if SIZEOF_TIME_T == 8
 const time_t KTimeZone::InvalidTime_t = 0x800000000000000LL;
 #else
 const time_t KTimeZone::InvalidTime_t = 0x80000000;
@@ -1305,17 +1305,15 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
             }
             while (!zoneFile.atEnd())
             {
-                if ((r = zoneFile.readLine(line.data(), 1023)) > 0)
+                if ((r = zoneFile.readLine(line.data(), 1023)) > 0
+                &&  line.startsWith("Zone"))
                 {
-                    if (line.startsWith("Zone"))
-                    {
-                        line.replace('\t', ' ');    // change tabs to spaces
-                        tokens = line.split(' ');
-                        for (int j = 0, jend = tokens.count();  j < jend;  ++j)
-                            if (tokens[j].endsWith(' '))
-                                tokens[j].chop(1);
-                        tmpStream << "??\t+9999+99999\t" << tokens[1] << "\n";
-                    }
+                    line.replace('\t', ' ');    // change tabs to spaces
+                    tokens = line.split(' ');
+                    for (int j = 0, jend = tokens.count();  j < jend;  ++j)
+                        if (tokens[j].endsWith(' '))
+                            tokens[j].chop(1);
+                    tmpStream << "??\t+9999+99999\t" << tokens[1] << "\n";
                 }
             }
             zoneFile.close();
@@ -1411,8 +1409,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
         QFileInfo fi(f);
         if (fi.isSymLink())
         {
-            // Try to match the last portion of the link reference with a valid
-            // database entry.
+            // Get the path of the file which the symlink points to
             QString zoneInfoFileName = fi.canonicalFilePath();
             if (zoneInfoFileName.startsWith(m_zoneinfoDir))
             {
@@ -1420,7 +1417,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
                 if (fiz.exists() && fiz.isReadable())
                 {
                     // We've got the zoneinfo file path.
-                    // The timezone name is the part of the path after the zoneinfo directory.
+                    // The time zone name is the part of the path after the zoneinfo directory.
                     QString name = zoneInfoFileName.mid(m_zoneinfoDir.length() + 1);
                     // kDebug() << "local=" << name << endl;
                     local = zone(name);
@@ -1575,7 +1572,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
 
     // SOLUTION 6: HEURISTIC.
     // None of the deterministic stuff above has worked: try a heuristic. We
-    // try to find a pair of matching timezone abbreviations...that way, we'll
+    // try to find a pair of matching time zone abbreviations...that way, we'll
     // likely return a value in the user's own country.
     if (!m_zoneinfoDir.isEmpty())
     {
