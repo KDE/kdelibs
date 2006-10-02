@@ -38,8 +38,12 @@ class KGzipFilterFactory : public KLibFactory
 public:
     KGzipFilterFactory() : KLibFactory() {}
     ~KGzipFilterFactory(){}
-    QObject *createObject( QObject *, const char *, const char*, const QStringList & )
+    QObject *createObject( QObject *parent, const char *name, const char*className, const QStringList & args )
     {
+        Q_UNUSED(parent);
+        Q_UNUSED(name);
+        Q_UNUSED(className);
+        Q_UNUSED(args);
         return new KGzipFilter;
     }
 };

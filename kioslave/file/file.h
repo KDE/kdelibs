@@ -48,10 +48,10 @@ public:
   virtual ~FileProtocol() { }
 
   virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode,
-		    bool _overwrite, bool _resume );
+  virtual void put( const KURL& url, int permissions,
+		    bool overwrite, bool resume );
   virtual void copy( const KURL &src, const KURL &dest,
-                     int mode, bool overwrite );
+                     int permissions, bool overwrite );
   virtual void rename( const KURL &src, const KURL &dest,
                        bool overwrite );
   virtual void symlink( const QString &target, const KURL &dest,

@@ -190,16 +190,16 @@ public:
   virtual void slave_status();
 
   virtual void get( const KURL& url );
-  virtual void put( const KURL& url, int _mode, bool overwrite,
-                    bool _resume );
+  virtual void put( const KURL& url, int permissions, bool overwrite,
+                    bool resume );
 
 //----------------- Re-implemented methods for WebDAV -----------
   virtual void listDir( const KURL& url );
-  virtual void mkdir( const KURL& url, int _permissions );
+  virtual void mkdir( const KURL& url, int permissions );
 
   virtual void rename( const KURL& src, const KURL& dest, bool overwrite );
-  virtual void copy( const KURL& src, const KURL& dest, int _permissions, bool overwrite );
-  virtual void del( const KURL& url, bool _isfile );
+  virtual void copy( const KURL& src, const KURL& dest, int permissions, bool overwrite );
+  virtual void del( const KURL& url, bool isfile );
 
   // ask the host whether it supports WebDAV & cache this info
   bool davHostOk();

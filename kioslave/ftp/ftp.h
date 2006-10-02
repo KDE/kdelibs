@@ -260,7 +260,7 @@ public:
 
   virtual void listDir( const KURL & url );
   virtual void mkdir( const KURL & url, int permissions );
-  virtual void rename( const KURL & src, const KURL & dst, bool overwrite );
+  virtual void rename( const KURL & src, const KURL & dest, bool overwrite );
   virtual void del( const KURL & url, bool isfile );
   virtual void chmod( const KURL & url, int permissions );
 
