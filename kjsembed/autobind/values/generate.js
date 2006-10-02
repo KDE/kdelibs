@@ -26,12 +26,36 @@ include ( '../shared/util.js' )
 include( 'generateheader.js' )
 include( 'generatebinding.js' )
 
+// function process_class_info( classDoc )
+//   classDoc - The DOM document that contains the compound objects description.// Processes a class document and creates binding header and source files.
 function process_class_info( classDoc )
 {
+    // Construct the compound doc for the compound object
+    var compound = {};
+
+    // Store the root of the class document
+    compound.doc = classDoc;
+
+    // Stores the base of the definition
+    compound.def = classDoc.firstChild().toElement();
+    
+    // Stores the name of the compound object
+    compound.name = compound.def.firstChildElement('compoundname').toElement().toString();
+
+    // Stores the name the compound object data will be stored under
+    compound.data = compound.name + "Data";
+
+    // Stores the name the compound object binding will be known by
+    compound.binding = compound.name + "Binding";
+
+    // Stores a list of elements that define all the members of the object.
+    compound.memberList = compound.def.elementsByTagName( "memberdef" );
+
     println("   Writing Header");
-    write_header( classDoc );
+    write_header( compound );
+
     println("   Writing Binding");
-    write_binding_new( classDoc );
+    write_binding_new( compound );
 }
 
 function process_class( compound_elem )

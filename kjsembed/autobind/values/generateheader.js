@@ -17,35 +17,33 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-/*
- * Generate the header file for binding the class specified in the passed DOM element.
- */
-function write_header( classDoc )
-{
-    var compounddef = classDoc.firstChild().toElement();
-    var includes = compounddef.firstChildElement('includes').toElement().toString();
-    var compoundName = compounddef.firstChildElement('compoundname').toElement().toString();
 
-    
+// function write_header( compound )
+//   compound  - The compound object provides information about the compound
+//               object being processed and a place to save compound specific
+//               state information.
+// Generate the header file for binding the class specified in the passed DOM element.
+function write_header( compound )
+{
     var template =
-        '#ifndef BIND_' + compoundName + '_H\n' +
-        '#define BIND_' + compoundName + '_H\n' +
+        '#ifndef BIND_' + compound.name + '_H\n' +
+        '#define BIND_' + compound.name + '_H\n' +
         '\n' +
         '#include <variant_binding.h>\n' +
         '#include <static_binding.h>\n' +
         '\n' +
-        'class ' + compoundName + ';\n' +
+        'class ' + compound.name + ';\n' +
         '\n' +
         'namespace KJSEmbed\n' +
         '{\n' +
-        '   class ' + compoundName + 'Binding : public VariantBinding\n' +
+        '   class ' + compound.binding + ' : public VariantBinding\n' +
         '   {\n' +
         '       public:\n' +
-        '           ' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName + ' &value );\n' +
+        '           ' + compound.binding + '( KJS::ExecState *exec, const ' + compound.name + ' &value );\n' +
         '           static const KJS::ClassInfo info;\n' +
         '           virtual const KJS::ClassInfo* classInfo() const { return &info; }\n' +
         '   };\n\n' +
-        '   class ' + compoundName + 'Data \n' +
+        '   class ' + compound.data + ' \n' +
         '   { \n' +
         '       public: \n' + 
         '           static const KJSEmbed::Method p_methods[]; \n' +
@@ -61,9 +59,9 @@ function write_header( classDoc )
         '                                           { return (*p_constructor.construct)(exec,args); } \n' +
         '   };\n\n' +
         '}\n' +
-        '#endif // BIND_' + compoundName + '_H\n\n';
+        '#endif // BIND_' + compound.name + '_H\n\n';
 
-    var fileName = output_dir + compoundName + '_bind.h';
+    var fileName = output_dir + compound.name + '_bind.h';
     header = new File( fileName );
 
     if( !header.open( File.WriteOnly ) )
