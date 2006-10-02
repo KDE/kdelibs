@@ -160,10 +160,10 @@ namespace KJS {
    * unknown property).
    *
    * Template arguments:
-   * @param FuncImp the class which implements this object's functions
-   * @param ThisImp the class of "this". It must implement the getValueProperty(exec,token) method,
-   * for non-function properties.
-   * @param ParentImp the class of the parent, to propagate the lookup.
+   *   - @c FuncImp the class which implements this object's functions
+   *   - @c ThisImp the class of "this". It must implement the 
+   *        getValueProperty(exec,token) method, for non-function properties.
+   *   - @c ParentImp the class of the parent, to propagate the lookup.
    *
    * Method arguments:
    * @param exec execution state, as usual

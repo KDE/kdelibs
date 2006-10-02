@@ -55,6 +55,9 @@ namespace KJS {
   /**
    * Additive operator. Either performs an addition or substraction of v1
    * and v2.
+   * @param exec execution state.
+   * @param v1 First operand.
+   * @param v2 Second operand.
    * @param oper '+' or '-' for an addition or substraction, respectively.
    * @return The result of the operation.
    */
@@ -62,6 +65,9 @@ namespace KJS {
   /**
    * Multiplicative operator. Either multiplies/divides v1 and v2 or
    * calculates the remainder from an division.
+   * @param exec execution state.
+   * @param v1 First operand.
+   * @param v2 Second operand.
    * @param oper '*', '/' or '%' for a multiplication, division or
    * modulo operation.
    * @return The result of the operation.
