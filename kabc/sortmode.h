@@ -66,6 +66,7 @@ class KABC_EXPORT NameSortMode : public SortMode
       Creates a NameSortMethod with the specified name type.
 
       @param type The name type.
+      @param ascending true for ascending sort, false for descending.
      */
     NameSortMode( NameType type, bool ascending = true );
 
@@ -91,6 +92,7 @@ class KABC_EXPORT FieldSortMode : public SortMode
       Creates a FieldSortMethod with the specified field.
 
       @param field The field.
+      @param ascending true for ascending sort, false for descending.
      */
     FieldSortMode( KABC::Field *field, bool ascending = true );
 

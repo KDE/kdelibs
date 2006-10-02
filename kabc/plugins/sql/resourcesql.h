@@ -43,7 +43,7 @@ public:
   Ticket *requestSaveTicket();
 
   bool load();
-  bool save( Ticket * );
+  bool save( Ticket * ticket );
 
   QString identifier() const;
 

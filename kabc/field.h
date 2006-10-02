@@ -97,7 +97,7 @@ public:
   virtual bool isCustom();
 
   /**
-   * Returns, if the field is equal with @param field.
+   * Returns, if the field is equal with @a field.
    */
   virtual bool equals( Field *field );
 

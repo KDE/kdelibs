@@ -51,7 +51,7 @@ namespace KABC {
  *      }
  *      KAudioPlayer::play( tmpFile ); 
  *    }
- *  \code
+ *  \endcode
  *       
  *  Unfortunetly KAudioPlayer::play is ASync, so to delete the temporary file, the best you can really do is set a timer.
  *
