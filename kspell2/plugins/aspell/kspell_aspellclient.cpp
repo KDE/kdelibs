@@ -1,4 +1,4 @@
-/**
+/*
  * kspell_aspellclient.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
