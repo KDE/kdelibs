@@ -178,7 +178,7 @@ class CategoriesMap : public QMap<int, QString>
  *  your mainwindow (or whereever). (The toolbar is not implemented by now). <BR>
  *  Some parts of the AddressBook widget are \e interactive, that means they are
  *  displayed as transparent KURLLabels that react when the user clicks on it.
- *  These interactive parts have to be enabled by calling #setInteractiveMode.
+ *  These interactive parts have to be enabled by calling setInteractiveMode().
  */
 class AddressBook : public QFrame
 {
@@ -266,26 +266,26 @@ public:
    *  specific address of this person is part of an object of the member list
    *  \c addresses referenced in the next paragraph. <BR>
    *  The keys defined directly in the entry sections are: <DL>
-   *  <DD> "title" The title of that person. </DD>
-   *  <DD> "rank" A possible military rank of that person. </DD>
-   *  <DD> "fn" The formatted name. If it is not empty, it replaces the
+   *  <DT>title<DT><DD> The title of that person. </DD>
+   *  <DT>rank<DT><DD>A possible military rank of that person. </DD>
+   *  <DT>fn<DT><DD>The formatted name. If it is not empty, it replaces the
    *       standard combination of the other name fields in the address
    *       display. </DD>
-   *  <DD> "nameprefix" A possible name prefix. </DD>
-   *  <DD> "firstname" The first name. </DD>
-   *  <DD> "middlename" The middle name. </DD>
-   *  <DD> "lastname" The last name. </DD>
-   *  <DD> "birthday" The birthday (a QDate). </DD>
-   *  <DD> "comment" A free form comment. </DD>
-   *  <DD> "talk" The talk addresses (a string list). </DD>
-   *  <DD> "emails" The email addresses (a string list). </DD>
-   *  <DD> "keywords" A list of free-form keywords. </DD>
-   *  <DD> "telephone" A list of telephone numbers in a special format. </DD>
-   *  <DD> "URLs" A list of internet addresses. </DD>
-   *  <DD> "user_1" The first user-declared data field. </DD>
-   *  <DD> "user_2" The second user-declared data field. </DD>
-   *  <DD> "user_3" The third user-declared data field. </DD>
-   *  <DD> "user_4" The fourth user-declared data field. </DD>
+   *  <DT>nameprefix<DT><DD>A possible name prefix. </DD>
+   *  <DT>firstname<DT><DD>The first name. </DD>
+   *  <DT>middlename<DT><DD>The middle name. </DD>
+   *  <DT>lastname<DT><DD>The last name. </DD>
+   *  <DT>birthday<DT><DD>The birthday (a QDate). </DD>
+   *  <DT>comment<DT><DD>A free form comment. </DD>
+   *  <DT>talk<DT><DD>The talk addresses (a string list). </DD>
+   *  <DT>emails<DT><DD>The email addresses (a string list). </DD>
+   *  <DT>keywords<DT><DD>A list of free-form keywords. </DD>
+   *  <DT>telephone<DT><DD>A list of telephone numbers in a special format. </DD>
+   *  <DT>URLs<DT><DD>A list of internet addresses. </DD>
+   *  <DT>user_1<DT><DD>The first user-declared data field. </DD>
+   *  <DT>user_2<DT><DD>The second user-declared data field. </DD>
+   *  <DT>user_3<DT><DD>The third user-declared data field. </DD>
+   *  <DT>user_4<DT><DD>The fourth user-declared data field. </DD>
    *  </DL>
    *  See the next section for a description of the addresses subsections.
    * 
@@ -295,18 +295,18 @@ public:
    *  in the order they are inserted, their keys are the numbers of
    *  inserting converted to a string. <BR>
    *  The keys defined in an address subsection are: <DL>
-   *  <DD> "headline" A headline shown for the address. </DD>
-   *  <DD> "position" The position of the person. </DD>
-   *  <DD> "org" The organization. </DD>
-   *  <DD> "orgunit" The organizational unit. </DD>
-   *  <DD> "orgsubunit" The organizational subunit. </DD>
-   *  <DD> "role" The role of the person. </DD>
-   *  <DD> "deliverylabel" A label for delivering to this address. </DD>
-   *  <DD> "address" The street, house no., flat etc line. </DD>
-   *  <DD> "zip" A zip or postal code. </DD>
-   *  <DD> "town" The town the person lives in in this address. </DD>
-   *  <DD> "country" The country for federal states. </DD>
-   *  <DD> "state" The state for federal states. </DD>
+   *  <DT>headline</DT><DD> A headline shown for the address. </DD>
+   *  <DT>position</DT><DD> The position of the person. </DD>
+   *  <DT>org</DT><DD> The organization. </DD>
+   *  <DT>orgunit</DT><DD> The organizational unit. </DD>
+   *  <DT>orgsubunit</DT><DD> The organizational subunit. </DD>
+   *  <DT>role</DT><DD> The role of the person. </DD>
+   *  <DT>deliverylabel</DT><DD> A label for delivering to this address. </DD>
+   *  <DT>address</DT><DD> The street, house no., flat etc line. </DD>
+   *  <DT>zip</DT><DD> A zip or postal code. </DD>
+   *  <DT>town</DT><DD> The town the person lives in in this address. </DD>
+   *  <DT>country</DT><DD> The country for federal states. </DD>
+   *  <DT>state</DT><DD> The state for federal states. </DD>
    *  </DL>
    *
    *  \par The local configuration section
@@ -315,10 +315,10 @@ public:
    *  with. These settings are called the local configuration. The settings
    *  are stored in the \c config section of the local file. The following
    *  keys are declared in this section: <DL>
-   *  <DD> "user_1" The \e name of the first user-declared field. </DD>
-   *  <DD> "user_2" The \e name of the second user-declared field. </DD>
-   *  <DD> "user_3" The \e name of the third user-declared field. </DD>
-   *  <DD> "user_4" The \e name of the fourth user-declared field. </DD>
+   *  <DT>user_1</DT><DD>The \e name of the first user-declared field. </DD>
+   *  <DT>user_2</DT><DD>The \e name of the second user-declared field. </DD>
+   *  <DT>user_3</DT><DD>The \e name of the third user-declared field. </DD>
+   *  <DT>user_4</DT><DD>The \e name of the fourth user-declared field. </DD>
    *  </DL>
    *  More fields will surely follow.
    **/

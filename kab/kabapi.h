@@ -77,6 +77,7 @@ public:
    * without failures. Thus you have to call init before you can
    * use the database.
    * @param parent The QWidget pointer to the parent widget.
+   * @param name The widgets name (used for debugging)
    */
   KabAPI(QWidget* parent=0, const char* name=0);
   /**
@@ -166,7 +167,7 @@ public:
    * for example, nearly similar email addresses. Empty parts of the
    * entry are not considered as criteria.
    * @short This method delivers the closest matches to the given entry.
-   * @param name The name, containing "." for abbreviations.
+   * @param pattern The pattern, containing "." for abbreviations.
    * @param entries Reference to a list of entries where matches are stored.
    * @param max Maximum number of returned entries.
    * @return NoError if an entry is found or NoEntry.

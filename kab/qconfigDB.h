@@ -199,7 +199,7 @@ public:
   bool save(QTextStream& file, int count); 
   /**
    * Get the value for the key as a string. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString& key, QCString& value) const;
@@ -226,7 +226,7 @@ public:
   // ---------------
   /**
    * Get the value for the key as a long integer. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, long&) const;
@@ -243,7 +243,7 @@ public:
    * This will probably be not fast, but this methods are not suited to save 
    * large amounts of data. For saving anything else than UNICODE strings,
    * no such conversion is needed.
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, QString&) const;
@@ -256,7 +256,7 @@ public:
   // ---------------
   /**
    * Get the value for the key as a double. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, double&) const;
@@ -269,7 +269,7 @@ public:
   // ---------------
   /**
    * Get the value for the key as a boolean value. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, bool&) const;
@@ -282,7 +282,7 @@ public:
   // ---------------
   /**
    * Get the value for the key as a list of strings. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, list<QCString>&) const;
@@ -295,7 +295,7 @@ public:
   // --------------
   /**
    * Get the value for the key as a QStrList. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, QStrList&) const;
@@ -310,7 +310,7 @@ public:
    * Get the value for the key as a QStringList. Beware of the difference -
    * a QStringList is a list of QString objects, while QStrList handles
    * char* like objects.
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, QStringList&) const;
@@ -323,7 +323,7 @@ public:
   // --------------
   /**
    * Get the value for the key as a list of long integers. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, list<long>&) const;
@@ -336,7 +336,7 @@ public:
   // --------------
   /**
    * Get the value for the key as a list of integers. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, list<int>&) const;
@@ -370,7 +370,7 @@ public:
   // --------------
   /**
    * Get the value for the key as a list of doubles. 
-   * \a key is the key to search for, \value is a reference to the object
+   * \a key is the key to search for, \a value is a reference to the object
    * the value for the key is assigned to.
    */
   bool get(const QCString&, list<double>&) const;
@@ -612,7 +612,7 @@ public:
   /**
    * Save the file. 
    * \a header will be the comment in the first line of the file.
-   * If \a force is \tt true, a file opened read-only will be switched
+   * If \a force is \c true, a file opened read-only will be switched
    * to read and write mode and back after saving. 
    * @see ::setFileName
    */
@@ -688,7 +688,7 @@ public:
   static void CleanLockFiles(int);
   /**
    * Lock the current file.
-   * Locking is done by creating a file <filename>.lock. 
+   * Locking is done by creating a file \<filename\> lock. 
    * QConfigDB-objects will reject opening a file for reading and 
    * writing if a lockfile for the  filename exists.
    */
