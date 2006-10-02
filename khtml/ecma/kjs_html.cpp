@@ -36,6 +36,7 @@
 // ### HACK
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_formimpl.h"
 #include "html/html_imageimpl.h"
 #include "html/html_miscimpl.h"
 #include "xml/dom2_eventsimpl.h"
@@ -70,7 +71,26 @@
 
 namespace KJS {
 
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLDocumentProto, DOMDocumentProto)
 KJS_IMPLEMENT_PROTOFUNC(HTMLDocFunction)
+KJS_IMPLEMENT_PROTOTYPE("HTMLDocument", HTMLDocumentProto, HTMLDocFunction)
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor, "HTMLDocument", HTMLDocumentProto)
+
+/* Source for HTMLDocumentProtoTable.
+@begin HTMLDocumentProtoTable 11
+  clear         HTMLDocument::Clear     DontDelete|Function 0
+  open          HTMLDocument::Open      DontDelete|Function 0
+  close         HTMLDocument::Close     DontDelete|Function 0
+  write         HTMLDocument::Write     DontDelete|Function 1
+  writeln       HTMLDocument::WriteLn       DontDelete|Function 1
+  getElementsByName HTMLDocument::GetElementsByName DontDelete|Function 1
+  getSelection  HTMLDocument::GetSelection  DontDelete|Function 1
+  captureEvents     HTMLDocument::CaptureEvents DontDelete|Function 0
+  releaseEvents     HTMLDocument::ReleaseEvents DontDelete|Function 0
+@end
+*/
+
 
 ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
@@ -153,15 +173,6 @@ const ClassInfo KJS::HTMLDocument::info =
   anchors		HTMLDocument::Anchors		DontDelete|ReadOnly
   scripts		HTMLDocument::Scripts		DontDelete|ReadOnly
   all			HTMLDocument::All		DontDelete|ReadOnly
-  clear			HTMLDocument::Clear		DontDelete|Function 0
-  open			HTMLDocument::Open		DontDelete|Function 0
-  close			HTMLDocument::Close		DontDelete|Function 0
-  write			HTMLDocument::Write		DontDelete|Function 1
-  writeln		HTMLDocument::WriteLn		DontDelete|Function 1
-  getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
-  getSelection	HTMLDocument::GetSelection	DontDelete|Function 1
-  captureEvents		HTMLDocument::CaptureEvents	DontDelete|Function 0
-  releaseEvents		HTMLDocument::ReleaseEvents	DontDelete|Function 0
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
   alinkColor		HTMLDocument::AlinkColor	DontDelete
@@ -186,8 +197,7 @@ const ClassInfo KJS::HTMLDocument::info =
 */
 
 KJS::HTMLDocument::HTMLDocument(ExecState *exec, DOM::HTMLDocumentImpl* d)
-  /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
-  : DOMDocument(exec, d) { }
+  : DOMDocument(HTMLDocumentProto::self(exec), d) { }
 
 /* Should this property be checked after overrides? */
 static bool isLateProperty(unsigned token)
@@ -368,22 +378,8 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
       return getHTMLCollection(exec,doc.layers(), true);
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
-    case Scripts: // TODO (IE-specific)
-    {
-      // Disable document.scripts unless we try to be IE-compatible
-      // Especially since it's not implemented, so
-      // if (document.scripts) shouldn't return true.
-      if ( exec->dynamicInterpreter()->compatMode() != Interpreter::IECompat )
-        return Undefined();
-      // To be implemented. Meanwhile, return an object with a length property set to 0
-      // This gets some code going on IE-specific pages.
-      // The script object isn't really simple to implement though
-      // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
-      kDebug(6070) << "WARNING: KJS::HTMLDocument document.scripts called - not implemented" << endl;
-      ObjectImp *obj = new ObjectImp;
-      obj->put( exec, lengthPropertyName, Number(0) );
-      return obj;
-    }
+    case Scripts:
+      return getHTMLCollection(exec,doc.scripts());
     case All:
       // Disable document.all when we try to be Netscape-compatible
       if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
@@ -759,10 +755,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
 # IE extension
-  scrollLeft	KJS::HTMLElement::BodyScrollLeft DontDelete
-  scrollTop	KJS::HTMLElement::BodyScrollTop	 DontDelete
-  scrollWidth   KJS::HTMLElement::BodyScrollWidth DontDelete|ReadOnly
-  scrollHeight  KJS::HTMLElement::BodyScrollHeight DontDelete|ReadOnly
   onload        KJS::HTMLElement::BodyOnLoad     DontDelete
 @end
 @begin HTMLFormElementTable 11
@@ -1145,7 +1137,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   clip	  	  KJS::HTMLElement::LayerClip			DontDelete|ReadOnly
   layers	  KJS::HTMLElement::LayerLayers			DontDelete|ReadOnly
 @end
-@begin HTMLFrameElementTable 9
+@begin HTMLFrameElementTable 13
   contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
   contentWindow KJS::HTMLElement::FrameContentWindow        DontDelete|ReadOnly
   frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
@@ -1157,6 +1149,9 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   scrolling	  KJS::HTMLElement::FrameScrolling		DontDelete
   src		  KJS::HTMLElement::FrameSrc			DontDelete
   location	  KJS::HTMLElement::FrameLocation		DontDelete
+# IE extension
+  width		  KJS::HTMLElement::FrameWidth			DontDelete|ReadOnly
+  height	  KJS::HTMLElement::FrameHeight			DontDelete|ReadOnly
 @end
 @begin HTMLIFrameElementTable 12
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
@@ -1663,20 +1658,6 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         //Value nodeValue(kjsDocNode);
         return kjsDocNode->getListener( DOM::EventImpl::LOAD_EVENT );
     }
-    default:
-      // Update the document's layout before we compute these attributes.
-      DOM::DocumentImpl* docimpl = impl()->getDocument();
-      if (docimpl)
-        docimpl->updateLayout();
-
-      switch( token ) {
-      case BodyScrollLeft:
-        return Number(body.getDocument()->view() ? body.getDocument()->view()->contentsX() : 0);
-      case BodyScrollTop:
-        return Number(body.getDocument()->view() ? body.getDocument()->view()->contentsY() : 0);
-      case BodyScrollHeight:   return Number(body.getDocument()->view() ? body.getDocument()->view()->contentsHeight() : 0);
-      case BodyScrollWidth:    return Number(body.getDocument()->view() ? body.getDocument()->view()->contentsWidth() : 0);
-      }
     }
   }
   break;
@@ -1911,6 +1892,14 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
             return Window::retrieveWindow(part);
         else
             return Undefined();
+      }
+    // IE only
+    case FrameWidth:
+    case FrameHeight:
+      {
+          frameElement.getDocument()->updateLayout();
+          khtml::RenderObject* r = frameElement.renderer();
+          return Number( r ? (token == FrameWidth ? r->width() : r->height()) : 0 );
       }
     }
   }
@@ -2420,21 +2409,6 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
     case ID_BODY: {
       DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
       switch (token) {
-      case BodyScrollLeft:
-      case BodyScrollTop: {
-        Q3ScrollView* sview = body.getDocument()->view();
-        if (sview) {
-          // Update the document's layout before we compute these attributes.
-          DOM::DocumentImpl* docimpl = body.getDocument();
-          if (docimpl)
-            docimpl->updateLayout();
-          if (token == BodyScrollLeft)
-            sview->setContentsPos(value->toInteger(exec), sview->contentsY());
-          else
-            sview->setContentsPos(sview->contentsX(), value->toInteger(exec));
-          }
-        return;
-      }
       case BodyOnLoad:
         DOM::DocumentImpl *doc = element.getDocument();
         if (doc && checkNodeSecurity(exec, impl()))
@@ -2587,6 +2561,9 @@ const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c)
   : DOMObject(HTMLCollectionProto::self(exec)), m_impl(c), hidden(false) {}
+  
+KJS::HTMLCollection::HTMLCollection(ObjectImp* proto, DOM::HTMLCollectionImpl* c)
+  : DOMObject(proto), m_impl(c), hidden(false) {}
 
 KJS::HTMLCollection::~HTMLCollection()
 {
@@ -2795,6 +2772,22 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
   }
 }
 
+// -------------------------------------------------------------------------
+/* Source for HTMLSelectCollectionProtoTable.
+@begin HTMLSelectCollectionProtoTable 1
+  add		HTMLSelectCollection::Add		DontDelete|Function 2
+@end
+*/
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLSelectCollectionProto, HTMLCollectionProto)
+KJS_IMPLEMENT_PROTOFUNC(HTMLSelectCollectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto, HTMLSelectCollectionProtoFunc)
+
+const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
+
+KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, 
+                                                DOM::HTMLSelectElementImpl* e)
+      : HTMLCollection(HTMLSelectCollectionProto::self(exec), c), element(e) { }
+
 ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
@@ -2896,6 +2889,53 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
   // finally add the new element
   element->add(option, before, exception);
 }
+
+
+ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+{
+  KJS_CHECK_THIS( KJS::HTMLSelectCollection, thisObj );
+  DOM::HTMLSelectElementImpl* element = static_cast<KJS::HTMLSelectCollection *>(thisObj)->toElement();
+
+  switch (id) {
+  case KJS::HTMLSelectCollection::Add:
+  {
+    //Non-standard select.options.add. 
+    //The first argument is the item, 2nd is offset.
+    //IE and Mozilla are both quite picky here, too...
+    DOM::NodeImpl* node = KJS::toNode(args[0]);
+    if (!node || node->id() != ID_OPTION)
+      return throwError(exec, GeneralError, "Invalid argument to HTMLOptionsCollection::add");
+
+    DOM::HTMLOptionElementImpl* option = static_cast<DOM::HTMLOptionElementImpl*>(node);
+
+    int  pos = 0;
+    //By default append, if not specified or null..
+    if (args[1]->isUndefined())
+      pos = element->length();
+    else
+      pos = (int)args[1]->toNumber(exec);
+      
+    if (pos < 0)
+      return throwError(exec, GeneralError, "Invalid index argument to HTMLOptionsCollection::add");
+    
+    DOMExceptionTranslator exception(exec);
+    if (pos >= element->length()) {
+      //Append
+      element->add(option, 0, exception); 
+    } else {
+      //Find what to prepend before..
+      QVector<HTMLGenericFormElementImpl*> items = element->listItems();
+      int dummy;
+      element->insertBefore(option, items.at(pos), dummy);
+    }
+    return Undefined();
+    break;
+  }
+  default:
+    return Undefined();
+  }
+}
+
 
 ////////////////////// Option Object ////////////////////////
 

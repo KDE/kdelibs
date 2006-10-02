@@ -332,7 +332,7 @@ void XMLHttpRequest::send(const QString& _body)
 
     // FIXME: determine post encoding correctly by looking in headers
     // for charset.
-    QByteArray buf = QByteArray(_body.toUtf8().data(), _body.length());
+    QByteArray buf = _body.toUtf8();
 
     job = KIO::http_post( url, buf, false );
     if(contentType.isNull())
@@ -708,7 +708,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
     }
   case XMLHttpRequest::Send:
     {
-      if (args.size() != 1) {
+      if (args.size() > 1) {
         return Undefined();
       }
 
@@ -717,20 +717,21 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       }
 
       QString body;
-      DOM::NodeImpl* docNode = toNode(args[0]);
-      if (docNode && docNode->isDocumentNode()) {
-        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
-
-        try {
-          body = doc->toString().string();
-          // FIXME: also need to set content type, including encoding!
-
-        } catch(DOM::DOMException& e) {
-          ObjectImp* err = Error::create(exec, GeneralError, "Exception serializing document");
-          exec->setException(err);
+      if (args.size() >= 1) {
+        DOM::NodeImpl* docNode = toNode(args[0]);
+        if (docNode && docNode->isDocumentNode()) {
+          DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
+          
+          try {
+            body = doc->toString().string();
+            // FIXME: also need to set content type, including encoding!
+  
+          } catch(DOM::DOMException& e) {
+            return throwError(exec, GeneralError, "Exception serializing document");
+          }
+        } else {
+          body = args[0]->toString(exec).qstring();
         }
-      } else {
-        body = args[0]->toString(exec).qstring();
       }
 
       request->send(body);

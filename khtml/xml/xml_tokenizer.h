@@ -26,6 +26,8 @@
 #include <qxml.h>
 #include <q3ptrlist.h>
 #include <q3ptrstack.h>
+#include <QStack>
+#include <QMap>
 #include <qobject.h>
 #include "misc/loader_client.h"
 #include "misc/stringit.h"
@@ -65,6 +67,13 @@ public:
     bool characters(const QString& ch);
     bool comment(const QString & ch);
     bool processingInstruction(const QString &target, const QString &data);
+    
+    // namespace handling, to workaround problem in QXML where some attributes
+    // do not get the namespace resolved properly
+    bool startPrefixMapping(const QString& prefix, const QString& uri);
+    bool endPrefixMapping(const QString& prefix);
+    void fixUpNSURI(QString& uri, const QString& qname);
+    QMap<QString, QStack<QString> > namespaceInfo;
 
 
     // from QXmlDeclHandler

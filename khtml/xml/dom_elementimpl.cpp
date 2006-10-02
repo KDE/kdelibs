@@ -176,8 +176,10 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     m_value = v.implementation();
     m_value->ref();
 
-    if (m_element)
+    if (m_element) {
         m_element->parseAttribute(m_attrId,m_value);
+        m_element->attributeChanged(m_attrId);
+    }
 }
 
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
@@ -264,8 +266,10 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 	m_data.value = value;
 	m_data.value->ref();
 
-	if (element)
+	if (element) {
 	    element->parseAttribute(this);
+	    element->attributeChanged(m_attrId);
+        }
     }
     else {
 	int exceptioncode = 0;
@@ -363,7 +367,6 @@ void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value, const DO
         return;
     }
     attributes()->setValue(id, value.implementation(), (qName.isEmpty() ? 0: qName.implementation()));
-    attributeChanged(id);
 }
 
 void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
@@ -385,14 +388,12 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
                             prefix.implementation(), localName.implementation(), false, true /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
                            true /*nsAware*/, !namespaceURI.isNull() /*hasNS*/);
-    attributeChanged(id);
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
 {
     int exceptioncode = 0;
     setAttribute(id,value,DOMString(),exceptioncode);
-    attributeChanged(id);
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -418,8 +419,10 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
         assert(namedAttrMap->m_element == 0);
         namedAttrMap->setElement(this);
         unsigned long len = namedAttrMap->length();
-        for (unsigned long i = 0; i < len; i++)
+        for (unsigned long i = 0; i < len; i++) {
             parseAttribute(&namedAttrMap->m_attrs[i]);
+            attributeChanged(namedAttrMap->m_attrs[i].id());
+        }
     }
 }
 
@@ -966,18 +969,22 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 
 DOMString ElementImpl::toString() const
 {
-    DOMString result = openTagStartToString();
+    QString result = openTagStartToString().string(); //Accumulate in QString, since DOMString can't append well.
 
     if (hasChildNodes()) {
 	result += ">";
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
-	    result += child->toString();
+	    DOMString kid = child->toString();
+	    result += QConstString(kid.unicode(), kid.length()).string();
 	}
 
 	result += "</";
-	result += tagName();
+	result += tagName().string();
 	result += ">";
+    } else if (result.length() == 1) {
+	// ensure we dont get results like < /> can happen when serialize document
+        result = "";
     } else {
 	result += " />";
     }
@@ -1132,6 +1139,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStrin
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
 	    m_element->parseAttribute(id,0);
+	    m_element->attributeChanged(id);
 	    return removed;
 	}
     }
@@ -1200,6 +1208,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
 	    m_attrs[i].m_data.attr->ref();
 	    attr->setElement(m_element);
 	    m_element->parseAttribute(&m_attrs[i]);
+	    m_element->attributeChanged(m_attrs[i].id());
 	    // ### dispatch mutation events
 	    return replaced;
 	}
@@ -1215,6 +1224,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     if (id == ATTR_ID)
         m_element->updateId(0, attr->val());
     m_element->parseAttribute(&m_attrs[m_attrCount-1]);
+    m_element->attributeChanged(m_attrs[m_attrCount-1].id());
     // ### dispatch mutation events
 
     return 0;
@@ -1322,6 +1332,7 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
 	if (id == ATTR_ID)
 	    m_element->updateId(0, value);
 	m_element->parseAttribute(&m_attrs[m_attrCount-1]);
+	m_element->attributeChanged(m_attrs[m_attrCount-1].id());
     }
     // ### dispatch mutation events
 }
@@ -1339,6 +1350,7 @@ Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
 	    m_element->parseAttribute(id,0);
+	    m_element->attributeChanged(id);
 	    // ### dispatch mutation events
 	    return removed;
 	}
@@ -1382,6 +1394,7 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	if (m_attrs[i].id() == ATTR_ID)
 	   m_element->updateId(0, m_attrs[i].val());
 	m_element->parseAttribute(&m_attrs[i]);
+	m_element->attributeChanged(m_attrs[i].id());
     }
 }
 

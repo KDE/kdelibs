@@ -265,6 +265,14 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
     return "";
 }
 
+static CSSPrimitiveValueImpl* valueForColor(QColor color)
+{
+    if (color.isValid())
+        return new CSSPrimitiveValueImpl(color.rgb());//### KDE4: use rgba!
+    else
+        return new CSSPrimitiveValueImpl(khtml::transparentColor);
+}
+
 static CSSValueImpl* valueForShadow(const ShadowData *shadow)
 {
     if (!shadow)
@@ -274,7 +282,7 @@ static CSSValueImpl* valueForShadow(const ShadowData *shadow)
         CSSPrimitiveValueImpl *x = new CSSPrimitiveValueImpl(s->x, CSSPrimitiveValue::CSS_PX);
         CSSPrimitiveValueImpl *y = new CSSPrimitiveValueImpl(s->y, CSSPrimitiveValue::CSS_PX);
         CSSPrimitiveValueImpl *blur = new CSSPrimitiveValueImpl(s->blur, CSSPrimitiveValue::CSS_PX);
-        CSSPrimitiveValueImpl *color = new CSSPrimitiveValueImpl(s->color.rgb());
+        CSSPrimitiveValueImpl *color = valueForColor(s->color);
         list->append(new ShadowValueImpl(x, y, blur, color));
     }
     return list;
@@ -309,16 +317,15 @@ static CSSValueImpl *getPositionOffsetValue(RenderObject *renderer, int property
 
     if (renderer->isPositioned())
         return valueForLength(l, renderer->contentWidth());
-    
+
     if (renderer->isRelPositioned())
         // FIXME: It's not enough to simply return "auto" values for one offset if the other side is defined.
         // In other words if left is auto and right is not auto, then left's computed value is negative right.
         // So we should get the opposite length unit and see if it is auto.
         return valueForLength(l, renderer->contentWidth());
-    
+
     return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
  }
-
 
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl(0), m_node(node)
@@ -374,7 +381,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     switch(propertyID)
     {
     case CSS_PROP_BACKGROUND_COLOR:
-        return new CSSPrimitiveValueImpl(style->backgroundColor().rgb());
+        return valueForColor(style->backgroundColor());
     case CSS_PROP_BACKGROUND_IMAGE:
         if (style->backgroundImage())
             return new CSSPrimitiveValueImpl(style->backgroundImage()->url(),
@@ -438,13 +445,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl(style->borderVerticalSpacing(),
                                          CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_BORDER_TOP_COLOR:
-        return new CSSPrimitiveValueImpl(style->borderTopColor().rgb());
+        return valueForColor(style->borderTopColor());
     case CSS_PROP_BORDER_RIGHT_COLOR:
-        return new CSSPrimitiveValueImpl(style->borderRightColor().rgb());
+        return valueForColor(style->borderRightColor());
     case CSS_PROP_BORDER_BOTTOM_COLOR:
-        return new CSSPrimitiveValueImpl(style->borderBottomColor().rgb());
+        return valueForColor(style->borderBottomColor());
     case CSS_PROP_BORDER_LEFT_COLOR:
-        return new CSSPrimitiveValueImpl(style->borderLeftColor().rgb());
+        return valueForColor(style->borderLeftColor());
     case CSS_PROP_BORDER_TOP_STYLE:
         return valueForBorderStyle(style->borderTopStyle());
     case CSS_PROP_BORDER_RIGHT_STYLE:
@@ -492,7 +499,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_CLIP:
         break;
     case CSS_PROP_COLOR:
-        return new CSSPrimitiveValueImpl(style->color().rgb());
+        return valueForColor(style->color());
     case CSS_PROP_CONTENT:
         break;
     case CSS_PROP_COUNTER_INCREMENT:
@@ -1112,7 +1119,7 @@ CSSProperty RenderStyleDeclarationImpl::property( int id ) const
 {
     CSSProperty prop;
     prop.m_id = id;
-    prop.m_bImportant = false;
+    prop.m_important = false;
     prop.nonCSSHint = false;
 
     CSSValueImpl* v = getPropertyCSSValue( id );

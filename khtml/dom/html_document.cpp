@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -150,6 +150,12 @@ HTMLCollection HTMLDocument::applets() const
 {
     if(!impl) return HTMLCollection();
     return ((HTMLDocumentImpl*)impl)->applets();
+}
+
+HTMLCollection HTMLDocument::scripts() const
+{
+    if(!impl) return HTMLCollection();
+    return ((HTMLDocumentImpl*)impl)->scripts();
 }
 
 HTMLCollection HTMLDocument::links() const

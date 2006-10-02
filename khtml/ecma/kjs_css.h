@@ -57,6 +57,7 @@ namespace KJS {
     SharedPtr<DOM::CSSStyleDeclarationImpl> m_impl;
   };
 
+  DEFINE_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor)
   ValueImp* getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* n);
 
   class DOMStyleSheet : public DOMObject {

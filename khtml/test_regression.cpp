@@ -32,6 +32,7 @@
 
 #include <kapplication.h>
 #include <kacceleratormanager.h>
+#include <kstandarddirs.h>
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
@@ -258,8 +259,8 @@ using namespace khtml;
 using namespace DOM;
 using namespace KJS;
 
-bool visual = false;
-pid_t xvfb;
+static bool visual = false;
+static pid_t xvfb;
 
 // -------------------------------------------------------------------------
 
@@ -329,7 +330,7 @@ void PartMonitor::partCompleted()
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
-void signal_handler( int )
+static void signal_handler( int )
 {
     printf( "timeout\n" );
     abort();
@@ -607,6 +608,9 @@ int main(int argc, char *argv[])
 
     signal( SIGALRM, signal_handler );
 
+    // workaround various Qt crashes by always enforcing a TrueColor visual
+    QApplication::setColorSpec( QApplication::ManyColor );
+
     KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
                        "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
@@ -637,16 +641,33 @@ int main(int argc, char *argv[])
 
     if (args->isSet("xvfb"))
     {
-    if ( ::access( "/usr/X11R6/bin/Xvfb", X_OK ) ) {
-        fprintf( stderr, "ERROR: We need /usr/X11R6/bin/Xvfb to be installed for reliable results\n" );
-        exit( 1 );
-    }
+        QString xvfbPath = KStandardDirs::findExe("Xvfb");
+        if ( xvfbPath.isEmpty() ) {
+            fprintf( stderr, "ERROR: We need Xvfb to be installed for reliable results\n" );
+            exit( 1 );
+        }
+        
+        QByteArray xvfbPath8 = QFile::encodeName(xvfbPath);
+        QStringList fpaths;
+        fpaths.append(baseDir+"/resources");
+
+        const char* const fontdirs[] = { "75dpi", "misc", "Type1" };
+        const char* const fontpaths[] =  {"/usr/share/fonts/", "/usr/X11/lib/X11/fonts/",
+            "/usr/lib/X11/fonts/", "/usr/share/fonts/X11/" };
+
+        for (size_t fp=0; fp < sizeof(fontpaths)/sizeof(*fontpaths); ++fp)
+            for (size_t fd=0; fd < sizeof(fontdirs)/sizeof(*fontdirs); ++fd)
+                if (QFile::exists(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd])))
+                    if (strcmp(fontdirs[fd] , "Type1"))
+                        fpaths.append(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd])+":unscaled");
+                    else
+                        fpaths.append(QLatin1String(fontpaths[fp])+QLatin1String(fontdirs[fd]));
 
         xvfb = fork();
         if ( !xvfb ) {
-            char buffer[1000];
-            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1,/usr/share/fonts/X11/misc,/usr/share/fonts/X11/75dpi:unscaled,/usr/share/fonts/X11/Type1", (const char *)baseDir );
-            execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-once", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", (char*)NULL );
+            QByteArray buffer = fpaths.join(",").toLatin1();
+            execl( xvfbPath8.data(), xvfbPath8.data(), "-once", "-dpi", "100", "-screen", "0",
+                    "1024x768x16", "-ac", "-fp", buffer.data(), ":47", (char*)NULL );
         }
 
         setenv( "DISPLAY", ":47", 1 );
@@ -1424,7 +1445,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     if (filename.endsWith(".html") || filename.endsWith(".htm")) args.serviceType = "text/html";
     else if (filename.endsWith(".xhtml")) args.serviceType = "application/xhtml+xml";
     else if (filename.endsWith(".xml")) args.serviceType = "text/xml";
-    m_part->browserExtension()->setURLArgs(args);
+    m_part->browserExtension()->setUrlArgs(args);
     // load page
     KUrl url;
     url.setProtocol("file");
@@ -1778,7 +1799,7 @@ void RegressionTest::createMissingDirs(const QString & filename)
 
 void RegressionTest::slotOpenURL(const KUrl &url, const KParts::URLArgs &args)
 {
-    m_part->browserExtension()->setURLArgs( args );
+    m_part->browserExtension()->setUrlArgs( args );
 
     PartMonitor pm(m_part);
     m_part->openUrl(url);

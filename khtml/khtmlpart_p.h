@@ -258,6 +258,7 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
+  KUrlLabel* m_statusBarIconLabel;
   KUrlLabel* m_statusBarWalletLabel;
   KUrlLabel* m_statusBarUALabel;
   KUrlLabel* m_statusBarJSErrorLabel;

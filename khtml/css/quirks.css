@@ -24,6 +24,7 @@ TABLE {
     color: -khtml-text;
     font-size: medium;
     empty-cells: hide;
+    text-align: -khtml-auto;
 }
 
 LAYER {

@@ -398,6 +398,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     //p = 0;
     //pixPart = 0;
     bg = 0;
+    scaled = 0;
     bgColor = qRgba( 0, 0, 0, 0xFF );
     typeChecked = false;
     isFullyTransparent = false;
@@ -451,7 +452,7 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
-const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
+QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 {
     QColor color = newc;
 
@@ -467,7 +468,16 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 #endif
 
     static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
-    if ( (bgColor != bgTransparent) && (bgColor != newc.rgba()) ) {
+
+    QSize s(pixmap_size());
+    int w = xWidth;
+    int h = xHeight;
+    if (w == -1) xWidth = w = s.width();
+    if (h == -1) xHeight = h = s.height();
+
+    if ( ( (bgColor != bgTransparent) && (bgColor != newc.rgba()) ) ||
+         ( bgSize != QSize(xWidth, xHeight)) )
+    {
         delete bg; bg = 0;
     }
 
@@ -479,37 +489,92 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (!haveBgColor)
         color = Qt::transparent;
 
-    //See whether/how much we should tile.
-    //### FIXME: restore support for mask-only case.
-    int w = i->size().width();
-    int h = i->size().height();
-    QSize s(i->size());
-    if ( w*h < 8192 )
-    {
-        if ( s.width() < BGMINWIDTH )
-            w = ((BGMINWIDTH  / s.width())+1) * s.width();
-        if ( s.height() < BGMINHEIGHT )
-            h = ((BGMINHEIGHT / s.height())+1) * s.height();
+    const QPixmap* src; //source for pretiling, if any
+
+    const QPixmap &r = pixmap();
+    if (r.isNull()) return r;
+
+    //See whether we should scale
+    if (xWidth != s.width() || xHeight != s.height()) {
+        src = &scaled_pixmap(xWidth, xHeight);
+    } else {
+        src = &r;
     }
 
-    QPixmap r (w, h);
-    r.fill(color); //Fill with the appropriate bg color/transparency
+    bgSize = QSize(xWidth, xHeight);
 
-    QPainter paint(&r);
-    ImagePainter pi(i);
-    //Tile as far as needed...
-    for (int x = 0; x < w; x += i->size().width())
-        for (int y = 0; y < h; y += i->size().height())
-            pi.paint(x, y, &paint);
+    //See whether we can - and should - pre-blend
+    if (haveBgColor && (r.hasAlpha() || r.hasAlphaChannel())) {
+        bg = new QPixmap(xWidth, xHeight);
+        bg->fill(newc);
+        bitBlt(bg, 0, 0, src);
+        bgColor = newc.rgb();
+        src     = bg;
+    } else {
+        bgColor = bgTransparent;
+    }
+
+    //See whether to pre-tile.
+    if ( w*h < 8192 )
+    {
+        if ( r.width() < BGMINWIDTH )
+            w = ((BGMINWIDTH-1) / xWidth + 1) * xWidth;
+        if ( r.height() < BGMINHEIGHT )
+            h = ((BGMINHEIGHT-1) / xHeight + 1) * xHeight;
+    }
+    
+    if ( w != xWidth  || h != xHeight )
+    {
+//         kdDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
+        QPixmap* oldbg = bg;
+        bg = new QPixmap(w, h);
+        bg->fill(bgColor);
+
+        //Tile horizontally on the first stripe
+        for (int x = 0; x < w; x += xWidth)
+            bitBlt(bg, x, 0, src, 0, 0, xWidth, xHeight);
+
+        //Copy first stripe down
+        for (int y = xHeight; y < h; y += xHeight)
+            bitBlt(bg, 0, y, bg, 0, 0, w, xHeight);
+
+        if ( src == oldbg )
+            delete oldbg;
+    }
+
+    if (bg)
+        return *bg;
+
+    return *src;
+}
+
+
+QPixmap CachedImage::scaled_pixmap( int xWidth, int xHeight )
+{
+    // no error indication for background images
+    if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
+
+    // If we don't have size yet, nothing to draw yet
+    if (i->size().width() == 0 || i->size().height() == 0)
+        return *Cache::nullPixmap;
+
+    if (scaled) {
+        if (scaled->width() == xWidth && scaled->height() == xHeight)
+            return *scaled;
+        delete scaled;
+    }
+
+    //### this is quite awful performance-wise
+    QImage im(i->size().width(), i->size().height(), QImage::Format_ARGB32_Premultiplied);
+
+    QPainter paint(&im);
+    ImagePainter pi(i, QSize(xWidth, xHeight));
+    pi.paint(0, 0, &paint);
     paint.end();
 
-    if (haveBgColor)
-        bgColor = color.rgb();
-    else
-        bgColor = bgTransparent;
+    scaled = new QPixmap(QPixmap::fromImage(im));
 
-    bg = new QPixmap(r);
-    return *bg;
+    return *scaled;
 }
 
 QPixmap CachedImage::pixmap( ) const
@@ -526,10 +591,7 @@ QPixmap CachedImage::pixmap( ) const
 
     QPainter paint(&im);
     ImagePainter pi(i);
-    //Tile as far as needed...
-    for (int x = 0; x < w; x += i->size().width())
-        for (int y = 0; y < h; y += i->size().height())
-            pi.paint(x, y, &paint);
+    pi.paint(0, 0, &paint);
     paint.end();
     return QPixmap::fromImage( im );
 }
@@ -740,11 +802,10 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
 void CachedImage::clear()
 {
     delete i;   i = new khtmlImLoad::Image(this);
+    delete scaled;  scaled = 0;
     bgColor = qRgba( 0, 0, 0, 0xff );
     delete bg;  bg = 0;
-/*    delete p;   p = 0;
-
-    delete pixPart; pixPart = 0; */
+    bgSize = QSize(-1,-1);
 
     formatType = 0;
     typeChecked = false;
@@ -1302,10 +1363,34 @@ void Cache::clear()
     cache->setAutoDelete( true );
 
 #ifndef NDEBUG
-    for (Q3DictIterator<CachedObject> it(*cache); it.current(); ++it)
-        assert(it.current()->canDelete());
-    foreach (CachedObject* co, *freeList)
-        assert(co->canDelete());
+    bool crash = false;
+    for (Q3DictIterator<CachedObject> it(*cache); it.current(); ++it) {
+        if (!it.current()->canDelete()) {
+            kdDebug( 6060 ) << " Object in cache still linked to" << endl;
+            kdDebug( 6060 ) << " -> URL: " << it.current()->url() << endl;
+            kdDebug( 6060 ) << " -> #clients: " << it.current()->count() << endl;
+            crash = true;
+//         assert(it.current()->canDelete());
+        }
+    }
+    foreach (CachedObject* co, *freeList) {
+        if (!co->canDelete()) {
+            kdDebug( 6060 ) << " Object in freelist still linked to" << endl;
+            kdDebug( 6060 ) << " -> URL: " << co->url() << endl;
+            kdDebug( 6060 ) << " -> #clients: " << co->count() << endl;
+            crash = true;
+            /*
+            QPtrDictIterator<CachedObjectClient> it(freeList->current()->m_clients);
+            for(;it.current(); ++it) {
+                if (dynamic_cast<RenderObject*>(it.current())) {
+                    kdDebug( 6060 ) << " --> RenderObject" << endl;
+                } else
+                    kdDebug( 6060 ) << " --> Something else" << endl;
+            }*/
+        }
+//         assert(freeList->current()->canDelete());
+    }
+    assert(!crash);
 #endif
 
     delete cache; cache = 0;

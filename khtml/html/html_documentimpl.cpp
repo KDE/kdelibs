@@ -567,5 +567,9 @@ HTMLCollectionImpl* HTMLDocumentImpl::all()
     return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_ALL);
 }
 
+HTMLCollectionImpl* HTMLDocumentImpl::scripts()
+{
+    return new HTMLCollectionImpl(this, HTMLCollectionImpl::DOC_SCRIPTS);
+}
 
 #include "html_documentimpl.moc"

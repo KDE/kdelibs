@@ -23,6 +23,7 @@
 #define RENDER_GENERATED_H
 
 #include "rendering/render_text.h"
+#include "rendering/render_box.h"
 
 namespace DOM {
     class CounterImpl;
@@ -87,6 +88,36 @@ public:
 
 protected:
     EQuoteContent m_quoteType;
+};
+
+// -----------------------------------------------------------------------------
+
+// Is actually a special case of renderCounter for non-counted list-styles
+// These have traditionally been drawn rather than use Unicode characters
+class RenderGlyph : public RenderBox
+{
+public:
+    RenderGlyph(DOM::NodeImpl* node, EListStyleType type);
+    virtual ~RenderGlyph() {};
+
+    virtual const char *renderName() const { return "RenderGlyph"; }
+
+    virtual void paint(PaintInfo& paintInfo, int _tx, int _ty);
+    virtual void calcMinMaxWidth();
+
+    virtual void setStyle(RenderStyle *_style);
+
+    virtual short lineHeight( bool firstLine ) const;
+    virtual short baselinePosition( bool firstLine ) const;
+
+    virtual bool isGlyph() const { return true; }
+
+    virtual void position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/) {
+        setPos( box->xPos(), box->yPos() );
+    }
+
+protected:
+    EListStyleType m_type;
 };
 
 } //namespace

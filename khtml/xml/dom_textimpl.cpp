@@ -39,25 +39,7 @@ using namespace khtml;
 
 static DOMString escapeHTML( const DOMString& in )
 {
-    //FIXME: this is rather slow
-    DOMString s;
-    for ( unsigned int i = 0; i < in.length(); ++i ) {
-        switch( in[i].toLatin1() ) {
-        case '&':
-            s += "&amp;";
-            break;
-        case '<':
-            s += "&lt;";
-            break;
-        case '>':
-            s += "&gt;";
-            break;
-        default:
-            s += DOMString( QString(in[i]) );
-        }
-    }
-
-    return s;
+    return in.implementation()->escapeHTML();
 }
 
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)
@@ -395,19 +377,20 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
         return true;
     }
     
-    if (par->isInline()) {
+    RenderObject *prev = previousRenderer();
+    if (par->isInlineFlow()) {
         // <span><div/> <div/></span>
-        RenderObject *prev = previousRenderer();
-        if (prev && prev->isRenderBlock()) {
+        if (prev && !prev->isInline()) {
             return false;
         }
     } else {
-        RenderObject *prev = previousRenderer();
         if (par->isRenderBlock() && !par->childrenInline() && (!prev || !prev->isInline())) {
             return false;
         }
         
         RenderObject *first = par->firstChild();
+        while (first && first->isFloatingOrPositioned())
+            first = first->nextSibling();
         RenderObject *next = nextRenderer();
         if (!first || next == first) {
             // Whitespace at the start of a block just goes away.  Don't even

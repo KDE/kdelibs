@@ -388,13 +388,14 @@ void HTMLTokenizer::scriptHandler()
 
     // Scripts following a frameset element should not be executed or even loaded in the case of extern scripts.
     bool followingFrameset = (parser->doc()->body() && parser->doc()->body()->id() == ID_FRAMESET);
+    bool effectiveScript = !parser->skipMode() && !followingFrameset;
     bool deferredScript = false;
 
-    if ( !parser->skipMode() && !followingFrameset) {
+    if ( effectiveScript ) {
         CachedScript* cs = 0;
 
         // forget what we just got, load from src url instead
-        if ( !currentScriptSrc.isEmpty() &&
+        if ( !currentScriptSrc.isEmpty() && javascript && 
              (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) )) {
             cachedScript.enqueue(cs);
         }
@@ -413,13 +414,16 @@ void HTMLTokenizer::scriptHandler()
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
+        } else {
+            // script was filtered or disallowed
+            effectiveScript = false;
         }
     }
 
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
-    if (parser->skipMode() || followingFrameset)
+    if ( !effectiveScript )
         return;
 
     if ( !m_executingScript && cachedScript.isEmpty() ) {
@@ -427,8 +431,8 @@ void HTMLTokenizer::scriptHandler()
     } else if ( cachedScript.isEmpty() ) {
         write( pendingQueue.pop(), false );
     } else if ( !deferredScript && pendingQueue.count() > 1) {
-       TokenizerString t = pendingQueue.pop();
-       pendingQueue.top().prepend( t );
+        TokenizerString t = pendingQueue.pop();
+        pendingQueue.top().prepend( t );
     }
 }
 
@@ -900,8 +904,17 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
-                        if ( !a )
-                            attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
+
+                        if ( !a ) {
+                            // did we just get /> or e.g checked/>
+                            if (curchar == '>' && cBufferPos >=1 && cBuffer[cBufferPos-1] == '/') {
+                                currToken.flat = true;
+                                if (cBufferPos>1)
+                                    a = khtml::getAttrID(cBuffer, cBufferPos-1);
+                            }
+                            if (!a)
+                                attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
+                        }
 
                         dest = buffer;
                         *dest++ = a;
@@ -911,9 +924,6 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         else
                             kDebug( 6036 ) << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data() << endl;
 #endif
-                        // did we just get />
-                        if (!a && cBufferPos == 1 && *cBuffer == '/' && curchar == '>')
-                            currToken.flat = true;
 
                         tag = SearchEqual;
                         break;
@@ -1144,6 +1154,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/ecmascript") != 0 &&
                         type.compare("text/livescript") != 0 &&
 			type.compare("application/x-javascript") != 0 &&
+			type.compare("application/x-ecmascript") != 0 &&
+			type.compare("application/javascript") != 0 && 
 			type.compare("application/ecmascript") != 0 )
                         javascript = false;
                 } else if( a ) {
@@ -1317,7 +1329,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         return;
     }
 
-    setSrc(str);
+    if (!src.isEmpty())
+        src.append(str);
+    else
+        setSrc(str);
     m_abort = false;
 
 //     if (Entity)

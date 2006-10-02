@@ -50,6 +50,25 @@
 using namespace KJS;
 
 // -------------------------------------------------------------------------
+/* Source for DOMNodeConstantsTable.
+@begin DOMNodeConstantsTable 11
+  ELEMENT_NODE      DOM::Node::ELEMENT_NODE     DontDelete|ReadOnly
+  ATTRIBUTE_NODE    DOM::Node::ATTRIBUTE_NODE       DontDelete|ReadOnly
+  TEXT_NODE     DOM::Node::TEXT_NODE        DontDelete|ReadOnly
+  CDATA_SECTION_NODE    DOM::Node::CDATA_SECTION_NODE   DontDelete|ReadOnly
+  ENTITY_REFERENCE_NODE DOM::Node::ENTITY_REFERENCE_NODE    DontDelete|ReadOnly
+  ENTITY_NODE       DOM::Node::ENTITY_NODE      DontDelete|ReadOnly
+  PROCESSING_INSTRUCTION_NODE DOM::Node::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
+  COMMENT_NODE      DOM::Node::COMMENT_NODE     DontDelete|ReadOnly
+  DOCUMENT_NODE     DOM::Node::DOCUMENT_NODE        DontDelete|ReadOnly
+  DOCUMENT_TYPE_NODE    DOM::Node::DOCUMENT_TYPE_NODE   DontDelete|ReadOnly
+  DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE  DontDelete|ReadOnly
+  NOTATION_NODE     DOM::Node::NOTATION_NODE        DontDelete|ReadOnly
+@end
+*/
+IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
+
+// -------------------------------------------------------------------------
 /* Source for DOMNodeProtoTable.
 @begin DOMNodeProtoTable 13
   insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
@@ -73,16 +92,19 @@ using namespace KJS;
   item          DOMNode::Item           DontDelete|Function 1
 @end
 */
-KJS_DEFINE_PROTOTYPE(DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNode", DOMNodeProto, DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
 DOMNode::DOMNode(ExecState *exec, DOM::NodeImpl* n)
   : DOMObject(DOMNodeProto::self(exec)), m_impl(n)
-{
-}
+{}
+
+DOMNode::DOMNode(ObjectImp *proto, DOM::NodeImpl* n)
+  : DOMObject(proto), m_impl(n)
+{}
+
 
 DOMNode::~DOMNode()
 {
@@ -162,6 +184,46 @@ bool DOMNode::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName
   kDebug(6070) << "DOMNode::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
   return getStaticValueSlot<DOMNode, DOMObject>(exec, &DOMNodeTable, this, propertyName, slot);
+}
+
+static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml::RenderObject* rend, int token)
+{
+  //This emulates the quirks of various height/width properties on the viewport and root. Note that it 
+  //is (mostly) IE-compatible in quirks, and mozilla-compatible in strict.
+  if (!rend) return 0;
+
+  bool quirksMode = rend->style() && rend->style()->htmlHacks();
+  
+  //There are a couple quirks here. One is that in quirks mode body is always forwarded to root...
+  //This is relevant for even the scrollTop/scrollLeft type properties.
+  if (quirksMode && node->id() == ID_BODY) {
+    while (rend->parent() && !rend->isRoot())
+      rend = rend->parent();
+  }
+
+  //Also, some properties of the root are really done in terms of the viewport.
+  //These are  {offset/client}{Height/Width}. The offset versions do it only in 
+  //quirks mode, the client always.
+  if (!rend->isRoot()) return rend; //Don't care about non-root things here!
+  bool needViewport = false;
+
+  switch (token) {
+    case DOMNode::OffsetHeight:
+    case DOMNode::OffsetWidth:
+      needViewport = quirksMode;
+      break;
+    case DOMNode::ClientHeight:
+    case DOMNode::ClientWidth:
+      needViewport = true;
+      break;
+  }
+  
+  if (needViewport) {
+    //Scan up to find the new target
+    while (rend->parent())
+      rend = rend->parent();
+  }
+  return rend;
 }
 
 ValueImp* DOMNode::getValueProperty(ExecState *exec, int token) const
@@ -276,6 +338,9 @@ ValueImp* DOMNode::getValueProperty(ExecState *exec, int token) const
     }
 
     khtml::RenderObject *rend = node.renderer();
+
+    //In quirks mode, may need to forward if to body.
+    rend = handleBodyRootQuirk(impl(), rend, token);
 
     switch (token) {
     case OffsetLeft:
@@ -420,6 +485,9 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
 
     khtml::RenderObject *rend = node.renderer();
 
+    //In quirks mode, may need to forward.
+    rend = handleBodyRootQuirk(impl(), rend, token);
+
     switch (token) {
       case ScrollLeft:
         if (rend && rend->layer()) {
@@ -532,12 +600,18 @@ ValueImp* DOMNodeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, 
     }
     case DOMNode::AppendChild:
       return getDOMNode(exec,node.appendChild(toNode(args[0]), exception));
-    case DOMNode::RemoveChild:
-      return getDOMNode(exec,node.removeChild(toNode(args[0]), exception));
+    case DOMNode::RemoveChild: {
+      SharedPtr<DOM::NodeImpl> oldKid = toNode(args[0]);
+      node.removeChild(oldKid.get(), exception);
+      return getDOMNode(exec, oldKid.get());
+    }
     case DOMNode::InsertBefore:
       return getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1]), exception));
-    case DOMNode::ReplaceChild:
-      return getDOMNode(exec,node.replaceChild(toNode(args[0]), toNode(args[1]), exception));
+    case DOMNode::ReplaceChild: {
+      SharedPtr<DOM::NodeImpl> oldKid = toNode(args[0]);
+      node.replaceChild(oldKid.get(), toNode(args[1]), exception);
+      return getDOMNode(exec, oldKid.get());
+    }
     case DOMNode::Contains:
     {
       DOM::NodeImpl* other = toNode(args[0]);
@@ -811,9 +885,11 @@ AttrImpl *toAttr(ValueImp *val)
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMDocumentProto, DOMNodeProto)
+
 KJS_IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc)
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor, "Document", DOMDocumentProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
@@ -821,6 +897,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
 @begin DOMDocumentTable 4
   doctype         DOMDocument::DocType                         DontDelete|ReadOnly
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
+  characterSet    DOMDocument::CharacterSet                    DontDelete|ReadOnly
   documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
   styleSheets     DOMDocument::StyleSheets                     DontDelete|ReadOnly
   preferredStylesheetSet  DOMDocument::PreferredStylesheetSet  DontDelete|ReadOnly
@@ -836,6 +913,10 @@ DOMDocument::DOMDocument(ExecState *exec, DOM::DocumentImpl* d)
 {
   setPrototype(DOMDocumentProto::self(exec));
 }
+
+DOMDocument::DOMDocument(ObjectImp *proto, DOM::DocumentImpl* d)
+  : DOMNode(proto, d)
+{}
 
 bool DOMDocument::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
@@ -857,6 +938,12 @@ ValueImp* DOMDocument::getValueProperty(ExecState *exec, int token) const
     return getDOMDOMImplementation(exec,doc.implementation());
   case DocumentElement:
     return getDOMNode(exec,doc.documentElement());
+  case CharacterSet: {
+    if (doc.part())
+      return String(doc.part()->encoding());
+    else
+      return Undefined();
+  }
   case StyleSheets:
     //kDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), &doc);
@@ -1051,6 +1138,8 @@ KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc)
 
+IMPLEMENT_PSEUDO_CONSTRUCTOR(ElementPseudoCtor, "Element", DOMElementProto)
+
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /* Source for DOMElementTable.
 @begin DOMElementTable 3
@@ -1139,12 +1228,12 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
     case DOMElement::GetAttributeNode:
       return getDOMNode(exec,element.getAttributeNode(args[0]->toString(exec).domString()));
     case DOMElement::SetAttributeNode: {
-      Attr old = element.setAttributeNode(toAttr(args[0]), exception);
-      return getDOMNode(exec, static_cast<AttrImpl*>(old.handle()));
+      DOM::Attr ret = element.setAttributeNode(KJS::toAttr(args[0]), exception);
+      return getDOMNode(exec, ret.handle());
     }
     case DOMElement::RemoveAttributeNode: {
-      Attr old = element.removeAttributeNode(toAttr(args[0]), exception);
-      return getDOMNode(exec,static_cast<AttrImpl*>(old.handle()));
+      DOM::Attr ret = element.removeAttributeNode(KJS::toAttr(args[0]), exception);
+      return getDOMNode(exec, ret.handle());
     }
     case DOMElement::GetElementsByTagName:
       return getDOMNodeList(exec,element.getElementsByTagName(args[0]->toString(exec).domString()));
@@ -1158,11 +1247,11 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
     case DOMElement::RemoveAttributeNS: // DOM2
       element.removeAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception);
       return Undefined();
-    case DOMElement::GetAttributeNodeNS: // DOM2 
+   case DOMElement::GetAttributeNodeNS: // DOM2 
       return getDOMNode(exec,element.getAttributeNodeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception));
-    case DOMElement::SetAttributeNodeNS: { // DOM2
-      Attr old = element.setAttributeNodeNS(toAttr(args[0]),exception);
-      return getDOMNode(exec,static_cast<AttrImpl*>(old.handle()));
+    case DOMElement::SetAttributeNodeNS: {
+      DOM::Attr toRet = element.setAttributeNodeNS(KJS::toAttr(args[0]), exception);
+      return getDOMNode(exec, toRet.handle());
     }
     case DOMElement::GetElementsByTagNameNS: // DOM2
       return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
@@ -1180,6 +1269,15 @@ DOM::ElementImpl *KJS::toElement(ValueImp *v)
     return static_cast<DOM::ElementImpl*>(node);
   return 0;
 }
+
+DOM::AttrImpl *KJS::toAttr(ValueImp *v)
+{
+  DOM::NodeImpl* node = toNode(v);
+  if (node && node->isAttributeNode())
+    return static_cast<DOM::AttrImpl*>(node);
+  return 0;
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -1370,8 +1468,8 @@ ValueImp* DOMNamedNodeMapProtoFunc::callAsFunction(ExecState *exec, ObjectImp *t
       return getDOMNode(exec, old.handle());
     }
     case DOMNamedNodeMap::RemoveNamedItem: {
-      DOM::Node old = map.removeNamedItem(args[0]->toString(exec).domString(),exception);
-      return getDOMNode(exec, old.handle());
+      DOM::Attr toRet = map.removeNamedItem(args[0]->toString(exec).domString(), exception);
+      return getDOMNode(exec, toRet.handle());
     }
     case DOMNamedNodeMap::Item:
       return getDOMNode(exec, map.item(args[0]->toInt32(exec)));
@@ -1587,76 +1685,7 @@ ValueImp* KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationIm
 
 // -------------------------------------------------------------------------
 
-const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructorTable, 0 };
-/* Source for NodeConstructorTable.
-@begin NodeConstructorTable 11
-  ELEMENT_NODE		DOM::Node::ELEMENT_NODE		DontDelete|ReadOnly
-  ATTRIBUTE_NODE	DOM::Node::ATTRIBUTE_NODE		DontDelete|ReadOnly
-  TEXT_NODE		DOM::Node::TEXT_NODE		DontDelete|ReadOnly
-  CDATA_SECTION_NODE	DOM::Node::CDATA_SECTION_NODE	DontDelete|ReadOnly
-  ENTITY_REFERENCE_NODE	DOM::Node::ENTITY_REFERENCE_NODE	DontDelete|ReadOnly
-  ENTITY_NODE		DOM::Node::ENTITY_NODE		DontDelete|ReadOnly
-  PROCESSING_INSTRUCTION_NODE DOM::Node::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
-  COMMENT_NODE		DOM::Node::COMMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_NODE		DOM::Node::DOCUMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_TYPE_NODE	DOM::Node::DOCUMENT_TYPE_NODE	DontDelete|ReadOnly
-  DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE	DontDelete|ReadOnly
-  NOTATION_NODE		DOM::Node::NOTATION_NODE		DontDelete|ReadOnly
-@end
-*/
-
-NodeConstructor::NodeConstructor(ExecState *exec)
-  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
-{
-}
-
-bool NodeConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
-{
-  return getStaticValueSlot<NodeConstructor, DOMObject>(exec, &NodeConstructorTable, this, propertyName, slot);
-}
-
-ValueImp* NodeConstructor::getValueProperty(ExecState *, int token) const
-{
-  // We use the token as the value to return directly
-  return Number((unsigned int)token);
-#if 0
-  switch (token) {
-  case ELEMENT_NODE:
-    return Number((unsigned int)DOM::Node::ELEMENT_NODE);
-  case ATTRIBUTE_NODE:
-    return Number((unsigned int)DOM::Node::ATTRIBUTE_NODE);
-  case TEXT_NODE:
-    return Number((unsigned int)DOM::Node::TEXT_NODE);
-  case CDATA_SECTION_NODE:
-    return Number((unsigned int)DOM::Node::CDATA_SECTION_NODE);
-  case ENTITY_REFERENCE_NODE:
-    return Number((unsigned int)DOM::Node::ENTITY_REFERENCE_NODE);
-  case ENTITY_NODE:
-    return Number((unsigned int)DOM::Node::ENTITY_NODE);
-  case PROCESSING_INSTRUCTION_NODE:
-    return Number((unsigned int)DOM::Node::PROCESSING_INSTRUCTION_NODE);
-  case COMMENT_NODE:
-    return Number((unsigned int)DOM::Node::COMMENT_NODE);
-  case DOCUMENT_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_NODE);
-  case DOCUMENT_TYPE_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_TYPE_NODE);
-  case DOCUMENT_FRAGMENT_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_FRAGMENT_NODE);
-  case NOTATION_NODE:
-    return Number((unsigned int)DOM::Node::NOTATION_NODE);
-  default:
-    kDebug(6070) << "WARNING: NodeConstructor::getValueProperty unhandled token " << token << endl;
-    return Null();
-  }
-#endif
-}
-
-ObjectImp *KJS::getNodeConstructor(ExecState *exec)
-{
-  return cacheGlobalObject<NodeConstructor>(exec, "[[node.constructor]]");
-}
-
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOMNodeProto, DOMNodeConstants)
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };

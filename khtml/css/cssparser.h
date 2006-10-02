@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright 2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 
 #include <qstring.h>
 #include <qcolor.h>
+#include <QVector>
 #include <dom/dom_string.h>
 
 namespace DOM {
@@ -54,6 +56,7 @@ namespace DOM {
 
     struct Value {
 	int id;
+        bool isInt;
 	union {
 	    double fValue;
 	    int iValue;
@@ -78,16 +81,15 @@ namespace DOM {
 
     class ValueList {
     public:
-	ValueList();
+        ValueList() : m_current(0) { }
 	~ValueList();
-	void addValue( const Value &val );
-	Value *current() { return currentValue < numValues ? values + currentValue : 0; }
-	Value *next() { ++currentValue; return current(); }
-        bool isLast() const { return currentValue+1 >= numValues; }
-	Value *values;
-	int numValues;
-	int maxValues;
-	int currentValue;
+        void addValue(const Value& v) { m_values.append(v); }
+        unsigned int size() const { return m_values.size(); }
+        Value* current() { return m_current < m_values.size() ? &m_values[m_current] : 0; }
+        Value* next() { ++m_current; return current(); }
+    private:
+        QVector<Value> m_values;
+	unsigned int m_current;
     };
 
     class CSSParser
@@ -115,15 +117,16 @@ namespace DOM {
 	CSSStyleDeclarationImpl *createStyleDeclaration( CSSStyleRuleImpl *rule );
 	void clearProperties();
 
-	bool parseValue( int propId, bool important, int expected=1 );
-	bool parseShortHand( const int *properties, int numProperties, bool important );
-	bool parse4Values( const int *properties, bool important );
+	bool parseValue( int propId, bool important );
+	bool parseShortHand( int propId, const int *properties, int numProperties, bool important );
+	bool parse4Values( int propId, const int *properties, bool important );
 	bool parseContent( int propId, bool important );
 
         CSSValueImpl* parseBackgroundColor();
         CSSValueImpl* parseBackgroundImage();
         CSSValueImpl* parseBackgroundPositionXY(bool& xFound, bool& yFound);
         void parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& value2);
+        CSSValueImpl* parseBackgroundSize();
 
         bool parseBackgroundProperty(int propId, int& propId1, int& propId2, CSSValueImpl*& retValue1, CSSValueImpl*& retValue2);
         bool parseBackgroundShorthand(bool important);
@@ -133,6 +136,9 @@ namespace DOM {
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
         bool parseCounter(int propId, bool increment, bool important);
+
+        bool parseColorParameters(Value*, int* colorValues, bool parseAlpha);
+        bool parseHSLParameters(Value*, double* colorValues, bool parseAlpha);
 
         // returns the found property
         // 0 if nothing found (or ok == false)
@@ -162,6 +168,8 @@ namespace DOM {
             FNonNeg    = 0x0200
         };
 
+        bool parseBorderImage(int propId, bool important);
+
         static bool validUnit( Value *value, int unitflags, bool strict );
 
 
@@ -176,7 +184,11 @@ namespace DOM {
 	CSSProperty **parsedProperties;
 	int numParsedProperties;
 	int maxParsedProperties;
-	bool inParseShortHand;
+
+        int m_inParseShorthand;
+        int m_currentShorthand;
+        bool m_implicitShorthand;
+
 	static CSSParser *currentParser;
 
 	// tokenizer methods and data
@@ -188,6 +200,8 @@ namespace DOM {
     private:
 	int yyparse();
         void runParser(int length);
+
+        bool inShorthand() const { return m_inParseShorthand; }
 
 	unsigned short *data;
 	unsigned short *yytext;

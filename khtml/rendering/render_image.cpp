@@ -61,7 +61,7 @@ using namespace khtmlImLoad;
 RenderImage::RenderImage(NodeImpl *_element)
     : RenderReplaced(_element)
 {
-    oimage = image = 0;
+    m_oldImage = m_cachedImage = 0;
 
     m_selectionState = SelectionNone;
     berrorPic = false;
@@ -75,8 +75,8 @@ RenderImage::RenderImage(NodeImpl *_element)
 
 RenderImage::~RenderImage()
 {
-    if(image) image->deref(this);
-    if (oimage) oimage->deref( this );
+    if(m_cachedImage) m_cachedImage->deref( this );
+    if(m_oldImage) m_oldImage->deref( this );
 }
 
 // QPixmap RenderImage::pixmap() const
@@ -94,16 +94,16 @@ void RenderImage::setStyle(RenderStyle* _style)
 
 void RenderImage::setContentObject(CachedObject* co )
 {
-    if (co && image != co)
+    if (co && m_cachedImage != co)
         updateImage( static_cast<CachedImage*>( co ) );
 }
 
 void RenderImage::updatePixmap( const QRect& r, CachedImage *o)
 {
-    if ( o == oimage )
+    if ( o == m_oldImage )
         return;
 
-    if(o != image) {
+    if(o != m_cachedImage) {
         RenderReplaced::updatePixmap(r, o);
         return;
     }
@@ -229,14 +229,15 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (!canvas()->printImages())
         return;
 
-    //    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
-    //                     oimage->pixmap_size().width()  == intrinsicWidth() &&
-    //                     oimage->pixmap_size().height() == intrinsicHeight()
-    //                     ? oimage : image;
 #ifdef __GNUC__
 #warning "FIXME: when isComplete added, use this"
 #endif
-    CachedImage* i = image;
+    CachedImage* i = m_cachedImage;
+
+/*    CachedImage* i = m_oldImage && m_oldImage->valid_rect().size() == m_oldImage->pixmap_size() &&
+                     m_oldImage->pixmap_size().width()  == intrinsicWidth() &&
+                     m_oldImage->pixmap_size().height() == intrinsicHeight()
+                     ? m_oldImage : m_cachedImage;*/
 
     // paint frame around image as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
@@ -355,7 +356,7 @@ void RenderImage::layout()
     int oldheight = m_height;
 
     // minimum height
-    m_height = image && image->isErrorImage() ? intrinsicHeight() : 0;
+    m_height = m_cachedImage && m_cachedImage->isErrorImage() ? intrinsicHeight() : 0;
 
     calcWidth();
     calcHeight();
@@ -380,9 +381,9 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
-        oimage->deref( this );
-        oimage = 0;
+    if ( ( m_cachedImage == finishedObj || m_oldImage == finishedObj ) && m_oldImage ) {
+        m_oldImage->deref( this );
+        m_oldImage = 0;
         repaint();
     }
 
@@ -414,20 +415,20 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
 
 void RenderImage::updateImage(CachedImage* new_image)
 {
-    CachedImage* tempimage = oimage;
-    oimage = image;
-    image = new_image;
-    assert( image != oimage );
+    CachedImage* tempimage = m_oldImage;
+    m_oldImage = m_cachedImage;
+    m_cachedImage = new_image;
+    assert( m_cachedImage != m_oldImage );
 
-    if ( image != tempimage && image != oimage )
-        image->ref(this);
+    if ( m_cachedImage )
+        m_cachedImage->ref(this);
 
-    if (tempimage && image != tempimage && oimage != tempimage )
+    if ( tempimage )
         tempimage->deref(this);
 
     // if the loading finishes we might get an error and then the image is deleted
-    if ( image )
-        berrorPic = image->isErrorImage();
+    if ( m_cachedImage )
+        berrorPic = m_cachedImage->isErrorImage();
     else
         berrorPic = true;
 }
@@ -443,17 +444,12 @@ void RenderImage::updateFromElement()
                   element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
 
     if (!u.isEmpty() &&
-        ( !image || image->url() != u ) ) {
+        ( !m_cachedImage || m_cachedImage->url() != u ) ) {
         CachedImage *new_image = element()->getDocument()->docLoader()->
                                  requestImage(khtml::parseURL(u));
 
-        if(new_image && new_image != image
-           // check appears redundant, as we only care about this when we're anonymous
-           // which can never happen here.
-           /*&& (!style() || !style()->contentObject())*/
-            ) {
+        if(new_image && new_image != m_cachedImage)
             updateImage( new_image );
-        }
     }
 }
 
@@ -461,8 +457,7 @@ bool RenderImage::complete() const
 {
      // "complete" means that the image has been loaded
      // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
-    //### FIXME!
-     return image && /*image->valid_rect().size() == image->pixmap_size() &&*/ !needsLayout();
+     return m_cachedImage && m_cachedImage->isComplete() && !needsLayout();
 }
 
 bool RenderImage::isWidthSpecified() const
@@ -495,7 +490,7 @@ short RenderImage::calcAspectRatioWidth() const
 {
     if (intrinsicHeight() == 0)
         return 0;
-    if (!image || image->isErrorImage())
+    if (!m_cachedImage || m_cachedImage->isErrorImage())
         return intrinsicWidth(); // Don't bother scaling.
     return RenderReplaced::calcReplacedHeight() * intrinsicWidth() / intrinsicHeight();
 }
@@ -504,7 +499,7 @@ int RenderImage::calcAspectRatioHeight() const
 {
     if (intrinsicWidth() == 0)
         return 0;
-    if (!image || image->isErrorImage())
+    if (!m_cachedImage || m_cachedImage->isErrorImage())
         return intrinsicHeight(); // Don't bother scaling.
     return RenderReplaced::calcReplacedWidth() * intrinsicHeight() / intrinsicWidth();
 }

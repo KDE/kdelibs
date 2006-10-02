@@ -312,6 +312,7 @@ NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 
 void HTMLTableElementImpl::handleChildAdd( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childAdded(this, child);
@@ -330,6 +331,7 @@ void HTMLTableElementImpl::handleChildAdd( NodeImpl *child )
 
 void HTMLTableElementImpl::handleChildAppend( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childAppended(child);
@@ -348,6 +350,7 @@ void HTMLTableElementImpl::handleChildAppend( NodeImpl *child )
 
 void HTMLTableElementImpl::handleChildRemove( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childRemoved(this, child);
@@ -386,21 +389,18 @@ NodeImpl *HTMLTableElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *ref
     return retval;
 }
 
-NodeImpl *HTMLTableElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+void HTMLTableElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
     handleChildRemove( oldChild ); //Always safe.
-
-    NodeImpl* retval = HTMLElementImpl::replaceChild( newChild, oldChild, exceptioncode );
-    if (retval)
+    HTMLElementImpl::replaceChild( newChild, oldChild, exceptioncode );
+    if ( !exceptioncode )
         handleChildAdd( newChild );
-
-    return retval;
 }
 
-NodeImpl *HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+void HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
     handleChildRemove( oldChild );
-    return HTMLElementImpl::removeChild( oldChild, exceptioncode);
+    HTMLElementImpl::removeChild( oldChild, exceptioncode);
 }
 
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
@@ -934,7 +934,7 @@ HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
     : HTMLTablePartElementImpl(doc)
 {
     _id = i;
-    _span = (_id == ID_COLGROUP ? 0 : 1);
+    _span = 1;
 }
 
 NodeImpl::Id HTMLTableColElementImpl::id() const
@@ -949,6 +949,7 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SPAN:
         _span = attr->val() ? attr->val()->toInt() : 1;
+        if (_span < 1) _span = 1;
         break;
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())

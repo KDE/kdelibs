@@ -63,6 +63,7 @@ public:
     HTMLCollectionImpl* layers();
     HTMLCollectionImpl* anchors();
     HTMLCollectionImpl* all();
+    HTMLCollectionImpl* scripts();
 
     HTMLElementImpl *body();
     void setBody(HTMLElementImpl *_body, int& exceptioncode);

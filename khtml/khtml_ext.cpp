@@ -39,6 +39,7 @@
 #include <qfileinfo.h>
 #include <qmenu.h>
 #include <qurl.h>
+#include <qurl.h>
 #include <qmetaobject.h>
 
 #include <kdebug.h>

@@ -58,6 +58,8 @@ namespace KJS {
     static ValueImp *layerNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot);
   };
 
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor)
+
   class HTMLElement : public DOMElement {
   public:
     HTMLElement(ExecState *exec, DOM::HTMLElementImpl* e) : DOMElement(exec, e) { }
@@ -86,8 +88,7 @@ namespace KJS {
            LinkSheet, TitleText, MetaName, MetaHttpEquiv, MetaContent, MetaScheme,
            BaseHref, BaseTarget, IsIndexForm, IsIndexPrompt, StyleDisabled,
            StyleSheet, StyleType, StyleMedia, BodyBackground, BodyVLink, BodyText,
-           BodyLink, BodyALink, BodyBgColor,  BodyScrollLeft, BodyScrollTop,
-           BodyScrollHeight, BodyScrollWidth, BodyOnLoad,
+           BodyLink, BodyALink, BodyBgColor,  BodyOnLoad,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectTabIndex, SelectValue, SelectSelectedIndex, SelectLength,
@@ -150,7 +151,7 @@ namespace KJS {
            FrameSetRows, FrameSrc, FrameLocation, FrameFrameBorder, FrameScrolling,
            FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName,
            FrameContentDocument, FrameContentWindow,
-           FrameNoResize, IFrameLongDesc, IFrameAlign,
+           FrameNoResize, FrameWidth, FrameHeight, IFrameLongDesc, IFrameAlign,
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            IFrameContentDocument, IFrameContentWindow,
@@ -205,7 +206,8 @@ namespace KJS {
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c);
+    HTMLCollection(ExecState *exec,  DOM::HTMLCollectionImpl* c);
+    HTMLCollection(KJS::ObjectImp *proto, DOM::HTMLCollectionImpl* c);
     ~HTMLCollection();
     ValueImp* getValueProperty(ExecState *exec, int token);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
@@ -231,10 +233,15 @@ namespace KJS {
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
-      : HTMLCollection(exec, c), element(e) { }
+    enum { Add };
+    HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    
+    DOM::HTMLSelectElementImpl* toElement() const { return element.get(); }
   private:
     SharedPtr<DOM::HTMLSelectElementImpl> element;
     static ValueImp *selectedIndexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot);

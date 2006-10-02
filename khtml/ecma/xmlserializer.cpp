@@ -74,21 +74,20 @@ ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
 	return Undefined();
       }
 
-      if (!args[0]->toObject(exec)->inherits(&DOMDocument::info)) {
+      if (!args[0]->toObject(exec)->inherits(&DOMNode::info)) {
 	return Undefined();
       }
 
-      DOM::NodeImpl* docNode = static_cast<KJS::DOMDocument *>(args[0]->toObject(exec))->impl();
-      DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
+      DOM::NodeImpl* node = static_cast<KJS::DOMNode *>(args[0]->toObject(exec))->impl();
 
-      if (!doc) {
+      if (!node) {
 	return Undefined();
       }
 
       QString body;
 
       try {
-	  body = doc->toString().string();
+	  body = node->toString().string();
       } catch(DOM::DOMException& e) {
 	  ObjectImp *err = Error::create(exec, GeneralError, "Exception serializing document");
 	  exec->setException(err);

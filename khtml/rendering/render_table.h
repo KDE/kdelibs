@@ -94,9 +94,6 @@ public:
 
     virtual void calcWidth();
 
-    virtual int borderTopExtra();
-    virtual int borderBottomExtra();
-
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
@@ -149,6 +146,9 @@ public:
     void setNeedSectionRecalc() { needSectionRecalc = true; }
 
     virtual RenderObject* removeChildNode(RenderObject* child);
+
+    RenderTableSection* sectionAbove(const RenderTableSection*, bool skipEmptySections = false) const;
+    RenderTableSection* sectionBelow(const RenderTableSection*, bool skipEmptySections = false) const;
 
     RenderTableCell* cellAbove(const RenderTableCell* cell) const;
     RenderTableCell* cellBelow(const RenderTableCell* cell) const;
@@ -242,6 +242,7 @@ public:
     virtual int lowestPosition(bool includeOverflowInterior, bool includeSelf) const;
     virtual int rightmostPosition(bool includeOverflowInterior, bool includeSelf) const;
     virtual int leftmostPosition(bool includeOverflowInterior, bool includeSelf) const;
+    virtual int highestPosition(bool includeOverflowInterior, bool includeSelf) const;
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 
@@ -257,6 +258,8 @@ public:
 
     virtual bool canClear(RenderObject *child, PageBreakLevel level);
     void addSpaceAt(int pos, int dy);
+
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside);
 
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
@@ -289,12 +292,8 @@ public:
 
     virtual void setStyle( RenderStyle* );
     virtual const char *renderName() const { return "RenderTableRow"; }
-
     virtual bool isTableRow() const { return true; }
-
-    // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-    virtual RenderObject* removeChildNode(RenderObject* child);
 
     virtual short offsetWidth() const;
     virtual int offsetHeight() const;
@@ -304,16 +303,20 @@ public:
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside);
+
     virtual void layout();
+
+    virtual RenderObject* removeChildNode(RenderObject* child);
+
+    // The only time rows get a layer is when they have transparency.
+    virtual bool requiresLayer() const { return /* style()->opacity() < 1.0f; */ false ; }
+    virtual void paint(PaintInfo& i, int tx, int ty);
 
     void paintRow( PaintInfo& i, int tx, int ty, int w, int h);
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
-
-#ifdef ENABLE_DUMP
-    virtual void dump(QTextStream &stream, const QString& ind) const;
-#endif
 };
 
 // -------------------------------------------------------------------------
@@ -344,11 +347,14 @@ public:
     int row() const { return _row; }
     void setRow(int r) { _row = r; }
 
+    Length styleOrColWidth();
+
     // overrides
     virtual void calcMinMaxWidth();
     virtual void calcWidth();
     virtual void setWidth( int width );
     virtual void setStyle( RenderStyle *style );
+    virtual bool requiresLayer() const;
 
     int borderLeft() const;
     int borderRight() const;
@@ -373,14 +379,15 @@ public:
     virtual void paint( PaintInfo& i, int tx, int ty);
 
     void paintCollapsedBorder(QPainter* p, int x, int y, int w, int h);
+    void paintBackgroundsBehindCell(PaintInfo& i, int _tx, int _ty, RenderObject* backgroundObject);
 
     virtual void close();
 
     // lie position to outside observers
     virtual int yPos() const { return m_y + _topExtra; }
 
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false) const;
 
     virtual short baselinePosition( bool = false ) const;
 
@@ -410,8 +417,8 @@ public:
 
 protected:
     virtual void paintBoxDecorations(PaintInfo& p, int _tx, int _ty);
-    virtual int borderTopExtra() { return _topExtra; }
-    virtual int borderBottomExtra() { return _bottomExtra; }
+    virtual int borderTopExtra() const { return _topExtra; }
+    virtual int borderBottomExtra() const { return _bottomExtra; }
 
     short _row;
     short _col;
@@ -434,16 +441,12 @@ public:
 
     virtual const char *renderName() const { return "RenderTableCol"; }
 
-    long span() const { return _span; }
-    void setSpan( long s ) { _span = s; }
-
-    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-
     virtual bool isTableCol() const { return true; }
 
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
     virtual void layout() {}
+    virtual bool requiresLayer() const { return false; }
 
     virtual void updateFromElement();
 
@@ -451,8 +454,11 @@ public:
     virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 
-protected:
-    short _span;
+    int span() const { return m_span; }
+    void setSpan( int s ) { m_span = s; }
+
+private:
+    int m_span;
 };
 
 // -------------------------------------------------------------------------

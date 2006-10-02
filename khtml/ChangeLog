@@ -1,3 +1,83 @@
+2006-06-28  Germain Garand  <germain@ebooksfrance.org>
+
+        make updating of addRule/removeRule/insertRule work
+        cf. http://www.quirksmode.org/dom/w3c_css.html#change
+
+        * css/css_stylesheetimpl.cpp 
+            (insertRule/deleteRule): shallow update of styleselector.
+        * xml/dom_docimpl.{h,cpp} 
+            (updateStyleSelector): new boolean argument for shallow recalculation, when all sheets are known.
+            (DocumentImpl::recalcStyleSelector): split.
+            (DocumentImpl::rebuildStyleSelector): new from split. Recreate styleselector with known sheets.
+
+2006-06-27  Germain Garand  <germain@ebooksfrance.org>
+
+        . Correct drawing of borders on iframes and objects (#118277/#56109)
+        . Frameborder attribute for iframes (http://www.w3.org/TR/html401/present/frames.html#adef-frameborder) 
+        . Fix widget counter-mask not being updated in time, thus sometimes missing a repaint (e.g: http://lequipe.fr)
+
+        * html/html_baseimpl.{h,cpp} (HTMLIFrameElementImpl::parseAttribute): parse frameborder attribute. Defaults to true as per specification.
+        (HTMLIFrameElementImpl::updateFrame/attach): apply/remove frameborder style at attachment time.
+        * khtmlview.cpp (drawContents): fix counter-mask problem. Widget geometry is not accurate before painting, so we must 
+        use the RenderObject's.
+        * rendering/render_frames.h (paddingTop/paddingBottom/paddingLeft/paddingRight): reimplement. Frames have no padding.
+        (RenderPartObject::canHaveBorder): reimplement. True.
+        * rendering/render_object.cpp (RenderObject::updateWidgetMasks): clip mask to correct width/height, though it doesn't matter much on X11.
+        * rendering/render_replaced.h (RenderWidget::borderTop/borderBottom/borderLeft/borderRight): percolated down from RenderForm. 
+        Frames/Iframes also need that reimplementation.
+
+2006-06-22  Germain Garand  <germain@ebooksfrance.org>
+
+        Implement floating auto-width table quirk
+
+        * rendering/render_block.cpp (positionNewFloats): in quirkmode, floated auto-width
+        tables try to fit within remaining linewidth, so look for minWidth, and relayout if 
+        position found ends up being narrower than current table width.
+
+2006-06-20  Germain Garand  <germain@ebooksfrance.org>
+
+        Don't let a float serie grow an object's maxwidth beyond the available width
+
+        * rendering/render_block.cpp (calcInlineMinMaxWidth/calcBlockMinMaxWidth): lazzily check available width
+        so floats don't overflow it if they can break line.
+        * rendering/render_box.{h,cpp} (availableWidth{,Using}): new. Like availableHeight{,Using}
+        * rendering/render_canvas.cpp (RenderCanvas::layout): set m_viewportWidth before recalculating minmax, as 
+        availableWidth needs it.
+
+2006-06-15  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge CSS3 properties background-size, background-origin and background-clip from WebCore
+
+        * rendering/render_style.{h,cpp}: New properties
+        * rendering/render_box.cpp: Handle the values in paintBackgroundExtended.
+        * dom/css_value.h: Add CSS_PAIR primitive value
+        * css/css_valueimpl.{h,cpp}: Add PairImpl primitive value
+        * css/cssstyleselector.cpp: New properties
+        * css/cssvalues.in: New values
+        * css/cssproperties.in: New properties
+        * css/cssparser.{h,cpp}: Clean-up short-hand parsing WC style
+
+2006-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement replaced CSS(3) content, and fix various details in generated pseudo elements for CSS 2.1
+
+        * rendering/render_style.{h,cpp}: Add REPLACED and MARKER pseudo styles
+        * rendering/render_container.{h,cpp}:
+            (updatePseudoChild) Allow display: block as per CSS 2.1 standard
+            (updateReplacedContent) Handle changes in Replaced content.
+            (childrenAllowed) forbid children when generated content is used, this prevents
+                 their render-objects from being attached.
+        * rendering/render_block.cpp: Postpone updatePseudoChilden to attachment because block
+            children might need the elements parents.
+        * rendering/render_inline.cpp: ditto
+        * rendering/render_generated.{h,cpp}: Add new class RenderGlyph to render list-style glyphs (square, disc, etc.)
+        * xml/dom_nodeimpl.cpp:
+            (NodeImpl::diff) detect changes in content and return Detach
+        * css/css_base.{h,cpp}: Add marker and replaced pseudo-styles
+        * css/cssstyleselector.cpp:
+            (checkOneSelector) Allow content on more elements
+            (precomputeAttributeDependencies) Track attributes inside :not elements as well
+
 2006-06-08  George Staikos <staikos@kde.org>
 
         Fix <a><label><img not in a form not being clickable
@@ -12,7 +92,7 @@
             (RenderBox::calcAbsoluteHorizontal):
             (RenderBox::calcAbsoluteHorizontalValues):
             (RenderBox::calcAbsoluteVertical):
-            (RenderBox::calcAbsoluteVerticalValues): 
+            (RenderBox::calcAbsoluteVerticalValues):
             (RenderBox::calcAbsoluteHorizontalReplaced): Handle replaced case separately.
             (RenderBox::calcAbsoluteVerticalReplaced): ditto.
 

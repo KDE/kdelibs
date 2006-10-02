@@ -160,6 +160,9 @@ protected:
     bool frameBorderSet : 1;
     bool noresize : 1;
     bool m_resizing : 1;  // is the user resizing currently
+    
+    EventListener* m_onLoad;
+    EventListener* m_onUnLoad;
 };
 
 // -------------------------------------------------------------------------
@@ -201,7 +204,11 @@ public:
     virtual void recalcStyle( StyleChange ch );
 
 protected:
+
+    void updateFrame();
+
     bool needWidgetUpdate;
+    bool m_frame;
 };
 
 

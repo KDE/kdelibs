@@ -29,6 +29,7 @@
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
+#include <QList>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -88,6 +89,13 @@ typedef enum {
     PageBreakForced = 2  // page-break-after/before: avoid, orphans and widows ignored
 } PageBreakLevel;
 
+typedef enum {
+    LowPriority = 0,
+    NormalPriority = 1,
+    HighPriority = 2,
+    RealtimePriority = 3
+} Priority;
+
 inline PageBreakLevel operator| (PageBreakLevel a, PageBreakLevel b) {
     if (a == PageBreakForced || b == PageBreakForced)
         return PageBreakForced;
@@ -141,7 +149,12 @@ public:
     virtual RenderObject *firstChild() const { return 0; }
     virtual RenderObject *lastChild() const { return 0; }
 
+    RenderObject *nextRenderer() const; 
+    RenderObject *previousRenderer() const; 
+
     virtual bool childAllowed() const { return false; }
+    virtual int borderTopExtra() const { return 0; }
+    virtual int borderBottomExtra() const { return 0; }
 
     virtual RenderLayer* layer() const { return 0; }
     RenderLayer* enclosingLayer() const;
@@ -153,7 +166,7 @@ public:
                                bool checkParent=true);
     virtual void positionChildLayers() { }
     virtual bool requiresLayer() const {
-        return isRoot() || (!isTableCell() && (isPositioned() || isRelPositioned() || hasOverflowClip()));
+        return isRoot()/* ### */ || isPositioned() || isRelPositioned() || hasOverflowClip();
     }
 
     // ### rename to overflowClipRect and clipRect
@@ -247,6 +260,7 @@ public:
     virtual bool isBox() const { return false; }
     virtual bool isRenderReplaced() const { return false; }
 
+    virtual bool isGlyph() const { return false; }
     virtual bool isCounter() const { return false; }
     virtual bool isQuote() const { return false; }
     virtual bool isListItem() const { return false; }
@@ -355,10 +369,12 @@ public:
      */
     struct PaintInfo {
        PaintInfo(QPainter* _p, const QRect& _r, PaintAction _phase)
-           : p(_p), r(_r), phase(_phase) {}
+           : p(_p), r(_r), phase(_phase), outlineObjects(0) {}
+       ~PaintInfo() { delete outlineObjects; }
        QPainter* p;
        QRect     r;
        PaintAction phase;
+       QList<RenderFlow *>* outlineObjects; // used to list which outlines should be painted by a block with inline children
     };
     virtual void paint( PaintInfo& i, int tx, int ty);
 
@@ -369,7 +385,7 @@ public:
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer * /*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {}
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/  ) {}
 
 
     /*
@@ -399,6 +415,12 @@ public:
     virtual void calcWidth() {}
 
     /*
+     * Calculates the actual width of the object (only for non inline
+     * objects)
+     */
+    virtual void calcHeight() {}
+
+    /*
      * This function should cause the Element to calculate its
      * width and height and the layout of its content
      *
@@ -417,6 +439,9 @@ public:
     // repaint and do not need a relayout
     virtual void updateFromElement() {}
 
+    // Called immediately after render-object is inserted
+    virtual void attach() { m_attached = true; }
+    bool attached() { return m_attached; }
     // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }
 
@@ -510,6 +535,7 @@ public:
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction, bool inside = false);
+    void setInnerNode(NodeInfo& info);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
@@ -541,7 +567,12 @@ public:
     /** the position of the object from where it begins drawing, including
      * its negative overflow
      */
-    int effectiveXPos() const { return xPos() - (hasOverflowClip() ? 0 : negativeOverflowWidth()); }
+    int effectiveXPos() const { return xPos() + (hasOverflowClip() ? 0 : overflowLeft()); }
+
+    /** the position of the object from where it begins drawing, including
+     * its negative overflow
+     */
+    int effectiveYPos() const { return yPos() + (hasOverflowClip() ? -borderTopExtra() : qMin(overflowTop(), -borderTopExtra())); }
 
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
@@ -553,7 +584,7 @@ public:
     virtual int inlineYPos() const { return 0; }
 
     // calculate client position of box
-    virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
+    virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false) const;
 
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
@@ -565,23 +596,25 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
-    // how much goes over the left hand side (0 or a positive number)
-    virtual int negativeOverflowWidth() const { return 0; }
-
+    // how much goes over the left hand side (0 or a negative number)
+    virtual int overflowTop() const { return 0; }
+    virtual int overflowLeft() const { return 0; }
+    
     /**
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
      */
-    int effectiveHeight() const { return hasOverflowClip() ? height() : overflowHeight(); }
+    int effectiveHeight() const { return hasOverflowClip() ? height() + borderTopExtra() + borderBottomExtra() : 
+                                         qMax(overflowHeight() - overflowTop(),  height() + borderTopExtra() + borderBottomExtra()); }
     /**
      * Returns the width that is effectively considered when contemplating the
      * object as a whole -- usually the overflow width, or the width if clipped.
      */
-    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() + negativeOverflowWidth(); }
+    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() - overflowLeft(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
-    virtual int offsetHeight() const { return height(); }
+    virtual int offsetHeight() const { return height() + borderTopExtra() + borderBottomExtra(); }
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
     virtual RenderObject* offsetParent() const;
@@ -644,8 +677,8 @@ public:
     virtual void collectBorders(QList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
-    virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate = false, bool f=false);
+    virtual void repaint(Priority p = NormalPriority) { if(m_parent) m_parent->repaint(p); }
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
 
     virtual unsigned int length() const { return 1; }
 
@@ -707,6 +740,7 @@ public:
     virtual int lowestPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
     virtual int rightmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
     virtual int leftmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
+    virtual int highestPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
 
     // recursively invalidate current layout
     // unused: void invalidateLayout();
@@ -740,7 +774,7 @@ public:
     virtual long maxOffset() const { return 0; }
 
     virtual void updatePixmap(const QRect&, CachedImage *);
-    
+
     QRegion visibleFlowRegion(int x, int y) const;
 
 protected:
@@ -749,6 +783,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
+    bool attemptDirectLayerTranslation();
     void updateWidgetMasks();
 
     virtual void removeLeftoverAnonymousBoxes();
@@ -782,6 +817,7 @@ private:
     bool m_recalcMinMax 	     : 1;
     bool m_isText                    : 1;
     bool m_inline                    : 1;
+    bool m_attached                  : 1;
 
     bool m_replaced                  : 1;
     bool m_mouseInside               : 1;
@@ -796,7 +832,7 @@ private:
     bool m_needsPageClear            : 1;
     bool m_containsPageBreak         : 1;
 
-    // ### we have 16 + 23 bits. Cut 4 and save 32
+    // ### we have 16 + 24 bits. Cut 8 and save 32
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

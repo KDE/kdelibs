@@ -56,9 +56,12 @@ public:
     // it would have an overflow height of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const  { return m_overflowHeight; }
     virtual int overflowWidth() const   { return m_overflowWidth; }
-    virtual int negativeOverflowWidth() const { return m_negativeOverflowWidth; }
+    virtual int overflowLeft() const { return m_overflowLeft; }
+    virtual int overflowTop() const  { return m_overflowTop; }
     virtual void setOverflowHeight(int h) { m_overflowHeight = h; }
     virtual void setOverflowWidth(int w) { m_overflowWidth = w; }
+    virtual void setOverflowLeft(int l) { m_overflowLeft = l; }
+    virtual void setOverflowTop(int t) { m_overflowTop = t; }
 
     virtual bool isSelfCollapsingBlock() const;
     virtual bool isTopMarginQuirk() const { return m_topMarginQuirk; }
@@ -92,6 +95,7 @@ public:
     virtual void removeChild(RenderObject *oldChild);
 
     virtual void setStyle(RenderStyle* _style);
+    virtual void attach();
     void updateFirstLetter();
 
     virtual void layout();
@@ -114,6 +118,7 @@ public:
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiState &bidi);
     void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
+    void checkLinesForOverflow();
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
@@ -129,6 +134,9 @@ public:
     int getClearDelta(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
+    // FIXME: containsFloats() should not return true if the floating objects list
+    // is empty. However, layoutInlineChildren() relies on the current behavior.
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=7395#c3
     virtual bool hasFloats() const { return m_floatingObjects!=0; }
     virtual bool containsFloat(RenderObject* o) const;
 
@@ -144,11 +152,11 @@ public:
     virtual int lowestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int rightmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int leftmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
+    virtual int highestPosition(bool includeOverflowInterior, bool includeSelf) const;
     int lowestAbsolutePosition() const;
     int leftmostAbsolutePosition() const;
     int rightmostAbsolutePosition() const;
-    
-    virtual bool absolutePosition(int &xPos, int &yPos, bool=false);
+    int highestAbsolutePosition() const;
 
     int rightOffset() const;
     int rightRelOffset(int y, int fixedOffset, bool applyTextIndent=true, int *heightRemaining = 0, bool *canClearLine = 0) const;
@@ -170,10 +178,6 @@ public:
 
     virtual int getBaselineOfFirstLineBox();
     virtual InlineFlowBox* getFirstLineBox();
-
-    // overrides RenderObject
-    virtual bool requiresLayer() const { return isRoot() || (!isTableCell() &&
-        (isPositioned() || isRelPositioned() || style()->hidesOverflow())); }
 
     bool inRootBlockContext() const;
 
@@ -326,6 +330,7 @@ protected:
     RenderObject* handleRunInChild(RenderObject* child, bool& handled);
     void collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPosEstimate);
     void clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInfo, int oldTopPosMargin, int oldTopNegMargin);
+    void adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     void insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     int estimateVerticalPosition(RenderObject* child, const MarginInfo& info);
     void determineHorizontalPosition(RenderObject* child);
@@ -337,10 +342,12 @@ protected:
 protected:
     // How much content overflows out of our block vertically or horizontally (all we support
     // for now is spillage out of the bottom and the right, which are the common cases).
-    // XXX Generalize to work with top and left as well.
     int m_overflowHeight;
     int m_overflowWidth;
-    int m_negativeOverflowWidth;
+
+    // Left and top overflow.
+    int m_overflowTop;
+    int m_overflowLeft;
 
 private:
     Q3PtrList<FloatingObject>* m_floatingObjects;

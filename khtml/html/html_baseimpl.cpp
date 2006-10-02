@@ -496,10 +496,22 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
     noresize = false;
 
     m_resizing = false;
+
+    m_onLoad = m_onUnLoad = 0;
 }
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
+    //### this is likely not quite right since we may be effectively "overriding" some old value,
+    //which needs to be recomputed, but this is better than crashing...
+    if (getDocument()) {
+        if (m_onLoad && getDocument()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
+            getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
+
+        if (m_onUnLoad && getDocument()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
+            getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
+    }
+
     delete [] m_rows;
     delete [] m_cols;
 }
@@ -542,12 +554,12 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
-        getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+        m_onLoad = getDocument()->createHTMLEventListener(attr->value().string(), "onload", this);
+        getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, m_onLoad);
         break;
     case ATTR_ONUNLOAD:
-        getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
+        m_onUnLoad = getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this);
+        getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, m_onUnLoad);
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -635,6 +647,7 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentPtr *doc) : HTMLFrameElemen
     marginWidth = 0;
     marginHeight = 0;
     needWidgetUpdate = false;
+    m_frame = true;
 }
 
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
@@ -662,13 +675,39 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
+    case ATTR_ALIGN:
+        addHTMLAlignment( attr->value() );
+        break;
     case ATTR_SRC:
         needWidgetUpdate = true; // ### do this for scrolling, margins etc?
         HTMLFrameElementImpl::parseAttribute( attr );
         break;
+    case ATTR_FRAMEBORDER:
+    {
+        m_frame = (!attr->val() || attr->value().toInt() > 0);
+        if (attached()) updateFrame();
+    }
     default:
         HTMLFrameElementImpl::parseAttribute( attr );
     }
+}
+
+void HTMLIFrameElementImpl::updateFrame()
+{
+    if (m_frame) {
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_OUTSET);
+        addCSSLength(CSS_PROP_BORDER_WIDTH, "2");
+    } else {
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_NONE);
+        removeCSSProperty(CSS_PROP_BORDER_WIDTH);
+    }
+
 }
 
 void HTMLIFrameElementImpl::attach()
@@ -677,6 +716,7 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
+    updateFrame();
     name = getAttribute(ATTR_NAME);
     if (name.isNull())
         name = getAttribute(ATTR_ID);

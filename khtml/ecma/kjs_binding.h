@@ -237,8 +237,6 @@ namespace KJS {
     return getIndexSlot(thisObj, (unsigned)lengthLimit, propertyName, slot);
   }
 
-
-
   /**
    Version w/o the bounds check
   */
@@ -312,6 +310,62 @@ namespace KJS {
   // convenience function
   inline JSCell* String(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
 
+// This is used to create pseudo-constructor objects, like Mozillaish
+// Element, HTMLDocument, etc., which do not act like real constructors,
+// but do have the prototype property pointing to prototype of "instances"
+#define DEFINE_PSEUDO_CONSTRUCTOR(ClassName) \
+  class ClassName : public DOMObject { \
+      public: \
+          ClassName(ExecState *); \
+          virtual const ClassInfo* classInfo() const { return &info; } \
+          static const ClassInfo info; \
+          static ObjectImp* self(ExecState *exec); \
+  };
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProto) \
+    const ClassInfo Class::info = { ClassName, 0, 0, 0 }; \
+    Class::Class(ExecState* exec): DOMObject(ParentProto) {\
+        ObjectImp* proto = ProtoClass::self(exec); \
+        putDirect(prototypePropertyName, proto, DontDelete|ReadOnly); \
+    }\
+    ObjectImp* Class::self(ExecState *exec) { \
+        return cacheGlobalObject<Class>(exec, "[[" ClassName ".constructor]]"); \
+    }
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR(Class,ClassName,ProtoClass) \
+    IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,exec->lexicalInterpreter()->builtinObjectPrototype())
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(Class,ClassName,ProtoClass,ParentProtoClass) \
+    IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProtoClass::self(exec))
+
+// This declares a constant table, which merely maps everything in its 
+// table to its token value. Can be used as a prototype
+#define DEFINE_CONSTANT_TABLE(Class) \
+   class Class : public DOMObject { \
+   public: \
+     Class(ExecState *exec): DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {} \
+     \
+     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);\
+     ValueImp* getValueProperty(ExecState *exec, int token) const; \
+     virtual const ClassInfo* classInfo() const { return &info; } \
+     static const ClassInfo info; \
+     static ObjectImp* self(ExecState *exec);\
+   }; 
+
+// Emits an implementation of a constant table 
+#define IMPLEMENT_CONSTANT_TABLE(Class,ClassName) \
+     bool Class::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
+     { \
+        return getStaticValueSlot<Class, DOMObject>(exec, &Class##Table, this, propertyName, slot);\
+     }\
+     ValueImp* Class::getValueProperty(ExecState * /*exec*/, int token) const { \
+        /* We use the token as the value to return directly*/ \
+        return Number((unsigned int)token); \
+     }  \
+     ObjectImp* Class::self(ExecState *exec) { \
+        return cacheGlobalObject<Class>(exec, "[[" ClassName ".constant_table]]"); \
+     } \
+   const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
 } // namespace
 
 

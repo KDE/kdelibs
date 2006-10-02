@@ -194,6 +194,8 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an
     //@import rule is inserted after a standard rule set or other at-rule.
     m_lstChildren->insert(index, r);
+    if (m_doc) 
+        m_doc->updateStyleSelector(true /*shallow*/);
     return index;
 }
 
@@ -211,6 +213,8 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
         return;
     }
     b->deref();
+    if (m_doc)
+        m_doc->updateStyleSelector(true /*shallow*/);
 }
 
 void CSSStyleSheetImpl::addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri)

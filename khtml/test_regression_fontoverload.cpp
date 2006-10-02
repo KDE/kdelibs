@@ -239,8 +239,6 @@ class KDE_EXPORT QX11PaintEngine: public QPaintEngine
     void drawFreetype(const QPointF &p, const QTextItemInt &si);
 };
 
-void qt_draw_transformed_rect(QPaintEngine *pe, int x, int y, int w, int h, bool fill);
-
 void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
 {
     if (!si.num_glyphs) return;
@@ -281,8 +279,8 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
             rect = QRect(x, y - ascent, pixS, pixS);
         }
 
-        //A bit overkill, but this gets the job done without hassling with private data
-        qt_draw_transformed_rect(this, rect.x(), rect.y(), rect.width(), rect.height(), true);
+        QPainter* p = painter();
+        p->fillRect(rect, p->pen().color());
 
         x += advance;
     }

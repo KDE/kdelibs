@@ -106,10 +106,14 @@ StyleVisualData::StyleVisualData(const StyleVisualData& o )
 BackgroundLayer::BackgroundLayer()
 :m_image(RenderStyle::initialBackgroundImage()),
  m_bgAttachment(RenderStyle::initialBackgroundAttachment()),
+ m_bgClip(RenderStyle::initialBackgroundClip()),
+ m_bgOrigin(RenderStyle::initialBackgroundOrigin()),
  m_bgRepeat(RenderStyle::initialBackgroundRepeat()),
+ m_backgroundSize(RenderStyle::initialBackgroundSize()),
  m_next(0)
 {
-    m_imageSet = m_attachmentSet = m_repeatSet = m_xPosSet = m_yPosSet = false;
+    m_imageSet = m_attachmentSet = m_clipSet = m_originSet = 
+            m_repeatSet = m_xPosSet = m_yPosSet = m_backgroundSizeSet = false;
 }
 
 BackgroundLayer::BackgroundLayer(const BackgroundLayer& o)
@@ -119,12 +123,18 @@ BackgroundLayer::BackgroundLayer(const BackgroundLayer& o)
     m_xPosition = o.m_xPosition;
     m_yPosition = o.m_yPosition;
     m_bgAttachment = o.m_bgAttachment;
+    m_bgClip = o.m_bgClip;
+    m_bgOrigin = o.m_bgOrigin;
     m_bgRepeat = o.m_bgRepeat;
+    m_backgroundSize = o.m_backgroundSize;
     m_imageSet = o.m_imageSet;
     m_attachmentSet = o.m_attachmentSet;
+    m_clipSet = o.m_clipSet;
+    m_originSet = o.m_originSet;
     m_repeatSet = o.m_repeatSet;
     m_xPosSet = o.m_xPosSet;
     m_yPosSet = o.m_yPosSet;
+    m_backgroundSizeSet = o.m_backgroundSizeSet;
 }
 
 BackgroundLayer::~BackgroundLayer()
@@ -142,22 +152,28 @@ BackgroundLayer& BackgroundLayer::operator=(const BackgroundLayer& o) {
     m_xPosition = o.m_xPosition;
     m_yPosition = o.m_yPosition;
     m_bgAttachment = o.m_bgAttachment;
+    m_bgClip = o.m_bgClip;
+    m_bgOrigin = o.m_bgOrigin;
     m_bgRepeat = o.m_bgRepeat;
+    m_backgroundSize = o.m_backgroundSize;
 
     m_imageSet = o.m_imageSet;
     m_attachmentSet = o.m_attachmentSet;
+    m_originSet = o.m_originSet;
     m_repeatSet = o.m_repeatSet;
     m_xPosSet = o.m_xPosSet;
     m_yPosSet = o.m_yPosSet;
+    m_backgroundSizeSet = o.m_backgroundSizeSet;
 
     return *this;
 }
 
 bool BackgroundLayer::operator==(const BackgroundLayer& o) const {
     return m_image == o.m_image && m_xPosition == o.m_xPosition && m_yPosition == o.m_yPosition &&
-           m_bgAttachment == o.m_bgAttachment && m_bgRepeat == o.m_bgRepeat &&
-           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet && m_repeatSet == o.m_repeatSet &&
-           m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet &&
+           m_bgAttachment == o.m_bgAttachment && m_bgClip == o.m_bgClip && m_bgOrigin == o.m_bgOrigin && m_bgRepeat == o.m_bgRepeat &&
+           m_backgroundSize.width == o.m_backgroundSize.width && m_backgroundSize.height == o.m_backgroundSize.height && 
+           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet && m_repeatSet == o.m_repeatSet && 
+           m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet && m_backgroundSizeSet == o.m_backgroundSizeSet && 
            ((m_next && o.m_next) ? *m_next == *o.m_next : m_next == o.m_next);
 }
 
@@ -208,11 +224,44 @@ void BackgroundLayer::fillUnsetProperties()
         }
     }
 
+    for (curr = this; curr && curr->isBackgroundClipSet(); curr = curr->next());
+    if (curr && curr != this) {
+        // We need to fill in the remaining values with the pattern specified.
+        for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
+            curr->m_bgClip = pattern->m_bgClip;
+            pattern = pattern->next();
+            if (pattern == curr || !pattern)
+                pattern = this;
+        }
+    }
+
+    for (curr = this; curr && curr->isBackgroundOriginSet(); curr = curr->next());
+    if (curr && curr != this) {
+        // We need to fill in the remaining values with the pattern specified.
+        for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
+            curr->m_bgOrigin = pattern->m_bgOrigin;
+            pattern = pattern->next();
+            if (pattern == curr || !pattern)
+                pattern = this;
+        }
+    }
+
     for (curr = this; curr && curr->isBackgroundRepeatSet(); curr = curr->next());
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
         for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
             curr->m_bgRepeat = pattern->m_bgRepeat;
+            pattern = pattern->next();
+            if (pattern == curr || !pattern)
+                pattern = this;
+        }
+    }
+    
+    for (curr = this; curr && curr->isBackgroundSizeSet(); curr = curr->next());
+    if (curr && curr != this) {
+        // We need to fill in the remaining values with the pattern specified.
+        for (BackgroundLayer* pattern = this; curr; curr = curr->next()) {
+            curr->m_backgroundSize = pattern->m_backgroundSize;
             pattern = pattern->next();
             if (pattern == curr || !pattern)
                 pattern = this;
@@ -227,7 +276,9 @@ void BackgroundLayer::cullEmptyLayers()
         next = p->m_next;
         if (next && !next->isBackgroundImageSet() &&
             !next->isBackgroundXPositionSet() && !next->isBackgroundYPositionSet() &&
-            !next->isBackgroundAttachmentSet() && !next->isBackgroundRepeatSet()) {
+            !next->isBackgroundAttachmentSet() && !next->isBackgroundClipSet() &&
+            !next->isBackgroundOriginSet() && !next->isBackgroundRepeatSet() &&
+            !next->isBackgroundSizeSet()) {
             delete next;
             p->m_next = 0;
             break;
@@ -558,8 +609,11 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             inherited == o.inherited);
 }
 
-enum EPseudoBit { NO_BIT = 0x0, BEFORE_BIT = 0x1, AFTER_BIT = 0x2, FIRST_LINE_BIT = 0x4,
-                  FIRST_LETTER_BIT = 0x8, SELECTION_BIT = 0x10 };
+enum EPseudoBit { NO_BIT = 0x0, 
+                  FIRST_LINE_BIT = 0x1, FIRST_LETTER_BIT = 0x2, SELECTION_BIT = 0x4, 
+                  BEFORE_BIT = 0x8, AFTER_BIT = 0x10, MARKER_BIT = 0x20,
+                  REPLACED_BIT = 0x40
+                  };
 
 static int pseudoBit(RenderStyle::PseudoId pseudo)
 {
@@ -568,6 +622,10 @@ static int pseudoBit(RenderStyle::PseudoId pseudo)
             return BEFORE_BIT;
         case RenderStyle::AFTER:
             return AFTER_BIT;
+        case RenderStyle::MARKER:
+            return MARKER_BIT;
+        case RenderStyle::REPLACED:
+            return REPLACED_BIT;
         case RenderStyle::FIRST_LINE:
             return FIRST_LINE_BIT;
         case RenderStyle::FIRST_LETTER:
@@ -697,7 +755,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     if ( *box.get() != *other->box.get() ||
          *visual.get() != *other->visual.get() ||
-         *surround.get() != *other->surround.get() ||
+         (*surround.get() != *other->surround.get() 
+           && (other->position() == STATIC || other->position() != position())) ||
          !(inherited->indent == other->inherited->indent) ||
          !(inherited->line_height == other->inherited->line_height) ||
          !(inherited->style_image == other->inherited->style_image) ||
@@ -758,6 +817,17 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
     if ( !(noninherited_flags.f._display == INLINE) &&
          !(noninherited_flags.f._vertical_align == other->noninherited_flags.f._vertical_align) )
 	    return Layout;
+
+    if (*surround.get() != *other->surround.get()) {
+        assert( other->position() != STATIC );                      // this style is positioned or relatively positioned
+        if ( surround->hasSamePBMData(*other->surround.get()) &&    // padding/border/margin are identical
+             (other->position() == RELATIVE ||
+               !(other->left().isVariable() && other->right().isVariable()) &&  // X isn't static
+               !(other->top().isVariable() && other->bottom().isVariable()) ))   // neither is Y
+           // therefore only the offset is different
+           return Position;
+        return Layout;
+    }
 
     // Visible:
 // 	EVisibility _visibility : 2;
@@ -961,14 +1031,25 @@ void RenderStyle::addContent(EQuoteContent q)
 
 // content: normal is the same as having no content at all
 void RenderStyle::setContentNormal() {
-    delete generated->content;
-    generated.access()->content = 0;
+    if (generated->content != 0) {
+        delete generated->content;
+        generated.access()->content = 0;
+    }
 }
 
 // content: none, add an empty content node
 void RenderStyle::setContentNone() {
     setContentNormal();
     generated.access()->content = new ContentData;
+}
+
+void RenderStyle::setContentData(ContentData *data) {
+    if (data != generated->content) {
+        if (data)
+            generated.access()->content = new ContentData(*data);
+        else
+            generated.access()->content = 0;
+    }
 }
 
 ContentData::ContentData(const ContentData& o) : _contentType(o._contentType)

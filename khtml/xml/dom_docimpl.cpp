@@ -238,7 +238,9 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 // ------------------------------------------------------------------------
 
 ElementMappingCache::ElementMappingCache():m_dict(257)
-{}
+{
+    m_dict.setAutoDelete(true);
+}
 
 void ElementMappingCache::add(const QString& id, ElementImpl* nd)
 {
@@ -838,6 +840,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_HR:
         n = new HTMLHRElementImpl(docPtr());
         break;
+    case ID_PLAINTEXT:
+    case ID_XMP:
     case ID_PRE:
         n = new HTMLPreElementImpl(docPtr(), id);
         break;
@@ -961,16 +965,14 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_SPAN:
     case ID_NOBR:
     case ID_WBR:
+    case ID_BDO:
+    case ID_NOFRAMES:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
     case ID_MARQUEE:
         n = new HTMLMarqueeElementImpl(docPtr());
         break;
-
-    case ID_BDO:
-        break;
-
 // text
     case ID_TEXT:
         kDebug( 6020 ) << "Use document->createTextNode()" << endl;
@@ -1716,42 +1718,34 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
     return false;
 }
 
+
 // DOM Section 1.1.1
-bool DocumentImpl::childAllowed( NodeImpl *newChild )
-{
-    // Documents may contain a maximum of one Element child
-    if (newChild->nodeType() == Node::ELEMENT_NODE) {
-        NodeImpl *c;
-        for (c = firstChild(); c; c = c->nextSibling()) {
-            if (c->nodeType() == Node::ELEMENT_NODE)
-                return false;
-        }
-    }
-
-    // Documents may contain a maximum of one DocumentType child
-    if (newChild->nodeType() == Node::DOCUMENT_TYPE_NODE) {
-        NodeImpl *c;
-        for (c = firstChild(); c; c = c->nextSibling()) {
-            if (c->nodeType() == Node::DOCUMENT_TYPE_NODE)
-                return false;
-        }
-    }
-
-    return childTypeAllowed(newChild->nodeType());
-}
-
 bool DocumentImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-        case Node::ELEMENT_NODE:
-        case Node::PROCESSING_INSTRUCTION_NODE:
-        case Node::COMMENT_NODE:
-        case Node::DOCUMENT_TYPE_NODE:
-            return true;
-            break;
-        default:
+        case Node::ATTRIBUTE_NODE:
+        case Node::CDATA_SECTION_NODE:
+        case Node::DOCUMENT_FRAGMENT_NODE:
+        case Node::DOCUMENT_NODE:
+        case Node::ENTITY_NODE:
+        case Node::ENTITY_REFERENCE_NODE:
+        case Node::NOTATION_NODE:
+        case Node::TEXT_NODE:
+//        case Node::XPATH_NAMESPACE_NODE:
             return false;
+        case Node::COMMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+            return true;
+        case Node::DOCUMENT_TYPE_NODE:
+        case Node::ELEMENT_NODE:
+            // Documents may contain no more than one of each of these.
+            // (One Element and one DocumentType.)
+            for (NodeImpl* c = firstChild(); c; c = c->nextSibling())
+                if (c->nodeType() == type)
+                    return false;
+            return true;
     }
+    return false;
 }
 
 NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
@@ -1990,7 +1984,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
     if (exceptioncode) *exceptioncode = excode;
 }
 
-void DocumentImpl::updateStyleSelector()
+void DocumentImpl::updateStyleSelector(bool shallow)
 {
 //    kDebug() << "PENDING " << m_pendingStylesheets << endl;
 
@@ -1998,7 +1992,10 @@ void DocumentImpl::updateStyleSelector()
     if (m_pendingStylesheets > 0)
         return;
 
-    recalcStyleSelector();
+    if (shallow)
+        rebuildStyleSelector();
+    else
+        recalcStyleSelector();
     recalcStyle(Force);
 #if 0
 
@@ -2148,6 +2145,11 @@ void DocumentImpl::recalcStyleSelector()
     for (; it.current(); ++it)
 	it.current()->deref();
 
+    rebuildStyleSelector();
+}
+
+void DocumentImpl::rebuildStyleSelector()
+{
     // Create a new style selector
     delete m_styleSelector;
     QString usersheet = m_usersheet;

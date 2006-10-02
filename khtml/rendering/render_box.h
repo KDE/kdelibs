@@ -63,7 +63,7 @@ public:
     virtual short contentWidth() const;
     virtual int contentHeight() const;
 
-    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false) const;
 
     virtual void setPos( int xPos, int yPos );
 
@@ -82,13 +82,14 @@ public:
 
     virtual void position(InlineBox* box, int from, int len, bool reverse);
 
+    virtual int highestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int lowestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int rightmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int leftmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
 
-    virtual void repaint(bool immediate=false);
+    virtual void repaint(Priority p=NormalPriority);
 
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
 
     virtual short containingBlockWidth() const;
     void relativePositionOffset(int &tx, int &ty) const;
@@ -100,6 +101,7 @@ public:
     virtual int   calcReplacedHeight() const;
 
     virtual int availableHeight() const;
+    virtual int availableWidth() const;
 
     void calcVerticalMargins();
 
@@ -118,18 +120,19 @@ public:
     virtual int pageTopAfter(int y) const;
     virtual int crossesPageBreak(int t, int b) const;
 
-protected:
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
     int calcContentWidth(int w) const;
     int calcContentHeight(int h) const;
 
+protected:
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
     int calcHeightUsing(const Length& height);
     int calcReplacedWidthUsing(WidthType widthType) const;
     int calcReplacedHeightUsing(HeightType heightType) const;
     int calcPercentageHeight(const Length& height, bool treatAsReplaced = false) const;
     int availableHeightUsing(const Length& h) const;
+    int availableWidthUsing(const Length& w) const;
     int calcImplicitHeight() const;
     bool hasImplicitHeight() const {
         return isPositioned() && !style()->top().isVariable() && !style()->bottom().isVariable();
@@ -144,20 +147,17 @@ protected:
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer* /*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ );
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/ );
 
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
-
-    virtual int borderTopExtra() { return 0; }
-    virtual int borderBottomExtra() { return 0; }
 
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
     void calcAbsoluteHorizontalValues(Length width, const RenderObject* cb, EDirection containerDirection,
-                                      const int containerWidth, const int bordersPlusPadding, 
+                                      const int containerWidth, const int bordersPlusPadding,
                                       const Length left, const Length right, const Length marginLeft, const Length marginRight,
                                       short& widthValue, short& marginLeftValue, short& marginRightValue, short& xPos);
-    void calcAbsoluteVerticalValues(Length height, const RenderObject* cb, 
+    void calcAbsoluteVerticalValues(Length height, const RenderObject* cb,
                                     const int containerHeight, const int bordersPlusPadding,
                                     const Length top, const Length bottom, const Length marginTop, const Length marginBottom,
                                     int& heightValue, short& marginTopValue, short& marginBottomValue, int& yPos);

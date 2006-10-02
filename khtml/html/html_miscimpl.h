@@ -56,6 +56,7 @@ public:
         DOC_LAYERS,    // all LAYERS
         DOC_LINKS,     // all A _and_ AREA elements with a value for href
         DOC_ANCHORS,      // all A elements with a value for name
+        DOC_SCRIPTS,   // all SCRIPT elements
         // from HTMLTable, HTMLTableSection, HTMLTableRow
         TABLE_ROWS,    // all rows in this table
         TABLE_TBODIES, // all TBODY elements in this table
@@ -96,7 +97,7 @@ public:
     }
 protected:
     virtual unsigned long calcLength(NodeImpl *start) const;
-    
+
     // The collection list the following elements
     int type:8;
 
@@ -133,7 +134,7 @@ private:
 };
 
 /*
- Special collection for items of given name/id under document. or window.; but using 
+ Special collection for items of given name/id under document. or window.; but using
  iteration interface
 */
 class HTMLMappedNameCollectionImpl : public HTMLCollectionImpl

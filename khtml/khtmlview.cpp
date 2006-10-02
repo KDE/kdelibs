@@ -89,6 +89,7 @@
 #include <qtimer.h>
 #include <QAbstractEventDispatcher>
 #include <qvector.h>
+#include <Q3ListBox>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -375,8 +376,8 @@ public:
     QWidget* cursor_icon_widget;
 
     // scrolling activated by MMB
-    int m_mouseScroll_byX : 4;
-    int m_mouseScroll_byY : 4;
+    short m_mouseScroll_byX;
+    short m_mouseScroll_byY;
     QTimer *m_mouseScrollTimer;
     QWidget *m_mouseScrollIndicator;
 };
@@ -648,7 +649,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
 	if (w && rw && !rw->isKHTMLWidget()) {
-            QRect g = w->geometry();
+            int x, y;
+            rw->absolutePosition(x, y);
+            contentsToViewport(x, y, x, y);
+            int pbx = rw->borderLeft()+rw->paddingLeft();
+            int pby = rw->borderTop()+rw->paddingTop();
+            QRect g = QRect(x+pbx, y+pby, 
+                            rw->width()-pbx-rw->borderRight()-rw->paddingRight(), 
+                            rw->height()-pby-rw->borderBottom()-rw->paddingBottom());
             if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
                                     (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
                 continue;
@@ -658,9 +666,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
                 mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
                 cr -= mask;
             } else {
-                int x, y;
-                rw->absolutePosition(x,y);
-                cr -= QRect(x,y,rw->width(),rw->height());
+                cr -= g;
             }
         }
     }
@@ -1075,7 +1081,10 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
     QPoint p(x-absx, y-absy);
     QMouseEvent fw(me->type(), p, me->button(), me->buttons(), me->modifiers());
     QWidget* w = r->widget();
-    if(w)
+    Q3ScrollView* sc = ::qobject_cast<Q3ScrollView*>(w);
+    if (sc && !::qobject_cast<Q3ListBox*>(w))
+        static_cast<khtml::RenderWidget::ScrollViewEventPropagator*>(sc)->sendEvent(&fw);
+    else if(w)
         static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
 }
 
@@ -1090,20 +1099,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         (deltaX > 0) ? d->m_mouseScroll_byX = 1 : d->m_mouseScroll_byX = -1;
         (deltaY > 0) ? d->m_mouseScroll_byY = 1 : d->m_mouseScroll_byY = -1;
 
-        int adX = abs( deltaX );
-        int adY = abs( deltaY );
+        double adX = QABS(deltaX)/30.0;
+        double adY = QABS(deltaY)/30.0;
 
-        if (adX > 100) d->m_mouseScroll_byX *= 7;
-        else if (adX > 75) d->m_mouseScroll_byX *= 4;
-        else if (adX > 50) d->m_mouseScroll_byX *= 2;
-        else if (adX > 25) d->m_mouseScroll_byX *= 1;
-        else d->m_mouseScroll_byX = 0;
-
-        if (adY > 100) d->m_mouseScroll_byY *= 7;
-        else if (adY > 75) d->m_mouseScroll_byY *= 4;
-        else if (adY > 50) d->m_mouseScroll_byY *= 2;
-        else if (adY > 25) d->m_mouseScroll_byY *= 1;
-        else d->m_mouseScroll_byY = 0;
+        d->m_mouseScroll_byX = qMax(qMin(d->m_mouseScroll_byX * int(adX*adX), SHRT_MAX), SHRT_MIN);
+        d->m_mouseScroll_byY = qMax(qMin(d->m_mouseScroll_byY * int(adY*adY), SHRT_MAX), SHRT_MIN);
 
         if (d->m_mouseScroll_byX == 0 && d->m_mouseScroll_byY == 0) {
             d->m_mouseScrollTimer->stop();
@@ -1485,13 +1485,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
       switch(_ke->key())
         {
         case Qt::Key_Space:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, -clipper()->height() + offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, -clipper()->height() + offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
 
         case Qt::Key_Down:
@@ -1519,69 +1515,47 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         {
         case Qt::Key_Down:
         case Qt::Key_J:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 0, 10 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 0, 10 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
 
         case Qt::Key_Space:
         case Qt::Key_PageDown:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, clipper()->height() - offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, clipper()->height() - offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
+
 
         case Qt::Key_Up:
         case Qt::Key_K:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 0, -10 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 0, -10 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
 
         case Qt::Key_PageUp:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, -clipper()->height() + offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, -clipper()->height() + offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Qt::Key_Right:
         case Qt::Key_L:
-            if ( d->hmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 10, 0 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 10, 0 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
+
         case Qt::Key_Left:
         case Qt::Key_H:
-            if ( d->hmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( -10, 0 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( -10, 0 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
         case Qt::Key_Enter:
         case Qt::Key_Return:
@@ -1594,22 +1568,14 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    }
             break;
         case Qt::Key_Home:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                setContentsPos( 0, 0 );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            setContentsPos( 0, 0 );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Qt::Key_End:
-            if ( d->vmode == Q3ScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                setContentsPos( 0, contentsHeight() - visibleHeight() );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            setContentsPos( 0, contentsHeight() - visibleHeight() );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Qt::Key_Shift:
             // what are you doing here?
@@ -1964,9 +1930,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w)) {
+		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w) && !::qobject_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
-		    QPoint pt = (me->pos() + w->pos());
+		    QPoint pt = w->mapTo( view, me->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->buttons(), me->modifiers());
 
 		    if (e->type() == QEvent::MouseMove)
@@ -3272,11 +3238,6 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();
     }
-    else if ( (e->orientation() == Qt::Vertical && d->vmode == Q3ScrollView::AlwaysOff) ||
-              (e->orientation() == Qt::Horizontal && d->hmode == Q3ScrollView::AlwaysOff) )
-    {
-        e->accept();
-    }
     else
     {
         d->scrollBarMoved = true;
@@ -3409,6 +3370,9 @@ void KHTMLView::slotScrollBarMoved()
         // ensure quick reset of contentsMoving flag
         scheduleRepaint(0, 0, 0, 0);
     }
+    
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
+        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )

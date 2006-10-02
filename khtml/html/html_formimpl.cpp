@@ -913,6 +913,11 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     {
         if( p->id() == ID_FORM )
             return static_cast<HTMLFormElementImpl *>(p);
+        if( p->parentNode() && p->parentNode()->id() == ID_TABLE && p->previousSibling() )
+        {
+            p = p->previousSibling();
+            continue;
+        }
         p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
@@ -1416,7 +1421,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         if (!attr->val()) break;
         bool ok;
         const int ml = attr->val()->toInt(&ok);
-        if (ml > 0 && ml < 1024)
+        if (ml > 0 && ml < 32767)
             m_maxLen = ml;
         else if (ok && ml <= 0)
             m_maxLen = 0;
@@ -1935,7 +1940,7 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (act) {
 	    NodeImpl* const formNode=getFormElement();
-	    if (formNode) {
+	    if (formNode && evt->target() != formNode) {
 		getDocument()->setFocusNode(formNode);
 		if (formNode->id()==ID_INPUT)
 		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
@@ -2234,20 +2239,18 @@ NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *re
     return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+void HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl* const result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
+    HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
     if( !exceptioncode )
         setRecalcListItems();
-    return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+void HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl* const result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
+    HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
     if( !exceptioncode )
         setRecalcListItems();
-    return result;
 }
 
 NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )

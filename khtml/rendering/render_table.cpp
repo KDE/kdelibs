@@ -34,6 +34,7 @@
 #include "rendering/render_canvas.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
+#include "html/html_formimpl.h"
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "rendering/render_line.h"
@@ -134,70 +135,94 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     kDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    RenderObject *o = child;
-
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
-        return;
-    }
+    bool wrapInAnonymousSection = false;
 
     switch(child->style()->display())
     {
-    case TABLE_CAPTION:
-        tCaption = static_cast<RenderBlock *>(child);
-        break;
-    case TABLE_COLUMN:
-    case TABLE_COLUMN_GROUP:
-	has_col_elems = true;
-        break;
-    case TABLE_HEADER_GROUP:
-	if ( !head )
-	    head = static_cast<RenderTableSection *>(child);
-	else if ( !firstBody )
-            firstBody = static_cast<RenderTableSection *>(child);
-        break;
-    case TABLE_FOOTER_GROUP:
-	if ( !foot ) {
-	    foot = static_cast<RenderTableSection *>(child);
-	    break;
-	}
-	// fall through
-    case TABLE_ROW_GROUP:
-        if(!firstBody)
-            firstBody = static_cast<RenderTableSection *>(child);
-        break;
-    default:
-        if ( !beforeChild && lastChild() &&
-	     lastChild()->isTableSection() && lastChild()->isAnonymous() ) {
-            o = lastChild();
-        } else {
-	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymous() &&
-		    !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION )
-		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymous() ) {
-		lastBox->addChild( child, beforeChild );
-		return;
-	    } else {
-		if ( beforeChild && !beforeChild->isTableSection() )
-		    beforeChild = 0;
-  		//kDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
-		o = new (renderArena()) RenderTableSection(document() /* anonymous */);
-		RenderStyle *newStyle = new RenderStyle();
-		newStyle->inheritFrom(style());
-                newStyle->setDisplay(TABLE_ROW_GROUP);
-		o->setStyle(newStyle);
-		addChild(o, beforeChild);
-	    }
-        }
-        o->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
+        case TABLE_CAPTION:
+            if (child->isRenderBlock())
+                tCaption = static_cast<RenderBlock *>(child);
+            break;
+        case TABLE_COLUMN:
+        case TABLE_COLUMN_GROUP:
+            has_col_elems = true;
+            break;
+        case TABLE_HEADER_GROUP:
+            if ( !head ) {
+                if (child->isTableSection())
+                    head = static_cast<RenderTableSection *>(child);
+            }
+            else if ( !firstBody )
+                if (child->isTableSection())
+                    firstBody = static_cast<RenderTableSection *>(child);
+            break;
+        case TABLE_FOOTER_GROUP:
+            if ( !foot ) {
+                if (child->isTableSection())
+                    foot = static_cast<RenderTableSection *>(child);
+                break;
+            }
+            // fall through
+        case TABLE_ROW_GROUP:
+            if(!firstBody)
+                if (child->isTableSection())
+                    firstBody = static_cast<RenderTableSection *>(child);
+            break;
+        case TABLE_CELL:
+        case TABLE_ROW:
+            wrapInAnonymousSection = true;
+            break;
+        case BLOCK:
+//         case BOX:
+        case COMPACT:
+        case INLINE:
+        case INLINE_BLOCK:
+//         case INLINE_BOX:
+        case INLINE_TABLE:
+        case LIST_ITEM:
+        case NONE:
+        case RUN_IN:
+        case TABLE:
+            // The special TABLE > FORM quirk allows the form to sit directly under the table
+            if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM)
+                wrapInAnonymousSection = !static_cast<HTMLFormElementImpl*>(child->element())->isMalformed();
+            else
+                wrapInAnonymousSection = true;
+            break;
+    }
+
+    if (!wrapInAnonymousSection) {
+        RenderContainer::addChild(child, beforeChild);
         return;
     }
-    RenderContainer::addChild(child,beforeChild);
+
+    if (!beforeChild && lastChild() && lastChild()->isTableSection() && lastChild()->isAnonymous()) {
+        lastChild()->addChild(child);
+        return;
+    }
+
+    RenderObject *lastBox = beforeChild;
+    RenderObject *nextToLastBox = beforeChild;
+    while (lastBox && lastBox->parent()->isAnonymous() &&
+            !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION) {
+        nextToLastBox = lastBox;
+        lastBox = lastBox->parent();
+    }
+    if (lastBox && lastBox->isAnonymous()) {
+        lastBox->addChild(child, nextToLastBox);
+        return;
+    }
+
+    if (beforeChild && !beforeChild->isTableSection())
+        beforeChild = 0;
+    RenderTableSection* section = new (renderArena()) RenderTableSection(document() /* anonymous */);
+    RenderStyle* newStyle = new RenderStyle();
+    newStyle->inheritFrom(style());
+    newStyle->setDisplay(TABLE_ROW_GROUP);
+    section->setStyle(newStyle);
+    addChild(section, beforeChild);
+    section->addChild(child);
 }
-
-
 
 void RenderTable::calcWidth()
 {
@@ -258,9 +283,12 @@ void RenderTable::layout()
     m_height = 0;
     initMaxMarginValues();
 
-    //int oldWidth = m_width;
+    int oldWidth = m_width;
     calcWidth();
     m_overflowWidth = m_width;
+    
+    if (tCaption && (oldWidth != m_width || tCaption->style()->height().isPercent()))
+        tCaption->setChildNeedsLayout(true);
 
     // the optimization below doesn't work since the internal table
     // layout could have changed.  we need to add a flag to the table
@@ -280,6 +308,7 @@ void RenderTable::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
+        // FIXME: What about a form that has a display value that makes it a table section?
 	if ( child->needsLayout() && !(child->element() && child->element()->id() == ID_FORM) )
 	    child->layout();
 	if ( child->isTableSection() ) {
@@ -291,7 +320,7 @@ void RenderTable::layout()
 
     // ### collapse caption margin
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM) {
-        tCaption->setPos(tCaption->marginLeft(), m_height);
+        tCaption->setPos(tCaption->marginLeft(), tCaption->marginTop()+m_height);
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
@@ -358,7 +387,7 @@ void RenderTable::layout()
     m_height += bpBottom;
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM) {
-        tCaption->setPos(tCaption->marginLeft(), m_height);
+        tCaption->setPos(tCaption->marginLeft(), tCaption->marginTop()+m_height);
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
@@ -476,8 +505,15 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 void RenderTable::paintBoxDecorations(PaintInfo &pI, int _tx, int _ty)
 {
     int w = width();
-    int h = height() + borderTopExtra() + borderBottomExtra();
-    _ty -= borderTopExtra();
+    int h = height();
+
+    // Account for the caption.
+    if (tCaption) {
+        int captionHeight = (tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
+        h -= captionHeight;
+        if (tCaption->style()->captionSide() != CAPBOTTOM)
+            _ty += captionHeight;
+    }
 
     int my = qMax(_ty,pI.r.y());
     int mh;
@@ -505,8 +541,11 @@ void RenderTable::calcMinMaxWidth()
 
     tableLayout->calcMinMaxWidth();
 
-    if (tCaption && tCaption->minWidth() > m_minWidth)
-        m_minWidth = tCaption->minWidth();
+    if (tCaption) {
+        tCaption->calcWidth();
+        if (tCaption->marginLeft()+tCaption->marginRight()+tCaption->minWidth() > m_minWidth)
+            m_minWidth = tCaption->marginLeft()+tCaption->marginRight()+tCaption->minWidth();
+    }
 
     setMinMaxKnown();
 #ifdef DEBUG_LAYOUT
@@ -519,24 +558,6 @@ void RenderTable::close()
 //    kDebug( 6040 ) << "RenderTable::close()" << endl;
     setNeedsLayoutAndMinMaxRecalc();
 }
-
-int RenderTable::borderTopExtra()
-{
-    if (tCaption && tCaption->style()->captionSide()!=CAPBOTTOM)
-        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else
-        return 0;
-
-}
-
-int RenderTable::borderBottomExtra()
-{
-    if (tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
-        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else
-        return 0;
-}
-
 
 void RenderTable::splitColumn( int pos, int firstSpan )
 {
@@ -644,7 +665,7 @@ void RenderTable::recalcSections()
     while ( child ) {
 	switch(child->style()->display()) {
 	case TABLE_CAPTION:
-	    if ( !tCaption) {
+	    if ( !tCaption && child->isRenderBlock() ) {
 		tCaption = static_cast<RenderBlock*>(child);
                 tCaption->setNeedsLayout(true);
             }
@@ -653,33 +674,37 @@ void RenderTable::recalcSections()
 	case TABLE_COLUMN_GROUP:
 	    has_col_elems = true;
 	    break;
-	case TABLE_HEADER_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !head )
-		head = section;
-	    else if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	    break;
-	}
-	case TABLE_FOOTER_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !foot )
-		foot = section;
-	    else if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	    break;
-	}
-	case TABLE_ROW_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	}
+        case TABLE_HEADER_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!head)
+                    head = section;
+                else if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+            break;
+        case TABLE_FOOTER_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!foot)
+                    foot = section;
+                else if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+            break;
+        case TABLE_ROW_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+            break;
 	default:
 	    break;
 	}
@@ -734,32 +759,55 @@ int RenderTable::borderBottom() const
     }
     return RenderBlock::borderBottom();
 }
+ 
+RenderTableSection* RenderTable::sectionAbove(const RenderTableSection* section, bool skipEmptySections) const
+{
+    if (section == head)
+        return 0;
+    RenderObject *prevSection = (section == foot ? lastChild() : const_cast<RenderTableSection *>(section))->previousSibling();
+    while (prevSection) {
+        if (prevSection->isTableSection() && prevSection != head && prevSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(prevSection)->numRows()))
+            break;
+        prevSection = prevSection->previousSibling();
+    }
+    if (!prevSection && head && (!skipEmptySections || head->numRows()))
+        prevSection = head;
+    return static_cast<RenderTableSection*>(prevSection);
+}
+
+RenderTableSection* RenderTable::sectionBelow(const RenderTableSection* section, bool skipEmptySections) const
+{
+    if (section == foot)
+        return 0;
+    RenderObject *nextSection = (section == head ? firstChild() : const_cast<RenderTableSection *>(section))->nextSibling();
+    while (nextSection) {
+        if (nextSection->isTableSection() && nextSection != head && nextSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(nextSection)->numRows()))
+            break;
+        nextSection = nextSection->nextSibling();
+    }
+    if (!nextSection && foot && (!skipEmptySections || foot->numRows()))
+        nextSection = foot;
+    return static_cast<RenderTableSection*>(nextSection);
+}
 
 RenderTableCell* RenderTable::cellAbove(const RenderTableCell* cell) const
 {
     // Find the section and row to look in
     int r = cell->row();
     RenderTableSection* section = 0;
-    int rAbove = -1;
+    int rAbove = 0;
     if (r > 0) {
         // cell is not in the first row, so use the above row in its own section
         section = cell->section();
         rAbove = r-1;
     } else {
-        // cell is at top of a section, use last row in previous section
-        for (RenderObject *prevSection = cell->section()->previousSibling();
-             prevSection && rAbove < 0;
-             prevSection = prevSection->previousSibling()) {
-            if (prevSection->isTableSection()) {
-                section = static_cast<RenderTableSection *>(prevSection);
-                if (section->numRows() > 0)
-                    rAbove = section->numRows()-1;
-            }
-        }
+        section = sectionAbove(cell->section(), true);
+        if (section)
+            rAbove = section->numRows() - 1;
     }
 
     // Look up the cell in the section's grid, which requires effective col index
-    if (section && rAbove >= 0) {
+    if (section) {
         int effCol = colToEffCol(cell->col());
         RenderTableCell* aboveCell;
         // If we hit a span back up to a real cell.
@@ -778,27 +826,19 @@ RenderTableCell* RenderTable::cellBelow(const RenderTableCell* cell) const
     // Find the section and row to look in
     int r = cell->row() + cell->rowSpan() - 1;
     RenderTableSection* section = 0;
-    int rBelow = -1;
+    int rBelow = 0;
     if (r < cell->section()->numRows()-1) {
         // The cell is not in the last row, so use the next row in the section.
         section = cell->section();
         rBelow= r+1;
     } else {
-        // The cell is at the bottom of a section. Use the first row in the next section.
-        for (RenderObject* nextSection = cell->section()->nextSibling();
-             nextSection && rBelow < 0;
-             nextSection = nextSection->nextSibling())
-        {
-            if (nextSection->isTableSection()) {
-                section = static_cast<RenderTableSection *>(nextSection);
-                if (section->numRows() > 0)
-                    rBelow = 0;
-            }
-        }
+        section = sectionBelow(cell->section(), true);
+        if (section)
+            rBelow = 0;
     }
 
     // Look up the cell in the section's grid, which requires effective col index
-    if (section && rBelow >= 0) {
+    if (section) {
         int effCol = colToEffCol(cell->col());
         RenderTableCell* belowCell;
         // If we hit a colspan back up to a real cell.
@@ -955,39 +995,40 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     kDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    RenderObject *row = child;
-
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
-        return;
-    }
-
     if ( !child->isTableRow() ) {
-
-        if( !beforeChild )
-            beforeChild = lastChild();
-
-        if( beforeChild && beforeChild->isAnonymous() )
-            row = beforeChild;
-        else {
-	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymous() && !lastBox->isTableRow() )
-		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymous() ) {
-		lastBox->addChild( child, beforeChild );
-		return;
-	    } else {
-		//kDebug( 6040 ) << "creating anonymous table row" << endl;
-		row = new (renderArena()) RenderTableRow(document() /* anonymous table */);
-		RenderStyle *newStyle = new RenderStyle();
-		newStyle->inheritFrom(style());
-		newStyle->setDisplay( TABLE_ROW );
-		row->setStyle(newStyle);
-		addChild(row, beforeChild);
-	    }
+        // TBODY > FORM quirk (???)
+        if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM &&
+            static_cast<HTMLFormElementImpl*>(child->element())->isMalformed())
+        {
+            RenderContainer::addChild(child, beforeChild);
+            return;
         }
+
+        RenderObject* last = beforeChild;
+        if (!last)
+            last = lastChild();
+        if (last && last->isAnonymous()) {
+            last->addChild(child);
+            return;
+        }
+
+        // If beforeChild is inside an anonymous cell/row, insert into the cell or into
+        // the anonymous row containing it, if there is one.
+        RenderObject* lastBox = last;
+        while (lastBox && lastBox->parent()->isAnonymous() && !lastBox->isTableRow())
+            lastBox = lastBox->parent();
+        if (lastBox && lastBox->isAnonymous()) {
+            lastBox->addChild(child, beforeChild);
+            return;
+        }
+
+        RenderObject* row = new (renderArena()) RenderTableRow(document() /* anonymous table */);
+        RenderStyle* newStyle = new RenderStyle();
+        newStyle->inheritFrom(style());
+        newStyle->setDisplay(TABLE_ROW);
+        row->setStyle(newStyle);
+        addChild(row, beforeChild);
         row->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
         return;
     }
 
@@ -998,6 +1039,8 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     cCol = 0;
 
     ensureRows( cRow+1 );
+    KHTMLAssert( child->isTableRow() );
+    grid[cRow].rowRenderer = static_cast<RenderTableRow*>(child);
 
     if (!beforeChild) {
         grid[cRow].height = child->style()->height();
@@ -1171,7 +1214,7 @@ void RenderTableSection::calcRowHeight()
 	int bdesc = 0;
 // 	qDebug("height of row %d is %d/%d", r, grid[r].height.value, grid[r].height.type );
 	int ch = grid[r].height.minWidth( 0 );
-	int pos = rowPos[ r+1 ] + ch + vspacing;
+	int pos = rowPos[r] + ch + (grid[r].rowRenderer ? vspacing : 0);
 
 	if ( pos > rowPos[r+1] )
 	    rowPos[r+1] = pos;
@@ -1212,7 +1255,7 @@ void RenderTableSection::calcRowHeight()
             if (!cell->style()->height().isVariable())
                 grid[r].needFlex = true;
 
-	    pos = rowPos[ indx ] + ch + vspacing;
+	    pos = rowPos[indx] + ch + (grid[r].rowRenderer ? vspacing : 0);
 
 	    if ( pos > rowPos[r+1] )
 		rowPos[r+1] = pos;
@@ -1237,7 +1280,7 @@ void RenderTableSection::calcRowHeight()
 	//do we have baseline aligned elements?
 	if (baseline) {
 	    // increase rowheight if baseline requires
-	    int bRowPos = baseline + bdesc  + vspacing ; // + 2*padding
+	    int bRowPos = baseline + bdesc + (grid[r].rowRenderer ? vspacing : 0);
 	    if (rowPos[r+1]<bRowPos)
 		rowPos[r+1]=bRowPos;
 
@@ -1257,6 +1300,10 @@ int RenderTableSection::layoutRows( int toAdd )
     int totalRows = grid.size();
     int hspacing = table()->borderHSpacing();
     int vspacing = table()->borderVSpacing();
+    
+    // Set the width of our section now.  The rows will also be this width.
+    m_width = table()->contentWidth();
+    
     if (markedForRepaint()) {
         repaintDuringLayout();
         setMarkedForRepaint(false);
@@ -1355,6 +1402,20 @@ int RenderTableSection::layoutRows( int toAdd )
     {
 	Row *row = grid[r].row;
 	int totalCols = row->size();
+
+#ifdef APPLE_CHANGES
+        // in WC, rows and cells share the same coordinate space, so that rows can have
+        // dimensions in the layer system. This is of dubious value, and a heavy maintenance burden 
+        // (RenderObject's coordinates can't be used deterministically anymore) so we'll consider other options.
+
+        // Set the row's x/y position and width/height.
+        if (grid[r].rowRenderer) {
+            grid[r].rowRenderer->setPos(0, rowPos[r]);
+            grid[r].rowRenderer->setWidth(m_width);
+            grid[r].rowRenderer->setHeight(rowPos[r+1] - rowPos[r] - vspacing);
+        }
+#endif
+
         for ( int c = 0; c < nEffCols; c++ )
         {
             RenderTableCell *cell = cellAt(r, c);
@@ -1479,7 +1540,7 @@ inline static RenderTableRow *nextTableRow(RenderObject *row)
 
 int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int bottom = RenderContainer::lowestPosition(includeOverflowInterior, includeSelf);
+    int bottom = RenderBox::lowestPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
 
@@ -1496,7 +1557,7 @@ int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includ
 
 int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int right = RenderContainer::rightmostPosition(includeOverflowInterior, includeSelf);
+    int right = RenderBox::rightmostPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return right;
 
@@ -1513,7 +1574,7 @@ int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool inc
 
 int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int left = RenderContainer::leftmostPosition(includeOverflowInterior, includeSelf);
+    int left = RenderBox::leftmostPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return left;
 
@@ -1526,6 +1587,23 @@ int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool incl
     }
 
     return left;
+}
+
+int RenderTableSection::highestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int top = RenderBox::highestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return top;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int hp = cell->yPos() + cell->highestPosition(false);
+                top = qMin(top, hp);
+        }
+    }
+
+    return top;
 }
 
 // Search from first_row to last_row for the row containing y
@@ -1562,11 +1640,11 @@ static void findRowCover(unsigned int &startrow, unsigned int &endrow,
         int offset = (endrow - startrow)/2;
         while (endrow - startrow > 1) {
             index = startrow+offset;
-            if (rowPos[index] <= min_y ) 
+            if (rowPos[index] <= min_y )
                 // index is below both min_y and max_y
                 startrow = index;
             else
-            if (rowPos[index] > max_y) 
+            if (rowPos[index] > max_y)
                 // index is above both min_y and max_y
                 endrow = index;
             else
@@ -1635,15 +1713,43 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 		c--;
 	    for ( ; c < endcol; c++ ) {
 		RenderTableCell *cell = (*row)[c];
-		if (!cell || cell == (RenderTableCell *)-1 )
+		if ( !cell || cell == (RenderTableCell *)-1 || nextrow && (*nextrow)[c] == cell )
 		    continue;
-		if ( nextrow && (*nextrow)[c] == cell )
-		    continue;
-
 #ifdef TABLE_PRINT
 		kDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->paint( pI, tx, ty);
+                if (pI.phase == PaintActionElementBackground || pI.phase == PaintActionChildBackground) {
+                    // We need to handle painting a stack of backgrounds.  This stack (from bottom to top) consists of
+                    // the column group, column, row group, row, and then the cell.
+                    RenderObject* col = table()->colElement(c);
+                    RenderObject* colGroup = 0;
+                    if (col) {
+                        RenderStyle *style = col->parent()->style();
+                        if (style->display() == TABLE_COLUMN_GROUP)
+                            colGroup = col->parent();
+                    }
+                    RenderObject* row = cell->parent();
+                    
+                    // ###
+                    // Column groups and columns first.
+                    // FIXME: Columns and column groups do not currently support opacity, and they are being painted "too late" in
+                    // the stack, since we have already opened a transparency layer (potentially) for the table row group.
+                    // Note that we deliberately ignore whether or not the cell has a layer, since these backgrounds paint "behind" the
+                    // cell.
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, colGroup);
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, col);
+
+                    // Paint the row group next.
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, this);
+
+                    // Paint the row next, but only if it doesn't have a layer.  If a row has a layer, it will be responsible for
+                    // painting the row background for the cell.
+                    if (!row->layer())
+                        cell->paintBackgroundsBehindCell(pI, tx, ty, row);
+                }
+
+                if ((!cell->layer() && !cell->parent()->layer()) || pI.phase == PaintActionCollapsedTableBorders)
+                    cell->paint(pI, tx, ty);
 	    }
 	}
     }
@@ -1661,6 +1767,8 @@ void RenderTableSection::recalcCells()
 	cRow++;
 	cCol = 0;
 	ensureRows( cRow+1 );
+            grid[cRow].rowRenderer = static_cast<RenderTableRow*>(row);
+
             for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
                 if (cell->isTableCell())
                     addCell( static_cast<RenderTableCell *>(cell), static_cast<RenderTableRow *>(row) );
@@ -1865,6 +1973,28 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
     return SelectionPointBefore;
 }
 
+// Hit Testing
+bool RenderTableSection::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside)
+{
+    // Table sections cannot ever be hit tested.  Effectively they do not exist.
+    // Just forward to our children always.
+    tx += m_x;
+    ty += m_y;
+
+    for (RenderObject* child = lastChild(); child; child = child->previousSibling()) {
+        // FIXME: We have to skip over inline flows, since they can show up inside table rows
+        // at the moment (a demoted inline <form> for example). If we ever implement a
+        // table-specific hit-test method (which we should do for performance reasons anyway),
+        // then we can remove this check.
+        if (!child->layer() && !child->isInlineFlow() && child->nodeAtPoint(info, x, y, tx, ty, action, inside)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 // -------------------------------------------------------------------------
 
 RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
@@ -1872,6 +2002,15 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
+}
+
+RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
+{
+    RenderTableSection *s = section();
+    if (s)
+        s->setNeedCellRecalc();
+
+    return RenderContainer::removeChildNode( child );
 }
 
 void RenderTableRow::detach()
@@ -1883,10 +2022,13 @@ void RenderTableRow::detach()
     RenderContainer::detach();
 }
 
-void RenderTableRow::setStyle(RenderStyle* style)
+void RenderTableRow::setStyle(RenderStyle* newStyle)
 {
-    style->setDisplay(TABLE_ROW);
-    RenderContainer::setStyle(style);
+    if (section() && style() && style()->height() != newStyle->height())
+        section()->setNeedCellRecalc();
+
+    newStyle->setDisplay(TABLE_ROW);
+    RenderContainer::setStyle(newStyle);
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -1895,61 +2037,49 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     kDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
+
+    if ( !child->isTableCell() ) {
+        // TR > FORM quirk (???)
+        if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM &&
+            static_cast<HTMLFormElementImpl*>(child->element())->isMalformed())
+        {
+            RenderContainer::addChild(child, beforeChild);
+            return;
+        }
+
+        RenderObject* last = beforeChild;
+        if (!last)
+            last = lastChild();
+        if (last && last->isAnonymous() && last->isTableCell()) {
+            last->addChild(child);
+            return;
+        }
+
+        // If beforeChild is inside an anonymous cell, insert into the cell.
+        if (last && !last->isTableCell() && last->parent() && last->parent()->isAnonymous()) {
+            last->parent()->addChild(child, beforeChild);
+            return;
+        }
+
+        RenderTableCell* cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
+        RenderStyle* newStyle = new RenderStyle();
+        newStyle->inheritFrom(style());
+        newStyle->setDisplay(TABLE_CELL);
+        cell->setStyle(newStyle);
+        addChild(cell, beforeChild);
+        cell->addChild(child);
         return;
     }
 
-    RenderTableCell *cell;
-
-    if ( !child->isTableCell() ) {
-	RenderObject *last = beforeChild;
-        if ( !last )
-            last = lastChild();
-        RenderTableCell *cell = 0;
-        if( last && last->isAnonymous() && last->isTableCell() )
-            cell = static_cast<RenderTableCell *>(last);
-        else {
-            // If beforeChild is inside an anonymous cell, insert into the cell.
-            if (last && !last->isTableCell() && last->parent() && last->parent()->isAnonymous()) {
-                last->parent()->addChild(child, beforeChild);
-                return;
-            }
-            cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
-	    RenderStyle *newStyle = new RenderStyle();
-	    newStyle->inheritFrom(style());
-	    newStyle->setDisplay( TABLE_CELL );
-	    cell->setStyle(newStyle);
-	    addChild(cell, beforeChild);
-        }
-        cell->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
-        return;
-    } else
-        cell = static_cast<RenderTableCell *>(child);
+    RenderTableCell* cell = static_cast<RenderTableCell*>(child);
 
     section()->addCell( cell, this );
 
     RenderContainer::addChild(cell,beforeChild);
 
-    if ( ( beforeChild || nextSibling()) && section() )
-	section()->setNeedCellRecalc();
+    if ( beforeChild || nextSibling() )
+        section()->setNeedCellRecalc();
 }
-
-RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
-{
-// RenderTableCell detach should do it
-//     if ( section() )
-// 	section()->setNeedCellRecalc();
-    return RenderContainer::removeChildNode( child );
-}
-
-#ifdef ENABLE_DUMP
-void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
-{
-    RenderContainer::dump(stream,ind);
-}
-#endif
 
 void RenderTableRow::layout()
 {
@@ -2043,6 +2173,43 @@ void RenderTableRow::paintRow( PaintInfo& pI, int tx, int ty, int w, int h )
         paintOutline(pI.p, tx, ty, w, h, style());
 }
 
+void RenderTableRow::paint(PaintInfo& i, int tx, int ty)
+{
+    KHTMLAssert(layer());
+    if (!layer())
+        return;
+
+    for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
+        if (child->isTableCell()) {
+            // Paint the row background behind the cell.
+            if (i.phase == PaintActionElementBackground || i.phase == PaintActionChildBackground) {
+                RenderTableCell* cell = static_cast<RenderTableCell*>(child);
+                cell->paintBackgroundsBehindCell(i, tx, ty, this);
+            }
+            if (!child->layer())
+                child->paint(i, tx, ty);
+        }
+    }
+}
+
+// Hit Testing
+bool RenderTableRow::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside)
+{
+    // Table rows cannot ever be hit tested.  Effectively they do not exist.
+    // Just forward to our children always.
+    for (RenderObject* child = lastChild(); child; child = child->previousSibling()) {
+        // FIXME: We have to skip over inline flows, since they can show up inside table rows
+        // at the moment (a demoted inline <form> for example). If we ever implement a
+        // table-specific hit-test method (which we should do for performance reasons anyway),
+        // then we can remove this check.
+        if (!child->layer() && !child->isInlineFlow() && child->nodeAtPoint(info, x, y, tx, ty, action, inside)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // -------------------------------------------------------------------------
 
 RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
@@ -2079,6 +2246,17 @@ void RenderTableCell::updateFromElement()
   }
 }
 
+Length RenderTableCell::styleOrColWidth()
+{
+    Length w = style()->width();
+    if (colSpan() > 1 || !w.isVariable())
+        return w;
+    RenderTableCol* col = table()->colElement(_col);
+    if (col)
+        w = col->style()->width();
+    return w;
+}
+
 void RenderTableCell::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
@@ -2086,18 +2264,22 @@ void RenderTableCell::calcMinMaxWidth()
     kDebug( 6040 ) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
+    if (section()->needCellRecalc)
+        section()->recalcCells();
+
     RenderBlock::calcMinMaxWidth();
     if (element() && style()->whiteSpace() == NORMAL) {
         // See if nowrap was set.
+        Length w = styleOrColWidth();
         DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
-        if (!nowrap.isNull() && style()->width().isFixed() &&
-            m_minWidth < style()->width().value() )
+        if (!nowrap.isNull() && w.isFixed() &&
+            m_minWidth < w.value() )
             // Nowrap is set, but we didn't actually use it because of the
             // fixed width set on the cell.  Even so, it is a WinIE/Moz trait
             // to make the minwidth of the cell into the fixed width.  They do this
             // even in strict mode, so do not make this a quirk.  Affected the top
             // of hiptop.com.
-            m_minWidth = style()->width().value();
+            m_minWidth = w.value();
     }
 
     setMinMaxKnown();
@@ -2130,18 +2312,23 @@ void RenderTableCell::close()
 #endif
 }
 
-
-void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
-{
-    RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, immediate, f);
+bool RenderTableCell::requiresLayer() const {
+    // table-cell display is never positioned (css 2.1-9.7), so the only time a layer is needed
+    // is when overflow != visible (or when there is opacity when we support it)
+    return /* style()->opacity() < 1.0f || */ hasOverflowClip() || isRelPositioned();
 }
 
-bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
+void RenderTableCell::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
-    bool ret = RenderBlock::absolutePosition(xPos, yPos, f);
-    if (ret)
-      yPos += _topExtra;
-    return ret;
+    RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, p, f);
+}
+
+bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f) const
+{
+    bool result = RenderBlock::absolutePosition(xPos, yPos, f);
+    xPos -= parent()->xPos(); // Rows are in the same coordinate space, so don't add their offset in.
+    yPos -= parent()->yPos();
+    return result;
 }
 
 int RenderTableCell::pageTopAfter(int y) const
@@ -2168,20 +2355,23 @@ short RenderTableCell::baselinePosition( bool ) const
 }
 
 
-void RenderTableCell::setStyle( RenderStyle *style )
+void RenderTableCell::setStyle( RenderStyle *newStyle )
 {
-    style->setDisplay(TABLE_CELL);
-    RenderBlock::setStyle( style );
+    if (parent() && section() && style() && style()->height() != newStyle->height())
+        section()->setNeedCellRecalc();
+
+    newStyle->setDisplay(TABLE_CELL);
+    RenderBlock::setStyle( newStyle );
     setShouldPaintBackgroundOrBorder(true);
 
-    if (style->whiteSpace() == KHTML_NOWRAP) {
+    if (newStyle->whiteSpace() == KHTML_NOWRAP) {
       // Figure out if we are really nowrapping or if we should just
       // use normal instead.  If the width of the cell is fixed, then
       // we don't actually use NOWRAP.
-      if (style->width().isFixed())
-	style->setWhiteSpace(NORMAL);
+      if (newStyle->width().isFixed())
+	newStyle->setWhiteSpace(NORMAL);
       else
-	style->setWhiteSpace(NOWRAP);
+	newStyle->setWhiteSpace(NOWRAP);
     }
 }
 
@@ -2371,20 +2561,18 @@ CollapsedBorderValue RenderTableCell::collapsedTopBorder() const
     }
 
     // Now check row groups.
-    RenderObject* currSection = parent()->parent();
+    RenderTableSection* currSection = section();
     if (row() == 0) {
         // (5) Our row group's top border.
         result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderTop(), BROWGROUP));
         if (!result.exists()) return result;
 
         // (6) Previous row group's bottom border.
-        for (currSection = currSection->previousSibling(); currSection;
-            currSection = currSection->previousSibling()) {
-            if (currSection->isTableSection()) {
-                RenderTableSection* section = static_cast<RenderTableSection*>(currSection);
-                result = compareBorders(result, CollapsedBorderValue(&section->style()->borderBottom(), BROWGROUP));
-                if (!result.exists()) return result;
-            }
+        currSection = table()->sectionAbove(currSection);
+        if (currSection) {
+            result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderBottom(), BROWGROUP));
+            if (!result.exists())
+                return result;
         }
     }
 
@@ -2428,20 +2616,18 @@ CollapsedBorderValue RenderTableCell::collapsedBottomBorder() const
     }
 
     // Now check row groups.
-    RenderObject* currSection = parent()->parent();
+    RenderTableSection* currSection = section();
     if (row()+rowSpan() >= static_cast<RenderTableSection*>(currSection)->numRows()) {
         // (5) Our row group's bottom border.
         result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderBottom(), BROWGROUP));
         if (!result.exists()) return result;
 
         // (6) Following row group's top border.
-        for (currSection = currSection->nextSibling(); currSection;
-            currSection = currSection->nextSibling()) {
-            if (currSection->isTableSection()) {
-                RenderTableSection* section = static_cast<RenderTableSection*>(currSection);
-                result = compareBorders(result, CollapsedBorderValue(&section->style()->borderTop(), BROWGROUP));
-                if (!result.exists()) return result;
-            }
+        currSection = table()->sectionBelow(currSection);
+        if (currSection) {
+            result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderTop(), BROWGROUP));
+            if (!result.exists())
+                return result;
         }
     }
 
@@ -2688,6 +2874,48 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
     }
 }
 
+void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty, RenderObject* backgroundObject)
+{
+    if (!backgroundObject)
+        return;
+
+    RenderTable* tableElt = table();
+    if (backgroundObject != this) {
+        _tx += m_x;
+        _ty += m_y + _topExtra;
+    }
+
+    int w = width();
+    int h = height() + borderTopExtra() + borderBottomExtra();
+    _ty -= borderTopExtra();
+
+    int my = qMax(_ty,pI.r.y());
+    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
+    int mh = end - my;
+
+    QColor c = backgroundObject->style()->backgroundColor();
+    const BackgroundLayer* bgLayer = backgroundObject->style()->backgroundLayers();
+
+    if (bgLayer->hasImage() || c.isValid()) {
+        // We have to clip here because the background would paint
+        // on top of the borders otherwise.  This only matters for cells and rows.
+        bool hasLayer = backgroundObject->layer() && (backgroundObject == this || backgroundObject == parent());
+        if (hasLayer && tableElt->collapseBorders()) {
+            pI.p->save();
+            QRect clipRect(_tx + borderLeft(), _ty + borderTop(), w - borderLeft() - borderRight(), h - borderTop() - borderBottom());
+            clipRect = pI.p->xForm(clipRect);
+            QRegion creg(clipRect);
+            QRegion old = pI.p->clipRegion();
+            if (!old.isNull())
+                creg = old.intersect(creg);
+            pI.p->setClipRegion(creg);
+        }                                                                            
+	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
+        if (hasLayer && tableElt->collapseBorders())
+            pI.p->restore();
+    }
+}
+
 void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     RenderTable* tableElt = table();
@@ -2698,57 +2926,12 @@ void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
         drawBorders = false;
     if (!style()->htmlHacks() && !drawBorders) return;
 
+    // Paint our cell background.
+    paintBackgroundsBehindCell(pI, _tx, _ty, this);
+
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
-
-    QColor c = style()->backgroundColor();
-    if ( !c.isValid() && parent() ) // take from row
-        c = parent()->style()->backgroundColor();
-    if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
-        c = parent()->parent()->style()->backgroundColor();
-    if ( !c.isValid() ) {
-	// see if we have a col or colgroup for this
-	RenderTableCol *col = table()->colElement( _col );
-	if ( col ) {
-	    c = col->style()->backgroundColor();
-	    if ( !c.isValid() ) {
-		// try column group
-		RenderStyle *style = col->parent()->style();
-		if ( style->display() == TABLE_COLUMN_GROUP )
-		    c = style->backgroundColor();
-	    }
-	}
-    }
-
-    // FIXME: This code is just plain wrong.  Rows and columns should paint their backgrounds
-    // independent from the cell.
-    // ### get offsets right in case the bgimage is inherited.
-    const BackgroundLayer* bgLayer = style()->backgroundLayers();
-    if (!bgLayer->hasImage() && parent())
-        bgLayer = parent()->style()->backgroundLayers();
-    if (!bgLayer->hasImage() && parent() && parent()->parent())
-        bgLayer = parent()->parent()->style()->backgroundLayers();
-    if (!bgLayer->hasImage()) {
-	// see if we have a col or colgroup for this
-	RenderTableCol* col = table()->colElement(_col);
-	if (col) {
-	    bgLayer = col->style()->backgroundLayers();
-	    if (!bgLayer->hasImage()) {
-		// try column group
-		RenderStyle *style = col->parent()->style();
-		if (style->display() == TABLE_COLUMN_GROUP)
-		    bgLayer = style->backgroundLayers();
-	    }
-	}
-    }
-
-    int my = qMax(_ty,pI.r.y());
-    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
-    int mh = end - my;
-
-    if (bgLayer->hasImage() || c.isValid())
-	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
 
     if (drawBorders && style()->hasBorder() && !tableElt->collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());
@@ -2770,12 +2953,10 @@ void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 // -------------------------------------------------------------------------
 
 RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
-    : RenderContainer(node)
+    : RenderContainer(node), m_span(1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is not Inline
-
-    _span = 1;
     updateFromElement();
 }
 
@@ -2784,29 +2965,16 @@ void RenderTableCol::updateFromElement()
   DOM::NodeImpl *node = element();
   if ( node && (node->id() == ID_COL || node->id() == ID_COLGROUP) ) {
       DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
-      _span = tc->span();
+      m_span = tc->span();
   } else
-      _span = ! ( style() && style()->display() == TABLE_COLUMN_GROUP );
-}
-
-void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
-{
-#ifdef DEBUG_LAYOUT
-    //kDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )"  << ", " <<
-    //                   (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
-#endif
-
-    KHTMLAssert(child->style()->display() == TABLE_COLUMN);
-
-    // these have to come before the table definition!
-    RenderContainer::addChild(child,beforeChild);
+      m_span = ! ( style() && style()->display() == TABLE_COLUMN_GROUP );
 }
 
 #ifdef ENABLE_DUMP
 void RenderTableCol::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
-    stream << " _span=" << _span;
+    stream << " _span=" << m_span;
 }
 #endif
 

@@ -463,7 +463,8 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     }
 
     // make sure we don't bust up X11
-    size = qMax(0, qMin(255, size));
+    // Also, Qt does not support sizing a QFont to zero.
+    size = qMax(1, qMin(255, size));
 
 //       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.toLatin1().constData(), fontDef.italic,
 //    	   fontDef.weight, size );
@@ -479,7 +480,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
 
     if ( fontDef.smallCaps ) {
 	scFont = new QFont( f );
-	scFont->setPixelSize( f.pixelSize()*7/10 );
+	scFont->setPixelSize( qMax(1, f.pixelSize()*7/10) );
     }
 }
 

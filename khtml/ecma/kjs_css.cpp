@@ -134,6 +134,8 @@ KJS_DEFINE_PROTOTYPE(DOMCSSStyleDeclarationProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSStyleDeclarationProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
 
+IMPLEMENT_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor, "DOMCSSStyleDeclaration",DOMCSSStyleDeclarationProto)
+
 const ClassInfo DOMCSSStyleDeclaration::info = { "CSSStyleDeclaration", 0, &DOMCSSStyleDeclarationTable, 0 };
 
 DOMCSSStyleDeclaration::DOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* s)
@@ -243,8 +245,13 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
     if (int pId = cssPropertyId(prop)) {
       if (propvalue.isEmpty())
         styleDecl.removeProperty(pId);
-      else
-        styleDecl.setProperty(pId,DOM::DOMString(propvalue),"", exception); // ### is "" ok for priority?
+      else {
+        int important = propvalue.find("!important", 0, false);
+        if (important == -1)
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue), "", exception);
+        else
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), "important", exception);
+      }
     }
     else
       // otherwise add it as a JS property

@@ -97,7 +97,10 @@ m_vBar( 0 ),
 m_scrollMediator( 0 ),
 m_posZOrderList( 0 ),
 m_negZOrderList( 0 ),
+m_overflowList(0),
 m_zOrderListsDirty( true ),
+m_overflowListDirty(true),
+m_isOverflowOnly( shouldBeOverflowOnly() ),
 m_markedForRepaint( false ),
 m_hasOverlaidWidgets( false ),
 m_marquee( 0 )
@@ -113,6 +116,7 @@ RenderLayer::~RenderLayer()
     delete m_scrollMediator;
     delete m_posZOrderList;
     delete m_negZOrderList;
+    delete m_overflowList;
     delete m_marquee;
 }
 
@@ -125,7 +129,7 @@ void RenderLayer::updateLayerPosition()
         return;
 
     int x = m_object->xPos();
-    int y = m_object->yPos();
+    int y = m_object->yPos() - m_object->borderTopExtra();
 
     if (!m_object->isPositioned()) {
         // We must adjust our position by walking up the render tree looking for the
@@ -136,6 +140,7 @@ void RenderLayer::updateLayerPosition()
             y += curr->yPos();
             curr = curr->parent();
         }
+        y += curr->borderTopExtra();
     }
 
     if (m_object->isRelPositioned())
@@ -189,17 +194,17 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
     return r;
 }
 
-void RenderLayer::repaint( bool markForRepaint )
+void RenderLayer::repaint( Priority p, bool markForRepaint )
 {
     if (markForRepaint && m_markedForRepaint)
         return;
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
-        child->repaint( markForRepaint );
+        child->repaint( p, markForRepaint );
     QRect layerBounds, damageRect, fgrect;
     calculateRects(renderer()->canvas()->layer(), renderer()->viewRect(), layerBounds, damageRect, fgrect);
     m_visibleRect = damageRect.intersect( layerBounds );
     if (m_visibleRect.isValid())
-        renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height() );
+        renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height(), (p > NormalPriority) );
     if (markForRepaint)
         m_markedForRepaint = true;
 }
@@ -285,7 +290,7 @@ short RenderLayer::width() const
 
 int RenderLayer::height() const
 {
-    int h = m_object->height();
+    int h = m_object->height() + m_object->borderTopExtra() + m_object->borderBottomExtra();
     if (!m_object->style()->hidesOverflow())
         h = qMax(m_object->overflowHeight(), h);
     return h;
@@ -371,12 +376,16 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
 
     child->setParent(this);
 
-    // Dirty the z-order list in which we are contained.  The stackingContext() can be null in the
-    // case where we're building up generated content layers.  This is ok, since the lists will start
-    // off dirty in that case anyway.
-    RenderLayer* stackingContext = child->stackingContext();
-    if (stackingContext)
-        stackingContext->dirtyZOrderLists();
+    if (child->isOverflowOnly())
+        dirtyOverflowList();
+    else {
+        // Dirty the z-order list in which we are contained.  The stackingContext() can be null in the
+        // case where we're building up generated content layers.  This is ok, since the lists will start
+        // off dirty in that case anyway.
+        RenderLayer* stackingContext = child->stackingContext();
+        if (stackingContext)
+            stackingContext->dirtyZOrderLists();
+    }
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
@@ -392,12 +401,16 @@ RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
     if (m_last == oldChild)
         m_last = oldChild->previousSibling();
 
-    // Dirty the z-order list in which we are contained.  When called via the
-    // reattachment process in removeOnlyThisLayer, the layer may already be disconnected
-    // from the main layer tree, so we need to null-check the |stackingContext| value.
-    RenderLayer* stackingContext = oldChild->stackingContext();
-    if (stackingContext)
-        oldChild->stackingContext()->dirtyZOrderLists();
+    if (oldChild->isOverflowOnly())
+        dirtyOverflowList();
+    else {
+        // Dirty the z-order list in which we are contained.  When called via the
+        // reattachment process in removeOnlyThisLayer, the layer may already be disconnected
+        // from the main layer tree, so we need to null-check the |stackingContext| value.
+        RenderLayer* stackingContext = oldChild->stackingContext();
+        if (stackingContext)
+            stackingContext->dirtyZOrderLists();
+    }
 
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
@@ -557,7 +570,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
 
     // Just schedule a full repaint of our object.
     if (repaint)
-        m_object->repaint(true);
+        m_object->repaint(RealtimePriority);
 
     if (updateScrollbars) {
         if (m_hBar)
@@ -708,8 +721,13 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
 
 void RenderLayer::checkScrollbarsAfterLayout()
 {
-    int rightPos = m_object->overflowWidth();
-    int bottomPos = m_object->overflowHeight();
+    int rightPos = m_object->rightmostPosition(true, false);
+    int bottomPos = m_object->lowestPosition(true, false);
+    
+/*  TODO
+    m_scrollLeft = m_object->leftmostPosition(true, false);
+    m_scrollTop = m_object->highestPosition(true, false);
+*/
 
     int clientWidth = m_object->clientWidth();
     int clientHeight = m_object->clientHeight();
@@ -835,8 +853,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     int x = layerBounds.x();
     int y = layerBounds.y();
 
-    // Ensure our z-order lists are up-to-date.
+    // Ensure our lists are up-to-date.
     updateZOrderLists();
+    updateOverflowList();
 
 #ifdef APPLE_CHANGES
     // Set our transparency if we need to.
@@ -855,7 +874,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             // Paint the background.
             RenderObject::PaintInfo paintInfo(p, damageRect, PaintActionElementBackground);
             renderer()->paint(paintInfo,
-                              x - renderer()->xPos(), y - renderer()->yPos());
+                              x - renderer()->xPos(), y - renderer()->yPos() + renderer()->borderTopExtra());
 
             // Position our scrollbars.
             positionScrollbars(layerBounds);
@@ -886,27 +905,37 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 
         RenderObject::PaintInfo paintInfo(p, clipRectToApply, PaintActionSelection);
 
+        int tx = x - renderer()->xPos();
+        int ty = y - renderer()->yPos() + renderer()->borderTopExtra();
+
         if (selectionOnly)
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
         else {
             paintInfo.phase = PaintActionChildBackgrounds;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionFloat;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionForeground;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
-            paintInfo.phase = PaintActionOutline;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             RenderCanvas *rc = static_cast<RenderCanvas*>(renderer()->document()->renderer());
+            if (rc->maximalOutlineSize()) {
+                paintInfo.phase = PaintActionOutline;
+                renderer()->paint(paintInfo, tx, ty);
+            }
             if (rc->selectionStart() && rc->selectionEnd()) {
                 paintInfo.phase = PaintActionSelection;
-                renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+                renderer()->paint(paintInfo, tx, ty);
             }
         }
 
         // Now restore our clip.
         restoreClip(p, paintDirtyRect, clipRectToApply);
     }
+
+    // Paint any child layers that have overflow.
+    if (m_overflowList)
+        foreach (RenderLayer* layer, *m_overflowList)
+            layer->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
 
     // Now walk the sorted list of children with positive z-indices.
     if (m_posZOrderList) {
@@ -979,8 +1008,9 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     QRect layerBounds, bgRect, fgRect;
     calculateRects(rootLayer, hitTestRect, layerBounds, bgRect, fgRect);
 
-    // Ensure our z-order lists are up-to-date.
+    // Ensure our lists are up-to-date.
     updateZOrderLists();
+    updateOverflowList();
 
     // This variable tracks which layer the mouse ends up being inside.  The minute we find an insideLayer,
     // we are done and can return it.
@@ -998,12 +1028,21 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
         }
     }
 
-    // Next we want to see if the mouse pos is inside the child RenderObjects of the layer.
+    // Now check our overflow objects.
+    if (m_overflowList) {
+        QVector<RenderLayer*>::iterator it = m_overflowList->end();
+        for (--it; it != m_overflowList->end(); --it) {
+            insideLayer = (*it)->nodeAtPointForLayer(rootLayer, info,  xMousePos, yMousePos, hitTestRect);
+            if (insideLayer)
+                return insideLayer;
+        }
+    }
 
+    // Next we want to see if the mouse pos is inside the child RenderObjects of the layer.
     if (containsPoint(xMousePos, yMousePos, fgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
-                                layerBounds.x() - renderer()->xPos(),
-                                layerBounds.y() - renderer()->yPos(),
+                            layerBounds.x() - renderer()->xPos(),
+                            layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra(),
                                 HitTestChildrenOnly)) {
 	if (info.innerNode() != m_object->element())
 	    return this;
@@ -1024,7 +1063,7 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     if (containsPoint(xMousePos, yMousePos, bgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
                                 layerBounds.x() - renderer()->xPos(),
-                                layerBounds.y() - renderer()->yPos(),
+                                layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra(),
                                 HitTestSelfOnly))
         return this;
 
@@ -1281,6 +1320,13 @@ void RenderLayer::dirtyZOrderLists()
     m_zOrderListsDirty = true;
 }
 
+void RenderLayer::dirtyOverflowList()
+{
+    if (m_overflowList)
+        m_overflowList->clear();
+    m_overflowListDirty = true;
+}
+
 void RenderLayer::updateZOrderLists()
 {
     if (!isStackingContext() || !m_zOrderListsDirty)
@@ -1302,6 +1348,22 @@ void RenderLayer::updateZOrderLists()
     m_zOrderListsDirty = false;
 }
 
+void RenderLayer::updateOverflowList()
+{
+    if (!m_overflowListDirty)
+        return;
+
+    for (RenderLayer* child = firstChild(); child; child = child->nextSibling()) {
+        if (child->isOverflowOnly()) {
+            if (!m_overflowList)
+                m_overflowList = new QVector<RenderLayer*>;
+            m_overflowList->append(child);
+        }
+    }
+
+    m_overflowListDirty = false;
+}
+
 void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<RenderLayer*>*& negBuffer)
 {
     // FIXME: A child render object or layer could override visibility.  Don't remove this
@@ -1310,15 +1372,18 @@ void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<Rende
     if (renderer()->style()->visibility() != VISIBLE)
         return;
 
-    // Determine which buffer the child should be in.
-    QVector<RenderLayer*>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
+    // Overflow layers are just painted by their enclosing layers, so they don't get put in zorder lists.
+    if (!isOverflowOnly()) {
+        // Determine which buffer the child should be in.
+        QVector<RenderLayer*>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
 
-    // Create the buffer if it doesn't exist yet.
-    if (!buffer)
-        buffer = new QVector<RenderLayer*>();
+        // Create the buffer if it doesn't exist yet.
+        if (!buffer)
+            buffer = new QVector<RenderLayer*>();
 
-    // Append ourselves at the end of the appropriate buffer.
-    buffer->append(this);
+        // Append ourselves at the end of the appropriate buffer.
+        buffer->append(this);
+    }
 
     // Recur into our children to collect more layers, but only if we don't establish
     // a stacking context.
@@ -1382,11 +1447,13 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
     QRect layerBounds, damageRect, clipRectToApply;
     l->calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
 
-    // Ensure our z-order lists are up-to-date.
+    // Ensure our lists are up-to-date.
     l->updateZOrderLists();
+    l->updateOverflowList();
 
     bool shouldPaint = l->intersectsDamageRect(layerBounds, damageRect);
     QVector<RenderLayer*>* negList = l->negZOrderList();
+    QVector<RenderLayer*>* ovfList = l->overflowList();
     if (shouldPaint && negList && negList->count() > 0)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, -1, indent);
 
@@ -1397,6 +1464,11 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
 
     if (shouldPaint)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
+        
+    if (ovfList) {
+        for (QVector<RenderLayer*>::iterator it = ovfList->begin(); it != ovfList->end(); ++it)
+            writeLayers(ts, rootLayer, *it, paintDirtyRect, indent);
+    }
 
     QVector<RenderLayer*>* posList = l->posZOrderList();
     if (posList) {
@@ -1416,8 +1488,26 @@ void RenderLayer::dump(QTextStream &ts, const QString &ind)
 
 #endif
 
+bool RenderLayer::shouldBeOverflowOnly() const
+{
+    return renderer()->style() && renderer()->hasOverflowClip() &&
+           !renderer()->isPositioned() &&  !renderer()->isRelPositioned();
+           /* && !isTransparent(); */
+}
+
 void RenderLayer::styleChanged()
 {
+    bool isOverflowOnly = shouldBeOverflowOnly();
+    if (isOverflowOnly != m_isOverflowOnly) {
+        m_isOverflowOnly = isOverflowOnly;
+        RenderLayer* p = parent();
+        RenderLayer* sc = stackingContext();
+        if (p)
+            p->dirtyOverflowList();
+        if (sc)
+            sc->dirtyZOrderLists();
+    }
+
     if (m_object->style()->overflow() == OMARQUEE && m_object->style()->marqueeBehavior() != MNONE) {
         if (!m_marquee)
             m_marquee = new Marquee(this);

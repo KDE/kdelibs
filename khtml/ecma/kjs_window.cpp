@@ -347,6 +347,15 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
   XMLSerializer	Window::XMLSerializer	DontDelete|ReadOnly
   DOMParser	Window::DOMParser	DontDelete|ReadOnly
+
+# Mozilla dom emulation ones.
+  Element   Window::ElementCtor DontDelete
+  Document  Window::DocumentCtor DontDelete
+  #this one is an alias since we don't have a separate XMLDocument
+  XMLDocument Window::DocumentCtor DontDelete
+  HTMLElement  Window::HTMLElementCtor DontDelete
+  HTMLDocument Window::HTMLDocumentCtor DontDelete
+  CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontDelete
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
@@ -698,7 +707,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       else
         return Undefined();
     case Node:
-      return getNodeConstructor(exec);
+      return NodeConstructor::self(exec);
     case Range:
       return getRangeConstructor(exec);
     case NodeFilter:
@@ -707,8 +716,17 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return getDOMExceptionConstructor(exec);
     case CSSRule:
       return getCSSRuleConstructor(exec);
+    case ElementCtor:
+    case HTMLElementCtor: //Hack -- we don't have a separate prototype here
+      return ElementPseudoCtor::self(exec);
+    case DocumentCtor:
+      return DocumentPseudoCtor::self(exec);
+    case HTMLDocumentCtor:
+      return HTMLDocumentPseudoCtor::self(exec);
+    case CSSStyleDeclarationCtor:
+        return CSSStyleDeclarationPseudoCtor::self(exec);
     case EventCtor:
-      return getEventConstructor(exec);
+      return EventConstructor::self(exec);
     case MutationEventCtor:
       return getMutationEventConstructor(exec);
     case KeyboardEventCtor:
@@ -2255,20 +2273,24 @@ ValueImp *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Ident
 {
   FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
   DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(thisObj->part->document().handle());
-  DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
-  DOM::NodeImpl*     node = docuAll.namedItem(propertyName.domString());
-  if (node) {
-    if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
-      //Return the Window object.
-      KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
-      if (part)
-        return Window::retrieveWindow(part);
-      else
-        return Undefined();
-    } else {
-      //Just a regular node..
-      return getDOMNode(exec, node);
+  if (doc) {
+    DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
+    DOM::NodeImpl*     node = docuAll.namedItem(propertyName.domString());
+    if (node) {
+      if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
+        //Return the Window object.
+        KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
+        if (part)
+          return Window::retrieveWindow(part);
+        else
+          return Undefined();
+      } else {
+        //Just a regular node..
+        return getDOMNode(exec, node);
+      }
     }
+  } else {
+    kdWarning(6070) << "Missing own document in FrameArray::get()" << endl;
   }
   return Undefined();
 }

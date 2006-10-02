@@ -45,6 +45,9 @@ public:
 
     void detach(RenderArena* renderArena);
 
+    virtual void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
+    virtual bool nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty);
+
     // Overloaded new operator.
     void* operator new(size_t sz, RenderArena* renderArena) throw();
 
@@ -96,6 +99,7 @@ public:
     int baseline() const { return m_baseline; }
 
     virtual bool hasTextChildren() const { return true; }
+    virtual bool hasTextDescendant() const { return true; }
 
     virtual int topOverflow() const { return yPos(); }
     virtual int bottomOverflow() const { return yPos()+height(); }
@@ -137,8 +141,8 @@ public:
     void setNextLineBox(InlineRunBox* n) { m_nextLine = n; }
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
-    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {}
-    virtual void paintDecorations(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/) {}
+    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/) {}
+    virtual void paintDecorations(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/, bool /*paintedChildren*/ = false) {}
 
 protected:
     InlineRunBox* m_prevLine;  // The previous box that also uses our RenderObject
@@ -155,12 +159,16 @@ public:
         m_lastChild = 0;
         m_includeLeftEdge = m_includeRightEdge = false;
         m_hasTextChildren = false;
+        m_hasTextDescendant = false;
         m_afterPageBreak = false;
     }
 
     ~InlineFlowBox();
 
     virtual bool isInlineFlowBox() const { return true; }
+
+    InlineFlowBox* prevFlowBox() const { return static_cast<InlineFlowBox*>(m_prevLine); }
+    InlineFlowBox* nextFlowBox() const { return static_cast<InlineFlowBox*>(m_nextLine); }
 
     InlineBox* firstChild() const  { return m_firstChild; }
     InlineBox* lastChild() const { return m_lastChild; }
@@ -180,16 +188,21 @@ public:
         }
         child->setFirstLineStyleBit(m_firstLine);
         child->setParent(this);
-        if (child->isInlineTextBox())
-            m_hasTextChildren = true;
+        if (!m_hasTextChildren && child->isInlineTextBox()) {
+            m_hasTextDescendant = m_hasTextChildren = true;
+            for (InlineFlowBox* p = m_parent; p && !p->hasTextDescendant(); p = p->parent())
+                p->m_hasTextDescendant = true;
+        }
     }
     void removeFromLine(InlineBox* child);
-    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty, int xOffsetOnLine);
+    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty);
     void paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                          int my, int mh, int _tx, int _ty, int w, int h, int xoff);
+                          int my, int mh, int _tx, int _ty, int w, int h);
     void paintBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                         int my, int mh, int _tx, int _ty, int w, int h, int xoff);
-    virtual void paintDecorations(RenderObject::PaintInfo&, int _tx, int _ty);
+                         int my, int mh, int _tx, int _ty, int w, int h);
+    virtual void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
+    virtual void paintDecorations(RenderObject::PaintInfo&, int _tx, int _ty, bool paintedChildren = false);
+    virtual bool nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty);
 
     int marginBorderPaddingLeft() const;
     int marginBorderPaddingRight() const;
@@ -207,6 +220,7 @@ public:
         m_includeRightEdge = includeRight;
     }
     virtual bool hasTextChildren() const { return m_hasTextChildren; }
+    bool hasTextDescendant() const { return m_hasTextDescendant; }
 
     // Helper functions used during line construction and placement.
     void determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject);
@@ -235,6 +249,7 @@ protected:
     bool m_includeLeftEdge : 1;
     bool m_includeRightEdge : 1;
     bool m_hasTextChildren : 1;
+    bool m_hasTextDescendant : 1;
     bool m_afterPageBreak : 1;
 };
 

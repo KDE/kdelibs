@@ -84,17 +84,7 @@ namespace KJS {
   };
 
   // Constructor for Event - currently only used for some global vars
-  class EventConstructor : public DOMObject {
-  public:
-    EventConstructor(ExecState *);
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
-    // no put - all read-only
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
-
-  ValueImp* getEventConstructor(ExecState *exec);
+  DEFINE_PSEUDO_CONSTRUCTOR(EventConstructor)
 
   class DOMEvent : public DOMObject {
   public:

@@ -260,10 +260,14 @@ public:
      * <LINK>, <STYLE> or <BODY> elements, as well as processing instructions (XML documents only). A list is
      * constructed from these which is used to create the a new style selector which collates all of the stylesheets
      * found and is used to calculate the derived styles for all rendering objects.
+     *
+     * @param shallow If the stylesheet list for the document is unchanged, with only added or removed rules 
+     * in existing sheets, then set this argument to true for efficiency.
      */
-    void updateStyleSelector();
+    void updateStyleSelector(bool shallow=false);
 
     void recalcStyleSelector();
+    void rebuildStyleSelector();
 
     QString nextState();
 
@@ -374,7 +378,6 @@ public:
     // internal
     bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
-    virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep );
 

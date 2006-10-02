@@ -370,9 +370,9 @@ DOMStringImpl *DOMStringImpl::upper() const
     return c;
 }
 
-DOMStringImpl *DOMStringImpl::capitalize() const
+DOMStringImpl *DOMStringImpl::capitalize(bool noFirstCap) const
 {
-    bool canCapitalize=true;
+    bool canCapitalize= !noFirstCap;
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;
     
@@ -416,5 +416,45 @@ int DOMStringImpl::toInt(bool* ok) const
     return QString::fromRawData(s, i).toInt(ok);
 }
 
+static const unsigned short amp[] = {'&', 'a', 'm', 'p', ';'};
+static const unsigned short lt[] =  {'&', 'l', 't', ';'};
+static const unsigned short gt[] =  {'&', 'g', 't', ';'};
 
+DOMStringImpl *DOMStringImpl::escapeHTML()
+{
+    unsigned outL = 0;
+    for (unsigned int i = 0; i < l; ++i ) {
+        if ( s[i] == '&' )
+            outL += 5; //&amp;
+        else if (s[i] == '<' || s[i] == '>')
+            outL += 4; //&gt;/&lt;
+        else
+            ++outL;
+    }
+    if (outL == l)
+        return this;
+
+    
+    DOMStringImpl* toRet = new DOMStringImpl();
+    toRet->s = QT_ALLOC_QCHAR_VEC(outL);
+    toRet->l = outL;
+
+    unsigned outP = 0;
+    for (unsigned int i = 0; i < l; ++i ) {
+        if ( s[i] == '&' ) {
+            memcpy(&toRet->s[outP], amp, sizeof(amp));
+            outP += 5; 
+        } else if (s[i] == '<') {
+            memcpy(&toRet->s[outP], lt, sizeof(lt));
+            outP += 4;
+        } else if (s[i] == '>') {
+            memcpy(&toRet->s[outP], gt, sizeof(gt));
+            outP += 4;
+        } else {
+            toRet->s[outP] = s[i];
+            ++outP;
+        }
+    }
+    return toRet;
+}
 

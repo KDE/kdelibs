@@ -140,6 +140,8 @@ namespace khtml
 
 	int size() const { return m_size; }
 
+        bool isLoaded() const { return !m_loading; }
+
         bool free() const { return m_free; }
 
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
@@ -263,11 +265,13 @@ namespace khtml
 	virtual ~CachedImage();
 
 	QPixmap pixmap() const;
-	const QPixmap &tiled_pixmap(const QColor& bg);
+	QPixmap scaled_pixmap(int xWidth, int xHeight);
+	QPixmap tiled_pixmap(const QColor& bg, int xWidth = -1, int xHeight = -1);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
         //QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
 
+        bool canRender() const { return !isErrorImage() && pixmap_size().width() > 0 && pixmap_size().height() > 0; }
         void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
@@ -319,13 +323,10 @@ namespace khtml
 #ifdef IMAGE_TITLES
         QString m_suggestedTitle;
 #endif
-/*	QMovie* m;
-        QPixmap* p;
-
-
-        mutable QPixmap* pixPart;*/
         QPixmap* bg;
+	QPixmap* scaled;
         QRgb bgColor;
+        QSize bgSize;
 
         ImageSource* imgSource;
         const char* formatType;  // Is the name of the movie format type

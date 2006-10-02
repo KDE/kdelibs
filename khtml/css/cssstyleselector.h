@@ -1,8 +1,8 @@
 /*
  * This file is part of the CSS implementation for KDE.
  *
- * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright 2003 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2003, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,6 +28,7 @@
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
+#include "xml/dom_restyler.h"
 
 class KHTMLSettings;
 class KHTMLView;
@@ -145,15 +146,15 @@ namespace khtml
 
 	static void precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel);
     protected:
-
-	DOM::NodeImpl* checkSubSelectors(DOM::CSSSelector *sel, DOM::NodeImpl *n, bool isAncestor);
-
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
 	    with given relationships matches the given Element */
 	void checkSelector(int selector, DOM::ElementImpl *e);
 	/* checks if the selector matches the given Element */
-	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector=false);
+	bool checkSimpleSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
 
+       DOM::ElementImpl* checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
+
+        void addDependency(StructuralDependencyType dependencyType, DOM::ElementImpl* dependency);
 #ifdef APPLE_CHANGES
 	/* This function fixes up the default font size if it detects that the
 	   current generic font family has changed. -dwh */
@@ -190,8 +191,11 @@ public:
         void init(const KHTMLSettings* settings, DOM::DocumentImpl* doc);
 
         void mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundClip(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundOrigin(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundImage(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundRepeat(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundSize(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundYPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
 

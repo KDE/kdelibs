@@ -1863,9 +1863,11 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
     setSuppressedPopupIndicator( false );
     d->m_openableSuppressedPopups = 0;
     foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
-       KJS::Window *w = KJS::Window::retrieveWindow( part );
-       if (w)
-           w->forgetSuppressedWindows();
+      if (part) {
+        KJS::Window *w = KJS::Window::retrieveWindow( part );
+        if (w)
+          w->forgetSuppressedWindows();
+      }
     }
   }
 
@@ -4305,12 +4307,20 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
-      QVariant res = executeScript( DOM::Node(frame->element()), KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
-      KUrl myurl;
-      myurl.setProtocol("javascript");
-      if ( res.type() == QVariant::String )
-	myurl.setPath(res.toString());
-      return processObjectRequest(*it, myurl, QString("text/html") );
+    if ( processObjectRequest(*it, KUrl("about:blank"), QString("text/html") ) ) {
+      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
+      
+      // See if we want to replace content with javascript: output..
+      QVariant res = p->executeScript( DOM::Node(), 
+                                       KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
+      if ( res.type() == QVariant::String ) {
+        p->begin();
+        p->write( res.toString() );
+        p->end();
+      }
+      return true;
+    }
+    return false;
   }
   KUrl u = url.isEmpty() ? KUrl() : completeURL( url );
   return requestObject( *it, u );
@@ -6698,12 +6708,11 @@ void KHTMLPart::runAdFilter()
 
             if ( node->id() == ID_IMG ||
                  node->id() == ID_IFRAME ||
-                 (node->id() == ID_INPUT && static_cast<HTMLInputElementImpl *>(node)->inputType() == HTMLInputElementImpl::IMAGE) )
+                 (node->id() == ID_INPUT && static_cast<HTMLInputElementImpl *>(node)->inputType() == HTMLInputElementImpl::IMAGE ))
             {
                 if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
                 {
                     // We found an IMG, IFRAME or INPUT (of type IMAGE) matching a filter.
-
                     node->ref();
                     NodeImpl *parent = node->parent();
                     if( parent )
@@ -6712,7 +6721,6 @@ void KHTMLPart::runAdFilter()
                         parent->removeChild(node, exception);
                     }
                     node->deref();
-
                 }
             }
         }
@@ -7398,11 +7406,13 @@ void KHTMLPart::togglePopupPassivePopup() {
 
 void KHTMLPart::showSuppressedPopups() {
     foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
-       KJS::Window *w = KJS::Window::retrieveWindow( part );
-       if (w) {
-           w->showSuppressedWindows();
-           w->forgetSuppressedWindows();
-       }
+      if (part) {
+        KJS::Window *w = KJS::Window::retrieveWindow( part );
+        if (w) {
+          w->showSuppressedWindows();
+          w->forgetSuppressedWindows();
+        }
+      }
     }
     setSuppressedPopupIndicator( false );
     d->m_openableSuppressedPopups = 0;

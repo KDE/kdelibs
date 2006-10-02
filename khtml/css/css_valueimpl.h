@@ -1,9 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright 2002 Apple Computer, Inc.
- * Copyright 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2004, 2005, 2006 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,12 +38,14 @@ namespace khtml {
     class CachedImage;
 }
 
+
 namespace DOM {
 
 class CSSRuleImpl;
 class CSSValueImpl;
 class NodeImpl;
 class CounterImpl;
+class PairImpl;
 
 
 class CSSStyleDeclarationImpl : public StyleBaseImpl
@@ -170,6 +172,7 @@ public:
     CSSPrimitiveValueImpl(CounterImpl *c);
     CSSPrimitiveValueImpl( RectImpl *r);
     CSSPrimitiveValueImpl(QRgb color);
+    CSSPrimitiveValueImpl(PairImpl *p);
 
     virtual ~CSSPrimitiveValueImpl();
 
@@ -215,6 +218,10 @@ public:
 	return ( m_type != CSSPrimitiveValue::CSS_RGBCOLOR ? 0 : m_value.rgbcolor );
     }
 
+    PairImpl* getPairValue() const {
+        return (m_type != CSSPrimitiveValue::CSS_PAIR ? 0 : m_value.pair);
+    }
+
     virtual bool isPrimitiveValue() const { return true; }
     virtual unsigned short cssValueType() const;
 
@@ -234,6 +241,7 @@ protected:
 	CounterImpl *counter;
 	RectImpl *rect;
         QRgb rgbcolor;
+        PairImpl* pair;
     } m_value;
 };
 
@@ -284,6 +292,29 @@ protected:
     CSSPrimitiveValueImpl *m_bottom;
     CSSPrimitiveValueImpl *m_left;
 };
+
+// A primitive value representing a pair.  This is useful for properties like border-radius, background-size/position,
+// and border-spacing (all of which are space-separated sets of two values).  At the moment we are only using it for
+// border-radius and background-size, but (FIXME) border-spacing and background-position could be converted over to use
+// it (eliminating some extra -webkit- internal properties).
+class PairImpl : public khtml::Shared<PairImpl> {
+public:
+    PairImpl() : m_first(0), m_second(0) { }
+    PairImpl(CSSPrimitiveValueImpl* first, CSSPrimitiveValueImpl* second)
+        : m_first(first), m_second(second) { if (first) first->ref(); if (second) second->ref(); }
+    virtual ~PairImpl();
+
+    CSSPrimitiveValueImpl* first() const { return m_first; }
+    CSSPrimitiveValueImpl* second() const { return m_second; }
+
+    void setFirst(CSSPrimitiveValueImpl* first);
+    void setSecond(CSSPrimitiveValueImpl* second);
+
+protected:
+    CSSPrimitiveValueImpl* m_first;
+    CSSPrimitiveValueImpl* m_second;
+};
+
 
 class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient
 {
@@ -392,14 +423,14 @@ public:
     CSSProperty()
     {
 	m_id = -1;
-	m_bImportant = false;
+	m_important = false;
 	nonCSSHint = false;
         m_value = 0;
     }
     CSSProperty(const CSSProperty& o)
     {
         m_id = o.m_id;
-        m_bImportant = o.m_bImportant;
+        m_important = o.m_important;
         nonCSSHint = o.nonCSSHint;
         m_value = o.m_value;
         if (m_value) m_value->ref();
@@ -416,14 +447,18 @@ public:
 	}
     }
 
+    int id() const { return m_id; }
+
+    bool isImportant() const { return m_important; }
+
     CSSValueImpl *value() const { return m_value; }
 
     DOM::DOMString cssText() const;
 
     // make sure the following fits in 4 bytes.
-    signed int  m_id 	: 29;
-    bool m_bImportant 	: 1;
-    bool nonCSSHint 	: 1;
+    signed int  m_id   : 29;
+    bool m_important   : 1;
+    bool nonCSSHint    : 1;
 protected:
     CSSValueImpl *m_value;
 };

@@ -2,7 +2,7 @@
  * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2003-2004 Apple Computer, Inc.
+ *           (C) 2003-2005 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -277,7 +277,7 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, B
 
         if (!next) break;
 
-        if (next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned()
+        if (next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned() || next->isGlyph()
             || ((!skipInlines || !next->firstChild()) // Always return EMPTY inlines.
                 && next->isInlineFlow()))
             break;
@@ -298,7 +298,7 @@ static RenderObject *first( RenderObject *par, BidiState &bidi, bool skipInlines
             return o; // Never skip empty inlines.
     }
 
-    if (o && !o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
+    if (o && !o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned() && !o->isGlyph())
         o = Bidinext( par, o, bidi, skipInlines );
     return o;
 }
@@ -784,7 +784,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
     if (rightPos > m_overflowWidth)
         m_overflowWidth = rightPos; // FIXME: Work for rtl overflow also.
     if (x < 0)
-        m_negativeOverflowWidth = qMax(m_negativeOverflowWidth, -x);
+        m_overflowLeft = qMin(m_overflowLeft, x);
 }
 
 void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
@@ -1606,8 +1606,10 @@ redo_linebreak:
     m_height += toAdd;
 
     // Always make sure this is at least our height.
-    if (m_overflowHeight < m_height)
-        m_overflowHeight = m_height;
+    m_overflowHeight = qMax(m_height, m_overflowHeight);
+
+    // See if any lines spill out of the block.  If so, we need to update our overflow width.
+    checkLinesForOverflow();
 
 #if BIDI_DEBUG > 1
     kDebug(6041) << " ------- bidi end " << this << " -------" << endl;
@@ -1790,7 +1792,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             KHTMLAssert(!o->firstChild());
             tmpW += o->marginLeft()+o->borderLeft()+o->paddingLeft()+
                     o->marginRight()+o->borderRight()+o->paddingRight();
-        } else if ( o->isReplaced() ) {
+        } else if ( o->isReplaced() || o->isGlyph() ) {
             EWhiteSpace currWS = o->style()->whiteSpace();
             EWhiteSpace lastWS = last->style()->whiteSpace();
 
@@ -2196,6 +2198,16 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
     return lBreak;
+}
+
+void RenderBlock::checkLinesForOverflow()
+{
+    for (RootInlineBox* curr = static_cast<khtml::RootInlineBox*>(firstLineBox()); curr; curr = static_cast<khtml::RootInlineBox*>(curr->nextLineBox())) {
+//         m_overflowLeft = min(curr->leftOverflow(), m_overflowLeft);
+        m_overflowTop = qMin(curr->topOverflow(), m_overflowTop);
+//         m_overflowWidth = max(curr->rightOverflow(), m_overflowWidth);
+        m_overflowHeight = qMax(curr->bottomOverflow(), m_overflowHeight);
+    }
 }
 
 // For --enable-final

@@ -29,12 +29,14 @@
 
 #include "ecma/kjs_binding.h"
 
+
 namespace KJS {
 
   class DOMNode : public DOMObject {
   public:
     // Build a DOMNode
-    DOMNode(ExecState *exec, DOM::NodeImpl* n);
+    DOMNode(ExecState *exec,  DOM::NodeImpl* n);
+    DOMNode(ObjectImp *proto, DOM::NodeImpl* n);
     ~DOMNode();
     virtual bool toBoolean(ExecState *) const;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
@@ -71,6 +73,9 @@ namespace KJS {
     SharedPtr<DOM::NodeImpl> m_impl;
   };
 
+  DEFINE_CONSTANT_TABLE(DOMNodeConstants)
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMNodeProto, DOMNodeConstants)
+
   class DOMNodeList : public DOMObject {
   public:
     DOMNodeList(ExecState *, DOM::NodeListImpl* l);
@@ -103,7 +108,8 @@ namespace KJS {
   class DOMDocument : public DOMNode {
   public:
     // Build a DOMDocument
-    DOMDocument(ExecState *exec, DOM::DocumentImpl* d);
+    DOMDocument(ExecState *exec,  DOM::DocumentImpl* d);
+    DOMDocument(ObjectImp *proto, DOM::DocumentImpl* d);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
@@ -112,7 +118,7 @@ namespace KJS {
     void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { DocType, Implementation, DocumentElement,
+    enum { DocType, Implementation, DocumentElement, CharacterSet, 
            // Functions
            CreateElement, CreateDocumentFragment, CreateTextNode, CreateComment,
            CreateCDATASection, CreateProcessingInstruction, CreateAttribute,
@@ -123,6 +129,10 @@ namespace KJS {
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
+  
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMDocumentProto, DOMNodeProto)
+
+  DEFINE_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor)
 
   class DOMAttr : public DOMNode {
   public:
@@ -156,7 +166,9 @@ namespace KJS {
     static ValueImp *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
   };
 
+  DOM::AttrImpl    *toAttr   (ValueImp *); // returns 0 if passed-in value is not a DOMAtt object
   DOM::ElementImpl *toElement(ValueImp *); // returns 0 if passed-in value is not a DOMElement object
+  DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
 
   class DOMDOMImplementation : public DOMObject {
   public:
@@ -245,16 +257,7 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  // Constructor for Node - constructor stuff not implemented yet
-  class NodeConstructor : public DOMObject {
-  public:
-    NodeConstructor(ExecState *);
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    // no put - all read-only
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {
@@ -272,7 +275,6 @@ namespace KJS {
   ValueImp* getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m);
   ValueImp* getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l);
   ValueImp* getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i);
-  ObjectImp *getNodeConstructor(ExecState *exec);
   ObjectImp *getDOMExceptionConstructor(ExecState *exec);
 
   // Internal class, used for the collection return by e.g. document.forms.myinput

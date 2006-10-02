@@ -386,7 +386,22 @@ alternate
 unfurl
 
 #
-# Not supported CSS 2 Aural values
+
+#
+# CSS_PROP_BACKGROUND_CLIP/ORIGIN
+#
+border
+content
+padding
+
+#
+# Not supported:
+#
+# CSS_PROP_BORDER_IMAGE
+#
+# stretch
+# repeat
+# round
 #
 # CSS_PROP_AZIMUTH:
 #

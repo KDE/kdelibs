@@ -67,7 +67,7 @@ RenderApplet::~RenderApplet()
 
 short RenderApplet::intrinsicWidth() const
 {
-    int rval = 150;
+    int rval = 300;
 
     if( m_widget )
         rval = ((KJavaAppletWidget*)(m_widget))->sizeHint().width();
