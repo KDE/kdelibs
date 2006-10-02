@@ -41,14 +41,14 @@ Solid::Network::~Network()
 {
 }
 
-QStringList Solid::Network::ipV4Addresses() const
+QList<KNetwork::KIpAddress> Solid::Network::ipV4Addresses() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV4Addresses() );
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<KNetwork::KIpAddress>(), ipV4Addresses() );
 }
 
-QStringList Solid::Network::ipV6Addresses() const
+QList<KNetwork::KIpAddress> Solid::Network::ipV6Addresses() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV6Addresses() );
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<KNetwork::KIpAddress>(), ipV6Addresses() );
 }
 
 QString Solid::Network::subnetMask() const
@@ -66,9 +66,9 @@ QString Solid::Network::route() const
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), route() );
 }
 
-QStringList Solid::Network::dnsServers() const
+QList<KNetwork::KIpAddress> Solid::Network::dnsServers() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), dnsServers() );
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<KNetwork::KIpAddress>(), dnsServers() );
 }
 
 void Solid::Network::setActivated( bool active )

@@ -19,6 +19,19 @@
 
 #include "fakenetwork.h"
 
+
+QList<KNetwork::KIpAddress> FakeNetwork::stringlistToKIpAddress( const QStringList & addrStringList ) const
+{
+    QList<KNetwork::KIpAddress> ipv4Addrs;
+    foreach ( QString addrString, addrStringList )
+    {
+        KNetwork::KIpAddress addr( addrString );
+        ipv4Addrs.append( addr );
+    }
+    return ipv4Addrs;
+
+}
+
 FakeNetwork::FakeNetwork( const QString & uni, const QMap<QString, QVariant> & propertyMap,
                           QObject * parent )
 : QObject( parent ), mPropertyMap( propertyMap )
@@ -31,14 +44,14 @@ FakeNetwork::~FakeNetwork()
 
 }
 
-QStringList FakeNetwork::ipV4Addresses() const
+QList<KNetwork::KIpAddress> FakeNetwork::ipV4Addresses() const
 {
-    return mPropertyMap[ "ipv4addresses" ].toStringList();
+    return stringlistToKIpAddress( mPropertyMap[ "ipv4addresses" ].toStringList() );
 }
 
-QStringList FakeNetwork::ipV6Addresses() const
+QList<KNetwork::KIpAddress> FakeNetwork::ipV6Addresses() const
 {
-    return mPropertyMap[ "ipv6addresses" ].toString().simplified().split( ',' );
+    return stringlistToKIpAddress( mPropertyMap[ "ipv6addresses" ].toString().simplified().split( ',' ) );
 }
 
 QString FakeNetwork::subnetMask() const
@@ -56,9 +69,9 @@ QString FakeNetwork::route() const
     return mPropertyMap[ "route" ].toString();
 }
 
-QStringList FakeNetwork::dnsServers() const
+QList<KNetwork::KIpAddress> FakeNetwork::dnsServers() const
 {
-    return mPropertyMap[ "dns" ].toString().simplified().split( ',' );
+        return stringlistToKIpAddress( mPropertyMap[ "dns" ].toString().simplified().split( ',' ) );
 }
 
 void FakeNetwork::setActivated( bool active )

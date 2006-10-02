@@ -23,6 +23,7 @@
 
 #include <solid/networkmanager.h>
 #include <solid/networkinterface.h>
+#include <kdebug.h>
 
 #include <fakenetworkmanager.h>
 
@@ -67,7 +68,7 @@ void SolidNetTest::testFindNetworkInterface()
 
     // Note the extra space
     QCOMPARE( manager.findNetworkInterface( "/org/kde/solid/fakenet/eth0 " ).isValid(), false );
-    QCOMPARE( manager.findNetworkInterface( "#'({(à]" ).isValid(), false );
+    QCOMPARE( manager.findNetworkInterface( "#'({(ï¿½" ).isValid(), false );
     QCOMPARE( manager.findNetworkInterface( QString() ).isValid(), false );
 }
 
@@ -146,14 +147,17 @@ void SolidNetTest::testInterfaceBasicFeatures()
     QVERIFY( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net1" )!=0 );
     QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net1" )->isValid(), true );
 
-    QVERIFY( valid_iface.findNetwork( "eùmldzn" )!=0 );
-    QCOMPARE( valid_iface.findNetwork( "eùmldzn" )->isValid(), false );
+    QVERIFY( valid_iface.findNetwork( "emldzn" )!=0 );
+    QCOMPARE( valid_iface.findNetwork( "emldzn" )->isValid(), false );
 
     QVERIFY( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth1/net0" )!=0 );
     QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth1/net0" )->isValid(), false );
 
     QVERIFY( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0 " )!=0 );
     QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->isValid(), true );
+    
+    QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->ipV4Addresses().size(), 1 );
+    QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->ipV6Addresses().size(), 2 );
 
     QCOMPARE( valid_iface.networks().size(), 4 );
 }

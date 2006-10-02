@@ -24,6 +24,7 @@
 #include <solid/ifaces/enums.h>
 
 #include <QStringList>
+#include <ksocketaddress.h>
 
 namespace Solid
 {
@@ -31,8 +32,6 @@ namespace Solid
 
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
-     *
-     * TODO what about QNetworkAddressEntry
      */
     class SOLID_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
     {
@@ -63,22 +62,16 @@ namespace Solid
         /**
          * Retrieves the IP version 4 addresses the device has on this network.
          *
-         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
-         *
          * @return the list of IP version 4 addresses
          */
-        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
-        QStringList ipV4Addresses() const;
+        QList<KNetwork::KIpAddress> ipV4Addresses() const;
 
         /**
          * Retrieves the IP version 6 addresses the device has on this network.
          *
-         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
-         *
          * @return the list of IP version 6 addresses
          */
-        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
-        QStringList ipV6Addresses() const;
+        QList<KNetwork::KIpAddress> ipV6Addresses() const;
         // TODO check with ipv6 guy about this
         /**
          * Retrieves the IP version 4 subnetwork mask of this network.
@@ -106,7 +99,7 @@ namespace Solid
          *
          * @return the dns servers
          */
-        QStringList dnsServers() const;
+        QList<KNetwork::KIpAddress> dnsServers() const;
 
         /**
          * Retrieves the activation status of this network. For ethernets, this will always be true.

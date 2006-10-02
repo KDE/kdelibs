@@ -21,7 +21,7 @@
 #define FAKE_NETWORK_H
 
 #include <QObject>
-#include <QString>
+#include <QStringList>
 #include <QVariant>
 
 #include <kdemacros.h>
@@ -39,15 +39,15 @@ public:
                  QObject * parent = 0 );
     virtual ~FakeNetwork();
 
-    QStringList ipV4Addresses() const;
-    QStringList ipV6Addresses() const;
+    QList<KNetwork::KIpAddress> ipV4Addresses() const;
+    QList<KNetwork::KIpAddress> ipV6Addresses() const;
 
     QString subnetMask() const;
     QString broadcastAddress() const;
 
     QString route() const;
 
-    QStringList dnsServers() const;
+    QList<KNetwork::KIpAddress> dnsServers() const;
 
     void setActivated( bool );
     bool isActive() const;
@@ -58,6 +58,7 @@ signals:
     void activationStateChanged( bool );
 
 protected:
+    QList<KNetwork::KIpAddress> stringlistToKIpAddress( const QStringList & ) const;
     QMap<QString, QVariant> mPropertyMap;
 };
 
