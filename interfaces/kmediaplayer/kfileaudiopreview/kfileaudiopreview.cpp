@@ -21,8 +21,10 @@ class KFileAudioPreviewFactory : public KLibFactory
 {
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
-                           const char *, const QStringList & )
+                           const char *className, const QStringList & args)
     {
+        Q_UNUSED(className);
+        Q_UNUSED(args);
         return new KFileAudioPreview( dynamic_cast<QWidget*>( parent ), name );
     }
 };
