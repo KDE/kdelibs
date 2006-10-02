@@ -27,11 +27,6 @@ KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader, int overlays)
 {
 }
 
-KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader)
-  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KGlobal::iconLoader(), 0))
-{
-}
-
 KIcon::KIcon()
 {
 }

@@ -49,17 +49,6 @@ public:
      */
     explicit KIcon(const QString& iconName, KIconLoader* iconLoader = 0L, int overlays = 0);
 
-    // TEMPORARY, FOR BC ONLY
-    /**
-     * Constructor which takes a kde style icon name, and optionally
-     * a custom icon loader.
-     *
-     * \param iconName The name of the kde icon to load
-     * \param iconLoader The icon loader to use in loading this icon, or
-     *                   null to use the default global icon loader.
-     */
-    explicit KIcon(const QString& iconName, KIconLoader* iconLoader);
-
     /**
      * Copy constructor which takes any QIcon.
      *
