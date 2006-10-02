@@ -1,5 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
-/**
+/*
  * client.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
