@@ -56,7 +56,6 @@ class KateCCListBox : public QListBox
   public:
     /**
       @short Create a new CCListBox
-      @param view The KateView, CCListBox is displayed in
     */
     KateCCListBox (QWidget* parent = 0, const char* name = 0, WFlags f = 0):QListBox(parent, name, f)
     {

@@ -349,7 +349,7 @@ class KateCSmartIndent : public KateNormalIndent
     KateCSmartIndent (KateDocument *doc);
     ~KateCSmartIndent ();
 
-    virtual void processNewline (KateDocCursor &begin, bool needContinue);
+    virtual void processNewline (KateDocCursor &cur, bool needContinue);
     virtual void processChar (QChar c);
 
     virtual void processLine (KateDocCursor &line);
@@ -380,7 +380,7 @@ class KatePythonIndent : public KateNormalIndent
     KatePythonIndent (KateDocument *doc);
     ~KatePythonIndent ();
 
-    virtual void processNewline (KateDocCursor &begin, bool needContinue);
+    virtual void processNewline (KateDocCursor &cur, bool needContinue);
 
     virtual uint modeNumber () const { return KateDocumentConfig::imPythonStyle; };
 
@@ -402,7 +402,7 @@ class KateXmlIndent : public KateNormalIndent
     ~KateXmlIndent ();
 
     virtual uint modeNumber () const { return KateDocumentConfig::imXmlStyle; }
-    virtual void processNewline (KateDocCursor &begin, bool needContinue);
+    virtual void processNewline (KateDocCursor &cur, bool needContinue);
     virtual void processChar (QChar c);
     virtual void processLine (KateDocCursor &line);
     virtual bool canProcessLine() const { return true; }
@@ -544,7 +544,7 @@ class KateScriptIndent : public KateNormalIndent
     KateScriptIndent( KateDocument *doc );
     ~KateScriptIndent();
 
-    virtual void processNewline( KateDocCursor &begin, bool needContinue );
+    virtual void processNewline( KateDocCursor &cur, bool needContinue );
     virtual void processChar( QChar c );
 
     virtual void processLine (KateDocCursor &line);

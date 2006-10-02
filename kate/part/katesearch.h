@@ -223,7 +223,7 @@ class SearchCommand : public Kate::Command, public Kate::CommandExtension
     bool help(class Kate::View *, const QString &, QString &);
     QStringList cmds();
     bool wantsToProcessText( const QString &/*cmdname*/ );
-    void processText( Kate::View *, const QString& );
+    void processText( Kate::View *view, const QString& text );
 
   private:
     /**

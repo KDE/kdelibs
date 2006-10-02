@@ -286,8 +286,8 @@ class KateView : public Kate::View,
         { return getDoc()->textLine( cursorLine() ); }
     QString currentWord()
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
-    void insertText( const QString& text )
-        { getDoc()->insertText( cursorLine(), cursorColumnReal(), text ); }
+    void insertText( const QString& mark )
+        { getDoc()->insertText( cursorLine(), cursorColumnReal(), mark ); }
     bool canDiscard();
     int tabWidth()                { return m_doc->config()->tabWidth(); }
     void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
@@ -380,6 +380,7 @@ class KateView : public Kate::View,
     void find( const QString&, long, bool add=true ); ///< proxy for KateSearch
     void replace();
     void replace( const QString&, const QString &, long ); ///< proxy for KateSearch
+    /** Highly confusing but KateSearch::findAgain() is backwards too. */
     void findAgain( bool back );
     void findAgain()              { findAgain( false );          }
     void findPrev()               { findAgain( true );           }

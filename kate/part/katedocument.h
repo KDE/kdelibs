@@ -264,6 +264,7 @@ class KateDocument : public Kate::Document,
      * @p removeLine is true, @p length is ignored (eg not needed).
      * @param line line number
      * @param removeLine if true, force to remove the next line
+     * @param length length of the line
      * @return true on success
      */
     bool editUnWrapLine ( uint line, bool removeLine = true, uint length = 0 );
@@ -557,7 +558,7 @@ class KateDocument : public Kate::Document,
 
     bool saveFile ();
 
-    void setReadWrite ( bool rw = true );
+    void setReadWrite ( bool readwrite = true );
 
     void setModified( bool m );
 

@@ -52,6 +52,7 @@ class KateFactoryPublic : public KParts::Factory
      * @param widgetName widget name
      * @param parent QObject parent
      * @param name object name
+     * @param classname class name
      * @param args additional arguments
      * @return constructed part object
      */

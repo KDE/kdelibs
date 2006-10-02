@@ -360,7 +360,7 @@ IMPLEMENT_PROTOTYPE(KateJSDocumentProto,KateJSDocumentProtoFunc)
 
 const KJS::ClassInfo KateJSDocument::info = { "KateJSDocument", 0, 0, 0 };
 
-Value KateJSDocumentProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
+KJS::Value KJS::KateJSDocumentProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
 {
   KJS_CHECK_THIS( KateJSDocument, thisObj );
 
@@ -523,7 +523,7 @@ IMPLEMENT_PROTOTYPE(KateJSViewProto,KateJSViewProtoFunc)
 
 const KJS::ClassInfo KateJSView::info = { "KateJSView", 0, &KateJSViewTable, 0 };
 
-Value KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
+KJS::Value KJS::KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
 {
   KJS_CHECK_THIS( KateJSView, thisObj );
 
@@ -834,7 +834,7 @@ IMPLEMENT_PROTOTYPE(KateJSIndenterProto,KateJSIndenterProtoFunc)
 
 const KJS::ClassInfo KateJSIndenter::info = { "KateJSIndenter", 0, &KateJSIndenterTable, 0 };
 
-Value KateJSIndenterProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
+KJS::Value KJS::KateJSIndenterProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
 {
   KJS_CHECK_THIS( KateJSIndenter, thisObj );
 
