@@ -12,8 +12,8 @@ public:
 	RichPage(QWidget *parent = 0, const char *name = 0);
 	~RichPage();
 
-	void setOptions(const QMap<QString,QString>& options);
-	void getOptions(QMap<QString,QString>& options, bool incldef = false);
+	void setOptions(const QMap<QString,QString>& opts);
+	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
 private:
 	QSpinBox	*margin_;

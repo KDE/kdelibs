@@ -35,7 +35,7 @@ public:
 
 public slots:
 	virtual void setItems(const QStringList& lst, const QStringList& iconlst);
-	virtual void setCurrentItem(int);
+	virtual void setCurrentItem(int index);
 
 protected:
 	void createPopupMenu();
