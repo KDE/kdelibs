@@ -389,9 +389,13 @@ class KRESOURCES_EXPORT PluginFactoryBase : public KLibFactory
     virtual ConfigWidget *configWidget( QWidget *parent ) = 0;
 
   protected:
-    virtual QObject* createObject( QObject *, const char *, const char *,
-                                   const QStringList & )
+    virtual QObject* createObject( QObject *parent, const char *name, const char *className,
+                                   const QStringList & args)
     {
+      Q_UNUSED(parent);
+      Q_UNUSED(name);
+      Q_UNUSED(className);
+      Q_UNUSED(args);
       return 0;
     }
 };
