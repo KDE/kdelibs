@@ -36,7 +36,7 @@ function write_header( compound )
         '\n' +
         'namespace KJSEmbed\n' +
         '{\n' +
-        '   class ' + compound.binding + ' : public VariantBinding\n' +
+        '   class ' + compound.binding + ' : public ' + compound.bindingBase + '\n' +
         '   {\n' +
         '       public:\n' +
         '           ' + compound.binding + '( KJS::ExecState *exec, const ' + compound.name + ' &value );\n' +

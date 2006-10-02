@@ -51,6 +51,20 @@ function process_class_info( classDoc )
     // Stores a list of elements that define all the members of the object.
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
+    // choose the bindings (TODO: Add ObjectBinding and QObjectBinding).
+    if (isVariant( compound.name ))
+    {
+        compound.bindingFactory = "VariantFactory";
+        compound.bindingBase = "VariantBinding";
+        compound.isVariant = true;
+    }
+    else
+    {
+        compound.bindingFactory = "ValueFactory";
+        compound.bindingBase = "ValueBinding";
+        compound.isVariant = false;
+    }
+
     println("   Writing Header");
     write_header( compound );
 

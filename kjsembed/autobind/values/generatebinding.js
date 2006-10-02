@@ -166,7 +166,11 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
             else if (coreParamType == 'QString')
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
             else //if(isVariant(paramType))
+            {
+                if (coreParamType != compound.name)
+                    compound.externalBindings[coreParamType] = true;
                 params += 'object'+argIdx+' && object'+argIdx+'->inherits(&' + coreParamType + 'Binding::info)';
+            }
 //            else
 //                params += 'isBasic(value'+argIdx+')';
 
@@ -300,7 +304,7 @@ function write_method( compound, memberName, overloadList )
             
     method +=
         '    KJS::JSValue *result = KJS::Null(); \n' +
-        '    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); \n' +
+        '    KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
         '    if( !imp ) \n' +
         '        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
         '\n' +
@@ -359,8 +363,13 @@ function write_method( compound, memberName, overloadList )
                     '        result = KJSEmbed::createValue( exec, "' + coreMethodType + '", tmp );\n';
             }
         }
-        funcCallEnd += 
-            indent + '        imp->setValue(qVariantFromValue(value)); \n' +
+
+        if (compound.isVariant)
+            funcCallEnd += indent + '        imp->setValue(qVariantFromValue(value)); \n';
+        else
+            funcCallEnd += indent + '        imp->setValue(value); \n';
+
+        funcCallEnd +=
             indent + '        return result; \n';
 
         if (methodArgList.count() != 0)
@@ -586,6 +595,7 @@ function write_binding_new( compound )
     var methodLut = '';
 
     compound.enums = {};
+    compound.externalBindings = {};
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
     // Eventually all of these should be moved to their own functions, but once again
@@ -597,21 +607,21 @@ function write_binding_new( compound )
 
 //    println ( "compoundIncludes: " + compoundIncludes );
     includes += '#include "' + compound.name + '_bind.h"\n';
-    includes += "#include <" + compoundIncludes + ">\n";
-    includes += "#include <value_binding.h>\n";
-    includes += "#include <object_binding.h>\n";
+    includes += '#include <' + compoundIncludes + '>\n';
+    includes += '#include <value_binding.h>\n';
+    includes += '#include <object_binding.h>\n';
 
     // Binding Ctor
     bindingCtor +=
         '\n' +
         'using namespace KJSEmbed;\n' +
         '\n' +
-        "const KJS::ClassInfo " + compound.binding + "::info = { \""+ compound.name + "\", &VariantBinding::info, 0, 0 };\n" +
+        'const KJS::ClassInfo ' + compound.binding + '::info = { "'+ compound.name + '", &' + compound.bindingBase + '::info, 0, 0 };\n' +
         compound.name + 'Binding::' + compound.binding + '( KJS::ExecState *exec, const ' + compound.name +' &value )\n' +
-        '   : VariantBinding(exec, value)\n' +
+        '   : ' + compound.bindingBase + '(exec, value)\n' +
         '{\n' +
         '    StaticBinding::publish(exec, this, ' + compound.data + '::methods() );\n' +
-        '    StaticBinding::publish(exec, this, VariantFactory::methods() );\n' +
+        '    StaticBinding::publish(exec, this, ' + compound.bindingFactory + '::methods() );\n' +
         '}\n\n';
 
     var enums = write_enums( compound );
@@ -633,6 +643,13 @@ function write_binding_new( compound )
     var bindingFile = new File( fileName );
     if( !bindingFile.open( File.WriteOnly ) )
         throw "Unable to open output binding, " + fileName;
+
+    println('Required External Bindings:');
+    for (var i in compound.externalBindings)
+    {
+        println('    ' + i);
+        includes += '#include "' + i + '_bind.h"\n';
+    }
 
     bindingFile.writeln( includes );
     bindingFile.writeln( bindingCtor );
