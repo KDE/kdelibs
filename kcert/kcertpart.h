@@ -73,7 +73,7 @@ public:
 	    const QStringList &args = QStringList() );
   virtual ~KCertPart();
 
-  virtual void setReadWrite(bool rw);
+  virtual void setReadWrite(bool readwrite);
 
   static KAboutData *createAboutData();
 
