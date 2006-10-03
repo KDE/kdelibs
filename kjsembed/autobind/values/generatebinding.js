@@ -87,11 +87,15 @@ function extract_parameter( compound, param, paramIdx )
     }
     else if ( compound.enums[paramType] )  // Enum Value
     {
+        var enumHeading = "";
+        if (compound.enums[paramType] != 1)
+            enumHeading = compound.enums[paramType] + "::";
+
         extracted +=
-            '       ' + compound.enums[paramType] + '::' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + compound.enums[paramType] + '::' + paramType + '>(exec, args, ' + paramIdx;
+            '       ' + enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
-            extracted += ', ' + compound.enums[paramType] + '::' + paramDefault.toString() + ');\n';
+            extracted += ', ' + enumHeading + paramDefault.toString() + ');\n';
         else
             extracted += ');\n';
 
@@ -594,7 +598,6 @@ function write_binding_new( compound )
     var ctor = '';
     var methodLut = '';
 
-    compound.enums = {};
     compound.externalBindings = {};
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
