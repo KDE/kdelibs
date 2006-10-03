@@ -101,6 +101,31 @@ function extract_parameter( compound, param, paramIdx )
 
         return extracted;
     }
+    else if (coreParamType == 'QString')
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractQString(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
+    else if (contains(coreParamType, 'uchar') ||
+             contains(coreParamType, 'char'))
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractString<' + coreParamType + '>(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
     else if ( isVariant(coreParamType) )
     {
         extracted +=
@@ -167,7 +192,9 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
             else if ( isNumber(coreParamType) || 
                       isEnum(coreParamType, compound.enums ) )
                 params += 'object'+argIdx+' && object'+argIdx+'->isNumber()';
-            else if (coreParamType == 'QString')
+            else if (coreParamType == 'QString' ||
+                    contains(coreParamType, 'uchar') ||
+                    contains(coreParamType, 'char'))
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
             else //if(isVariant(paramType))
             {
