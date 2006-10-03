@@ -127,7 +127,7 @@ void ResolveNode::streamTo(SourceStream &s) const { s << ident; }
 
 void GroupNode::streamTo(SourceStream &s) const
 {
-  s << "(" << group << ")"; 
+  s << "(" << group << ")";
 }
 
 void ElementNode::streamTo(SourceStream &s) const
@@ -158,7 +158,7 @@ void ObjectLiteralNode::streamTo(SourceStream &s) const
 void PropertyListNode::streamTo(SourceStream &s) const
 {
   s << node;
-  
+
   for (const PropertyListNode *n = next.get(); n; n = n->next.get())
     s << ", " << n->node;
 }
@@ -173,10 +173,10 @@ void PropertyNode::streamTo(SourceStream &s) const
     case Setter: {
       const FuncExprNode *func = static_cast<const FuncExprNode *>(assign.get());
       if (type == Getter)
-        s << "get "; 
+        s << "get ";
       else
         s << "set ";
-      
+
       s << name << "(" << func->param << ")" << func->body;
       break;
     }
@@ -599,7 +599,7 @@ void ForInNode::streamTo(SourceStream &s) const
     s << "var " << varDecl;
   else
     s << lexpr;
-  
+
   if (init)
     s << " = " << init;
   s << " in " << expr << ")" << SourceStream::Indent
@@ -713,4 +713,24 @@ void SourceElementsNode::streamTo(SourceStream &s) const
 {
   for (const SourceElementsNode *n = this; n; n = n->next.get())
     s << n->node;
+}
+
+void PackageIdentNode::streamTo(SourceStream &s) const
+{
+    if (idents)
+        s << idents << ".";
+    s << id;
+}
+
+void PackageNameNode::streamTo(SourceStream &s) const
+{
+    if (idents)
+        s << idents;
+    else
+        s << "\"" << str << "\"";
+}
+
+void ImportStatement::streamTo(SourceStream &s) const
+{
+    s << SourceStream::Endl << "import " << name << ";";
 }

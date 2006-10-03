@@ -82,8 +82,8 @@ using namespace KJS;
 
 
 #ifndef NDEBUG
-struct NodeCounter { 
-    static int count; 
+struct NodeCounter {
+    static int count;
     ~NodeCounter() { if (count != 0) fprintf(stderr, "LEAK: %d KJS::Node\n", count); }
 };
 int NodeCounter::count = 0;
@@ -121,10 +121,10 @@ void Node::ref()
             ASSERT(!nodeExtraRefCounts || !nodeExtraRefCounts->contains(this));
             return;
         }
-    }   
+    }
 
     ASSERT(!newNodes || !newNodes->contains(this));
-    
+
     if (!nodeExtraRefCounts)
         nodeExtraRefCounts = new HashCountedSet<Node*>;
     nodeExtraRefCounts->add(this);
@@ -133,7 +133,7 @@ void Node::ref()
 void Node::deref()
 {
     ASSERT(!newNodes || !newNodes->contains(this));
-    
+
     if (!nodeExtraRefCounts) {
         delete this;
         return;
@@ -152,7 +152,7 @@ unsigned Node::refcount()
         ASSERT(!nodeExtraRefCounts || !nodeExtraRefCounts->contains(this));
         return 0;
     }
- 
+
     ASSERT(!newNodes || !newNodes->contains(this));
 
     if (!nodeExtraRefCounts)
@@ -276,7 +276,7 @@ Node *Node::nodeInsideAllParens()
 
 // ------------------------------ StatementNode --------------------------------
 
-StatementNode::StatementNode() 
+StatementNode::StatementNode()
     : m_lastLine(-1)
 {
     m_line = -1;
@@ -358,17 +358,17 @@ JSValue *ResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
-  do { 
+  do {
     JSObject *o = *iter;
 
     if (o->getPropertySlot(exec, ident, slot))
       return slot.getValue(exec, o, ident);
-    
+
     ++iter;
   } while (iter != end);
 
@@ -408,8 +408,8 @@ JSValue *ElementNode::evaluate(ExecState *exec)
   return array;
 }
 
-void ElementNode::breakCycle() 
-{ 
+void ElementNode::breakCycle()
+{
     next = 0;
 }
 
@@ -454,13 +454,13 @@ JSValue *ObjectLiteralNode::evaluate(ExecState *exec)
 JSValue *PropertyListNode::evaluate(ExecState *exec)
 {
   JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
-  
+
   for (PropertyListNode *p = this; p; p = p->next.get()) {
     JSValue *n = p->node->name->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
     JSValue *v = p->node->assign->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
-    
+
     Identifier propertyName = Identifier(n->toString(exec));
     switch (p->node->type) {
       case PropertyNode::Getter:
@@ -480,8 +480,8 @@ JSValue *PropertyListNode::evaluate(ExecState *exec)
   return obj;
 }
 
-void PropertyListNode::breakCycle() 
-{ 
+void PropertyListNode::breakCycle()
+{
     next = 0;
 }
 
@@ -558,8 +558,8 @@ List ArgumentListNode::evaluateList(ExecState *exec)
   return l;
 }
 
-void ArgumentListNode::breakCycle() 
-{ 
+void ArgumentListNode::breakCycle()
+{
     next = 0;
 }
 
@@ -607,7 +607,7 @@ JSValue *FunctionCallValueNode::evaluate(ExecState *exec)
   if (!v->isObject()) {
     return throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, expr.get());
   }
-  
+
   JSObject *func = static_cast<JSObject*>(v);
 
   if (!func->implementsCall()) {
@@ -628,31 +628,31 @@ JSValue *FunctionCallResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, ident, slot)) {
       JSValue *v = slot.getValue(exec, base, ident);
       KJS_CHECKEXCEPTIONVALUE
-        
+
       if (!v->isObject()) {
         return throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, ident);
       }
-      
+
       JSObject *func = static_cast<JSObject*>(v);
-      
+
       if (!func->implementsCall()) {
         return throwError(exec, TypeError, "Object %s (result of expression %s) does not allow calls.", v, ident);
       }
-      
+
       List argList = args->evaluateList(exec);
       KJS_CHECKEXCEPTIONVALUE
-        
+
       JSObject *thisObj = base;
       // ECMA 11.2.3 says that in this situation the this value should be null.
       // However, section 10.2.3 says that in the case where the value provided
@@ -667,7 +667,7 @@ JSValue *FunctionCallResolveNode::evaluate(ExecState *exec)
     }
     ++iter;
   } while (iter != end);
-  
+
   return throwUndefinedVariableError(exec, ident);
 }
 
@@ -698,11 +698,11 @@ JSValue *FunctionCallBracketNode::evaluate(ExecState *exec)
   }
 
   KJS_CHECKEXCEPTIONVALUE
-  
+
   if (!funcVal->isObject()) {
     return throwError(exec, TypeError, "Value %s (result of expression %s[%s]) is not object.", funcVal, base.get(), subscript.get());
   }
-  
+
   JSObject *func = static_cast<JSObject*>(funcVal);
 
   if (!func->implementsCall()) {
@@ -725,7 +725,7 @@ static const char *dotExprNotAnObjectString()
   return "Value %s (result of expression %s.%s) is not object.";
 }
 
-static const char *dotExprDoesNotAllowCallsString() 
+static const char *dotExprDoesNotAllowCallsString()
 {
   return "Object %s (result of expression %s.%s) does not allow calls.";
 }
@@ -742,7 +742,7 @@ JSValue *FunctionCallDotNode::evaluate(ExecState *exec)
 
   if (!funcVal->isObject())
     return throwError(exec, TypeError, dotExprNotAnObjectString(), funcVal, base.get(), ident);
-  
+
   JSObject *func = static_cast<JSObject*>(funcVal);
 
   if (!func->implementsCall())
@@ -768,22 +768,22 @@ JSValue *PostfixResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
         JSValue *v = slot.getValue(exec, base, m_ident);
 
         double n = v->toNumber(exec);
-        
+
         double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
         base->put(exec, m_ident, jsNumber(newValue));
-        
+
         return jsNumber(n);
     }
 
@@ -814,7 +814,7 @@ JSValue *PostfixBracketNode::evaluate(ExecState *exec)
 
     double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
     base->put(exec, propertyIndex, jsNumber(newValue));
-        
+
     return jsNumber(n);
   }
 
@@ -824,10 +824,10 @@ JSValue *PostfixBracketNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
-  
+
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
   base->put(exec, propertyName, jsNumber(newValue));
-        
+
   return jsNumber(n);
 }
 
@@ -844,10 +844,10 @@ JSValue *PostfixDotNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
-  
+
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
   base->put(exec, m_ident, jsNumber(newValue));
-        
+
   return jsNumber(n);
 }
 
@@ -859,13 +859,13 @@ JSValue *DeleteResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
         return jsBoolean(base->deleteProperty(exec, m_ident));
@@ -948,11 +948,11 @@ static JSValue *typeStringForValue(JSValue *v)
             // Return "undefined" for objects that should be treated
             // as null when doing comparisons.
             if (static_cast<JSObject*>(v)->masqueradeAsUndefined())
-                return jsString("undefined");            
+                return jsString("undefined");
             else if (static_cast<JSObject*>(v)->implementsCall())
                 return jsString("function");
         }
-        
+
         return jsString("object");
     }
 }
@@ -962,13 +962,13 @@ JSValue *TypeOfResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
         JSValue *v = slot.getValue(exec, base, m_ident);
@@ -1000,19 +1000,19 @@ JSValue *PrefixResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot)) {
         JSValue *v = slot.getValue(exec, base, m_ident);
 
         double n = v->toNumber(exec);
-        
+
         double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
         JSValue *n2 = jsNumber(newValue);
         base->put(exec, m_ident, n2);
@@ -1058,7 +1058,7 @@ JSValue *PrefixBracketNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
-  
+
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
   JSValue *n2 = jsNumber(newValue);
   base->put(exec, propertyName, n2);
@@ -1079,7 +1079,7 @@ JSValue *PrefixDotNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   double n = v->toNumber(exec);
-  
+
   double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
   JSValue *n2 = jsNumber(newValue);
   base->put(exec, m_ident, n2);
@@ -1375,7 +1375,7 @@ static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSV
     assert(0);
     v = jsUndefined();
   }
-  
+
   return v;
 }
 
@@ -1386,13 +1386,13 @@ JSValue *AssignResolveNode::evaluate(ExecState *exec)
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
-  
+
   // we must always have something in the scope chain
   assert(iter != end);
 
   PropertySlot slot;
   JSObject *base;
-  do { 
+  do {
     base = *iter;
     if (base->getPropertySlot(exec, m_ident, slot))
       goto found;
@@ -1519,7 +1519,7 @@ JSValue *AssignExprNode::evaluate(ExecState *exec)
 
 // ------------------------------ VarDeclNode ----------------------------------
 
-    
+
 VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in, Type t)
     : varType(t), ident(id), init(in)
 {
@@ -1537,7 +1537,7 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
   } else {
       // already declared? - check with getDirect so you can override
       // built-in properties of the global object with var declarations.
-      if (variable->getDirect(ident)) 
+      if (variable->getDirect(ident))
           return 0;
       val = jsUndefined();
   }
@@ -1591,8 +1591,8 @@ void VarDeclListNode::processVarDecls(ExecState *exec)
     n->var->processVarDecls(exec);
 }
 
-void VarDeclListNode::breakCycle() 
-{ 
+void VarDeclListNode::breakCycle()
+{
     next = 0;
 }
 
@@ -1713,7 +1713,7 @@ Completion DoWhileNode::execute(ExecState *exec)
     exec->context()->pushIteration();
     c = statement->execute(exec);
     exec->context()->popIteration();
-    
+
     if (exec->dynamicInterpreter()->checkTimeout())
         return Completion(Interrupted);
 
@@ -1764,7 +1764,7 @@ Completion WhileNode::execute(ExecState *exec)
 
     if (exec->dynamicInterpreter()->checkTimeout())
         return Completion(Interrupted);
-    
+
     if (c.isValueCompletion())
       value = c.value();
 
@@ -1816,16 +1816,16 @@ Completion ForNode::execute(ExecState *exec)
       if (c.complType() != Normal)
       return c;
     }
-    
+
     if (exec->dynamicInterpreter()->checkTimeout())
         return Completion(Interrupted);
-    
+
     if (expr3) {
       v = expr3->evaluate(exec);
       KJS_CHECKEXCEPTION
     }
   }
-  
+
   return Completion(); // work around gcc 4.0 bug
 }
 
@@ -1879,7 +1879,7 @@ Completion ForInNode::execute(ExecState *exec)
   KJS_CHECKEXCEPTION
   v = e->toObject(exec);
   v->getPropertyNames(exec, propertyNames);
-  
+
   PropertyNameArrayIterator end = propertyNames.end();
   for (PropertyNameArrayIterator it = propertyNames.begin(); it != end; ++it) {
       const Identifier &name = *it;
@@ -1894,13 +1894,13 @@ Completion ForInNode::execute(ExecState *exec)
         const ScopeChain& chain = exec->context()->scopeChain();
         ScopeChainIterator iter = chain.begin();
         ScopeChainIterator end = chain.end();
-  
+
         // we must always have something in the scope chain
         assert(iter != end);
 
         PropertySlot slot;
         JSObject *o;
-        do { 
+        do {
             o = *iter;
             if (o->getPropertySlot(exec, ident, slot)) {
                 o->put(exec, ident, str);
@@ -1908,7 +1908,7 @@ Completion ForInNode::execute(ExecState *exec)
             }
             ++iter;
         } while (iter != end);
-        
+
         if (iter == end)
             o->put(exec, ident, str);
     } else if (lexpr->isDotAccessorNode()) {
@@ -2093,8 +2093,8 @@ void ClauseListNode::processFuncDecl(ExecState* exec)
       n->clause->processFuncDecl(exec);
 }
 
-void ClauseListNode::breakCycle() 
-{ 
+void ClauseListNode::breakCycle()
+{
     next = 0;
 }
 
@@ -2119,7 +2119,7 @@ CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
     list2 = 0;
   }
 }
- 
+
 JSValue *CaseBlockNode::evaluate(ExecState *)
 {
   // should never be called
@@ -2315,8 +2315,8 @@ JSValue *ParameterNode::evaluate(ExecState *)
   return jsUndefined();
 }
 
-void ParameterNode::breakCycle() 
-{ 
+void ParameterNode::breakCycle()
+{
     next = 0;
 }
 
@@ -2438,7 +2438,7 @@ Completion SourceElementsNode::execute(ExecState *exec)
   KJS_CHECKEXCEPTION;
   if (c1.complType() != Normal)
     return c1;
-  
+
   for (SourceElementsNode *n = next.get(); n; n = n->next.get()) {
     Completion c2 = n->node->execute(exec);
     if (c2.complType() != Normal)
@@ -2448,7 +2448,7 @@ Completion SourceElementsNode::execute(ExecState *exec)
     if (c2.value())
       c1 = c2;
   }
-  
+
   return c1;
 }
 
@@ -2465,11 +2465,32 @@ void SourceElementsNode::processVarDecls(ExecState *exec)
     n->node->processVarDecls(exec);
 }
 
-void SourceElementsNode::breakCycle() 
-{ 
+void SourceElementsNode::breakCycle()
+{
     next = 0;
 }
 
 ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
+{
+}
+
+JSValue* PackageIdentNode::evaluate(ExecState*)
+{
+    // should never get here
+    return 0;
+}
+
+JSValue* PackageNameNode::evaluate(ExecState*)
+{
+    // should never get here
+    return 0;
+}
+
+Completion ImportStatement::execute(ExecState*)
+{
+    return Completion(Normal);
+}
+
+void ImportStatement::processVarDecls(ExecState *)
 {
 }

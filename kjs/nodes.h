@@ -252,11 +252,11 @@ namespace KJS {
     double numeric;
     Identifier str;
   };
-  
+
   class PropertyNode : public Node {
   public:
     enum Type { Constant, Getter, Setter };
-    PropertyNode(PropertyNameNode *n, Node *a, Type t) 
+    PropertyNode(PropertyNameNode *n, Node *a, Type t)
       : name(n), assign(a), type(t) { }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
@@ -266,7 +266,7 @@ namespace KJS {
     RefPtr<Node> assign;
     Type type;
   };
-  
+
   class PropertyListNode : public Node {
   public:
     // list pointer is tail of a circular list, cracked in the ObjectLiteralNode ctor
@@ -687,7 +687,7 @@ namespace KJS {
 
   class AssignResolveNode : public Node {
   public:
-    AssignResolveNode(const Identifier &ident, Operator oper, Node *right) 
+    AssignResolveNode(const Identifier &ident, Operator oper, Node *right)
       : m_ident(ident), m_oper(oper), m_right(right) {}
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
@@ -699,7 +699,7 @@ namespace KJS {
 
   class AssignBracketNode : public Node {
   public:
-    AssignBracketNode(Node *base, Node *subscript, Operator oper, Node *right) 
+    AssignBracketNode(Node *base, Node *subscript, Operator oper, Node *right)
       : m_base(base), m_subscript(subscript), m_oper(oper), m_right(right) {}
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
@@ -1017,7 +1017,7 @@ namespace KJS {
     // list pointer is tail of a circular list, cracked in the BlockNode (or subclass) ctor
     SourceElementsNode(StatementNode*);
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
-    
+
     Completion execute(ExecState*);
     void processFuncDecl(ExecState*);
     virtual void processVarDecls(ExecState*);
@@ -1045,7 +1045,7 @@ namespace KJS {
       RefPtr<Node> expr;
       RefPtr<SourceElementsNode> source;
   };
-  
+
   class ClauseListNode : public Node {
   public:
       // list pointer is tail of a circular list, cracked in the CaseBlockNode ctor
@@ -1065,7 +1065,7 @@ namespace KJS {
       RefPtr<CaseClauseNode> clause;
       ListRefPtr<ClauseListNode> next;
   };
-  
+
   class CaseBlockNode : public Node {
   public:
       CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2);
@@ -1079,7 +1079,7 @@ namespace KJS {
       RefPtr<CaseClauseNode> def;
       RefPtr<ClauseListNode> list2;
   };
-  
+
   class SwitchNode : public StatementNode {
   public:
       SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
@@ -1091,10 +1091,43 @@ namespace KJS {
       RefPtr<Node> expr;
       RefPtr<CaseBlockNode> block;
   };
-  
+
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s);
+  };
+
+  class PackageIdentNode : public Node {
+  public:
+    PackageIdentNode(const Identifier &i) : idents(0), id(i) { }
+    PackageIdentNode(PackageIdentNode *in,
+                     const Identifier &i) : idents(in), id(i) { }
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  private:
+    RefPtr<PackageIdentNode> idents;
+    Identifier id;
+  };
+
+  class PackageNameNode : public Node {
+  public:
+    PackageNameNode(const UString &s) : str(s), idents(0) { }
+    PackageNameNode(PackageIdentNode *id) : idents(id) {}
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  private:
+    UString str;
+    RefPtr<PackageIdentNode> idents;
+  };
+
+  class ImportStatement : public StatementNode {
+  public:
+    ImportStatement(PackageNameNode *n) : name(n) {}
+    virtual Completion execute(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+    virtual void processVarDecls(ExecState*);
+  private:
+    RefPtr<PackageNameNode> name;
   };
 
 } // namespace

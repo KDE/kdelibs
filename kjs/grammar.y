@@ -88,6 +88,8 @@ static Node *makeDeleteNode(Node *expr);
   PropertyListNode   *plist;
   PropertyNode       *pnode;
   PropertyNameNode   *pname;
+  PackageNameNode     *pkgn;
+  PackageIdentNode     *pkgi;
 }
 
 %start Program
@@ -101,7 +103,7 @@ static Node *makeDeleteNode(Node *expr);
 %token IF THIS DO WHILE IN INSTANCEOF TYPEOF
 %token SWITCH WITH RESERVED
 %token THROW TRY CATCH FINALLY
-%token DEBUGGER
+%token DEBUGGER IMPORT
 
 /* give an if without an else higher precedence than an else to resolve the ambiguity */
 %nonassoc IF_WITHOUT_ELSE
@@ -153,7 +155,6 @@ static Node *makeDeleteNode(Node *expr);
 %type <node>  ConditionalExpr ConditionalExprNoIn ConditionalExprNoBF
 %type <node>  AssignmentExpr AssignmentExprNoIn AssignmentExprNoBF
 %type <node>  Expr ExprNoIn ExprNoBF
-
 %type <node>  ExprOpt ExprNoInOpt
 
 %type <stat>  Statement Block
@@ -162,7 +163,7 @@ static Node *makeDeleteNode(Node *expr);
 %type <stat>  BreakStatement ReturnStatement WithStatement
 %type <stat>  SwitchStatement LabelledStatement
 %type <stat>  ThrowStatement TryStatement
-%type <stat>  DebuggerStatement
+%type <stat>  DebuggerStatement ImportStatement
 %type <stat>  SourceElement
 
 %type <init>  Initializer InitializerNoIn
@@ -184,6 +185,8 @@ static Node *makeDeleteNode(Node *expr);
 %type <pname> PropertyName
 %type <pnode> Property
 %type <plist> PropertyList
+%type <pkgn>  PackageName
+%type <pkgi>  PackageIdentifiers
 %%
 
 Literal:
@@ -627,6 +630,7 @@ Statement:
   | ThrowStatement
   | TryStatement
   | DebuggerStatement
+  | ImportStatement
 ;
 
 Block:
@@ -806,6 +810,21 @@ TryStatement:
 DebuggerStatement:
     DEBUGGER ';'                           { $$ = new EmptyStatementNode(); DBG($$, @1, @2); }
   | DEBUGGER error                         { $$ = new EmptyStatementNode(); DBG($$, @1, @1); AUTO_SEMICOLON; }
+;
+
+PackageIdentifiers:
+    IDENT                               { $$ = new PackageIdentNode(*$1); }
+  | PackageIdentifiers '.' IDENT        { $$ = new PackageIdentNode($1, *$3); }
+;
+
+PackageName:
+    STRING                                 { $$ = new PackageNameNode(*$1); }
+  | PackageIdentifiers                     { $$ = new PackageNameNode($1); }
+;
+
+ImportStatement:
+    IMPORT PackageName ';'                 { $$ = new ImportStatement($2); DBG($$, @1, @3); }
+  | IMPORT PackageName error               { $$ = new ImportStatement($2); DBG($$, @1, @2); AUTO_SEMICOLON; }
 ;
 
 FunctionDeclaration:
