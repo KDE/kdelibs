@@ -38,7 +38,7 @@ function process_class_info( classDoc )
 
     // Stores the base of the definition
     compound.def = classDoc.firstChild().toElement();
-    
+
     // Stores the name of the compound object
     compound.name = compound.def.firstChildElement('compoundname').toElement().toString();
 
@@ -91,7 +91,7 @@ function process_class( compound_elem )
     // Create the DOM
     var classDoc = new QDomDocument("class");
     classDoc.setContent( content );
-    process_class_info( classDoc.documentElement().toElement() );
+    return classDoc.documentElement().toElement();
 }
 
 
@@ -114,6 +114,40 @@ var root = index_doc.documentElement();
 
 // List the classes
 var nodeList = root.elementsByTagName( "compound" );
+
+// First pass to gather pertinent data
+//   Enums       ... check
+//   Inheritance ... not done
+var enum_array = {};
+for( x = 0; x < nodeList.length(); ++x )
+{
+    var compoundElement = nodeList.item(x).toElement();
+    var compoundKind = compoundElement.attribute('kind');
+    if ( compoundKind == 'class' ) 
+    {
+        var classRootElement = process_class( compoundElement );
+        var memberList = classRootElement.elementsByTagName( "memberdef" );
+        for ( y = 0; y < memberList.length(); ++y )
+        {
+            var memberElement = memberList.item(y).toElement();
+            var memberKind = memberElement.attribute('kind');
+            if ( memberKind == 'enum' )
+            {
+                var enumName = memberElement.firstChildElement('name').toElement().toString();
+                var enumList = memberElement.elementsByTagName( "enumvalue" );
+                for ( z = 0; z < enumList.length(); ++z )
+                {
+                    var enumValue = enumList.item(z).toElement().firstChildElement('name').toElement().toString();
+                    var qualifiedEnum = enumName + "::" + enumValue;
+                    enum_array[qualifiedEnum] = 1;
+                    println( "   Added enum " + qualifiedEnum );
+                }
+            }
+        }
+    }
+}
+
+// Second pass to actually process classes
 for( x = 0; x < nodeList.length(); ++x )
 {
     var compound_elem =  nodeList.item(x).toElement();
@@ -121,7 +155,8 @@ for( x = 0; x < nodeList.length(); ++x )
 
     if ( kind == 'class' )
     {
-        process_class( compound_elem );
+        var classRootElement = process_class( compound_elem );
+        process_class_info( classRootElement );
     }
 }
 
