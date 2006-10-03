@@ -40,43 +40,20 @@ function extract_parameter( compound, param, paramIdx )
     if ( isBool(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx;
-
-        if (!paramDefault.isNull())
-            extracted += ', ' + paramDefault.toString() + ');\n';
-        else
-            extracted += ');\n';
-
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
-    else if ( isInteger(coreParamType) )  // integral value
+/*
+    else if( coreParamType == "bool *") // special case for some situations in QString/QByteArray 
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx;
-
-        if (!paramDefault.isNull())
-            extracted += ', ' + paramDefault.toString() + ');\n';
-        else
-            extracted += ');\n';
-
-        return extracted;
+            '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
     }
+*/
     else if ( isNumber(coreParamType) )  // integral value
     {
         extracted +=
             '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
-
-        if (!paramDefault.isNull())
-            extracted += ', ' + paramDefault.toString() + ');\n';
-        else
-            extracted += ');\n';
-
-        return extracted;
-    }
-    else if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
-    {
-        extracted +=
-            '        ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -458,22 +435,24 @@ function write_methods( compound )
         var memberElement = memberList.item(idx).toElement();
         var memberKind = memberElement.attribute('kind');
         var memberProt = memberElement.attribute('prot');
+        var memberStatic = memberElement.attribute('static');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
 
         if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
              ( memberProt == 'public' ) &&
-             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
-             ( memberName.indexOf(compound.name) == -1 ) ) // Not a ctor
+             ( memberName.indexOf('operator') == -1 ) &&     // Make sure this is not an operator.
+             ( memberName.indexOf(compound.name) == -1 ) &&  // Not a ctor
+             ( contains(memberStatic, 'no') ))               // Not a static method
         {
             if (processed[memberName])
             {
                 println( '      Skipping method overload ' + memberName );
                 continue;
             }
-            
+
             println( '      Processing method ' + memberName );
             processed[memberName] = true;
-            
+
             var overloadList = find_method_overloads(memberList, idx, memberName);
 
             methods += write_method(compound, memberName, overloadList);
@@ -505,13 +484,15 @@ function write_method_lut( compound )
         var memberElement = memberList.item(idx).toElement();
         var memberKind = memberElement.attribute('kind');
         var memberProt = memberElement.attribute('prot');
+        var memberStatic = memberElement.attribute('static');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
 
         var numParams = memberElement.elementsByTagName("param").count();
         if ( ( memberKind == 'function' ) &&
              ( memberProt == 'public' ) &&
-             ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
-             ( memberName.indexOf(compound.name) == -1 ) ) // Make sure this is not a ctor or dtor
+             ( memberName.indexOf('operator') == -1 ) &&     // Make sure this is not an operator.
+             ( memberName.indexOf(compound.name) == -1 ) &&  // Make sure this is not a ctor or dtor
+             ( contains(memberStatic, "no") ) )              // Not a static method
         {
             // make sure only one lut entry per member
             if (processed[memberName])
@@ -654,13 +635,9 @@ function write_binding_new( compound )
 
 
     if (compound.bindingBase == 'ValueBinding')
-    {
         bindingCtor += '   : ' + compound.bindingBase + '(exec, "' + compound.name + '", value)\n';
-    }
     else
-    {
         bindingCtor += '   : ' + compound.bindingBase + '(exec, value)\n';
-    }
 
     bindingCtor +=
         '{\n' +
