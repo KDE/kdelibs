@@ -51,6 +51,9 @@ function process_class_info( classDoc )
     // Stores a list of elements that define all the members of the object.
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
+    // Store the cached enum types with our compound object.
+    // compound.enums = enum_array;
+
     // choose the bindings (TODO: Add ObjectBinding and QObjectBinding).
     if (isVariant( compound.name ))
     {
@@ -91,7 +94,7 @@ function process_class( compound_elem )
     // Create the DOM
     var classDoc = new QDomDocument("class");
     classDoc.setContent( content );
-    return classDoc.documentElement().toElement();
+    return classDoc.documentElement();
 }
 
 
@@ -123,10 +126,12 @@ for( x = 0; x < nodeList.length(); ++x )
 {
     var compoundElement = nodeList.item(x).toElement();
     var compoundKind = compoundElement.attribute('kind');
-    if ( compoundKind == 'class' ) 
+    if ( compoundKind == 'class' )
     {
         var classRootElement = process_class( compoundElement );
-        var memberList = classRootElement.elementsByTagName( "memberdef" );
+        var compoundDef = classRootElement.firstChildElement('compounddef').toElement();
+        var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+        var memberList = compoundDef.elementsByTagName( "memberdef" );
         for ( y = 0; y < memberList.length(); ++y )
         {
             var memberElement = memberList.item(y).toElement();
@@ -134,6 +139,12 @@ for( x = 0; x < nodeList.length(); ++x )
             if ( memberKind == 'enum' )
             {
                 var enumName = memberElement.firstChildElement('name').toElement().toString();
+                var qualifiedEnum = compoundName + "::" + enumName;
+                enum_array[enumName] = 1;
+                enum_array[qualifiedEnum] = 1;
+                println("   Added enum " + qualifiedEnum);
+ 
+/*
                 var enumList = memberElement.elementsByTagName( "enumvalue" );
                 for ( z = 0; z < enumList.length(); ++z )
                 {
@@ -142,6 +153,7 @@ for( x = 0; x < nodeList.length(); ++x )
                     enum_array[qualifiedEnum] = 1;
                     println( "   Added enum " + qualifiedEnum );
                 }
+*/
             }
         }
     }
