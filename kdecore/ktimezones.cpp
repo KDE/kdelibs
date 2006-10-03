@@ -240,6 +240,13 @@ class KTimeZonePhasePrivate : public QSharedData
           utcOffset(rhs.utcOffset),
           dst(rhs.dst)
         {}
+	bool operator==(const KTimeZonePhasePrivate &rhs) const
+	{
+	    return abbreviations == rhs.abbreviations
+	       &&  comment       == rhs.comment
+	       &&  utcOffset     == rhs.utcOffset
+	       &&  dst           == rhs.dst;
+	}
 };
 
 
@@ -285,7 +292,7 @@ KTimeZone::Phase &KTimeZone::Phase::operator=(const KTimeZone::Phase &rhs)
 
 bool KTimeZone::Phase::operator==(const KTimeZone::Phase &rhs) const
 {
-    return d == rhs.d;
+    return d == rhs.d  ||  *d == *rhs.d;
 }
 
 int KTimeZone::Phase::utcOffset() const
