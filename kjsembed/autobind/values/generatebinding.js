@@ -495,9 +495,10 @@ function write_method_lut( compound )
              ( contains(memberStatic, "no") ) )              // Not a static method
         {
             // make sure only one lut entry per member
-            if (processed[memberName])
+            var memberCacheId = memberName + numParams;
+            if (processed[memberCacheId])
                 continue;
-            processed[memberName] = true;
+            processed[memberCacheId] = true;
 
             lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compound.name + 'NS::' + memberName + ' },\n';
         }
