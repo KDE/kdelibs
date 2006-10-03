@@ -17,10 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// remove when Q3SimpleRichText is ported
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include <QtCore/QPointer>
 #include <QtCore/QStringList>
 #include <QtGui/QCheckBox>
@@ -193,37 +189,37 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        pref_height = label2->heightForWidth(pref_width);
 
        document.setTextWidth(pref_width);
-       int used_width = document.idealWidth();
-       pref_height = document.size().height();
+       qreal used_width = document.idealWidth();
+       pref_height = (int) document.size().height();
        if (3*pref_height > 2*d.height())
        {
           // Very high dialog.. make it wider
           pref_width = d.width() / 2;
           document.setTextWidth(pref_width);
           used_width = document.idealWidth();
-          pref_height = document.size().height();
+          pref_height = (int) document.size().height();
        }
        if (used_width <= pref_width)
        {
           while(true)
           {
-             int new_width = (used_width * 9) / 10;
+             int new_width = (int) (used_width * 9) / 10;
              document.setTextWidth(new_width);
-             int new_height = document.size().height();
+             int new_height = (int) document.size().height();
              if (new_height > pref_height)
                 break;
              used_width = document.idealWidth();
              if (used_width > new_width)
                 break;
           }
-          pref_width = used_width;
+          pref_width = (int) used_width;
        }
        else
        {
           if (used_width > (pref_width *2))
              pref_width = pref_width *2;
           else
-             pref_width = used_width;
+             pref_width = (int) used_width;
        }
    }
 
