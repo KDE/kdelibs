@@ -39,7 +39,7 @@ class FakeBattery : public FakeCapability, virtual public Solid::Ifaces::Battery
     Q_PROPERTY( ChargeState chargeState READ chargeState )
 
 public:
-    FakeBattery( FakeDevice *device );
+    explicit FakeBattery( FakeDevice *device );
     virtual ~FakeBattery();
 
 public Q_SLOTS:

@@ -31,7 +31,7 @@ class FakeNetworkHw : public FakeCapability, public Solid::Ifaces::NetworkHw
     Q_PROPERTY( QString hwAddress READ hwAddress )
     Q_PROPERTY( qulonglong macAddress READ macAddress )
 public:
-    FakeNetworkHw(FakeDevice *device);
+    explicit FakeNetworkHw(FakeDevice *device);
     ~FakeNetworkHw();
 
 public Q_SLOTS:

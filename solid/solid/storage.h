@@ -46,7 +46,7 @@ namespace Solid
          * @param parent the parent QObject
          * @see Solid::Device::as()
          */
-        Storage( QObject *backendObject );
+        explicit Storage( QObject *backendObject );
 
         /**
          * Destroys a Storage object.

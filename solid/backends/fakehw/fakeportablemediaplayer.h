@@ -34,7 +34,7 @@ class FakePortableMediaPlayer : public FakeCapability, virtual public Solid::Ifa
     Q_ENUMS( AccessType )
 
 public:
-    FakePortableMediaPlayer( FakeDevice *device );
+    explicit FakePortableMediaPlayer( FakeDevice *device );
     ~FakePortableMediaPlayer();
 
 public Q_SLOTS:

@@ -49,7 +49,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Camera( QObject *backendObject );
+        explicit Camera( QObject *backendObject );
 
         /**
          * Destroys a Camera object.

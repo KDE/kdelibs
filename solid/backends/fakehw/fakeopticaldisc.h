@@ -36,7 +36,7 @@ class FakeOpticalDisc : public FakeVolume, virtual public Solid::Ifaces::Optical
     Q_ENUMS( ContentType DiscType )
 
 public:
-    FakeOpticalDisc( FakeDevice *device );
+    explicit FakeOpticalDisc( FakeDevice *device );
     virtual ~FakeOpticalDisc();
 
 public Q_SLOTS:

@@ -38,7 +38,7 @@ class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::Volume
     Q_ENUMS( UsageType )
 
 public:
-    FakeVolume( FakeDevice *device );
+    explicit FakeVolume( FakeDevice *device );
     virtual ~FakeVolume();
 
 public Q_SLOTS:

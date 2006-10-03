@@ -30,7 +30,7 @@ class FakeProcessor : public FakeCapability, public Solid::Ifaces::Processor
     Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
     Q_PROPERTY( bool canThrottle READ canThrottle )
 public:
-    FakeProcessor(FakeDevice *device);
+    explicit FakeProcessor(FakeDevice *device);
     ~FakeProcessor();
 
 public Q_SLOTS:

@@ -46,14 +46,14 @@ namespace Solid
          *
          * @param uni the uni of the network interface to create
          */
-        NetworkInterface( const QString &uni );
+        explicit NetworkInterface( const QString &uni );
 
         /**
          * Constructs a new network interface taking its data from a backend.
          *
          * @param backendObject the object given by the backend
          */
-        NetworkInterface( QObject *backendObject );
+        explicit NetworkInterface( QObject *backendObject );
 
         /**
          * Constructs a copy of a network interface.

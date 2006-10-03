@@ -34,7 +34,7 @@ class FakeAudioHw : public FakeCapability, virtual public Solid::Ifaces::AudioHw
     Q_ENUMS( AudioDriver AudioHwType )
 
 public:
-    FakeAudioHw( FakeDevice *device );
+    explicit FakeAudioHw( FakeDevice *device );
     virtual ~FakeAudioHw();
 
 public Q_SLOTS:

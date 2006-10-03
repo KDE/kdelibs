@@ -43,7 +43,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        OpticalDisc( QObject *backendObject );
+        explicit OpticalDisc( QObject *backendObject );
 
         /**
          * Destroys an OpticalDisc object.

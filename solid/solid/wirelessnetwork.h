@@ -42,7 +42,7 @@ namespace Solid
          *
          * @param backendObject the network object provided by the backend
          */
-        WirelessNetwork( QObject *backendObject );
+        explicit WirelessNetwork( QObject *backendObject );
 
         /**
          * Destroys a WirelessNetwork object

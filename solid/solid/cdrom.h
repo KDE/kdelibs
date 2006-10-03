@@ -45,7 +45,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Cdrom( QObject *backendObject );
+        explicit Cdrom( QObject *backendObject );
 
         /**
          * Destroys a Cdrom object.

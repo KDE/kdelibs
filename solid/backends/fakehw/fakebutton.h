@@ -33,7 +33,7 @@ class FakeButton : public FakeCapability, virtual public Solid::Ifaces::Button
     Q_ENUMS( ButtonType )
 
 public:
-    FakeButton( FakeDevice *device );
+    explicit FakeButton( FakeDevice *device );
     ~FakeButton();
 
 public Q_SLOTS:

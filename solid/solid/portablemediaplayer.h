@@ -48,7 +48,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        PortableMediaPlayer( QObject *backendObject );
+        explicit PortableMediaPlayer( QObject *backendObject );
 
         /**
          * Destroys a portable media player object.

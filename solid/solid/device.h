@@ -66,7 +66,7 @@ namespace Solid
          *
          * @param udi the udi of the device to create
          */
-        Device( const QString &udi );
+        explicit Device( const QString &udi );
 
         /**
          * Constructs a copy of a device.
@@ -80,7 +80,7 @@ namespace Solid
          *
          * @param backendObject the object given by the backend
          */
-        Device( QObject *backendObject );
+        explicit Device( QObject *backendObject );
 
         /**
          * Destroys the device.

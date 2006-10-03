@@ -45,7 +45,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Block( QObject *backendObject );
+        explicit Block( QObject *backendObject );
 
         /**
          * Destroys a Block object.

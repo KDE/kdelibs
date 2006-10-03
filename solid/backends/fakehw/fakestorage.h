@@ -38,7 +38,7 @@ class FakeStorage : public FakeBlock, virtual public Solid::Ifaces::Storage
     Q_ENUMS( Bus DriveType )
 
 public:
-    FakeStorage( FakeDevice *device );
+    explicit FakeStorage( FakeDevice *device );
     ~FakeStorage();
 
 public Q_SLOTS:

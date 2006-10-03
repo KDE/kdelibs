@@ -32,7 +32,7 @@ class FakeBlock : public FakeCapability, virtual public Solid::Ifaces::Block
     Q_PROPERTY( QString device READ device )
 
 public:
-    FakeBlock( FakeDevice *device );
+    explicit FakeBlock( FakeDevice *device );
     ~FakeBlock();
 
 public Q_SLOTS:

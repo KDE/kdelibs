@@ -32,7 +32,7 @@ class FakeCamera : public FakeCapability, virtual public Solid::Ifaces::Camera
     Q_ENUMS( AccessType )
 
 public:
-    FakeCamera( FakeDevice *device );
+    explicit FakeCamera( FakeDevice *device );
     ~FakeCamera();
 
 public Q_SLOTS:

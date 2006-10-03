@@ -34,7 +34,7 @@ class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::Cdrom
     Q_ENUMS( MediumType )
 
 public:
-    FakeCdrom( FakeDevice *device );
+    explicit FakeCdrom( FakeDevice *device );
     virtual ~FakeCdrom();
 
 public Q_SLOTS:

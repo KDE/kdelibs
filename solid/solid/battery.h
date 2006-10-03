@@ -42,7 +42,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Battery( QObject *backendObject );
+        explicit Battery( QObject *backendObject );
 
         /**
          * Destroys a Battery object.

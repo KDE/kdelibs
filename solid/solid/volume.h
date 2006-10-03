@@ -47,7 +47,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Volume( QObject *backendObject );
+        explicit Volume( QObject *backendObject );
 
         /**
          * Destroys a Volume object.

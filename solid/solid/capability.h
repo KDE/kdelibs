@@ -48,7 +48,7 @@ namespace Solid
          *
          * @param backendObject the capability object provided by the backend
          */
-        Capability( QObject *backendObject );
+        explicit Capability( QObject *backendObject );
 
         /**
          * Destroys a Capability object.

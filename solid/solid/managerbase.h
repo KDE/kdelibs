@@ -65,7 +65,7 @@ namespace Solid
          *
          * @param backend the backend object to use
          */
-        ManagerBase( QObject *backend );
+        explicit ManagerBase( QObject *backend );
 
         /**
          * Destroys a ManagerBase object.

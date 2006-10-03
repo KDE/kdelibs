@@ -32,7 +32,7 @@ class FakeDisplay : public FakeCapability, public virtual Solid::Ifaces::Display
     Q_ENUMS( DisplayType )
 
 public:
-    FakeDisplay(FakeDevice *device);
+    explicit FakeDisplay(FakeDevice *device);
     ~FakeDisplay();
 
 public Q_SLOTS:

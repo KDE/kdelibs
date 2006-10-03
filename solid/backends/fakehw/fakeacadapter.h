@@ -30,7 +30,7 @@ class FakeAcAdapter : public FakeCapability, virtual public Solid::Ifaces::AcAda
     Q_PROPERTY( bool plugged READ isPlugged )
 
 public:
-    FakeAcAdapter( FakeDevice *device );
+    explicit FakeAcAdapter( FakeDevice *device );
     virtual ~FakeAcAdapter();
 
 public Q_SLOTS:

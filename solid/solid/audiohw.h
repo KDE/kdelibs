@@ -42,7 +42,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        AudioHw( QObject *backendObject );
+        explicit AudioHw( QObject *backendObject );
 
         /**
          * Destroys an AudioHw object.

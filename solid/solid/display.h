@@ -46,7 +46,7 @@ namespace Solid
          * @param parent the parent QObject
          * @see Solid::Device::as()
          */
-        Display( QObject *backendObject );
+        explicit Display( QObject *backendObject );
 
         /**
          * Destroys a Display object.

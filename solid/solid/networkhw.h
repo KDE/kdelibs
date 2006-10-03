@@ -41,7 +41,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        NetworkHw( QObject *backendObject );
+        explicit NetworkHw( QObject *backendObject );
 
         /**
          * Destroys a NetworkHw object.

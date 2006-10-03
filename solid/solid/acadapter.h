@@ -41,7 +41,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        AcAdapter( QObject *backendObject );
+        explicit AcAdapter( QObject *backendObject );
 
         /**
          * Destroys an AcAdapter object.

@@ -46,7 +46,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Button( QObject *backendObject );
+        explicit Button( QObject *backendObject );
 
         /**
          * Destroys a Button object.

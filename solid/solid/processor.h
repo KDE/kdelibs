@@ -41,7 +41,7 @@ namespace Solid
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Processor( QObject *backendObject );
+        explicit Processor( QObject *backendObject );
 
         /**
          * Destroys a Processor object.
