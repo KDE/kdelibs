@@ -105,20 +105,17 @@ void KTextBrowser::keyPressEvent( QKeyEvent *event )
   else
     QTextBrowser::keyPressEvent( event );
 }
-#include <QApplication>
+
 void KTextBrowser::mouseMoveEvent( QMouseEvent *event )
 {
+  //FIXME restore curser after hover a link
   // do this first so we get the right type of cursor
   QTextBrowser::mouseMoveEvent( event );
 
-//   if ( (viewport()->cursor().shape() == Qt::PointingHandCursor)/* || (viewport()->cursor() == KCursor::handCursor())*/ )
-//   {
-//     viewport()->setCursor( KCursor::handCursor() )
-// QApplication::setOverrideCursor(KCursor::handCursor());
-//   }
-//   else
-//     viewport()->setCursor( viewport()->cursor().shape() );
-// QApplication::restoreOverrideCursor();
+  if ( viewport()->cursor().shape() == Qt::PointingHandCursor )
+    viewport()->setCursor( KCursor::handCursor() );
+  else
+    viewport()->setCursor( viewport()->cursor().shape() );
 }
 
 void KTextBrowser::wheelEvent( QWheelEvent *event )
