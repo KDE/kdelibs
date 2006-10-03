@@ -658,7 +658,7 @@ RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid) const
     if (noninherited_flags.f._styleType==NOPSEUDO)
         for (ps = pseudoStyle; ps; ps = ps->pseudoStyle)
             if (ps->noninherited_flags.f._styleType==pid)
-		break;
+                break;
     return ps;
 }
 
