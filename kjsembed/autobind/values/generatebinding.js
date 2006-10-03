@@ -650,8 +650,19 @@ function write_binding_new( compound )
         'using namespace KJSEmbed;\n' +
         '\n' +
         'const KJS::ClassInfo ' + compound.binding + '::info = { "'+ compound.name + '", &' + compound.bindingBase + '::info, 0, 0 };\n' +
-        compound.name + 'Binding::' + compound.binding + '( KJS::ExecState *exec, const ' + compound.name +' &value )\n' +
-        '   : ' + compound.bindingBase + '(exec, value)\n' +
+        compound.name + 'Binding::' + compound.binding + '( KJS::ExecState *exec, const ' + compound.name +' &value )\n';
+
+
+    if (compound.bindingBase == 'ValueBinding')
+    {
+        bindingCtor += '   : ' + compound.bindingBase + '(exec, "' + compound.name + '", value)\n';
+    }
+    else
+    {
+        bindingCtor += '   : ' + compound.bindingBase + '(exec, value)\n';
+    }
+
+    bindingCtor +=
         '{\n' +
         '    StaticBinding::publish(exec, this, ' + compound.data + '::methods() );\n' +
         '    StaticBinding::publish(exec, this, ' + compound.bindingFactory + '::methods() );\n' +
@@ -682,6 +693,7 @@ function write_binding_new( compound )
     {
         println('    ' + i);
         includes += '#include "' + i + '_bind.h"\n';
+        includes += '#include <' + i.toLowerCase() + '.h>\n'; 
     }
 
     bindingFile.writeln( includes );
