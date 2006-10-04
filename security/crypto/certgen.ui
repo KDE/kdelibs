@@ -1,513 +1,463 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>D_GenCert</class>
-<widget class="QDialog">
-    <property name="name">
-        <cstring>D_GenCert</cstring>
+<ui version="4.0" stdsetdef="1" >
+  <author></author>
+  <comment></comment>
+  <exportmacro></exportmacro>
+  <class>D_GenCert</class>
+  <widget class="QDialog" name="D_GenCert" >
+    <property name="geometry" >
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>539</width>
+        <height>367</height>
+      </rect>
     </property>
-    <property name="geometry">
+    <property name="windowTitle" >
+      <string>Certificate Creation Wizard</string>
+    </property>
+    <widget class="QLabel" name="TextLabel2" >
+      <property name="geometry" >
         <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>539</width>
-            <height>367</height>
+          <x>10</x>
+          <y>40</y>
+          <width>70</width>
+          <height>21</height>
         </rect>
-    </property>
-    <property name="windowTitle">
-        <string>Certificate Creation Wizard</string>
-    </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>40</y>
-                <width>70</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Plain</enum>
-        </property>
-        <property name="text">
-            <string>Passphrase:</string>
-        </property>
+      </property>
+      <property name="frameShape" >
+        <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
+      </property>
+      <property name="text" >
+        <string>Passphrase:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>100</y>
-                <width>90</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Country code:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel3" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>90</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Country code:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>130</y>
-                <width>150</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>State or province (in full):</string>
-        </property>
+    <widget class="QLabel" name="TextLabel4" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>130</y>
+          <width>150</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>State or province (in full):</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>T_CertType</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>100</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Certificate type:</string>
-        </property>
+    <widget class="QLabel" name="T_CertType" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>100</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Certificate type:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>70</y>
-                <width>120</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Passphrase (verify):</string>
-        </property>
+    <widget class="QLabel" name="TextLabel2_2" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>120</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Passphrase (verify):</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel5</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>160</y>
-                <width>30</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>City:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel5" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>30</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>City:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>190</y>
-                <width>141</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Organization name:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel6" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>190</y>
+          <width>141</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Organization name:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel7</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>220</y>
-                <width>150</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Organizational unit/group:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel7" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>220</y>
+          <width>150</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Organizational unit/group:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel8</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>250</y>
-                <width>170</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Full hostname of the server:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel8" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>250</y>
+          <width>170</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Full hostname of the server:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>L_CertType</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>10</y>
-                <width>130</width>
-                <height>21</height>
-            </rect>
-        </property>
+    <widget class="QComboBox" name="L_CertType" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>10</y>
+          <width>130</width>
+          <height>21</height>
+        </rect>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>100</y>
-                <width>41</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>2</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit3" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>100</y>
+          <width>41</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>2</number>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel9</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>280</y>
-                <width>111</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Email address:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel9" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>111</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Email address:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4_2_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>220</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4_2_2_2" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>220</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4_2_2_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>250</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4_2_2_2_2" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>250</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4_2_2_2_3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>280</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4_2_2_2_3" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>280</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>E_Passphrase</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>40</y>
-                <width>130</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>500</number>
-        </property>
-        <property name="echoMode">
-            <enum>Password</enum>
-        </property>
+    <widget class="QLineEdit" name="E_Passphrase" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>40</y>
+          <width>130</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>500</number>
+      </property>
+      <property name="echoMode" >
+        <enum>QLineEdit::Password</enum>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>E_Passphrase_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>70</y>
-                <width>131</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>500</number>
-        </property>
-        <property name="echoMode">
-            <enum>Password</enum>
-        </property>
+    <widget class="QLineEdit" name="E_Passphrase_2" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>70</y>
+          <width>131</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>500</number>
+      </property>
+      <property name="echoMode" >
+        <enum>QLineEdit::Password</enum>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel10</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>310</y>
-                <width>121</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Days valid:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel10" >
+      <property name="geometry" >
+        <rect>
+          <x>10</x>
+          <y>310</y>
+          <width>121</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Days valid:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QSpinBox">
-        <property name="name">
-            <cstring>SpinBox1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>310</y>
-                <width>81</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="maximum">
-            <number>365</number>
-        </property>
-        <property name="minimum">
-            <number>1</number>
-        </property>
-        <property name="value">
-            <number>365</number>
-        </property>
+    <widget class="QSpinBox" name="SpinBox1" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>310</y>
+          <width>81</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="maximum" >
+        <number>365</number>
+      </property>
+      <property name="minimum" >
+        <number>1</number>
+      </property>
+      <property name="value" >
+        <number>365</number>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel11</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>320</x>
-                <y>40</y>
-                <width>60</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Digest:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel11" >
+      <property name="geometry" >
+        <rect>
+          <x>320</x>
+          <y>40</y>
+          <width>60</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Digest:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>CheckBox1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>320</x>
-                <y>10</y>
-                <width>80</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Self sign</string>
-        </property>
-        <property name="checked">
-            <bool>true</bool>
-        </property>
+    <widget class="QCheckBox" name="CheckBox1" >
+      <property name="geometry" >
+        <rect>
+          <x>320</x>
+          <y>10</y>
+          <width>80</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Self sign</string>
+      </property>
+      <property name="checked" >
+        <bool>true</bool>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel12</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>320</x>
-                <y>70</y>
-                <width>50</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Alias:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel12" >
+      <property name="geometry" >
+        <rect>
+          <x>320</x>
+          <y>70</y>
+          <width>50</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Alias:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit19</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>70</y>
-                <width>131</width>
-                <height>22</height>
-            </rect>
-        </property>
+    <widget class="QLineEdit" name="LineEdit19" >
+      <property name="geometry" >
+        <rect>
+          <x>380</x>
+          <y>70</y>
+          <width>131</width>
+          <height>22</height>
+        </rect>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>190</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4_2_2" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>190</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>160</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4_2" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>160</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBox2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>40</y>
-                <width>130</width>
-                <height>21</height>
-            </rect>
-        </property>
+    <widget class="QComboBox" name="ComboBox2" >
+      <property name="geometry" >
+        <rect>
+          <x>380</x>
+          <y>40</y>
+          <width>130</width>
+          <height>21</height>
+        </rect>
+      </property>
     </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>CheckBox2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>320</x>
-                <y>100</y>
-                <width>161</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Use DSA instead of RSA</string>
-        </property>
+    <widget class="QCheckBox" name="CheckBox2" >
+      <property name="geometry" >
+        <rect>
+          <x>320</x>
+          <y>100</y>
+          <width>161</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Use DSA instead of RSA</string>
+      </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel13</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>320</x>
-                <y>130</y>
-                <width>71</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Bit strength:</string>
-        </property>
+    <widget class="QLabel" name="TextLabel13" >
+      <property name="geometry" >
+        <rect>
+          <x>320</x>
+          <y>130</y>
+          <width>71</width>
+          <height>21</height>
+        </rect>
+      </property>
+      <property name="text" >
+        <string>Bit strength:</string>
+      </property>
+      <property name="wordWrap" >
+        <bool>false</bool>
+      </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBox5</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>400</x>
-                <y>130</y>
-                <width>111</width>
-                <height>21</height>
-            </rect>
-        </property>
+    <widget class="QComboBox" name="ComboBox5" >
+      <property name="geometry" >
+        <rect>
+          <x>400</x>
+          <y>130</y>
+          <width>111</width>
+          <height>21</height>
+        </rect>
+      </property>
     </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEdit4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>130</y>
-                <width>121</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="maxLength">
-            <number>200</number>
-        </property>
+    <widget class="QLineEdit" name="LineEdit4" >
+      <property name="geometry" >
+        <rect>
+          <x>180</x>
+          <y>130</y>
+          <width>121</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <property name="maxLength" >
+        <number>200</number>
+      </property>
     </widget>
-</widget>
-<includes>
-    <include location="local" impldecl="in implementation">kdialog.h</include>
-</includes>
-<layoutdefaults spacing="3" margin="6"/>
-<layoutfunctions spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
-</UI>
+  </widget>
+  <layoutdefault spacing="3" margin="6" />
+  <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
+  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+</ui>
