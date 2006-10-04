@@ -172,11 +172,15 @@ KateView::~KateView()
 
   m_doc->removeView( this );
 
-  delete m_viewInternal;
+  // its a QObject. don't double-delete
+  //delete m_viewInternal;
+  //delete m_codeCompletion;
 
   delete m_renderer;
+  m_renderer = 0;
 
   delete m_config;
+  m_config = 0;
   KateFactory::self()->deregisterView (this);
 }
 

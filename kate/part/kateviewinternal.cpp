@@ -3006,7 +3006,7 @@ void KateViewInternal::focusInEvent (QFocusEvent *)
 
 void KateViewInternal::focusOutEvent (QFocusEvent *)
 {
-  if( ! m_view->m_codeCompletion->codeCompletionVisible() )
+  if( m_view->renderer() && ! m_view->m_codeCompletion->codeCompletionVisible() )
   {
     m_cursorTimer.stop();
 
