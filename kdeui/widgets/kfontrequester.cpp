@@ -31,6 +31,7 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
     m_onlyFixed( onlyFixed )
 {
   QHBoxLayout *layout = new QHBoxLayout( this );
+  layout->setMargin( 0 );
   layout->setSpacing( KDialog::spacingHint() );
 
   m_sampleLabel = new QLabel( this );
