@@ -56,10 +56,6 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
-//change to sudo or su according to your preferences
-//also change in su.cpp and kdebase/kdesu/kdesu/sudlg.cpp
-#define DEFAULT_SUPER_USER_COMMAND "su"
-
 int PtyProcess::waitMS(int fd,int ms)
 {
 	struct timeval tv;

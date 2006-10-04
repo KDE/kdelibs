@@ -14,6 +14,25 @@ else
     AC_DEFINE_UNQUOTED(__PATH_SUDO, "$path_sudo", [path to sudo])
 fi
 
+AC_ARG_WITH(sudo-kdesu-backend,
+	    AC_HELP_STRING([--with-sudo-kdesu-backend],
+			   [use sudo as backend for kdesu (default is su)]),
+[
+    if test x$withval = xyes; then
+        use_kdesu_backend="sudo"
+    else
+        use_kdesu_backend="su"
+    fi
+],
+    use_kdesu_backend="su"
+)
+
+if test x$use_kdesu_backend = xsudo -a x$path_sudo = xno; then
+    AC_MSG_ERROR(sudo was chosen as kdesu backend, but was not found in path.)
+fi
+
+AC_DEFINE_UNQUOTED(DEFAULT_SUPER_USER_COMMAND, "$use_kdesu_backend", [Use su or sudo])
+
 dnl Check for POSIX.1b scheduling
 AC_MSG_CHECKING([POSIX.1b scheduling])
 AC_TRY_LINK([

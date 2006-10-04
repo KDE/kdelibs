@@ -50,10 +50,6 @@
 #define __PATH_SUDO "false"
 #endif
 
-//change to sudo or su according to your preferences
-//also change in process.cpp and kdebase/kdesu/kdesu/sudlg.cpp
-#define DEFAULT_SUPER_USER_COMMAND "su"
-
 SuProcess::SuProcess(const QCString &user, const QCString &command)
 {
     m_User = user;
@@ -148,10 +144,10 @@ int SuProcess::exec(const char *password, int check)
     SuErrors ret = (SuErrors) ConverseSU(password);
     // kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
 
-    if (ret == error) 
+    if (ret == error)
     {
         if (!check)
-            kdError(900) << k_lineinfo << "Conversation with su failed\n";
+            kdError(900) << k_lineinfo << "Conversation with " << superUserCommand << " failed\n";
         return ret;
     }
     if (check == NeedPassword)
@@ -238,7 +234,7 @@ int SuProcess::ConverseSU(const char *password)
     QCString line;
     while (true)
     {
-        line = readLine(); 
+        line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
         kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
@@ -287,7 +283,7 @@ int SuProcess::ConverseSU(const char *password)
                         return killme;
                     if (!checkPid(m_Pid))
                     {
-                        kdError(900) << "su has exited while waiting for pwd." << endl;
+                        kdError(900) << superUserCommand << " has exited while waiting for pwd." << endl;
                         return error;
                     }
                     if ((WaitSlave() == 0) && checkPid(m_Pid))
