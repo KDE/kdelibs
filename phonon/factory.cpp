@@ -63,7 +63,7 @@ class Factory::Private
 				// This code is in here temporarily until NMM gets fixed.
 				// Currently the NMM backend will fail with undefined symbols if
 				// the backend is not loaded with global symbol resolution
-				KLibrary* library = KLibLoader::self()->globalLibrary( QFile::encodeName( ptr->library() ) );
+				KLibrary* library = KLibLoader::self()->library( QFile::encodeName( ptr->library() ), QLibrary::ExportExternalSymbolsHint );
 				if( library )
 					factory = library->factory();
 #else
