@@ -544,6 +544,7 @@ void ByteStreamTest::initOutput()
 	{
 		m_audioPath = new AudioPath( this );
 		m_audioOutput = new AudioOutput( Phonon::MusicCategory, this );
+		m_audioOutput->setVolume( 0.0f );
 		m_audioPath->addOutput( m_audioOutput );
 	}
 	qDebug() << "m_media->addAudioPath()";

@@ -470,6 +470,7 @@ void MediaObjectTest::initOutput()
 	// AudioPath and AudioOutput are needed else the backend might finish in no time
 	AudioPath* audioPath = new AudioPath( this );
 	AudioOutput* audioOutput = new AudioOutput( Phonon::MusicCategory, this );
+	audioOutput->setVolume( 0.0f );
 	audioPath->addOutput( audioOutput );
 	m_media->addAudioPath( audioPath );
 }
