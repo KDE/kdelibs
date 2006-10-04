@@ -42,6 +42,13 @@ static void set_protection( pid_t pid, int enable )
 {
    char buf[ 1024 ];
    sprintf( buf, "/proc/%d/oom_adj", pid );
+   if( !enable ) {
+       /* Be paranoid and check that the pid we got from the pipe
+          belongs to this user. */
+       struct stat st;
+       if( lstat( buf, &st ) < 0 || st.st_uid != getuid())
+           return;
+   }
    int procfile = open( buf, O_WRONLY );
    if( procfile >= 0 ) {
       if( enable )
@@ -63,6 +70,8 @@ int main(int argc, char **argv)
       perror( "pipe()" );
       return 1;
    }
+   if( argc > 1000 )
+       abort(); /* paranoid */
    set_protection( getpid(), 1 );
    switch( fork()) {
       case -1:
