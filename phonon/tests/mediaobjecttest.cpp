@@ -357,9 +357,20 @@ void MediaObjectTest::testTickSignal()
 				// before the tick signal
 				// so: s2 <= s1
 
+				// allow +/-350ms inaccuracy
+				const int inaccuracy = 350;
+
 				QVERIFY( tickTime <= m_media->currentTime() );
-				QVERIFY( s1 >= tickTime );
-				QVERIFY( s2 <= tickTime );
+				QVERIFY( s1 + inaccuracy >= tickTime );
+				QVERIFY( s2 - inaccuracy <= tickTime );
+				/*
+				if( s1 + inaccuracy < tickTime )
+					QWARN( qPrintable( QString( "tickTime %1 is greater than %2 - %3, the time that elapsed since before playback was started" )
+								.arg( tickTime ).arg( s1 + inaccuracy ).arg( inaccuracy ) ) );
+				if( s2 - inaccuracy > tickTime )
+					QWARN( qPrintable( QString( "tickTime %1 is less than %2 + %3, the time that elapsed since after playback was started" )
+								.arg( tickTime ).arg( s2 - inaccuracy ).arg( inaccuracy ) ) );
+				*/
 				QVERIFY( s1 >= lastCount * m_media->tickInterval() );
 				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
 					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
