@@ -41,7 +41,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kxmlguifactory.h>
 
 #include <stdio.h>
@@ -360,8 +360,11 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     QString extension;
     if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
         extension = '.'+ext; // keep the '.'
-    KTempFile tempFile( QString::null, extension );
-    m_file = tempFile.name();
+    KTemporaryFile tempFile;
+    tempFile.setSuffix(extension);
+    tempFile.setAutoRemove(false);
+    tempFile.open();
+    m_file = tempFile.fileName();
 
     KUrl destURL;
     destURL.setPath( m_file );
@@ -602,8 +605,10 @@ void ReadWritePart::prepareSaving()
     // We haven't saved yet, or we did but locally - provide a temp file
     if ( m_file.isEmpty() || !m_bTemp )
     {
-      KTempFile tempFile;
-      m_file = tempFile.name();
+      KTemporaryFile tempFile;
+      tempFile.setAutoRemove(false);
+      tempFile.open();
+      m_file = tempFile.fileName();
       m_bTemp = true;
     }
     // otherwise, we already had a temp file
@@ -632,11 +637,12 @@ bool ReadWritePart::saveToUrl()
        d->m_uploadJob->kill();
        d->m_uploadJob = 0;
     }
-    KTempFile tempFile;
-    QString uploadFile = tempFile.name();
+    KTemporaryFile *tempFile = new KTemporaryFile();
+    tempFile->open();
+    QString uploadFile = tempFile->fileName();
+    delete tempFile;
     KUrl uploadUrl;
     uploadUrl.setPath( uploadFile );
-    tempFile.unlink();
     // Create hardlink
     if (::link(QFile::encodeName(m_file), QFile::encodeName(uploadFile)) != 0)
     {

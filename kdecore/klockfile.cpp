@@ -40,7 +40,7 @@
 #include "krandom.h"
 #include "kglobal.h"
 #include "kinstance.h"
-#include "ktempfile.h"
+#include "ktemporaryfile.h"
 #include "kde_file.h"
 
 // TODO: http://www.spinnaker.de/linux/nfs-locking.html
@@ -125,10 +125,11 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   if (result == 0)
      return KLockFile::LockFail;
 
-  KTempFile uniqueFile(lockFile, QString(), 0644);
-  uniqueFile.setAutoDelete(true);
-  if (uniqueFile.status() != 0)
+  KTemporaryFile uniqueFile;
+  uniqueFile.setPrefix(lockFile);
+  if (!uniqueFile.open())
      return KLockFile::LockError;
+  uniqueFile.setPermissions(QFile::ReadUser|QFile::WriteUser|QFile::ReadGroup|QFile::ReadOther);
 
   char hostname[256];
   hostname[0] = 0;
@@ -136,12 +137,13 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[255] = 0;
   QByteArray instanceName = KGlobal::instance()->instanceName();
 
-  (*(uniqueFile.textStream())) << QString::number(getpid()) << endl
+  QTextStream stream(&uniqueFile);
+  stream << QString::number(getpid()) << endl
       << instanceName << endl
       << hostname << endl;
-  uniqueFile.close();
+  stream.flush();
 
-  QByteArray uniqueName = QFile::encodeName( uniqueFile.name() );
+  QByteArray uniqueName = QFile::encodeName( uniqueFile.fileName() );
 
   // Create lock file
   result = ::link( uniqueName, lockFileName );
@@ -181,14 +183,14 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
    // the old stale one, let's be very careful
 
    // Create temp file
-   KTempFile ktmpFile(lockFile);
-   if (ktmpFile.status() != 0)
+   KTemporaryFile *ktmpFile = new KTemporaryFile();
+   ktmpFile->setPrefix(lockFile);
+   if (!ktmpFile->open())
       return KLockFile::LockError;
 
    QByteArray lckFile = QFile::encodeName(lockFile);
-   QByteArray tmpFile = QFile::encodeName(ktmpFile.name());
-   ktmpFile.close();
-   ktmpFile.unlink();
+   QByteArray tmpFile = QFile::encodeName(ktmpFile->fileName());
+   delete ktmpFile;
 
 #ifdef Q_OS_UNIX
    // link to lock file

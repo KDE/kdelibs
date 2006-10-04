@@ -37,7 +37,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kprocess.h>
 #include <klibloader.h>
 #include <ktoolinvocation.h>
@@ -292,20 +292,19 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
         return new DataProtocol();
 
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
-    KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
-    if ( socketfile.status() != 0 )
+    KTemporaryFile *socketfile = new KTemporaryFile();
+    socketfile->setPrefix(prefix);
+    socketfile->setSuffix(QLatin1String(".slave-socket"));
+    if ( !socketfile->open() )
     {
-	error_text = i18n("Unable to create io-slave: %1", strerror(errno));
-	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
-	return 0;
+        error_text = i18n("Unable to create io-slave: %1", strerror(errno));
+        error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+        delete socketfile;
+        return 0;
     }
 
-    QString sockname = socketfile.name();
-
-#ifdef __CYGWIN__
-   socketfile.close();
-#endif
-   socketfile.unlink(); // can't bind if there is such a file
+    QString sockname = socketfile->fileName();
+    delete socketfile; // can't bind if there is such a file
 
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
@@ -400,24 +399,26 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
         return 0;
 
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
-    KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
-    if ( socketfile.status() != 0 )
-	return 0;
+    KTemporaryFile *socketfile = new KTemporaryFile();
+    socketfile->setPrefix(prefix);
+    socketfile->setSuffix(QLatin1String(".slave-socket"));
+    if ( !socketfile->open() ) {
+        delete socketfile;
+        return 0;
+    }
 
-#ifdef __CYGWIN__
-   socketfile.close();
-   socketfile.unlink();
-#endif
+    QString sockname = socketfile->fileName();
+    delete socketfile; // can't bind if there is such a file
 
 #ifndef Q_WS_WIN
-    KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
+    KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
 
-    Slave *slave = new Slave(kss, protocol, socketfile.name());
+    Slave *slave = new Slave(kss, protocol, sockname);
 #else
     Slave *slave = 0;
 #endif
 
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), socketfile.name());
+    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), sockname);
     if (!reply.isValid()) {
         delete slave;
         return 0;

@@ -29,7 +29,7 @@
 #include <kglobal.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <ksavefile.h>
 
 #include <qtest_kde.h>
@@ -46,58 +46,60 @@ void test( const char *msg, bool result )
 
 void KSaveFileTest::test_numberedBackupFile()
 {
-    KTempFile f( "fred", QString(), 0600 );
+    KTemporaryFile f;
+    f.setPrefix("fred");
+    f.open();
 
-    test( "backup file", KSaveFile::backupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    test( "numbered backup", KSaveFile::numberedBackupFile( f.name() ) );
-    //test( "numbered backup", KSaveFile::numberedBackupFile( f.name(),5 ) );
+    test( "backup file", KSaveFile::backupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    //test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName(),5 ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName() ) );
+    //test( "numbered backup", KSaveFile::numberedBackupFile( f.fileName(),5 ) );
 
-    f.setAutoDelete( true );
     // TODO also clean up all the numbered backups!
 }
 
 void KSaveFileTest::test_rcsBackupFile()
 {
-    KTempFile f( "fred", QString(), 0600 );
+    KTemporaryFile f;
+    f.setPrefix("fred");
+    f.open();
 
-    test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
-    test( "rcs backup", KSaveFile::rcsBackupFile( f.name() ) );
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.fileName() ) );
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.fileName() ) );
 
-    QFile fl( f.name() );
+    QFile fl( f.fileName() );
     if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
         QTextStream out( &fl );
         out << "Testing a change\n";
         fl.close();
-        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString("/tmp"), "Testmsg" ) );
+        test( "rcs backup", KSaveFile::rcsBackupFile( f.fileName(), QString("/tmp"), "Testmsg" ) );
     }
-    test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString(), "BROKE IF YOU SEE ME IN /tmp" ) );
+    test( "rcs backup", KSaveFile::rcsBackupFile( f.fileName(), QString(), "BROKE IF YOU SEE ME IN /tmp" ) );
     if ( fl.open( QFile::WriteOnly | QFile::Truncate ) ) {
         QTextStream out( &fl );
         out << "Testing another change\n";
         fl.close();
-        test( "rcs backup", KSaveFile::rcsBackupFile( f.name(), QString("/tmp"), "Another Testmsg" ) );
+        test( "rcs backup", KSaveFile::rcsBackupFile( f.fileName(), QString("/tmp"), "Another Testmsg" ) );
     }
-    QFile::remove( f.name() + ",v" );
-    f.unlink();
+    QFile::remove( f.fileName() + ",v" );
 }
 
 

@@ -60,7 +60,7 @@
 #include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <kinputdialog.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include "khtml_factory.h"
 #include <kstdaction.h>
 #include <kactioncollection.h>
@@ -876,13 +876,13 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
             else
             {
                 // save to temp file, then move to final destination.
-                KTempFile destFile;
-                if (destFile.status() == 0)
+                KTemporaryFile destFile;
+                if (destFile.open())
                 {
-                    KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
-                    destFile.close();
+                    QDataStream stream ( &destFile );
+                    KHTMLPageCache::self()->saveData(cacheId, &stream);
                     KUrl url2 = KUrl();
-                    url2.setPath(destFile.name());
+                    url2.setPath(destFile.fileName());
                     KIO::file_move(url2, destURL, -1, true /*overwrite*/);
                     saved = true;
                 }

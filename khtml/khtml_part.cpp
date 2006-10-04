@@ -88,7 +88,7 @@ using namespace DOM;
 #include <kstdaction.h>
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
@@ -4001,12 +4001,15 @@ void KHTMLPart::slotViewDocumentSource()
   bool isTempFile = false;
   if (!(url.isLocalFile()) && KHTMLPageCache::self()->isComplete(d->m_cacheId))
   {
-     KTempFile sourceFile(QString::null, defaultExtension());
-     if (sourceFile.status() == 0)
+     KTemporaryFile sourceFile;
+     sourceFile.setSuffix(defaultExtension());
+     sourceFile.setAutoRemove(false);
+     if (sourceFile.open())
      {
-        KHTMLPageCache::self()->saveData(d->m_cacheId, sourceFile.dataStream());
+        QDataStream stream ( &sourceFile );
+        KHTMLPageCache::self()->saveData(d->m_cacheId, &stream);
         url = KUrl();
-        url.setPath(sourceFile.name());
+        url.setPath(sourceFile.fileName());
         isTempFile = true;
      }
   }
@@ -4086,10 +4089,13 @@ void KHTMLPart::slotViewFrameSource()
 
        if (KHTMLPageCache::self()->isComplete(cacheId))
        {
-          KTempFile sourceFile(QString::null, defaultExtension());
-           if (sourceFile.status() == 0)
+           KTemporaryFile sourceFile;
+           sourceFile.setSuffix(defaultExtension());
+           sourceFile.setAutoRemove(false);
+           if (sourceFile.open())
            {
-               KHTMLPageCache::self()->saveData(cacheId, sourceFile.dataStream());
+               QDataStream stream ( &sourceFile );
+               KHTMLPageCache::self()->saveData(cacheId, &stream);
                url = KUrl();
                url.setPath(sourceFile.name());
                isTempFile = true;

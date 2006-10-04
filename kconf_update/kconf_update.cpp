@@ -36,7 +36,7 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kinstance.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kurl.h>
 
 static KCmdLineOptions options[] =
@@ -777,22 +777,22 @@ void KonfUpdate::gotScript(const QString &_script)
       cmd += m_arguments;
    }
 
-   KTempFile tmp1;
-   tmp1.setAutoDelete(true);
-   KTempFile tmp2;
-   tmp2.setAutoDelete(true);
-   KTempFile tmp3;
-   tmp3.setAutoDelete(true);
+   KTemporaryFile tmp1;
+   tmp1.open();
+   KTemporaryFile tmp2;
+   tmp2.open();
+   KTemporaryFile tmp3;
+   tmp3.open();
 
    int result;
    if (oldConfig1)
    {
        if (debug)
        {
-           tmp1.setAutoDelete(false);
-           log() << "Script input stored in " << tmp1.name() << endl;
+           tmp1.setAutoRemove(false);
+           log() << "Script input stored in " << tmp1.fileName() << endl;
        }
-       KSimpleConfig cfg(tmp1.name());
+       KSimpleConfig cfg(tmp1.fileName());
 
        if (oldGroup.isEmpty())
        {
@@ -810,17 +810,17 @@ void KonfUpdate::gotScript(const QString &_script)
            copyGroup(oldConfig1, oldGroup, &cfg, QString());
        }
        cfg.sync();
-       result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.name(), tmp2.name(), tmp3.name())));
+       result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.fileName(), tmp2.fileName(), tmp3.fileName())));
    }
    else
    {
        // No config file
-       result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, tmp3.name())));
+       result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, tmp3.fileName())));
    }
 
    // Copy script stderr to log file
    {
-     QFile output(tmp3.name());
+     QFile output(tmp3.fileName());
      if (output.open(QIODevice::ReadOnly))
      {
        QTextStream ts( &output );
@@ -844,14 +844,14 @@ void KonfUpdate::gotScript(const QString &_script)
 
    if (debug)
    {
-      tmp2.setAutoDelete(false);
-      log() << "Script output stored in " << tmp2.name() << endl;
+      tmp2.setAutoRemove(false);
+      log() << "Script output stored in " << tmp2.fileName() << endl;
    }
 
    // Deleting old entries
    {
      QString group = oldGroup;
-     QFile output(tmp2.name());
+     QFile output(tmp2.fileName());
      if (output.open(QIODevice::ReadOnly))
      {
        QTextStream ts( &output );
@@ -908,7 +908,7 @@ void KonfUpdate::gotScript(const QString &_script)
      KConfig *saveOldConfig1 = oldConfig1;
      QString saveOldGroup = oldGroup;
      QString saveNewGroup = newGroup;
-     oldConfig1 = new KConfig(tmp2.name(), true, false);
+     oldConfig1 = new KConfig(tmp2.fileName(), true, false);
 
      // For all groups...
      QStringList grpList = oldConfig1->groupList();

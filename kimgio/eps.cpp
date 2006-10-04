@@ -7,7 +7,7 @@
 #include <qprinter.h>
 #include <QTextStream>
 #include <kapplication.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kdebug.h>
 #include "eps.h"
 
@@ -156,14 +156,11 @@ bool EPSHandler::read(QImage *image)
         return false;
     }
 
-    KTempFile tmpFile;
-    tmpFile.setAutoDelete(true);
-
-    if( tmpFile.status() != 0 ) {
+    KTemporaryFile tmpFile;
+    if( !tmpFile.open() ) {
         kError(399) << "kimgio EPS: no temp file!" << endl;
         return false;
     }
-    tmpFile.close(); // Close the file, we just want the filename
 
     // x1, y1 -> translation
     // x2, y2 -> new size
@@ -179,7 +176,7 @@ bool EPSHandler::read(QImage *image)
     // create GS command line
 
     cmdBuf = "gs -sOutputFile=";
-    cmdBuf += tmpFile.name();
+    cmdBuf += tmpFile.fileName();
     cmdBuf += " -q -g";
     tmp.setNum( wantedWidth );
     cmdBuf += tmp;
@@ -222,7 +219,7 @@ bool EPSHandler::read(QImage *image)
     pclose ( ghostfd );
 
     // load image
-    if( image->load (tmpFile.name()) ) {
+    if( image->load (tmpFile.fileName()) ) {
         kDebug(399) << "kimgio EPS: success!" << endl;
         //kDebug(399) << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
         return true;
@@ -245,13 +242,12 @@ bool EPSHandler::write(const QImage &image)
       psOut.setOutputFileName( "untitled_printer_document" );
 
     // Extension must be .eps so that Qt generates EPS file
-    KTempFile tmpFile(QString::null, ".eps");
-    tmpFile.setAutoDelete(true);
-    if ( tmpFile.status() != 0)
+    KTemporaryFile tmpFile;
+    tmpFile.setSuffix(".eps");
+    if ( !tmpFile.open() )
         return false;
-    tmpFile.close(); // Close the file, we just want the filename
 
-    psOut.setOutputFileName(tmpFile.name());
+    psOut.setOutputFileName(tmpFile.fileName());
     psOut.setFullPage(true);
 
     // painting the pixmap to the "printer" which is a file
@@ -262,7 +258,7 @@ bool EPSHandler::write(const QImage &image)
     p.end();
 
     // Copy file to imageio struct
-    QFile inFile(tmpFile.name());
+    QFile inFile(tmpFile.fileName());
     inFile.open( QIODevice::ReadOnly );
 
     QTextStream in( &inFile );

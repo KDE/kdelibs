@@ -35,7 +35,7 @@
 
 #include <kapplication.h>
 #include <klocale.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
@@ -69,8 +69,10 @@ bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
 
   if (target.isEmpty())
   {
-      KTempFile tmpFile;
-      target = tmpFile.name();
+      KTemporaryFile tmpFile;
+      tmpFile.setAutoRemove(false);
+      tmpFile.open();
+      target = tmpFile.fileName();
       if (!tmpfiles)
           tmpfiles = new QStringList;
       tmpfiles->append(target);
@@ -325,14 +327,14 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
 {
   QString target, remoteTempFileName, resultData;
   KUrl tempPathUrl;
-  KTempFile tmpFile;
-  tmpFile.setAutoDelete( true );
+  KTemporaryFile tmpFile;
+  tmpFile.open();
 
   if( url.protocol() == "fish" )
   {
     // construct remote temp filename
     tempPathUrl = url;
-    remoteTempFileName = tmpFile.name();
+    remoteTempFileName = tmpFile.fileName();
     // only need the filename KTempFile adds some KDE specific dirs
     // that probably does not exist on the remote side
     int pos = remoteTempFileName.lastIndexOf('/');

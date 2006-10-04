@@ -37,7 +37,7 @@
 
 #include <kcodecs.h>
 #include <kstringhandler.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kdebug.h>
 #include <ktimezones.h>
 
@@ -1286,10 +1286,9 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
         d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
         QStringList fileList = d.entryList();
 
-        KTempFile temp;
-        QFile f;
-        f.setFileName(temp.name());
-        if (!f.open(QIODevice::WriteOnly|QIODevice::Truncate))
+        KTemporaryFile f;
+        f.setAutoRemove(false);
+        if (!f.open())
         {
             kError() << "Could not open/create temp file for writing" << endl;
             return false;
@@ -1326,7 +1325,7 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
             zoneFile.close();
         }
         f.close();
-        if (!f.open(QIODevice::ReadOnly))
+        if (!f.open())
         {
             kError() << "Could not reopen temp file for reading." << endl;
             return false;

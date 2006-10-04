@@ -73,7 +73,7 @@
 #include <kurl.h>
 #include <kinstance.h>
 #include <ksimpleconfig.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <klocale.h>
 #include <qfile.h>
 #include "file.h"
@@ -1443,8 +1443,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 #else
 
 
-    KTempFile tmpFile;
-    QByteArray tmpFileName = QFile::encodeName(tmpFile.name());
+    KTemporaryFile tmpFile;
+    tmpFile.setAutoRemove(false);
+    tmpFile.open();
+    QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
     QByteArray dev;
     if ( _dev.startsWith( "LABEL=" ) ) { // turn LABEL=foo into -L foo (#71430)
         QString labelName = _dev.mid( 6 );
@@ -1552,8 +1554,10 @@ void FileProtocol::unmount( const QString& _point )
 {
     QByteArray buffer;
 
-    KTempFile tmpFile;
-    QByteArray tmpFileName = QFile::encodeName(tmpFile.name());
+    KTemporaryFile tmpFile;
+    tmpFile.setAutoRemove(false);
+    tmpFile.open();
+    QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
     QString err;
 
 #ifdef HAVE_VOLMGT
@@ -1654,7 +1658,7 @@ void FileProtocol::unmount( const QString& _point )
 
     err = testLogFile( tmpFileName );
     if ( err.isEmpty() )
-	finished();
+        finished();
     else
         error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 }

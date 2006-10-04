@@ -20,7 +20,7 @@
 #include "smbview.h"
 
 #include <kprocess.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <q3header.h>
 #include <qapplication.h>
 #include <QTextStream>
@@ -75,16 +75,14 @@ void SmbView::setLoginInfos(const QString& login, const QString& password)
 	// Therefor we write the password to a file and pass that file to
 	// smbclient with the -A option
 	delete m_passwdFile;
-	m_passwdFile = new KTempFile;
-	m_passwdFile->setAutoDelete(true);
+	m_passwdFile = new KTemporaryFile;
+	if (!m_passwdFile->open()) return; // Error
 
-	QTextStream *passwdFile = m_passwdFile->textStream();
-	if (!passwdFile) return; // Error
-	(*passwdFile) << "username = " << m_login << endl;
-	(*passwdFile) << "password = " << m_password << endl;
-	// (*passwdFile) << "domain = " << ???? << endl;
-
-	m_passwdFile->close();
+	QTextStream passwdFile ( m_passwdFile );
+	passwdFile << "username = " << m_login << endl;
+	passwdFile << "password = " << m_password << endl;
+	// passwdFile << "domain = " << ???? << endl;
+	passwdFile.flush();
 }
 
 void SmbView::startProcess(int state)
@@ -183,7 +181,7 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
                         *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
                         *m_proc << KProcess::quote(item->text(0));
 			*m_proc << " -A ";
-                        *m_proc << KProcess::quote(m_passwdFile->name());
+                        *m_proc << KProcess::quote(m_passwdFile->fileName());
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
@@ -206,7 +204,7 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 			{
 				*m_proc << " -A ";
 				*m_proc << KProcess::
-					quote (m_passwdFile->name ());
+					quote (m_passwdFile->fileName ());
 			}
 			startProcess(ShareListing);
 		}

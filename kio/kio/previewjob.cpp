@@ -42,7 +42,7 @@
 
 #include <kfileitem.h>
 #include <kapplication.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kservicetypetrader.h>
 #include <kcodecs.h>
 #include <kglobal.h>
@@ -407,9 +407,11 @@ void PreviewJob::getOrCreateThumbnail()
     else
     {
         d->state = PreviewJobPrivate::STATE_GETORIG;
-        KTempFile localFile;
+        KTemporaryFile localFile;
+        localFile.setAutoRemove(false);
+        localFile.open();
         KUrl localURL;
-        localURL.setPath( d->tempName = localFile.name() );
+        localURL.setPath( d->tempName = localFile.fileName() );
         const KUrl currentURL = item->url();
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
                                          false, false /* No GUI */ );
@@ -489,11 +491,14 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         thumb.setText("Thumb::Size", number(d->currentItem.item->size()));
         thumb.setText("Thumb::Mimetype", d->currentItem.item->mimetype());
         thumb.setText("Software", "KDE Thumbnail Generator");
-        KTempFile temp(d->thumbPath + "kde-tmp-", ".png");
-        if (temp.status() == 0) //Only try to write out the thumbnail if we
-        {                       //actually created the temp file.
-            thumb.save(temp.name(), "PNG");
-            rename(QFile::encodeName(temp.name()), QFile::encodeName(d->thumbPath + d->thumbName));
+        KTemporaryFile temp;
+        temp.setPrefix(d->thumbPath + "kde-tmp-");
+        temp.setSuffix(".png");
+        temp.setAutoRemove(false);
+        if (temp.open()) //Only try to write out the thumbnail if we
+        {                //actually created the temp file.
+            thumb.save(temp.fileName(), "PNG");
+            rename(QFile::encodeName(temp.fileName()), QFile::encodeName(d->thumbPath + d->thumbName));
         }
     }
     emitPreview( thumb );

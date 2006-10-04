@@ -26,7 +26,7 @@
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <qfile.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kmessagebox.h>
 #include <kparts/componentfactory.h>
 #include <kparts/genericfactory.h>
@@ -134,7 +134,7 @@ KMultiPart::~KMultiPart()
     delete m_job;
     delete m_lineParser;
     if ( m_tempFile ) {
-        m_tempFile->setAutoDelete( true );
+        m_tempFile->setAutoRemove( true );
         delete m_tempFile;
     }
     delete m_filter;
@@ -433,7 +433,7 @@ void KMultiPart::startOfData()
 
     m_nextMimeType.clear();
     if ( m_tempFile ) {
-        m_tempFile->setAutoDelete( true );
+        m_tempFile->setAutoRemove( true );
         delete m_tempFile;
         m_tempFile = 0;
     }
@@ -445,7 +445,8 @@ void KMultiPart::startOfData()
     else
     {
         // ###### TODO use a QByteArray and a data: URL instead
-        m_tempFile = new KTempFile;
+        m_tempFile = new KTemporaryFile;
+        m_tempFile->open();
     }
 }
 
@@ -470,7 +471,7 @@ void KMultiPart::reallySendData( const QByteArray& line )
     }
     else if ( m_tempFile )
     {
-        m_tempFile->file()->write( line.data(), line.size() );
+        m_tempFile->write( line.data(), line.size() );
     }
 }
 
@@ -490,13 +491,13 @@ void KMultiPart::endOfData()
             // Otherwise we'd keep canceling it, and nothing would ever show up...
             kDebug() << "KMultiPart::endOfData part isn't ready, skipping frame" << endl;
             ++m_numberOfFramesSkipped;
-            m_tempFile->setAutoDelete( true );
+            m_tempFile->setAutoRemove( true );
         }
         else
         {
-            kDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
+            kDebug() << "KMultiPart::endOfData opening " << m_tempFile->fileName() << endl;
             KUrl url;
-            url.setPath( m_tempFile->name() );
+            url.setPath( m_tempFile->fileName() );
             m_partIsLoading = true;
             (void) m_part->openUrl( url );
         }

@@ -36,7 +36,7 @@
 #include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 
 #include <qapplication.h>
 #include <qclipboard.h>
@@ -86,12 +86,14 @@ static KUrl getNewFileName( const KUrl &u, const QString& text )
 // The finaly step: write _data to tempfile and move it to newUrl
 static KIO::CopyJob* pasteDataAsyncTo( const KUrl& newUrl, const QByteArray& _data )
 {
-     KTempFile tempFile;
-     tempFile.dataStream()->writeRawData( _data.data(), _data.size() );
-     tempFile.close();
+     KTemporaryFile tempFile;
+     tempFile.setAutoRemove(false);
+     tempFile.open();
+     tempFile.write( _data.data(), _data.size() );
+     tempFile.flush();
 
      KUrl origUrl;
-     origUrl.setPath(tempFile.name());
+     origUrl.setPath(tempFile.fileName());
 
      return KIO::move( origUrl, newUrl );
 }
@@ -251,12 +253,12 @@ KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget*
     if (newUrl.isEmpty())
        return;
 
-    KTempFile tempFile;
-    tempFile.setAutoDelete( true );
-    tempFile.dataStream()->writeRawData( _data.data(), _data.size() );
-    tempFile.close();
+    KTemporaryFile tempFile;
+    tempFile.open();
+    tempFile.write( _data.data(), _data.size() );
+    tempFile.flush();
 
-    (void) KIO::NetAccess::upload( tempFile.name(), newUrl, widget );
+    (void) KIO::NetAccess::upload( tempFile.fileName(), newUrl, widget );
 }
 
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, const QString& text )

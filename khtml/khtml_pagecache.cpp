@@ -21,7 +21,7 @@
 #include "khtml_pagecache.h"
 
 #include <kstaticdeleter.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kstandarddirs.h>
 
 #include <q3intdict.h>
@@ -58,7 +58,7 @@ private:
   long m_id;
   bool m_complete;
   QList<QByteArray> m_data;
-  KTempFile *m_file;
+  KTemporaryFile *m_file;
 };
 
 class KHTMLPageCachePrivate
@@ -73,9 +73,9 @@ public:
 
 KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_complete(false)
 {
-  QString path = KStandardDirs::locateLocal("tmp", "khtmlcache");
-  m_file = new KTempFile(path);
-  m_file->unlink();
+  m_file = new KTemporaryFile();
+  m_file->setPrefix("khtmlcache");
+  m_file->open();
 }
 
 KHTMLPageCacheEntry::~KHTMLPageCacheEntry()
@@ -87,17 +87,18 @@ KHTMLPageCacheEntry::~KHTMLPageCacheEntry()
 void
 KHTMLPageCacheEntry::addData(const QByteArray &data)
 {
-  if (m_file->status() == 0)
-     m_file->dataStream()->writeRawData(data.data(), data.size());
+  if (m_file->error() == QFile::NoError) {
+    m_file->write(data.data(), data.size());
+  }
 }
 
 void
 KHTMLPageCacheEntry::endData()
 {
   m_complete = true;
-  if ( m_file->status() == 0) {
-    m_file->file()->flush();
-    m_file->dataStream()->device()->seek(0);
+  if (m_file->error() == QFile::NoError) {
+    m_file->flush();
+    m_file->seek(0);
   }
 }
 

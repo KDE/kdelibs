@@ -30,7 +30,7 @@
 
 #include <qmap.h>
 
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kdebug.h>
 
 #include "kvmallocator.h"
@@ -50,7 +50,7 @@ struct KVMAllocator::Block
 class KVMAllocatorPrivate
 {
 public:
-   KTempFile *tempfile;
+   KTemporaryFile *tempfile;
    off_t max_length;
    QMap<off_t, KVMAllocator::Block> used_blocks;
    QMap<off_t, KVMAllocator::Block> free_blocks;
@@ -84,8 +84,9 @@ KVMAllocator::allocate(size_t _size)
 {
    if (!d->tempfile)
    {
-      d->tempfile = new KTempFile(QString(), "vmdata");
-      d->tempfile->unlink();
+      d->tempfile = new KTemporaryFile();
+      d->tempfile->setSuffix("vmdata");
+      d->tempfile->open();
    }
    // Search in free list
    QMap<off_t,KVMAllocator::Block>::iterator it;

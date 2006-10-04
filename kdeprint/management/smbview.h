@@ -23,7 +23,7 @@
 #include <k3listview.h>
 
 class KProcess;
-class KTempFile;
+class KTemporaryFile;
 
 class SmbView : public K3ListView
 {
@@ -60,7 +60,7 @@ private:
 	KProcess	*m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;
-	KTempFile	*m_passwdFile;
+	KTemporaryFile	*m_passwdFile;
 	QString		m_wins_server;
 };
 

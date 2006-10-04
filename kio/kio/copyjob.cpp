@@ -39,7 +39,7 @@
 #include "kio/observer.h"
 
 #include <kdirnotify.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -1427,10 +1427,12 @@ void CopyJob::slotResultRenaming( KJob* job )
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
             QByteArray _src( QFile::encodeName(m_currentSrcURL.path()) );
             QByteArray _dest( QFile::encodeName(dest.path()) );
-            KTempFile tmpFile( m_currentSrcURL.directory(KUrl::ObeyTrailingSlash) );
-            QByteArray _tmp( QFile::encodeName(tmpFile.name()) );
-            kDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
-            tmpFile.unlink();
+            KTemporaryFile tmpFile;
+            tmpFile.setPrefix(m_currentSrcURL.directory(KUrl::ObeyTrailingSlash));
+            tmpFile.setAutoRemove(false);
+            tmpFile.open();
+            QByteArray _tmp( QFile::encodeName(tmpFile.fileName()) );
+            kDebug(7007) << "CopyJob::slotResult KTemporaryFile using " << _tmp << " as intermediary" << endl;
             if ( ::rename( _src, _tmp ) == 0 )
             {
                 if ( !QFile::exists( _dest ) && ::rename( _tmp, _dest ) == 0 )
@@ -1442,7 +1444,7 @@ void CopyJob::slotResultRenaming( KJob* job )
                 {
                     // Revert back to original name!
                     if ( ::rename( _tmp, _src ) != 0 ) {
-                        kError(7007) << "Couldn't rename " << tmpFile.name() << " back to " << _src << " !" << endl;
+                        kError(7007) << "Couldn't rename " << tmpFile.fileName() << " back to " << _src << " !" << endl;
                         // Severe error, abort
                         Job::slotResult( job ); // will set the error and emit result(this)
                         return;

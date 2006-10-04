@@ -37,7 +37,7 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kurl.h>
 
 #include "kio/global.h"
@@ -172,18 +172,21 @@ KLauncher::KLauncher(int _kdeinitSocket)
            SLOT(slotNameOwnerChanged(QString,QString,QString)));
 
    QString prefix = KStandardDirs::locateLocal("socket", "klauncher");
-   KTempFile domainname(prefix, QLatin1String(".slave-socket"));
-   if (domainname.status() != 0)
+   KTemporaryFile *domainname = new KTemporaryFile();
+   domainname->setPrefix(prefix);
+   domainname->setSuffix(QLatin1String(".slave-socket"));
+   domainname->setAutoRemove(false);
+   if (!domainname->open())
    {
       // Sever error!
       qDebug("KLauncher: Fatal error, can't create tempfile!");
       ::_exit(1);
    }
-   mPoolSocketName = domainname.name();
+   mPoolSocketName = domainname->fileName();
 #ifdef __CYGWIN__
-   domainname.close();
-   domainname.unlink();
+   domainname->setAutoRemove(true);
 #endif
+   delete domainname;
 
    mPoolSocket.setAddress(QFile::encodeName(mPoolSocketName));
    mPoolSocket.setAcceptBuffered(false); // we use KStreamSockets

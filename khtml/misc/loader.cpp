@@ -75,7 +75,7 @@
 #ifdef IMAGE_TITLES
 #include <qfile.h>
 #include <kfilemetainfo.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #endif
 
 #include "html/html_documentimpl.h"
@@ -1197,11 +1197,11 @@ void Loader::slotFinished( KJob* job )
           static_cast<CachedImage*>( r->object )->setSuggestedFilename(fn);
 #ifdef IMAGE_TITLES
           static_cast<CachedImage*>( r->object )->setSuggestedTitle(fn);
-          KTempFile tf;
-          tf.setAutoDelete(true);
-          tf.file()->write((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
-          tf.sync();
-          KFileMetaInfo kfmi(tf.name());
+          KTemporaryFile tf;
+          tf.open();
+          tf.write((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
+          tf.flush();
+          KFileMetaInfo kfmi(tf.fileName());
           if (!kfmi.isEmpty()) {
               KFileMetaInfoItem i = kfmi.item("Name");
               if (i.isValid()) {

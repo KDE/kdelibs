@@ -26,7 +26,7 @@
 #include <kprocess.h>
 #include <kstringhandler.h>
 #include <kmimetypetrader.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <assert.h>
@@ -226,9 +226,12 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
-                KTempFile tempFile( QString::null, extension );
+                KTemporaryFile tempFile;
+                tempFile.setSuffix(extension);
+                tempFile.setAutoRemove(false);
+                tempFile.open();
                 KUrl destURL;
-                destURL.setPath( tempFile.name() );
+                destURL.setPath( tempFile.fileName() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
                 job->ui()->setWindow (m_window);
                 connect( job, SIGNAL( result( KJob *)),
