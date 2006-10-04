@@ -95,9 +95,7 @@ void MediaObject::setUrl( const KUrl& url )
 		stop(); // first call stop as that often is the expected state
 		                    // for setting a new URL
 		INTERFACE_CALL1( setUrl, url );
-		//FIXME: the stateChanged signal will be emitted. Perhaps it should be
-		//disabled for the setUrl call and then replayed when it didn't go into
-		//ErrorState
+		//the stateChanged signal will be filtered in _k_stateChanged.
 		if( state() == Phonon::ErrorState )
 		{
 			d->deleteIface();
@@ -158,6 +156,13 @@ void MediaObjectPrivate::_k_setupKioJob()
 				q, SLOT(_k_bytestreamFileJobOpen(KIO::Job*)) );
 		QObject::connect( kiojob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
 				q, SLOT(_k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t)) );
+
+		if( !readTimer )
+		{
+			readTimer = new QTimer( q );
+			readTimer->setInterval( 0 );
+			QObject::connect( readTimer, SIGNAL( timeout() ), q, SLOT( _k_readTimerTimeout() ) );
+		}
 	}
 
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
@@ -193,15 +198,6 @@ void MediaObjectPrivate::setupKioStreaming()
 
 		//setupIface for AbstractMediaProducer
 		static_cast<AbstractMediaProducer*>( q )->setupIface();
-
-		// start streaming data to the Backend until it signals enoughData
-		if( !readTimer )
-		{
-			readTimer = new QTimer( q );
-			readTimer->setInterval( 0 );
-			QObject::connect( readTimer, SIGNAL( timeout() ), q, SLOT( _k_readTimerTimeout() ) );
-		}
-		readTimer->start();
 	}
 }
 
@@ -320,6 +316,9 @@ void MediaObjectPrivate::_k_bytestreamFileJobOpen( KIO::Job* )
 	KIO::FileJob *filejob = static_cast<KIO::FileJob*>( kiojob );
 	kDebug( 600 ) << k_funcinfo << filejob->size() << endl;
 	pBACKEND_CALL1( "setStreamSize", qint64, filejob->size() );
+
+	// start streaming data to the Backend until it signals enoughData
+	readTimer->start();
 }
 
 void MediaObjectPrivate::_k_bytestreamTotalSize( KJob*, qulonglong size )
@@ -344,6 +343,17 @@ bool MediaObjectPrivate::aboutToDeleteIface()
 	return AbstractMediaProducerPrivate::aboutToDeleteIface();
 }
 
+void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State oldstate )
+{
+	if( newstate == Phonon::ErrorState && oldstate == Phonon::LoadingState )
+	{
+		// setup ByteStream -> see setUrl
+		return;
+	}
+	K_Q( MediaObject );
+	emit q->stateChanged( newstate, oldstate );
+}
+
 // setupIface is not called for ByteStream
 void MediaObject::setupIface()
 {
@@ -351,6 +361,11 @@ void MediaObject::setupIface()
 	Q_ASSERT( d->backendObject );
 	//kDebug( 600 ) << k_funcinfo << endl;
 	AbstractMediaProducer::setupIface();
+
+	// disconnect what AbstractMediaProducer::setupIface connected to filter out
+	// the LoadingState -> ErrorState change on setUrl
+	disconnect( d->backendObject, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ), this, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
+	connect( d->backendObject, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ), SLOT( _k_stateChanged( Phonon::State, Phonon::State ) ) );
 
 	connect( d->backendObject, SIGNAL( finished() ), SIGNAL( finished() ) );
 	connect( d->backendObject, SIGNAL( aboutToFinish( qint32 ) ), SIGNAL( aboutToFinish( qint32 ) ) );

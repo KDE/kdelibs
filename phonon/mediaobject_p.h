@@ -71,6 +71,7 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		void _k_bytestreamFileJobOpen(KIO::Job*);
 		void _k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t);
 		void _k_readTimerTimeout();
+		void _k_stateChanged( Phonon::State, Phonon::State );
 
 		KUrl url;
 		qint32 aboutToFinishTime;
