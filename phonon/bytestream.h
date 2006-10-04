@@ -193,6 +193,14 @@ namespace Phonon
 			 * until the end is not known early enough. Never rely on the
 			 * aboutToFinishTime you set, but use the \p msec parameter instead.
 			 *
+			 * \warning Sometimes the media framework has no idea when the
+			 * stream will end and only knows it when it has finished. For
+			 * example, for an Ogg Vorbis stream which is not seekable the
+			 * backend can only estimate the length of the stream by looking at
+			 * the average bitrate and size of the stream, which can make a big
+			 * difference some times. So especially when the stream is not
+			 * seekable you cannot expect this signal to be of any use.
+			 *
 			 * \param msec The time in milliseconds until the stream finishes.
 			 */
 			void aboutToFinish( qint32 msec );
