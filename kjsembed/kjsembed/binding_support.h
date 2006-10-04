@@ -282,7 +282,7 @@ namespace KJSEmbed
             return defaultValue;
 
 // deal with MSVC annoyances
-#if COMPILER(MSVC)
+#if COMPILER(MSVC) || (__GNUC__ == 3 && __GNUC_MINOR__ == 4) 
         return static_cast<T>(static_cast<int>(value->toInteger(exec)));
 #else
         return static_cast<T>(value->toInteger(exec));
