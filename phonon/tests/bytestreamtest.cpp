@@ -449,11 +449,11 @@ void ByteStreamTest::testTickSignal()
 			QCoreApplication::processEvents();
 		}
 		stopPlayback( Phonon::PlayingState );
+		initByteStream();
+		initOutput();
+		setMedia();
 		tickSpy.clear();
 	}
-	initByteStream();
-	initOutput();
-	setMedia();
 }
 
 void ByteStreamTest::addPaths()
