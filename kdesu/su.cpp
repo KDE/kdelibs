@@ -51,6 +51,7 @@
 #endif
 
 //change to sudo or su according to your preferences
+//also change in process.cpp and kdebase/kdesu/kdesu/sudlg.cpp
 #define DEFAULT_SUPER_USER_COMMAND "su"
 
 SuProcess::SuProcess(const QCString &user, const QCString &command)

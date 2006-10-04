@@ -56,6 +56,10 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
+//change to sudo or su according to your preferences
+//also change in su.cpp and kdebase/kdesu/kdesu/sudlg.cpp
+#define DEFAULT_SUPER_USER_COMMAND "su"
+
 int PtyProcess::waitMS(int fd,int ms)
 {
 	struct timeval tv;
@@ -76,7 +80,7 @@ bool PtyProcess::checkPid(pid_t pid)
 {
 	KConfig* config = KGlobal::config();
 	config->setGroup("super-user-command");
-	QString superUserCommand = config->readEntry("super-user-command", "su");
+	QString superUserCommand = config->readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 	//sudo does not accept signals from user so we except it
 	if (superUserCommand == "sudo") {
 		return true;
