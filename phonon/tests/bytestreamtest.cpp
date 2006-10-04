@@ -17,13 +17,13 @@
 
 */
 
-#include "mediaobjecttest.h"
+#include "bytestreamtest.h"
 #include <cstdlib>
 #include <qtest_kde.h>
 #include <QTime>
 #include <QtDebug>
-#include <phonon/audiopath.h>
 #include <phonon/videopath.h>
+#include <kio/job.h>
 
 using namespace Phonon;
 
@@ -39,7 +39,7 @@ static const qint32 castQVariantToInt32( const QVariant& variant )
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
 
-void MediaObjectTest::startPlayback()
+void ByteStreamTest::startPlayback()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
@@ -66,7 +66,7 @@ void MediaObjectTest::startPlayback()
 	QCOMPARE( m_media->state(), Phonon::PlayingState );
 }
 
-void MediaObjectTest::stopPlayback( Phonon::State currentState )
+void ByteStreamTest::stopPlayback( Phonon::State currentState )
 {
 	m_media->stop();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
@@ -78,7 +78,7 @@ void MediaObjectTest::stopPlayback( Phonon::State currentState )
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void MediaObjectTest::pausePlayback( Phonon::State currentState )
+void ByteStreamTest::pausePlayback( Phonon::State currentState )
 {
 	m_media->pause();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
@@ -90,7 +90,7 @@ void MediaObjectTest::pausePlayback( Phonon::State currentState )
 	QCOMPARE( m_media->state(), Phonon::PausedState );
 }
 
-void MediaObjectTest::initTestCase()
+void ByteStreamTest::initTestCase()
 {
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
 	qRegisterMetaType<qint32>( "qint32" );
@@ -99,28 +99,75 @@ void MediaObjectTest::initTestCase()
 	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
 	if( !m_url.isValid() )
 		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
-	m_media = new MediaObject( this );
+
+	initByteStream();
+}
+
+void ByteStreamTest::initByteStream()
+{
+	delete m_media;
+	delete m_stateChangedSignalSpy;
+	m_media = new ByteStream( this );
+	m_media->setStreamSeekable( false );
 	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	QVERIFY( m_stateChangedSignalSpy->isValid() );
 	m_stateChangedSignalSpy->clear();
 }
 
-void MediaObjectTest::setMedia()
+void ByteStreamTest::kioTotalSize(KJob*,qulonglong size)
+{
+	m_media->setStreamSize( size );
+}
+
+void ByteStreamTest::kioData(KIO::Job*,const QByteArray& data)
+{
+	m_media->writeData( data );
+}
+
+void ByteStreamTest::kioResult(KJob*)
+{
+	m_media->endOfData();
+}
+
+void ByteStreamTest::setMedia()
 {
 	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( qint64 ) ) );
-	QVERIFY( m_media->url().isEmpty() );
 	QCOMPARE( m_media->state(), Phonon::LoadingState );
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	m_media->setUrl( m_url );
-	QCOMPARE( m_url, m_media->url() );
+
+	if( m_job )
+	{
+		disconnect( m_job, SIGNAL(data(KIO::Job*,const QByteArray&)),
+				this, SLOT(kioData(KIO::Job*,const QByteArray&)) );
+		disconnect( m_job, SIGNAL(result(KJob*)),
+				this, SLOT(kioResult(KJob*)) );
+		disconnect( m_job, SIGNAL(totalSize(KJob*, qulonglong)),
+				this, SLOT(kioTotalSize(KJob*,qulonglong)) );
+		m_job->kill();
+	}
+
+	m_job = KIO::get( m_url, false, false );
+	m_job->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
+	connect( m_job, SIGNAL(data(KIO::Job*,const QByteArray&)),
+			this, SLOT(kioData(KIO::Job*,const QByteArray&)) );
+	connect( m_job, SIGNAL(result(KJob*)),
+			this, SLOT(kioResult(KJob*)) );
+	connect( m_job, SIGNAL(totalSize(KJob*, qulonglong)),
+			this, SLOT(kioTotalSize(KJob*,qulonglong)) );
+
 	int emits = m_stateChangedSignalSpy->count();
 	Phonon::State s = m_media->state();
 	if( s == Phonon::LoadingState )
 	{
 		// still in LoadingState, there should be no state change
 		QCOMPARE( emits, 0 );
+		QTime startTime;
+		startTime.start();
 		while( m_stateChangedSignalSpy->count() == 0 )
+		{
 			QCoreApplication::processEvents();
+			QVERIFY( startTime.elapsed() < 30 * 1000 ); // give it 30 seconds to leave LoadingState
+		}
 		emits = m_stateChangedSignalSpy->count();
 		s = m_media->state();
 	}
@@ -135,7 +182,7 @@ void MediaObjectTest::setMedia()
 		QCOMPARE( Phonon::LoadingState, oldstate );
 		QCOMPARE( s, newstate );
 		if( Phonon::ErrorState == s )
-			QFAIL( "Loading the URL put the MediaObject into the ErrorState. Check that PHONON_TESTURL is set to a valid URL." );
+			QFAIL( "Loading the data put the ByteStream into the ErrorState. Check that PHONON_TESTURL is set to a valid URL." );
 		QCOMPARE( Phonon::StoppedState, s );
 		QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 
@@ -150,13 +197,13 @@ void MediaObjectTest::setMedia()
 	}
 }
 
-void MediaObjectTest::checkForDefaults()
+void ByteStreamTest::checkForDefaults()
 {
 	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
 	QCOMPARE( m_media->aboutToFinishTime(), qint32( 0 ) );
 }
 
-void MediaObjectTest::stopToStop()
+void ByteStreamTest::stopToStop()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
@@ -165,7 +212,7 @@ void MediaObjectTest::stopToStop()
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void MediaObjectTest::stopToPause()
+void ByteStreamTest::stopToPause()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
@@ -174,13 +221,16 @@ void MediaObjectTest::stopToPause()
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void MediaObjectTest::stopToPlay()
+void ByteStreamTest::stopToPlay()
 {
 	startPlayback();
 	stopPlayback( Phonon::PlayingState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::playToPlay()
+void ByteStreamTest::playToPlay()
 {
 	startPlayback();
 
@@ -189,22 +239,31 @@ void MediaObjectTest::playToPlay()
 	QCOMPARE( m_media->state(), Phonon::PlayingState );
 
 	stopPlayback( Phonon::PlayingState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::playToPause()
+void ByteStreamTest::playToPause()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
 	stopPlayback( Phonon::PausedState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::playToStop()
+void ByteStreamTest::playToStop()
 {
 	startPlayback();
 	stopPlayback( Phonon::PlayingState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::pauseToPause()
+void ByteStreamTest::pauseToPause()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
@@ -214,9 +273,12 @@ void MediaObjectTest::pauseToPause()
 	QCOMPARE( m_media->state(), Phonon::PausedState );
 
 	stopPlayback( Phonon::PausedState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::pauseToPlay()
+void ByteStreamTest::pauseToPlay()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
@@ -231,21 +293,27 @@ void MediaObjectTest::pauseToPlay()
 	QCOMPARE( m_media->state(), Phonon::PlayingState );
 
 	stopPlayback( Phonon::PlayingState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::pauseToStop()
+void ByteStreamTest::pauseToStop()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
 	stopPlayback( Phonon::PausedState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::testSeek()
+void ByteStreamTest::testSeek()
 {
 	startPlayback();
 	qint64 c = m_media->currentTime();
 	qint64 r = m_media->remainingTime();
-	if( m_media->seekable() )
+	if( m_media->isSeekable() )
 		if( r > 0 )
 		{
 			qint64 s = c + r/2;
@@ -280,21 +348,24 @@ void MediaObjectTest::testSeek()
 			return;
 		}
 		else
-			QWARN( "didn't test seeking as the MediaObject reported a remaining size <= 0" );
+			QWARN( "didn't test seeking as the ByteStream reported a remaining size <= 0" );
 	else
-		QWARN( "didn't test seeking as the MediaObject is not seekable" );
+		QWARN( "didn't test seeking as the ByteStream is not seekable" );
 	stopPlayback( Phonon::PlayingState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::testAboutToFinish()
+void ByteStreamTest::testAboutToFinish()
 {
 	m_media->setAboutToFinishTime( 500 );
 	QCOMPARE( m_media->aboutToFinishTime(), qint32( 500 ) );
 	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( qint32 ) ) );
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
-	if( m_media->seekable() )
-		m_media->seek( m_media->totalTime() - 1000 );
+	if( m_media->isSeekable() )
+		m_media->seek( m_media->totalTime() - 2000 );
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
@@ -302,7 +373,7 @@ void MediaObjectTest::testAboutToFinish()
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
 	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
-	QVERIFY( aboutToFinishTime <= 500 );
+	QVERIFY( aboutToFinishTime <= 650 ); // allow it to be up to 150ms too early
 	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
 	{
 		QVERIFY( r <= aboutToFinishTime );
@@ -322,9 +393,12 @@ void MediaObjectTest::testAboutToFinish()
 	QCOMPARE( oldstate, Phonon::PlayingState );
 	QCOMPARE( newstate, Phonon::StoppedState );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::testTickSignal()
+void ByteStreamTest::testTickSignal()
 {
 	QSignalSpy tickSpy( m_media, SIGNAL( tick( qint64 ) ) );
 	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
@@ -352,9 +426,20 @@ void MediaObjectTest::testTickSignal()
 				// before the tick signal
 				// so: s2 <= s1
 
+				// allow +/-350ms inaccuracy
+				const int inaccuracy = 350;
+
 				QVERIFY( tickTime <= m_media->currentTime() );
-				QVERIFY( s1 >= tickTime );
-				QVERIFY( s2 <= tickTime );
+				QVERIFY( s1 + inaccuracy >= tickTime );
+				QVERIFY( s2 - inaccuracy <= tickTime );
+				/*
+				if( s1 + inaccuracy < tickTime )
+					QWARN( qPrintable( QString( "tickTime %1 is greater than %2 - %3, the time that elapsed since before playback was started" )
+								.arg( tickTime ).arg( s1 + inaccuracy ).arg( inaccuracy ) ) );
+				if( s2 - inaccuracy > tickTime )
+					QWARN( qPrintable( QString( "tickTime %1 is less than %2 + %3, the time that elapsed since after playback was started" )
+								.arg( tickTime ).arg( s2 - inaccuracy ).arg( inaccuracy ) ) );
+				*/
 				QVERIFY( s1 >= lastCount * m_media->tickInterval() );
 				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
 					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
@@ -366,9 +451,12 @@ void MediaObjectTest::testTickSignal()
 		stopPlayback( Phonon::PlayingState );
 		tickSpy.clear();
 	}
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
-void MediaObjectTest::addPaths()
+void ByteStreamTest::addPaths()
 {
 	AudioPath *a1 = new AudioPath( this );
 	AudioPath *a2 = new AudioPath( this );
@@ -408,6 +496,9 @@ void MediaObjectTest::addPaths()
 	}
 	else
 		QWARN( "backend does not allow usage of more than one AudioPath" );
+	delete a1;
+	QCOMPARE( m_media->audioPaths().size(), 0 );
+	a1 = 0;
 
 	m_media->addVideoPath( v1 );
 	QCOMPARE( m_media->videoPaths().size(), 1 ); // one should always work
@@ -441,14 +532,30 @@ void MediaObjectTest::addPaths()
 	}
 	else
 		QWARN( "backend does not allow usage of more than one VideoPath" );
+	delete v1;
+	QCOMPARE( m_media->videoPaths().size(), 0 );
+	v1 = 0;
 }
 
-void MediaObjectTest::cleanupTestCase()
+void ByteStreamTest::initOutput()
+{
+	// AudioPath and AudioOutput are needed else the backend might finish in no time
+	if( !m_audioPath && !m_audioOutput )
+	{
+		m_audioPath = new AudioPath( this );
+		m_audioOutput = new AudioOutput( Phonon::MusicCategory, this );
+		m_audioPath->addOutput( m_audioOutput );
+	}
+	qDebug() << "m_media->addAudioPath()";
+	m_media->addAudioPath( m_audioPath );
+}
+
+void ByteStreamTest::cleanupTestCase()
 {
 	delete m_stateChangedSignalSpy;
 	delete m_media;
 }
 
-QTEST_KDEMAIN( MediaObjectTest, NoGUI )
-#include "mediaobjecttest.moc"
+QTEST_KDEMAIN( ByteStreamTest, NoGUI )
+#include "bytestreamtest.moc"
 // vim: sw=4 ts=4 noet

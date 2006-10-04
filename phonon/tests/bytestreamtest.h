@@ -22,17 +22,31 @@
 
 #include <QObject>
 #include <kurl.h>
-#include <phonon/mediaobject.h>
+#include <phonon/bytestream.h>
+#include <phonon/audiopath.h>
+#include <phonon/audiooutput.h>
 #include <QtTest/QSignalSpy>
+#include <kio/jobclasses.h>
 
-class MediaObjectTest : public QObject
+class ByteStreamTest : public QObject
 {
 	Q_OBJECT
+	public:
+		ByteStreamTest()
+			: m_job( 0 ),
+			m_media( 0 ),
+			m_stateChangedSignalSpy( 0 ),
+			m_audioPath( 0 ),
+			m_audioOutput( 0 )
+		{}
 
 	private Q_SLOTS:
 		void initTestCase();
 		void setMedia();
 		void checkForDefaults();
+
+		void addPaths();
+		void initOutput();
 
 		// state change tests
 		void stopToStop();
@@ -49,18 +63,25 @@ class MediaObjectTest : public QObject
 		void testAboutToFinish();
 		void testTickSignal();
 
-		void addPaths();
-
 		void cleanupTestCase();
 
+		void kioTotalSize(KJob*,qulonglong size);
+		void kioData(KIO::Job*,const QByteArray&);
+		void kioResult(KJob*);
+
 	private:
+		void initByteStream();
+
 		void startPlayback();
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
 
 		KUrl m_url;
-		Phonon::MediaObject* m_media;
+		KIO::TransferJob* m_job;
+		Phonon::ByteStream* m_media;
 		QSignalSpy* m_stateChangedSignalSpy;
+		Phonon::AudioPath* m_audioPath;
+		Phonon::AudioOutput* m_audioOutput;
 };
 
 // vim: sw=4 ts=4
