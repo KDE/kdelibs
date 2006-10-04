@@ -78,7 +78,7 @@
 
 #if KDE_IS_VERSION( 3, 90, 0 )
 #ifdef __GNUC__
-#warning Check if Linux OOM-killer still sucks and if yes, forwardport revision 579164.
+#warning Check if Linux OOM-killer still sucks and if yes, forwardport revision 579164 and following fixes.
 #endif
 #endif
 
