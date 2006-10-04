@@ -23,6 +23,7 @@
 #include "mediaobjectinterface.h"
 
 #include <kdebug.h>
+#include <QCoreApplication>
 
 #define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME MediaObjectInterface
@@ -120,7 +121,7 @@ void MediaObject::stop()
 	// {
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( d->backendObject );
 	if (bs)
-		d->setupKioJob();
+		d->_k_setupKioJob();
 	// }
 }
 
@@ -131,7 +132,7 @@ void MediaObject::play()
 
 PHONON_SETTER( setAboutToFinishTime, aboutToFinishTime, qint32 )
 
-void MediaObjectPrivate::setupKioJob()
+void MediaObjectPrivate::_k_setupKioJob()
 {
 	K_Q( MediaObject );
 	Q_ASSERT( backendObject );
@@ -139,15 +140,31 @@ void MediaObjectPrivate::setupKioJob()
 	if( kiojob )
 		kiojob->kill();
 
-	kiojob = KIO::get( url, false, false );
+	kiojob = KIO::open( url, 1 /*ReadOnly*/ );
+	if( !kiojob )
+	{
+		kiojob = KIO::get( url, false, false );
+		if( !kiojob )
+			return;
+		pBACKEND_CALL1( "setStreamSeekable", bool, false );
+		QObject::connect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
+				q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
+	}
+	else
+	{
+		//pBACKEND_CALL1( "setStreamSeekable", bool, false );
+		pBACKEND_CALL1( "setStreamSeekable", bool, true );
+		QObject::connect( kiojob, SIGNAL(open(KIO::Job*)),
+				q, SLOT(_k_bytestreamFileJobOpen(KIO::Job*)) );
+		QObject::connect( kiojob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+				q, SLOT(_k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t)) );
+	}
+
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 	QObject::connect( kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
 			q, SLOT(_k_bytestreamData(KIO::Job*,const QByteArray&)) );
 	QObject::connect( kiojob, SIGNAL(result(KJob*)),
 			q, SLOT(_k_bytestreamResult(KJob*)) );
-	QObject::connect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
-			q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
-
 }
 
 void MediaObjectPrivate::setupKioStreaming()
@@ -158,37 +175,117 @@ void MediaObjectPrivate::setupKioStreaming()
 	if( backendObject )
 	{
 		QObject::connect( backendObject, SIGNAL( destroyed( QObject* ) ), q, SLOT( _k_cleanupByteStream() ) );
-		setupKioJob();
-		static_cast<AbstractMediaProducer*>( q )->setupIface();
+		_k_setupKioJob();
+		endOfDataSent = false;
 
 		//setupIface for ByteStream
 		QObject::connect( backendObject, SIGNAL(finished()), q, SIGNAL(finished()) );
-		QObject::connect( backendObject, SIGNAL(finished()), q, SLOT(setupKioJob()) );
+		QObject::connect( backendObject, SIGNAL(finished()), q, SLOT(_k_setupKioJob()) );
 		QObject::connect( backendObject, SIGNAL(aboutToFinish(qint32)), q, SIGNAL(aboutToFinish(qint32)) );
 		QObject::connect( backendObject, SIGNAL(length(qint64)), q, SIGNAL(length(qint64)) );
 
 		QObject::connect( backendObject, SIGNAL(needData()), q, SLOT(_k_bytestreamNeedData()) );
 		QObject::connect( backendObject, SIGNAL(enoughData()), q, SLOT(_k_bytestreamEnoughData()) );
 
-		pBACKEND_CALL1( "setStreamSeekable", bool, false ); //FIXME: KIO doesn't support seeking at this point
-		//connect( backendObject, SIGNAL(seekStream(qint64)), kiojob, SLOT(
+		QObject::connect( backendObject, SIGNAL(seekStream(qint64)), q, SLOT(_k_bytestreamSeekStream(qint64)) );
+
+		//TODO handle redirection ...
+
+		//setupIface for AbstractMediaProducer
+		static_cast<AbstractMediaProducer*>( q )->setupIface();
+
+		// start streaming data to the Backend until it signals enoughData
+		if( !readTimer )
+		{
+			readTimer = new QTimer( q );
+			readTimer->setInterval( 0 );
+			QObject::connect( readTimer, SIGNAL( timeout() ), q, SLOT( _k_readTimerTimeout() ) );
+		}
+		readTimer->start();
 	}
+}
+
+void MediaObjectPrivate::_k_bytestreamSeekStream( qint64 position )
+{
+	kDebug( 600 ) << k_funcinfo << position << " = " << qulonglong( position ) << endl;
+	KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>( kiojob );
+	seeking = true;
+	readTimer->stop();
+
+	// don't suspend when seeking as that will make the application hang,
+	// waiting for the FileJob::position signal
+	if( kiojob->isSuspended() )
+		kiojob->resume();
+
+	filejob->seek( position );
+	// seek doesn't block, so don't send data to the backend until it signals us
+	// that the seek is done
+}
+
+void MediaObjectPrivate::_k_bytestreamSeekDone( KIO::Job*, KIO::filesize_t offset )
+{
+	kDebug( 600 ) << k_funcinfo << offset << endl;
+	seeking = false;
+	endOfDataSent = false;
+	readTimer->start();
 }
 
 void MediaObjectPrivate::_k_bytestreamNeedData()
 {
+	// while seeking the backend won't get any data
+	if( seeking )
+		return;
+
 	if( kiojob && kiojob->isSuspended() )
 		kiojob->resume();
+	KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>( kiojob );
+	if( filejob )
+	{
+		filejob->read( 4096 );
+		readTimer->start();
+	}
+}
+
+void MediaObjectPrivate::_k_readTimerTimeout()
+{
+	kDebug( 600 ) << k_funcinfo << endl;
+	KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>( kiojob );
+	if( filejob )
+		filejob->read( 4096 );
 }
 
 void MediaObjectPrivate::_k_bytestreamEnoughData()
 {
-	if( kiojob && !kiojob->isSuspended() )
+	kDebug( 600 ) << k_funcinfo << endl;
+	// don't suspend when seeking as that will make the application hang,
+	// waiting for the FileJob::position signal
+	if( !seeking && kiojob && !kiojob->isSuspended() )
 		kiojob->suspend();
+	readTimer->stop();
 }
 
 void MediaObjectPrivate::_k_bytestreamData( KIO::Job*, const QByteArray& data )
 {
+	if( seeking )
+	{
+		kDebug( 600 ) << k_funcinfo << "seeking: do nothing" << endl;
+		return;
+	}
+	if( data.isEmpty() )
+	{
+		if( readTimer )
+			readTimer->stop();
+		if( !endOfDataSent )
+		{
+			kDebug( 600 ) << k_funcinfo << "empty data: stopping the stream" << endl;
+			endOfDataSent = true;
+			ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
+			bs->endOfData();
+		}
+		return;
+	}
+
+	kDebug( 600 ) << k_funcinfo << "calling writeData on the Backend ByteStream " << data.size() << endl;
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
 	bs->writeData( data );
 }
@@ -206,16 +303,29 @@ void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 			q, SLOT(_k_bytestreamResult(KJob*)) );
 		QObject::disconnect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
 			q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
+		QObject::disconnect( kiojob, SIGNAL(open(KIO::Job*)),
+				q, SLOT(_k_bytestreamFileJobOpen(KIO::Job*)) );
 	}
 
+	endOfDataSent = true;
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
 	bs->endOfData();
+	if( readTimer )
+		readTimer->stop();
+}
 
+void MediaObjectPrivate::_k_bytestreamFileJobOpen( KIO::Job* )
+{
+	endOfDataSent = false;
+	KIO::FileJob *filejob = static_cast<KIO::FileJob*>( kiojob );
+	kDebug( 600 ) << k_funcinfo << filejob->size() << endl;
+	pBACKEND_CALL1( "setStreamSize", qint64, filejob->size() );
 }
 
 void MediaObjectPrivate::_k_bytestreamTotalSize( KJob*, qulonglong size )
 {
-	pBACKEND_CALL1( "setStreamSize", quint64, size );
+	kDebug( 600 ) << k_funcinfo << size << endl;
+	pBACKEND_CALL1( "setStreamSize", qint64, size );
 }
 
 void MediaObjectPrivate::_k_cleanupByteStream()
