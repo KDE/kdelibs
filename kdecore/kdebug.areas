@@ -49,9 +49,7 @@
 400        artskde
 500        kdeprint
 600        phonon (core)
-601        phonon (core iface)
 602        phonon (ui)
-603        phonon (ui iface)
 604        phonon (fake backend)
 610        phonon (xine backend)
 700        kutils (KSettings::Dialog)
