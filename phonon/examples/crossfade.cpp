@@ -21,6 +21,7 @@
 #include <phonon/mediaqueue.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
+#include <phonon/ui/seekslider.h>
 #include <kurl.h>
 #include <QTimer>
 #include <kaboutdata.h>
@@ -39,6 +40,10 @@ Crossfader::Crossfader( const KUrl& url1, const KUrl& url2, QObject* parent )
 	media->setUrl( url1 );
 	media->setNextUrl( url2 );
 	connect( media, SIGNAL( finished() ), SLOT( finished() ) );
+	SeekSlider* slider = new SeekSlider();
+	slider->setMediaProducer( media );
+	slider->resize( 1000, 50 );
+	slider->show();
 	media->play();
 	media->seek( media->totalTime() * 97 / 100 );
 	//QTimer::singleShot( 0, media, SLOT( play() ) );
