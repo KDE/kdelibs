@@ -2290,7 +2290,7 @@ ValueImp *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Ident
       }
     }
   } else {
-    kdWarning(6070) << "Missing own document in FrameArray::get()" << endl;
+    kWarning(6070) << "Missing own document in FrameArray::get()" << endl;
   }
   return Undefined();
 }
