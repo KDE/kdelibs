@@ -143,7 +143,6 @@ set(kdecore_LIB_SRCS
    kglobal.cpp
    kglobalsettings.cpp
    kallocator.cpp
-   kvmallocator.cpp
    kmimesourcefactory.cpp
    kinstance.cpp
    kpalette.cpp
@@ -328,7 +327,6 @@ install( FILES
    kglobalsettings.h
    ksharedptr.h
    kallocator.h
-   kvmallocator.h
    kcrash.h
    krfcdate.h
    kinstance.h
