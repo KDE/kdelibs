@@ -647,7 +647,7 @@ function write_binding_new( compound )
 
 
 //    println ( "compoundIncludes: " + compoundIncludes );
-    includes += '#include "' + compound.name + '_bind.h"\n';
+    includes += '#include "' + compound.filebase + '_bind.h"\n';
     includes += '#include <' + compoundIncludes + '>\n';
     includes += '#include <object_binding.h>\n';
     if (compound.isVariant)
@@ -690,7 +690,7 @@ function write_binding_new( compound )
 
 
     // Write everything
-    var fileName = output_dir + compound.name + '_bind.cpp';
+    var fileName = output_dir + compound.filebase + '_bind.cpp';
     var bindingFile = new File( fileName );
     if( !bindingFile.open( File.WriteOnly ) )
         throw "Unable to open output binding, " + fileName;
@@ -699,7 +699,7 @@ function write_binding_new( compound )
     for (var i in compound.externalBindings)
     {
         println('    ' + i);
-        includes += '#include "' + i + '_bind.h"\n';
+        includes += '#include "' + i.replace(/::/g, '_') + '_bind.h"\n';
         includes += '#include <' + i + '>\n'; 
     }
 

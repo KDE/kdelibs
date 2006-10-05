@@ -45,6 +45,9 @@ void printUsage(QString appName)
                           << "Options:" << endl
                           << "    -e, --exec            execute script without gui support." << endl 
                           << "    -i, --interactive     start interactive kjs interpreter." << endl
+#ifndef QT_ONLY
+                          << "    -n, --no-kde          start without KDE KApplication support." << endl
+#endif
                           << endl;
 }
 
@@ -52,6 +55,12 @@ void printUsage(QString appName)
 
 static KCmdLineOptions options[] =
 {
+    {"e", I18N_NOOP("Execute script without gui support"), 0 },
+    {"exec", I18N_NOOP("Execute script without gui support"), 0 },
+    {"i", I18N_NOOP("start interactive kjs interpreter"), 0 },
+    {"interactive", I18N_NOOP("start interactive kjs interpreter"), 0 },
+    {"n", I18N_NOOP("start without KDE KApplication support."), 0 },
+    {"no-kde", I18N_NOOP("start without KDE KApplication support."), 0 },
     { "!+command", I18N_NOOP("Script to execute"), 0 },
     KCmdLineLastOption
 };
@@ -135,7 +144,7 @@ int main( int argc, char **argv )
     QCoreApplication *app;
 
 #ifndef QT_ONLY
-    if (kde && gui)
+    if (kde)
     {
         KAboutData aboutData( "kjscmd", I18N_NOOP("KJSCmd"), "0.2",
             I18N_NOOP(""
@@ -146,7 +155,7 @@ int main( int argc, char **argv )
         KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
         KCmdLineArgs::init( argc, argv, &aboutData );
 
-        app = new KApplication();
+        app = new KApplication(gui);
     }
     else
 #endif
@@ -161,7 +170,7 @@ int main( int argc, char **argv )
 	qDebug("no GUI");
         app = new QCoreApplication(argc, argv);
     }
-    qDebug(" New QApplication %dms", time.elapsed());
+    qDebug(" New %s %dms", app->metaObject()->className(), time.elapsed());
 
     app->setApplicationName( appName );
     

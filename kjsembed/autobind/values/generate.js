@@ -48,6 +48,9 @@ function process_class_info( classDoc )
     // Stores the name the compound object binding will be known by
     compound.binding = compound.name + "Binding";
 
+    // Stores the filename the compound binding will be stored as
+    compound.filebase = compound.name.replace(/::/g, '_');
+
     // Stores a list of elements that define all the members of the object.
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
@@ -126,7 +129,9 @@ for( x = 0; x < nodeList.length(); ++x )
 {
     var compoundElement = nodeList.item(x).toElement();
     var compoundKind = compoundElement.attribute('kind');
-    if (( compoundKind == 'class' ) || (compoundKind == 'namespace'))
+    if (( compoundKind == 'class' ) ||
+	( compoundKind == 'struct' ) ||
+	( compoundKind == 'namespace' ))
     {
         var classRootElement = process_class( compoundElement );
         var compoundDef = classRootElement.firstChildElement('compounddef').toElement();
@@ -164,7 +169,7 @@ for( x = 0; x < nodeList.length(); ++x )
     var compound_elem =  nodeList.item(x).toElement();
     var kind = compound_elem.attribute( 'kind' );
 
-    if ( kind == 'class' )
+    if ( ( kind == 'class' ) || ( kind == 'struct' ))
     {
         var classRootElement = process_class( compound_elem );
         process_class_info( classRootElement );

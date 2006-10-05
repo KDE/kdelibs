@@ -67,7 +67,7 @@ function write_header( compound )
         '}\n' +
         '#endif // BIND_' + compound.name + '_H\n\n';
 
-    var fileName = output_dir + compound.name + '_bind.h';
+    var fileName = output_dir + compound.filebase + '_bind.h';
     header = new File( fileName );
 
     if( !header.open( File.WriteOnly ) )
