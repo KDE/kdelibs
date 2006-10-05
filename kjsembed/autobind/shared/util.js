@@ -88,8 +88,8 @@ var data_types = {
      "qreal" : 5, "float" : 5, "qint8" : 6, "quint8" : 6, "qint16" : 6, "quint16" : 6, 
      "qint32" : 6, "quint32" : 6, "qint64" : 6, "quint64" : 6, 
      "qulonglong" : 6,
-     "char" : 6, "uchar" : 6, "ushort" : 6, "ulong" : 6
-    
+     "char" : 6, "uchar" : 6, "ushort" : 6, "ulong" : 6, 
+    "short" : 6, "long" : 6, 
 };
 
 // function isVariant( paramType )
@@ -161,9 +161,9 @@ function isCompoundEnum( paramType, compoundEnums )
 //   paramType - The parameter type to check (preferably sans embellishments).
 //   compoundEnums - Associative array of enum types to containing objects
 // Returns true if the paramType is any known enum type.
-function isEnum( paramType, compoundEnums )
+function isEnum( paramType, globalEnums, compoundEnums )
 {
-    return ((paramType.indexOf('Qt::') != -1) || // it is a Qt enum
-            (compoundEnums[paramType]));
+    return (globalEnums[paramType] || // it is a Qt enum
+            compoundEnums[paramType]);
 }
 

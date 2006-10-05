@@ -50,8 +50,20 @@ function extract_parameter( compound, param, paramIdx )
             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
     }
 */
-    else if ( isNumber(coreParamType) )  // integral value
+    else if ( isInteger(coreParamType) )  // integer value
     {
+	extracted +=
+	    '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
+        
+        if (!paramDefault.isNull()) 	 
+            extracted += ', ' + paramDefault.toString() + ');\n'; 	 
+        else 	 
+            extracted += ');\n'; 	 
+        
+        return extracted;    
+    }
+    else if ( isNumber(coreParamType) )  // integral value
+	{
         extracted +=
             '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
 
@@ -64,15 +76,25 @@ function extract_parameter( compound, param, paramIdx )
     }
     else if ( compound.enums[paramType] )  // Enum Value
     {
-        var enumHeading = "";
-        if (compound.enums[paramType] != 1)
-            enumHeading = compound.enums[paramType] + "::";
+        var enumHeading = compound.enums[paramType] + '::';
 
         extracted +=
             '       ' + enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + enumHeading + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
+    }
+    else if ( compound.globalEnums[paramType] )  // Enum Value
+    {
+        extracted +=
+            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + paramType + '>(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
         else
             extracted += ');\n';
 
@@ -167,13 +189,13 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
             if (isBool(coreParamType))
                 params += 'object'+argIdx+' && object'+argIdx+'->isBoolean()';
             else if ( isNumber(coreParamType) || 
-                      isEnum(coreParamType, compound.enums ) )
+                      isEnum(coreParamType, compound.globalEnums, compound.enums ) )
                 params += 'object'+argIdx+' && object'+argIdx+'->isNumber()';
             else if (coreParamType == 'QString' ||
                     contains(coreParamType, 'uchar') ||
                     contains(coreParamType, 'char'))
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
-            else //if(isVariant(paramType))
+            else 
             {
                 if (coreParamType != compound.name)
                     compound.externalBindings[coreParamType] = true;
@@ -344,7 +366,7 @@ function write_method( compound, memberName, overloadList )
             funcCallStart = 
                 'value.' + memberName + '(';
         }
-        else if (compound.enums[coreMethodType]) 
+        else if (compound.enums[coreMethodType]) // local scope enum value
         {
             funcCallStart +=
                 compound.enums[coreMethodType] + '::' + coreMethodType + ' tmp = value.' + memberName + '(';
@@ -355,10 +377,16 @@ function write_method( compound, memberName, overloadList )
         {
             funcCallStart +=
                 methodType + ' tmp = value.' + memberName + '(';
-            if ( coreMethodType.indexOf('Qt::') != -1 ) // Enum Value
+            if ( compound.globalEnums[coreMethodType] ||  // Enum Value
+		 isInteger(coreMethodType) )
             {
                 funcCallEnd += indent +
                     '        result = KJS::Number( tmp );\n';
+            }
+            else if (isBool(coreMethodType))
+            {
+                funcCallEnd += indent +
+                    '        result = KJS::Boolean( tmp );\n';
             }
             else if (isVariant(coreMethodType))
             {
@@ -607,6 +635,7 @@ function write_binding_new( compound )
     var ctor = '';
     var methodLut = '';
 
+    compound.enums = {};
     compound.externalBindings = {};
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
@@ -671,7 +700,7 @@ function write_binding_new( compound )
     {
         println('    ' + i);
         includes += '#include "' + i + '_bind.h"\n';
-        includes += '#include <' + i.toLowerCase() + '.h>\n'; 
+        includes += '#include <' + i + '>\n'; 
     }
 
     bindingFile.writeln( includes );

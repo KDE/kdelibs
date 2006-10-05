@@ -52,7 +52,7 @@ function process_class_info( classDoc )
     compound.memberList = compound.def.elementsByTagName( "memberdef" );
 
     // Store the cached enum types with our compound object.
-    compound.enums = enum_array;
+    compound.globalEnums = enum_array;
 
     // choose the bindings (TODO: Add ObjectBinding and QObjectBinding).
     if (isVariant( compound.name ))
@@ -126,7 +126,7 @@ for( x = 0; x < nodeList.length(); ++x )
 {
     var compoundElement = nodeList.item(x).toElement();
     var compoundKind = compoundElement.attribute('kind');
-    if ( compoundKind == 'class' )
+    if (( compoundKind == 'class' ) || (compoundKind == 'namespace'))
     {
         var classRootElement = process_class( compoundElement );
         var compoundDef = classRootElement.firstChildElement('compounddef').toElement();
@@ -140,8 +140,7 @@ for( x = 0; x < nodeList.length(); ++x )
             {
                 var enumName = memberElement.firstChildElement('name').toElement().toString();
                 var qualifiedEnum = compoundName + "::" + enumName;
-                enum_array[enumName] = compoundName;
-                enum_array[qualifiedEnum] = 1;
+                enum_array[qualifiedEnum] = true;
                 println("   Added enum " + qualifiedEnum);
  
 /*

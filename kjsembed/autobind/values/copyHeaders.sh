@@ -8,11 +8,11 @@ HEADERS="qbitarray.h   qbytearray.h  qcursor.h      qicon.h
          qpolygon.h    qregion.h     qstring.h      qbrush.h
          qcolor.h      qfont.h       qkeysequence.h qmatrix.h
          qpixmap.h     qrect.h       qsize.h        qtextformat.h
-         qmatrix.h"
+         qmatrix.h qnamespace.h qglobal.h"
 
 for header in $HEADERS
 do
-    cp $QTDIR/include/Qt/$header ./input
+    cp -Lv $QTDIR/include/Qt/$header ./input
 done
 
 
