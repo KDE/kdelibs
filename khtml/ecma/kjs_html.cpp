@@ -3475,8 +3475,9 @@ Value KJS::HTMLSelectCollectionProtoFunc::tryCall(ExecState *exec, Object &thisO
     break;
   }
   default:
-    return Undefined();
+    break;
   }
+  return Undefined();
 }
 
 
