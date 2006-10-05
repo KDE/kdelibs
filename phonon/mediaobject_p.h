@@ -44,7 +44,7 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		MediaObjectPrivate()
 			: aboutToFinishTime( 0 ),
 			kiojob( 0 ),
-			readTimer( 0 ),
+			reading( false ),
 			seeking( false ),
 			endOfDataSent( false )
 		{
@@ -70,13 +70,12 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		void _k_bytestreamSeekStream(qint64);
 		void _k_bytestreamFileJobOpen(KIO::Job*);
 		void _k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t);
-		void _k_readTimerTimeout();
 		void _k_stateChanged( Phonon::State, Phonon::State );
 
 		KUrl url;
 		qint32 aboutToFinishTime;
 		KIO::SimpleJob *kiojob;
-		QTimer *readTimer;
+		bool reading;
 		bool seeking;
 		bool endOfDataSent;
 };
