@@ -65,16 +65,12 @@ public:
 #define bAutoDelete d->_autoDelete
 };
 
-KTempDir::KTempDir(QString directoryPrefix, int mode) : d(new KTempDirPrivate)
+KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new KTempDirPrivate)
 {
    bAutoDelete = false;
    bExists = false;
    mError=0;
-   if (directoryPrefix.isEmpty())
-   {
-      directoryPrefix = KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName());
-   }
-   (void) create(directoryPrefix , mode);
+   (void) create( directoryPrefix.isEmpty() ? KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName()) : directoryPrefix , mode);
 }
 
 bool

@@ -168,7 +168,7 @@ write_all(int fd, const char *buf, size_t len)
 }
 
 static bool
-copy_all( int fd, KDE_struct_stat *buff, QString newName )
+copy_all( int fd, KDE_struct_stat *buff, const QString& newName )
 {
    QByteArray cNewName = QFile::encodeName( newName );
    const char *copyname = cNewName.data();

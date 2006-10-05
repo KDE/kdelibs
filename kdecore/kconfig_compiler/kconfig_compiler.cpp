@@ -344,7 +344,7 @@ static QString dumpNode(const QDomNode &node)
   return msg;
 }
 
-static QString filenameOnly(QString path)
+static QString filenameOnly(const QString& path)
 {
    int i = path.lastIndexOf(QRegExp("[/\\]"));
    if (i >= 0)
