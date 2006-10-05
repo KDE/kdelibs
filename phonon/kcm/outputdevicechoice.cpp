@@ -104,14 +104,21 @@ void OutputDeviceChoice::on_communicationNoPreferButton_clicked()
 
 void OutputDeviceChoice::updateButtonsEnabled()
 {
-	notificationPreferButton->setEnabled( notificationDeviceList->currentIndex().row() > 0 );
-	notificationNoPreferButton->setEnabled( notificationDeviceList->currentIndex().row() < m_notificationModel.rowCount() - 1 );
-	musicPreferButton->setEnabled( musicDeviceList->currentIndex().row() > 0 );
-	musicNoPreferButton->setEnabled( musicDeviceList->currentIndex().row() < m_musicModel.rowCount() - 1 );
-	videoPreferButton->setEnabled( videoDeviceList->currentIndex().row() > 0 );
-	videoNoPreferButton->setEnabled( videoDeviceList->currentIndex().row() < m_videoModel.rowCount() - 1 );
-	communicationPreferButton->setEnabled( communicationDeviceList->currentIndex().row() > 0 );
-	communicationNoPreferButton->setEnabled( communicationDeviceList->currentIndex().row() < m_communicationModel.rowCount() - 1 );
+	QModelIndex idx = notificationDeviceList->currentIndex();
+	notificationPreferButton->setEnabled( idx.isValid() && idx.row() > 0 );
+	notificationNoPreferButton->setEnabled( idx.isValid() && idx.row() < m_notificationModel.rowCount() - 1 );
+
+	idx = musicDeviceList->currentIndex();
+	musicPreferButton->setEnabled( idx.isValid() && idx.row() > 0 );
+	musicNoPreferButton->setEnabled( idx.isValid() && idx.row() < m_musicModel.rowCount() - 1 );
+
+	idx = videoDeviceList->currentIndex();
+	videoPreferButton->setEnabled( idx.isValid() && idx.row() > 0 );
+	videoNoPreferButton->setEnabled( idx.isValid() && idx.row() < m_videoModel.rowCount() - 1 );
+
+	idx = communicationDeviceList->currentIndex();
+	communicationPreferButton->setEnabled( idx.isValid() && idx.row() > 0 );
+	communicationNoPreferButton->setEnabled( idx.isValid() && idx.row() < m_communicationModel.rowCount() - 1 );
 }
 
 #include "outputdevicechoice.moc"
