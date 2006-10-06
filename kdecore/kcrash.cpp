@@ -264,7 +264,7 @@ KCrash::defaultCrashHandler (int sig)
             argv[i++] = sidtxt;
           }
 
-          if ( s_flags && SaferDialog )
+          if ( s_flags & SaferDialog )
             argv[i++] = "--safer";
 
           // NULL terminated list
