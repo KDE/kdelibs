@@ -161,7 +161,7 @@ char **xstrsep(char *str)
     while ((nptr = strchr(ptr, ',')) != 0L) 
     {
 	if (i > size-2)
-	    list = realloc(list, (size *= 2) * sizeof(char *));
+	    list = xrealloc(list, (size *= 2) * sizeof(char *));
 	*nptr = '\000';
 	list[i++] = ptr;
 	ptr = nptr+1;
