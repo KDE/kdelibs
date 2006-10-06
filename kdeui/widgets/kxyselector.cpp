@@ -56,6 +56,16 @@ KXYSelector::~KXYSelector()
 
 void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 {
+  if (_maxX == _minX) {
+     kWarning() << "KXYSelector::setRange invalid range: " << _maxX << " == " << _minX << " (for X) " << endl;
+     return;
+  }
+  if (_maxY == _minY) {
+     kWarning() << "KXYSelector::setRange invalid range: " << _maxY << " == " << _minY << " (for Y) " << endl;
+     return;
+  }
+
+
   int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
   px = w;
   py = w;
@@ -92,7 +102,10 @@ void KXYSelector::setValues( int _xPos, int _yPos )
   else if ( yPos < minY )
     yPos = minY;
 
+  Q_ASSERT(maxX != minX);
   int xp = w + (width() - 2 * w) * xPos / (maxX - minX);
+  
+  Q_ASSERT(maxY != minY);
   int yp = height() - w - (height() - 2 * w) * yPos / (maxY - minY);
 
   setPosition( xp, yp );
