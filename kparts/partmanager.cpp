@@ -287,8 +287,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     w = w->parentWidget();
 
-    if ( w && ( ( ( w->windowFlags() && Qt::Dialog ) && w->isModal() ) ||
-                ( w->windowFlags() && Qt::Popup ) || ( w->windowFlags() && Qt::Tool ) ) )
+    if ( w && ( ( ( w->windowFlags() & Qt::Dialog ) && w->isModal() ) ||
+                ( w->windowFlags() & Qt::Popup ) || ( w->windowFlags() & Qt::Tool ) ) )
     {
 #ifdef DEBUG_PARTMANAGER
       kDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
