@@ -269,10 +269,11 @@ KTimeZone::Phase::Phase(int utcOffset, const QList<QByteArray> &abbrevs,
 {
     for (int i = 0, end = abbrevs.count();  i < end;  ++i)
     {
+        if (i > 0)
+            d->abbreviations += '\0';
         d->abbreviations += abbrevs[i];
-        d->abbreviations += '\0';
     }
-    d->comment   = cmt;
+    d->comment = cmt;
 }
 
 KTimeZone::Phase::Phase(const KTimeZone::Phase &rhs)
