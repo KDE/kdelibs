@@ -28,10 +28,10 @@
 <varlistentry>
 <term><menuchoice>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Reportar Erro...</guimenuitem>
+<guimenuitem>Relatar Falha...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Abre a janela para Reportar Erros</action> onde pode 
-relatar um erro ou <quote>sugerir</quote> uma funcionalidade.</para></listitem>
+<listitem><para><action>Abre a janela para Reportar Falhas</action> onde você pode 
+relatar uma falha ou <quote>sugerir</quote> uma funcionalidade.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -39,7 +39,7 @@ relatar um erro ou <quote>sugerir</quote> uma funcionalidade.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Sobre o &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Isto irá mostrar a versão e as informações do autor.</action></para></listitem>
+<listitem><para><action>Isto irá mostrar a versão da aplicação e as informações do autor.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
