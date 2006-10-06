@@ -130,6 +130,7 @@ class QMenu;
 class KDEUI_EXPORT KDialog : public QDialog
 {
   Q_OBJECT
+  Q_ENUMS(ButtonCode)
 
   public:
 
