@@ -24,6 +24,7 @@
 
 #include <kdebug.h>
 #include <QCoreApplication>
+#include <kprotocolmanager.h>
 
 #define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME MediaObjectInterface
@@ -37,21 +38,20 @@ MediaObject::MediaObject( Phonon::MediaObjectPrivate& dd, QObject* parent )
 {
 }
 
-//PHONON_INTERFACE_GETTER( KUrl, url, d->url )
 KUrl MediaObject::url() const 
-{ 
-	K_D( const MediaObject ); 
-	if( d->backendObject ) 
+{
+	K_D( const MediaObject );
+	if( d->backendObject )
 	{
 		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
 		ByteStreamInterface *iface2 = qobject_cast<ByteStreamInterface*>( d->backendObject );
 
 		if( iface )
 			return iface->url();
-		else if( iface2 && d->kiojob)
+		else if( iface2 && d->kiojob )
 			return d->kiojob->url();
 	}
-	return KUrl(""); 
+	return KUrl();
 }
 
 PHONON_GETTER( qint32, aboutToFinishTime, d->aboutToFinishTime )
@@ -94,16 +94,27 @@ void MediaObject::setUrl( const KUrl& url )
 	{
 		stop(); // first call stop as that often is the expected state
 		                    // for setting a new URL
-		INTERFACE_CALL1( setUrl, url );
-		//the stateChanged signal will be filtered in _k_stateChanged.
-		if( state() == Phonon::ErrorState )
+		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
+		if( iface )
 		{
-			d->deleteIface();
-			//at this point MediaObject uses a ByteStream
-			//instead and sends the data it receives from the KIO Job via writeBuffer.
-			//This essentially makes all media frameworks read data via KIO...
-			d->setupKioStreaming();
+			iface->setUrl( url );
+			//the stateChanged signal will be filtered in _k_stateChanged.
+			if( state() == Phonon::ErrorState )
+			{
+				d->deleteIface();
+				//at this point MediaObject uses a ByteStream
+				//instead and sends the data it receives from the KIO Job via writeBuffer.
+				//This essentially makes all media frameworks read data via KIO...
+				d->setupKioStreaming();
+			}
+			return;
 		}
+
+		// we're using a ByteStream
+		// first try to do with a proper MediaObject
+		d->deleteIface();
+		d->createIface();
+		// createIface will set up a ByteStream if needed
 	}
 }
 
@@ -138,24 +149,28 @@ void MediaObjectPrivate::_k_setupKioJob()
 	if( kiojob )
 		kiojob->kill();
 
-	kiojob = KIO::open( url, 1 /*ReadOnly*/ );
-	if( !kiojob )
+	if( KProtocolManager::supportsOpening( url ) )
 	{
-		kiojob = KIO::get( url, false, false );
+		kiojob = KIO::open( url, 1 /*ReadOnly*/ );
 		if( !kiojob )
 			return;
-		pBACKEND_CALL1( "setStreamSeekable", bool, false );
-		QObject::connect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
-				q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
-	}
-	else
-	{
+
 		//pBACKEND_CALL1( "setStreamSeekable", bool, false );
 		pBACKEND_CALL1( "setStreamSeekable", bool, true );
 		QObject::connect( kiojob, SIGNAL(open(KIO::Job*)),
 				q, SLOT(_k_bytestreamFileJobOpen(KIO::Job*)) );
 		QObject::connect( kiojob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
 				q, SLOT(_k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t)) );
+	}
+	else
+	{
+		kiojob = KIO::get( url, false, false );
+		if( !kiojob )
+			return;
+
+		pBACKEND_CALL1( "setStreamSeekable", bool, false );
+		QObject::connect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
+				q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
 	}
 
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
@@ -281,7 +296,6 @@ void MediaObjectPrivate::_k_bytestreamData( KIO::Job*, const QByteArray& data )
 void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 {
 	K_Q( MediaObject );
-	kiojob = 0;
 	if( job->error() )
 	{
 		kDebug(600)<<"Error :kiojob in "<<k_funcinfo<<endl;
@@ -294,6 +308,7 @@ void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 		QObject::disconnect( kiojob, SIGNAL(open(KIO::Job*)),
 				q, SLOT(_k_bytestreamFileJobOpen(KIO::Job*)) );
 	}
+	kiojob = 0;
 
 	endOfDataSent = true;
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
