@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QStyleOptionFrame>
 #include <QMouseEvent>
+#include <kdebug.h>
 
 //-----------------------------------------------------------------------------
 /*
