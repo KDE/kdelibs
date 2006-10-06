@@ -407,6 +407,17 @@ public:
   static bool supportsMoving( const KUrl &url );
 
   /**
+   * Returns whether the protocol can be opened using KIO::open(const KUrl&).
+   *
+   * This corresponds to the "opening=" field in the protocol description file.
+   * Valid values for this field are "true" or "false" (default).
+   *
+   * @param url the url to check
+   * @return true if the protocol supports opening
+   */
+  static bool supportsOpening( const KUrl &url );
+
+  /**
    * Returns whether the protocol can copy files/objects directly from the
    * filesystem itself. If not, the application will read files from the
    * filesystem using the file-protocol and pass the data on to the destination

@@ -64,6 +64,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_supportsDeleting = config.readEntry( "deleting", false );
   m_supportsLinking = config.readEntry( "linking", false );
   m_supportsMoving = config.readEntry( "moving", false );
+  m_supportsOpening = config.readEntry( "opening", false );
   m_canCopyFromFile = config.readEntry( "copyFromFile", false );
   m_canCopyToFile = config.readEntry( "copyToFile", false );
   d->canRenameFromFile = config.readEntry( "renameFromFile", false );
@@ -152,7 +153,8 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving, i_determineMimetypeFromExtension,
+          i_supportsMoving, i_supportsOpening,
+          i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
           i_uriMode, i_canRenameFromFile, i_canRenameToFile,
           i_canDeleteRecursive, i_fileNameUsedForCopying;
@@ -165,7 +167,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsListing >> i_supportsReading
         >> i_supportsWriting >> i_supportsMakeDir
         >> i_supportsDeleting >> i_supportsLinking
-        >> i_supportsMoving
+        >> i_supportsMoving >> i_supportsOpening
         >> i_canCopyFromFile >> i_canCopyToFile
         >> m_config >> m_maxSlaves >> d->docPath >> d->protClass
         >> d->extraFields >> i_showPreviews >> i_uriMode
@@ -184,6 +186,7 @@ KProtocolInfo::load( QDataStream& _str)
    m_supportsDeleting = (i_supportsDeleting != 0);
    m_supportsLinking = (i_supportsLinking != 0);
    m_supportsMoving = (i_supportsMoving != 0);
+   m_supportsOpening = (i_supportsOpening != 0);
    m_canCopyFromFile = (i_canCopyFromFile != 0);
    m_canCopyToFile = (i_canCopyToFile != 0);
    d->canRenameFromFile = (i_canRenameFromFile != 0);
@@ -209,7 +212,8 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving, i_determineMimetypeFromExtension,
+          i_supportsMoving, i_supportsOpening,
+          i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
           i_uriMode, i_canRenameFromFile, i_canRenameToFile,
           i_canDeleteRecursive, i_fileNameUsedForCopying;
@@ -225,6 +229,7 @@ KProtocolInfo::save( QDataStream& _str)
    i_supportsDeleting = m_supportsDeleting ? 1 : 0;
    i_supportsLinking = m_supportsLinking ? 1 : 0;
    i_supportsMoving = m_supportsMoving ? 1 : 0;
+   i_supportsOpening = m_supportsOpening ? 1 : 0;
    i_canCopyFromFile = m_canCopyFromFile ? 1 : 0;
    i_canCopyToFile = m_canCopyToFile ? 1 : 0;
    i_canRenameFromFile = d->canRenameFromFile ? 1 : 0;
@@ -247,7 +252,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsListing << i_supportsReading
         << i_supportsWriting << i_supportsMakeDir
         << i_supportsDeleting << i_supportsLinking
-        << i_supportsMoving
+        << i_supportsMoving << i_supportsOpening
         << i_canCopyFromFile << i_canCopyToFile
         << m_config << m_maxSlaves << d->docPath << d->protClass
         << d->extraFields << i_showPreviews << i_uriMode

@@ -362,6 +362,7 @@ protected:
   bool m_supportsDeleting;
   bool m_supportsLinking;
   bool m_supportsMoving;
+  bool m_supportsOpening;
   QString m_defaultMimetype;
   bool m_determineMimetypeFromExtension;
   QString m_icon;

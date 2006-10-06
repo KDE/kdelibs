@@ -655,6 +655,15 @@ bool KProtocolManager::supportsMoving( const KUrl &url )
   return prot->m_supportsMoving;
 }
 
+bool KProtocolManager::supportsOpening( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsOpening;
+}
+
 bool KProtocolManager::canCopyFromFile( const KUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
