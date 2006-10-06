@@ -644,7 +644,7 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurr
         }
 
         int index = d->data->transitionIndex(utcDateTime);
-        int secs = (index >= 0) ? d->data->transitions()[index].phase().utcOffset() : d->data ? d->data->previousUtcOffset() : 0;
+        int secs = (index >= 0) ? d->data->transitions()[index].phase().utcOffset() : d->data->previousUtcOffset();
         QDateTime dt = utcDateTime.addSecs(secs);
         if (secondOccurrence)
         {
