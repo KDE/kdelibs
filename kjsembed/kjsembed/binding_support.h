@@ -245,6 +245,25 @@ namespace KJSEmbed
     KJS::JSValue* createQByteArray( KJS::ExecState *exec, const QByteArray &value );
 
 
+    template<typename T>
+    inline T KJSEMBED_EXPORT extractString(KJS::ExecState *exec, KJS::JSValue *value, T defaultValue = T())
+    {
+        if (!value || !value->isString())
+		return defaultValue;
+
+	return (T)(value->toString(exec).ascii());
+    }
+
+    template<typename T>
+    inline T KJSEMBED_EXPORT extractString(KJS::ExecState *exec, const KJS::List &args, int idx, T defaultValue = T())
+    {
+        if (args.size() >= idx)
+	    return extractString<T>(exec, args[idx], defaultValue);
+	else
+	    return defaultValue;
+    }
+    
+
    /**
      * Extract a number from a value. If the value cannot convert to an integer or is not present defaultValue is returned
      */

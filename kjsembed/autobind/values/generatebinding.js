@@ -52,18 +52,18 @@ function extract_parameter( compound, param, paramIdx )
 */
     else if ( isInteger(coreParamType) )  // integer value
     {
-	extracted +=
-	    '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
-        
-        if (!paramDefault.isNull()) 	 
-            extracted += ', ' + paramDefault.toString() + ');\n'; 	 
-        else 	 
-            extracted += ');\n'; 	 
-        
-        return extracted;    
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
+
+        if (!paramDefault.isNull())
+            extracted += ', ' + paramDefault.toString() + ');\n';
+        else
+            extracted += ');\n';
+
+        return extracted;
     }
     else if ( isNumber(coreParamType) )  // integral value
-	{
+    {
         extracted +=
             '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
 
@@ -272,7 +272,7 @@ function write_enums( compound )
     else {
         enums = 'const Enumerator KJSEmbed::' + compound.data + '::p_enums[] = {{0, 0 }};\n';
     }
- 
+
     return enums;
 }
 
@@ -310,7 +310,7 @@ function find_method_overloads(memberList, startIdx, name)
             //            println( '          Found ' + overloadList[args].length + ' override with ' + args + ' arguments' );
         }
     }
-     
+
     return overloadList;
 }
 
@@ -329,9 +329,9 @@ function write_method( compound, memberName, overloadList )
         '//  ' + memberName  + '\n' +
         'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
         '{ \n';
-    
+
     method += '    Q_UNUSED(args); \n';
-            
+
     method +=
         '    KJS::JSValue *result = KJS::Null(); \n' +
         '    KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
@@ -339,7 +339,7 @@ function write_method( compound, memberName, overloadList )
         '        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
         '\n' +
         '    ' + compound.name + ' value = imp->value<' + compound.name + '>();\n';
-        
+
     for (var idx = 0; idx < overloadList.length; ++idx)
     {
         if (!overloadList[idx])
@@ -378,7 +378,7 @@ function write_method( compound, memberName, overloadList )
             funcCallStart +=
                 methodType + ' tmp = value.' + memberName + '(';
             if ( compound.globalEnums[coreMethodType] ||  // Enum Value
-		 isInteger(coreMethodType) )
+                 isInteger(coreMethodType) )
             {
                 funcCallEnd += indent +
                     '        result = KJS::Number( tmp );\n';
@@ -420,13 +420,13 @@ function write_method( compound, memberName, overloadList )
                     paramVar = 'arg' + paramIdx;
                 tmpArgs += paramVar + ', ';
             }
-        
+
             if (tmpArgs != '') 
             {
                 var tmpIdx = tmpArgs.lastIndexOf(',');
                 tmpArgs = tmpArgs.substr(0, tmpIdx);
             }
-        
+
             method += construct_parameters(compound, overloadList[idx], idx, funcCallStart, funcCallEnd);
         }
         else
@@ -470,7 +470,8 @@ function write_methods( compound )
              ( memberProt == 'public' ) &&
              ( memberName.indexOf('operator') == -1 ) &&     // Make sure this is not an operator.
              ( memberName.indexOf(compound.name) == -1 ) &&  // Not a ctor
-             ( contains(memberStatic, 'no') ))               // Not a static method
+             ( contains(memberStatic, 'no') ) &&             // Not a static method
+             ( hasNoProblematicTypes(memberElement) ) )
         {
             if (processed[memberName])
             {
@@ -518,12 +519,12 @@ function write_method_lut( compound )
         var numParams = memberElement.elementsByTagName("param").count();
         if ( ( memberKind == 'function' ) &&
              ( memberProt == 'public' ) &&
-             ( memberName.indexOf('operator') == -1 ) &&     // Make sure this is not an operator.
-             ( memberName.indexOf(compound.name) == -1 ) &&  // Make sure this is not a ctor or dtor
-             ( contains(memberStatic, "no") ) )              // Not a static method
+             ( memberName.indexOf('operator') == -1 ) &&     // Not an operator.
+             ( memberName.indexOf(compound.name) == -1 ) &&  // Not a ctor or dtor
+             ( contains(memberStatic, "no") ) &&             // Not a static method
+             ( hasNoProblematicTypes(memberElement) ) )
         {
-            // make sure only one lut entry per member
-            var memberCacheId = memberName + numParams;
+            var memberCacheId = memberName + numParams;      // Only one entry per member
             if (processed[memberCacheId])
                 continue;
             processed[memberCacheId] = true;
@@ -560,11 +561,12 @@ function write_ctor( compound )
         var memberKind = memberElement.attribute( 'kind' );
         var memberProt = memberElement.attribute('prot');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
-        if (( memberKind == 'function' ) && // Constructor is a function
-            ( memberProt == 'public' ) && // Make sure it is public
-            ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
-            ( memberName.indexOf(compound.name) != -1 ) && // This _is_ a ctor
-            ( memberName.indexOf('~') == -1 )) // This is _not_ a dtor
+        if (( memberKind == 'function' ) &&                 // Is a function
+            ( memberProt == 'public' ) &&                   // Is public
+            ( memberName.indexOf('operator') == -1 ) &&     // Not an operator.
+            ( memberName.indexOf(compound.name) != -1 ) &&  // Is a ctor
+            ( memberName.indexOf('~') == -1 ) &&            // Not a dtor
+            ( hasNoProblematicTypes(memberElement) ))
         {
             var memberArgList = memberElement.elementsByTagName('param');
             var args = memberArgList.count();

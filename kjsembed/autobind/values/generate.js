@@ -130,8 +130,8 @@ for( x = 0; x < nodeList.length(); ++x )
     var compoundElement = nodeList.item(x).toElement();
     var compoundKind = compoundElement.attribute('kind');
     if (( compoundKind == 'class' ) ||
-	( compoundKind == 'struct' ) ||
-	( compoundKind == 'namespace' ))
+        ( compoundKind == 'struct' ) ||
+        ( compoundKind == 'namespace' ))
     {
         var classRootElement = process_class( compoundElement );
         var compoundDef = classRootElement.firstChildElement('compounddef').toElement();
@@ -147,17 +147,6 @@ for( x = 0; x < nodeList.length(); ++x )
                 var qualifiedEnum = compoundName + "::" + enumName;
                 enum_array[qualifiedEnum] = true;
                 println("   Added enum " + qualifiedEnum);
- 
-/*
-                var enumList = memberElement.elementsByTagName( "enumvalue" );
-                for ( z = 0; z < enumList.length(); ++z )
-                {
-                    var enumValue = enumList.item(z).toElement().firstChildElement('name').toElement().toString();
-                    var qualifiedEnum = enumName + "::" + enumValue;
-                    enum_array[qualifiedEnum] = 1;
-                    println( "   Added enum " + qualifiedEnum );
-                }
-*/
             }
         }
     }

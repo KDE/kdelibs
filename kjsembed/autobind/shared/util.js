@@ -157,8 +157,9 @@ function isCompoundEnum( paramType, compoundEnums )
     return (compoundEnums[paramType]);
 }
 
-// function isCompoundEnum( paramType )
+// function isEnum( paramType )
 //   paramType - The parameter type to check (preferably sans embellishments).
+//   globalEnums - Associative array of Qt:: namesapce enum types
 //   compoundEnums - Associative array of enum types to containing objects
 // Returns true if the paramType is any known enum type.
 function isEnum( paramType, globalEnums, compoundEnums )
@@ -166,4 +167,27 @@ function isEnum( paramType, globalEnums, compoundEnums )
     return (globalEnums[paramType] || // it is a Qt enum
             compoundEnums[paramType]);
 }
+
+// function hasNoProblematicTypes( memberElement )
+//   memberElement - element of compound member
+// This function temporarily checks for paramters we can't handle right
+// now due to limitations in KJS. Potentially will be fixed soon.
+// returns true if it has no problematic types
+function hasNoProblematicTypes( memberElement )
+{
+    var memberArgList = memberElement.elementsByTagName('param');
+    for ( i = 0; i < memberArgList.count(); ++i )
+    {
+        var param = memberArgList.item(i).toElement();
+        var paramElement = param.firstChildElement('type').toElement();
+        var paramType = paramElement.toString();
+
+        if ( contains(paramType,'int *') ||
+             contains(paramType, 'qreal *') ||
+             contains(paramType, 'bool *') )
+            return false;
+    }
+    return true;
+}
+
 
