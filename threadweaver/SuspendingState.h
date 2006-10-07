@@ -28,7 +28,7 @@ namespace ThreadWeaver {
     /** SuspendingState is the state after suspend() has been called, but
         before all threads finished executing the current job and blocked.
     */
-    class SuspendingState : public StateImplementation
+    class THREADWEAVER_EXPORT SuspendingState : public StateImplementation
     {
     public:
 	explicit SuspendingState( WeaverImpl *weaver)

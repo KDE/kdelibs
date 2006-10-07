@@ -29,7 +29,7 @@
 #endif
 
 /* Qt macros aren't known in a non C++ project */
-#if defined _WIN32 || defined _WIN64 
+#if defined _WIN32 || defined _WIN64
 # include <kdelibs_export_win.h>
 #else /* UNIX */
 
@@ -88,6 +88,8 @@
 #define KDED_EXPORT KDE_EXPORT
 #define KDOCUMENT_EXPORT KDE_EXPORT
 #define KNEWSTUFF_EXPORT KDE_EXPORT
+
+#define THREADWEAVER_EXPORT KDE_EXPORT
 
 
 #define KPATH_SEPARATOR ':'

@@ -19,6 +19,8 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 
 #include <QObject>
 
+#include <kdelibs_export.h>
+
 class QMutex;
 class QWaitCondition;
 
@@ -45,7 +47,7 @@ namespace ThreadWeaver {
 	DependencyPolicy.
     */
 
-    class Job : public QObject
+    class THREADWEAVER_EXPORT Job : public QObject
     {
         Q_OBJECT
 

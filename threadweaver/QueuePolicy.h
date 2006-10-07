@@ -1,6 +1,8 @@
 #ifndef QUEUEPOLICY_H
 #define QUEUEPOLICY_H
 
+#include <kdelibs_export.h>
+
 namespace ThreadWeaver {
 
     class Job;
@@ -26,7 +28,7 @@ namespace ThreadWeaver {
     jobs are executed. Jobs never assume ownership of their assigned queue
     policies.
 */
-    class QueuePolicy
+    class THREADWEAVER_EXPORT QueuePolicy
     {
     public:
         virtual ~QueuePolicy() {}

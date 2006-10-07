@@ -22,6 +22,8 @@
 #include <QMutex>
 #include <QThread>
 
+#include <kdelibs_export.h>
+
 namespace ThreadWeaver {
 
     class Job;
@@ -30,7 +32,7 @@ namespace ThreadWeaver {
 
     /** The class Thread is used to represent the worker threads in
         the weaver's inventory. It is not meant to be overloaded. */
-    class Thread : public QThread
+    class THREADWEAVER_EXPORT Thread : public QThread
     {
         Q_OBJECT
 

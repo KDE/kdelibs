@@ -31,7 +31,7 @@ namespace ThreadWeaver {
      * It is intended that the collection is set up first and then
      * queued. After queuing, no further jobs should be added to the collection.
      */
-    class JobCollection : public Job
+    class THREADWEAVER_EXPORT JobCollection : public Job
     {
         friend class JobCollectionJobRunner;
         Q_OBJECT

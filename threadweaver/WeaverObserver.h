@@ -19,6 +19,8 @@
 
 #include <QObject>
 
+#include <kdelibs_export.h>
+
 namespace ThreadWeaver {
 
     class Job;
@@ -41,7 +43,7 @@ namespace ThreadWeaver {
         aware not to delete Job objects externally that you reference in a
         WeaverObserver implementation.
     */
-    class WeaverObserver : public QObject
+    class THREADWEAVER_EXPORT WeaverObserver : public QObject
     {
         Q_OBJECT
     public:

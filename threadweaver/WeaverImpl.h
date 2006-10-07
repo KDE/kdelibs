@@ -36,7 +36,7 @@ namespace ThreadWeaver {
         which it assigns jobs from it's queue. It extends the API of
         WeaverInterface to provide additional methods needed by the Thread
         objects. */
-    class WeaverImpl : public WeaverInterface
+    class THREADWEAVER_EXPORT WeaverImpl : public WeaverInterface
     {
         Q_OBJECT
     public:

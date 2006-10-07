@@ -50,7 +50,7 @@ namespace ThreadWeaver {
 
     */
   // Note: All member documentation is in the WeaverInterface class.
-    class Weaver : public WeaverInterface
+    class THREADWEAVER_EXPORT Weaver : public WeaverInterface
     {
         Q_OBJECT
     public:

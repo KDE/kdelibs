@@ -19,6 +19,8 @@
 
 #include <QString>
 
+#include <kdelibs_export.h>
+
 namespace ThreadWeaver {
 
     class Job;
@@ -56,7 +58,7 @@ namespace ThreadWeaver {
 
     /** We use a State pattern to handle the system state in ThreadWeaver.
      */
-    class State
+    class THREADWEAVER_EXPORT State
     {
     public:
         /** Default constructor. */

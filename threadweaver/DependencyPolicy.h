@@ -34,7 +34,7 @@ namespace ThreadWeaver {
         JobSequence uses dependencies to implement the ordered execution of
         the sequence elements.
     */
-    class DependencyPolicy : public QueuePolicy
+    class THREADWEAVER_EXPORT DependencyPolicy : public QueuePolicy
     {
     public:
       /** Destructor. */

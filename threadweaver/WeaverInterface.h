@@ -19,6 +19,8 @@
 
 #include <QObject>
 
+#include <kdelibs_export.h>
+
 namespace ThreadWeaver {
 
     class Job;
@@ -44,7 +46,7 @@ namespace ThreadWeaver {
         WeaverImpl classes.
     */
 
-    class WeaverInterface : public QObject {
+    class THREADWEAVER_EXPORT WeaverInterface : public QObject {
         Q_OBJECT
 
     public:

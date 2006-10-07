@@ -39,7 +39,7 @@ namespace ThreadWeaver {
 
     */
 
-    class ResourceRestrictionPolicy : public QueuePolicy
+    class THREADWEAVER_EXPORT ResourceRestrictionPolicy : public QueuePolicy
     {
     public:
         explicit ResourceRestrictionPolicy ( int cap = 0);

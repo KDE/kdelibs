@@ -30,7 +30,7 @@ namespace ThreadWeaver {
     /** InConstructionState handles the calls to the WeaverImpl
         object until the constructor has finished.
     */
-    class InConstructionState : public StateImplementation
+    class THREADWEAVER_EXPORT InConstructionState : public StateImplementation
     {
     public:
 	explicit InConstructionState( WeaverInterface *weaver)
