@@ -226,7 +226,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             }
 
             // parent gets a click -> we hide
-            else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
+            else if ( type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ||
                       type == QEvent::Move ) {
                 hide();
