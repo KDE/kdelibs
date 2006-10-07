@@ -548,7 +548,7 @@ void ByteStreamTest::initOutput()
 		m_audioPath->addOutput( m_audioOutput );
 	}
 	qDebug() << "m_media->addAudioPath()";
-	m_media->addAudioPath( m_audioPath );
+	QVERIFY( m_media->addAudioPath( m_audioPath ) );
 }
 
 void ByteStreamTest::cleanupTestCase()
