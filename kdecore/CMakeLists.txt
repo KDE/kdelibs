@@ -344,9 +344,7 @@ install( FILES
    kpixmapprovider.h
    kstaticdeleter.h
    kprocio.h
-   kasyncio.h
    krandom.h
-   kbufferedio.h
    kmimesourcefactory.h
    kcodecs.h
    ksocks.h
