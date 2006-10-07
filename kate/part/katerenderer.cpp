@@ -763,7 +763,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
 
     x += width;
 
-    if (unicode[z] == QChar('\t'))
+    if (z < len && unicode[z] == QChar('\t'))
       x -= x % width;
   }
 
