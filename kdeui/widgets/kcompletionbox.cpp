@@ -225,12 +225,19 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 }
             }
 
-            // parent loses focus or gets a click -> we hide
+            // parent gets a click -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ||
                       type == QEvent::Move ) {
                 hide();
             }
+            
+            else if ( type == QEvent::FocusOut ) {
+                  QFocusEvent* event = static_cast<QFocusEvent*>( e );
+                  if (event->reason() != Qt::PopupFocusReason)
+                    hide();
+            }
+            
         }
     }
 
