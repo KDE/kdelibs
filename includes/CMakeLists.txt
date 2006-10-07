@@ -23,7 +23,6 @@ install( FILES
   KMManager
   KPReloadObject
   KPrintDialogPage
-  KPrintAction
   KPrinter
   KCModuleContainer
   KPluginSelector
@@ -31,18 +30,22 @@ install( FILES
   KMultiTabBarTab
   KMultiTabBarButton
   KMultiTabBar
+  KCMultiDialog
   KCModuleLoader
   KCModuleInfo
   KNewStuffSecure
   KNewStuff
-  KNewStuffGeneric
   K3BookmarkDrag
+  K3SpellConfig
+  K3SpellDlg
+  K3Spell
   K3Wizard
   K3DictSpellingHighlighter
   K3SpellingHighlighter
   K3SyntaxHighlighter
   K3ColorDrag
   K3TextEdit
+  K3PopupMenu
   K3DockArea
   K3DockMainWindow
   K3DockManager
@@ -59,6 +62,9 @@ install( FILES
   ProgressItem
   ListProgress
   KCustomMenuEditor
+  KNotifyDialog
+  KApplicationPropsPlugin
+  KExecPropsPlugin
   KDesktopPropsPlugin
   KDevicePropsPlugin
   KBindingPropsPlugin
@@ -105,13 +111,18 @@ install( FILES
   KBookmarkDomBuilder
   KBookmarkImporter
   KNSBookmarkExporterImpl
+  KNSBookmarkExporter
   KMozillaBookmarkImporterImpl
   KNSBookmarkImporterImpl
+  KNSBookmarkImporter
   KIEBookmarkExporterImpl
   KIEBookmarkImporterImpl
+  KIEBookmarkImporter
   KOperaBookmarkExporterImpl
   KOperaBookmarkImporterImpl
+  KOperaBookmarkImporter
   KCrashBookmarkImporterImpl
+  KCrashBookmarkImporter
   KBookmarkNotifier
   KBookmarkMenuNSImporter
   KBookmarkMenu
@@ -175,10 +186,14 @@ install( FILES
   KZip
   KTar
   KAr
+  KAutoUnmount
+  KAutoMount
   KDirWatch
   KProcessRunner
   KRun
   KImageIO
+  KMimeMagic
+  KMimeMagicResult
   KMimeTypeTrader
   KFolderType
   KMimeType
@@ -211,6 +226,9 @@ install( FILES
   KCookie
   PTY
   PtyProcess
+  KDEsuClient
+  KTreeWidgetSearchLineWidget
+  KTreeWidgetSearchLine
   KListBox
   K3ListViewSearchLineWidget
   K3ListViewSearchLine
@@ -231,6 +249,8 @@ install( FILES
   KIntValidator
   KNotificationRestrictions
   KNotification
+  KSelectionWatcher
+  KSelectionOwner
   KIcon
   KIconEngine
   KGlobalAccel
@@ -251,10 +271,12 @@ install( FILES
   KPasswordDialog
   KPasswordEdit
   KPageDialog
+  KKeyDialog
   KKeyChooser
   KInputDialog
   KFontDialog
   KFontChooser
+  KDialogQueue
   KDialog
   KConfigDialogManager
   KConfigDialog
@@ -281,6 +303,7 @@ install( FILES
   KTabBar
   KTimeZoneWidget
   KDateTimeWidget
+  KTextEdit
   KDateWidget
   KSqueezedTextLabel
   KCompletionBox
@@ -294,6 +317,7 @@ install( FILES
   KEditListBox
   KLed
   KDialogButtonBox
+  KButtonBox
   KColorButton
   KLineEdit
   KDoubleSpinBox
@@ -309,7 +333,6 @@ install( FILES
   KReplace
   KFind
   KMessageBoxMessageHandler
-  KToolBarLabelAction
   KPixmapRegionSelectorWidget
   KLanguageButton
   KActionSelector
@@ -317,6 +340,9 @@ install( FILES
   KStdGuiItem
   KGuiItem
   KArrowButton
+  KTipDialog
+  KTipDatabase
+  KWindowListMenu
   KAnimatedButton
   KEditToolbarWidget
   KEditToolbar
@@ -325,30 +351,23 @@ install( FILES
   KXMLGUIClient
   KCModule
   KHelpMenu
-  KPasteTextAction
-  KToggleFullScreenAction
-  KToggleToolBarAction
-  KToolBarPopupAction
-  KActionMenu
-  KFontSizeAction
-  KFontAction
-  KRecentFilesAction
   KSelectAction
-  KToggleAction
-  KSeparatorAction
   KActionCollection
   KAction
   KTextBrowser
   KMessageBox
-  KPageWidgetItem
+  KPageView
   KPageModel
   KRuler
+  KUrlLabel
   KRestrictedLine
   KSeparator
   KMenuBar
+  KToolBar
   KMainWindow
   KStatusBar
   KStatusBarLabel
+  KTabCtl
   KDateTable
   KDateValidator
   KPopupFrame
@@ -361,6 +380,8 @@ install( FILES
   KServiceTypeProfile
   KServiceType
   KService
+  KMessageHandler
+  KMessage
   KProtocolInfo
   KAutostart
   KDEDModule
@@ -376,6 +397,7 @@ install( FILES
   KTimeZoneSource
   KTimeZone
   KTimeZones
+  KXErrorHandler
   KTempDir
   KLockFile
   KUserGroup
@@ -390,8 +412,10 @@ install( FILES
   KStartupInfoData
   KStartupInfoId
   KStartupInfo
+  KXMessages
   KSycocaEntry
   KSycoca
+  KSocks
   KMD4
   KMD5
   KCodecs
@@ -402,15 +426,22 @@ install( FILES
   KPixmapProvider
   NET
   KAcceleratorManager
+  NETWinInfo
+  NETRootInfo4
+  NETRootInfo3
+  NETRootInfo2
+  NETRootInfo
   KIconEffect
   KRandomSequence
   KSaveFile
   KTemporaryFile
+  KTempFile
   KLibLoader
   KLibFactory
   KLibrary
   KPalette
   KInstance
+  KRFCDate
   KCrash
   KVMAllocator
   KZoneAllocator
@@ -420,6 +451,7 @@ install( FILES
   KStringHandler
   KCatalog
   KShortcut
+  KWin
   KWinModule
   kndbgstream
   kdbgstream
@@ -432,6 +464,7 @@ install( FILES
   KProcessController
   KShellProcess
   KProcess
+  KPty
   KCharsets
   KUniqueApplication
   KToolInvocation
@@ -479,75 +512,23 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 
 install( FILES 
   DOM/AbstractView
-  DOM/MutationEvent
-  DOM/KeyboardEvent
-  DOM/TextEvent
-  DOM/MouseEvent
-  DOM/UIEvent
-  DOM/EventException
-  DOM/Event
-  DOM/EventListener
   DOM/TreeWalker
   DOM/CustomNodeFilter
   DOM/NodeFilter
   DOM/NodeIterator
-  DOM/Range
-  DOM/RangeException
-  DOM/HTMLMapElement
-  DOM/HTMLImageElement
-  DOM/HTMLAreaElement
-  DOM/ProcessingInstruction
-  DOM/Notation
-  DOM/EntityReference
-  DOM/Entity
-  DOM/CDATASection
   DOM/Element
   DOM/Attr
-  DOM/HTMLTitleElement
-  DOM/HTMLStyleElement
-  DOM/HTMLScriptElement
-  DOM/HTMLMetaElement
-  DOM/HTMLLinkElement
-  DOM/HTMLBaseElement
-  DOM/Text
-  DOM/Comment
-  DOM/CharacterData
-  DOM/DocumentType
-  DOM/DocumentFragment
-  DOM/Document
-  DOM/DOMImplementation
   DOM/HTMLTableSectionElement
   DOM/HTMLTableRowElement
   DOM/HTMLTableElement
   DOM/HTMLTableColElement
   DOM/HTMLTableCellElement
   DOM/HTMLTableCaptionElement
-  DOM/HTMLIsIndexElement
-  DOM/HTMLOptionElement
-  DOM/HTMLTextAreaElement
-  DOM/HTMLSelectElement
-  DOM/HTMLOptGroupElement
-  DOM/HTMLLegendElement
-  DOM/HTMLLabelElement
-  DOM/HTMLInputElement
-  DOM/HTMLFormElement
-  DOM/HTMLFieldSetElement
-  DOM/HTMLButtonElement
   DOM/DOMString
-  DOM/HTMLParamElement
-  DOM/HTMLObjectElement
-  DOM/HTMLAppletElement
   DOM/HTMLElement
   DOM/NodeList
   DOM/Node
   DOM/NamedNodeMap
-  DOM/Counter
-  DOM/Rect
-  DOM/RGBColor
-  DOM/CSSPrimitiveValue
-  DOM/CSSValueList
-  DOM/CSSValue
-  DOM/CSSStyleDeclaration
   DOM/HTMLFormCollection
   DOM/HTMLCollection
   DOM/HTMLBaseFontElement
@@ -573,15 +554,6 @@ install( FILES
   DOM/HTMLHRElement
   DOM/HTMLDivElement
   DOM/HTMLBlockquoteElement
-  DOM/CSSRuleList
-  DOM/CSSUnknownRule
-  DOM/CSSStyleRule
-  DOM/CSSPageRule
-  DOM/CSSMediaRule
-  DOM/CSSImportRule
-  DOM/CSSFontFaceRule
-  DOM/CSSCharsetRule
-  DOM/CSSRule
   DOM/HTMLQuoteElement
   DOM/HTMLModElement
   DOM/HTMLFontElement
@@ -593,7 +565,6 @@ install( FILES
   DOM/HTMLFrameSetElement
   DOM/HTMLFrameElement
   DOM/HTMLBodyElement
-  DOM/DOMException
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM )
 
 
@@ -650,37 +621,12 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
 install( FILES 
-  KJS/JSCell
-  KJS/JSValue
-  KJS/UString
-  KJS/CString
-  KJS/UCharReference
-  KJS/UChar
-  KJS/ScopeChain
-  KJS/ScopeChainIterator
-  KJS/ScopeChainNode
-  KJS/PropertySlot
-  KJS/PropertyMap
-  KJS/Error
-  KJS/JSObject
-  KJS/Lookup
-  KJS/HashEntry
-  KJS/List
-  KJS/Interpreter
-  KJS/Identifier
-  KJS/DeclaredFunctionImp
-  KJS/FunctionImp
-  KJS/Collector
-  KJS/PropertyNameArray
-  KJS/JSLock
-  KJS/JSImmediate
-  KJS/ExecState
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
-
-
-install( FILES 
-  KJS/KJS/UString/Rep
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS/KJS/UString )
+  KJSEmbed/Engine
+  KJSEmbed/Constructor
+  KJSEmbed/Enumerator
+  KJSEmbed/Method
+  KJSEmbed/ProxyBinding
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 
 install( FILES 
@@ -722,6 +668,18 @@ install( FILES
   KNetwork/KResolverResults
   KNetwork/KResolverEntry
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
+
+
+install( FILES 
+  KNotify/KNotifyWidget
+  KNotify/ApplicationList
+  KNotify/Application
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotify )
+
+
+install( FILES 
+  KNotifyClient/Instance
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotifyClient )
 
 
 install( FILES 
@@ -774,6 +732,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSpell2 )
 
 install( FILES 
   KTextEditor/ConfigInterface
+  KTextEditor/CodeCompletionInterface2
   KTextEditor/CodeCompletionModel
   KTextEditor/SmartRange
   KTextEditor/SmartCursor
@@ -829,13 +788,16 @@ install( FILES
   Phonon/VolumeSlider
   Phonon/MediaControls
   Phonon/SeekSlider
+  Phonon/VideoPlayer
   Phonon/VideoWidget
   Phonon/BackendCapabilities
+  Phonon/AudioPlayer
   Phonon/Visualization
   Phonon/VideoDataOutput
   Phonon/AbstractVideoOutput
   Phonon/AudioDataOutput
   Phonon/AudioOutput
+  Phonon/AbstractAudioOutput
   Phonon/BrightnessControl
   Phonon/VideoEffect
   Phonon/VolumeFaderEffect
@@ -846,6 +808,9 @@ install( FILES
   Phonon/AudioPath
   Phonon/ByteStream
   Phonon/AvCapture
+  Phonon/MediaQueue
+  Phonon/MediaObject
+  Phonon/AbstractMediaProducer
   Phonon/Base
   Phonon/ObjectDescriptionModel
   Phonon/ObjectDescription
