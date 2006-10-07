@@ -41,6 +41,7 @@
 static void set_protection( pid_t pid, int enable )
 {
    char buf[ 1024 ];
+   int procfile;
    sprintf( buf, "/proc/%d/oom_adj", pid );
    if( !enable ) {
        /* Be paranoid and check that the pid we got from the pipe
@@ -49,7 +50,7 @@ static void set_protection( pid_t pid, int enable )
        if( lstat( buf, &st ) < 0 || st.st_uid != getuid())
            return;
    }
-   int procfile = open( buf, O_WRONLY );
+   procfile = open( buf, O_WRONLY );
    if( procfile >= 0 ) {
       if( enable )
          write( procfile, "-5", sizeof( "-5" ));
