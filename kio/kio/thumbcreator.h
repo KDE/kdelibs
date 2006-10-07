@@ -20,6 +20,8 @@
 #ifndef _THUMBCREATOR_H_
 #define _THUMBCREATOR_H_
 
+#include <kdelibs_export.h>
+
 class QString;
 class QImage;
 /**
