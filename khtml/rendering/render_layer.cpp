@@ -140,7 +140,8 @@ void RenderLayer::updateLayerPosition()
             y += curr->yPos();
             curr = curr->parent();
         }
-        y += curr->borderTopExtra();
+        if (curr)
+          y += curr->borderTopExtra();
     }
 
     if (m_object->isRelPositioned())
@@ -722,7 +723,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
 {
     int rightPos = m_object->rightmostPosition(true);
     int bottomPos = m_object->lowestPosition(true);
-    
+
 /*  TODO
     m_scrollLeft = m_object->leftmostPosition(true);
     m_scrollTop = m_object->highestPosition(true);
@@ -1474,7 +1475,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
 
     if (shouldPaint)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
-        
+
     if (ovfList) {
         for (QValueList<RenderLayer*>::iterator it = ovfList->begin(); it != ovfList->end(); ++it)
             writeLayers(ts, rootLayer, *it, paintDirtyRect, indent);
