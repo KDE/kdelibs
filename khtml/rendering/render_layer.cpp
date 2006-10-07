@@ -140,7 +140,8 @@ void RenderLayer::updateLayerPosition()
             y += curr->yPos();
             curr = curr->parent();
         }
-        y += curr->borderTopExtra();
+	if (cur)
+	  y += curr->borderTopExtra();
     }
 
     if (m_object->isRelPositioned())
