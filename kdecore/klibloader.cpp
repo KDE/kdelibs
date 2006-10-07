@@ -381,7 +381,7 @@ static inline QByteArray makeLibName( const char* name )
     if (pos < 0)
       pos = 0;
     if (libname.indexOf('.', pos) < 0) {
-        const char* const extList[] = { ".dylib", ".bundle", ".so", ".dll", ".sl" };
+        const char* const extList[] = { ".so", ".dylib", ".bundle", ".dll", ".sl" };
         for (int i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
            if (QLibrary::isLibrary(libname + extList[i]))
                return libname + extList[i];
