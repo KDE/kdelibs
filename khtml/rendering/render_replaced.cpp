@@ -253,7 +253,7 @@ void RenderWidget::layout( )
                 el = el->parent();
             }                                                                                                                                      
             if (m_needsMask) {
-                rl->setHasOverlaidWidgets();
+                if (rl) rl->setHasOverlaidWidgets();
                 canvas()->setNeedsWidgetMasks();
             }
         }
