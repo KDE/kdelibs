@@ -20,10 +20,12 @@
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
 
+#include <kdelibs_export.h>
+
 /*
  * Proxy class for interface org.kde.KLauncher
  */
-class OrgKdeKLauncherInterface: public QDBusAbstractInterface
+class KDECORE_EXPORT OrgKdeKLauncherInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
