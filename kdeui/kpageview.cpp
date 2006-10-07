@@ -30,8 +30,22 @@
 #include <QAbstractItemView>
 #include <QGridLayout>
 #include <QLabel>
+#include <QSize>
 #include <QStackedWidget>
 #include <QTimer>
+
+class KPageStackedWidget : public QStackedWidget {
+    QSize m_minimum_size;
+public:
+    KPageStackedWidget(QWidget *parent = NULL)
+	    : QStackedWidget(parent) {}
+    void setMinimumSize(const QSize& s) {
+	    m_minimum_size = s;
+    }
+    virtual QSize minimumSizeHint () const {
+	return m_minimum_size.expandedTo(QStackedWidget::minimumSizeHint());
+    }
+};
 
 class KPageView::Private
 {
@@ -49,7 +63,7 @@ class KPageView::Private
     FaceType faceType;
 
     // gui
-    QStackedWidget *stack;
+    KPageStackedWidget *stack;
     QFrame *headerFrame;
     QLabel *headerLabel;
     QLabel *headerIcon;
@@ -199,7 +213,7 @@ KPageView::KPageView( QWidget *parent )
   : QWidget( parent ), d( new Private( this ) )
 {
   d->layout = new QGridLayout( this );
-  d->stack = new QStackedWidget( this );
+  d->stack = new KPageStackedWidget( this );
   d->headerLabel = new QLabel( this );
   d->headerIcon = new QLabel( this );
 
