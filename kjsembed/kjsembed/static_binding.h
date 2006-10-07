@@ -76,6 +76,7 @@ public:
     * @code
     * KJS::JSObject *ctor = StaticConstructor::add( exec, parent, TestPointer::constructor() ); // Ctor
     * ctor.addStaticMethods( exec, TestPointer::staticMethods() );
+    * @endcode
     */
     void addStaticMethods( KJS::ExecState *exec, const Method *methods );
 

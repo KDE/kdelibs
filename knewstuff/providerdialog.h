@@ -40,7 +40,7 @@ class Engine;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class ProviderDialog : public KDialog
+class KNEWSTUFF_EXPORT ProviderDialog : public KDialog
 {
     Q_OBJECT
   public:

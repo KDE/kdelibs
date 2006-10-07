@@ -33,7 +33,7 @@ class DownloadDialog;
  * more convenient by encapsulating most of the details involved in
  * using KHotNewStuff in the button itself.
  */
-class Button : public KPushButton
+class KNEWSTUFF_EXPORT Button : public KPushButton
 {
     Q_OBJECT
 

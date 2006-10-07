@@ -49,7 +49,7 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
 
     public:
         /**
-         * @enum
+         * @enum Service
          * @value NoServices the baseline "don't disable anything" value
          * @value ScreenSaver causes the screensaver to be prevented from
          *        automatically turning on

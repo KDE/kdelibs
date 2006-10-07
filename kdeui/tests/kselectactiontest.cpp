@@ -33,11 +33,13 @@ SelectActionTest::SelectActionTest(QWidget *parent)
     }
 
     m_comboSelect->setToolBarMode(KSelectAction::ComboBoxMode);
+    m_comboSelect->setWhatsThis("What's this?");
     connect(m_comboSelect, SIGNAL(triggered(QAction*)), SLOT(triggered(QAction*)));
     connect(m_comboSelect, SIGNAL(triggered(int)), SLOT(triggered(int)));
     connect(m_comboSelect, SIGNAL(triggered(const QString&)), SLOT(triggered(const QString&)));
 
     m_buttonSelect->setToolBarMode(KSelectAction::MenuMode);
+    m_buttonSelect->setWhatsThis("What's this?");
     connect(m_buttonSelect, SIGNAL(triggered(QAction*)), SLOT(triggered(QAction*)));
     connect(m_buttonSelect, SIGNAL(triggered(int)), SLOT(triggered(int)));
     connect(m_buttonSelect, SIGNAL(triggered(const QString&)), SLOT(triggered(const QString&)));

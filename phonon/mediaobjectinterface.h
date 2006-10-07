@@ -20,9 +20,11 @@
 #ifndef PHONON_MEDIAOBJECTINTERFACE_H
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
+#include <kdelibs_export.h>
+
 namespace Phonon
 {
-class MediaObjectInterface
+class PHONONCORE_EXPORT MediaObjectInterface
 {
 	public:
 		virtual ~MediaObjectInterface() {}

@@ -70,7 +70,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), bytesEditInterface()
  */
-class BytesEditInterface
+class KHEXEDIT_EXPORT BytesEditInterface
 {
   public:
     virtual ~BytesEditInterface() {}

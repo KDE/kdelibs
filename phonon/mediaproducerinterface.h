@@ -30,7 +30,7 @@ class QObject;
 namespace Phonon
 {
 
-class MediaProducerInterface
+class PHONONCORE_EXPORT MediaProducerInterface
 {
 	public:
 		virtual ~MediaProducerInterface() {}

@@ -18,6 +18,7 @@
 #ifndef KHE_ZOOMINTERFACE_H
 #define KHE_ZOOMINTERFACE_H
 
+#include <kdelibs_export.h>
 
 namespace KHE
 {
@@ -31,7 +32,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), zoomInterface()
  */
-class ZoomInterface
+class KHEXEDIT_EXPORT ZoomInterface
 {
   public:
     virtual ~ZoomInterface() {}
@@ -41,7 +42,7 @@ class ZoomInterface
       * @param PointInc increment to the display size (in font point size)
       */
     virtual void zoomIn( int PointInc ) = 0;
-    /** increases the display size by an arbitrary value, usually 1 font point 
+    /** increases the display size by an arbitrary value, usually 1 font point
       * @see zoomOut()
       */
     virtual void zoomIn() = 0;
@@ -49,7 +50,7 @@ class ZoomInterface
       * @param PointDec decrement to the display size (in font point size)
       */
     virtual void zoomOut( int PointDec ) = 0;
-    /** decreases the display size by an arbitrary value, usually 1 font point 
+    /** decreases the display size by an arbitrary value, usually 1 font point
       * @see zoomIn()
       */
     virtual void zoomOut() = 0;

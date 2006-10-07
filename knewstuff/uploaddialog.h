@@ -44,7 +44,7 @@ class Entry;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class UploadDialog : public KDialog
+class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 {
     Q_OBJECT
   public:

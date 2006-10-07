@@ -156,7 +156,7 @@ public:
      * The backup file names will be of the form:
      *     \<name\>.\<number\>\<extension\>
      * for instance
-     *     \verbatim chat.3.log\endverbatim
+     *     \verbatim chat.3.log \endverbatim
      *
      * The new backup file will be have the backup number 1.
      * Each existing backup file will have its number incremented by 1.

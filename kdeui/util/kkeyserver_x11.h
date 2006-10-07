@@ -27,11 +27,6 @@
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 
-/**
- * A collection of functions for the conversion of key presses and
- * their modifiers from the window system specific format
- * to the generic format and vice-versa.
- */
 namespace KKeyServer
 {
 	static const int MODE_SWITCH = 0x2000;

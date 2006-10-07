@@ -20,9 +20,11 @@
 #ifndef PHONON_BYTESTREAMINTERFACE_H
 #define PHONON_BYTESTREAMINTERFACE_H
 
+#include <kdelibs_export.h>
+
 namespace Phonon
 {
-class ByteStreamInterface
+class PHONONCORE_EXPORT ByteStreamInterface
 {
 	public:
 		virtual ~ByteStreamInterface() {}

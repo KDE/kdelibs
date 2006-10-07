@@ -45,7 +45,7 @@ namespace KJS {
    *
    * @short Handle for a Completion type.
    */
-  class Completion {
+  class KJS_EXPORT Completion {
   public:
     Completion(ComplType c = Normal, JSValue *v = NULL, const Identifier &t = Identifier::null())
         : comp(c), val(v), tar(t) { }
@@ -84,4 +84,4 @@ namespace KJS {
 
 }
 
-#endif 
+#endif

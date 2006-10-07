@@ -9,7 +9,7 @@
 
 namespace KParts
 {
-    class ComponentFactory
+    class KPARTS_EXPORT ComponentFactory
     {
     public:
         /**

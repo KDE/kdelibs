@@ -1,6 +1,6 @@
 /***************************************************** vim:set ts=4 sw=4 sts=4:
   KSpeech
-  
+
   The KDE Text-to-Speech API.
   ------------------------------
   Copyright:
@@ -32,6 +32,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QByteArray>
 
+#include <kdelibs_export.h>
+
 class KSpeechPrivate;
 
 /**
@@ -43,7 +45,7 @@ class KSpeechPrivate;
 *
 * See also @ref kspeech_intro
 */
-class KSpeech : public QObject
+class KSPEECH_EXPORT KSpeech : public QObject
 {
 Q_OBJECT
 
@@ -60,7 +62,7 @@ public:
         jpMessage            = 3,    /**< Message job.*/
         jpText               = 4     /**< Text job. */
     };
-    
+
     /**
     * @enum JobState
     * Job states returned by method @ref getJobState.
@@ -76,7 +78,7 @@ public:
         jsFinished    = 6,  /**< Job is finished and is deleteable. */
         jsDeleted     = 7   /**< Job is deleted from the queue. */
     };
-    
+
     /**
     * @enum SayOptions
     * Hints about text content when sending via @ref say.
@@ -92,7 +94,7 @@ public:
         soKey       = 0x0010,   /**< The text contains a keyboard symbolic key name. */
         soSoundIcon = 0x0020    /**< The text is the name of a sound icon. */
     };
-    
+
     /**
     * @enum TalkerCapabilities1
     * Flags for synthesizer/talker capabilities.
@@ -131,7 +133,7 @@ public:
         tcCanRetrieveAudio                      = 0x10000000, /**< FALSE */
         tcCanPlayAudio                          = 0x20000000  /**< FALSE */
     };
-    
+
     /**
     * @enum TalkerCapabilities2
     * All items marked FALSE are hard-coded off at this time.
@@ -202,7 +204,7 @@ public Q_SLOTS: // METHODS
     /**
     * Sets a friendly display name for the application.
     * @param applicationName    Friendly name for the application.
-    */    
+    */
     void setApplicationName(const QString &applicationName);
 
     /**
@@ -282,7 +284,7 @@ public Q_SLOTS: // METHODS
     * @see defaultTalker
     */
     bool autoConfigureTalkersOn();
-    
+
     /** Sets whether KTTSD will automatically attempt to configure new
     * talkers to meet required talker attributes.
     * @param autoConfigureTalkersOn True to enable auto configuration.
@@ -294,7 +296,7 @@ public Q_SLOTS: // METHODS
     * @return               True if application is paused.
     */
     bool isApplicationPaused();
-    
+
     /**
     * Returns the full path name to XSLT file used to convert HTML
     * markup to speakable form.
@@ -313,7 +315,7 @@ public Q_SLOTS: // METHODS
     * Returns the full path name to XSLT file used to convert SSML
     * markup to a speakable form.
     * @return                   XSLT filename.
-    */    
+    */
     QString ssmlFilterXsltFile();
 
     /**
@@ -577,7 +579,7 @@ public Q_SLOTS: // METHODS
     *
     * Since there is only one ScreenReaderOutput, this method is meaningless
     * for ScreenReaderOutput jobs.
-    */    
+    */
     void moveJobLater(int jobNum);
 
     /**
@@ -595,7 +597,7 @@ public Q_SLOTS: // METHODS
     *
     * Since ScreenReaderOutput jobs are not split into sentences, this method
     * is meaningless for ScreenReaderOutput jobs.
-    */    
+    */
     int moveRelSentence(int jobNum, int n);
 
     /**
@@ -608,24 +610,24 @@ public Q_SLOTS: // METHODS
     * Shuts down KTTSD.  Do not call this!
     */
     void kttsdExit();
-    
+
     /**
     * Cause KTTSD to re-read its configuration.
     */
     void reinit();
-    
+
     /** Called by DBusAdaptor so that KTTSD knows the application that
     * called it.
     * @param appId              DBUS connection name that called KSpeech.
     */
     void setCallingAppId(const QString& appId);
-        
+
 Q_SIGNALS: // SIGNALS
     /**
     * This signal is emitted when KTTSD starts.
     */
     void kttsdStarted();
-    
+
     /**
     * This signal is emitted just before KTTS exits.
     */
@@ -666,19 +668,19 @@ private slots:
     void slotJobStateChanged(const QString& appId, int jobNum, KSpeech::JobState state);
     void slotMarker(const QString& appId, int jobNum, KSpeech::MarkerType markerType, const QString& markerData);
     void slotFilteringFinished();
-    
+
 private:
     /**
     * The DBUS connection name of the last application that called KTTSD.
     */
     QString callingAppId();
-    
+
     /*
     * Checks if KTTSD is ready to speak and at least one talker is configured.
     * If not, user is prompted to display the configuration dialog.
     */
     bool ready();
-    
+
     /**
     * Create and initialize the Configuration Data object.
     */

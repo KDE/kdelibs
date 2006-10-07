@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -37,12 +37,12 @@ class KMulticastSocketDevicePrivate;
  * @class KMulticastSocketImpl kmulticastsocketdevice.h kmulticastsocketdevice.h
  * @brief The low-level backend for multicasting sockets.
  *
- * This class is an interface providing methods for handling multicast 
+ * This class is an interface providing methods for handling multicast
  * operations.
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KMulticastSocketDevice: public KSocketDevice
+class KDECORE_EXPORT KMulticastSocketDevice: public KSocketDevice
 {
 public:
   /**
@@ -111,7 +111,7 @@ public:
   virtual bool setNetworkInterface(const KNetworkInterface& iface);
 
   /**
-   * Joins a multicast group. The group to be joined is identified by the 
+   * Joins a multicast group. The group to be joined is identified by the
    * @p group parameter.
    *
    * @param group	the multicast group to join
@@ -124,7 +124,7 @@ public:
    * Joins a multicast group. This function also specifies the network interface
    * to be used.
    */
-  virtual bool joinGroup(const KSocketAddress& group, 
+  virtual bool joinGroup(const KSocketAddress& group,
 			 const KNetworkInterface& iface);
 
   /**

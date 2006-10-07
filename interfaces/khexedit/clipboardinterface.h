@@ -18,6 +18,8 @@
 #ifndef KHE_CLIPBOARDINTERFACE_H
 #define KHE_CLIPBOARDINTERFACE_H
 
+#include <kdelibs_export.h>
+
 namespace KHE
 {
 
@@ -37,12 +39,12 @@ namespace KHE
  *   // Yes, use BytesEditWidget, not Clipboard, because that's the QObject, indeed hacky...
  *   connect( BytesEditWidget, SIGNAL(copyAvailable(bool)), this, SLOT(offerCopy(bool)) );
  * }
- * \endcode 
+ * \endcode
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), clipboardInterface()
  */
-class ClipboardInterface
+class KHEXEDIT_EXPORT ClipboardInterface
 {
   public:
     virtual ~ClipboardInterface() {}
@@ -69,7 +71,7 @@ class ClipboardInterface
 };
 
 
-/** tries to get the clipboard interface of t   
+/** tries to get the clipboard interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
 */

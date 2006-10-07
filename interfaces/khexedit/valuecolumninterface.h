@@ -18,6 +18,8 @@
 #ifndef KHE_VALUECOLUMNINTERFACE_H
 #define KHE_VALUECOLUMNINTERFACE_H
 
+#include <kdelibs_export.h>
+
 namespace KHE
 {
 
@@ -28,7 +30,7 @@ namespace KHE
  * @see createBytesEditWidget(), valueColumnInterface()
  */
 
-class ValueColumnInterface
+class KHEXEDIT_EXPORT ValueColumnInterface
 {
   public:
     virtual ~ValueColumnInterface() {}
@@ -97,7 +99,7 @@ class ValueColumnInterface
       */
     virtual int groupSpacingWidth() const = 0;
 
-    /** @return the gap in the middle of a binary (in pixels) 
+    /** @return the gap in the middle of a binary (in pixels)
       * @see setBinaryGapWidth()
     */
     virtual int binaryGapWidth()    const = 0;
@@ -153,7 +155,7 @@ class ValueColumnInterface
 };
 
 
-/** tries to get the valuecolumn interface of t 
+/** tries to get the valuecolumn interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
 */

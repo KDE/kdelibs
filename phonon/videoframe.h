@@ -33,7 +33,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class VideoFrame
+	class PHONONCORE_EXPORT VideoFrame
 	{
 		public:
 			QByteArray data;

@@ -27,7 +27,7 @@
 namespace khtml
 {
 
-class MouseEvent : public KParts::Event
+class KHTML_EXPORT MouseEvent : public KParts::Event
 {
 public:
   MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y,
@@ -60,7 +60,7 @@ private:
   MouseEventPrivate *d;
 };
 
-class MousePressEvent : public MouseEvent
+class KHTML_EXPORT MousePressEvent : public MouseEvent
 {
 public:
   MousePressEvent( QMouseEvent *mouseEvent, int x, int y,
@@ -76,7 +76,7 @@ private:
   static const char *s_strMousePressEvent;
 };
 
-class MouseDoubleClickEvent : public MouseEvent
+class KHTML_EXPORT MouseDoubleClickEvent : public MouseEvent
 {
 public:
   // clickCount is 3 for a triple-click event
@@ -97,7 +97,7 @@ private:
   static const char *s_strMouseDoubleClickEvent;
 };
 
-class MouseMoveEvent : public MouseEvent
+class KHTML_EXPORT MouseMoveEvent : public MouseEvent
 {
 public:
   MouseMoveEvent( QMouseEvent *mouseEvent, int x, int y,
@@ -112,7 +112,7 @@ private:
   static const char *s_strMouseMoveEvent;
 };
 
-class MouseReleaseEvent : public MouseEvent
+class KHTML_EXPORT MouseReleaseEvent : public MouseEvent
 {
 public:
   MouseReleaseEvent( QMouseEvent *mouseEvent, int x, int y,
@@ -127,7 +127,7 @@ private:
   static const char *s_strMouseReleaseEvent;
 };
 
-class DrawContentsEvent : public KParts::Event
+class KHTML_EXPORT DrawContentsEvent : public KParts::Event
 {
 public:
   DrawContentsEvent( QPainter *painter, int clipx, int clipy, int clipw, int cliph );

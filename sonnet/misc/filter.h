@@ -37,7 +37,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short struct represents word
      */
-    struct Word
+    struct KSPELL2_EXPORT Word
     {
         Word() : start( 0 ), end( true )
             {}

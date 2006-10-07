@@ -22,11 +22,6 @@
 
 #include "kshortcut.h"
 
-/**
- * A collection of functions for the conversion of key presses and
- * their modifiers from the window system specific format
- * to the generic format and vice-versa.
- */
 namespace KKeyServer
 {
     /**

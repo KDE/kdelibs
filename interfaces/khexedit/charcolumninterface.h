@@ -18,6 +18,8 @@
 #ifndef KHE_CHARCOLUMNINTERFACE_H
 #define KHE_CHARCOLUMNINTERFACE_H
 
+#include <kdelibs_export.h>
+
 namespace KHE
 {
 
@@ -27,7 +29,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
  * @see createBytesEditWidget(), charColumnInterface()
  */
-class CharColumnInterface
+class KHEXEDIT_EXPORT CharColumnInterface
 {
   public:
     virtual ~CharColumnInterface(){}
