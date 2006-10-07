@@ -140,7 +140,7 @@ void RenderLayer::updateLayerPosition()
             y += curr->yPos();
             curr = curr->parent();
         }
-	if (cur)
+	if (curr)
 	  y += curr->borderTopExtra();
     }
 
