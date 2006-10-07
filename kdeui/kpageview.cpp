@@ -336,6 +336,9 @@ void KPageView::pageSelected( const QModelIndex &index, const QModelIndex &previ
   }
 
   QString header = d->model->data( index, KPageModel::HeaderRole ).toString();
+  if (header.isNull()) {
+    header = d->model->data( index, Qt::DisplayRole ).toString();
+  }
   d->headerLabel->setText( header );
   const QIcon icon = d->model->data( index, Qt::DecorationRole ).value<QIcon>();
   d->headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
