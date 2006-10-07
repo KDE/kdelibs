@@ -286,7 +286,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (offset%2)
         bulletWidth++;
     if (!listPositionInside()) {
-        if (listItem->style()->direction() == LTR)
+        if (listItem && listItem->style()->direction() == LTR)
             xoff = -cMarkerPadding - offset;
         else
             xoff = cMarkerPadding + (haveImage ? 0 : (offset - bulletWidth));
