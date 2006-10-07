@@ -330,12 +330,12 @@ static CSSValueImpl *getPositionOffsetValue(RenderObject *renderer, int property
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl(0), m_node(node)
 {
-    kdDebug() << "Render Style Declaration created" << endl;
+    //kdDebug() << "Render Style Declaration created" << endl;
 }
 
 RenderStyleDeclarationImpl::~RenderStyleDeclarationImpl()
 {
-    kdDebug() << "Render Style Declaration destroyed" << endl;
+    //kdDebug() << "Render Style Declaration destroyed" << endl;
 }
 
 DOM::DOMString RenderStyleDeclarationImpl::cssText() const

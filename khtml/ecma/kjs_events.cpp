@@ -602,7 +602,7 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     if ( rend ) {
       int xPos, yPos;
       if ( rend->absolutePosition( xPos, yPos ) ) {
-        kdDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
+        //kdDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
         x -= xPos;
         y -= yPos;
       }
