@@ -281,8 +281,8 @@ public:
             {28,1}, {20,1}, {20,2}, {20,3}, {20,4}, {20,6}, {20,8}, {0,0}
         };
         if (!scrollTimerId ||
-            (scrollDirection != direction &&
-             (scrollDirection != oppositedir || scrollSuspended))) {
+            (static_cast<int>(scrollDirection) != direction &&
+             (static_cast<int>(scrollDirection) != oppositedir || scrollSuspended))) {
             scrollTiming = 6;
             scrollBy = timings[scrollTiming].pixels;
             scrollDirection = direction;
