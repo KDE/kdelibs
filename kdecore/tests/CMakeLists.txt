@@ -594,6 +594,18 @@ kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRC
 
 target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
+########### next target ###############
+
+set(ktemporaryfiletest_SRCS ktemporaryfiletest.cpp )
+
+kde4_automoc(${ktemporaryfiletest_SRCS})
+
+kde4_add_executable(ktemporaryfiletest NOGUI RUN_UNINSTALLED ${ktemporaryfiletest_SRCS})
+
+target_link_libraries(ktemporaryfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-ktemporaryfiletest ${EXECUTABLE_OUTPUT_PATH}/ktemporaryfiletest)
+
 # hack - we don't really want to install this module [it would break later runs when the module is modified locally]
 # so we do the .la by hand
 #install(TARGETS klibloadertestmodule  DESTINATION ${PLUGIN_INSTALL_DIR} )
