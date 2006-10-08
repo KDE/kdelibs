@@ -28,7 +28,7 @@
 #include <qfile.h>
 #include <ksslall.h>
 #include <kdebug.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kcodecs.h>
 
 #include <assert.h>
@@ -61,15 +61,15 @@ KSSLPKCS7::~KSSLPKCS7() {
 
 KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
 #ifdef KSSL_HAVE_SSL
-KTempFile ktf;
+    KTemporaryFile ktf;
+    ktf.open();
 
     if (base64.isEmpty()) return NULL;
     QByteArray qba, qbb = Q3CString(base64.toLatin1()).copy();
     KCodecs::base64Decode(qbb, qba);
-    ktf.file()->write(qba);
-    ktf.close();
-    KSSLPKCS7* rc = loadCertFile(ktf.name());
-    ktf.unlink();
+    ktf.write(qba);
+    ktf.flush();
+    KSSLPKCS7* rc = loadCertFile(ktf.fileName());
     return rc;
 #endif
 return NULL;

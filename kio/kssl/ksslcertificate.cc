@@ -38,7 +38,7 @@
 #include <kcodecs.h>
 #include <klocale.h>
 #include <qdatetime.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 
 #include <sys/types.h>
 
@@ -1003,11 +1003,13 @@ return qba;
 
 // what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
-QByteArray qba;
+	QByteArray qba;
 #ifdef KSSL_HAVE_SSL
-ASN1_HEADER ah;
-ASN1_OCTET_STRING os;
-KTempFile ktf;
+	ASN1_HEADER ah;
+	ASN1_OCTET_STRING os;
+	KTemporaryFile ktf;
+	ktf.open();
+	FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
 
 	os.data = (unsigned char *)NETSCAPE_CERT_HDR;
 	os.length = strlen(NETSCAPE_CERT_HDR);
@@ -1015,19 +1017,16 @@ KTempFile ktf;
 	ah.data = (char *)getCert();
 	ah.meth = d->kossl->X509_asn1_meth();
 
-	d->kossl->ASN1_i2d_fp(ktf.fstream(),(unsigned char *)&ah);
+	d->kossl->ASN1_i2d_fp(ktf_fs,(unsigned char *)&ah);
+	fclose(ktf_fs);
 
-	ktf.close();
-
-	QFile qf(ktf.name());
+	QFile qf(ktf.fileName());
 	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()];
 	qf.read(buf, qf.size());
 	qba = QByteArray(buf, qf.size());
 	qf.close();
 	delete[] buf;
-
-	ktf.unlink();
 
 #endif
 return qba;
@@ -1038,12 +1037,14 @@ return qba;
 QString KSSLCertificate::toText() {
 QString text;
 #ifdef KSSL_HAVE_SSL
-KTempFile ktf;
+	KTemporaryFile ktf;
+	ktf.open();
+	FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
 
-	d->kossl->X509_print(ktf.fstream(), getCert());
-	ktf.close();
+	d->kossl->X509_print(ktf_fs, getCert());
+	fclose(ktf_fs);
 
-	QFile qf(ktf.name());
+	QFile qf(ktf.fileName());
 	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()+1];
 	qf.read(buf, qf.size());
@@ -1051,7 +1052,6 @@ KTempFile ktf;
 	text = buf;
 	delete[] buf;
 	qf.close();
-	ktf.unlink();
 #endif
 return text;
 }

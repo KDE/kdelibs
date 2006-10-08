@@ -25,7 +25,7 @@
 #include <qfile.h>
 #include <kdebug.h>
 #include <kmimetype.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 
 #include <kfilterdev.h>
 #include <kfilterbase.h>
@@ -43,7 +43,7 @@ public:
     KTarPrivate() : tarEnd( 0 ), tmpFile( 0 ) {}
     QStringList dirList;
     qint64 tarEnd;
-    KTempFile* tmpFile;
+    KTemporaryFile* tmpFile;
     QString mimetype;
     QByteArray origFileName;
 
@@ -128,11 +128,13 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         // Which is in fact nearly as slow as a complete decompression for each file.
 
         Q_ASSERT(!d->tmpFile);
-        d->tmpFile = new KTempFile( KStandardDirs::locateLocal("tmp", "ktar-"),".tar");
-        kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->name() << endl;
-        d->tmpFile->setAutoDelete(true);
+        d->tmpFile = new KTemporaryFile();
+        d->tmpFile->setPrefix("ktar-");
+        d->tmpFile->setSuffix(".tar");
+        d->tmpFile->open();
+        kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->fileName() << endl;
 
-        setDevice( d->tmpFile->file() );
+        setDevice( d->tmpFile );
         return true;
     }
 }
@@ -272,13 +274,8 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
 
     if( filterDev ) {
-        QFile* file = tmpFile->file();
-        file->close();
-        if ( ! file->open( QIODevice::WriteOnly ) )
-        {
-            delete filterDev;
-            return false;
-        }
+        QFile* file = tmpFile;
+        file->seek(0);
         QByteArray buffer;
         buffer.resize(8*1024);
         if ( ! filterDev->open( QIODevice::ReadOnly ) )
@@ -301,9 +298,8 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
         filterDev->close();
         delete filterDev;
 
-        file->close();
-        if ( ! file->open( QIODevice::ReadOnly ) )
-            return false;
+        file->flush();
+        file->seek(0);
     }
     else
         kDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
@@ -486,9 +482,9 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
 
     QIODevice *dev = KFilterDev::deviceForFile( fileName, mimetype, forced );
     if( dev ) {
-        QFile* file = tmpFile->file();
+        QFile* file = tmpFile;
         file->close();
-        if ( ! file->open(QIODevice::ReadOnly) || ! dev->open(QIODevice::WriteOnly) )
+        if ( !dev->open(QIODevice::WriteOnly) )
         {
             file->close();
             delete dev;

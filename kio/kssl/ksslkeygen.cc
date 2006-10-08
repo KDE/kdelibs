@@ -29,7 +29,7 @@
 #include <kmessagebox.h>
 #include <kopenssl.h>
 #include <kstandarddirs.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <kwallet.h>
 
 #include <qlineedit.h>
@@ -179,25 +179,34 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
 
 	QString path = KGlobal::dirs()->saveLocation("kssl");
-	KTempFile csrFile(path + "csr_", ".der");
+	KTemporaryFile csrFile;
+	csrFile.setAutoRemove(false);
+	csrFile.setPrefix(path + "csr_");
+	csrFile.setSuffix(".der");
 
-	if (!csrFile.fstream()) {
+	if (!csrFile.open()) {
 		kossl->X509_REQ_free(req);
 		kossl->EVP_PKEY_free(pkey);
 		return -5;
 	}
 
-	KTempFile p8File(path + "pkey_", ".p8");
+	KTemporaryFile p8File;
+	csrFile.setAutoRemove(false);
+	csrFile.setPrefix(path + "pkey_");
+	csrFile.setSuffix(".p8");
 
-	if (!p8File.fstream()) {
+	if (!p8File.open()) {
 		kossl->X509_REQ_free(req);
 		kossl->EVP_PKEY_free(pkey);
 		return -5;
 	}
+	
+	FILE *csr_fs = fopen(csrFile.fileName().toAscii(), "r+");
+	FILE *p8_fs = fopen(p8File.fileName().toAscii(), "r+");
 
-	kossl->i2d_X509_REQ_fp(csrFile.fstream(), req);
+	kossl->i2d_X509_REQ_fp(csr_fs, req);
 
-	kossl->i2d_PKCS8PrivateKey_fp(p8File.fstream(), pkey,
+	kossl->i2d_PKCS8PrivateKey_fp(p8_fs, pkey,
 			kossl->EVP_bf_cbc(), pass.toLocal8Bit().data(),
 			pass.length(), 0L, 0L);
 
@@ -205,6 +214,9 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 
 	kossl->X509_REQ_free(req);
 	kossl->EVP_PKEY_free(pkey);
+
+	fclose(csr_fs);
+	fclose(p8_fs);
 
 	return 0;
 #else
