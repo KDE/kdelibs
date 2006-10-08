@@ -15,3 +15,5 @@
  * And nothing's changed it (Ooh)
  * The code is still hot, hot, hot, hot, hot, hot, hot, hot
  */
+
+// DOXYGEN_EXCLUDE = backends tests
