@@ -68,7 +68,7 @@ extern "C" {
 #include "kssl/ksslcsessioncache.h"
 
 #include <kdirnotify.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>

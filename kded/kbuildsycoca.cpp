@@ -34,7 +34,7 @@
 #include <kbuildservicegroupfactory.h>
 #include <kbuildprotocolinfofactory.h>
 #include <kctimefactory.h>
-#include <ktempfile.h>
+#include <ktemporaryfile.h>
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qtimer.h>
