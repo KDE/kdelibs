@@ -125,6 +125,7 @@ var nodeList = root.elementsByTagName( "compound" );
 //   Enums       ... check
 //   Inheritance ... not done
 var enum_array = {};
+var object_types = {};
 for( x = 0; x < nodeList.length(); ++x )
 {
     var compoundElement = nodeList.item(x).toElement();

@@ -43,6 +43,19 @@ function extract_parameter( compound, param, paramIdx )
             '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
+    else if ( isClassPointer(coreParamType) )
+    {
+        extracted +=
+            '        ' + coreParamType + ' ' + paramVar + ' =';
+
+        baseParamType = strip(coreParamType);
+        if ( isObject(baseParamType, compound.objectTypes) )
+            extracted += ' KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+        else
+            extracted += ' KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+
+        return extracted;
+    }
 /*
     else if( coreParamType == "bool *") // special case for some situations in QString/QByteArray 
     {
@@ -197,6 +210,9 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
             else 
             {
+                if ( isClassPointer(coreParamType) )
+                    coreParamType = strip(coreParamType);
+
                 if (coreParamType != compound.name)
                     compound.externalBindings[coreParamType] = true;
                 params += 'object'+argIdx+' && object'+argIdx+'->inherits(&' + coreParamType + 'Binding::info)';
