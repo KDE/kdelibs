@@ -27,7 +27,7 @@ namespace ThreadWeaver {
 
     class WeaverImpl;
 
-    class THREADWEAVER_EXPORT StateImplementation : public State
+    class StateImplementation : public State
     {
     public:
         StateImplementation( WeaverInterface* weaver )

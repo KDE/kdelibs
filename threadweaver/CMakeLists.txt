@@ -35,18 +35,10 @@ install(TARGETS threadweaver DESTINATION ${LIB_INSTALL_DIR})
 install(FILES
     WeaverInterface.h
     ThreadWeaver.h
-    WeaverImpl.h
     DebuggingAids.h
     Thread.h
     Job.h
     State.h
-    StateImplementation.h
-    InConstructionState.h
-    WorkingHardState.h
-    SuspendingState.h
-    SuspendedState.h
-    ShuttingDownState.h
-    DestructedState.h
     WeaverObserver.h
     JobCollection.h
     JobSequence.h

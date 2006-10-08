@@ -27,7 +27,7 @@ namespace ThreadWeaver {
 
     /* WorkingHardState handles the state dependent calls in the state where
        jobs are executed.  */
-    class THREADWEAVER_EXPORT WorkingHardState : public StateImplementation
+    class WorkingHardState : public StateImplementation
     {
     public:
 	explicit WorkingHardState( WeaverImpl *weaver)

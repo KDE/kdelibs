@@ -28,7 +28,7 @@ namespace ThreadWeaver {
     /** DestructedState is only active after the thread have been destroyed by
         the destructor, but before superclass destructors have finished.
     */
-    class THREADWEAVER_EXPORT DestructedState : public StateImplementation
+    class DestructedState : public StateImplementation
     {
     public:
 	explicit DestructedState( WeaverInterface *weaver)

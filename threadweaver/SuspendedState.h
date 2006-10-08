@@ -27,7 +27,7 @@ namespace ThreadWeaver {
 
     /** In SuspendedState, jobs are queued, but will not be executed. All
         thread remains blocked.  */
-    class THREADWEAVER_EXPORT SuspendedState : public StateImplementation
+    class SuspendedState : public StateImplementation
     {
     public:
 	explicit SuspendedState( WeaverImpl *weaver)

@@ -28,7 +28,7 @@ namespace ThreadWeaver {
     /** ShuttingDownState is enabled when the Weaver destructor is entered. It
         prevents threads from still accessing queue management methods.
     */
-    class THREADWEAVER_EXPORT ShuttingDownState : public StateImplementation
+    class ShuttingDownState : public StateImplementation
     {
     public:
 	explicit ShuttingDownState( WeaverInterface *weaver)
