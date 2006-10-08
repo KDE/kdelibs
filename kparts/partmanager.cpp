@@ -183,8 +183,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
   QWidget *w = static_cast<QWidget *>( obj );
 
-  if ( ( ( w->windowFlags() && Qt::Dialog ) && w->isModal() ) ||
-       ( w->windowFlags() && Qt::Popup ) || ( w->windowFlags() && Qt::Tool ) )
+  if ( ( ( w->windowFlags().testFlag(Qt::Dialog) ) && w->isModal() ) ||
+       ( w->windowFlags().testFlag(Qt::Popup) ) || ( w->windowFlags().testFlag(Qt::Tool) ) )
     return false;
 
   QMouseEvent* mev = 0L;
