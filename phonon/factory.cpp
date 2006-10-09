@@ -321,8 +321,11 @@ QString Factory::backendWebsite() const
 
 QObject* Factory::registerQObject( QObject* o )
 {
-	connect( o, SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ), Qt::DirectConnection );
-	d->objects.append( o );
+	if( o )
+	{
+		connect( o, SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ), Qt::DirectConnection );
+		d->objects.append( o );
+	}
 	return o;
 }
 
