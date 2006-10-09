@@ -385,8 +385,6 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 
         if ( !mHelpMenu )
             return 0;
-        connect( mHelpMenu, SIGNAL( showAboutApplication() ),
-                 this, SLOT( showAboutApplication() ) );
     }
 
     return mHelpMenu->menu();
