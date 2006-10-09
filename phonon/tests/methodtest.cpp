@@ -99,6 +99,8 @@ void MethodTest::checkVolumeFaderEffectMethods() { checkMethods( Factory::self()
 void MethodTest::checkByteStreamInterfaces()
 {
 	QObject* backendObject = Factory::self()->createByteStream();
+	if( !backendObject )
+		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::ByteStreamInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
 }
@@ -106,6 +108,8 @@ void MethodTest::checkByteStreamInterfaces()
 void MethodTest::checkMediaObjectInterfaces()
 {
 	QObject* backendObject = Factory::self()->createMediaObject();
+	if( !backendObject )
+		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaObjectInterface*>( backendObject ) != 0 );
 }
@@ -113,6 +117,8 @@ void MethodTest::checkMediaObjectInterfaces()
 void MethodTest::checkAvCapturetInterfaces()
 {
 	QObject* backendObject = Factory::self()->createAvCapture();
+	if( !backendObject )
+		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
 }
 
