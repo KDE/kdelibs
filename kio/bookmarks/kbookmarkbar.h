@@ -29,7 +29,7 @@
 
 class KToolBar;
 class KBookmarkMenu;
-class KBookmarkOwner;
+class KonqBookmarkOwner;
 class KActionCollection;
 class KAction;
 class QMenu;
@@ -40,6 +40,7 @@ class KBookmarkBarPrivate;
  * identical to using KBookmarkMenu so follow the directions
  * there.
  */
+//FIXME rename KonqBookmarkBar
 class KIO_EXPORT KBookmarkBar : public QObject
 {
     Q_OBJECT
@@ -48,7 +49,7 @@ public:
      * Fills a bookmark toolbar
      *
      * @param manager the bookmark manager
-     * @param owner implementation of the KBookmarkOwner interface (callbacks)
+     * @param owner implementation of the KonqBookmarkOwner interface (callbacks)
      * @param toolBar toolbar to fill
      *
      * The KActionCollection pointer argument is now obsolete.
@@ -56,28 +57,18 @@ public:
      * @param parent the parent widget for the bookmark toolbar
      */
     KBookmarkBar( KBookmarkManager* manager,
-                  KBookmarkOwner *owner, KToolBar *toolBar,
-                  KActionCollection *,
+                  KonqBookmarkOwner *owner, KToolBar *toolBar,
                   QObject *parent = 0);
 
     virtual ~KBookmarkBar();
 
-    bool isReadOnly() const;
-
-    void setReadOnly(bool);
-
     QString parentAddress();
-
-Q_SIGNALS:
-    void aboutToShowContextMenu( const KBookmark &, QMenu * );
-    void openBookmark( KBookmark bk, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 public Q_SLOTS:
     void clear();
     void contextMenu( const QPoint & );
 
     void slotBookmarksChanged( const QString & );
-    void slotBookmarkSelected();
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );
@@ -88,18 +79,13 @@ private:
     void removeTempSep();
     bool handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAction *>& actions, QString text);
 
-    KBookmarkOwner *m_pOwner;
+    KonqBookmarkOwner *m_pOwner;
     QPointer<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
     QList<KBookmarkMenu *> m_lstSubMenus;
     QAction* m_toolBarSeparator;
 
-    /**
-     * If you want to extend KBookmarkBar without breaking binary compatibility, 
-     * put additional members into this class. When you can break compatibility, move 
-     * members into KBookmarBar and empty this private class.
-     */
     KBookmarkBarPrivate * const d;
 };
 

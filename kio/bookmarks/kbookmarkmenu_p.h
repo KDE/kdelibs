@@ -31,6 +31,8 @@
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
+#include <krun.h>
+#include <kmenu.h>
 #include <QtGui/QBoxLayout>
 #include <QtCore/QModelIndex>
 #include <QtGui/QTreeWidget>
@@ -52,57 +54,6 @@ class KBookmarkOwner;
 class KBookmarkMenu;
 class KBookmarkBar;
 class KMenu;
-
-
-class KBookmarkActionMenu : public KActionMenu {
-  Q_OBJECT
-  Q_PROPERTY( QString address READ address WRITE setAddress )
-public:
-  const QString address() const { return m_address; }
-  void setAddress(const QString &address) { m_address = address; }
-private:
-  QString m_url;
-  QString m_address;
-  bool m_readOnly;
-public:
-  KBookmarkActionMenu(
-    const KIcon& icon, const QString &text,
-    KActionCollection* parent, const char* name)
-  : KActionMenu(icon, text, parent, name) {
-     ;
-  }
-};
-
-class KBookmarkAction : public KAction {
-  Q_OBJECT
-  Q_PROPERTY( QString url READ url WRITE setUrl )
-  Q_PROPERTY( QString address READ address WRITE setAddress )
-public:
-  const QString url() const { return m_url; }
-  void setUrl(const QString &url) { m_url = url; }
-  const QString address() const { return m_address; }
-  void setAddress(const QString &address) { m_address = address; }
-private:
-  QString m_url;
-  QString m_address;
-public:
-  KBookmarkAction(
-    const QString& text, const QString& sIconName, const KShortcut& cut,
-    KActionCollection* parent, const char* name)
-  : KAction(text, parent, name) {
-      setIcon( KIcon( sIconName ) );
-      setShortcut( cut );
-  }
-
-  KBookmarkAction(KBookmark bm, KActionCollection* parent)
-  : KAction( bm.text().replace('&', "&&"), parent, 0)
-  {
-      setIcon(KIcon(bm.icon()));
-      setProperty( "url", bm.url().url() );
-      setProperty( "address", bm.address() );
-      setToolTip( bm.url().pathOrUrl() );
-  }	
-};
 
 class KBookmarkEditFields {
 public:
@@ -166,36 +117,59 @@ public:
   static KBookmarkSettings *self();
 };
 
-/* Right mouse button */
-class RMB : public QObject
+/**
+ * A class connected to KNSBookmarkImporter, to fill KActionMenus.
+ */
+class KBookmarkMenuNSImporter : public QObject
 {
   Q_OBJECT
 public:
-  RMB(QString parentAddress, QString highlightedAddress,
-      KBookmarkManager *pManager, KBookmarkOwner *pOwner, QWidget *parentMenu = 0);
+  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
+     m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
 
-  ~RMB();
+  void openNSBookmarks();
+  void openBookmarks( const QString &location, const QString &type );
+  void connectToImporter( const QObject &importer );
 
-  KBookmark atAddress(const QString & address);
-  void fillContextMenu( const QString & address);
-  void fillContextMenu2( const QString & address);
-  QMenu * contextMenu();
-  void popup(const QPoint & pos);
+protected Q_SLOTS:
+  void newBookmark( const QString & text, const QString & url, const QString & );
+  void newFolder( const QString & text, bool, const QString & );
+  void newSeparator();
+  void endFolder();
+
+protected:
+  QStack<KImportedBookmarkMenu*> mstack;
+  KImportedBookmarkMenu * m_menu;
+  KActionCollection * m_actionCollection;
+  KBookmarkManager* m_pManager;
+};
+
+class KImportedBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
+{
+public:
+  KImportedBookmarkActionMenu(const KIcon &icon, const QString &text, KActionCollection *parent, const QString &name)
+    : KActionMenu(icon, text, parent, name),
+      KBookmarkActionInterface(KBookmark())
+  {
+  }
+  ~KImportedBookmarkActionMenu()
+  {}
+  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+  {}
+};
+
+class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
+{
+  Q_OBJECT
+public:
+  KImportedBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner );
+  ~KImportedBookmarkAction();
+  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 
 public Q_SLOTS:
-  void slotEditAt();
-  void slotProperties();
-  void slotInsert();
-  void slotRemove();
-  void slotCopyLocation();
-
+  void slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km);
 private:
-  QString m_parentAddress;
-  QString m_highlightedAddress;
-  KBookmarkManager *m_pManager;
-  KBookmarkOwner *m_pOwner;
-  QWidget *m_parentMenu;
-  QMenu * m_contextMenu;
+  KBookmarkOwner * m_pOwner;
 };
 
 #endif

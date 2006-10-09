@@ -162,8 +162,6 @@ void KBookmarkManager::init( const QString& dbusPath )
         QDBusConnection::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
                                     "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
     }
-
-    m_showNSBookmarks = true;
 }
 
 KBookmarkManager::~KBookmarkManager()
@@ -211,7 +209,7 @@ void KBookmarkManager::parse() const
         {
             kWarning() << "Old style bookmarks found. Calling convertToXBEL." << endl;
             docElem.setTagName("xbel");
-            if ( docElem.hasAttribute( "HIDE_NSBK" ) && m_showNSBookmarks ) // non standard either, but we need it
+            if ( docElem.hasAttribute( "HIDE_NSBK" ) ) // non standard either, but we need it
             {
                 docElem.setAttribute( "hide_nsbk", docElem.attribute( "HIDE_NSBK" ) == "1" ? "yes" : "no" );
                 docElem.removeAttribute( "HIDE_NSBK" );
@@ -546,7 +544,7 @@ void KBookmarkManager::notifyCompleteChange( QString caller ) // DBUS call
 {
     if (!m_update) return;
 
-    //kDebug(7043) << "KBookmarkManager::notifyCompleteChange" << endl;
+    kDebug(7043) << "KBookmarkManager::notifyCompleteChange" << endl;
     // The bk editor tells us we should reload everything
     // Reparse
     parse();
@@ -564,6 +562,7 @@ void KBookmarkManager::notifyConfigChanged() // DBUS call
 
 void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &msg ) // DBUS call
 {
+    kDebug() << "KBookmarkManager::notifyChanged ( "<<groupAddress<<")"<<endl;
     if (!m_update) return;
 
     // Reparse (the whole file, no other choice)
@@ -575,22 +574,6 @@ void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &
     //KBookmarkGroup group = findByAddress( groupAddress ).toGroup();
     //Q_ASSERT(!group.isNull());
     emit changed( groupAddress, QString() );
-}
-
-bool KBookmarkManager::showNSBookmarks() const
-{
-    return KBookmarkMenu::showDynamicBookmarks("netscape").show;
-}
-
-void KBookmarkManager::setShowNSBookmarks( bool show )
-{
-    m_showNSBookmarks = show;
-    if (this != userBookmarksManager())
-       return;
-    KBookmarkMenu::DynMenuInfo info
-       = KBookmarkMenu::showDynamicBookmarks("netscape");
-    info.show = show;
-    KBookmarkMenu::setDynamicBookmarks("netscape", info);
 }
 
 void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
@@ -695,6 +678,11 @@ KBookmarkSettings *KBookmarkSettings::self()
       readSettings();
    }
    return s_self;
+}
+
+void KBookmarkOwner::openBookmark(KBookmark bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km)
+{
+
 }
 
 #include "kbookmarkmanager.moc"

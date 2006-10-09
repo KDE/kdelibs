@@ -1216,15 +1216,8 @@ KBookmark::List::populateMimeData() in the drag/copy side,
 and the static methods KBookmark::List::canDecode() and KBookmark::List::fromMimeData()
 in the drop/paste side.</li>
 <li>KBookmarkMenu constructor is much simpler. It always creates a toplevel menu, which makes the parameter isRoot and parentAddress superfluous. KBookmarkOwner now governs wheter to show a "Add Bookmark" Menu Entry, thus the constructor parameter add is gone.</li>
-<li>If a bookmark is selected KBookmarkMenu and KBookmarkBar only emit a signal and no longer call KBookmarkOwner::openURL(). KBookmarkOwner::openURL() was removed.</li>
-<li>The KBookmarkMenu/KBookmarkBar::openBookmark's signal was changed from:
-<code>
-void openBookmark( const QString&amp; url, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-</code>
-to
-<code>
-void openBookmark( KBookmark bk, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-</code></li>
+<li>KBookmarkMenu and KBookmarkBar no longer emits openBookmark(), override KBookmarkOwner::openBookmark() instead. </li>
+<li>KBookmarkOwner::openBookmarkURL() was replaced by  KBookmarkOwner::openBookmark()</li>
 <li>KExtendBookmarkOwner functionality was integrated into KBookmarkOwner. (And the API is more regular now.)</li>
 <li>KBookmarkMenu::slotBookmarksChanged() and KBookmarkMenu::fillBookmarkMenu() are no longer public. Both had comments, that they shouldn't be used anyway.</li>
 </ul>

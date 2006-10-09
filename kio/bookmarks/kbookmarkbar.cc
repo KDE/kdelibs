@@ -22,23 +22,22 @@
 #include <qregexp.h>
 #include <qfile.h>
 #include <qevent.h>
+#include <qapplication.h>
 
-#include <kbookmarkbar.h>
-
-#include <kbookmarkmenu.h>
-#include <kdebug.h>
 
 #include <ktoolbar.h>
-
 #include <kactionmenu.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kmenu.h>
+#include <kdebug.h>
 
+#include "konqbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkdombuilder.h"
 
-#include <qapplication.h>
+
+#include "kbookmarkbar.h"
 
 
 class KBookmarkBarPrivate
@@ -47,16 +46,12 @@ public:
     QList<KAction *> m_actions;
     KBookmarkManager* m_filteredMgr;
     int m_sepIndex;
-    bool m_readOnly;
-    RMB* m_rmb;
     QList<int> widgetPositions; //right edge, bottom edge
     QString tempLabel;
 
     KBookmarkBarPrivate() :
         m_filteredMgr( 0 ),
-        m_sepIndex( -1 ),
-        m_readOnly( false ),
-        m_rmb( 0 )
+        m_sepIndex( -1 )
     {}
 };
 
@@ -76,11 +71,10 @@ private:
 };
 
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
-                            KBookmarkOwner *_owner, KToolBar *_toolBar,
-                            KActionCollection *coll,
+                            KonqBookmarkOwner *_owner, KToolBar *_toolBar,
                             QObject *parent )
     : QObject( parent ), m_pOwner(_owner), m_toolBar(_toolBar),
-      m_actionCollection( coll ), m_pManager( mgr ), d( new KBookmarkBarPrivate )
+      m_pManager( mgr ), d( new KBookmarkBarPrivate )
 {
     m_toolBar->setAcceptDrops( true );
     m_toolBar->installEventFilter( this ); // for drops
@@ -142,7 +136,6 @@ KBookmarkBar::~KBookmarkBar()
     //clear();
     qDeleteAll( d->m_actions );
     qDeleteAll( m_lstSubMenus );
-    delete d->m_rmb;
     delete d;
 }
 
@@ -187,65 +180,26 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
     for (KBookmark bm = parent.first(); !bm.isNull(); bm = parent.next(bm))
     {
-        QString text = bm.text();
-        text.replace( '&', "&&" );
         if (!bm.isGroup())
         {
             if ( bm.isSeparator() )
                 m_toolBar->addSeparator();
             else
             {
-                KAction *action = new KBookmarkAction( bm, m_actionCollection );
-                connect(action, SIGNAL( triggered(bool) ),
-                        this, SLOT( slotBookmarkSelected() ));
+                KAction *action = new KonqBookmarkAction( bm, 0, m_pOwner );
                 m_toolBar->addAction(action);
                 d->m_actions.append( action );
             }
         }
         else
         {
-            KActionMenu *action = new KBookmarkActionMenu( KIcon(bm.icon()),
-                                                           text,
-                                                           m_actionCollection,
-                                                           "bookmarkbar-actionmenu");
-            action->setProperty( "address", bm.address() );
-            action->setProperty( "readOnly", d->m_readOnly );
+            KonqBookmarkActionMenu *action = new KonqBookmarkActionMenu(bm, 0, "bookmarkbar-actionmenu");
             action->setDelayed( false );
-
-            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->menu(),
-                                                    m_actionCollection, bm.address());
-            connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),
-                    this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ));
-            connect(menu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                    this, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers) ));
-            menu->fillBookmarkMenu();
             m_toolBar->addAction(action);
-            m_lstSubMenus.append( menu );
-
             d->m_actions.append( action );
+            KBookmarkMenu *menu = new KonqBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action, bm.address());
+            m_lstSubMenus.append( menu );
         }
-    }
-}
-
-void KBookmarkBar::setReadOnly(bool readOnly)
-{
-    d->m_readOnly = readOnly;
-}
-
-bool KBookmarkBar::isReadOnly() const
-{
-    return d->m_readOnly;
-}
-
-void KBookmarkBar::slotBookmarkSelected()
-{
-    if (!m_pOwner) return; // this view doesn't handle bookmarks...
-
-    if (const KAction* action = qobject_cast<const KAction*>(sender()))
-    {
-        const QString & address = action->property("address").toString();
-        KBookmark bm = m_pManager->findByAddress(address); 
-        emit openBookmark( bm, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
     }
 }
 
@@ -340,24 +294,18 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
 
 void KBookmarkBar::contextMenu(const QPoint & pos)
 {
-    QAction * action = m_toolBar->actionAt(pos);
+    KBookmarkActionInterface * action = dynamic_cast<KBookmarkActionInterface *>( m_toolBar->actionAt(pos) );
     if(!action)
         return;
-    QString addr = action->property("address").toString();
-    delete d->m_rmb;
-    d->m_rmb = new RMB(parentAddress(), addr, m_pManager, m_pOwner);
-    d->m_rmb->fillContextMenu( addr);
-    emit aboutToShowContextMenu( m_pManager->findByAddress( addr ), d->m_rmb->contextMenu() );
-    d->m_rmb->fillContextMenu2( addr );
-    d->m_rmb->popup( m_toolBar->mapToGlobal(pos) );
+    action->contextMenu(m_toolBar->mapToGlobal(pos), m_pManager, m_pOwner);
 }
 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
-    if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,
-                                                     // this shouldn't really be the case
+    if (d->m_filteredMgr) // note, we assume m_pManager in various places,
+                          // this shouldn't really be the case
         return false; // todo: make this limit the actions
 
     if ( e->type() == QEvent::DragLeave )

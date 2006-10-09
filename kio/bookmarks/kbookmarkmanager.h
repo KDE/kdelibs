@@ -173,21 +173,6 @@ public:
     void emitConfigChanged();
 
     /**
-     * @return true if the NS bookmarks should be dynamically shown
-     *         in the toplevel kactionmenu
-     * @deprecated
-     */
-    bool showNSBookmarks() const;
-    //TODO KonqBookmarkManager?
-
-    /**
-     * Shows an extra menu for NS bookmarks. Set this to false, if you don't
-     * want this.
-     */
-    void setShowNSBookmarks( bool show );
-    //TODO KonqBookmarkManager?
-
-    /**
      * Set options with which slotEditBookmarks called keditbookmarks
      * this can be used to change the appearance of the keditbookmarks
      * in order to provide a slightly differing outer shell depending
@@ -291,7 +276,6 @@ private:
     mutable bool m_docIsLoaded;
     bool m_update;
     static KBookmarkManagerList* s_pSelf;
-    bool m_showNSBookmarks;
 
     QString m_editorCaption;
     bool m_browserEditor;
@@ -366,6 +350,8 @@ public:
    * Returns true if the bookmark menu/toolbar should show an "Edit Bookmarks" Entry
    */
   virtual bool editBookmarkEntry() const { return true; }
+
+  virtual void openBookmark(KBookmark bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
 
 private:
   class KBookmarkOwnerPrivate;

@@ -2,6 +2,7 @@
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 Daniel Teske <teske@squorn.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,6 +30,10 @@
 
 #include <klocale.h>
 #include <kaction.h>
+#include <kactionmenu.h>
+#include <kaction.h>
+#include <kicon.h>
+#include <krun.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
@@ -45,7 +50,7 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KMenu;
-class RMB;
+class KBookmarkActionInterface;
 
 class KBookmarkMenuPrivate; // Not implemented
 
@@ -102,56 +107,11 @@ public:
    **/
   void ensureUpToDate();
 
-  /**
-   * Structure used for storing information about
-   * the dynamic menu setting
-   */
-  // TODO - transform into class, move to KonqBookmarkMenu
-  struct DynMenuInfo {
-     bool show;
-     QString location;
-     QString type;
-     QString name;
-     class DynMenuInfoPrivate *d;
-  };
-
-  /**
-   * @return dynmenu info block for the given dynmenu name
-   */
-  static DynMenuInfo showDynamicBookmarks( const QString &id );
-  //TODO move to KonqBookmarkMenu
-
-  /**
-   * Shows an extra menu for the given bookmarks file and type.
-   * Upgrades from option inside XBEL to option in rc file
-   * on first call of this function.
-   * @param id the unique identification for the dynamic menu
-   * @param info a DynMenuInfo struct containing the to be added/modified data
-   */
-  static void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
-  //TODO move to KonqBookmarkMenu
-
-  /**
-   * @return list of dynamic menu ids
-   */
-  static QStringList dynamicBookmarksList();
-  //TODO move to KonqBookmarkMenu
-
-Q_SIGNALS:
-  void aboutToShowContextMenu( const KBookmark &, QMenu * );
-  /**
-   * Emitted if a bookmark was selected
-   * Note: If you passed a null KBookmarkOwner to the constructor, this signal
-   * is not emitted, instead KRun is used to open the bookmark.
-  **/
-  void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
-
 protected Q_SLOTS:
   void slotBookmarksChanged( const QString & );
   void slotAboutToShow();
   void contextMenu( const QPoint & );
 
-  void slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers);
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
@@ -160,17 +120,17 @@ protected:
   /**
    * Creates a bookmark submenu
    */
-  KBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu,
-                 KActionCollection * collec, const QString & parentAddress);
-  void fillBookmarkMenu();
-  void refill();
+  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner,
+                 KMenu * parentMenu, const QString & parentAddress);
+  virtual void clear();
+  virtual void refill();
+  virtual KAction* actionForBookmark(KBookmark bm);
+  void addActions();
+  void fillBookmarks();
   void addAddBookmark();
   void addAddBookmarksList();
   void addEditBookmarks();
   void addNewFolder();
-
-  void showContextMenu( const QString &, const QPoint & pos);
 
   bool m_bIsRoot:1;
   bool m_bDirty:1;
@@ -195,11 +155,74 @@ protected:
    * Parent bookmark for this menu.
    */
   QString m_parentAddress;
-
-
-  RMB *m_rmb;
 private:
   KBookmarkMenuPrivate* d;
+};
+
+class KIO_EXPORT KBookmarkActionContextMenu : public QObject
+{
+  Q_OBJECT
+public:
+  void contextMenu(QPoint pos, QString highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
+  ~KBookmarkActionContextMenu();
+  KBookmark atAddress(const QString & address);
+  static KBookmarkActionContextMenu & self();
+public Q_SLOTS:
+  void slotEditAt();
+  void slotProperties();
+  void slotInsert();
+  void slotRemove();
+  void slotCopyLocation();
+
+protected:
+  void addBookmark();
+  void addFolderActions();
+  void addProperties();
+  void addBookmarkActions();
+
+  QString m_parentAddress;
+  QString m_highlightedAddress;
+  KBookmarkManager *m_pManager;
+  KBookmarkOwner *m_pOwner;
+  QWidget *m_parentMenu;
+  QMenu * m_contextMenu;
+};
+
+
+class KIO_EXPORT KBookmarkActionInterface
+{
+public:
+  KBookmarkActionInterface(KBookmark bk);
+  virtual ~KBookmarkActionInterface();
+  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner) = 0;
+protected:
+  const KBookmark bookmark() const;
+private:
+  KBookmark bm;
+};
+
+class KIO_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
+{
+public:
+  KBookmarkActionMenu(KBookmark bm, KActionCollection* parent, const char* name);
+  KBookmarkActionMenu(KBookmark bm, const QString & text, KActionCollection* parent, const char* name);
+  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  virtual ~KBookmarkActionMenu();
+};
+
+class KIO_EXPORT KBookmarkAction : public KAction, public KBookmarkActionInterface
+{
+  Q_OBJECT
+public:
+  KBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner);
+  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  virtual ~KBookmarkAction();
+
+public Q_SLOTS:
+  void slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km);
+
+private:
+  KBookmarkOwner* m_pOwner;
 };
 
 class KImportedBookmarkMenu : public KBookmarkMenu
@@ -210,43 +233,17 @@ public:
   //TODO simplfy
   KImportedBookmarkMenu( KBookmarkManager* mgr,
                  KBookmarkOwner * owner, KMenu * parentMenu,
-                 KActionCollection * collec, const QString & type, const QString & location );
+                 const QString & type, const QString & location );
   KImportedBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu,
-                 KActionCollection * collec);
+                 KBookmarkOwner * owner, KMenu * parentMenu);
   ~KImportedBookmarkMenu();
+  virtual void clear();
+  virtual void refill();
 protected Q_SLOTS:
   void slotNSLoad();
 private:
    QString m_type;
    QString m_location;
-};
-
-/**
- * A class connected to KNSBookmarkImporter, to fill KActionMenus.
- */
-class KIO_EXPORT KBookmarkMenuNSImporter : public QObject
-{
-  Q_OBJECT
-public:
-  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
-     m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
-
-  void openNSBookmarks();
-  void openBookmarks( const QString &location, const QString &type );
-  void connectToImporter( const QObject &importer );
-
-protected Q_SLOTS:
-  void newBookmark( const QString & text, const QString & url, const QString & );
-  void newFolder( const QString & text, bool, const QString & );
-  void newSeparator();
-  void endFolder();
-
-protected:
-  QStack<KImportedBookmarkMenu*> mstack;
-  KImportedBookmarkMenu * m_menu;
-  KActionCollection * m_actionCollection;
-  KBookmarkManager* m_pManager;
 };
 
 #endif

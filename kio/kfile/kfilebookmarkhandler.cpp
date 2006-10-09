@@ -50,12 +50,9 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     }
 
     manager->setUpdate( true );
-    manager->setShowNSBookmarks( false );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu,
                                         dialog->actionCollection() );
-    connect( m_bookmarkMenu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
-             this, SLOT( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers)) );
 }
 
 KFileBookmarkHandler::~KFileBookmarkHandler()

@@ -140,6 +140,7 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkmanageradaptor.cc
   bookmarks/kbookmarknotifier.cc
   bookmarks/kbookmarkmenu.cc
+  bookmarks/konqbookmarkmenu.cc
   bookmarks/kbookmarkimporter_crash.cc
   bookmarks/kbookmarkimporter_opera.cc
   bookmarks/kbookmarkimporter_ie.cc
