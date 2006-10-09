@@ -1,7 +1,5 @@
 <ui version="4.0" >
  <author>Matthias Kretz &lt;kretz@kde.org></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>OutputDeviceChoice</class>
  <widget class="QWidget" name="OutputDeviceChoice" >
   <property name="geometry" >
@@ -9,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>391</width>
-    <height>332</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -74,6 +72,9 @@
        </property>
        <property name="dragEnabled" >
         <bool>true</bool>
+       </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
        </property>
       </widget>
      </item>
@@ -209,6 +210,9 @@
        <property name="dragEnabled" >
         <bool>true</bool>
        </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -289,6 +293,9 @@
        <property name="dragEnabled" >
         <bool>true</bool>
        </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -314,6 +321,9 @@
        </property>
        <property name="dragEnabled" >
         <bool>true</bool>
+       </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
        </property>
       </widget>
      </item>
@@ -417,7 +427,6 @@
  </widget>
  <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <pixmapfunction>Small</pixmapfunction>
- <includes/>
  <resources/>
  <connections/>
 </ui>

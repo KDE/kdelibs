@@ -1,6 +1,5 @@
 <ui version="4.0" >
  <author>Matthias Kretz &lt;kretz@kde.org></author>
- <exportmacro></exportmacro>
  <class>BackendSelection</class>
  <widget class="QWidget" name="BackendSelection" >
   <property name="geometry" >
@@ -49,6 +48,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="dragEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
        </property>
       </widget>
      </item>
@@ -234,7 +239,6 @@
  <layoutdefault spacing="6" margin="11" />
  <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <includes/>
  <resources/>
  <connections/>
 </ui>
