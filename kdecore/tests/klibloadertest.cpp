@@ -53,7 +53,7 @@ void KLibLoaderTest::testFindLibrary()
     const QString library = KLibLoader::findLibrary( s_module );
     QVERIFY( !library.isEmpty() );
     const QString libraryPath = QFileInfo( library ).canonicalFilePath();
-    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_module + ".la" ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_module + ".so" ).canonicalFilePath();
     QCOMPARE( library, expectedPath );
 }
 
