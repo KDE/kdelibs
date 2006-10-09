@@ -132,30 +132,16 @@ int ObjectDescriptionModel<type>::tupleIndexAtPositionIndex( int positionIndex )
 	return d_func()->data.at( positionIndex ).index();
 }
 
-#define PHONON_INSTANCIATE_ALL_FUNCTIONS( T ) \
-	template int ObjectDescriptionModel<T>::tupleIndexAtPositionIndex(int) const; \
-    template QList<int> ObjectDescriptionModel<T>::tupleIndexOrder() const; \
-    template void ObjectDescriptionModel<T>::moveDown( const QModelIndex& ); \
-    template void ObjectDescriptionModel<T>::moveUp( const QModelIndex& ); \
-    template QVariant ObjectDescriptionModel<T>::data( const QModelIndex&, int) const; \
-    template int ObjectDescriptionModel<T>::rowCount( const QModelIndex& parent ) const; \
-    template void ObjectDescriptionModel<T>::setModelData( const QList<ObjectDescription<T> >& ); \
-    template ObjectDescriptionModel<T>::~ObjectDescriptionModel(); \
-    template ObjectDescriptionModel<T>::ObjectDescriptionModel( QObject* );
-
-
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioOutputDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCaptureDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoOutputDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCaptureDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioEffectType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoEffectType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCodecType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCodecType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( ContainerFormatType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VisualizationType )
-
-#undef PHONON_INSTANCIATE_ALL_FUNCTIONS
+template class ObjectDescriptionModel<AudioOutputDeviceType>;
+template class ObjectDescriptionModel<AudioCaptureDeviceType>;
+template class ObjectDescriptionModel<VideoOutputDeviceType>;
+template class ObjectDescriptionModel<VideoCaptureDeviceType>;
+template class ObjectDescriptionModel<AudioEffectType>;
+template class ObjectDescriptionModel<VideoEffectType>;
+template class ObjectDescriptionModel<AudioCodecType>;
+template class ObjectDescriptionModel<VideoCodecType>;
+template class ObjectDescriptionModel<ContainerFormatType>;
+template class ObjectDescriptionModel<VisualizationType>;
 
 }
 

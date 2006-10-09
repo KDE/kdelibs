@@ -107,31 +107,16 @@ ObjectDescription<T> ObjectDescription<T>::fromIndex( int index )
 	return ObjectDescription<T>( index, name, description );
 }
 
-#define PHONON_INSTANCIATE_ALL_FUNCTIONS( T ) \
-	template ObjectDescription<T> ObjectDescription<T>::fromIndex(int); \
-	template int ObjectDescription<T>::index() const; \
-	template QString const & ObjectDescription<T>::name() const; \
-	template ObjectDescription<T>::~ObjectDescription() ; \
-    template ObjectDescription<T>& ObjectDescription<T>::operator=( const ObjectDescription<T>& ); \
-    template ObjectDescription<T>::ObjectDescription(); \
-    template ObjectDescription<T>::ObjectDescription(const ObjectDescription<T>& ); \
-    template ObjectDescription<T>::ObjectDescription( int, const QString&, const QString&  ); \
-    template bool ObjectDescription<T>::operator==( const ObjectDescription<T>& ) const; \
-	template const QString& ObjectDescription<T>::description() const; \
-    template bool ObjectDescription<T>::isValid() const;
-	
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioOutputDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCaptureDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoOutputDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCaptureDeviceType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioEffectType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoEffectType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCodecType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCodecType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( ContainerFormatType )
-PHONON_INSTANCIATE_ALL_FUNCTIONS( VisualizationType )
-
-#undef PHONON_INSTANCIATE_ALL_FUNCTIONS
+template class ObjectDescription<AudioOutputDeviceType>;
+template class ObjectDescription<AudioCaptureDeviceType>;
+template class ObjectDescription<VideoOutputDeviceType>;
+template class ObjectDescription<VideoCaptureDeviceType>;
+template class ObjectDescription<AudioEffectType>;
+template class ObjectDescription<VideoEffectType>;
+template class ObjectDescription<AudioCodecType>;
+template class ObjectDescription<VideoCodecType>;
+template class ObjectDescription<ContainerFormatType>;
+template class ObjectDescription<VisualizationType>;
 
 } //namespace Phonon
 // vim: sw=4 ts=4 noet
