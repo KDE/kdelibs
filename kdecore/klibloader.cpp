@@ -319,7 +319,7 @@ void KLibrary::slotTimeout()
 // -------------------------------------------------
 
 KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, QLibrary* h)
- : lib(l), ref_count(1), handle(h), name(l->name()), filename(l->fileName())
+ : lib(l), handle(h),ref_count(1), name(l->name()), filename(l->fileName())
 {
     unload_mode = KLibLoader_cpp::UNKNOWN;
     if (handle->resolve("__kde_do_not_unload") != 0) {
