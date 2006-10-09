@@ -26,6 +26,7 @@
 #include <phonon/audiooutput.h>
 #include <phonon/audiopath.h>
 #include <phonon/audioeffect.h>
+#include <phonon/brightnesscontrol.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/mediacontrols.h>
 #include <phonon/ui/effectwidget.h>
@@ -46,6 +47,7 @@ class MediaPlayer : public QWidget
 		Phonon::AudioOutput* m_aoutput;
 		Phonon::VideoPath* m_vpath;
 		Phonon::AudioEffect* m_effect;
+		Phonon::BrightnessControl* m_brightness;
 		Phonon::VideoWidget* m_vwidget;
 		Phonon::MediaControls* m_controls;
 		Phonon::EffectWidget* m_effectWidget;

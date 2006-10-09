@@ -26,6 +26,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include "../../backendcapabilities.h"
+#include <QSlider>
 
 using namespace Phonon;
 
@@ -65,6 +66,16 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 		button->setText( "configure effect" );
 		connect( button, SIGNAL( clicked() ), SLOT( openEffectWidget() ) );
 	}
+
+	m_brightness = new BrightnessControl( this );
+	QSlider* slider = new QSlider( this );
+	layout->addWidget( slider );
+	slider->setOrientation( Qt::Horizontal );
+	slider->setRange( m_brightness->lowerBound(), m_brightness->upperBound() );
+	slider->setValue( m_brightness->brightness() );
+	connect( slider, SIGNAL( valueChanged( int ) ), m_brightness, SLOT( setBrightness( int ) ) );
+
+	m_vpath->insertEffect( m_brightness );
 }
 
 void MediaPlayer::openEffectWidget()
