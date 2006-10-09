@@ -19,7 +19,8 @@
 #ifndef ksavefiletest_h
 #define ksavefiletest_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class KSaveFileTest : public QObject
 {
@@ -30,7 +31,11 @@ private Q_SLOTS:
     void test_numberedBackupFile();
     void test_rcsBackupFile();
     void test_dataStream();
+    void test_simpleBackupFile();
+    void cleanupTestCase();
     
+private:
+    QStringList filesToRemove;
 };
 
 #endif

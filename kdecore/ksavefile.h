@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+   Copyright 1999 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,6 +29,8 @@ class QTextStream;
 class QDataStream;
 
 /**
+ * @brief Class to allow for atomic file I/O, as well as utility functions.
+ *
  * The KSaveFile class has been made to write out changes to an existing
  * file atomically.
  * This means that EITHER:
@@ -38,6 +40,9 @@ class QDataStream;
  * b)
  *   Some error occurred, no changes have been written whatsoever and the
  *   old file is still in place.
+ *
+ * There are also several static utility functions available to help ensure
+ * data integrity. See the individual functions for details.
  */
 class KDECORE_EXPORT KSaveFile
 {
@@ -125,21 +130,24 @@ public:
    bool close();
 
     /**
-     * Static method to create a backup file before saving.
-     * You can use this method even if you don't use KSaveFile.
-     * @param filename the file to backup
-     * @param backupDir optional directory where to save the backup file in.
+     * @brief Static method to create a backup file before saving.
+     *
      * If empty (the default), the backup will be in the same directory as @p filename.
      * The backup type (simple, rcs, or numbered), extension string, and maximum
      * number of backup files are read from the user's global configuration.
      * Use simpleBackupFile() or numberedBackupFile() to force one of these
      * specific backup styles.
+     * You can use this method even if you don't use KSaveFile.
+     * @param filename the file to backup
+     * @param backupDir optional directory where to save the backup file in.
      */
    static bool backupFile( const QString& filename,
                            const QString& backupDir = QString() );
 
     /**
-     * Static method to create a backup file before saving.
+     * @brief Static method to create a backup file for a given filename.
+     *
+     * This function creates a backup file from the given filename.
      * You can use this method even if you don't use KSaveFile.
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
@@ -151,8 +159,11 @@ public:
                                  const QString& backupExtension = QLatin1String( "~" ) );
 
     /**
-     * Static method to create a backup file before saving.
-     * You can use this method even if you don't use KSaveFile.
+     * @brief Static method to create a backup file for a given filename.
+     *
+     * This function creates a series of numbered backup files from the
+     * given filename.
+     *
      * The backup file names will be of the form:
      *     \<name\>.\<number\>\<extension\>
      * for instance
@@ -162,6 +173,7 @@ public:
      * Each existing backup file will have its number incremented by 1.
      * Any backup files with numbers greater than the maximum number
      * permitted (@p maxBackups) will be removed.
+     * You can use this method even if you don't use KSaveFile.
      *
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
@@ -180,15 +192,19 @@ public:
 
 
     /**
-     * Static method to create a backup file before saving.
-     * You can use this method even if you don't use KSaveFile.
+     * @brief Static method to create an rcs backup file for a given filename.
+     *
+     * This function creates a rcs-formatted backup file from the
+     * given filename.
+     *
      * The backup file names will be of the form:
      *     \<name\>,v
      * for instance
-     *     \verbatim photo.jpg,v\endverbatim
+     *     \verbatim photo.jpg,v \endverbatim
      *
      * The new backup file will be in RCS format.
      * Each existing backup file will be committed as a new revision.
+     * You can use this method even if you don't use KSaveFile.
      *
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
