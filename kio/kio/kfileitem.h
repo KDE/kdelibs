@@ -499,7 +499,7 @@ public:
     /**
      * @deprecated simply use '='
      */
-    void assign( const KFileItem & item ) KDE_DEPRECATED {
+    KDE_DEPRECATED void assign( const KFileItem & item ) {
         *this = item;
     }
 
@@ -522,7 +522,7 @@ public:
      * @deprecated why not just create another KFileItem and use operator=,
      * now that it's a value class?
      */
-    void KDE_DEPRECATED setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
+    KDE_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
                                      bool determineMimeTypeOnDemand = false,
                                      bool urlIsDirectory = false );
 

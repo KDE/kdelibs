@@ -79,7 +79,7 @@ void KFileItemTest::testBasic()
     KTemporaryFile file;
     QVERIFY(file.open());
     QFile fileObj(file.fileName());
-    QVERIFY(fileObj.open(QIODevice::IO_WriteOnly));
+    QVERIFY(fileObj.open(QIODevice::WriteOnly));
     fileObj.write("Hello");
     fileObj.close();
 
