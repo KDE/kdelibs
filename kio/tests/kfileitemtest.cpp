@@ -23,6 +23,8 @@
 #include <kfileitem.h>
 
 #include <ktempdir.h>
+#include <ktemporaryfile.h>
+#include <kuser.h>
 
 QTEST_KDEMAIN( KFileItemTest, NoGUI )
 
@@ -55,5 +57,76 @@ void KFileItemTest::testPermissionsString()
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));
+}
+
+void KFileItemTest::testDetach()
+{
+    KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
+    KFileItem fileItem2(fileItem);
+    QVERIFY(fileItem == fileItem2);
+    fileItem2.mark();
+    QVERIFY(fileItem2.isMarked());
+    QVERIFY(!fileItem.isMarked());
+    QVERIFY(fileItem != fileItem2);
+
+    fileItem = fileItem2;
+    QVERIFY(fileItem2.isMarked());
+    QVERIFY(fileItem == fileItem2);
+}
+
+void KFileItemTest::testBasic()
+{
+    KTemporaryFile file;
+    QVERIFY(file.open());
+    QFile fileObj(file.fileName());
+    QVERIFY(fileObj.open(QIODevice::IO_WriteOnly));
+    fileObj.write("Hello");
+    fileObj.close();
+
+    KUrl url(file.fileName());
+    KFileItem fileItem(url, QString(), KFileItem::Unknown);
+    QCOMPARE(fileItem.text(), url.fileName());
+    QVERIFY(fileItem.isLocalFile());
+    QCOMPARE(fileItem.localPath(), url.path());
+    QCOMPARE(fileItem.size(), KIO::filesize_t(5));
+    QVERIFY(fileItem.linkDest().isEmpty());
+    QVERIFY(!fileItem.isHidden());
+    QVERIFY(fileItem.isReadable());
+    QVERIFY(fileItem.isWritable());
+    QVERIFY(fileItem.isFile());
+    QVERIFY(!fileItem.isDir());
+    QCOMPARE(fileItem.user(), KUser().loginName());
+    QCOMPARE(fileItem.group(), KUserGroup().name());
+}
+
+void KFileItemTest::testMimeTypeOnDemand()
+{
+    KTemporaryFile file;
+    QVERIFY(file.open());
+
+    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+    QCOMPARE(fileItem.mimeTypePtr()->name(), KMimeType::defaultMimeType());
+    QVERIFY(!fileItem.isMimeTypeKnown());
+    kDebug() << fileItem.determineMimeType()->name() << endl;
+    QCOMPARE(fileItem.determineMimeType()->name(), QString("application/x-zerosize"));
+    QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
+    QVERIFY(fileItem.isMimeTypeKnown());
+
+    // Calling mimeType directly also does mimetype determination
+    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+    QVERIFY(!fileItem2.isMimeTypeKnown());
+    QCOMPARE(fileItem2.mimetype(), QString("application/x-zerosize"));
+    QVERIFY(fileItem2.isMimeTypeKnown());
+}
+
+void KFileItemTest::testCmp()
+{
+    KTemporaryFile file;
+    QVERIFY(file.open());
+
+    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), false);
+    QVERIFY(fileItem != fileItem2); // created independently so not 'equal'
+    QVERIFY(fileItem.cmp(fileItem2));
 }
 
