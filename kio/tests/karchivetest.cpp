@@ -174,8 +174,9 @@ static void testCopyTo( KArchive* archive )
     QCOMPARE(fileInfo4.size(), Q_INT64_C(29));
 }
 
-static const char* s_tarFileName = "karchivetest.tar.gz";
-static const char* s_tarMaxLengthFileName = "karchivetest-maxlength.tar.gz";
+static const char* s_tarFileName = "karchivetest.tar";
+static const char* s_tarGzFileName = "karchivetest.tar.gz";
+static const char* s_tarGzMaxLengthFileName = "karchivetest-maxlength.tar.gz";
 static const char* s_zipFileName = "karchivetest.zip";
 static const char* s_zipMaxLengthFileName = "karchivetest-maxlength.zip";
 
@@ -194,13 +195,31 @@ void KArchiveTest::testCreateTar()
     QFileInfo fileInfo( QFile::encodeName( s_tarFileName ) );
     QVERIFY( fileInfo.exists() );
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
+    QVERIFY( fileInfo.size() > 450 );
+}
+
+void KArchiveTest::testCreateTarGz()
+{
+    KTar tar( s_tarGzFileName );
+
+    bool ok = tar.open( QIODevice::WriteOnly );
+    QVERIFY( ok );
+
+    writeTestFilesToArchive( &tar );
+
+    ok = tar.close();
+    QVERIFY( ok );
+
+    QFileInfo fileInfo( QFile::encodeName( s_tarGzFileName ) );
+    QVERIFY( fileInfo.exists() );
+    // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
     QVERIFY( fileInfo.size() > 350 );
 }
 
 void KArchiveTest::testReadTar()
 {
     // testCreateTar must have been run first.
-    KTar tar( s_tarFileName );
+    KTar tar( s_tarGzFileName );
 
     bool ok = tar.open( QIODevice::ReadOnly );
     QVERIFY( ok );
@@ -240,8 +259,8 @@ void KArchiveTest::testReadTar()
 void KArchiveTest::testUncompress()
 {
     // testCreateTar must have been run first.
-    QVERIFY( QFile::exists( s_tarFileName ) );
-    QIODevice *filterDev = KFilterDev::deviceForFile( s_tarFileName, "application/x-gzip", true );
+    QVERIFY( QFile::exists( s_tarGzFileName ) );
+    QIODevice *filterDev = KFilterDev::deviceForFile( s_tarGzFileName, "application/x-gzip", true );
     QVERIFY( filterDev );
     QByteArray buffer;
     buffer.resize(8*1024);
@@ -265,7 +284,7 @@ void KArchiveTest::testUncompress()
 void KArchiveTest::testTarFileData()
 {
     // testCreateTar must have been run first.
-    KTar tar( s_tarFileName );
+    KTar tar( s_tarGzFileName );
     bool ok = tar.open( QIODevice::ReadOnly );
     QVERIFY( ok );
 
@@ -278,7 +297,7 @@ void KArchiveTest::testTarFileData()
 void KArchiveTest::testTarCopyTo()
 {
     // testCreateTar must have been run first.
-    KTar tar( s_tarFileName );
+    KTar tar( s_tarGzFileName );
     bool ok = tar.open( QIODevice::ReadOnly );
     QVERIFY( ok );
 
@@ -290,7 +309,7 @@ void KArchiveTest::testTarCopyTo()
 
 void KArchiveTest::testTarMaxLength()
 {
-    KTar tar( s_tarMaxLengthFileName );
+    KTar tar( s_tarGzMaxLengthFileName );
 
     bool ok = tar.open( QIODevice::WriteOnly );
     QVERIFY( ok );
@@ -476,8 +495,8 @@ void KArchiveTest::testZipMaxLength()
 
 void KArchiveTest::cleanupTestCase()
 {
-    QVERIFY( QFile::remove("karchivetest-maxlength.tar.gz") );
-    QVERIFY( QFile::remove("karchivetest-maxlength.zip") );
-    QVERIFY( QFile::remove("karchivetest.tar.gz") );
-    QVERIFY( QFile::remove("karchivetest.zip") );
+    QFile::remove("karchivetest-maxlength.tar.gz");
+    QFile::remove("karchivetest-maxlength.zip");
+    QFile::remove("karchivetest.tar.gz");
+    QFile::remove("karchivetest.zip");
 }

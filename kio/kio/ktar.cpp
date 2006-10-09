@@ -275,6 +275,8 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
 
     if( filterDev ) {
         QFile* file = tmpFile;
+        Q_ASSERT(file->isOpen());
+        Q_ASSERT(file->openMode() & QIODevice::WriteOnly);
         file->seek(0);
         QByteArray buffer;
         buffer.resize(8*1024);
@@ -300,6 +302,8 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
 
         file->flush();
         file->seek(0);
+        Q_ASSERT(file->isOpen());
+        Q_ASSERT(file->openMode() & QIODevice::ReadOnly);
     }
     else
         kDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
@@ -483,7 +487,6 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
     QIODevice *dev = KFilterDev::deviceForFile( fileName, mimetype, forced );
     if( dev ) {
         QFile* file = tmpFile;
-        file->close();
         if ( !dev->open(QIODevice::WriteOnly) )
         {
             file->close();
@@ -492,6 +495,7 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
         }
         if ( forced )
             static_cast<KFilterDev *>(dev)->setOrigFileName( origFileName );
+        file->seek(0);
         QByteArray buffer;
         buffer.resize(8*1024);
         qint64 len;
@@ -529,7 +533,7 @@ bool KTar::closeArchive() {
 bool KTar::doFinishWriting( qint64 size ) {
     // Write alignment
     int rest = size % 0x200;
-    if ( mode() & QIODevice::ReadWrite )
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
         d->tarEnd = device()->pos() + (rest ? 0x200 - rest : 0); // Record our new end of archive
     if ( rest )
     {
@@ -685,7 +689,8 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
+        device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need later on
     const QByteArray encodedFileName = QFile::encodeName(fileName);
@@ -737,7 +742,8 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
+        device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need lateron
     QByteArray encodedDirname = QFile::encodeName(dirName);
@@ -760,7 +766,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     // Write header
     device()->write( buffer, 0x200 );
-    if ( mode() & QIODevice::ReadWrite )
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
         d->tarEnd = device()->pos();
 
     d->dirList.append( dirName ); // contains trailing slash
@@ -787,7 +793,8 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );
-    if ( mode() & QIODevice::ReadWrite ) device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
+        device()->seek(d->tarEnd); // Go to end of archive as might have moved with a read
 
     // provide converted stuff we need lateron
     QByteArray encodedFileName = QFile::encodeName(fileName);
@@ -816,7 +823,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     // Write header
     bool retval = device()->write( buffer, 0x200 ) == 0x200;
-    if ( mode() & QIODevice::ReadWrite )
+    if ( ( mode() & QIODevice::ReadWrite ) == QIODevice::ReadWrite )
         d->tarEnd = device()->pos();
     return retval;
 }

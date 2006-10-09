@@ -27,6 +27,7 @@ class KArchiveTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void testCreateTar();
+    void testCreateTarGz();
     void testReadTar();
     void testUncompress();
     void testTarFileData();
