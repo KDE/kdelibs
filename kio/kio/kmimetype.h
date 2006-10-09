@@ -232,6 +232,9 @@ public:
    *
    * @em Very @em important: Don't store the result in a KMimeType* !
    *
+   * Also note that you get a new KMimeType pointer every time you call this.
+   * Don't ever write code that compares mimetype pointers, compare names instead.
+   *
    * @param _name the name of the mime type
    * @return the pointer to the KMimeType with the given @p _name, or
    *         0L if not found

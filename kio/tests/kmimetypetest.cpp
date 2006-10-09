@@ -55,6 +55,10 @@ void KMimeTypeTest::testByName()
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
     qDebug("Comment is %s", qPrintable(s0->comment()) );
 
+    KMimeType::Ptr s0Again = KMimeType::mimeType("application/x-zerosize");
+    QCOMPARE(s0Again->name(), s0->name());
+    QVERIFY(s0Again != s0);
+
     KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
     QVERIFY( s1 );
     QCOMPARE( s1->name(), QString::fromLatin1("text/plain") );
