@@ -126,7 +126,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
      return KLockFile::LockFail;
 
   KTemporaryFile uniqueFile;
-  uniqueFile.setPrefix(lockFile);
+  uniqueFile.setFileTemplate(lockFile);
   if (!uniqueFile.open())
      return KLockFile::LockError;
   uniqueFile.setPermissions(QFile::ReadUser|QFile::WriteUser|QFile::ReadGroup|QFile::ReadOther);
@@ -181,10 +181,10 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
-
+   
    // Create temp file
    KTemporaryFile *ktmpFile = new KTemporaryFile();
-   ktmpFile->setPrefix(lockFile);
+   ktmpFile->setFileTemplate(lockFile);
    if (!ktmpFile->open())
       return KLockFile::LockError;
 
