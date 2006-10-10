@@ -372,7 +372,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 {
     QObjectBinding *imp = extractBindingImp<QObjectBinding>(exec,self);
     if( imp == 0 )
-        return KJS::Boolean(false);
+        return KJS::Null();
 
     PointerBase *qtArgs[10];
     void *param[11];
@@ -421,6 +421,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     {
         KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
         // KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
+        return KJS::Null();
     }
 
     //TODO use the QMetaType-stuff ( defined as QVariant::UserType ) to handle also other cases
