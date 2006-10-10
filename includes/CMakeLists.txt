@@ -9,6 +9,8 @@ install( FILES
   DrMain
   DrStringOption
   FileProtocol
+  I18nTypeCheck
+  I18nTypeCheck
   K3BookmarkDrag
   K3ColorDrag
   K3DictSpellingHighlighter
@@ -33,53 +35,60 @@ install( FILES
   K3MimeSourceFactory
   K3MultipleDrag
   K3PopupMenu
-  K3Spell
-  K3SpellConfig
-  K3SpellDlg
   K3SpellingHighlighter
   K3SyntaxHighlighter
   K3TextEdit
   K3URLDrag
+  K3Wizard
+  KACL
   KAboutApplication
+  KAboutContainer
+  KAboutContributor
   KAboutData
+  KAboutDialog
   KAboutKDE
   KAboutPerson
   KAboutTranslator
+  KAboutWidget
   KAcceleratorManager
   KAction
   KActionCollection
-  KActionMenu
   KActionSelector
-  KActiveLabel
   KAnimatedButton
   KApplication
+  KApplicationPropsPlugin
   KAr
+  KArchive
+  KArchiveDirectory
+  KArchiveEntry
+  KArchiveFile
   KArrowButton
-  KAssistantDialog
   KAuthorized
-  KAutoMount
-  KAutoUnmount
   KAutostart
+  KBindingPropsPlugin
   KBookmark
+  KBookmarkAction
+  KBookmarkActionContextMenu
+  KBookmarkActionInterface
+  KBookmarkActionMenu
   KBookmarkBar
   KBookmarkDomBuilder
   KBookmarkExporterBase
   KBookmarkGroup
   KBookmarkGroupTraverser
+  KBookmarkImporter
+  KBookmarkImporterBase
   KBookmarkManager
   KBookmarkMenu
-  KBookmarkMenuNSImporter
+  KBookmarkNotifier
   KBookmarkOwner
-  KBugReport
   KBuildSycocaProgressDialog
-  KButtonBox
   KButtonGroup
   KCModule
   KCModuleContainer
   KCModuleInfo
   KCModuleLoader
   KCModuleProxy
-  KCMultiDialog
   KCPUInfo
   KCalendarSystem
   KCalendarSystemFactory
@@ -94,33 +103,37 @@ install( FILES
   KCodecs
   KColor
   KColorButton
+  KColorCells
   KColorCombo
+  KColorDialog
   KColorMimeData
+  KColorPatch
   KColorValueSelector
   KCombiView
   KComboBox
   KCommand
   KCommandHistory
+  KCompletion
+  KCompletionBase
   KCompletionBox
+  KCompletionMatches
   KCompositeJob
   KConfig
   KConfigBackEnd
-  KConfigDialog
+  KConfigBase
   KConfigDialogManager
+  KConfigGroup
   KConfigINIBackEnd
   KConfigSkeleton
   KConfigSkeletonGenericItem
   KConfigSkeletonItem
-  KCookie
   KCrash
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
   KCursor
-  KCustomMenuEditor
   KDBusServiceStarter
   KDEDModule
   KDEDesktopMimeType
-  KDEsuClient
   KDataTool
   KDataToolAction
   KDataToolInfo
@@ -134,7 +147,11 @@ install( FILES
   KDateValidator
   KDateWidget
   KDesktopFile
+  KDesktopPropsPlugin
+  KDevicePropsPlugin
+  KDialog
   KDialogButtonBox
+  KDialogQueue
   KDirLister
   KDirModel
   KDirOperator
@@ -150,34 +167,50 @@ install( FILES
   KEditToolbar
   KEditToolbarWidget
   KEncodingFileDialog
+  KEntry
+  KEntryKey
+  KExecPropsPlugin
+  KFile
   KFileDetailView
   KFileDialog
   KFileFilter
   KFileFilterCombo
   KFileIconView
   KFileIconViewItem
+  KFileItem
+  KFileItemList
   KFileListViewItem
+  KFileMetaInfo
+  KFileMetaInfoGroup
+  KFileMetaInfoItem
+  KFileMetaInfoProvider
+  KFileMimeTypeInfo
+  KFilePermissionsPropsPlugin
+  KFilePlugin
   KFilePreview
+  KFilePropsPlugin
   KFileShare
-  KFileSharePropsPlugin
+  KFileTreeBranch
   KFileTreeView
+  KFileTreeViewItem
+  KFileView
+  KFileViewSignaler
   KFilterBase
   KFilterDev
   KFind
-  KFindDialog
   KFloatValidator
-  KFontAction
-  KFontChooser
-  KFontDialog
+  KFolderType
   KFontRequester
-  KFontSizeAction
   KGenericFactory
   KGenericFactory
   KGenericFactory
   KGenericFactoryBase
+  KGlobal
   KGlobalAccel
+  KGlobalSettings
   KGradientSelector
   KGuiItem
+  KHBox
   KHTMLPart
   KHTMLSettings
   KHTMLView
@@ -200,21 +233,23 @@ install( FILES
   KImageEffect
   KImageFilePreview
   KImageIO
-  KInputDialog
+  KInstance
   KIntNumInput
   KIntSpinBox
   KIntValidator
   KJob
   KJobUiDelegate
   KKeyButton
-  KKeyChooser
-  KKeyDialog
   KLanguageButton
   KLed
   KLibFactory
   KLibLoader
   KLibrary
+  KLineEdit
+  KListBox
   KLocale
+  KLocalizedString
+  KLockFile
   KMD4
   KMD5
   KMJob
@@ -222,17 +257,20 @@ install( FILES
   KMJobViewer
   KMMainView
   KMManager
+  KMPrinter
   KMTimer
   KMacroCommand
   KMacroExpanderBase
   KMainWindow
+  KMakeTypeList
+  KMakeTypeList
+  KMenu
   KMenuBar
   KMessage
   KMessageBox
   KMessageBoxMessageHandler
   KMessageHandler
-  KMimeMagic
-  KMimeMagicResult
+  KMimeType
   KMimeTypeChooser
   KMimeTypeChooserDialog
   KMimeTypeResolver
@@ -241,49 +279,46 @@ install( FILES
   KMimeTypeTrader
   KMimeTypeValidator
   KMountPoint
+  KMozillaBookmarkImporterImpl
   KMultiTabBar
   KMultiTabBarButton
   KMultiTabBarTab
   KNFSShare
+  KNSBookmarkExporter
+  KNSBookmarkExporterImpl
+  KNSBookmarkImporter
+  KNSBookmarkImporterImpl
   KNTLM
   KNamedCommand
   KNewStuff
-  KNewStuffGeneric
   KNewStuffSecure
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
-  KNotifyDialog
   KNumInput
   KOCRDialog
   KOCRDialogFactory
   KOpenSSLProxy
   KOpenWithDlg
   KOperaBookmarkExporterImpl
-  KOperaBookmarkImporter
   KOperaBookmarkImporterImpl
+  KPReloadObject
   KPageModel
   KPageView
-  KPageWidget
-  KPageWidgetItem
-  KPageWidgetModel
   KPalette
   KPaletteTable
   KPassivePopup
   KPassivePopupMessageHandler
   KPasswordDialog
   KPasswordEdit
-  KPasteTextAction
   KPixmapEffect
   KPixmapProvider
-  KPixmapRegionSelectorDialog
   KPixmapRegionSelectorWidget
   KPixmapSplitter
   KPluginInfo
   KPluginSelector
   KPopupFrame
   KPreviewWidgetBase
-  KPrintAction
   KPrintDialog
   KPrintDialogPage
   KPrinter
@@ -292,54 +327,59 @@ install( FILES
   KProcessController
   KProcessRunner
   KProgressDialog
+  KPropertiesDialog
+  KPropsDlgPlugin
   KProtocolInfo
   KProtocolManager
-  KPty
   KPushButton
-  KRFCDate
   KRandom
   KRandomSequence
   KRecentDocument
-  KRecentFilesAction
   KRemoteEncoding
   KReplace
-  KReplaceDialog
   KRestrictedLine
   KRuler
   KRun
-  KSMIMECrypto
   KSSL
   KSSLCertBox
+  KSSLCertChain
   KSSLCertDlg
   KSSLCertDlgRet
+  KSSLCertificate
   KSSLCertificateCache
   KSSLCertificateFactory
   KSSLCertificateHome
+  KSSLConnectionInfo
   KSSLInfoDlg
   KSSLKeyGen
+  KSSLPeerInfo
+  KSSLSession
+  KSSLSettings
+  KSSLSigners
+  KSSLX509Map
+  KSSLX509V3
   KSambaShare
   KSaveFile
   KScanDialog
   KScanDialogFactory
   KSelectAction
-  KSelectionOwner
-  KSelectionWatcher
   KSelector
   KSeparator
-  KSeparatorAction
   KService
   KServiceGroup
+  KServiceOffer
   KServiceSeparator
+  KServiceType
   KServiceTypeProfile
+  KServiceTypeTrader
   KSessionManaged
   KSharedConfig
+  KSharedPtr
   KShellCompletion
   KShellProcess
   KShortcut
-  KShortcutDialog
   KSimpleConfig
   KSimpleFileFilter
-  KSocks
   KSortableItem
   KSortableList
   KSpeech
@@ -370,7 +410,6 @@ install( FILES
   KTabWidget
   KTar
   KTempDir
-  KTempFile
   KTemporaryFile
   KTextBrowser
   KTextEdit
@@ -381,16 +420,16 @@ install( FILES
   KTimeZones
   KTipDatabase
   KTipDialog
-  KToggleAction
-  KToggleFullScreenAction
-  KToggleToolBarAction
   KToolBar
-  KToolBarLabelAction
-  KToolBarPopupAction
-  KToolBarSpacerAction
   KToolInvocation
   KTreeWidgetSearchLine
   KTreeWidgetSearchLineWidget
+  KTypeList
+  KTypeListIndexOf
+  KTypeListIndexOf
+  KTypeListIndexOf
+  KTypeListLength
+  KTypeListLength
   KTzfileTimeZone
   KTzfileTimeZoneSource
   KUniqueApplication
@@ -408,37 +447,32 @@ install( FILES
   KUrlCompletion
   KUrlLabel
   KUrlPixmapProvider
+  KUrlPropsPlugin
   KUrlRequester
   KUrlRequesterDlg
   KUser
   KUserGroup
-  KWin
+  KVBox
   KWinModule
-  KWindowListMenu
   KWordMacroExpander
   KWordWrap
-  KXErrorHandler
+  KXBELBookmarkImporterImpl
   KXMLGUIBuilder
   KXMLGUIClient
   KXMLGUIFactory
-  KXMessages
   KXYSelector
   KZip
   KZipFileEntry
   KZoneAllocator
   ListProgress
-  NETRootInfo
-  NETRootInfo2
-  NETRootInfo3
-  NETRootInfo4
-  NETWinInfo
+  NET
   Observer
+  OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
   Pointer
   ProgressItem
   PtyProcess
-  QMetaTypeId
   QMetaTypeId
   SshProcess
   StubProcess
@@ -446,6 +480,8 @@ install( FILES
   ThumbCreator
   UIServer
   Value
+  kdbgstream
+  kndbgstream
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 
@@ -477,6 +513,8 @@ install( FILES
   DNSSD/DomainBrowser
   DNSSD/PublicService
   DNSSD/Query
+  DNSSD/RemoteService
+  DNSSD/ServiceBase
   DNSSD/ServiceBrowser
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 
@@ -484,49 +522,26 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 install( FILES 
   DOM/AbstractView
   DOM/Attr
-  DOM/CDATASection
-  DOM/CSSCharsetRule
-  DOM/CSSFontFaceRule
-  DOM/CSSImportRule
-  DOM/CSSMediaRule
-  DOM/CSSPageRule
-  DOM/CSSPrimitiveValue
-  DOM/CSSRule
-  DOM/CSSRuleList
-  DOM/CSSStyleDeclaration
-  DOM/CSSStyleRule
-  DOM/CSSUnknownRule
-  DOM/CSSValue
-  DOM/CSSValueList
-  DOM/CharacterData
-  DOM/Comment
-  DOM/Counter
+  DOM/CSSException
+  DOM/CSSStyleSheet
   DOM/CustomNodeFilter
-  DOM/DOMException
+  DOM/DOMString
+  DOM/DocumentStyle
+  DOM/DomShared
   DOM/Element
-  DOM/Entity
-  DOM/EntityReference
-  DOM/Event
-  DOM/EventException
-  DOM/EventListener
   DOM/HTMLAnchorElement
-  DOM/HTMLAppletElement
-  DOM/HTMLAreaElement
   DOM/HTMLBRElement
-  DOM/HTMLBaseElement
   DOM/HTMLBaseFontElement
   DOM/HTMLBlockquoteElement
   DOM/HTMLBodyElement
-  DOM/HTMLButtonElement
   DOM/HTMLCollection
   DOM/HTMLDListElement
   DOM/HTMLDirectoryElement
   DOM/HTMLDivElement
+  DOM/HTMLDocument
   DOM/HTMLElement
-  DOM/HTMLFieldSetElement
   DOM/HTMLFontElement
   DOM/HTMLFormCollection
-  DOM/HTMLFormElement
   DOM/HTMLFrameElement
   DOM/HTMLFrameSetElement
   DOM/HTMLHRElement
@@ -534,51 +549,31 @@ install( FILES
   DOM/HTMLHeadingElement
   DOM/HTMLHtmlElement
   DOM/HTMLIFrameElement
-  DOM/HTMLImageElement
-  DOM/HTMLInputElement
-  DOM/HTMLIsIndexElement
   DOM/HTMLLIElement
-  DOM/HTMLLabelElement
   DOM/HTMLLayerElement
-  DOM/HTMLLegendElement
-  DOM/HTMLLinkElement
-  DOM/HTMLMapElement
   DOM/HTMLMenuElement
-  DOM/HTMLMetaElement
   DOM/HTMLModElement
   DOM/HTMLOListElement
-  DOM/HTMLObjectElement
-  DOM/HTMLOptGroupElement
-  DOM/HTMLOptionElement
   DOM/HTMLParagraphElement
-  DOM/HTMLParamElement
   DOM/HTMLPreElement
   DOM/HTMLQuoteElement
-  DOM/HTMLScriptElement
-  DOM/HTMLSelectElement
-  DOM/HTMLStyleElement
   DOM/HTMLTableCaptionElement
   DOM/HTMLTableCellElement
   DOM/HTMLTableColElement
   DOM/HTMLTableElement
   DOM/HTMLTableRowElement
   DOM/HTMLTableSectionElement
-  DOM/HTMLTextAreaElement
-  DOM/HTMLTitleElement
   DOM/HTMLUListElement
-  DOM/KeyboardEvent
-  DOM/MouseEvent
-  DOM/MutationEvent
+  DOM/LinkStyle
+  DOM/MediaList
+  DOM/NamedNodeMap
+  DOM/Node
   DOM/NodeFilter
   DOM/NodeIterator
-  DOM/Notation
-  DOM/ProcessingInstruction
-  DOM/RGBColor
-  DOM/Rect
-  DOM/Text
-  DOM/TextEvent
+  DOM/NodeList
+  DOM/StyleSheet
+  DOM/StyleSheetList
   DOM/TreeWalker
-  DOM/UIEvent
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM )
 
 
@@ -589,13 +584,29 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen )
 
 
 install( FILES 
+  KDEPrivate/ConcreteFactory
+  KDEPrivate/If
+  KDEPrivate/If
+  KDEPrivate/InheritanceDetector
+  KDEPrivate/MultiFactory
+  KDEPrivate/MultiFactory
+  KDEPrivate/MultiFactory
+  KDEPrivate/MultiFactory
+  KDEPrivate/MultiFactory
+  KDEPrivate/PartInheritanceTest
+  KDEPrivate/QWidgetInheritanceTest
+  KDEPrivate/Type2Type
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDEPrivate )
+
+
+install( FILES 
+  KDocument/Document
   KDocument/GenericFactory
   KDocument/View
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDocument )
 
 
 install( FILES 
-  KHE/BytesEditInterface
   KHE/CharColumnInterface
   KHE/ClipboardInterface
   KHE/ValueColumnInterface
@@ -626,7 +637,6 @@ install( FILES
   KIO/MultiGetJob
   KIO/NetAccess
   KIO/NetRC
-  KIO/PasswordDialog
   KIO/PreviewJob
   KIO/ProgressBase
   KIO/RenameDlg
@@ -636,7 +646,6 @@ install( FILES
   KIO/SimpleJob
   KIO/SkipDlg
   KIO/Slave
-  KIO/SlaveBase
   KIO/SlaveConfig
   KIO/SlaveInterface
   KIO/StatJob
@@ -650,31 +659,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
 install( FILES 
-  KJS/CString
-  KJS/Collector
-  KJS/Completion
-  KJS/DeclaredFunctionImp
-  KJS/Error
-  KJS/ExecState
-  KJS/FunctionImp
-  KJS/HashEntry
-  KJS/Identifier
-  KJS/Interpreter
-  KJS/JSCell
-  KJS/JSLock
-  KJS/JSObject
-  KJS/JSValue
-  KJS/List
-  KJS/Lookup
-  KJS/PropertyMap
-  KJS/PropertyNameArray
   KJS/ProtectedPtr
-  KJS/ScopeChain
-  KJS/ScopeChainIterator
-  KJS/ScopeChainNode
-  KJS/UChar
-  KJS/UCharReference
-  KJS/UString
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
 
@@ -687,7 +672,6 @@ install( FILES
   KJSEmbed/ObjectFactory
   KJSEmbed/ProxyBinding
   KJSEmbed/QObjectBinding
-  KJSEmbed/QWidgetBinding
   KJSEmbed/SlotBinding
   KJSEmbed/StaticBinding
   KJSEmbed/StaticConstructor
@@ -698,6 +682,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 install( FILES 
   KMediaPlayer/Player
+  KMediaPlayer/View
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
@@ -707,9 +692,7 @@ install( FILES
   KNS/Engine
   KNS/Entry
   KNS/Provider
-  KNS/ProviderDialog
   KNS/ProviderLoader
-  KNS/UploadDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
 
 
@@ -720,32 +703,25 @@ install( FILES
   KNetwork/KDatagramPacket
   KNetwork/KDatagramSocket
   KNetwork/KHttpProxySocketDevice
+  KNetwork/KInetSocketAddress
+  KNetwork/KIpAddress
   KNetwork/KMulticastSocket
   KNetwork/KMulticastSocketDevice
+  KNetwork/KNetworkInterface
   KNetwork/KPassiveSocketBase
   KNetwork/KResolver
   KNetwork/KResolverEntry
   KNetwork/KResolverResults
   KNetwork/KReverseResolver
   KNetwork/KServerSocket
+  KNetwork/KSocketAddress
   KNetwork/KSocketBase
   KNetwork/KSocketDevice
   KNetwork/KSocketDeviceFactory
   KNetwork/KSocksSocketDevice
   KNetwork/KStreamSocket
+  KNetwork/KUnixSocketAddress
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
-
-
-install( FILES 
-  KNotify/Application
-  KNotify/ApplicationList
-  KNotify/KNotifyWidget
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotify )
-
-
-install( FILES 
-  KNotifyClient/Instance
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotifyClient )
 
 
 install( FILES 
@@ -765,10 +741,14 @@ install( FILES
   KParts/LiveConnectExtension
   KParts/MainWindow
   KParts/OpenURLEvent
+  KParts/Part
   KParts/PartActivateEvent
+  KParts/PartBase
   KParts/PartManager
   KParts/PartSelectEvent
   KParts/Plugin
+  KParts/ReadOnlyPart
+  KParts/ReadWritePart
   KParts/StatusBarExtension
   KParts/URLArgs
   KParts/WindowArgs
@@ -788,16 +768,18 @@ install( FILES
   KSpell2/ConfigDialog
   KSpell2/ConfigWidget
   KSpell2/DefaultDictionary
-  KSpell2/Dialog
   KSpell2/Filter
   KSpell2/Highlighter
+  KSpell2/Loader
   KSpell2/Settings
+  KSpell2/Speller
   KSpell2/Word
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSpell2 )
 
 
 install( FILES 
   KTextEditor/ArgHintData
+  KTextEditor/Attribute
   KTextEditor/CodeCompletionInterface
   KTextEditor/CodeCompletionInterface2
   KTextEditor/CodeCompletionModel
@@ -809,6 +791,7 @@ install( FILES
   KTextEditor/CompletionProvider
   KTextEditor/ConfigInterface
   KTextEditor/ConfigPage
+  KTextEditor/Cursor
   KTextEditor/Document
   KTextEditor/Editor
   KTextEditor/EditorChooser
@@ -817,11 +800,14 @@ install( FILES
   KTextEditor/MarkInterface
   KTextEditor/ModificationInterface
   KTextEditor/Plugin
+  KTextEditor/Range
   KTextEditor/SearchInterface
   KTextEditor/SessionConfigInterface
+  KTextEditor/SmartCursor
   KTextEditor/SmartCursorNotifier
   KTextEditor/SmartCursorWatcher
   KTextEditor/SmartInterface
+  KTextEditor/SmartRange
   KTextEditor/SmartRangeNotifier
   KTextEditor/SmartRangeWatcher
   KTextEditor/TemplateInterface
@@ -845,7 +831,124 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 
 install( FILES 
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DefaultHash
+  KXMLCore/DeletedValueAssigner
+  KXMLCore/DeletedValueAssigner
+  KXMLCore/DeletedValueAssigner
+  KXMLCore/GenericHashTraits
+  KXMLCore/GenericHashTraitsBase
+  KXMLCore/GenericHashTraitsBase
+  KXMLCore/HashCountedSet
+  KXMLCore/HashKeyStorageTraits
+  KXMLCore/HashKeyStorageTraits
+  KXMLCore/HashKeyStorageTraits
+  KXMLCore/HashMap
+  KXMLCore/HashMapTranslator
+  KXMLCore/HashMapTranslator
+  KXMLCore/HashSet
+  KXMLCore/HashSetTranslator
+  KXMLCore/HashSetTranslator
+  KXMLCore/HashSetTranslatorAdapter
+  KXMLCore/HashSetTranslatorAdapter
+  KXMLCore/HashTable
+  KXMLCore/HashTableConstIterator
+  KXMLCore/HashTableConstIteratorAdapter
+  KXMLCore/HashTableIterator
+  KXMLCore/HashTableIteratorAdapter
+  KXMLCore/HashTableRefCounter
+  KXMLCore/HashTableRefCounterBase
+  KXMLCore/HashTableRefCounterBase
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/HashTraits
+  KXMLCore/IdentityExtractor
+  KXMLCore/IdentityHashTranslator
+  KXMLCore/IntHash
+  KXMLCore/IntTypes
+  KXMLCore/IntTypes
+  KXMLCore/IntTypes
+  KXMLCore/IntTypes
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsInteger
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/IsPod
+  KXMLCore/Mover
+  KXMLCore/Mover
+  KXMLCore/NeedsRef
+  KXMLCore/NeedsRef
+  KXMLCore/OwnArrayPtr
+  KXMLCore/OwnPtr
+  KXMLCore/PairBaseHashTraits
+  KXMLCore/PairFirstExtractor
+  KXMLCore/PairHashTraits
+  KXMLCore/PassRefPtr
+  KXMLCore/PtrHash
+  KXMLCore/PtrHash
+  KXMLCore/RefCounter
+  KXMLCore/RefCounter
+  KXMLCore/RefCounterBase
+  KXMLCore/RefCounterBase
+  KXMLCore/RefPtr
   KXMLCore/SharedPtr
+  KXMLCore/Vector
+  KXMLCore/VectorBuffer
+  KXMLCore/VectorBuffer
+  KXMLCore/VectorCopier
+  KXMLCore/VectorCopier
+  KXMLCore/VectorDestructor
+  KXMLCore/VectorDestructor
+  KXMLCore/VectorFiller
+  KXMLCore/VectorFiller
+  KXMLCore/VectorInitializer
+  KXMLCore/VectorInitializer
+  KXMLCore/VectorInitializer
+  KXMLCore/VectorMover
+  KXMLCore/VectorMover
+  KXMLCore/VectorTraits
+  KXMLCore/VectorTraits
+  KXMLCore/VectorTraits
+  KXMLCore/VectorTraitsBase
+  KXMLCore/VectorTraitsBase
+  KXMLCore/VectorTypeOperations
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KXMLCore )
 
 
@@ -875,9 +978,11 @@ install( FILES
   Phonon/ObjectDescription
   Phonon/ObjectDescriptionModel
   Phonon/SeekSlider
+  Phonon/VideoDataOutput
   Phonon/VideoEffect
   Phonon/VideoFrame
   Phonon/VideoPath
+  Phonon/VideoPlayer
   Phonon/VideoWidget
   Phonon/Visualization
   Phonon/VolumeFaderEffect
@@ -899,17 +1004,20 @@ install( FILES
   Solid/Block
   Solid/Button
   Solid/Camera
+  Solid/Capability
   Solid/Cdrom
   Solid/Device
   Solid/DeviceManager
   Solid/Display
   Solid/FrontendObject
   Solid/ManagerBase
+  Solid/Network
   Solid/NetworkHw
   Solid/NetworkInterface
   Solid/OpticalDisc
   Solid/PortableMediaPlayer
   Solid/PowerManager
+  Solid/Predicate
   Solid/Processor
   Solid/Storage
   Solid/Volume
@@ -920,10 +1028,12 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
 install( FILES 
   Solid/Ifaces/AcAdapter
   Solid/Ifaces/AudioHw
+  Solid/Ifaces/AuthenticationValidator
   Solid/Ifaces/Battery
   Solid/Ifaces/Block
   Solid/Ifaces/Button
   Solid/Ifaces/Camera
+  Solid/Ifaces/Capability
   Solid/Ifaces/Cdrom
   Solid/Ifaces/Device
   Solid/Ifaces/DeviceManager
@@ -943,22 +1053,16 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid/Ifaces )
 
 install( FILES 
   ThreadWeaver/DependencyPolicy
-  ThreadWeaver/DestructedState
-  ThreadWeaver/InConstructionState
   ThreadWeaver/Job
   ThreadWeaver/JobCollection
   ThreadWeaver/JobSequence
+  ThreadWeaver/QueuePolicy
   ThreadWeaver/ResourceRestrictionPolicy
-  ThreadWeaver/ShuttingDownState
-  ThreadWeaver/StateImplementation
-  ThreadWeaver/SuspendedState
-  ThreadWeaver/SuspendingState
+  ThreadWeaver/State
   ThreadWeaver/Thread
   ThreadWeaver/Weaver
-  ThreadWeaver/WeaverImpl
   ThreadWeaver/WeaverInterface
   ThreadWeaver/WeaverObserver
-  ThreadWeaver/WorkingHardState
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ThreadWeaver )
 
 
