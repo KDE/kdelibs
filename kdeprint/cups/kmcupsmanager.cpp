@@ -920,7 +920,7 @@ void KMCupsManager::checkUpdatePossibleInternal()
 	kdDebug(500) << "Checking for update possible" << endl;
 	delete m_socket;
         m_socket = new KNetwork::KBufferedSocket;
-	m_socket->setTimeout( 1 );
+	m_socket->setTimeout( 1500 );
 	connect( m_socket, SIGNAL( connected(const KResolverEntry&) ), 
                 SLOT( slotConnectionSuccess() ) );
 	connect( m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
@@ -958,7 +958,7 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kdDebug(500) << "Starting async connect" << endl;
+	kdDebug(500) << "Starting async connect to " << CupsInfos::self()->hostaddr() << endl;
 	//m_socket->startAsyncConnect();
         if (CupsInfos::self()->host().startsWith("/"))
             m_socket->connect( QString(), CupsInfos::self()->host());
