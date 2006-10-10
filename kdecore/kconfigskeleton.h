@@ -906,7 +906,7 @@ public:
    * Constructor.
    *
    * @param configname name of config file. If no name is given, the default
-   * config file as returned by kapp()->config() is used.
+   * config file as returned by KGlobal::config() is used.
    */
   explicit KConfigSkeleton(const QString & configname = QString());
 
