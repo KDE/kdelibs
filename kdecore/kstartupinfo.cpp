@@ -146,7 +146,7 @@ void KStartupInfo::init( int flags_P )
         d->wm_module = NULL;
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
 #endif
-    d->cleanup = new QTimer( this );
+    d->cleanup = new QTimer( this, "cleanup" );
     connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
     }
 
