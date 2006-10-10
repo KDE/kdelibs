@@ -154,7 +154,7 @@ class KDECORE_EXPORT KInstance
      * userCaption using a standard layout.
      *
      * To make a compliant caption
-     * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
+     * for your window, simply do: @p setCaption(KGlobal::instance()->makeStdCaption(yourCaption));
      *
      * @param userCaption The caption string you want to display in the
      * window caption area. Do not include the application name!
