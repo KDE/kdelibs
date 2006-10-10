@@ -175,7 +175,7 @@ class KDECORE_EXPORT KStartupInfo
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like sendStartup , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendStartup , uses dpy instead of qt_xdisplay() for sending the info.
 	 * @param dpy the display of the application. Note that the name field
          * in data is required.
 	 * @param id the id of the application
@@ -198,7 +198,7 @@ class KDECORE_EXPORT KStartupInfo
         static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like sendChange , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendChange , uses dpy instead of qt_xdisplay() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @param data the application's data
@@ -215,7 +215,7 @@ class KDECORE_EXPORT KStartupInfo
         static bool sendFinish( const KStartupInfoId& id );
 
 	/**
-	 * Like sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendFinish , uses dpy instead of qt_xdisplay() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @return true if successful, false otherwise
@@ -232,7 +232,7 @@ class KDECORE_EXPORT KStartupInfo
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendFinish , uses dpy instead of qt_xdisplay() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @param data the application's data
