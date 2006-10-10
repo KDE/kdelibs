@@ -441,7 +441,7 @@ QString KStandardDirs::findResourceDir( const char *type,
     }
 
 #ifndef NDEBUG
-    if(false && type != "locale")
+    if(false && strcmp(type, "locale"))
       kdDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
 #endif
 
@@ -690,7 +690,7 @@ KStandardDirs::realPath(const QString &dirname)
 
     /* If the path contains symlinks, get the real name */
     if (realpath( QFile::encodeName(dirname).data(), realpath_buffer) != 0) {
-        // succes, use result from realpath
+        // success, use result from realpath
         int len = strlen(realpath_buffer);
         realpath_buffer[len] = '/';
         realpath_buffer[len+1] = 0;
@@ -708,7 +708,7 @@ KStandardDirs::realFilePath(const QString &filename)
 
     /* If the path contains symlinks, get the real name */
     if (realpath( QFile::encodeName(filename).data(), realpath_buffer) != 0) {
-        // succes, use result from realpath
+        // success, use result from realpath
         return QFile::decodeName(realpath_buffer);
     }
 
@@ -1287,6 +1287,7 @@ void KStandardDirs::addKDEDefaults()
            kdedirList.append(kdedir);
         }
     }
+
 #ifndef Q_OS_WIN //no default KDEDIR on win32 defined
     kdedirList.append(KDEDIR);
 #endif
