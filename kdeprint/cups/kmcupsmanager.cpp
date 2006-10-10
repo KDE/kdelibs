@@ -891,7 +891,7 @@ void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kDebug(500) << "Checking for update possible" << endl;
 	m_socket = new KNetwork::KBufferedSocket;
-	m_socket->setTimeout( 1 );
+	m_socket->setTimeout( 1500 );
 	connect( m_socket, SIGNAL( connected(const KResolverEntry&) ),
                 SLOT( slotConnectionSuccess() ) );
 	connect( m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
