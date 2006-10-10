@@ -21,7 +21,6 @@
 
 #include <QFile>
 #include <QDataStream>
-#include <QVector>
 
 #include <kdebug.h>
 #include <ktzfiletimezone.h>
@@ -249,8 +248,6 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     // Read the leap second adjustments
     qint32  t;
     quint32 s;
-    QDateTime dt;
-    dt.setTimeSpec(Qt::UTC);   // ensure that setTime_t() produces UTC value
     QList<KTimeZone::LeapSeconds> leapChanges;
     for (i = 0;  i < nLeapSecondAdjusts;  ++i)
     {

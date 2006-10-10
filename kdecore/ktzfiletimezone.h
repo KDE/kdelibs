@@ -25,10 +25,7 @@
 #ifndef _KTZFILETIMEZONE_H
 #define _KTZFILETIMEZONE_H
 
-#include <QtCore/QDateTime>
-#include <QtCore/QList>
 #include <QtCore/QString>
-#include <QtCore/QByteArray>
 #include "kdelibs_export.h"
 #include <ktimezones.h>
 
