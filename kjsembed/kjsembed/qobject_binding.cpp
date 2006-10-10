@@ -31,6 +31,7 @@
 #include "jseventmapper.h"
 #include "pointer.h"
 #include "qobject_binding.h"
+#include "variant_binding.h"
 
 #include <kjs/function_object.h>
 #include <kjs/property_slot.h>
@@ -376,7 +377,6 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     PointerBase *qtArgs[10];
     void *param[11];
 
-    QGenericArgument returnArgument;
     QObject *object = imp->object<QObject>();
     int count = object->metaObject()->methodCount();
     QMetaMethod metaMember;
@@ -398,6 +398,9 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 //    int kjsArgCount = args.size();
 //    int qArgCount = types.size();
 
+    QVariant::Type returnTypeId = QVariant::nameToType( metaMember.typeName() );
+    QVariant returnValue( returnTypeId );
+    QGenericReturnArgument returnArgument(metaMember.typeName(), &returnValue);
     param[0] = returnArgument.data();
     for( int idx = 0; idx < 10; ++idx)
     {
@@ -409,7 +412,6 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     success = object->qt_metacall(QMetaObject::InvokeMetaMethod, offset, param) < 0;
     //qDebug("after param ptr %0x", *(void**)param[1]);
 
-
     for( int idx = 0; idx < 10; ++idx)
     {
         delete qtArgs[idx];
@@ -420,7 +422,9 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
         // KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
     }
-    return KJS::Boolean(success);
+
+    //TODO use the QMetaType-stuff ( defined as QVariant::UserType ) to handle also other cases
+    return KJSEmbed::convertToValue(exec, returnValue);
 }
 
 SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
