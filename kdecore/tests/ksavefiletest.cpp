@@ -44,7 +44,7 @@ void KSaveFileTest::test_simpleBackupFile()
     QVERIFY( KSaveFile::simpleBackupFile(file.fileName()));
     QVERIFY( QFile::exists(file.fileName() + '~'));
     QFile::remove(file.fileName() + '~');
-    
+
     QVERIFY( KSaveFile::simpleBackupFile(file.fileName(), "/tmp/") );
     QFileInfo fi ( file.fileName() );
     QVERIFY( QFile::exists("/tmp/" + fi.fileName() + '~') );
@@ -61,7 +61,7 @@ void KSaveFileTest::test_numberedBackupFile()
         for ( int i=1; i<15; i++ ) {
             QVERIFY( KSaveFile::numberedBackupFile(file.fileName()) );
         }
-    
+
         QString fileNameTemplate = file.fileName() + ".%1~";
         for ( int i=1; i<=10; i++ ) {
             QVERIFY( QFile::exists(fileNameTemplate.arg(i)) );
@@ -73,7 +73,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( !QFile::exists(fileNameTemplate.arg(13)) );
         QVERIFY( !QFile::exists(fileNameTemplate.arg(14)) );
     }
-    
+
     // Test current directory
     {
         KTemporaryFile file;
@@ -121,7 +121,7 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( !QFile::exists(fileNameTemplate.arg(13)) );
         QVERIFY( !QFile::exists(fileNameTemplate.arg(14)) );
     }
-    
+
     // Test current directory w/new directory
     {
         KTemporaryFile file;
@@ -145,11 +145,15 @@ void KSaveFileTest::test_numberedBackupFile()
         QVERIFY( !QFile::exists(fileNameTemplate.arg(13)) );
         QVERIFY( !QFile::exists(fileNameTemplate.arg(14)) );
     }
-   
+
 }
 
 void KSaveFileTest::test_rcsBackupFile()
 {
+    QString cipath = KStandardDirs::findExe("ci");
+    if (cipath.isEmpty())
+        QSKIP("ci not available", SkipAll);
+
     {
         KTemporaryFile f;
         QVERIFY(f.open());
@@ -165,23 +169,23 @@ void KSaveFileTest::test_rcsBackupFile()
     {
         KTemporaryFile f;
         QVERIFY(f.open());
-        
+
         QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
         QVERIFY( QFile::exists(f.fileName() + ",v" ) );
-        
+
         QTextStream out( &f );
         out << "Testing a change\n";
         out.flush();
-        
+
         QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
-        
+
         out << "Testing another change\n";
         out.flush();
 
         QVERIFY( KSaveFile::rcsBackupFile( f.fileName() ) );
         filesToRemove << f.fileName() + ",v";
     }
-    
+
     {
         KTemporaryFile f;
         QVERIFY(f.open());
@@ -196,7 +200,7 @@ void KSaveFileTest::test_rcsBackupFile()
 
         filesToRemove << f.fileName() + ",v";
     }
-    
+
     {
         KTemporaryFile f;
         QVERIFY(f.open());
@@ -210,7 +214,7 @@ void KSaveFileTest::test_rcsBackupFile()
 
         filesToRemove << "/tmp/" + fi.fileName() + ",v";
     }
-    
+
     {
         KTemporaryFile f;
         QVERIFY(f.open());
@@ -233,18 +237,18 @@ void KSaveFileTest::test_dataStream()
 #ifdef Q_WS_WIN
 
     QString path=QDir::homePath();
-    
+
     path = path + QLatin1String("/test_KSaveFileTest_dataStream.tmp");
 
     printf("KSaveFileTest::test_dataStream(): path='%s'\n", qPrintable(path));
 
     KSaveFile* database = new KSaveFile(path);
 
-    
+
     // msvc linked against QtCore4.lib (release version) crashes in
-    //     QFile * KTempFile::file() 
+    //     QFile * KTempFile::file()
     //     { ...
-    //     mFile->open(mStream, QIODevice::ReadWrite); 
+    //     mFile->open(mStream, QIODevice::ReadWrite);
     //
     //     mFile is QFile*
     QDataStream* m_str = database->dataStream();
