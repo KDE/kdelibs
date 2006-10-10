@@ -714,6 +714,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   int parenCount = 0;  // Possibly in a multiline for stmt.  Used to skip ';' ...
   bool found = false;
   bool isSpecial = false;
+  bool potentialAnchorSeen = false;
 
   //kdDebug(13030) << "calcIndent begin line:" << begin.line() << " col:" << begin.col() << endl;
 
@@ -733,7 +734,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
       {
         QChar tc = textLine->getChar (pos);
         if ((tc == ';' || tc == ':' || tc == ',') && otherAnchor == -1 && parenCount <= 0)
-          otherAnchor = pos;
+          otherAnchor = pos, potentialAnchorSeen = true;
         else if (tc == ')')
           parenCount++;
         else if (tc == '(')
@@ -742,7 +743,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
           openCount--;
         else if (tc == '{')
         {
-          openCount++;
+          openCount++, potentialAnchorSeen = true;
           if (openCount == 1)
             break;
         }
@@ -826,7 +827,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   }
 
   // treat beginning of document as anchor position
-  if (cur.line() == 0 && cur.col() == 0)
+  if (cur.line() == 0 && cur.col() == 0 && potentialAnchorSeen)
     found = true;
 
   if (!found)
