@@ -410,15 +410,6 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command), m_totalSize(0)
 {
-    if (!m_url.isValid())
-    {
-        m_error = ERR_MALFORMED_URL;
-        m_errorText = m_url.url();
-        QTimer::singleShot(0, this, SLOT(slotFinished()) );
-        return;
-    }
-
-
     if (m_url.hasSubURL())
     {
        KURL::List list = KURL::split(m_url);
@@ -430,6 +421,15 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
     }
 
     Scheduler::doJob(this);
+
+    if (!m_url.isValid())
+    {
+        kdDebug() << "ERR_MALFORMED_URL" << endl;
+        m_error = ERR_MALFORMED_URL;
+        m_errorText = m_url.url();
+        QTimer::singleShot(0, this, SLOT(slotFinished()) );
+        return;
+    }
 }
 
 void SimpleJob::kill( bool quietly )
