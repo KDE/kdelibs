@@ -505,6 +505,7 @@ install( FILES
   KVBox
   KWin
   KWinModule
+  KWindowListMenu
   KWordMacroExpander
   KWordWrap
   KXBELBookmarkImporterImpl
@@ -512,6 +513,7 @@ install( FILES
   KXMLGUIBuilder
   KXMLGUIClient
   KXMLGUIFactory
+  KXMessages
   KXYSelector
   KZip
   KZipFileEntry
@@ -520,6 +522,11 @@ install( FILES
   KonqBookmarkOwner
   ListProgress
   NET
+  NETRootInfo
+  NETRootInfo2
+  NETRootInfo3
+  NETRootInfo4
+  NETWinInfo
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
