@@ -571,6 +571,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck )
 
 
 install( FILES 
+  DNSSD/Configuration
   DNSSD/DomainBrowser
   DNSSD/PublicService
   DNSSD/Query
@@ -712,7 +713,33 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
 install( FILES 
+  KJS/CString
+  KJS/Collector
+  KJS/Completion
+  KJS/DeclaredFunctionImp
+  KJS/Error
+  KJS/ExecState
+  KJS/FunctionImp
+  KJS/HashEntry
+  KJS/Identifier
+  KJS/Interpreter
+  KJS/JSCell
+  KJS/JSImmediate
+  KJS/JSLock
+  KJS/JSObject
+  KJS/JSValue
+  KJS/List
+  KJS/Lookup
+  KJS/PropertyMap
+  KJS/PropertyNameArray
+  KJS/PropertySlot
   KJS/ProtectedPtr
+  KJS/ScopeChain
+  KJS/ScopeChainIterator
+  KJS/ScopeChainNode
+  KJS/UChar
+  KJS/UCharReference
+  KJS/UString
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
 
