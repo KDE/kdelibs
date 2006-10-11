@@ -83,11 +83,8 @@ VoiceManager::~VoiceManager()
   LastVoice=NULL;
   LastnotusedVoice=NULL;
 
-  if (VoiceList!=NULL) 
-  {
-    delete VoiceList;
-    VoiceList=NULL;
-  }
+  delete [] VoiceList;
+  VoiceList=NULL;
 
   delete searcher_aid;
 }
