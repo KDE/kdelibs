@@ -255,7 +255,7 @@ KJS::JSValue *Engine::callMethod( const KJS::UString &methodName, const KJS::Lis
     KJS::JSValue *retValue;
 
     if ( !fun->implementsCall() ) {
-	QString msg = i18n( "%1 is not a function and cannot be called." ).arg( methodName.qstring() );
+	QString msg = i18n( "%1 is not a function and cannot be called.", methodName.qstring() );
 	return throwError( exec, KJS::TypeError, msg );
     }
 
@@ -277,7 +277,7 @@ KJS::JSValue *Engine::callMethod(  KJS::JSObject *parent,
     KJS::JSValue *retValue;
 
     if ( !fun->implementsCall() ) {
-	QString msg = i18n( "%1 is not a function and cannot be called." ).arg( methodName.qstring() );
+	QString msg = i18n( "%1 is not a function and cannot be called.", methodName.qstring() );
 	return throwError( exec, KJS::TypeError, msg );
     }
 

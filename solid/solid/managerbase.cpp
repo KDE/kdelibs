@@ -131,12 +131,12 @@ QObject *Solid::ManagerBase::loadBackend( const QString &description, const char
     {
         if ( offers.size() == 0 )
         {
-            d->errorText = i18n( "No %1 Backend found" ).arg( description );
+            d->errorText = i18n( "No %1 Backend found", description );
         }
         else
         {
             d->errorText = "<qt>";
-            d->errorText+= i18n( "Unable to use any of the %1 Backends" ).arg( description );
+            d->errorText+= i18n( "Unable to use any of the %1 Backends", description );
             d->errorText+= "<table>";
 
             QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";

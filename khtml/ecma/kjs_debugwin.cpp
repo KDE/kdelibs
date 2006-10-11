@@ -461,7 +461,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   // Venkman use F12, KDevelop F10
   KShortcut scNext = KShortcut(KKeySequence(KKey(Qt::Key_F12)));
   scNext.append(KKeySequence(KKey(Qt::Key_F10)));
-  m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",scNext,this,SLOT(slotNext()),
+  m_nextAction       = new KAction(i18nc("Next breakpoint","&Next"),"dbgnext",scNext,this,SLOT(slotNext()),
 				   m_actionCollection,"next");
   m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(Qt::Key_F11),this,SLOT(slotStep()),
 				   m_actionCollection,"step");
@@ -475,7 +475,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(Qt::Key_F8),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
 
-  m_nextAction->setToolTip(i18n("Next breakpoint","Next"));
+  m_nextAction->setToolTip(i18nc("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));
   m_continueAction->setToolTip(i18n("Continue"));
   m_stopAction->setToolTip(i18n("Stop"));

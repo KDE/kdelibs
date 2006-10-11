@@ -955,12 +955,12 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 		break;
 	    case KNetwork::KSocketBase::WouldBlock:
 	    default:
-		einfo = i18n("read failed (%1)").arg(errcode);
+		einfo = i18n("read failed (%1)", errcode);
 		break;
 	}
 
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-        "Error: %2: %1" ).arg(einfo).arg(CupsInfos::self()->hostaddr()) );
+        "Error: %2: %1", einfo, CupsInfos::self()->hostaddr() ) );
 	setUpdatePossible( false );
 }
 

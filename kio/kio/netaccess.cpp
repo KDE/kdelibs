@@ -368,7 +368,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
   }
   else
   {
-    resultData = i18n( "ERROR: Unknown protocol '%1'" ).arg( url.protocol() );
+    resultData = i18n( "ERROR: Unknown protocol '%1'", url.protocol() );
   }
   return resultData;
 }
