@@ -35,12 +35,14 @@ install( FILES
   K3MimeSourceFactory
   K3MultipleDrag
   K3PopupMenu
+  K3Spell
+  K3SpellConfig
+  K3SpellDlg
   K3SpellingHighlighter
   K3SyntaxHighlighter
   K3TextEdit
   K3URLDrag
   K3Wizard
-  KACL
   KAboutApplication
   KAboutContainer
   KAboutContributor
@@ -53,7 +55,9 @@ install( FILES
   KAcceleratorManager
   KAction
   KActionCollection
+  KActionMenu
   KActionSelector
+  KActiveLabel
   KAnimatedButton
   KApplication
   KApplicationPropsPlugin
@@ -63,7 +67,10 @@ install( FILES
   KArchiveEntry
   KArchiveFile
   KArrowButton
+  KAssistantDialog
   KAuthorized
+  KAutoMount
+  KAutoUnmount
   KAutostart
   KBindingPropsPlugin
   KBookmark
@@ -82,7 +89,9 @@ install( FILES
   KBookmarkMenu
   KBookmarkNotifier
   KBookmarkOwner
+  KBugReport
   KBuildSycocaProgressDialog
+  KButtonBox
   KButtonGroup
   KCModule
   KCModuleContainer
@@ -121,6 +130,7 @@ install( FILES
   KConfig
   KConfigBackEnd
   KConfigBase
+  KConfigDialog
   KConfigDialogManager
   KConfigGroup
   KConfigINIBackEnd
@@ -131,9 +141,11 @@ install( FILES
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
   KCursor
+  KCustomMenuEditor
   KDBusServiceStarter
   KDEDModule
   KDEDesktopMimeType
+  KDEsuClient
   KDataTool
   KDataToolAction
   KDataToolInfo
@@ -190,6 +202,7 @@ install( FILES
   KFilePreview
   KFilePropsPlugin
   KFileShare
+  KFileSharePropsPlugin
   KFileTreeBranch
   KFileTreeView
   KFileTreeViewItem
@@ -198,9 +211,14 @@ install( FILES
   KFilterBase
   KFilterDev
   KFind
+  KFindDialog
   KFloatValidator
   KFolderType
+  KFontAction
+  KFontChooser
+  KFontDialog
   KFontRequester
+  KFontSizeAction
   KGenericFactory
   KGenericFactory
   KGenericFactory
@@ -233,6 +251,7 @@ install( FILES
   KImageEffect
   KImageFilePreview
   KImageIO
+  KInputDialog
   KInstance
   KIntNumInput
   KIntSpinBox
@@ -240,6 +259,7 @@ install( FILES
   KJob
   KJobUiDelegate
   KKeyButton
+  KKeyChooser
   KLanguageButton
   KLed
   KLibFactory
@@ -270,6 +290,8 @@ install( FILES
   KMessageBox
   KMessageBoxMessageHandler
   KMessageHandler
+  KMimeMagic
+  KMimeMagicResult
   KMimeType
   KMimeTypeChooser
   KMimeTypeChooserDialog
@@ -278,7 +300,6 @@ install( FILES
   KMimeTypeResolverHelper
   KMimeTypeTrader
   KMimeTypeValidator
-  KMountPoint
   KMozillaBookmarkImporterImpl
   KMultiTabBar
   KMultiTabBarButton
@@ -291,34 +312,44 @@ install( FILES
   KNTLM
   KNamedCommand
   KNewStuff
+  KNewStuffGeneric
   KNewStuffSecure
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
+  KNotifyDialog
   KNumInput
   KOCRDialog
   KOCRDialogFactory
   KOpenSSLProxy
   KOpenWithDlg
   KOperaBookmarkExporterImpl
+  KOperaBookmarkImporter
   KOperaBookmarkImporterImpl
   KPReloadObject
+  KPageDialog
   KPageModel
   KPageView
+  KPageWidget
+  KPageWidgetItem
+  KPageWidgetModel
   KPalette
   KPaletteTable
   KPassivePopup
   KPassivePopupMessageHandler
   KPasswordDialog
   KPasswordEdit
+  KPasteTextAction
   KPixmapEffect
   KPixmapProvider
+  KPixmapRegionSelectorDialog
   KPixmapRegionSelectorWidget
   KPixmapSplitter
   KPluginInfo
   KPluginSelector
   KPopupFrame
   KPreviewWidgetBase
+  KPrintAction
   KPrintDialog
   KPrintDialogPage
   KPrinter
@@ -331,15 +362,19 @@ install( FILES
   KPropsDlgPlugin
   KProtocolInfo
   KProtocolManager
-  KPushButton
+  KPty
+  KRFCDate
   KRandom
   KRandomSequence
   KRecentDocument
+  KRecentFilesAction
   KRemoteEncoding
   KReplace
+  KReplaceDialog
   KRestrictedLine
   KRuler
   KRun
+  KSMIMECrypto
   KSSL
   KSSLCertBox
   KSSLCertChain
@@ -352,6 +387,8 @@ install( FILES
   KSSLConnectionInfo
   KSSLInfoDlg
   KSSLKeyGen
+  KSSLPKCS12
+  KSSLPKCS7
   KSSLPeerInfo
   KSSLSession
   KSSLSettings
@@ -363,8 +400,11 @@ install( FILES
   KScanDialog
   KScanDialogFactory
   KSelectAction
+  KSelectionOwner
+  KSelectionWatcher
   KSelector
   KSeparator
+  KSeparatorAction
   KService
   KServiceGroup
   KServiceOffer
@@ -378,8 +418,10 @@ install( FILES
   KShellCompletion
   KShellProcess
   KShortcut
+  KShortcutDialog
   KSimpleConfig
   KSimpleFileFilter
+  KSocks
   KSortableItem
   KSortableList
   KSpeech
@@ -410,6 +452,7 @@ install( FILES
   KTabWidget
   KTar
   KTempDir
+  KTempFile
   KTemporaryFile
   KTextBrowser
   KTextEdit
@@ -420,7 +463,13 @@ install( FILES
   KTimeZones
   KTipDatabase
   KTipDialog
+  KToggleAction
+  KToggleFullScreenAction
+  KToggleToolBarAction
   KToolBar
+  KToolBarLabelAction
+  KToolBarPopupAction
+  KToolBarSpacerAction
   KToolInvocation
   KTreeWidgetSearchLine
   KTreeWidgetSearchLineWidget
@@ -453,10 +502,12 @@ install( FILES
   KUser
   KUserGroup
   KVBox
+  KWin
   KWinModule
   KWordMacroExpander
   KWordWrap
   KXBELBookmarkImporterImpl
+  KXErrorHandler
   KXMLGUIBuilder
   KXMLGUIClient
   KXMLGUIFactory
@@ -466,13 +517,13 @@ install( FILES
   KZoneAllocator
   ListProgress
   NET
-  Observer
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
   Pointer
   ProgressItem
   PtyProcess
+  QMetaTypeId
   QMetaTypeId
   SshProcess
   StubProcess
@@ -621,12 +672,10 @@ install( FILES
   KIO/CopyInfo
   KIO/CopyJob
   KIO/DavJob
-  KIO/DefaultProgress
   KIO/DeleteJob
   KIO/DirectCopyJob
   KIO/FileCopyJob
   KIO/FileJob
-  KIO/ForwardingSlaveBase
   KIO/Job
   KIO/JobUiDelegate
   KIO/ListJob
@@ -637,19 +686,13 @@ install( FILES
   KIO/MultiGetJob
   KIO/NetAccess
   KIO/NetRC
+  KIO/PasswordDialog
   KIO/PreviewJob
-  KIO/ProgressBase
   KIO/RenameDlg
-  KIO/RenameDlgPlugin
-  KIO/Scheduler
-  KIO/SessionData
   KIO/SimpleJob
   KIO/SkipDlg
   KIO/Slave
-  KIO/SlaveConfig
-  KIO/SlaveInterface
   KIO/StatJob
-  KIO/StatusbarProgress
   KIO/StoredTransferJob
   KIO/TCPSlaveBase
   KIO/Task
@@ -672,6 +715,7 @@ install( FILES
   KJSEmbed/ObjectFactory
   KJSEmbed/ProxyBinding
   KJSEmbed/QObjectBinding
+  KJSEmbed/QWidgetBinding
   KJSEmbed/SlotBinding
   KJSEmbed/StaticBinding
   KJSEmbed/StaticConstructor
@@ -687,12 +731,13 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
 install( FILES 
-  KNS/Button
   KNS/DownloadDialog
   KNS/Engine
   KNS/Entry
   KNS/Provider
+  KNS/ProviderDialog
   KNS/ProviderLoader
+  KNS/UploadDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
 
 
@@ -722,6 +767,18 @@ install( FILES
   KNetwork/KStreamSocket
   KNetwork/KUnixSocketAddress
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
+
+
+install( FILES 
+  KNotify/Application
+  KNotify/ApplicationList
+  KNotify/KNotifyWidget
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotify )
+
+
+install( FILES 
+  KNotifyClient/Instance
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotifyClient )
 
 
 install( FILES 
@@ -768,6 +825,7 @@ install( FILES
   KSpell2/ConfigDialog
   KSpell2/ConfigWidget
   KSpell2/DefaultDictionary
+  KSpell2/Dialog
   KSpell2/Filter
   KSpell2/Highlighter
   KSpell2/Loader
