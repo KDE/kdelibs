@@ -36,6 +36,76 @@
 
 QTEST_KDEMAIN( KSaveFileTest, NoGUI )
 
+void KSaveFileTest::test_ksavefile()
+{
+    QString targetFile;
+
+    {
+        //This will be the file we eventually write to. Yes, I know you
+        //should never remove the temporaryfile and then expect the filename
+        //to continue to be unique, but this is a test for crying out loud. :)
+        KTemporaryFile file;
+        file.setPrefix("ksavefiletest");
+        QVERIFY( file.open() );
+        targetFile = file.fileName();
+    }
+
+    {
+        //Test basic functionality
+        KSaveFile saveFile ( targetFile );
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        QTextStream *ts = saveFile.textStream();
+        (*ts) << "Hello out there in TV land!\n";
+        ts->flush();
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        QVERIFY( saveFile.close() );
+        QVERIFY( QFile::exists(targetFile) );
+    }
+
+    QFile::remove(targetFile);
+    QVERIFY( !QFile::exists(targetFile) );
+
+    {
+        //Do it again, aborting this time
+        KSaveFile saveFile ( targetFile );
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        QTextStream *ts = saveFile.textStream();
+        (*ts) << "Hello out there in TV land!\n";
+        ts->flush();
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        saveFile.abort();
+        QVERIFY( !QFile::exists(targetFile) );
+    }
+
+    QFileInfo fi ( targetFile );
+    targetFile = fi.fileName();
+    QDir::setCurrent(fi.path());
+
+    {
+        //one last time, this time with relative filenames
+        KSaveFile saveFile ( targetFile );
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        QTextStream *ts = saveFile.textStream();
+        (*ts) << "Hello out there in TV land!\n";
+        ts->flush();
+        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( !QFile::exists(targetFile) );
+
+        QVERIFY( saveFile.close() );
+        QVERIFY( QFile::exists(targetFile) );
+    }
+}
+
 void KSaveFileTest::test_simpleBackupFile()
 {
     KTemporaryFile file;
