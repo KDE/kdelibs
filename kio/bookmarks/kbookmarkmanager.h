@@ -209,8 +209,6 @@ public:
                                              const QString& dbusObjectName,
                                              bool bImportDesktopFiles = true );
 
-    static KBookmarkManager* managerForFile( const QString&, bool);
-    
 
     /**
      * only used for KBookmarkBar
