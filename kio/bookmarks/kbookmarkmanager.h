@@ -80,6 +80,7 @@ protected:
      */
     KBookmarkManager( const QString & bookmarksFile, const QString& dbusObjectName, bool bImportDesktopFiles = true );
 
+
     KBookmarkManager();
 
 public:
@@ -89,11 +90,10 @@ public:
     ~KBookmarkManager();
 
     /**
-     * Set the update flag. Defaults to true. TODO - check
-     * @param update if true then KBookmarkManager will listen to DCOP update requests.
+     * Set the update flag. Defaults to true.
+     * @param update if true then KBookmarkManager will listen to DBUS update requests.
      */
     void setUpdate( bool update );
-    //TODO update??
 
     /**
      * Save the bookmarks to an XML file on disk.
@@ -209,7 +209,12 @@ public:
                                              const QString& dbusObjectName,
                                              bool bImportDesktopFiles = true );
 
+    static KBookmarkManager* managerForFile( const QString&, bool);
+    
 
+    /**
+     * only used for KBookmarkBar
+     */
     static KBookmarkManager* createTempManager();
 
     /**
@@ -351,6 +356,9 @@ public:
    */
   virtual bool editBookmarkEntry() const { return true; }
 
+  /**
+   * Called if a bookmark is selected. You need to override this.
+   */
   virtual void openBookmark(KBookmark bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
 
 private:
