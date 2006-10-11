@@ -27,12 +27,11 @@
 #include <kdelibs_export.h>
 
 /**
- * Tabbed dialog with extended features.
- * KTabCtl is very similar to QTabDialog, with the following differences:
+ * Dynamic tabbed widget - based on QTabBar but not on QStackWidget,
+ * so the pages can be created on demand.
  *
- * @li To avoid confusion, the API is almost identical with QTabDialog.
- * @li Does not create any buttons, therefore KTabCtl is not limited
- * to dialog boxes. You can use it whereever you want.
+ * KTabCtl is very similar to QTabWidget, with the following difference:
+ *
  * @li emits the signal tabSelected(int pagenumber) when the user
  * selects one of the tabs. This gives you the chance to update the
  * widget contents of a single page. The signal is emitted _before_ the
@@ -65,26 +64,26 @@ class KDEUI_EXPORT KTabCtl : public QWidget
     void setFont( const QFont &font );
 
     /**
-     * Sets the @param font for the tab widgets.
+     * Sets the @p font for the tab bar.
      */
     void setTabFont( const QFont &font );
 
     /**
-     * Adds the @param widget as new tab with the given
+     * Adds the @p widget as new tab with the given text.
      * @param name.
      */
-    void addTab( QWidget *widget, const QString &name );
+    int addTab( QWidget *widget, const QString &text );
 
     /**
      * Returns whether the tab with the given @param name
      * is enabled.
      */
-    bool isTabEnabled( const QString &name );
+    bool isTabEnabled( int index ) const;
 
     /**
-     * Sets the tab with the given @param name enabled or disabled.
+     * Sets the tab with the given @p index enabled or disabled.
      */
-    void setTabEnabled( const QString &name, bool enabled );
+    void setTabEnabled( int index, bool enabled );
 
     /**
      * Sets whether the tab widget should be enclosed by
@@ -100,7 +99,7 @@ class KDEUI_EXPORT KTabCtl : public QWidget
     /**
      * Reimplemented from @see QWidget.
      */
-    void show();
+    virtual void setVisible( bool b );
 
     /**
      * Reimplemented from @see QWidget.

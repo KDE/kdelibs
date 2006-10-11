@@ -13,7 +13,6 @@
 #include <qtabbar.h>
 #include <qpalette.h>
 #include <qtextedit.h>
-#include <QResizeEvent>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +50,7 @@ TopLevel::TopLevel(QWidget *parent)
     w->setObjectName( "_page2" );
     e = new QTextEdit(w);
     e->setObjectName( "_editor" );
-    e->setPlainText("Write some usesless stuff here :-)");
+    e->setPlainText("Write some useless stuff here :-)");
     w->resize(width(), height());
     test->addTab(w, "Seite 2");
     pages[1] = w;
@@ -63,10 +62,6 @@ TopLevel::TopLevel(QWidget *parent)
     bt->move(20, 20);
     test->addTab(w, "Seite 3");
     pages[2] = w;
-    test->resize(200, 200);
-    test->move(0, 0);
-    move(20, 20);
-    resize(400, 300);
     adjustSize();
 }
 
@@ -85,19 +80,32 @@ void TopLevel::tabChanged(int newpage)
 
 void TopLevel::okPressed()
 {
-    kapp->quit();
+    qApp->quit();
 }
 
 int main( int argc, char ** argv )
 {
-    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+    KCmdLineArgs::init( argc, argv, "test", "Test", "test app", "1.0" );
     KApplication a;
 
     a.setFont(default_font);
 
     TopLevel *toplevel = new TopLevel(0);
-
     toplevel->show();
+
+#if 0
+    QTabWidget *tabWidget = new QTabWidget(0);
+    QWidget *w = new QWidget();
+    w->setObjectName("_page1");
+    QPushButton *bt = new QPushButton("Click me to quit", w);
+    bt->setObjectName( "_bt1" );
+    QObject::connect(bt, SIGNAL(clicked()), toplevel, SLOT(okPressed()));
+    bt->adjustSize();
+    bt->move(20, 20);
+    tabWidget->addTab(w, "Seite 1");
+    tabWidget->show();
+#endif
+
     return a.exec();
 }
 
