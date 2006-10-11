@@ -104,6 +104,8 @@ void KSaveFileTest::test_ksavefile()
         QVERIFY( saveFile.close() );
         QVERIFY( QFile::exists(targetFile) );
     }
+
+    QFile::remove(targetFile);
 }
 
 void KSaveFileTest::test_simpleBackupFile()
