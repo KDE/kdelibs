@@ -11,7 +11,9 @@
 #ifndef __KCookie_h_Included__
 #define __KCookie_h_Included__
 
-#include <qbytearray.h>
+#include <QtCore/QByteArray>
+
+#include <kdelibs_export.h>
 
 /**
  * Utility class to access the authentication tokens needed to run a KDE
