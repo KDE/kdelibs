@@ -584,26 +584,59 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 install( FILES 
   DOM/AbstractView
   DOM/Attr
+  DOM/CDATASection
+  DOM/CSSCharsetRule
   DOM/CSSException
+  DOM/CSSFontFaceRule
+  DOM/CSSImportRule
+  DOM/CSSMediaRule
+  DOM/CSSPageRule
+  DOM/CSSPrimitiveValue
+  DOM/CSSRule
+  DOM/CSSRuleList
+  DOM/CSSStyleDeclaration
+  DOM/CSSStyleRule
   DOM/CSSStyleSheet
+  DOM/CSSUnknownRule
+  DOM/CSSValue
+  DOM/CSSValueList
+  DOM/CharacterData
+  DOM/Comment
+  DOM/Counter
   DOM/CustomNodeFilter
+  DOM/DOMException
+  DOM/DOMImplementation
   DOM/DOMString
+  DOM/Document
+  DOM/DocumentFragment
   DOM/DocumentStyle
+  DOM/DocumentType
   DOM/DomShared
   DOM/Element
+  DOM/Entity
+  DOM/EntityReference
+  DOM/Event
+  DOM/EventException
+  DOM/EventListener
   DOM/HTMLAnchorElement
+  DOM/HTMLAppletElement
+  DOM/HTMLAreaElement
   DOM/HTMLBRElement
+  DOM/HTMLBaseElement
   DOM/HTMLBaseFontElement
   DOM/HTMLBlockquoteElement
   DOM/HTMLBodyElement
+  DOM/HTMLButtonElement
   DOM/HTMLCollection
   DOM/HTMLDListElement
   DOM/HTMLDirectoryElement
   DOM/HTMLDivElement
   DOM/HTMLDocument
   DOM/HTMLElement
+  DOM/HTMLFieldSetElement
   DOM/HTMLFontElement
   DOM/HTMLFormCollection
+  DOM/HTMLFormElement
   DOM/HTMLFrameElement
   DOM/HTMLFrameSetElement
   DOM/HTMLHRElement
@@ -611,31 +644,60 @@ install( FILES
   DOM/HTMLHeadingElement
   DOM/HTMLHtmlElement
   DOM/HTMLIFrameElement
+  DOM/HTMLImageElement
+  DOM/HTMLInputElement
+  DOM/HTMLIsIndexElement
   DOM/HTMLLIElement
+  DOM/HTMLLabelElement
   DOM/HTMLLayerElement
+  DOM/HTMLLegendElement
+  DOM/HTMLLinkElement
+  DOM/HTMLMapElement
   DOM/HTMLMenuElement
+  DOM/HTMLMetaElement
   DOM/HTMLModElement
   DOM/HTMLOListElement
+  DOM/HTMLObjectElement
+  DOM/HTMLOptGroupElement
+  DOM/HTMLOptionElement
   DOM/HTMLParagraphElement
+  DOM/HTMLParamElement
   DOM/HTMLPreElement
   DOM/HTMLQuoteElement
+  DOM/HTMLScriptElement
+  DOM/HTMLSelectElement
+  DOM/HTMLStyleElement
   DOM/HTMLTableCaptionElement
   DOM/HTMLTableCellElement
   DOM/HTMLTableColElement
   DOM/HTMLTableElement
   DOM/HTMLTableRowElement
   DOM/HTMLTableSectionElement
+  DOM/HTMLTextAreaElement
+  DOM/HTMLTitleElement
   DOM/HTMLUListElement
+  DOM/KeyboardEvent
   DOM/LinkStyle
   DOM/MediaList
+  DOM/MouseEvent
+  DOM/MutationEvent
   DOM/NamedNodeMap
   DOM/Node
   DOM/NodeFilter
   DOM/NodeIterator
   DOM/NodeList
+  DOM/Notation
+  DOM/ProcessingInstruction
+  DOM/RGBColor
+  DOM/Range
+  DOM/RangeException
+  DOM/Rect
   DOM/StyleSheet
   DOM/StyleSheetList
+  DOM/Text
+  DOM/TextEvent
   DOM/TreeWalker
+  DOM/UIEvent
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM )
 
 
