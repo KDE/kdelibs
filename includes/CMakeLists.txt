@@ -139,6 +139,7 @@ install( FILES
   KConfigSkeleton
   KConfigSkeletonGenericItem
   KConfigSkeletonItem
+  KCookie
   KCrash
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
