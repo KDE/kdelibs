@@ -43,6 +43,7 @@ install( FILES
   K3TextEdit
   K3URLDrag
   K3Wizard
+  KACL
   KAboutApplication
   KAboutContainer
   KAboutContributor
@@ -527,6 +528,7 @@ install( FILES
   NETRootInfo3
   NETRootInfo4
   NETWinInfo
+  Observer
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
@@ -745,10 +747,12 @@ install( FILES
   KIO/CopyInfo
   KIO/CopyJob
   KIO/DavJob
+  KIO/DefaultProgress
   KIO/DeleteJob
   KIO/DirectCopyJob
   KIO/FileCopyJob
   KIO/FileJob
+  KIO/ForwardingSlaveBase
   KIO/Job
   KIO/JobUiDelegate
   KIO/ListJob
@@ -761,11 +765,19 @@ install( FILES
   KIO/NetRC
   KIO/PasswordDialog
   KIO/PreviewJob
+  KIO/ProgressBase
   KIO/RenameDlg
+  KIO/RenameDlgPlugin
+  KIO/Scheduler
+  KIO/SessionData
   KIO/SimpleJob
   KIO/SkipDlg
   KIO/Slave
+  KIO/SlaveBase
+  KIO/SlaveConfig
+  KIO/SlaveInterface
   KIO/StatJob
+  KIO/StatusbarProgress
   KIO/StoredTransferJob
   KIO/TCPSlaveBase
   KIO/Task
