@@ -47,6 +47,7 @@
 #include <sys/types.h>
 #include <utime.h>
 #include <kprotocolinfo.h>
+#include <kio/scheduler.h>
 
 QTEST_KDEMAIN( JobTest, GUI )
 
@@ -914,6 +915,20 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
 
     // restore normal behavior
     kio_resolve_local_urls = true;
+}
+
+void JobTest::getInvalidUrl()
+{
+    KUrl url("file://\"\"");
+    QVERIFY(!url.isValid());
+
+    KIO::SimpleJob* job = KIO::get(url);
+    QVERIFY(job != 0);
+
+    KIO::Scheduler::scheduleJob(job); // shouldn't crash (#135456)
+
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    QVERIFY( !ok ); // it should fail :)
 }
 
 #include "jobtest.moc"

@@ -56,6 +56,7 @@ private Q_SLOTS:
     // Remote tests
     void copyFileToSystem();
 
+    void getInvalidUrl();
 
 Q_SIGNALS:
     void exitLoop();
