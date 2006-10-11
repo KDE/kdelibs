@@ -99,6 +99,7 @@ install( FILES
   KCModuleInfo
   KCModuleLoader
   KCModuleProxy
+  KCMultiDialog
   KCPUInfo
   KCalendarSystem
   KCalendarSystemFactory
@@ -261,6 +262,7 @@ install( FILES
   KJobUiDelegate
   KKeyButton
   KKeyChooser
+  KKeyDialog
   KLanguageButton
   KLed
   KLibFactory
