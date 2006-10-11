@@ -1,1 +1,1 @@
-#include "../../sonnet/spelling/speller.h"
+#include "../../sonnet/speller.h"

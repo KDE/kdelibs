@@ -363,6 +363,7 @@ install( FILES
   KProtocolInfo
   KProtocolManager
   KPty
+  KPushButton
   KRFCDate
   KRandom
   KRandomSequence
@@ -515,6 +516,8 @@ install( FILES
   KZip
   KZipFileEntry
   KZoneAllocator
+  KonqBookmarkMenu
+  KonqBookmarkOwner
   ListProgress
   NET
   OrgKdeKDirNotifyInterface
@@ -731,6 +734,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
 install( FILES 
+  KNS/Button
   KNS/DownloadDialog
   KNS/Engine
   KNS/Entry
