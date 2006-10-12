@@ -208,17 +208,17 @@ void VCard21Parser::readFromString(KABC::AddressBook *addressbook, const QString
 KABC::Addressee VCard21Parser::readFromString( const QString &data)
 {
   KABC::Addressee addressee;
-  VCard21ParserImpl *mVCard = VCard21ParserImpl::parseVCard(data);
+  VCard21ParserImpl *vCard = VCard21ParserImpl::parseVCard(data);
   QString tmpStr;
 
   // Check if parsing failed
-  if (mVCard == 0)
+  if (vCard == 0)
   {
      kdDebug() << "Parsing failed" << endl;
      return addressee;
   }
   //set the addressees name and formated name
-  QStringList tmpList = mVCard->getValues(VCARD_N);
+  QStringList tmpList = vCard->getValues(VCARD_N);
   QString formattedName = "";
   if (tmpList.count() > 0)
     addressee.setFamilyName(tmpList[0]);
@@ -231,38 +231,38 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   if (tmpList.count() > 4)
     addressee.setSuffix(tmpList[4]);
 
-  tmpStr = (mVCard->getValue(VCARD_FN));
+  tmpStr = (vCard->getValue(VCARD_FN));
   if (!tmpStr.isEmpty())
     addressee.setFormattedName(tmpStr);
 
   //set the addressee's nick name
-  tmpStr = mVCard->getValue(VCARD_NICKNAME);
+  tmpStr = vCard->getValue(VCARD_NICKNAME);
   addressee.setNickName(tmpStr);
   //set the addressee's organization
-  tmpStr = mVCard->getValue(VCARD_ORG);
+  tmpStr = vCard->getValue(VCARD_ORG);
   addressee.setOrganization(tmpStr);
   //set the addressee's title
-  tmpStr = mVCard->getValue(VCARD_TITLE);
+  tmpStr = vCard->getValue(VCARD_TITLE);
   addressee.setTitle(tmpStr);
   //set the addressee's email - we can only deal with two.  The preferenced one and one other.
-  tmpStr = mVCard->getValue(VCARD_EMAIL, VCARD_EMAIL_INTERNET);
+  tmpStr = vCard->getValue(VCARD_EMAIL, VCARD_EMAIL_INTERNET);
   addressee.insertEmail(tmpStr, false);
-  tmpStr = mVCard->getValue(VCARD_EMAIL,VCARD_EMAIL_PREF);
+  tmpStr = vCard->getValue(VCARD_EMAIL,VCARD_EMAIL_PREF);
   addressee.insertEmail(tmpStr, true);
   //set the addressee's url
-  tmpStr = mVCard->getValue(VCARD_URL);
-  if (tmpStr.isEmpty()) tmpStr = mVCard->getValue(VCARD_URL, VCARD_ADR_WORK);
-  if (tmpStr.isEmpty()) tmpStr = mVCard->getValue(VCARD_URL, VCARD_ADR_HOME);
+  tmpStr = vCard->getValue(VCARD_URL);
+  if (tmpStr.isEmpty()) tmpStr = vCard->getValue(VCARD_URL, VCARD_ADR_WORK);
+  if (tmpStr.isEmpty()) tmpStr = vCard->getValue(VCARD_URL, VCARD_ADR_HOME);
   if (!tmpStr.isEmpty()) {
     addressee.setUrl(KURL(tmpStr));
   }
 
   //set the addressee's birthday
-  tmpStr = mVCard->getValue(VCARD_BDAY);
+  tmpStr = vCard->getValue(VCARD_BDAY);
   addressee.setBirthday(VCardStringToDate(tmpStr));
 
   //set the addressee's phone numbers
-  for ( QValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
+  for ( QValueListIterator<VCardLineX> i = vCard->_vcdata->begin();i != vCard->_vcdata->end(); ++i ) {
     if ( (*i).name == VCARD_TEL ) {
       int type = 0;
       if ( (*i).qualified ) {
@@ -300,7 +300,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   }
 
   //set the addressee's addresses
-  for ( QValueListIterator<VCardLineX> i = mVCard->_vcdata->begin();i != mVCard->_vcdata->end(); ++i ) {
+  for ( QValueListIterator<VCardLineX> i = vCard->_vcdata->begin();i != vCard->_vcdata->end(); ++i ) {
     if ( (*i).name == VCARD_ADR ) {
       int type = 0;
       if ( (*i).qualified ) {
@@ -324,7 +324,7 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   }
 
   //set the addressee's delivery label
-  tmpStr = mVCard->getValue(VCARD_LABEL);
+  tmpStr = vCard->getValue(VCARD_LABEL);
   if (!tmpStr.isEmpty()) {
     tmpStr.replace("\r\n","\n");
     Address tmpAddress;
@@ -333,17 +333,17 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   }
 
   //set the addressee's notes
-  tmpStr = mVCard->getValue(VCARD_NOTE);
+  tmpStr = vCard->getValue(VCARD_NOTE);
   tmpStr.replace("\r\n","\n");
   addressee.setNote(tmpStr);
 
   //set the addressee's timezone
-  tmpStr = mVCard->getValue(VCARD_TZ);
+  tmpStr = vCard->getValue(VCARD_TZ);
   TimeZone tmpZone(tmpStr.toInt());
   addressee.setTimeZone(tmpZone);
 
   //set the addressee's geographical position
-  tmpList = mVCard->getValues(VCARD_GEO);
+  tmpList = vCard->getValues(VCARD_GEO);
   if (tmpList.count()==2)
   {
     tmpStr = tmpList[0];
@@ -355,12 +355,14 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   }
 
   //set the last revision date
-  tmpStr = mVCard->getValue(VCARD_REV);
+  tmpStr = vCard->getValue(VCARD_REV);
   addressee.setRevision(VCardStringToDate(tmpStr));
 
   //set the role of the addressee
-  tmpStr = mVCard->getValue(VCARD_ROLE);
+  tmpStr = vCard->getValue(VCARD_ROLE);
   addressee.setRole(tmpStr);
+
+  delete vCard;
 
   return addressee;
 }
@@ -396,10 +398,10 @@ VCard21ParserImpl *VCard21ParserImpl::parseVCard( const QString& vc, int *err )
   int _err = 0;
   int _state = VC_STATE_BEGIN;
 
-  QValueList<VCardLineX> *_vcdata;
+  QValueList<VCardLineX> *vcdata;
   QValueList<QString> lines;
 
-  _vcdata = new QValueList<VCardLineX>;
+  vcdata = new QValueList<VCardLineX>;
 
   lines = QStringList::split( QRegExp( "[\x0d\x0a]" ), vc );
 
@@ -505,7 +507,7 @@ VCard21ParserImpl *VCard21ParserImpl::parseVCard( const QString& vc, int *err )
     }
 
     // add to vector
-    _vcdata->append( _vcl );
+    vcdata->append( _vcl );
   }
 
   // errors to check at the last minute (exit state related)
@@ -524,17 +526,28 @@ VCard21ParserImpl *VCard21ParserImpl::parseVCard( const QString& vc, int *err )
     *err = _err;
 
   if ( _err != 0 ) {
-    delete _vcdata;
+    delete vcdata;
     return 0;
   }
 
-  return new VCard21ParserImpl( _vcdata );
+  return new VCard21ParserImpl( vcdata );
 }
 
-VCard21ParserImpl::VCard21ParserImpl(QValueList<VCardLineX> *_vcd) : _vcdata(_vcd)
+VCard21ParserImpl::VCard21ParserImpl()
+  : _vcdata( 0 )
 {
 }
 
+VCard21ParserImpl::VCard21ParserImpl(QValueList<VCardLineX> *_vcd)
+  : _vcdata(_vcd)
+{
+}
+
+VCard21ParserImpl::~VCard21ParserImpl()
+{
+  delete _vcdata;
+  _vcdata = 0;
+}
 
 QString VCard21ParserImpl::getValue(const QString& name, const QString& qualifier)
 {

@@ -204,8 +204,8 @@ class KABC_EXPORT VCard21ParserImpl
   friend class VCardLineX;
 
 public:
-  VCard21ParserImpl() {  };
-  virtual ~VCard21ParserImpl() {  };
+  VCard21ParserImpl();
+  virtual ~VCard21ParserImpl();
   static VCard21ParserImpl *parseVCard(const QString& vc, int *err = NULL);
   QString getValue(const QString& name, const QString& qualifier);
   QString getValue(const QString& name);
