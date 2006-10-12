@@ -344,10 +344,8 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     m_file = m_url.path();
     bool ret = openFile();
     if (ret)
-    {
-        emit completed();
         emit setWindowCaption( m_url.prettyUrl() );
-    };
+    emit completed();
     return ret;
   }
   else
