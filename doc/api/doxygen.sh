@@ -244,6 +244,8 @@ do
 	# referenced tag files.
 	list=""
 	if test -d "$dir" && test -f "$dir/Mainpage.dox" ; then
+		# Need this dir at the very least, even if it doesn't reference
+		echo "$dir" "$dir"
 		list=`grep DOXYGEN_REFERENCES $dir/Mainpage.dox | sed 's/.*=//'`
 	fi
 
