@@ -54,6 +54,9 @@ FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList & ) 
 
 FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList &, const QString& xmlFile ) : Solid::Ifaces::NetworkManager( parent ), mAuthValidator( 0 )
 {
+    mUserNetworkingEnabled = true;
+    mUserWirelessEnabled = true;
+
     mXmlFile = xmlFile;
     if( mXmlFile.isEmpty() )
     {
