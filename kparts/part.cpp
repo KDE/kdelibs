@@ -343,9 +343,10 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     emit started( 0 );
     m_file = m_url.path();
     bool ret = openFile();
-    if (ret)
+    if (ret) {
         emit setWindowCaption( m_url.prettyUrl() );
-    emit completed();
+	emit completed();
+    } else emit canceled(QString());
     return ret;
   }
   else
@@ -408,9 +409,10 @@ void ReadOnlyPart::slotJobFinished( KJob * job )
     emit canceled( job->errorString() );
   else
   {
-    if ( openFile() )
+    if ( openFile() ) {
       emit setWindowCaption( m_url.prettyUrl() );
-    emit completed();
+      emit completed();
+    } else emit canceled(QString());
   }
 }
 
