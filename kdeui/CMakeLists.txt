@@ -44,7 +44,6 @@ set(kdeui_LIB_SRCS
  kurllabel.cpp
  kmenubar.cpp
  kdatetable.cpp
- ktabctl.cpp
  kstatusbar.cpp
  kmainwindow.cpp
  kseparator.cpp
@@ -197,7 +196,6 @@ install( FILES dialogs/aboutkde.png ktip-bulb.png ktip-background.png  DESTINATI
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kdatetable.h
- ktabctl.h
  kstatusbar.h
  kmainwindow.h
  ktoolbar.h

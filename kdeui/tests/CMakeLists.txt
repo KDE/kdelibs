@@ -353,18 +353,6 @@ kde4_add_executable(kstatusbartest RUN_UNINSTALLED ${kstatusbartest_SRCS})
 
 target_link_libraries(kstatusbartest ${KDE4_KDEUI_LIBS})
 
-########### next target ###############
-
-set(ktabctltest_SRCS
-ktabctltest.cpp
-)
-
-kde4_automoc(${ktabctltest_SRCS})
-
-kde4_add_executable(ktabctltest RUN_UNINSTALLED ${ktabctltest_SRCS})
-
-target_link_libraries(ktabctltest ${KDE4_KDEUI_LIBS})
-
 
 ########### next target ###############
 
