@@ -39,7 +39,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>
-#include <ktabctl.h>
 #include <kcmoduleinfo.h>
 #include <kservice.h>
 #include <ktabwidget.h>
