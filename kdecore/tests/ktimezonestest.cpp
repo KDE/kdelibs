@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -180,11 +180,9 @@ void KTimeZonesTest::abbreviation()
     QVERIFY( london != 0 );
     QDateTime winter(QDate(2005,1,1), QTime(0,0,0), Qt::UTC);
     QDateTime summer(QDate(2005,6,1), QTime(0,0,0), Qt::UTC);
-    QDateTime standard(QDate(1970,4,30), QTime(12,45,16,25), Qt::UTC);
     QString sResult = london->abbreviation(winter);
     QCOMPARE(london->abbreviation(winter), QByteArray("GMT"));
     QCOMPARE(london->abbreviation(summer), QByteArray("BST"));
-    QCOMPARE(london->abbreviation(standard), QByteArray("BST"));
     QCOMPARE(losAngeles->abbreviation(winter), QByteArray("PST"));
     QCOMPARE(losAngeles->abbreviation(summer), QByteArray("PDT"));
 }
@@ -367,20 +365,17 @@ void KTimeZonesTest::tzfileUtcOffsets()
     delete london;
 }
 
-#if 0
-  if ((argc==2) && (strcmp(argv[1], "list")==0))
-  {
-
-    /////////////////////////
-    // KSystemTimeZones tests
-    /////////////////////////
-    KTimeZones::ZoneMap allZones = KSystemTimeZones::zones();
-    for ( KTimeZones::ZoneMap::const_iterator it = allZones.begin(), end = allZones.end(); it != end; ++it )
-      printf( "%s\n", it.key().toLatin1().constData() );
-    return 0;
-  }
-
-  printf( "Usage: ktimezonestest [local|list]!\n" );
-  return 1;
+void KTimeZonesTest::tzfileAbbreviation()
+{
+    KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
+    KTimeZone *london = new KTzfileTimeZone(&tzsource, "Europe/London");
+    QVERIFY( london != 0 );
+    QDateTime winter(QDate(2005,1,1), QTime(0,0,0), Qt::UTC);
+    QDateTime summer(QDate(2005,6,1), QTime(0,0,0), Qt::UTC);
+    QDateTime standard(QDate(1970,4,30), QTime(12,45,16,25), Qt::UTC);
+    QString sResult = london->abbreviation(winter);
+    QCOMPARE(london->abbreviation(winter), QByteArray("GMT"));
+    QCOMPARE(london->abbreviation(summer), QByteArray("BST"));
+    QCOMPARE(london->abbreviation(standard), QByteArray("BST"));
+    delete london;
 }
-#endif
