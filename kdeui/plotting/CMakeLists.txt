@@ -8,7 +8,7 @@ set(kdeeduplot_LIB_SRCS
    kplotwidget.cpp
 )
 
-kde4_automoc(${kdeeduplot_LIB_SRCS})
+kde4_automoc(kdeeduplot ${kdeeduplot_LIB_SRCS})
 
 kde4_add_library(kdeeduplot SHARED ${kdeeduplot_LIB_SRCS})
 
