@@ -1709,10 +1709,6 @@ void RenderBox::calcAbsoluteVertical()
 
     height += bordersPlusPadding;
 
-    // If our natural/content height exceeds the new height once we've set it, then we
-    // need to make sure to update overflow to track the spillout.
-    if (m_height > height && isRenderBlock())
-        static_cast<RenderBlock*>(this)->setOverflowHeight(m_height);
     // Set final height value.
     m_height = height;
 }
