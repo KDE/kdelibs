@@ -625,9 +625,9 @@ apidox_subdir()
 			else
 				if test -z "$file" ; then
 					# Really no Qt tags
-					echo "" >> "$subdir/Doxyfile"
+					echo "\\" >> "$subdir/Doxyfile"
 				else
-					echo "  $file=$QTDOCDIR" >> "$subdir/Doxyfile"
+					echo "  $file=$QTDOCDIR \\" >> "$subdir/Doxyfile"
 				fi
 			fi
 		else
@@ -638,16 +638,18 @@ apidox_subdir()
 		fi
 	done
 
-	apidox_local
-
 	if test -z "$1" ; then
+		echo "" >> "$subdir/Doxyfile"
 		echo "GENERATE_HTML=NO" >> "$subdir/Doxyfile"
 		echo "GENERATE_TAGFILE=$subdir/$subdirname.tag" >> "$subdir/Doxyfile"
 		test -z "$NO_APPEND_TAG" && echo "	$subdir/$subdirname.tag \\" >> subdirs.tag
 	else
-		echo "GENERATE_HTML=YES" >> "$subdir/Doxyfile"
 		test -s subdirs.tag && grep -v "$subdir/$subdirname.tag" subdirs.tag >> "$subdir/Doxyfile"
+		echo "" >> "$subdir/Doxyfile"
+		echo "GENERATE_HTML=YES" >> "$subdir/Doxyfile"
 	fi
+
+	apidox_local
 
 	if grep '^DOXYGEN_EMPTY' "$srcdir/Mainpage.dox" > /dev/null 2>&1 ; then
 		# This directory is empty, so don't process it, but
@@ -899,8 +901,8 @@ fi
 if test "YES" = "$cleanup" ; then
 	rm -f subdirs.in  subdirs.later subdirs.sort subdirs.top Doxyfile.in
 	rm -f `find . -name Doxyfile`
-	rm -f qt/qt.tag
-	rmdir qt > /dev/null 2>&1
+#	rm -f qt/qt.tag
+#	rmdir qt > /dev/null 2>&1
 fi
 
 
