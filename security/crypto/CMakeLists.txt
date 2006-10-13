@@ -2,7 +2,7 @@
 ########### next target ###############
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 
-kde4_automoc(${kcm_crypto_PART_SRCS})
+kde4_automoc(kcm_crypto ${kcm_crypto_PART_SRCS})
 
 kde4_add_plugin(kcm_crypto ${kcm_crypto_PART_SRCS})
 
