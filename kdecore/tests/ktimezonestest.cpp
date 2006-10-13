@@ -97,10 +97,12 @@ void KTimeZonesTest::local()
 
 void KTimeZonesTest::zone()
 {
+    const KTimeZone *utc = KSystemTimeZones::zone("UTC");
+    QVERIFY(utc != 0);
     const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
-    QVERIFY( losAngeles != 0 );
+    QVERIFY(losAngeles != 0);
     const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
-    QVERIFY( london != 0 );
+    QVERIFY(london != 0);
 }
 
 void KTimeZonesTest::zoneinfoDir()

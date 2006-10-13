@@ -207,6 +207,8 @@ const KTimeZone *KTimeZones::zone(const QString &name) const
         ZoneMap::ConstIterator it = d->zones->find(name);
         if (it != d->zones->end())
             return it.value();
+        if (name == KTimeZonesPrivate::utc()->name())
+            return KTimeZonesPrivate::utc();
     }
     return 0;    // error
 #endif
