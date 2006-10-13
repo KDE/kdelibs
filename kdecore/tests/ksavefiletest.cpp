@@ -85,12 +85,43 @@ void KSaveFileTest::test_ksavefile()
         QVERIFY( !QFile::exists(targetFile) );
     }
 
+    QFile file ( targetFile );
+    QVERIFY( file.open(QIODevice::WriteOnly | QIODevice::Text) );
+    QVERIFY( file.setPermissions( file.permissions() | QFile::ExeUser ) );
+    file.close();
+
+    {
+        //Test how it works when the file already exists
+        //Also check for special permissions
+        KSaveFile saveFile ( targetFile );
+        QCOMPARE( saveFile.status(), 0 );
+
+        QVERIFY( QFile::exists(targetFile) );
+        QFileInfo fi ( targetFile );
+        QVERIFY( fi.permission( QFile::ExeUser ) );
+        QVERIFY( fi.size() == 0 );
+
+        QTextStream *ts = saveFile.textStream();
+        (*ts) << "Hello out there in TV land!\n";
+        ts->flush();
+
+        fi.refresh();
+        QVERIFY( fi.size() == 0 );
+        QVERIFY( saveFile.close() );
+        
+        fi.refresh();
+        QVERIFY( fi.size() != 0 );
+        QVERIFY( fi.permission( QFile::ExeUser ) );
+    }
+    
+    QFile::remove(targetFile);
+
     QFileInfo fi ( targetFile );
     targetFile = fi.fileName();
     QDir::setCurrent(fi.path());
 
     {
-        //one last time, this time with relative filenames
+        //one more time, this time with relative filenames
         KSaveFile saveFile ( targetFile );
         QCOMPARE( saveFile.status(), 0 );
         QVERIFY( !QFile::exists(targetFile) );
