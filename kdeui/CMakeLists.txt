@@ -172,7 +172,7 @@ endif (Q_WS_WIN)
 
 SET_SOURCE_FILES_PROPERTIES(liveui/kliveui.cpp PROPERTIES SKIP_AUTOMOC TRUE)
 
-kde4_automoc(${kdeui_LIB_SRCS})
+kde4_automoc(kdeui ${kdeui_LIB_SRCS})
 
 set( kdeui_UI
    dialogs/kkeydialog.ui

@@ -29,7 +29,7 @@ sizewidget.cpp
 main.cpp
 )
 
-kde4_automoc(${cupsdconf_KDEINIT_SRCS})
+kde4_automoc(cupsdconf ${cupsdconf_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( cupsdconf ${cupsdconf_KDEINIT_SRCS})
 

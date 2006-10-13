@@ -8,7 +8,7 @@ if(KDE4_BUILD_TESTS)
    
    set(kdockwidgetdemo_SRCS kdockwidgetdemo.cpp )
    
-   kde4_automoc(${kdockwidgetdemo_SRCS})
+   kde4_automoc(kdockwidgetdemo ${kdockwidgetdemo_SRCS})
    
    kde4_add_executable(kdockwidgetdemo ${kdockwidgetdemo_SRCS})
    
@@ -19,7 +19,7 @@ if(KDE4_BUILD_TESTS)
    
    set(kdockwidgettest_SRCS kdockwidgettest.cpp )
    
-   kde4_automoc(${kdockwidgettest_SRCS})
+   kde4_automoc(kdockwidgettest ${kdockwidgettest_SRCS})
    
    kde4_add_executable(kdockwidgettest ${kdockwidgettest_SRCS})
    
@@ -30,7 +30,7 @@ if(KDE4_BUILD_TESTS)
    
    set(kdocktest_SRCS kdocktest.cpp )
    
-   kde4_automoc(${kdocktest_SRCS})
+   kde4_automoc(kdocktest ${kdocktest_SRCS})
    
    kde4_add_executable(kdocktest ${kdocktest_SRCS})
    

@@ -43,7 +43,7 @@ set(kjsembed_LIB_SRCS
    QBrush_bind.cpp
    )
 
-kde4_automoc(${kjsembed_LIB_SRCS})
+kde4_automoc(kjsembed ${kjsembed_LIB_SRCS})
 
 kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
 

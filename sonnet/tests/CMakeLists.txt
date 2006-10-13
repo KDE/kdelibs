@@ -10,7 +10,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 # TODO automate and merge with test_filter?
 set(test_suggest_SRCS test.cpp)
 
-kde4_automoc(${test_suggest_SRCS})
+kde4_automoc(test_suggest ${test_suggest_SRCS})
 
 kde4_add_executable(test_suggest NOGUI RUN_UNINSTALLED ${test_suggest_SRCS})
 
@@ -21,7 +21,7 @@ target_link_libraries(test_suggest ${KDE4_KDECORE_LIBS} kspell2 )
 
 set(test_filter_SRCS test_filter.cpp )
 
-kde4_automoc(${test_filter_SRCS})
+kde4_automoc(test_filter ${test_filter_SRCS})
 
 kde4_add_executable(test_filter NOGUI RUN_UNINSTALLED ${test_filter_SRCS})
 
@@ -34,7 +34,7 @@ add_test(kspell2_test_filter ${EXECUTABLE_OUTPUT_PATH}/test_filter)
 
 set(backgroundtest_SRCS backgroundtest.cpp)
 
-kde4_automoc(${backgroundtest_SRCS})
+kde4_automoc(backgroundtest ${backgroundtest_SRCS})
 
 kde4_add_executable(backgroundtest RUN_UNINSTALLED ${backgroundtest_SRCS})
 
@@ -45,7 +45,7 @@ target_link_libraries(backgroundtest ${KDE4_KDECORE_LIBS} kspell2 )
 
 set(test_dialog_SRCS test_dialog.cpp)
 
-kde4_automoc(${test_dialog_SRCS})
+kde4_automoc(test_dialog ${test_dialog_SRCS})
 
 kde4_add_executable(test_dialog RUN_UNINSTALLED ${test_dialog_SRCS})
 
@@ -56,7 +56,7 @@ target_link_libraries(test_dialog ${KDE4_KDECORE_LIBS} kspell2 )
 
 set(test_highlighter_SRCS test_highlighter.cpp)
 
-kde4_automoc(${test_highlighter_SRCS})
+kde4_automoc(test_highlighter ${test_highlighter_SRCS})
 
 kde4_add_executable(test_highlighter RUN_UNINSTALLED ${test_highlighter_SRCS})
 
@@ -67,7 +67,7 @@ target_link_libraries(test_highlighter ${KDE4_KDECORE_LIBS} kspell2 )
 
 set(test_configdialog_SRCS test_configdialog.cpp)
 
-kde4_automoc(${test_configdialog_SRCS})
+kde4_automoc(test_configdialog ${test_configdialog_SRCS})
 
 kde4_add_executable(test_configdialog RUN_UNINSTALLED ${test_configdialog_SRCS})
 

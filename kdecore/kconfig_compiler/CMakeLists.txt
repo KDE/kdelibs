@@ -8,7 +8,7 @@ add_subdirectory( tests )
 
 set(kconfig_compiler_SRCS kconfig_compiler.cpp)
 
-kde4_automoc(${kconfig_compiler_SRCS})
+kde4_automoc(kconfig_compiler ${kconfig_compiler_SRCS})
 
 kde4_add_executable(kconfig_compiler NOGUI RUN_UNINSTALLED ${kconfig_compiler_SRCS})
 

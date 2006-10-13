@@ -3,7 +3,7 @@
 
 set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 
-kde4_automoc(${kntlm_LIB_SRCS})
+kde4_automoc(kntlm ${kntlm_LIB_SRCS})
 
 kde4_add_library(kntlm SHARED ${kntlm_LIB_SRCS})
 

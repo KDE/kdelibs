@@ -11,7 +11,7 @@ set(kimproxy_LIB_SRCS
   kimiface.cpp
 )
 
-kde4_automoc(${kimproxy_LIB_SRCS})
+kde4_automoc(kimproxy ${kimproxy_LIB_SRCS})
 
 kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 

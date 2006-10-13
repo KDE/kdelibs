@@ -20,7 +20,7 @@ set(knewstuff_LIB_SRCS
    security.cpp
    )
 
-kde4_automoc(${knewstuff_LIB_SRCS})
+kde4_automoc(knewstuff ${knewstuff_LIB_SRCS})
 
 kde4_add_library(knewstuff SHARED ${knewstuff_LIB_SRCS})
 
@@ -34,7 +34,7 @@ install(TARGETS knewstuff  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(khotnewstuff_SRCS khotnewstuff.cpp )
 
-kde4_automoc(${khotnewstuff_SRCS})
+kde4_automoc(khotnewstuff ${khotnewstuff_SRCS})
 
 kde4_add_executable(khotnewstuff ${khotnewstuff_SRCS})
 
@@ -49,7 +49,7 @@ if(KDE4_BUILD_TESTS)
 
    set(testnewstuff_SRCS testnewstuff.cpp )
    
-   kde4_automoc(${testnewstuff_SRCS})
+   kde4_automoc(testnewstuff ${testnewstuff_SRCS})
    
    kde4_add_executable(testnewstuff ${testnewstuff_SRCS})
    
@@ -60,7 +60,7 @@ if(KDE4_BUILD_TESTS)
    
    set(ghns_SRCS ghns.cpp )
    
-   kde4_automoc(${ghns_SRCS})
+   kde4_automoc(ghns ${ghns_SRCS})
    
    kde4_add_executable(ghns ${ghns_SRCS})
    

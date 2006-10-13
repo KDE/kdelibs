@@ -240,7 +240,7 @@ kde4_add_ui_files(kio_LIB_SRCS
    kssl/keygenwizard2.ui
 )
 
-kde4_automoc(${kio_LIB_SRCS})
+kde4_automoc(kio ${kio_LIB_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 

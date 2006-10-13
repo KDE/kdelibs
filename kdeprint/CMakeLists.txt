@@ -36,7 +36,7 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 
 set(kded_kdeprintd_PART_SRCS kdeprintd.cpp kprintprocess.cpp )
 
-kde4_automoc(${kded_kdeprintd_PART_SRCS})
+kde4_automoc(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
 kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
@@ -101,7 +101,7 @@ set(kdeprint_LIB_SRCS
    ppdloader.cpp
    )
 
-kde4_automoc(${kdeprint_LIB_SRCS})
+kde4_automoc(kdeprint ${kdeprint_LIB_SRCS})
 
 qt4_add_dbus_adaptor(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml kmfactory.h KMFactory)
 qt4_add_dbus_interfaces(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml )

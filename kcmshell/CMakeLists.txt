@@ -9,7 +9,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kutils )
 
 set(kcmshell_KDEINIT_SRCS main.cpp )
 
-kde4_automoc(${kcmshell_KDEINIT_SRCS})
+kde4_automoc(kcmshell ${kcmshell_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kcmshell ${kcmshell_KDEINIT_SRCS})
 

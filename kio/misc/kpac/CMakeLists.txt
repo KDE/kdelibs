@@ -12,7 +12,7 @@ set(kded_proxyscout_PART_SRCS
    discovery.cpp
 )
 
-kde4_automoc(${kded_proxyscout_PART_SRCS})
+kde4_automoc(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 

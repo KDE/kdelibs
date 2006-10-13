@@ -16,7 +16,7 @@ uiserver.cpp
 uiserveradaptor.cpp
 )
 
-kde4_automoc(${kio_uiserver_KDEINIT_SRCS})
+kde4_automoc(kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
@@ -31,7 +31,7 @@ install(TARGETS kio_uiserver DESTINATION ${BIN_INSTALL_DIR} )
 
 set(kmailservice_SRCS kmailservice.cpp )
 
-kde4_automoc(${kmailservice_SRCS})
+kde4_automoc(kmailservice ${kmailservice_SRCS})
 
 kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
@@ -44,7 +44,7 @@ install(TARGETS kmailservice DESTINATION ${BIN_INSTALL_DIR} )
 
 set(ktelnetservice_SRCS ktelnetservice.cpp )
 
-kde4_automoc(${ktelnetservice_SRCS})
+kde4_automoc(ktelnetservice ${ktelnetservice_SRCS})
 
 kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 

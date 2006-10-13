@@ -8,7 +8,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 set(fakehardwaretest_SRCS fakehardwaretest.cpp )
 
-kde4_automoc(${fakehardwaretest_SRCS})
+kde4_automoc(fakehardwaretest ${fakehardwaretest_SRCS})
 
 kde4_add_executable(fakehardwaretest RUN_UNINSTALLED ${fakehardwaretest_SRCS})
 

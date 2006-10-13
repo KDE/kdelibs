@@ -11,7 +11,7 @@ set(kspell2_LIB_SRCS
  configdialog.cpp
 )
 
-kde4_automoc(${kspell2_LIB_SRCS})
+kde4_automoc(kspell2 ${kspell2_LIB_SRCS})
 
 kde4_add_ui_files(kspell2_LIB_SRCS kspell2ui.ui configui.ui)
 

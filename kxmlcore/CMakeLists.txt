@@ -5,7 +5,7 @@ include_directories( ${_KDE4_PLATFORM_INCLUDE_DIRS} )
 
 set(kxmlcore_LIB_SRCS HashTable.cpp )
 
-kde4_automoc(${kxmlcore_LIB_SRCS})
+kde4_automoc(kxmlcore ${kxmlcore_LIB_SRCS})
 
 kde4_add_library(kxmlcore SHARED ${kxmlcore_LIB_SRCS})
 

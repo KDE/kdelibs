@@ -8,7 +8,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(kded_KDEINIT_SRCS kded.cpp )
 
-kde4_automoc(${kded_KDEINIT_SRCS})
+kde4_automoc(kded ${kded_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
 
@@ -33,7 +33,7 @@ set(kbuildsycoca_KDEINIT_SRCS
    vfolder_menu.cpp
    )
 
-kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
+kde4_automoc(kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kbuildsycoca NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
@@ -48,7 +48,7 @@ install(TARGETS kbuildsycoca DESTINATION ${BIN_INSTALL_DIR} )
 
 set(kdontchangethehostname_SRCS khostname.cpp )
 
-kde4_automoc(${kdontchangethehostname_SRCS})
+kde4_automoc(kdontchangethehostname ${kdontchangethehostname_SRCS})
 
 kde4_add_executable(kdontchangethehostname NOGUI ${kdontchangethehostname_SRCS})
 

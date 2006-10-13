@@ -13,7 +13,7 @@ if(NOT WIN32)
 
 set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
 
-kde4_automoc(${kdeinit_SRCS})
+kde4_automoc(kdeinit ${kdeinit_SRCS})
 
 kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
 
@@ -86,7 +86,7 @@ install(TARGETS lnusertemp DESTINATION ${BIN_INSTALL_DIR} )
 
 set(kioslave_SRCS kioslave.cpp)
 
-kde4_automoc(${kioslave_SRCS})
+kde4_automoc(kioslave ${kioslave_SRCS})
 
 kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
@@ -99,7 +99,7 @@ install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
 
 set(kstartupconfig_SRCS kstartupconfig.cpp )
 
-kde4_automoc(${kstartupconfig_SRCS})
+kde4_automoc(kstartupconfig ${kstartupconfig_SRCS})
 
 kde4_add_executable(kstartupconfig NOGUI ${kstartupconfig_SRCS})
 
@@ -116,7 +116,7 @@ install(TARGETS kstartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 set(kdostartupconfig_SRCS kdostartupconfig.cpp )
 
-kde4_automoc(${kdostartupconfig_SRCS})
+kde4_automoc(kdostartupconfig ${kdostartupconfig_SRCS})
 
 kde4_add_executable(kdostartupconfig NOGUI ${kdostartupconfig_SRCS})
 
@@ -137,7 +137,7 @@ set(klauncher_KDEINIT_SRCS
 # The adaptor is manually edited to add QDBusMessage arguments
 #qt4_add_dbus_adaptor(klauncher_KDEINIT_SRCS org.kde.KLauncher.xml klauncher.h KLauncher)
 
-kde4_automoc(${klauncher_KDEINIT_SRCS})
+kde4_automoc(klauncher ${klauncher_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 

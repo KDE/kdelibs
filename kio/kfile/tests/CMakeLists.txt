@@ -13,7 +13,7 @@ kfstest.cpp
 kfdtest.cpp
 )
 
-kde4_automoc(${kfstest_SRCS})
+kde4_automoc(kfstest ${kfstest_SRCS})
 
 kde4_add_executable(kfstest RUN_UNINSTALLED ${kfstest_SRCS})
 
@@ -26,7 +26,7 @@ set(kurlrequestertest_SRCS
 kurlrequestertest.cpp
 )
 
-kde4_automoc(${kurlrequestertest_SRCS})
+kde4_automoc(kurlrequestertest ${kurlrequestertest_SRCS})
 
 kde4_add_executable(kurlrequestertest RUN_UNINSTALLED ${kurlrequestertest_SRCS})
 
@@ -39,7 +39,7 @@ set(kfiletreeviewtest_SRCS
 kfiletreeviewtest.cpp
 )
 
-kde4_automoc(${kfiletreeviewtest_SRCS})
+kde4_automoc(kfiletreeviewtest ${kfiletreeviewtest_SRCS})
 
 kde4_add_executable(kfiletreeviewtest RUN_UNINSTALLED ${kfiletreeviewtest_SRCS})
 
@@ -52,7 +52,7 @@ set(kopenwithtest_SRCS
 kopenwithtest.cpp
 )
 
-kde4_automoc(${kopenwithtest_SRCS})
+kde4_automoc(kopenwithtest ${kopenwithtest_SRCS})
 
 kde4_add_executable(kopenwithtest RUN_UNINSTALLED ${kopenwithtest_SRCS})
 
@@ -65,7 +65,7 @@ set(kdirselectdialogtest_SRCS
 kdirselectdialogtest.cpp
 )
 
-kde4_automoc(${kdirselectdialogtest_SRCS})
+kde4_automoc(kdirselectdialogtest ${kdirselectdialogtest_SRCS})
 
 kde4_add_executable(kdirselectdialogtest RUN_UNINSTALLED ${kdirselectdialogtest_SRCS})
 
@@ -78,7 +78,7 @@ set(kicondialogtest_SRCS
 kicondialogtest.cpp
 )
 
-kde4_automoc(${kicondialogtest_SRCS})
+kde4_automoc(kicondialogtest ${kicondialogtest_SRCS})
 
 kde4_add_executable(kicondialogtest RUN_UNINSTALLED ${kicondialogtest_SRCS})
 
@@ -91,7 +91,7 @@ set(knotifytest_SRCS
 knotifytest.cpp
 )
 
-kde4_automoc(${knotifytest_SRCS})
+kde4_automoc(knotifytest ${knotifytest_SRCS})
 
 kde4_add_executable(knotifytest RUN_UNINSTALLED ${knotifytest_SRCS})
 
@@ -104,7 +104,7 @@ set(kcustommenueditortest_SRCS
 kcustommenueditortest.cpp
 )
 
-kde4_automoc(${kcustommenueditortest_SRCS})
+kde4_automoc(kcustommenueditortest ${kcustommenueditortest_SRCS})
 
 kde4_add_executable(kcustommenueditortest RUN_UNINSTALLED ${kcustommenueditortest_SRCS})
 

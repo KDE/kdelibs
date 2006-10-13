@@ -12,7 +12,7 @@ main.cpp
 #kcookiejariface.cpp
 )
 
-kde4_automoc(${kcookiejar_SRCS})
+kde4_automoc(kcookiejar ${kcookiejar_SRCS})
 
 qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml)
 
@@ -37,7 +37,7 @@ set(kded_kcookiejar_PART_SRCS
    kcookiejaradaptor.cpp
 )
 
-kde4_automoc(${kded_kcookiejar_PART_SRCS})
+kde4_automoc(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
 # The adaptor is hand-edited to add QDBusMessage
 # qt4_add_dbus_adaptor(kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml kcookieserver.h KCookieServer)

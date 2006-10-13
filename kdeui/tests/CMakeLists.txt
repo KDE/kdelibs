@@ -14,7 +14,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 set(kaboutdialogtest_SRCS kaboutdialogtest.cpp)
 
-kde4_automoc(${kaboutdialogtest_SRCS})
+kde4_automoc(kaboutdialogtest ${kaboutdialogtest_SRCS})
 
 kde4_add_executable(kaboutdialogtest RUN_UNINSTALLED ${kaboutdialogtest_SRCS})
 
@@ -25,7 +25,7 @@ target_link_libraries(kaboutdialogtest ${KDE4_KDEUI_LIBS})
 
 set(kblendtest_SRCS kblendtest.cpp)
 
-kde4_automoc(${kblendtest_SRCS})
+kde4_automoc(kblendtest ${kblendtest_SRCS})
 
 kde4_add_executable(kblendtest RUN_UNINSTALLED ${kblendtest_SRCS})
 
@@ -38,7 +38,7 @@ set(kdialogbuttonboxtest_SRCS
 kdialogbuttonboxtest.cpp
 )
 
-kde4_automoc(${kdialogbuttonboxtest_SRCS})
+kde4_automoc(kdialogbuttonboxtest ${kdialogbuttonboxtest_SRCS})
 
 kde4_add_executable(kdialogbuttonboxtest RUN_UNINSTALLED ${kdialogbuttonboxtest_SRCS})
 
@@ -51,7 +51,7 @@ set(kcharselecttest_SRCS
 kcharselecttest.cpp
 )
 
-kde4_automoc(${kcharselecttest_SRCS})
+kde4_automoc(kcharselecttest ${kcharselecttest_SRCS})
 
 kde4_add_executable(kcharselecttest RUN_UNINSTALLED ${kcharselecttest_SRCS})
 
@@ -64,7 +64,7 @@ set(kcolortest_SRCS
 kcolortest.cpp
 )
 
-kde4_automoc(${kcolortest_SRCS})
+kde4_automoc(kcolortest ${kcolortest_SRCS})
 
 kde4_add_executable(kcolortest RUN_UNINSTALLED ${kcolortest_SRCS})
 
@@ -77,7 +77,7 @@ set(kcolordlgtest_SRCS
 kcolordlgtest.cpp
 )
 
-kde4_automoc(${kcolordlgtest_SRCS})
+kde4_automoc(kcolordlgtest ${kcolordlgtest_SRCS})
 
 kde4_add_executable(kcolordlgtest RUN_UNINSTALLED ${kcolordlgtest_SRCS})
 
@@ -90,7 +90,7 @@ set(kcomboboxtest_SRCS
 kcomboboxtest.cpp
 )
 
-kde4_automoc(${kcomboboxtest_SRCS})
+kde4_automoc(kcomboboxtest ${kcomboboxtest_SRCS})
 
 kde4_add_executable(kcomboboxtest RUN_UNINSTALLED ${kcomboboxtest_SRCS})
 
@@ -103,7 +103,7 @@ set(kcompletiontest_kdeui_SRCS
 kcompletionuitest.cpp
 )
 
-kde4_automoc(${kcompletiontest_kdeui_SRCS})
+kde4_automoc(kcompletiontest_kdeui ${kcompletiontest_kdeui_SRCS})
 
 kde4_add_executable(kcompletiontest_kdeui RUN_UNINSTALLED ${kcompletiontest_kdeui_SRCS})
 
@@ -114,7 +114,7 @@ target_link_libraries(kcompletiontest_kdeui ${KDE4_KDEUI_LIBS})
 
 set(kcompletiontest_SRCS kcompletioncoretest.cpp )
 
-kde4_automoc(${kcompletiontest_SRCS})
+kde4_automoc(kcompletiontest ${kcompletiontest_SRCS})
 
 kde4_add_executable(kcompletiontest RUN_UNINSTALLED ${kcompletiontest_SRCS})
 
@@ -126,7 +126,7 @@ add_test(kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
 
 set(kmainwindow_unittest_SRCS kmainwindow_unittest.cpp )
 
-kde4_automoc(${kmainwindow_unittest_SRCS})
+kde4_automoc(kmainwindow_unittest ${kmainwindow_unittest_SRCS})
 
 kde4_add_executable(kmainwindow_unittest RUN_UNINSTALLED ${kmainwindow_unittest_SRCS})
 
@@ -140,7 +140,7 @@ set(kdatepicktest_SRCS
 kdatepicktest.cpp
 )
 
-kde4_automoc(${kdatepicktest_SRCS})
+kde4_automoc(kdatepicktest ${kdatepicktest_SRCS})
 
 kde4_add_executable(kdatepicktest RUN_UNINSTALLED ${kdatepicktest_SRCS})
 
@@ -153,7 +153,7 @@ set(kdatewidgettest_SRCS
 kdatewidgettest.cpp
 )
 
-kde4_automoc(${kdatewidgettest_SRCS})
+kde4_automoc(kdatewidgettest ${kdatewidgettest_SRCS})
 
 kde4_add_executable(kdatewidgettest RUN_UNINSTALLED ${kdatewidgettest_SRCS})
 
@@ -166,7 +166,7 @@ set(keditlistboxtest_SRCS
 keditlistboxtest.cpp
 )
 
-kde4_automoc(${keditlistboxtest_SRCS})
+kde4_automoc(keditlistboxtest ${keditlistboxtest_SRCS})
 
 kde4_add_executable(keditlistboxtest RUN_UNINSTALLED ${keditlistboxtest_SRCS})
 
@@ -179,7 +179,7 @@ set(kfontdialogtest_SRCS
 kfontdialogtest.cpp
 )
 
-kde4_automoc(${kfontdialogtest_SRCS})
+kde4_automoc(kfontdialogtest ${kfontdialogtest_SRCS})
 
 kde4_add_executable(kfontdialogtest RUN_UNINSTALLED ${kfontdialogtest_SRCS})
 
@@ -192,7 +192,7 @@ set(kgradienttest_SRCS
 kgradienttest.cpp
 )
 
-kde4_automoc(${kgradienttest_SRCS})
+kde4_automoc(kgradienttest ${kgradienttest_SRCS})
 
 kde4_add_executable(kgradienttest RUN_UNINSTALLED ${kgradienttest_SRCS})
 
@@ -205,7 +205,7 @@ set(khashtest_SRCS
 khashtest.cpp
 )
 
-kde4_automoc(${khashtest_SRCS})
+kde4_automoc(khashtest ${khashtest_SRCS})
 
 kde4_add_executable(khashtest RUN_UNINSTALLED ${khashtest_SRCS})
 
@@ -218,7 +218,7 @@ set(kdesattest_SRCS
 kdesattest.cpp
 )
 
-kde4_automoc(${kdesattest_SRCS})
+kde4_automoc(kdesattest ${kdesattest_SRCS})
 
 kde4_add_executable(kdesattest RUN_UNINSTALLED ${kdesattest_SRCS})
 
@@ -231,7 +231,7 @@ set(kledtest_SRCS
 kledtest.cpp
 )
 
-kde4_automoc(${kledtest_SRCS})
+kde4_automoc(kledtest ${kledtest_SRCS})
 
 kde4_add_executable(kledtest RUN_UNINSTALLED ${kledtest_SRCS})
 
@@ -244,7 +244,7 @@ set(klineedittest_SRCS
 klineedittest.cpp
 )
 
-kde4_automoc(${klineedittest_SRCS})
+kde4_automoc(klineedittest ${klineedittest_SRCS})
 
 kde4_add_executable(klineedittest RUN_UNINSTALLED ${klineedittest_SRCS})
 
@@ -257,7 +257,7 @@ set(kmessageboxtest_SRCS
 kmessageboxtest.cpp
 )
 
-kde4_automoc(${kmessageboxtest_SRCS})
+kde4_automoc(kmessageboxtest ${kmessageboxtest_SRCS})
 
 kde4_add_executable(kmessageboxtest RUN_UNINSTALLED ${kmessageboxtest_SRCS})
 
@@ -269,7 +269,7 @@ set(knuminputtest_SRCS
 knuminputtest.cpp
 )
 
-kde4_automoc(${knuminputtest_SRCS})
+kde4_automoc(knuminputtest ${knuminputtest_SRCS})
 
 kde4_add_executable(knuminputtest RUN_UNINSTALLED ${knuminputtest_SRCS})
 
@@ -282,7 +282,7 @@ set(kpalettetest_SRCS
 kpalettetest.cpp
 )
 
-kde4_automoc(${kpalettetest_SRCS})
+kde4_automoc(kpalettetest ${kpalettetest_SRCS})
 
 kde4_add_executable(kpalettetest RUN_UNINSTALLED ${kpalettetest_SRCS})
 
@@ -295,7 +295,7 @@ set(kpopuptest_SRCS
 kpopuptest.cpp
 )
 
-kde4_automoc(${kpopuptest_SRCS})
+kde4_automoc(kpopuptest ${kpopuptest_SRCS})
 
 kde4_add_executable(kpopuptest RUN_UNINSTALLED ${kpopuptest_SRCS})
 
@@ -308,7 +308,7 @@ set(kprogressdialogtest_SRCS
 kprogressdialogtest.cpp
 )
 
-kde4_automoc(${kprogressdialogtest_SRCS})
+kde4_automoc(kprogressdialogtest ${kprogressdialogtest_SRCS})
 
 kde4_add_executable(kprogressdialogtest RUN_UNINSTALLED ${kprogressdialogtest_SRCS})
 
@@ -321,7 +321,7 @@ set(krulertest_SRCS
 krulertest.cpp
 )
 
-kde4_automoc(${krulertest_SRCS})
+kde4_automoc(krulertest ${krulertest_SRCS})
 
 kde4_add_executable(krulertest RUN_UNINSTALLED ${krulertest_SRCS})
 
@@ -334,7 +334,7 @@ set(kseparatortest_SRCS
 kseparatortest.cpp
 )
 
-kde4_automoc(${kseparatortest_SRCS})
+kde4_automoc(kseparatortest ${kseparatortest_SRCS})
 
 kde4_add_executable(kseparatortest RUN_UNINSTALLED ${kseparatortest_SRCS})
 
@@ -347,7 +347,7 @@ set(kstatusbartest_SRCS
 kstatusbartest.cpp
 )
 
-kde4_automoc(${kstatusbartest_SRCS})
+kde4_automoc(kstatusbartest ${kstatusbartest_SRCS})
 
 kde4_add_executable(kstatusbartest RUN_UNINSTALLED ${kstatusbartest_SRCS})
 
@@ -360,7 +360,7 @@ set(kunbalancedgrdtest_SRCS
 kunbalancedgrdtest.cpp
 )
 
-kde4_automoc(${kunbalancedgrdtest_SRCS})
+kde4_automoc(kunbalancedgrdtest ${kunbalancedgrdtest_SRCS})
 
 kde4_add_executable(kunbalancedgrdtest RUN_UNINSTALLED ${kunbalancedgrdtest_SRCS})
 
@@ -373,7 +373,7 @@ set(kwindowtest_SRCS
 kwindowtest.cpp
 )
 
-kde4_automoc(${kwindowtest_SRCS})
+kde4_automoc(kwindowtest ${kwindowtest_SRCS})
 
 kde4_add_executable(kwindowtest RUN_UNINSTALLED ${kwindowtest_SRCS})
 
@@ -386,7 +386,7 @@ set(kselectactiontest_SRCS
 kselectactiontest.cpp
 )
 
-kde4_automoc(${kselectactiontest_SRCS})
+kde4_automoc(kselectactiontest ${kselectactiontest_SRCS})
 
 kde4_add_executable(kselectactiontest RUN_UNINSTALLED ${kselectactiontest_SRCS})
 
@@ -399,7 +399,7 @@ set(itemcontainertest_SRCS
 itemcontainertest.cpp
 )
 
-kde4_automoc(${itemcontainertest_SRCS})
+kde4_automoc(itemcontainertest ${itemcontainertest_SRCS})
 
 kde4_add_executable(itemcontainertest RUN_UNINSTALLED ${itemcontainertest_SRCS})
 
@@ -411,7 +411,7 @@ set(kxmlguitest_SRCS
 kxmlguitest.cpp
 )
 
-kde4_automoc(${kxmlguitest_SRCS})
+kde4_automoc(kxmlguitest ${kxmlguitest_SRCS})
 
 kde4_add_executable(kxmlguitest RUN_UNINSTALLED ${kxmlguitest_SRCS})
 
@@ -424,7 +424,7 @@ set(kaccelgentest_SRCS
 kaccelgentest.cpp
 )
 
-kde4_automoc(${kaccelgentest_SRCS})
+kde4_automoc(kaccelgentest ${kaccelgentest_SRCS})
 
 kde4_add_executable(kaccelgentest RUN_UNINSTALLED ${kaccelgentest_SRCS})
 
@@ -437,7 +437,7 @@ set(ksystemtraytest_SRCS
 ksystemtraytest.cpp
 )
 
-kde4_automoc(${ksystemtraytest_SRCS})
+kde4_automoc(ksystemtraytest ${ksystemtraytest_SRCS})
 
 kde4_add_executable(ksystemtraytest RUN_UNINSTALLED ${ksystemtraytest_SRCS})
 
@@ -450,7 +450,7 @@ set(k3listviewtest_SRCS
 k3listviewtest.cpp
 )
 
-kde4_automoc(${k3listviewtest_SRCS})
+kde4_automoc(k3listviewtest ${k3listviewtest_SRCS})
 
 kde4_add_executable(k3listviewtest RUN_UNINSTALLED ${k3listviewtest_SRCS})
 
@@ -463,7 +463,7 @@ set(ktreewidgetsearchlinetest_SRCS
 ktreewidgetsearchlinetest.cpp
 )
 
-kde4_automoc(${ktreewidgetsearchlinetest_SRCS})
+kde4_automoc(ktreewidgetsearchlinetest ${ktreewidgetsearchlinetest_SRCS})
 
 kde4_add_executable(ktreewidgetsearchlinetest RUN_UNINSTALLED ${ktreewidgetsearchlinetest_SRCS})
 
@@ -476,7 +476,7 @@ set(ktextedittest_SRCS
 ktextedittest.cpp
 )
 
-kde4_automoc(${ktextedittest_SRCS})
+kde4_automoc(ktextedittest ${ktextedittest_SRCS})
 
 kde4_add_executable(ktextedittest RUN_UNINSTALLED ${ktextedittest_SRCS})
 
@@ -489,7 +489,7 @@ set(kmainwindowtest_SRCS
 kmainwindowtest.cpp
 )
 
-kde4_automoc(${kmainwindowtest_SRCS})
+kde4_automoc(kmainwindowtest ${kmainwindowtest_SRCS})
 
 kde4_add_executable(kmainwindowtest RUN_UNINSTALLED ${kmainwindowtest_SRCS})
 
@@ -502,7 +502,7 @@ set(kmainwindowrestoretest_SRCS
 kmainwindowrestoretest.cpp
 )
 
-kde4_automoc(${kmainwindowrestoretest_SRCS})
+kde4_automoc(kmainwindowrestoretest ${kmainwindowrestoretest_SRCS})
 
 kde4_add_executable(kmainwindowrestoretest RUN_UNINSTALLED ${kmainwindowrestoretest_SRCS})
 
@@ -515,7 +515,7 @@ set(kactiontest_SRCS
 kactiontest.cpp
 )
 
-kde4_automoc(${kactiontest_SRCS})
+kde4_automoc(kactiontest ${kactiontest_SRCS})
 
 kde4_add_executable(kactiontest RUN_UNINSTALLED ${kactiontest_SRCS})
 
@@ -528,7 +528,7 @@ set(ktoolbartest_SRCS
 ktoolbartest.cpp
 )
 
-kde4_automoc(${ktoolbartest_SRCS})
+kde4_automoc(ktoolbartest ${ktoolbartest_SRCS})
 
 kde4_add_executable(ktoolbartest RUN_UNINSTALLED ${ktoolbartest_SRCS})
 
@@ -541,7 +541,7 @@ set(kdatetimewidgettest_SRCS
 kdatetimewidgettest.cpp
 )
 
-kde4_automoc(${kdatetimewidgettest_SRCS})
+kde4_automoc(kdatetimewidgettest ${kdatetimewidgettest_SRCS})
 
 kde4_add_executable(kdatetimewidgettest RUN_UNINSTALLED ${kdatetimewidgettest_SRCS})
 
@@ -554,7 +554,7 @@ set(kdatetabletest_SRCS
 kdatetabletest.cpp
 )
 
-kde4_automoc(${kdatetabletest_SRCS})
+kde4_automoc(kdatetabletest ${kdatetabletest_SRCS})
 
 kde4_add_executable(kdatetabletest RUN_UNINSTALLED ${kdatetabletest_SRCS})
 
@@ -567,7 +567,7 @@ set(kinputdialogtest_SRCS
 kinputdialogtest.cpp
 )
 
-kde4_automoc(${kinputdialogtest_SRCS})
+kde4_automoc(kinputdialogtest ${kinputdialogtest_SRCS})
 
 kde4_add_executable(kinputdialogtest RUN_UNINSTALLED ${kinputdialogtest_SRCS})
 
@@ -580,7 +580,7 @@ set(ktabwidgettest_SRCS
 ktabwidgettest.cpp
 )
 
-kde4_automoc(${ktabwidgettest_SRCS})
+kde4_automoc(ktabwidgettest ${ktabwidgettest_SRCS})
 
 kde4_add_executable(ktabwidgettest RUN_UNINSTALLED ${ktabwidgettest_SRCS})
 
@@ -593,7 +593,7 @@ set(kwordwraptest_SRCS
 kwordwraptest.cpp
 )
 
-kde4_automoc(${kwordwraptest_SRCS})
+kde4_automoc(kwordwraptest ${kwordwraptest_SRCS})
 
 kde4_add_executable(kwordwraptest RUN_UNINSTALLED ${kwordwraptest_SRCS})
 
@@ -606,7 +606,7 @@ set(ksqueezedtextlabeltest_SRCS
 ksqueezedtextlabeltest.cpp
 )
 
-kde4_automoc(${ksqueezedtextlabeltest_SRCS})
+kde4_automoc(ksqueezedtextlabeltest ${ksqueezedtextlabeltest_SRCS})
 
 kde4_add_executable(ksqueezedtextlabeltest RUN_UNINSTALLED ${ksqueezedtextlabeltest_SRCS})
 
@@ -619,7 +619,7 @@ set(kpixmapregionselectordialogtest_SRCS
 kpixmapregionselectordialogtest.cpp
 )
 
-kde4_automoc(${kpixmapregionselectordialogtest_SRCS})
+kde4_automoc(kpixmapregionselectordialogtest ${kpixmapregionselectordialogtest_SRCS})
 
 kde4_add_executable(kpixmapregionselectordialogtest RUN_UNINSTALLED ${kpixmapregionselectordialogtest_SRCS})
 
@@ -632,7 +632,7 @@ set(ktoolbarlabelactiontest_SRCS
 ktoolbarlabelactiontest.cpp
 )
 
-kde4_automoc(${ktoolbarlabelactiontest_SRCS})
+kde4_automoc(ktoolbarlabelactiontest ${ktoolbarlabelactiontest_SRCS})
 
 kde4_add_executable(ktoolbarlabelactiontest RUN_UNINSTALLED ${ktoolbarlabelactiontest_SRCS})
 
@@ -645,7 +645,7 @@ set(khboxtest_SRCS
 khboxtest.cpp
 )
 
-kde4_automoc(${khboxtest_SRCS})
+kde4_automoc(khboxtest ${khboxtest_SRCS})
 
 kde4_add_executable(khboxtest RUN_UNINSTALLED ${khboxtest_SRCS})
 
@@ -658,7 +658,7 @@ set(kbugreporttest_SRCS
 kbugreporttest.cpp
 )
 
-kde4_automoc(${kbugreporttest_SRCS})
+kde4_automoc(kbugreporttest ${kbugreporttest_SRCS})
 
 kde4_add_executable(kbugreporttest RUN_UNINSTALLED ${kbugreporttest_SRCS})
 
@@ -671,7 +671,7 @@ set(kdialogtest_SRCS
 kdialogtest.cpp
 )
 
-kde4_automoc(${kdialogtest_SRCS})
+kde4_automoc(kdialogtest ${kdialogtest_SRCS})
 
 kde4_add_executable(kdialogtest RUN_UNINSTALLED ${kdialogtest_SRCS})
 
@@ -684,7 +684,7 @@ set(kglobalacceltest_SRCS
 kglobalacceltest.cpp
 )
 
-kde4_automoc(${kglobalacceltest_SRCS})
+kde4_automoc(kglobalacceltest ${kglobalacceltest_SRCS})
 
 kde4_add_executable(kglobalacceltest RUN_UNINSTALLED ${kglobalacceltest_SRCS})
 
@@ -697,7 +697,7 @@ set(kactivelabeltest_SRCS
 kactivelabeltest.cpp
 )
 
-kde4_automoc(${kactivelabeltest_SRCS})
+kde4_automoc(kactivelabeltest ${kactivelabeltest_SRCS})
 
 kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
 
@@ -710,7 +710,7 @@ set(knotificationrestrictionstest_SRCS
 knotificationrestrictionstest.cpp
 )
 
-kde4_automoc(${knotificationrestrictionstest_SRCS})
+kde4_automoc(knotificationrestrictionstest ${knotificationrestrictionstest_SRCS})
 
 kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificationrestrictionstest_SRCS})
 
@@ -722,7 +722,7 @@ set(kmessagetest_SRCS
 kmessagetest.cpp
 )
 
-kde4_automoc( ${kmessagetest_SRCS} )
+kde4_automoc( kmessagetest ${kmessagetest_SRCS} )
 
 kde4_add_executable(kmessagetest RUN_UNINSTALLED ${kmessagetest_SRCS})
 
@@ -733,7 +733,7 @@ set(kpagedialogtest_SRCS
 kpagedialogtest.cpp
 )
 
-kde4_automoc(${kpagedialogtest_SRCS})
+kde4_automoc(kpagedialogtest ${kpagedialogtest_SRCS})
 
 kde4_add_executable(kpagedialogtest RUN_UNINSTALLED ${kpagedialogtest_SRCS})
 
@@ -744,7 +744,7 @@ set(kpagewidgettest_SRCS
 kpagewidgettest.cpp
 )
 
-kde4_automoc(${kpagewidgettest_SRCS})
+kde4_automoc(kpagewidgettest ${kpagewidgettest_SRCS})
 
 kde4_add_executable(kpagewidgettest RUN_UNINSTALLED ${kpagewidgettest_SRCS})
 
@@ -754,7 +754,7 @@ target_link_libraries(kpagewidgettest  ${KDE4_KDEUI_LIBS})
 
 set(kfindtest_SRCS kfindtest.cpp )
 
-kde4_automoc(${kfindtest_SRCS})
+kde4_automoc(kfindtest ${kfindtest_SRCS})
 
 kde4_add_executable(kfindtest ${kfindtest_SRCS})
 
@@ -764,7 +764,7 @@ target_link_libraries(kfindtest ${KDE4_KDEUI_LIBS} )
 
 set(kreplacetest_SRCS kreplacetest.cpp )
 
-kde4_automoc(${kreplacetest_SRCS})
+kde4_automoc(kreplacetest ${kreplacetest_SRCS})
 
 kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
 
@@ -774,7 +774,7 @@ target_link_libraries(kreplacetest  ${KDE4_KDEUI_LIBS} )
 
 set(kbuttongrouptest_SRCS kbuttongrouptest.cpp )
 
-kde4_automoc(${kbuttongrouptest_SRCS})
+kde4_automoc(kbuttongrouptest ${kbuttongrouptest_SRCS})
 
 kde4_add_executable(kbuttongrouptest RUN_UNINSTALLED ${kbuttongrouptest_SRCS})
 
@@ -787,7 +787,7 @@ add_test(kbuttongrouptest ${EXECUTABLE_OUTPUT_PATH}/kbuttongrouptest)
 
 set(kassistantdialogtest_SRCS kassistantdialogtest.cpp )
 
-kde4_automoc(${kassistantdialogtest_SRCS})
+kde4_automoc(kassistantdialogtest ${kassistantdialogtest_SRCS})
 
 kde4_add_executable(kassistantdialogtest RUN_UNINSTALLED ${kassistantdialogtest_SRCS})
 

@@ -6,7 +6,7 @@ main.cpp
 smtp.cpp
 )
 
-kde4_automoc(${ksendbugmail_SRCS})
+kde4_automoc(ksendbugmail ${ksendbugmail_SRCS})
 
 kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
 

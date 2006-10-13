@@ -5,7 +5,7 @@ if(KDE4_BUILD_TESTS)
    
    set(klaunchertest_SRCS klaunchertest.cpp )
    
-   kde4_automoc(${klaunchertest_SRCS})
+   kde4_automoc(klaunchertest ${klaunchertest_SRCS})
    
    kde4_add_executable(klaunchertest ${klaunchertest_SRCS})
    

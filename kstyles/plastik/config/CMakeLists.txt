@@ -6,7 +6,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 set(kstyle_plastik_config_PART_SRCS plastikconf.cpp )
 
-kde4_automoc(${kstyle_plastik_config_PART_SRCS})
+kde4_automoc(kstyle_plastik_config ${kstyle_plastik_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_plastik_config ${kstyle_plastik_config_PART_SRCS})
 

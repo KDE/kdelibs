@@ -13,7 +13,7 @@ include_directories(
 
 set(kjscmd_SRCS kjscmd.cpp )
 
-kde4_automoc(${kjscmd_SRCS})
+kde4_automoc(kjscmd ${kjscmd_SRCS})
 
 qt4_add_resources(kjscmd_SRCS kjscmd.qrc )
 

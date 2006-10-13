@@ -8,7 +8,7 @@ set(kdeprint_foomatic_PART_SRCS
    kfoomaticprinterimpl.cpp
 )
 
-kde4_automoc(${kdeprint_foomatic_PART_SRCS})
+kde4_automoc(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 
 kde4_add_plugin(kdeprint_foomatic ${kdeprint_foomatic_PART_SRCS})
 

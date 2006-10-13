@@ -6,7 +6,7 @@ add_definitions(-DQT_PLUGIN)
 
 set(highcolor_PART_SRCS highcolor.cpp )
 
-kde4_automoc(${highcolor_PART_SRCS})
+kde4_automoc(highcolor ${highcolor_PART_SRCS})
 
 kde4_add_plugin(highcolor ${highcolor_PART_SRCS})
 

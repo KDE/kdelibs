@@ -10,7 +10,7 @@ knotifyeventlist.cpp
 knotifyconfigwidget.cpp
 )
 
-kde4_automoc(${knotifyconfig_LIB_SRCS})
+kde4_automoc(knotifyconfig ${knotifyconfig_LIB_SRCS})
 
 set( knotifyconfig_UI knotifyconfigactionswidgetbase.ui )
 
