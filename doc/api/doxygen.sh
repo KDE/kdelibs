@@ -644,7 +644,7 @@ apidox_subdir()
 		echo "GENERATE_TAGFILE=$subdir/$subdirname.tag" >> "$subdir/Doxyfile"
 		test -z "$NO_APPEND_TAG" && echo "	$subdir/$subdirname.tag \\" >> subdirs.tag
 	else
-		test -s subdirs.tag && grep -v "$subdir/$subdirname.tag" subdirs.tag >> "$subdir/Doxyfile"
+		#test -s subdirs.tag && grep -v "$subdir/$subdirname.tag" subdirs.tag >> "$subdir/Doxyfile"
 		echo "" >> "$subdir/Doxyfile"
 		echo "GENERATE_HTML=YES" >> "$subdir/Doxyfile"
 	fi
