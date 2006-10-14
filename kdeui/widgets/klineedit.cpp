@@ -172,6 +172,7 @@ void KLineEdit::setClearButtonShown(bool show)
         d->clearButton = new QLabel( this );
         d->clearButton->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
         d->clearButton->setCursor( Qt::ArrowCursor );
+        d->clearButton->setToolTip( i18n( "Clear text" ) );
 
         if ( qApp->isLeftToRight() ) {
             d->clearButton->setPixmap( SmallIcon( "clear_left.png" ) );
@@ -470,11 +471,11 @@ void KLineEdit::setSqueezedText()
     {
       QLineEdit::setText(fullText);
 
-          this->setToolTip("" );
-          QToolTip::showText(pos(), QString()); // hide
-       }
+      this->setToolTip( "" );
+      QToolTip::showText(pos(), QString()); // hide
+    }
 
-       setCursorPosition(0);
+    setCursorPosition(0);
 }
 
 void KLineEdit::copy() const
