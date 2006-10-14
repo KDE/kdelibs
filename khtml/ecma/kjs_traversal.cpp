@@ -28,7 +28,7 @@
 #include <khtml_part.h>
 #include <kdebug.h>
 
-using namespace KJS;
+namespace KJS {
 
 // -------------------------------------------------------------------------
 
@@ -46,9 +46,9 @@ const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, &DOMNodeIteratorTab
   detach	DOMNodeIterator::Detach		DontDelete|Function 0
 @end
 */
-DEFINE_PROTOTYPE("DOMNodeIterator",DOMNodeIteratorProto)
+KJS_DEFINE_PROTOTYPE(DOMNodeIteratorProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNodeIteratorProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeIteratorProto,DOMNodeIteratorProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeIterator", DOMNodeIteratorProto,DOMNodeIteratorProtoFunc)
 
 DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
   : DOMObject(DOMNodeIteratorProto::self(exec)), nodeIterator(ni) {}
@@ -97,7 +97,7 @@ Value DOMNodeIteratorProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
   return Undefined();
 }
 
-Value KJS::getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
+Value getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
 {
   return cacheDOMObject<DOM::NodeIterator, DOMNodeIterator>(exec, ni);
 }
@@ -143,7 +143,7 @@ Value NodeFilterConstructor::getValueProperty(ExecState *, int token) const
   return Number(token);
 }
 
-Value KJS::getNodeFilterConstructor(ExecState *exec)
+Value getNodeFilterConstructor(ExecState *exec)
 {
   return cacheGlobalObject<NodeFilterConstructor>(exec, "[[nodeFilter.constructor]]");
 }
@@ -156,9 +156,9 @@ const ClassInfo DOMNodeFilter::info = { "NodeFilter", 0, 0, 0 };
   acceptNode	DOMNodeFilter::AcceptNode	DontDelete|Function 0
 @end
 */
-DEFINE_PROTOTYPE("DOMNodeFilter",DOMNodeFilterProto)
+KJS_DEFINE_PROTOTYPE(DOMNodeFilterProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNodeFilterProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeFilterProto,DOMNodeFilterProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeFilter",DOMNodeFilterProto,DOMNodeFilterProtoFunc)
 
 DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
   : DOMObject(DOMNodeFilterProto::self(exec)), nodeFilter(nf) {}
@@ -179,7 +179,7 @@ Value DOMNodeFilterProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
   return Undefined();
 }
 
-Value KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
+Value getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
 {
   return cacheDOMObject<DOM::NodeFilter, DOMNodeFilter>(exec, nf);
 }
@@ -205,9 +205,9 @@ const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, &DOMTreeWalkerTable, 0 
   nextNode	DOMTreeWalker::NextNode		DontDelete|Function 0
 @end
 */
-DEFINE_PROTOTYPE("DOMTreeWalker",DOMTreeWalkerProto)
+KJS_DEFINE_PROTOTYPE(DOMTreeWalkerProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMTreeWalkerProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMTreeWalkerProto,DOMTreeWalkerProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMTreeWalker", DOMTreeWalkerProto,DOMTreeWalkerProtoFunc)
 
 DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
   : DOMObject(DOMTreeWalkerProto::self(exec)), treeWalker(tw) {}
@@ -275,12 +275,12 @@ Value DOMTreeWalkerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
   return Undefined();
 }
 
-Value KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
+Value getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
 {
   return cacheDOMObject<DOM::TreeWalker, DOMTreeWalker>(exec, tw);
 }
 
-DOM::NodeFilter KJS::toNodeFilter(const Value& val)
+DOM::NodeFilter toNodeFilter(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
   if (!obj.isValid() || !obj.inherits(&DOMNodeFilter::info))
@@ -323,3 +323,5 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
 
   return DOM::NodeFilter::FILTER_REJECT;
 }
+
+} //namespace KJS

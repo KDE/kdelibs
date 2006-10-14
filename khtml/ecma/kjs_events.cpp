@@ -34,8 +34,9 @@
 
 #include <kdebug.h>
 
-using namespace KJS;
 using namespace DOM;
+
+namespace KJS {
 
 // -------------------------------------------------------------------------
 
@@ -243,9 +244,9 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
   initEvent		DOMEvent::InitEvent		DontDelete|Function 3
 @end
 */
-DEFINE_PROTOTYPE("DOMEvent", DOMEventProto)
+KJS_DEFINE_PROTOTYPE(DOMEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMEventProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMEventProto, DOMEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMEvent", DOMEventProto, DOMEventProtoFunc)
 
 DOMEvent::DOMEvent(ExecState *exec, DOM::Event e)
   : DOMObject(DOMEventProto::self(exec)), event(e) { }
@@ -344,7 +345,7 @@ Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &
   return Undefined();
 }
 
-Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
+Value getDOMEvent(ExecState *exec, DOM::Event e)
 {
   DOM::EventImpl *ei = e.handle();
   if (!ei)
@@ -371,7 +372,7 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
   return Value(ret);
 }
 
-DOM::Event KJS::toEvent(const Value& val)
+DOM::Event toEvent(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
   if (!obj.isValid() || !obj.inherits(&DOMEvent::info))
@@ -406,7 +407,8 @@ DOM::Event KJS::toEvent(const Value& val)
   CHANGE        32768               DontDelete|ReadOnly
 @end
 */
-CREATE_CONSTANT_TABLE(EventConstants, "EventConstants")
+DEFINE_CONSTANT_TABLE(EventConstants)
+IMPLEMENT_CONSTANT_TABLE(EventConstants, "EventConstants")
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(EventConstructor, "EventConstructor", DOMEventProto, EventConstants)
 // -------------------------------------------------------------------------
@@ -434,7 +436,7 @@ Value EventExceptionConstructor::getValueProperty(ExecState *, int token) const
   return Number(token);
 }
 
-Value KJS::getEventExceptionConstructor(ExecState *exec)
+Value getEventExceptionConstructor(ExecState *exec)
 {
   return cacheGlobalObject<EventExceptionConstructor>(exec, "[[eventException.constructor]]");
 }
@@ -458,9 +460,9 @@ const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTabl
   initUIEvent	DOMUIEvent::InitUIEvent	DontDelete|Function 5
 @end
 */
-DEFINE_PROTOTYPE("DOMUIEvent",DOMUIEventProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMUIEventProto, DOMEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMUIEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMUIEvent", DOMUIEventProto, DOMUIEventProtoFunc)
 
 DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEvent ue) :
   DOMEvent(DOMUIEventProto::self(exec), ue) {}
@@ -556,9 +558,9 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15
 @end
 */
-DEFINE_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMMouseEventProto, DOMUIEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMMouseEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMMouseEvent", DOMMouseEventProto, DOMMouseEventProtoFunc)
 
 DOMMouseEvent::DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) :
   DOMUIEvent(DOMMouseEventProto::self(exec), me) {}
@@ -744,9 +746,9 @@ const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMKeyEventBase::info, &DOM
   # Missing: initTextEventNS
 @end
 */
-DEFINE_PROTOTYPE("DOMTextEvent",DOMTextEventProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextEventProto, DOMUIEventProto) //Note: no proto in KeyBase
 IMPLEMENT_PROTOFUNC_DOM(DOMTextEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto) //Note: no proto in KeyBase
+KJS_IMPLEMENT_PROTOTYPE("DOMTextEvent", DOMTextEventProto, DOMTextEventProtoFunc)
 
 DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEvent ke) :
   DOMKeyEventBase(DOMTextEventProto::self(exec), ke) {}
@@ -804,9 +806,9 @@ const ClassInfo DOMKeyboardEvent::info = { "KeyboardEvent", &DOMKeyEventBase::in
   getModifierState      DOMKeyboardEvent::GetModifierState      DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMKeyboardEvent",DOMKeyboardEventProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMKeyboardEventProto, DOMUIEventProto) //Note: no proto in KeyBase
 IMPLEMENT_PROTOFUNC_DOM(DOMKeyboardEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMKeyboardEventProto,DOMKeyboardEventProtoFunc,DOMUIEventProto) //Note: no proto in KeyBase
+KJS_IMPLEMENT_PROTOTYPE("DOMKeyboardEvent", DOMKeyboardEventProto, DOMKeyboardEventProtoFunc)
 
 DOMKeyboardEvent::DOMKeyboardEvent(ExecState *exec, DOM::TextEvent ke) :
   DOMKeyEventBase(DOMKeyboardEventProto::self(exec), ke) {}
@@ -882,7 +884,7 @@ Value KeyboardEventConstructor::getValueProperty(ExecState *, int token) const
   return Number(token);
 }
 
-Value KJS::getKeyboardEventConstructor(ExecState *exec)
+Value getKeyboardEventConstructor(ExecState *exec)
 {
   return cacheGlobalObject<KeyboardEventConstructor>(exec, "[[keyboardEvent.constructor]]");
 }
@@ -913,7 +915,7 @@ Value MutationEventConstructor::getValueProperty(ExecState *, int token) const
   return Number(token);
 }
 
-Value KJS::getMutationEventConstructor(ExecState *exec)
+Value getMutationEventConstructor(ExecState *exec)
 {
   return cacheGlobalObject<MutationEventConstructor>(exec, "[[mutationEvent.constructor]]");
 }
@@ -933,9 +935,9 @@ const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DO
   initMutationEvent	DOMMutationEvent::InitMutationEvent	DontDelete|Function 8
 @end
 */
-DEFINE_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMMutationEventProto, DOMEventProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMMutationEventProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMMutationEvent", DOMMutationEventProto, DOMMutationEventProtoFunc)
 
 DOMMutationEvent::DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) :
   DOMEvent(DOMMutationEventProto::self(exec), me) {}
@@ -986,3 +988,5 @@ Value DOMMutationEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
   }
   return Undefined();
 }
+
+} //namespace KJS

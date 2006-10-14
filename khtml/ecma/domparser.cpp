@@ -38,13 +38,13 @@ using DOM::DocumentImpl;
 @end
 */
 
-using namespace KJS;
-
-DEFINE_PROTOTYPE("DOMParser",DOMParserProto)
-IMPLEMENT_PROTOFUNC_DOM(DOMParserProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMParserProto,DOMParserProtoFunc)
 
 namespace KJS {
+
+KJS_DEFINE_PROTOTYPE(DOMParserProto)
+IMPLEMENT_PROTOFUNC_DOM(DOMParserProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMParser", DOMParserProto, DOMParserProtoFunc)
+
 
 DOMParserConstructorImp::DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d)
     : doc(d)

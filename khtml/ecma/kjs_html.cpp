@@ -62,11 +62,11 @@
 
 #include <kdebug.h>
 
-using namespace KJS;
+namespace KJS {
 
-DEFINE_PROTOTYPE("HTMLDocument",HTMLDocumentProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLDocumentProto, DOMDocumentProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(HTMLDocumentProto,HTMLDocFunction,DOMDocumentProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLDocument", HTMLDocumentProto, HTMLDocFunction)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor, "HTMLDocument", HTMLDocumentProto)
 
@@ -3082,9 +3082,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
   tags		HTMLCollection::Tags		DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
+KJS_DEFINE_PROTOTYPE(HTMLCollectionProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLCollectionProtoFunc)
-IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("HTMLCollection", HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
@@ -3340,9 +3340,9 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
   add		HTMLSelectCollection::Add		DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLSelectCollectionProto, HTMLCollectionProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLSelectCollectionProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(HTMLSelectCollectionProto,HTMLSelectCollectionProtoFunc,HTMLCollectionProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLOptionsCollection",  HTMLSelectCollectionProto, HTMLSelectCollectionProtoFunc)
 
 const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
 
@@ -3561,7 +3561,7 @@ Object ImageConstructorImp::construct(ExecState *exec, const List &list)
   return Object::dynamicCast(getDOMNode(exec,image));
 }
 
-Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
+Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
 {
   Value coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
   if (hide) {
@@ -3571,7 +3571,7 @@ Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool
   return coll;
 }
 
-Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
+Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
 {
   DOMObject *ret;
   if (c.isNull())
@@ -3585,3 +3585,5 @@ Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c
     return Value(ret);
   }
 }
+
+} //namespace KJS

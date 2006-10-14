@@ -130,7 +130,7 @@ namespace KJS {
 #include "rendering/render_replaced.h"
 
 ////////////////////// Screen Object ////////////////////////
-
+namespace KJS {
 // table for screen object
 /*
 @begin ScreenTable 7
@@ -2734,5 +2734,6 @@ UString Konqueror::toString(ExecState *) const
 
 #endif
 /////////////////////////////////////////////////////////////////////////////
+} //namespace KJS
 
 #include "kjs_window.moc"

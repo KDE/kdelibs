@@ -27,7 +27,6 @@
 
 #include <kdebug.h>
 
-using namespace KJS;
 
 ////////////////////// XMLSerializer Object ////////////////////////
 
@@ -36,11 +35,12 @@ using namespace KJS;
   serializeToString XMLSerializer::SerializeToString DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("XMLSerializer",XMLSerializerProto)
-IMPLEMENT_PROTOFUNC_DOM(XMLSerializerProtoFunc)
-IMPLEMENT_PROTOTYPE(XMLSerializerProto,XMLSerializerProtoFunc)
 
 namespace KJS {
+
+KJS_DEFINE_PROTOTYPE(XMLSerializerProto)
+IMPLEMENT_PROTOFUNC_DOM(XMLSerializerProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("XMLSerializer", XMLSerializerProto, XMLSerializerProtoFunc)
 
 XMLSerializerConstructorImp::XMLSerializerConstructorImp(ExecState *)
     : ObjectImp()

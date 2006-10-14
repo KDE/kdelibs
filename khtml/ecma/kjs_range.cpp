@@ -1,3 +1,4 @@
+
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
@@ -23,7 +24,7 @@
 #include "kjs_range.lut.h"
 #include <kdebug.h>
 
-using namespace KJS;
+namespace KJS {
 
 // -------------------------------------------------------------------------
 
@@ -59,9 +60,9 @@ setStart		    DOMRange::SetStart			DontDelete|Function 2
   createContextualFragment  DOMRange::CreateContextualFragment  DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMRange",DOMRangeProto)
+KJS_DEFINE_PROTOTYPE(DOMRangeProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMRangeProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMRangeProto,DOMRangeProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMRange",DOMRangeProto,DOMRangeProtoFunc)
 
 DOMRange::DOMRange(ExecState *exec, DOM::Range r)
  : DOMObject(DOMRangeProto::self(exec)), range(r) {}
@@ -183,7 +184,7 @@ Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &a
   return result;
 }
 
-Value KJS::getDOMRange(ExecState *exec, DOM::Range r)
+Value getDOMRange(ExecState *exec, DOM::Range r)
 {
   return cacheDOMObject<DOM::Range, KJS::DOMRange>(exec, r);
 }
@@ -213,13 +214,13 @@ Value RangeConstructor::getValueProperty(ExecState *, int token) const
   return Number(token);
 }
 
-Value KJS::getRangeConstructor(ExecState *exec)
+Value getRangeConstructor(ExecState *exec)
 {
   return cacheGlobalObject<RangeConstructor>(exec, "[[range.constructor]]");
 }
 
 
-DOM::Range KJS::toRange(const Value& val)
+DOM::Range toRange(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
   if (!obj.isValid() || !obj.inherits(&DOMRange::info))
@@ -228,3 +229,5 @@ DOM::Range KJS::toRange(const Value& val)
   const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());
   return dobj->toRange();
 }
+
+} //namespace KJS

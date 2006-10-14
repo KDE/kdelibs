@@ -43,7 +43,7 @@
 #include "kjs_dom.lut.h"
 #include "khtmlpart_p.h"
 
-using namespace KJS;
+namespace KJS {
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeConstantsTable.
@@ -62,7 +62,7 @@ using namespace KJS;
   NOTATION_NODE     DOM::Node::NOTATION_NODE        DontDelete|ReadOnly
 @end
 */
-CREATE_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
+IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
 // -------------------------------------------------------------------------
 /* Source for DOMNodeProtoTable.
 @begin DOMNodeProtoTable 13
@@ -87,9 +87,8 @@ CREATE_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
   item          DOMNode::Item           DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNodeProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMNodeProto,DOMNodeProtoFunc,DOMNodeConstants)
+KJS_IMPLEMENT_PROTOTYPE("DOMNode", DOMNodeProto, DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
@@ -633,9 +632,10 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
   namedItem	DOMNodeList::NamedItem		DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMNodeList", DOMNodeListProto)
+KJS_DEFINE_PROTOTYPE(DOMNodeListProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNodeListProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeListProto,DOMNodeListProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeList", DOMNodeListProto, DOMNodeListProtoFunc)
+
 
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
@@ -795,6 +795,7 @@ Value DOMNodeListProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 
 // -------------------------------------------------------------------------
 
+//### FIXME: link to the node prototype.
 const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 
 /* Source for DOMAttrTable.
@@ -878,8 +879,7 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
 @end
 */
 IMPLEMENT_PROTOFUNC_DOM(DOMDocumentProtoFunc)
-PUBLIC_IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, "DOMDocument", DOMDocumentProtoFunc, DOMNodeProto)
-
+KJS_IMPLEMENT_PROTOTYPE("DOMDocument", DOMDocumentProto, DOMDocumentProtoFunc)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor, "Document", DOMDocumentProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
@@ -1127,9 +1127,8 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMElementProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMElement", DOMElementProto, DOMElementProtoFunc)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(ElementPseudoCtor, "Element", DOMElementProto)
 
@@ -1241,9 +1240,9 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
   createHTMLDocument    DOMDOMImplementation::CreateHTMLDocument        DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
+KJS_DEFINE_PROTOTYPE(DOMDOMImplementationProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMDOMImplementationProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMImplementation", DOMDOMImplementationProto, DOMDOMImplementationProtoFunc)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
 
@@ -1352,9 +1351,9 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   length		DOMNamedNodeMap::Length			DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
+KJS_DEFINE_PROTOTYPE(DOMNamedNodeMapProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNamedNodeMapProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto, DOMNamedNodeMapProtoFunc)
 
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, &DOMNamedNodeMapTable, 0 };
 
@@ -1415,7 +1414,7 @@ Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
 }
 
 // -------------------------------------------------------------------------
-
+//### FIXME: proto
 const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, &DOMProcessingInstructionTable, 0 };
 
 /* Source for DOMProcessingInstructionTable.
@@ -1515,7 +1514,7 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-bool KJS::checkNodeSecurity(ExecState *exec, const DOM::Node& n)
+bool checkNodeSecurity(ExecState *exec, const DOM::Node& n)
 {
   // Check to see if the currently executing interpreter is allowed to access the specified node
   if (n.isNull())
@@ -1527,7 +1526,7 @@ bool KJS::checkNodeSecurity(ExecState *exec, const DOM::Node& n)
   return true;
 }
 
-Value KJS::getDOMNode(ExecState *exec, const DOM::Node& n)
+Value getDOMNode(ExecState *exec, const DOM::Node& n)
 {
   DOMObject *ret = 0;
   if (n.isNull())
@@ -1585,17 +1584,17 @@ Value KJS::getDOMNode(ExecState *exec, const DOM::Node& n)
   return Value(ret);
 }
 
-Value KJS::getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
+Value getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
 {
   return Value(cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m));
 }
 
-Value KJS::getDOMNodeList(ExecState *exec, const DOM::NodeList& l)
+Value getDOMNodeList(ExecState *exec, const DOM::NodeList& l)
 {
   return Value(cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l));
 }
 
-Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i)
+Value getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i)
 {
   return Value(cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i));
 }
@@ -1679,7 +1678,7 @@ Value DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
 #endif
 }
 
-Object KJS::getDOMExceptionConstructor(ExecState *exec)
+Object getDOMExceptionConstructor(ExecState *exec)
 {
   return cacheGlobalObject<DOMExceptionConstructor>(exec, "[[DOMException.constructor]]");
 }
@@ -1735,9 +1734,9 @@ const ClassInfo DOMCharacterData::info = { "CharacterImp",
   replaceData	DOMCharacterData::ReplaceData	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMCharacterDataProto, DOMNodeProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCharacterDataProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMCharacterData", DOMCharacterDataProto, DOMCharacterDataProtoFunc)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, const DOM::CharacterData& d)
  : DOMNode(DOMCharacterDataProto::self(exec), d) {}
@@ -1812,9 +1811,9 @@ const ClassInfo DOMText::info = { "Text",
   splitText	DOMText::SplitText	DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMText",DOMTextProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextProto, DOMCharacterDataProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMTextProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMText", DOMTextProto, DOMTextProtoFunc)
 
 DOMText::DOMText(ExecState *exec, const DOM::Text& t)
   : DOMCharacterData(DOMTextProto::self(exec), t) { }
@@ -1838,4 +1837,6 @@ Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
       break;
   }
   return Undefined();
+}
+
 }

@@ -29,7 +29,6 @@
 
 #include "ecma/kjs_binding.h"
 
-PUBLIC_DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
 
 namespace KJS {
 
@@ -73,6 +72,10 @@ namespace KJS {
   protected:
     DOM::Node node;
   };
+
+  DEFINE_CONSTANT_TABLE(DOMNodeConstants)
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMNodeProto, DOMNodeConstants)
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   class DOMNodeList : public DOMObject {
   public:
@@ -118,6 +121,8 @@ namespace KJS {
            CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
   };
+  
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMDocumentProto, DOMNodeProto)
 
   DEFINE_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor)
 
@@ -149,7 +154,8 @@ namespace KJS {
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
   };
-
+  
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
   DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
 
   class DOMDOMImplementation : public DOMObject {
@@ -229,8 +235,6 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
-
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {
   public:
@@ -278,7 +282,7 @@ namespace KJS {
     enum { Data, Length,
            SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
   };
-
+  
   class DOMText : public DOMCharacterData {
   public:
     DOMText(ExecState *exec, const DOM::Text& t);

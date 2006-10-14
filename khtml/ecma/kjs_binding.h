@@ -245,10 +245,53 @@ namespace KJS {
     else
       thisObj->putValueProperty(exec, entry->value, value, attr);
   }
+  
+// Versions of prototype functions that properly support instanceof,
+// and are compatible with trunk.
+#define KJS_DEFINE_PROTOTYPE_IMP(ClassProto,ProtoCode) \
+  class ClassProto : public ObjectImp { \
+  friend Object cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
+  public: \
+    static Object self(ExecState *exec); \
+    virtual const ClassInfo *classInfo() const { return &info; } \
+    static const ClassInfo info; \
+    Value get(ExecState *exec, const Identifier &propertyName) const; \
+  protected: \
+    ClassProto( ExecState *exec ) \
+      : ObjectImp( ProtoCode ) {} \
+    \
+    static Identifier* s_name; \
+    static Identifier* name(); \
+  };
 
+#define KJS_DEFINE_PROTOTYPE(ClassProto) \
+        KJS_DEFINE_PROTOTYPE_IMP(ClassProto, exec->interpreter()->builtinObjectPrototype())
+
+#define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
+            KJS_DEFINE_PROTOTYPE_IMP(ClassProto, ClassProtoProto::self(exec))
+
+//### this doesn't implement hasProperty, but stuff in lookup.h didn't 
+//either (just did the forward)
+#define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto, ClassFunc) \
+    const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
+    Identifier* ClassProto::s_name = 0; \
+    Object ClassProto::self(ExecState *exec) \
+    { \
+      return cacheGlobalObject<ClassProto>(exec, *name()); \
+    } \
+    Value ClassProto::get(ExecState *exec, const Identifier &propertyName) const \
+    { \
+      /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
+      return lookupGetFunction<ClassFunc,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+    } \
+    Identifier* ClassProto::name() \
+    { \
+      if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
+      return s_name; \
+    } 
+    
   // Modified version of IMPLEMENT_PROTOFUNC, to use DOMFunction and tryCall
 #define IMPLEMENT_PROTOFUNC_DOM(ClassFunc) \
-  namespace KJS { \
   class ClassFunc : public DOMFunction { \
   public: \
     ClassFunc(ExecState *exec, int i, int len) \
@@ -260,8 +303,7 @@ namespace KJS {
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \
   private: \
     int id; \
-  }; \
-  }
+  }; 
 
   Value getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
@@ -294,25 +336,48 @@ namespace KJS {
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(Class,ClassName,ProtoClass,ParentProtoClass) \
     IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProtoClass::self(exec))
 
-// This is used to implement a constant table. Can be used as a prototype
-#define CREATE_CONSTANT_TABLE(Class,ClassName) \
+// This declares a constant table, which merely maps everything in its 
+// table to its token value. Can be used as a prototype
+#define DEFINE_CONSTANT_TABLE(Class) \
    class Class : public DOMObject { \
    public: \
-     Class(ExecState *exec): DOMObject(exec->interpreter()->builtinObjectPrototype()) {} \
-     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const { \
-        return DOMObjectLookupGetValue<Class, DOMObject>(exec, propertyName, &Class##Table, this);\
-     } \
-     Value getValueProperty(ExecState * /*exec*/, int token) const { \
-        /* We use the token as the value to return directly*/ \
-        return Number((unsigned int)token); \
-     }  \
+     Class(ExecState *exec): DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {} \
+     \
+     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;\
+     Value  getValueProperty(ExecState * /*exec*/, int token) const; \
      virtual const ClassInfo* classInfo() const { return &info; } \
      static const ClassInfo info; \
-     static Object self(ExecState *exec) { \
-        return Object(cacheGlobalObject<Class>(exec, "[[" ClassName ".constant_table]]")); \
-     } \
-   }; \
-   const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
+     static Object self(ExecState *exec);\
+     static Identifier* s_name; \
+     static Identifier* name(); \
+   };
+
+// Emits an implementation of a constant table 
+#define IMPLEMENT_CONSTANT_TABLE(Class,ClassName) \
+    Value Class::tryGet(ExecState *exec, const Identifier &propertyName) const { \
+        return DOMObjectLookupGetValue<Class, DOMObject>(exec, propertyName, &Class##Table, this);\
+    } \
+    Value Class::getValueProperty(ExecState * /*exec*/, int token) const { \
+        /* We use the token as the value to return directly*/ \
+        return Number((unsigned int)token); \
+    }  \
+    Object Class::self(ExecState *exec) { \
+        return cacheGlobalObject<Class>(exec, *name()); \
+    } \
+    Identifier* Class::s_name = 0; \
+    Identifier* Class::name() { \
+        if (!s_name) s_name = new Identifier("[[" ClassName ".constant_table]]"); \
+        return s_name; \
+    } \
+    const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
+
+   
+// Hide some of the stuff in lookup.h..
+#undef PUBLIC_DEFINE_PROTOTYPE
+#undef DEFINE_PROTOTYPE
+#undef IMPLEMENT_PROTOTYPE
+#undef PUBLIC_IMPLEMENT_PROTOTYPE
+#undef IMPLEMENT_PROTOTYPE_WITH_PARENT
 
 } // namespace
 

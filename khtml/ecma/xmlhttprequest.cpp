@@ -50,8 +50,9 @@ using KIO::NetAccess;
                             "delete,head,trace,put,propfind,proppatch,"\
                             "mkcol,lock,unlock,options,via"
 
-using namespace KJS;
 using khtml::Decoder;
+
+namespace KJS {
 
 ////////////////////// XMLHttpRequest Object ////////////////////////
 
@@ -65,11 +66,10 @@ using khtml::Decoder;
   setRequestHeader	XMLHttpRequest::SetRequestHeader	DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("XMLHttpRequest",XMLHttpRequestProto)
+KJS_DEFINE_PROTOTYPE(XMLHttpRequestProto)
 IMPLEMENT_PROTOFUNC_DOM(XMLHttpRequestProtoFunc)
-IMPLEMENT_PROTOTYPE(XMLHttpRequestProto,XMLHttpRequestProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("XMLHttpRequest", XMLHttpRequestProto,XMLHttpRequestProtoFunc)
 
-namespace KJS {
 
 XMLHttpRequestQObject::XMLHttpRequestQObject(XMLHttpRequest *_jsObject)
 {
@@ -760,5 +760,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 }
 
 } // end namespace
+
 
 #include "xmlhttprequest.moc"

@@ -28,8 +28,10 @@
 #include <css/css_base.h>
 #include "kjs_dom.h"
 
-using namespace KJS;
+
 #include <kdebug.h>
+
+namespace KJS {
 
 static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
 {
@@ -76,9 +78,9 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
   parentRule		DOMCSSStyleDeclaration::ParentRule	DontDelete|ReadOnly
 @end
 */
-DEFINE_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto)
+KJS_DEFINE_PROTOTYPE(DOMCSSStyleDeclarationProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSStyleDeclarationProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor, "DOMCSSStyleDeclaration",DOMCSSStyleDeclarationProto)
 
@@ -224,7 +226,7 @@ Value DOMCSSStyleDeclarationProtoFunc::tryCall(ExecState *exec, Object &thisObj,
   }
 }
 
-Value KJS::getDOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& s)
+Value getDOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& s)
 {
   return cacheDOMObject<DOM::CSSStyleDeclaration, KJS::DOMCSSStyleDeclaration>(exec, s);
 }
@@ -289,7 +291,7 @@ void DOMStyleSheet::tryPut(ExecState *exec, const Identifier &propertyName, cons
     DOMObject::tryPut(exec, propertyName, value, attr);
 }
 
-Value KJS::getDOMStyleSheet(ExecState *exec, const DOM::StyleSheet& ss)
+Value getDOMStyleSheet(ExecState *exec, const DOM::StyleSheet& ss)
 {
   DOMObject *ret;
   if (ss.isNull())
@@ -406,7 +408,7 @@ Value DOMStyleSheetList::tryCall(ExecState *exec, Object & /*thisObj*/, const Li
   return Undefined();
 }
 
-Value KJS::getDOMStyleSheetList(ExecState *exec, const DOM::StyleSheetList& ssl, const DOM::Document& doc)
+Value getDOMStyleSheetList(ExecState *exec, const DOM::StyleSheetList& ssl, const DOM::Document& doc)
 {
   // Can't use the cacheDOMObject macro because of the doc argument
   DOMObject *ret;
@@ -446,9 +448,9 @@ const ClassInfo DOMMediaList::info = { "MediaList", 0, &DOMMediaListTable, 0 };
   appendMedium	DOMMediaList::AppendMedium	DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMMediaList", DOMMediaListProto)
+KJS_DEFINE_PROTOTYPE(DOMMediaListProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMMediaListProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMMediaListProto, DOMMediaListProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMMediaList", DOMMediaListProto, DOMMediaListProtoFunc)
 
 DOMMediaList::DOMMediaList(ExecState *exec, const DOM::MediaList& ml)
   : DOMObject(DOMMediaListProto::self(exec)), mediaList(ml) { }
@@ -481,7 +483,7 @@ void DOMMediaList::tryPut(ExecState *exec, const Identifier &propertyName, const
     DOMObject::tryPut(exec, propertyName, value, attr);
 }
 
-Value KJS::getDOMMediaList(ExecState *exec, const DOM::MediaList& ml)
+Value getDOMMediaList(ExecState *exec, const DOM::MediaList& ml)
 {
   return cacheDOMObject<DOM::MediaList, KJS::DOMMediaList>(exec, ml);
 }
@@ -523,9 +525,9 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
   removeRule	DOMCSSStyleSheet::RemoveRule	DontDelete|Function 1
 @end
 */
-DEFINE_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto)
+KJS_DEFINE_PROTOTYPE(DOMCSSStyleSheetProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSStyleSheetProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc) // warning, use _WITH_PARENT if DOMStyleSheet gets a proto
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc) // warning, use _WITH_PARENT if DOMStyleSheet gets a proto
 
 DOMCSSStyleSheet::DOMCSSStyleSheet(ExecState *exec, const DOM::CSSStyleSheet& ss)
   : DOMStyleSheet(DOMCSSStyleSheetProto::self(exec),ss) { }
@@ -625,7 +627,7 @@ Value DOMCSSRuleListFunc::tryCall(ExecState *exec, Object &thisObj, const List &
   }
 }
 
-Value KJS::getDOMCSSRuleList(ExecState *exec, const DOM::CSSRuleList& rl)
+Value getDOMCSSRuleList(ExecState *exec, const DOM::CSSRuleList& rl)
 {
   return cacheDOMObject<DOM::CSSRuleList, KJS::DOMCSSRuleList>(exec, rl);
 }
@@ -832,7 +834,7 @@ Value DOMCSSRuleFunc::tryCall(ExecState *exec, Object &thisObj, const List &args
   return Undefined();
 }
 
-Value KJS::getDOMCSSRule(ExecState *exec, const DOM::CSSRule& r)
+Value getDOMCSSRule(ExecState *exec, const DOM::CSSRule& r)
 {
   return cacheDOMObject<DOM::CSSRule, KJS::DOMCSSRule>(exec, r);
 }
@@ -840,7 +842,7 @@ Value KJS::getDOMCSSRule(ExecState *exec, const DOM::CSSRule& r)
 // -------------------------------------------------------------------------
 
 
-DOM::CSSRule KJS::toCSSRule(const Value& val)
+DOM::CSSRule toCSSRule(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
   if (!obj.isValid() || !obj.inherits(&DOMCSSRule::info))
@@ -896,7 +898,7 @@ Value CSSRuleConstructor::getValueProperty(ExecState *, int token) const
   return Value();
 }
 
-Value KJS::getCSSRuleConstructor(ExecState *exec)
+Value getCSSRuleConstructor(ExecState *exec)
 {
   return cacheGlobalObject<CSSRuleConstructor>( exec, "[[cssRule.constructor]]" );
 }
@@ -939,7 +941,7 @@ void DOMCSSValue::tryPut(ExecState *exec, const Identifier &propertyName, const 
     DOMObject::tryPut(exec, propertyName, value, attr);
 }
 
-Value KJS::getDOMCSSValue(ExecState *exec, const DOM::CSSValue& v)
+Value getDOMCSSValue(ExecState *exec, const DOM::CSSValue& v)
 {
   DOMObject *ret;
   if (v.isNull())
@@ -996,7 +998,7 @@ Value CSSValueConstructor::getValueProperty(ExecState *, int token) const
   return Value();
 }
 
-Value KJS::getCSSValueConstructor(ExecState *exec)
+Value getCSSValueConstructor(ExecState *exec)
 {
   return cacheGlobalObject<CSSValueConstructor>( exec, "[[cssValue.constructor]]" );
 }
@@ -1018,9 +1020,9 @@ const ClassInfo DOMCSSPrimitiveValue::info = { "CSSPrimitiveValue", 0, &DOMCSSPr
   getRGBColorValue	DOMCSSPrimitiveValue::GetRGBColorValue	DontDelete|Function 0
 @end
 */
-DEFINE_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto)
+KJS_DEFINE_PROTOTYPE(DOMCSSPrimitiveValueProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSPrimitiveValueProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
 
 DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, const DOM::CSSPrimitiveValue& v)
   : DOMCSSValue(DOMCSSPrimitiveValueProto::self(exec), v) { }
@@ -1104,7 +1106,7 @@ Value CSSPrimitiveValueConstructor::getValueProperty(ExecState *, int token) con
   return Number(token);
 }
 
-Value KJS::getCSSPrimitiveValueConstructor(ExecState *exec)
+Value getCSSPrimitiveValueConstructor(ExecState *exec)
 {
   return cacheGlobalObject<CSSPrimitiveValueConstructor>( exec, "[[cssPrimitiveValue.constructor]]" );
 }
@@ -1197,7 +1199,7 @@ Value DOMRGBColor::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-Value KJS::getDOMRGBColor(ExecState *exec, const DOM::RGBColor& c)
+Value getDOMRGBColor(ExecState *exec, const DOM::RGBColor& c)
 {
   // ### implement equals for RGBColor since they're not refcounted objects
   return Value(new DOMRGBColor(exec, c));
@@ -1247,7 +1249,7 @@ Value DOMRect::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-Value KJS::getDOMRect(ExecState *exec, const DOM::Rect& r)
+Value getDOMRect(ExecState *exec, const DOM::Rect& r)
 {
   return cacheDOMObject<DOM::Rect, KJS::DOMRect>(exec, r);
 }
@@ -1292,7 +1294,9 @@ Value DOMCounter::getValueProperty(ExecState *, int token) const
   }
 }
 
-Value KJS::getDOMCounter(ExecState *exec, const DOM::Counter& c)
+Value getDOMCounter(ExecState *exec, const DOM::Counter& c)
 {
   return cacheDOMObject<DOM::Counter, KJS::DOMCounter>(exec, c);
 }
+
+} //namespace KJS
