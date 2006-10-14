@@ -15,7 +15,7 @@ void KJSErrorDlg::addError( const QString & error )
 
 void KJSErrorDlg::setURL( const QString & url )
 {
-  _url->setPlainText(url);
+  _url->setText(url);
 }
 
 void KJSErrorDlg::clear()

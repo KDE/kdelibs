@@ -36,7 +36,6 @@
 #include <kfiledialog.h>
 #include <kseparator.h>
 #include <kguiitem.h>
-#include <kactivelabel.h>
 #include <kdatetable.h>
 #include <kdialog.h>
 

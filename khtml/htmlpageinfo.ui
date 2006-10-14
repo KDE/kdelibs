@@ -72,7 +72,7 @@
          </widget>
         </item>
         <item row="0" column="1" >
-         <widget class="KActiveLabel" name="_title" >
+         <widget class="QLabel" name="_title" >
           <property name="sizePolicy" >
            <sizepolicy>
             <hsizetype>7</hsizetype>
@@ -84,7 +84,10 @@
          </widget>
         </item>
         <item row="1" column="1" >
-         <widget class="KActiveLabel" name="_url" >
+         <widget class="QLabel" name="_url" >
+          <property name="openExternalLinks" >
+           <bool>true</bool>
+          </property>
           <property name="sizePolicy" >
            <sizepolicy>
             <hsizetype>7</hsizetype>
@@ -162,7 +165,7 @@
          </widget>
         </item>
         <item row="3" column="1" >
-         <widget class="KActiveLabel" name="_encoding" >
+         <widget class="QLabel" name="_encoding" >
           <property name="sizePolicy" >
            <sizepolicy>
             <hsizetype>7</hsizetype>
@@ -259,13 +262,6 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>KActiveLabel</class>
-   <extends>QWidget</extends>
-   <header>kactivelabel.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
    <class>Q3GroupBox</class>
    <extends></extends>
    <header>Qt3Support/Q3GroupBox</header>
@@ -295,7 +291,6 @@
  <includes>
   <include location="global" >kpushbutton.h</include>
   <include location="global" >qlabel.h</include>
-  <include location="global" >kactivelabel.h</include>
   <include location="global" >q3listview.h</include>
  </includes>
  <resources/>

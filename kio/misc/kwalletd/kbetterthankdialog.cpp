@@ -13,7 +13,7 @@ void KBetterThanKDialog::init()
 
 void KBetterThanKDialog::setLabel( const QString & label )
 {
-    _label->setPlainText(label);
+    _label->setText(label);
 }
 
 void KBetterThanKDialog::clicked()

@@ -84,22 +84,13 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="3" >
-    <widget class="KActiveLabel" name="_url" />
+    <widget class="QLabel" name="_url" />
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>KActiveLabel</class>
-   <extends>QWidget</extends>
-   <header>kactivelabel.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>_errorText</tabstop>
   <tabstop>_close</tabstop>
@@ -107,7 +98,6 @@
  </tabstops>
  <includes>
   <include location="global" >kdialog.h</include>
-  <include location="global" >kactivelabel.h</include>
  </includes>
  <resources/>
  <connections/>

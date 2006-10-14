@@ -4021,14 +4021,15 @@ void KHTMLPart::slotViewPageInfo()
 {
   Ui_KHTMLInfoDlg ui;
 
-  QDialog *dlg = new QDialog(0, "KHTML Page Info Dialog", false, Qt::WDestructiveClose);
+  QDialog *dlg = new QDialog(0, Qt::WDestructiveClose);
+  dlg->setObjectName("KHTML Page Info Dialog");
   ui.setupUi(dlg);
 
   ui._close->setGuiItem(KStdGuiItem::close());
 
   connect(ui._close, SIGNAL(clicked()), dlg, SLOT(accept()));
   if (d->m_doc)
-     ui._title->setHtml(d->m_doc->title().string());
+     ui._title->setText(d->m_doc->title().string());
 
   // If it's a frame, set the caption to "Frame Information"
   if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {
@@ -4041,7 +4042,7 @@ void KHTMLPart::slotViewPageInfo()
     editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
 
   QString squeezedURL = KStringHandler::csqueeze( url().prettyUrl(), 80 );
-  ui._url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
+  ui._url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     ui._lastModified->hide();
@@ -4055,7 +4056,7 @@ void KHTMLPart::slotViewPageInfo()
     ui._eLabel->hide();
     ui._encoding->hide();
   } else {
-    ui._encoding->setPlainText(enc);
+    ui._encoding->setText(enc);
   }
   /* populate the list view now */
   const QStringList headers = d->m_httpHeaders.split("\n");
@@ -4097,7 +4098,7 @@ void KHTMLPart::slotViewFrameSource()
                QDataStream stream ( &sourceFile );
                KHTMLPageCache::self()->saveData(cacheId, &stream);
                url = KUrl();
-               url.setPath(sourceFile.name());
+               url.setPath(sourceFile.fileName());
                isTempFile = true;
            }
      }

@@ -282,7 +282,7 @@ void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool
 // dialog parents. Hopefully to be done in KDE4, for now just use all kinds of bad hacks to make
 //  sure the user doesn't overlook the active dialog.
 void KWalletD::checkActiveDialog() {
-	if( !activeDialog || !activeDialog->isShown())
+	if( !activeDialog || activeDialog->isHidden())
 		return;
 	kapp->updateUserTimestamp();
 	KWin::setState( activeDialog->winId(), NET::KeepAbove );
