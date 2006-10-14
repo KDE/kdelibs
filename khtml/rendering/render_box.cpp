@@ -568,24 +568,26 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > scaledImageWidth ) {
-                cw = scaledImageWidth;
-                cx = vr.x() + bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth);
+            int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+            if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
+                cw = kMin(scaledImageWidth, pw - xPosition);
+                cx = vr.x() + xPosition;
             } else {
                 cw = pw;
                 cx = vr.x();
                 if (scaledImageWidth > 0)
-                    sx = scaledImageWidth - bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth) % scaledImageWidth;
+                    sx = scaledImageWidth - xPosition % scaledImageWidth;
             }
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > scaledImageHeight ) {
-                ch = scaledImageHeight;
-                cy = vr.y() + bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+            int yPosition = bgLayer->backgroundYPosition().minWidth(ph-scaledImageHeight);
+            if (bgr == NO_REPEAT || bgr == REPEAT_X) {
+                ch = kMin(scaledImageHeight, ph - yPosition);
+                cy = vr.y() + yPosition;
             } else {
                 ch = ph;
                 cy = vr.y();
                 if (scaledImageHeight > 0)
-                    sy = scaledImageHeight - bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight) % scaledImageHeight;
+                    sy = scaledImageHeight - yPosition % scaledImageHeight;
             }
 
             QRect fix(cx, cy, cw, ch);
