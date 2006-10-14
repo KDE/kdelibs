@@ -48,7 +48,7 @@
 using namespace khtml;
 using namespace DOM;
 
-HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
+HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)
 {
     rules = None;
@@ -661,7 +661,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentPtr *doc,
+HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentImpl *doc,
                                                          ushort tagid, bool implicit)
     : HTMLTablePartElementImpl(doc)
 {
@@ -833,7 +833,7 @@ void HTMLTableRowElementImpl::deleteCell( long index, int &exceptioncode )
 
 // -------------------------------------------------------------------------
 
-HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
+HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentImpl *doc, int tag)
   : HTMLTablePartElementImpl(doc)
 {
   _col = -1;
@@ -930,7 +930,7 @@ void HTMLTableCellElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
+HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
     : HTMLTablePartElementImpl(doc)
 {
     _id = i;

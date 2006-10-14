@@ -57,7 +57,7 @@
 using namespace DOM;
 using namespace khtml;
 
-AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
+AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attrId,
 		   DOMStringImpl *value, DOMStringImpl *prefix)
     : NodeBaseImpl(docPtr),
       m_element(element),
@@ -277,12 +277,12 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
     }
 }
 
-AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
+AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentImpl *docPtr)
 {
     if (m_attrId) {
 	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value);
         if (!attr) return 0;
-        attr->setHTMLCompat( docPtr->document()->htmlMode() != DocumentImpl::XHtml );
+        attr->setHTMLCompat( docPtr->htmlMode() != DocumentImpl::XHtml );
 	m_data.value->deref();
 	m_data.attr = attr;
 	m_data.attr->ref();
@@ -305,7 +305,7 @@ void AttributeImpl::free()
 
 // -------------------------------------------------------------------------
 
-ElementImpl::ElementImpl(DocumentPtr *doc)
+ElementImpl::ElementImpl(DocumentImpl *doc)
     : NodeBaseImpl(doc)
 {
     namedAttrMap = 0;
@@ -883,14 +883,14 @@ void ElementImpl::setContentEditable(bool enabled) {
 
 // -------------------------------------------------------------------------
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id)
+XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id)
     : ElementImpl(doc)
 {
     // Called from createElement(). In this case localName, prefix, and namespaceURI all need to be null.
     m_id = id;
 }
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_prefix)
+XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id, DOMStringImpl *_prefix)
     : ElementImpl(doc)
 {
     // Called from createElementNS()

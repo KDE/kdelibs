@@ -42,9 +42,9 @@ class DOMString;
 class EntityImpl : public NodeBaseImpl
 {
 public:
-    EntityImpl(DocumentPtr *doc);
-    EntityImpl(DocumentPtr *doc, DOMString _name);
-    EntityImpl(DocumentPtr *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
+    EntityImpl(DocumentImpl *doc);
+    EntityImpl(DocumentImpl *doc, DOMString _name);
+    EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
     virtual ~EntityImpl();
 
     // DOM methods & attributes for Entity
@@ -76,8 +76,8 @@ protected:
 class EntityReferenceImpl : public NodeBaseImpl
 {
 public:
-    EntityReferenceImpl(DocumentPtr *doc);
-    EntityReferenceImpl(DocumentPtr *doc, DOMStringImpl *_entityName);
+    EntityReferenceImpl(DocumentImpl *doc);
+    EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName);
     virtual ~EntityReferenceImpl();
 
     // DOM methods overridden from  parent classes
@@ -98,8 +98,8 @@ protected:
 class NotationImpl : public NodeBaseImpl
 {
 public:
-    NotationImpl(DocumentPtr *doc);
-    NotationImpl(DocumentPtr *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
+    NotationImpl(DocumentImpl *doc);
+    NotationImpl(DocumentImpl *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
     virtual ~NotationImpl();
 
     // DOM methods & attributes for Notation
@@ -126,8 +126,8 @@ protected:
 class ProcessingInstructionImpl : public NodeBaseImpl, private khtml::CachedObjectClient
 {
 public:
-    ProcessingInstructionImpl(DocumentPtr *doc);
-    ProcessingInstructionImpl(DocumentPtr *doc, DOMString _target, DOMString _data);
+    ProcessingInstructionImpl(DocumentImpl *doc);
+    ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data);
     virtual ~ProcessingInstructionImpl();
 
     // DOM methods & attributes for Notation

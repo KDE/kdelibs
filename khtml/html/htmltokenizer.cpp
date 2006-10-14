@@ -123,7 +123,7 @@ static const char titleEnd [] = "</title";
 #endif
 // ----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
+HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
 {
     view = _view;
     buffer = 0;
@@ -138,7 +138,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     reset();
 }
 
-HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *i)
+HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl *i)
 {
     view = 0;
     buffer = 0;
@@ -966,7 +966,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     }
                     else {
                         DOMString v("");
-                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
+                        currToken.addAttribute(parser->docPtr(), buffer, attrName, v);
                         dest = buffer;
                         tag = SearchAttribute;
                     }
@@ -1021,7 +1021,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
                             dest--; // remove trailing newlines
                         DOMString v(buffer+1, dest-buffer-1);
-                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
+                        currToken.addAttribute(parser->docPtr(), buffer, attrName, v);
 
                         dest = buffer;
                         tag = SearchAttribute;
@@ -1057,7 +1057,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if ( curchar <= ' ' || curchar == '>' )
                     {
                         DOMString v(buffer+1, dest-buffer-1);
-                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
+                        currToken.addAttribute(parser->docPtr(), buffer, attrName, v);
                         dest = buffer;
                         tag = SearchAttribute;
                         break;

@@ -35,8 +35,8 @@ class RangeImpl : public khtml::Shared<RangeImpl>
 {
     friend class DocumentImpl;
 public:
-    RangeImpl(DocumentPtr *_ownerDocument);
-    RangeImpl(DocumentPtr *_ownerDocument,
+    RangeImpl(DocumentImpl *_ownerDocument);
+    RangeImpl(DocumentImpl *_ownerDocument,
               NodeImpl *_startContainer, long _startOffset,
               NodeImpl *_endContainer, long _endOffset);
 
@@ -105,7 +105,7 @@ public:
     bool readOnly() { return false; }
 
 protected:
-    DocumentPtr *m_ownerDocument;
+    DocumentImpl *m_ownerDocument;
     NodeImpl *m_startContainer;
     unsigned long m_startOffset;
     NodeImpl *m_endContainer;

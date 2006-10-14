@@ -52,7 +52,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
+HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc), ismap(false), loadEventSent(true), m_image(0), m_form(f)
 {
     if (m_form)
@@ -343,7 +343,7 @@ bool HTMLImageElementImpl::complete() const
 
 // -------------------------------------------------------------------------
 
-HTMLMapElementImpl::HTMLMapElementImpl(DocumentPtr *doc)
+HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -435,7 +435,7 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
+HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     : HTMLAnchorElementImpl(doc)
 {
     m_coords=0;

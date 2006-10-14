@@ -46,7 +46,7 @@ class CSSStyleSheetImpl;
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBaseElementImpl(DocumentPtr *doc)
+    HTMLBaseElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     DOMString href() const { return m_href; }
@@ -71,7 +71,7 @@ protected:
 class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElementImpl
 {
 public:
-    HTMLLinkElementImpl(DocumentPtr *doc)
+    HTMLLinkElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_isDisabled(false),
 	m_loading(false), m_alternate(false), m_isCSSSheet(false) {}
 
@@ -119,7 +119,7 @@ protected:
 class HTMLMetaElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMetaElementImpl(DocumentPtr *doc)
+    HTMLMetaElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
@@ -138,7 +138,7 @@ protected:
 class HTMLScriptElementImpl : public HTMLElementImpl, public khtml::CachedObjectClient
 {
 public:
-    HTMLScriptElementImpl(DocumentPtr *doc);
+    HTMLScriptElementImpl(DocumentImpl *doc);
     ~HTMLScriptElementImpl();
 
     virtual void insertedIntoDocument();
@@ -185,7 +185,7 @@ private:
 class HTMLStyleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLStyleElementImpl(DocumentPtr *doc)
+    HTMLStyleElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc), m_sheet(0), m_loading(false) {}
     ~HTMLStyleElementImpl();
 
@@ -214,7 +214,7 @@ protected:
 class HTMLTitleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLTitleElementImpl(DocumentPtr *doc)
+    HTMLTitleElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     DOMString text();

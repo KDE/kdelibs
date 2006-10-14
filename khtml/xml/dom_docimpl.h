@@ -673,12 +673,29 @@ protected:
     khtml::SharedPtr<khtml::RenderArena> m_renderArena;
 private:
     mutable DOMString m_domain;
+    int m_selfOnlyRefCount;
+public:
+    // Nodes belonging to this document hold "self-only" references -
+    // these are enough to keep the document from being destroyed, but
+    // not enough to keep it from removing its children. This allows a
+    // node that outlives its document to still have a valid document
+    // pointer without introducing reference cycles
+
+    void selfOnlyRef() { ++m_selfOnlyRefCount; }
+    void selfOnlyDeref() {
+        --m_selfOnlyRefCount;
+        if (!m_selfOnlyRefCount && !refCount())
+            delete this;
+    }
+    
+    // This is called when our last outside reference dies
+    virtual void removedLastRef();
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
-    DocumentFragmentImpl(DocumentPtr *doc);
+    DocumentFragmentImpl(DocumentImpl *doc);
     DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     // DOM methods overridden from  parent classes
@@ -696,7 +713,7 @@ public:
 class DocumentTypeImpl : public NodeImpl
 {
 public:
-    DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentPtr *doc,
+    DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentImpl *doc,
                      const DOMString &qualifiedName, const DOMString &publicId,
                      const DOMString &systemId);
     ~DocumentTypeImpl();

@@ -125,7 +125,7 @@ public:
  *
  */
 
-KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
+KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentImpl *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
@@ -134,7 +134,6 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
 
     HTMLWidget    = _parent;
     document      = doc;
-    document->ref();
 
     blockStack = 0;
     current = 0;
@@ -145,11 +144,10 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
     reset();
 }
 
-KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
+KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentImpl *doc )
 {
     HTMLWidget = 0;
     document = doc;
-    document->ref();
 
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
@@ -173,15 +171,13 @@ KHTMLParser::~KHTMLParser()
 
     if (current) current->deref();
 
-    document->deref();
-
     delete [] forbiddenTag;
     delete isindex;
 }
 
 void KHTMLParser::reset()
 {
-    setCurrent ( document->document() );
+    setCurrent ( document );
 
     freeBlock();
 
@@ -230,7 +226,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(t->tid == ID_BR+ID_CLOSE_TAG && document->document()->inCompatMode())
+    if(t->tid == ID_BR+ID_CLOSE_TAG && document->inCompatMode())
         t->tid -= ID_CLOSE_TAG;
 
     if(t->tid > ID_CLOSE_TAG)
@@ -349,8 +345,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             if(!n->attached() && HTMLWidget)
                 n->attach();
             if (n->maintainsState()) {
-                document->document()->registerMaintainsState(n);
-                QString state(document->document()->nextState());
+                document->registerMaintainsState(n);
+                QString state(document->nextState());
                 if (!state.isNull()) n->restoreState(state);
             }
             n->close();
@@ -886,8 +882,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             // we can't implement that behavior now because it could cause too many
             // regressions and the headaches are not worth the work as long as there is
             // no site actually relying on that detail (Dirk)
-            if (static_cast<HTMLDocumentImpl*>(document->document())->body())
-                static_cast<HTMLDocumentImpl*>(document->document())->body()
+            if (static_cast<HTMLDocumentImpl*>(document)->body())
+                static_cast<HTMLDocumentImpl*>(document)->body()
                     ->addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
             inBody = false;
         }
@@ -1631,9 +1627,9 @@ void KHTMLParser::popOneBlock(bool delBlock)
 
 #if SPEED_DEBUG < 1
     if((Elem->node != current)) {
-        if (current->maintainsState() && document->document()){
-            document->document()->registerMaintainsState(current);
-            QString state(document->document()->nextState());
+        if (current->maintainsState() && document){
+            document->registerMaintainsState(current);
+            QString state(document->nextState());
             if (!state.isNull()) current->restoreState(state);
         }
         current->close();

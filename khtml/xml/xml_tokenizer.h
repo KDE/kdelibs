@@ -42,7 +42,7 @@ namespace DOM {
     class DocumentImpl;
     class NodeImpl;
     class HTMLScriptElementImpl;
-    class DocumentPtr;
+    class DocumentImpl;
     class HTMLScriptElementImpl;
 }
 
@@ -51,7 +51,7 @@ namespace khtml {
 class XMLHandler : public QXmlDefaultHandler
 {
 public:
-    XMLHandler(DOM::DocumentPtr *_doc, KHTMLView *_view);
+    XMLHandler(DOM::DocumentImpl *_doc, KHTMLView *_view);
     virtual ~XMLHandler();
 
     // return the error protocol if parsing failed
@@ -100,7 +100,7 @@ private:
     DOM::NodeImpl *currentNode() const;
 private:
     QString errorProt;
-    DOM::DocumentPtr *m_doc;
+    DOM::DocumentImpl *m_doc;
     KHTMLView *m_view;
     QPtrStack<DOM::NodeImpl> m_nodes;
     DOM::NodeImpl *m_rootNode;
@@ -162,7 +162,7 @@ private:
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
 public:
-    XMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
+    XMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
     virtual ~XMLTokenizer();
     virtual void begin();
     virtual void write( const TokenizerString &str, bool );
@@ -177,7 +177,7 @@ public:
     virtual bool isExecutingScript() const { return false; }
 
 protected:
-    DOM::DocumentPtr *m_doc;
+    DOM::DocumentImpl *m_doc;
     KHTMLView *m_view;
 
     void executeScripts();

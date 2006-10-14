@@ -37,8 +37,8 @@ namespace DOM {
 class CharacterDataImpl : public NodeImpl
 {
 public:
-    CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text);
-    CharacterDataImpl(DocumentPtr *doc)
+    CharacterDataImpl(DocumentImpl *doc, DOMStringImpl* _text);
+    CharacterDataImpl(DocumentImpl *doc)
         : NodeImpl(doc), str(0) {}
 
     virtual ~CharacterDataImpl();
@@ -83,9 +83,9 @@ protected:
 class CommentImpl : public CharacterDataImpl
 {
 public:
-    CommentImpl(DocumentPtr *doc, DOMStringImpl* _text)
+    CommentImpl(DocumentImpl *doc, DOMStringImpl* _text)
         : CharacterDataImpl(doc, _text) {}
-    CommentImpl(DocumentPtr *doc)
+    CommentImpl(DocumentImpl *doc)
         : CharacterDataImpl(doc) {}
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
@@ -105,9 +105,9 @@ public:
 class TextImpl : public CharacterDataImpl
 {
 public:
-    TextImpl(DocumentPtr *impl, DOMStringImpl* _text)
+    TextImpl(DocumentImpl *impl, DOMStringImpl* _text)
         : CharacterDataImpl(impl, _text) {}
-    TextImpl(DocumentPtr *impl)
+    TextImpl(DocumentImpl *impl)
         : CharacterDataImpl(impl) {}
 
     // DOM methods & attributes for CharacterData
@@ -147,9 +147,9 @@ protected:
 class CDATASectionImpl : public TextImpl
 {
 public:
-    CDATASectionImpl(DocumentPtr *impl, DOMStringImpl* _text)
+    CDATASectionImpl(DocumentImpl *impl, DOMStringImpl* _text)
         : TextImpl(impl, _text) {}
-    CDATASectionImpl(DocumentPtr *impl)
+    CDATASectionImpl(DocumentImpl *impl)
         : TextImpl(impl) {}
 
     // DOM methods overridden from  parent classes

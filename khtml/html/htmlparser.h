@@ -48,7 +48,7 @@ class HTMLStackElem;
 
 namespace DOM {
     class HTMLDocumentImpl;
-    class DocumentPtr;
+    class DocumentImpl;
     class HTMLElementImpl;
     class NodeImpl;
     class HTMLFormElementImpl;
@@ -68,8 +68,8 @@ class Token;
 class KHTMLParser
 {
 public:
-    KHTMLParser( KHTMLView *w, DOM::DocumentPtr *i );
-    KHTMLParser( DOM::DocumentFragmentImpl *frag, DOM::DocumentPtr *doc );
+    KHTMLParser( KHTMLView *w, DOM::DocumentImpl *i );
+    KHTMLParser( DOM::DocumentFragmentImpl *frag, DOM::DocumentImpl *doc );
     virtual ~KHTMLParser();
 
     /**
@@ -86,13 +86,13 @@ public:
     bool noSpaces() const { return (inSelect || !m_inline  || !inBody); }
     bool selectMode() const { return inSelect; }
 
-    DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document->document()); }
-    DOM::DocumentPtr *docPtr() const { return document; }
+    DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document); }
+    DOM::DocumentImpl *docPtr() const { return document; }
 
 protected:
 
     KHTMLView *HTMLWidget;
-    DOM::DocumentPtr *document;
+    DOM::DocumentImpl *document;
 
     /*
      * generate an element from the token

@@ -56,10 +56,10 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
+HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc)
     : ElementImpl( doc )
 {
-    m_htmlCompat = doc && doc->document() ? doc->document()->htmlMode() != DocumentImpl::XHtml : false;
+    m_htmlCompat = doc && doc->htmlMode() != DocumentImpl::XHtml;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
@@ -663,7 +663,7 @@ DOMString HTMLElementImpl::toString() const
 }
 
 // -------------------------------------------------------------------------
-HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)
+HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
     _id = i;

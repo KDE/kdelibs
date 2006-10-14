@@ -302,7 +302,7 @@ JSNodeFilter::~JSNodeFilter()
 
 short JSNodeFilter::acceptNode(const DOM::Node &n)
 {
-  KHTMLView *view = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr()->document() )->view();
+  KHTMLView *view = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr() )->view();
   if (!view)
       return DOM::NodeFilter::FILTER_REJECT;
 

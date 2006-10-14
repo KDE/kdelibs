@@ -58,18 +58,6 @@ class CSSStyleDeclarationImpl;
 class RegisteredEventListener;
 class EventImpl;
 
-class DocumentPtr : public khtml::Shared<DocumentPtr>
-{
-public:
-    DocumentImpl *document() const { return doc; }
-private:
-    DocumentPtr() { doc = 0; }
-    friend class DocumentImpl;
-    friend class DOMImplementationImpl;
-
-    DocumentImpl *doc;
-};
-
 struct RegisteredListenerList {
     RegisteredListenerList() : listeners(0)
     {}
@@ -114,7 +102,7 @@ class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
     friend class DocumentImpl;
 public:
-    NodeImpl(DocumentPtr *doc);
+    NodeImpl(DocumentImpl *doc);
     virtual ~NodeImpl();
 
     // DOM methods & attributes for Node
@@ -272,7 +260,7 @@ public:
     unsigned long nodeIndex() const;
     // Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
     // DOM's ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes).
-    DocumentImpl* getDocument() const { return document->document(); }
+    DocumentImpl* getDocument() const { return m_document.get(); }
 
     void addEventListener(int id, EventListener *listener, const bool useCapture);
     void removeEventListener(int id, EventListener *listener, bool useCapture);
@@ -323,7 +311,7 @@ public:
      */
     NodeImpl *traversePreviousNode() const;
 
-    DocumentPtr *docPtr() const { return document; }
+    DocumentImpl *docPtr() const { return m_document.get(); }
 
     khtml::RenderObject *renderer() const { return m_render; }
     khtml::RenderObject *nextRenderer();
@@ -461,7 +449,7 @@ public:
     }
 
 private: // members
-    DocumentPtr *document;
+    khtml::DocPtr<DocumentImpl> m_document;
     NodeImpl *m_previous;
     NodeImpl *m_next;
 protected:
@@ -494,7 +482,7 @@ protected:
 class NodeBaseImpl : public NodeImpl
 {
 public:
-    NodeBaseImpl(DocumentPtr *doc)
+    NodeBaseImpl(DocumentImpl *doc)
         : NodeImpl(doc), _first(0), _last(0) {}
     virtual ~NodeBaseImpl();
 
@@ -710,7 +698,7 @@ public:
 class GenericRONamedNodeMapImpl : public NamedNodeMapImpl
 {
 public:
-    GenericRONamedNodeMapImpl(DocumentPtr* doc);
+    GenericRONamedNodeMapImpl(DocumentImpl* doc);
     virtual ~GenericRONamedNodeMapImpl();
 
     // DOM methods & attributes for NamedNodeMap

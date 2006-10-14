@@ -35,20 +35,20 @@
 using namespace DOM;
 
 
-RangeImpl::RangeImpl(DocumentPtr *_ownerDocument)
+RangeImpl::RangeImpl(DocumentImpl *_ownerDocument)
 {
     m_ownerDocument = _ownerDocument;
     m_ownerDocument->ref();
-    m_startContainer = _ownerDocument->document();
+    m_startContainer = _ownerDocument;
     m_startContainer->ref();
-    m_endContainer = _ownerDocument->document();
+    m_endContainer = _ownerDocument;
     m_endContainer->ref();
     m_startOffset = 0;
     m_endOffset = 0;
     m_detached = false;
 }
 
-RangeImpl::RangeImpl(DocumentPtr *_ownerDocument,
+RangeImpl::RangeImpl(DocumentImpl *_ownerDocument,
               NodeImpl *_startContainer, long _startOffset,
               NodeImpl *_endContainer, long _endOffset)
 {
@@ -161,7 +161,7 @@ void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -199,7 +199,7 @@ void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1270,7 +1270,7 @@ void RangeImpl::setStartAfter( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1294,7 +1294,7 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1318,7 +1318,7 @@ void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1527,7 +1527,7 @@ void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument->document()) {
+    if (refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }

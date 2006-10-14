@@ -48,7 +48,7 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentPtr *doc)
+HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc),
     m_bgSet( false ), m_fgSet( false )
 {
@@ -233,7 +233,7 @@ void HTMLBodyElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
+HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     frameBorder = true;
@@ -430,7 +430,7 @@ KHTMLPart*   HTMLFrameElementImpl::contentPart() const
 
 // -------------------------------------------------------------------------
 
-HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
+HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     // default value for rows and cols...
@@ -590,7 +590,7 @@ NodeImpl::Id HTMLHtmlElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentPtr *doc) : HTMLFrameElementImpl(doc)
+HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameElementImpl(doc)
 {
     frameBorder = false;
     marginWidth = 0;
