@@ -148,12 +148,8 @@ void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
     QTreeWidget * listview = new QTreeWidget( this );
     d->listview = listview;
 
-    connect( listview, SIGNAL( itemPressed( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
-    connect( listview, SIGNAL( itemActivated( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
-    connect( listview, SIGNAL( itemSelectionChanged( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( listview, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this,
+            SLOT(executed(QTreeWidgetItem*,int)) );
     listview->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Preferred );
     listview->setAcceptDrops( false );
     listview->setHeaderLabels( QStringList( i18n( "Name" ) ) );
