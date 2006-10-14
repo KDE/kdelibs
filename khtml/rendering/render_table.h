@@ -73,6 +73,10 @@ public:
     int borderRight() const;
     int borderTop() const;
     int borderBottom() const;
+    int paddingLeft() const { return collapseBorders() ? 0 : RenderBlock::paddingLeft(); }
+    int paddingRight() const { return collapseBorders() ? 0 : RenderBlock::paddingRight(); }
+    int paddingTop() const { return collapseBorders() ? 0 : RenderBlock::paddingTop(); }
+    int paddingBottom() const { return collapseBorders() ? 0 : RenderBlock::paddingBottom(); }
 
     const QColor &bgColor() const { return style()->backgroundColor(); }
 

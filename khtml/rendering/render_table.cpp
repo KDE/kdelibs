@@ -233,27 +233,33 @@ void RenderTable::calcWidth()
     RenderBlock *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
-    // Subtract minimum margins
-    availableWidth -= style()->marginLeft().minWidth(cb->contentWidth());
-    availableWidth -= style()->marginRight().minWidth(cb->contentWidth());
-
     LengthType widthType = style()->width().type();
     if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
-        m_width = style()->width().minWidth( availableWidth );
+        m_width = calcBoxWidth(style()->width().minWidth( availableWidth ));
         if(m_minWidth > m_width) m_width = m_minWidth;
     } else {
-        m_width = KMIN(short( availableWidth ), short(m_maxWidth));
+        // Subtract out any fixed margins from our available width for auto width tables.
+        int marginTotal = 0;
+        if (!style()->marginLeft().isVariable())
+            marginTotal += style()->marginLeft().width(availableWidth);
+        if (!style()->marginRight().isVariable())
+            marginTotal += style()->marginRight().width(availableWidth);
+
+        // Subtract out our margins to get the available content width.
+        int availContentWidth = kMax(0, availableWidth - marginTotal);
+
+        // Ensure we aren't bigger than our max width or smaller than our min width.
+        m_width = kMin(availContentWidth, m_maxWidth);
     }
 
     // restrict width to what we really have
     // EXCEPT percent tables, which are still calculated as above
-
     availableWidth = cb->lineWidth( m_y );
     if ( widthType != Percent )
-        m_width = KMIN( short( availableWidth ), m_width );
+        m_width = kMin( short( availableWidth ), m_width );
 
-    m_width = KMAX (m_width, m_minWidth);
+    m_width = kMax (m_width, m_minWidth);
 
     // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;

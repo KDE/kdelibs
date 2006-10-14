@@ -233,7 +233,10 @@ void FixedTableLayout::calcMinMaxWidth()
     // unlimited.
 
     int bs = table->bordersPaddingAndSpacing();
-    int tableWidth = table->style()->width().isFixed() ? table->style()->width().value() - bs : 0;
+    int tableWidth = 0;
+    if (table->style()->width().isFixed()) {
+        tableWidth = table->calcBoxWidth(table->style()->width().value());
+    }
 
     int mw = calcWidthArray() + bs;
     table->m_minWidth = kMin( kMax( mw, tableWidth ), 0x7fff );
@@ -599,7 +602,8 @@ void AutoTableLayout::calcMinMaxWidth()
 
     Length tw = table->style()->width();
     if ( tw.isFixed() && tw.value() > 0 ) {
-	minWidth = kMax( minWidth, int( tw.value() ) );
+        int width = table->calcBoxWidth(tw.value());
+        minWidth = kMax( minWidth, width );
 	maxWidth = minWidth;
     }
 
