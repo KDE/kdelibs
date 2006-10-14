@@ -601,10 +601,12 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	result = createComment(static_cast<CommentImpl*>(importedNode)->string());
 	deep = false;
     }
+    else if (importedNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
+	result = createDocumentFragment();
     else
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
 	
-    //### FIXME: This should handle DocumentFragment, Attributes, and a few other things
+    //### FIXME: This should handle Attributes, and a few other things
 
     if(deep && result)
     {
