@@ -248,6 +248,11 @@ public:
     virtual int leftmostPosition(bool includeOverflowInterior, bool includeSelf) const;
     virtual int highestPosition(bool includeOverflowInterior, bool includeSelf) const;
 
+    int borderLeft() const { return table()->collapseBorders() ? 0 : RenderBox::borderLeft(); }
+    int borderRight() const { return table()->collapseBorders() ? 0 : RenderBox::borderRight(); }
+    int borderTop() const { return table()->collapseBorders() ? 0 : RenderBox::borderTop(); }
+    int borderBottom() const { return table()->collapseBorders() ? 0 : RenderBox::borderBottom(); }
+
     virtual void paint( PaintInfo& i, int tx, int ty);
 
     int numRows() const { return grid.size(); }
