@@ -542,8 +542,11 @@ apidox_subdir()
 		echo "RECURSIVE              = NO"
 	fi
 	echo "HTML_OUTPUT            = $subdir/html"
-	test -d "$top_srcdir/doc/api" && \
-		echo "IMAGE_PATH             = $top_srcdir/doc/api"
+	if test -d "$top_srcdir/doc/api"; then
+		echo "IMAGE_PATH             = $top_srcdir/doc/api $srcdir"
+	else
+		echo "IMAGE_PATH             = $srcdir"
+	fi
 	} >> "$subdir/Doxyfile"
 
 	apidox_htmlfiles ""
