@@ -224,7 +224,7 @@ void RenderBlock::updateFirstLetter()
         if(oldText->l >= 1) {
             oldText->ref();
             // begin: we need skip leading whitespace so that RenderBlock::findNextLineBreak
-            // won't think we're continuing from a previous run 
+            // won't think we're continuing from a previous run
             unsigned int begin = 0; // the position that first-letter begins
             unsigned int length = 0; // the position that "the rest" begins
             while ( length < oldText->l && (oldText->s+length)->isSpace() )
@@ -711,7 +711,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
-    if ( hasOverhangingFloats() && !style()->scrollsOverflow() && (isFloatingOrPositioned() || flowAroundFloats()) )
+    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
         m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
@@ -930,7 +930,7 @@ void RenderBlock::adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo&
         RenderObject* compactChild = compactInfo.compact();
         if (compactChild->height() > child->height())
             m_height += compactChild->height() - child->height();
-    } 
+    }
 }
 
 void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo)
