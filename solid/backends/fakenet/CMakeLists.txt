@@ -12,7 +12,7 @@ set(solid_fakenet_PART_SRCS
 
 kde4_automoc(solid_fakenet ${solid_fakenet_PART_SRCS})
 
-add_library(solid_fakenet_static STATIC ${solid_fakenet_PART_SRCS} )
+kde4_add_library(solid_fakenet_static STATIC ${solid_fakenet_PART_SRCS} )
 target_link_libraries(solid_fakenet_static solidifaces ${QT_QTXML_LIBRARY} )
 
 kde4_add_plugin(solid_fakenet module.cpp ${solid_fakenet_PART_SRCS})

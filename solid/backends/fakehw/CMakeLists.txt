@@ -26,7 +26,7 @@ set(solid_fakehw_PART_SRCS
 
 kde4_automoc(solid_fakehw ${solid_fakehw_PART_SRCS})
 
-add_library(solid_fakehw_static STATIC ${solid_fakehw_PART_SRCS} )
+kde4_add_library(solid_fakehw_static STATIC ${solid_fakehw_PART_SRCS} )
 target_link_libraries(solid_fakehw_static solidifaces ${QT_QTXML_LIBRARY} )
 
 kde4_add_plugin(solid_fakehw module.cpp ${solid_fakehw_PART_SRCS})
