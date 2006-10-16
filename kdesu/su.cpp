@@ -3,6 +3,9 @@
 * This file is part of the KDE project, module kdesu.
 * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
 *
+* Sudo support added by Jonathan Riddell <jriddell@ ubuntu.com>
+* Copyright (C) 2005 Canonical Ltd
+*
 * This is free software; you can use this library under the GNU Library
 * General Public License, version 2. See the file "COPYING.LIB" for the
 * exact licensing terms.
@@ -27,6 +30,7 @@
 
 #include <qfile.h>
 
+#include <kconfig.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -39,11 +43,25 @@
 #define __PATH_SU "false"
 #endif
 
+#ifndef __PATH_SUDO
+#define __PATH_SUDO "false"
+#endif
+
+//change to sudo or su according to your preferences
+#define DEFAULT_SUPER_USER_COMMAND "sudo"
 
 SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
 {
     m_User = user;
     m_Command = command;
+
+    KConfig* config = KGlobal::config();
+    config->setGroup("super-user-command");
+    superUserCommand = config->readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
+    if ( superUserCommand != "sudo" && superUserCommand != "su" ) {
+      kdWarning() << "unknown super user command" << endl;
+      superUserCommand = "su";
+    }
 }
 
 
@@ -70,21 +88,38 @@ int SuProcess::exec(const char *password, int check)
     if (check)
         setTerminal(true);
 
+    // since user may change after constructor (due to setUser())
+    // we need to override sudo with su for non-root here
+    if (m_User != "root") {
+        superUserCommand = "su";
+    }
+
     QList<QByteArray> args;
+    if (superUserCommand == "sudo") {
+        args += "-u";
+    }
 
     if ((m_Scheduler != SchedNormal) || (m_Priority > 50))
         args += "root";
     else
         args += m_User;
 
-    args += "-c";
+    if (superUserCommand == "su") {
+        args += "-c";
+    }
     args += QByteArray(__KDE_BINDIR) + "/kdesu_stub";
     args += "-";
 
-    QByteArray command = __PATH_SU;
-    if (::access(__PATH_SU, X_OK) != 0)
+    QCString command;
+    if (superUserCommand == "sudo") {
+        command = __PATH_SUDO;
+    } else {
+        command = __PATH_SU;
+    }
+ 
+    if (::access(command, X_OK) != 0)
     {
-        command = QFile::encodeName(KGlobal::dirs()->findExe("su"));
+        command = QFile::encodeName( KGlobal::dirs()->findExe(superUserCommand.ascii()) );
         if (command.isEmpty())
             return check ? SuNotFound : -1;
     }
@@ -109,10 +144,16 @@ int SuProcess::exec(const char *password, int check)
     {
         if (ret == killme)
         {
-            if (kill(m_Pid, SIGKILL) < 0)
-            {
-                ret=error;
-            }
+            if ( superUserCommand == "sudo" ) {
+ 	        // sudo can not be killed, just return
+ 	        return ret;
+ 	    }
+ 	    if (kill(m_Pid, SIGKILL) < 0) {
+ 	        kdDebug() << k_funcinfo << "kill < 0" << endl;
+ 		//FIXME SIGKILL doesn't work for sudo,
+ 		//why is this different from su?
+ 		ret=error;
+ 	    }
             else
             {
                 int iret = waitForChild();
@@ -129,7 +170,9 @@ int SuProcess::exec(const char *password, int check)
     if (ret == notauthorized)
     {
         kill(m_Pid, SIGKILL);
-        waitForChild();
+        if (superUserCommand != "sudo") {
+            waitForChild();
+        }
         return SuIncorrectPassword;
     }
 
@@ -262,6 +305,10 @@ int SuProcess::ConverseSU(const char *password)
                 {
                     unreadLine(line);
                     return ok;
+ 	        } else if (superUserCommand == "sudo") {
+ 	            // sudo gives a "sorry" line so reaches here
+ 	            // with the wrong password
+ 	            return notauthorized;
                 }
                 break;
             //////////////////////////////////////////////////////////////////////////

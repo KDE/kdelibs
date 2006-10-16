@@ -53,6 +53,7 @@ protected:
 private:
     class SuProcessPrivate;
     SuProcessPrivate *d;
+    QString superUserCommand;
 };
 
 #endif
