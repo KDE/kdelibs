@@ -147,7 +147,6 @@ set(kdecore_LIB_SRCS
    kinstance.cpp
    kpalette.cpp
    klibloader.cpp
-   ktempfile.cpp
    ktemporaryfile.cpp
    kuniqueapplication.cpp
    kacceleratormanager.cpp
@@ -332,7 +331,6 @@ install( FILES
    kinstance.h
    kpalette.h
    klibloader.h
-   ktempfile.h
    ktemporaryfile.h
    ksavefile.h
    krandomsequence.h

@@ -465,18 +465,6 @@ add_test(kdecore-kconfigskeletontest ${EXECUTABLE_OUTPUT_PATH}/kconfigskeletonte
 
 ########### next target ###############
 
-set(ktempfiletest_SRCS ktempfiletest.cpp )
-
-kde4_automoc(ktempfiletest ${ktempfiletest_SRCS})
-
-kde4_add_executable(ktempfiletest NOGUI RUN_UNINSTALLED ${ktempfiletest_SRCS})
-
-target_link_libraries(ktempfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kdecore-ktempfiletest ${EXECUTABLE_OUTPUT_PATH}/ktempfiletest)
-
-########### next target ###############
-
 set(kurlmimetest_SRCS kurlmimetest.cpp )
 
 kde4_automoc(kurlmimetest ${kurlmimetest_SRCS})

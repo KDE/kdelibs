@@ -50,12 +50,12 @@
 #include "kglobal.h"
 #include "krandom.h"
 #include "kinstance.h"
-#include "ktempfile.h"
+#include "k3tempfile.h"
 #include "kstandarddirs.h"
 #include "kde_file.h"
 #include "kdebug.h"
 
-class KTempFile::Private
+class K3TempFile::Private
 {
 public:
    int _Error;
@@ -78,7 +78,7 @@ public:
 #define bAutoDelete d->_AutoDelete
 };
 
-KTempFile::KTempFile(const QString& filePrefix,
+K3TempFile::K3TempFile(const QString& filePrefix,
                      const QString& fileExtension, int mode)
  : d(new Private)
 {
@@ -101,7 +101,7 @@ KTempFile::KTempFile(const QString& filePrefix,
    (void) create(prefix, extension, mode);
 }
 
-KTempFile::KTempFile(bool):d(new Private)
+K3TempFile::K3TempFile(bool):d(new Private)
 {
    bAutoDelete = false;
    mFd = -1;
@@ -114,7 +114,7 @@ KTempFile::KTempFile(bool):d(new Private)
 }
 
 bool
-KTempFile::create(const QString &filePrefix, const QString &fileExtension,
+K3TempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
    // make sure the random seed is randomized
@@ -126,7 +126,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    {
        // Recreate it for the warning, mkstemps emptied it
        nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
-       kWarning() << "KTempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
+       kWarning() << "K3TempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
        mError = errno;
        mTmpName.clear();
        return false;
@@ -151,7 +151,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    return true;
 }
 
-KTempFile::~KTempFile()
+K3TempFile::~K3TempFile()
 {
    close();
    if (bAutoDelete)
@@ -160,25 +160,25 @@ KTempFile::~KTempFile()
 }
 
 int
-KTempFile::status() const
+K3TempFile::status() const
 {
    return mError;
 }
 
 QString
-KTempFile::name() const
+K3TempFile::name() const
 {
    return mTmpName;
 }
 
 int
-KTempFile::handle() const
+K3TempFile::handle() const
 {
    return mFd;
 }
 
 FILE *
-KTempFile::fstream()
+K3TempFile::fstream()
 {
    if (mStream) return mStream;
    if (mFd < 0) return 0;
@@ -186,14 +186,14 @@ KTempFile::fstream()
    // Create a stream
    mStream = KDE_fdopen(mFd, "r+");
    if (!mStream) {
-     kWarning() << "KTempFile: Error trying to open " << mTmpName << ": " << strerror(errno) << endl;
+     kWarning() << "K3TempFile: Error trying to open " << mTmpName << ": " << strerror(errno) << endl;
      mError = errno;
    }
    return mStream;
 }
 
 QFile *
-KTempFile::file()
+K3TempFile::file()
 {
    if (mFile) return mFile;
    if ( !fstream() ) return 0;
@@ -205,7 +205,7 @@ KTempFile::file()
 }
 
 QTextStream *
-KTempFile::textStream()
+K3TempFile::textStream()
 {
    if (mTextStream) return mTextStream;
    if ( !file() ) return 0; // Initialize mFile
@@ -215,7 +215,7 @@ KTempFile::textStream()
 }
 
 QDataStream *
-KTempFile::dataStream()
+K3TempFile::dataStream()
 {
    if (mDataStream) return mDataStream;
    if ( !file() ) return 0;  // Initialize mFile
@@ -225,7 +225,7 @@ KTempFile::dataStream()
 }
 
 void
-KTempFile::unlink()
+K3TempFile::unlink()
 {
    if (!mTmpName.isEmpty())
       QFile::remove( mTmpName );
@@ -239,7 +239,7 @@ KTempFile::unlink()
 #endif
 
 bool
-KTempFile::sync()
+K3TempFile::sync()
 {
    int result = 0;
 
@@ -252,7 +252,7 @@ KTempFile::sync()
 
       if (result)
       {
-         kWarning() << "KTempFile: Error trying to flush " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to flush " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -262,7 +262,7 @@ KTempFile::sync()
       result = FDATASYNC(mFd);
       if (result)
       {
-         kWarning() << "KTempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -273,7 +273,7 @@ KTempFile::sync()
 #undef FDATASYNC
 
 bool
-KTempFile::close()
+K3TempFile::close()
 {
    int result = 0;
    delete mTextStream; mTextStream = 0;
@@ -290,7 +290,7 @@ KTempFile::close()
       mStream = 0;
       mFd = -1;
       if (result != 0) {
-         kWarning() << "KTempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -301,7 +301,7 @@ KTempFile::close()
       result = ::close(mFd);
       mFd = -1;
       if (result != 0) {
-         kWarning() << "KTempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
          mError = errno;
       }
    }
@@ -311,19 +311,19 @@ KTempFile::close()
 }
 
 void
-KTempFile::setAutoDelete(bool autoDelete)
+K3TempFile::setAutoDelete(bool autoDelete)
 {
    bAutoDelete = autoDelete;
 }
 
 void
-KTempFile::setError(int error)
+K3TempFile::setError(int error)
 {
    mError = error;
 }
 
 bool
-KTempFile::isOpen() const
+K3TempFile::isOpen() const
 {
    return bOpen;
 }

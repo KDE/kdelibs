@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KTEMPFILE_H
-#define KTEMPFILE_H
+#ifndef K3TEMPFILE_H
+#define K3TEMPFILE_H
 
 #include <stdio.h>
 #include "kdelibs_export.h"
@@ -30,21 +30,21 @@ class QDataStream;
 class KSaveFile;
 
 /**
- * The KTempFile class creates and opens a unique file for temporary use.
+ * The K3TempFile class creates and opens a unique file for temporary use.
  *
  * This is especially useful if you need to create a file in a world
  * writable directory like /tmp without being vulnerable to so called
  * symlink attacks.
  *
  * KDE applications, however, shouldn't create files in /tmp in the first
- * place but use the "tmp" resource instead. The standard KTempFile
+ * place but use the "tmp" resource instead. The standard K3TempFile
  * constructor will do that by default.
  *
  * To create a temporary file that starts with a certain name
  * in the "tmp" resource, one should use:
- * KTempFile(locateLocal("tmp", prefix), extension);
+ * K3TempFile(locateLocal("tmp", prefix), extension);
  *
- * KTempFile does not create any missing directories, but locateLocal() does.
+ * K3TempFile does not create any missing directories, but locateLocal() does.
  *
  * See also KStandardDirs
  *
@@ -52,7 +52,7 @@ class KSaveFile;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT_DEPRECATED KTempFile
+class KDECORE_EXPORT_DEPRECATED K3TempFile
 {
    friend class KSaveFile;
 public:
@@ -68,7 +68,7 @@ public:
     *        the default value
     * @param mode the file permissions
     **/
-   explicit KTempFile(const QString& filePrefix=QString(),
+   explicit K3TempFile(const QString& filePrefix=QString(),
                       const QString& fileExtension=QString(),
                       int mode = 0600 );
 
@@ -76,7 +76,7 @@ public:
     * The destructor closes the file.
     * If autoDelete is enabled the file gets unlinked as well.
     **/
-   ~KTempFile();
+   ~K3TempFile();
 
    /**
     * Turn automatic deletion on or off.
@@ -114,7 +114,7 @@ public:
     * actual presence of a file with such name is a problem. In that case the
     * file should first be both closed and unlinked. Such usage is not
     * recommended since it may lead to the kind of symlink vulnerabilities
-    * that the KTempFile design attempts to prevent.
+    * that the K3TempFile design attempts to prevent.
     *
     * @return The name of the file, or QString() if opening the
     *         file has failed or the file has been unlinked already.
@@ -185,12 +185,12 @@ protected:
    /**
     * Constructor used by KSaveFile
     **/
-   explicit KTempFile(bool);
+   explicit K3TempFile(bool);
 
    /**
-    * Create function used internally by KTempFile and KSaveFile.
+    * Create function used internally by K3TempFile and KSaveFile.
     * The file is opened by this function (and no other).
-    * @see KTempFile()
+    * @see K3TempFile()
     * @see isOpen()
     * @internal
     **/
@@ -213,7 +213,7 @@ protected:
    bool isOpen() const;
 private:
 
-   Q_DISABLE_COPY(KTempFile)
+   Q_DISABLE_COPY(K3TempFile)
 
    class Private;
    Private * const d;
