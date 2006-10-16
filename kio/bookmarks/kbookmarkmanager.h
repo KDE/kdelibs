@@ -208,8 +208,6 @@ public:
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                              const QString& dbusObjectName,
                                              bool bImportDesktopFiles = true );
-
-
     /**
      * only used for KBookmarkBar
      */
@@ -271,6 +269,15 @@ protected:
     static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
 
 private:
+    /**
+    * You need to pass a dbusObjectName as the second parameter
+    * In kde 3 managerForFile had the parameters (const  QString &, bool)
+    * We want old calls which pass a bool as a second parameter to fail.
+    * Unfourtanetly C++ can convert a bool to a QString, via QString(char(bool))
+    * This private overloaded method pervents this, as it is a better match,
+    * and thus old calls fail at compile time.
+    */
+    static KBookmarkManager* managerForFile( const QString&, int);
     void init( const QString& dbusPath );
 
     QString m_bookmarksFile;
@@ -357,7 +364,7 @@ public:
   /**
    * Called if a bookmark is selected. You need to override this.
    */
-  virtual void openBookmark(KBookmark bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
+  virtual void openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
 
 private:
   class KBookmarkOwnerPrivate;

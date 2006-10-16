@@ -44,7 +44,7 @@ public:
     KMenu *menu() const { return m_menu; }
 
 public Q_SLOTS:
-    void openBookmark(KBookmark bm, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
+    void openBookmark(const KBookmark & bm, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 Q_SIGNALS:
     void openUrl( const QString& url );

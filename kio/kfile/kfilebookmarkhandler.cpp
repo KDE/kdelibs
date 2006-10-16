@@ -60,7 +60,7 @@ KFileBookmarkHandler::~KFileBookmarkHandler()
     delete m_bookmarkMenu;
 }
 
-void KFileBookmarkHandler::openBookmark( KBookmark bm, Qt::MouseButtons, Qt::KeyboardModifiers)
+void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons, Qt::KeyboardModifiers)
 {
   emit openUrl( bm.url().url() );
 }

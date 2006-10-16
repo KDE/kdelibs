@@ -680,7 +680,7 @@ KBookmarkSettings *KBookmarkSettings::self()
    return s_self;
 }
 
-void KBookmarkOwner::openBookmark(KBookmark bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km)
+void KBookmarkOwner::openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km)
 {
 
 }
