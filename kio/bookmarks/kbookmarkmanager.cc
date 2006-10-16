@@ -36,6 +36,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <QtDBus/QtDBus>
+#include <QTextStream>
 #include <kstaticdeleter.h>
 #include "kbookmarkmanageradaptor_p.h"
 
@@ -117,7 +118,7 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName, bool bImportDesktopFiles )
-    : m_doc("xbel"), m_docIsLoaded(false)
+    : m_doc("xbel"), m_docIsLoaded(false), m_dbusObjectName(dbusObjectName)
 {
     init( "/KBookmarkManager/"+dbusObjectName );
 
@@ -343,8 +344,9 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     if ( file.open() )
     {
         file.simpleBackupFile( file.fileName(), QString(), ".bak" );
-        QByteArray cstr = internalDocument().toByteArray(); // is in UTF8
-        file.write( cstr.data(), cstr.length() );
+        QTextStream stream(&file);
+        stream << internalDocument().toString();
+        stream.flush();
         if ( file.finalize() )
             return true;
     }
@@ -589,6 +591,8 @@ void KBookmarkManager::slotEditBookmarks()
        args << QLatin1String("--customcaption") << m_editorCaption;
     if (!m_browserEditor)
        args << QLatin1String("--nobrowser");
+    if( !m_dbusObjectName.isNull() && m_dbusObjectName != "")
+      args << QLatin1String("--dbusObjectName") << m_dbusObjectName;
     args << m_bookmarksFile;
     QProcess::startDetached("keditbookmarks", args);
 }

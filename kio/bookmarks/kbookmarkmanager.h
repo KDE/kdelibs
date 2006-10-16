@@ -285,6 +285,7 @@ private:
     mutable QDomDocument m_toolbarDoc;
     mutable bool m_docIsLoaded;
     bool m_update;
+    QString m_dbusObjectName;
     static KBookmarkManagerList* s_pSelf;
 
     QString m_editorCaption;
