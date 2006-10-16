@@ -129,14 +129,13 @@ bool KArchive::createDevice( QIODevice::OpenMode mode )
             // The use of KSaveFile can't be done in the ctor (no mode known yet)
             //kDebug() << "Writing to a file using KSaveFile" << endl;
             d->saveFile = new KSaveFile( d->fileName );
-            if ( d->saveFile->status() != 0 ) {
-                kWarning() << "KSaveFile creation for " << d->fileName << " failed, " << strerror( d->saveFile->status() ) << endl;
+            if ( !d->saveFile->open() ) {
+                kWarning() << "KSaveFile creation for " << d->fileName << " failed, " << d->saveFile->errorString() << endl;
                 delete d->saveFile;
                 d->saveFile = 0;
                 return false;
             }
-            Q_ASSERT( d->saveFile->file() );
-            m_dev = d->saveFile->file();
+            m_dev = d->saveFile;
             Q_ASSERT( m_dev );
         }
         break;
@@ -177,7 +176,7 @@ bool KArchive::close()
         delete m_dev; // we created it ourselves in open()
     }
     if ( d->saveFile ) {
-        d->saveFile->close();
+        d->saveFile->finalize();
         delete d->saveFile;
         d->saveFile = 0;
     }

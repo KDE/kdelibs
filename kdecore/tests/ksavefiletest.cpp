@@ -52,33 +52,65 @@ void KSaveFileTest::test_ksavefile()
 
     {
         //Test basic functionality
-        KSaveFile saveFile ( targetFile );
-        QCOMPARE( saveFile.status(), 0 );
+        KSaveFile saveFile;
+        saveFile.setFileName(targetFile);
+        QVERIFY( saveFile.open() );
         QVERIFY( !QFile::exists(targetFile) );
 
-        QTextStream *ts = saveFile.textStream();
-        (*ts) << "Hello out there in TV land!\n";
-        ts->flush();
-        QCOMPARE( saveFile.status(), 0 );
+        QTextStream ts ( &saveFile );
+        ts << "This is test data one.\n";
+        ts.flush();
+        QCOMPARE( saveFile.error(), QFile::NoError );
         QVERIFY( !QFile::exists(targetFile) );
 
-        QVERIFY( saveFile.close() );
+        QVERIFY( saveFile.finalize() );
         QVERIFY( QFile::exists(targetFile) );
+        
+        QFile::remove(targetFile);
+        QVERIFY( !QFile::exists(targetFile) );
     }
 
-    QFile::remove(targetFile);
-    QVERIFY( !QFile::exists(targetFile) );
+    {
+        //Make sure destructor does what it is supposed to do.
+        {
+            KSaveFile saveFile;
+            saveFile.setFileName(targetFile);
+            QVERIFY( saveFile.open() );
+            QVERIFY( !QFile::exists(targetFile) );
+        }
+        
+        QVERIFY( QFile::exists(targetFile) );
+        QFile::remove(targetFile);
+        QVERIFY( !QFile::exists(targetFile) );
+    }
+
+    {
+        //Test some error conditions
+        KSaveFile saveFile;
+        QVERIFY( !saveFile.open() ); //no filename
+        saveFile.setFileName(targetFile);
+        QVERIFY( saveFile.open() );
+        QVERIFY( !QFile::exists(targetFile) );
+        QVERIFY( !saveFile.open() ); //already open
+
+        QVERIFY( saveFile.finalize() );
+        QVERIFY( QFile::exists(targetFile) );
+        QVERIFY( !saveFile.finalize() ); //already finalized
+        
+        QFile::remove(targetFile);
+        QVERIFY( !QFile::exists(targetFile) );
+    }
 
     {
         //Do it again, aborting this time
         KSaveFile saveFile ( targetFile );
-        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( saveFile.open() );
         QVERIFY( !QFile::exists(targetFile) );
 
-        QTextStream *ts = saveFile.textStream();
-        (*ts) << "Hello out there in TV land!\n";
-        ts->flush();
-        QCOMPARE( saveFile.status(), 0 );
+        QTextStream ts ( &saveFile );
+        ts << "This is test data two.\n";
+        ts.flush();
+        QCOMPARE( saveFile.error(), QFile::NoError );
         QVERIFY( !QFile::exists(targetFile) );
 
         saveFile.abort();
@@ -94,49 +126,49 @@ void KSaveFileTest::test_ksavefile()
         //Test how it works when the file already exists
         //Also check for special permissions
         KSaveFile saveFile ( targetFile );
-        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( saveFile.open() );
 
         QVERIFY( QFile::exists(targetFile) );
         QFileInfo fi ( targetFile );
         QVERIFY( fi.permission( QFile::ExeUser ) );
         QVERIFY( fi.size() == 0 );
 
-        QTextStream *ts = saveFile.textStream();
-        (*ts) << "Hello out there in TV land!\n";
-        ts->flush();
+        QTextStream ts ( &saveFile );
+        ts << "This is test data three.\n";
+        ts.flush();
 
         fi.refresh();
         QVERIFY( fi.size() == 0 );
-        QVERIFY( saveFile.close() );
+        QVERIFY( saveFile.finalize() );
         
         fi.refresh();
         QVERIFY( fi.size() != 0 );
         QVERIFY( fi.permission( QFile::ExeUser ) );
-    }
-    
-    QFile::remove(targetFile);
 
-    QFileInfo fi ( targetFile );
-    targetFile = fi.fileName();
-    QDir::setCurrent(fi.path());
+        QFile::remove(targetFile);
+    }
 
     {
+        QFileInfo fi ( targetFile );
+        targetFile = fi.fileName();
+        QDir::setCurrent(fi.path());
+        
         //one more time, this time with relative filenames
         KSaveFile saveFile ( targetFile );
-        QCOMPARE( saveFile.status(), 0 );
+        QVERIFY( saveFile.open() );
         QVERIFY( !QFile::exists(targetFile) );
 
-        QTextStream *ts = saveFile.textStream();
-        (*ts) << "Hello out there in TV land!\n";
-        ts->flush();
-        QCOMPARE( saveFile.status(), 0 );
+        QTextStream ts ( &saveFile );
+        ts << "This is test data four.\n";
+        ts.flush();
+        QCOMPARE( saveFile.error(), QFile::NoError );
         QVERIFY( !QFile::exists(targetFile) );
 
-        QVERIFY( saveFile.close() );
+        QVERIFY( saveFile.finalize() );
         QVERIFY( QFile::exists(targetFile) );
+        QFile::remove(targetFile);
     }
 
-    QFile::remove(targetFile);
 }
 
 void KSaveFileTest::test_simpleBackupFile()

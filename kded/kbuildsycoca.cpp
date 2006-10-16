@@ -476,16 +476,16 @@ bool KBuildSycoca::recreate()
   QString path(sycocaPath());
 
   // KSaveFile first writes to a temp file.
-  // Upon close() it moves the stuff to the right place.
-  std::auto_ptr<KSaveFile> database( new KSaveFile(path) );
-  if (database->status() == EACCES && QFile::exists(path))
+  // Upon finalize() it moves the stuff to the right place.
+  KSaveFile database(path);
+  if (!database.open() && database.error() == QFile::PermissionsError && QFile::exists(path))
   {
     QFile::remove( path );
-    database.reset( new KSaveFile(path) ); // try again
   }
-  if (database->status() != 0)
+  if (!database.open())
   {
-    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n", path.toLocal8Bit().data(),strerror(database->status()));
+    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n",
+      path.toLocal8Bit().data(), database.errorString().toLocal8Bit().data());
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
     if (!silent)
@@ -494,7 +494,7 @@ bool KBuildSycoca::recreate()
     return false;
   }
 
-  m_str = database->dataStream();
+  m_str = new QDataStream ( &database );
   m_str->setVersion(QDataStream::Qt_3_1);
 
   kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
@@ -511,11 +511,12 @@ bool KBuildSycoca::recreate()
   {
     save(); // Save database
     if (m_str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
-      database->abort(); // Error
+      database.abort(); // Error
+    delete m_str;
     m_str = 0L;
-    if (!database->close())
+    if (!database.finalize())
     {
-      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database->name().toLocal8Bit().data());
+      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
       fprintf(stderr, "kbuildsycoca: Disk full?\n");
 #ifdef KBUILDSYCOCA_GUI
       if (!silent)
@@ -526,8 +527,9 @@ bool KBuildSycoca::recreate()
   }
   else
   {
+    delete m_str;
     m_str = 0L;
-    database->abort();
+    database.abort();
     if (bMenuTest)
        return true;
     kDebug(7021) << "Database is up to date" << endl;

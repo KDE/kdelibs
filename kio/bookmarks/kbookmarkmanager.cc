@@ -324,14 +324,14 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     if(toolbarCache && !root().isToolbarGroup())
     {
         KSaveFile cacheFile( cacheFilename );
-        if ( cacheFile.status() == 0 )
+        if ( cacheFile.open() )
         {
             QString str;
             QTextStream stream(&str, QIODevice::WriteOnly);
             stream << root().findToolbar();
             const QByteArray cstr = str.toUtf8();
-            cacheFile.file()->write( cstr.data(), cstr.length() );
-            cacheFile.close();
+            cacheFile.write( cstr.data(), cstr.length() );
+            cacheFile.finalize();
         }
     }
     else // remove any (now) stale cache
@@ -340,12 +340,12 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     }
 
     KSaveFile file( filename );
-    if ( file.status() == 0 )
+    if ( file.open() )
     {
-        file.simpleBackupFile( file.name(), QString(), ".bak" );
+        file.simpleBackupFile( file.fileName(), QString(), ".bak" );
         QByteArray cstr = internalDocument().toByteArray(); // is in UTF8
-        file.file()->write( cstr.data(), cstr.length() );
-        if ( file.close() )
+        file.write( cstr.data(), cstr.length() );
+        if ( file.finalize() )
             return true;
     }
 

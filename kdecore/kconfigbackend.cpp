@@ -1031,13 +1031,14 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
 
   if (createNew)
   {
-     pConfigFile = new KSaveFile( filename, 0600 );
+     pConfigFile = new KSaveFile( filename );
 
-     if (pConfigFile->status() != 0)
+     if (!pConfigFile->open())
      {
         delete pConfigFile;
         return bEntriesLeft;
      }
+     pConfigFile->setPermissions(QFile::ReadUser|QFile::WriteUser);
 
      if (!bGlobal && (fileMode == -1))
         fileMode = mFileMode;
@@ -1074,13 +1075,12 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
      if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
      {
         // File is empty and doesn't have special permissions: delete it.
-        ::unlink(QFile::encodeName(filename));
         pConfigFile->abort();
      }
      else
      {
         // Normal case: Close the file
-        pConfigFile->close();
+        pConfigFile->finalize();
      }
      delete pConfigFile;
   }

@@ -1,6 +1,8 @@
+/* kate: tab-indents off; replace-tabs on; tab-width 4; remove-trailing-space on; encoding utf-8;*/
 /*
    This file is part of the KDE libraries
    Copyright 1999 Waldo Bastian <bastian@kde.org>
+   Copyright 2006 Jaison Lee <lee.jaison@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,112 +24,160 @@
 
 #include "kdelibs_export.h"
 
-#include <stdio.h>
 #include <QtCore/QFile>
-class QString;
-class QTextStream;
-class QDataStream;
+#include <QtCore/QString>
 
 /**
  * @brief Class to allow for atomic file I/O, as well as utility functions.
  *
  * The KSaveFile class has been made to write out changes to an existing
- * file atomically.
- * This means that EITHER:
- * a)
- *   All changes have been written successfully to the file.
+ * file atomically. This means that either <b>ALL</b> changes will be written
+ * to the file, or <b>NO</b> changes have been written, and the original file
+ * (if any) has been unchanged. This is useful if you have lots of 
+ * time-consuming processing to perform during which an interruption could
+ * occur, or if any error in the file structure will cause the entire file
+ * to be corrupt.
  *
- * b)
- *   Some error occurred, no changes have been written whatsoever and the
- *   old file is still in place.
+ * When you create a KSaveFile for a given file, a temporary file is instead
+ * created and all your I/O occurs in the save file. Once you call finalize()
+ * the temporary file is renamed to the target file, so that all your changes
+ * happen at once. If abort() is called then the temporary file is removed and
+ * the target file is untouched. KSaveFile derives from QFile so you can use
+ * it just as you would a normal QFile.
  *
- * There are also several static utility functions available to help ensure
- * data integrity. See the individual functions for details.
+ * This class also includes several static utility functions available that
+ * can help ensure data integrity. See the individual functions for details.
+ *
+ * Here is a quick example of how to use KSaveFile:
+ *
+ * First we create the KSaveFile and open it.
+ *
+ * @code
+ * KSaveFile saveFile;
+ * saveFile.setFileName("/lib/foo/bar.dat");
+ * if ( !saveFile.open() ) {
+ *     //Handle error
+ * }
+ * @endcode
+ *
+ * At this point the file "/lib/foo/bar.dat" has not been altered in any way.
+ * Now, let's write out some data to the file.
+ *
+ * @code
+ * QTextStream stream ( &saveFile );
+ * stream << "Add some data.";
+ * // Perform long processing
+ * stream << "Add some more data.";
+ * stream.flush();
+ * @endcode
+ *
+ * Even after writing this data, the target file "/lib/foo/bar.dat" still has
+ * not been altered in any way. Now that we are done writing our data, we can
+ * write out all thge changes that we have made by calling finalize().
+ *
+ * @code
+ * if ( !saveFile.finalize() ) {
+ *     //Handle error
+ * }
+ * @endcode
+ *
+ * If a user interruption or error occurred while we were writing out our
+ * changes, we would instead call abort() to cancel all the I/O without
+ * affecting the target file.
+ *
+ * @port4 KSaveFile now derives from QFile, so you can use it just like you
+ * would use a normal QFile. The close() function has been renamed to
+ * finalize(). Use the error() and errorString() functions to check for
+ * errors instead of status().
+ * 
+ * @see QFile
+ *
+ * @author Jaison Lee <lee.jaison@gmail.com>
+ * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KSaveFile
+class KDECORE_EXPORT KSaveFile : public QFile
 {
 public:
-   /**
-    * Creates a new KSaveFile with the given file name.
-    * @param filename the path of the file
-    * @param mode the mode of the file (see chmod(1))
-    */
-   explicit KSaveFile(const QString &filename, int mode = 0666 );
+    /**
+     * Default constructor.
+     */
+    KSaveFile();
+   
+    /**
+     * Creates a new KSaveFile and sets the target file to @p filename.
+     * @param filename the path of the file
+     */
+    explicit KSaveFile(const QString &filename);
 
-   /**
-    * The destructor closes the file.
-    * You might want to call close() explicitly though, to test whether it worked.
-    **/
-   ~KSaveFile();
+    /**
+     * Destructor.
+     * @note If the file has been opened but not yet finalized, the
+     * destructor will call finalize(). If you do not want the target file
+     * to be affected you need to call abort() before destroying the object.
+     **/
+    virtual ~KSaveFile();
 
-   /**
-    * Returns the status of the file based on errno. (see errno.h)
-    * 0 means OK.
-    *
-    * You should check the status after object creation to check
-    * whether a file could be created in the first place.
-    *
-    * You may check the status after closing the file to verify that
-    * the file has indeed been written correctly.
-    * @return the errno status, 0 means ok
-    **/
-   int status() const;
+    /**
+     * @brief Set the target filename for the save file.
+     * You must use this to set the filename of the target file if you do
+     * not use the contructor that does so.
+     * @param filename Name of the target file.
+     */
+    void setFileName(const QString &filename);
 
-   /**
-    * The name of the file as passed to the constructor.
-    * @return The name of the file, or QString() if opening the
-    *         file has failed
-    **/
-   QString name() const;
+    /**
+     * @brief Returns the name of the target file.
+     * This function returns the name of the target file, or an empty
+     * QString if it has not yet been set.
+     * @returns The name of the target file.
+     */
+    QString fileName() const;
 
-   /**
-    * An integer file descriptor open for writing to the file.
-    * @return The file descriptor, or a negative number if opening
-    *         the temporary file failed
-    **/
-   int handle()	const;
+    /**
+     * @brief Returns the last error that occurred.
+     * Use this function to check for errors.
+     * @returns The last error that occurred, or QFile::NoError.
+     */
+    QFile::FileError error() const;
 
-   /**
-    * A FILE* stream open for writing to the file.
-    * @return FILE* stream open for writing to the file, or 0
-    *         if opening the temporary file failed
-    **/
-   FILE *fstream();
+    /**
+     * @brief Returns a human-readable description of the last error.
+     * Use this function to get a human-readable description of the
+     * last error that occurred.
+     * @return A string describing the last error that occurred.
+     */
+    QString errorString() const;
 
-   /**
-    * A QFile* open for writing to the file.
-    * @return A QFile open for writing to the file, or 0 if
-    *         opening the temporary file failed.
-    **/
-   QFile *file();
+    /**
+     * @brief Open the save file.
+     * This function will open the save file by creating a temporary file to write
+     * to. It will also check to ensure that there are sufficient permissions to
+     * write to the target file.
+     * @return true if successful, or false if an error has occurred.
+     */
+    bool open();
 
-   /**
-    * A QTextStream* open for writing to the file.
-    * @return A QTextStream that is open for writing to the file, or 0
-    *         if opening the temporary file failed
-    **/
-   QTextStream *textStream();
+    /**
+     * @brief Discard changes without affecting the target file.
+     * This will discard all changes that have been made to this file.
+     * The target file will not be altered in any way.
+     **/
+    void abort();
 
-   /**
-    * A QDataStream* open for writing to the file.
-    * @return A QDataStream that is open for writing to the file, or 0
-    *         if opening the file failed
-    **/
-   QDataStream *dataStream();
+    /**
+     * @brief Finalize changes to the file.
+     * This will commit all the changes that have been made to the file.
+     * @return true if successful, or false if an error has occurred.
+     **/
+    bool finalize();
 
-   /**
-    * Aborts the write operation and removes any intermediate files
-    * This implies a close.
-    **/
-   void abort();
-
-   /**
-    * Closes the file and makes the changes definitive.
-    * Returns 'true' is successful, or 'false' if an error has occurred.
-    * See status() for details about errors.
-    * @return true if successful, or false if an error has occurred.
-    **/
-   bool close();
+    /**
+     * @brief Return a FILE pointer to the save file.
+     * @deprecated Use a QTextStream or QString::sprintf() instead.
+     * This function is provided for older code that is dificult to port.
+     * New code should <b>not</b> use this function.
+     */
+    FILE *fstream ( void ) const;
 
     /**
      * @brief Static method to create a backup file before saving.
@@ -140,9 +190,10 @@ public:
      * You can use this method even if you don't use KSaveFile.
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.
+     * @return true if successful, or false if an error has occurred.
      */
-   static bool backupFile( const QString& filename,
-                           const QString& backupDir = QString() );
+    static bool backupFile( const QString& filename,
+                            const QString& backupDir = QString() );
 
     /**
      * @brief Static method to create a backup file for a given filename.
@@ -153,10 +204,11 @@ public:
      * @param backupDir optional directory where to save the backup file in.
      * If empty (the default), the backup will be in the same directory as @p filename.
      * @param backupExtension the extension to append to @p filename, "~" by default.
+     * @return true if successful, or false if an error has occurred.
      */
-   static bool simpleBackupFile( const QString& filename,
-                                 const QString& backupDir = QString(),
-                                 const QString& backupExtension = QLatin1String( "~" ) );
+    static bool simpleBackupFile( const QString& filename,
+                                  const QString& backupDir = QString(),
+                                  const QString& backupExtension = QLatin1String( "~" ) );
 
     /**
      * @brief Static method to create a backup file for a given filename.
@@ -183,11 +235,12 @@ public:
      * which is "~" by default.  Do not use an extension containing digits.
      * @param maxBackups the maximum number of backup files permitted.
      * For best performance a small number (10) is recommended.
+     * @return true if successful, or false if an error has occurred.
      */
     static bool numberedBackupFile( const QString& filename,
                                     const QString& backupDir = QString(),
                                     const QString& backupExtension = QString::fromLatin1( "~" ),
-                               const uint maxBackups = 10
+                                    const uint maxBackups = 10
         );
 
 
@@ -211,6 +264,7 @@ public:
      * If empty (the default), the backup will be in the same directory as
      * @p filename.
      * @param backupMessage is the RCS commit message for this revision.
+     * @return true if successful, or false if an error has occurred.
      */
     static bool rcsBackupFile( const QString& filename,
                                const QString& backupDir = QString(),
@@ -218,11 +272,10 @@ public:
         );
 
 private:
+    Q_DISABLE_COPY(KSaveFile)
 
-   Q_DISABLE_COPY(KSaveFile)
-
-   class Private;
-   Private *const d;
+    class Private;
+    Private *const d;
 };
 
 #endif

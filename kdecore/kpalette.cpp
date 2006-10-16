@@ -109,22 +109,24 @@ KPalette::save()
 {
    QString filename = KStandardDirs::locateLocal("config", "colors/"+mName);
    KSaveFile sf(filename);
-   if (sf.status() != 0) return false;
+   if (!sf.open()) return false;
 
-   QTextStream *str = sf.textStream();
+   QTextStream str ( &sf );
 
    QString description = mDesc.trimmed();
    description = '#'+description.split( "\n", QString::KeepEmptyParts).join("\n#");
 
-   (*str) << "KDE RGB Palette\n";
-   (*str) << description << "\n";
+   str << "KDE RGB Palette\n";
+   str << description << "\n";
    foreach (ColorNode node, mColorList)
    {
        int r,g,b;
        node.color.getRgb(&r, &g, &b);
-       (*str) << r << " " << g << " " << b << " " << node.name << "\n";
+       str << r << " " << g << " " << b << " " << node.name << "\n";
    }
-   return sf.close();
+
+   sf.flush();
+   return sf.finalize();
 }
 
 

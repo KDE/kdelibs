@@ -23,132 +23,210 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <errno.h>
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#include <unistd.h>
-#include <fcntl.h>
-
-#ifdef HAVE_TEST
-#include <test.h>
-#endif
-
-#include <qdir.h>
-#include <qstring.h>
+#include <QtCore/QDir>
+#include <QtCore/QTemporaryFile>
 #include <QProcess>
 
 #include <kde_file.h>
 #include "ksavefile.h"
 #include "kstandarddirs.h"
-#include "ktempfile.h"
+#include "klocale.h"
 #include "kconfig.h"
 
 class KSaveFile::Private
 {
 public:
-   QString _fileName;
-#define mFileName d->_fileName
-   KTempFile *_tempFile;
-#define mTempFile d->_tempFile
-   ~Private() { delete _tempFile; }
+    QString realFileName; //The name of the end-result file
+    QString tempFileName; //The name of the temp file we are using
+    
+    QFile::FileError error;
+    QString errorString;
+    bool wasFinalized;
+    FILE *stream;
+
+    Private() {
+        error = QFile::NoError;
+        wasFinalized = false;
+        stream = 0;
+    }
 };
 
-KSaveFile::KSaveFile(const QString &filename, int mode)
+KSaveFile::KSaveFile()
  : d(new Private)
 {
-   mTempFile = new KTempFile(true);
+}
 
-   QString real_filename = filename;
-   // make absolute if needed
-   if ( QDir::isRelativePath( filename ) )
-       real_filename = QDir::current().absoluteFilePath( filename );
-
-   // follow symbolic link, if any
-   real_filename = KStandardDirs::realFilePath( real_filename );
-
-   // we only check here if the directory can be written to
-   // the actual filename isn't written to, but replaced later
-   // with the contents of our tempfile
-   if (!KStandardDirs::checkAccess(real_filename, W_OK))
-   {
-      mTempFile->setError(EACCES);
-      return;
-   }
-
-   if (mTempFile->create(real_filename, QLatin1String(".new"), mode))
-   {
-      mFileName = real_filename; // Set filename upon success
-
-      // if we're overwriting an existing file, ensure temp file's
-      // permissions are the same as existing file so the existing
-      // file's permissions are preserved
-      KDE_struct_stat stat_buf;
-      if (KDE_stat(QFile::encodeName(real_filename), &stat_buf)==0)
-      {
-         // But only if we own the existing file
-         if (stat_buf.st_uid == getuid())
-         {
-            bool changePermission = true;
-            if (stat_buf.st_gid != getgid())
-      {
-               if (fchown(mTempFile->handle(), (uid_t) -1, stat_buf.st_gid) != 0)
-               {
-                  // Use standard permission if we can't set the group
-                  changePermission = false;
-               }
-            }
-            if (changePermission)
-               fchmod(mTempFile->handle(), stat_buf.st_mode);
-         }
-      }
-   }
+KSaveFile::KSaveFile(const QString &filename)
+ : d(new Private)
+{
+    KSaveFile::setFileName(filename);
 }
 
 KSaveFile::~KSaveFile()
 {
-   if (mTempFile->isOpen())
-      close(); // Close if we were still open
+    if (!d->wasFinalized)
+        finalize();
 
-   delete d;
+    delete d;
 }
 
-QString
-KSaveFile::name() const
+bool KSaveFile::open()
 {
-   return mFileName;
+    if ( d->realFileName.isNull() ) {
+        d->error=QFile::OpenError;
+        d->errorString=i18n("No target filename has been given.");
+        return false;
+    }
+
+    if ( !d->tempFileName.isNull() ) {
+        d->error=QFile::OpenError;
+        d->errorString=i18n("Already opened.");
+        return false;
+    }
+
+    // we only check here if the directory can be written to
+    // the actual filename isn't written to, but replaced later
+    // with the contents of our tempfile
+    if (!KStandardDirs::checkAccess(d->realFileName, W_OK)) {
+        d->error=QFile::PermissionsError;
+        d->errorString=i18n("Insufficient permissions in target directory.");
+        return false;
+    }
+
+    //Create our temporary file
+    QTemporaryFile tempFile;
+    tempFile.setAutoRemove(false);
+    tempFile.setFileTemplate(d->realFileName + "XXXXXX.new");
+    if (!tempFile.open()) {
+        d->error=QFile::OpenError;
+        d->errorString=i18n("Unable to open temporary file.");
+        return false;
+    }
+    
+    // if we're overwriting an existing file, ensure temp file's
+    // permissions are the same as existing file so the existing
+    // file's permissions are preserved; but only if we are the
+    // same owner and group.
+    QFileInfo fi ( d->realFileName );
+    if (fi.ownerId() == getuid()) {
+        bool changePermission = true;
+        if (fi.groupId() != getgid()) {
+            //Qt apparently has no way to change owner/group of file :(
+            if (fchown(tempFile.handle(), (uid_t) -1, fi.groupId()) != 0) {
+                // Use standard permission if we can't set the group
+                changePermission = false;
+             }
+        }
+        
+        if (changePermission) {
+            tempFile.setPermissions(fi.permissions());
+        }
+    }
+
+    //Open oursleves with the temporary file
+    QFile::setFileName(tempFile.fileName());
+    if ( !QFile::open(QIODevice::ReadWrite) ) {
+        tempFile.setAutoRemove(true);
+        return false;
+    }
+
+    //Provide a hack for old code that should be updated.
+    d->stream = KDE_fdopen(handle(), "r+");
+
+    d->tempFileName = tempFile.fileName();
+    d->error=QFile::NoError;
+    d->errorString.clear();
+    return true;
 }
 
-void
-KSaveFile::abort()
+void KSaveFile::setFileName(const QString &filename)
 {
-   mTempFile->close();
-   mTempFile->unlink();
+    d->realFileName = filename;
+    
+    // make absolute if needed
+    if ( QDir::isRelativePath( filename ) ) {
+        d->realFileName = QDir::current().absoluteFilePath( filename );
+    }
+
+    // follow symbolic link, if any
+    d->realFileName = KStandardDirs::realFilePath( d->realFileName );
+    return;
 }
 
-bool
-KSaveFile::close()
+QFile::FileError KSaveFile::error() const
 {
-   if (mTempFile->name().isEmpty() || mTempFile->handle()==-1)
-      return false; // Save was aborted already
-   if (!mTempFile->sync())
-   {
-      abort();
-      return false;
-   }
-   if (mTempFile->close())
-   {
-      if (0==KDE_rename(QFile::encodeName(mTempFile->name()),
-                        QFile::encodeName(mFileName)))
-         return true; // Success!
-      mTempFile->setError(errno);
-   }
-   // Something went wrong, make sure to delete the interim file.
-   mTempFile->unlink();
-   return false;
+    if ( d->error != QFile::NoError ) {
+        return d->error;
+    } else {
+        return QFile::error();
+    }
+}
+
+QString KSaveFile::errorString() const
+{
+    if ( !d->errorString.isEmpty() ) {
+        return d->errorString;
+    } else {
+        return QFile::errorString();
+    }
+}
+
+QString KSaveFile::fileName() const
+{
+    return d->realFileName;
+}
+
+void KSaveFile::abort()
+{
+    if ( d->stream ) {
+        fclose(d->stream);
+        d->stream = 0;
+    }
+    
+    close();
+    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work. 
+    d->wasFinalized = true;
+}
+
+bool KSaveFile::finalize()
+{
+    bool success = false;
+
+    if ( !d->wasFinalized ) {
+        if ( d->stream ) {
+            fclose(d->stream);
+            d->stream = 0;
+        }
+        close();
+
+        //Qt does not allow us to atomically overwrite an existing file,
+        //so if the target file already exists, there is no way to change it
+        //to the temp file without creating a small race condition. So we use
+        //the standard rename call instead, which will do the copy without the
+        //race condition.
+        if (0 == KDE_rename(QFile::encodeName(d->tempFileName),
+                      QFile::encodeName(d->realFileName))) {
+            d->error=QFile::NoError;
+            d->errorString.clear();
+            success = true;
+        } else {
+            d->error=QFile::OpenError;
+            d->errorString=i18n("Error during rename.");
+            QFile::remove();
+        }
+
+        d->wasFinalized = true;
+    }
+
+    return success;
+}
+
+// DEPRECATED. Provided to ease porting issues ONLY.
+// Please, PLEASE don't use this. Use a QTextStream instead.
+// If you need to emulate fprintf() then use QString::sprintf()
+FILE* KSaveFile::fstream() const
+{
+    return d->stream;
 }
 
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
@@ -312,35 +390,3 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
     return QFile::copy(qFilename, sTemplate.arg(1));
 }
 
-int KSaveFile::status() const
-{
-   return mTempFile->status();
-}
-
-int KSaveFile::handle() const
-{
-   return mTempFile->handle();
-}
-
-FILE* KSaveFile::fstream()
-{
-   return mTempFile->fstream();
-}
-
-QFile* KSaveFile::file()
-{
-   return mTempFile->file();
-}
-
-QTextStream* KSaveFile::textStream()
-{
-   return mTempFile->textStream();
-}
-
-QDataStream* KSaveFile::dataStream()
-{
-   return mTempFile->dataStream();
-}
-
-#undef mFileName
-#undef mTempFile

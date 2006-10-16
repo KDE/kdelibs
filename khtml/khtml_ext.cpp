@@ -867,9 +867,10 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
             if (destURL.isLocalFile())
             {
                 KSaveFile destFile(destURL.path());
-                if (destFile.status() == 0)
+                if (destFile.open())
                 {
-                    KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
+                    QDataStream stream ( &destFile );
+                    KHTMLPageCache::self()->saveData(cacheId, &stream);
                     saved = true;
                 }
             }

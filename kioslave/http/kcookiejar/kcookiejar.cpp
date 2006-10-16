@@ -1253,10 +1253,11 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
 // On failure 'false' is returned.
 bool KCookieJar::saveCookies(const QString &_filename)
 {
-    KSaveFile saveFile(_filename, 0600);
+    KSaveFile saveFile(_filename);
 
-    if (saveFile.status() != 0)
+    if (!saveFile.open())
        return false;
+    saveFile.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
     FILE *fStream = saveFile.fstream();
 
@@ -1318,7 +1319,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
         }
     }
 
-    return saveFile.close();
+    return saveFile.finalize();
 }
 
 typedef char *charPtr;
