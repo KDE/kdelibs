@@ -315,6 +315,19 @@ private:
 
 #include <ktoolbarpopupaction.h>
 
+/**
+ * This type of action is used to show undo or redo actions in the menu or in the
+ * toolbars.
+ * This action will keep itself up to date and change the text based on the undo
+ * history, plus it will disable itself when there is nothing to undo/redo.
+ * You will typically need two instances of this action per view.
+ * @code
+    new KUndoRedoAction( KUndoRedoAction::Undo, view->actionCollection(), m_history );
+    new KUndoRedoAction( KUndoRedoAction::Redo, view->actionCollection(), m_history );
+   @endcode
+ * Note that there is no need to connect or even keep a reference to the object as
+ * all work is done automatically.
+ */
 class KUndoRedoAction : public KToolBarPopupAction
 {
     Q_OBJECT
