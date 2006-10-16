@@ -561,7 +561,7 @@ void KApplication::init()
               reversedDomain.prepend(QLatin1Char('.'));
               reversedDomain.prepend(s);
           }
-      const QString pidSuffix = QString::number( getpid() ).prepend( QLatin1Char('_') );
+      const QString pidSuffix = QString::number( getpid() ).prepend( QLatin1String("-") );
       const QString serviceName = reversedDomain + applicationName() + pidSuffix;
       if ( bus->registerService(serviceName) == QDBusConnectionInterface::ServiceNotRegistered ) {
           kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
