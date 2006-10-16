@@ -124,6 +124,8 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
   *    }
   * @endcode
   *
+  * \image html kmimetypechooserdialog.png "KMimeTypeChooserDialog in action"
+  *
   * @author Anders Lund (anders at alweb dk) dec 19, 2001
   */
 class KIO_EXPORT KMimeTypeChooserDialog : public KDialog
