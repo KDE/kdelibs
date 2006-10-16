@@ -65,11 +65,17 @@ void KMacroCommand::unexecute()
 
 class KCommandHistory::KCommandHistoryPrivate {
 public:
-    KCommandHistoryPrivate() {
-        m_savedAt = -1;
-        m_current = -1;
+    KCommandHistoryPrivate()
+        : m_undoLimit(50), m_redoLimit(30),
+        m_savedAt(-1), m_current(-1) {
     }
-    ~KCommandHistoryPrivate() {}
+    ~KCommandHistoryPrivate() {
+        qDeleteAll( m_commands );
+    }
+
+    QList<KCommand *> m_commands;
+    int m_undoLimit, m_redoLimit;
+
     int m_savedAt;
     int m_current;
     /*
@@ -91,14 +97,12 @@ public:
 ////////////
 
 KCommandHistory::KCommandHistory() :
-    m_undo(0), m_redo(0), m_undoLimit(50), m_redoLimit(30),
     d( new KCommandHistoryPrivate )
 {
     clear();
 }
 
 KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool withMenus) :
-    m_undoLimit(50), m_redoLimit(30),
     d( new KCommandHistoryPrivate )
 {
     if (withMenus)
@@ -108,52 +112,27 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
 
         // TODO also move this out of KCommandHistory, to make it core-only.
 
-        KToolBarPopupAction * undo = new KToolBarPopupAction( KIcon("undo"), i18n("&Undo"),
-                                          actionCollection, KStdAction::stdName( KStdAction::Undo ) );
-        undo->setShortcut( KStdAccel::shortcut(KStdAccel::Undo) );
-        connect( undo, SIGNAL(triggered(bool)), this, SLOT( undo() ) );
-        connect( undo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
-        connect( undo->menu(), SIGNAL( triggered( QAction* ) ), this, SLOT( slotUndoActivated( QAction* ) ) );
-        m_undo = undo;
-        m_undoPopup = undo->menu();
-
-        KToolBarPopupAction * redo = new KToolBarPopupAction( KIcon("redo"), i18n("&Redo"),
-                                          actionCollection, KStdAction::stdName( KStdAction::Redo ) );
-        redo->setShortcut( KStdAccel::shortcut(KStdAccel::Redo) );
-        connect( redo, SIGNAL(triggered(bool)), this, SLOT( redo() ) );
-        connect( redo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
-        connect( redo->menu(), SIGNAL( triggered( QAction* ) ), this, SLOT( slotRedoActivated( QAction* ) ) );
-        m_redo = redo;
-        m_redoPopup = redo->menu();
+        new KUndoRedoAction( KUndoRedoAction::Undo, actionCollection, this );
+        new KUndoRedoAction( KUndoRedoAction::Redo, actionCollection, this );
     }
     else
     {
-        m_undo = KStdAction::undo( this, SLOT( undo() ), actionCollection );
-        m_redo = KStdAction::redo( this, SLOT( redo() ), actionCollection );
-        m_undoPopup = 0;
-        m_redoPopup = 0;
+        KStdAction::undo( this, SLOT( undo() ), actionCollection );
+        KStdAction::redo( this, SLOT( redo() ), actionCollection );
     }
     clear();
 }
 
 KCommandHistory::~KCommandHistory() {
-    qDeleteAll( m_commands );
     delete d;
 }
 
 void KCommandHistory::clear() {
-    if ( m_undo ) {
-        m_undo->setEnabled(false);
-        m_undo->setText( i18n("&Undo") );
-    }
-    if ( m_redo ) {
-        m_redo->setEnabled(false);
-        m_redo->setText( i18n("&Redo") );
-    }
-    qDeleteAll( m_commands );
-    m_commands.clear();
+    qDeleteAll( d->m_commands );
+    d->m_commands.clear();
     d->m_current = -1;
     d->m_savedAt = -1;
+    emit commandHistoryChanged();
 }
 
 void KCommandHistory::addCommand(KCommand *command, bool execute) {
@@ -161,24 +140,16 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         return;
 
     ++d->m_current;
-    m_commands.insert( d->m_current, command );
+    d->m_commands.insert( d->m_current, command );
     // Truncate history
-    int count = m_commands.count();
+    int count = d->m_commands.count();
     for ( int i = d->m_current + 1; i < count; ++i )
-        delete m_commands.takeLast();
+        delete d->m_commands.takeLast();
 
     // Check whether we still can reach savedAt
     if ( d->m_current < d->m_savedAt )
         d->m_savedAt = -2;
 
-    if ( m_undo ) {
-        m_undo->setEnabled(true);
-        m_undo->setText( i18n("&Undo: %1", command->name()) );
-    }
-    if ( m_redo && m_redo->isEnabled() ) {
-        m_redo->setEnabled(false);
-        m_redo->setText( i18n("&Redo") );
-    }
     clipCommands();
 
     if ( execute )
@@ -191,37 +162,19 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 KCommand * KCommandHistory::presentCommand() const
 {
     if ( d->m_current >= 0 )
-        return m_commands[ d->m_current ];
+        return d->m_commands[ d->m_current ];
     return 0;
 }
 
 void KCommandHistory::undo() {
     Q_ASSERT( d->m_current >= 0 );
 
-    KCommand* command = m_commands[ d->m_current ];
+    KCommand* command = d->m_commands[ d->m_current ];
 
     command->unexecute();
     emit commandExecuted( command );
-    if ( m_redo ) {
-        m_redo->setEnabled(true);
-        m_redo->setText( i18n("&Redo: %1", command->name()) );
-    }
 
     --d->m_current;
-    if ( d->m_current >= 0 ) {
-        // undoing further is possible
-        if (m_undo ) {
-            KCommand* command = m_commands[ d->m_current ];
-            m_undo->setEnabled(true);
-            m_undo->setText( i18n("&Undo: %1", command->name()) );
-        }
-    } else {
-        // undoing further is not possible
-        if ( m_undo ) {
-            m_undo->setEnabled(false);
-            m_undo->setText( i18n("&Undo") );
-        }
-    }
 
     if ( d->m_current == d->m_savedAt )
         emit documentRestored();
@@ -230,32 +183,16 @@ void KCommandHistory::undo() {
 }
 
 void KCommandHistory::redo() {
-    KCommand* command = m_commands[ d->m_current + 1 ];
+    KCommand* command = d->m_commands[ d->m_current + 1 ];
     command->execute();
     emit commandExecuted( command );
-
-    if ( m_undo ) {
-        m_undo->setEnabled(true);
-        m_undo->setText( i18n("&Undo: %1", command->name()) );
-    }
 
     ++d->m_current;
 
     if ( d->m_current == d->m_savedAt )
         emit documentRestored();
 
-    if ( isRedoAvailable() ) {
-        if ( m_redo ) {
-            command = m_commands[ d->m_current + 1 ];
-            m_redo->setEnabled(true);
-            m_redo->setText( i18n("&Redo: %1", command->name()) );
-        }
-    } else {
-        if( m_redo ) {
-            m_redo->setEnabled(false);
-            m_redo->setText( i18n("&Redo") );
-        }
-    }
+    emit commandHistoryChanged();
 }
 
 void KCommandHistory::documentSaved() {
@@ -263,100 +200,53 @@ void KCommandHistory::documentSaved() {
 }
 
 void KCommandHistory::setUndoLimit(int limit) {
-    if ( limit>0 && limit != m_undoLimit ) {
-        m_undoLimit = limit;
+    if ( limit>0 && limit != d->m_undoLimit ) {
+        d->m_undoLimit = limit;
         clipCommands();
     }
 }
 
 void KCommandHistory::setRedoLimit(int limit) {
-    if ( limit>0 && limit != m_redoLimit ) {
-        m_redoLimit = limit;
+    if ( limit>0 && limit != d->m_redoLimit ) {
+        d->m_redoLimit = limit;
         clipCommands();
     }
 }
 
 void KCommandHistory::clipCommands() {
-    int count = m_commands.count();
-    if ( count <= m_undoLimit && count <= m_redoLimit )
+    int count = d->m_commands.count();
+    if ( count <= d->m_undoLimit && count <= d->m_redoLimit ) {
+        emit commandHistoryChanged();
         return;
+    }
 
-    if ( d->m_current >= m_undoLimit ) {
-        const int toRemove = (d->m_current - m_undoLimit) + 1;
+    if ( d->m_current >= d->m_undoLimit ) {
+        const int toRemove = (d->m_current - d->m_undoLimit) + 1;
         for ( int i = 0; i < toRemove; ++i ) {
-            delete m_commands.takeFirst();
+            delete d->m_commands.takeFirst();
             --d->m_savedAt;
             --d->m_current;
         }
         Q_ASSERT( d->m_current >= -1 );
-        count = m_commands.count(); // update count for the redo branch below
+        count = d->m_commands.count(); // update count for the redo branch below
         if ( d->m_savedAt < 0 )
             d->m_savedAt = -1; // savedAt went out of the history
     }
 
-    if ( d->m_current + m_redoLimit + 1 < count ) {
-        if ( d->m_savedAt > (d->m_current + m_redoLimit) )
+    if ( d->m_current + d->m_redoLimit + 1 < count ) {
+        if ( d->m_savedAt > (d->m_current + d->m_redoLimit) )
             d->m_savedAt = -1;
-        const int toRemove = count - (d->m_current + m_redoLimit + 1);
+        const int toRemove = count - (d->m_current + d->m_redoLimit + 1);
         for ( int i = 0; i< toRemove; ++i )
-            delete m_commands.takeLast();
+            delete d->m_commands.takeLast();
     }
-}
-
-void KCommandHistory::slotUndoAboutToShow()
-{
-    m_undoPopup->clear();
-    // Start at d->m_current and go back until d->m_current - 9 included (or 0 if bigger).
-    // TODO make number of items configurable ?
-    const int end = qMax( d->m_current - 9, 0 );
-    int j = 0;
-    for ( int i = d->m_current; i >= end; --i ) {
-        QAction *action = m_undoPopup->addAction( i18n("Undo: %1", m_commands[i]->name()) );
-        action->setData( j );
-
-        j++;
-    }
-}
-
-void KCommandHistory::slotUndoActivated( QAction *action )
-{
-    const int pos = action->data().toInt();
-
-    kDebug(230) << "KCommandHistory::slotUndoActivated " << pos << endl;
-    for ( int i = 0 ; i < pos+1; ++i )
-        undo();
-}
-
-void KCommandHistory::slotRedoAboutToShow()
-{
-    m_redoPopup->clear();
-    // Start at d->m_current + 1 and go up until d->m_current + 10 included (or count-1 if bigger).
-    // TODO make number of items configurable ?
-    const int end = qMin( d->m_current + 10, m_commands.count() - 1 );
-    int j = 0;
-    for ( int i = d->m_current + 1; i < end; ++i ) {
-        QAction *action = m_redoPopup->addAction( i18n("Redo: %1", m_commands[i]->name()) );
-        action->setData( j );
-
-        j++;
-    }
-}
-
-void KCommandHistory::slotRedoActivated( QAction *action )
-{
-    const int pos = action->data().toInt();
-
-    kDebug(230) << "KCommandHistory::slotRedoActivated " << pos << endl;
-    for ( int i = 0 ; i < pos+1; ++i )
-        redo();
+    emit commandHistoryChanged();
 }
 
 void KCommandHistory::updateActions()
 {
-    if ( m_undo )
-        m_undo->setEnabled( isUndoAvailable() );
-    if ( m_redo )
-        m_redo->setEnabled( isRedoAvailable() );
+    // it hasn't changed, but this updates all actions connected to this command history.
+    emit commandHistoryChanged();
 }
 
 bool KCommandHistory::isUndoAvailable() const
@@ -366,14 +256,14 @@ bool KCommandHistory::isUndoAvailable() const
 
 bool KCommandHistory::isRedoAvailable() const
 {
-    return d->m_current < m_commands.count() - 1;
+    return d->m_current < d->m_commands.count() - 1;
 }
 
 QList<KCommand *> KCommandHistory::undoCommands( int maxCommands ) const
 {
     QList<KCommand *> lst;
     for ( int i = d->m_current; i >= 0; --i ) {
-        lst.append( m_commands[i] );
+        lst.append( d->m_commands[i] );
         if ( maxCommands > 0 && lst.count() == maxCommands )
             break;
     }
@@ -383,14 +273,98 @@ QList<KCommand *> KCommandHistory::undoCommands( int maxCommands ) const
 QList<KCommand *> KCommandHistory::redoCommands( int maxCommands ) const
 {
     QList<KCommand *> lst;
-    for ( int i = d->m_current + 1; i < m_commands.count(); ++i )
+    for ( int i = d->m_current + 1; i < d->m_commands.count(); ++i )
     {
-        lst.append( m_commands[i] );
+        lst.append( d->m_commands[i] );
         if ( maxCommands > 0 && lst.count() == maxCommands )
             break;
     }
     return lst;
 }
+
+int KCommandHistory::undoLimit() const
+{
+     return d->m_undoLimit;
+}
+
+int KCommandHistory::redoLimit() const
+{
+     return d->m_redoLimit;
+}
+
+KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory )
+    : KToolBarPopupAction( KIcon( type == Undo ? "undo" : "redo" ),
+                           QString(), // text is set in clear() on start
+                           actionCollection,
+                           KStdAction::stdName( type == Undo ? KStdAction::Undo : KStdAction::Redo ) ),
+      m_type( type ),
+      m_commandHistory( commandHistory ),
+      d(0)
+{
+    setShortcut( KStdAccel::shortcut( type == Undo ? KStdAccel::Undo : KStdAccel::Redo ) );
+    if (m_type == Undo)
+        connect( this, SIGNAL(triggered(bool)), m_commandHistory, SLOT(undo()) );
+    else
+        connect( this, SIGNAL(triggered(bool)), m_commandHistory, SLOT(redo()) );
+    connect( this->menu(), SIGNAL(aboutToShow()), this, SLOT(slotAboutToShow()) );
+    connect( this->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotActionTriggered(QAction*)) );
+
+    connect( m_commandHistory, SIGNAL(commandHistoryChanged()), this, SLOT(slotCommandHistoryChanged()) );
+    slotCommandHistoryChanged();
+}
+
+void KUndoRedoAction::slotAboutToShow()
+{
+    menu()->clear();
+    // TODO make number of items configurable ?
+    const int maxCommands = 9;
+    if (m_type == Undo) {
+        const QList<KCommand *> commands = m_commandHistory->undoCommands( maxCommands );
+        for (int i = 0; i < commands.count(); ++i) {
+            QAction *action = menu()->addAction( i18n("Undo: %1", commands[i]->name()) );
+            action->setData( i );
+        }
+    } else {
+        const QList<KCommand *> commands = m_commandHistory->redoCommands( maxCommands );
+        for (int i = 0; i < commands.count(); ++i) {
+            QAction *action = menu()->addAction( i18n("Redo: %1", commands[i]->name()) );
+            action->setData( i );
+        }
+    }
+}
+
+void KUndoRedoAction::slotActionTriggered( QAction *action )
+{
+    const int pos = action->data().toInt();
+    kDebug(230) << "KUndoRedoAction::slotActionTriggered " << pos << endl;
+    if (m_type == Undo) {
+        for ( int i = 0 ; i < pos+1; ++i )
+            m_commandHistory->undo();
+    } else {
+        for ( int i = 0 ; i < pos+1; ++i )
+            m_commandHistory->redo();
+    }
+}
+
+void KUndoRedoAction::slotCommandHistoryChanged()
+{
+    const bool isUndo = m_type == Undo;
+    const bool enabled = isUndo ? m_commandHistory->isUndoAvailable() : m_commandHistory->isRedoAvailable();
+    setEnabled(enabled);
+    if (!enabled) {
+        setText(isUndo ? i18n("&Undo") : i18n("&Redo"));
+    } else {
+        if (isUndo) {
+            KCommand* presentCommand = m_commandHistory->presentCommand();
+            Q_ASSERT(presentCommand);
+            setText(i18n("&Undo: %1", presentCommand->name()));
+        } else {
+            KCommand* redoCommand = m_commandHistory->redoCommands(1).first();
+            setText(i18n("&Redo: %1", redoCommand->name()));
+        }
+    }
+}
+
 
 void KCommand::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -794,13 +794,19 @@ kde4_add_executable(kassistantdialogtest RUN_UNINSTALLED ${kassistantdialogtest_
 target_link_libraries(kassistantdialogtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
 
+########### kcommandtest ###############
+
+set(kcommandtest_SRCS kcommandtest.cpp )
+
+kde4_automoc(kcommandtest ${kcommandtest_SRCS})
+
+kde4_add_executable(kcommandtest RUN_UNINSTALLED ${kcommandtest_SRCS})
+
+target_link_libraries(kcommandtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kcommandtest ${EXECUTABLE_OUTPUT_PATH}/kcommandtest)
 
 
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
-
-
-
-
-

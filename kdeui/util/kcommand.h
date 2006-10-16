@@ -202,7 +202,7 @@ public:
     /**
      * @return the maximum number of items in the undo history
      */
-    int undoLimit() const { return m_undoLimit; }
+    int undoLimit() const;
     /**
      * Sets the maximum number of items in the undo history.
      */
@@ -210,7 +210,7 @@ public:
     /**
      * @return the maximum number of items in the redo history
      */
-    int redoLimit() const { return m_redoLimit; }
+    int redoLimit() const;
     /**
      * Sets the maximum number of items in the redo history.
      */
@@ -283,12 +283,6 @@ public Q_SLOTS:
      */
     virtual void documentSaved();
 
-protected Q_SLOTS:
-    void slotUndoAboutToShow();
-    void slotUndoActivated( QAction* );
-    void slotRedoAboutToShow();
-    void slotRedoActivated( QAction* );
-
 Q_SIGNALS:
     /**
      * Emitted every time a command is executed
@@ -304,16 +298,41 @@ Q_SIGNALS:
      */
     void documentRestored();
 
+    /**
+     * Emitted whenever the command history has changed,
+     * i.e. after addCommand, undo or redo.
+     * This is used by the actions to update themselves.
+     */
+    void commandHistoryChanged();
+
 private:
     void clipCommands();  // ensures that the limits are kept
 
-    QList<KCommand *> m_commands;
-    KAction *m_undo, *m_redo;
-    QMenu *m_undoPopup, *m_redoPopup;
-    int m_undoLimit, m_redoLimit;
 private:
     class KCommandHistoryPrivate;
     KCommandHistoryPrivate * const d;
+};
+
+#include <ktoolbarpopupaction.h>
+
+class KUndoRedoAction : public KToolBarPopupAction
+{
+    Q_OBJECT
+public:
+    enum Type { Undo, Redo };
+    KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory );
+
+private Q_SLOTS:
+    void slotAboutToShow();
+    void slotActionTriggered( QAction *action );
+    void slotCommandHistoryChanged();
+
+private:
+    Type m_type;
+    KCommandHistory* m_commandHistory;
+
+    class KUndoRedoActionPrivate;
+    KUndoRedoActionPrivate* const d;
 };
 
 #endif

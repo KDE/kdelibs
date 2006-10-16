@@ -111,7 +111,8 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( !ch.isRedoAvailable() );
         QCOMPARE( m_documentRestored, 0 );
         QCOMPARE( ch.presentCommand(), c1 );
-        ch.undo();
+        //ch.undo();
+        undo->trigger();
         QCOMPARE( m_documentRestored, 1 );
         QCOMPARE( KTestCommand::unexecutedCommands.join( "," ), QString( "1" ) );
         QVERIFY( !undo->isEnabled() );
@@ -250,13 +251,16 @@ void KCommandTest::testUndoLimit()
         ch.addCommand( c2 );
         KTestCommand* c3 = new KTestCommand( "3" );
         ch.addCommand( c3 );
-        // c1 should have been removed now; let's check that we can only undo twice.
-        ch.undo();
-        ch.undo();
-        QCOMPARE( m_documentRestored, 0 );
 
         KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
+        // c1 should have been removed now; let's check that we can only undo twice.
+        //ch.undo();
+        //ch.undo();
+        undo->trigger();
+        undo->trigger();
+        QCOMPARE( m_documentRestored, 0 );
+
         QVERIFY( !undo->isEnabled() );
         QVERIFY( !ch.isUndoAvailable() );
         KAction* redo = actionCollection.action( "edit_redo" );
@@ -264,7 +268,8 @@ void KCommandTest::testUndoLimit()
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
         QCOMPARE( redo->text(), i18n( "&Redo: %1" ,  2 ) );
-        ch.redo();
+        //ch.redo();
+        redo->trigger();
         QVERIFY( undo->isEnabled() );
         QVERIFY( ch.isUndoAvailable() );
         QVERIFY( redo->isEnabled() );
