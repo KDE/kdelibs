@@ -364,12 +364,12 @@ void AutoBookmarkerEntEditor::showMTDlg()
 {
   QString text = i18n("Select the MimeTypes for this pattern.\nPlease note that this will automatically edit the associated file extensions as well.");
   QStringList list = QStringList::split( QRegExp("\\s*;\\s*"), leMimeTypes->text() );
-  KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( i18n("Select Mime Types"), text, list, "text", this );
-  if ( d->exec() == KDialogBase::Accepted ) {
+  KMimeTypeChooserDialog d( i18n("Select Mime Types"), text, list, "text", this );
+  if ( d.exec() == KDialogBase::Accepted ) {
     // do some checking, warn user if mime types or patterns are removed.
     // if the lists are empty, and the fields not, warn.
-    leFileMask->setText(d->chooser()->patterns().join("; "));
-    leMimeTypes->setText(d->chooser()->mimeTypes().join("; "));
+    leFileMask->setText(d.chooser()->patterns().join("; "));
+    leMimeTypes->setText(d.chooser()->mimeTypes().join("; "));
   }
 }
 //END
