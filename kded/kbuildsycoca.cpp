@@ -478,11 +478,13 @@ bool KBuildSycoca::recreate()
   // KSaveFile first writes to a temp file.
   // Upon finalize() it moves the stuff to the right place.
   KSaveFile database(path);
-  if (!database.open() && database.error() == QFile::PermissionsError && QFile::exists(path))
+  bool openedOK = database.open();
+  if (!openedOK && database.error() == QFile::PermissionsError && QFile::exists(path))
   {
     QFile::remove( path );
+    openedOK = database.open();
   }
-  if (!database.open())
+  if (!openedOK)
   {
     fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n",
       path.toLocal8Bit().data(), database.errorString().toLocal8Bit().data());
