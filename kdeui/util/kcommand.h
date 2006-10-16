@@ -320,7 +320,7 @@ private:
  * toolbars.
  * This action will keep itself up to date and change the text based on the undo
  * history, plus it will disable itself when there is nothing to undo/redo.
- * You will typically need two instances of this action per view.
+ * You will typically need two instances of this action per view (e.g. the mainwindow).
  * @code
     new KUndoRedoAction( KUndoRedoAction::Undo, view->actionCollection(), m_history );
     new KUndoRedoAction( KUndoRedoAction::Redo, view->actionCollection(), m_history );
