@@ -1084,30 +1084,29 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
     if(sel->attr)
     {
+        // attributes are always case-sensitive in XHTML
+        // attributes are sometimes case-sensitive in HTML Strict
+        // ### for now we only treat id and class selector as case-sensitive in HTML strict
+        bool caseSensitive = e->getDocument()->htmlMode() == DocumentImpl::XHtml;
+        bool caseSensitive_alt = strictParsing || caseSensitive;
+
         DOMStringImpl* value = e->getAttributeImpl(sel->attr);
         if(!value) return false; // attribute is not set
 
         switch(sel->match)
         {
-        case CSSSelector::Exact:
-            /* attribute values are case insensitive in all HTML modes,
-               even in the strict ones */
-            if ( e->getDocument()->htmlMode() != DocumentImpl::XHtml ) {
-                if ( strcasecmp(sel->value, value) )
-                    return false;
-            } else {
-                if ( strcmp(sel->value, value) )
-                    return false;
-            }
+        case CSSSelector::Set:
+            // True if we make it this far
             break;
         case CSSSelector::Id:
-	    if( (strictParsing && strcmp(sel->value, value) ) ||
-                (!strictParsing && strcasecmp(sel->value, value)))
-                return false;
-            break;
-        case CSSSelector::Set:
+            caseSensitive = caseSensitive_alt;
+            // no break
+        case CSSSelector::Exact:
+            return (caseSensitive && !strcmp(sel->value, value)) ||
+                   (!caseSensitive && !strcasecmp(sel->value, value));
             break;
         case CSSSelector::Class:
+            caseSensitive = caseSensitive_alt;
             // no break
         case CSSSelector::List:
         {
@@ -1118,8 +1117,8 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Selector string may not contain spaces
             if ((sel->attr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
             if (sel_len == val_len)
-                return (strictParsing && !strcmp(sel->value, value)) ||
-		       (!strictParsing && !strcasecmp(sel->value, value));
+                return (caseSensitive && !strcmp(sel->value, value)) ||
+		       (!caseSensitive && !strcasecmp(sel->value, value));
             // else the value is longer and can be a list
             if ( sel->match == CSSSelector::Class && !e->hasClassList() ) return false;
 
@@ -1131,7 +1130,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
             int pos = 0;
             for ( ;; ) {
-                pos = val_str.string().find(sel_str.string(), pos, strictParsing);
+                pos = val_str.string().find(sel_str.string(), pos, caseSensitive);
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || val_uc[pos-1].isSpace() ) {
                     int endpos = pos + sel_len;
@@ -1147,21 +1146,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             //kdDebug( 6080 ) << "checking for contains match" << endl;
             QConstString val_str(value->unicode(), value->length());
             QConstString sel_str(sel->value.unicode(), sel->value.length());
-            return val_str.string().contains(sel_str.string());
+            return val_str.string().contains(sel_str.string(), caseSensitive);
         }
         case CSSSelector::Begin:
         {
             //kdDebug( 6080 ) << "checking for beginswith match" << endl;
             QConstString val_str(value->unicode(), value->length());
             QConstString sel_str(sel->value.unicode(), sel->value.length());
-            return val_str.string().startsWith(sel_str.string());
+            return val_str.string().startsWith(sel_str.string(), caseSensitive);
         }
         case CSSSelector::End:
         {
             //kdDebug( 6080 ) << "checking for endswith match" << endl;
             QConstString val_str(value->unicode(), value->length());
             QConstString sel_str(sel->value.unicode(), sel->value.length());
-            return val_str.string().endsWith(sel_str.string());
+            return val_str.string().endsWith(sel_str.string(), caseSensitive);
         }
         case CSSSelector::Hyphen:
         {
@@ -1172,7 +1171,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             const QString& selStr = sel_str.string();
             if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
-            if(str.find(selStr, 0, strictParsing) != 0) return false;
+            if(str.find(selStr, 0, caseSensitive) != 0) return false;
             // It does. Check for exact match or following '-':
             if(str.length() != selStr.length()
                 && str[selStr.length()] != '-') return false;
