@@ -1028,7 +1028,7 @@ bool PrefixNode::deref()
 Value PrefixNode::evaluate(ExecState *exec) const
 {
   Reference ref = expr->evaluateReference(exec);
-  KJS_CHECKEXCEPTION
+  KJS_CHECKEXCEPTIONVALUE
   Value v = ref.getValue(exec);
   double n = v.toNumber(exec);
 
