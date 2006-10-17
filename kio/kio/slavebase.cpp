@@ -58,6 +58,8 @@
 #include "kio/ioslave_defaults.h"
 #include "kio/slaveinterface.h"
 
+#include "uiserver_stub.h"
+
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE
 #include <execinfo.h>
@@ -821,10 +823,15 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
+    long progressId = metaData("progress-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
+    kdDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << " progress-id=" << progressId << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
+
+    UIServer_stub uiserver( "kio_uiserver", "UIServer" );
+    if (progressId)
+      uiserver.setJobVisible( progressId, false );
 
     QDataStream stream(params, IO_WriteOnly);
 
@@ -833,8 +840,13 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     else
        stream << info << errorMsg << windowId << s_seqNr;
 
-    if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
-                               params, replyType, reply ) )
+    bool callOK = d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
+                                        params, replyType, reply );
+
+    if (progressId)
+      uiserver.setJobVisible( progressId, true );
+
+    if (!callOK)
     {
        kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;

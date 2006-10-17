@@ -110,6 +110,7 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
     if ( showProgressInfo )
     {
         m_progressId = Observer::self()->newJob( this, true );
+        addMetaData("progress-id", QString::number(m_progressId));
         //kdDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
