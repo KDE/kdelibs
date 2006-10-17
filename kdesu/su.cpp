@@ -59,7 +59,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     config->setGroup("super-user-command");
     superUserCommand = config->readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
     if ( superUserCommand != "sudo" && superUserCommand != "su" ) {
-      kdWarning() << "unknown super user command" << endl;
+      kWarning() << "unknown super user command" << endl;
       superUserCommand = "su";
     }
 }
@@ -110,7 +110,7 @@ int SuProcess::exec(const char *password, int check)
     args += QByteArray(__KDE_BINDIR) + "/kdesu_stub";
     args += "-";
 
-    QCString command;
+    QByteArray command;
     if (superUserCommand == "sudo") {
         command = __PATH_SUDO;
     } else {
@@ -119,7 +119,7 @@ int SuProcess::exec(const char *password, int check)
  
     if (::access(command, X_OK) != 0)
     {
-        command = QFile::encodeName( KGlobal::dirs()->findExe(superUserCommand.ascii()) );
+        command = QFile::encodeName( KGlobal::dirs()->findExe(superUserCommand.toAscii()) );
         if (command.isEmpty())
             return check ? SuNotFound : -1;
     }
@@ -149,7 +149,7 @@ int SuProcess::exec(const char *password, int check)
  	        return ret;
  	    }
  	    if (kill(m_Pid, SIGKILL) < 0) {
- 	        kdDebug() << k_funcinfo << "kill < 0" << endl;
+ 	        kDebug() << k_funcinfo << "kill < 0" << endl;
  		//FIXME SIGKILL doesn't work for sudo,
  		//why is this different from su?
  		ret=error;
