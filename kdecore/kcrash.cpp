@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 #include "kcrash.h"
 
 #include <sys/types.h>
@@ -308,7 +309,11 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
   {
     if( kill( pid, 0 ) < 0 )
       _exit(253);
-    sleep( 1 ); // the debugger should stop this process anyway
+    struct timeval tm;
+    tm.tv_sec = 8;
+    tm.tv_usec = 0;
+    select(0, 0, 0, 0, &tm);
+    // the debugger should stop this process anyway
   }
 }
 
