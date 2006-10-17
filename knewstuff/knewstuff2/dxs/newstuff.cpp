@@ -39,6 +39,7 @@
 #include <kio/netaccess.h>
 
 #include <knewstuff2/provider.h>
+#include <knewstuff2/providerhandler.h>
 #include <knewstuff2/entry.h>
 #include <knewstuff2/entryhandler.h>
 #include <knewstuff2/category.h>
@@ -751,6 +752,12 @@ void NewStuffDialog::setEngine(Dxs *engine)
 	connect(m_dxs,
 		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
 		SLOT(slotEntries(QValueList<KNS::Entry*>)));
+	connect(m_dxs,
+		SIGNAL(signalError()),
+		SLOT(slotError()));
+	connect(m_dxs,
+		SIGNAL(signalFault()),
+		SLOT(slotFault()));
 }
 
 void NewStuffDialog::slotLoadProviderDXS(int index)
@@ -887,7 +894,10 @@ void NewStuffDialog::slotProvidersListResult( KIO::Job * job )
         QDomElement elem = providerNode.toElement();
         providerNode = providerNode.nextSibling();
         if ( elem.tagName() == "provider" )
-            d->providers.append( new Provider( elem ) );
+	{
+            ProviderHandler handler(elem);
+            d->providers.append(handler.providerptr());
+	}
     }
 
     // inform user about providers in the list
@@ -1114,5 +1124,20 @@ void NewStuffDialog::slotItemResult( KIO::Job * job )
     emit installedFile( item->name().representation(), item->type() );
 }
 //END File(s) Transferring
+
+// fault/error from kdxsbutton
+void NewStuffDialog::slotFault()
+{
+	KMessageBox::error(this,
+		i18n("A protocol fault has occurred. The request has failed."),
+		i18n("Desktop Exchange Service"));
+}
+
+void NewStuffDialog::slotError()
+{
+	KMessageBox::error(this,
+		i18n("A network error has occurred. The request has failed."),
+		i18n("Desktop Exchange Service"));
+}
 
 #include "newstuff.moc"

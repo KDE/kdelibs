@@ -38,6 +38,7 @@ public:
 
 signals:
 	void signalResult(QDomNode node);
+	void signalError();
 
 private slots:
 	void slotData(KIO::Job *job, const QByteArray& data);

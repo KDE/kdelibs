@@ -141,6 +141,8 @@ void Soap::slotResult(KIO::Job *job)
 	if((job) && (job->error()))
 	{
 		//job->showErrorDialog(this);
+		kdDebug() << "SOAP ERROR!" << endl;
+		emit signalError();
 		return;
 	}
 

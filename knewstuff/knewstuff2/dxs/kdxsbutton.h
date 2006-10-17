@@ -41,6 +41,7 @@ public slots:
 	void slotRating(bool success);
 
 	void slotFault();
+	void slotError();
 
 private:
 	bool authenticate();

@@ -43,9 +43,11 @@ signals:
 	void signalComment(bool success);
 	void signalRating(bool success);
 	void signalFault();
+	void signalError();
 
 private slots:
 	void slotResult(QDomNode node);
+	void slotError();
 
 private:
 	Soap *m_soap;

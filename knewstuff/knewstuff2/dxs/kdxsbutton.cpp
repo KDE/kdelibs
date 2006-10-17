@@ -125,6 +125,9 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_dxs,
 		SIGNAL(signalFault()),
 		SLOT(slotFault()));
+	connect(m_dxs,
+		SIGNAL(signalError()),
+		SLOT(slotError()));
 
 	QPixmap pix = il->loadIcon("knewstuff", KIcon::Small);
 	setIconSet(pix);
@@ -307,6 +310,13 @@ void KDXSButton::slotFault()
 {
 	KMessageBox::error(this,
 		i18n("A protocol fault has occurred. The request has failed."),
+		i18n("Desktop Exchange Service"));
+}
+
+void KDXSButton::slotError()
+{
+	KMessageBox::error(this,
+		i18n("A network error has occurred. The request has failed."),
 		i18n("Desktop Exchange Service"));
 }
 

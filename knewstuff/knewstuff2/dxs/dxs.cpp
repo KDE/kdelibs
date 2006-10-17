@@ -18,6 +18,7 @@ Dxs::Dxs()
 {
 	m_soap = new Soap();
 	connect(m_soap, SIGNAL(signalResult(QDomNode)), SLOT(slotResult(QDomNode)));
+	connect(m_soap, SIGNAL(signalError()), SLOT(slotError()));
 }
 
 Dxs::~Dxs()
@@ -150,6 +151,11 @@ void Dxs::call_rating(int id, int rating)
 	eratingtext.appendChild(trating);
 	erating.appendChild(eratingtext);
 	m_soap->call(erating, m_endpoint);
+}
+
+void Dxs::slotError()
+{
+	emit signalError();
 }
 
 void Dxs::slotResult(QDomNode node)

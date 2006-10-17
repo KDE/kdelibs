@@ -71,6 +71,8 @@ class NewStuffDialog : public QDialog
         void slotLoadProviderDXS(int index);
 	void slotCategories(QValueList<KNS::Category*> categories);
 	void slotEntries(QValueList<KNS::Entry*> entries);
+	void slotFault();
+	void slotError();
         // file downloading
         void slotDownloadItem( AvailableItem * );
         void slotItemMessage( KIO::Job *, const QString & );
