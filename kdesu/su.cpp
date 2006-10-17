@@ -119,7 +119,7 @@ int SuProcess::exec(const char *password, int check)
  
     if (::access(command, X_OK) != 0)
     {
-        command = QFile::encodeName( KGlobal::dirs()->findExe(superUserCommand.toAscii()) );
+        command = QFile::encodeName( KGlobal::dirs()->findExe(superUserCommand.toLatin1()) );
         if (command.isEmpty())
             return check ? SuNotFound : -1;
     }
