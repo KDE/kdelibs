@@ -67,7 +67,11 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
     // Notify the UI Server and get a progress id
     if ( d->showProgressInfo )
     {
-        job->setProgressId( Observer::self()->newJob( static_cast<KIO::Job*>( job ), true ) );
+        KIO::Job* kioJob = static_cast<KIO::Job*>( job );
+        const int progressId = Observer::self()->newJob( kioJob, true );
+        job->setProgressId( progressId );
+        kioJob->addMetaData("progress-id", QString::number(progressId));
+
         //kDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
         connect( job, SIGNAL( percent( KJob*, unsigned long ) ),

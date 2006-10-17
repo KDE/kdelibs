@@ -40,6 +40,7 @@
 #include <qfile.h>
 #include <qlist.h>
 #include <QtDBus/QtDBus>
+#include "uiserveriface.h"
 
 #include <kapplication.h>
 #include <kcrash.h>
@@ -759,7 +760,7 @@ void SlaveBase::listDir(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_LISTDIR)); }
 void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
-void SlaveBase::open(KUrl const &, int access )
+void SlaveBase::open(KUrl const &, int )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
 void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
@@ -809,7 +810,12 @@ bool SlaveBase::dispatch()
 bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 {
     AuthInfo authResult;
-    long windowId = metaData("window-id").toLong();
+    const long windowId = metaData("window-id").toLong();
+    const long progressId = metaData("progress-id").toLong();
+
+    org::kde::KIO::UIServer uiserver("org.kde.kio_uiserver", "/UIServer", QDBusConnection::sessionBus());
+    if (progressId)
+        uiserver.setJobVisible(progressId, false);
 
     kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
@@ -828,8 +834,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     else
        reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
 
+    bool callOK = reply.type() == QDBusMessage::ReplyMessage;
+    if (progressId)
+        uiserver.setJobVisible(progressId, true);
 
-    if ( reply.type() != QDBusMessage::ReplyMessage )
+    if (!callOK)
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!" << endl;
        kDebug(7019) << reply.arguments().at(0).toString() << endl;
