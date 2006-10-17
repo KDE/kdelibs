@@ -176,6 +176,8 @@ void KBookmarkMenu::contextMenu( const QPoint & pos )
 {
   QAction * action = m_parentMenu->actionAt(pos);
   KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
+  if (!act)
+      return;
   act->contextMenu(m_parentMenu->mapToGlobal(pos), m_pManager, m_pOwner);
 }
 
