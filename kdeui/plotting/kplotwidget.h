@@ -91,6 +91,12 @@ public:
 	 * @param parent the parent widget
 	 */
 	KPlotWidget( double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0, QWidget *parent=0 );
+	
+	/**
+	 * @short Constructor. x and y limits will be set to 0.0 and 1.0 (min/max)
+	 * @param parent the parent widget
+	 */
+  KPlotWidget( QWidget *parent=0 );
 
 	/**
 	 * Destructor.

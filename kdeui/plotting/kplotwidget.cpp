@@ -36,6 +36,41 @@
 #define XPADDING 20
 #define YPADDING 20
 
+KPlotWidget::KPlotWidget( QWidget *parent )
+ : QFrame( parent ), ShowGrid( false ), ShowObjectToolTips( true ), UseAntialias( false )
+{
+	setAttribute( Qt::WA_NoBackground, true );
+
+  double x1 = 0.0;
+  double x2 = 1.0;
+  double y1 = 0.0;
+  double y2 = 1.0;
+
+	// create the axes
+	mAxes[LeftAxis] = new KPlotAxis();
+	mAxes[BottomAxis] = new KPlotAxis();
+	mAxes[RightAxis] = new KPlotAxis();
+	mAxes[TopAxis] = new KPlotAxis();
+
+	//set DataRect
+	setLimits( x1, x2, y1, y2 );
+	SecondDataRect = QRect(); //default: no secondary data rect
+
+	//By default, the left and bottom axes have tickmark labels
+	axis(LeftAxis)->setShowTickLabels( true );
+	axis(BottomAxis)->setShowTickLabels( true );
+
+	setDefaultPaddings();
+
+	//default colors:
+	setBackgroundColor( Qt::black );
+	setForegroundColor( Qt::white );
+	setGridColor( Qt::gray );
+
+	setMinimumSize( 150, 150 );
+
+}
+
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent )
  : QFrame( parent ), ShowGrid( false ), ShowObjectToolTips( true ), UseAntialias( false )
 {
