@@ -707,6 +707,10 @@ short RenderBox::containingBlockWidth() const
     }
 
     RenderBlock* cb = containingBlock();
+    if (isRenderBlock() && cb->isTable()) {
+        //captions are not affected by table border or padding
+        return cb->width();
+    }
     if (usesLineWidth())
         return cb->lineWidth(m_y);
     else
