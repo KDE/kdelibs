@@ -125,7 +125,7 @@ bool KProgressDialog::wasCancelled() const
 
 void KProgressDialog::ignoreCancel()
 {
-    mCancelled = false;
+    d->mCancelled = false;
 }
 
 void KProgressDialog::setMinimumDuration(int ms)
