@@ -366,6 +366,31 @@ void KSaveFileTest::test_rcsBackupFile()
     }
 }
 
+void KSaveFileTest::test_dataStream()
+{
+#ifdef Q_WS_WIN
+
+    QString path=QDir::homePath();
+
+    path = path + QLatin1String("/test_KSaveFileTest_dataStream.tmp");
+
+    printf("KSaveFileTest::test_dataStream(): path='%s'\n", qPrintable(path));
+
+    KSaveFile* database = new KSaveFile(path);
+
+
+    // msvc linked against QtCore4.lib (release version) crashes in
+    //     QFile * KTempFile::file()
+    //     { ...
+    //     mFile->open(mStream, QIODevice::ReadWrite);
+    //
+    //     mFile is QFile*
+    QDataStream m_str(database);
+
+    delete database;
+#endif
+}
+
 void KSaveFileTest::cleanupTestCase()
 {
     foreach ( QString fileToRemove, filesToRemove ) {
