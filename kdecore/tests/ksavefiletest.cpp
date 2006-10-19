@@ -378,14 +378,8 @@ void KSaveFileTest::test_dataStream()
 
     KSaveFile* database = new KSaveFile(path);
 
-
-    // msvc linked against QtCore4.lib (release version) crashes in
-    //     QFile * KTempFile::file()
-    //     { ...
-    //     mFile->open(mStream, QIODevice::ReadWrite);
-    //
-    //     mFile is QFile*
     QDataStream m_str(database);
+    FILE* fs = database->fstream();
 
     delete database;
 #endif
