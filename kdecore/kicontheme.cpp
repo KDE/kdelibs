@@ -32,6 +32,7 @@
 #include <kinstance.h>
 
 #include "kicontheme.h"
+#include "kstaticdeleter.h"
 
 class KIconThemePrivate
 {
@@ -421,9 +422,11 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType mat
 
 // static
 QString *KIconTheme::_theme = 0L;
+static KStaticDeleter<QString> themeStaticDeleter;
 
 // static
 QStringList *KIconTheme::_theme_list = 0L;
+static KStaticDeleter<QStringList> themelistStaticDeleter;
 
 // static
 QString KIconTheme::current()
@@ -432,7 +435,8 @@ QString KIconTheme::current()
     if (_theme != 0L)
         return *_theme;
 
-    _theme = new QString;
+    themeStaticDeleter.setObject(_theme, new QString);
+
     KConfigGroup cg(KGlobal::config(), "Icons");
     *_theme = cg.readEntry("Theme",defaultThemeName());
     if ( *_theme == QLatin1String("hicolor") ) *_theme = defaultThemeName();
@@ -453,7 +457,7 @@ QStringList KIconTheme::list()
     if (_theme_list != 0L)
         return *_theme_list;
 
-    _theme_list = new QStringList;
+    themelistStaticDeleter.setObject(_theme_list, new QStringList);
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
      << KGlobal::dirs()->resourceDirs("xdgdata-icon")
      << "/usr/share/pixmaps";
