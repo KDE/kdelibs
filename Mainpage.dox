@@ -21,7 +21,7 @@
         *   (<a href="kjs/html/classes.html">classes</a>)\n
 	*   <i>Javascript (aka. ECMAScript and JScript) support.</i>
 	* - <a href="kio/html/index.html"><b>kio</b></a>
-        *   (<a href="kio/kio/html/classes.html">classes</a>)\n
+        *   (<a href="kio/html/classes.html">classes</a>)\n
 	*   <i>KDE's input/output system.<br> Provides network transparency input
 	*   and output, file monitoring, and more</i>
 	* - <a href="kparts/html/index.html"><b>kparts</b></a>

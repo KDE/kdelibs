@@ -3,4 +3,4 @@
  * Not much to say.
 */
 
-// DOXYGEN_REFERENCES = kdecore kdeui
+// DOXYGEN_REFERENCES = kdecore kdeui kio kded

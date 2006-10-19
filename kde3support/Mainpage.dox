@@ -1,0 +1,10 @@
+/**
+
+@mainpage KDE3 Support Library
+
+The classes here are only for convenience of porting, they are not supposed to be used for a long time.
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore kdeui kio kparts
+// DOXYGEN_EXCLUDE = kunittest

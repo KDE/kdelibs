@@ -2,4 +2,4 @@
  * 
  * Not much to say.
 */
-// DOXYGEN_REFERENCES = kparts
+// DOXYGEN_REFERENCES = kdecore kdeui kio kparts

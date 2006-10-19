@@ -6,4 +6,4 @@
 \section phonon_UiBackend_optionalmethods Optional Methods
 
 */
-// DOXYGEN_REFERENCES = kdecore kio phonon
+// DOXYGEN_REFERENCES = kdecore kdeui kio phonon

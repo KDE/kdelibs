@@ -13,6 +13,6 @@
 *   <i>Interface to plain text editing services in KDE.</i>
 *
 */
-// DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts
+// DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
 // DOXYGEN_EXCLUDE = kspeech ktexteditor kdocument
 // DOXYGEN_SET_RECURSIVE = YES

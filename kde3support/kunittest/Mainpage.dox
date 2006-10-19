@@ -1,4 +1,1 @@
-/** @mainpage ./kde3support/kunittest
- * 
- * Not much to say.
-*/
+// DOXYGEN_REFERENCES = kdecore
