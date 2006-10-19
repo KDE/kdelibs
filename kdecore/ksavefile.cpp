@@ -179,7 +179,7 @@ QString KSaveFile::fileName() const
 void KSaveFile::abort()
 {
     if ( d->stream ) {
-        fclose(d->stream);
+        fflush(d->stream);
         d->stream = 0;
     }
     
@@ -194,7 +194,7 @@ bool KSaveFile::finalize()
 
     if ( !d->wasFinalized ) {
         if ( d->stream ) {
-            fclose(d->stream);
+            fflush(d->stream);
             d->stream = 0;
         }
         close();

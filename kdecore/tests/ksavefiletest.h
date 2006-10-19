@@ -31,7 +31,6 @@ private Q_SLOTS:
     void test_ksavefile();
     void test_numberedBackupFile();
     void test_rcsBackupFile();
-    void test_dataStream();
     void test_simpleBackupFile();
     void cleanupTestCase();
     
