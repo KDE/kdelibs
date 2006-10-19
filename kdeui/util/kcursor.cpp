@@ -360,7 +360,10 @@ KCursorPrivate * KCursorPrivate::self()
 {
     if ( !s_self )
         s_self = new KCursorPrivate;
-    // WABA: We never delete KCursorPrivate. Don't change.
+    // WABA: Don't delete KCursorPrivate, it serves no real purpose.
+    // Even worse it causes crashes because it seems to get deleted
+    // during ~QApplication and ~QApplication doesn't seem to like it
+    // when we delete a QCursor. No idea if that is a bug itself.
 
     return s_self;
 }
