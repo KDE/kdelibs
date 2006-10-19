@@ -23,9 +23,6 @@
 #include <qobject.h>
 #include <knotifyclient.h>
 #include <dcopobject.h>
-#ifndef WITHOUT_ARTS
-#include <soundserver.h>
-#endif
 
 class KNotifyPrivate;
 class KProcess;

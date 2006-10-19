@@ -22,7 +22,6 @@ AC_MSG_CHECKING(for aRts-$ARTS_WANT_VERSION_MAJOR.$ARTS_WANT_VERSION_MINOR)
 ARTS_OK=no
 
 if test "$build_arts" != "yes"; then
-  DO_NOT_COMPILE="$DO_NOT_COMPILE arts"
   AC_MSG_RESULT(disabled)
 else
 

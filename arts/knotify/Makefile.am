@@ -6,7 +6,9 @@ INCLUDES= -I$(top_srcdir)/arts/kde -I$(includedir)/arts $(all_includes)
 kde_module_LTLIBRARIES = knotify.la
 
 knotify_la_SOURCES	= knotify.cpp knotify.skel
+if include_ARTS
 knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI) $(top_builddir)/arts/kde/libartskde.la
+endif
 knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
 knotify_la_METASOURCES = AUTO
 
