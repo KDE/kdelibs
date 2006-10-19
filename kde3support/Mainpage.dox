@@ -7,4 +7,5 @@ The classes here are only for convenience of porting, they are not supposed to b
 */
 
 // DOXYGEN_REFERENCES = kdecore kdeui kio kparts
+// DOXYGEN_SET_RECURSIVE = YES
 // DOXYGEN_EXCLUDE = kunittest
