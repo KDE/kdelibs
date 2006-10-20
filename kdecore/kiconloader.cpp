@@ -728,8 +728,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
                 // Try "User" icon too. Some apps expect this.
                 if (!name.isEmpty())
                     pix = loadIcon(name, KIcon::User, size, state, path_store, true);
-                if (!pix.isNull() || canReturnNull)
+                if (!pix.isNull() || canReturnNull) {
+                    QPixmapCache::insert(key, pix);
                     return pix;
+                }
 
                 icon = findMatchingIcon(str_unknown, size);
                 if (!icon.isValid())
