@@ -43,6 +43,7 @@ KMConfigCommand::KMConfigCommand(QWidget *parent)
 				"set of options, a set of requirements and associated mime types. "
 				"Here you can create new command objects and edit existing ones. All "
 				"changes will only be effective for you."), gb);
+	lab->setWordWrap(true);
 	KXmlCommandSelector	*sel = new KXmlCommandSelector(false, gb);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);

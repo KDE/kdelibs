@@ -61,6 +61,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 			  "printers you want to see from the list on the left or enter a <b>Location</b> "
 			  "filter (ex: Group_1*). Both are cumulative and ignored if empty."));
 	lab->setTextFormat(Qt::RichText);
+	lab->setWordWrap(true);
 	QLabel	*lab1 = new QLabel(i18n("Location filter:"), box);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);

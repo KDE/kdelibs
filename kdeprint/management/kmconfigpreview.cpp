@@ -47,6 +47,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 					  "(KGhostView) cannot be found, KDE tries automatically to find another "
 					  "external PostScript viewer"));
 	lab->setTextFormat(Qt::RichText);
+	lab->setWordWrap(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
 	l0->setMargin(0);
