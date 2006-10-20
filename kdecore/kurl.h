@@ -451,7 +451,7 @@ public:
    * The reference is @em never decoded automatically.
    * @return the undecoded reference, or QString() if there is none
    */
-  QString ref() const { return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ) ); }
+  QString ref() const;
 
   /**
    * Sets the reference part (everything after '#').
@@ -794,7 +794,7 @@ public:
    * @return true if this url is a parent of @p u (or the same URL as @p u)
    *
    */
-  bool isParentOf( const KUrl& u ) const { return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash ); }
+  bool isParentOf( const KUrl& u ) const;
     // (this overload of the QUrl method allows to use the implicit KUrl constructors)
     // but also the equality test
 

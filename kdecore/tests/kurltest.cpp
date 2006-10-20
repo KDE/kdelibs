@@ -305,6 +305,8 @@ void KUrlTest::testEmptyQueryOrRef()
   KUrl noQuery( "http://www.kde.org");
   QCOMPARE( noQuery.query(), QString() ); // query at all
   QVERIFY( !noQuery.hasQuery() );
+  QVERIFY( !noQuery.hasRef());
+  QVERIFY( noQuery.ref().isNull() );
 
   // Empty queries should be preserved!
   QUrl qurl = QUrl::fromEncoded("http://www.kde.org/cgi/test.cgi?", QUrl::TolerantMode);

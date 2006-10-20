@@ -1517,3 +1517,16 @@ void KUrl::setRef( const QString& fragment )
   else
     setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) );
 }
+
+QString KUrl::ref() const
+{
+  if ( fragment().isNull() )
+    return QString();
+  else
+    return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ) );
+}
+
+bool KUrl::isParentOf( const KUrl& u ) const
+{
+  return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash );
+}
