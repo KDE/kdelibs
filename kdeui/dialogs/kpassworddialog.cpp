@@ -526,11 +526,12 @@ void KPasswordDialog::slotKeep(bool keep)
 }
 
 
-int KPasswordDialog::getPassword(QWidget *parent,QByteArray &password, const QString &prompt,
-	int *keep)
+int KPasswordDialog::getPassword(QWidget *parent, QByteArray &password, const QString &caption,
+    const QString &prompt, bool *keep)
 {
     const bool enableKeep = (keep && *keep);
     KPasswordDialog* const dlg = new KPasswordDialog(Password, enableKeep,false,parent);
+    dlg->setWindowTitle(caption);
     dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted) {
@@ -542,16 +543,38 @@ int KPasswordDialog::getPassword(QWidget *parent,QByteArray &password, const QSt
     return ret;
 }
 
+int KPasswordDialog::getPassword(QWidget *parent, QByteArray &password, const QString &prompt,
+	int *keep)
+{
+    int res = KPasswordDialog::Rejected;
+    if (keep) {
+        bool boolkeep = *keep;
+        res = getPassword(parent, password, i18n("Password Input"), prompt, &boolkeep);
+        *keep = boolkeep;
+    }
+    else {
+        res = getPassword(parent, password, i18n("Password Input"), prompt);
+    }
+    return res;
+}
 
-int KPasswordDialog::getNewPassword(QWidget *parent,QByteArray &password, const QString &prompt)
+
+int KPasswordDialog::getNewPassword(QWidget *parent, QByteArray &password, const QString &caption,
+    const QString &prompt)
 {
     KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);
+    dlg->setWindowTitle(caption);
     dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted)
 	password = dlg->password();
     delete dlg;
     return ret;
+}
+
+int KPasswordDialog::getNewPassword(QWidget *parent, QByteArray &password, const QString &prompt)
+{
+    return getNewPassword(parent, password, i18n("Password Input"), prompt);
 }
 
 

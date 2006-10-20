@@ -315,15 +315,23 @@ public:
      *
      * @param parent The widget the dialog belongs too
      * @param password The password is returned in this reference parameter.
+     * @param caption A caption for the dialog.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
      * @param keep Enable/disable a checkbox controlling password keeping.
-     * If you pass a null pointer, or a pointer to the value 0, the checkbox
-     * is not shown. If you pass a pointer to a nonzero value, the checkbox
+     * If you pass a null pointer, or a pointer to the value false, the checkbox
+     * is not shown. If you pass a pointer to a true value, the checkbox
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
-    static int getPassword(QWidget *parent,QByteArray &password, const QString &prompt, int *keep=0L);
+    static int getPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt, bool *keep = 0L);
+
+    /**
+     * @overload
+     *
+     * @deprecated Use the new version with the caption argument
+     */
+    static KDE_DEPRECATED int getPassword(QWidget *parent, QByteArray &password, const QString &prompt, int *keep = 0L);
 
     /**
      * Pops up the dialog, asks the user for a password and returns it. The
@@ -332,11 +340,19 @@ public:
      *
      * @param parent The widget the dialog belongs too
      * @param password The password is returned in this reference parameter.
+     * @param caption A caption for the dialog.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
      * @return Result code: Accepted or Rejected.
      */
-    static int getNewPassword(QWidget *parent,QByteArray &password, const QString &prompt);
+    static int getNewPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt);
+
+    /**
+     * @overload
+     *
+     * @deprecated Use the new version with the caption argument
+     */
+    static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &prompt);
 
     /**
      * Static helper function that disables core dumps.
