@@ -262,8 +262,7 @@ bool KGlobalAccel::keyPressed( int key )
 void KGlobalAccel::regrabKeys( )
 {
 	QMutableMapIterator<int, KAction*> it2 = d->grabbedKeys;
-	while (it2.hasNext())
-	{
+	while (it2.hasNext()) {
 		it2.next();
 		if (!i->grabKey(it2.key(), true)) {
 			QMultiMap<KAction*, int>::Iterator it = d->grabbedActions.find(it2.value());
