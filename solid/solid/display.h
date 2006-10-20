@@ -36,6 +36,10 @@ namespace Solid
     class SOLID_EXPORT Display : public Capability, public Ifaces::Enums::Display
     {
         Q_OBJECT
+        Q_ENUMS( DisplayType )
+        Q_PROPERTY( DisplayType type READ type )
+        Q_PROPERTY( int lcdBrightness READ lcdBrightness )
+
     public:
         /**
          * Creates a new Display object.

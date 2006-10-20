@@ -27,9 +27,6 @@ class FakeDisplay : public FakeCapability, public virtual Solid::Ifaces::Display
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Display )
-    Q_PROPERTY( DisplayType type READ type )
-    Q_PROPERTY( int lcdBrightness READ lcdBrightness )
-    Q_ENUMS( DisplayType )
 
 public:
     explicit FakeDisplay(FakeDevice *device);

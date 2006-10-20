@@ -41,10 +41,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Camera : virtual public Capability, public Enums::Camera
     {
-//         Q_PROPERTY( AccessType accessMethod READ accessMethod )
-//         Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
-//         Q_ENUMS( AccessType )
-
     public:
         /**
          * Destroys a Camera object.

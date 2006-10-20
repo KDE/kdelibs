@@ -27,11 +27,6 @@ class FakePortableMediaPlayer : public FakeCapability, virtual public Solid::Ifa
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::PortableMediaPlayer )
-    Q_PROPERTY( AccessType accessMethod READ accessMethod )
-    Q_PROPERTY( QStringList outputFormats READ outputFormats )
-    Q_PROPERTY( QStringList inputFormats READ inputFormats )
-    Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
-    Q_ENUMS( AccessType )
 
 public:
     explicit FakePortableMediaPlayer( FakeDevice *device );

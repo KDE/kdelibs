@@ -27,9 +27,6 @@ class FakeBlock : public FakeCapability, virtual public Solid::Ifaces::Block
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Block )
-    Q_PROPERTY( int major READ major )
-    Q_PROPERTY( int minor READ minor )
-    Q_PROPERTY( QString device READ device )
 
 public:
     explicit FakeBlock( FakeDevice *device );

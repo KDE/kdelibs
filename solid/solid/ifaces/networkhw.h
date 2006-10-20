@@ -33,11 +33,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT NetworkHw : virtual public Capability
     {
-//         Q_PROPERTY( QString ifaceName READ ifaceName )
-//         Q_PROPERTY( bool wireless READ isWireless )
-//         Q_PROPERTY( QString hwAddress READ hwAddress )
-//         Q_PROPERTY( qulonglong macAddress READ macAddress )
-
     public:
         /**
          * Destroys a NetworkHw object.

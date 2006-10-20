@@ -38,12 +38,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
     {
-//        Q_PROPERTY( AccessType accessMethod READ accessMethod )
-//        Q_PROPERTY( QStringList outputFormats READ outputFormats )
-//        Q_PROPERTY( QStringList inputFormats READ inputFormats )
-//        Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
-//        Q_ENUMS( AccessType )
-
     public:
         /**
          * Destroys a portable media player object.

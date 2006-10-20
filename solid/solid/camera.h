@@ -40,6 +40,10 @@ namespace Solid
     class SOLID_EXPORT Camera : public Capability, public Ifaces::Enums::Camera
     {
         Q_OBJECT
+        Q_ENUMS( AccessType )
+        Q_PROPERTY( AccessType accessMethod READ accessMethod )
+        Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
+
     public:
         /**
          * Creates a new Camera object.

@@ -27,7 +27,6 @@ class FakeAcAdapter : public FakeCapability, virtual public Solid::Ifaces::AcAda
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::AcAdapter )
-    Q_PROPERTY( bool plugged READ isPlugged )
 
 public:
     explicit FakeAcAdapter( FakeDevice *device );

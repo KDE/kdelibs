@@ -27,9 +27,6 @@ class FakeCamera : public FakeCapability, virtual public Solid::Ifaces::Camera
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Camera )
-    Q_PROPERTY( AccessType accessMethod READ accessMethod )
-    Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
-    Q_ENUMS( AccessType )
 
 public:
     explicit FakeCamera( FakeDevice *device );

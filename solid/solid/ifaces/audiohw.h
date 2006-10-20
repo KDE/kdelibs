@@ -34,12 +34,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT AudioHw : virtual public Capability, public Enums::AudioHw
     {
-//         Q_PROPERTY( AudioDriver driver READ driver )
-//         Q_PROPERTY( QString driverHandler READ driverHandler )
-//         Q_PROPERTY( QString name READ name )
-//         Q_PROPERTY( AudioHwTypes type READ type )
-//         Q_ENUMS( AudioDriver AudioHwType )
-
     public:
         /**
          * Destroys an AudioHw object.

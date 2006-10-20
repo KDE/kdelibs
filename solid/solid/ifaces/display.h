@@ -37,10 +37,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Display : virtual public Capability, public Enums::Display
     {
-//         Q_PROPERTY( DisplayType type READ type )
-//         Q_PROPERTY( int lcdBrightness READ lcdBrightness )
-//         Q_ENUMS( DisplayType )
-
     public:
         /**
          * Destroys a Display object.

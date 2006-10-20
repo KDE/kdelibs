@@ -36,6 +36,12 @@ namespace Solid
     class SOLID_EXPORT Cdrom : public Storage, public Ifaces::Enums::Cdrom
     {
         Q_OBJECT
+        Q_ENUMS( MediumType )
+        Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
+        Q_PROPERTY( int readSpeed READ readSpeed )
+        Q_PROPERTY( int writeSpeed READ writeSpeed )
+        Q_PROPERTY( QList<int> writeSpeeds READ writeSpeeds )
+
     public:
         /**
          * Creates a new Cdrom object.

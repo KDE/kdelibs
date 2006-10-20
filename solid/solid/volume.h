@@ -38,6 +38,16 @@ namespace Solid
     class SOLID_EXPORT Volume : public Block, public Ifaces::Enums::Volume
     {
         Q_OBJECT
+        Q_ENUMS( UsageType )
+        Q_PROPERTY( bool ignored READ isIgnored )
+        Q_PROPERTY( bool mounted READ isMounted )
+        Q_PROPERTY( QString mountPoint READ mountPoint )
+        Q_PROPERTY( UsageType usage READ usage )
+        Q_PROPERTY( QString fsType READ fsType )
+        Q_PROPERTY( QString label READ label )
+        Q_PROPERTY( QString uuid READ uuid )
+        Q_PROPERTY( qulonglong size READ size )
+
     public:
         /**
          * Creates a new Volume object.

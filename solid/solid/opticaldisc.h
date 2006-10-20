@@ -34,6 +34,14 @@ namespace Solid
     class SOLID_EXPORT OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
     {
         Q_OBJECT
+        Q_ENUMS( ContentType DiscType )
+        Q_PROPERTY( ContentTypes availableContent READ availableContent )
+        Q_PROPERTY( DiscType discType READ discType )
+        Q_PROPERTY( bool appendable READ isAppendable )
+        Q_PROPERTY( bool blank READ isBlank )
+        Q_PROPERTY( bool rewritable READ isRewritable )
+        Q_PROPERTY( qulonglong capacity READ capacity )
+
     public:
         /**
          * Creates a new OpticalDisc object.

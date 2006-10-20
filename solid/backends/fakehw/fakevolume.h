@@ -27,15 +27,6 @@ class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::Volume
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Volume )
-    Q_PROPERTY( bool ignored READ isIgnored )
-    Q_PROPERTY( bool mounted READ isMounted )
-    Q_PROPERTY( QString mountPoint READ mountPoint )
-    Q_PROPERTY( UsageType usage READ usage )
-    Q_PROPERTY( QString fsType READ fsType )
-    Q_PROPERTY( QString label READ label )
-    Q_PROPERTY( QString uuid READ uuid )
-    Q_PROPERTY( qulonglong size READ size )
-    Q_ENUMS( UsageType )
 
 public:
     explicit FakeVolume( FakeDevice *device );

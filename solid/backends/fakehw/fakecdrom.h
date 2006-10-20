@@ -27,11 +27,6 @@ class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::Cdrom
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Cdrom )
-    Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
-    Q_PROPERTY( int readSpeed READ readSpeed )
-    Q_PROPERTY( int writeSpeed READ writeSpeed )
-    Q_PROPERTY( QList<int> writeSpeeds READ writeSpeeds )
-    Q_ENUMS( MediumType )
 
 public:
     explicit FakeCdrom( FakeDevice *device );

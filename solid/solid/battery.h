@@ -33,6 +33,17 @@ namespace Solid
     class SOLID_EXPORT Battery : public Capability, public Ifaces::Enums::Battery
     {
         Q_OBJECT
+        Q_ENUMS( BatteryType ChargeState )
+        Q_PROPERTY( bool plugged READ isPlugged )
+        Q_PROPERTY( BatteryType type READ type )
+        Q_PROPERTY( QString chargeLevelUnit READ chargeLevelUnit )
+        Q_PROPERTY( int charge READ charge )
+        Q_PROPERTY( int chargePercent READ chargePercent )
+        Q_PROPERTY( QString voltageUnit READ voltageUnit )
+        Q_PROPERTY( int voltage READ voltage )
+        Q_PROPERTY( bool rechargeable READ isRechargeable )
+        Q_PROPERTY( ChargeState chargeState READ chargeState )
+
     public:
         /**
          * Creates a new Battery object.

@@ -26,9 +26,7 @@ class FakeProcessor : public FakeCapability, public Solid::Ifaces::Processor
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Processor )
-    Q_PROPERTY( int number READ number )
-    Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
-    Q_PROPERTY( bool canThrottle READ canThrottle )
+
 public:
     explicit FakeProcessor(FakeDevice *device);
     ~FakeProcessor();

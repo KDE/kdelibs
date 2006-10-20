@@ -27,11 +27,6 @@ class FakeAudioHw : public FakeCapability, virtual public Solid::Ifaces::AudioHw
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::AudioHw )
-    Q_PROPERTY( AudioDriver driver READ driver )
-    Q_PROPERTY( QString driverHandler READ driverHandler )
-    Q_PROPERTY( QString name READ name )
-    Q_PROPERTY( AudioHwTypes type READ type )
-    Q_ENUMS( AudioDriver AudioHwType )
 
 public:
     explicit FakeAudioHw( FakeDevice *device );

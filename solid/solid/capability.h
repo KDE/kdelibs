@@ -57,7 +57,6 @@ namespace Solid
 
     private:
         friend class Device;
-        friend class Predicate;
     };
 }
 

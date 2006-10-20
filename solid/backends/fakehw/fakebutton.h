@@ -27,10 +27,6 @@ class FakeButton : public FakeCapability, virtual public Solid::Ifaces::Button
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Button )
-    Q_PROPERTY( ButtonType type READ type )
-    Q_PROPERTY( bool hasState READ hasState )
-    Q_PROPERTY( bool stateValue READ stateValue )
-    Q_ENUMS( ButtonType )
 
 public:
     explicit FakeButton( FakeDevice *device );

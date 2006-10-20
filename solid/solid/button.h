@@ -37,6 +37,11 @@ namespace Solid
     class SOLID_EXPORT Button : public Capability, public Ifaces::Enums::Button
     {
         Q_OBJECT
+        Q_ENUMS( ButtonType )
+        Q_PROPERTY( ButtonType type READ type )
+        Q_PROPERTY( bool hasState READ hasState )
+        Q_PROPERTY( bool stateValue READ stateValue )
+
     public:
         /**
          * Creates a new Button object.

@@ -33,17 +33,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Battery : virtual public Capability, public Enums::Battery
     {
-//         Q_ENUMS( BatteryType ChargeState )
-//         Q_PROPERTY( bool plugged READ isPlugged )
-//         Q_PROPERTY( BatteryType type READ type )
-//         Q_PROPERTY( QString chargeLevelUnit READ chargeLevelUnit )
-//         Q_PROPERTY( int charge READ charge )
-//         Q_PROPERTY( int chargePercent READ chargePercent )
-//         Q_PROPERTY( QString voltageUnit READ voltageUnit )
-//         Q_PROPERTY( int voltage READ voltage )
-//         Q_PROPERTY( bool rechargeable READ isRechargeable )
-//         Q_PROPERTY( ChargeState chargeState READ chargeState )
-
     public:
         /**
          * Destroys a Battery object.

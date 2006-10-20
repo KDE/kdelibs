@@ -32,6 +32,10 @@ namespace Solid
     class SOLID_EXPORT Processor : public Capability
     {
         Q_OBJECT
+        Q_PROPERTY( int number READ number )
+        Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
+        Q_PROPERTY( bool canThrottle READ canThrottle )
+
     public:
         /**
          * Creates a new Processor object.

@@ -171,16 +171,10 @@ bool Solid::Predicate::matches( Device *device ) const
     case Private::AtomType:
     {
         Capability *iface = device->asCapability( d->capability );
-        QObject *backendObject = 0;
 
         if ( iface!=0 )
         {
-            backendObject = iface->backendObject();
-        }
-
-        if ( backendObject!=0 )
-        {
-            QVariant value = backendObject->property( d->property.toLatin1() );
+            QVariant value = iface->property( d->property.toLatin1() );
             return ( value == d->value );
         }
         break;

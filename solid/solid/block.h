@@ -36,6 +36,10 @@ namespace Solid
     class SOLID_EXPORT Block : public Capability
     {
         Q_OBJECT
+        Q_PROPERTY( int major READ major )
+        Q_PROPERTY( int minor READ minor )
+        Q_PROPERTY( QString device READ device )
+
     public:
         /**
          * Creates a new Block object.

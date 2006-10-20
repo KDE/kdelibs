@@ -38,11 +38,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Button : virtual public Capability, public Enums::Button
     {
-//         Q_PROPERTY( ButtonType type READ type )
-//         Q_PROPERTY( bool hasState READ hasState )
-//         Q_PROPERTY( bool stateValue READ stateValue )
-//         Q_ENUMS( ButtonType )
-
     public:
         /**
          * Destroys a Button object.

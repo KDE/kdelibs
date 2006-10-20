@@ -33,10 +33,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Processor : virtual public Capability
     {
-//         Q_PROPERTY( int number READ number )
-//         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
-//         Q_PROPERTY( bool canThrottle READ canThrottle )
-
     public:
         /**
          * Destroys a Processor object.

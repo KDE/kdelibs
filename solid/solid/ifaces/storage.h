@@ -37,16 +37,6 @@ namespace Ifaces
      */
     class SOLIDIFACES_EXPORT Storage : virtual public Block, public Enums::Storage
     {
-//         Q_PROPERTY( Bus bus READ bus )
-//         Q_PROPERTY( DriveType driveType READ driveType )
-//         Q_PROPERTY( bool removable READ isRemovable )
-//         Q_PROPERTY( bool ejectRequired READ isEjectRequired )
-//         Q_PROPERTY( bool hotpluggable READ isHotpluggable )
-//         Q_PROPERTY( bool mediaCheckEnabled READ isMediaCheckEnabled )
-//         Q_PROPERTY( QString vendor READ vendor )
-//         Q_PROPERTY( QString product READ product )
-//         Q_ENUMS( Bus DriveType )
-
     public:
         /**
          * Destroys a Storage object.

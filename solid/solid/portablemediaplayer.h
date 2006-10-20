@@ -39,6 +39,12 @@ namespace Solid
     class SOLID_EXPORT PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
     {
         Q_OBJECT
+        Q_ENUMS( AccessType )
+        Q_PROPERTY( AccessType accessMethod READ accessMethod )
+        Q_PROPERTY( QStringList outputFormats READ outputFormats )
+        Q_PROPERTY( QStringList inputFormats READ inputFormats )
+        Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
+
     public:
         /**
          * Creates a new PortableMediaPlayer object.

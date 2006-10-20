@@ -33,6 +33,12 @@ namespace Solid
     class SOLID_EXPORT AudioHw : public Capability, public Ifaces::Enums::AudioHw
     {
         Q_OBJECT
+        Q_ENUMS( AudioDriver AudioHwType )
+        Q_PROPERTY( AudioDriver driver READ driver )
+        Q_PROPERTY( QString driverHandler READ driverHandler )
+        Q_PROPERTY( QString name READ name )
+        Q_PROPERTY( AudioHwTypes type READ type )
+
     public:
         /**
          * Creates a new AudioHw object.

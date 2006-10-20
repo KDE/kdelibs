@@ -32,6 +32,8 @@ namespace Solid
     class SOLID_EXPORT AcAdapter : public Capability
     {
         Q_OBJECT
+        Q_PROPERTY( bool plugged READ isPlugged )
+
     public:
         /**
          * Creates a new AcAdapter object.

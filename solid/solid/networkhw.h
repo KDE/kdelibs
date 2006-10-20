@@ -32,6 +32,11 @@ namespace Solid
     class SOLID_EXPORT NetworkHw : public Capability
     {
         Q_OBJECT
+        Q_PROPERTY( QString ifaceName READ ifaceName )
+        Q_PROPERTY( bool wireless READ isWireless )
+        Q_PROPERTY( QString hwAddress READ hwAddress )
+        Q_PROPERTY( qulonglong macAddress READ macAddress )
+
     public:
         /**
          * Creates a new NetworkHw object.
