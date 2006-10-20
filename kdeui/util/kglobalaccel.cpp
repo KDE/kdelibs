@@ -263,6 +263,7 @@ void KGlobalAccel::regrabKeys( )
 {
 	QMutableMapIterator<int, KAction*> it2 = d->grabbedKeys;
 	while (it2.hasNext())
+	{
 		it2.next();
 		if (!i->grabKey(it2.key(), true)) {
 			QMultiMap<KAction*, int>::Iterator it = d->grabbedActions.find(it2.value());
@@ -276,6 +277,7 @@ void KGlobalAccel::regrabKeys( )
 
 			it2.remove();
 		}
+	}
 }
 
 const QList< KAction * > KGlobalAccel::actionsWithGlobalShortcut( ) const
