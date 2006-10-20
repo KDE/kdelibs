@@ -116,9 +116,6 @@
 #include <QDesktopWidget>
 #include <QMetaObject>
 
-bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
-bool kde_kiosk_admin = false;
-
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 

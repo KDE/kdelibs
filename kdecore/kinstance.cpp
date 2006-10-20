@@ -180,8 +180,8 @@ KStandardDirs *KInstance::dirs() const
     return _dirs;
 }
 
-extern bool kde_kiosk_exception;
-extern bool kde_kiosk_admin;
+bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+bool kde_kiosk_admin = false;
 
 KConfig* KInstance::privateConfig() const
 {
