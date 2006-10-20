@@ -81,6 +81,7 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
     KPageWidgetItem *item = new KPageWidgetItem( frame, page->pageName() );
     item->setHeader( page->pageHeader() );
     item->setIcon( KIcon( page->pagePixmap() ) );
+    addPage( item );
 	}
 }
 
