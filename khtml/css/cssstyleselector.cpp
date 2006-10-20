@@ -1084,14 +1084,16 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
     if(sel->attr)
     {
-        // attributes are always case-sensitive in XHTML
-        // attributes are sometimes case-sensitive in HTML Strict
-        // ### for now we only treat id and class selector as case-sensitive in HTML strict
-        bool caseSensitive = e->getDocument()->htmlMode() == DocumentImpl::XHtml;
-        bool caseSensitive_alt = strictParsing || caseSensitive;
-
         DOMStringImpl* value = e->getAttributeImpl(sel->attr);
         if(!value) return false; // attribute is not set
+
+        // attributes are always case-sensitive in XHTML
+        // attributes are sometimes case-sensitive in HTML
+        // we only treat id and class selectors as case-sensitive in HTML strict
+        // for compatibility reasons
+        bool caseSensitive = e->getDocument()->htmlMode() == DocumentImpl::XHtml;
+        bool caseSensitive_alt = strictParsing || caseSensitive;
+        caseSensitive |= (sel->attr > ATTR_LAST_CI_ATTR);
 
         switch(sel->match)
         {
