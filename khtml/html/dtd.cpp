@@ -597,7 +597,6 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_NOBR:
     case ID_WBR:
         // _1 *
-        if(tagID == ID_A && childID == ID_TABLE) return false;
         return check_array(childID, tag_list_1) || check_array(childID, tag_list_6);
     case ID_P:
         // P: ( _0 | TABLE | NOSCRIPT) *
