@@ -514,19 +514,20 @@ function write_methods( compound )
 
         if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
              ( memberProt == 'public' ) &&
-             ( memberName.indexOf('operator') == -1 ) &&     // Not an operator.
+             ( memberName.indexOf('operator') == -1 ) &&     // Not an operator
              ( memberName.indexOf(compound.name) == -1 ) &&  // Not a ctor
              ( contains(memberStatic, 'no') ) &&             // Not a static method
              ( hasNoProblematicTypes(memberElement) ) )
         {
-            if (processed[memberName])
+            var memberCacheString = memberName + memberKind;    // Need to get around some js keywords with this
+            if (processed[memberCacheString])
             {
                 println( '      Skipping method overload ' + memberName );
                 continue;
             }
 
             println( '      Processing method ' + memberName );
-            processed[memberName] = true;
+            processed[memberCacheString] = true;
 
             var overloadList = find_method_overloads(memberList, idx, memberName);
 
