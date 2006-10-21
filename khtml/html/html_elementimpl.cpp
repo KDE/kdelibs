@@ -460,7 +460,7 @@ DOMString HTMLElementImpl::innerHTML() const
 
 DOMString HTMLElementImpl::innerText() const
 {
-    DOMString text = "";
+    QString text = "";
     if(!firstChild())
         return text;
 
@@ -481,7 +481,8 @@ DOMString HTMLElementImpl::innerText() const
             n = next;
         }
         if(n->isTextNode() ) {
-            text += static_cast<const TextImpl *>(n)->data();
+            DOMStringImpl* data = static_cast<const TextImpl *>(n)->string();
+            text += QConstString(data->s, data->l).string();
         }
     }
  end:
