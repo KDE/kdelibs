@@ -37,18 +37,23 @@ function extract_parameter( compound, param, paramIdx )
         paramVar = 'arg' + paramIdx;
 
     coreParamType = findCoreParamType(paramType);
+    var cppParamType = coreParamType;
+
+    if (isTypedef(coreParamType, compound.typedefs))
+        coreParamType = compound.typedefs[coreParamType];
+
     if ( isBool(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
-    else if ( isClassPointer(coreParamType) )
+    else if ( isPointer(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' =';
+            '        ' + cppParamType + ' ' + paramVar + ' =';
 
-        baseParamType = strip(coreParamType);
+        baseParamType = strip(cppParamType);
         if ( isObject(baseParamType, compound.objectTypes) )
             extracted += ' KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         else
@@ -66,7 +71,7 @@ function extract_parameter( compound, param, paramIdx )
     else if ( isInteger(coreParamType) )  // integer value
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -78,7 +83,7 @@ function extract_parameter( compound, param, paramIdx )
     else if ( isNumber(coreParamType) )  // integral value
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -92,7 +97,7 @@ function extract_parameter( compound, param, paramIdx )
         var enumHeading = compound.enums[paramType] + '::';
 
         extracted +=
-            '       ' + enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
+            '        ' + enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + enumHeading + paramDefault.toString() + ');\n';
@@ -116,7 +121,7 @@ function extract_parameter( compound, param, paramIdx )
     else if (coreParamType == 'QString')
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractQString(exec, args, ' + paramIdx;
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractQString(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -129,7 +134,7 @@ function extract_parameter( compound, param, paramIdx )
              contains(coreParamType, 'char'))
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractString<' + coreParamType + '>(exec, args, ' + paramIdx;
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractString<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -141,13 +146,20 @@ function extract_parameter( compound, param, paramIdx )
     else if ( isVariant(coreParamType) )
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
+    }
+    else if ( isNotImplemented(coreParamType) )
+    {
+        extracted += 
+            '        // Not currently implemented\n' +
+            '            // ' + cppParamType + ' ' + paramVar + ' =\n';
+        return extracted; // Shortcut adding the ) here because it's not implemented.
     }
     else    // It's an object, or something else?
     {
         extracted +=
-            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
+            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
     }
 
     if (!paramDefault.isNull())
@@ -199,6 +211,12 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
             if (!paramDefault.isNull())
                 params += '( ( ';
 
+
+            if (isTypedef(coreParamType, compound.typedefs))        // I _think_ this works for all cases
+                coreParamType = compound.typedefs[coreParamType];
+
+
+
             if (isBool(coreParamType))
                 params += 'object'+argIdx+' && object'+argIdx+'->isBoolean()';
             else if ( isNumber(coreParamType) || 
@@ -208,17 +226,17 @@ function construct_parameters(compound, overloadList, numArgs, funcCallStart, fu
                     contains(coreParamType, 'uchar') ||
                     contains(coreParamType, 'char'))
                 params += 'object'+argIdx+' && object'+argIdx+'->isString()';
-            else 
+            else if (isNotImplemented(coreParamType))
+                continue;
+            else
             {
-                if ( isClassPointer(coreParamType) )
+                if ( isPointer(coreParamType) )
                     coreParamType = strip(coreParamType);
 
                 if (coreParamType != compound.name)
                     compound.externalBindings[coreParamType] = true;
                 params += 'object'+argIdx+' && object'+argIdx+'->inherits(&' + coreParamType + 'Binding::info)';
             }
-//            else
-//                params += 'isBasic(value'+argIdx+')';
 
             if (!paramDefault.isNull())
                 params += ' ) || !object'+argIdx+' )';
@@ -375,9 +393,12 @@ function write_method( compound, memberName, overloadList )
         method += '    if (args.size() == ' + methodArgList.count() + ' )\n' +
         '    {\n';
 
+        if (isTypedef(coreMethodType, compound.typedefs))
+            coreMethodType = compound.typedefs[coreMethodType];
+
         var funcCallStart = '';
         var funcCallEnd = ');\n';
-        if (methodType == "void")
+        if (methodType == 'void')
         {
             funcCallStart = 
                 'value.' + memberName + '(';
@@ -412,8 +433,17 @@ function write_method( compound, memberName, overloadList )
             else
             {
                 funcCallEnd += indent +
-                    '        result = KJSEmbed::createValue( exec, "' + coreMethodType + '", tmp );\n';
+                            '// Not currently implemented\n' +
+                            indent +
+                            '// ' + coreMethodType + '\n' +
+                            indent + 
+                            'result = KJS::Null();\n';
             }
+//            else
+//            {
+//                funcCallEnd += indent +
+//                    '        result = KJSEmbed::createValue( exec, "' + coreMethodType + '", tmp );\n';
+//            }
         }
 
         if (compound.isVariant)
@@ -484,7 +514,7 @@ function write_methods( compound )
 
         if ( ( memberKind == 'function' ) && // Make sure we're working with a function here
              ( memberProt == 'public' ) &&
-             ( memberName.indexOf('operator') == -1 ) &&     // Make sure this is not an operator.
+             ( memberName.indexOf('operator') == -1 ) &&     // Not an operator.
              ( memberName.indexOf(compound.name) == -1 ) &&  // Not a ctor
              ( contains(memberStatic, 'no') ) &&             // Not a static method
              ( hasNoProblematicTypes(memberElement) ) )

@@ -30,11 +30,35 @@ function contains( string, part )
     return false;
 }
 
+
+function strip( string )
+{
+    string = string.replace(/ /, '');
+    string = string.replace(/\*/, '');
+    return string;
+}
+
+function stripQtKeywords( string )
+{
+    string = string.replace(/QT_BEGIN_HEADER/, ' ');
+    return string;
+}
+
+function stripWhitespace( string )
+{
+    string = string.replace(/^\s+/g, '').replace(/\s+$/g, '');
+    return string;
+}
+
+
 // Regular expression used to spot const & type args (i.e. 'const QString &').
 const_ref_rx = /const\s+(\w+)\s*&/;
 
 // Regular expression used to spot pointer type args (i.e. 'QString *').
 ptr_rx = /(\w+)\s*\*/;
+
+// Regular expression used to identify templates/containers
+template_rx = /.*<.*>.*/;
 
 // findCoreParamType(paramType)
 //   paramType - The potentially embellished type
@@ -71,25 +95,25 @@ function isPointer( paramType )
 // 6   - Is a non-variant integer.
 var data_types = {
     // Actual variant types
-    "QBitArray" : 1, "QBitmap" : 1, "bool" : 2, "QBrush" : 1,
-    "QByteArray" : 1, "QChar" : 1, "QColor" : 1, "QCursor" : 1,
-    "QDate" : 1, "QDateTime" : 1, "double" : 4, "QFont" : 1,
-    "QIcon" : 1, "QImage" : 1, "int" : 3, "QKeySequence" : 1,
-    "QLine" : 1, "QLineF" : 1, "QVariantList" : 1, "QLocale" : 1,
-    "qlonglong" : 3, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
-    "QPixmap" : 1, "QPoint" : 1, "QPointArray" : 1, "QPointF" : 1,
-    "QPolygon" : 1, "QRect" : 1, "QRectF" : 1, "QRegExp" : 1,
-    "QRegion" : 1, "QSize" : 1, "QSizeF" : 1, "QSizePolicy" : 1,
-    "QString" : 1, "QStringList" : 1, "QTextFormat" : 1,
-    "QTextLength" : 1, "QTime" : 1, "uint" : 3, "qulonglong" : 3,
-    "QUrl" : 1, 
+    "QBitArray" : 1,    "QBitmap" : 1,      "bool" : 2,         "QBrush" : 1,
+    "QByteArray" : 1,   "QChar" : 1,        "QColor" : 1,       "QCursor" : 1,
+    "QDate" : 1,        "QDateTime" : 1,    "double" : 4,       "QFont" : 1,
+    "QIcon" : 1,        "QImage" : 1,       "int" : 3,          "QKeySequence" : 1,
+    "QLine" : 1,        "QLineF" : 1,       "QVariantList" : 1, "QLocale" : 1,
+    "qlonglong" : 3,    "QVariantMap" : 1,  "QPalette" : 1,     "QPen" : 1,
+    "QPixmap" : 1,      "QPoint" : 1,       "QPointArray" : 1,  "QPointF" : 1,
+    "QPolygon" : 1,     "QRect" : 1,        "QRectF" : 1,       "QRegExp" : 1,
+    "QRegion" : 1,      "QSize" : 1,        "QSizeF" : 1,       "QSizePolicy" : 1,
+    "QString" : 1,      "QStringList" : 1,  "QTextFormat" : 1,
+    "QTextLength" : 1,  "QTime" : 1,        "uint" : 3,         "qulonglong" : 3,
+    "QUrl" : 1,
 
-     // Other necessary qglobal.h types.
-     "qreal" : 5, "float" : 5, "qint8" : 6, "quint8" : 6, "qint16" : 6, "quint16" : 6, 
-     "qint32" : 6, "quint32" : 6, "qint64" : 6, "quint64" : 6, 
-     "qulonglong" : 6,
-     "char" : 6, "uchar" : 6, "ushort" : 6, "ulong" : 6, 
-    "short" : 6, "long" : 6, 
+    // Other necessary qglobal.h types.
+    "qreal" : 5,   "float" : 5,    "qint8" : 6,    "quint8" : 6,   "qint16" : 6, "quint16" : 6, 
+    "qint32" : 6,  "quint32" : 6,  "qint64" : 6,   "quint64" : 6,
+    "qulonglong" : 6,
+    "char" : 6,  "uchar" : 6, "ushort" : 6,        "ulong" : 6, 
+    "short" : 6, "long" : 6,  "unsigned int" : 6
 };
 
 // function isVariant( paramType )
@@ -168,6 +192,12 @@ function isEnum( paramType, globalEnums, compoundEnums )
             compoundEnums[paramType]);
 }
 
+function isTypedef( paramType, compoundTypedefs )
+{
+    return (compoundTypedefs[paramType]);
+}
+
+
 // function hasNoProblematicTypes( memberElement )
 //   memberElement - element of compound member
 // This function temporarily checks for paramters we can't handle right
@@ -190,4 +220,10 @@ function hasNoProblematicTypes( memberElement )
     return true;
 }
 
+function isNotImplemented( paramType )
+{
+    if (template_rx.exec(paramType) != null)
+        return true;
 
+    return false;
+}

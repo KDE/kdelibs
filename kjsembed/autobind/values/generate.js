@@ -43,59 +43,62 @@ function process_class_info( classDoc )
     compound.name = compound.def.firstChildElement('compoundname').toElement().toString();
 
     // Stores the name the compound object data will be stored under
-    compound.data = compound.name + "Data";
+    compound.data = compound.name + 'Data';
 
     // Stores the name the compound object binding will be known by
-    compound.binding = compound.name + "Binding";
+    compound.binding = compound.name + 'Binding';
 
     // Stores the filename the compound binding will be stored as
     compound.filebase = compound.name.replace(/::/g, '_');
 
     // Stores a list of elements that define all the members of the object.
-    compound.memberList = compound.def.elementsByTagName( "memberdef" );
+    compound.memberList = compound.def.elementsByTagName( 'memberdef' );
 
     // Store the cached enum types with our compound object.
     compound.globalEnums = enum_array;
 
+    // Store the cached type definitions with our compound object.
+    compound.typedefs = typedef_array;
+
     // choose the bindings (TODO: Add ObjectBinding and QObjectBinding).
     if (isVariant( compound.name ))
     {
-        compound.bindingFactory = "VariantFactory";
-        compound.bindingBase = "VariantBinding";
+        compound.bindingFactory = 'VariantFactory';
+        compound.bindingBase = 'VariantBinding';
         compound.isVariant = true;
     }
     else
     {
-        compound.bindingFactory = "ValueFactory";
-        compound.bindingBase = "ValueBinding";
+        compound.bindingFactory = 'ValueFactory';
+        compound.bindingBase = 'ValueBinding';
         compound.isVariant = false;
     }
 
-    println("   Writing Header");
+    println('   Writing Header');
     write_header( compound );
 
-    println("   Writing Binding");
+    println('   Writing Binding');
     write_binding_new( compound );
 }
 
 function process_class( compound_elem )
 {
     var className = compound_elem.firstChild().toElement().toString();
-    println( "Found class: " + className );
+    println( 'Found class: ' + className );
 
     // Find the class description file
     var fileName = intermediate_dir + compound_elem.attribute( 'refid' ) + '.xml';
 
-    println( "Loading class file: " + fileName);
+    println( 'Loading class file: ' + fileName);
     var classInfo = new File( fileName );
     if ( !classInfo.open( File.ReadOnly ) )
-        throw "Could not open class info file" + fileName;
+        throw 'Could not open class info file' + fileName;
 
     // Read the index
     var content = classInfo.readAll();
 
     // Create the DOM
-    var classDoc = new QDomDocument("class");
+    var classDoc = new QDomDocument('class');
     classDoc.setContent( content );
     return classDoc.documentElement();
 }
@@ -109,22 +112,23 @@ println( 'Generating bindings for values...' );
 // Read the index
 var input = new File( intermediate_dir + 'index.xml' );
 if( !input.open( File.ReadOnly ) )
-  throw "Unable to open class list";
+  throw 'Unable to open class list';
 
 var content = input.readAll();
 
 // Create the DOM
-var index_doc = new QDomDocument("index");
+var index_doc = new QDomDocument('index');
 index_doc.setContent( content );
 var root = index_doc.documentElement();
 
 // List the classes
-var nodeList = root.elementsByTagName( "compound" );
+var nodeList = root.elementsByTagName( 'compound' );
 
 // First pass to gather pertinent data
 //   Enums       ... check
 //   Inheritance ... not done
 var enum_array = {};
+var typedef_array = {};
 var object_types = {};
 for( x = 0; x < nodeList.length(); ++x )
 {
@@ -137,7 +141,7 @@ for( x = 0; x < nodeList.length(); ++x )
         var classRootElement = process_class( compoundElement );
         var compoundDef = classRootElement.firstChildElement('compounddef').toElement();
         var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
-        var memberList = compoundDef.elementsByTagName( "memberdef" );
+        var memberList = compoundDef.elementsByTagName( 'memberdef' );
         for ( y = 0; y < memberList.length(); ++y )
         {
             var memberElement = memberList.item(y).toElement();
@@ -145,9 +149,39 @@ for( x = 0; x < nodeList.length(); ++x )
             if ( memberKind == 'enum' )
             {
                 var enumName = memberElement.firstChildElement('name').toElement().toString();
-                var qualifiedEnum = compoundName + "::" + enumName;
+                var qualifiedEnum = compoundName + '::' + enumName;
                 enum_array[qualifiedEnum] = true;
-                println("   Added enum " + qualifiedEnum);
+                println('   Added enum ' + qualifiedEnum);
+            }
+        }
+    }
+    else if ( compoundKind == 'file' )
+    {
+        var tempClassRoot = process_class( compoundElement );
+        var tempClassCompoundDef = tempClassRoot.firstChildElement('compounddef').toElement();
+        var tempClassNodeList = tempClassCompoundDef.elementsByTagName('memberdef');
+
+        for ( z = 0; z < tempClassNodeList.length(); ++z )
+        {
+            var memberElement = tempClassNodeList.item(z).toElement();
+            var memberKind = memberElement.attribute( 'kind' );
+            if ( memberKind == 'variable' )
+            {
+                var memberType = memberElement.firstChildElement('type').toElement().toString();
+                memberType = stripQtKeywords(memberType);
+                if (contains(memberType, 'typedef'))
+                {
+                    var typedefName = memberElement.firstChildElement('name').toElement().toString();
+                    var typedefValue = memberType.replace(/typedef/, '');
+                    typedefValue = typedefValue.replace(typedefName, '');
+                    typedefValue = stripWhitespace(typedefValue);
+                    typedef_array[typedefName] = typedefValue;
+                    println('   Added typedef ' + typedefName + ' => ' + typedefValue);
+                }
+            }
+            else if ( memberKind == 'function' )
+            {
+                // Not implemented yet - global methods might be dangerous
             }
         }
     }
