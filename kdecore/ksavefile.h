@@ -177,7 +177,7 @@ public:
      * This function is provided for older code that is dificult to port.
      * New code should <b>not</b> use this function.
      */
-    FILE *fstream ( void ) const;
+    KDE_DEPRECATED FILE *fstream ( void );
 
     /**
      * @brief Static method to create a backup file before saving.

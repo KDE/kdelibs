@@ -130,9 +130,6 @@ bool KSaveFile::open()
         return false;
     }
 
-    //Provide a hack for old code that should be updated.
-    d->stream = KDE_fdopen(handle(), "r+");
-
     d->tempFileName = tempFile.fileName();
     d->error=QFile::NoError;
     d->errorString.clear();
@@ -224,8 +221,15 @@ bool KSaveFile::finalize()
 // DEPRECATED. Provided to ease porting issues ONLY.
 // Please, PLEASE don't use this. Use a QTextStream instead.
 // If you need to emulate fprintf() then use QString::sprintf()
-FILE* KSaveFile::fstream() const
+FILE* KSaveFile::fstream()
 {
+    if ( !d->stream ) {
+        close(); //Close the QFile to prevent problems in Windows
+
+        //Provide a hack for old code that should be updated.
+        d->stream = KDE_fopen(QFile::encodeName(d->tempFileName), "r+");
+    }
+
     return d->stream;
 }
 
