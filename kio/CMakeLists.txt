@@ -32,19 +32,19 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
-add_subdirectory( kio ) 
-add_subdirectory( bookmarks ) 
-add_subdirectory( kfile ) 
-add_subdirectory( kpasswdserver ) 
+add_subdirectory( kio )
+add_subdirectory( bookmarks )
+add_subdirectory( kfile )
+add_subdirectory( kpasswdserver )
 if (UNIX)
-   add_subdirectory( misc ) 
+   add_subdirectory( misc )
 endif (UNIX)
 if (WIN32)
-   add_subdirectory( misc/kntlm ) 
+   add_subdirectory( misc/kntlm )
 endif (WIN32)
-add_subdirectory( pics ) 
-add_subdirectory( tests ) 
-add_subdirectory( kioexec ) 
+add_subdirectory( pics )
+add_subdirectory( tests )
+add_subdirectory( kioexec )
 
 # for the kfile usage in bookmarks
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
@@ -275,6 +275,82 @@ install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kpasswdserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES renamedlgplugin.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
+install(  FILES
+  kio/connection.h
+  kio/slaveinterface.h
+  kio/slave.h
+  kio/slaveconfig.h
+  kio/sessiondata.h
+  kio/global.h
+  kio/passdlg.h
+  kio/netaccess.h
+  kio/job.h
+  kio/scheduler.h
+  kio/jobclasses.h
+  kio/copyjob.h
+  kio/deletejob.h
+  kio/jobuidelegate.h
+  kio/paste.h
+  kio/slavebase.h
+  kio/filejob.h
+  kio/progressbase.h
+  kio/defaultprogress.h
+  kio/statusbarprogress.h
+  kio/tcpslavebase.h
+  kio/forwardingslavebase.h
+  kio/observer.h
+  kio/chmodjob.h
+  kio/authinfo.h
+  kio/ioslave_defaults.h
+  kio/http_slave_defaults.h
+  kio/previewjob.h
+  kio/thumbcreator.h
+  kio/metainfojob.h
+  kio/davjob.h
+  kio/renamedlg.h
+  kio/renamedlgplugin.h
+  kio/skipdlg.h
+  kio/safesite.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
+
+install( FILES
+  kio/kmimetype.h
+  kio/kmimetypetrader.h
+  kio/kmimemagic.h
+  kio/kimageio.h
+  kio/krun.h
+  kio/kdirwatch.h
+  kio/kautomount.h
+  kio/kar.h
+  kio/ktar.h
+  kio/kzip.h
+  kio/kurifilter.h
+  kio/kurlcompletion.h
+  kio/kshellcompletion.h
+  kio/kfileitem.h
+  kio/kfileshare.h
+  kio/ksambashare.h
+  kio/knfsshare.h
+  kio/kdirlister.h
+  kio/kservicegroup.h
+  kio/kdirnotify.h
+  kio/kurlpixmapprovider.h
+  kio/kprotocolmanager.h
+  kio/kemailsettings.h
+  kio/kscan.h
+  kio/kdatatool.h
+  kio/karchive.h
+  kio/kfilefilter.h
+  kio/kfilemetainfo.h
+  kio/kmimetyperesolver.h
+  kio/kdbusservicestarter.h
+  kio/kremoteencoding.h
+  kio/kmimetypechooser.h
+  kio/kacl.h
+  kio/kdedesktopmimetype.h
+  kio/kbuildsycocaprogressdialog.h
+  kio/kdirmodel.h
+  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 
 
