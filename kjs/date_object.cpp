@@ -58,9 +58,11 @@
 
 #if PLATFORM(WIN_OS)
 #define copysign(x, y) _copysign(x, y)
+#define snprintf _snprintf
+#if !COMPILER(GCC)
 #define isfinite(x) _finite(x)
 #define strncasecmp(x, y, z) strnicmp(x, y, z)
-#define snprintf _snprintf
+#endif
 #endif
 
 inline int gmtoffset(const tm& t)
