@@ -213,17 +213,39 @@ struct addrinfo
 # endif
 
 /* Error values for `getaddrinfo' function.  */
-# define EAI_ADDRFAMILY	1	/* Address family for NAME not supported.  */
-# define EAI_AGAIN	2	/* Temporary failure in name resolution.  */
-# define EAI_BADFLAGS	3	/* Invalid value for `ai_flags' field.  */
-# define EAI_FAIL	4	/* Non-recoverable failure in name res.  */
-# define EAI_FAMILY	5	/* `ai_family' not supported.  */
-# define EAI_MEMORY	6 	/* Memory allocation failure.  */
-# define EAI_NODATA	7	/* No address associated with NAME.  */
-# define EAI_NONAME	8	/* NAME or SERVICE is unknown.  */
-# define EAI_SERVICE	9	/* SERVICE not supported for `ai_socktype'.  */
-# define EAI_SOCKTYPE	10	/* `ai_socktype' not supported.  */
-# define EAI_SYSTEM	11	/* System error returned in `errno'.  */
+# ifndef EAI_ADDRFAMILY
+#  define EAI_ADDRFAMILY	1	/* Address family for NAME not supported.  */
+# endif
+# ifndef EAI_AGAIN
+#  define EAI_AGAIN	2	/* Temporary failure in name resolution.  */
+# endif
+# ifndef EAI_BADFLAGS
+#  define EAI_BADFLAGS	3	/* Invalid value for `ai_flags' field.  */
+# endif
+# ifndef EAI_FAIL
+#  define EAI_FAIL	4	/* Non-recoverable failure in name res.  */
+# endif
+# ifndef EAI_FAMILY
+#  define EAI_FAMILY	5	/* `ai_family' not supported.  */
+# endif
+# ifndef EAI_MEMORY
+#  define EAI_MEMORY	6 	/* Memory allocation failure.  */
+# endif
+# ifndef EAI_NODATA
+#  define EAI_NODATA	7	/* No address associated with NAME.  */
+# endif
+# ifndef EAI_NONAME
+#  define EAI_NONAME	8	/* NAME or SERVICE is unknown.  */
+# endif
+# ifndef EAI_SERVICE
+#  define EAI_SERVICE	9	/* SERVICE not supported for `ai_socktype'.  */
+# endif
+# ifndef EAI_SOCKTYPE
+#  define EAI_SOCKTYPE	10	/* `ai_socktype' not supported.  */
+# endif
+# ifndef EAI_SYSTEM
+#  define EAI_SYSTEM	11	/* System error returned in `errno'.  */
+# endif
 
 /*
  * These are specified in the RFC

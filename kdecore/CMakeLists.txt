@@ -64,6 +64,7 @@ if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kapplication_win.cpp 
       ktoolinvocation_win.cpp 
+      netsupp.cpp
       )
 
     add_definitions(-DKIO_EXPORT=)

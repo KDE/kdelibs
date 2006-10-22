@@ -45,9 +45,7 @@
 #ifndef HAVE_GETNAMEINFO
 // FIXME KDE4:
 // move to syssocket or adapt
-#ifndef Q_CC_MSVC
 # include "netsupp.h"
-#endif
 #endif
 
 using namespace KNetwork;
