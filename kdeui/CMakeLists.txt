@@ -13,11 +13,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
-add_subdirectory( findreplace )
-add_subdirectory( widgets )
-add_subdirectory( dialogs )
-add_subdirectory( util )
-add_subdirectory( itemviews )
 add_subdirectory( liveui/tests )
 add_subdirectory( about )
 add_subdirectory( tests )
@@ -244,6 +239,82 @@ install( FILES
  ktoolbarlabelaction.h
  ktoolbarspaceraction.h
  kmessageboxmessagehandler.h
+ widgets/kdatepicker.h
+ widgets/kmenu.h
+ widgets/kfontrequester.h
+ widgets/knuminput.h
+ widgets/klineedit.h
+ widgets/kcolorbutton.h
+ widgets/kbuttonbox.h
+ widgets/kdialogbuttonbox.h
+ widgets/kled.h
+ widgets/keditlistbox.h
+ widgets/kkeybutton.h
+ widgets/kcharselect.h
+ widgets/kcombobox.h
+ widgets/kpushbutton.h
+ widgets/kcolorcombo.h
+ widgets/kcompletionbox.h
+ widgets/ksqueezedtextlabel.h
+ widgets/kdatewidget.h
+ widgets/ktextedit.h
+ widgets/kdatetimewidget.h
+ widgets/ktimezonewidget.h
+ widgets/ktabbar.h
+ widgets/ktabwidget.h
+ widgets/khbox.h
+ widgets/kvbox.h
+ widgets/kbuttongroup.h
+ widgets/kselector.h
+ widgets/kcolorvalueselector.h
+ widgets/kxyselector.h
+ dialogs/kaboutapplication.h
+ dialogs/kaboutdialog.h
+ dialogs/kaboutkde.h
+ dialogs/kcolordialog.h
+ dialogs/kconfigdialog.h
+ dialogs/kconfigdialogmanager.h
+ dialogs/kdialog.h
+ dialogs/kfontdialog.h
+ dialogs/kinputdialog.h
+ dialogs/kkeydialog.h
+ dialogs/kpagedialog.h
+ dialogs/kpassworddialog.h
+ dialogs/kpixmapregionselectordialog.h
+ dialogs/kprogressdialog.h
+ dialogs/kshortcutdialog.h
+ dialogs/kassistantdialog.h
+ dialogs/kbugreport.h
+ findreplace/kfind.h
+ findreplace/kreplace.h
+ findreplace/kfinddialog.h
+ findreplace/kreplacedialog.h
+ itemviews/k3iconview.h
+ itemviews/k3iconviewsearchline.h
+ itemviews/k3listview.h
+ itemviews/k3listviewlineedit.h
+ itemviews/k3listviewsearchline.h
+ itemviews/klistbox.h
+ itemviews/ktreewidgetsearchline.h
+ util/kaccelgen.h
+ util/kcolormimedata.h
+ util/kcommand.h
+ util/kcompletion.h
+ util/kcursor.h
+ util/kglobalaccel.h
+ util/kiconengine.h
+ util/kicon.h
+ util/kkeyserver.h
+ util/kkeyserver_x11.h
+ util/kmanagerselection.h
+ util/knotification.h
+ util/knotificationrestrictions.h
+ util/knumvalidator.h
+ util/kpassivepopup.h
+ util/kpassivepopupmessagehandler.h
+ util/kstringvalidator.h
+ util/ksystemtrayicon.h
+ util/kwordwrap.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
