@@ -86,6 +86,11 @@ Solid::PowerManager::BatteryState Solid::PowerManager::batteryState() const
     return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), NoBatteryState, batteryState() );
 }
 
+int Solid::PowerManager::batteryChargePercent() const
+{
+    return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), -1, batteryChargePercent() );
+}
+
 Solid::PowerManager::AcAdapterState Solid::PowerManager::acAdapterState() const
 {
     return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), Plugged, acAdapterState() );

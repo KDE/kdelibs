@@ -97,6 +97,13 @@ namespace Ifaces
         virtual BatteryState batteryState() const = 0;
 
         /**
+         * Retrieves the current charge percentage of the system batteries.
+         *
+         * @return the current global battery charge percentage
+         */
+        virtual int batteryChargePercent() const = 0;
+
+        /**
          * Retrieves the current state of the system AC adapter.
          *
          * @return the current AC adapter state

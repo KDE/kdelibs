@@ -410,11 +410,12 @@ namespace Enums
          * This enum type defines the different CPU frequency policies.
          *
          * - UnknownCpuFreqPolicy: The name says it all
-         * - Dynamic: Frequency is changed depending on the processor load
+         * - OnDemand: Frequency is changed by the kernel depending on the processor load
+         * - Userspace: Frequency is changed by a userspace agent depending on the processor load
          * - Powersave: Frequency is always set to the lowest available
          * - Performance: Frequency is always set to the highest available
          */
-        enum CpuFreqPolicy{ UnknownCpuFreqPolicy = 0, Dynamic = 1, Powersave = 2, Performance = 4 };
+        enum CpuFreqPolicy{ UnknownCpuFreqPolicy = 0, OnDemand = 1, Userspace = 2, Powersave = 4, Performance = 8 };
 
         /**
          * This type stores an OR combination of CpuFreqPolicy values.

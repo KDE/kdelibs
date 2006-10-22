@@ -87,6 +87,13 @@ namespace Solid
         BatteryState batteryState() const;
 
         /**
+         * Retrieves the current charge percentage of the system batteries.
+         *
+         * @return the current global battery charge percentage
+         */
+        int batteryChargePercent() const;
+
+        /**
          * Retrieves the current state of the system AC adapter.
          *
          * @return the current AC adapter state
