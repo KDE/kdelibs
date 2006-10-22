@@ -445,6 +445,18 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           }
           return QPoint(list.at( 0 ), list.at( 1 ));
       }
+      case QVariant::PointF: {
+          const QList<qreal> list = readEntry( pKey, QList<qreal>() );
+
+          if ( list.count() != 2 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          return QPointF(list.at( 0 ), list.at( 1 ));
+      }
+
       case QVariant::Rect: {
           const QList<int> list = readEntry( pKey, QList<int>() );
 
@@ -461,6 +473,23 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           }
           return rect;
       }
+      case QVariant::RectF: {
+          const QList<qreal> list = readEntry( pKey, QList<qreal>() );
+
+          if ( list.count() != 4 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(4).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+          if ( !rect.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return rect;
+      }
+
       case QVariant::Size: {
           const QList<int> list = readEntry( pKey, QList<int>() );
 
@@ -477,6 +506,23 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
           }
           return size;
       }
+      case QVariant::SizeF: {
+          const QList<qreal> list = readEntry( pKey, QList<qreal>() );
+
+          if ( list.count() != 2 ) {
+              kcbError() << errString.arg(readEntry(pKey))
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+              return aDefault;
+          }
+          const QSizeF size(list.at( 0 ), list.at( 1 ));
+          if ( !size.isValid() ) {
+              kcbError() << errString.arg(readEntry(pKey)) << endl;
+              return aDefault;
+          }
+          return size;
+      }
+
       case QVariant::LongLong: {
           const QByteArray aValue = readEntryUtf8(pKey);
 
