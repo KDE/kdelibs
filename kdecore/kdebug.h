@@ -481,7 +481,7 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
  * @see kndDebug()
  */
 KDECORE_EXPORT kdbgstream kDebug(int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(int area = 0) { return kDebug( area ); }
+inline kdbgstream kdDebug(int area = 0) { return kDebug( area ); }
 /**
  * \relates KGlobal
  * Returns a debug stream. You can use it to conditionally
@@ -490,7 +490,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(int area = 0) { return kDebu
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kDebug(bool cond, int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(bool cond, int area = 0) { return kDebug( cond, area ); }
+inline kdbgstream kdDebug(bool cond, int area = 0) { return kDebug( cond, area ); }
 
 /**
  * \relates KGlobal
@@ -499,7 +499,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdDebug(bool cond, int area = 0) { r
  * @return a backtrace
  */
 KDECORE_EXPORT QString kBacktrace(int levels=-1);
-inline KDECORE_EXPORT_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
+inline QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
@@ -512,7 +512,7 @@ inline QString kndBacktrace(int = -1) { return QString(); }
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kWarning(int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(int area = 0) { return kWarning( area ); }
+inline kdbgstream kdWarning(int area = 0) { return kWarning( area ); }
 /**
  * \relates KGlobal
  * Returns a warning stream. You can use it to conditionally
@@ -521,7 +521,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(int area = 0) { return kWa
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kWarning(bool cond, int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(bool cond, int area = 0) { return kWarning( cond, area ); }
+inline kdbgstream kdWarning(bool cond, int area = 0) { return kWarning( cond, area ); }
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to print error
@@ -529,7 +529,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdWarning(bool cond, int area = 0) {
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kError(int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(int area = 0) { return kError( area ); }
+inline kdbgstream kdError(int area = 0) { return kError( area ); }
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to conditionally
@@ -538,7 +538,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(int area = 0) { return kErro
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kError(bool cond, int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(bool cond, int area = 0) { return kError( cond, area ); }
+inline kdbgstream kdError(bool cond, int area = 0) { return kError( cond, area ); }
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to print fatal error
@@ -546,7 +546,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdError(bool cond, int area = 0) { r
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kFatal(int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(int area = 0) { return kFatal( area ); }
+inline kdbgstream kdFatal(int area = 0) { return kFatal( area ); }
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to conditionally
@@ -555,7 +555,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(int area = 0) { return kFata
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kFatal(bool cond, int area = 0);
-inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(bool cond, int area = 0) { return kFatal( cond, area ); }
+inline kdbgstream kdFatal(bool cond, int area = 0) { return kFatal( cond, area ); }
 
 /**
  * \relates KGlobal
@@ -563,7 +563,7 @@ inline KDECORE_EXPORT_DEPRECATED kdbgstream kdFatal(bool cond, int area = 0) { r
  * config file
  */
 KDECORE_EXPORT void kClearDebugConfig();
-inline KDECORE_EXPORT_DEPRECATED void kdClearDebugConfig() { return kClearDebugConfig(); }
+inline void kdClearDebugConfig() { return kClearDebugConfig(); }
 
 /** @} */
 
