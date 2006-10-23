@@ -231,13 +231,13 @@ void RenderTable::calcWidth()
     }
 
     RenderBlock *cb = containingBlock();
-    int availableWidth = cb->contentWidth();
+    int availableWidth = cb->lineWidth( m_y );
 
     LengthType widthType = style()->width().type();
     if(widthType > Relative && style()->width().value() > 0) {
-	// Percent or fixed table
-        m_width = calcBoxWidth(style()->width().minWidth( availableWidth ));
-        if(m_minWidth > m_width) m_width = m_minWidth;
+        // Percent or fixed table
+        // Percent is calculated from contentWidth, not available width
+        m_width = calcBoxWidth(style()->width().minWidth( cb->contentWidth() ));
     } else {
         // Subtract out any fixed margins from our available width for auto width tables.
         int marginTotal = 0;
@@ -252,12 +252,6 @@ void RenderTable::calcWidth()
         // Ensure we aren't bigger than our max width or smaller than our min width.
         m_width = kMin(availContentWidth, m_maxWidth);
     }
-
-    // restrict width to what we really have
-    // EXCEPT percent tables, which are still calculated as above
-    availableWidth = cb->lineWidth( m_y );
-    if ( widthType != Percent )
-        m_width = kMin( short( availableWidth ), m_width );
 
     m_width = kMax (m_width, m_minWidth);
 
@@ -292,7 +286,7 @@ void RenderTable::layout()
     int oldWidth = m_width;
     calcWidth();
     m_overflowWidth = m_width;
-    
+
     if (tCaption && (oldWidth != m_width || tCaption->style()->height().isPercent()))
         tCaption->setChildNeedsLayout(true);
 
@@ -765,7 +759,7 @@ int RenderTable::borderBottom() const
     }
     return RenderBlock::borderBottom();
 }
- 
+
 RenderTableSection* RenderTable::sectionAbove(const RenderTableSection* section, bool skipEmptySections) const
 {
     if (section == head)
@@ -1306,10 +1300,10 @@ int RenderTableSection::layoutRows( int toAdd )
     int totalRows = grid.size();
     int hspacing = table()->borderHSpacing();
     int vspacing = table()->borderVSpacing();
-    
+
     // Set the width of our section now.  The rows will also be this width.
     m_width = table()->contentWidth();
-    
+
     if (markedForRepaint()) {
         repaintDuringLayout();
         setMarkedForRepaint(false);
@@ -1411,7 +1405,7 @@ int RenderTableSection::layoutRows( int toAdd )
 
 #ifdef APPLE_CHANGES
         // in WC, rows and cells share the same coordinate space, so that rows can have
-        // dimensions in the layer system. This is of dubious value, and a heavy maintenance burden 
+        // dimensions in the layer system. This is of dubious value, and a heavy maintenance burden
         // (RenderObject's coordinates can't be used deterministically anymore) so we'll consider other options.
 
         // Set the row's x/y position and width/height.
@@ -1735,7 +1729,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
                             colGroup = col->parent();
                     }
                     RenderObject* row = cell->parent();
-                    
+
                     // ###
                     // Column groups and columns first.
                     // FIXME: Columns and column groups do not currently support opacity, and they are being painted "too late" in
@@ -2915,7 +2909,7 @@ void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty
             if (!old.isNull())
                 creg = old.intersect(creg);
             pI.p->setClipRegion(creg);
-        }                                                                            
+        }
 	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
         if (hasLayer && tableElt->collapseBorders())
             pI.p->restore();
