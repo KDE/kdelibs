@@ -129,6 +129,7 @@ QModelIndex KDirModelPrivate::indexForNode(KDirModelNode* node) const
         return QModelIndex();
 
     KDirModelNode* const parentNode = node->parent();
+    Q_ASSERT(parentNode);
     const int row = parentNode->m_childNodes.indexOf(node);
     return q->createIndex(row, 0, node);
 }

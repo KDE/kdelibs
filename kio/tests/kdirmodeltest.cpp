@@ -89,9 +89,14 @@ void KDirModelTest::initTestCase()
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir");
 
-    // Now fill the model
+    fillModel( false );
+}
+
+void KDirModelTest::fillModel( bool reload )
+{
+    const QString path = m_tempDir.name();
     KDirLister* dirLister = m_dirModel.dirLister();
-    dirLister->openUrl(KUrl(path));
+    dirLister->openUrl(KUrl(path), false, reload);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
@@ -192,7 +197,6 @@ void KDirModelTest::testNames()
     QCOMPARE(fileInSubdirName, QString("testfile"));
 }
 
-
 void KDirModelTest::testItemForIndex()
 {
     // root item
@@ -239,4 +243,10 @@ void KDirModelTest::testData()
     QModelIndex idx2col0 = m_dirModel.index(1, 0, QModelIndex());
     QString display2 = m_dirModel.data(idx2col0, Qt::DisplayRole).toString();
     QCOMPARE(display2, QString("toplevelfile_2"));
+}
+
+void KDirModelTest::testReload()
+{
+    fillModel( true );
+    testItemForIndex();
 }

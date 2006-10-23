@@ -34,6 +34,7 @@ private Q_SLOTS:
     void testNames();
     void testItemForIndex();
     void testData();
+    void testReload();
 
 Q_SIGNALS:
     void exitLoop();
@@ -43,6 +44,7 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
 
 private:
     void enterLoop();
+    void fillModel( bool reload );
 
 private:
     KTempDir m_tempDir;
