@@ -25,7 +25,6 @@
 #ifndef __kurifilter_h__
 #define __kurifilter_h__
 
-#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qstringlist.h>
 
@@ -335,31 +334,12 @@ class KIO_EXPORT KUriFilterPlugin : public QObject
 public:
 
     /**
-     * Constructs a filter plugin with a given name and
-     * priority.
+     * Constructs a filter plugin with a given name
      *
      * @param parent the parent object, or 0 for no parent
-     * @param name the name of the plugin, or 0 for no name
-     * @param pri the priority of the plugin.
+     * @param name the name of the plugin, mandatory
      */
-    KUriFilterPlugin( const QString &name, QObject *parent = 0, double pri = 1.0 );
-
-    /**
-     * Returns the filter's name.
-     *
-     * @return A string naming the filter.
-     */
-    virtual QString name() const { return m_strName; }
-
-    /**
-     * Returns the filter's priority.
-     *
-     * Each filter has an assigned priority, a float from 0 to 1. Filters
-     * with the lowest priority are first given a chance to filter a URI.
-     *
-     * @return The priority of the filter.
-     */
-    virtual double priority() const { return m_dblPriority; }
+    KUriFilterPlugin( const QString &name, QObject *parent = 0 );
 
     /**
      * Filters a URI.
@@ -384,7 +364,7 @@ public:
      *
      * @return the name of a configuration module or QString() if none.
      */
-    virtual QString configName() const { return name(); }
+    virtual QString configName() const { return objectName(); }
 
 protected:
 
@@ -414,30 +394,10 @@ protected:
      */
     void setArguments( KUriFilterData& data, const QString& args ) const;
 
-    QString m_strName;
-    double m_dblPriority;
-
 private:
     class KUriFilterPluginPrivate *d;
 };
 
-
-/**
- * A list of filter plugins.
- */
-class KIO_EXPORT KUriFilterPluginList : public Q3PtrList<KUriFilterPlugin>
-{
-public:
-    virtual int compareItems(Item a, Item b)
-    {
-      double diff = ((KUriFilterPlugin *) a)->priority() - ((KUriFilterPlugin *) b)->priority();
-      return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
-    }
-
-private:
-    KUriFilterPrivate *d;
-
-};
 
 /**
  * Manages the filtering of URIs.
@@ -589,14 +549,6 @@ public:
     QString filteredUri( const QString &uri, const QStringList& filters = QStringList() );
 
     /**
-     * Return an iterator to iterate over all loaded
-     * plugins.
-     *
-     * @return a plugin iterator.
-     */
-    Q3PtrListIterator<KUriFilterPlugin> pluginsIterator() const;
-
-    /**
      * Return a list of the names of all loaded plugins.
      *
      * @return a QStringList of plugin names
@@ -624,7 +576,7 @@ protected:
 
 private:
     static KUriFilter *m_self;
-    KUriFilterPluginList m_lstPlugins;
+    QList<KUriFilterPlugin *> m_lstPlugins;
     KUriFilterPrivate *d;
 };
 

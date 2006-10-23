@@ -29,16 +29,12 @@
 
 #include "kurifilter.h"
 
-template class Q3PtrList<KUriFilterPlugin>;
+typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 
-#ifdef KDE3_SUPPORT
-KUriFilterPlugin::KUriFilterPlugin( QObject *parent, const char *name, double pri )
-#else
-KUriFilterPlugin::KUriFilterPlugin( const QString & name, QObject *parent, double pri )
-#endif
-                 :QObject( parent ), m_strName( name )
+KUriFilterPlugin::KUriFilterPlugin( const QString & name, QObject *parent )
+    : QObject( parent )
 {
-    m_dblPriority = pri;
+    setObjectName( name );
 }
 
 void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) const
@@ -53,7 +49,7 @@ void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) c
 class KUriFilterDataPrivate
 {
 public:
-    KUriFilterDataPrivate() {};
+    KUriFilterDataPrivate() {}
     QString abs_path;
     QString args;
     QString typedString;
@@ -217,49 +213,51 @@ KUriFilter *KUriFilter::self()
 
 KUriFilter::KUriFilter()
 {
-    m_lstPlugins.setAutoDelete(true);
     loadPlugins();
 }
 
 KUriFilter::~KUriFilter()
 {
+    qDeleteAll(m_lstPlugins);
     m_self = 0;
+}
+
+static KUriFilterPlugin* findPluginByName( const KUriFilterPluginList& lst, const QString& name )
+{
+    for ( KUriFilterPluginList::const_iterator it = lst.begin(), end = lst.end();
+          it != end ; ++it ) {
+        if ( (*it)->objectName() == name )
+            return *it;
+    }
+    return 0;
 }
 
 bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
 {
-    bool filtered = false;
     KUriFilterPluginList use_plugins;
 
     // If we have a filter list, only include the once
     // explicitly specified by it. Otherwise, use all available filters...
     if( filters.isEmpty() )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...
-    else
-    {
+    else {
         //kDebug() << "Named plugins requested..."  << endl;
-        for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
-        {
-            Q3PtrListIterator<KUriFilterPlugin> it( m_lstPlugins );
-            for( ; it.current() ; ++it )
-            {
-                if( (*lst) == it.current()->name() )
-                {
-                    //kDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
-                    use_plugins.append( it.current() );
-                    break;  // We already found it ; so lets test the next named filter...
-                }
+        for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst ) {
+            KUriFilterPlugin* plugin = findPluginByName( m_lstPlugins, *lst );
+            if (plugin) {
+                //kDebug() << "Will use filter plugin named: " << plugin->name() << endl;
+                use_plugins.append(plugin);
             }
         }
     }
 
-    Q3PtrListIterator<KUriFilterPlugin> it( use_plugins );
     //kDebug() << "Using " << use_plugins.count() << " out of the "
     //          << m_lstPlugins.count() << " available plugins" << endl;
-    for (; it.current() && !filtered; ++it)
-    {
-        //kDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
-        filtered |= it.current()->filterUri( data );
+    bool filtered = false;
+    for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
+          it != end && !filtered ; ++it ) {
+        //kDebug() << "Using a filter plugin named: " << (*it)->name() << endl;
+        filtered = (*it)->filterUri( data );
     }
     return filtered;
 }
@@ -278,7 +276,6 @@ bool KUriFilter::filterUri( QString& uri, const QStringList& filters )
     bool filtered = filterUri( data, filters );
     if( filtered )  uri = data.uri().url();
     return filtered;
-
 }
 
 KUrl KUriFilter::filteredUri( const KUrl &uri, const QStringList& filters )
@@ -295,16 +292,11 @@ QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters 
     return data.uri().url();
 }
 
-Q3PtrListIterator<KUriFilterPlugin> KUriFilter::pluginsIterator() const
-{
-    return Q3PtrListIterator<KUriFilterPlugin>(m_lstPlugins);
-}
-
 QStringList KUriFilter::pluginNames() const
 {
     QStringList list;
-    for(Q3PtrListIterator<KUriFilterPlugin> i = pluginsIterator(); *i; ++i)
-        list.append((*i)->name());
+    Q_FOREACH( KUriFilterPlugin* plugin, m_lstPlugins )
+        list.append(plugin->objectName());
     return list;
 }
 
@@ -317,16 +309,20 @@ void KUriFilter::loadPlugins()
 
     for (; it != end; ++it )
     {
-      KUriFilterPlugin *plugin = KService::createInstance<KUriFilterPlugin>( *it );
+        KUriFilterPlugin *plugin = KService::createInstance<KUriFilterPlugin>( *it );
 
-      if ( plugin ) {
-        plugin->setObjectName( (*it)->desktopEntryName() );
-        m_lstPlugins.append( plugin );
-      }
+        if ( plugin ) {
+            // plugins set their name already
+            //plugin->setObjectName( (*it)->desktopEntryName() );
+            Q_ASSERT( !plugin->objectName().isEmpty() );
+            m_lstPlugins.append( plugin );
+        }
     }
 
-    // NOTE: Plugin priority is now determined by
-    // the entry in the .desktop files...
+    // NOTE: Plugin priority is determined by
+    // the InitialPreference entry in the .desktop files,
+    // so the trader result is already sorted.
+
     // TODO: Config dialog to differentiate "system"
     // plugins from "user-defined" ones...
     // m_lstPlugins.sort();
