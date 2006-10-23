@@ -154,7 +154,7 @@ KDirModelNode* KDirModelPrivate::nodeForIndex(const QModelIndex& index) const
  * The internal pointer of the QModelIndex for a given file is the node for that file in our own tree.
  * E.g. index(2,0) returns a QModelIndex with row=2 internalPointer=<KDirModelNode for the 3rd child of the root>
  *
- * Invalid parent index means root of the tree, m_m_rootNode
+ * Invalid parent index means root of the tree, m_rootNode
  */
 
 #ifndef NDEBUG
@@ -283,8 +283,13 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
 
 void KDirModel::slotClear()
 {
+    const int numRows = d->m_rootNode->m_childNodes.count();
+    beginRemoveRows( QModelIndex(), 0, numRows );
+    endRemoveRows();
+
+    //emit layoutAboutToBeChanged();
     d->clear();
-    emit layoutChanged();
+    //emit layoutChanged();
 }
 
 int KDirModel::columnCount( const QModelIndex & ) const
