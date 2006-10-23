@@ -397,7 +397,7 @@ void KPasswordDialog::init()
 
         KHBox* const strengthBox = new KHBox(m_pMain);
         strengthBox->setSpacing(10);
-        m_pGrid->addWidget(strengthBox, 11, 11, 0, 2);
+        m_pGrid->addWidget(strengthBox, 11, 0, 1, 3);
         QLabel* const passStrengthLabel = new QLabel(strengthBox);
         passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         passStrengthLabel->setText(i18n("Password strength meter:"));
@@ -421,7 +421,7 @@ void KPasswordDialog::init()
         d->m_MatchLabel = new QLabel(m_pMain);
         d->m_MatchLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         d->m_MatchLabel->setWordWrap(true);
-        m_pGrid->addWidget(d->m_MatchLabel, 13, 13, 0, 2);
+        m_pGrid->addWidget(d->m_MatchLabel, 13, 0, 1, 3);
         d->m_MatchLabel->setText(i18n("Passwords do not match"));
 
 
