@@ -418,7 +418,7 @@ template <int s> class I18nTypeCheck<char[s], s> {};
  * @param text string to be localized
  * @return localized version of a string
  */
-inline QString i18n (const char *text)
+static inline QString i18n (const char *text)
 {
     return ki18n(text).toString();
 }
@@ -681,7 +681,7 @@ inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, c
  * @return localized version of a string
  */
 template <typename A1, typename A2, typename A3>
-inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
+static inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
 {
     return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).toString();
 }
