@@ -4,6 +4,10 @@ KBetterThanKDialog::KBetterThanKDialog( QWidget *parent )
   : QDialog( parent )
 {
   setupUi( this );
+  connect(_allowOnce, SIGNAL(clicked()), this, SLOT(allowOnceClicked()));
+  connect(_allowAlways, SIGNAL(clicked()), this, SLOT(allowAlwaysClicked()));
+  connect(_deny, SIGNAL(clicked()), this, SLOT(denyClicked()));
+  connect(_denyForever, SIGNAL(clicked()), this, SLOT(denyForeverClicked()));
 }
 
 void KBetterThanKDialog::init()
@@ -16,19 +20,6 @@ void KBetterThanKDialog::setLabel( const QString & label )
     _label->setText(label);
 }
 
-void KBetterThanKDialog::clicked()
-{
-    if (sender() == _allowOnce) {
-        done(0);
-    } else if (sender() == _allowAlways) {
-        done(1);
-    } else if (sender() == _deny) {
-        done(2);
-    } else if (sender() == _denyForever) {
-        done(3);
-    }
-}
-
 void KBetterThanKDialog::accept()
 {
     setResult(0);
@@ -38,6 +29,26 @@ void KBetterThanKDialog::reject()
 {
     QDialog::reject();
     setResult(2);
+}
+
+void KBetterThanKDialog::allowOnceClicked()
+{
+    done(0);
+}
+
+void KBetterThanKDialog::allowAlwaysClicked()
+{
+    done(1);
+}
+
+void KBetterThanKDialog::denyClicked()
+{
+    done(2);
+}
+
+void KBetterThanKDialog::denyForeverClicked()
+{
+    done(3);
 }
 
 #include "kbetterthankdialog.moc"

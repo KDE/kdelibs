@@ -15,12 +15,15 @@ class KBetterThanKDialog : public QDialog, private Ui_KBetterThanKDialogBase
     void init();
     void setLabel( const QString &label );
 
-  public Q_SLOTS:
-    void clicked();
-
   protected Q_SLOTS:
     virtual void accept();
     virtual void reject();
+  
+  private Q_SLOTS:
+    void allowOnceClicked();
+    void allowAlwaysClicked();
+    void denyClicked();
+    void denyForeverClicked();
 };
 
 #endif
