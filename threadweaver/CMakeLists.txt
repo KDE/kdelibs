@@ -25,7 +25,7 @@ set(ThreadWeaver_LIB_SRCS
     ResourceRestrictionPolicy.cpp
 )
 
-QT4_AUTOMOC(${ThreadWeaver_LIB_SRCS})
+KDE4_AUTOMOC(${ThreadWeaver_LIB_SRCS})
 
 kde4_add_library(threadweaver SHARED ${ThreadWeaver_LIB_SRCS})
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
