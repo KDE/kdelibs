@@ -47,35 +47,35 @@ int FakeWirelessNetwork::frequency() const
     return mPropertyMap[ "frequency" ].toInt();
 }
 
-Enums::WirelessNetwork::Capabilities FakeWirelessNetwork::capabilities() const
+Solid::WirelessNetwork::Capabilities FakeWirelessNetwork::capabilities() const
 {
     QStringList capStrings = mPropertyMap[ "capabilities" ].toStringList();
 
-    Capabilities caps = 0;
+    Solid::WirelessNetwork::Capabilities caps = 0;
     if ( capStrings.contains( "wep" ) )
-        caps |= Wep;
+        caps |= Solid::WirelessNetwork::Wep;
     if ( capStrings.contains( "wpa" ) )
-        caps |= Wpa;
+        caps |= Solid::WirelessNetwork::Wpa;
     if ( capStrings.contains( "wpa2" ) )
-        caps |= Wpa2;
+        caps |= Solid::WirelessNetwork::Wpa2;
     if ( capStrings.contains( "psk" ) )
-        caps |= Psk;
+        caps |= Solid::WirelessNetwork::Psk;
     if ( capStrings.contains( "ieee8021x" ) )
-        caps |= Ieee8021x;
+        caps |= Solid::WirelessNetwork::Ieee8021x;
     if ( capStrings.contains( "wep40" ) )
-        caps |= Wep40;
+        caps |= Solid::WirelessNetwork::Wep40;
     if ( capStrings.contains( "wep104" ) )
-        caps |= Wep104;
+        caps |= Solid::WirelessNetwork::Wep104;
     if ( capStrings.contains( "wep192" ) )
-        caps |= Wep192;
+        caps |= Solid::WirelessNetwork::Wep192;
     if ( capStrings.contains( "wep256" ) )
-        caps |= Wep256;
+        caps |= Solid::WirelessNetwork::Wep256;
     if ( capStrings.contains( "wep_other" ) )
-        caps |= WepOther;
+        caps |= Solid::WirelessNetwork::WepOther;
     if ( capStrings.contains( "tkip" ) )
-        caps |= Tkip;
+        caps |= Solid::WirelessNetwork::Tkip;
     if ( capStrings.contains( "ccmp" ) )
-        caps |= Ccmp;
+        caps |= Solid::WirelessNetwork::Ccmp;
 
     return caps;
 }
@@ -85,20 +85,20 @@ QString FakeWirelessNetwork::essid() const
     return mPropertyMap[ "essid" ].toString();
 }
 
-Enums::WirelessNetwork::OperationMode FakeWirelessNetwork::mode() const
+Solid::WirelessNetwork::OperationMode FakeWirelessNetwork::mode() const
 {
     QString modeName = mPropertyMap[ "mode" ].toString();
 
     if ( modeName == "adhoc" )
-        return Adhoc;
+        return Solid::WirelessNetwork::Adhoc;
     else if ( modeName == "managed" )
-        return Managed;
+        return Solid::WirelessNetwork::Managed;
     else if ( modeName == "master" )
-        return Master;
+        return Solid::WirelessNetwork::Master;
     else if ( modeName == "repeater" )
-        return Repeater;
+        return Solid::WirelessNetwork::Repeater;
     else
-        return Unassociated;
+        return Solid::WirelessNetwork::Unassociated;
 }
 
 bool FakeWirelessNetwork::isAssociated() const

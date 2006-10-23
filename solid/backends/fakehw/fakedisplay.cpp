@@ -30,26 +30,26 @@ FakeDisplay::~FakeDisplay()
 
 }
 
-Display::DisplayType FakeDisplay::type() const
+Solid::Display::DisplayType FakeDisplay::type() const
 {
 
     QString displaytype = fakeDevice()->property("type").toString();
 
     if ( displaytype=="lcd" )
     {
-        return Lcd;
+        return Solid::Display::Lcd;
     }
     else if (displaytype=="crt")
     {
-        return Crt;
+        return Solid::Display::Crt;
     }
     else if (displaytype=="tv_out")
     {
-        return TvOut;
+        return Solid::Display::TvOut;
     }
     else
     {
-        return UnknownDisplayType;
+        return Solid::Display::UnknownDisplayType;
     }
 }
 

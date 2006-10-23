@@ -30,7 +30,6 @@
 
 #include "fakenetworkinterface.h"
 
-using namespace Solid::Ifaces;
 
 class FakeAuthenticationValidator;
 class QDomElement;

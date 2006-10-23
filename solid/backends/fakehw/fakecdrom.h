@@ -33,7 +33,7 @@ public:
     virtual ~FakeCdrom();
 
 public Q_SLOTS:
-    virtual MediumTypes supportedMedia() const;
+    virtual Solid::Cdrom::MediumTypes supportedMedia() const;
     virtual int readSpeed() const;
     virtual int writeSpeed() const;
     virtual QList<int> writeSpeeds() const;

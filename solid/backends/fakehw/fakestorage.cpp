@@ -30,75 +30,75 @@ FakeStorage::~FakeStorage()
 
 }
 
-Storage::Bus FakeStorage::bus() const
+Solid::Storage::Bus FakeStorage::bus() const
 {
     QString bus = fakeDevice()->property("bus").toString();
 
     if ( bus=="ide" )
     {
-        return Ide;
+        return Solid::Storage::Ide;
     }
     else if ( bus=="usb" )
     {
-        return Usb;
+        return Solid::Storage::Usb;
     }
     else if ( bus=="ieee1394" )
     {
-        return Ieee1394;
+        return Solid::Storage::Ieee1394;
     }
     else if ( bus=="scsi" )
     {
-        return Scsi;
+        return Solid::Storage::Scsi;
     }
     else if ( bus=="sata" )
     {
-        return Sata;
+        return Solid::Storage::Sata;
     }
     else
     {
-        return Platform;
+        return Solid::Storage::Platform;
     }
 }
 
-Storage::DriveType FakeStorage::driveType() const
+Solid::Storage::DriveType FakeStorage::driveType() const
 {
     QString type = fakeDevice()->property("major").toString();
 
     if ( type=="disk" )
     {
-        return HardDisk;
+        return Solid::Storage::HardDisk;
     }
     else if ( type=="cdrom" )
     {
-        return CdromDrive;
+        return Solid::Storage::CdromDrive;
     }
     else if ( type=="floppy" )
     {
-        return Floppy;
+        return Solid::Storage::Floppy;
     }
     else if ( type=="tape" )
     {
-        return Tape;
+        return Solid::Storage::Tape;
     }
     else if ( type=="compact_flash" )
     {
-        return CompactFlash;
+        return Solid::Storage::CompactFlash;
     }
     else if ( type=="memory_stick" )
     {
-        return MemoryStick;
+        return Solid::Storage::MemoryStick;
     }
     else if ( type=="smart_media" )
     {
-        return SmartMedia;
+        return Solid::Storage::SmartMedia;
     }
     else if ( type=="sd_mmc" )
     {
-        return SdMmc;
+        return Solid::Storage::SdMmc;
     }
     else
     {
-        return HardDisk;
+        return Solid::Storage::HardDisk;
     }
 }
 

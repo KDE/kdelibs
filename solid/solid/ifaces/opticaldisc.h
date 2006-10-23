@@ -23,6 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/volume.h>
+#include <solid/opticaldisc.h>
 
 namespace Solid
 {
@@ -33,7 +34,7 @@ namespace Ifaces
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class SOLIDIFACES_EXPORT OpticalDisc : virtual public Volume, public Enums::OpticalDisc
+    class SOLIDIFACES_EXPORT OpticalDisc : virtual public Volume
     {
     public:
         /**
@@ -48,14 +49,14 @@ namespace Ifaces
          *
          * @return the flag set indicating the available contents
          */
-        virtual ContentTypes availableContent() const = 0;
+        virtual Solid::OpticalDisc::ContentTypes availableContent() const = 0;
 
         /**
          * Retrieves the disc type (cdr, cdrw...).
          *
          * @return the disc type
          */
-        virtual DiscType discType() const = 0;
+        virtual Solid::OpticalDisc::DiscType discType() const = 0;
 
         /**
          * Indicates if it's possible to write additional data to the disc.

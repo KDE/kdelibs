@@ -33,7 +33,7 @@ public:
     ~FakeButton();
 
 public Q_SLOTS:
-    virtual ButtonType type() const;
+    virtual Solid::Button::ButtonType type() const;
     virtual bool hasState() const;
     virtual bool stateValue() const;
 

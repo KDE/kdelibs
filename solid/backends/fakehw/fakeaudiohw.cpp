@@ -34,21 +34,21 @@ FakeAudioHw::~FakeAudioHw()
 }
 
 
-FakeAudioHw::AudioDriver FakeAudioHw::driver()
+Solid::AudioHw::AudioDriver FakeAudioHw::driver()
 {
     QString driver = fakeDevice()->property( "driver" ).toString();
 
     if ( driver == "alsa" )
     {
-        return Alsa;
+        return Solid::AudioHw::Alsa;
     }
     else if ( driver == "oss" )
     {
-        return OpenSoundSystem;
+        return Solid::AudioHw::OpenSoundSystem;
     }
     else
     {
-        return UnknownAudioDriver;
+        return Solid::AudioHw::UnknownAudioDriver;
     }
 }
 
@@ -62,9 +62,9 @@ QString FakeAudioHw::name()
     return fakeDevice()->property( "name" ).toString();
 }
 
-FakeAudioHw::AudioHwTypes FakeAudioHw::type()
+Solid::AudioHw::AudioHwTypes FakeAudioHw::type()
 {
-    AudioHwTypes result;
+    Solid::AudioHw::AudioHwTypes result;
 
     QStringList type_list = fakeDevice()->property( "type" ).toString().split( "," );
 
@@ -72,15 +72,15 @@ FakeAudioHw::AudioHwTypes FakeAudioHw::type()
     {
         if ( type_str == "control" )
         {
-            result|=AudioControl;
+            result|=Solid::AudioHw::AudioControl;
         }
         else if ( type_str == "input" )
         {
-            result|=AudioInput;
+            result|=Solid::AudioHw::AudioInput;
         }
         else if ( type_str == "output" )
         {
-            result|=AudioOutput;
+            result|=Solid::AudioHw::AudioOutput;
         }
     }
 

@@ -30,21 +30,21 @@ FakeCamera::~FakeCamera()
 
 }
 
-FakeCamera::AccessType FakeCamera::accessMethod() const
+Solid::Camera::AccessType FakeCamera::accessMethod() const
 {
     QString method = fakeDevice()->property( "accessMethod" ).toString();
 
     if ( method=="storage" )
     {
-        return MassStorage;
+        return Solid::Camera::MassStorage;
     }
     else if ( method=="ptp" )
     {
-        return Ptp;
+        return Solid::Camera::Ptp;
     }
     else
     {
-        return Proprietary;
+        return Solid::Camera::Proprietary;
     }
 }
 

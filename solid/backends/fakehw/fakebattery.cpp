@@ -34,41 +34,41 @@ bool FakeBattery::isPlugged() const
     return fakeDevice()->property( "isPlugged" ).toBool();
 }
 
-FakeBattery::BatteryType FakeBattery::type() const
+Solid::Battery::BatteryType FakeBattery::type() const
 {
     QString name = fakeDevice()->property( "batteryType" ).toString();
 
     if ( name == "pda" )
     {
-        return PdaBattery;
+        return Solid::Battery::PdaBattery;
     }
     else if ( name == "ups" )
     {
-        return UpsBattery;
+        return Solid::Battery::UpsBattery;
     }
     else if ( name == "primary" )
     {
-        return PrimaryBattery;
+        return Solid::Battery::PrimaryBattery;
     }
     else if ( name == "mouse" )
     {
-        return MouseBattery;
+        return Solid::Battery::MouseBattery;
     }
     else if ( name == "keyboard" )
     {
-        return KeyboardBattery;
+        return Solid::Battery::KeyboardBattery;
     }
     else if ( name == "keyboard_mouse" )
     {
-        return KeyboardMouseBattery;
+        return Solid::Battery::KeyboardMouseBattery;
     }
     else if ( name == "camera" )
     {
-        return CameraBattery;
+        return Solid::Battery::CameraBattery;
     }
     else
     {
-        return UnknownBattery;
+        return Solid::Battery::UnknownBattery;
     }
 }
 
@@ -77,19 +77,19 @@ QString FakeBattery::chargeLevelUnit() const
     return fakeDevice()->property( "chargeLevelUnit" ).toString();
 }
 
-int FakeBattery::charge( LevelType type ) const
+int FakeBattery::charge( Solid::Battery::LevelType type ) const
 {
     switch( type )
     {
-    case MaxLevel:
+    case Solid::Battery::MaxLevel:
         return fakeDevice()->property( "maxLevel" ).toInt();
-    case LastFullLevel:
+    case Solid::Battery::LastFullLevel:
         return fakeDevice()->property( "lastFullLevel" ).toInt();
-    case CurrentLevel:
+    case Solid::Battery::CurrentLevel:
         return fakeDevice()->property( "currentLevel" ).toInt();
-    case WarningLevel:
+    case Solid::Battery::WarningLevel:
         return fakeDevice()->property( "warningLevel" ).toInt();
-    case LowLevel:
+    case Solid::Battery::LowLevel:
         return fakeDevice()->property( "lowLevel" ).toInt();
     }
 
@@ -99,8 +99,8 @@ int FakeBattery::charge( LevelType type ) const
 
 int FakeBattery::chargePercent() const
 {
-    int last_full = charge( LastFullLevel );
-    int current = charge( CurrentLevel );
+    int last_full = charge( Solid::Battery::LastFullLevel );
+    int current = charge( Solid::Battery::CurrentLevel );
 
     int percent = ( 100 * current ) / last_full;
 
@@ -122,36 +122,36 @@ bool FakeBattery::isRechargeable() const
     return fakeDevice()->property( "isRechargeable" ).toBool();
 }
 
-FakeBattery::ChargeState FakeBattery::chargeState() const
+Solid::Battery::ChargeState FakeBattery::chargeState() const
 {
     QString state = fakeDevice()->property( "chargeState" ).toString();
 
     if ( state == "charging" )
     {
-        return Charging;
+        return Solid::Battery::Charging;
     }
     else if ( state == "discharging" )
     {
-        return Discharging;
+        return Solid::Battery::Discharging;
     }
     else
     {
-        return NoCharge;
+        return Solid::Battery::NoCharge;
     }
 }
 
-void FakeBattery::setChargeState( ChargeState newState )
+void FakeBattery::setChargeState( Solid::Battery::ChargeState newState )
 {
     QString name;
 
     switch( newState )
     {
-    case Charging:
+    case Solid::Battery::Charging:
         name = "charging";
         break;
-    case Discharging:
+    case Solid::Battery::Discharging:
         name = "discharging";
-    case NoCharge:
+    case Solid::Battery::NoCharge:
         name = "noCharge";
     }
 

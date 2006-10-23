@@ -22,7 +22,6 @@
 
 #include <solid/network.h>
 #include <solid/authentication.h>
-#include <solid/ifaces/enums.h>
 
 
 namespace Solid
@@ -33,10 +32,22 @@ namespace Solid
     /**
      * This type of networks is used by wifi network interfaces.
      */
-    class SOLID_EXPORT WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
+    class SOLID_EXPORT WirelessNetwork : public Network
     {
         Q_OBJECT
+        Q_ENUMS( OperationMode Capability )
+        Q_FLAGS( Capabilities )
+
     public:
+        enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
+        // corresponding to 802.11 capabilities defined in NetworkManager.h
+        enum Capability { Wep = 0x1, Wpa = 0x2, Wpa2 = 0x4, Psk = 0x8,
+                          Ieee8021x = 0x10, Wep40 = 0x20, Wep104 = 0x40, Wep192 = 0x80, Wep256 = 0x100,
+                          WepOther = 0x200, Tkip = 0x400, Ccmp = 0x800 };
+        Q_DECLARE_FLAGS( Capabilities, Capability )
+
+
+
         /**
          * Creates a new WirelessNetwork object.
          *
@@ -82,7 +93,7 @@ namespace Solid
          * Retrieves the capabilities of this wifi network.
          *
          * @return the flag set describing the capabilities
-         * @see Solid::Ifaces::Enums::WirelessNetwork::Capability
+         * @see Solid::WirelessNetwork::Capability
          */
         Capabilities capabilities() const;
 
@@ -99,7 +110,7 @@ namespace Solid
          * Retrieves the operation mode of this network.
          *
          * @return the current mode
-         * @see Solid::Ifaces::Enums::WirelessNetwork::OperationMode
+         * @see Solid::WirelessNetwork::OperationMode
          */
         OperationMode mode() const;
 
@@ -180,5 +191,7 @@ namespace Solid
 };
 
 } //Solid
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::WirelessNetwork::Capabilities )
 
 #endif

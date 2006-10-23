@@ -23,7 +23,7 @@
 #include <QList>
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/enums.h>
+#include <solid/networkinterface.h>
 
 #include <QObject>
 
@@ -37,7 +37,7 @@ namespace Ifaces
      * For non network specific hardware details,
      * @see Solid::Ifaces::NetworkHw
      */
-    class SOLIDIFACES_EXPORT NetworkInterface : public QObject, public Enums::NetworkInterface
+    class SOLIDIFACES_EXPORT NetworkInterface : public QObject
     {
         Q_OBJECT
     public:
@@ -73,9 +73,9 @@ namespace Ifaces
          * if a device is wired or wireless.
          *
          * @return this network interface type
-         * @see Solid::Ifaces::Enums::NetworkInterface::Type
+         * @see Solid::NetworkInterface::Type
          */
-        virtual Type type() const = 0;
+        virtual Solid::NetworkInterface::Type type() const = 0;
 
         /**
          * Retrieves the current state of the network connection held by this device.
@@ -83,9 +83,9 @@ namespace Ifaces
          * it provides states coming from different layers.
          *
          * @return the current connection state
-         * @see Solid::Ifaces::Enums::NetworkInterface::ConnectionState
+         * @see Solid::NetworkInterface::ConnectionState
          */
-        virtual ConnectionState connectionState() const = 0;
+        virtual Solid::NetworkInterface::ConnectionState connectionState() const = 0;
 
         /**
          * Retrieves the current signal strength of this network interface. It ranges from 0 to 100.
@@ -113,9 +113,9 @@ namespace Ifaces
          * Retrieves the capabilities supported by this device.
          *
          * @return the capabilities of the device
-         * @param Solid::Ifaces::Enums::NetworkInterface
+         * @see Solid::NetworkInterface::Capabilities
          */
-        virtual Capabilities capabilities() const = 0;
+        virtual Solid::NetworkInterface::Capabilities capabilities() const = 0;
 
         /**
          * Instantiates a new Network object from the current backend given its UNI.
@@ -166,7 +166,7 @@ namespace Ifaces
          * is no carrier anymore.
          *
          * @param state the new state of the connection
-         * @see Solid::Ifaces::NetworkInterface::ConnectionState
+         * @see Solid::NetworkInterface::ConnectionState
          */
         void connectionStateChanged( int state );
 

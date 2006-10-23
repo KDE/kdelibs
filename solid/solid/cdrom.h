@@ -33,16 +33,39 @@ namespace Solid
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class SOLID_EXPORT Cdrom : public Storage, public Ifaces::Enums::Cdrom
+    class SOLID_EXPORT Cdrom : public Storage
     {
         Q_OBJECT
         Q_ENUMS( MediumType )
+        Q_FLAGS( MediumTypes )
         Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
         Q_PROPERTY( int readSpeed READ readSpeed )
         Q_PROPERTY( int writeSpeed READ writeSpeed )
         Q_PROPERTY( QList<int> writeSpeeds READ writeSpeeds )
 
     public:
+        /**
+         * This enum type defines the type of medium a cdrom drive supports.
+         *
+         * - Cdr : A Recordable Compact Disc (CD-R)
+         * - Cdrw : A ReWritable Compact Disc (CD-RW)
+         * - Dvd : A Digital Versatile Disc (DVD)
+         * - Dvdr : A Recordable Digital Versatile Disc (DVD-R)
+         * - Dvdrw : A ReWritable Digital Versatile Disc (DVD-RW)
+         * - Dvdram : A Random Access Memory Digital Versatile Disc (DVD-RAM)
+         * - Dvdplusr : A Recordable Digital Versatile Disc (DVD+R)
+         * - Dvdplusrw : A ReWritable Digital Versatile Disc (DVD+RW)
+         * - Dvdplusdl : A Dual Layer Digital Versatile Disc (DVD+R DL)
+         */
+        enum MediumType { Cdr, Cdrw, Dvd, Dvdr, Dvdrw, Dvdram, Dvdplusr, Dvdplusrw, Dvdplusdl };
+
+        /**
+         * This type stores an OR combination of MediumType values.
+         */
+        Q_DECLARE_FLAGS( MediumTypes, MediumType )
+
+
+
         /**
          * Creates a new Cdrom object.
          * You generally won't need this. It's created when necessary using
@@ -107,5 +130,7 @@ namespace Solid
         void ejectPressed();
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::Cdrom::MediumTypes )
 
 #endif

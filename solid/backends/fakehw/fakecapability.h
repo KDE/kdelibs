@@ -42,75 +42,75 @@ protected:
     }
 
 public:
-    inline static QString toString( Type capability )
+    inline static QString toString( Solid::Capability::Type capability )
     {
         switch( capability )
         {
-            case Capability::Processor:
-                return "processor";
-            case Capability::Block:
-                return "block";
-            case Capability::Storage:
-                return "storage";
-            case Capability::Cdrom:
-                return "cdrom";
-            case Capability::Volume:
-                return "volume";
-            case Capability::OpticalDisc:
-                return "opticaldisc";
-            case Capability::Camera:
-                return "camera";
-            case Capability::PortableMediaPlayer:
-                return "portablemediaplayer";
-            case Capability::NetworkHw:
-                return "networkhw";
-            case Capability::AcAdapter:
-                return "acadapter";
-            case Capability::Battery:
-                return "battery";
-            case Capability::Button:
-                return "button";
-            case Capability::Display:
-                return "display";
-            case Capability::AudioHw:
-                return "audiohw";
-            default:
-                return QString();
+        case Solid::Capability::Processor:
+            return "processor";
+        case Solid::Capability::Block:
+            return "block";
+        case Solid::Capability::Storage:
+            return "storage";
+        case Solid::Capability::Cdrom:
+            return "cdrom";
+        case Solid::Capability::Volume:
+            return "volume";
+        case Solid::Capability::OpticalDisc:
+            return "opticaldisc";
+        case Solid::Capability::Camera:
+            return "camera";
+        case Solid::Capability::PortableMediaPlayer:
+            return "portablemediaplayer";
+        case Solid::Capability::NetworkHw:
+            return "networkhw";
+        case Solid::Capability::AcAdapter:
+            return "acadapter";
+        case Solid::Capability::Battery:
+            return "battery";
+        case Solid::Capability::Button:
+            return "button";
+        case Solid::Capability::Display:
+            return "display";
+        case Solid::Capability::AudioHw:
+            return "audiohw";
+        default:
+            return QString();
         }
     }
 
-    inline static Type fromString( const QString &capability )
+    inline static Solid::Capability::Type fromString( const QString &capability )
     {
         if ( capability == "processor" )
-            return Capability::Processor;
+            return Solid::Capability::Processor;
         else if ( capability == "block" )
-            return Capability::Block;
+            return Solid::Capability::Block;
         else if ( capability == "storage" )
-            return Capability::Storage;
+            return Solid::Capability::Storage;
         else if ( capability == "cdrom" )
-            return Capability::Cdrom;
+            return Solid::Capability::Cdrom;
         else if ( capability == "volume" )
-            return Capability::Volume;
+            return Solid::Capability::Volume;
         else if ( capability == "opticaldisc" )
-            return Capability::OpticalDisc;
+            return Solid::Capability::OpticalDisc;
         else if ( capability == "camera" )
-            return Capability::Camera;
+            return Solid::Capability::Camera;
         else if ( capability == "portablemediaplayer" )
-            return Capability::PortableMediaPlayer;
+            return Solid::Capability::PortableMediaPlayer;
         else if ( capability == "networkhw" )
-            return Capability::NetworkHw;
+            return Solid::Capability::NetworkHw;
         else if ( capability == "acadapter" )
-            return Capability::AcAdapter;
+            return Solid::Capability::AcAdapter;
         else if ( capability == "battery" )
-            return Capability::Battery;
+            return Solid::Capability::Battery;
         else if ( capability == "button" )
-            return Capability::Button;
+            return Solid::Capability::Button;
         else if ( capability == "display" )
-            return Capability::Display;
+            return Solid::Capability::Display;
         else if ( capability == "audiohw" )
-            return Capability::AudioHw;
+            return Solid::Capability::AudioHw;
         else
-            return Capability::Unknown;
+            return Solid::Capability::Unknown;
     }
 
 private:

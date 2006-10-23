@@ -26,7 +26,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/frontendobject.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
@@ -39,10 +38,42 @@ namespace Solid
      * A capability describes what a device can do. A device generally has
      * a set of capabilities.
      */
-    class SOLID_EXPORT Capability : public FrontendObject, public Ifaces::Enums::Capability
+    class SOLID_EXPORT Capability : public FrontendObject
     {
         Q_OBJECT
+        Q_ENUMS(Type)
+        Q_FLAGS(Types)
+
     public:
+        /**
+         * This enum type defines the type of capability that a Device can have.
+         *
+         * - Unknown : An undetermined capability
+         * - Processor : A processor
+         * - Block : A block device
+         * - Storage : A storage drive
+         * - Cdrom : A CD-ROM drive
+         * - Volume : A volume
+         * - OpticalDisc : An optical disc
+         * - Camera : A digital camera
+         * - PortableMediaPlayer: A portable media player
+         * - NetworkHw: A network interface
+         * - Display : A video display
+         */
+        enum Type { Unknown = 0, Processor = 1, Block = 2,
+                    Storage = 4, Cdrom = 8,
+                    Volume = 16, OpticalDisc = 32,
+                    Camera = 64, PortableMediaPlayer = 128,
+                    NetworkHw = 256, AcAdapter = 512,
+                    Battery = 1024, Button = 2048,
+                    Display = 4096, AudioHw = 8192 };
+
+        /**
+         * This type stores an OR combination of Type values.
+         */
+        Q_DECLARE_FLAGS( Types, Type )
+
+
         /**
          * Creates a new Capability object.
          *
@@ -59,5 +90,7 @@ namespace Solid
         friend class Device;
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::Capability::Types )
 
 #endif

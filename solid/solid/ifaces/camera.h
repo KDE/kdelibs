@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/capability.h>
-#include <solid/ifaces/enums.h>
+#include <solid/camera.h>
 
 namespace Solid
 {
@@ -39,7 +39,7 @@ namespace Ifaces
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class SOLIDIFACES_EXPORT Camera : virtual public Capability, public Enums::Camera
+    class SOLIDIFACES_EXPORT Camera : virtual public Capability
     {
     public:
         /**
@@ -53,9 +53,9 @@ namespace Ifaces
          * device.
          *
          * @return the access method type
-         * @see Solid::Ifaces::Enums::Camera::AccessType
+         * @see Solid::Camera::AccessType
          */
-        virtual AccessType accessMethod() const = 0;
+        virtual Solid::Camera::AccessType accessMethod() const = 0;
 
         /**
          * Indicates if the camera is supported by a driver from the libgphoto2 project.

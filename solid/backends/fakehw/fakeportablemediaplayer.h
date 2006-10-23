@@ -33,7 +33,7 @@ public:
     ~FakePortableMediaPlayer();
 
 public Q_SLOTS:
-    virtual AccessType accessMethod() const;
+    virtual Solid::PortableMediaPlayer::AccessType accessMethod() const;
     virtual QStringList outputFormats() const;
     virtual QStringList inputFormats() const;
     virtual QStringList playlistFormats() const;

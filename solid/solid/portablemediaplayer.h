@@ -25,7 +25,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/capability.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
@@ -36,7 +35,7 @@ namespace Solid
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
+    class SOLID_EXPORT PortableMediaPlayer : public Capability
     {
         Q_OBJECT
         Q_ENUMS( AccessType )
@@ -46,6 +45,16 @@ namespace Solid
         Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
 
     public:
+        /**
+         * This enum type defines the access method that can be used for a portable media player
+         *
+         * - MassStorage : A mass storage portable media player
+         * - Proprietary : A portable media player using a proprietary protocol
+         */
+         enum AccessType { MassStorage, Proprietary };
+
+
+
         /**
          * Creates a new PortableMediaPlayer object.
          * You generally won't need this. It's created when necessary using
@@ -65,7 +74,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the PortableMediaPlayer capability.
          *
          * @return the PortableMediaPlayer capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::PortableMediaPlayer; };
 
@@ -74,7 +83,7 @@ namespace Solid
          * device.
          *
          * @return the access method type
-         * @see Solid::Ifaces::Enums::PortableMediaPlayer::AccessType
+         * @see Solid::PortableMediaPlayer::AccessType
          */
         AccessType accessMethod() const;
 

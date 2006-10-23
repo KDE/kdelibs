@@ -49,29 +49,29 @@ QString FakeVolume::mountPoint() const
     return fakeDevice()->property("mountPoint").toString();
 }
 
-FakeVolume::UsageType FakeVolume::usage() const
+Solid::Volume::UsageType FakeVolume::usage() const
 {
     QString usage = fakeDevice()->property("usage").toString();
 
     if ( usage == "filesystem" )
     {
-        return FileSystem;
+        return Solid::Volume::FileSystem;
     }
     else if ( usage == "partitiontable" )
     {
-        return PartitionTable;
+        return Solid::Volume::PartitionTable;
     }
     else if ( usage == "raid" )
     {
-        return Raid;
+        return Solid::Volume::Raid;
     }
     else if ( usage == "unused" )
     {
-        return Unused;
+        return Solid::Volume::Unused;
     }
     else
     {
-        return Other;
+        return Solid::Volume::Other;
     }
 }
 

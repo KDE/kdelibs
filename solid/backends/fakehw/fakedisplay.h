@@ -33,7 +33,7 @@ public:
     ~FakeDisplay();
 
 public Q_SLOTS:
-    virtual DisplayType type() const;
+    virtual Solid::Display::DisplayType type() const;
     virtual int lcdBrightness() const;
 };
 

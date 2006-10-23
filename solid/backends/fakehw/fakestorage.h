@@ -33,8 +33,8 @@ public:
     ~FakeStorage();
 
 public Q_SLOTS:
-    virtual Bus bus() const;
-    virtual DriveType driveType() const;
+    virtual Solid::Storage::Bus bus() const;
+    virtual Solid::Storage::DriveType driveType() const;
 
     virtual bool isRemovable() const;
     virtual bool isEjectRequired() const;

@@ -27,8 +27,8 @@
 
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/capability.h>
-#include <solid/ifaces/enums.h>
+#include <solid/capability.h>
+#include <solid/device.h>
 
 namespace Solid
 {
@@ -43,7 +43,7 @@ namespace Ifaces
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLIDIFACES_EXPORT Device : public QObject, public Enums::Device
+    class SOLIDIFACES_EXPORT Device : public QObject
     {
         Q_OBJECT
 
@@ -136,7 +136,7 @@ namespace Ifaces
          * @param capability the capability type
          * @returns true if the operation succeeded, false otherwise
          */
-        virtual bool addCapability( const Capability::Type &capability );
+        virtual bool addCapability( const Solid::Capability::Type &capability );
 
         /**
          * Tests if a property exist.
@@ -144,7 +144,7 @@ namespace Ifaces
          * @param capability the capability type
          * @returns true if the capability is provided by this device, false otherwise
          */
-        virtual bool queryCapability( const Capability::Type &capability ) const = 0;
+        virtual bool queryCapability( const Solid::Capability::Type &capability ) const = 0;
 
         /**
          * Create a specialized interface to interact with the device corresponding to
@@ -153,7 +153,7 @@ namespace Ifaces
          * @param capability the capability type
          * @returns a pointer to the capability interfaces if supported by the device, 0 otherwise
          */
-        virtual QObject *createCapability( const Capability::Type &capability ) = 0;
+        virtual QObject *createCapability( const Solid::Capability::Type &capability ) = 0;
 
         /**
          * Locks a device, giving a reason for such a lock.
@@ -192,7 +192,7 @@ namespace Ifaces
          * @param key the changed property name
          * @param change the kind of change done on the device
          * property (added/removed/modified), it's one of the type
-         * Solid::PropertyChange
+         * Solid::Device::PropertyChange
          */
         void propertyChanged( const QMap<QString,int> &changes );
 

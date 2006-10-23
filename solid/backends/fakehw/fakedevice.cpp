@@ -37,7 +37,6 @@
 #include <QStringList>
 #include <QDBusConnection>
 
-using namespace Solid::Ifaces;
 
 class FakeDevice::Private
 {
@@ -67,7 +66,7 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
     // a problem for unit testing.
     foreach ( QString capability, d->capabilityList )
     {
-        Capability::Type type = FakeCapability::fromString( capability );
+        Solid::Capability::Type type = FakeCapability::fromString( capability );
         createCapability( type );
     }
 }
@@ -116,11 +115,11 @@ bool FakeDevice::setProperty(const QString &key, const QVariant &value)
 {
     if ( d->broken ) return false;
 
-    PropertyChange change_type = PropertyModified;
+    Solid::Device::PropertyChange change_type = Solid::Device::PropertyModified;
 
     if (!d->propertyMap.contains(key))
     {
-        change_type = PropertyAdded;
+        change_type = Solid::Device::PropertyAdded;
     }
 
     d->propertyMap[key] = value;
@@ -140,7 +139,7 @@ bool FakeDevice::removeProperty(const QString &key)
     d->propertyMap.remove( key );
 
     QMap<QString,int> change;
-    change[key] = PropertyRemoved;
+    change[key] = Solid::Device::PropertyRemoved;
 
     emit propertyChanged( change );
 
@@ -192,12 +191,12 @@ void FakeDevice::raiseCondition( const QString &condition, const QString &reason
     emit conditionRaised( condition, reason );
 }
 
-bool FakeDevice::queryCapability(const Capability::Type &capability) const
+bool FakeDevice::queryCapability(const Solid::Capability::Type &capability) const
 {
     return d->capabilityList.contains( FakeCapability::toString(capability) );
 }
 
-QObject *FakeDevice::createCapability(const Capability::Type &capability)
+QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
 {
     // Do not try to cast with a unsupported capability.
     if( !queryCapability(capability) )
@@ -207,50 +206,50 @@ QObject *FakeDevice::createCapability(const Capability::Type &capability)
 
     switch(capability)
     {
-        case Capability::Processor:
-            iface = new FakeProcessor(this);
-            break;
-        case Capability::Block:
-            iface = new FakeBlock(this);
-            break;
-        case Capability::Storage:
-            iface = new FakeStorage(this);
-            break;
-        case Capability::Cdrom:
-            iface = new FakeCdrom(this);
-            break;
-        case Capability::Volume:
-            iface = new FakeVolume(this);
-            break;
-        case Capability::OpticalDisc:
-            iface = new FakeOpticalDisc(this);
-            break;
-        case Capability::Camera:
-            iface = new FakeCamera(this);
-            break;
-        case Capability::PortableMediaPlayer:
-            iface = new FakePortableMediaPlayer(this);
-            break;
-        case Capability::NetworkHw:
-            iface = new FakeNetworkHw(this);
-            break;
-        case Capability::AcAdapter:
-            iface = new FakeAcAdapter(this);
-            break;
-        case Capability::Battery:
-            iface = new FakeBattery(this);
-            break;
-        case Capability::Button:
-            iface = new FakeButton(this);
-            break;
-        case Capability::Display:
-            iface = new FakeDisplay(this);
-            break;
-        case Capability::AudioHw:
-            iface = new FakeAudioHw(this);
-            break;
-        case Capability::Unknown:
-            break;
+    case Solid::Capability::Processor:
+        iface = new FakeProcessor(this);
+        break;
+    case Solid::Capability::Block:
+        iface = new FakeBlock(this);
+        break;
+    case Solid::Capability::Storage:
+        iface = new FakeStorage(this);
+        break;
+    case Solid::Capability::Cdrom:
+        iface = new FakeCdrom(this);
+        break;
+    case Solid::Capability::Volume:
+        iface = new FakeVolume(this);
+        break;
+    case Solid::Capability::OpticalDisc:
+        iface = new FakeOpticalDisc(this);
+        break;
+    case Solid::Capability::Camera:
+        iface = new FakeCamera(this);
+        break;
+    case Solid::Capability::PortableMediaPlayer:
+        iface = new FakePortableMediaPlayer(this);
+        break;
+    case Solid::Capability::NetworkHw:
+        iface = new FakeNetworkHw(this);
+        break;
+    case Solid::Capability::AcAdapter:
+        iface = new FakeAcAdapter(this);
+        break;
+    case Solid::Capability::Battery:
+        iface = new FakeBattery(this);
+        break;
+    case Solid::Capability::Button:
+        iface = new FakeButton(this);
+        break;
+    case Solid::Capability::Display:
+        iface = new FakeDisplay(this);
+        break;
+    case Solid::Capability::AudioHw:
+        iface = new FakeAudioHw(this);
+        break;
+    case Solid::Capability::Unknown:
+        break;
     }
 
     if(iface)

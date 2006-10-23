@@ -32,20 +32,20 @@ FakeOpticalDisc::~FakeOpticalDisc()
 
 }
 
-FakeOpticalDisc::ContentTypes FakeOpticalDisc::availableContent() const
+Solid::OpticalDisc::ContentTypes FakeOpticalDisc::availableContent() const
 {
-    ContentTypes content;
+    Solid::OpticalDisc::ContentTypes content;
 
-    QMap<ContentType, QString> map;
-    map[Audio] = "audio";
-    map[Data] = "data";
-    map[VideoCd] = "vcd";
-    map[SuperVideoCd] = "svcd";
-    map[VideoDvd] ="videodvd";
+    QMap<Solid::OpticalDisc::ContentType, QString> map;
+    map[Solid::OpticalDisc::Audio] = "audio";
+    map[Solid::OpticalDisc::Data] = "data";
+    map[Solid::OpticalDisc::VideoCd] = "vcd";
+    map[Solid::OpticalDisc::SuperVideoCd] = "svcd";
+    map[Solid::OpticalDisc::VideoDvd] ="videodvd";
 
     QStringList content_typelist = fakeDevice()->property("availableContent").toString().split(',');
 
-    foreach( const ContentType type, map.keys() )
+    foreach( const Solid::OpticalDisc::ContentType type, map.keys() )
     {
         if ( content_typelist.indexOf(map[type]) != -1 )
         {
@@ -56,49 +56,49 @@ FakeOpticalDisc::ContentTypes FakeOpticalDisc::availableContent() const
     return content;
 }
 
-FakeOpticalDisc::DiscType FakeOpticalDisc::discType() const
+Solid::OpticalDisc::DiscType FakeOpticalDisc::discType() const
 {
     QString type = fakeDevice()->property("discType").toString();
 
     if ( type == "cd_rom" )
     {
-        return CdRom;
+        return Solid::OpticalDisc::CdRom;
     }
     else if ( type == "cd_r" )
     {
-        return CdRecordable;
+        return Solid::OpticalDisc::CdRecordable;
     }
     else if ( type == "cd_rw" )
     {
-        return CdRewritable;
+        return Solid::OpticalDisc::CdRewritable;
     }
     else if ( type == "dvd_rom" )
     {
-        return DvdRom;
+        return Solid::OpticalDisc::DvdRom;
     }
     else if ( type == "dvd_ram" )
     {
-        return DvdRam;
+        return Solid::OpticalDisc::DvdRam;
     }
     else if ( type == "dvd_r" )
     {
-        return DvdRecordable;
+        return Solid::OpticalDisc::DvdRecordable;
     }
     else if ( type == "dvd_rw" )
     {
-        return DvdRewritable;
+        return Solid::OpticalDisc::DvdRewritable;
     }
     else if ( type == "dvd_plus_r" )
     {
-        return DvdPlusRecordable;
+        return Solid::OpticalDisc::DvdPlusRecordable;
     }
     else if ( type == "dvd_plus_rw" )
     {
-        return DvdPlusRewritable;
+        return Solid::OpticalDisc::DvdPlusRewritable;
     }
     else
     {
-        return UnknownDiscType;
+        return Solid::OpticalDisc::UnknownDiscType;
     }
 }
 

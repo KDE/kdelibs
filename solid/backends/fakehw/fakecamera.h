@@ -33,7 +33,7 @@ public:
     ~FakeCamera();
 
 public Q_SLOTS:
-    virtual AccessType accessMethod() const;
+    virtual Solid::Camera::AccessType accessMethod() const;
     virtual bool isGphotoSupported() const;
 };
 

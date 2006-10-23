@@ -33,8 +33,8 @@ public:
     virtual ~FakeOpticalDisc();
 
 public Q_SLOTS:
-    virtual ContentTypes availableContent() const;
-    virtual DiscType discType() const;
+    virtual Solid::OpticalDisc::ContentTypes availableContent() const;
+    virtual Solid::OpticalDisc::DiscType discType() const;
     virtual bool isAppendable() const;
     virtual bool isBlank() const;
     virtual bool isRewritable() const;

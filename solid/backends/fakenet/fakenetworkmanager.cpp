@@ -112,7 +112,7 @@ bool FakeNetworkManager::isWirelessEnabled() const
     {
         it.next();
         FakeNetworkInterface * netDevice = it.value();
-        if ( netDevice->type() == Enums::NetworkInterface::Ieee80211 )
+        if ( netDevice->type() == Solid::NetworkInterface::Ieee80211 )
             if ( netDevice->isActive() )
                 return true;
     }
@@ -141,7 +141,7 @@ void FakeNetworkManager::setWirelessEnabled( bool enabled )
         {
             it.next();
             FakeNetworkInterface * netDevice = it.value();
-            if ( netDevice->type() == Enums::NetworkInterface::Ieee80211 )
+            if ( netDevice->type() == Solid::NetworkInterface::Ieee80211 )
                 netDevice->setActive( enabled );
         }
     }
@@ -155,8 +155,8 @@ void FakeNetworkManager::setNetworkingEnabled( bool enabled )
     {
         it.next();
         FakeNetworkInterface * netDevice = it.value();
-        if ( ( netDevice->type() == Enums::NetworkInterface::Ieee80211 && mUserWirelessEnabled )
-           || netDevice->type() == Enums::NetworkInterface::Ieee8023 )
+        if ( ( netDevice->type() == Solid::NetworkInterface::Ieee80211 && mUserWirelessEnabled )
+           || netDevice->type() == Solid::NetworkInterface::Ieee8023 )
             netDevice->setActive( enabled );
     }
     mUserNetworkingEnabled = enabled;
@@ -248,7 +248,7 @@ FakeNetworkInterface *FakeNetworkManager::parseDeviceElement(const QDomElement &
         childNode = childNode.nextSibling();
     }
     //kDebug() << "Done listing. " << endl;
-    
+
 /*    if( !propertyMap.isEmpty() )
     {*/
         kDebug() << k_funcinfo << "Creating FakeNetworkDevice for " << uni << endl;
@@ -260,7 +260,7 @@ FakeNetworkInterface *FakeNetworkManager::parseDeviceElement(const QDomElement &
             kDebug() << "Injecting " << net->uni() << endl;
             device->injectNetwork( net->uni(), net );
         }
-        
+
 //     }
 
     return device;

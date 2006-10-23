@@ -42,12 +42,12 @@ public:
         virtual ~FakeNetworkInterface();
         QString uni() const;
         bool isActive() const;
-        Type type() const;
-        ConnectionState connectionState() const;
+        Solid::NetworkInterface::Type type() const;
+        Solid::NetworkInterface::ConnectionState connectionState() const;
         int signalStrength() const;
         int designSpeed() const;
         bool isLinkUp() const;
-        Capabilities capabilities() const;
+        Solid::NetworkInterface::Capabilities capabilities() const;
         QObject * createNetwork( const QString & uni );
         QStringList networks() const;
     Q_SIGNALS:

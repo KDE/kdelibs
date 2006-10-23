@@ -24,8 +24,7 @@
 
 #include <QStringList>
 
-#include <solid/ifaces/enums.h>
-
+#include <solid/wirelessnetwork.h>
 #include <solid/ifaces/network.h>
 
 
@@ -41,7 +40,7 @@ namespace Ifaces
     /**
      * This type of networks is used by wifi network interfaces.
      */
-    class SOLIDIFACES_EXPORT WirelessNetwork : virtual public Network, public Enums::WirelessNetwork
+    class SOLIDIFACES_EXPORT WirelessNetwork : virtual public Network
     {
     public:
         /**
@@ -74,9 +73,9 @@ namespace Ifaces
          * Retrieves the capabilities of this wifi network.
          *
          * @return the flag set describing the capabilities
-         * @see Solid::Ifaces::Enums::WirelessNetwork::Capability
+         * @see Solid::WirelessNetwork::Capability
          */
-        virtual Capabilities capabilities() const = 0;
+        virtual Solid::WirelessNetwork::Capabilities capabilities() const = 0;
 
 
 
@@ -92,9 +91,9 @@ namespace Ifaces
          * Retrieves the operation mode of this network.
          *
          * @return the current mode
-         * @see Solid::Ifaces::Enums::WirelessNetwork::OperationMode
+         * @see Solid::WirelessNetwork::OperationMode
          */
-        virtual OperationMode mode() const = 0;
+        virtual Solid::WirelessNetwork::OperationMode mode() const = 0;
 
         /**
          * Indicates if the network interface is associated to this network.

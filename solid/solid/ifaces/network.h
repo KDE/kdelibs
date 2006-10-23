@@ -22,8 +22,6 @@
 
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/enums.h>
-
 #include <QObject>
 #include <QList>
 #include <ksocketaddress.h>
@@ -35,7 +33,7 @@ namespace Ifaces
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
      */
-    class SOLIDIFACES_EXPORT Network : public Enums::Network
+    class SOLIDIFACES_EXPORT Network
     {
     public:
         /**

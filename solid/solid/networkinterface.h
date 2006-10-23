@@ -21,7 +21,6 @@
 #define SOLID_NETWORKINTERFACE_H
 
 #include <solid/frontendobject.h>
-#include <solid/ifaces/enums.h>
 #include <solid/network.h>
 
 namespace Solid
@@ -32,10 +31,42 @@ namespace Solid
      * For non network specific hardware details,
      * @see Solid::NetworkHw
      */
-    class SOLID_EXPORT NetworkInterface : public FrontendObject, public Ifaces::Enums::NetworkInterface
+    class SOLID_EXPORT NetworkInterface : public FrontendObject
     {
         Q_OBJECT
+        Q_ENUMS( ConnectionState Capability Type )
+        Q_FLAGS( Capabilities )
+
     public:
+        // == NM ActivationStage
+        /**
+         * Device connection states describe the possible states of a
+         * network connection from the user's point of view.  For
+         * simplicity, states from several different layers are present -
+         * this is a high level view
+         */
+        enum ConnectionState{ UnknownState, Prepare, Configure, NeedUserKey,
+                              IPStart, IPGet, IPCommit, Activated, Failed,
+                              Cancelled };
+        /**
+         * Possible Device capabilities
+         * - IsManageable: denotes that the device can be controlled by this API
+         * - SupportsCarrierDetect: the device informs us when it is plugged in to the medium
+         * - SupportsWirelessScan: the device can scan for wireless networks
+         */
+        enum Capability { IsManageable = 0x1, SupportsCarrierDetect = 0x2,
+                          SupportsWirelessScan = 0x4 };
+        /**
+         * Device medium types
+         * - Ieee8023: wired ethernet
+         * - Ieee80211: the popular family of wireless networks
+         */
+        enum Type { UnknownType, Ieee8023, Ieee80211 };
+
+        Q_DECLARE_FLAGS( Capabilities, Capability )
+
+
+
         /**
          * Constructs an invalid network interface
          */
@@ -99,7 +130,7 @@ namespace Solid
          * if a device is wired or wireless.
          *
          * @return this network interface type
-         * @see Solid::Ifaces::Enums::NetworkInterface::Type
+         * @see Solid::NetworkInterface::Type
          */
         Type type() const;
 
@@ -109,7 +140,7 @@ namespace Solid
          * it provides states coming from different layers.
          *
          * @return the current connection state
-         * @see Solid::Ifaces::Enums::NetworkInterface::ConnectionState
+         * @see Solid::NetworkInterface::ConnectionState
          */
         ConnectionState connectionState() const;
 
@@ -139,7 +170,6 @@ namespace Solid
          * Retrieves the capabilities supported by this device.
          *
          * @return the capabilities of the device
-         * @param Solid::Ifaces::Enums::NetworkInterface
          */
         Capabilities capabilities() const;
 
@@ -190,7 +220,7 @@ namespace Solid
          * is no carrier anymore.
          *
          * @param state the new state of the connection
-         * @see Solid::Ifaces::NetworkInterface::ConnectionState
+         * @see Solid::NetworkInterface::ConnectionState
          */
         void connectionStateChanged( int state );
 
@@ -229,5 +259,7 @@ namespace Solid
 };
 
 } //Solid
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::NetworkInterface::Capabilities )
 
 #endif

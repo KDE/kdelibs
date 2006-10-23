@@ -31,10 +31,11 @@ namespace Solid
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class SOLID_EXPORT OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
+    class SOLID_EXPORT OpticalDisc : public Volume
     {
         Q_OBJECT
         Q_ENUMS( ContentType DiscType )
+        Q_FLAGS( ContentTypes )
         Q_PROPERTY( ContentTypes availableContent READ availableContent )
         Q_PROPERTY( DiscType discType READ discType )
         Q_PROPERTY( bool appendable READ isAppendable )
@@ -43,6 +44,41 @@ namespace Solid
         Q_PROPERTY( qulonglong capacity READ capacity )
 
     public:
+        /**
+         * This enum type defines the type of content available in an optical disc.
+         *
+         * - Audio : A disc containing audio
+         * - Data : A disc containing data
+         * - VideoCd : A Video Compact Disc (VCD)
+         * - SuperVideoCd : A Super Video Compact Disc (SVCD)
+         * - VideoDvd : A Video Digital Versatile Disc (DVD-Video)
+         */
+        enum ContentType { Audio, Data, VideoCd, SuperVideoCd, VideoDvd };
+
+        /**
+         * This type stores an OR combination of ContentType values.
+         */
+        Q_DECLARE_FLAGS( ContentTypes, ContentType )
+
+        /**
+         * This enum type defines the type of optical disc it can be.
+         *
+         * - CdRom : A Compact Disc Read-Only Memory (CD-ROM)
+         * - CdRecordable : A Compact Disc Recordable (CD-R)
+         * - CdRewritable : A Compact Disc ReWritable (CD-RW)
+         * - DvdRom : A Digital Versatile Disc Read-Only Memory (DVD-ROM)
+         * - DvdRam : A Digital Versatile Disc Random Access Memory (DVD-RAM)
+         * - DvdRecordable : A Digital Versatile Disc Recordable (DVD-R)
+         * - DvdRewritable : A Digital Versatile Disc ReWritable (DVD-RW)
+         * - DvdPlusRecordable : A Digital Versatile Disc Recordable (DVD+R)
+         * - DvdPlusRewritable : A Digital Versatile Disc ReWritable (DVD+RW)
+         * - UnknownDiscType : An undetermined disc type
+         */
+        enum DiscType { CdRom, CdRecordable, CdRewritable, DvdRom, DvdRam,
+                        DvdRecordable, DvdRewritable,
+                        DvdPlusRecordable, DvdPlusRewritable, UnknownDiscType };
+
+
         /**
          * Creates a new OpticalDisc object.
          * You generally won't need this. It's created when necessary using
@@ -115,5 +151,7 @@ namespace Solid
         qulonglong capacity() const;
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::OpticalDisc::ContentTypes )
 
 #endif

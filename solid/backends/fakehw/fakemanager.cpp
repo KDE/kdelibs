@@ -31,7 +31,6 @@
 
 #include "fakedevice.h"
 
-using namespace Solid::Ifaces;
 
 class FakeManager::Private
 {
@@ -89,13 +88,13 @@ bool FakeManager::deviceExists(const QString &udi)
     return d->loadedDevices.contains(udi);
 }
 
-QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Capability::Type capability)
+QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Capability::Type capability)
 {
     if( !parentUdi.isEmpty() )
     {
         QStringList found = findDeviceStringMatch(QLatin1String("parent"), parentUdi);
 
-        if( capability == Capability::Unknown )
+        if( capability == Solid::Capability::Unknown )
         {
             return found;
         }
@@ -117,7 +116,7 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Capability::
 
         return result;
     }
-    else if( capability != Capability::Unknown )
+    else if( capability != Solid::Capability::Unknown )
     {
         return findDeviceByCapability( capability );
     }
@@ -162,7 +161,7 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
     return result;
 }
 
-QStringList FakeManager::findDeviceByCapability( const Capability::Type &capability )
+QStringList FakeManager::findDeviceByCapability( const Solid::Capability::Type &capability )
 {
     QStringList result;
     FakeDevice *device;
@@ -177,7 +176,7 @@ QStringList FakeManager::findDeviceByCapability( const Capability::Type &capabil
     return result;
 }
 
-void FakeManager::raiseCapabilityAdded( const QString &udi, Capability::Type capability )
+void FakeManager::raiseCapabilityAdded( const QString &udi, Solid::Capability::Type capability )
 {
     emit newCapability( udi, capability );
 }

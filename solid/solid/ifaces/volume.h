@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/block.h>
-#include <solid/ifaces/enums.h>
+#include <solid/volume.h>
 
 class KJob;
 
@@ -37,7 +37,7 @@ namespace Ifaces
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLIDIFACES_EXPORT Volume : virtual public Block, public Enums::Volume
+    class SOLIDIFACES_EXPORT Volume : virtual public Block
     {
     public:
         /**
@@ -76,9 +76,9 @@ namespace Ifaces
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
-         * @see Solid::Ifaces::Enums::Volume::UsageType
+         * @see Solid::Volume::UsageType
          */
-        virtual UsageType usage() const = 0;
+        virtual Solid::Volume::UsageType usage() const = 0;
 
         /**
          * Retrieves the filesystem type of this volume.

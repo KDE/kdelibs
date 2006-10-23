@@ -23,23 +23,51 @@
 #include <kdelibs_export.h>
 
 #include <solid/capability.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
-    class SOLID_EXPORT AudioHw : public Capability, public Ifaces::Enums::AudioHw
+    class SOLID_EXPORT AudioHw : public Capability
     {
         Q_OBJECT
         Q_ENUMS( AudioDriver AudioHwType )
+        Q_FLAGS( AudioHwTypes )
         Q_PROPERTY( AudioDriver driver READ driver )
         Q_PROPERTY( QString driverHandler READ driverHandler )
         Q_PROPERTY( QString name READ name )
         Q_PROPERTY( AudioHwTypes type READ type )
 
     public:
+        /**
+         * This enum type defines the type of driver required to
+         * interact with the device.
+         *
+         * - Alsa: An Advanced Linux Sound Architecture (ALSA) driver device
+         * - OpenSoundSystem: An Open Sound System (OSS) driver device
+         * - UnknownAudioDriver: An unknown driver device
+         */
+        enum AudioDriver{ Alsa, OpenSoundSystem, UnknownAudioDriver };
+
+        /**
+         * This enum type defines the type of audio interface this
+         * device expose.
+         *
+         * - AudioControl: A control/mixer interface
+         * - AudioInput: An audio source
+         * - AudioOutput: An audio sink
+         * - UnknownAudioHwType: An unknown audio interface
+         */
+        enum AudioHwType{ UnknownAudioHwType, AudioControl, AudioInput, AudioOutput };
+
+        /**
+         * This type stores an OR combination of AudioHwType values.
+         */
+        Q_DECLARE_FLAGS( AudioHwTypes, AudioHwType )
+
+
+
         /**
          * Creates a new AudioHw object.
          * You generally won't need this. It's created when necessary using
@@ -60,7 +88,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the AudioHw capability.
          *
          * @return the AudioHw capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::AudioHw; }
 
@@ -70,7 +98,7 @@ namespace Solid
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see Solid::Ifaces::Enums::AudioDriver
+         * @see Solid::AudioHw::AudioDriver
          */
         AudioDriver driver();
 
@@ -97,10 +125,12 @@ namespace Solid
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see Solid::Ifaces::Enums::AudioHwTypes
+         * @see Solid::AudioHw::AudioHwTypes
          */
         AudioHwTypes type();
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::AudioHw::AudioHwTypes )
 
 #endif

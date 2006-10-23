@@ -51,12 +51,12 @@ public:
 
     int frequency() const;
 
-    Capabilities capabilities() const;
+    Solid::WirelessNetwork::Capabilities capabilities() const;
 
     // Service Set stuff
     QString essid() const;
 
-    OperationMode mode() const;
+    Solid::WirelessNetwork::OperationMode mode() const;
 
     bool isAssociated() const;
 

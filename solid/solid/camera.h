@@ -23,7 +23,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/capability.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
@@ -37,7 +36,7 @@ namespace Solid
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class SOLID_EXPORT Camera : public Capability, public Ifaces::Enums::Camera
+    class SOLID_EXPORT Camera : public Capability
     {
         Q_OBJECT
         Q_ENUMS( AccessType )
@@ -45,6 +44,17 @@ namespace Solid
         Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
 
     public:
+        /**
+         * This enum type defines the access method that can be used for a camera.
+         *
+         * - MassStorage : A mass storage camera
+         * - Ptp : A camera supporting Picture Transfer Protocol (PTP)
+         * - Proprietary : A camera using a proprietary protocol
+         */
+        enum AccessType { MassStorage, Ptp, Proprietary };
+
+
+
         /**
          * Creates a new Camera object.
          * You generally won't need this. It's created when necessary using
@@ -65,7 +75,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the Camera capability.
          *
          * @return the Camera capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::Camera; }
 
@@ -75,7 +85,7 @@ namespace Solid
          * device.
          *
          * @return the access method type
-         * @see Solid::Ifaces::Enums::Camera::AccessType
+         * @see Solid::Camera::AccessType
          */
         AccessType accessMethod() const;
 

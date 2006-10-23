@@ -27,7 +27,7 @@
 
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/capability.h>
 
 namespace Solid
 {
@@ -85,7 +85,7 @@ namespace Ifaces
          * @returns the UDIs of all the devices having the given parent and capability
          */
         virtual QStringList devicesFromQuery( const QString &parentUdi,
-                                               Capability::Type capability = Capability::Unknown ) = 0;
+                                              Solid::Capability::Type capability = Solid::Capability::Unknown ) = 0;
 
         /**
          * Instantiates a new Device object from this backend given its UDI.

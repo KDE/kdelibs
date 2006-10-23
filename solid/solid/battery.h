@@ -23,17 +23,16 @@
 #include <kdelibs_export.h>
 
 #include <solid/capability.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
     /**
      * This capability is available on batteries.
      */
-    class SOLID_EXPORT Battery : public Capability, public Ifaces::Enums::Battery
+    class SOLID_EXPORT Battery : public Capability
     {
         Q_OBJECT
-        Q_ENUMS( BatteryType ChargeState )
+        Q_ENUMS( BatteryType LevelType ChargeState )
         Q_PROPERTY( bool plugged READ isPlugged )
         Q_PROPERTY( BatteryType type READ type )
         Q_PROPERTY( QString chargeLevelUnit READ chargeLevelUnit )
@@ -45,6 +44,45 @@ namespace Solid
         Q_PROPERTY( ChargeState chargeState READ chargeState )
 
     public:
+        /**
+         * This enum type defines the type of the device holding the battery
+         *
+         * - PdaBattery : A battery in a Personal Digital Assistant
+         * - UpsBattery : A battery in an Uninterruptible Power Supply
+         * - PrimaryBattery : A primary battery for the system (for example laptop battery)
+         * - MouseBattery : A battery in a mouse
+         * - KeyboardBattery : A battery in a keyboard
+         * - KeyboardMouseBattery : A battery in a combined keyboard and mouse
+         * - CameraBattery : A battery in a camera
+         * - UnknownBattery : A battery in an unknown device
+         */
+        enum BatteryType { UnknownBattery, PdaBattery, UpsBattery,
+                           PrimaryBattery, MouseBattery, KeyboardBattery,
+                           KeyboardMouseBattery, CameraBattery };
+
+        /**
+         * This enum type defines the kind of charge level a battery can expose
+         *
+         * - MaxLevel : The maximum charge level the battery got designed for
+         * - LastFullLevel : The last charge level the battery got when full
+         * - CurrentLevel : The current charge level
+         * - WarningLevel : The battery is in 'warning' state below this level
+         * - LowLevel : The battery is in 'low' state below this level
+         */
+        enum LevelType { MaxLevel, LastFullLevel, CurrentLevel,
+                         WarningLevel, LowLevel };
+
+        /**
+         * This enum type defines charge state of a battery
+         *
+         * - NoCharge : Battery charge is stable, not charging or discharging
+         * - Charging : Battery is charging
+         * - Discharging : Battery is discharging
+         */
+        enum ChargeState { NoCharge, Charging, Discharging };
+
+
+
         /**
          * Creates a new Battery object.
          * You generally won't need this. It's created when necessary using
@@ -65,7 +103,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the Battery capability.
          *
          * @return the Battery capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::Battery; }
 
@@ -80,7 +118,7 @@ namespace Solid
          * Retrieves the type of device holding this battery.
          *
          * @return the type of device holding this battery
-         * @see Solid::Ifaces::Enums::Battery::BatteryType
+         * @see Solid::Battery::BatteryType
          */
         BatteryType type() const;
 
@@ -102,7 +140,7 @@ namespace Solid
          * The unit of the returned value is determined by chargeLevelUnit()
          *
          * @return the requested charge level
-         * @see Solid::Ifaces::Enums::Battery::LevelType
+         * @see Solid::Battery::LevelType
          */
         int charge( LevelType type = CurrentLevel ) const;
 
@@ -146,7 +184,7 @@ namespace Solid
          * state (no charge), charging or discharging.
          *
          * @return the current battery charge state
-         * @see Solid::Ifaces::Enums::Battery::ChargeState
+         * @see Solid::Battery::ChargeState
          */
         ChargeState chargeState() const;
 
@@ -164,8 +202,8 @@ namespace Solid
          * has changed.
          *
          * @param newState the new charge state of the battery, it's one of
-         * the type Solid::Ifaces::Enums::ChargeState
-         * @see Solid::Ifaces::Enums::ChargeState
+         * the type Solid::Battery::ChargeState
+         * @see Solid::Battery::ChargeState
          */
         void chargeStateChanged( int newState );
     };

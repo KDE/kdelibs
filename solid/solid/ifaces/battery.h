@@ -22,6 +22,7 @@
 
 #include <kdelibs_export.h>
 
+#include <solid/battery.h>
 #include <solid/ifaces/capability.h>
 
 namespace Solid
@@ -31,7 +32,7 @@ namespace Ifaces
     /**
      * This capability is available on batteries.
      */
-    class SOLIDIFACES_EXPORT Battery : virtual public Capability, public Enums::Battery
+    class SOLIDIFACES_EXPORT Battery : virtual public Capability
     {
     public:
         /**
@@ -52,9 +53,9 @@ namespace Ifaces
          * Retrieves the type of device holding this battery.
          *
          * @return the type of device holding this battery
-         * @see Solid::Ifaces::Enums::Battery::BatteryType
+         * @see Solid::Battery::BatteryType
          */
-        virtual BatteryType type() const = 0;
+        virtual Solid::Battery::BatteryType type() const = 0;
 
 
 
@@ -74,9 +75,9 @@ namespace Ifaces
          * The unit of the returned value is determined by chargeLevelUnit()
          *
          * @return the requested charge level
-         * @see Solid::Ifaces::Enums::Battery::LevelType
+         * @see Solid::Battery::LevelType
          */
-        virtual int charge( LevelType type = CurrentLevel ) const = 0;
+        virtual int charge( Solid::Battery::LevelType type = Solid::Battery::CurrentLevel ) const = 0;
 
         /**
          * Retrieves the current charge level of the battery normalised
@@ -118,9 +119,9 @@ namespace Ifaces
          * state (no charge), charging or discharging.
          *
          * @return the current battery charge state
-         * @see Solid::Ifaces::Enums::Battery::ChargeState
+         * @see Solid::Battery::ChargeState
          */
-        virtual ChargeState chargeState() const = 0;
+        virtual Solid::Battery::ChargeState chargeState() const = 0;
 
     protected:
     //Q_SIGNALS:
@@ -137,8 +138,8 @@ namespace Ifaces
          * has changed.
          *
          * @param newState the new charge state of the battery, it's one of
-         * the type Solid::Ifaces::Enums::ChargeState
-         * @see Solid::Ifaces::Enums::ChargeState
+         * the type Solid::Battery::ChargeState
+         * @see Solid::Battery::ChargeState
          */
         virtual void chargeStateChanged( int newState ) = 0;
     };

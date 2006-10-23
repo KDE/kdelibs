@@ -23,6 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/capability.h>
+#include <solid/display.h>
 
 namespace Solid
 {
@@ -35,7 +36,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Display : virtual public Capability, public Enums::Display
+    class SOLIDIFACES_EXPORT Display : virtual public Capability
     {
     public:
         /**
@@ -47,9 +48,9 @@ namespace Ifaces
          * Retrieves the type of display device.
          *
          * @return the type of display device.
-         * @see Solid::Ifaces::Enums::Display::DisplayType
+         * @see Solid::Display::DisplayType
          */
-        virtual DisplayType type() const = 0;
+        virtual Solid::Display::DisplayType type() const = 0;
 
         /**
          * Retrieves the brightness level in percent.

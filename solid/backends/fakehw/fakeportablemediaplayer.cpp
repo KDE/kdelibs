@@ -32,17 +32,17 @@ FakePortableMediaPlayer::~FakePortableMediaPlayer()
 
 }
 
-FakePortableMediaPlayer::AccessType FakePortableMediaPlayer::accessMethod() const
+Solid::PortableMediaPlayer::AccessType FakePortableMediaPlayer::accessMethod() const
 {
     QString type = fakeDevice()->property("accessMethod").toString();
 
     if ( type == "MassStorage" )
     {
-        return MassStorage;
+        return Solid::PortableMediaPlayer::MassStorage;
     }
     else
     {
-        return Proprietary;
+        return Solid::PortableMediaPlayer::Proprietary;
     }
 }
 

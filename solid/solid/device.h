@@ -29,7 +29,6 @@
 
 #include <solid/frontendobject.h>
 #include <solid/capability.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
@@ -52,10 +51,22 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT Device : public FrontendObject, public Ifaces::Enums::Device
+    class SOLID_EXPORT Device : public FrontendObject
     {
         Q_OBJECT
     public:
+        /**
+         * This enum type defines the type of change that can occur to a Device
+         * property.
+         *
+         * - PropertyModified : A property value has changed in the device
+         * - PropertyAdded : A new property has been added to the device
+         * - PropertyRemoved : A property has been removed from the device
+         */
+        enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
+
+
+
         /**
          * Constructs an invalid device.
          */
@@ -274,7 +285,7 @@ namespace Solid
          * @param changes the map describing the property changes that
          * occurred in the device, keys are property name and values
          * describe the kind of change done on the device property
-         * (added/removed/modified), it's one of the type Solid::PropertyChange
+         * (added/removed/modified), it's one of the type Solid::Device::PropertyChange
          */
         void propertyChanged( const QMap<QString,int> &changes );
 

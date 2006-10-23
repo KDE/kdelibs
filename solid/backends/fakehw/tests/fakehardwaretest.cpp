@@ -54,9 +54,9 @@ void FakeHardwareTest::testFakeBackend()
     QVERIFY( device->propertyExists("number") );
     QVERIFY( !device->propertyExists("youstfuqewerrernoob") );
 
-    QVERIFY( device->queryCapability(Capability::Processor) );
+    QVERIFY( device->queryCapability(Solid::Capability::Processor) );
 
-    QObject *capability = device->createCapability( Solid::Ifaces::Capability::Processor );
+    QObject *capability = device->createCapability( Solid::Capability::Processor );
     Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor*>( capability );
 
     QCOMPARE( processor->number(), 0 );

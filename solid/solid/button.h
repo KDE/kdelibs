@@ -34,7 +34,7 @@ namespace Solid
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT Button : public Capability, public Ifaces::Enums::Button
+    class SOLID_EXPORT Button : public Capability
     {
         Q_OBJECT
         Q_ENUMS( ButtonType )
@@ -43,6 +43,18 @@ namespace Solid
         Q_PROPERTY( bool stateValue READ stateValue )
 
     public:
+        /**
+         * This enum type defines the type of button.
+         *
+         * - LidButton : The switch on a laptop that senses whether the lid is open or closed.
+         * - PowerButton : The main power button on the computer.
+         * - SleepButton : The sleep button on a computer capable of putting the computer into a suspend state.
+         * - UnknownButtonType : The type of the button is unknow.
+         */
+         enum ButtonType{ LidButton, PowerButton, SleepButton, UnknownButtonType };
+
+
+
         /**
          * Creates a new Button object.
          * You generally won't need this. It's created when necessary using
@@ -62,7 +74,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the Button capability.
          *
          * @return the Button capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::Button; }
 
@@ -70,7 +82,7 @@ namespace Solid
          * Retrieves the type of button device.
          *
          * @return the type of button device.
-         * @see Solid::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Button::ButtonType
          */
         ButtonType type() const;
 
@@ -97,8 +109,8 @@ namespace Solid
          * This signal is emitted when the button is pressed.
          *
          * @param type the type of button device, it's one of
-         * the type Solid::Ifaces::Enums::Button::ButtonType
-         * @see Solid::Ifaces::Enums::Button::ButtonType
+         * the type Solid::Button::ButtonType
+         * @see Solid::Button::ButtonType
          */
         void pressed( int type );
     };

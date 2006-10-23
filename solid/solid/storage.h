@@ -23,7 +23,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/block.h>
-#include <solid/ifaces/enums.h>
 
 namespace Solid
 {
@@ -33,7 +32,7 @@ namespace Solid
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Storage : public Block, public Ifaces::Enums::Storage
+    class SOLID_EXPORT Storage : public Block
     {
         Q_OBJECT
         Q_ENUMS( Bus DriveType )
@@ -47,6 +46,34 @@ namespace Solid
         Q_PROPERTY( QString product READ product )
 
     public:
+        /**
+         * This enum type defines the type of bus a storage device is attached to.
+         *
+         * - Ide : An Integrated Drive Electronics (IDE) bus, also known as ATA
+         * - Usb : An Universal Serial Bus (USB)
+         * - Ieee1394 : An Ieee1394 bus, also known as Firewire
+         * - Scsi : A Small Computer System Interface bus
+         * - Sata : A Serial Advanced Technology Attachment (SATA) bus
+         * - Platform : A legacy bus that is part of the underlying platform
+         */
+        enum Bus { Ide, Usb, Ieee1394, Scsi, Sata, Platform };
+
+        /**
+         * This enum type defines the type of drive a storage device can be.
+         *
+         * - HardDisk : A hard disk
+         * - CdromDrive : An optical drive
+         * - Floppy : A floppy disk drive
+         * - Tape : A tape drive
+         * - CompactFlash : A Compact Flash card reader
+         * - MemoryStick : A Memory Stick card reader
+         * - SmartMedia : A Smart Media card reader
+         * - SdMmc : A SecureDigital/MultiMediaCard card reader
+         */
+        enum DriveType { HardDisk, CdromDrive, Floppy, Tape, CompactFlash, MemoryStick, SmartMedia, SdMmc };
+
+
+
         /**
          * Creates a new Storage object.
          * You generally won't need this. It's created when necessary using

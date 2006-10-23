@@ -23,7 +23,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/block.h>
-#include <solid/ifaces/enums.h>
 
 class KJob;
 
@@ -35,7 +34,7 @@ namespace Solid
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Volume : public Block, public Ifaces::Enums::Volume
+    class SOLID_EXPORT Volume : public Block
     {
         Q_OBJECT
         Q_ENUMS( UsageType )
@@ -49,6 +48,19 @@ namespace Solid
         Q_PROPERTY( qulonglong size READ size )
 
     public:
+        /**
+         * This enum type defines the how a volume is used.
+         *
+         * - FileSystem : A mountable filesystem volume
+         * - PartitionTable : A volume containing a partition table
+         * - Raid : A volume member of a raid set (not mountable)
+         * - Other : A not mountable volume (like a swap partition)
+         * - Unused : An unused or free volume
+         */
+        enum UsageType { FileSystem, PartitionTable, Raid, Other, Unused };
+
+
+
         /**
          * Creates a new Volume object.
          * You generally won't need this. It's created when necessary using

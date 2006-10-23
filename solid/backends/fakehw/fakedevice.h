@@ -23,7 +23,6 @@
 
 #include <QMap>
 
-using namespace Solid::Ifaces;
 
 class FakeDevice : public Solid::Ifaces::Device
 {
@@ -54,8 +53,8 @@ public Q_SLOTS:
     void raiseCondition( const QString &condition, const QString &reason );
 
 public:
-    virtual bool queryCapability(const Solid::Ifaces::Capability::Type &capability) const;
-    virtual QObject *createCapability(const Solid::Ifaces::Capability::Type &capability);
+    virtual bool queryCapability(const Solid::Capability::Type &capability) const;
+    virtual QObject *createCapability(const Solid::Capability::Type &capability);
 
 private:
     class Private;

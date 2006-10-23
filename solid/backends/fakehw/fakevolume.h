@@ -36,7 +36,7 @@ public Q_SLOTS:
     virtual bool isIgnored() const;
     virtual bool isMounted() const;
     virtual QString mountPoint() const;
-    virtual UsageType usage() const;
+    virtual Solid::Volume::UsageType usage() const;
     virtual QString fsType() const;
     virtual QString label() const;
     virtual QString uuid() const;

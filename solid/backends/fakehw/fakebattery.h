@@ -34,19 +34,19 @@ public:
 
 public Q_SLOTS:
     virtual bool isPlugged() const;
-    virtual BatteryType type() const;
+    virtual Solid::Battery::BatteryType type() const;
 
     virtual QString chargeLevelUnit() const;
-    virtual int charge( LevelType type = CurrentLevel ) const;
+    virtual int charge( Solid::Battery::LevelType type = Solid::Battery::CurrentLevel ) const;
     virtual int chargePercent() const;
 
     virtual QString voltageUnit() const;
     virtual int voltage() const;
 
     virtual bool isRechargeable() const;
-    virtual ChargeState chargeState() const;
+    virtual Solid::Battery::ChargeState chargeState() const;
 
-    void setChargeState( ChargeState newState );
+    void setChargeState( Solid::Battery::ChargeState newState );
     void setChargeLevel( int newLevel );
 
 Q_SIGNALS:

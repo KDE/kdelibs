@@ -23,6 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/capability.h>
+#include <solid/button.h>
 
 namespace Solid
 {
@@ -36,7 +37,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Button : virtual public Capability, public Enums::Button
+    class SOLIDIFACES_EXPORT Button : virtual public Capability
     {
     public:
         /**
@@ -48,9 +49,9 @@ namespace Ifaces
          * Retrieves the type of button device.
          *
          * @return the type of button device.
-         * @see Solid::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Button::ButtonType
          */
-        virtual ButtonType type() const = 0;
+        virtual Solid::Button::ButtonType type() const = 0;
 
         /**
          * Indicates if the button mantains state (Can toggled on/off).
@@ -76,8 +77,8 @@ namespace Ifaces
          * This signal is emitted when the button is pressed.
          *
          * @param type the type of button device, it's one of
-         * the type Solid::Ifaces::Enums::Button::ButtonType
-         * @see Solid::Ifaces::Enums::Button::ButtonType
+         * the type Solid::Button::ButtonType
+         * @see Solid::Button::ButtonType
          */
         virtual void pressed( int type ) = 0;
     };

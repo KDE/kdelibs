@@ -30,25 +30,25 @@ FakeButton::~FakeButton()
 
 }
 
-FakeButton::ButtonType FakeButton::type() const
+Solid::Button::ButtonType FakeButton::type() const
 {
     QString buttontype = fakeDevice()->property( "type" ).toString();
 
     if ( buttontype=="LidButton" )
     {
-        return LidButton;
+        return Solid::Button::LidButton;
     }
     else if ( buttontype=="PowerButton" )
     {
-        return PowerButton;
+        return Solid::Button::PowerButton;
     }
     else if ( buttontype=="SleepButton" )
     {
-        return SleepButton;
+        return Solid::Button::SleepButton;
     }
     else
     {
-        return UnknownButtonType;
+        return Solid::Button::UnknownButtonType;
     }
 }
 

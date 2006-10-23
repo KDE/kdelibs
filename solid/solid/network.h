@@ -21,7 +21,6 @@
 #define SOLID_NETWORK_H
 
 #include <solid/frontendobject.h>
-#include <solid/ifaces/enums.h>
 
 #include <QStringList>
 #include <ksocketaddress.h>
@@ -33,7 +32,7 @@ namespace Solid
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
      */
-    class SOLID_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
+    class SOLID_EXPORT Network : public FrontendObject
     {
         Q_OBJECT
     public:

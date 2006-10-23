@@ -25,8 +25,6 @@
 
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/enums.h>
-
 namespace Solid
 {
 namespace Ifaces
@@ -39,7 +37,7 @@ namespace Ifaces
      *
      * @see Solid::Ifaces::AbstractCapability
      */
-    class SOLIDIFACES_EXPORT Capability : public Enums::Capability
+    class SOLIDIFACES_EXPORT Capability
     {
     public:
         /**

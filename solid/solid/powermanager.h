@@ -23,7 +23,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/managerbase.h>
-#include <solid/ifaces/enums.h>
 
 class KJob;
 
@@ -40,12 +39,78 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT PowerManager : public ManagerBase, public Ifaces::Enums::PowerManager
+    class SOLID_EXPORT PowerManager : public ManagerBase
     {
         Q_OBJECT
+        Q_ENUMS( BatteryState AcAdapterState ButtonType SuspendMethod CpuFreqPolicy )
+        Q_FLAGS( SuspendMethods CpuFreqPolicies )
         SOLID_SINGLETON( PowerManager )
 
     public:
+       /**
+         * This enum type defines the different states of the system battery.
+         *
+         * - NoBatteryState: No battery available
+         * - Normal: The battery is at its normal charge level
+         * - Warning: The battery is at its warning charge level
+         * - Low: The battery is at its low charge level
+         * - Critical: The battery is at its critical charge level
+         */
+        enum BatteryState{ NoBatteryState, Normal, Warning, Low, Critical };
+
+        /**
+         * This enum type defines the different states of the AC adapter.
+         *
+         * - UnknownAcAdapterState: The AC adapter has an unknown state
+         * - Plugged: The AC adapter is plugged
+         * - Unplugged: The AC adapter is unplugged
+         */
+        enum AcAdapterState{ UnknownAcAdapterState, Plugged, Unplugged };
+
+        /**
+         * This enum type defines the types of system button events.
+         *
+         * - UnknownButtonType: An unknown button
+         * - PowerButton: A power button pressed event, generally used to turn on or off the system
+         * - SleepButton: A sleep button pressed event, generally used to make the system asleep
+         * - LidOpen: A laptop lid open event
+         * - LidClose: A laptop lid close event
+         */
+        enum ButtonType{ UnknownButtonType, PowerButton, SleepButton, LidOpen, LidClose };
+
+        /**
+         * This enum type defines the different suspend methods.
+         *
+         * - UnknownSuspendMethod: The name says it all
+         * - Standby: Processes are stopped, some hardware is deactivated (ACPI S1)
+         * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
+         * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
+         */
+        enum SuspendMethod{ UnknownSuspendMethod = 0, Standby = 1, ToRam = 2, ToDisk = 4};
+
+        /**
+         * This type stores an OR combination of SuspendMethod values.
+         */
+        Q_DECLARE_FLAGS( SuspendMethods, SuspendMethod )
+
+        /**
+         * This enum type defines the different CPU frequency policies.
+         *
+         * - UnknownCpuFreqPolicy: The name says it all
+         * - OnDemand: Frequency is changed by the kernel depending on the processor load
+         * - Userspace: Frequency is changed by a userspace agent depending on the processor load
+         * - Powersave: Frequency is always set to the lowest available
+         * - Performance: Frequency is always set to the highest available
+         */
+        enum CpuFreqPolicy{ UnknownCpuFreqPolicy = 0, OnDemand = 1, Userspace = 2, Powersave = 4, Performance = 8 };
+
+        /**
+         * This type stores an OR combination of CpuFreqPolicy values.
+         */
+        Q_DECLARE_FLAGS( CpuFreqPolicies, CpuFreqPolicy )
+
+
+
         /**
          * Retrieves the list of power management schemes available on this system.
          *
@@ -82,7 +147,7 @@ namespace Solid
          * Retrieves the current state of the system battery.
          *
          * @return the current battery state
-         * @see Solid::Ifaces::Enums::PowerManager::BatteryState
+         * @see Solid::PowerManager::BatteryState
          */
         BatteryState batteryState() const;
 
@@ -97,7 +162,7 @@ namespace Solid
          * Retrieves the current state of the system AC adapter.
          *
          * @return the current AC adapter state
-         * @see Solid::Ifaces::Enums::PowerManager::AcAdapterState
+         * @see Solid::PowerManager::AcAdapterState
          */
         AcAdapterState acAdapterState() const;
 
@@ -106,8 +171,8 @@ namespace Solid
          * Retrieves the set of suspend methods supported by the system.
          *
          * @return the suspend methods supported by this system
-         * @see Solid::Ifaces::Enums::PowerManager::SuspendMethod
-         * @see Solid::Ifaces::Enums::PowerManager::SuspendMethods
+         * @see Solid::PowerManager::SuspendMethod
+         * @see Solid::PowerManager::SuspendMethods
          */
         SuspendMethods supportedSuspendMethods() const;
 
@@ -124,8 +189,8 @@ namespace Solid
          * Retrieves the set of CPU frequency policies supported by the system.
          *
          * @return the CPU frequency policies supported by this system
-         * @see Solid::Ifaces::Enums::PowerManager::CpuFreqPolicy
-         * @see Solid::Ifaces::Enums::PowerManager::CpuFreqPolicies
+         * @see Solid::PowerManager::CpuFreqPolicy
+         * @see Solid::PowerManager::CpuFreqPolicies
          */
         CpuFreqPolicies supportedCpuFreqPolicies() const;
 
@@ -133,7 +198,7 @@ namespace Solid
          * Retrieves the current CPU frequency policy of the system.
          *
          * @return the current CPU frequency policy used by the system
-         * @see Solid::Ifaces::Enums::PowerManager::CpuFreqPolicy
+         * @see Solid::PowerManager::CpuFreqPolicy
          */
         CpuFreqPolicy cpuFreqPolicy() const;
 
@@ -142,7 +207,7 @@ namespace Solid
          *
          * @param newPolicy the new policy
          * @return true if the policy change succeeded, false otherwise
-         * @see Solid::Ifaces::Enums::PowerManager::CpuFreqPolicy
+         * @see Solid::PowerManager::CpuFreqPolicy
          */
         bool setCpuFreqPolicy( CpuFreqPolicy newPolicy );
 
@@ -175,7 +240,7 @@ namespace Solid
          * This signal is emitted when the AC adapter is plugged or unplugged.
          *
          * @param newState the new state of the AC adapter, it's one of the
-         * type @see Solid::Ifaces::Enums::PowerManager::AcAdapterState
+         * type @see Solid::PowerManager::AcAdapterState
          */
         void acAdapterStateChanged( int newState );
 
@@ -183,7 +248,7 @@ namespace Solid
          * This signal is emitted when the system battery state changed.
          *
          * @param newState the new state of the system battery, it's one of the
-         * type @see Solid::Ifaces::Enums::PowerManager::BatteryState
+         * type @see Solid::PowerManager::BatteryState
          */
         void batteryStateChanged( int newState );
 
@@ -191,7 +256,7 @@ namespace Solid
          * This signal is emitted when a button has been pressed.
          *
          * @param buttonType the pressed button type, it's one of the
-         * type @see Solid::Ifaces::Enums::PowerManager::ButtonType
+         * type @see Solid::PowerManager::ButtonType
          */
         void buttonPressed( int buttonType );
 
@@ -205,5 +270,8 @@ namespace Solid
         Private *d;
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::PowerManager::SuspendMethods )
+Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::PowerManager::CpuFreqPolicies )
 
 #endif

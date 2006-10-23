@@ -25,7 +25,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/storage.h>
-#include <solid/ifaces/enums.h>
+#include <solid/cdrom.h>
 
 namespace Solid
 {
@@ -36,7 +36,7 @@ namespace Ifaces
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class SOLIDIFACES_EXPORT Cdrom : virtual public Storage, public Enums::Cdrom
+    class SOLIDIFACES_EXPORT Cdrom : virtual public Storage
     {
     public:
         /**
@@ -49,7 +49,7 @@ namespace Ifaces
          *
          * @return the flag set indicating the supported medium types
          */
-        virtual MediumTypes supportedMedia() const = 0;
+        virtual Solid::Cdrom::MediumTypes supportedMedia() const = 0;
 
         /**
          * Retrieves the maximum read speed of this drive in kilobytes.

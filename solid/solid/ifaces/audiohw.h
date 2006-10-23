@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/capability.h>
-#include <solid/ifaces/enums.h>
+#include <solid/audiohw.h>
 
 namespace Solid
 {
@@ -32,7 +32,7 @@ namespace Ifaces
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
-    class SOLIDIFACES_EXPORT AudioHw : virtual public Capability, public Enums::AudioHw
+    class SOLIDIFACES_EXPORT AudioHw : virtual public Capability
     {
     public:
         /**
@@ -46,9 +46,9 @@ namespace Ifaces
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see Solid::Ifaces::Enums::AudioDriver
+         * @see Solid::AudioHw::AudioDriver
          */
-        virtual AudioDriver driver() = 0;
+        virtual Solid::AudioHw::AudioDriver driver() = 0;
 
         /**
          * Retrieves a driver specific string allowing to access the device.
@@ -73,9 +73,9 @@ namespace Ifaces
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see Solid::Ifaces::Enums::AudioHwTypes
+         * @see Solid::AudioHw::AudioHwTypes
          */
-        virtual AudioHwTypes type() = 0;
+        virtual Solid::AudioHw::AudioHwTypes type() = 0;
     };
 }
 }

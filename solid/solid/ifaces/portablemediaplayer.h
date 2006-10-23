@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/capability.h>
-#include <solid/ifaces/enums.h>
+#include <solid/portablemediaplayer.h>
 
 namespace Solid
 {
@@ -36,7 +36,7 @@ namespace Ifaces
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
+    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public Capability
     {
     public:
         /**
@@ -49,9 +49,9 @@ namespace Ifaces
          * device.
          *
          * @return the access method type
-         * @see Solid::Ifaces::Enums::PortableMediaPlayer::AccessType
+         * @see Solid::PortableMediaPlayer::AccessType
          */
-        virtual AccessType accessMethod() const = 0;
+        virtual Solid::PortableMediaPlayer::AccessType accessMethod() const = 0;
 
         /**
          * Retrieves a list of MIME-types representing the kind of formats

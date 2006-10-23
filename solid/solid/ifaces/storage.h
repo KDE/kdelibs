@@ -23,7 +23,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/block.h>
-#include <solid/ifaces/enums.h>
+#include <solid/storage.h>
 
 namespace Solid
 {
@@ -35,7 +35,7 @@ namespace Ifaces
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLIDIFACES_EXPORT Storage : virtual public Block, public Enums::Storage
+    class SOLIDIFACES_EXPORT Storage : virtual public Block
     {
     public:
         /**
@@ -49,17 +49,17 @@ namespace Ifaces
          * connected to.
          *
          * @return the bus type
-         * @see Solid::Ifaces::Enums::Storage::Bus
+         * @see Solid::Storage::Bus
          */
-        virtual Bus bus() const = 0;
+        virtual Solid::Storage::Bus bus() const = 0;
 
         /**
          * Retrieves the type of this storage drive.
          *
          * @return the drive type
-         * @see Solid::Ifaces::Enums::Storage::DriveType
+         * @see Solid::Storage::DriveType
          */
-        virtual DriveType driveType() const = 0;
+        virtual Solid::Storage::DriveType driveType() const = 0;
 
 
         /**

@@ -33,7 +33,7 @@ namespace Solid
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT Display : public Capability, public Ifaces::Enums::Display
+    class SOLID_EXPORT Display : public Capability
     {
         Q_OBJECT
         Q_ENUMS( DisplayType )
@@ -41,6 +41,18 @@ namespace Solid
         Q_PROPERTY( int lcdBrightness READ lcdBrightness )
 
     public:
+        /**
+         * This enum type defines the type of display a device can be.
+         *
+         * - Lcd: A LCD (Liquid Crystal Display) panel
+         * - Crt: A CRT (Cathode Ray Tube) tube
+         * - TvOut: A TV Out port
+         * - UnknowDisplayType: An undetermined display type
+         */
+        enum DisplayType{ Lcd, Crt, TvOut, UnknownDisplayType };
+
+
+
         /**
          * Creates a new Display object.
          * You generally won't need this. It's created when necessary using
@@ -61,7 +73,7 @@ namespace Solid
          * Get the Solid::Capability::Type of the Button capability.
          *
          * @return the Button capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @see Solid::Capability::Type
          */
         static Type capabilityType() { return Capability::Display; }
 
@@ -69,7 +81,7 @@ namespace Solid
          * Retrieves the type of display device.
          *
          * @return the type of display device.
-         * @see Solid::Ifaces::Enums::Display::DisplayType
+         * @see Solid::Display::DisplayType
          */
         DisplayType type() const;
 

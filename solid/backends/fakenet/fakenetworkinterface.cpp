@@ -44,42 +44,42 @@ bool FakeNetworkInterface::isActive() const
     return mPropertyMap[ "active" ].toBool();
 }
 
-Enums::NetworkInterface::Type FakeNetworkInterface::type() const
+Solid::NetworkInterface::Type FakeNetworkInterface::type() const
 {
     QString typeString = mPropertyMap[ "type" ].toString();
 
     if ( typeString == "ieee8023" )
-        return Ieee8023;
+        return Solid::NetworkInterface::Ieee8023;
     else if ( typeString == "ieee80211" )
-        return Ieee80211;
+        return Solid::NetworkInterface::Ieee80211;
     else
-        return UnknownType;
+        return Solid::NetworkInterface::UnknownType;
 }
 
-Enums::NetworkInterface::ConnectionState FakeNetworkInterface::connectionState() const
+Solid::NetworkInterface::ConnectionState FakeNetworkInterface::connectionState() const
 {
     QString stateString = mPropertyMap[ "state" ].toString();
 
     if ( stateString == "prepare" )
-        return Prepare;
+        return Solid::NetworkInterface::Prepare;
     else if ( stateString == "configure" )
-        return Configure;
+        return Solid::NetworkInterface::Configure;
     else if ( stateString == "needuserkey" )
-        return NeedUserKey;
+        return Solid::NetworkInterface::NeedUserKey;
     else if ( stateString == "ipstart" )
-        return IPStart;
+        return Solid::NetworkInterface::IPStart;
     else if ( stateString == "ipget" )
-        return IPGet;
+        return Solid::NetworkInterface::IPGet;
     else if ( stateString == "ipcommit" )
-        return IPCommit;
+        return Solid::NetworkInterface::IPCommit;
     else if ( stateString == "activated" )
-        return Activated;
+        return Solid::NetworkInterface::Activated;
     else if ( stateString == "failed" )
-        return Failed;
+        return Solid::NetworkInterface::Failed;
     else if ( stateString == "cancelled" )
-        return Cancelled;
+        return Solid::NetworkInterface::Cancelled;
     else
-        return UnknownState;
+        return Solid::NetworkInterface::UnknownState;
 }
 
 int FakeNetworkInterface::signalStrength() const
@@ -97,19 +97,19 @@ bool FakeNetworkInterface::isLinkUp() const
     return mPropertyMap[ "linkup" ].toBool();
 }
 
-Enums::NetworkInterface::Capabilities FakeNetworkInterface::capabilities() const
+Solid::NetworkInterface::Capabilities FakeNetworkInterface::capabilities() const
 {
     QStringList capStrings = mPropertyMap[ "capabilities" ].toString().simplified().split( ',' );
 
-    Capabilities caps = 0;
+    Solid::NetworkInterface::Capabilities caps = 0;
     if ( capStrings.contains( "manageable" ) )
-        caps |= IsManageable;
+        caps |= Solid::NetworkInterface::IsManageable;
     if ( capStrings.contains( "carrierdetect" ) )
-        caps |= SupportsCarrierDetect;
+        caps |= Solid::NetworkInterface::SupportsCarrierDetect;
     if ( capStrings.contains( "wirelessscan" ) )
-        caps |= SupportsWirelessScan;
+        caps |= Solid::NetworkInterface::SupportsWirelessScan;
 
-    return (Enums::NetworkInterface::Capabilities)caps;
+    return caps;
 }
 
 QObject * FakeNetworkInterface::createNetwork( const QString & uni )
