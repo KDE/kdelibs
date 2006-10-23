@@ -310,7 +310,7 @@ set(khtml_LIB_SRCS
    ${kjava_STAT_SRCS}
    )
 
-kde4_automoc(khtml ${khtml_LIB_SRCS})
+kde4_automoc(${khtml_LIB_SRCS})
 
 qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
 
@@ -328,7 +328,7 @@ install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(khtmlpart_PART_SRCS khtml_factory_init.cpp )
 
-kde4_automoc(khtmlpart ${khtmlpart_PART_SRCS})
+kde4_automoc(${khtmlpart_PART_SRCS})
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
@@ -358,7 +358,7 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
         domtreeview.cpp
     )
 
-    kde4_automoc(testkhtml ${testkhtml_SRCS})
+    kde4_automoc(${testkhtml_SRCS})
 
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
@@ -371,7 +371,7 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
     )
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
-    kde4_automoc( khtmltest ${khtmltest_SRCS} )
+    kde4_automoc(${khtmltest_SRCS})
     kde4_add_executable( khtmltest ${khtmltest_SRCS} )
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 
@@ -382,7 +382,7 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
         domtreeview.cpp
     )
 
-    kde4_automoc(testkhtml_static ${testkhtml_static_SRCS})
+    kde4_automoc(${testkhtml_static_SRCS})
 
     kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
@@ -400,7 +400,7 @@ if (BUILD_TESTREGRESSION)
         test_regression_fontoverload.cpp
     )
 
-    kde4_automoc(testregression ${testregression_SRCS})
+    kde4_automoc(${testregression_SRCS})
 
     kde4_add_executable(testregression ${testregression_SRCS})
 
@@ -418,7 +418,7 @@ endif (BUILD_TESTREGRESSION)
 
     kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
 
-    kde4_automoc(testregressiongui ${testregressiongui_SRCS})
+    kde4_automoc(${testregressiongui_SRCS})
 
     kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
 

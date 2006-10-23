@@ -53,7 +53,7 @@ set(phononcore_LIB_SRCS
 	factory.cpp
 	)
 
-kde4_automoc(phononcore ${phononcore_LIB_SRCS})
+kde4_automoc(${phononcore_LIB_SRCS})
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 

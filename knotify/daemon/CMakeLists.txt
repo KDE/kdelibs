@@ -13,7 +13,7 @@ notifybytaskbar.cpp
 notifybyexecute.cpp
 )
 
-kde4_automoc(knotify ${knotify_KDEINIT_SRCS})
+kde4_automoc(${knotify_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 

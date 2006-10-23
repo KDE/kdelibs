@@ -74,7 +74,7 @@ ${k3io_STAT_SRCS}
 )
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DKDE_DEPRECATED_WARNINGS)
-kde4_automoc(kde3support ${kde3support_LIB_SRCS})
+kde4_automoc(${kde3support_LIB_SRCS})
 
 kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 

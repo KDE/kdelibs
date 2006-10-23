@@ -19,7 +19,7 @@ set(kio_help_PART_SRCS
    xslt.cpp
 )
 
-kde4_automoc(kio_help ${kio_help_PART_SRCS})
+kde4_automoc(${kio_help_PART_SRCS})
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
@@ -32,7 +32,7 @@ install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp )
 
-kde4_automoc(kio_ghelp ${kio_ghelp_PART_SRCS})
+kde4_automoc(${kio_ghelp_PART_SRCS})
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
@@ -45,7 +45,7 @@ install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
-kde4_automoc(meinproc ${meinproc_SRCS})
+kde4_automoc(${meinproc_SRCS})
 
 kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
 
@@ -59,7 +59,7 @@ install(TARGETS meinproc DESTINATION ${BIN_INSTALL_DIR} )
 
 set(genshortcutents_SRCS genshortcutents.cpp )
 
-kde4_automoc(genshortcutents ${genshortcutents_SRCS})
+kde4_automoc(${genshortcutents_SRCS})
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 

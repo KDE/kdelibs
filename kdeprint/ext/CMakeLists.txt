@@ -10,7 +10,7 @@ set(kdeprint_ext_PART_SRCS
    kmextuimanager.cpp
 )
 
-kde4_automoc(kdeprint_ext ${kdeprint_ext_PART_SRCS})
+kde4_automoc(${kdeprint_ext_PART_SRCS})
 
 kde4_add_plugin(kdeprint_ext ${kdeprint_ext_PART_SRCS})
 

@@ -18,7 +18,7 @@ set( embed_QRC
 
 qt4_add_resources(embed_SRCS ${embed_QRC} )
 
-kde4_automoc(embed ${embed_SRCS})
+kde4_automoc(${embed_SRCS})
 
 kde4_add_executable(embed ${embed_SRCS})
 

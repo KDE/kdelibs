@@ -5,7 +5,7 @@ if(KDE4_BUILD_TESTS)
 
 set(kcookiejartest_SRCS kcookiejartest.cpp )
 
-kde4_automoc(kcookiejartest ${kcookiejartest_SRCS})
+kde4_automoc(${kcookiejartest_SRCS})
 
 kde4_add_executable(kcookiejartest NOGUI ${kcookiejartest_SRCS})
 

@@ -20,7 +20,7 @@ set(kjavaappletviewer_PART_SRCS
    kjavaappletviewer.cpp
 )
 
-kde4_automoc(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
+kde4_automoc(${kjavaappletviewer_PART_SRCS})
 
 kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 

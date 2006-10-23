@@ -11,7 +11,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 set(tst_kliveui_SRCS tst_kliveui.cpp)
 
-kde4_automoc(tst_kliveui ${tst_kliveui_SRCS})
+kde4_automoc(${tst_kliveui_SRCS})
 
 kde4_add_executable(kliveuitest RUN_UNINSTALLED ${tst_kliveui_SRCS})
 
@@ -21,7 +21,7 @@ target_link_libraries(kliveuitest ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
 set(tst_xmlguihandler_SRCS tst_xmlguihandler.cpp)
 
-kde4_automoc(tst_xmlguihandler ${tst_xmlguihandler_SRCS})
+kde4_automoc(${tst_xmlguihandler_SRCS})
 
 kde4_add_executable(kxmlguihandlertest RUN_UNINSTALLED ${tst_xmlguihandler_SRCS})
 

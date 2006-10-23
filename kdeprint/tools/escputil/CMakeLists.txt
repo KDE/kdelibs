@@ -5,7 +5,7 @@
 
 set(kdeprint_tool_escputil_PART_SRCS escpwidget.cpp )
 
-kde4_automoc(kdeprint_tool_escputil ${kdeprint_tool_escputil_PART_SRCS})
+kde4_automoc(${kdeprint_tool_escputil_PART_SRCS})
 
 kde4_add_plugin(kdeprint_tool_escputil ${kdeprint_tool_escputil_PART_SRCS})
 

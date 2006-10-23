@@ -11,7 +11,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(makekdewidgets_SRCS makekdewidgets.cpp )
 
-kde4_automoc(makekdewidgets ${makekdewidgets_SRCS})
+kde4_automoc(${makekdewidgets_SRCS})
 
 kde4_add_executable(makekdewidgets NOGUI RUN_UNINSTALLED ${makekdewidgets_SRCS})
 

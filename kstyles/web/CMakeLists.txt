@@ -7,7 +7,7 @@ project(kstyle-web)
 
 set(webstyle_LIB_SRCS webstyle.cpp plugin.cpp )
 
-kde4_automoc(webstyle ${webstyle_LIB_SRCS})
+kde4_automoc(${webstyle_LIB_SRCS})
 
 kde4_add_library(webstyle SHARED ${webstyle_LIB_SRCS})
 

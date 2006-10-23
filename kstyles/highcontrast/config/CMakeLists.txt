@@ -5,7 +5,7 @@
 
 set(kstyle_highcontrast_config_PART_SRCS highcontrastconfig.cpp )
 
-kde4_automoc(kstyle_highcontrast_config ${kstyle_highcontrast_config_PART_SRCS})
+kde4_automoc(${kstyle_highcontrast_config_PART_SRCS})
 
 kde4_add_plugin(kstyle_highcontrast_config ${kstyle_highcontrast_config_PART_SRCS})
 

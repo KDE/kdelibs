@@ -13,7 +13,7 @@ set(phononui_LIB_SRCS
    effectwidget.cpp
    )
 
-kde4_automoc(phononui ${phononui_LIB_SRCS})
+kde4_automoc(${phononui_LIB_SRCS})
 
 kde4_add_library(phononui SHARED ${phononui_LIB_SRCS})
 

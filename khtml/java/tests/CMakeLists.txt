@@ -11,7 +11,7 @@ if(KDE4_BUILD_TESTS)
    
    set(testserver_SRCS testkjavaappletserver.cpp )
    
-   kde4_automoc(testserver ${testserver_SRCS})
+   kde4_automoc(${testserver_SRCS})
    
    kde4_add_executable(testserver ${testserver_SRCS})
    

@@ -6,7 +6,7 @@ include_directories( ${HSPELL_INCLUDE_DIR}  )
 
 set(kspell_hspell_PART_SRCS kspell_hspellclient.cpp kspell_hspelldict.cpp )
 
-kde4_automoc(kspell_hspell ${kspell_hspell_PART_SRCS})
+kde4_automoc(${kspell_hspell_PART_SRCS})
 
 kde4_add_plugin(kspell_hspell ${kspell_hspell_PART_SRCS})
 

@@ -24,11 +24,11 @@ set(kdnssd_LIB_SRCS
    servicebrowser.cpp
    )
 
-kde4_automoc(kdnssd ${kdnssd_LIB_SRCS})
+kde4_automoc(${kdnssd_LIB_SRCS})
 
 set( kdnssd_KCFG_SRCS settings.kcfgc )
 
-kde4_add_kcfg_files(kdnssd kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
+kde4_add_kcfg_files(kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 

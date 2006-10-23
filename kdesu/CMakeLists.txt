@@ -16,7 +16,7 @@ set(kdesu_LIB_SRCS
    kdesu_pty.cpp
    )
 
-kde4_automoc(kdesu kdesu ${kdesu_LIB_SRCS})
+kde4_automoc(${kdesu_LIB_SRCS})
 
 kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
 

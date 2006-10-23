@@ -5,7 +5,7 @@
 
 # set(kded_test_PART_SRCS test.cpp )
 #
-# kde4_automoc(kded_test ${kded_test_PART_SRCS})
+# kde4_automoc(${kded_test_PART_SRCS})
 #
 # set( kded_test_DCOP_SKEL_SRCS test.h )
 #

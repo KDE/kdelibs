@@ -5,7 +5,7 @@ include_directories( ${ENCHANT_INCLUDE_DIR}  )
 
 set(kspell_enchant_PART_SRCS enchantdict.cpp enchantclient.cpp )
 
-kde4_automoc(kspell_enchant ${kspell_enchant_PART_SRCS})
+kde4_automoc(${kspell_enchant_PART_SRCS})
 
 kde4_add_plugin(kspell_enchant ${kspell_enchant_PART_SRCS})
 

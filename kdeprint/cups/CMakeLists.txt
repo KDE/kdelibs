@@ -44,7 +44,7 @@ if (UNIX)
    set(KDEFAKES_LIB kdefakes)
 endif (UNIX)
 
-kde4_automoc(kdeprint_cups ${kdeprint_cups_PART_SRCS})
+kde4_automoc(${kdeprint_cups_PART_SRCS})
 
 kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 

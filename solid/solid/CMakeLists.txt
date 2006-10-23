@@ -36,7 +36,7 @@ set(solid_LIB_SRCS
    authentication.cpp
 )
 
-kde4_automoc(solid ${solid_LIB_SRCS})
+kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 

@@ -11,7 +11,7 @@ view.cpp
 kmediaplayeradaptor.cpp
 )
 
-kde4_automoc(kmediaplayer ${kmediaplayer_LIB_SRCS})
+kde4_automoc(${kmediaplayer_LIB_SRCS})
 
 kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 

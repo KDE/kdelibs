@@ -8,7 +8,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(kio_metainfo_PART_SRCS metainfo.cpp )
 
-kde4_automoc(kio_metainfo ${kio_metainfo_PART_SRCS})
+kde4_automoc(${kio_metainfo_PART_SRCS})
 
 kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
 

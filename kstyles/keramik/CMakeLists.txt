@@ -9,7 +9,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdefx )
 
 set(genembed_SRCS genembed.cpp )
 
-kde4_automoc(genembed ${genembed_SRCS})
+kde4_automoc(${genembed_SRCS})
 
 kde4_add_executable(genembed NOGUI RUN_UNINSTALLED ${genembed_SRCS})
 
@@ -50,7 +50,7 @@ if (WIN32)
    set_source_files_properties(keramik.cpp PROPERTIES OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h)
 endif (WIN32)
 
-kde4_automoc(keramik ${keramik_PART_SRCS})
+kde4_automoc(${keramik_PART_SRCS})
 
 kde4_add_plugin(keramik ${keramik_PART_SRCS})
 

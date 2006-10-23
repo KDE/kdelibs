@@ -26,7 +26,7 @@ mdi.qrc
 
 qt4_add_resources(editor_SRCS ${editor_QRC} )
 
-kde4_automoc(editor ${editor_SRCS})
+kde4_automoc(${editor_SRCS})
 
 kde4_add_executable(editor ${editor_SRCS})
 target_link_libraries(editor  ${KDE4_KDECORE_LIBS} kjsembed )

@@ -8,7 +8,7 @@ if(KDE4_BUILD_TESTS)
    
    set(backendtest_SRCS backendtest.cpp )
    
-   kde4_automoc(backendtest ${backendtest_SRCS})
+   kde4_automoc(${backendtest_SRCS})
    
    kde4_add_executable(backendtest ${backendtest_SRCS})
    
@@ -19,7 +19,7 @@ if(KDE4_BUILD_TESTS)
    
    set(testbf_SRCS testbf.cpp )
    
-   kde4_automoc(testbf ${testbf_SRCS})
+   kde4_automoc(${testbf_SRCS})
    
    kde4_add_executable(testbf ${testbf_SRCS})
    
@@ -30,7 +30,7 @@ if(KDE4_BUILD_TESTS)
    
    set(testsha_SRCS testsha.cpp )
    
-   kde4_automoc(testsha ${testsha_SRCS})
+   kde4_automoc(${testsha_SRCS})
    
    kde4_add_executable(testsha ${testsha_SRCS})
    

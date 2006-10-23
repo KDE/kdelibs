@@ -25,7 +25,7 @@ endmacro(GEN_KCFG_TEST_SOURCE)
 
 set(test1_SRCS test1main.cpp )
 
-kde4_automoc(test1 ${test1_SRCS})
+kde4_automoc(${test1_SRCS})
 
 gen_kcfg_test_source(test1 test1_SRCS)
 
@@ -38,7 +38,7 @@ target_link_libraries(test1  ${KDE4_KDECORE_LIBS} )
 
 set(test2_SRCS test2main.cpp )
 
-kde4_automoc(test2 ${test2_SRCS})
+kde4_automoc(${test2_SRCS})
 
 gen_kcfg_test_source(test2 test2_SRCS)
 
@@ -51,7 +51,7 @@ target_link_libraries(test2  ${KDE4_KDECORE_LIBS} )
 
 set(test3_SRCS test3main.cpp )
 
-kde4_automoc(test3 ${test3_SRCS})
+kde4_automoc(${test3_SRCS})
 
 gen_kcfg_test_source(test3 test3_SRCS)
 
@@ -64,7 +64,7 @@ target_link_libraries(test3  ${KDE4_KDECORE_LIBS} )
 
 set(test4_SRCS test4main.cpp )
 
-kde4_automoc(test4 ${test4_SRCS})
+kde4_automoc(${test4_SRCS})
 
 gen_kcfg_test_source(test4 test4_SRCS)
 
@@ -77,7 +77,7 @@ target_link_libraries(test4  ${KDE4_KDECORE_LIBS} )
 
 set(test5_SRCS test5main.cpp )
 
-kde4_automoc(test5 ${test5_SRCS})
+kde4_automoc(${test5_SRCS})
 
 gen_kcfg_test_source(test5 test5_SRCS)
 
@@ -90,7 +90,7 @@ target_link_libraries(test5  ${KDE4_KDECORE_LIBS} )
 
 set(test6_SRCS test6main.cpp )
 
-kde4_automoc(test6 ${test6_SRCS})
+kde4_automoc(${test6_SRCS})
 
 gen_kcfg_test_source(test6 test6_SRCS)
 
@@ -103,7 +103,7 @@ target_link_libraries(test6  ${KDE4_KDECORE_LIBS} )
 
 set(test7_SRCS test7main.cpp )
 
-kde4_automoc(test7 ${test7_SRCS})
+kde4_automoc(${test7_SRCS})
 
 gen_kcfg_test_source(test7 test7_SRCS)
 
@@ -116,7 +116,7 @@ target_link_libraries(test7  ${KDE4_KDECORE_LIBS} )
 
 set(test8_SRCS test8main.cpp )
 
-kde4_automoc(test8 ${test8_SRCS})
+kde4_automoc(${test8_SRCS})
 
 gen_kcfg_test_source(test8a test8_SRCS)
 gen_kcfg_test_source(test8b test8_SRCS)
@@ -130,7 +130,7 @@ target_link_libraries(test8  ${KDE4_KDECORE_LIBS} )
 
 set(test9_SRCS test9main.cpp )
 
-kde4_automoc(test9 ${test9_SRCS})
+kde4_automoc(${test9_SRCS})
 
 gen_kcfg_test_source(test9 test9_SRCS)
 
@@ -143,7 +143,7 @@ target_link_libraries(test9  ${KDE4_KDECORE_LIBS} )
 
 set(test_dpointer_SRCS test_dpointer_main.cpp )
 
-kde4_automoc(test_dpointer ${test_dpointer_SRCS})
+kde4_automoc(${test_dpointer_SRCS})
 
 gen_kcfg_test_source(test_dpointer test_dpointer_SRCS)
 
@@ -156,7 +156,7 @@ target_link_libraries(test_dpointer  ${KDE4_KDECORE_LIBS} )
 
 set(test_signal_SRCS test_signal_main.cpp )
 
-kde4_automoc(test_signal ${test_signal_SRCS})
+kde4_automoc(${test_signal_SRCS})
 
 gen_kcfg_test_source(test_signal test_signal_SRCS)
 
@@ -169,7 +169,7 @@ target_link_libraries(test_signal  ${KDE4_KDECORE_LIBS} )
 
 set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 
-kde4_automoc(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
+kde4_automoc(${kconfigcompiler_test_SRCS})
 
 
 #kde4_add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})

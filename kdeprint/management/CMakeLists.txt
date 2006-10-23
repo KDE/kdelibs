@@ -63,7 +63,7 @@ kmconfigjobs.cpp
 networkscanner.cpp
 )
 
-kde4_automoc(kdeprint_management ${kdeprint_management_LIB_SRCS})
+kde4_automoc(${kdeprint_management_LIB_SRCS})
 
 kde4_add_library(kdeprint_management SHARED ${kdeprint_management_LIB_SRCS})
 
@@ -77,7 +77,7 @@ install(TARGETS kdeprint_management  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(kdeprint_management_module_PART_SRCS kdeprint_management_module.cpp )
 
-kde4_automoc(kdeprint_management_module ${kdeprint_management_module_PART_SRCS})
+kde4_automoc(${kdeprint_management_module_PART_SRCS})
 
 kde4_add_plugin(kdeprint_management_module WITH_PREFIX ${kdeprint_management_module_PART_SRCS})
 
@@ -90,7 +90,7 @@ install(TARGETS kdeprint_management_module  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 set(kaddprinterwizard_KDEINIT_SRCS kaddprinterwizard.cpp )
 
-kde4_automoc(kaddprinterwizard_KDEINIT ${kaddprinterwizard_KDEINIT_SRCS})
+kde4_automoc(${kaddprinterwizard_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS})
 

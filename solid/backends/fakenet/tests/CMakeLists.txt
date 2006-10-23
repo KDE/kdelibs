@@ -8,7 +8,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 set(fakenetworktest_SRCS fakenetworktest.cpp )
 
-kde4_automoc(fakenetworktest ${fakenetworktest_SRCS})
+kde4_automoc(${fakenetworktest_SRCS})
 
 kde4_add_executable(fakenetworktest RUN_UNINSTALLED ${fakenetworktest_SRCS})
 

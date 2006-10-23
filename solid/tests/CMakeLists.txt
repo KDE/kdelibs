@@ -9,7 +9,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 set(solidhwtest_SRCS 
    solidhwtest.cpp )
 
-kde4_automoc(solidhwtest ${solidhwtest_SRCS})
+kde4_automoc(${solidhwtest_SRCS})
 
 kde4_add_executable(solidhwtest RUN_UNINSTALLED ${solidhwtest_SRCS})
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakehw/fakecomputer.xml\\"")
@@ -25,7 +25,7 @@ add_test(solidhwtest ${EXECUTABLE_OUTPUT_PATH}/solidhwtest)
 set(solidnettest_SRCS 
    solidnettest.cpp )
 
-kde4_automoc(solidnettest ${solidnettest_SRCS})
+kde4_automoc(${solidnettest_SRCS})
 
 kde4_add_executable(solidnettest RUN_UNINSTALLED ${solidnettest_SRCS})
 add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet/fakenetworking.xml\\"")

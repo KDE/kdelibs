@@ -10,7 +10,7 @@ if(KDE4_BUILD_TESTS)
       richpage.cpp
       )
    
-   kde4_automoc(helpviewer ${helpviewer_SRCS})
+   kde4_automoc(${helpviewer_SRCS})
    
    kde4_add_executable(helpviewer ${helpviewer_SRCS})
    
@@ -21,7 +21,7 @@ if(KDE4_BUILD_TESTS)
    
    set(drawdemo_SRCS drawdemo.cpp )
    
-   kde4_automoc(drawdemo ${drawdemo_SRCS})
+   kde4_automoc(${drawdemo_SRCS})
    
    kde4_add_executable(drawdemo ${drawdemo_SRCS})
    

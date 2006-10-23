@@ -13,7 +13,7 @@ set(kdeprint_lpd_PART_SRCS
    gschecker.cpp
 )
 
-kde4_automoc(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
+kde4_automoc(${kdeprint_lpd_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 
@@ -32,7 +32,7 @@ if (UNIX)
    set(KDEFAKES_LIB kdefakes)
 endif (UNIX)
 
-kde4_automoc(make_driver_db_lpd ${make_driver_db_lpd_SRCS})
+kde4_automoc(${make_driver_db_lpd_SRCS})
 
 kde4_add_executable(make_driver_db_lpd ${make_driver_db_lpd_SRCS})
 

@@ -27,7 +27,7 @@ set(solidifaces_LIB_SRCS
    authentication.cpp
    networkmanager.cpp )
 
-kde4_automoc(solidifaces ${solidifaces_LIB_SRCS})
+kde4_automoc(${solidifaces_LIB_SRCS})
 
 kde4_add_library(solidifaces SHARED ${solidifaces_LIB_SRCS})
 

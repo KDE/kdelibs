@@ -7,7 +7,7 @@ set(designer_SRCS
 main.cpp
 )
 
-kde4_automoc(designer ${designer_SRCS})
+kde4_automoc(${designer_SRCS})
 
 kde4_add_executable(designer ${designer_SRCS})
 

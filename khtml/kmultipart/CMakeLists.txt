@@ -6,7 +6,7 @@ include_directories(${ZLIB_INCLUDE_DIR})
 
 set(kmultipart_PART_SRCS kmultipart.cpp ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc )
 
-kde4_automoc(kmultipart ${kmultipart_PART_SRCS})
+kde4_automoc(${kmultipart_PART_SRCS})
 
 kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
 

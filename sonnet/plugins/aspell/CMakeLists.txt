@@ -6,7 +6,7 @@ include_directories( ${ASPELL_INCLUDE_DIR}  )
 
 set(kspell_aspell_PART_SRCS kspell_aspellclient.cpp kspell_aspelldict.cpp )
 
-kde4_automoc(kspell_aspell ${kspell_aspell_PART_SRCS})
+kde4_automoc(${kspell_aspell_PART_SRCS})
 
 kde4_add_plugin(kspell_aspell ${kspell_aspell_PART_SRCS})
 
