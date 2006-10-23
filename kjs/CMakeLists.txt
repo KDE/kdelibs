@@ -1,5 +1,6 @@
 
 project(kjs)
+KDE4_NO_ENABLE_FINAL(kjs)
 
 # Configuration checks
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
