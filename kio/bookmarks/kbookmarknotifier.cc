@@ -22,7 +22,7 @@
 #include "kbookmarknotifier.h"
 #include "QtDBus/QtDBus"
 
-static void emitSignal(const QString &signalName, const QVariantList &args)
+static void emitKBookmarkNotifierSignal(const QString &signalName, const QVariantList &args)
 {
     QDBusMessage message =
         QDBusMessage::createSignal("/", "org.kde.KIO.KBookmarkNotifier", signalName);
@@ -34,16 +34,16 @@ void KBookmarkNotifier::addedBookmark(const QString &filename, const QString &ur
                                       const QString &text, const QString &address,
                                       const QString &icon)
 {
-    emitSignal("addedBookmark", QVariantList() << filename << url << text << address << icon);
+    emitKBookmarkNotifierSignal("addedBookmark", QVariantList() << filename << url << text << address << icon);
 }
 
 void KBookmarkNotifier::createdNewFolder(const QString &filename, const QString &text,
                                          const QString &address)
 {
-    emitSignal("createdNewFolder", QVariantList() << filename << text << address);
+    emitKBookmarkNotifierSignal("createdNewFolder", QVariantList() << filename << text << address);
 }
 
 void KBookmarkNotifier::updatedAccessMetadata(const QString &filename, const QString &url)
 {
-    emitSignal("updatedAccessMetadata", QVariantList() << filename << url);
+    emitKBookmarkNotifierSignal("updatedAccessMetadata", QVariantList() << filename << url);
 }

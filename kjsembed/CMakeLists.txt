@@ -1,4 +1,4 @@
-
+KDE4_NO_ENABLE_FINAL(kjsembed)
 add_subdirectory( kjsembed )
 add_subdirectory( kjscmd )
 add_subdirectory( console )
