@@ -1,5 +1,5 @@
 project(kdecore)
-
+KDE4_NO_ENABLE_FINAL(kdecore)
 # Generate kdefakes.h
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
