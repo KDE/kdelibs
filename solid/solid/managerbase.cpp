@@ -113,6 +113,7 @@ QObject *Solid::ManagerBase::loadBackend( const QString &description, const char
             if( backend != 0 )
             {
                 kDebug() << "Backend loaded: " << ptr->name() << endl;
+                break;
             }
             else
             {
