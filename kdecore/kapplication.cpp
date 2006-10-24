@@ -525,7 +525,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
         {
             if( d->app_started_timer == NULL )
             {
-                d->app_started_timer = new QTimer( this );
+                d->app_started_timer = new QTimer( this, "app_started_timer" );
                 connect( d->app_started_timer, SIGNAL( timeout()), SLOT( checkAppStartedSlot()));
             }
             if( !d->app_started_timer->isActive())
