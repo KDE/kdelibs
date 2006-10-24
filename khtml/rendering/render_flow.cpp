@@ -85,8 +85,10 @@ RenderFlow* RenderFlow::continuationBefore(RenderObject* beforeChild)
 void RenderFlow::addChildWithContinuation(RenderObject* newChild, RenderObject* beforeChild)
 {
     RenderFlow* flow = continuationBefore(beforeChild);
-    KHTMLAssert(!beforeChild || beforeChild->parent()->isRenderBlock() ||
-                beforeChild->parent()->isRenderInline());
+    while(beforeChild && beforeChild->parent() != this && !beforeChild->parent()->isAnonymousBlock()) {
+        // skip implicit containers around beforeChild
+        beforeChild = beforeChild->parent();
+    }
     RenderFlow* beforeChildParent = beforeChild ? static_cast<RenderFlow*>(beforeChild->parent()) :
                                     (flow->continuation() ? flow->continuation() : flow);
 
@@ -260,7 +262,7 @@ bool RenderFlow::hitTestLines(NodeInfo& i, int x, int y, int tx, int ty, HitTest
             }
         }
     }
-    
+
     return false;
 }
 

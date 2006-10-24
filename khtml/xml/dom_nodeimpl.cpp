@@ -910,14 +910,8 @@ RenderObject * NodeImpl::previousRenderer()
 RenderObject * NodeImpl::nextRenderer()
 {
     for (NodeImpl *n = nextSibling(); n; n = n->nextSibling()) {
-        if (n->renderer()) {
-            RenderObject *r = n->renderer();
-            // If the renderer has caused implicit containers,
-            // return the topmost implicit container
-            while (r->parent()->isAnonymous() && !r->parent()->isAnonymousBlock())
-                r = r->parent();
-            return r;
-        }
+        if (n->renderer())
+            return n->renderer();
     }
     return 0;
 }
