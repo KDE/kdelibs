@@ -59,6 +59,17 @@ BackendChooser::BackendChooser( QWidget *parent, const QString &backendType )
              this, SLOT( slotUpClicked() ) );
     connect( m_ui.downButton, SIGNAL( clicked() ),
              this, SLOT( slotDownClicked() ) );
+
+    KServiceType::Ptr service_type = KServiceType::serviceType( backendType );
+
+    QString title = service_type->comment();
+
+    if ( title.isEmpty() )
+    {
+        title = backendType;
+    }
+
+    m_ui.groupBox->setTitle( title );
 }
 
 void BackendChooser::load()
