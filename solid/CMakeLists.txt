@@ -6,5 +6,6 @@ KDE4_NO_ENABLE_FINAL(solid)
 
 add_subdirectory( solid )
 add_subdirectory( backends )
+add_subdirectory( kcm )
 add_subdirectory( tests )
 

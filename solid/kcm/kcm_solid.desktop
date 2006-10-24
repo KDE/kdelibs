@@ -1,0 +1,18 @@
+[Desktop Entry]
+Encoding=UTF-8
+Exec=kcmshell kcm_solid
+Icon=system
+Type=Service
+ServiceTypes=KCModule
+DocPath=kcontrol/solid/index.html
+
+X-KDE-Library=kcm_solid
+X-KDE-FactoryName=kcm_solid
+X-KDE-ParentApp=kcontrol
+
+Name=Solid
+
+Comment=Hardware Integration Configuration
+
+Keywords=Solid,Hardware,Power,Network,Discovery,Management
+
