@@ -6,7 +6,7 @@ kde4_add_ui_files(kcmsolid_SRCS backendchooser.ui)
 kde4_automoc(${kcmsolid_SRCS})
 
 kde4_add_plugin(kcm_solid ${kcmsolid_SRCS})
-target_link_libraries(kcm_solid  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_SOLID_LIBS} )
+target_link_libraries(kcm_solid  ${KDE4_KDEUI_LIBS} ${KDE4_SOLID_LIBS} )
 install(TARGETS kcm_solid  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
