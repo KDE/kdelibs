@@ -970,7 +970,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     }
     else
     {
-        if ( (ml.isVariable() && mr.isVariable()) ||
+        if ( (ml.isVariable() && mr.isVariable() && m_width<cw) ||
              (!ml.isVariable() && !mr.isVariable() &&
                 containingBlock()->style()->textAlign() == KHTML_CENTER) )
         {
@@ -978,14 +978,14 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
             if (m_marginLeft<0) m_marginLeft=0;
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (mr.isVariable() ||
+        else if ( (mr.isVariable() && m_width<cw) ||
                  (!ml.isVariable() && containingBlock()->style()->direction() == RTL &&
                   containingBlock()->style()->textAlign() == KHTML_LEFT))
         {
             m_marginLeft = ml.width(cw);
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (ml.isVariable() ||
+        else if ( (ml.isVariable() && m_width<cw) ||
                  (!mr.isVariable() && containingBlock()->style()->direction() == LTR &&
                   containingBlock()->style()->textAlign() == KHTML_RIGHT))
         {
@@ -994,6 +994,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
         }
         else
         {
+           // this makes auto margins 0 if we failed a m_width<cw test above (css2.1, 10.3.3)
             m_marginLeft = ml.minWidth(cw);
             m_marginRight = mr.minWidth(cw);
         }
