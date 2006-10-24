@@ -2,7 +2,8 @@
 Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=SolidDeviceManager
-Name=KDE Hardware Discovery Backend
+
+Comment=Hardware Discovery Backend
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

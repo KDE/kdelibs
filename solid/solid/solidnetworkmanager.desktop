@@ -2,7 +2,8 @@
 Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=SolidNetworkManager
-Name=KDE Network Management Backend
+
+Comment=Network Management Backend
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString
