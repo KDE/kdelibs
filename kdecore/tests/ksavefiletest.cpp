@@ -385,12 +385,10 @@ void KSaveFileTest::cleanupTestCase()
 void KSaveFileTest::test_fstream()
 {
     // test to check portability 
-    // remove this test with together with KSaveFile::fstream
+    // remove this test together with KSaveFile::fstream
     QString path=QDir::homePath();
     path = path + QLatin1String("/test_KSaveFileTest_fstream.tmp");
-    printf("KSaveFileTest::test_fstream(): path='%s'\n", qPrintable(path));
     KSaveFile sf(path);
-    sf.open();
     FILE* fs = sf.fstream();
     sf.finalize();
 }

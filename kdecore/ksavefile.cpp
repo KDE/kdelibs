@@ -224,10 +224,10 @@ bool KSaveFile::finalize()
 FILE* KSaveFile::fstream()
 {
     if ( !d->stream ) {
-        close(); //Close the QFile to prevent problems in Windows
-
+        if (!isOpen())
+            open();
         //Provide a hack for old code that should be updated.
-        d->stream = KDE_fopen(QFile::encodeName(d->tempFileName), "r+");
+        d->stream = KDE_fdopen(dup(handle()), "r+");
     }
 
     return d->stream;
