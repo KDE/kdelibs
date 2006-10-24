@@ -145,6 +145,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 #endif
         m_str = new QDataStream(database);
         m_str->setVersion(QDataStream::Qt_3_1);
+        m_sycoca_mmap = 0;
 #ifdef HAVE_MMAP
      }
      else
@@ -152,12 +153,11 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 #ifdef HAVE_MADVISE
         (void) madvise((char*)m_sycoca_mmap, m_sycoca_size, MADV_WILLNEED);
 #endif
-        QByteArray b = QByteArray::fromRawData(m_sycoca_mmap, m_sycoca_size);
-        QBuffer *buffer = new QBuffer( new QByteArray(b) );
+        QBuffer *buffer = new QBuffer;
+        buffer->setData(QByteArray::fromRawData(m_sycoca_mmap, m_sycoca_size));
         buffer->open(QIODevice::ReadOnly);
         m_str = new QDataStream( buffer);
         m_str->setVersion(QDataStream::Qt_3_1);
-        //### FIXME: cleanup the array?
      }
 #endif
      bNoDatabase = false;
@@ -175,9 +175,9 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      {
         // We open a dummy database instead.
         //kDebug(7011) << "No database, opening a dummy one." << endl;
-        QBuffer *buffer = new QBuffer( new QByteArray );
+        QBuffer *buffer = new QBuffer;
         buffer->open(QIODevice::ReadWrite);
-        m_str = new QDataStream( buffer);
+        m_str = new QDataStream(buffer);
         m_str->setVersion(QDataStream::Qt_3_1);
         *m_str << qint32(KSYCOCA_VERSION);
         *m_str << qint32(0);
