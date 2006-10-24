@@ -214,10 +214,10 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * label is the text that appears as the label for the list. list
      * is the string list which is inserted into the list, and current
      * is the number of the item which should be the selected item. If
-     * editable is true, the user can enter their own text.
+     * editable is true, the user can enter his own text.
      *
      * @param caption  Caption of the dialog
-     * @param label    Text of the label for the spin box
+     * @param label    Text of the label for the list
      * @param list     List of item for user to choose from
      * @param current  Index of the selected item
      * @param editable If true, user can enter own text
@@ -240,7 +240,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * true, the user can select multiple items.
      *
      * @param caption  Caption of the dialog
-     * @param label    Text of the label for the spin box
+     * @param label    Text of the label for the list
      * @param list     List of item for user to choose from
      * @param select   List of item(s) that should be selected
      * @param multiple If true, user can select multiple items
