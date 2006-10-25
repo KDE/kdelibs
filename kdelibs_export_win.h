@@ -45,6 +45,15 @@
 # endif
 #endif
 
+
+#ifndef KSPEECH_EXPORT
+# ifdef MAKE_KSPEECH_LIB
+#  define KSPEECH_EXPORT  KDE_EXPORT
+# else
+#  define KSPEECH_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KDEPRINT_EXPORT
 # ifdef MAKE_KDEPRINT_LIB
 #  define KDEPRINT_EXPORT  KDE_EXPORT
