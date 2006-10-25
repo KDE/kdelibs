@@ -292,11 +292,7 @@ public:
 	 * Used mainly when drawing.
 	 * @return the coordinate in the pixel coordinate system
 	 */
-	QPoint mapToPoint( const QPointF& p ) const {
-		int px = PixRect.left() + int( PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width() );
-		int py = PixRect.top() + int( PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height() );
-		return QPoint( px, py );
-	}
+	QPointF mapToPoint( const QPointF& p ) const;
 
 	/**
 	 * Retrieve the pointer to the axis of type @p a.

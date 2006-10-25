@@ -190,7 +190,7 @@ QList<KPlotObject*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 			continue;
 
 		for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit ) {
-			if ( ( p - mapToPoint( **dpit ) ).manhattanLength() <= 4 )
+			if ( ( p - mapToPoint( **dpit ).toPoint() ).manhattanLength() <= 4 )
 				pts << po;
 		}
 	}
@@ -224,6 +224,12 @@ void KPlotWidget::setPixRect() {
 	int newHeight = contentsRect().height() - topPadding() - bottomPadding();
 	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
 	PixRect = QRect( 0, 0, newWidth, newHeight );
+}
+
+QPointF KPlotWidget::mapToPoint( const QPointF& p ) const {
+	float px = PixRect.left() + PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width();
+	float py = PixRect.top() + PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height();
+	return QPointF( px, py );
 }
 
 void KPlotWidget::paintEvent( QPaintEvent *e ) {
@@ -260,9 +266,9 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 					{
-						QPoint q = mapToPoint( **dpit );
-						int x1 = q.x() - po->size()/2;
-						int y1 = q.y() - po->size()/2;
+						QPointF q = mapToPoint( **dpit );
+						float x1 = q.x() - 0.5*po->size();
+						float y1 = q.y() - 0.5*po->size();
 
 						switch( po->param() ) {
 							case KPlotObject::CIRCLE : p->drawEllipse( x1, y1, po->size(), po->size() ); break;
@@ -279,16 +285,17 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				case KPlotObject::CURVE :
 				{
 					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
-					QPolygon poly;
+					QPolygonF poly;
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 						poly << mapToPoint( **dpit );
 					p->drawPolyline( poly );
 					break;
 				}
 
+				//FIXME: implement non-overlapping labels
 				case KPlotObject::LABEL : //draw label centered at point in x, and slightly below point in y.
 				{
-					QPoint q = mapToPoint( *(po->points()->first()) );
+					QPointF q = mapToPoint( *(po->points()->first()) );
 					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::TextDontClip, po->name() );
 					break;
 				}
@@ -298,7 +305,7 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
 					p->setBrush( po->color() );
 
-					QPolygon a( po->count() );
+					QPolygonF a( po->count() );
 
 					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
 						a << mapToPoint( **dpit );
