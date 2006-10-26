@@ -120,11 +120,18 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         AccessFlags access() const;
 
         /**
-        * Set the defined \a Access flags.
+        * Set the defined \a Access flags to \p access .
         */
         void setAccess(AccessFlags access);
 
+        /**
+        * Set the value \p value of the property \p propertyName .
+        */
         void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr=KJS::None);
+
+        /**
+        * \return true if the property \p propertyName can be changed else false is returned.
+        */
         bool canPut(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
 
         /**
@@ -138,9 +145,22 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         */
         static KJS::JSValue *propertyGetter( KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier& name, const KJS::PropertySlot& );
 
+        /**
+        * \return a string-representation of the QObject. For example for a QWidget-instance that
+        * has the QObject::objectName "mywidget" the string "mywidget (QWidget)" is returned.
+        */
         KJS::UString toString(KJS::ExecState *exec) const;
+
+        /**
+        * \return the QObject's classname. For example for a QWidget-instance the string "QWidget"
+        * is returned.
+        */
         KJS::UString className() const;
 
+        /**
+        * Add the QObject \p object to the internal QObjectCleanupHandler to watch the
+        * lifetime of the QObject to know when the QObject got deleted.
+        */
         void watchObject( QObject *object );
 
     private:
@@ -205,7 +225,7 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
             }
             else
             {
-                throwError(exec, KJS::TypeError, i18n("Could not construct value"));
+                KJS::throwError(exec, KJS::TypeError, i18n("Could not construct value"));
                 return new KJS::JSObject();
             }
             return returnValue;

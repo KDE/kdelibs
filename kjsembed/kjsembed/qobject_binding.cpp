@@ -122,14 +122,13 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         }
         QObject* receiver = 0;
         QObject* sender = senderImp->object<QObject>();
-        // 2#signal
         char *signal = qstrdup( createSignal(args[1]->toString(exec).ascii()).data() );
-        // 1#slot
         char *slot = 0;
-        if( args.size() == 4)
+        KJSEmbed::QObjectBinding *receiverImp = 0;
+        if( args.size() >= 4)
         {
             slot = qstrdup( createSlot(args[3]->toString(exec).ascii()).data() );
-            KJSEmbed::QObjectBinding *receiverImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[2] );
+            receiverImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[2] );
             if( !receiverImp )
                 receiver = new SlotProxy(args[2]->toObject(exec), exec->dynamicInterpreter(), sender, args[3]->toString(exec).ascii() );
             else
@@ -137,6 +136,7 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         }
         else
         {
+            receiverImp = imp;
             receiver = imp->object<QObject>();
             slot = qstrdup( createSlot(args[2]->toString(exec).ascii()).data() );
         }
@@ -147,7 +147,7 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         const QMetaObject *receiverMetaObject = receiver->metaObject();
         QMetaMethod receiverMetaMethod = receiverMetaObject->method( receiverMetaObject->indexOfSlot(slot) );
 
-        if(validSignal(senderMetaMethod, senderImp->access()) && validSlot(receiverMetaMethod, imp->access()))
+        if( validSignal(senderMetaMethod, senderImp->access()) && ( !receiverImp || validSlot(receiverMetaMethod, receiverImp->access()) ) )
         {
             return KJS::Boolean(QObject::connect(sender, signal, receiver, slot));
         }
@@ -167,8 +167,7 @@ QByteArray extractMemberName( const QMetaMethod &member )
 void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target, QObject *object)
 {
     KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec,  target);
-    if( imp == 0 )
-        return;
+    Q_ASSERT(imp);
 
     // Add the children the QObject has.
     if (imp->access() & QObjectBinding::ChildObjects) {
@@ -293,10 +292,8 @@ KJS::JSValue *QObjectBinding::propertyGetter( KJS::ExecState *exec, KJS::JSObjec
     if ( val.isValid() ) {
         return convertToValue( exec, val );
     }
-    else {
-        qDebug() << "propertyGetter called but no property, name was" << propertyName.ascii();
-        return 0; // ERROR
-    }
+    qDebug() << QString("propertyGetter called but no property, name was '%1'").arg(propertyName.ascii());
+    return 0; // ERROR
 }
 
 QObjectBinding::AccessFlags QObjectBinding::access() const
@@ -315,7 +312,6 @@ void QObjectBinding::put(KJS::ExecState *exec, const KJS::Identifier &propertyNa
     if ( obj && !m_cleanupHandler->isEmpty() )
     {
         // Properties
-        //QString prop = propertyName.qstring();
         const QMetaObject *meta = obj->metaObject();
 
         if ( int propIndex = meta->indexOfProperty( propertyName.ascii() ) != -1 )
@@ -403,10 +399,10 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         KJS::throwError(exec, KJS::GeneralError, i18n("The slot sked for %1 arguments but there are only %2 arguments available.",
                         idx,
                         types.size()));
-//        KJSEmbed::throwError(exec,
-//                i18n("The slot asked for %1 arguments but there are only are %2 arguments available.")
-//                        .arg(idx)
-//                        .arg(types.size() ) );
+        //KJSEmbed::throwError(exec,
+        //                     i18n("The slot asked for %1 arguments but there are only are %2 arguments available.")
+        //                        .arg(idx)
+        //                        .arg(types.size() ) );
         return new NullPtr();
     }
     switch( args[idx]->type() )
@@ -488,11 +484,10 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         }
     }
 
-    if(! success)
+    if( !success )
     {
-        KJS::throwError(exec, KJS::GeneralError, i18n("No such method '%1'.",  m_memberName.constData()));
-        // KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
-        return KJS::Null();
+        return KJS::throwError(exec, KJS::GeneralError, i18n("No such method '%1'.",  m_memberName.constData()));
+        //return KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
     }
 
     QList<QByteArray> types = metaMember.parameterTypes();
@@ -518,9 +513,8 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 
     if( !success )
     {
-        KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
-        // KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
-        return KJS::Null();
+        return KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
+        //return KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
     }
 
     //TODO use the QMetaType-stuff ( defined as QVariant::UserType ) to handle also other cases
