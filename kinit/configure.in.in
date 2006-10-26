@@ -49,10 +49,12 @@ kdeinit_setuid=
 case $target_os in
     linux*)
         AC_MSG_RESULT(yes)
-        kdeinit_setuid=1
+        KDEINIT_SETUID=1
         AC_DEFINE(KDEINIT_OOM_PROTECT,1,[Enable prevention against poor Linux OOM-killer])
         ;;
     *)  AC_MSG_RESULT(no)
+        KDEINIT_SETUID=0
         ;;
 esac
-AM_CONDITIONAL(KDEINIT_SETUID, test -n "$kdeinit_setuid" )
+AC_SUBST(KDEINIT_SETUID)
+AM_CONDITIONAL(KDEINIT_SETUID, test "$KDEINIT_SETUID" != 0 )

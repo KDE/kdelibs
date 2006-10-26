@@ -82,14 +82,9 @@ shell.o: wrapper.c
 dummy.cpp:
 	echo > dummy.cpp
 
-if KDEINIT_SETUID
-# start_kdeinit needs to be installed setuid root on Linux
 install-exec-hook:
-	@(chown 0 $(DESTDIR)$(bindir)/start_kdeinit && chmod 4755 $(DESTDIR)$(bindir)/start_kdeinit) || echo "Please make start_kdeinit setuid root" >&2
-	@echo ""
-	@echo "start_kdeinit is by default installed on Linux with a set SETUID root bit!"
-	@echo "This is needed to prevent kdeinit from being killed by a bad heuristic in the OOM-killer when running out of memory."
-	@echo ""
-endif
+	@if test \${KDEINIT_SETUID} != 0; then \
+		(chown 0 $(DESTDIR)$(bindir)/start_kdeinit && chmod 4755 $(DESTDIR)$(bindir)/start_kdeinit) || echo "Please make start_kdeinit setuid root" ; \
+	fi
 
 include $(top_srcdir)/admin/Doxyfile.am
