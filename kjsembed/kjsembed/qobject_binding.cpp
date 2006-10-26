@@ -537,6 +537,9 @@ SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
 }
 
 START_QOBJECT_METHOD( callParent, QObject )
+    //TODO it would be better, if each QObjectBinding remembers it's parent rather then
+    //creating a new instance each time. That wouldn't only be more logical, but also
+    //does prevent losing of additional infos like e.g. the access-level.
     KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
     QObject *parent = (!objImp || objImp->access() & QObjectBinding::GetParentObject)
         ? imp->object<QObject>()->parent()
