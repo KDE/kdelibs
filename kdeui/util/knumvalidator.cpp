@@ -35,23 +35,16 @@
 //
 
 KIntValidator::KIntValidator ( QWidget * parent, int base )
-  : QValidator(parent)
+  : QValidator(parent), _min(0), _max(0)
 {
-  _base = base;
-  if (_base < 2) _base = 2;
-  if (_base > 36) _base = 36;
-
-  _min = _max = 0;
+  setBase(base);
 }
 
 KIntValidator::KIntValidator ( int bottom, int top, QWidget * parent, int base )
   : QValidator(parent)
 {
-  _base = base;
-  if (_base > 36) _base = 36;
-
-  _min = bottom;
-  _max = top;
+  setBase(base);
+  setRange(bottom, top);
 }
 
 KIntValidator::~KIntValidator ()
@@ -67,12 +60,13 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   if (_base > 10)
     newStr = newStr.toUpper();
 
-  if (newStr == QLatin1String("-")) // a special case
+  if (newStr == QLatin1String("-")) {// a special case
     if ((_min || _max) && _min >= 0)
       ok = false;
     else
       return QValidator::Acceptable;
-  else if (newStr.length())
+  }
+  else if (!newStr.isEmpty())
     val = newStr.toInt(&ok, _base);
   else {
     val = 0;
@@ -126,6 +120,7 @@ void KIntValidator::setBase ( int base )
 {
   _base = base;
   if (_base < 2) _base = 2;
+  if (_base > 36) _base = 36;
 }
 
 int KIntValidator::bottom () const
@@ -162,11 +157,10 @@ public:
 
 
 KFloatValidator::KFloatValidator ( QWidget * parent )
-  : QValidator(parent)
+  : QValidator(parent), _min(0), _max(0)
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
-    _min = _max = 0;
 }
 
 KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent )
@@ -174,8 +168,7 @@ KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent )
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
-    _min = bottom;
-    _max = top;
+    setRange(bottom, top);
 }
 
 KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent )
@@ -183,8 +176,7 @@ KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, 
 {
     d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers = localeAware;
-    _min = bottom;
-    _max = top;
+    setRange(bottom, top);
 }
 
 KFloatValidator::~KFloatValidator ()
@@ -209,14 +201,15 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   QString newStr;
   newStr = str.trimmed();
 
-  if (newStr == QLatin1String("-")) // a special case
+  if (newStr == QLatin1String("-")) {// a special case
     if ((_min || _max) && _min >= 0)
       ok = false;
     else
       return QValidator::Acceptable;
+  }
   else if (newStr == QLatin1String(".") || (d->acceptLocalizedNumbers && newStr==KGlobal::locale()->decimalSymbol())) // another special case
     return QValidator::Acceptable;
-  else if (newStr.length())
+  else if (!newStr.isEmpty())
   {
     val = newStr.toDouble(&ok);
     if(!ok && d->acceptLocalizedNumbers)
@@ -304,7 +297,7 @@ KDoubleValidator::KDoubleValidator( QObject * parent )
 }
 
 KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
-				    QObject * parent )
+  QObject * parent )
   : QDoubleValidator( bottom, top, decimals, parent ), d( 0 )
 {
   d = new Private();
@@ -312,7 +305,7 @@ KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
 
 KDoubleValidator::~KDoubleValidator()
 {
-	delete d;
+  delete d;
 }
 
 bool KDoubleValidator::acceptLocalizedNumbers() const {
@@ -340,29 +333,29 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
     // first, delete p's and t's:
     if ( !p.isEmpty() )
       for ( int idx = s.indexOf( p ) ; idx >= 0 ; idx = s.indexOf( p, idx ) )
-	s.remove( idx, p.length() );
+        s.remove( idx, p.length() );
 
 
     if ( !t.isEmpty() )
       for ( int idx = s.indexOf( t ) ; idx >= 0 ; idx = s.indexOf( t, idx ) )
-	s.remove( idx, t.length() );
+        s.remove( idx, t.length() );
 
     // then, replace the d's and n's
     if ( ( !n.isEmpty() && n.indexOf('.') != -1 ) ||
-	 ( !d.isEmpty() && d.indexOf('-') != -1 ) ) {
+       ( !d.isEmpty() && d.indexOf('-') != -1 ) ) {
       // make sure we don't replace something twice:
       kWarning() << "KDoubleValidator: decimal symbol contains '-' or "
-		     "negative sign contains '.' -> improve algorithm" << endl;
+                    "negative sign contains '.' -> improve algorithm" << endl;
       return Invalid;
     }
 
     if ( !d.isEmpty() && d != "." )
       for ( int idx = s.indexOf( d ) ; idx >= 0 ; idx = s.indexOf( d, idx + 1 ) )
-	s.replace( idx, d.length(), '.');
+        s.replace( idx, d.length(), '.');
 
     if ( !n.isEmpty() && n != "-" )
       for ( int idx = s.indexOf( n ) ; idx >= 0 ; idx = s.indexOf( n, idx + 1 ) )
-	s.replace( idx, n.length(), '-' );
+        s.replace( idx, n.length(), '-' );
   }
 
   return base::validate( s, p );

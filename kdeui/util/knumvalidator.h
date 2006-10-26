@@ -63,11 +63,12 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
      */
     virtual void fixup ( QString & ) const;
     /**
-     * Sets the minimum and maximum values allowed.
+     * Sets the minimum and maximum values allowed. 
+     * If @p top is greater than @p bottom, it is set to the value of @p bottom.
      */
     virtual void setRange ( int bottom, int top );
     /**
-     * Sets the numeric base value.
+     * Sets the numeric base value. @p base must be between 2 and 36.
      */
     virtual void setBase ( int base );
     /**
