@@ -40,14 +40,14 @@
  * or for a protocol (e.g. http) be careful that it is appropriate.
  * (Fictional) example: "4.0.90 (>=20070101)"
  */
-#define KDE_VERSION_STRING "3.80.1 (>= 20060903)"
+#define KDE_VERSION_STRING "3.80.2 (>= 20061026)"
 
 /// @brief Major version of KDE, at compile time
 #define KDE_VERSION_MAJOR 3
 /// @brief Minor version of KDE, at compile time
 #define KDE_VERSION_MINOR 80
 /// @brief Release version of KDE, at compile time
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 
 /**
  * @brief Make a number from the major, minor and release number of a KDE version
