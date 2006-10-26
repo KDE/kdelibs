@@ -85,7 +85,7 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         /**
         * Enumeration of access-flags that could be OR-combined to define
         * what parts of the QObject should be published.
-        * Default is AllSlots|AllSignals|AllProperties|ChildObjects what
+        * Default is AllSlots|AllSignals|AllProperties|AllObjects what
         * means that everything got published, even e.g. private slots.
         */
         enum Access {
@@ -109,7 +109,10 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
             NonScriptableProperties = 0x20000, ///< Publish properties that don't have Q_SCRIPTABLE defined.
             AllProperties = ScriptableProperties|NonScriptableProperties,
 
-            ChildObjects = 0x1000000 ///< Publish also the child objects the QObject has.
+            GetParentObject = 0x100000, ///< Provide access to the parent QObject the QObject has.
+            SetParentObject = 0x200000, ///< Be able to set the parent QObject the QObject has.
+            ChildObjects = 0x400000, ///< Provide access to the child QObject's the QObject has.
+            AllObjects = GetParentObject|SetParentObject|ChildObjects
         };
 
         Q_DECLARE_FLAGS(AccessFlags, Access)

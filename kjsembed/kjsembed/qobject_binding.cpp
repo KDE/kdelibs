@@ -181,7 +181,13 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
             QString objectName = (*child)->objectName();
             if( !objectName.isEmpty() )
             {
-                target->put(exec, KJS::Identifier(objectName), KJSEmbed::createQObject(exec,(*child) ));
+                KJS::JSObject *childObject = KJSEmbed::createQObject(exec, *child);
+                KJSEmbed::QObjectBinding *childImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, childObject);
+                if(childImp)
+                {
+                    childImp->setAccess( imp->access() ); // inherit access from parent
+                    target->put(exec, KJS::Identifier(objectName), childObject);
+                }
             }
         }
     }
@@ -216,7 +222,7 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
 QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
     : ObjectBinding(exec, object->metaObject()->className(), object)
     , m_evproxy(0)
-    , m_access( AllSlots | AllSignals | AllProperties | ChildObjects )
+    , m_access( AllSlots | AllSignals | AllProperties | AllObjects )
 {
     if( object->parent() != 0 )
     {
@@ -531,7 +537,10 @@ SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
 }
 
 START_QOBJECT_METHOD( callParent, QObject )
-    QObject *parent = imp->object<QObject>()->parent();
+    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
+    QObject *parent = (!objImp || objImp->access() & QObjectBinding::GetParentObject)
+        ? imp->object<QObject>()->parent()
+        : 0;
     result = KJSEmbed::createQObject(exec, parent);
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callIsWidgetType, QObject )
@@ -542,12 +551,18 @@ START_QOBJECT_METHOD( callInherits, QObject)
     result = KJS::Boolean(object->inherits(className.constData()));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callSetParent, QObject )
-    QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
-    object->setParent(parent);
+    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
+    if(!objImp || objImp->access() & QObjectBinding::SetParentObject) {
+        QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
+        object->setParent(parent);
+    }
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callFindChild, QObject )
+    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
     QString childName = KJSEmbed::extractQString(exec, args, 0);
-    QObject *child = object->findChild<QObject*>(childName);
+    QObject *child = (!objImp || objImp->access() & QObjectBinding::ChildObjects)
+        ? object->findChild<QObject*>(childName)
+        : 0;
     result = KJSEmbed::createQObject(exec, child);
 END_QOBJECT_METHOD
 
