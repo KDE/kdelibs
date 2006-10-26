@@ -170,6 +170,9 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
 
     // Add the children the QObject has.
     if (imp->access() & QObjectBinding::ChildObjects) {
+        //TODO uh, this one is dirty cause it may eat a lot of time to publish things that may not
+        //got accessed anyway. Better solution would be to provide access to them on demand only. That
+        //would also allow to manipulate the QObject-tree at runtime what is currently not possible.
         QObjectList children = object->children();
         QObjectList::Iterator child = children.begin();
         for( ; child != children.end(); ++child)
