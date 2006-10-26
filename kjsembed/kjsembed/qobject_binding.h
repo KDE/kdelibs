@@ -24,6 +24,7 @@
 
 #include <QObjectCleanupHandler>
 #include <QDebug>
+#include <QFlags>
 #include <qglobal.h>
 
 #include <kjs/function.h>
@@ -66,35 +67,76 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 class QObject;
 class QMetaMethod;
 
-namespace KJS {
-}
-
 namespace KJSEmbed {
 
 KJS_BINDING( QObjectFactory )
 
 class EventProxy;
+
 class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
 {
     public:
+
         QObjectBinding( KJS::ExecState *exec, QObject *object );
         virtual ~QObjectBinding();
 
         static void publishQObject( KJS::ExecState *exec, KJS::JSObject *target, QObject *object);
 
+        /**
+        * Enumeration of access-flags that could be OR-combined to define
+        * what parts of the QObject should be published.
+        * Default is AllSlots|AllSignals|AllProperties|ChildObjects what
+        * means that everything got published, even e.g. private slots.
+        */
+        enum Access {
+            None = 0x00, ///< Don't publish anything.
+
+            ScriptableSlots = 0x01, ///< Publish slots that have Q_SCRIPTABLE defined.
+            NonScriptableSlots = 0x02, ///< Publish slots that don't have Q_SCRIPTABLE defined.
+            PrivateSlots = 0x04, ///< Publish private slots.
+            ProtectedSlots = 0x08, ///< Publish protected slots.
+            PublicSlots = 0x10, ///< Publish public slots.
+            AllSlots = ScriptableSlots|NonScriptableSlots|PrivateSlots|ProtectedSlots|PublicSlots,
+
+            ScriptableSignals = 0x100, ///< Publish signals that have Q_SCRIPTABLE defined.
+            NonScriptableSignals = 0x200, ///< Publish signals that don't have Q_SCRIPTABLE defined.
+            PrivateSignals = 0x400, ///< Publish private signals.
+            ProtectedSignals = 0x800, ///< Publish protected signals.
+            PublicSignals = 0x1000, ///< Publish public signals.
+            AllSignals = ScriptableSignals|NonScriptableSignals|PrivateSignals|ProtectedSignals|PublicSignals,
+
+            ScriptableProperties = 0x10000, ///< Publish properties that have Q_SCRIPTABLE defined.
+            NonScriptableProperties = 0x20000, ///< Publish properties that don't have Q_SCRIPTABLE defined.
+            AllProperties = ScriptableProperties|NonScriptableProperties,
+
+            ChildObjects = 0x1000000 ///< Publish also the child objects the QObject has.
+        };
+
+        Q_DECLARE_FLAGS(AccessFlags, Access)
+
+        /**
+        * \return the defined \a Access flags.
+        */
+        AccessFlags access() const;
+
+        /**
+        * Set the defined \a Access flags.
+        */
+        void setAccess(AccessFlags access);
+
         void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr=KJS::None);
         bool canPut(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
 
-	/**
-	 * Called to ask if we have a callback for the named property.
-	 * We return the callback in the property slot.
-	 */
-	bool getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::PropertySlot &slot );
+        /**
+        * Called to ask if we have a callback for the named property.
+        * We return the callback in the property slot.
+        */
+        bool getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::PropertySlot &slot );
 
-	/**
-	 * Callback used to get properties.
-	 */
-	static KJS::JSValue *propertyGetter( KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier& name, const KJS::PropertySlot& );
+        /**
+        * Callback used to get properties.
+        */
+        static KJS::JSValue *propertyGetter( KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier& name, const KJS::PropertySlot& );
 
         KJS::UString toString(KJS::ExecState *exec) const;
         KJS::UString className() const;
@@ -104,7 +146,10 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
     private:
         EventProxy *m_evproxy;
         QObjectCleanupHandler *m_cleanupHandler;
+        AccessFlags m_access;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(QObjectBinding::AccessFlags)
 
 class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 {
