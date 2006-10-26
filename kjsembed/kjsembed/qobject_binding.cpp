@@ -541,7 +541,12 @@ START_QOBJECT_METHOD( callParent, QObject )
     QObject *parent = (!objImp || objImp->access() & QObjectBinding::GetParentObject)
         ? imp->object<QObject>()->parent()
         : 0;
-    result = KJSEmbed::createQObject(exec, parent);
+    KJS::JSObject *parentObject = KJSEmbed::createQObject(exec, parent);
+    KJSEmbed::QObjectBinding *parentImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, parentObject);
+    if(objImp && parentImp) {
+        parentImp->setAccess( objImp->access() ); // inherit access from child since we don't know the access-level of the parent here :-(
+    }
+    result = parentObject;
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callIsWidgetType, QObject )
     result = KJS::Boolean(object->isWidgetType());
@@ -563,7 +568,12 @@ START_QOBJECT_METHOD( callFindChild, QObject )
     QObject *child = (!objImp || objImp->access() & QObjectBinding::ChildObjects)
         ? object->findChild<QObject*>(childName)
         : 0;
-    result = KJSEmbed::createQObject(exec, child);
+    KJS::JSObject *childObject = KJSEmbed::createQObject(exec, child);
+    KJSEmbed::QObjectBinding *childImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, childObject);
+    if(objImp && childImp) {
+        childImp->setAccess( objImp->access() ); // inherit access from parent
+    }
+    result = childObject;
 END_QOBJECT_METHOD
 
 START_METHOD_LUT(QObjectFactory)
