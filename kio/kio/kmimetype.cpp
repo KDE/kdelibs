@@ -1013,7 +1013,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     } else {
       if(kapp->dcopClient()->call( app, object,
                    function.utf8(),
-                   dataToSend, replyType, replyData, true, 100)
+                   dataToSend, replyType, replyData, true, -1)
 	    && replyType == "QStringList" ) {
 
         QDataStream dataStreamIn(replyData, IO_ReadOnly);
