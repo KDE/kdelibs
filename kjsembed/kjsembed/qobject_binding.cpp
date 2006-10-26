@@ -147,8 +147,10 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         const QMetaObject *receiverMetaObject = receiver->metaObject();
         QMetaMethod receiverMetaMethod = receiverMetaObject->method( receiverMetaObject->indexOfSlot(slot) );
 
-        if(validSignal(senderMetaMethod, imp->access()) && validSlot(receiverMetaMethod, imp->access()))
+        if(validSignal(senderMetaMethod, senderImp->access()) && validSlot(receiverMetaMethod, imp->access()))
+        {
             return KJS::Boolean(QObject::connect(sender, signal, receiver, slot));
+        }
 
         return KJS::Boolean(false);
     }
