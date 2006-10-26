@@ -1308,18 +1308,21 @@ bool KHTMLParser::isAffectedByResidualStyle(int _id)
 
 void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 {
-    // Find the element that crosses over to a higher level.   For now, if there is more than
-    // one, we will just give up and not attempt any sort of correction.  It's highly unlikely that
-    // there will be more than one, since <p> tags aren't allowed to be nested.
+    // Find the element that crosses over to a higher level.
+    // ### For now, if there is more than one, we will only make sure we close the residual style.
     int exceptionCode = 0;
     HTMLStackElem* curr = blockStack;
     HTMLStackElem* maxElem = 0;
+    HTMLStackElem* endElem = 0;
     HTMLStackElem* prev = 0;
     HTMLStackElem* prevMaxElem = 0;
+    bool advancedResidual = false; // ### if set we only close the residual style
     while (curr && curr != elem) {
         if (curr->level > elem->level) {
-            if (maxElem)
-                return;
+            if (!isAffectedByResidualStyle(curr->id)) return;
+            if (maxElem) advancedResidual = true;
+            else
+                endElem = curr;
             maxElem = curr;
             prevMaxElem = prev;
         }
@@ -1328,7 +1331,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         curr = curr->next;
     }
 
-    if (!curr || !maxElem || !isAffectedByResidualStyle(maxElem->id)) return;
+    if (!curr || !maxElem ) return;
 
     NodeImpl* residualElem = prev->node;
     NodeImpl* blockElem = prevMaxElem ? prevMaxElem->node : current;
@@ -1341,7 +1344,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     if (!parentElem->childAllowed(blockElem))
         return;
 
-    if (maxElem->node->parentNode() != elem->node) {
+    if (maxElem->node->parentNode() != elem->node && !advancedResidual) {
         // Walk the stack and remove any elements that aren't residual style tags.  These
         // are basically just being closed up.  Example:
         // <font><span>Moo<p>Goo</font></p>.
@@ -1375,6 +1378,8 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
             if (isResidualStyleTag(currElem->node->id())) {
                 // Create a clone of this element.
                 currNode = currElem->node->cloneNode(false);
+                currElem->node->close();
+                removeForbidden(currElem->id, forbiddenTag);
 
                 // Change the stack element's node to point to the clone.
                 currElem->setNode(currNode);
@@ -1407,6 +1412,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     SharedPtr<NodeImpl> guard(blockElem);
     blockElem->parentNode()->removeChild(blockElem, exceptionCode);
 
+    if (!advancedResidual) {
     // Step 2: Clone |residualElem|.
     NodeImpl* newNode = residualElem->cloneNode(false); // Shallow clone. We don't pick up the same kids.
 
@@ -1433,6 +1439,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     // Step 4: Place |newNode| under |blockElem|.  |blockElem| is still out of the document, so no
     // attachment can occur yet.
     blockElem->appendChild(newNode, exceptionCode);
+    }
 
     // Step 5: Reparent |blockElem|.  Now the full attachment of the fixed up tree takes place.
     parentElem->appendChild(blockElem, exceptionCode);
@@ -1454,7 +1461,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     // In the above example, Goo should stay italic.
     curr = blockStack;
     HTMLStackElem* residualStyleStack = 0;
-    while (curr && curr != maxElem) {
+    while (curr && curr != endElem) {
         // We will actually schedule this tag for reopening
         // after we complete the close of this entire block.
         NodeImpl* currNode = current;
