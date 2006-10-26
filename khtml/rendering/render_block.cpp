@@ -1896,7 +1896,6 @@ void RenderBlock::positionNewFloats()
                 _height = o->height() + o->marginTop() + o->marginBottom();
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
-            if (fx<0) fx=0;
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx << endl;
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
@@ -1921,14 +1920,18 @@ void RenderBlock::positionNewFloats()
                 _height = o->height() + o->marginTop() + o->marginBottom();
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
-            if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 
-        if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
-            m_overflowWidth = o->xPos()+o->width();
+        if ( m_layer && style()->hidesOverflow()) {
+            if (o->xPos()+o->width() > m_overflowWidth)
+                m_overflowWidth = o->xPos()+o->width();
+            else
+            if (o->xPos() < m_overflowLeft)
+                m_overflowLeft = o->xPos();
+        }
 
         f->startY = y;
         f->endY = f->startY + _height;
