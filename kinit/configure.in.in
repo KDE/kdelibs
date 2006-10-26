@@ -57,4 +57,3 @@ case $target_os in
         ;;
 esac
 AC_SUBST(KDEINIT_SETUID)
-AM_CONDITIONAL(KDEINIT_SETUID, test "$KDEINIT_SETUID" != 0 )
