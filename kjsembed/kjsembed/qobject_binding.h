@@ -44,7 +44,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 { \
         Q_UNUSED( args ); \
         KJS::JSValue *result = KJS::Null(); \
-        KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, self ); \
+        KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, self ); \
         if( imp ) \
         { \
             TYPE *object = imp->object<TYPE>(); \

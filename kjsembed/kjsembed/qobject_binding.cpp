@@ -540,16 +540,16 @@ START_QOBJECT_METHOD( callParent, QObject )
     //TODO it would be better, if each QObjectBinding remembers it's parent rather then
     //creating a new instance each time. That wouldn't only be more logical, but also
     //does prevent losing of additional infos like e.g. the access-level.
-    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
-    QObject *parent = (!objImp || objImp->access() & QObjectBinding::GetParentObject)
-        ? imp->object<QObject>()->parent()
-        : 0;
-    KJS::JSObject *parentObject = KJSEmbed::createQObject(exec, parent);
-    KJSEmbed::QObjectBinding *parentImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, parentObject);
-    if(objImp && parentImp) {
-        parentImp->setAccess( objImp->access() ); // inherit access from child since we don't know the access-level of the parent here :-(
+    if( imp->access() & QObjectBinding::GetParentObject )
+    {
+        QObject *parent = imp->object<QObject>()->parent();
+        KJS::JSObject *parentObject = KJSEmbed::createQObject(exec, parent);
+        KJSEmbed::QObjectBinding *parentImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, parentObject);
+        if( parentImp ) {
+            parentImp->setAccess( imp->access() ); // inherit access from child since we don't know the access-level of the parent here :-(
+        }
+        result = parentObject;
     }
-    result = parentObject;
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callIsWidgetType, QObject )
     result = KJS::Boolean(object->isWidgetType());
@@ -559,24 +559,24 @@ START_QOBJECT_METHOD( callInherits, QObject)
     result = KJS::Boolean(object->inherits(className.constData()));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callSetParent, QObject )
-    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
-    if(!objImp || objImp->access() & QObjectBinding::SetParentObject) {
+    if( imp->access() & QObjectBinding::SetParentObject )
+    {
         QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
         object->setParent(parent);
     }
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callFindChild, QObject )
-    KJSEmbed::QObjectBinding *objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, imp);
-    QString childName = KJSEmbed::extractQString(exec, args, 0);
-    QObject *child = (!objImp || objImp->access() & QObjectBinding::ChildObjects)
-        ? object->findChild<QObject*>(childName)
-        : 0;
-    KJS::JSObject *childObject = KJSEmbed::createQObject(exec, child);
-    KJSEmbed::QObjectBinding *childImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, childObject);
-    if(objImp && childImp) {
-        childImp->setAccess( objImp->access() ); // inherit access from parent
+    if( imp->access() & QObjectBinding::ChildObjects )
+    {
+        QString childName = KJSEmbed::extractQString(exec, args, 0);
+        QObject *child = object->findChild<QObject*>(childName);
+        KJS::JSObject *childObject = KJSEmbed::createQObject(exec, child);
+        KJSEmbed::QObjectBinding *childImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, childObject);
+        if( childImp ) {
+            childImp->setAccess( imp->access() ); // inherit access from parent
+        }
+        result = childObject;
     }
-    result = childObject;
 END_QOBJECT_METHOD
 
 START_METHOD_LUT(QObjectFactory)
