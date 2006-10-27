@@ -1788,6 +1788,15 @@ static void handleWidget(QWidget* w, KHTMLView* view)
     }
 }
 
+class KHTMLBackingStoreHackWidget : public QWidget
+{
+public:
+    void publicEvent(QEvent *e)
+    {
+        QWidget::event(e);
+    }
+};
+
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::ShortcutOverride ) {
@@ -1850,8 +1859,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {
 	    case QEvent::UpdateRequest: {
-                extern void qt_syncBackingStore(QWidget *widget);
-                qt_syncBackingStore(w);
+                // implicitly call qt_syncBackingStore(w)
+                static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(e);
                 block = true;
                 break;	    
             }
@@ -1884,7 +1893,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                         w->setAttribute(Qt::WA_WState_InPaintEvent, false);
                         w->update(static_cast<QUpdateLaterEvent*>(e)->region());
                         w->setAttribute(Qt::WA_WState_InPaintEvent);
-                        qt_syncBackingStore(w);
+                        // implicitly call qt_syncBackingStore(w)
+                        QEvent fakeEvent(QEvent::UpdateRequest);
+                        static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(&fakeEvent);
                     }
 
 		    // QScrollView needs fast repaints
