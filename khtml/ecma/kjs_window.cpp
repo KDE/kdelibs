@@ -220,7 +220,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable, 0 };
 
 /*
-@begin WindowTable 89
+@begin WindowTable 162
   atob		Window::AToB		DontDelete|Function 1
   btoa		Window::BToA		DontDelete|Function 1
   closed	Window::Closed		DontDelete|ReadOnly
@@ -340,7 +340,61 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   #this one is an alias since we don't have a separate XMLDocument
   XMLDocument Window::DocumentCtor DontDelete
   HTMLElement  Window::HTMLElementCtor DontDelete
-  HTMLDocument Window::HTMLDocumentCtor DontDelete
+  HTMLDocument  Window::HTMLDocumentCtor DontDelete
+  HTMLHtmlElement Window::HTMLHtmlElementCtor DontDelete
+  HTMLHeadElement Window::HTMLHeadElementCtor DontDelete
+  HTMLLinkElement Window::HTMLLinkElementCtor DontDelete
+  HTMLTitleElement Window::HTMLTitleElementCtor DontDelete
+  HTMLMetaElement Window::HTMLMetaElementCtor DontDelete
+  HTMLBaseElement Window::HTMLBaseElementCtor DontDelete
+  HTMLIsIndexElement Window::HTMLIsIndexElementCtor DontDelete
+  HTMLStyleElement Window::HTMLStyleElementCtor DontDelete
+  HTMLBodyElement Window::HTMLBodyElementCtor DontDelete
+  HTMLFormElement Window::HTMLFormElementCtor DontDelete
+  HTMLSelectElement Window::HTMLSelectElementCtor DontDelete
+  HTMLOptGroupElement Window::HTMLOptGroupElementCtor DontDelete
+  HTMLOptionElement Window::HTMLOptionElementCtor DontDelete
+  HTMLInputElement Window::HTMLInputElementCtor DontDelete
+  HTMLTextAreaElement Window::HTMLTextAreaElementCtor DontDelete
+  HTMLButtonElement Window::HTMLButtonElementCtor DontDelete
+  HTMLLabelElement Window::HTMLLabelElementCtor DontDelete
+  HTMLFieldSetElement Window::HTMLFieldSetElementCtor DontDelete
+  HTMLLegendElement Window::HTMLLegendElementCtor DontDelete
+  HTMLUListElement Window::HTMLUListElementCtor DontDelete
+  HTMLOListElement Window::HTMLOListElementCtor DontDelete
+  HTMLDListElement Window::HTMLDListElementCtor DontDelete
+  HTMLDirectoryElement Window::HTMLDirectoryElementCtor DontDelete
+  HTMLMenuElement Window::HTMLMenuElementCtor DontDelete
+  HTMLLIElement Window::HTMLLIElementCtor DontDelete
+  HTMLDivElement Window::HTMLDivElementCtor DontDelete
+  HTMLParagraphElement Window::HTMLParagraphElementCtor DontDelete
+  HTMLHeadingElement Window::HTMLHeadingElementCtor DontDelete
+  HTMLBlockQuoteElement Window::HTMLBlockQuoteElementCtor DontDelete
+  HTMLQuoteElement Window::HTMLQuoteElementCtor DontDelete
+  HTMLPreElement Window::HTMLPreElementCtor DontDelete
+  HTMLBRElement Window::HTMLBRElementCtor DontDelete
+  HTMLBaseFontElement Window::HTMLBaseFontElementCtor DontDelete
+  HTMLFontElement Window::HTMLFontElementCtor DontDelete
+  HTMLHRElement Window::HTMLHRElementCtor DontDelete
+  HTMLModElement Window::HTMLModElementCtor DontDelete
+  HTMLAnchorElement Window::HTMLAnchorElementCtor DontDelete
+  HTMLImageElement Window::HTMLImageElementCtor DontDelete
+  HTMLObjectElement Window::HTMLObjectElementCtor DontDelete
+  HTMLParamElement Window::HTMLParamElementCtor DontDelete
+  HTMLAppletElement Window::HTMLAppletElementCtor DontDelete
+  HTMLMapElement Window::HTMLMapElementCtor DontDelete
+  HTMLAreaElement Window::HTMLAreaElementCtor DontDelete
+  HTMLScriptElement Window::HTMLScriptElementCtor DontDelete
+  HTMLTableElement Window::HTMLTableElementCtor DontDelete
+  HTMLTableCaptionElement Window::HTMLTableCaptionElementCtor DontDelete
+  HTMLTableColElement Window::HTMLTableColElementCtor DontDelete
+  HTMLTableSectionElement Window::HTMLTableSectionElementCtor DontDelete
+  HTMLTableRowElement Window::HTMLTableRowElementCtor DontDelete
+  HTMLTableCellElement Window::HTMLTableCellElementCtor DontDelete
+  HTMLFrameSetElement Window::HTMLFrameSetElementCtor DontDelete
+  HTMLLayerElement Window::HTMLLayerElementCtor DontDelete
+  HTMLFrameElement Window::HTMLFrameElementCtor DontDelete
+  HTMLIFrameElement Window::HTMLIFrameElementCtor DontDelete
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontDelete
 @end
 */
@@ -610,8 +664,117 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case CSSRule:
       return getCSSRuleConstructor(exec);
     case ElementCtor:
-    case HTMLElementCtor: //Hack -- we don't have a separate prototype here
       return ElementPseudoCtor::self(exec);
+    case HTMLElementCtor:
+      return HTMLElementPseudoCtor::self(exec);
+    case HTMLHtmlElementCtor:
+      return HTMLHtmlElementPseudoCtor::self(exec);
+    case HTMLHeadElementCtor:
+      return HTMLHeadElementPseudoCtor::self(exec);
+    case HTMLLinkElementCtor:
+      return HTMLLinkElementPseudoCtor::self(exec);
+    case HTMLTitleElementCtor:
+      return HTMLTitleElementPseudoCtor::self(exec);
+    case HTMLMetaElementCtor:
+      return HTMLMetaElementPseudoCtor::self(exec);
+    case HTMLBaseElementCtor:
+      return HTMLBaseElementPseudoCtor::self(exec);
+    case HTMLIsIndexElementCtor:
+      return HTMLIsIndexElementPseudoCtor::self(exec);
+    case HTMLStyleElementCtor:
+      return HTMLStyleElementPseudoCtor::self(exec);
+    case HTMLBodyElementCtor:
+      return HTMLBodyElementPseudoCtor::self(exec);
+    case HTMLFormElementCtor:
+      return HTMLFormElementPseudoCtor::self(exec);
+    case HTMLSelectElementCtor:
+      return HTMLSelectElementPseudoCtor::self(exec);
+    case HTMLOptGroupElementCtor:
+      return HTMLOptGroupElementPseudoCtor::self(exec);
+    case HTMLOptionElementCtor:
+      return HTMLOptionElementPseudoCtor::self(exec);
+    case HTMLInputElementCtor:
+      return HTMLInputElementPseudoCtor::self(exec);
+    case HTMLTextAreaElementCtor:
+      return HTMLTextAreaElementPseudoCtor::self(exec);
+    case HTMLButtonElementCtor:
+      return HTMLButtonElementPseudoCtor::self(exec);
+    case HTMLLabelElementCtor:
+      return HTMLLabelElementPseudoCtor::self(exec);
+    case HTMLFieldSetElementCtor:
+      return HTMLFieldSetElementPseudoCtor::self(exec);
+    case HTMLLegendElementCtor:
+      return HTMLLegendElementPseudoCtor::self(exec);
+    case HTMLUListElementCtor:
+      return HTMLUListElementPseudoCtor::self(exec);
+    case HTMLOListElementCtor:
+      return HTMLOListElementPseudoCtor::self(exec);
+    case HTMLDListElementCtor:
+      return HTMLDListElementPseudoCtor::self(exec);
+    case HTMLDirectoryElementCtor:
+      return HTMLDirectoryElementPseudoCtor::self(exec);
+    case HTMLMenuElementCtor:
+      return HTMLMenuElementPseudoCtor::self(exec);
+    case HTMLLIElementCtor:
+      return HTMLLIElementPseudoCtor::self(exec);
+    case HTMLDivElementCtor:
+      return HTMLDivElementPseudoCtor::self(exec);
+    case HTMLParagraphElementCtor:
+      return HTMLParagraphElementPseudoCtor::self(exec);
+    case HTMLHeadingElementCtor:
+      return HTMLHeadingElementPseudoCtor::self(exec);
+    case HTMLBlockQuoteElementCtor:
+      return HTMLBlockQuoteElementPseudoCtor::self(exec);
+    case HTMLQuoteElementCtor:
+      return HTMLQuoteElementPseudoCtor::self(exec);
+    case HTMLPreElementCtor:
+      return HTMLPreElementPseudoCtor::self(exec);
+    case HTMLBRElementCtor:
+      return HTMLBRElementPseudoCtor::self(exec);
+    case HTMLBaseFontElementCtor:
+      return HTMLBaseFontElementPseudoCtor::self(exec);
+    case HTMLFontElementCtor:
+      return HTMLFontElementPseudoCtor::self(exec);
+    case HTMLHRElementCtor:
+      return HTMLHRElementPseudoCtor::self(exec);
+    case HTMLModElementCtor:
+      return HTMLModElementPseudoCtor::self(exec);
+    case HTMLAnchorElementCtor:
+      return HTMLAnchorElementPseudoCtor::self(exec);
+    case HTMLImageElementCtor:
+      return HTMLImageElementPseudoCtor::self(exec);
+    case HTMLObjectElementCtor:
+      return HTMLObjectElementPseudoCtor::self(exec);
+    case HTMLParamElementCtor:
+      return HTMLParamElementPseudoCtor::self(exec);
+    case HTMLAppletElementCtor:
+      return HTMLAppletElementPseudoCtor::self(exec);
+    case HTMLMapElementCtor:
+      return HTMLMapElementPseudoCtor::self(exec);
+    case HTMLAreaElementCtor:
+      return HTMLAreaElementPseudoCtor::self(exec);
+    case HTMLScriptElementCtor:
+      return HTMLScriptElementPseudoCtor::self(exec);
+    case HTMLTableElementCtor:
+      return HTMLTableElementPseudoCtor::self(exec);
+    case HTMLTableCaptionElementCtor:
+      return HTMLTableCaptionElementPseudoCtor::self(exec);
+    case HTMLTableColElementCtor:
+      return HTMLTableColElementPseudoCtor::self(exec);
+    case HTMLTableSectionElementCtor:
+      return HTMLTableSectionElementPseudoCtor::self(exec);
+    case HTMLTableRowElementCtor:
+      return HTMLTableRowElementPseudoCtor::self(exec);
+    case HTMLTableCellElementCtor:
+      return HTMLTableCellElementPseudoCtor::self(exec);
+    case HTMLFrameSetElementCtor:
+      return HTMLFrameSetElementPseudoCtor::self(exec);
+    case HTMLLayerElementCtor:
+      return HTMLLayerElementPseudoCtor::self(exec);
+    case HTMLFrameElementCtor:
+      return HTMLFrameElementPseudoCtor::self(exec);
+    case HTMLIFrameElementCtor:
+      return HTMLIFrameElementPseudoCtor::self(exec);
     case DocumentCtor:
       return DocumentPseudoCtor::self(exec);
     case HTMLDocumentCtor:

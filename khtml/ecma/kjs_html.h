@@ -57,7 +57,7 @@ namespace KJS {
 
   class HTMLElement : public DOMElement {
   public:
-    HTMLElement(ExecState *exec, const DOM::HTMLElement& e) : DOMElement(exec, e) { }
+    HTMLElement(ExecState *exec, const DOM::HTMLElement& e);
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
@@ -160,7 +160,6 @@ namespace KJS {
     DOM::HTMLElement toElement() const { return static_cast<DOM::HTMLElement>(node); }
   };
 
-
   class HTMLElementFunction : public DOMFunction {
   public:
     HTMLElementFunction(ExecState *exec, int i, int len);
@@ -231,6 +230,65 @@ namespace KJS {
 
   Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
   Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
+  
+  
+  //All the pseudo constructors..
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLHtmlElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLHeadElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLLinkElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTitleElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLMetaElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLBaseElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLIsIndexElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLStyleElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLBodyElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLFormElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLSelectElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLOptGroupElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLOptionElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLInputElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTextAreaElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLButtonElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLLabelElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLFieldSetElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLLegendElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLUListElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLOListElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLDListElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLDirectoryElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLMenuElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLLIElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLDivElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLParagraphElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLHeadingElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLBlockQuoteElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLQuoteElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLPreElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLBRElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLBaseFontElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLFontElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLHRElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLModElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLAnchorElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLImageElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLObjectElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLParamElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLAppletElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLMapElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLAreaElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLScriptElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableCaptionElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableColElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableSectionElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableRowElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLTableCellElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLFrameSetElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLLayerElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor)
 } // namespace
 
 #endif

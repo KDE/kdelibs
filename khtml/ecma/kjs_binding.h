@@ -270,6 +270,31 @@ namespace KJS {
 #define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
             KJS_DEFINE_PROTOTYPE_IMP(ClassProto, ClassProtoProto::self(exec))
 
+#define KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ProtoCode) \
+      class ClassProto : public ObjectImp { \
+      friend Object cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
+      public: \
+        static Object self(ExecState *exec) { \
+          return cacheGlobalObject<ClassProto>(exec, *name()); \
+        } \
+        virtual const ClassInfo *classInfo() const { return &info; } \
+        static const ClassInfo info; \
+      protected: \
+        ClassProto( ExecState *exec ) \
+          : ObjectImp( ProtoCode ) {} \
+        \
+        static Identifier* s_name; \
+        static Identifier* name() { \
+            if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
+            return s_name; \
+        }\
+      }; \
+      Identifier* ClassProto::s_name = 0; \
+      const ClassInfo ClassProto::info = { ClassName, 0, 0, 0 };
+      
+#define KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE(ClassName, ClassProto, ClassProtoProto) \
+  KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ClassProtoProto::self(exec))
+
 //### this doesn't implement hasProperty, but stuff in lookup.h didn't 
 //either (just did the forward)
 #define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto, ClassFunc) \
