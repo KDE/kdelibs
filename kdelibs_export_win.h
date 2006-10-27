@@ -295,7 +295,7 @@
 #endif
 
 #ifndef KABC_DIR_EXPORT
-# ifdef MAKE_KABC_DIR_LIB
+# ifdef MAKE_KABC_DIRECTORY_LIB
 #  define KABC_DIR_EXPORT KDE_EXPORT
 # else
 #  define KABC_DIR_EXPORT KDE_IMPORT
