@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *           (C) 2006 Maksim Orlovich (maksim@kde.org)
+ *           (C) 2006 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,6 +42,7 @@
 #include <kactioncollection.h>
 
 #include <QAbstractItemView>
+#include <QAbstractTextDocumentLayout>
 #include <qstyle.h>
 #include <QStyleOptionButton>
 
@@ -388,6 +390,7 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 
 void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
+    (void) e;
     QMenu* popup = createStandardContextMenu();
 
 /*    menu->exec(e->globalPos());
@@ -931,7 +934,7 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	case Qt::Key_Backtab:
 	    // ugly hack. emulate popdownlistbox() (private in QComboBox)
 	    // we re-use ke here to store the reference to the generated event.
-	    ke = new QKeyEvent(QEvent::KeyPress, Qt::Key_Escape, 0, 0);
+	    ke = new QKeyEvent(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
 	    QApplication::sendEvent(dest,ke);
 	    focusNextPrevChild(forward);
 	    delete ke;
@@ -1296,22 +1299,21 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : K3TextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setObjectName( "__khtml" );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-        setWordWrap(Q3TextEdit::WidgetWidth);
-        setHScrollBarMode( AlwaysOff );
-        setVScrollBarMode( AlwaysOn );
+        setLineWrapMode(QTextEdit::WidgetWidth);
+        setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+        setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     }
     else {
-        setWordWrap(Q3TextEdit::NoWrap);
-        setHScrollBarMode( Auto );
-        setVScrollBarMode( Auto );
+        setLineWrapMode(QTextEdit::NoWrap);
+        setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+        setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
     }
     KCursor::setAutoHideCursor(viewport(), true);
-    setTextFormat(Qt::PlainText);
-    //setAutoMask(true);
+    setAcceptRichText (false);
     setMouseTracking(true);
 
     KActionCollection *ac = new KActionCollection(this);
@@ -1319,7 +1321,6 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     m_findNextAction = KStdAction::findNext( this, SLOT( slotFindNext() ), ac );
     m_replaceAction = KStdAction::replace( this, SLOT( slotReplace() ), ac );
 }
-
 
 TextAreaWidget::~TextAreaWidget()
 {
@@ -1333,29 +1334,26 @@ TextAreaWidget::~TextAreaWidget()
     m_findDlg = 0L;
 }
 
-
-Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
+void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
 {
-    Q3PopupMenu *popup = K3TextEdit::createPopupMenu(pos);
 
-    if ( !popup ) {
-        return 0L;
-    }
+    QMenu *popup = createStandardContextMenu();
 
     if (!isReadOnly()) {
         popup->addSeparator();
 
         popup->addAction( m_findAction );
-        m_findAction->setEnabled( !text().isEmpty() );
+        m_findAction->setEnabled( !toPlainText().isEmpty() );
 
         popup->addAction( m_findNextAction );
         m_findNextAction->setEnabled( m_find != 0 );
 
         popup->addAction( m_replaceAction );
-        m_replaceAction->setEnabled( !text().isEmpty() );
+        m_replaceAction->setEnabled( !toPlainText().isEmpty() );
     }
 
-    return popup;
+    popup->exec(e->globalPos());
+    delete popup;
 }
 
 
@@ -1363,13 +1361,10 @@ void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, i
 {
     Q_UNUSED(text)
     //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength << endl;
-    if (sender() == m_replace) {
-        setSelection(m_repPara, matchingIndex, m_repPara, matchingIndex + matchingLength);
-        setCursorPosition(m_repPara, matchingIndex);
-    } else {
-        setSelection(m_findPara, matchingIndex, m_findPara, matchingIndex + matchingLength);
-        setCursorPosition(m_findPara, matchingIndex);
-    }
+    QTextCursor tc = textCursor();
+    tc.setPosition(matchingIndex);
+    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchingLength);
+    setTextCursor(tc);
     ensureCursorVisible();
 }
 
@@ -1377,9 +1372,12 @@ void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, i
 void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
     Q_UNUSED(text)
     //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
-    setSelection(m_repPara, replacementIndex, m_repPara, replacementIndex + matchedLength);
-    removeSelectedText();
-    insertAt(m_repDlg->replacement(), m_repPara, replacementIndex);
+    QTextCursor tc = textCursor();
+    tc.setPosition(replacementIndex);
+    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
+    tc.removeSelectedText();
+    tc.insertText(m_repDlg->replacement());
+    setTextCursor(tc);
     if (m_replace->options() & KReplaceDialog::PromptOnReplace) {
         ensureCursorVisible();
     }
@@ -1395,14 +1393,9 @@ void TextAreaWidget::slotDoReplace()
 
     delete m_replace;
     m_replace = new KReplace(m_repDlg->pattern(), m_repDlg->replacement(), m_repDlg->options(), this);
-    if (m_replace->options() & KFind::FromCursor) {
-        getCursorPosition(&m_repPara, &m_repIndex);
-    } else if (m_replace->options() & KFind::FindBackwards) {
-        m_repPara = paragraphs() - 1;
-        m_repIndex = paragraphLength(m_repPara) - 1;
-    } else {
-        m_repPara = 0;
-        m_repIndex = 0;
+    m_repIndex = 0;
+    if (m_replace->options() & KFind::FromCursor || m_replace->options() & KFind::FindBackwards) {
+        m_repIndex = textCursor().anchor();
     }
 
     // Connect highlight signal to code which handles highlighting
@@ -1420,60 +1413,23 @@ void TextAreaWidget::slotDoReplace()
 
 void TextAreaWidget::slotReplaceNext()
 {
-    if (!m_replace) {
-        // assert?
+    if (!m_replace)
         return;
-    }
 
-    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace)) {
+    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace))
         viewport()->setUpdatesEnabled(false);
-    }
 
     KFind::Result res = KFind::NoMatch;
-    while (res == KFind::NoMatch) {
-        // If we're done.....
-        if (m_replace->options() & KFind::FindBackwards) {
-            if (m_repIndex == 0 && m_repPara == 0) {
-                break;
-            }
-        } else {
-            if (m_repPara == paragraphs() - 1 &&
-                m_repIndex == paragraphLength(m_repPara) - 1) {
-                break;
-            }
-        }
 
-        if (m_replace->needData()) {
-            m_replace->setData(text(m_repPara), m_repIndex);
-        }
-
-        res = m_replace->replace();
-
-        if (res == KFind::NoMatch) {
-            if (m_replace->options() & KFind::FindBackwards) {
-                if (m_repPara == 0) {
-                    m_repIndex = 0;
-                } else {
-                    m_repPara--;
-                    m_repIndex = paragraphLength(m_repPara) - 1;
-                }
-            } else {
-                if (m_repPara == paragraphs() - 1) {
-                    m_repIndex = paragraphLength(m_repPara) - 1;
-                } else {
-                    m_repPara++;
-                    m_repIndex = 0;
-                }
-            }
-        }
-    }
-
+    if (m_replace->needData())
+        m_replace->setData(toPlainText(), m_repIndex);
+    res = m_replace->replace();
     if (!(m_replace->options() & KReplaceDialog::PromptOnReplace)) {
         viewport()->setUpdatesEnabled(true);
-        repaintChanged();
+        viewport()->update();
     }
 
-    if (res == KFind::NoMatch) { // at end
+    if (res == KFind::NoMatch) {
         m_replace->displayFinalDialog();
         delete m_replace;
         m_replace = 0;
@@ -1494,14 +1450,9 @@ void TextAreaWidget::slotDoFind()
 
     delete m_find;
     m_find = new KFind(m_findDlg->pattern(), m_findDlg->options(), this);
-    if (m_find->options() & KFind::FromCursor) {
-        getCursorPosition(&m_findPara, &m_findIndex);
-    } else if (m_find->options() & KFind::FindBackwards) {
-        m_findPara = paragraphs() - 1;
-        m_findIndex = paragraphLength(m_findPara) - 1;
-    } else {
-        m_findPara = 0;
-        m_findIndex = 0;
+    m_findIndex = 0;
+    if (m_find->options() & KFind::FromCursor || m_find->options() & KFind::FindBackwards) {
+        m_findIndex = textCursor().anchor();
     }
 
     // Connect highlight signal to code which handles highlighting
@@ -1518,51 +1469,15 @@ void TextAreaWidget::slotDoFind()
 
 void TextAreaWidget::slotFindNext()
 {
-    if (!m_find) {
-        // assert?
+    if (!m_find)
         return;
-    }
 
     KFind::Result res = KFind::NoMatch;
-    while (res == KFind::NoMatch) {
-        // If we're done.....
-        if (m_find->options() & KFind::FindBackwards) {
-            if (m_findIndex == 0 && m_findPara == 0) {
-                break;
-            }
-        } else {
-            if (m_findPara == paragraphs() - 1 &&
-                m_findIndex == paragraphLength(m_findPara) - 1) {
-                break;
-            }
-        }
+    if (m_find->needData())
+        m_find->setData(toPlainText(), m_findIndex);
+    res = m_find->find();
 
-        if (m_find->needData()) {
-            m_find->setData(text(m_findPara), m_findIndex);
-        }
-
-        res = m_find->find();
-
-        if (res == KFind::NoMatch) {
-            if (m_find->options() & KFind::FindBackwards) {
-                if (m_findPara == 0) {
-                    m_findIndex = 0;
-                } else {
-                    m_findPara--;
-                    m_findIndex = paragraphLength(m_findPara) - 1;
-                }
-            } else {
-                if (m_findPara == paragraphs() - 1) {
-                    m_findIndex = paragraphLength(m_findPara) - 1;
-                } else {
-                    m_findPara++;
-                    m_findIndex = 0;
-                }
-            }
-        }
-    }
-
-    if (res == KFind::NoMatch) { // at end
+    if (res == KFind::NoMatch) {
         m_find->displayFinalDialog();
         delete m_find;
         m_find = 0;
@@ -1575,7 +1490,7 @@ void TextAreaWidget::slotFindNext()
 
 void TextAreaWidget::slotFind()
 {
-    if( text().isEmpty() )  // saves having to track the text changes
+    if( toPlainText().isEmpty() )  // saves having to track the text changes
         return;
 
     if ( m_findDlg ) {
@@ -1594,7 +1509,7 @@ void TextAreaWidget::slotFind()
 
 void TextAreaWidget::slotReplace()
 {
-    if( text().isEmpty() )  // saves having to track the text changes
+    if( toPlainText().isEmpty() )  // saves having to track the text changes
         return;
 
     if ( m_repDlg ) {
@@ -1630,7 +1545,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return K3TextEdit::event( e );
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
@@ -1681,7 +1596,7 @@ void RenderTextArea::calcMinMaxWidth()
     QSize size( qMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 qMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
-                (w->wordWrap() == Q3TextEdit::NoWrap ?
+                (w->lineWrapMode() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 
@@ -1729,13 +1644,13 @@ void RenderTextArea::updateFromElement()
     if ( elementText != text() )
     {
         w->blockSignals(true);
-        int line, col;
-        w->getCursorPosition( &line, &col );
-        int cx = w->contentsX();
-        int cy = w->contentsY();
-        w->setText( elementText );
-        w->setCursorPosition( line, col );
-        w->scrollBy( cx, cy );
+        QTextCursor tc = w->textCursor();
+        int cx = w->horizontalScrollBar()->value();
+        int cy = w->verticalScrollBar()->value();
+        w->setPlainText( elementText );
+        w->setTextCursor(tc);
+        w->horizontalScrollBar()->setValue( cx );
+        w->verticalScrollBar()->setValue( cy );
         w->blockSignals(false);
     }
     element()->m_dirtyvalue = false;
@@ -1754,125 +1669,31 @@ QString RenderTextArea::text()
 {
     QString txt;
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-
-    if(element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
-        // yeah, QTextEdit has no accessor for getting the visually wrapped text
-        for (int p=0; p < w->paragraphs(); ++p) {
-            int ll = 0;
-            int lindex = w->lineOfChar(p, 0);
-            QString paragraphText = w->text(p);
-            int pl = w->paragraphLength(p);
-            paragraphText = paragraphText.left(pl); //Snip invented space.
-            for (int l = 0; l < pl; ++l) {
-                if (lindex != w->lineOfChar(p, l)) {
-                    paragraphText.insert(l+ll++, QLatin1String("\n"));
-                    lindex = w->lineOfChar(p, l);
-                }
-            }
-            txt += paragraphText;
-            if (p < w->paragraphs() - 1)
-                txt += QLatin1String("\n");
+#ifdef __GNUC__
+#warning "Physical wrap mode needs testing (also in ::selection*)"
+#endif
+    if (element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
+        QTextCursor tc(w->document());
+        while (!tc.atEnd()) {
+           tc.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+           txt += tc.selectedText();
+           if (tc.movePosition(QTextCursor::Down)) {
+               txt += QLatin1String("\n");
+               tc.movePosition(QTextCursor::StartOfLine);
+           }
         }
     }
     else
-        txt = w->text();
-
+        txt = w->toPlainText();
     return txt;
-}
-
-int RenderTextArea::queryParagraphInfo(int para, Mode m, int param) {
-    /* We have to be a bit careful here, as we need to match up the positions
-    to what our value returns here*/
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int        length = 0;
-
-    bool physWrap     = element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical;
-
-    QString paragraphText = w->text(para);
-    int pl                = w->paragraphLength(para);
-    int physicalPL        = pl;
-    if (m == ParaPortionLength)
-        pl = param;
-
-    if (physWrap) {
-        //Go through all the chars of paragraph, and count line changes, chars, etc.
-        int lindex = w->lineOfChar(para, 0);
-        for (int c = 0; c < pl; ++c) {
-            ++length;
-            // Is there a change after this char?
-            if (c+1 < physicalPL && lindex != w->lineOfChar(para, c+1)) {
-                lindex =  w->lineOfChar(para, c+1);
-                ++length;
-            }
-            if (m == ParaPortionOffset && length > param)
-                return c;
-        }
-    } else {
-        //Make sure to count the LF, CR as appropriate. ### this is stupid now, simplify
-        for (int c = 0; c < pl; ++c) {
-            ++length;
-            if (m == ParaPortionOffset && length > param)
-                return c;
-        }
-    }
-    if (m == ParaPortionOffset)
-        return pl;
-    if (m == ParaPortionLength)
-        return length;
-    return length + 1;
-}
-
-long RenderTextArea::computeCharOffset(int para, int index) {
-    if (para < 0)
-        return 0;
-
-    long pos = 0;
-    for (int cp = 0; cp < para; ++cp)
-        pos += queryParagraphInfo(cp, ParaLength);
-
-    if (index >= 0)
-        pos += queryParagraphInfo(para, ParaPortionLength, index);
-    return pos;
-}
-
-void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index) {
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-
-    if (!w->paragraphs()) {
-        *para  = -1;
-        *index = -1;
-        return;
-    }
-
-    //Find the paragraph that contains us..
-    int containingPar = 0;
-    long endPos       = 0;
-    long startPos     = 0;
-    for (int p = 0; p < w->paragraphs(); ++p) {
-        int len = queryParagraphInfo(p, ParaLength);
-        endPos += len;
-        if (endPos > offset) {
-            containingPar = p;
-            break;
-        }
-        startPos += len;
-    }
-
-    *para = containingPar;
-
-    //Now, scan within the paragraph to find the position..
-    long localOffset = offset - startPos;
-
-    *index = queryParagraphInfo(containingPar, ParaPortionOffset, localOffset);
 }
 
 void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     if ( w )
-        w->highLightWord( length, pos );
+        w->highlightWord( length, pos );
 }
-
 
 void RenderTextArea::slotTextChanged()
 {
@@ -1890,51 +1711,52 @@ void RenderTextArea::select()
 long RenderTextArea::selectionStart()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int para, index, dummy1, dummy2;
-    w->getSelection(&para, &index, &dummy1, &dummy2);
-    if (para == -1 || index == -1)
-        w->getCursorPosition(&para, &index);
-
-    return computeCharOffset(para, index);
+    return w->textCursor().selectionStart();
 }
 
 long RenderTextArea::selectionEnd()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int para, index, dummy1, dummy2;
-    w->getSelection(&dummy1, &dummy2, &para, &index);
-    if (para == -1 || index == -1)
-        w->getCursorPosition(&para, &index);
+    return w->textCursor().selectionEnd();
+}
 
-    return computeCharOffset(para, index);
+static void setPhysWrapPos(QTextCursor& otc, bool selStart, int idx)
+{
+    QTextCursor tc = otc;
+    tc.setPosition(0);
+    tc.movePosition(QTextCursor::EndOfLine);
+    while (!tc.atEnd()) {
+        if (tc.movePosition(QTextCursor::Down) && tc.position()< idx)
+            --idx;
+        if (tc.position() >= idx)
+            break;
+    }
+    otc.setPosition(idx, selStart ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );   
 }
 
 void RenderTextArea::setSelectionStart(long offset) {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int fromPara, fromIndex, toPara, toIndex;
-    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
-    computeParagraphAndIndex(offset, &fromPara, &fromIndex);
-    if (toPara == -1 || toIndex == -1) {
-        toPara  = fromPara;
-        toIndex = fromIndex;
-    }
-    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+    QTextCursor tc = w->textCursor();
+    if (element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical)
+        setPhysWrapPos(tc, true /*selStart*/, offset);
+    else
+        tc.setPosition(offset);
+    w->setTextCursor(tc);
 }
 
 void RenderTextArea::setSelectionEnd(long offset) {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int fromPara, fromIndex, toPara, toIndex;
-    w->getSelection(&fromPara, &fromIndex, &toPara, &toIndex);
-    computeParagraphAndIndex(offset, &toPara, &toIndex);
-    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+    QTextCursor tc = w->textCursor();
+    if (element()->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical)
+        setPhysWrapPos(tc, false /*selStart*/, offset);
+    else
+        tc.setPosition(offset, QTextCursor::KeepAnchor);
+    w->setTextCursor(tc);
 }
 
 void RenderTextArea::setSelectionRange(long start, long end) {
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    int fromPara, fromIndex, toPara, toIndex;
-    computeParagraphAndIndex(start, &fromPara, &fromIndex);
-    computeParagraphAndIndex(end,   &toPara,   &toIndex);
-    w->setSelection(fromPara, fromIndex, toPara, toIndex);
+    setSelectionStart(start);
+    setSelectionEnd(end);
 }
 // ---------------------------------------------------------------------------
 

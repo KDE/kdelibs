@@ -6,6 +6,7 @@
  *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
  *                     2003-2004 Apple Computer, Inc.
+ *                     2006 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -90,6 +91,7 @@
 #include <QAbstractEventDispatcher>
 #include <qvector.h>
 #include <Q3ListBox>
+#include <QAbstractScrollArea>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -637,51 +639,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     if (d->painting) {
         kDebug( 6000 ) << "WARNING: drawContents reentered! " << endl;
+        kDebug( 6000 ) << kBacktrace() << endl;
         return;
     }
     d->painting = true;
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
-    QRegion cr = QRect(ex, ey, ew, eh);
-
-    // kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
-    for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
-	QWidget *w = it.current();
-	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-	if (w && rw && !rw->isKHTMLWidget()) {
-            int x, y;
-            rw->absolutePosition(x, y);
-            contentsToViewport(x, y, x, y);
-            int pbx = rw->borderLeft()+rw->paddingLeft();
-            int pby = rw->borderTop()+rw->paddingTop();
-            QRect g = QRect(x+pbx, y+pby, 
-                            rw->width()-pbx-rw->borderRight()-rw->paddingRight(), 
-                            rw->height()-pby-rw->borderBottom()-rw->paddingBottom());
-            if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
-                                    (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
-                continue;
-            RenderLayer* rl = rw->needsMask() ? rw->enclosingStackingContext() : 0;
-            QRegion mask = rl ? rl->getMask() : QRegion();
-            if (!mask.isEmpty()) {
-                mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
-                cr -= mask;
-            } else {
-                cr -= g;
-            }
-        }
-    }
-
-#if 0
-    // this is commonly the case with framesets. we still do
-    // want to paint them, otherwise the widgets don't get placed.
-    if (cr.isEmpty()) {
-        d->painting = false;
-	return;
-    }
-#endif
 
 #ifndef DEBUG_NO_PAINT_BUFFER
-    p->setClipRegion(cr);
 
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
         if ( d->vertPaintBuffer->height() < visibleHeight() )
@@ -1804,14 +1769,6 @@ void KHTMLView::doAutoScroll()
     }
 }
 
-
-class HackWidget : public QWidget
-{
- public:
-    inline void setNoErase() { setAttribute(Qt::WA_NoBackground); }
-};
-
-
 static void handleWidget(QWidget* w, KHTMLView* view)
 {
     if (w->isTopLevel())
@@ -1819,7 +1776,8 @@ static void handleWidget(QWidget* w, KHTMLView* view)
 
     if (!qobject_cast<QFrame*>(w))
 	w->setAttribute( Qt::WA_NoSystemBackground );
-    static_cast<HackWidget *>(w)->setNoErase();
+    w->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible - FIXME (needs Qt change to Widget::update)
+    w->setAttribute(Qt::WA_OpaquePaintEvent);
     w->installEventFilter(view);
 
     QObjectList children = w->children();
@@ -1888,41 +1846,58 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 
 	if (v && !strcmp(c->objectName(), "__khtml")) {
 	    bool block = false;
+	    bool isUpdate = false;
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {
+	    case QEvent::UpdateRequest: {
+                extern void qt_syncBackingStore(QWidget *widget);
+                qt_syncBackingStore(w);
+                block = true;
+                break;	    
+            }
+            case QEvent::UpdateLater:
+                isUpdate = true;
+                // no break;
 	    case QEvent::Paint:
-	    case QEvent::UpdateRequest:
 		if (!allowWidgetPaintEvents) {
 		    // eat the event. Like this we can control exactly when the widget
-		    // get's repainted.
+		    // gets repainted.
 		    block = true;
 		    int x = 0, y = 0;
-		    QWidget *v = w;
-		    while (v && v != view) {
-			x += v->x();
-			y += v->y();
-			v = v->parentWidget();
-		    }
-		    viewportToContents( x, y, x, y );
-#ifdef __GNUC__
-    #warning "QEvent::UpdateRequest is no QPaintEvent (leads to invalid read)"
-#endif
-		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView*>(c);
-#ifdef __GNUC__
-    #warning "Q3ScrollView??"
-#endif
+
+		    // ### FIXME: need something more efficient
+                    for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
+                        if (c == it.current()) {
+                            RenderWidget*rw=static_cast<RenderWidget*>( it.currentKey() );
+                            rw->absolutePosition(x, y);
+                            x += rw->borderLeft()+rw->paddingLeft();
+                            y += rw->borderTop()+rw->paddingTop();
+                            break;
+                        }
+                    }
+
+		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent *>(e)->rect();
+                    bool asap = !isUpdate && !d->contentsMoving && (qobject_cast<Q3ScrollView*>(c) || qobject_cast<QAbstractScrollArea*>(c));
+
+                    if (isUpdate) {
+                        // ### horrible - FIXME
+                        w->setAttribute(Qt::WA_WState_InPaintEvent, false);
+                        w->update(static_cast<QUpdateLaterEvent*>(e)->region());
+                        w->setAttribute(Qt::WA_WState_InPaintEvent);
+                        qt_syncBackingStore(w);
+                    }
 
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
                         d->painting = true;
-		        repaintContents(x + pe->rect().x(), y + pe->rect().y(),
-	                                        pe->rect().width(), pe->rect().height(), true);
+		        repaintContents(x + pr.x(), y + pr.y(),
+	                                        pr.width(), pr.height()+1, true); // ### investigate that +1 (shows up when
+	                                                                          // updating e.g a textarea's blinking cursor)
                         d->painting = false;
                     } else if (!d->painting) {
- 		        scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
- 				    pe->rect().width(), pe->rect().height(), asap);
+ 		        scheduleRepaint(x + pr.x(), y + pr.y(),
+ 				    pr.width(), pr.height()+1, asap);
                     }
 		}
 		break;

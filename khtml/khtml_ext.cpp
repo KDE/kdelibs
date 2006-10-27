@@ -205,7 +205,7 @@ void KHTMLPartBrowserExtension::cut()
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->cut();
     else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->cut();
+        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->cut();
 }
 
 void KHTMLPartBrowserExtension::copy()
@@ -255,7 +255,7 @@ void KHTMLPartBrowserExtension::copy()
         if ( m_editableFormWidget->inherits( "QLineEdit" ) )
             static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
         else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-            static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->copy();
+            static_cast<QTextEdit *>( &(*m_editableFormWidget) )->copy();
     }
 }
 
@@ -304,7 +304,7 @@ void KHTMLPartBrowserExtension::paste()
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
     else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->paste();
+        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->paste();
 }
 
 void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
@@ -342,8 +342,8 @@ void KHTMLPartBrowserExtension::updateEditActions()
     if( m_editableFormWidget) {
         if ( qobject_cast<QLineEdit*>(m_editableFormWidget))
             hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-        else if(qobject_cast<Q3TextEdit*>(m_editableFormWidget))
-            hasSelection = static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+        else if(qobject_cast<QTextEdit*>(m_editableFormWidget))
+            hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     }
 
     enableAction( "copy", hasSelection );

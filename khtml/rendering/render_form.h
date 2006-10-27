@@ -34,7 +34,7 @@ class QWidget;
 class QLineEdit;
 class QListboxItem;
 
-#include <kde3support/kdeui/k3textedit.h>
+#include <ktextedit.h>
 #include <kurlrequester.h>
 #include <klineedit.h>
 #include <qcheckbox.h>
@@ -412,7 +412,7 @@ protected Q_SLOTS:
 };
 
 // -------------------------------------------------------------------------
-class TextAreaWidget : public K3TextEdit
+class TextAreaWidget : public KTextEdit
 {
     Q_OBJECT
 public:
@@ -421,8 +421,8 @@ public:
 
 protected:
     virtual bool event (QEvent *e );
-    virtual Q3PopupMenu *createPopupMenu(const QPoint& pos);
-    virtual Q3PopupMenu* createPopupMenu() { return K3TextEdit::createPopupMenu(); }
+    virtual void contextMenuEvent(QContextMenuEvent * e);
+
 private Q_SLOTS:
     void slotFind();
     void slotDoFind();
@@ -487,18 +487,6 @@ protected:
     virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
-private:
-    //Convert para, index -> offset
-    long computeCharOffset(int para, int index);
-
-    //Convert offset -> para, index
-    void computeParagraphAndIndex(long offset, int* para, int* index);
-
-    //Helper for doing the conversion..
-    enum Mode { ParaLength,     //Returns the length of the entire paragraph
-           ParaPortionLength,   //Return length of paragraph portion set by threshold
-           ParaPortionOffset }; //Return offset that matches the length threshold.
-    int queryParagraphInfo(int para, Mode m, int param = -1);
 };
 
 // -------------------------------------------------------------------------

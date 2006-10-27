@@ -2,9 +2,9 @@
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2003 Apple Computer, Inc.
- * Copyright (C) 2004 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004-2006 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -440,95 +440,19 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         yPos = yNew;
     }
     m_view->setWidgetVisible(this, true);
-    m_view->addChild(m_widget, xPos, yPos );
+    if (!khtmlw)
+        m_view->addChild(m_widget, xPos, yPos );
+    else
+        m_view->addChild(m_widget, xPos, -500000 +yPos);
     m_widget->show();
     if (khtmlw)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
-// The PaintBuffer class provides a shared buffer for widget painting.
-//
-// It will grow to encompass the biggest widget encountered, in order to avoid
-// constantly resizing.
-// When it grows over maxPixelBuffering, it periodically checks if such a size
-// is still needed.  If not, it shrinks down to the biggest size < maxPixelBuffering
-// that was requested during the overflow lapse.
-
-class PaintBuffer: public QObject
-{
-public:
-    static const int maxPixelBuffering = 320*200;
-    static const int leaseTime = 20*1000;
-
-    static QPixmap *grab( QSize s = QSize() ) {
-        if (!m_inst)
-            m_inst = new PaintBuffer;
-        return m_inst->getBuf( s );
-    }
-    static void release() { m_inst->m_grabbed = false; }
-protected:
-    PaintBuffer(): m_overflow(false), m_grabbed(false),
-                   m_timer(0), m_resetWidth(0), m_resetHeight(0) {};
-    void timerEvent(QTimerEvent* e) {
-        assert( m_timer == e->timerId() );
-        if (m_grabbed)
-            return;
-        m_buf = QPixmap(m_resetWidth, m_resetHeight);
-        m_resetWidth = m_resetHeight = 0;
-        killTimer( m_timer );
-        m_timer = 0;
-    }
-
-    QPixmap *getBuf( QSize s ) {
-        assert( !m_grabbed );
-        if (s.isEmpty())
-            return 0;
-
-        m_grabbed = true;
-        bool cur_overflow = false;
-
-        int nw = qMax(m_buf.width(), s.width());
-        int nh = qMax(m_buf.height(), s.height());
-
-        if (!m_overflow && (nw*nh > maxPixelBuffering))
-            cur_overflow = true;
-
-        if (nw != m_buf.width() || nh != m_buf.height())
-            m_buf = QPixmap(nw, nh);
-
-        if (cur_overflow) {
-            m_overflow = true;
-            m_timer = startTimer( leaseTime );
-        } else if (m_overflow) {
-            if( s.width()*s.height() > maxPixelBuffering ) {
-                killTimer( m_timer );
-                m_timer = startTimer( leaseTime );
-            } else {
-                if (s.width() > m_resetWidth)
-                    m_resetWidth = s.width();
-                if (s.height() > m_resetHeight)
-                    m_resetHeight = s.height();
-            }
-        }
-        return &m_buf;
-    }
-private:
-    static PaintBuffer* m_inst;
-    QPixmap m_buf;
-    bool m_overflow;
-    bool m_grabbed;
-    int m_timer;
-    int m_resetWidth;
-    int m_resetHeight;
-};
-
-PaintBuffer *PaintBuffer::m_inst = 0;
-
 static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty)
 {
     if (r.isNull() || r.isEmpty() )
         return;
-    QRegion blit(r);
     QVector<QWidget*> cw;
     QVector<QRect> cr;
 
@@ -539,7 +463,6 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 	    QWidget* w = qobject_cast<QWidget* >(it);
 	    if ( w && !w->isTopLevel() && !w->isHidden()) {
 	        QRect r2 = w->geometry();
-		blit.subtract( r2 );
 		r2 = r2.intersect( r );
 		r2.translate(-w->x(), -w->y());
 		cr.append(r2);
@@ -547,46 +470,22 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 	    }
         }
     }
-    QVector<QRect> br = blit.rects();
-
-    const int cnt = br.size();
-    const bool external = p->device()->paintEngine()->type() >= QPaintEngine::PostScript;
-    QPixmap* const pm = PaintBuffer::grab( widget->size() );
-    if (!pm)
-    {
-        kWarning(6040) << "Rendering widget [ " << widget->metaObject()->className() << " ] failed due to invalid size." << endl;
-        return;
-    }
-
-    // fill background
-    if ( external ) {
-	// even hackier!
-        QPainter pt( pm );
-        const QColor c = widget->palette().color(QPalette::Base);
-        for (int i = 0; i < cnt; ++i)
-            pt.fillRect( br[i], c );
-    } else {
-        QRect dr;
-        for (int i = 0; i < cnt; ++i ) {
-            dr = br[i];
-            dr.translate( tx, ty );
-            dr = p->matrix().mapRect(dr);
-            bitBlt(pm, br[i].topLeft(), p->device(), dr);
-        }
-    }
 
     // send paint event
-    QPainter::setRedirected(widget, pm);
+    QPoint thePoint(tx, ty);
+    QMatrix m = p->matrix();
+    thePoint = thePoint * m;
+    QPaintDevice *d = p->device();
+    p->end();
+    QPainter::setRedirected(widget, d, -thePoint);
     QPaintEvent e( r );
     QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
+    p->begin(d);
+    p->setMatrix( m );
+    
+    widget->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible hack - FIXME
 
-    // transfer result
-    for ( int i = 0; i < cnt; ++i )
-        p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
-
-    // cleanup and recurse
-    PaintBuffer::release();
     QVector<QWidget*>::iterator cwit = cw.begin();
     QVector<QWidget*>::iterator cwitEnd = cw.end();
     QVector<QRect>::const_iterator crit = cr.begin();
