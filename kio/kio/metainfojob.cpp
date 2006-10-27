@@ -21,8 +21,7 @@
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <kservice.h>
-#include <kparts/componentfactory.h>
+#include <kservicetypetrader.h>
 
 #include <qtimer.h>
 
