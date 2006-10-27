@@ -693,6 +693,7 @@ static void calc3DColor(QColor &color, bool darken)
   int rb = color.red();
   int gb = color.green();
   int bb = color.blue();
+  int a = color.alpha();
 
   int brightness_ = brightness(rb,gb,bb);
 
@@ -729,6 +730,7 @@ static void calc3DColor(QColor &color, bool darken)
     else
       color.setRgb(r, g, b);
   }
+  color.setAlpha(a);
 }
 
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,

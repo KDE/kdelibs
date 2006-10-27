@@ -216,7 +216,7 @@ public:
     }
 
     bool isTransparent() const {
-        return color.isValid() && qAlpha(color.rgba()) == 0;
+        return color.isValid() && color.alpha() == 0;
     }
 
     bool operator==(const BorderValue& o) const
@@ -1018,7 +1018,7 @@ public:
     bool        hasOffset() const { return surround->offset.nonZero(); }
 
     bool hasBackground() const {
-        if (backgroundColor().isValid() && qAlpha(backgroundColor().rgb()) > 0)
+        if (backgroundColor().isValid() && backgroundColor().alpha() > 0)
             return true;
         else
             return background->m_background.hasImage();

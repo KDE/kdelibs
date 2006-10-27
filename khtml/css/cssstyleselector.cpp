@@ -2679,10 +2679,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		else
 		    col = colorForCSSValue( ident );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {
-#ifndef APPLE_CHANGES
-		if(qAlpha(primitiveValue->getRGBColorValue()))
-#endif
-		    col.setRgb(primitiveValue->getRGBColorValue());
+		    col.setRgba(primitiveValue->getRGBColorValue());
 	    } else {
 		return;
 	    }
