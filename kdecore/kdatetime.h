@@ -1455,8 +1455,10 @@ class KDECORE_EXPORT KDateTime
      * the result cannot be guaranteed to be correct, since by definition they
      * contain no information about time zones or daylight savings changes.
      *
-     * If both instances are date-only, the comparison is performed between the
-     * two dates, ignoring time zones.
+     * If both instance are date-only, they are considered simultaneous if both
+     * their start of day and end of day times are simultaneous with each
+     * other. (Both start and end of day times need to be considered in case a
+     * daylight savings change occurs during that day.)
      *
      * @return @c true if the two instances represent the same time, @c false otherwise
      * @see compare()

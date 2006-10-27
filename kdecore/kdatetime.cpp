@@ -703,7 +703,7 @@ QDateTime KDateTimePrivate::toZone(const KTimeZone *zone, const KTimeZone *local
         // Converted value is already cached
 #ifndef NDEBUG
 //        kDebug() << "KDateTimePrivate::toZone(" << zone->name() << "): " << mDt << " cached" << endl;
-	++KDateTime_zoneCacheHit;
+        ++KDateTime_zoneCacheHit;
 #endif
         return QDateTime(converted.date, converted.time, Qt::LocalTime);
     }
@@ -1292,13 +1292,28 @@ bool KDateTime::operator==(const KDateTime &other) const
         return true;   // the two instances share the same data
     if (d->dateOnly() != other.d->dateOnly())
         return false;
-    if (d->dateOnly())
-        return d->date() == other.d->date();
     if (d->equalSpec(*other.d))
     {
         // Both instances are in the same time zone, so compare directly
-        return d->secondOccurrence() == other.d->secondOccurrence()
-           &&  d->dt() == other.d->dt();
+        if (d->dateOnly())
+            return d->date() == other.d->date();
+        else
+            return d->secondOccurrence() == other.d->secondOccurrence()
+               &&  d->dt() == other.d->dt();
+    }
+    if (d->dateOnly())
+    {
+        // Date-only values are equal if both the start and end of day times are equal.
+        // Don't waste time converting to UTC if the dates aren't very close.
+        if (qAbs(d->date().daysTo(other.d->date())) > 2)
+            return false;
+        if (d->toUtc() != other.d->toUtc())
+            return false;    // start-of-day times differ
+        KDateTime end1(*this);
+        end1.setTime(QTime(23,59,59,999));
+        KDateTime end2(other);
+        end2.setTime(QTime(23,59,59,999));
+        return end1.d->toUtc() == end2.d->toUtc();
     }
     return d->toUtc() == other.d->toUtc();
 }
@@ -2275,8 +2290,8 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
     int millisec  = NO_NUMBER;
     int ampm      = NO_NUMBER;
     int tzoffset  = NO_NUMBER;
-    zoneName = QString();
-    zoneAbbrev = QByteArray();
+    zoneName.clear();
+    zoneAbbrev.clear();
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KGlobal::locale();
