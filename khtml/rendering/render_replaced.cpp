@@ -616,6 +616,14 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         return false;
     if ( !element() ) return true;
 
+
+    static bool directToWidget = false;
+    if (directToWidget) {
+      //We're trying to get the event to the widget 
+      //promptly. So get out of here..
+      return false;
+    }
+
     ref();
     element()->ref();
 
@@ -624,12 +632,25 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     //kdDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
     switch(e->type()) {
     case QEvent::FocusOut:
+        // First, forward it to the widget, so that Qt gets a precise
+        // state of the focus before pesky JS can try changing it..
+        directToWidget = true;
+        QApplication::sendEvent(m_widget, e);
+        directToWidget = false;
+        filtered       = true; //We already delivered it!
+        
         // Don't count popup as a valid reason for losing the focus
         // (example: opening the options of a select combobox shouldn't emit onblur)
         if ( QFocusEvent::reason() != QFocusEvent::Popup )
             handleFocusOut();
         break;
     case QEvent::FocusIn:
+        //As above, forward to the widget first...
+        directToWidget = true;
+        QApplication::sendEvent(m_widget, e);
+        directToWidget = false;
+        filtered       = true; //We already delivered it!
+
         //kdDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
         element()->getDocument()->setFocusNode(element());
 //         if ( isEditable() ) {
