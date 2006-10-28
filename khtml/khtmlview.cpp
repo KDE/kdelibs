@@ -2031,6 +2031,15 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
+    
+    // See whether we're in the middle of detach. If so, we want to 
+    // clear focus... The document code will be careful to not 
+    // emit events in that case..
+    if (oldFocusNode && oldFocusNode->renderer() && 
+        !oldFocusNode->renderer()->parent()) {
+        doc->setFocusNode(0);
+        return true;
+    }
 
 #if 1
     // If the user has scrolled the document, then instead of picking

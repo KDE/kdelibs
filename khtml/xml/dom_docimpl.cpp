@@ -2227,6 +2227,13 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
     // don't process focus changes while detaching
     if( !m_render ) return;
+    
+    // We do want to blur if a widget is being detached,
+    // but we don't want to emit events since that 
+    // triggers updateLayout() and may recurse detach()
+    bool widgetDetach = m_focusNode && m_focusNode != this &&
+              m_focusNode->renderer() && !m_focusNode->renderer()->parent();
+      
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->getDocument() != this))
         return;
@@ -2241,8 +2248,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 oldFocusNode->setActive(false);
 
             oldFocusNode->setFocus(false);
-	    oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-	    oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
+            
+            if (!widgetDetach) {
+                oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+                oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
+            }
             if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
                 oldFocusNode->deref(); // deletes this
                 return;
@@ -2278,7 +2288,8 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 view()->setFocus();
         }
 
-        updateRendering(); 
+        if (!widgetDetach)
+            updateRendering();
     }
 }
 
