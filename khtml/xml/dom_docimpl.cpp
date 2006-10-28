@@ -2272,9 +2272,13 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                         static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
                 }
             }
+        } else {
+            //We're blurring. Better clear the Qt focus/give it to the view...
+            if (view())
+                view()->setFocus();
         }
 
-        updateRendering();
+        updateRendering(); 
     }
 }
 
