@@ -15,43 +15,56 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "kplotobject.h"
-
 #include <QtAlgorithms>
+#include <QPainter>
 
 #include <kdebug.h>
 
-KPlotObject::KPlotObject() {
-	KPlotObject( "", Qt::white, POINTS );
+#include "kplotobject.h"
+#include "kplotwidget.h"
+
+KPlotPoint::KPlotPoint() {
+	X = 0.0;
+	Y = 0.0;
+	Label = QString();
 }
 
-KPlotObject::KPlotObject( const QString &n, const QColor &c, PTYPE t, unsigned int s, unsigned int p ) {
-	//We use the set functions because they may include data validation
-	setName( n );
-	setColor( c );
-	setType( t );
-	setSize( s );
-	setParam( p );
+KPlotPoint::KPlotPoint( double x, double y, const QString &label, double barWidth ) 
+	: X( x ), Y( y ), Label( label ), BarWidth( barWidth )
+{
+}
+
+KPlotPoint::KPlotPoint( const QPointF &p, const QString &label, double barWidth )
+	:	X( p.x() ), Y( p.y() ), Label( label ), BarWidth( barWidth )
+{
+}
+
+KPlotPoint::~KPlotPoint() 
+{
+}
+
+KPlotObject::KPlotObject() {
+	KPlotObject( Qt::white, POINTS );
+}
+
+KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PStyle ps ) {
+	//By default, all pens and brushes are set to the given color
+	setBrush( c );
+	setBarBrush( c );
+	setPen( QPen( brush(), 1 ) );
+	setLinePen( pen() );
+	setBarPen( pen() );
+	setLabelPen( pen() );
+
+	Type = t;
+	setSize( size );
+	setPointStyle( ps );
 }
 
 KPlotObject::~KPlotObject()
 {
 	qDeleteAll( pList );
 	pList.clear();
-}
-
-QPointF* KPlotObject::point( int index ) {
-	if ( index < 0 || index >= pList.count() ) {
-		kWarning() << "KPlotObject::object(): index " << index << " out of range!" << endl;
-		return 0;
-	}
-	return pList.at(index);
-}
-
-void KPlotObject::addPoint( QPointF *p ) {
-	// skip null pointers
-	if ( !p ) return;
-	pList.append( p );
 }
 
 void KPlotObject::removePoint( int index ) {
@@ -68,3 +81,152 @@ void KPlotObject::clearPoints() {
 	pList.clear();
 }
 
+void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
+	//Order of drawing determines z-distance: Bars in the back, then lines, 
+	//then points, then labels.
+
+	if ( showBars() ) {
+		painter->setPen( barPen() );
+		painter->setBrush( barBrush() );
+
+		for ( unsigned int i=0; i<pList.size(); ++i ) {
+			double w;
+			if ( pList[i]->barWidth() == 0.0 ) {
+				if ( i<pList.size()-1 ) 
+					w = pList[i+1]->x() - pList[i]->x();
+				//For the last bin, we'll just keep the previous width
+
+			} else {
+				w = pList[i]->barWidth();
+			}
+
+			QPointF pp = pList[i]->position();
+			QPointF p1( pp.x() - 0.5*w, 0.0 );
+			QPointF p2( pp.x() + 0.5*w, pp.y() );
+			QPointF sp1 = pw->toScreen( p1 );
+			QPointF sp2 = pw->toScreen( p2 );
+
+			painter->drawRect( QRectF( sp1.x(), sp1.y(), sp2.x()-sp1.x(), sp2.y()-sp1.y() ) );
+		}
+	}
+	
+	//Draw lines:
+	if ( showLines() ) {
+		painter->setPen( linePen() );
+
+		QPointF Previous = QPointF();  //Initialize to null
+
+		foreach ( KPlotPoint *pp, pList ) {
+			//q is the position of the point in screen pixel coordinates
+			QPointF q = pw->toScreen( pp->position() );
+
+			if ( ! Previous.isNull() ) {
+				painter->drawLine( Previous, q );
+			}
+			
+			Previous = q;
+		}
+	}
+
+	//Draw points:
+	if ( showPoints() ) {
+
+		foreach( KPlotPoint *pp, pList ) {
+			//q is the position of the point in screen pixel coordinates
+			QPointF q = pw->toScreen( pp->position() );
+			double x1 = q.x() - 0.5*size();
+			double y1 = q.y() - 0.5*size();
+			QRectF qr = QRectF( x1, y1, size(), size() );
+			
+			painter->setPen( pen() );
+			painter->setBrush( brush() );
+
+			switch ( pointStyle() ) {
+			case CIRCLE:
+				painter->drawEllipse( qr );
+				break;
+
+			case LETTER:
+				painter->drawText( qr, Qt::AlignCenter, pp->label().left(1) );
+				break;
+
+			case TRIANGLE:
+				{
+					QPolygonF tri;
+					tri << QPointF( x1, y1 ) << QPointF( q.x(), y1-size() ) << QPointF( x1+size(), y1 );
+					painter->drawPolygon( tri );
+					break;
+				}
+
+			case SQUARE:
+				painter->drawRect( qr );
+				break;
+
+			case PENTAGON:
+				{
+					QPolygonF pent;
+					pent << QPointF( q.x(), q.y() + size() ) 
+							 << QPointF( q.x() + size(), q.y() + 0.309*size() )
+							 << QPointF( q.x() + 0.588*size(), q.y() - size() )
+							 << QPointF( q.x() - 0.588*size(), q.y() - size() )
+							 << QPointF( q.x() - size(), q.y() + 0.309*size() );
+					painter->drawPolygon( pent );
+					break;
+				}
+
+			case HEXAGON:
+				{
+					QPolygonF hex;
+					hex << QPointF( q.x(), q.y() + size() ) 
+							<< QPointF( q.x() + size(), q.y() + 0.5*size() )
+							<< QPointF( q.x() + size(), q.y() - 0.5*size() )
+							<< QPointF( q.x(), q.y() - size() )
+							<< QPointF( q.x() - size(), q.y() + 0.5*size() )
+							<< QPointF( q.x() - size(), q.y() - 0.5*size() );
+					painter->drawPolygon( hex );
+					break;
+				}
+
+			case ASTERISK:
+				painter->drawLine( q, QPointF( q.x(), q.y() + size() ) );
+				painter->drawLine( q, QPointF( q.x() + size(), q.y() + 0.5*size() ) );
+				painter->drawLine( q, QPointF( q.x() + size(), q.y() - 0.5*size() ) );
+				painter->drawLine( q, QPointF( q.x(), q.y() - size() ) );
+				painter->drawLine( q, QPointF( q.x() - size(), q.y() + 0.5*size() ) );
+				painter->drawLine( q, QPointF( q.x() - size(), q.y() - 0.5*size() ) );
+				break;
+
+			case STAR:
+				{
+					QPolygonF star;
+					star << QPointF( q.x(), q.y() + size() ) 
+							 << QPointF( q.x() + 0.2245*size(), q.y() + 0.309*size() )
+							 << QPointF( q.x() + size(), q.y() + 0.309*size() )
+							 << QPointF( q.x() + 0.363*size(), q.y() - 0.118*size() )
+							 << QPointF( q.x() + 0.588*size(), q.y() - size() )
+							 << QPointF( q.x(), q.y() - 0.382*size() )
+							 << QPointF( q.x() - 0.588*size(), q.y() - size() )
+							 << QPointF( q.x() - 0.363*size(), q.y() - 0.118*size() )
+							 << QPointF( q.x() - size(), q.y() + 0.309*size() )
+							 << QPointF( q.x() - 0.2245*size(), q.y() + 0.309*size() );
+					painter->drawPolygon( star );
+					break;
+				}
+
+			default:
+				break;
+			}
+		}
+	}
+
+	//Draw labels
+	//FIXME: implement non-collision labels
+	painter->setPen( labelPen() );
+
+	foreach ( KPlotPoint *pp, pList ) {
+		if ( ! pp->label().isEmpty() ) {
+			painter->drawText( pw->toScreen( pp->position() ), pp->label() );
+		}
+	}
+
+}

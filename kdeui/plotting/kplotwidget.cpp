@@ -31,10 +31,16 @@
 #include "kplotaxis.h"
 #include "kplotobject.h"
 
-#define BIGTICKSIZE 10
-#define SMALLTICKSIZE 4
 #define XPADDING 20
 #define YPADDING 20
+#define BIGTICKSIZE 10
+#define SMALLTICKSIZE 4
+
+//Different architectures seem to draw the tickmarks differently.
+#define TICKOFFSET 2
+#if defined DARWIN
+#define TICKOFFSET 0
+#endif
 
 KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
  : QFrame( parent ), ShowGrid( false ), ShowObjectToolTips( true ), UseAntialias( false )
@@ -133,6 +139,14 @@ void KPlotWidget::setSecondaryLimits( double x1, double x2, double y1, double y2
 	update();
 }
 
+void KPlotWidget::clearSecondaryLimits() {
+	SecondDataRect = QRectF();
+	axis(RightAxis)->setTickMarks( DataRect.y(), DataRect.height() );
+	axis(TopAxis)->setTickMarks( DataRect.x(), DataRect.width() );
+
+	update();
+}
+
 void KPlotWidget::addObject( KPlotObject *o ) {
 	// skip null pointers
 	if ( !o ) return;
@@ -181,19 +195,15 @@ KPlotAxis* KPlotWidget::axis( Axis a ) {
 	return mAxes.contains( a ) ? mAxes[a] : 0;
 }
 
-QList<KPlotObject*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
-	QList<KPlotObject*> pts;
-	for ( QList<KPlotObject*>::ConstIterator it = ObjectList.begin(); it != ObjectList.constEnd(); ++it ) {
-		KPlotObject *po = ( *it );
-		if ( ( po->count() == 0 ) || ( po->type() != KPlotObject::POINTS ) )
-//		if ( ( po->count() == 0 ) || ( po->type() != KPlotObject::POINTS ) || ( po->type() != KPlotObject::POLYGON ) )
-			continue;
-
-		for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit ) {
-			if ( ( p - mapToPoint( **dpit ).toPoint() ).manhattanLength() <= 4 )
-				pts << po;
+QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
+	QList<KPlotPoint*> pts;
+	foreach ( KPlotObject *po, ObjectList ) {
+		foreach ( KPlotPoint *pp, po->points() ) {
+			if ( ( p - toScreen( pp->position() ).toPoint() ).manhattanLength() <= 4 )
+				pts << pp;
 		}
 	}
+
 	return pts;
 }
 
@@ -203,9 +213,9 @@ bool KPlotWidget::event( QEvent* e ) {
 		if ( ShowObjectToolTips )
 		{
 			QHelpEvent *he = static_cast<QHelpEvent*>( e );
-			QList<KPlotObject*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
+			QList<KPlotPoint*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
 			if ( pts.count() > 0 ) {
-				QToolTip::showText( he->globalPos(), pts.front()->name(), this );
+				QToolTip::showText( he->globalPos(), pts.front()->label(), this );
 			}
 		}
 		e->accept();
@@ -226,7 +236,7 @@ void KPlotWidget::setPixRect() {
 	PixRect = QRect( 0, 0, newWidth, newHeight );
 }
 
-QPointF KPlotWidget::mapToPoint( const QPointF& p ) const {
+QPointF KPlotWidget::toScreen( const QPointF& p ) const {
 	float px = PixRect.left() + PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width();
 	float py = PixRect.top() + PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height();
 	return QPointF( px, py );
@@ -245,81 +255,14 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 	setPixRect();
 	p.setClipRect( PixRect );
 	p.setClipping( true );
-	drawObjects( &p );
+
+	foreach( KPlotObject *po, ObjectList ) 
+		po->draw( &p, this );
+
 	p.setClipping( false );
 	drawAxes( &p );
 
 	p.end();
-}
-
-void KPlotWidget::drawObjects( QPainter *p ) {
-	for ( QList<KPlotObject*>::ConstIterator it = ObjectList.begin(); it != ObjectList.constEnd(); ++it ) {
-		KPlotObject *po = ( *it );
-		if ( po->points()->count() ) {
-			//draw the plot object
-			p->setPen( po->color() );
-
-			switch ( po->type() ) {
-				case KPlotObject::POINTS :
-				{
-					p->setBrush( po->color() );
-
-					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-					{
-						QPointF q = mapToPoint( **dpit );
-						float x1 = q.x() - 0.5*po->size();
-						float y1 = q.y() - 0.5*po->size();
-
-						switch( po->param() ) {
-							case KPlotObject::CIRCLE : p->drawEllipse( x1, y1, po->size(), po->size() ); break;
-							case KPlotObject::SQUARE : p->drawRect( x1, y1, po->size(), po->size() ); break;
-							case KPlotObject::LETTER : p->drawText( q, po->name().left(1) ); break;
-							default: p->drawPoint( q );
-						}
-					}
-
-					p->setBrush( Qt::NoBrush );
-					break;
-				}
-
-				case KPlotObject::CURVE :
-				{
-					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
-					QPolygonF poly;
-					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-						poly << mapToPoint( **dpit );
-					p->drawPolyline( poly );
-					break;
-				}
-
-				//FIXME: implement non-overlapping labels
-				case KPlotObject::LABEL : //draw label centered at point in x, and slightly below point in y.
-				{
-					QPointF q = mapToPoint( *(po->points()->first()) );
-					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::TextDontClip, po->name() );
-					break;
-				}
-
-				case KPlotObject::POLYGON :
-				{
-					p->setPen( QPen( po->color(), po->size(), (Qt::PenStyle)po->param() ) );
-					p->setBrush( po->color() );
-
-					QPolygonF a( po->count() );
-
-					for ( QList<QPointF*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
-						a << mapToPoint( **dpit );
-
-					p->drawPolygon( a );
-					break;
-				}
-
-				case KPlotObject::UNKNOWN_TYPE :
-				default:
-					kDebug() << "KPlotWidget::drawObjects(): Unknown object type: " << po->type() << endl;
-			}
-		}
-	}
 }
 
 void KPlotWidget::drawAxes( QPainter *p ) {
@@ -358,8 +301,8 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach( double xx, a->majorTickMarks() ) {
 			double px = PixRect.width() * (xx - x()) / dataWidth();
 			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, double(PixRect.height() - 2.0)), 
-						QPointF( px, double(PixRect.height() - BIGTICKSIZE - 2.0)) );
+				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
+						QPointF( px, double(PixRect.height() - BIGTICKSIZE - TICKOFFSET)) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
@@ -373,8 +316,8 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach ( double xx, a->minorTickMarks() ) {
 			double px = PixRect.width() * (xx - x()) / dataWidth();
 			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, double(PixRect.height() - 2.0)), 
-						QPointF( px, double(PixRect.height() - SMALLTICKSIZE - 2.0)) );
+				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
+						QPointF( px, double(PixRect.height() - SMALLTICKSIZE -TICKOFFSET)) );
 			}
 		}
 
@@ -395,7 +338,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach( double yy, a->majorTickMarks() ) {
 			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
 			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( 2.0, py ), QPointF( double(2.0 + BIGTICKSIZE), py ) );
+				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
@@ -409,7 +352,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach ( double yy, a->minorTickMarks() ) {
 			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
 			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( 2.0, py ), QPointF( double(2.0 + SMALLTICKSIZE), py ) );
+				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + SMALLTICKSIZE), py ) );
 			}
 		}
 
@@ -439,7 +382,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach( double xx, a->majorTickMarks() ) {
 			double px = PixRect.width() * (xx - x()) / dataWidth();
 			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, 2.0 ), QPointF( px, double(BIGTICKSIZE + 2.0)) );
+				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(BIGTICKSIZE + TICKOFFSET)) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
@@ -453,7 +396,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach ( double xx, a->minorTickMarks() ) {
 			double px = PixRect.width() * (xx - x()) / dataWidth();
 			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, 2.0 ), QPointF( px, double(SMALLTICKSIZE + 2.0)) );
+				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(SMALLTICKSIZE + TICKOFFSET)) );
 			}
 		}
 
@@ -474,8 +417,8 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach( double yy, a->majorTickMarks() ) {
 			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
 			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( double(PixRect.width() - 2.0), py ), 
-						QPointF( double(PixRect.width() - 2.0 - BIGTICKSIZE), py ) );
+				p->drawLine( QPointF( double(PixRect.width() - TICKOFFSET), py ), 
+						QPointF( double(PixRect.width() - TICKOFFSET - BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
@@ -489,8 +432,8 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		foreach ( double yy, a->minorTickMarks() ) {
 			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
 			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( double(PixRect.width() - 2.0), py ), 
-						QPointF( double(PixRect.width() - 2.0 - SMALLTICKSIZE), py ) );
+				p->drawLine( QPointF( double(PixRect.width() - 0.0), py ), 
+						QPointF( double(PixRect.width() - 0.0 - SMALLTICKSIZE), py ) );
 			}
 		}
 

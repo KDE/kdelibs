@@ -27,6 +27,7 @@
 class QPixmap;
 class KPlotAxis;
 class KPlotObject;
+class KPlotPoint;
 
 /**
  *@class KPlotWidget
@@ -54,11 +55,11 @@ class KPlotObject;
  *Example of usage:
  *
  *  KPlotWidget *kpw = new KPlotWidget( this, 0.0, 1.0, 0.0, 1.0 );
- *  KPlotObject *kpo = new KPlotObject( "parabola", QColor(Qt::red), KPlotObject::CURVE );
+ *  KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
  *
  *  //Add points to kpo:
  *  for ( float x=0.0; x<=1.0; x+=0.1 )
- *    kpo->addPoint( QPointF( x, x*x ) );
+ *    kpo->addPoint( x, x*x );
  *    
  *  kpw->addObject( kpo );
  *  update();
@@ -131,6 +132,13 @@ public:
 	virtual void setSecondaryLimits( double x1, double x2, double y1, double y2 );
 
 	/**
+	 * Unset the secondary limits, so the top and right axes 
+	 * show the same tickmarks as the bottom and left axes (no tickmark
+	 * labels will be drawn for the top and right axes in this case)
+	 */
+	virtual void clearSecondaryLimits();
+
+	/**
 	 * @return the minimum X value in data units
 	 */
 	virtual double x() const { return DataRect.x(); }
@@ -192,12 +200,13 @@ public:
 	KPlotObject *object( int i );
 
 	/**
-	 * @return the background color
+	 * @return the background color of the plot
 	 */
 	QColor backgroundColor() const { return cBackground; }
 
 	/**
-	 * @return the foreground color
+	 * @return the foreground color, used for the axes, tickmarks
+	 * and associated labels.
 	 */
 	QColor foregroundColor() const { return cForeground; }
 
@@ -292,7 +301,7 @@ public:
 	 * Used mainly when drawing.
 	 * @return the coordinate in the pixel coordinate system
 	 */
-	QPointF mapToPoint( const QPointF& p ) const;
+	QPointF toScreen( const QPointF& p ) const;
 
 	/**
 	 * Retrieve the pointer to the axis of type @p a.
@@ -331,14 +340,6 @@ protected:
 	virtual void resizeEvent( QResizeEvent* );
 
 	/**
-	 * Draws all of the objects onto the widget.
-	 * @internal Internal use only; one should simply call update()
-	 * to draw the widget with axes and all objects.
-	 * @param p pointer to the painter on which we are drawing
-	 */
-	virtual void drawObjects( QPainter *p );
-
-	/**
 	 * Draws the plot axes and axis labels.
 	 * @internal Internal use only; one should simply call update()
 	 * to draw the widget with axes and all objects.
@@ -346,9 +347,18 @@ protected:
 	 */
 	virtual void drawAxes( QPainter *p );
 
+	/**
+	 * Synchronize the PixRect with the current widget size and 
+	 * padding settings
+	 */
 	void setPixRect();
 
-	QList<KPlotObject*> pointsUnderPoint( const QPoint& p ) const;
+	/**
+	 * @return a list of points in the plot which are within 4 pixels
+	 * of the screen position given as an argument.
+	 * @param p The screen position from which to check for plot points.
+	 */
+	QList<KPlotPoint*> pointsUnderPoint( const QPoint& p ) const;
 
 	/**
 	 * Limits of the plot area in pixel units
