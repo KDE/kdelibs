@@ -199,15 +199,6 @@ public:
 	bool isNull() const;
 
 	/**
-	 * Checks whether this shortcut contains a sequence that starts
-	 * with the given key.
-	 * @param keyQt the key to check
-	 * @return @c true if a key sequence starts with the key, @c false
-	 *         otherwise
-	 */
-	bool contains( int keyQt ) const;
-
-	/**
 	 * Checks whether this shortcut contains the given sequence.
 	 * @param keySeq the key sequence to check
 	 * @return @c true if the shortcut has the given key sequence,

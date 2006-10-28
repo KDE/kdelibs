@@ -175,15 +175,6 @@ bool KShortcut::operator == ( const KShortcut& cut ) const
 	return d == cut.d || d->seq == cut.d->seq;
 }
 
-bool KShortcut::contains( int keyQt ) const
-{
-	foreach (const QKeySequence& seq, d->seq)
-		if (seq.count() && keyQt == seq[0])
-			return true;
-
-	return false;
-}
-
 bool KShortcut::contains( const QKeySequence& otherSeq ) const
 {
 	foreach (const QKeySequence& seq, d->seq)
