@@ -23,10 +23,9 @@
 #include "kplotobject.h"
 #include "kplotwidget.h"
 
-KPlotPoint::KPlotPoint() {
-	X = 0.0;
-	Y = 0.0;
-	Label = QString();
+KPlotPoint::KPlotPoint()
+ : X(0), Y(0), Label(QString()), BarWidth(0.0)
+{
 }
 
 KPlotPoint::KPlotPoint( double x, double y, const QString &label, double barWidth ) 
@@ -106,7 +105,9 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 			QPointF sp1 = pw->toScreen( p1 );
 			QPointF sp2 = pw->toScreen( p2 );
 
-			painter->drawRect( QRectF( sp1.x(), sp1.y(), sp2.x()-sp1.x(), sp2.y()-sp1.y() ) );
+			QRectF barRect = QRectF( sp1.x(), sp1.y(), sp2.x()-sp1.x(), sp2.y()-sp1.y() ).normalized();
+			painter->drawRect( barRect );
+			pw->maskRect( barRect, 0.25 );
 		}
 	}
 	
@@ -122,6 +123,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 
 			if ( ! Previous.isNull() ) {
 				painter->drawLine( Previous, q );
+				pw->maskAlongLine( Previous, q );
 			}
 			
 			Previous = q;
@@ -134,10 +136,13 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 		foreach( KPlotPoint *pp, pList ) {
 			//q is the position of the point in screen pixel coordinates
 			QPointF q = pw->toScreen( pp->position() );
-			double x1 = q.x() - 0.5*size();
-			double y1 = q.y() - 0.5*size();
-			QRectF qr = QRectF( x1, y1, size(), size() );
-			
+			double x1 = q.x() - size();
+			double y1 = q.y() - size();
+			QRectF qr = QRectF( x1, y1, 2*size(), 2*size() );
+
+			//Mask out this rect in the plot for label avoidance
+			pw->maskRect( qr, 2.0 );
+
 			painter->setPen( pen() );
 			painter->setBrush( brush() );
 
@@ -153,7 +158,9 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 			case TRIANGLE:
 				{
 					QPolygonF tri;
-					tri << QPointF( x1, y1 ) << QPointF( q.x(), y1-size() ) << QPointF( x1+size(), y1 );
+					tri << QPointF( q.x() - size(), q.y() + size() ) 
+							<< QPointF( q.x(), q.y() - size() ) 
+							<< QPointF( q.x() + size(), q.y() + size() );
 					painter->drawPolygon( tri );
 					break;
 				}
@@ -165,11 +172,11 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 			case PENTAGON:
 				{
 					QPolygonF pent;
-					pent << QPointF( q.x(), q.y() + size() ) 
-							 << QPointF( q.x() + size(), q.y() + 0.309*size() )
-							 << QPointF( q.x() + 0.588*size(), q.y() - size() )
-							 << QPointF( q.x() - 0.588*size(), q.y() - size() )
-							 << QPointF( q.x() - size(), q.y() + 0.309*size() );
+					pent << QPointF( q.x(), q.y() - size() ) 
+							 << QPointF( q.x() + size(), q.y() - 0.309*size() )
+							 << QPointF( q.x() + 0.588*size(), q.y() + size() )
+							 << QPointF( q.x() - 0.588*size(), q.y() + size() )
+							 << QPointF( q.x() - size(), q.y() - 0.309*size() );
 					painter->drawPolygon( pent );
 					break;
 				}
@@ -199,16 +206,16 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 			case STAR:
 				{
 					QPolygonF star;
-					star << QPointF( q.x(), q.y() + size() ) 
-							 << QPointF( q.x() + 0.2245*size(), q.y() + 0.309*size() )
-							 << QPointF( q.x() + size(), q.y() + 0.309*size() )
-							 << QPointF( q.x() + 0.363*size(), q.y() - 0.118*size() )
-							 << QPointF( q.x() + 0.588*size(), q.y() - size() )
-							 << QPointF( q.x(), q.y() - 0.382*size() )
-							 << QPointF( q.x() - 0.588*size(), q.y() - size() )
-							 << QPointF( q.x() - 0.363*size(), q.y() - 0.118*size() )
-							 << QPointF( q.x() - size(), q.y() + 0.309*size() )
-							 << QPointF( q.x() - 0.2245*size(), q.y() + 0.309*size() );
+					star << QPointF( q.x(), q.y() - size() ) 
+							 << QPointF( q.x() + 0.2245*size(), q.y() - 0.309*size() )
+							 << QPointF( q.x() + size(), q.y() - 0.309*size() )
+							 << QPointF( q.x() + 0.363*size(), q.y() + 0.118*size() )
+							 << QPointF( q.x() + 0.588*size(), q.y() + size() )
+							 << QPointF( q.x(), q.y() + 0.382*size() )
+							 << QPointF( q.x() - 0.588*size(), q.y() + size() )
+							 << QPointF( q.x() - 0.363*size(), q.y() + 0.118*size() )
+							 << QPointF( q.x() - size(), q.y() - 0.309*size() )
+							 << QPointF( q.x() - 0.2245*size(), q.y() - 0.309*size() );
 					painter->drawPolygon( star );
 					break;
 				}
@@ -220,12 +227,11 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	}
 
 	//Draw labels
-	//FIXME: implement non-collision labels
 	painter->setPen( labelPen() );
 
 	foreach ( KPlotPoint *pp, pList ) {
 		if ( ! pp->label().isEmpty() ) {
-			painter->drawText( pw->toScreen( pp->position() ), pp->label() );
+			pw->placeLabel( painter, pp );
 		}
 	}
 

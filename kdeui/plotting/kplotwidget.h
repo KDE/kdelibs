@@ -182,6 +182,16 @@ public:
 	void clearObjectList();
 
 	/**
+	 * Reset the PlotMask so that all regions are empty
+	 */
+	void resetPlotMask();
+
+	/**
+	 * Clear the object list, reset the data limits, and remove axis labels
+	 */
+	void resetPlot();
+
+	/**
 	 * Replace an item in the KPlotObject list.
 	 * @param i the index of th item to be replaced
 	 * @param o pointer to the replacement KPlotObject
@@ -304,6 +314,46 @@ public:
 	QPointF toScreen( const QPointF& p ) const;
 
 	/**
+	 * Indicate that object labels should not occupy the given 
+	 * rectangle in the plot.  The rectangle is in pixel coordinates.
+	 *
+	 * @note You should not normally call this function directly.
+	 * It is called by KPlotObject when points, bars and labels are drawn.
+	 * @param r the rectangle defining the region in the plot that 
+	 * text labels should avoid (in pixel coordinates)
+	 * @param value Allows you to determine how strongly the rectangle 
+	 * should be avoided.  Larger values are avoided more strongly.
+	 */
+	void maskRect( const QRectF &r, float value=1.0 );
+
+	/**
+	 * Indicate that object labels should not be placed over the line 
+   * joining the two given points (in pixel coordinates).
+	 *
+	 * @note You should not normally call this function directly.
+	 * It is called by KPlotObject when lines are drawn in the plot.
+	 * @param p1 the starting point for the line
+	 * @param p2 the ending point for the line
+	 * @param value Allows you to determine how strongly the line
+	 * should be avoided.  Larger values are avoided more strongly.
+	 */
+	void maskAlongLine( const QPointF &p1, const QPointF &p2, float value=1.0 );
+
+	/**
+	 * Place an object label optimally in the plot.  This function will
+	 * attempt to place the label as close as it can to the point to which 
+	 * the label belongs, while avoiding overlap with regions of the plot 
+	 * that have been masked. 
+	 *
+	 * @note You should not normally call this function directly.
+	 * It is called internally in KPlotObject::draw().
+	 *
+	 * @param painter Pointer to the painter on which to draw the label
+	 * @param pp pointer to the KPlotPoint whose label is to be drawn.
+	 */
+	void placeLabel( QPainter *painter, KPlotPoint *pp );
+
+	/**
 	 * Retrieve the pointer to the axis of type @p a.
 	 * @sa Axis
 	 * @return a pointer to the axis @p a , or 0 if not found
@@ -361,6 +411,16 @@ protected:
 	QList<KPlotPoint*> pointsUnderPoint( const QPoint& p ) const;
 
 	/**
+	 * @return a value indicating how well the given rectangle is 
+	 * avoiding masked regions in the plot.  A higher returned value 
+	 * indicates that the rectangle is intersecting a larger portion 
+	 * of the masked region, or a portion of the masked region which 
+	 * is weighted higher.
+	 * @param r The rectangle to be tested
+	 */
+	float rectCost( const QRectF &r );
+
+	/**
 	 * Limits of the plot area in pixel units
 	 */
 	QRect PixRect;
@@ -384,6 +444,10 @@ protected:
 	bool ShowGrid, ShowObjectToolTips, UseAntialias;
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
+
+	//Grid of bools to mask "used" regions of the plot
+	float PlotMask[100][100];
+	double px[100], py[100];
 };
 
 #endif

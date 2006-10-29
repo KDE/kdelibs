@@ -23,6 +23,7 @@
 
 #include "../kplotwidget.h"
 #include "../kplotobject.h"
+#include "../kplotaxis.h"
 #include "testplot_widget.h"
 
 TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
@@ -39,6 +40,7 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 
 	plot = new KPlotWidget( w );
 	plot->setMinimumSize( 400,400 );
+	plot->setAntialias( true );
 	vlay->addWidget( PlotSelector );
 	vlay->addWidget( plot );
 
@@ -49,12 +51,12 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 }
 
 void TestPlot::slotSelectPlot( int n ) {
+	plot->resetPlot();
+
 	switch ( n ) {
 	case 0: //Points plot
 		{
 			plot->setLimits( -6.0, 11.0, -10.0, 110.0 );
-			plot->clearSecondaryLimits();
-			plot->clearObjectList();
 			
 			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 4, KPlotObject::ASTERISK );
 			po2 = new KPlotObject( Qt::green, KPlotObject::POINTS, 4, KPlotObject::TRIANGLE );
@@ -75,8 +77,10 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -0.1, 6.38, -1.1, 1.1 );
 			plot->setSecondaryLimits( -5.73, 365.55, -1.1, 1.1 );
-			plot->clearObjectList();
-			
+			plot->axis(KPlotWidget::TopAxis)->setShowTickLabels( true );
+			plot->axis(KPlotWidget::BottomAxis)->setLabel(i18n("Angle [radians]"));
+			plot->axis(KPlotWidget::TopAxis)->setLabel(i18n("Angle [degrees]"));
+
 			po1 = new KPlotObject( Qt::red,  KPlotObject::LINES, 2 );
 			po2 = new KPlotObject( Qt::cyan, KPlotObject::LINES, 2 );
 
@@ -95,8 +99,6 @@ void TestPlot::slotSelectPlot( int n ) {
 	case 2: //Bars plot
 		{
 			plot->setLimits( -7.0, 7.0, -5.0, 105.0 );
-			plot->clearSecondaryLimits();
-			plot->clearObjectList();
 
 			po1 = new KPlotObject( Qt::white, KPlotObject::BARS, 2 );
 			po1->setBarBrush( QBrush(Qt::green, Qt::Dense4Pattern) );
@@ -114,8 +116,6 @@ void TestPlot::slotSelectPlot( int n ) {
 	case 3: //Points plot with labels
 		{
 			plot->setLimits( -1.1, 1.1, -1.1, 1.1 );
-			plot->clearSecondaryLimits();
-			plot->clearObjectList();
 
 			po1 = new KPlotObject( Qt::yellow, KPlotObject::POINTS, 10, KPlotObject::STAR );
 			po1->setLabelPen( QPen(Qt::green) );
@@ -138,8 +138,6 @@ void TestPlot::slotSelectPlot( int n ) {
 	case 4: //Points, Lines and Bars plot
 		{
 			plot->setLimits( -2.1, 2.1, -0.1, 4.1 );
-			plot->clearSecondaryLimits();
-			plot->clearObjectList();
 
 			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 10, KPlotObject::PENTAGON );
 
@@ -167,8 +165,6 @@ void TestPlot::slotSelectPlot( int n ) {
 	case 5: //Points, Lines and Bars plot with labels
 		{
 			plot->setLimits( -2.1, 2.1, -0.1, 4.1 );
-			plot->clearSecondaryLimits();
-			plot->clearObjectList();
 
 			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 10, KPlotObject::PENTAGON );
 

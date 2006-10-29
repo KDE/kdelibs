@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <math.h>
 #include <kdebug.h>
 
 #include <qevent.h>
@@ -160,6 +161,25 @@ void KPlotWidget::clearObjectList() {
 	update();
 }
 
+void KPlotWidget::resetPlotMask() {
+	for (int ix=0; ix<100; ++ix ) 
+		for ( int iy=0; iy<100; ++iy ) 
+			PlotMask[ix][iy] = 0.0;
+}
+		
+void KPlotWidget::resetPlot() {
+	clearObjectList();
+	clearSecondaryLimits();
+	setLimits(0.0, 1.0, 0.0, 1.0);
+	axis(KPlotWidget::RightAxis)->setShowTickLabels( false );
+	axis(KPlotWidget::TopAxis)->setShowTickLabels( false );
+	axis(KPlotWidget::LeftAxis)->setLabel( QString() );
+	axis(KPlotWidget::BottomAxis)->setLabel( QString() );
+	axis(KPlotWidget::RightAxis)->setLabel( QString() );
+	axis(KPlotWidget::TopAxis)->setLabel( QString() );
+	resetPlotMask();
+}
+
 void KPlotWidget::replaceObject( int i, KPlotObject *o ) {
 	// skip null pointers
 	if ( !o ) return;
@@ -234,12 +254,111 @@ void KPlotWidget::setPixRect() {
 	int newHeight = contentsRect().height() - topPadding() - bottomPadding();
 	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
 	PixRect = QRect( 0, 0, newWidth, newHeight );
+	for ( int i=0; i<100; ++i ) {
+		px[i] = double(i*PixRect.width())/100.0 + double(PixRect.x());
+		py[i] = double(i*PixRect.height())/100.0 + double(PixRect.y());
+	}
 }
 
 QPointF KPlotWidget::toScreen( const QPointF& p ) const {
 	float px = PixRect.left() + PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width();
 	float py = PixRect.top() + PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height();
 	return QPointF( px, py );
+}
+
+void KPlotWidget::maskRect( const QRectF& r, float value ) {
+	//Loop over Mask grid points that are near the target rectangle.
+	int ix1 = int( 100.0*(r.x() - PixRect.x())/PixRect.width() );
+	int iy1 = int( 100.0*(r.y() - PixRect.y())/PixRect.height() );
+	if ( ix1 < 0 ) ix1 = 0;
+	if ( iy1 < 0 ) iy1 = 0;
+	int ix2 = int( 100.0*(r.right() - PixRect.x())/PixRect.width() ) + 2;
+	int iy2 = int( 100.0*(r.bottom() - PixRect.y())/PixRect.height() ) + 2;
+	if ( ix1 > 99 ) ix1 = 99;
+	if ( iy1 > 99 ) iy1 = 99;
+
+	for ( int ix=ix1; ix<ix2; ++ix ) 
+		for ( int iy=iy1; iy<iy2; ++iy ) 
+			PlotMask[ix][iy] += value;
+}
+
+void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float value ) {
+	//Determine slope and zeropoint of line
+	double m = (p2.y() - p1.y())/(p2.x() - p1.x());
+	double y0 = p1.y() - m*p1.x();
+ 
+	//Make steps along line from p1 to p2, computing the nearest 
+	//gridpoint position at each point.
+	double x1 = p1.x();
+	double x2 = p2.x();
+	if ( x1 > x2 ) {
+		x1 = p2.x(); 
+		x2 = p1.x();
+	}
+	for ( double x=x1; x<x2; x+=0.01*(x2-x1) ) {
+		double y = y0 + m*x;
+		int ix = int( 100.0*( x - PixRect.x() )/PixRect.width() );
+		int iy = int( 100.0*( y - PixRect.y() )/PixRect.height() );
+
+		if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 )
+  		PlotMask[ix][iy] += value;
+
+	}
+}
+
+void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
+	int textFlags = Qt::TextSingleLine | Qt::AlignLeft | Qt::AlignTop;
+
+	float bestCost = 1.0e7;
+	QPointF pos = toScreen( pp->position() );
+	QRectF bestRect;
+	int ix0 = int( 100.0*( pos.x() - PixRect.x() )/PixRect.width() );
+	int iy0 = int( 100.0*( pos.y() - PixRect.y() )/PixRect.height() );
+
+	for ( int ix=ix0-20; ix<ix0+20; ix++ ) {
+		for ( int iy=iy0-20; iy<iy0+20; iy++ ) {
+			if ( ( ix >= 0 && ix < 100 ) && ( iy >= 0 && iy < 100 ) ) {
+				QRectF labelRect = painter->boundingRect( QRectF( px[ix], py[iy], 1, 1 ), textFlags, pp->label() );
+					
+				float r = sqrt( (ix-ix0)*(ix-ix0) + (iy-iy0)*(iy-iy0) );
+				float cost = rectCost( labelRect ) + 0.1*r;
+
+				if ( cost < bestCost ) {
+					bestRect = labelRect;
+					bestCost = cost;
+				}
+			}
+		}
+	}
+
+	painter->drawText( bestRect, textFlags, pp->label() );
+
+	//DEBUG_LABEL_RECT
+	//painter->setBrush( QBrush() );
+	//painter->drawRect( bestRect );
+
+	//Mask the label's rectangle so other labels won't overlap it.
+	maskRect( bestRect );
+}
+
+float KPlotWidget::rectCost ( const QRectF &r ) {
+	int ix1= int( 100.0*( r.x() - PixRect.x() )/PixRect.width() );
+	int ix2= int( 100.0*( r.right() - PixRect.x() )/PixRect.width() );
+	int iy1= int( 100.0*( r.y() - PixRect.y() )/PixRect.height() );
+	int iy2= int( 100.0*( r.bottom() - PixRect.y() )/PixRect.height() );
+	float cost = 0.0;
+
+	for ( int ix=ix1; ix<ix2; ++ix ) {
+		for ( int iy=iy1; iy<iy2; ++iy ) {
+			if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 ) {
+				cost += PlotMask[ix][iy];
+			} else {
+				cost += 100.;
+			}
+		}
+	}
+
+	return cost;
 }
 
 void KPlotWidget::paintEvent( QPaintEvent *e ) {
@@ -256,8 +375,26 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 	p.setClipRect( PixRect );
 	p.setClipping( true );
 
+	resetPlotMask();
+
 	foreach( KPlotObject *po, ObjectList ) 
 		po->draw( &p, this );
+
+	//DEBUG_MASK
+	/*
+	p.setPen( Qt::magenta );
+	p.setBrush( Qt::magenta );
+	for ( int ix=0; ix<100; ++ix ) {
+		for ( int iy=0; iy<100; ++iy ) {
+			if ( PlotMask[ix][iy] > 0.0 ) {
+				double x = PixRect.x() + double(ix*PixRect.width())/100.;
+				double y = PixRect.y() + double(iy*PixRect.height())/100.;
+
+				p.drawRect( QRectF(x-1, y-1, 2, 2 ) );
+			}
+		}
+	}
+  */
 
 	p.setClipping( false );
 	drawAxes( &p );
@@ -372,6 +509,18 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		}
 	}  //End of LeftAxis
 
+	//Prepare for top and right axes; we may need the secondary data rect
+	double x0 = x();
+	double y0 = y();
+	double dw = dataWidth();
+	double dh = dataHeight();
+	if ( secondaryDataRect().isValid() ) {
+		x0 = secondaryDataRect().x();
+		y0 = secondaryDataRect().y();
+		dw = secondaryDataRect().width();
+		dh = secondaryDataRect().height();
+	}
+
 	/*** TopAxis ***/
 	a = axis(TopAxis);
 	if (a->isVisible()) {
@@ -380,13 +529,13 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw major tickmarks
 		foreach( double xx, a->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - x()) / dataWidth();
+			double px = PixRect.width() * (xx - x0) / dw;
 			if ( px > 0 && px < PixRect.width() ) {
 				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(BIGTICKSIZE + TICKOFFSET)) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
-					QRect r( int(px) - BIGTICKSIZE, -1*BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
+					QRect r( int(px) - BIGTICKSIZE, -1.5*BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 					p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, a->tickLabel( xx ) );
 				}
 			}
@@ -394,7 +543,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double xx, a->minorTickMarks() ) {
-			double px = PixRect.width() * (xx - x()) / dataWidth();
+			double px = PixRect.width() * (xx - x0) / dw;
 			if ( px > 0 && px < PixRect.width() ) {
 				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(SMALLTICKSIZE + TICKOFFSET)) );
 			}
@@ -415,7 +564,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw major tickmarks
 		foreach( double yy, a->majorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
+			double py = PixRect.height() * ( 1.0 - (yy - y0) / dh );
 			if ( py > 0 && py < PixRect.height() ) {
 				p->drawLine( QPointF( double(PixRect.width() - TICKOFFSET), py ), 
 						QPointF( double(PixRect.width() - TICKOFFSET - BIGTICKSIZE), py ) );
@@ -430,7 +579,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double yy, a->minorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
+			double py = PixRect.height() * ( 1.0 - (yy - y0) / dh );
 			if ( py > 0 && py < PixRect.height() ) {
 				p->drawLine( QPointF( double(PixRect.width() - 0.0), py ), 
 						QPointF( double(PixRect.width() - 0.0 - SMALLTICKSIZE), py ) );
