@@ -34,14 +34,16 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
 : KDialog(parent, Qt::Dialog ),
   m_printer(p), m_driver(0), m_current(0)
 {
-  setButtons( KDialog::Ok | KDialog::Cancel | KDialog::User1 );
-  setButtonGuiItem( KDialog::User1, KStdGuiItem::save() );
+	setButtons( KDialog::Ok | KDialog::Cancel | KDialog::User1 );
+	setButtonGuiItem( KDialog::User1, KStdGuiItem::save() );
 	setModal(true);
 	showButtonSeparator(false);
 	setDefaultButton(KDialog::Ok);
 	// set a margin
 	m_tw = new QTabWidget(this);
 	connect(m_tw,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
+	connect(this,SIGNAL(user1Clicked()),SLOT(slotUser1()));
+	connect(this,SIGNAL(okClicked()),SLOT(slotOk()));
 	setMainWidget(m_tw);
 
 	if (m_printer)
@@ -114,7 +116,6 @@ void KPrinterPropertyDialog::slotOk()
 {
 	if (!synchronize())
 		return;
-	KDialog::slotButtonClicked(KDialog::Ok);
 }
 
 void KPrinterPropertyDialog::slotUser1()
