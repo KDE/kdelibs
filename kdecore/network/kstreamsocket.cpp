@@ -28,6 +28,7 @@
 #include <QSocketNotifier>
 #include <QDateTime>
 #include <QTimer>
+#include <QPointer>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
@@ -318,8 +319,12 @@ void KStreamSocket::timeoutSlot()
   setError(Timeout);
   setState(HostFound);
   emit stateChanged(HostFound);
+
+  QPointer<KStreamSocket> that = this;
   emit gotError(Timeout);
-  emit timedOut();
+
+  if (!that.isNull())
+    emit timedOut();
 }
 
 bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
