@@ -114,8 +114,9 @@ class EDUPLOT_EXPORT KPlotPoint {
 	void stBarWidth( double w ) { BarWidth = w; }
 
  private:
-	double X, Y, BarWidth;
+	double X, Y;
 	QString Label;
+  double BarWidth;
 };
 
 /**

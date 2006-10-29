@@ -535,7 +535,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
-					QRect r( int(px) - BIGTICKSIZE, -1.5*BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
+					QRect r( int(px) - BIGTICKSIZE, (int)-1.5*BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 					p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, a->tickLabel( xx ) );
 				}
 			}
