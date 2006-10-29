@@ -70,7 +70,7 @@ class KStreamSocketPrivate;
  *    : socket(hostname, port)
  *  {
  *    // connect signals to our slots
- *    QObject::connect(&socket, SIGNAL(connected(const KResolverEntry&)),
+ *    QObject::connect(&socket, SIGNAL(connected(const KNetwork::KResolverEntry&)),
  *                     this, SLOT(slotSocketConnected()));
  *    QObject::connect(&socket, SIGNAL(gotError(int)),
  *                     this, SLOT(slotSocketError(int)));
