@@ -26,6 +26,8 @@ class QString;
 class QDir;
 
 /**
+ * @brief Create a unique directory for temporary use.
+ *
  * The KTempDir class creates a unique directory for temporary use.
  *
  * This is especially useful if you need to create a directory in a world
@@ -40,9 +42,10 @@ class QDir;
  * in the "tmp" resource, one should use:
  * KTempDir(locateLocal("tmp", prefix));
  *
- * KTempFile does not create any missing directories, but locateLocal() does.
+ * KTempDir does not create any missing directories, but locateLocal() does.
  *
  * @see KStandardDirs
+ * @see KTemporaryFile
  * @author Joseph Wenninger <jowenn@kde.org>
  */
 class KDECORE_EXPORT KTempDir
@@ -68,7 +71,7 @@ public:
 
 
    /**
-    * The destructor deletes the directory and it's contents if autoDelete
+    * The destructor deletes the directory and its contents if autoDelete
     * is set to true.
     * @see setAutoDelete.
     **/
@@ -154,17 +157,10 @@ protected:
     */
    bool create(const QString &directoryPrefix,  int mode);
 
-   /**
-    * Sets the errno value
-    * @param error the value to set the status to.
-    */
-   void setError(int error);
-
 private:
-   class KTempDirPrivate;
-   KTempDirPrivate * const d;
-   KTempDir(const KTempDir&);
-   KTempDir& operator=(const KTempDir&);
+    Q_DISABLE_COPY(KTempDir);
+    class Private;
+    Private * const d;
 };
 
 #endif

@@ -1,3 +1,4 @@
+/* kate: tab-indents off; replace-tabs on; tab-width 4; remove-trailing-space on; encoding utf-8;*/
 /*
  *  This file is part of the KDE libraries
  *  Copyright (c) 2003 Joseph Wenninger <jowenn@kde.org>
@@ -38,10 +39,6 @@
 #include <paths.h>
 #endif
 
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp"
-#endif
-
 #include <qdir.h>
 
 #include "kglobal.h"
@@ -52,29 +49,28 @@
 #include <kdebug.h>
 #include "kde_file.h"
 
-class KTempDir::KTempDirPrivate
+class KTempDir::Private
 {
 public:
-   int _error;
-#define mError d->_error
-   QString _tmpName;
-#define mTmpName d->_tmpName
-   bool _exists;
-#define bExists d->_exists
-   bool _autoDelete;
-#define bAutoDelete d->_autoDelete
+    int error;
+    QString tmpName;
+    bool exists;
+    bool autoDelete;
+    
+    Private()
+    {
+        autoDelete = false;
+        exists = false;
+        error=0;
+    }
 };
 
-KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new KTempDirPrivate)
+KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new Private)
 {
-   bAutoDelete = false;
-   bExists = false;
-   mError=0;
-   (void) create( directoryPrefix.isEmpty() ? KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName()) : directoryPrefix , mode);
+    (void) create( directoryPrefix.isEmpty() ? KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName()) : directoryPrefix , mode);
 }
 
-bool
-KTempDir::create(const QString &directoryPrefix, int mode)
+bool KTempDir::create(const QString &directoryPrefix, int mode)
 {
    // make sure the random seed is randomized
    (void) KRandom::random();
@@ -87,15 +83,15 @@ KTempDir::create(const QString &directoryPrefix, int mode)
        nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
        kWarning(180) << "KTempDir: Error trying to create " << nme.data()
 		      << ": " << ::strerror(errno) << endl;
-       mError = errno;
-       mTmpName.clear();
+       d->error = errno;
+       d->tmpName.clear();
        return false;
    }
 
    // got a return value != 0
    QByteArray realNameStr(realName);
-   mTmpName = QFile::decodeName(realNameStr)+'/';
-   kDebug(180) << "KTempDir: Temporary directory created :" << mTmpName
+   d->tmpName = QFile::decodeName(realNameStr)+'/';
+   kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
 	        << endl;
    mode_t tmp = 0;
    mode_t umsk = umask(tmp);
@@ -103,7 +99,7 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    chmod(nme, mode&(~umsk));
 
    // Success!
-   bExists = true;
+   d->exists = true;
 
    // Set uid/gid (necessary for SUID programs)
    chown(nme, getuid(), getgid());
@@ -112,63 +108,51 @@ KTempDir::create(const QString &directoryPrefix, int mode)
 
 KTempDir::~KTempDir()
 {
-   if (bAutoDelete)
-      unlink();
+    if (d->autoDelete) {
+        unlink();
+    }
 
-   delete d;
+    delete d;
 }
 
-int
-KTempDir::status() const
+int KTempDir::status() const
 {
-   return mError;
+    return d->error;
 }
 
-QString
-KTempDir::name() const
+QString KTempDir::name() const
 {
-   return mTmpName;
+    return d->tmpName;
 }
 
-bool
-KTempDir::exists() const
+bool KTempDir::exists() const
 {
-   return bExists;
+    return d->exists;
 }
 
-QDir *
-KTempDir::qDir()
+QDir * KTempDir::qDir()
 {
-   if (bExists) return new QDir(mTmpName);
-   return 0;
+    if (d->exists) return new QDir(d->tmpName);
+    return 0;
 }
 
-void
-KTempDir::setAutoDelete(bool autoDelete)
+void KTempDir::setAutoDelete(bool autoDelete)
 {
-   bAutoDelete = autoDelete;
+    d->autoDelete = autoDelete;
 }
 
-void
-KTempDir::setError(int error)
+void KTempDir::unlink()
 {
-   mError = error;
-}
-
-void
-KTempDir::unlink()
-{
-   if (!bExists) return;
-   if (KTempDir::removeDir(mTmpName))
-      mError=0;
-   else
-      mError=errno;
-   bExists=false;
+    if (!d->exists) return;
+    if (KTempDir::removeDir(d->tmpName))
+        d->error=0;
+    else
+        d->error=errno;
+    d->exists=false;
 }
 
 // Auxiliary recursive function for removeDirs
-static bool
-rmtree(const QByteArray& name)
+static bool rmtree(const QByteArray& name)
 {
     //kDebug(180) << "Checking directory for remove " << name << endl;
     KDE_struct_stat st;
@@ -216,9 +200,9 @@ rmtree(const QByteArray& name)
     }
     else
     {
-         // This is a non-directory file, so remove it
-         kDebug(180) << "KTempDir: unlinking file " << name << endl;
-         return ! ::unlink( name );
+        // This is a non-directory file, so remove it
+        kDebug(180) << "KTempDir: unlinking file " << name << endl;
+        return ! ::unlink( name );
     }
 }
 
@@ -231,5 +215,4 @@ bool KTempDir::removeDir( const QString& path )
     const QByteArray cstr( QFile::encodeName( path ) );
     return rmtree( cstr );
 }
-
 

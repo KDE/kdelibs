@@ -51,16 +51,25 @@ void KTempDirTest::testAutoDelete()
 
 void KTempDirTest::testCreateSubDir()
 {
-	KTempDir dir("test");
-	dir.setAutoDelete(true);
-	QVERIFY(dir.status() == 0);
-	QVERIFY(dir.exists());
+	KTempDir *dir = new KTempDir("test");
+	dir->setAutoDelete(true);
+	QVERIFY(dir->status() == 0);
+	QVERIFY(dir->exists());
 
-	QDir *d = dir.qDir();
+	QDir *d = dir->qDir();
 	QVERIFY(d->exists());
 
 	QVERIFY(d->mkdir(QString("123")));
 	QVERIFY(d->mkdir(QString("456")));
+
+	QString dName = dir->name();
+	delete dir;
+	d->refresh();
+	
+	QVERIFY(!QDir(dName).exists());
+	QVERIFY(!d->exists(QString("123")));
+	QVERIFY(!d->exists(QString("456")));
+	delete d;
 }
 
 QTEST_KDEMAIN(KTempDirTest, 0)
