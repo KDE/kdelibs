@@ -27,6 +27,7 @@
 #include <qsocketnotifier.h>
 #include <qdatetime.h>
 #include <qtimer.h>
+#include <qguardedptr.h>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
