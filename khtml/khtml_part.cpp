@@ -1878,7 +1878,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_openableSuppressedPopups = 0;
     for ( QValueListIterator<QGuardedPtr<KHTMLPart> > i = d->m_suppressedPopupOriginParts.begin();
           i != d->m_suppressedPopupOriginParts.end(); ++i ) {
-       
+
       if (KHTMLPart* part = *i) {
         KJS::Window *w = KJS::Window::retrieveWindow( part );
         if (w)
@@ -1991,26 +1991,32 @@ void KHTMLPart::write( const char *str, int len )
 
 void KHTMLPart::write( const QString &str )
 {
-  if ( str.isNull() )
-    return;
+    if ( str.isNull() )
+        return;
 
-  if(d->m_bFirstData) {
-      // determine the parse mode
-      d->m_doc->setParseMode( DocumentImpl::Strict );
-      d->m_bFirstData = false;
-  }
-  khtml::Tokenizer* t = d->m_doc->tokenizer();
-  if(t)
-    t->write( str, true );
+    if(d->m_bFirstData) {
+        // determine the parse mode
+        d->m_doc->setParseMode( DocumentImpl::Strict );
+        d->m_bFirstData = false;
+    }
+    khtml::Tokenizer* t = d->m_doc->tokenizer();
+    if(t)
+        t->write( str, true );
 }
 
 void KHTMLPart::end()
 {
-    // make sure nothing's left in there...
-    if(d->m_decoder)
-        write(d->m_decoder->flush());
-    if (d->m_doc)
+    if (d->m_doc) {
+        if (d->m_decoder) {
+            QString decoded = d->m_decoder->flush();
+            if (d->m_bFirstData) {
+                d->m_bFirstData = false;
+                d->m_doc->determineParseMode(decoded);
+            }
+            write(decoded);
+        }
         d->m_doc->finishParsing();
+    }
 }
 
 bool KHTMLPart::doOpenStream( const QString& mimeType )
@@ -4316,7 +4322,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   {
     if ( processObjectRequest(*it, KURL("about:blank"), QString("text/html") ) ) {
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
-      
+
       // See if we want to replace content with javascript: output..
       QVariant res = p->executeScript( DOM::Node(), KURL::decode_string( url.right( url.length() - 11) ) );
       if ( res.type() == QVariant::String ) {
