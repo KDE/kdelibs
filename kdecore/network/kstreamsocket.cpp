@@ -309,8 +309,11 @@ void KStreamSocket::timeoutSlot()
   setError(IO_TimeOutError, Timeout);
   setState(HostFound);
   emit stateChanged(HostFound);
+
+  QGuardedPtr<KStreamSocket> that = this;
   emit gotError(Timeout);
-  emit timedOut();
+  if (!that.isNull())
+    emit timedOut();
 }
 
 bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
