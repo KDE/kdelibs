@@ -1150,7 +1150,7 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "kcfg"))
 	return "share/config.kcfg";
     if (!strcmp(type, "emoticons"))
-			return "share/emoticons";
+        return "share/emoticons";
 
 
     qFatal("unknown resource type %s", type);
