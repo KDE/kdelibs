@@ -11,6 +11,7 @@
               (C) 2005-2006 Hamish Rodda <rodda@kde.org>
               (C) 2006 Albert Astals Cid <aacid@kde.org>
               (C) 2006 Clarence Dang <dang@kde.org>
+              (C) 2006 Michel Hermier <michel.hermier@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -213,7 +214,7 @@ QList<QAction*> KSelectAction::actions( ) const
 
 QAction* KSelectAction::currentAction() const
 {
-  return d->m_actionGroup->checkedAction();
+  return selectableActionGroup()->checkedAction();
 }
 
 int KSelectAction::currentItem() const
@@ -229,31 +230,31 @@ QString KSelectAction::currentText( ) const
   return QString();
 }
 
-void KSelectAction::setCurrentAction(QAction* action)
+bool KSelectAction::setCurrentAction(QAction* action)
 {
   //kDebug (129) << "KSelectAction::setCurrentAction(" << action << ")" << endl;
-  if (!action) {
-    if (currentAction())
-      currentAction()->setChecked(false);
-
-  } else {
-    action->setChecked(true);
+  if (action) {
+    if (actions().contains(action)) {
+      if (action->isVisible() && action->isEnabled() && action->isCheckable()) {
+        action->setChecked(true);
+        return true;
+      } else
+        kWarning (129) << k_funcinfo << "Action don't have the correct properties to be current:" << action->text() << endl;
+    } else
+      kWarning (129) << k_funcinfo << "Action don't belong to group:" << action->text() << endl;
+    return false;
   }
+
+  if (currentAction())
+    currentAction()->setChecked(false);
+
+  return false;
 }
 
 bool KSelectAction::setCurrentItem( int index )
 {
   //kDebug (129) << "KSelectAction::setCurrentIndex(" << index << ")" << endl;
-  if (QAction* a = action(index)) {
-    setCurrentAction(a);
-    return true;
-  }
-
-  //kDebug (129) << "\tdoing the deselect" << endl;
-  if (selectableActionGroup()->checkedAction())
-    selectableActionGroup()->checkedAction()->setChecked(false);
-
-  return false;
+  return setCurrentAction(action(index));
 }
 
 QAction * KSelectAction::action( int index ) const
@@ -291,13 +292,7 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
 bool KSelectAction::setCurrentAction( const QString & text, Qt::CaseSensitivity cs)
 {
   //kDebug (129) << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")" << endl;
-  if (QAction* a = action(text, cs)) {
-    a->setChecked(true);
-    return true;
-  }
-
-  //kDebug (129) << "\tfailed" << endl;
-  return false;
+  return setCurrentAction(action(text, cs));
 }
 
 void KSelectAction::setComboWidth( int width )
@@ -332,7 +327,6 @@ void KSelectAction::addAction(QAction* action)
   //kDebug (129) << "KSelectAction::addAction(" << action << ")" << endl;
 
   action->setActionGroup(selectableActionGroup());
-  action->setCheckable( true );
 
   // Keep in sync with createToolBarWidget()
   foreach (QToolButton* button, d->m_buttons)
@@ -344,9 +338,11 @@ void KSelectAction::addAction(QAction* action)
   menu()->addAction(action);
 }
 
-QAction* KSelectAction::addAction(const QString& text)
+KAction* KSelectAction::addAction(const QString& text)
 {
-  QAction* newAction = new QAction(text, selectableActionGroup());
+  KAction* newAction = new KAction(text, parentCollection(), 0);
+  newAction->setCheckable( true );
+  newAction->setShortcutConfigurable(false);
 
   if (!d->m_menuAccelsEnabled) {
     newAction->setText(text);
@@ -357,16 +353,10 @@ QAction* KSelectAction::addAction(const QString& text)
   return newAction;
 }
 
-QAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
+KAction* KSelectAction::addAction(const KIcon& icon, const QString& text)
 {
-  QAction* newAction = new QAction(icon, text, selectableActionGroup());
-
-  if (!d->m_menuAccelsEnabled) {
-    newAction->setText(text);
-    newAction->setShortcut(QKeySequence());
-  }
-
-  addAction(newAction);
+  KAction* newAction = addAction(text);
+  newAction->setIcon(icon);
   return newAction;
 }
 
@@ -424,20 +414,6 @@ void KSelectAction::changeItem( int index, const QString& text )
   actions()[index]->setText( d->makeMenuText( text ) );
 }
 
-static KAction *NewAction (KSelectAction *self, const QString &text)
-{
-  KAction* action = new KAction(text, self->parentCollection(), 0);
-
-  if (!self->menuAccelsEnabled ()) {
-    action->setText(text);
-    action->setShortcut(QKeySequence());
-  }
-
-  action->setShortcutConfigurable(false);
-
-  return action;
-}
-
 void KSelectAction::setItems( const QStringList &lst )
 {
   //kDebug (129) << "KSelectAction::setItems(" << lst << ")" << endl;
@@ -446,8 +422,7 @@ void KSelectAction::setItems( const QStringList &lst )
 
   foreach (const QString& string, lst) {
     if ( !string.isEmpty() ) {
-      KAction* action = ::NewAction (this, string);
-      addAction(action);
+      addAction(string);
     } else {
       QAction* action = new QAction(this);
       action->setSeparator(true);
@@ -558,8 +533,7 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
     triggeringCombo->removeItem (index);
     triggeringCombo->blockSignals (false);
 
-    KAction* newAction = ::NewAction (this, newItemText);
-    addAction (newAction);
+    KAction *newAction = addAction (newItemText);
 
     newAction->trigger();
   } else {

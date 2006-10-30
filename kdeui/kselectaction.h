@@ -10,6 +10,7 @@
               (C) 2005-2006 Hamish Rodda <rodda@kde.org>
               (C) 2006 Albert Astals Cid <aacid@kde.org>
               (C) 2006 Clarence Dang <dang@kde.org>
+              (C) 2006 Michel Hermier <michel.hermier@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -256,11 +257,13 @@ public:
     QAction* action(const QString& text, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
 
     /**
-     *  Sets the currently checked item.
+     * Sets the currently checked item.
      *
-     *  @param item the QAction to become the currently checked item.
+     * @param item the QAction to become the currently checked item.
+     *
+     * \return \e true if a corresponding action was found and successfully checked.
      */
-    void setCurrentAction(QAction* action);
+    bool setCurrentAction(QAction* action);
 
     /**
      * \overload setCurrentAction(QAction*)
@@ -298,16 +301,20 @@ public:
      *
      * Convenience function which creates an action from \a text and inserts it into
      * the list of selectable actions.
+     *
+     * The newly create is checkable and not user configurable.
      */
-    QAction* addAction(const QString& text);
+    KAction* addAction(const QString& text);
 
     /**
      * \overload addAction(QAction* action)
      *
      * Convenience function which creates an action from \a text and \a icon and inserts it into
      * the list of selectable actions.
+     *
+     * The newly create is checkable and not user configurable.
      */
-    QAction* addAction(const QIcon& icon, const QString& text);
+    KAction* addAction(const KIcon& icon, const QString& text);
 
     /**
      * Remove the specified \a action from this action selector.
