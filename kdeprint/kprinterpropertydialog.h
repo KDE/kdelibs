@@ -50,7 +50,7 @@ protected:
 	void collectOptions(QMap<QString,QString>& opts, bool incldef = false);
 
 protected Q_SLOTS:
-	void slotCurrentChanged(QWidget*);
+	void slotCurrentChanged(int);
 	void slotUser1();
 	void slotOk();
 

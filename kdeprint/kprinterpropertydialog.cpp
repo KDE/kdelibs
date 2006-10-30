@@ -41,7 +41,7 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
 	setDefaultButton(KDialog::Ok);
 	// set a margin
 	m_tw = new QTabWidget(this);
-	connect(m_tw,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
+	connect(m_tw,SIGNAL(currentChanged(int)),SLOT(slotCurrentChanged(int)));
 	connect(this,SIGNAL(user1Clicked()),SLOT(slotUser1()));
 	connect(this,SIGNAL(okClicked()),SLOT(slotOk()));
 	setMainWidget(m_tw);
@@ -58,10 +58,10 @@ KPrinterPropertyDialog::~KPrinterPropertyDialog()
 	delete m_driver;
 }
 
-void KPrinterPropertyDialog::slotCurrentChanged(QWidget *w)
+void KPrinterPropertyDialog::slotCurrentChanged(int index)
 {
 	if (m_current) m_current->getOptions(m_options,true);
-	m_current = (KPrintDialogPage*)w;
+	m_current = (KPrintDialogPage*)m_tw->widget(index);
 	if (m_current) m_current->setOptions(m_options);
 }
 
@@ -69,6 +69,8 @@ void KPrinterPropertyDialog::addPage(KPrintDialogPage *page)
 {
 	m_tw->addTab(page,page->title());
 	m_pages.append(page);
+	// QTabWidget does not emit currentChanged on inserting the first page
+	if (m_pages.count() == 1) slotCurrentChanged(0);
 }
 
 bool KPrinterPropertyDialog::synchronize()
