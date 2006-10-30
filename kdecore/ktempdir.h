@@ -150,7 +150,7 @@ protected:
    bool create(const QString &directoryPrefix,  int mode);
 
 private:
-    Q_DISABLE_COPY(KTempDir);
+    Q_DISABLE_COPY(KTempDir)
     class Private;
     Private * const d;
 };
