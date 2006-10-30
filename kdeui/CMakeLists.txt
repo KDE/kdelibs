@@ -32,6 +32,7 @@ set(kdeui_LIB_SRCS
  krecentfilesaction.cpp
  kfontaction.cpp
  kfontsizeaction.cpp
+ kcodecaction.cpp
  kactionmenu.cpp
  ktoolbarpopupaction.cpp
  ktoggletoolbaraction.cpp

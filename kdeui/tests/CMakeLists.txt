@@ -524,6 +524,18 @@ target_link_libraries(kactiontest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
+set(kcodecactiontest_SRCS
+kcodecactiontest.cpp
+)
+
+kde4_automoc(kcodecactiontest ${kcodecactiontest_SRCS})
+
+kde4_add_executable(kcodecactiontest RUN_UNINSTALLED ${kcodecactiontest_SRCS})
+
+target_link_libraries(kcodecactiontest ${KDE4_KDEUI_LIBS})
+
+########### next target ###############
+
 set(ktoolbartest_SRCS
 ktoolbartest.cpp
 )
