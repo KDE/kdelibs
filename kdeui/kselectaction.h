@@ -302,7 +302,7 @@ public:
      * Convenience function which creates an action from \a text and inserts it into
      * the list of selectable actions.
      *
-     * The newly create is checkable and not user configurable.
+     * The newly created action is checkable and not user configurable.
      */
     KAction* addAction(const QString& text);
 
@@ -312,7 +312,7 @@ public:
      * Convenience function which creates an action from \a text and \a icon and inserts it into
      * the list of selectable actions.
      *
-     * The newly create is checkable and not user configurable.
+     * The newly created action is checkable and not user configurable.
      */
     KAction* addAction(const KIcon& icon, const QString& text);
 
