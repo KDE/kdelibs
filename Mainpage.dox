@@ -50,6 +50,9 @@
 	* - <a href="dnssd/html/index.html"><b>dnssd</b></a>
         *   (<a href="dnssd/html/classes.html">classes</a>)\n
 	*   <i>Network sevices publishing and discovery.</i>
+	* - <a href="solid/html/index.html"><b>Solid</b></a>
+        *   (<a href="solid/html/classes.html">classes</a>)\n
+	*   <i>KDE Hardware Discovery and Management classes.</i>
 
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
