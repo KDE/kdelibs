@@ -163,7 +163,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 			int	i=1;
 			while (i < args.count())
 			{
-				if (args[i].left(2) != "-P")
+				if (!args[i].startsWith(QLatin1String("-P")))
 					i++;
 				else
 				{

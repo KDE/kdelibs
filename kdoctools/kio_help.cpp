@@ -183,7 +183,7 @@ void HelpProtocol::get( const KUrl& url )
     QString file = target.path();
 
     if ( mGhelp ) {
-      if ( file.right( 4 ) != ".xml" ) {
+      if ( !file.endsWith( QLatin1String( ".xml" ) ) ) {
          get_file( target );
          return;
       }
@@ -196,7 +196,7 @@ void HelpProtocol::get( const KUrl& url )
             if (fi.isDir()) {
                 file = file + "/index.docbook";
             } else {
-                if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
+                if ( !file.endsWith( QLatin1String( ".html" ) ) || !compareTimeStamps( file, docbook_file ) ) {
                     get_file( target );
                     return;
                 } else

@@ -306,8 +306,8 @@ static QString getFunction(const QString &n, const QString &className = QString:
 
 static void addQuotes( QString &s )
 {
-  if ( s.left( 1 ) != "\"" ) s.prepend( "\"" );
-  if ( s.right( 1 ) != "\"" ) s.append( "\"" );
+  if ( !s.startsWith( '"' ) s.prepend( '"' );
+  if ( !s.endsWith( '"' ) s.append( '"' );
 }
 
 static QString quoteString( const QString &s )

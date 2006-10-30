@@ -767,7 +767,7 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
 		setOption(it.key(), it.value());
-		if (it.key().left(4) != "kde-")
+		if (!it.key().startsWith(QLatin1String("kde-")))
 			d->m_impl->broadcastOption(it.key(),it.value());
 	}
 }

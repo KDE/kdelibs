@@ -3617,7 +3617,7 @@ try_again:
                 m_strMimeType != "application/x-tgz" &&
                 m_strMimeType != "application/x-targz" &&
                 m_strMimeType != "application/x-gzip" &&
-                m_request.url.path().right(3) != ".gz")
+                !m_request.url.path().endsWith(QLatin1String(".gz")))
                 )
      {
         // Unzip!

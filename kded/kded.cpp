@@ -531,7 +531,7 @@ void Kded::recreate(const QDBusMessage &msg)
 void Kded::readDirectory( const QString& _path )
 {
   QString path( _path );
-  if ( path.right(1) != "/" )
+  if ( !path.endsWith( '/' ) )
     path += '/';
 
   if ( m_pDirWatch->contains( path ) ) // Already seen this one?

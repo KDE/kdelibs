@@ -208,7 +208,7 @@ int PTY::grantpt()
 #else
 
     // konsole_grantpty only does /dev/pty??
-    if (ptyname.left(8) != "/dev/pty")
+    if (!ptyname.startsWith(QLatin1String("/dev/pty"))
 	return 0;
 
     // Use konsole_grantpty:
