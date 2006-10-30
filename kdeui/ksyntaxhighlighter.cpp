@@ -319,7 +319,8 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     }
 
     slotDictionaryChanged();
-    startTimer( 2 * 1000 );
+    // whats this good for?
+    //startTimer( 2 * 1000 );
 }
 
 KDictSpellingHighlighter::~KDictSpellingHighlighter()
