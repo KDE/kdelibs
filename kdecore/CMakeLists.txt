@@ -82,7 +82,6 @@ if (UNIX)
       kwinmodule.cpp 
       network/khttpproxysocketdevice.cpp
       network/ksockssocketdevice.cpp
-      network/knetworkinterface.cpp 
       fakes.c )
 endif (UNIX)
 
