@@ -7,17 +7,6 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 
 ########### next target ###############
-if (UNIX)
-   set(netif_SRCS netif.cpp )
-   
-   kde4_automoc(${netif_SRCS})
-   
-   kde4_add_executable(netif ${netif_SRCS})
-   
-   target_link_libraries(netif  ${KDE4_KDECORE_LIBS} )
-endif (UNIX)
-
-########### next target ###############
 
 set(resolution_SRCS resolution.cpp )
 
