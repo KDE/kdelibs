@@ -36,7 +36,6 @@ void KFileItemTest::testPermissionsString()
 {
     // Directory
     KTempDir tempDir;
-    tempDir.setAutoDelete(true);
     KFileItem dirItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));

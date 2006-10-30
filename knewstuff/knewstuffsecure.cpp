@@ -52,7 +52,6 @@ bool KNewStuffSecure::install(const QString &fileName)
 
   removeTempDirectory();
   m_tempDir = new KTempDir();
-  m_tempDir->setAutoDelete(true);
   KTar tar(fileName, "application/x-gzip");
   if (tar.open(QIODevice::ReadOnly))
   {
@@ -176,7 +175,6 @@ void KNewStuffSecure::uploadResource(const QString& fileName)
   connect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
   removeTempDirectory();
   m_tempDir = new KTempDir();
-  m_tempDir->setAutoDelete(true);
   QFileInfo f(fileName);
   m_signedFileName = m_tempDir->name() + '/' + f.fileName();
   KIO::NetAccess::file_copy(KUrl(fileName), KUrl(m_signedFileName), -1, true);

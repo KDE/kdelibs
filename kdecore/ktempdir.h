@@ -71,18 +71,19 @@ public:
 
 
    /**
-    * The destructor deletes the directory and its contents if autoDelete
+    * The destructor deletes the directory and its contents if autoRemove
     * is set to true.
-    * @see setAutoDelete.
+    * @see setAutoRemove.
     **/
    ~KTempDir();
 
    /**
-    * Turn automatic deletion on or off.
-    * Automatic deletion is off by default.
-    * @param autoDelete true to turn automatic deletion on
+    * Turn automatic deletion of the directory on or off.
+    * Automatic deletion is on by default.
+    * @param autoRemove toggle automatic deletion on or off
+    * @port4 The default for setAutoRemove() is now true
     **/
-   void setAutoDelete(bool autoDelete);
+   void setAutoRemove(bool autoRemove);
 
    /**
     * Returns the status of the directory creation  based on errno.
@@ -102,15 +103,6 @@ public:
     *         directory has failed or the directory has been unlinked
     **/
    QString name() const;
-
-
-   /**
-    * Returns the QDir* of the temporary directory.
-    * @return QDir directory information of the directory or 0 if there is
-    *         no managed directory
-    * @note The caller has to free the pointer returned.
-    **/
-   QDir *qDir();
 
    /**
     * Deletes the directory recursively

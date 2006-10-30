@@ -145,7 +145,6 @@ static void testCopyTo( KArchive* archive )
 {
     const KArchiveDirectory* dir = archive->directory();
     KTempDir tmpDir;
-    tmpDir.setAutoDelete(true);
     const QString dirName = tmpDir.name();
 
     dir->copyTo( dirName );

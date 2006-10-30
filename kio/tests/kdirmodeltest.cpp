@@ -81,7 +81,6 @@ void KDirModelTest::initTestCase()
      * PATH/subdir/subsubdir
      * PATH/subdir/subsubdir/testfile
      */
-    m_tempDir.setAutoDelete(true);
     const QString path = m_tempDir.name();
     createTestFile(path+"toplevelfile_1");
     createTestFile(path+"toplevelfile_2");

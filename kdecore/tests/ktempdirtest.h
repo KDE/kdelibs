@@ -25,7 +25,7 @@ class KTempDirTest : public QObject
 {
 	Q_OBJECT
 private Q_SLOTS:
-	void testBasic();
+	void testNoDelete();
 	void testAutoDelete();
 	void testCreateSubDir();
 };

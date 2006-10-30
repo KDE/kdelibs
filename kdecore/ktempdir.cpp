@@ -55,11 +55,11 @@ public:
     int error;
     QString tmpName;
     bool exists;
-    bool autoDelete;
+    bool autoRemove;
     
     Private()
     {
-        autoDelete = false;
+        autoRemove = true;
         exists = false;
         error=0;
     }
@@ -108,7 +108,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
 KTempDir::~KTempDir()
 {
-    if (d->autoDelete) {
+    if (d->autoRemove) {
         unlink();
     }
 
@@ -130,15 +130,9 @@ bool KTempDir::exists() const
     return d->exists;
 }
 
-QDir * KTempDir::qDir()
+void KTempDir::setAutoRemove(bool autoRemove)
 {
-    if (d->exists) return new QDir(d->tmpName);
-    return 0;
-}
-
-void KTempDir::setAutoDelete(bool autoDelete)
-{
-    d->autoDelete = autoDelete;
+    d->autoRemove = autoRemove;
 }
 
 void KTempDir::unlink()

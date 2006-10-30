@@ -50,7 +50,6 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     kDebug() << k_funcinfo << endl;
     m_completion = new KUrlCompletion;
     m_tempDir = new KTempDir;
-    m_tempDir->setAutoDelete( true );
     m_dir = m_tempDir->name();
     kDebug() << "m_dir=" << m_dir << endl;
     Q_ASSERT( m_dir.endsWith( "/" ) );
