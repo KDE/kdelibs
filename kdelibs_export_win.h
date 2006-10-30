@@ -86,14 +86,6 @@
 # endif
 #endif
 
-#ifndef DCOP_EXPORT
-# ifdef MAKE_DCOP_LIB
-#  define DCOP_EXPORT KDE_EXPORT
-# else
-#  define DCOP_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KPARTS_EXPORT
 # ifdef MAKE_KPARTS_LIB
 #  define KPARTS_EXPORT KDE_EXPORT
