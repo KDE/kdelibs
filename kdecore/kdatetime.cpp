@@ -1322,16 +1322,10 @@ bool KDateTime::operator<(const KDateTime &other) const
 {
     if (d == other.d)
         return false;   // the two instances share the same data
-    bool dates = (d->dateOnly() || other.d->dateOnly());
-    if (dates)
-    {
-        if (d->dateOnly() && other.d->dateOnly())
-            return d->date() < other.d->date();
-    }
     if (d->equalSpec(*other.d))
     {
         // Both instances are in the same time zone, so compare directly
-        if (dates)
+        if (d->dateOnly() || other.d->dateOnly())
             return d->date() < other.d->date();
         if (d->secondOccurrence() == other.d->secondOccurrence())
             return d->dt() < other.d->dt();
@@ -1344,11 +1338,17 @@ bool KDateTime::operator<(const KDateTime &other) const
         if (diff < -1)
             return false;
     }
-
-    QDateTime thisDt = d->toUtc();
     if (d->dateOnly())
-        thisDt = thisDt.addSecs(86400 - 1);    // this instance is date-only - get end of its day
-    return thisDt < other.d->toUtc();
+    {
+        // This instance is date-only, so we need to compare the end of its
+        // day with the other value. Note that if the other value is date-only,
+	// we want to compare with the start of its day, which will happen
+	// automatically.
+        KDateTime kdt(*this);
+        kdt.setTime(QTime(23,59,59,999));
+        return kdt.d->toUtc() < other.d->toUtc();
+    }
+    return d->toUtc() < other.d->toUtc();
 }
 
 QString KDateTime::toString(const QString &format) const

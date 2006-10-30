@@ -1455,10 +1455,10 @@ class KDECORE_EXPORT KDateTime
      * the result cannot be guaranteed to be correct, since by definition they
      * contain no information about time zones or daylight savings changes.
      *
-     * If both instance are date-only, they are considered simultaneous if both
+     * If both instances are date-only, they are considered simultaneous if both
      * their start of day and end of day times are simultaneous with each
      * other. (Both start and end of day times need to be considered in case a
-     * daylight savings change occurs during that day.)
+     * daylight saving change occurs during that day.)
      *
      * @return @c true if the two instances represent the same time, @c false otherwise
      * @see compare()
@@ -1476,20 +1476,11 @@ class KDECORE_EXPORT KDateTime
      * the result cannot be guaranteed to be correct, since by definition they
      * contain no information about time zones or daylight savings changes.
      *
-     * If this instance is date-only and the other date/time, the comparison
-     * returns true if the date/time falls after the end of this instance's
-     * day. The comparison is performed by converting the date/time value to
-     * this instance's time zone, and comparing the resultant date with this
-     * instance's date.
-     *
-     * If this instance is a date/time value and the other is date-only, the
-     * comparison returns true if this date/time falls before the start of the
-     * date-only day. The comparison is performed by converting this date/time
-     * value to the other instance's time zone, and comparing the resultant
-     * date with the other instance's date.
-     *
-     * If both instances are date-only, the comparison is performed between the
-     * two dates, ignoring time zones.
+     * If one or both instances are date-only, the comparison returns true if
+     * this date/time or day, falls wholly before the other date/time or
+     * day. To achieve this, the time used in the comparison is the end of day
+     * (if this instance is date-only) or the start of day (if the other
+     * instance is date-only).
      *
      * @return @c true if this instance represents an earlier time than @p other,
      *         @c false otherwise
