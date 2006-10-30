@@ -259,7 +259,7 @@ public:
     /**
      * Sets the currently checked item.
      *
-     * @param item the QAction to become the currently checked item.
+     * @param action the QAction to become the currently checked item.
      *
      * \return \e true if a corresponding action was found and successfully checked.
      */
