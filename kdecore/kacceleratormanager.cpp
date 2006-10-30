@@ -37,6 +37,7 @@
 #include <q3textview.h>
 #include <qwidget.h>
 #include <QStackedWidget>
+#include <QDockWidget>
 #include <QTextDocument>
 
 #include <kstdaction.h>
@@ -110,6 +111,7 @@ private:
   static void manageWidget(QWidget *widget, Item *item);
   static void manageMenuBar(QMenuBar *mbar, Item *item);
   static void manageTabBar(QTabBar *bar, Item *item);
+  static void manageDockWidget(QDockWidget *dock, Item *item);
 
   static void calculateAccelerators(Item *item, QString &used);
 
@@ -211,6 +213,13 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     {
         cnt++;
 
+        QDockWidget *dock = qobject_cast<QDockWidget*>(it->m_widget);
+        if (dock)
+        {
+            if (checkChange(contents[cnt]))
+                dock->setWindowTitle(contents[cnt].accelerated());
+            continue;
+        }
         QTabBar *tabBar = qobject_cast<QTabBar*>(it->m_widget);
         if (tabBar)
         {
@@ -290,6 +299,15 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       QWidgetStackAccelManager::manage( wds );
       // return;
   }
+
+  QDockWidget *dock = qobject_cast<QDockWidget*>( w );
+  if ( dock )
+  {
+      //QWidgetStackAccelManager::manage( wds );
+      manageDockWidget(dock, item);
+    // return;
+  }
+
 
   QMenu *popupMenu = qobject_cast<QMenu*>(w);
   if (popupMenu)
@@ -396,6 +414,19 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
     it->m_content = KAccelString(content);
   }
 }
+
+void KAcceleratorManagerPrivate::manageDockWidget(QDockWidget *dock, Item *item)
+{
+    QString content = dock->windowTitle();
+    if (content.isEmpty())
+        return;
+
+    Item *it = new Item;
+    item->addChild(it);
+    it->m_widget = dock;
+    it->m_content = KAccelString(content);
+}
+
 
 void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 {
