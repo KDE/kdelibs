@@ -3,9 +3,9 @@
 #define KDEDIR "${CMAKE_INSTALL_PREFIX}"
 
 /* The compiled in system configuration prefix */
-#define KDESYSCONFDIR "${CMAKE_INSTALL_PREFIX}/etc"
+#define KDESYSCONFDIR "${SYSCONF_INSTALL_DIR}"
 
-#define __KDE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin"
+#define __KDE_BINDIR "${BIN_INSTALL_DIR}"
 
 /* Compile in the exec prefix to help kstddirs in finding dynamic libs
    (This was for exec_prefix != prefix - still needed?) */
