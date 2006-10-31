@@ -107,9 +107,9 @@ public:
     QString parsePermissions( mode_t perm ) const;
 
     /**
-     * We keep a copy of the UDSEntry since we need it for getStatusBarInfo
+     * The UDSEntry that contains the data for this fileitem, if it came from a directory listing.
      */
-    KIO::UDSEntry m_entry;
+    mutable KIO::UDSEntry m_entry;
     /**
      * The url of the file
      */
@@ -125,11 +125,6 @@ public:
      * ('%%' becomes '%', '%2F' becomes '/')
      */
     QString m_strText;
-
-    /**
-     * the user and group assigned to the file.
-     */
-    mutable QString m_user, m_group; // TODO remove, and use m_entry.stringValue( KIO::UDS_USER ) instead.
 
     /**
      * The filename in lower case (to speed up sorting)
@@ -172,7 +167,6 @@ public:
     // For special case like link to dirs over FTP
     QString m_guessedMimeType;
     mutable QString m_access;
-    QString m_iconName;
     QMap<const void*, void*> m_extra; // DEPRECATED
     mutable KFileMetaInfo m_metaInfo;
 
@@ -241,8 +235,6 @@ KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
     m_strText = other.m_strText;
     m_fileMode = other.m_fileMode;
     m_permissions = other.m_permissions;
-    m_user = other.m_user;
-    m_group = other.m_group;
     m_bLink = other.m_bLink;
     m_pMimeType = other.m_pMimeType;
     m_strLowerCaseName = other.m_strLowerCaseName;
@@ -259,8 +251,6 @@ KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
 
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
-
-    m_iconName = other.m_iconName;
 }
 #endif
 
@@ -270,8 +260,6 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 
     m_fileMode = m_entry.numberValue( KIO::UDS_FILE_TYPE );
     m_permissions = m_entry.numberValue( KIO::UDS_ACCESS );
-    m_user = m_entry.stringValue( KIO::UDS_USER );
-    m_group = m_entry.stringValue( KIO::UDS_GROUP );
     m_strName = m_entry.stringValue( KIO::UDS_NAME );
     m_strText = KIO::decodeFileName( m_strName );
     const QString urlStr = m_entry.stringValue( KIO::UDS_URL );
@@ -288,8 +276,6 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 
     m_guessedMimeType = m_entry.stringValue( KIO::UDS_GUESSED_MIME_TYPE );
     m_bLink = !m_entry.stringValue( KIO::UDS_LINK_DEST ).isEmpty(); // we don't store the link dest
-
-    m_iconName = m_entry.stringValue( KIO::UDS_ICON_NAME );
 
     const int hiddenVal = m_entry.numberValue( KIO::UDS_HIDDEN, -1 );
     m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
@@ -370,13 +356,14 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
              && m_bIsLocalUrl == item.m_bIsLocalUrl
              && m_fileMode == item.m_fileMode
              && m_permissions == item.m_permissions
-             && m_user == item.m_user
-             && m_group == item.m_group
+             && m_entry.stringValue( KIO::UDS_USER ) == item.m_entry.stringValue( KIO::UDS_USER )
+             && m_entry.stringValue( KIO::UDS_GROUP ) == item.m_entry.stringValue( KIO::UDS_GROUP )
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
              && size() == item.size()
              && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
-             && m_iconName == m_iconName );
+             && m_entry.stringValue( KIO::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDS_ICON_NAME )
+        );
 
     // Don't compare the mimetypes here. They might not be known, and we don't want to
     // do the slow operation of determining them here.
@@ -484,8 +471,6 @@ void KFileItem::refresh()
     d->m_fileMode = KFileItem::Unknown;
     d->m_permissions = KFileItem::Unknown;
     d->m_pMimeType = 0;
-    d->m_user.clear();
-    d->m_group.clear();
     d->m_metaInfo = KFileMetaInfo();
     d->m_hidden = KFileItemPrivate::Auto;
 
@@ -586,38 +571,44 @@ time_t KFileItem::time( unsigned int which ) const
 
 QString KFileItem::user() const
 {
-    if ( d->m_user.isEmpty() && d->m_bIsLocalUrl )
+    QString userName = d->m_entry.stringValue( KIO::UDS_USER );
+    if ( userName.isEmpty() && d->m_bIsLocalUrl )
     {
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
-            struct passwd *user = getpwuid( buff.st_uid );
-            if ( user != 0L )
-                d->m_user = QString::fromLocal8Bit(user->pw_name);
+            struct passwd *pwuser = getpwuid( buff.st_uid );
+            if ( pwuser != 0 ) {
+                userName = QString::fromLocal8Bit(pwuser->pw_name);
+                d->m_entry.insert( KIO::UDS_USER, userName );
+            }
         }
     }
-    return d->m_user;
+    return userName;
 }
 
 QString KFileItem::group() const
 {
-#ifdef Q_OS_UNIX
-    if (d->m_group.isEmpty() && d->m_bIsLocalUrl )
+    QString groupName = d->m_entry.stringValue( KIO::UDS_GROUP );
+    if (groupName.isEmpty() && d->m_bIsLocalUrl )
     {
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
+#ifdef Q_OS_UNIX
             struct group *ge = getgrgid( buff.st_gid );
-            if ( ge != 0L ) {
-                d->m_group = QString::fromLocal8Bit(ge->gr_name);
-                if (d->m_group.isEmpty())
-                    d->m_group.sprintf("%d",ge->gr_gid);
-            } else
-                d->m_group.sprintf("%d",buff.st_gid);
+            if ( ge != 0 ) {
+                groupName = QString::fromLocal8Bit(ge->gr_name);
+                if (groupName.isEmpty())
+                    groupName.sprintf("%d",ge->gr_gid);
+            }
+            else
+#endif
+                groupName.sprintf("%d",buff.st_gid);
+            d->m_entry.insert( KIO::UDS_GROUP, groupName );
         }
     }
-#endif
-    return d->m_group;
+    return groupName;
 }
 
 QString KFileItem::mimetype() const
@@ -667,7 +658,9 @@ QString KFileItem::mimeComment() const
 
 QString KFileItem::iconName() const
 {
-    if (!d->m_iconName.isEmpty()) return d->m_iconName;
+    const QString iconName = d->m_entry.stringValue( KIO::UDS_ICON_NAME );
+    if (!iconName.isEmpty())
+        return iconName;
 
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
@@ -706,8 +699,9 @@ int KFileItem::overlays() const
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
-    if ( !d->m_iconName.isEmpty() )
-        return DesktopIcon(d->m_iconName, _size, _state);
+    const QString iconName = d->m_entry.stringValue( KIO::UDS_ICON_NAME );
+    if ( !iconName.isEmpty() )
+        return DesktopIcon(iconName, _size, _state);
 
     if ( !d->m_pMimeType )
     {
@@ -912,7 +906,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 #ifndef Q_WS_WIN //TODO: show win32-specific permissions
            +start + i18n("Owner:") + mid + user() + " - " + group() + end +
            start + i18n("Permissions:") + mid +
-           d->parsePermissions(d->m_permissions) + end
+           permissionsString() + end
 #endif
            ;
 
@@ -972,8 +966,6 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_url = _url;
     d->m_strName.clear();
     d->m_strText.clear();
-    d->m_user.clear();
-    d->m_group.clear();
     d->m_strLowerCaseName.clear();
     d->m_pMimeType = 0;
     d->m_fileMode = KFileItem::Unknown;
@@ -985,7 +977,6 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_hidden = KFileItemPrivate::Auto;
     d->m_guessedMimeType.clear();
     d->m_metaInfo = KFileMetaInfo();
-    d->m_iconName.clear();
     d->m_bDetermineMimeTypeOnDemand = _determineMimeTypeOnDemand;
 
     d->readUDSEntry( _urlIsDirectory );
