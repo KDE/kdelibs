@@ -94,7 +94,8 @@ void Solid::ManagerBase::setManagerBackend( QObject *backend )
     d->backend = backend;
 }
 
-QObject *Solid::ManagerBase::loadBackend( const QString &description, const char *serviceName, const char *backendClassName )
+QObject *Solid::ManagerBase::loadBackend( const QString &description, const char *serviceName,
+                                          const char *backendClassName )
 {
     QStringList error_msg;
 
@@ -104,27 +105,19 @@ QObject *Solid::ManagerBase::loadBackend( const QString &description, const char
 
     foreach ( KService::Ptr ptr, offers )
     {
-        KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+        int error = 0;
+        backend = KService::createInstance<QObject>( ptr, 0, QStringList(), &error );
 
-        if ( factory )
+        if( backend != 0 )
         {
-            backend = factory->create( 0, backendClassName, QStringList() );
-
-            if( backend != 0 )
-            {
-                kDebug() << "Backend loaded: " << ptr->name() << endl;
-                break;
-            }
-            else
-            {
-                kDebug() << "Error loading '" << ptr->name() << "', factory's create method returned 0" << endl;
-                error_msg.append( i18n("Factory's create method failed") );
-            }
+            kDebug() << "Backend loaded: " << ptr->name() << endl;
+            break;
         }
         else
         {
-            kDebug() << "Error loading '" << ptr->name() << "', factory creation failed" << endl;
-            error_msg.append( i18n("Factory creation failed") );
+            QString error_string = KLibLoader::errorString( error );
+            kDebug() << "Error loading '" << ptr->name() << "', KLibLoader said: " << error_string << endl;
+            error_msg.append( error_string );
         }
     }
 
