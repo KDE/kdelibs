@@ -449,6 +449,9 @@ class KDECORE_EXPORT KDateTime
      * period whose start and end times are the same. They may therefore be
      * earlier or later, or may overlap or be contained one within the other.
      *
+     * Values may be OR'ed with each other in any combination of 'consecutive'
+     * intervals to represent different types of relationship.
+     *
      * In the descriptions of the values below,
      * - s1 = start time of this instance
      * - e1 = end time of this instance
@@ -457,31 +460,43 @@ class KDECORE_EXPORT KDateTime
      */
     enum Comparison
     {
-        Before,        /**< This KDateTime is strictly earlier than the other,
-                        *   i.e. e1 < s2.
-                        */
-        BeforeOverlap, /**< This KDateTime starts earlier than the other, but
-                        *   the time periods partly overlap, i.e. s1 < s2 &&
-                        *   e1 >= s2 && e1 < e2.
-                        */
-        Equal,         /**< Simultaneous, i.e. s1 = s2 && e1 = e2.
-                        */
-        Contains,      /**< The other KDateTime is contained within this
-                        *   date-only value, i.e. (s1 <= s2 && e1 > e2) ||
-                        *   (s1 < s2 && e1 >= e2).
-                        */
-        ContainedBy,   /**< This KDateTime is contained within the other
-                        *   date-only value, i.e. (s1 >= s2 && e1 < e2) ||
-                        *   (s1 > s2 && e1 <= e2).
-                        */
-        AfterOverlap,  /**< This KDateTime ends later than the other, but the
-                        *   time periods partly overlap, i.e. s1 > s2 &&
-                        *   s1 < e2 && e1 > e2.
-                        */
-        After          /**< This KDateTime is strictly later than the other,
-                        *   i.e. s1 > e2.
-                        */
-    };
+        Before  = 0x01, /**< This KDateTime is strictly earlier than the other,
+                         *   i.e. e1 < s2.
+                         */
+	AtStart = 0x02, /**< This KDateTime starts at the same time as the other,
+                         *   and ends before the end of the other,
+                         *   i.e. s1 = s2, e1 < e2.
+                         */
+	Inside  = 0x04, /**< This KDateTime starts after the start of the other,
+                         *   and ends before the end of the other,
+                         *   i.e. s1 > s2, e1 < e2.
+                         */
+	AtEnd   = 0x08, /**< This KDateTime starts after the start of the other,
+                         *   and ends at the same time as the other,
+                         *   i.e. s1 > s2, e1 = e2.
+                         */
+	After   = 0x10, /**< This KDateTime is strictly later than the other,
+                         *   i.e. s1 > e2.
+                         */
+        Equal = AtStart | Inside | AtEnd,
+                        /**< Simultaneous, i.e. s1 = s2 && e1 = e2.
+                         */
+        Outside = Before | AtStart | Inside | AtEnd | After,
+                        /**< This KDateTime starts before the start of the other,
+                         *   and ends after the end of the other,
+                         *   i.e. s1 < s2, e1 > e2.
+                         */
+ 	StartsAt = AtStart | Inside | AtEnd | After,
+                        /**< This KDateTime starts at the same time as the other,
+                         *   and ends after the end of the other,
+                         *   i.e. s1 = s2, e1 > e2.
+                         */
+ 	EndsAt = Before | AtStart | Inside | AtEnd
+                        /**< This KDateTime starts before the start of the other,
+                         *   and ends at the same time as the other,
+                         *   i.e. s1 < s2, e1 = e2.
+                         */
+   };
 
   
     /**

@@ -1255,7 +1255,7 @@ KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
                 end1 = kdt.d->toUtc();
             }
             else
-                end1 = d->toUtc();
+                end1 = start1;
             if (other.d->dateOnly())
             {
                 KDateTime kdt(other);
@@ -1263,7 +1263,7 @@ KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
                 end2 = kdt.d->toUtc();
             }
             else
-                end2 = other.d->toUtc();
+                end2 = start2;
         }
         else
         {
@@ -1277,11 +1277,19 @@ KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
                 end2 = other.d->dt();
         }
         if (start1 == start2)
-            return (end1 == end2) ? Equal : (end1 < end2) ? ContainedBy : Contains;
+            return !d->dateOnly() ? AtStart : (end1 == end2) ? Equal
+                 : (end1 < end2) ? static_cast<Comparison>(AtStart|Inside)
+                 : static_cast<Comparison>(AtStart|Inside|AtEnd|After);
         if (start1 < start2)
-            return (end1 < start2) ? Before : (end1 < end2) ? BeforeOverlap : Contains;
+            return (end1 < start2) ? Before
+                 : (end1 == end2) ? static_cast<Comparison>(Before|AtStart|Inside|AtEnd)
+                 : (end1 == start2) ? static_cast<Comparison>(Before|AtStart)
+                 : (end1 < end2) ? static_cast<Comparison>(Before|AtStart|Inside) : Outside;
         else
-            return (start1 > end2) ? After : (end1 > end2) ? AfterOverlap : ContainedBy;
+            return (start1 > end2) ? After
+                 : (start1 == end2) ? (end1 == end2 ? AtEnd : static_cast<Comparison>(AtEnd|After))
+                 : (end1 == end2) ? static_cast<Comparison>(Inside|AtEnd)
+                 : (end1 < end2) ? Inside : static_cast<Comparison>(Inside|AtEnd|After);
     }
     return (start1 == start2) ? Equal : (start1 < start2) ? Before : After;
 }
@@ -1342,8 +1350,8 @@ bool KDateTime::operator<(const KDateTime &other) const
     {
         // This instance is date-only, so we need to compare the end of its
         // day with the other value. Note that if the other value is date-only,
-	// we want to compare with the start of its day, which will happen
-	// automatically.
+        // we want to compare with the start of its day, which will happen
+        // automatically.
         KDateTime kdt(*this);
         kdt.setTime(QTime(23,59,59,999));
         return kdt.d->toUtc() < other.d->toUtc();
