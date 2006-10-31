@@ -13,6 +13,8 @@
 
 #define KDELIBSUFF "${KDELIBSUFF}"
 
+#define LIBEXEC_INSTALL_DIR "${LIBEXEC_INSTALL_DIR}" 
+
 /****************************/
 
 #cmakedefine   HAVE_BZIP2_SUPPORT 1
