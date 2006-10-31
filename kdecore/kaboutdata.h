@@ -589,19 +589,19 @@ class KDECORE_EXPORT KAboutData
      * Returns a list of authors.
      * @return author information (list of persons).
      */
-    const QList<KAboutPerson> authors() const;
+    QList<KAboutPerson> authors() const;
 
     /**
      * Returns a list of persons who contributed.
      * @return credit information (list of persons).
      */
-    const QList<KAboutPerson> credits() const;
+    QList<KAboutPerson> credits() const;
 
     /**
      * Returns a list of translators.
      * @return translators information (list of persons)
      */
-    const QList<KAboutTranslator> translators() const;
+    QList<KAboutTranslator> translators() const;
 
     /**
      * Returns a message about the translation team.

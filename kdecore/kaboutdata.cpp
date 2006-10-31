@@ -465,19 +465,19 @@ KAboutData::internalBugAddress() const
    return d->_bugEmailAddress;
 }
 
-const QList<KAboutPerson>
+QList<KAboutPerson>
 KAboutData::authors() const
 {
    return d->_authorList;
 }
 
-const QList<KAboutPerson>
+QList<KAboutPerson>
 KAboutData::credits() const
 {
    return d->_creditList;
 }
 
-const QList<KAboutTranslator>
+QList<KAboutTranslator>
 KAboutData::translators() const
 {
     QList<KAboutTranslator> personList;
