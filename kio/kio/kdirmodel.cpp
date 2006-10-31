@@ -16,6 +16,7 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #include "kdirmodel.h"
 #include "kdirlister.h"
 #include "kfileitem.h"
@@ -32,10 +33,11 @@ class KDirModelNode;
 class KDirModelNode
 {
 public:
-    KDirModelNode( KDirModelNode* parent = 0 ) :
-        m_item(0),
+    KDirModelNode( KDirModelNode* parent, KFileItem* item ) :
         m_childNodes(),
-        m_parent(parent)
+        m_item(item),
+        m_parent(parent),
+        m_preview()
     {
     }
     ~KDirModelNode() {
@@ -46,34 +48,39 @@ public:
     KFileItem* item() const { return m_item; }
     KDirModelNode* parent() const { return m_parent; }
     // linear search
-    int rowNumber() const { if (!m_parent) return 0;
-        return m_parent->m_childNodes.indexOf(const_cast<KDirModelNode*>(this)); }
-
-    KFileItem* m_item;
+    int rowNumber() const {
+        if (!m_parent) return 0;
+        return m_parent->m_childNodes.indexOf(const_cast<KDirModelNode*>(this));
+    }
+    QIcon preview() const { return m_preview; }
+    void addPreview( const QPixmap& pix ) { m_preview.addPixmap(pix); }
+    void setPreview( const QIcon& icn ) { m_preview = icn; }
 
     // TODO maybe move this field to a DirNode subclass to save 4 bytes per file?
     QList<KDirModelNode *> m_childNodes;
 private:
+    KFileItem* m_item;
     KDirModelNode* const m_parent;
+    QIcon m_preview;
 };
 
 class KDirModelPrivate
 {
 public:
     KDirModelPrivate( KDirModel* model )
-        : q(model), m_dirLister(0), m_rootNode(new KDirModelNode) {
+        : q(model), m_dirLister(0), m_rootNode(new KDirModelNode(0, 0)) {
     }
     ~KDirModelPrivate() {
         delete m_rootNode;
     }
     void clear() {
         delete m_rootNode;
-        m_rootNode = new KDirModelNode;
+        m_rootNode = new KDirModelNode(0, 0);
     }
-    //KDirModelNode* nodeForFileItem(KFileItem* item) const;
-    KDirModelNode* nodeForUrl(const KUrl& _url) const;
+    QPair<int /*row*/, KDirModelNode*> nodeForUrl(const KUrl& url) const;
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
-    QModelIndex indexForNode(KDirModelNode* node) const;
+    QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
+    QModelIndex indexForUrl(const KUrl& url) const;
 
     KDirModel* q;
     KDirLister* m_dirLister;
@@ -83,14 +90,13 @@ public:
 // If we want to support arbitrary trees like "home:/ as a child of system:/" then,
 // we need to get the parent KFileItem in slotNewItems, and then we can use a QHash<KFileItem*,KDirModelNode*> cache.
 // For now we'll assume "child url = parent url + filename"
-
-KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const
+QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url) const // O(n*m)
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
     //kDebug() << k_funcinfo << url << endl;
     if (url == m_dirLister->url())
-        return m_rootNode;
+        return qMakePair(0, m_rootNode);
 
     const QString urlStr = url.url();
     KDirModelNode* node = m_rootNode;
@@ -100,11 +106,12 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const
         bool foundChild = false;
         QList<KDirModelNode *>::const_iterator it = node->m_childNodes.begin();
         const QList<KDirModelNode *>::const_iterator end = node->m_childNodes.end();
-        for ( ; it != end ; ++it ) {
+        int row = 0;
+        for ( ; it != end ; ++it, ++row ) {
             const KUrl u = (*it)->item()->url();
             if ( u == url ) {
                 //kDebug() << "Found! " << u << endl;
-                return *it;
+                return qMakePair(row, *it);
             }
             if ( urlStr.startsWith(u.url()) ) {
                 node = *it;
@@ -115,25 +122,25 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const
         }
         if (!foundChild) {
             //kDebug() << "child equal or starting with " << url << " not found" << endl;
-            return false;
+            return qMakePair(0, static_cast<KDirModelNode*>(0));
         }
         nodeUrl = node->item()->url();
         //kDebug() << " " << nodeUrl << endl;
     }
-    return 0;
+    return qMakePair(0, static_cast<KDirModelNode*>(0));
 }
 
-QModelIndex KDirModelPrivate::indexForNode(KDirModelNode* node) const
+// node -> index. If rowNumber is set (or node is root): O(1). Otherwise: O(n).
+QModelIndex KDirModelPrivate::indexForNode(KDirModelNode* node, int rowNumber) const
 {
     if (node == m_rootNode)
         return QModelIndex();
 
-    KDirModelNode* const parentNode = node->parent();
-    Q_ASSERT(parentNode);
-    const int row = parentNode->m_childNodes.indexOf(node);
-    return q->createIndex(row, 0, node);
+    Q_ASSERT(node->parent());
+    return q->createIndex(rowNumber == -1 ? node->rowNumber() : rowNumber, 0, node);
 }
 
+// index -> node. O(1)
 KDirModelNode* KDirModelPrivate::nodeForIndex(const QModelIndex& index) const
 {
     return index.isValid()
@@ -141,7 +148,19 @@ KDirModelNode* KDirModelPrivate::nodeForIndex(const QModelIndex& index) const
         : m_rootNode;
 }
 
+// url -> index. O(n*m)
+QModelIndex KDirModelPrivate::indexForUrl(const KUrl& url) const
+{
+    const QPair<int, KDirModelNode*> result = nodeForUrl(url); // O(n*m) (m is the depth from the root)
+    if (!result.second) {
+        kWarning() << "KDirModelPrivate::indexForUrl: " << url << " not found" << endl;
+        return QModelIndex();
+    }
+    return indexForNode(result.second, result.first); // O(1)
+}
 
+
+// We don't use QHash<KUrl,...> anymore, it's too slow.
 // Idea from George, to make QHash<KUrl,...> fast: - cache hash value into QUrl or KUrl
 // This also helps making operator== fast [which means operator== has to call qHash if cached value isn't there]
 // But it means invalidating the cached hash value when the url is modified,
@@ -218,18 +237,18 @@ void KDirModel::slotNewItems( const KFileItemList& items )
 
     //kDebug() << k_funcinfo << "dir=" << dir << endl;
 
-    KDirModelNode* dirNode = d->nodeForUrl(dir);
+    const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
+    KDirModelNode* dirNode = result.second;
 
     Q_ASSERT(dirNode);
     KFileItemList::const_iterator it = items.begin();
     const KFileItemList::const_iterator end = items.end();
     for ( ; it != end ; ++it ) {
-        KDirModelNode* node = new KDirModelNode( dirNode );
-        node->m_item = *it;
+        KDirModelNode* node = new KDirModelNode( dirNode, *it );
         dirNode->m_childNodes.append( node );
     }
 
-    const QModelIndex index = d->indexForNode(dirNode);
+    const QModelIndex index = d->indexForNode(dirNode, result.first); // O(1)
     const int newRowCount = dirNode->m_childNodes.count();
     kDebug() << k_funcinfo << items.count() << " in " << dir
              << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
@@ -244,19 +263,18 @@ void KDirModel::slotDeleteItem( KFileItem *item )
     //KUrl dir( item->url().upUrl() );
     //dir.adjustPath(KUrl::RemoveTrailingSlash);
 
-    KDirModelNode* node = d->nodeForUrl(item->url());
+    const QPair<int, KDirModelNode*> result = d->nodeForUrl(item->url()); // O(n*m)
+    const int rowNumber = result.first;
+    KDirModelNode* node = result.second;
     Q_ASSERT(node);
     if (!node)
         return;
 
-    const QModelIndex parentIndex = d->indexForNode(node->parent());
-    const int rowNumber = node->rowNumber();
-    //kDebug() << k_funcinfo << debugIndex(parentIndex) << " " << rowNumber << endl;
-
-    KDirModelNode* dirNode = d->nodeForIndex(parentIndex);
+    KDirModelNode* dirNode = node->parent();
     Q_ASSERT(dirNode);
     dirNode->m_childNodes.removeAt(rowNumber);
 
+    QModelIndex parentIndex = d->indexForNode(dirNode); // O(n)
     beginRemoveRows( parentIndex, rowNumber, rowNumber );
     endRemoveRows();
 }
@@ -268,7 +286,7 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
     for ( KFileItemList::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
-        const QModelIndex index = d->indexForNode(d->nodeForUrl( (*fit)->url() ));
+        const QModelIndex index = d->indexForUrl( (*fit)->url() ); // O(n*m); maybe we could look up to the parent only once
         if (!topLeft.isValid() || index.row() < topLeft.row()) {
             topLeft = index;
         }
@@ -300,7 +318,8 @@ int KDirModel::columnCount( const QModelIndex & ) const
 QVariant KDirModel::data( const QModelIndex & index, int role ) const
 {
     if (index.isValid()) {
-        KFileItem* item = static_cast<KDirModelNode*>(index.internalPointer())->item();
+        KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
+        KFileItem* item = node->item();
         switch (role) {
         case Qt::DisplayRole:
             switch (index.column()) {
@@ -326,6 +345,10 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             break;
         case Qt::DecorationRole:
             if (index.column() == Name) {
+                if (!node->preview().isNull()) {
+                    //kDebug() << item->url() << " preview found" << endl;
+                    return node->preview();
+                }
                 Q_ASSERT(item);
                 const int overlays = item->overlays();
                 //kDebug() << item->url() << " overlays=" << overlays << endl;
@@ -339,12 +362,38 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
 
 void KDirModel::sort( int column, Qt::SortOrder order )
 {
+    // Not implemented - we should probably use QSortFilterProxyModel instead.
     return QAbstractItemModel::sort(column, order);
 }
 
 bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int role )
 {
-    return QAbstractItemModel::setData(index, value, role);
+    switch (role) {
+    case Qt::DisplayRole:
+        // TODO handle renaming here?
+        break;
+    case Qt::DecorationRole:
+        if (index.column() == Name) {
+            Q_ASSERT(index.isValid());
+            // Set new pixmap - e.g. preview
+            KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
+            //kDebug() << "setting icon for " << node->item()->url() << endl;
+            Q_ASSERT(node);
+            if (value.type() == QVariant::Icon) {
+                const QIcon icon(qvariant_cast<QIcon>(value));
+                Q_ASSERT(!icon.isNull());
+                node->setPreview(icon);
+            } else if (value.type() == QVariant::Pixmap) {
+                node->addPreview(qvariant_cast<QPixmap>(value));
+            }
+            emit dataChanged(index, index);
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
 }
 
 int KDirModel::rowCount( const QModelIndex & parent ) const
@@ -394,6 +443,11 @@ KFileItem* KDirModel::itemForIndex( const QModelIndex& index ) const
     } else {
         return static_cast<KDirModelNode*>(index.internalPointer())->item();
     }
+}
+
+QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
+{
+    return d->indexForUrl(item->url()); // O(n*m)
 }
 
 QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) const

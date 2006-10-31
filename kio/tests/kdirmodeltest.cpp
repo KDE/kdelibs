@@ -23,11 +23,13 @@
 #include <kdirlister.h>
 
 #include <qtest_kde.h>
-#include <kdebug.h>
+
 #ifdef Q_OS_UNIX
 #include <utime.h>
-#include <kdirlister.h>
 #endif
+#include <kdebug.h>
+#include <kio/deletejob.h>
+#include <kio/netaccess.h>
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
@@ -248,4 +250,25 @@ void KDirModelTest::testReload()
 {
     fillModel( true );
     testItemForIndex();
+}
+
+void KDirModelTest::testDeleteFile()
+{
+    const QString file = m_tempDir.name() + "toplevelfile_1";
+    const KUrl url(file);
+
+    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+             this, SIGNAL(exitLoop()) );
+
+    KIO::DeleteJob* job = KIO::del(url);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then rowsRemoved() was emitted - all good.
+    const int topLevelRowCount = m_dirModel.rowCount();
+    QCOMPARE(topLevelRowCount, 3); // one less than before
 }

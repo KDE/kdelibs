@@ -129,3 +129,4 @@ void KFileItemTest::testCmp()
     QVERIFY(fileItem.cmp(fileItem2));
 }
 
+// TODO test KFileItem(UDSEntry), for instance doing a synchronous kio listing or stat.

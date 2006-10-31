@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testItemForIndex();
     void testData();
     void testReload();
+    void testDeleteFile();
 
 Q_SIGNALS:
     void exitLoop();
