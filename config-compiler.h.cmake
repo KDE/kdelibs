@@ -3,5 +3,5 @@
 
 #define KDE_COMPILING_OS  "${CMAKE_SYSTEM}"
 
-#define KDE_DISTRIBUTION_TEXT "compiled sources"
+#define KDE_DISTRIBUTION_TEXT "${KDE_DISTRIBUTION_TEXT}"
 
