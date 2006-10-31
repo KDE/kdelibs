@@ -31,6 +31,8 @@ class KInputDialogPrivate;
 class KListBox;
 
 #include <kdialog.h>
+#include <limits.h>
+#include <float.h>
 
 /**
  * The KInputDialog class provides a simple dialog to get a single value
@@ -161,7 +163,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      */
 
     static int getInteger( const QString &caption, const QString &label,
-        int value=0, int minValue=-2147483647, int maxValue=2147483647,
+        int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
         int step=1, int base=10, bool *ok=0, QWidget *parent=0 );
 
     /**
@@ -169,7 +171,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * above except it assumes base to be 10, i.e. accepts decimal numbers.
      */
     static int getInteger( const QString &caption, const QString &label,
-        int value=0, int minValue=-2147483647, int maxValue=2147483647,
+        int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
         int step=1, bool *ok=0, QWidget *parent=0 );
 
     /**
@@ -195,8 +197,8 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @return Number user entered if Ok was pressed, else 0
      */
     static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-2147483647,
-        double maxValue=2147483647, double step=0.1, int decimals=1,
+        double value=0, double minValue=-DBL_MAX,
+        double maxValue=DBL_MAX, double step=0.1, int decimals=1,
         bool *ok=0, QWidget *parent=0 );
 
     /**
@@ -204,8 +206,8 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * the above function.
      */
     static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-2147483647,
-        double maxValue=2147483647, int decimals=1, bool *ok=0,
+        double value=0, double minValue=-DBL_MAX,
+        double maxValue=DBL_MAX, int decimals=1, bool *ok=0,
         QWidget *parent=0 );
 
     /**
