@@ -1032,7 +1032,8 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     // Now check our overflow objects.
     if (m_overflowList) {
         QVector<RenderLayer*>::iterator it = m_overflowList->end();
-        for (--it; it != m_overflowList->end(); --it) {
+        while (it != m_overflowList->begin()) {
+            --it;
             insideLayer = (*it)->nodeAtPointForLayer(rootLayer, info,  xMousePos, yMousePos, hitTestRect);
             if (insideLayer)
                 return insideLayer;
