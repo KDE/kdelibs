@@ -155,10 +155,8 @@ public:
 
     bool isOverflowOnly() const { return m_isOverflowOnly; }
 
-#ifdef APPLE_CHANGES
-    bool isTransparent();
-    RenderLayer* transparentAncestor();
-#endif
+    bool isTransparent() const;
+    RenderLayer* transparentAncestor() const;
 
     RenderLayer* root() {
         RenderLayer* curr = this;

@@ -166,7 +166,7 @@ public:
                                bool checkParent=true);
     virtual void positionChildLayers() { }
     virtual bool requiresLayer() const {
-        return isRoot()/* ### */ || isPositioned() || isRelPositioned() || hasOverflowClip();
+        return isRoot()/* ### */ || isPositioned() || isRelPositioned() || hasOverflowClip() || style()->opacity() < 1.0f;
     }
 
     // ### rename to overflowClipRect and clipRect

@@ -317,19 +317,17 @@ RenderLayer* RenderLayer::enclosingPositionedAncestor() const
     return curr;
 }
 
-#ifdef APPLE_CHANGES
-bool RenderLayer::isTransparent()
+bool RenderLayer::isTransparent() const
 {
     return m_object->style()->opacity() < 1.0f;
 }
 
-RenderLayer* RenderLayer::transparentAncestor()
+RenderLayer* RenderLayer::transparentAncestor() const
 {
     RenderLayer* curr = parent();
     for ( ; curr && curr->m_object->style()->opacity() == 1.0f; curr = curr->parent());
     return curr;
 }
-#endif
 
 void* RenderLayer::operator new(size_t sz, RenderArena* renderArena) throw()
 {
@@ -858,11 +856,10 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     updateZOrderLists();
     updateOverflowList();
 
-#ifdef APPLE_CHANGES
     // Set our transparency if we need to.
+    float previousOpacity = p->opacity();
     if (isTransparent())
-        p->beginTransparencyLayer(renderer()->style()->opacity());
-#endif
+        p->setOpacity(renderer()->style()->opacity());
 
     // We want to paint our layer, but only if we intersect the damage rect.
     bool shouldPaint = intersectsDamageRect(layerBounds, damageRect);
@@ -958,11 +955,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     }
 #endif
 
-#ifdef APPLE_CHANGES
     // End our transparency layer
     if (isTransparent())
-        p->endTransparencyLayer();
-#endif
+        p->setOpacity(previousOpacity);
 }
 
 bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
@@ -1493,8 +1488,7 @@ void RenderLayer::dump(QTextStream &ts, const QString &ind)
 bool RenderLayer::shouldBeOverflowOnly() const
 {
     return renderer()->style() && renderer()->hasOverflowClip() &&
-           !renderer()->isPositioned() &&  !renderer()->isRelPositioned();
-           /* && !isTransparent(); */
+           !renderer()->isPositioned() && !renderer()->isRelPositioned() && !isTransparent();
 }
 
 void RenderLayer::styleChanged()
