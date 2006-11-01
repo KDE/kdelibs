@@ -54,6 +54,7 @@ class KPlotPoint;
  *
  *Example of usage:
  *
+ * @code
  *  KPlotWidget *kpw = new KPlotWidget( this, 0.0, 1.0, 0.0, 1.0 );
  *  KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
  *
@@ -63,6 +64,7 @@ class KPlotPoint;
  *    
  *  kpw->addObject( kpo );
  *  update();
+ * @endcode
  *
  *@note KPlotWidget will take care of the objects added to it, so when
  *clearing the objects list (eg with clearObjectList()) any previous 
