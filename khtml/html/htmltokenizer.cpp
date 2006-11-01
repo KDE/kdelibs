@@ -395,7 +395,7 @@ void HTMLTokenizer::scriptHandler()
         CachedScript* cs = 0;
 
         // forget what we just got, load from src url instead
-        if ( !currentScriptSrc.isEmpty() && javascript && 
+        if ( !currentScriptSrc.isEmpty() && javascript &&
              (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) )) {
             cachedScript.enqueue(cs);
         }
@@ -601,6 +601,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
     if( start )
     {
         cBufferPos = 0;
+        entityLen = 0;
         Entity = SearchEntity;
     }
 
@@ -696,8 +697,8 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 if ( tag == NoTag ) {
                     const entity* e = kde_findEntity(cBuffer, cBufferPos);
                     if ( e && e->code < 256 ) {
-                        Entity = SearchSemicolon;
-                        break;
+                        EntityChar = e->code;
+                        entityLen = cBufferPos;
                     }
                 }
             }
@@ -705,8 +706,10 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             if(Entity == SearchSemicolon) {
                 if(cBufferPos > 1) {
                     const entity *e = kde_findEntity(cBuffer, cBufferPos);
-                    if(e && ( e->code < 256 || *src == ';' ))
+                    if(e && ( e->code < 256 || *src == ';' )) {
                         EntityChar = e->code;
+                        entityLen = cBufferPos;
+                    }
                 }
             }
             break;
@@ -723,7 +726,17 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             if ( !EntityChar.isNull() ) {
                 checkBuffer();
                 // Just insert it
-                src.push( EntityChar );
+                *dest++ = EntityChar;
+                if (entityLen > 0 && entityLen < cBufferPos) {
+                    int rem = cBufferPos - entityLen;
+                    for(int i = 0; i < rem; i++)
+                        dest[i] = cBuffer[i+entityLen];
+                    dest += rem;
+                    if (pre)
+                        prePos += rem;
+                }
+                if (pre)
+                    prePos++;
             } else {
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "unknown entity!" << endl;
@@ -734,7 +747,6 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 for(unsigned int i = 0; i < cBufferPos; i++)
                     dest[i] = cBuffer[i];
                 dest += cBufferPos;
-                Entity = NoEntity;
                 if (pre)
                     prePos += cBufferPos+1;
             }
@@ -1154,7 +1166,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/livescript") != 0 &&
 			type.compare("application/x-javascript") != 0 &&
 			type.compare("application/x-ecmascript") != 0 &&
-			type.compare("application/javascript") != 0 && 
+			type.compare("application/javascript") != 0 &&
 			type.compare("application/ecmascript") != 0 )
                         javascript = false;
                 } else if( a ) {
