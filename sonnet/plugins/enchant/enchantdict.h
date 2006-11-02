@@ -22,7 +22,7 @@
 
 #include "speller.h"
 
-#include <enchant.h>
+#include <enchant/enchant.h>
 
 class QSpellEnchantDict : public KSpell2::Speller
 {

@@ -25,21 +25,25 @@
 
 #include <qobject.h>
 #include <qset.h>
-#include <enchant.h>
+#include <enchant/enchant.h>
+
+namespace KSpell2 {
+    class Speller;
+}
+using KSpell2::Speller;
 
 class QSpellEnchantClient : public KSpell2::Client
 {
     Q_OBJECT
-    Q_INTERFACES(QSpell::Client)
 public:
-    QSpellEnchantClient(QObject *parent=0);
+    QSpellEnchantClient(QObject *parent, const QStringList & /* args */);
     ~QSpellEnchantClient();
 
     virtual int reliability() const {
         return 30;
     }
 
-    virtual QSpell::Speller *createSpeller(const QString &language);
+    virtual Speller *createSpeller(const QString &language);
 
     virtual QStringList languages() const;
 

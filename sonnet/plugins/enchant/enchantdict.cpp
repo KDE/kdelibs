@@ -22,10 +22,12 @@
 #include <qtextcodec.h>
 #include <qdebug.h>
 
+using namespace KSpell2;
+
 QSpellEnchantDict::QSpellEnchantDict(EnchantBroker *broker,
                                      EnchantDict *dict,
                                      const QString &language)
-    : QSpell::Speller(language),
+    : Speller(language),
       m_broker(broker),
       m_dict(dict)
 {

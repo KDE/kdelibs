@@ -26,6 +26,8 @@
 typedef KGenericFactory<QSpellEnchantClient> EnchantClientFactory;
 K_EXPORT_COMPONENT_FACTORY(kspell_enchant, EnchantClientFactory("kspell_enchant"))
 
+using namespace KSpell2;
+
 static void enchantDictDescribeFn(const char * const lang_tag,
                                   const char * const provider_name,
                                   const char * const provider_desc,
@@ -42,8 +44,8 @@ static void enchantDictDescribeFn(const char * const lang_tag,
 
 }
 
-QSpellEnchantClient::QSpellEnchantClient(QObject *parent)
-    : QSpell::Client(parent)
+QSpellEnchantClient::QSpellEnchantClient(QObject *parent, const QStringList& /* args */)
+    : Client(parent)
 {
     m_broker = enchant_broker_init();
     enchant_broker_list_dicts(m_broker,
@@ -56,7 +58,7 @@ QSpellEnchantClient::~QSpellEnchantClient()
     enchant_broker_free(m_broker);
 }
 
-QSpell::Speller *QSpellEnchantClient::createSpeller(const QString &language)
+Speller *QSpellEnchantClient::createSpeller(const QString &language)
 {
     EnchantDict *dict = enchant_broker_request_dict(m_broker,
                                                     language.toUtf8());
