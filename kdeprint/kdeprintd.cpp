@@ -263,7 +263,7 @@ void KDEPrintd::processRequest()
 	info.comment = i18n( "Printing system" );
 
 	QDataStream input( params, IO_WriteOnly );
-	input << info << i18n( "Authentication failed (user name=%1)" ).arg( info.username ) << 0 << req->seqNbr;
+	input << info << i18n( "Authentication failed (user name=%1)" ).arg( info.username ) << 0L << (long int) req->seqNbr;
 	if ( callingDcopClient()->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo,QString,long int,long int)",
 				params, replyType, reply ) )
 	{
