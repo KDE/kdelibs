@@ -165,19 +165,33 @@ for( x = 0; x < nodeList.length(); ++x )
         {
             var memberElement = tempClassNodeList.item(z).toElement();
             var memberKind = memberElement.attribute( 'kind' );
-            if ( memberKind == 'variable' )
+            if ( contains(memberKind,'typedef') || 
+                 contains(memberKind,'variable') )
             {
-                var memberType = memberElement.firstChildElement('type').toElement().toString();
-                memberType = stripQtKeywords(memberType);
-                if (contains(memberType, 'typedef'))
+                var typedefName = memberElement.firstChildElement('name').toElement().toString();
+                var typedefValue = '';
+
+                if (contains(memberKind, 'variable'))
                 {
-                    var typedefName = memberElement.firstChildElement('name').toElement().toString();
-                    var typedefValue = memberType.replace(/typedef/, '');
-                    typedefValue = typedefValue.replace(typedefName, '');
-                    typedefValue = stripWhitespace(typedefValue);
-                    typedef_array[typedefName] = typedefValue;
-                    println('   Added typedef ' + typedefName + ' => ' + typedefValue);
+                    var memberType = memberElement.firstChildElement('type').toElement().toString();
+                    memberType = stripQtKeywords(memberType);
+                    if (contains(memberType, 'typedef'))
+                        typedefName = memberElement.firstChildElement('name').toElement().toString();
+                    else
+                        continue;
+ 
+                   typedefValue = memberType;
                 }
+                else
+                {
+                    typedefValue = memberElement.firstChildElement('definition').toString();
+                }
+                typedefValue = typedefValue.replace(/typedef/, '');
+                typedefValue = typedefValue.replace(typedefName, '');
+                typedefValue = stripWhitespace(typedefValue);
+
+                typedef_array[typedefName] = typedefValue;
+                println('   Added typedef ' + typedefName + ' => ' + typedefValue);
             }
             else if ( memberKind == 'function' )
             {

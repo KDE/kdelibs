@@ -106,14 +106,14 @@ var data_types = {
     "QRegion" : 1,      "QSize" : 1,        "QSizeF" : 1,       "QSizePolicy" : 1,
     "QString" : 1,      "QStringList" : 1,  "QTextFormat" : 1,
     "QTextLength" : 1,  "QTime" : 1,        "uint" : 3,         "qulonglong" : 3,
-    "QUrl" : 1,
+    "QUrl" : 1, 
 
     // Other necessary qglobal.h types.
     "qreal" : 5,   "float" : 5,    "qint8" : 6,    "quint8" : 6,   "qint16" : 6, "quint16" : 6, 
     "qint32" : 6,  "quint32" : 6,  "qint64" : 6,   "quint64" : 6,
     "qulonglong" : 6,
     "char" : 6,  "uchar" : 6, "ushort" : 6,        "ulong" : 6, 
-    "short" : 6, "long" : 6,  "unsigned int" : 6
+    "short" : 6, "long" : 6,  "unsigned int" : 6,  "long long" : 6
 };
 
 // function isVariant( paramType )

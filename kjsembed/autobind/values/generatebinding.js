@@ -45,13 +45,13 @@ function extract_parameter( compound, param, paramIdx )
     if ( isBool(coreParamType) )
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractBool(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else if ( isPointer(coreParamType) )
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' =';
+            cppParamType + ' ' + paramVar + ' =';
 
         baseParamType = strip(cppParamType);
         if ( isObject(baseParamType, compound.objectTypes) )
@@ -61,17 +61,10 @@ function extract_parameter( compound, param, paramIdx )
 
         return extracted;
     }
-/*
-    else if( coreParamType == "bool *") // special case for some situations in QString/QByteArray 
-    {
-        extracted +=
-            '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
-    }
-*/
     else if ( isInteger(coreParamType) )  // integer value
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx; 	             '       bool ok = KJSEmbed::extractBool(exec, args, ' + paramIdx;
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -83,7 +76,7 @@ function extract_parameter( compound, param, paramIdx )
     else if ( isNumber(coreParamType) )  // integral value
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractNumber<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -97,7 +90,7 @@ function extract_parameter( compound, param, paramIdx )
         var enumHeading = compound.enums[paramType] + '::';
 
         extracted +=
-            '        ' + enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
+            enumHeading + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + enumHeading + paramType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + enumHeading + paramDefault.toString() + ');\n';
@@ -109,7 +102,7 @@ function extract_parameter( compound, param, paramIdx )
     else if ( compound.globalEnums[paramType] )  // Enum Value
     {
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + paramType + '>(exec, args, ' + paramIdx;
+            paramType + ' ' + paramVar + ' = KJSEmbed::extractInteger<' + paramType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -121,7 +114,7 @@ function extract_parameter( compound, param, paramIdx )
     else if (coreParamType == 'QString')
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractQString(exec, args, ' + paramIdx;
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractQString(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -134,7 +127,7 @@ function extract_parameter( compound, param, paramIdx )
              contains(coreParamType, 'char'))
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractString<' + coreParamType + '>(exec, args, ' + paramIdx;
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractString<' + coreParamType + '>(exec, args, ' + paramIdx;
 
         if (!paramDefault.isNull())
             extracted += ', ' + paramDefault.toString() + ');\n';
@@ -146,20 +139,20 @@ function extract_parameter( compound, param, paramIdx )
     else if ( isVariant(coreParamType) )
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractVariant<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else if ( isNotImplemented(coreParamType) )
     {
         extracted += 
-            '        // Not currently implemented\n' +
-            '            // ' + cppParamType + ' ' + paramVar + ' =\n';
+            '// Not currently implemented\n' +
+            '// ' + cppParamType + ' ' + paramVar + ' =\n';
         return extracted; // Shortcut adding the ) here because it's not implemented.
     }
     else    // It's an object, or something else?
     {
         extracted +=
-            '        ' + cppParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
+            cppParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx;
     }
 
     if (!paramDefault.isNull())
@@ -348,6 +341,65 @@ function find_method_overloads(memberList, startIdx, name)
     return overloadList;
 }
 
+
+
+function write_method_new(compound, memberName, overloadList)
+{
+    // Handle arguments
+    var header =
+        '//  ' + memberName  + '\n' +
+        'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
+        '{ \n';
+
+    header += indent + 'Q_UNUSED(args); \n';
+
+    header +=
+        indent + 'KJS::JSValue *result = KJS::Null(); \n' +
+        indent + 'KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
+        indent + 'if( !imp ) \n' +
+        indent + indent + 'return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
+        '\n' +
+        indent + compound.name + ' value = imp->value<' + compound.name + '>();\n';
+
+    var footer =
+        indent + 'return KJS::throwError(exec, KJS::SyntaxError, "Syntax error for ' + compound.name + '.' + memberName + '"); \n' +
+        '}\n\n';
+
+
+    var segments = extract_method_segments(compound, memberName, overloadList);
+
+
+
+
+    // This is all we need to do to write the method, make sure everything is good before this point.
+    var method = '';
+    method += header;
+
+    for (var idx = 0; idx < segments.length; ++idx)
+    {
+        var segment = segments[idx];
+        method += segment;
+    }
+
+    method += footer;
+    return header;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // function write_method( compound, memberName, overloadList )
 //   compound     - The compound object
 //   memberName   - The name of the method/member being processed.
@@ -358,135 +410,264 @@ function find_method_overloads(memberList, startIdx, name)
 // Generates the code to handle all the overloads of an individual method
 function write_method( compound, memberName, overloadList )
 {
+    var tab = '    ';
+    var indent = tab;
+
+    var method = '';
+
     // Handle arguments
-    var method =
+    var methodHeader =
         '//  ' + memberName  + '\n' +
         'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
         '{ \n';
 
-    method += '    Q_UNUSED(args); \n';
+    methodHeader += indent + 'Q_UNUSED(args); \n';
 
-    method +=
-        '    KJS::JSValue *result = KJS::Null(); \n' +
-        '    KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
-        '    if( !imp ) \n' +
-        '        return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
+    methodHeader +=
+        indent + 'KJS::JSValue *result = KJS::Null(); \n' +
+        indent + 'KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
+        indent + 'if( !imp ) \n' +
+        indent + indent + 'return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
         '\n' +
-        '    ' + compound.name + ' value = imp->value<' + compound.name + '>();\n';
+        indent + compound.name + ' value = imp->value<' + compound.name + '>();\n';
+
+    method += methodHeader;
+
 
     for (var idx = 0; idx < overloadList.length; ++idx)
     {
         if (!overloadList[idx])
             continue;
 
+        var methodSegment = '';
+        methodSegment += indent + 'if (args.size() == ' + idx + ' )\n' +
+                  indent + '{\n';
 
-        var memberElement = overloadList[idx][0];
-        var methodType = memberElement.firstChildElement('type').toElement().toString();
-        var coreMethodType = findCoreParamType(methodType);
-        var methodArgList = memberElement.elementsByTagName('param');
-        var indent = '';
-        if (methodArgList.count() != 0)
-            indent = '    ';
+        indent = tab + tab;
 
-//        println( '      writing method with ' + idx + ' args, overrides = ' + overloadList[idx].length + '"' + indent + '"');
-
-        method += '    if (args.size() == ' + methodArgList.count() + ' )\n' +
-        '    {\n';
-
-        if (isTypedef(coreMethodType, compound.typedefs))
-            coreMethodType = compound.typedefs[coreMethodType];
-
-        var funcCallStart = '';
-        var funcCallEnd = ');\n';
-        if (methodType == 'void')
+        // First we make all the value/object pairs
+        var tempParams = '';
+        var variables = '';
+        for (var tempArgIdx = 0; tempArgIdx < idx; ++tempArgIdx)
         {
-            funcCallStart = 
-                'value.' + memberName + '(';
+            variables += indent + 'KJS::JSValue* value'+tempArgIdx+'=args['+tempArgIdx+'];\n';
+            variables += indent + 'KJS::JSObject* object'+tempArgIdx+'=value'+tempArgIdx+'->toObject(exec);\n';
         }
-        else if (compound.enums[coreMethodType]) // local scope enum value
+
+        methodSegment += variables; // soon move this down
+
+        var overloadArray = overloadList[idx];
+        for (var idx2 = 0; idx2 < overloadArray.length; ++idx2)
         {
-            funcCallStart +=
-                compound.enums[coreMethodType] + '::' + coreMethodType + ' tmp = value.' + memberName + '(';
-            funcCallEnd += 
-                '           result = KJS::Number( tmp );\n';
-        }
-        else
-        {
-            funcCallStart +=
-                methodType + ' tmp = value.' + memberName + '(';
-            if ( compound.globalEnums[coreMethodType] ||  // Enum Value
-                 isInteger(coreMethodType) )
+            var tempMethodElement = overloadArray[idx2].toElement();
+            var tempMethodName = tempMethodElement.firstChildElement('name').toElement().toString();
+            var tempMethodType = tempMethodElement.firstChildElement('type').toElement().toString();
+            var tempCoreMethodType = findCoreParamType(tempMethodType);
+            var tempMethodArgList = tempMethodElement.elementsByTagName('param');
+
+            var checkParams = '';
+            if (tempMethodArgList.count() != 0)
+                checkParams += indent + 'if(';
+
+            if (isTypedef(tempCoreMethodType, compound.typedefs))
+                tempCoreMethodType = compound.typedefs[tempCoreMethodType];
+
+            for(var tempArgIdx = 0; tempArgIdx < idx; ++tempArgIdx)
             {
-                funcCallEnd += indent +
-                    '        result = KJS::Number( tmp );\n';
+                var tempParam = tempMethodArgList.item(tempArgIdx).toElement();
+                var tempParamVarElement = tempParam.firstChildElement('declname').toElement();
+                var tempParamVar = tempParamVarElement.toString();
+                if (tempParamVarElement.isNull())
+                    tempParamVar = 'arg' + tempArgIdx;
+
+                var tempParamType = tempParam.firstChildElement('type').toElement().toString();
+                var tempCoreParamType = findCoreParamType(tempParamType);
+                var tempParamDefault = tempParam.firstChildElement('defval').toElement();
+
+                if (!tempParamDefault.isNull())
+                    checkParams += '( ( ';
+
+//                print(tempCoreParamType + ' ' + tempParamVar + '...');
+                if (isTypedef(tempCoreParamType, compound.typedefs))        // I _think_ this works for all cases
+                {
+//                     print('isTypdef\n');
+                    tempCoreParamType = compound.typedefs[tempCoreParamType];
+                }
+
+                if (isBool(tempCoreParamType))
+                {
+//                     print('isBool\n');
+                    checkParams += 'object'+tempArgIdx+' && object'+tempArgIdx+'->isBoolean()';
+                }
+                else if ( isNumber(tempCoreParamType) || 
+                        isEnum(tempCoreParamType, compound.globalEnums, compound.enums ) )
+                {
+//                     print('isNumber || isEnum\n');
+                    checkParams += 'object'+tempArgIdx+' && object'+tempArgIdx+'->isNumber()';
+                }
+                else if (tempCoreParamType == 'QString' ||
+                        contains(tempCoreParamType, 'uchar') ||
+                        contains(tempCoreParamType, 'char'))
+                {
+//                     print('isString\n');
+                    checkParams += 'object'+tempArgIdx+' && object'+tempArgIdx+'->isString()';
+                }
+                else if (isNotImplemented(tempCoreParamType))
+                {
+//                     print('Not Implemented\n');
+                    notImplementedHit = 1;
+                    checkParams += '0';  // unf
+                    continue;
+                }
+                else
+                {
+//                    print('is[Object,Value,Variant]\n');
+                    if ( isPointer(tempCoreParamType) )
+                        tempCoreParamType = strip(tempCoreParamType);
+
+                    if (tempCoreParamType != compound.name)
+                        compound.externalBindings[tempCoreParamType] = true;
+                    checkParams += 'object'+tempArgIdx+' && object'+tempArgIdx+'->inherits(&' + tempCoreParamType + 'Binding::info)';
+                }
+
+                if (!tempParamDefault.isNull())
+                    checkParams += ' ) || !object'+tempArgIdx+' )';
+
+                if(tempArgIdx < idx-1)
+                    checkParams += ' && ';
             }
-            else if (isBool(coreMethodType))
+
+            if (tempMethodArgList.count() != 0)
             {
-                funcCallEnd += indent +
-                    '        result = KJS::Boolean( tmp );\n';
+                checkParams += ')\n' +
+                          indent + '{\n';
+                indent = tab + tab + tab;
             }
-            else if (isVariant(coreMethodType))
+
+
+            methodSegment += checkParams;
+
+
+            // Get all the args into C++
+            var parameters = '';
+            for(var tempArgIdx = 0; tempArgIdx < idx; ++tempArgIdx)
             {
-                funcCallEnd += indent +
-                    '        result = KJSEmbed::createVariant( exec, "' + coreMethodType + '", tmp );\n';
+                var tempParam = tempMethodArgList.item(tempArgIdx).toElement();
+                parameters += indent + extract_parameter(compound, tempParam, tempArgIdx);
+            }
+
+            // Manipulate the internal value
+            var tempMethodCallStart = '';
+            var tempMethodCallEnd = ');\n' + indent;
+            if (isNotImplemented(tempCoreParamType))    // NOTE: it is tempCoreParam type not tempCoreMethodType
+            {
+                tempMethodCallStart += '// value\n';
+                tempMethodCallEnd += 'result = KJS::Null();\n';
+            }
+            else if (contains(tempCoreMethodType, 'void')) // since method type is void, we don't need to assign anything
+            {
+                tempMethodCallStart += 
+                    'value.' + memberName + '(';
+            }
+            else if (compound.enums[tempCoreMethodType]) // local scope enum value
+            {
+                tempMethodCallStart +=
+                    compound.enums[tempCoreMethodType] + '::' + tempCoreMethodType + ' tmp = value.' + memberName + '(';
+                tempMethodCallEnd += 
+                    'result = KJS::Number( tmp );\n';
             }
             else
             {
-                funcCallEnd += indent +
-                            '// Not currently implemented\n' +
-                            indent +
-                            '// ' + coreMethodType + '\n' +
-                            indent + 
-                            'result = KJS::Null();\n';
+                tempMethodCallStart +=
+                    tempCoreMethodType + ' tmp = value.' + memberName + '(';
+                if ( compound.globalEnums[tempCoreMethodType] ||  // Enum Value
+                    isInteger(tempCoreMethodType) )
+                {
+                    tempMethodCallEnd +=
+                        'result = KJS::Number( tmp );\n';
+                }
+                else if (isBool(tempCoreMethodType))
+                {
+                    tempMethodCallEnd +=
+                        'result = KJS::Boolean( tmp );\n';
+                }
+                else if (isVariant(tempCoreMethodType))
+                {
+                    tempMethodCallEnd +=
+                        'result = KJSEmbed::createVariant( exec, "' + tempCoreMethodType + '", tmp );\n';
+                }
+                else
+                {
+                    tempMethodCallEnd +=
+                                indent + '// Not currently implemented\n' +
+                                indent + '// ' + tempCoreMethodType + '\n' +
+                                indent + 'result = KJS::Null();\n';
+                }
             }
-//            else
-//            {
-//                funcCallEnd += indent +
-//                    '        result = KJSEmbed::createValue( exec, "' + coreMethodType + '", tmp );\n';
-//            }
-        }
 
-        if (compound.isVariant)
-            funcCallEnd += indent + '        imp->setValue(qVariantFromValue(value)); \n';
-        else
-            funcCallEnd += indent + '        imp->setValue(value); \n';
-
-        funcCallEnd +=
-            indent + '        return result; \n';
-
-        if (methodArgList.count() != 0)
-        {
-            var tmpArgs = '';
-            for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
+            if (!isNotImplemented(tempCoreParamType)) // Sweet little double negative here ;)
             {
-                var param = methodArgList.item(paramIdx).toElement();
-                var paramVarElement = param.firstChildElement('declname').toElement();
-                var paramVar = paramVarElement.toString();
-                if (paramVarElement.isNull())
-                    paramVar = 'arg' + paramIdx;
-                tmpArgs += paramVar + ', ';
+                if (compound.isVariant)
+                    tempMethodCallEnd += indent + 'imp->setValue(qVariantFromValue(value)); \n';
+                else
+                    tempMethodCallEnd += indent + 'imp->setValue(value); \n';
             }
 
-            if (tmpArgs != '') 
+            tempMethodCallEnd +=
+                indent + 'return result; \n';
+
+            if (!isNotImplemented(tempCoreParamType))     // NOTE: so must be a better way to do all this
+            {                                           // set a flag somewhere that we're working with
+                if (tempMethodArgList.count() != 0)     // an unspported method...
+                {
+                    var tempTmpArgs = '';
+                    for ( tempParamIdx = 0; tempParamIdx < tempMethodArgList.count(); ++tempParamIdx )
+                    {
+                        var tempParam = tempMethodArgList.item(tempParamIdx).toElement();
+                        var tempParamVarElement = tempParam.firstChildElement('declname').toElement();
+                        var tempParamVar = tempParamVarElement.toString();
+                        if (tempParamVarElement.isNull())
+                            tempParamVar = 'arg' + tempParamIdx;
+                        tempTmpArgs += tempParamVar + ', ';
+                    }
+
+                    if (tempTmpArgs != '') 
+                    {
+                        var tempTmpIdx = tempTmpArgs.lastIndexOf(',');
+                        tempTmpArgs = tempTmpArgs.substr(0, tempTmpIdx);
+                    }
+
+                    parameters += indent + tempMethodCallStart + tempTmpArgs + tempMethodCallEnd;
+                }
+                else
+                    parameters += indent + tempMethodCallStart + tempMethodCallEnd;
+            }
+
+            methodSegment += parameters
+
+            if (tempMethodArgList.count() != 0)
             {
-                var tmpIdx = tmpArgs.lastIndexOf(',');
-                tmpArgs = tmpArgs.substr(0, tmpIdx);
+                indent = tab + tab;
+                methodSegment += 
+                        indent + '}\n';
             }
-
-            method += construct_parameters(compound, overloadList[idx], idx, funcCallStart, funcCallEnd);
+//            println('name: ' + tempMethodName);
+//            println('type: ' + tempMethodType);
+//            println('coreType: ' + tempCoreMethodType);
+//            println('method: ' + tempMethod);
+            method += methodSegment;
         }
-        else
-        {
-            method += '        ' + funcCallStart + funcCallEnd;
-        }
 
-        method += 
-                '    }\n';
+        indent = tab;
+        method +=
+                indent + '}\n';
     }
 
+
+    indent = tab;
     method +=
         '\n' +
-        '    return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compound.name + '.' + memberName + '"); \n' +
+        indent + 'return KJS::throwError(exec, KJS::SyntaxError, "Syntax error in parameter list for ' + compound.name + '.' + memberName + '"); \n' +
         '}\n\n';
 
     return method;
