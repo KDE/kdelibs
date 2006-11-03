@@ -246,6 +246,8 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     dirs += d->mpDirs->resourceDirs("pixmap");
     dirs += d->mpDirs->resourceDirs("xdgdata-icon");
     dirs += "/usr/share/pixmaps";
+    // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
+    dirs += d->mpDirs->resourceDirs("xdgdata-pixmap");
     for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it)
 	d->mpDirs->addResourceDir("appicon", *it);
 
