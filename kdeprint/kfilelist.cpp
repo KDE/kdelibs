@@ -183,18 +183,13 @@ void KFileList::addFiles(const KUrl::List& files)
 {
 	if (files.count() > 0)
 	{
-		// for each file, download it (if necessary) and add it
-		QString	downloaded;
 		for (KUrl::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (KIO::NetAccess::download(*it, downloaded, this))
-			{
-				KUrl	url;
-				url.setPath(downloaded);
-				KMimeType::Ptr	mime = KMimeType::findByUrl(url, 0, true, false);
+                {
+			KMimeType::Ptr	mime = KMimeType::findByUrl(*it, 0, true, false);
         QStringList data;
-        data << url.fileName() << mime->comment() << downloaded;
+        data << (*it).fileName() << mime->comment() << (*it).url();
 				QTreeWidgetItem *item = new QTreeWidgetItem(data);
-				item->setIcon(0, mime->pixmap(url, K3Icon::Small));
+				item->setIcon(0, mime->pixmap(*it, K3Icon::Small));
         m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
 			}
 
@@ -216,11 +211,10 @@ void KFileList::setFileList(const QStringList& files)
 	m_files->clear();
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
-		KUrl	url;
-		url.setPath(*it);
+		KUrl url( *it );
 		KMimeType::Ptr	mime = KMimeType::findByUrl(url, 0, true, false);
     QStringList data;
-    data << url.fileName() << mime->comment() << *it;
+    data << url.fileName() << mime->comment() << url.url();
 		QTreeWidgetItem *item = new QTreeWidgetItem(data);
 		item->setIcon(0, mime->pixmap(url, K3Icon::Small));
     m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
