@@ -56,11 +56,6 @@ public:
     KDirLister* dirLister() const;
 
     /**
-     * Return the fileitem for a given index. This is O(1), i.e. fast.
-     */
-    KFileItem* itemForIndex( const QModelIndex& index ) const;
-
-    /**
      * Return the index for a given kfileitem. This is slow.
      */
     QModelIndex indexForItem( const KFileItem* ) const;
@@ -78,8 +73,9 @@ public:
         ColumnCount
     };
 
-    //enum AdditionalRoles {
-    //};
+    enum AdditionalRoles {
+        FileItemRole = 0x07A263FF  ///< returns the KFileItem* for a given index
+    };
 
     virtual bool canFetchMore ( const QModelIndex & parent ) const;
     virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const;

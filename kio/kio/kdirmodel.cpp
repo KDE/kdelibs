@@ -342,6 +342,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return item->user();
             case Group:
                 return item->group();
+            case FileItemRole:
+                return item;
             }
             break;
         case Qt::DecorationRole:
@@ -434,16 +436,6 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
     QMimeData *data = new QMimeData();
     urls.populateMimeData( data );
     return data;
-}
-
-// Public API; not much point in calling it internally
-KFileItem* KDirModel::itemForIndex( const QModelIndex& index ) const
-{
-    if (!index.isValid()) {
-        return d->m_dirLister->rootItem();
-    } else {
-        return static_cast<KDirModelNode*>(index.internalPointer())->item();
-    }
 }
 
 QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
