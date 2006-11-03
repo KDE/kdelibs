@@ -113,9 +113,10 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
                 //kDebug() << "Found! " << u << endl;
                 return qMakePair(row, *it);
             }
-            if ( urlStr.startsWith(u.url()) ) {
+            if ( urlStr.startsWith(u.url()+'/') ) {
                 node = *it;
                 foundChild = true;
+                //kDebug() << "going into " << node->item()->url() << endl;
                 Q_ASSERT( node->item()->isDir() );
                 break;
             }
