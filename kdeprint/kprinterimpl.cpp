@@ -225,8 +225,8 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
 		{
-			// quote and encode filenames
-			filestr.append(quote(QFile::encodeName(*it))).append(" ");
+			// quote filenames
+			filestr.append(quote(*it)).append(" ");
 			printfiles.append(*it);
 		}
 		else
