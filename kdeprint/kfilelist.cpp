@@ -189,17 +189,12 @@ void KFileList::addFiles(const KURL::List& files)
 		while (item && item->nextSibling())
 			item = item->nextSibling();
 
-		// for each file, download it (if necessary) and add it
-		QString	downloaded;
 		for (KURL::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (KIO::NetAccess::download(*it, downloaded, this))
-			{
-				KURL	url;
-				url.setPath(downloaded);
-				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-				item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
-				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
-			}
+		{
+			KMimeType::Ptr	mime = KMimeType::findByURL( *it, 0, true, false);
+			item = new QListViewItem(m_files, item, (*it).fileName(), mime->comment(), (*it).url());
+			item->setPixmap(0, mime->pixmap(*it, KIcon::Small));
+		}
 
 		slotSelectionChanged();
 		/*
@@ -220,10 +215,9 @@ void KFileList::setFileList(const QStringList& files)
 	QListViewItem *item = 0;
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
-		KURL	url;
-		url.setPath(*it);
+		KURL	url = KURL::fromPathOrURL( *it );
 		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-		item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), *it);
+		item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), url.url());
 		item->setPixmap(0, mime->pixmap(url, KIcon::Small));
 	}
 	slotSelectionChanged();
