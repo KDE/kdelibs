@@ -438,6 +438,16 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
     return data;
 }
 
+// Public API; not much point in calling it internally
+KFileItem* KDirModel::itemForIndex( const QModelIndex& index ) const
+{
+    if (!index.isValid()) {
+        return d->m_dirLister->rootItem();
+    } else {
+        return static_cast<KDirModelNode*>(index.internalPointer())->item();
+    }
+}
+
 QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
 {
     return d->indexForUrl(item->url()); // O(n*m)

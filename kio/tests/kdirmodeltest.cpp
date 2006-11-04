@@ -201,29 +201,29 @@ void KDirModelTest::testNames()
 void KDirModelTest::testItemForIndex()
 {
     // root item
-    KFileItem* rootItem = m_dirModel.data(QModelIndex(), KDirModel::FileItemRole).value<KFileItem*>();
+    KFileItem* rootItem = m_dirModel.itemForIndex(QModelIndex());
     QVERIFY(rootItem != 0);
     QCOMPARE(rootItem->name(), QString("."));
 
-    KFileItem* fileItem = m_dirModel.data(m_fileIndex, KDirModel::FileItemRole).value<KFileItem*>();
+    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
     QVERIFY(fileItem != 0);
     QCOMPARE(fileItem->name(), QString("toplevelfile_1"));
     QVERIFY(!fileItem->isDir());
     QCOMPARE(fileItem->url().path(), m_tempDir.name() + "toplevelfile_1");
 
-    KFileItem* dirItem = m_dirModel.data(m_dirIndex, KDirModel::FileItemRole).value<KFileItem*>();
+    KFileItem* dirItem = m_dirModel.itemForIndex(m_dirIndex);
     QVERIFY(dirItem != 0);
     QCOMPARE(dirItem->name(), QString("subdir"));
     QVERIFY(dirItem->isDir());
     QCOMPARE(dirItem->url().path(), m_tempDir.name() + "subdir");
 
-    KFileItem* fileInDirItem = m_dirModel.data(m_fileInDirIndex, KDirModel::FileItemRole).value<KFileItem*>();
+    KFileItem* fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
     QVERIFY(fileInDirItem != 0);
     QCOMPARE(fileInDirItem->name(), QString("testfile"));
     QVERIFY(!fileInDirItem->isDir());
     QCOMPARE(fileInDirItem->url().path(), m_tempDir.name() + "subdir/testfile");
 
-    KFileItem* fileInSubdirItem = m_dirModel.data(m_fileInSubdirIndex, KDirModel::FileItemRole).value<KFileItem*>();
+    KFileItem* fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
     QVERIFY(fileInSubdirItem != 0);
     QCOMPARE(fileInSubdirItem->name(), QString("testfile"));
     QVERIFY(!fileInSubdirItem->isDir());

@@ -56,6 +56,11 @@ public:
     KDirLister* dirLister() const;
 
     /**
+     * Return the fileitem for a given index. This is O(1), i.e. fast.
+     */
+    KFileItem* itemForIndex( const QModelIndex& index ) const;
+
+    /**
      * Return the index for a given kfileitem. This is slow.
      */
     QModelIndex indexForItem( const KFileItem* ) const;
