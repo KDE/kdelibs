@@ -73,30 +73,31 @@ NumberProtoFunc::NumberProtoFunc(ExecState*, FunctionPrototype* funcProto, int i
 static UString integer_part_noexp(double d)
 {
     int decimalPoint;
-    int sign;
-    char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
+    int signDummy;
+    char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &signDummy, NULL);
     int length = strlen(result);
-    
-    UString str = sign ? "-" : "";
+
+    // sign for non-zero, negative numbers
+    UString str = d < 0 ? "-" : "";
     if (decimalPoint == 9999) {
         str += UString(result);
     } else if (decimalPoint <= 0) {
         str += UString("0");
     } else {
         Vector<char, 1024> buf(decimalPoint + 1);
-        
+
         if (length <= decimalPoint) {
             strcpy(buf, result);
             memset(buf + length, '0', decimalPoint - length);
         } else
             strncpy(buf, result, decimalPoint);
-        
+
         buf[decimalPoint] = '\0';
         str += UString(buf);
     }
-    
+
     kjs_freedtoa(result);
-    
+
     return str;
 }
 
@@ -203,7 +204,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     return jsString(v->toString(exec));
   case ValueOf:
     return jsNumber(v->toNumber(exec));
-  case ToFixed: 
+  case ToFixed:
   {
       JSValue *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
@@ -212,26 +213,26 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       if (!(df >= 0 && df <= 20)) // true for NaN
           return throwError(exec, RangeError, "toFixed() digits argument must be between 0 and 20");
       int f = (int)df;
-      
+
       double x = v->toNumber(exec);
       if (isNaN(x))
           return jsString("NaN");
-      
+
       UString s = "";
       if (x < 0) {
           s += "-";
           x = -x;
       }
-      
+
       if (x >= pow(10.0, 21.0))
           return jsString(s+UString::from(x));
-      
+
       double n = floor(x*pow(10.0, f));
       if (fabs(n / pow(10.0, f) - x) >= fabs((n + 1) / pow(10.0, f) - x))
           n++;
-      
+
       UString m = integer_part_noexp(n);
-      
+
       int k = m.size();
       if (k <= f) {
           UString z = "";
@@ -248,55 +249,55 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
   }
   case ToExponential: {
       double x = v->toNumber(exec);
-      
+
       if (isNaN(x) || isInf(x))
           return jsString(UString::from(x));
-      
+
       JSValue *fractionDigits = args[0];
       double df = fractionDigits->toInteger(exec);
       if (!fractionDigits->isUndefined() && !(df >= 0 && df <= 20)) // true for NaN
           return throwError(exec, RangeError, "toExponential() argument must between 0 and 20");
       int f = (int)df;
-      
+
       int decimalAdjust = 0;
       if (!fractionDigits->isUndefined()) {
           double logx = floor(log10(x));
           x /= pow(10.0, logx);
           double fx = floor(x * pow(10.0, f)) / pow(10.0, f);
           double cx = ceil(x * pow(10.0, f)) / pow(10.0, f);
-          
+
           if (fabs(fx-x) < fabs(cx-x))
               x = fx;
           else
               x = cx;
-          
+
           decimalAdjust = static_cast<int>(logx);
       }
-      
+
       char buf[80];
       int decimalPoint;
       int sign;
-      
+
       if (isNaN(x))
           return jsString("NaN");
-      
+
       char *result = kjs_dtoa(x, 0, 0, &decimalPoint, &sign, NULL);
       int length = strlen(result);
       decimalPoint += decimalAdjust;
-      
+
       int i = 0;
       if (sign) {
           buf[i++] = '-';
       }
-      
+
       if (decimalPoint == 999) {
           strcpy(buf + i, result);
       } else {
           buf[i++] = result[0];
-          
+
           if (fractionDigits->isUndefined())
               f = length-1;
-          
+
           if (length > 1 && f > 0) {
               buf[i++] = '.';
               int haveFDigits = length-1;
@@ -311,7 +312,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
                       buf[i++] = '0';
               }
           }
-          
+
           buf[i++] = 'e';
           buf[i++] = (decimalPoint >= 0) ? '+' : '-';
           // decimalPoint can't be more than 3 digits decimal given the
@@ -329,33 +330,33 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
           buf[i++] = '0' + exponential % 10;
           buf[i++] = '\0';
       }
-      
+
       assert(i <= 80);
-      
+
       kjs_freedtoa(result);
-      
+
       return jsString(buf);
   }
   case ToPrecision:
   {
       int e = 0;
       UString m;
-      
+
       double dp = args[0]->toInteger(exec);
       double x = v->toNumber(exec);
       if (isNaN(dp) || isNaN(x) || isInf(x))
           return jsString(v->toString(exec));
-      
+
       UString s = "";
       if (x < 0) {
           s = "-";
           x = -x;
       }
-      
+
       if (!(dp >= 1 && dp <= 21)) // true for NaN
           return throwError(exec, RangeError, "toPrecision() argument must be between 1 and 21");
       int p = (int)dp;
-      
+
       if (x != 0) {
           e = static_cast<int>(log10(x));
           double tens = intPow10(e - p + 1);
@@ -365,12 +366,12 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
               tens = intPow10(e - p + 1);
               n = floor(x / tens);
           }
-          
+
           if (fabs((n + 1.0) * tens - x) <= fabs(n * tens - x))
             ++n;
           assert(intPow10(p - 1) <= n);
           assert(n < intPow10(p));
-          
+
           m = integer_part_noexp(n);
           if (e < -6 || e >= p) {
               if (m.size() > 1)
@@ -385,7 +386,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
           m = char_sequence('0',p);
           e = 0;
       }
-      
+
       if (e == p-1) {
           return jsString(s+m);
       }
@@ -399,7 +400,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
           return jsString(s+"0."+char_sequence('0',-(e+1))+m);
       }
    }
-      
+
  }
   return NULL;
 }
