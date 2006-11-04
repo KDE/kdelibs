@@ -111,6 +111,7 @@ private:
     KDirModelPrivate *const d;
 };
 
+Q_DECLARE_METATYPE(KFileItem*)
 
 #endif /* KDIRMODEL_H */
 
