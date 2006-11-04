@@ -93,11 +93,12 @@ bool NumberProtoFuncImp::implementsCall() const
 static UString integer_part_noexp(double d)
 {
   int decimalPoint;
-  int sign;
-  char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
+  int signDummy;
+  char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &signDummy, NULL);
   int length = strlen(result);
 
-  UString str = sign ? "-" : "";
+  // sign for non-zero, negative numbers
+  UString str = d < 0 ? "-" : "";
   if (decimalPoint == 9999) {
     str += UString(result);
   } else if (decimalPoint <= 0) {
