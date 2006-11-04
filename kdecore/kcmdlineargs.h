@@ -253,7 +253,7 @@ public:
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
                     const char *_version,
-                    StdCmdLineArgs stdargs=static_cast<StdCmdLineArgs>(CmdLineArgQt|CmdLineArgKDE));
+                    StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
 
   /**
    * Initialize class.
@@ -270,7 +270,7 @@ public:
   static void init(int _argc,
                    char **_argv,
                    const KAboutData *about,
-                   StdCmdLineArgs stdargs=static_cast<StdCmdLineArgs>(CmdLineArgQt|CmdLineArgKDE));
+                   StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
   /**
    * Initialize Class
    *
@@ -289,7 +289,7 @@ public:
   /**
    * add standard Qt/KDE command-line args
    */
-  static void addStdCmdLineOptions(StdCmdLineArgs stdargs=static_cast<StdCmdLineArgs>(CmdLineArgQt|CmdLineArgKDE));
+  static void addStdCmdLineOptions(StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
 
   /**
    * Add options to your application.
