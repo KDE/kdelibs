@@ -41,12 +41,12 @@ Solid::Button::ButtonType Solid::Button::type() const
 
 bool Solid::Button::hasState() const
 {
-    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
+    return_SOLID_CALL( Ifaces::Button*, backendObject(), false, hasState() );
 }
 
 bool Solid::Button::stateValue() const
 {
-    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
+    return_SOLID_CALL( Ifaces::Button*, backendObject(), false, stateValue() );
 }
 
 
