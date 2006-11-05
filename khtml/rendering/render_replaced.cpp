@@ -94,6 +94,42 @@ void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*
     setPos( box->xPos(), box->yPos() );
 }
 
+FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
+{
+#if 0
+    kDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
+                    << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
+                << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
+#endif
+    node = element();
+    offset = 0;
+
+    if ( _y < _ty + yPos() )
+        return SelectionPointBefore; // above -> before
+
+    if ( _y > _ty + yPos() + height() ) {
+        // below -> after
+        // Set the offset to the max
+        offset = 1;
+        return SelectionPointAfter;
+    }
+    if ( _x > _tx + xPos() + width() ) {
+        // to the right
+        // ### how to regard bidi in replaced elements? (LS)
+        offset = 1;
+        return SelectionPointAfterInLine;
+    }
+
+    // The Y matches, check if we're on the left
+    if ( _x < _tx + xPos() ) {
+        // ### how to regard bidi in replaced elements? (LS)
+        return SelectionPointBeforeInLine;
+    }
+
+    offset = _x > _tx + xPos() + width()/2;
+    return SelectionPointInside;
+}
+
 // -----------------------------------------------------------------------------
 
 RenderWidget::RenderWidget(DOM::NodeImpl* node)
@@ -108,6 +144,8 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_discardResizes = false;
     m_isKHTMLWidget = false;
     m_needsMask = false;
+    m_wantMouseEvents = false;
+    m_pTarget = 0;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -213,10 +251,12 @@ void RenderWidget::setQWidget(QWidget *widget)
         }
         m_widget = widget;
         if (m_widget) {
+            KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
+            if (k) k->setRenderWidget(this);
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( (m_isKHTMLWidget = !strcmp(m_widget->objectName(), "__khtml")) && !qobject_cast<QFrame*>(m_widget))
+            if ( (m_isKHTMLWidget = (k||!strcmp(m_widget->objectName(), "__khtml"))) && !qobject_cast<QFrame*>(m_widget))
                 m_widget->setAttribute( Qt::WA_NoSystemBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
@@ -589,6 +629,15 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     case QEvent::KeyRelease:
         keyReleaseEvent(static_cast<QKeyEvent *>(e));
         break;
+    case QEvent::FocusIn:
+        focusInEvent(static_cast<QFocusEvent *>(e));
+        break;
+    case QEvent::FocusOut:
+        focusOutEvent(static_cast<QFocusEvent *>(e));
+        break;
+    case QEvent::ContextMenu:
+        contextMenuEvent(static_cast<QContextMenuEvent*>(e));
+        break;
     default:
         break;
     }
@@ -623,40 +672,31 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
     switch(ev.id()) {
+    case EventImpl::DOMFOCUSIN_EVENT: 
+    case EventImpl::DOMFOCUSOUT_EVENT: {
+          QFocusEvent e(ev.id() == EventImpl::DOMFOCUSIN_EVENT ? QEvent::FocusIn : QEvent::FocusOut);
+          static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+          ret = e.isAccepted();
+          break;
+    }
     case EventImpl::MOUSEDOWN_EVENT:
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
         if (!ev.isMouseEvent()) break;
+
         const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
         QMouseEvent* const qme = me.qEvent();
-
-        int absx = 0;
-        int absy = 0;
-
-        absolutePosition(absx, absy);
-        QPoint p(me.clientX() - absx + m_view->contentsX(),
-                 me.clientY() - absy + m_view->contentsY());
         QMouseEvent::Type type;
         Qt::MouseButton button = Qt::NoButton;
+        Qt::MouseButtons buttons = Qt::NoButton;
         Qt::KeyboardModifiers state = 0;
 
         if (qme) {
+            buttons = qme->buttons();
             button = qme->button();
             state = qme->modifiers();
             type = qme->type();
         } else {
-            switch(me.id())  {
-            case EventImpl::MOUSEDOWN_EVENT:
-                type = QMouseEvent::MouseButtonPress;
-                break;
-            case EventImpl::MOUSEUP_EVENT:
-                type = QMouseEvent::MouseButtonRelease;
-                break;
-            case EventImpl::MOUSEMOVE_EVENT:
-            default:
-                type = QMouseEvent::MouseMove;
-                break;
-            }
             switch (me.button()) {
             case 0:
                 button = Qt::LeftButton;
@@ -670,6 +710,23 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             default:
                 break;
             }
+
+            buttons = button;
+
+            switch(me.id())  {
+            case EventImpl::MOUSEDOWN_EVENT:
+                type = QMouseEvent::MouseButtonPress;
+                break;
+            case EventImpl::MOUSEUP_EVENT:
+                type = QMouseEvent::MouseButtonRelease;
+                break;
+            case EventImpl::MOUSEMOVE_EVENT:
+            default:
+                type = QMouseEvent::MouseMove;
+                button = Qt::NoButton;
+                break;
+            }
+
             if (me.ctrlKey())
                 state |= Qt::ControlModifier;
             if (me.altKey())
@@ -680,16 +737,47 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 state |= Qt::MetaModifier;
         }
 
-//     kDebug(6000) << "sending event to widget "
-//                   << " pos=" << p << " type=" << type
-//                   << " button=" << button << " state=" << state << endl;
-        QMouseEvent e(type, p, button, button, state);
-        Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(m_widget);
+        int absx = 0;
+        int absy = 0;
+        absolutePosition(absx, absy);
+        absx += borderLeft()+paddingLeft();
+        absy += borderTop()+paddingTop();
+        QPoint p(me.clientX() - absx + m_view->contentsX(),
+                 me.clientY() - absy + m_view->contentsY());
+
+        if (ev.id() == EventImpl::MOUSEDOWN_EVENT && button == Qt::LeftButton) {
+            m_pTarget = m_widget->childAt(p);
+            m_wantMouseEvents = true;
+        }
+
+        if (!m_pTarget || !::qobject_cast<QScrollBar*>(m_pTarget))
+            m_pTarget = m_widget;
+        else {
+            p = m_pTarget->mapFrom(m_widget, p);
+        }
+
+        bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
+
+        QMouseEvent e(type, p, button, buttons, state);
+        Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(m_pTarget);
         if (sc && !::qobject_cast<Q3ListBox*>(m_widget))
             static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(&e);
         else
-            static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+            static_cast<EventPropagator *>(m_pTarget)->sendEvent(&e);
+
         ret = e.isAccepted();
+
+        if (needContextMenuEvent) {
+            QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
+            static_cast<EventPropagator *>(m_pTarget)->sendEvent(&cme);
+        } else if (type == QEvent::MouseMove && m_widget->testAttribute(Qt::WA_Hover)) {
+            QHoverEvent he( QEvent::HoverMove, p, p );
+            QApplication::sendEvent(m_widget, &he);
+        }
+        if (ev.id() == EventImpl::MOUSEUP_EVENT && button == Qt::LeftButton) {
+            m_pTarget = 0;
+            m_wantMouseEvents = false;
+        }
         break;
     }
     case EventImpl::KEYDOWN_EVENT:
@@ -738,11 +826,19 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEOUT_EVENT: {
 	QEvent moe( QEvent::Leave );
 	QApplication::sendEvent(m_widget, &moe);
+	if (m_widget->testAttribute(Qt::WA_Hover)) {
+            QHoverEvent he( QEvent::HoverLeave, QPoint(-1,-1), QPoint(0,0) );
+            QApplication::sendEvent(m_widget, &he);
+        }
 	break;
     }
     case EventImpl::MOUSEOVER_EVENT: {
 	QEvent moe( QEvent::Enter );
 	QApplication::sendEvent(m_widget, &moe);
+        if (m_widget->testAttribute(Qt::WA_Hover)) {
+            QHoverEvent he( QEvent::HoverEnter, QPoint(0,0), QPoint(-1,-1) );
+            QApplication::sendEvent(m_widget, &he);
+        }
 	view()->part()->resetHoverText();
 	break;
     }
@@ -763,42 +859,6 @@ void RenderWidget::deref()
     }
 }
 
-FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
-{
-#if 0
-    kDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
-                    << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
-                << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
-#endif
-    node = element();
-    offset = 0;
-
-    if ( _y < _ty + yPos() )
-        return SelectionPointBefore; // above -> before
-
-    if ( _y > _ty + yPos() + height() ) {
-        // below -> after
-        // Set the offset to the max
-        offset = 1;
-        return SelectionPointAfter;
-    }
-    if ( _x > _tx + xPos() + width() ) {
-        // to the right
-        // ### how to regard bidi in replaced elements? (LS)
-        offset = 1;
-        return SelectionPointAfterInLine;
-    }
-
-    // The Y matches, check if we're on the left
-    if ( _x < _tx + xPos() ) {
-        // ### how to regard bidi in replaced elements? (LS)
-        return SelectionPointBeforeInLine;
-    }
-
-    offset = _x > _tx + xPos() + width()/2;
-    return SelectionPointInside;
-}
-
 #ifdef ENABLE_DUMP
 void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 {
@@ -810,6 +870,21 @@ void RenderWidget::dump(QTextStream &stream, const QString &ind) const
         stream << " null widget";
 }
 #endif
+
+// -----------------------------------------------------------------------------
+
+QRect KHTMLWidget::absoluteRect() 
+{
+        if (!m_rw)
+            return QRect();
+        int x, y, w, h;
+        m_rw->absolutePosition(x, y);
+        x += m_rw->borderLeft()+m_rw->paddingLeft();
+        y += m_rw->borderTop()+m_rw->paddingTop();
+        w = m_rw->width() -m_rw->borderLeft()-m_rw->paddingLeft()-m_rw->borderRight()-m_rw->paddingRight();
+        h = m_rw->height()-m_rw->borderTop()-m_rw->paddingTop()-m_rw->borderBottom()-m_rw->paddingBottom();
+        return QRect( x, y, w, h);
+}
 
 #include "render_replaced.moc"
 

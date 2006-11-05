@@ -1014,6 +1014,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::KEYDOWN_EVENT:
         case EventImpl::KEYUP_EVENT:
         case EventImpl::KEYPRESS_EVENT:
+        case EventImpl::DOMFOCUSIN_EVENT:
+        case EventImpl::DOMFOCUSOUT_EVENT:
             if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
 		evt->setDefaultHandled();
         default:
@@ -1034,6 +1036,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KEYDOWN_EVENT)
         {
             setActive();
+            if (renderer() && renderer()->isWidget())
+                static_cast<RenderWidget*>(renderer())->widget()->setFocus(); // ### mmh..
         }
         else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KEYUP_EVENT)
         {

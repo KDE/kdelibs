@@ -250,7 +250,7 @@ private:
 
 // -------------------------------------------------------------------------
 
-class LineEditWidget : public KLineEdit
+class LineEditWidget : public KLineEdit, public KHTMLWidget
 {
     Q_OBJECT
 public:
@@ -361,7 +361,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class ComboBoxWidget : public KComboBox
+class ComboBoxWidget : public KComboBox, public KHTMLWidget
 {
 public:
     ComboBoxWidget(QWidget *parent);
@@ -369,6 +369,8 @@ public:
 protected:
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
+    virtual void showPopup();
+    virtual void hidePopup();
 };
 
 // -------------------------------------------------------------------------
@@ -412,7 +414,7 @@ protected Q_SLOTS:
 };
 
 // -------------------------------------------------------------------------
-class TextAreaWidget : public KTextEdit
+class TextAreaWidget : public KTextEdit, public KHTMLWidget
 {
     Q_OBJECT
 public:
@@ -422,6 +424,7 @@ public:
 protected:
     virtual bool event (QEvent *e );
     virtual void contextMenuEvent(QContextMenuEvent * e);
+    virtual void scrollContentsBy(int dx, int dy);
 
 private Q_SLOTS:
     void slotFind();

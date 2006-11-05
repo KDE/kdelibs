@@ -390,15 +390,10 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 
 void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
-    (void) e;
     QMenu* popup = createStandardContextMenu();
 
-/*    menu->exec(e->globalPos());
-            delete menu;*/
-
-    if ( !popup ) {
+    if ( !popup )
         return;
-    }
 
     if (m_input->autoComplete()) {
         popup->addSeparator();
@@ -415,6 +410,8 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
         popup->addAction( m_spellAction );
         m_spellAction->setEnabled( !text().isEmpty() );
     }
+    popup->exec(e->globalPos());
+    delete popup;
 }
 
 
@@ -900,6 +897,29 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
+void ComboBoxWidget::showPopup()
+{
+    KComboBox::showPopup();
+    QWidget* w = parentWidget();
+    while (w && !qobject_cast<Q3ScrollView*>(w))
+        w = w->parentWidget();
+    Q3ScrollView* sv = static_cast<Q3ScrollView*>(w);
+    w = sv->viewport();
+    view()->parentWidget()->setParent( w );
+//    view()->parentWidget()->move( absoluteRect().bottomLeft() );
+    sv->addChild(view()->parentWidget(), absoluteRect().bottomLeft().x(), absoluteRect().bottomLeft().y());
+    view()->parentWidget()->raise();
+    view()->parentWidget()->show();
+}
+
+void ComboBoxWidget::hidePopup()
+{
+    view()->parentWidget()->setParent( this );
+    KComboBox::hidePopup();
+  
+}
+
+
 bool ComboBoxWidget::event(QEvent *e)
 {
     if (KComboBox::event(e))
@@ -1322,6 +1342,13 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     m_replaceAction = KStdAction::replace( this, SLOT( slotReplace() ), ac );
 }
 
+void TextAreaWidget::scrollContentsBy( int dx, int dy )
+{
+    KTextEdit::scrollContentsBy(dx, dy);
+    update();
+    
+}
+
 TextAreaWidget::~TextAreaWidget()
 {
     delete m_replace;
@@ -1336,7 +1363,6 @@ TextAreaWidget::~TextAreaWidget()
 
 void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
 {
-
     QMenu *popup = createStandardContextMenu();
 
     if (!isReadOnly()) {

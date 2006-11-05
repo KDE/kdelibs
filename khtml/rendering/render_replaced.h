@@ -25,6 +25,7 @@
 #include "rendering/render_block.h"
 #include <qobject.h>
 #include <q3scrollview.h>
+#include <QAbstractScrollArea>
 
 class KHTMLView;
 class QWidget;
@@ -80,7 +81,6 @@ protected:
     short m_intrinsicHeight;
 };
 
-
 class RenderWidget : public QObject, public RenderReplaced, public khtml::Shared<RenderWidget>
 {
     Q_OBJECT
@@ -91,6 +91,7 @@ public:
     virtual void setStyle(RenderStyle *style);
     virtual void paint( PaintInfo& i, int tx, int ty );
     virtual bool isWidget() const { return true; };
+
 
     virtual bool isFrame() const { return false; }
 
@@ -109,6 +110,8 @@ public:
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
+    bool wantMouseEvents() const { return m_wantMouseEvents; }
+    bool isKHTMLWidget() const { return m_isKHTMLWidget; }
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -119,7 +122,6 @@ public:
 
 public Q_SLOTS:
     void slotWidgetDestructed();
-    bool isKHTMLWidget() const { return m_isKHTMLWidget; }
 
 protected:
     virtual bool canHaveBorder() const { return false; }
@@ -135,6 +137,8 @@ protected:
 
     QWidget *m_widget;
     KHTMLView* m_view;
+    
+    bool m_wantMouseEvents;
 
     //Because we mess with normal detach due to ref/deref,
     //we need to keep track of the arena ourselves
@@ -145,6 +149,9 @@ protected:
     bool m_discardResizes;
     bool m_isKHTMLWidget;
     bool m_needsMask;
+
+private:
+    QWidget* m_pTarget; // current target for mouse events within m_widget
 
 public:
     virtual int borderTop() const { return canHaveBorder() ? RenderReplaced::borderTop() : 0; }
@@ -160,6 +167,16 @@ public:
     public:
         void sendEvent(QEvent *e);
     };
+};
+
+class KHTMLWidget
+{
+public:
+    KHTMLWidget(): m_rw(0) {}
+    QRect absoluteRect();
+    RenderWidget* renderWidget() const { return m_rw; }
+    void setRenderWidget(RenderWidget* rw) { m_rw = rw; }
+    RenderWidget *m_rw;
 };
 
 extern bool allowWidgetPaintEvents;

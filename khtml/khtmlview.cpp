@@ -1038,21 +1038,6 @@ void KHTMLView::tripleClickTimeout()
     d->clickCount = 0;
 }
 
-static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* me, int x, int y)
-{
-    int absx = 0;
-    int absy = 0;
-    r->absolutePosition(absx, absy);
-    QPoint p(x-absx, y-absy);
-    QMouseEvent fw(me->type(), p, me->button(), me->buttons(), me->modifiers());
-    QWidget* w = r->widget();
-    Q3ScrollView* sc = ::qobject_cast<Q3ScrollView*>(w);
-    if (sc && !::qobject_cast<Q3ListBox*>(w))
-        static_cast<khtml::RenderWidget::ScrollViewEventPropagator*>(sc)->sendEvent(&fw);
-    else if(w)
-        static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
-}
-
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( d->m_mouseScrollTimer ) {
@@ -1091,7 +1076,15 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 // 		  << " button " << _mouse->button()
 // 		  << " state " << _mouse->state() << endl;
 
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),false,
+    DOM::NodeImpl* target = mev.innerNode.handle();
+    DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
+
+    // a widget may be the real target of this event (e.g. if a scrollbar's slider is being moved)
+    if (fn && fn != mev.innerNode.handle() && fn->renderer() && fn->renderer()->isWidget() &&
+         static_cast<RenderWidget*>(fn->renderer())->wantMouseEvents())
+       target = fn;
+                    
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,target,mev.innerNonSharedNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
     if (d->clickCount > 0 &&
@@ -1102,13 +1095,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
 
-    DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
-    if (fn && fn != mev.innerNode.handle() &&
-        fn->renderer() && fn->renderer()->isWidget()) {
-        forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
-    }
-
-    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+    khtml::RenderObject* r = target ? target->renderer() : 0;
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
     bool mailtoCursor = false;
@@ -1222,7 +1209,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	_mouse->ignore();
     }
 
-
     d->prevMouseX = xm;
     d->prevMouseY = ym;
 
@@ -1243,7 +1229,15 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     {
         m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-        swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
+        DOM::NodeImpl* target = mev.innerNode.handle();
+        DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
+
+        // a widget may be the real target of this event (e.g. if a scrollbar's slider is being moved)
+        if (fn && fn != mev.innerNode.handle() && fn->renderer() && fn->renderer()->isWidget() &&
+              static_cast<RenderWidget*>(fn->renderer())->wantMouseEvents())
+            target = fn;
+
+        swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,target,mev.innerNonSharedNode.handle(),true,
                                           d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
         if (d->clickCount > 0 &&
@@ -1254,14 +1248,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
                                d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
         }
 
-        DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
-        if (fn && fn != mev.innerNode.handle() &&
-            fn->renderer() && fn->renderer()->isWidget() &&
-            _mouse->button() != Qt::MidButton) {
-            forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
-        }
-
-        khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+        khtml::RenderObject* r = target ? target->renderer() : 0;
         if (r && r->isWidget())
             _mouse->ignore();
     }
@@ -1873,8 +1860,15 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    // gets repainted.
 		    block = true;
 		    int x = 0, y = 0;
-
+		    
+		    if (dynamic_cast<KHTMLWidget*>(c)) {
+		        QRect ar = dynamic_cast<KHTMLWidget*>(c)->absoluteRect();
+		        x = ar.x();
+		        y = ar.y();
+                    }
 		    // ### FIXME: need something more efficient
+		    // ### FIXME: layers scrollbars don't have associated RenderWidget
+                    else
                     for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
                         if (c == it.current()) {
                             RenderWidget*rw=static_cast<RenderWidget*>( it.currentKey() );
@@ -1916,7 +1910,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w) && !::qobject_cast<QScrollBar *>(w)) {
+	        
+		if (0 && w->parentWidget() == view && !qobject_cast<QScrollBar*>(w) && !::qobject_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = w->mapTo( view, me->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->buttons(), me->modifiers());
@@ -1943,6 +1938,11 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 			keyReleaseEvent(ke);
 		    block = true;
 		}
+		break;
+            case QEvent::FocusIn:
+            case QEvent::FocusOut:
+                block = true;
+                break;
 	    default:
 		break;
 	    }
