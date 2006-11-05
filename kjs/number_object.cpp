@@ -373,11 +373,18 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
 
     if (x != 0) {
+      // suggestions for a better algorithm welcome!
       e = int(log10(x));
       double n = floor(x/pow(10.0,e-p+1));
       if (n < pow(10.0,p-1)) {
+	// first guess was not good
 	e = e - 1;
 	n = floor(x/pow(10.0,e-p+1));
+	if (n >= pow(10.0,p)) {
+	  // violated constraint. try something else.
+	  n = pow(10.0,p-1);
+	  e = int(log10(x/n)) + p - 1;
+	}
       }
 
       if (fabs((n+1)*pow(10.0,e-p+1)-x) < fabs(n*pow(10.0,e-p+1)-x))
