@@ -358,13 +358,21 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       int p = (int)dp;
 
       if (x != 0) {
+          // suggestions for a better algorithm welcome!
           e = static_cast<int>(log10(x));
           double tens = intPow10(e - p + 1);
           double n = floor(x / tens);
           if (n < intPow10(p - 1)) {
+              // first guess was not good
               e = e - 1;
               tens = intPow10(e - p + 1);
               n = floor(x / tens);
+              if (n >= pow(10.0,p)) {
+                  // violated constraint. try something else.
+                  n = pow(10.0, p - 1);
+                  e = e + 1;
+                  tens = intPow10(e - p + 1);
+              }
           }
 
           if (fabs((n + 1.0) * tens - x) <= fabs(n * tens - x))
