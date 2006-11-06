@@ -163,7 +163,7 @@ bool KCodecAction::setCurrentCodec( QTextCodec *codec )
         return setCurrentCodec(QLatin1String(codec->name()));
     else
     {
-        kWarning() << k_funcinfo << "Codec is not selectable: " << codec->name() << endl;
+        kWarning() << k_funcinfo << "Codec is not selectable." << endl;
         return false;
     }
 }
