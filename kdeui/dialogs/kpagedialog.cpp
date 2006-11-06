@@ -119,4 +119,9 @@ KPageWidgetItem* KPageDialog::currentPage() const
   return d->mPageWidget->currentPage();
 }
 
+KPageWidget* KPageDialog::pageWidget() const
+{
+  return d->mPageWidget;
+}
+
 #include "kpagedialog.moc"
