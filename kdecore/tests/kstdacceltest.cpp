@@ -85,7 +85,7 @@ void KStdAccelTest::testKShortcut()
     QVERIFY( quit != null );
     QVERIFY( !( quit == null ) );
 
-    QVERIFY( quit.contains( Qt::CTRL+Qt::Key_X ) );
+    QVERIFY( !quit.contains( Qt::CTRL+Qt::Key_X ) );
     QVERIFY( !quit.contains( Qt::CTRL+Qt::Key_Z ) );
     QVERIFY( !quit.contains( Qt::CTRL+Qt::Key_C ) );
     QKeySequence seq( Qt::CTRL+Qt::Key_X, Qt::CTRL+Qt::Key_C );
