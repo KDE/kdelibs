@@ -972,11 +972,9 @@ const KShortcut & KKeyChooserItem::defaultGlobalShortcut( ) const
 void KKeyChooserItem::checkModified( )
 {
 	m_modified = (m_newLocalShortcut != m_action->shortcut()) || (m_newGlobalShortcut != m_action->globalShortcut());
-	// Force redraw
-	if (text(0) == "a")
-		setText(0, "b");
-	else
-		setText(0, "a");
+
+	// why do I still have to use viewport() (with Qt 4.2.0)?
+	treeWidget()->viewport()->update();
 }
 
 void KKeyChooserItem::setGlobalShortcut( const KShortcut & cut )
