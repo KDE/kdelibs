@@ -186,7 +186,7 @@ void KFileMetaPropsPlugin::createLayout()
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
-            l->setAlignment( static_cast<Qt::Alignment>( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs ) );
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
             if (!val) kDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
             w = new KFileMetaInfoWidget(*iit, val, groupBox);
@@ -202,7 +202,7 @@ void KFileMetaPropsPlugin::createLayout()
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
-            l->setAlignment( static_cast<Qt::Alignment>( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs ) );
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
             w = new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox);
             grouplayout->addWidget(w, row, 1);
             ++row;

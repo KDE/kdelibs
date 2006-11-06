@@ -160,7 +160,7 @@ void KFileView::sortReversed()
 {
     int spec = sorting();
 
-    setSorting( static_cast<QDir::SortFlags>( spec ^ QDir::Reversed ) );
+    setSorting( QDir::SortFlags( spec ^ QDir::Reversed ) );
 }
 
 #if 0
