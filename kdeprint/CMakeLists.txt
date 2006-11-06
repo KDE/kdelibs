@@ -14,7 +14,7 @@ include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CU
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(Cups)
 
-macro_log_feature(CUPS_FOUND "CUPS"  "The CUPS (Common UNIX Printing System) libraries are required to get CUPS support in kdeprint" "http://www.cups.org")
+macro_log_feature(CUPS_FOUND "CUPS" "The CUPS (Common UNIX Printing System)" "http://www.cups.org" FALSE "" "Provide CUPS support in kdeprint.")
 
 add_subdirectory( management )
 add_subdirectory( lpdunix )
