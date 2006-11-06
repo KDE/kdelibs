@@ -212,7 +212,7 @@ void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcut
 	if (!(d->type & GlobalAction)) {
 		d->ui->list->header()->hideSection(3);
 
-	} else if (d->type & ~GlobalAction) {
+	} else if (!(d->type & ~GlobalAction)) {
 		d->ui->list->header()->hideSection(1);
 		d->ui->list->header()->hideSection(2);
 	}
