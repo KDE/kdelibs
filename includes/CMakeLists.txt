@@ -10,7 +10,6 @@ install( FILES
   DrStringOption
   FileProtocol
   I18nTypeCheck
-  I18nTypeCheck
   K3BookmarkDrag
   K3ColorDrag
   K3DictSpellingHighlighter
@@ -40,6 +39,7 @@ install( FILES
   K3SpellDlg
   K3SpellingHighlighter
   K3SyntaxHighlighter
+  K3TempFile
   K3TextEdit
   K3URLDrag
   K3Wizard
@@ -223,8 +223,6 @@ install( FILES
   KFontRequester
   KFontSizeAction
   KGenericFactory
-  KGenericFactory
-  KGenericFactory
   KGenericFactoryBase
   KGlobal
   KGlobalAccel
@@ -286,7 +284,6 @@ install( FILES
   KMacroCommand
   KMacroExpanderBase
   KMainWindow
-  KMakeTypeList
   KMakeTypeList
   KMenu
   KMenuBar
@@ -453,11 +450,9 @@ install( FILES
   KSystemTimeZones
   KSystemTrayIcon
   KTabBar
-  KTabCtl
   KTabWidget
   KTar
   KTempDir
-  KTempFile
   KTemporaryFile
   KTextBrowser
   KTextEdit
@@ -480,9 +475,6 @@ install( FILES
   KTreeWidgetSearchLineWidget
   KTypeList
   KTypeListIndexOf
-  KTypeListIndexOf
-  KTypeListIndexOf
-  KTypeListLength
   KTypeListLength
   KTzfileTimeZone
   KTzfileTimeZoneSource
@@ -490,7 +482,6 @@ install( FILES
   KUriFilter
   KUriFilterData
   KUriFilterPlugin
-  KUriFilterPluginList
   KUrl
   KUrlBar
   KUrlBarItem
@@ -539,7 +530,6 @@ install( FILES
   ProgressItem
   PtyProcess
   QMetaTypeId
-  QMetaTypeId
   SshProcess
   StubProcess
   SuProcess
@@ -552,23 +542,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 
 install( FILES 
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
-  ConversionCheck/QVconvertible
   ConversionCheck/QVconvertible
   ConversionCheck/type_toQString
   ConversionCheck/type_toQVariant
@@ -715,12 +688,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen )
 install( FILES 
   KDEPrivate/ConcreteFactory
   KDEPrivate/If
-  KDEPrivate/If
   KDEPrivate/InheritanceDetector
-  KDEPrivate/MultiFactory
-  KDEPrivate/MultiFactory
-  KDEPrivate/MultiFactory
-  KDEPrivate/MultiFactory
   KDEPrivate/MultiFactory
   KDEPrivate/PartInheritanceTest
   KDEPrivate/QWidgetInheritanceTest
@@ -867,7 +835,6 @@ install( FILES
   KNetwork/KIpAddress
   KNetwork/KMulticastSocket
   KNetwork/KMulticastSocketDevice
-  KNetwork/KNetworkInterface
   KNetwork/KPassiveSocketBase
   KNetwork/KResolver
   KNetwork/KResolverEntry
@@ -906,7 +873,6 @@ install( FILES
   KParts/Event
   KParts/Factory
   KParts/GUIActivateEvent
-  KParts/GenericFactory
   KParts/GenericFactory
   KParts/GenericFactoryBase
   KParts/HistoryProvider
@@ -951,17 +917,12 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSpell2 )
 
 
 install( FILES 
-  KTextEditor/ArgHintData
   KTextEditor/Attribute
   KTextEditor/CodeCompletionInterface
-  KTextEditor/CodeCompletionInterface2
   KTextEditor/CodeCompletionModel
   KTextEditor/Command
   KTextEditor/CommandExtension
   KTextEditor/CommandInterface
-  KTextEditor/CompletionData
-  KTextEditor/CompletionItem
-  KTextEditor/CompletionProvider
   KTextEditor/ConfigInterface
   KTextEditor/ConfigPage
   KTextEditor/Cursor
@@ -1005,30 +966,15 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 install( FILES 
   KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DefaultHash
-  KXMLCore/DeletedValueAssigner
-  KXMLCore/DeletedValueAssigner
   KXMLCore/DeletedValueAssigner
   KXMLCore/GenericHashTraits
   KXMLCore/GenericHashTraitsBase
-  KXMLCore/GenericHashTraitsBase
   KXMLCore/HashCountedSet
-  KXMLCore/HashKeyStorageTraits
-  KXMLCore/HashKeyStorageTraits
   KXMLCore/HashKeyStorageTraits
   KXMLCore/HashMap
   KXMLCore/HashMapTranslator
-  KXMLCore/HashMapTranslator
   KXMLCore/HashSet
   KXMLCore/HashSetTranslator
-  KXMLCore/HashSetTranslator
-  KXMLCore/HashSetTranslatorAdapter
   KXMLCore/HashSetTranslatorAdapter
   KXMLCore/HashTable
   KXMLCore/HashTableConstIterator
@@ -1037,56 +983,14 @@ install( FILES
   KXMLCore/HashTableIteratorAdapter
   KXMLCore/HashTableRefCounter
   KXMLCore/HashTableRefCounterBase
-  KXMLCore/HashTableRefCounterBase
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
-  KXMLCore/HashTraits
   KXMLCore/HashTraits
   KXMLCore/IdentityExtractor
   KXMLCore/IdentityHashTranslator
   KXMLCore/IntHash
   KXMLCore/IntTypes
-  KXMLCore/IntTypes
-  KXMLCore/IntTypes
-  KXMLCore/IntTypes
   KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsInteger
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
-  KXMLCore/IsPod
   KXMLCore/IsPod
   KXMLCore/Mover
-  KXMLCore/Mover
-  KXMLCore/NeedsRef
   KXMLCore/NeedsRef
   KXMLCore/OwnArrayPtr
   KXMLCore/OwnPtr
@@ -1095,31 +999,18 @@ install( FILES
   KXMLCore/PairHashTraits
   KXMLCore/PassRefPtr
   KXMLCore/PtrHash
-  KXMLCore/PtrHash
   KXMLCore/RefCounter
-  KXMLCore/RefCounter
-  KXMLCore/RefCounterBase
   KXMLCore/RefCounterBase
   KXMLCore/RefPtr
   KXMLCore/SharedPtr
   KXMLCore/Vector
   KXMLCore/VectorBuffer
-  KXMLCore/VectorBuffer
-  KXMLCore/VectorCopier
   KXMLCore/VectorCopier
   KXMLCore/VectorDestructor
-  KXMLCore/VectorDestructor
-  KXMLCore/VectorFiller
   KXMLCore/VectorFiller
   KXMLCore/VectorInitializer
-  KXMLCore/VectorInitializer
-  KXMLCore/VectorInitializer
-  KXMLCore/VectorMover
   KXMLCore/VectorMover
   KXMLCore/VectorTraits
-  KXMLCore/VectorTraits
-  KXMLCore/VectorTraits
-  KXMLCore/VectorTraitsBase
   KXMLCore/VectorTraitsBase
   KXMLCore/VectorTypeOperations
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KXMLCore )
