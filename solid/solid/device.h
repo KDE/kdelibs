@@ -115,7 +115,7 @@ namespace Solid
          *
          * @return the udi of the device
          */
-        virtual QString udi() const;
+        QString udi() const;
 
         /**
          * Retrieves the Universal Device Identifier (UDI)
@@ -123,7 +123,7 @@ namespace Solid
          *
          * @return the udi of the device's parent
          */
-        virtual QString parentUdi() const;
+        QString parentUdi() const;
 
 
         /**
@@ -142,14 +142,14 @@ namespace Solid
          *
          * @return the vendor name
          */
-        virtual QString vendor() const;
+        QString vendor() const;
 
         /**
          * Retrieves the name of the product corresponding to this device.
          *
          * @return the product name
          */
-        virtual QString product() const;
+        QString product() const;
 
 
 
@@ -166,7 +166,7 @@ namespace Solid
          * @param value the new value for the property
          * @return true if the change succeeded, false otherwise
          */
-        virtual bool setProperty( const QString &key, const QVariant &value );
+        bool setProperty( const QString &key, const QVariant &value );
 
         /**
          * Retrieves a property of the device.
@@ -180,7 +180,7 @@ namespace Solid
          * @return the actual value of the property, or QVariant() if the
          * property is unknown
          */
-        virtual QVariant property( const QString &key ) const;
+        QVariant property( const QString &key ) const;
 
         /**
          * Retrieves a key/value map of all the known properties for the device.
@@ -192,7 +192,7 @@ namespace Solid
          *
          * @return all the properties of the device
          */
-        virtual QMap<QString, QVariant> allProperties() const;
+        QMap<QString, QVariant> allProperties() const;
 
         /**
          * Tests if a property exist in the device.
@@ -206,7 +206,7 @@ namespace Solid
          * @return true if the property is available in the device, false
          * otherwise
          */
-        virtual bool propertyExists( const QString &key ) const;
+        bool propertyExists( const QString &key ) const;
 
         /**
          * Tests if a capability is available from the device.
@@ -214,7 +214,7 @@ namespace Solid
          * @param capability the capability to query
          * @return true if the capability is available, false otherwise
          */
-        virtual bool queryCapability( const Capability::Type &capability ) const;
+        bool queryCapability( const Capability::Type &capability ) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
@@ -223,7 +223,7 @@ namespace Solid
          * @param capability the capability type
          * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        virtual Capability *asCapability( const Capability::Type &capability );
+        Capability *asCapability( const Capability::Type &capability );
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
@@ -232,7 +232,7 @@ namespace Solid
          * @param capability the capability type
          * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        virtual const Capability *asCapability( const Capability::Type &capability ) const;
+        const Capability *asCapability( const Capability::Type &capability ) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
@@ -277,28 +277,28 @@ namespace Solid
          * @param reason a message describing the reason for the lock
          * @return true if the lock has been successfully acquired, false otherwise
          */
-        virtual bool lock(const QString &reason);
+        bool lock(const QString &reason);
 
         /**
          * Releases a lock on the device.
          *
          * @return true if the lock has been successfully released
          */
-        virtual bool unlock();
+        bool unlock();
 
         /**
          * Tests if the device is locked.
          *
          * @return true if the device is locked, false otherwise
          */
-        virtual bool isLocked() const;
+        bool isLocked() const;
 
         /**
          * Retrieves the reason for a lock.
          *
          * @return the lock reason if the device is locked, QString() otherwise
          */
-        virtual QString lockReason() const;
+        QString lockReason() const;
 
     Q_SIGNALS:
         /**
