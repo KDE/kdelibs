@@ -50,9 +50,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 # Use the one variable for the lib you depend upon.
 # E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 
-# DCOP depends on Qt
-set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS})
-# kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
+# kdecore depends on Qt
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kdeui/findreplace ${CMAKE_SOURCE_DIR}/kdeui/util ${CMAKE_SOURCE_DIR}/kdeui/widgets ${CMAKE_SOURCE_DIR}/kdeui/dialogs ${CMAKE_SOURCE_DIR}/kdeui/itemviews ${KDE4_KDECORE_INCLUDES})

@@ -7,10 +7,6 @@
 #
 # kde4_automoc(${kded_test_PART_SRCS})
 #
-# set( kded_test_DCOP_SKEL_SRCS test.h )
-#
-# kde4_add_dcop_skels(kded_test_PART_SRCS ${kded_test_DCOP_SKEL_SRCS})
-#
 # kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 #
 # target_link_libraries(kded_test  ${KDE4_KDECORE_LIBS} )
