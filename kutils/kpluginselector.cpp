@@ -1,506 +1,221 @@
-/*  This file is part of the KDE project
-    Copyright (C) 2002-2003 Matthias Kretz <kretz@kde.org>
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License version 2 as published by the Free Software Foundation.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA 02110-1301, USA.
-
-*/
+/**
+  * This file is part of the KDE project
+  * Copyright (C) 2006 Rafael Fernández López <ereslibre@gmail.com>
+  * Copyright (C) 2002-2003 Matthias Kretz <kretz@kde.org>
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Library General Public
+  * License version 2 as published by the Free Software Foundation.
+  *
+  * This library is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Library General Public License for more details.
+  *
+  * You should have received a copy of the GNU Library General Public License
+  * along with this library; see the file COPYING.LIB.  If not, write to
+  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+  * Boston, MA 02110-1301, USA.
+  */
 
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
-#include <qtooltip.h>
-#include <qlabel.h>
-#include <qfile.h>
-#include <qstring.h>
-#include <qlayout.h>
-#include <qcursor.h>
-#include <qapplication.h>
-#include <qobject.h>
-#include <QEvent>
-#include <QHelpEvent>
+#include <QFrame>
+#include <QStackedWidget>
 #include <QTreeWidget>
-
-#include <kdebug.h>
+#include <QSplitter>
+#include <QHeaderView>
+#include <QVBoxLayout>
+#include <QTreeWidgetItem>
+#include <QList>
+#include <QLabel>
+#include <QBrush>
 #include <klocale.h>
-#include <ksimpleconfig.h>
-#include <kdialog.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kstandarddirs.h>
-#include <kcmoduleinfo.h>
-#include <kservice.h>
 #include <ktabwidget.h>
+#include <kinstance.h>
+#include <kplugininfo.h>
+#include <kstandarddirs.h>
+#include <kconfigbase.h>
 #include <kiconloader.h>
 #include <kcmodule.h>
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
-#include <qsplitter.h>
-#include <qframe.h>
-#include "kplugininfo.h"
-#include <kinstance.h>
-#include <qstringlist.h>
-#include <QList>
 #include "kcmoduleproxy.h"
-#include <QStackedWidget>
 
-/*
-    QCheckListViewItem that holds a pointer to the KPluginInfo object.
-    Used in the tooltip code to access additional fields
-*/
-class KPluginInfoLVI : public QTreeWidgetItem
+KPluginInfoLVI::KPluginInfoLVI(QString itemTitle, QTreeWidget *parent)
+    : QTreeWidgetItem(parent, QStringList(itemTitle))
+    , m_pluginInfo(0)
+    , m_cfgGroup(0)
+    , m_moduleProxy(0)
+    , m_cfgWidget(0)
 {
-    public:
-        KPluginInfoLVI( KPluginInfo *pluginInfo, QTreeWidget *parent )
-            : QTreeWidgetItem( parent, QStringList( pluginInfo->name() ) ),
-              m_pluginInfo( pluginInfo )
-        {
-            QString toolTip = i18n( "<qt><table>"
-                "<tr><td><b>Description:</b></td><td>%1</td></tr>"
-                "<tr><td><b>Author:</b></td><td>%2</td></tr>"
-                "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-                "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
-                m_pluginInfo->comment(),
-                m_pluginInfo->author(),
-                m_pluginInfo->version(),
-                m_pluginInfo->license() );
-            setToolTip(0, toolTip);
-        }
+}
 
-        KPluginInfo * pluginInfo() { return m_pluginInfo; }
-
-    private:
-        KPluginInfo *m_pluginInfo;
-};
-
-struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
+KPluginInfoLVI::KPluginInfoLVI(KPluginInfo *pluginInfo, QTreeWidgetItem *parent)
+    : QTreeWidgetItem(parent, QStringList(pluginInfo->name()))
+    , m_pluginInfo(pluginInfo)
+    , m_cfgGroup(0)
+    , m_moduleProxy(0)
+    , m_cfgWidget(0)
 {
-    KPluginSelectionWidgetPrivate( KPluginSelector * _kps,
-                                   const QString & _cat,
-                                   KConfigGroup * _config )
-     : widgetstack( 0 )
-        , kps( _kps )
-        , config( _config )
-        , catname( _cat )
-        , currentplugininfo( 0 )
-        , visible( true )
-        , currentchecked( false )
-        , changed( 0 )
+    QString toolTip = i18n("<qt><table>"
+                           "<tr><td><b>Description:</b></td><td>%1</td></tr>"
+                           "<tr><td><b>Author:</b></td><td>%2</td></tr>"
+                           "<tr><td><b>Version:</b></td><td>%3</td></tr>"
+                           "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
+                           m_pluginInfo->comment(),
+                           m_pluginInfo->author(),
+                           m_pluginInfo->version(),
+                           m_pluginInfo->license());
+
+    setToolTip(0, toolTip);
+}
+
+KPluginInfoLVI::KPluginInfoLVI(QString itemTitle, QTreeWidgetItem *parent,
+                               KPluginInfo *pluginInfo)
+    : QTreeWidgetItem(parent, QStringList(itemTitle))
+    , m_pluginInfo(pluginInfo)
+    , m_cfgGroup(0)
+    , m_moduleProxy(0)
+    , m_cfgWidget(0)
+{
+    if (pluginInfo)
     {
-    }
+        QString toolTip = i18n("<qt><table>"
+                            "<tr><td><b>Description:</b></td><td>%1</td></tr>"
+                            "<tr><td><b>Author:</b></td><td>%2</td></tr>"
+                            "<tr><td><b>Version:</b></td><td>%3</td></tr>"
+                            "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
+                            m_pluginInfo->comment(),
+                            m_pluginInfo->author(),
+                            m_pluginInfo->version(),
+                            m_pluginInfo->license());
 
-    ~KPluginSelectionWidgetPrivate()
-    {
-        delete config;
-    }
-
-    QMap<QTreeWidgetItem*, KPluginInfo*> pluginInfoMap;
-
-    QTreeWidget     * listview;
-    QStackedWidget * widgetstack;
-    KPluginSelector * kps;
-    KConfigGroup * config;
-
-    QMap<QString, int> widgetIDs;
-    QMap<KPluginInfo*, bool> plugincheckedchanged;
-    QString catname;
-    QList<KCModuleProxy*> modulelist;
-    QMap<KCModuleProxy *, QStringList> moduleParentComponents;
-
-    KPluginInfo * currentplugininfo;
-    bool visible;
-    bool currentchecked;
-    int changed;
-};
-
-
-KPluginSelectionWidget::KPluginSelectionWidget(
-        const QList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
-        QWidget * parent, const QString & catname, const QString & category,
-        KConfigGroup * config )
-    : QWidget( parent )
-    , d( new KPluginSelectionWidgetPrivate( kps, catname, config ) )
-{
-    init( plugininfos, category );
-}
-
-inline QString KPluginSelectionWidget::catName() const
-{
-    return d->catname;
-}
-
-void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
-        const QString & category )
-{
-    // setup Widgets
-//    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
-    QTreeWidget * listview = new QTreeWidget( this );
-    d->listview = listview;
-
-    connect( listview, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this,
-            SLOT(executed(QTreeWidgetItem*,int)) );
-    listview->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Preferred );
-    listview->setAcceptDrops( false );
-    listview->setHeaderLabels( QStringList( i18n( "Name" ) ) );
-    for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
-            it != plugininfos.end(); ++it )
-    {
-        d->plugincheckedchanged[ *it ] = false;
-        if( !( *it )->isHidden() &&
-                ( category.isNull() || ( *it )->category() == category ) )
-        {
-            QTreeWidgetItem * item = new KPluginInfoLVI( *it, listview );
-            if( ! ( *it )->icon().isEmpty() )
-                item->setIcon( 0, SmallIcon( ( *it )->icon(), IconSize( K3Icon::Small ) ) );
-            if ( ( *it )->isPluginEnabled() )
-                item->setCheckState( 0, Qt::Checked );
-            else
-                item->setCheckState( 0, Qt::Unchecked );
-            d->pluginInfoMap.insert( item, *it );
-        }
-    }
-
-    // widgetstack
-    d->widgetstack = d->kps->widgetStack();
-    load();
-    // select and highlight the first item in the plugin list
-    if( listview->model()->rowCount() >= 1 ) {
-        const QModelIndex index = listview->model()->index( 0, 0 );
-        listview->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Select );
+        setToolTip(0, toolTip);
     }
 }
 
-KPluginSelectionWidget::~KPluginSelectionWidget()
+KPluginInfoLVI::~KPluginInfoLVI()
 {
-    delete d;
+    if (m_cfgWidget)
+
+        delete m_cfgWidget;
 }
 
-bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
+void KPluginInfoLVI::setPluginInfo(KPluginInfo *pluginInfo)
 {
-    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
-    while ( it.hasNext() ) {
-        it.next();
-        if( it.value()->pluginName() == pluginName )
-            return it.value()->isPluginEnabled();
-    }
+    Q_ASSERT(pluginInfo);
 
-    return false;
+    m_pluginInfo = pluginInfo;
 }
 
-
-QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
-        const KCModuleInfo & moduleinfo )
+void KPluginInfoLVI::setCfgGroup(KConfigGroup *cfgGroup)
 {
-    KCModuleProxy * module = new KCModuleProxy( moduleinfo, parent );
-    if( !module->realModule() )
-    {
-        //FIXME: not very verbose
-        QLabel * label = new QLabel( i18n( "Error" ), parent );
-        label->setAlignment( Qt::AlignCenter );
+    Q_ASSERT(cfgGroup);
 
-        return label;
-    }
-    // add the KCM to the list so that we can call load/save/defaults on it
-    d->modulelist.append( module );
-    QStringList parentComponents = moduleinfo.service()->property(
-        "X-KDE-ParentComponents" ).toStringList();
-    d->moduleParentComponents.insert( module, parentComponents );
-    connect( module, SIGNAL( changed( bool ) ), SLOT( clientChanged( bool ) ) );
-    return module;
+    m_cfgGroup = cfgGroup;
 }
 
-void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool checked )
+void KPluginInfoLVI::setModuleProxy(KCModuleProxy *moduleProxy)
 {
-    //if we have Services for the plugin we should be able to
-    //create KCM(s)
-    QApplication::setOverrideCursor( Qt::WaitCursor );
-    if( plugininfo->kcmServices().size() > 1 )
-    {
-        // we need a tabwidget
-        KTabWidget * tabwidget = new KTabWidget( d->widgetstack );
-        tabwidget->setEnabled( checked );
+    Q_ASSERT(moduleProxy);
 
-        int id = d->widgetstack->addWidget( tabwidget );
-        d->kps->configPage( id );
-        d->widgetIDs[ plugininfo->pluginName() ] = id;
+    m_moduleProxy = moduleProxy;
+}
 
-        for( QList<KService::Ptr>::ConstIterator it =
-                plugininfo->kcmServices().begin();
-                it != plugininfo->kcmServices().end(); ++it )
-        {
-            if( !( *it )->noDisplay() )
-            {
-                KCModuleInfo moduleinfo( *it );
-                QWidget * module = insertKCM( tabwidget, moduleinfo );
-                tabwidget->addTab( module, moduleinfo.moduleName() );
-            }
-        }
-    }
+void KPluginInfoLVI::setCfgWidget(QWidget *cfgWidget)
+{
+    Q_ASSERT(cfgWidget);
+
+    m_cfgWidget = cfgWidget;
+}
+
+void KPluginInfoLVI::setItemChecked(bool itemChecked)
+{
+    m_itemChecked = itemChecked;
+
+    if (itemChecked)
+        setCheckState(0, Qt::Checked);
     else
-    {
-        if( !plugininfo->kcmServices().front()->noDisplay() )
-        {
-            KCModuleInfo moduleinfo(
-                    plugininfo->kcmServices().front() );
-            QWidget * module = insertKCM( d->widgetstack, moduleinfo );
-            module->setEnabled( checked );
-
-            int id = d->widgetstack->addWidget( module );
-            d->kps->configPage( id );
-            d->widgetIDs[ plugininfo->pluginName() ] = id;
-        }
-    }
-    QApplication::restoreOverrideCursor();
+        setCheckState(0, Qt::Unchecked);
 }
 
-inline void KPluginSelectionWidget::updateConfigPage()
+KPluginInfo* KPluginInfoLVI::pluginInfo() const
 {
-    updateConfigPage( d->currentplugininfo, d->currentchecked );
+    return m_pluginInfo;
 }
 
-void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
-        bool checked )
+KConfigGroup* KPluginInfoLVI::cfgGroup() const
 {
-    //kDebug( 702 ) << k_funcinfo << endl;
-    d->currentplugininfo = plugininfo;
-    d->currentchecked = checked;
-
-    // if this widget is not currently visible (meaning that it's in a tabwidget
-    // and another tab is currently opened) it's not allowed to change the
-    // widgetstack
-    if( ! d->visible )
-        return;
-
-    if( 0 == plugininfo )
-    {
-        d->kps->configPage( 1 );
-        return;
-    }
-
-    if( plugininfo->kcmServices().empty() )
-        d->kps->configPage( 1 );
-    else
-    {
-        if( !d->widgetIDs.contains( plugininfo->pluginName() ) )
-            // if no widget exists for the plugin create it
-            embeddPluginKCMs( plugininfo, checked );
-        else
-        {
-            // the page already exists
-            int id = d->widgetIDs[ plugininfo->pluginName() ];
-            d->kps->configPage( id );
-            d->widgetstack->widget( id )->setEnabled( checked );
-        }
-    }
+    return m_cfgGroup;
 }
 
-void KPluginSelectionWidget::clientChanged( bool didchange )
+KCModuleProxy* KPluginInfoLVI::moduleProxy() const
 {
-    kDebug( 702 ) << k_funcinfo << endl;
-    d->changed += didchange ? 1 : -1;
-    if( d->changed == 1 )
-        emit changed( true );
-    else if( d->changed == 0 )
-        emit changed( false );
-    else if( d->changed < 0 )
-        kError( 702 ) << "negative changed value: " << d->changed << endl;
+    return m_moduleProxy;
 }
 
-void KPluginSelectionWidget::tabWidgetChanged( QWidget * widget )
+QWidget* KPluginInfoLVI::cfgWidget() const
 {
-    if( widget == this )
-    {
-        d->visible = true;
-        updateConfigPage();
-    }
-    else
-        d->visible = false;
+    return m_cfgWidget;
 }
 
-void KPluginSelectionWidget::executed( QTreeWidgetItem * item, int )
+bool KPluginInfoLVI::itemChecked() const
 {
-    kDebug( 702 ) << k_funcinfo << endl;
-    if( item == 0 )
-        return;
-
-    bool checked = ( item->checkState( 0 ) == Qt::Checked );
-
-    KPluginInfo * info = d->pluginInfoMap[ item ];
-    Q_ASSERT( !info->isHidden() );
-
-    if ( info->isPluginEnabled() != checked )
-    {
-        kDebug( 702 ) << "Item changed state, emitting changed()" << endl;
-
-        if( ! d->plugincheckedchanged[ info ] )
-        {
-            ++d->changed;
-            if ( d->changed == 1 )
-                emit changed( true );
-        }
-        d->plugincheckedchanged[ info ] = true;
-
-        checkDependencies( info );
-    }
-    else
-    {
-        if( d->plugincheckedchanged[ info ] )
-        {
-            --d->changed;
-            if ( d->changed == 0 )
-                emit changed( false );
-        }
-        d->plugincheckedchanged[ info ] = false;
-        // FIXME: plugins that depend on this plugin need to be disabled, too
-    }
-
-    updateConfigPage( info, checked );
+    return m_itemChecked;
 }
 
-void KPluginSelectionWidget::load()
+KPluginSelector::KPluginSelector(QWidget *parent)
+    : QWidget(parent)
+    , d(new Private(this))
 {
-    //kDebug( 702 ) << k_funcinfo << endl;
+    connect(d, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
 
-    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
-    while ( it.hasNext() ) {
-        it.next();
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-        KPluginInfo * info = it.value();
-        info->load( d->config );
-        it.key()->setCheckState( 0, info->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
-        if( d->visible && info == d->currentplugininfo )
-            d->currentchecked = info->isPluginEnabled();
-    }
+    d->splitter = new QSplitter(Qt::Horizontal);
+    d->treeView = new QTreeWidget(d->splitter);
+    d->stackedWidget = new QStackedWidget(d->splitter);
 
-    for( QList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
-            it != d->modulelist.end(); ++it )
-        if( ( *it )->changed() )
-            ( *it )->load();
+    d->treeView->header()->setVisible(false);
+    d->treeView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    d->treeView->setMinimumSize(200, 200);
+    d->treeView->setFocusPolicy(Qt::NoFocus);
+    d->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    updateConfigPage();
-    // TODO: update changed state
-}
+    /**
+      * This QWidget will show the information text when no selection is done.
+      * By default, it will be the 0 index in the QStackedWidget.
+      */
+    QVBoxLayout *noSelectionWidgetLayout = new QVBoxLayout;
+    QWidget *noSelectionWidget = new QWidget(d->stackedWidget);
+    noSelectionWidget->setLayout(noSelectionWidgetLayout);
+    QLabel *noSelectionLabel = new QLabel(i18n("No item selected"), noSelectionWidget);
+    noSelectionLabel->setAlignment(Qt::AlignCenter);
+    noSelectionWidgetLayout->addWidget(noSelectionLabel);
+    d->stackedWidget->insertWidget(0, noSelectionWidget);
 
-void KPluginSelectionWidget::save()
-{
-    kDebug( 702 ) << k_funcinfo << endl;
+    /**
+      * This QWidget will show the information text when no configuration is available.
+      * By default, it will be the 1 index in the QStackedWidget.
+      */
+    QVBoxLayout *noConfigWidgetLayout = new QVBoxLayout;
+    QWidget *noConfigWidget = new QWidget(d->stackedWidget);
+    noConfigWidget->setLayout(noConfigWidgetLayout);
+    QLabel *noConfigLabel = new QLabel(i18n("This plugin is not configurable"), noConfigWidget);
+    noConfigLabel->setAlignment(Qt::AlignCenter);
+    noConfigWidgetLayout->addWidget(noConfigLabel);
+    d->stackedWidget->insertWidget(1, noConfigWidget);
 
-    QMapIterator<QTreeWidgetItem*, KPluginInfo*> it( d->pluginInfoMap );
-    while ( it.hasNext() ) {
-        it.next();
+    layout->addWidget(d->splitter);
 
-        KPluginInfo * info = it.value();
-        bool checked = ( it.key()->checkState( 0 ) == Qt::Checked );
-        info->setPluginEnabled( checked );
-        info->save( d->config );
-        d->plugincheckedchanged[ info ] = false;
-    }
-    QStringList updatedModules;
-    for( QList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
-            it != d->modulelist.end(); ++it )
-        if( ( *it )->changed() )
-        {
-            ( *it )->save();
-            QStringList names = d->moduleParentComponents.value( *it );
-            if( names.isEmpty() )
-                names.append( QString() );
-            for( QStringList::ConstIterator nameit = names.begin();
-                    nameit != names.end(); ++nameit )
-                if( !updatedModules.contains( *nameit ) )
-                    updatedModules.append( *nameit );
-        }
-    for( QStringList::ConstIterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
-        emit configCommitted( ( *it ).toLatin1() );
+    connect(d->treeView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), d,
+            SLOT(treeWidgetClicked(QTreeWidgetItem*)));
 
-    updateConfigPage();
-    kDebug( 702 ) << "syncing config file" << endl;
-    d->config->sync();
-    d->changed = 0;
-    emit changed( false );
-}
-
-void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
-{
-    if( info->dependencies().isEmpty() )
-        return;
-
-    for( QStringList::ConstIterator it = info->dependencies().begin();
-            it != info->dependencies().end(); ++it ) {
-
-        QMapIterator<QTreeWidgetItem*, KPluginInfo*> infoIt( d->pluginInfoMap );
-        while ( infoIt.hasNext() ) {
-            infoIt.next();
-
-            if( infoIt.value()->pluginName() == *it ) {
-                if( infoIt.key()->checkState(0) == Qt::Unchecked )
-                {
-                    infoIt.key()->setCheckState( 0, Qt::Checked );
-                    checkDependencies( infoIt.value() );
-                }
-                continue;
-            }
-        }
-    }
-}
-
-class KPluginSelector::KPluginSelectorPrivate
-{
-    public:
-        KPluginSelectorPrivate()
-            : frame( 0 )
-            , tabwidget( 0 )
-            , widgetstack( 0 )
-            , hideconfigpage( false )
-            {
-            }
-
-        QFrame * frame;
-        KTabWidget * tabwidget;
-        QStackedWidget * widgetstack;
-        QList<KPluginSelectionWidget *> pswidgets;
-        bool hideconfigpage;
-};
-
-KPluginSelector::KPluginSelector( QWidget * parent )
-    : QWidget( parent )
-    , d( new KPluginSelectorPrivate )
-{
-    QBoxLayout * hbox = new QHBoxLayout( this );
-    hbox->setMargin( 0 );
-    hbox->setSpacing( KDialog::spacingHint() );
-
-    QSplitter* splitter = new QSplitter( Qt::Horizontal, this );
-    d->frame = new QFrame( splitter );
-    d->frame->setObjectName( "KPluginSelector left frame" );
-    d->frame->setFrameStyle( QFrame::NoFrame );
-    hbox->addWidget( splitter );
-//    ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
-
-    // widgetstack
-    d->widgetstack = new QStackedWidget( splitter/*, "KPluginSelector Config Pages"*/ );
-    d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-    d->widgetstack->setMinimumSize( 200, 200 );
-
-    QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
-            d->widgetstack );
-//    ( new QVBoxLayout( label, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
-    label->setAlignment( Qt::AlignCenter );
-    label->setMinimumSize( 200, 200 );
-
-    d->widgetstack->insertWidget( 1,label );
-
-    configPage( 1 );
+    connect(d->treeView, SIGNAL(customContextMenuRequested(const QPoint&)), d,
+            SLOT(showContextMenu(const QPoint&)));
 }
 
 KPluginSelector::~KPluginSelector()
@@ -508,173 +223,460 @@ KPluginSelector::~KPluginSelector()
     delete d;
 }
 
-void KPluginSelector::checkNeedForTabWidget()
+void KPluginSelector::addPlugins(const QString &instanceName,
+                                 const QString &categoryName,
+                                 const QString &category,
+                                 KConfig *config)
 {
-    kDebug( 702 ) << k_funcinfo << endl;
-    if( ! d->tabwidget && d->pswidgets.size() == 1 )
-    {
-        kDebug( 702 ) << "no TabWidget and one KPluginSelectionWidget" << endl;
-        // there's only one KPluginSelectionWidget yet, we need a TabWidget
-        KPluginSelectionWidget * w = d->pswidgets.first();
-        if( w )
-        {
-            kDebug( 702 ) << "create TabWidget" << endl;
-            d->tabwidget = new KTabWidget( d->frame  );
-            d->tabwidget->setObjectName( "KPluginSelector TabWidget" );
-            w->setParent( d->tabwidget );
-            d->tabwidget->addTab( w, w->catName() );
-            connect( d->tabwidget, SIGNAL( currentChanged( QWidget * ) ), w,
-                    SLOT( tabWidgetChanged( QWidget * ) ) );
-        }
-    }
-}
+    QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
+        instanceName + "/kpartplugins/*.desktop", true, false);
 
-static QList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
-{
-    if( instanceName.isNull() )
-        return QList<KPluginInfo*>(); //nothing
+    QList<KPluginInfo*> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
 
-    const QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
-            instanceName + "/kpartplugins/*.desktop", true, false );
-    return KPluginInfo::fromFiles( desktopfilenames );
-}
-
-void KPluginSelector::addPlugins( const QString & instanceName,
-        const QString & catname, const QString & category, KConfig * config )
-{
-    const QList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
-    if ( plugininfos.isEmpty() )
+    if (pluginInfoList.isEmpty())
         return;
-    checkNeedForTabWidget();
-    Q_ASSERT( config ); // please set config, or use addPlugins( instance, ... ) which takes care of it
-    if ( !config ) // KDE4: ensure that config is always set; make it second in the arg list?
-        config = new KSimpleConfig(  instanceName ); // memleak!
-    KConfigGroup * cfgGroup = new KConfigGroup( config, "KParts Plugins" );
+
+    Q_ASSERT(config);
+    if (!config)
+        config = new KSimpleConfig(instanceName);
+
+    KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
-    addPluginsInternal( plugininfos, catname, category, cfgGroup );
+
+    d->configGroupList.append(cfgGroup);
+
+    d->addPluginsInternal(pluginInfoList, categoryName, cfgGroup, category);
 }
 
-void KPluginSelector::addPluginsInternal( const QList<KPluginInfo*> plugininfos,
-                                          const QString & catname, const QString & category,
-                                          KConfigGroup* cfgGroup )
+void KPluginSelector::addPlugins(const KInstance *instance,
+                                 const QString &categoryName,
+                                 const QString &category,
+                                 KConfig *config)
 {
-    KPluginSelectionWidget * w;
-    if( d->tabwidget )
-    {
-        w = new KPluginSelectionWidget( plugininfos, this,
-                d->tabwidget, catname, category, cfgGroup );
-        d->tabwidget->addTab( w, catname );
-        connect( d->tabwidget, SIGNAL( currentChanged( QWidget * ) ), w,
-                SLOT( tabWidgetChanged( QWidget * ) ) );
-    }
-    else
-        w = new KPluginSelectionWidget( plugininfos, this, d->frame,
-                catname, category, cfgGroup );
-    w->setMinimumSize( 200, 200 );
-    connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( w, SIGNAL( configCommitted( const QByteArray & ) ), this,
-            SIGNAL( configCommitted( const QByteArray & ) ) );
-    d->pswidgets += w;
+    addPlugins(instance->instanceName(), categoryName, category, config);
 }
 
-void KPluginSelector::addPlugins( const KInstance * instance, const QString &
-        catname, const QString & category, KConfig * config )
+void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+                                 const QString &categoryName,
+                                 const QString &category,
+                                 KConfig *config)
 {
-    if ( !config )
-        config = instance->config();
-    addPlugins( instance->instanceName(), catname, category, config );
-}
-
-void KPluginSelector::addPlugins( const QList<KPluginInfo*> & plugininfos,
-        const QString & catname, const QString & category, KConfig * config )
-{
-    checkNeedForTabWidget();
-    // the KConfigGroup becomes owned by KPluginSelectionWidget
-    KConfigGroup * cfgGroup = new KConfigGroup( config ? config : KGlobal::config(), "Plugins" );
+    KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
-    addPluginsInternal( plugininfos, catname, category, cfgGroup );
-}
 
-QStackedWidget * KPluginSelector::widgetStack()
-{
-    return d->widgetstack;
-}
+    d->configGroupList.append(cfgGroup);
 
-inline void KPluginSelector::configPage( int id )
-{
-    if( id == 1 )
-    {
-        // no config page
-        if( d->hideconfigpage )
-        {
-            d->widgetstack->hide();
-            return;
-        }
-    }
-    else
-        d->widgetstack->show();
-
-    d->widgetstack->setCurrentIndex( id );
-}
-
-void KPluginSelector::setShowEmptyConfigPage( bool show )
-{
-    d->hideconfigpage = !show;
-    if( d->hideconfigpage )
-        if( d->widgetstack->currentIndex () == 1 )
-            d->widgetstack->hide();
+    d->addPluginsInternal(pluginInfoList, categoryName, cfgGroup, category);
 }
 
 void KPluginSelector::load()
 {
-    for( QList<KPluginSelectionWidget *>::Iterator it =
-            d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
+    KPluginInfoLVI *curItem;
+    for (QList<KPluginInfoLVI*>::Iterator it = d->treeItemList.begin();
+         it != d->treeItemList.end(); ++it)
     {
-        ( *it )->load();
+        curItem = (*it);
+
+        curItem->pluginInfo()->load(curItem->cfgGroup());
+        curItem->setItemChecked(curItem->pluginInfo()->isPluginEnabled());
     }
+
+    KCModuleProxy *curModuleProxy;
+    for(QList<KCModuleProxy*>::Iterator it = d->moduleProxyList.begin();
+        it != d->moduleProxyList.end(); ++it )
+    {
+        curModuleProxy = (*it);
+
+        if(curModuleProxy->changed())
+            curModuleProxy->load();
+    }
+
+    QList<QTreeWidgetItem*> selectedItems = d->treeView->selectedItems();
+
+    if (selectedItems.size() == 0)
+        return;
+
+    KPluginInfoLVI *selectedPluginInfoLVI = static_cast<KPluginInfoLVI*>(selectedItems[0]);
+
+    if (selectedPluginInfoLVI->moduleProxy())
+
+        d->stackedWidget->setEnabled(selectedPluginInfoLVI->pluginInfo()->isPluginEnabled());
 }
 
 void KPluginSelector::save()
 {
-    for( QList<KPluginSelectionWidget *>::Iterator it =
-            d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
+    KPluginInfoLVI *curItem;
+    for (QList<KPluginInfoLVI*>::Iterator it = d->treeItemList.begin();
+         it != d->treeItemList.end(); ++it)
     {
-        ( *it )->save();
+        curItem = (*it);
+
+        curItem->pluginInfo()->setPluginEnabled(curItem->itemChecked());
+        curItem->pluginInfo()->save(curItem->cfgGroup());
+    }
+
+    /**
+      * We actually have to save changes by writing into the config files
+      */
+    KConfigGroup *curConfigGroup;
+    for (QList<KConfigGroup*>::Iterator it = d->configGroupList.begin();
+         it != d->configGroupList.end(); ++it)
+    {
+        curConfigGroup = (*it);
+
+        curConfigGroup->sync();
+    }
+
+    KCModuleProxy *curModuleProxy;
+    for (QList<KCModuleProxy*>::Iterator it = d->moduleProxyList.begin();
+         it != d->moduleProxyList.end(); ++it)
+    {
+        curModuleProxy = (*it);
+
+        if (curModuleProxy->changed())
+        {
+            curModuleProxy->save();
+
+            QStringList names = d->moduleParentComponents[curModuleProxy];
+
+            if (names.isEmpty())
+               names.append(QString());
+
+            QString curName;
+            QStringList updatedModules;
+            for (QStringList::ConstIterator it = names.begin();
+                 it != names.end(); ++it )
+            {
+                curName = (*it);
+
+                if (!updatedModules.contains(curName))
+                    updatedModules.append(curName);
+            }
+
+            for (QStringList::ConstIterator it = updatedModules.begin();
+                 it != updatedModules.end(); ++it)
+            {
+                curName = (*it);
+
+                emit configCommitted(curName.toLatin1());
+            }
+        }
     }
 }
+
 
 void KPluginSelector::defaults()
 {
-    kDebug( 702 ) << k_funcinfo << endl;
+    /**
+      * This method may use defaults() from KCModuleProxy, but since by now this does not do
+      * anything, we can set this to a more useful behaviour: loading the last saved config (ereslibre)
+      */
 
-    // what should defaults do? here's what I think:
-    // Pressing a button in the dialog should not change any widgets that are
-    // not visible for the user. Therefor we may only change the currently
-    // visible plugin's KCM. Restoring the default plugin selections is therefor
-    // not possible. (if the plugin has multiple KCMs they will be shown in a
-    // tabwidget - defaults() will be called for all of them)
-
-    QWidget * pluginconfig = d->widgetstack->currentWidget ();
-    KCModuleProxy * kcm = qobject_cast<KCModuleProxy *>( pluginconfig );
-    if( kcm )
-    {
-        kDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
-            << endl;
-        kcm->defaults();
-        return;
-    }
-
-    // if we get here the visible Widget must be a tabwidget holding more than
-    // one KCM
-    QList<KCModuleProxy*> kcms = pluginconfig->findChildren<KCModuleProxy*>();
-    QListIterator<KCModuleProxy*> it( kcms );
-    while ( it.hasNext() )
-        it.next()->defaults();
-
-    // FIXME: update changed state
+    load();
 }
 
-// vim: sw=4 sts=4 et
+QWidget* KPluginSelector::Private::insertKCM(QWidget *parent,
+                                    const KCModuleInfo &moduleinfo,
+                                    KPluginInfoLVI *listViewItem)
+{
+    Q_ASSERT(listViewItem);
 
-#include "kpluginselector.moc"
+    KCModuleProxy *module = new KCModuleProxy(moduleinfo, parent);
+
+    if (!module->realModule())
+    {
+        QString errorTitle = i18n("<b>Error while retrieving plugin configuration dialog</b>");
+        QString errorMessage = i18n("A error ocurred while trying to load the configuration dialog of the current plugin (<b>%1</b>) in the library <b>%2</b>", module->moduleInfo().moduleName(), module->moduleInfo().library());
+
+        QVBoxLayout *errorTitleLayout = new QVBoxLayout;
+        QWidget *errorWidget = new QWidget;
+        errorWidget->setLayout(errorTitleLayout);
+        QLabel *errorLabel = new QLabel(errorTitle, errorWidget);
+        errorLabel->setWordWrap(true);
+        QLabel *errorLabel2 = new QLabel(errorMessage, errorWidget);
+        errorLabel2->setWordWrap(true);
+        errorLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        errorLabel2->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        errorTitleLayout->addWidget(errorLabel);
+        errorTitleLayout->addWidget(errorLabel2);
+
+        return errorWidget;
+    }
+
+    QStringList parentComponents = moduleinfo.service()->property("X-KDE-ParentComponents").toStringList();
+    moduleParentComponents.insert(module, parentComponents);
+
+    connect(module, SIGNAL(changed(bool)), this->parent, SIGNAL(changed(bool)));
+
+    moduleProxyList.append(module);
+
+    listViewItem->setModuleProxy(module);
+
+    return module;
+}
+
+void KPluginSelector::Private::treeWidgetClicked(QTreeWidgetItem *item)
+{
+    KPluginInfoLVI *treeWidgetItem = static_cast<KPluginInfoLVI*>(item);
+    bool isCategory = false;
+    int widgetIndex = -1;
+
+    if (!treeItemList.contains(treeWidgetItem)) // Is a category title
+    {
+        isCategory = true;
+
+        if (item->isExpanded()) 
+
+            item->setExpanded(false);
+
+        else
+
+            item->setExpanded(true);
+    }
+
+    if (treeWidgetItem->cfgWidget())
+
+        widgetIndex = stackedWidget->indexOf(treeWidgetItem->cfgWidget());
+
+    else if (!isCategory)
+    {
+        QVBoxLayout *newWidgetLayout = new QVBoxLayout;
+
+        int numServices = treeWidgetItem->pluginInfo()->kcmServices().size();
+
+        if (numServices == 0)
+
+            stackedWidget->setCurrentIndex(1);
+
+        else if (numServices == 1)
+        {
+            KCModuleInfo moduleinfo(treeWidgetItem->pluginInfo()->kcmServices().front());
+            QWidget *module = insertKCM(stackedWidget, moduleinfo, treeWidgetItem);
+            module->setLayout(newWidgetLayout);
+
+            widgetIndex = stackedWidget->addWidget(module);
+            treeWidgetItem->setCfgWidget(module);
+        }
+        else
+        {
+            KTabWidget *newTabWidget = new KTabWidget(stackedWidget);
+            newTabWidget->setLayout(newWidgetLayout);
+
+            KService::Ptr servicePtr;
+            for(QList<KService::Ptr>::ConstIterator it =
+                treeWidgetItem->pluginInfo()->kcmServices().begin();
+                it != treeWidgetItem->pluginInfo()->kcmServices().end(); ++it)
+            {
+                servicePtr = (*it);
+
+                if(!servicePtr->noDisplay())
+                {
+                    KCModuleInfo moduleinfo(servicePtr);
+                    QWidget *module = insertKCM(newTabWidget, moduleinfo, treeWidgetItem);
+                    newTabWidget->addTab(module, moduleinfo.moduleName());
+                }
+            }
+
+            widgetIndex = stackedWidget->addWidget(newTabWidget);
+            treeWidgetItem->setCfgWidget(newTabWidget);
+        }
+    }
+    else
+    {
+        QString title = i18n("Category: <b>%1</b>", treeWidgetItem->text(0));
+
+        QVBoxLayout *categoryWidgetLayout = new QVBoxLayout;
+        QWidget *categoryWidget = new QWidget(stackedWidget);
+        categoryWidget->setLayout(categoryWidgetLayout);
+        QLabel *categoryLabel = new QLabel(title, categoryWidget);
+        categoryLabel->setWordWrap(true);
+        QLabel *categoryLabel2 = new QLabel(i18n("You can navigate through category items by selecting them on the tree"), categoryWidget);
+        categoryLabel2->setWordWrap(true);
+        categoryLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        categoryLabel2->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        categoryWidgetLayout->addWidget(categoryLabel);
+        categoryWidgetLayout->addWidget(categoryLabel2);
+        stackedWidget->addWidget(categoryWidget);
+
+        widgetIndex = stackedWidget->addWidget(categoryWidget);
+        treeWidgetItem->setCfgWidget(categoryWidget);
+    }
+
+    if (!isCategory)
+    {
+        if (treeWidgetItem->itemChecked() != (item->checkState(0) == Qt::Checked))
+        {
+            treeWidgetItem->setItemChecked(item->checkState(0) == Qt::Checked);
+
+            emit changed(true);
+        }
+
+        // Check for dependencies
+        if (treeWidgetItem->itemChecked())
+            checkDependencies(treeWidgetItem->pluginInfo(),
+                              DependenciesINeed);
+        else
+            checkDependencies(treeWidgetItem->pluginInfo(),
+                              DependenciesNeedMe);
+    }
+
+    if ((treeWidgetItem->moduleProxy() == 0) || isCategory)
+
+        stackedWidget->setEnabled(true);
+
+    else
+
+        stackedWidget->setEnabled(treeWidgetItem->itemChecked());
+
+    stackedWidget->setCurrentIndex(widgetIndex);
+}
+
+void KPluginSelector::Private::showContextMenu(const QPoint &point)
+{
+    contextualMenu->exec(treeView->mapToGlobal(point));
+}
+
+void KPluginSelector::Private::contextualAction(QAction *action)
+{
+    if (action->text() == i18n("Expand all"))
+
+        treeView->expandAll();
+
+    else
+
+        treeView->collapseAll();
+}
+
+void KPluginSelector::Private::checkDependencies(const KPluginInfo *info,
+                                                 CheckWhatDependencies whatDependencies)
+{
+    if (whatDependencies == DependenciesINeed) // If I was checked, check my dependencies
+    {
+        QString curDependency;
+        for (QStringList::ConstIterator it = info->dependencies().begin();
+            it != info->dependencies().end(); ++it)
+        {
+            curDependency = (*it);
+
+            if (treeItemPluginNames.contains(curDependency))
+            {
+                if (!treeItemPluginNames[curDependency]->itemChecked())
+                {
+                    treeItemPluginNames[curDependency]->setItemChecked(true);
+
+                    checkDependencies(treeItemPluginNames[curDependency]->pluginInfo(),
+                                      DependenciesINeed);
+                }
+            }
+        }
+    }
+    else // If I was unchecked, uncheck all items that depends on me
+    {
+        KPluginInfoLVI *pluginInfo;
+        bool dependencyFound;
+        for (QList<KPluginInfoLVI*>::ConstIterator it = treeItemList.begin();
+             it != treeItemList.end(); ++it)
+        {
+            pluginInfo = (*it);
+            dependencyFound = false;
+
+            QString curDependency;
+            for (QStringList::ConstIterator it = pluginInfo->pluginInfo()->dependencies().begin();
+                 it != pluginInfo->pluginInfo()->dependencies().end() && !dependencyFound; ++it)
+            {
+                curDependency = (*it);
+
+                if (curDependency == info->pluginName())
+                {
+                    if (pluginInfo->itemChecked())
+                    {
+                        pluginInfo->setItemChecked(false);
+
+                        checkDependencies(pluginInfo->pluginInfo(),
+                                          DependenciesNeedMe);
+                    }
+
+                    dependencyFound = true;
+                }
+            }
+        }
+    }
+}
+
+void KPluginSelector::Private::addPluginsInternal(const QList<KPluginInfo*> &pluginInfoList,
+                                                  const QString &categoryName,
+                                                  KConfigGroup *cfgGroup,
+                                                  const QString &category)
+{
+    QTreeWidgetItem *currentTitle;
+    QString pluginCategory = categoryName.toLower();
+
+    int validPlugins = 0;
+
+    /**
+      * First check for valid plugins. If a plugin is hidden or the category doesn't
+      * match the category in which we currently are, is not valid. If no valid plugins
+      * on the list, continuing has no sense
+      */
+
+    KPluginInfo *pluginInfo;
+    for (QList<KPluginInfo*>::ConstIterator it = pluginInfoList.begin();
+         it != pluginInfoList.end() && validPlugins == 0; ++it)
+    {
+        pluginInfo = (*it);
+
+        if (!pluginInfo->isHidden() &&
+            (category.isNull() || pluginInfo->category() == category))
+
+            validPlugins++;
+    }
+
+    if (validPlugins == 0)
+        return;
+
+    /**
+      * Check whether the category was created before or not. If we match
+      * a previous added category, plugins will be added to that title
+      */
+    if (!categories.contains(pluginCategory))
+    {
+        KPluginInfoLVI *title = new KPluginInfoLVI(categoryName, treeView);
+
+        currentTitle = title;
+
+        treeView->expandItem(title);
+
+        titles.insert(pluginCategory, title);
+    }
+    else
+
+        currentTitle = titles[pluginCategory];
+
+    KPluginInfoLVI *newItem;
+    for (QList<KPluginInfo*>::ConstIterator it = pluginInfoList.begin();
+         it != pluginInfoList.end(); ++it)
+    {
+        pluginInfo = (*it);
+
+        if (!pluginInfo->isHidden() && (category.isNull() ||
+                                        pluginInfo->category() == category))
+        {
+            newItem = new KPluginInfoLVI(pluginInfo, currentTitle);
+
+            categories.insert(pluginCategory, newItem);
+
+            if(!pluginInfo->icon().isEmpty())
+                newItem->setIcon(0, SmallIcon(pluginInfo->icon(), IconSize(K3Icon::Small)));
+
+            newItem->setCfgGroup(cfgGroup);
+            newItem->pluginInfo()->load(newItem->cfgGroup());
+            newItem->setItemChecked(newItem->pluginInfo()->isPluginEnabled());
+
+            treeItemList.append(newItem);
+            treeItemPluginNames.insert(pluginInfo->pluginName(), newItem);
+        }
+    }
+}
+
 #include "kpluginselector_p.moc"
+#include "kpluginselector.moc"
