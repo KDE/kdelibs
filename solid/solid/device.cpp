@@ -88,10 +88,7 @@ Solid::Device::Device( QObject *backendObject )
 
 Solid::Device::~Device()
 {
-    foreach( Capability *iface, d->ifaces.values() )
-    {
-        delete iface;
-    }
+    qDeleteAll( d->ifaces.values() );
 
     delete d;
 }
