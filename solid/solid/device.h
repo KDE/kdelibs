@@ -226,6 +226,15 @@ namespace Solid
         virtual Capability *asCapability( const Capability::Type &capability );
 
         /**
+         * Retrieves a specialized interface to interact with the device corresponding to
+         * a particular capability.
+         *
+         * @param capability the capability type
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         */
+        virtual const Capability *asCapability( const Capability::Type &capability ) const;
+
+        /**
          * Retrieves a specialized interface to interact with the device corresponding
          * to a given capability interface.
          *
@@ -236,6 +245,19 @@ namespace Solid
             Capability::Type type = Cap::capabilityType();
             Capability *iface = asCapability( type );
             return qobject_cast<Cap*>( iface );
+        }
+
+        /**
+         * Retrieves a specialized interface to interact with the device corresponding
+         * to a given capability interface.
+         *
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         */
+        template <class Cap> const Cap *as() const
+        {
+            Capability::Type type = Cap::capabilityType();
+            const Capability *iface = asCapability( type );
+            return qobject_cast<const Cap*>( iface );
         }
 
         /**

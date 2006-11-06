@@ -180,6 +180,12 @@ inline CapType* capability_cast( QObject *backendObject )
 
 Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability )
 {
+    const Solid::Capability *cap = const_cast<const Device *>(this)->asCapability(capability);
+    return const_cast<Solid::Capability*>( cap );
+}
+
+const Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability ) const
+{
     Ifaces::Device *device = qobject_cast<Ifaces::Device*>( backendObject() );
 
     if ( device!=0 )
