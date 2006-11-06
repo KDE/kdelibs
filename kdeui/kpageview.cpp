@@ -34,17 +34,26 @@
 #include <QStackedWidget>
 #include <QTimer>
 
-class KPageStackedWidget : public QStackedWidget {
-    QSize m_minimum_size;
-public:
-    KPageStackedWidget(QWidget *parent = NULL)
-	    : QStackedWidget(parent) {}
-    void setMinimumSize(const QSize& s) {
-	    m_minimum_size = s;
+class KPageStackedWidget : public QStackedWidget
+{
+  public:
+    KPageStackedWidget( QWidget *parent = 0 )
+      : QStackedWidget( parent )
+    {
     }
-    virtual QSize minimumSizeHint () const {
-	return m_minimum_size.expandedTo(QStackedWidget::minimumSizeHint());
+
+    void setMinimumSize( const QSize& size )
+    {
+      mMinimumSize = size;
     }
+
+    virtual QSize minimumSizeHint () const
+    {
+      return mMinimumSize.expandedTo( QStackedWidget::minimumSizeHint() );
+    }
+
+  private:
+    QSize mMinimumSize;
 };
 
 class KPageView::Private
@@ -336,10 +345,11 @@ void KPageView::pageSelected( const QModelIndex &index, const QModelIndex &previ
   }
 
   QString header = d->model->data( index, KPageModel::HeaderRole ).toString();
-  if (header.isNull()) {
+  if ( header.isEmpty() ) {
     header = d->model->data( index, Qt::DisplayRole ).toString();
   }
   d->headerLabel->setText( header );
+
   const QIcon icon = d->model->data( index, Qt::DecorationRole ).value<QIcon>();
   d->headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
 
