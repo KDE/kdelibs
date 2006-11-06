@@ -118,6 +118,7 @@ add_subdirectory( knotify )
 add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( threadweaver )
+add_subdirectory( includes )
 
 
 ########### install files ###############
