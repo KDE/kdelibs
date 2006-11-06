@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -91,7 +91,6 @@ namespace Solid
          * @param backendClassName the fully qualified name of the type of the backend
          * @return the loaded backend
          */
-        // TODO: Make it a template and remove backendClassName
         QObject *loadBackend( const QString &description, const char *serviceName, const char *backendClassName );
 
     private:

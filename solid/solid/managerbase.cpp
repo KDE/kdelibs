@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -110,8 +110,22 @@ QObject *Solid::ManagerBase::loadBackend( const QString &description, const char
 
         if( backend != 0 )
         {
-            kDebug() << "Backend loaded: " << ptr->name() << endl;
-            break;
+            if ( backend->inherits( backendClassName ) )
+            {
+                kDebug() << "Backend loaded: " << ptr->name() << endl;
+                break;
+            }
+            else
+            {
+                QString error_string = i18n( "Backend loaded but wrong type obtained, expected %1",
+                                             backendClassName );
+
+                kDebug() << "Error loading '" << ptr->name() << "': " << error_string << endl;
+                error_msg.append( error_string );
+
+                delete backend;
+                backend = 0;
+            }
         }
         else
         {
