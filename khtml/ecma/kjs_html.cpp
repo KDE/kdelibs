@@ -1174,7 +1174,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
-  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  const HashEntry* entry = table ? Lookup::findEntry(table, propertyName) : 0;
   if (entry) {
     if (entry->attr & Function)
       return lookupOrCreateFunction<KJS::HTMLElementFunction>(exec, propertyName, this, entry->value, entry->params, entry->attr);
@@ -2381,7 +2381,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
-  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  const HashEntry* entry = table ? Lookup::findEntry(table, propertyName) : 0;
   if (entry) {
     if (entry->attr & Function) // function: put as override property
     {
