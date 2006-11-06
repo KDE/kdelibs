@@ -48,10 +48,6 @@ if(HAVE_IDNA_H)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} idn)
 endif(HAVE_IDNA_H)
 
-if(HAVE_LIBDL)
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBDL})
-endif(HAVE_LIBDL)
-
 if(X11_XTest_FOUND)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)

@@ -53,15 +53,11 @@ check_include_files(stdio.h       HAVE_STDIO_H)                        # various
 check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
 check_include_files(string.h      HAVE_STRING_H)                       # various
 check_include_files(strings.h     HAVE_STRINGS_H)                      # various
-check_include_files(ctype.h       HAVE_CTYPE_H)                        # libltdl
-check_include_files(malloc.h      HAVE_MALLOC_H)                       # libltdl, khtml
-check_include_files(memory.h      HAVE_MEMORY_H)                       # libltdl
+check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
 check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(float.h       HAVE_FLOAT_H)                        # kjs
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
-check_include_files(dld.h         HAVE_DLD_H)                          # libltdl
-check_include_files(dl.h          HAVE_DL_H)                           # libltdl
 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
@@ -108,7 +104,6 @@ macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                    
 # specific order.  Refer to the man page for each symbol for which a
 # check is to be added to get the proper set of headers.
 check_symbol_exists(strncasecmp     "strings.h"                HAVE_STRNCASECMP) # kjs
-check_symbol_exists(strchr          "string.h"                 HAVE_STRCHR)      # libltdl (kdecore ?)
 check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)      # libltdl
 check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)     # libltdl
 check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
@@ -118,17 +113,13 @@ check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)  
 
 
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
-check_function_exists(index            HAVE_INDEX)                    # libltdl
-check_function_exists(rindex           HAVE_RINDEX)                   # libltdl
-check_function_exists(memcpy           HAVE_MEMCPY)                   # libltdl, kdecore/malloc
-check_function_exists(bcopy            HAVE_BCOPY)                    # libltdl
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
-check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # kdecore/malloc, khtml
+check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 check_function_exists(getpt           HAVE_GETPT)                     # kdesu
 check_function_exists(grantpt         HAVE_GRANTPT)                   # kdecore, kdesu
 check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
-check_function_exists(mmap            HAVE_MMAP)                      # kdecore, kdecore/malloc, khtml
+check_function_exists(mmap            HAVE_MMAP)                      # kdecore, khtml
 check_function_exists(readdir_r       HAVE_READDIR_R)                 # kio
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
@@ -164,28 +155,6 @@ endif (HAVE_OPENPTY)
 #set(CMAKE_REQUIRED_LIBRARIES util)
 #check_function_exists(openpty "" HAVE_OPENPTY)
 #set(CMAKE_REQUIRED_LIBRARIES)
-
-#dlopen stuff
-set(LIBDL)
-set(HAVE_LIBDL)                                         # kdecore
-# on FreeBSD dlopen is in libc, on Linux it's in libdl
-check_library_exists(dl dlopen ""  DLOPEN_IN_LIBDL)
-check_function_exists(dlopen       DLOPEN_IN_LIBC)
-
-if (DLOPEN_IN_LIBC)
-   set(LIBDL c)
-   set(HAVE_LIBDL TRUE)
-   check_function_exists(dlerror HAVE_DLERROR)
-endif (DLOPEN_IN_LIBC)
-
-if (DLOPEN_IN_LIBDL)
-   set(LIBDL dl)
-   set(HAVE_LIBDL TRUE)
-   check_library_exists(dl dlerror ""  HAVE_DLERROR)     # libltdl
-endif (DLOPEN_IN_LIBDL)
-
-check_function_exists(shl_load   HAVE_SHL_LOAD)          # libltdl
-check_function_exists(dld_init   HAVE_DLD)               # libltdl
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
 check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu

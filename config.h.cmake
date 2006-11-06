@@ -39,14 +39,8 @@
 /* Define to 1 if you have strings.h */
 #cmakedefine   HAVE_STRINGS_H 1
 
-/* Define to 1 if you have ctype.h */
-#cmakedefine   HAVE_CTYPE_H 1
-
 /* Define to 1 if you have malloc.h */
 #cmakedefine   HAVE_MALLOC_H 1
-
-/* Define to 1 if you have memory.h */
-#cmakedefine   HAVE_MEMORY_H 1
 
 #cmakedefine   HAVE_FLOAT_H 1
 
@@ -75,8 +69,6 @@
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
 #cmakedefine HAVE_CARBON_CARBON_H 1
-#cmakedefine HAVE_DLD_H 1
-#cmakedefine HAVE_DL_H 1
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_IEEEFP_H 1
 #cmakedefine HAVE_LIBUTIL_H 1
@@ -97,7 +89,6 @@
 
 
 #cmakedefine   HAVE_BACKTRACE 1
-#cmakedefine   HAVE_BCOPY 1
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_FUNC__FINITE 1
 #cmakedefine   HAVE_FUNC_FINITE 1
@@ -107,10 +98,8 @@
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_GETPT 1
 #cmakedefine   HAVE_GRANTPT 1
-#cmakedefine   HAVE_INDEX 1
 #cmakedefine   HAVE_INITGROUPS 1
 #cmakedefine   HAVE_MADVISE 1
-#cmakedefine   HAVE_MEMCPY 1
 #cmakedefine   HAVE_MMAP 1
 #cmakedefine   HAVE_MKSTEMPS 1
 #cmakedefine   HAVE_MKSTEMP 1
@@ -120,16 +109,13 @@
 #cmakedefine   HAVE_RANDOM 1
 #cmakedefine   HAVE_READDIR_R 1
 #cmakedefine   HAVE_REVOKE 1
-#cmakedefine   HAVE_RINDEX 1
 #cmakedefine   HAVE_SENDFILE 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
 #cmakedefine   HAVE_SETMNTENT 1
 #cmakedefine   HAVE_SETPRIORITY 1
-#cmakedefine   HAVE_SHL_LOAD 1
 #cmakedefine   HAVE_SNPRINTF 1
 #cmakedefine   HAVE_SRANDOM 1
-#cmakedefine   HAVE_STRCHR 1
 #cmakedefine   HAVE_STRCMP 1
 #cmakedefine   HAVE_STRLCPY 1
 #cmakedefine   HAVE_STRLCAT 1
@@ -148,10 +134,6 @@
 #cmakedefine HAVE_S_ISSOCK 1
 
 #cmakedefine TIME_WITH_SYS_TIME 1
-
-#cmakedefine HAVE_LIBDL 1
-#cmakedefine HAVE_DLERROR 1
-#cmakedefine HAVE_DLD 1
 
 /********* structs ******************/
 

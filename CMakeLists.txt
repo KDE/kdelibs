@@ -52,7 +52,6 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 
 # DCOP depends on Qt
 set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS})
-
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
@@ -63,22 +62,18 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAK
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
 
 
-# now create config headers
-
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-include(ConfigureChecks.cmake)
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
+include(ConfigureChecks.cmake)
 
-# create config.h
+# now create config headers
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
-
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
-
 
 
 # list the subdirectories
@@ -127,6 +122,9 @@ add_subdirectory( threadweaver )
 
 ########### install files ###############
 
+# we need the absolute directories where stuff will be installed too
+# but since the variables which contain the destinations can be relative
+# or absolute paths, we need this macro to make them all absoulte, Alex
 macro(MAKE_INSTALL_PATH_ABSOLUTE out in)
    if (UNIX)
       if ("${in}" MATCHES "^/.*")
@@ -162,8 +160,9 @@ install( FILES kdelibs_export.h ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINA
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 
 if(WIN32)
-install( FILES kdelibs_export_win.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+   install( FILES kdelibs_export_win.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 endif(WIN32)
 
 
 
+macro_display_feature_log()
