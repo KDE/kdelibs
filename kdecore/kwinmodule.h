@@ -214,7 +214,7 @@ public:
     bool showingDesktop() const;
 
     /**
-     * Informs kwin via dcop to not manage a window with the
+     * Informs kwin via dbus to not manage a window with the
      * specified @p title.
      *
      * Useful for swallowing legacy applications, for example java
