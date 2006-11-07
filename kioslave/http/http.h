@@ -38,7 +38,6 @@
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
 
-class DCOPClient;
 class QDomElement;
 class QDomNodeList;
 
