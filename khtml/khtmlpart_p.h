@@ -126,7 +126,6 @@ struct KHTMLFrameList : public Q3ValueList<khtml::ChildFrame*>
 typedef KHTMLFrameList::ConstIterator ConstFrameIt;
 typedef KHTMLFrameList::Iterator FrameIt;
 
-static int khtml_part_dcop_counter = 0;
 
 class KHTMLPartPrivate
 {
@@ -228,7 +227,6 @@ public:
     m_openedByJS = false;
     m_newJSInterpreterExists = false;
     m_jobspeed = 0;
-    m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
     m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
@@ -296,7 +294,6 @@ public:
   bool m_bWalletOpened;
   bool m_urlSelectedOpenedURL; // KDE4: remove
   int m_frameNameId;
-  int m_dcop_counter;
 
 #ifndef Q_WS_QWS
   KJavaAppletContext *m_javaContext;
