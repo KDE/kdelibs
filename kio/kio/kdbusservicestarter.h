@@ -78,7 +78,7 @@ public:
      * @param error On failure, @p error contains a description of the error
      *         that occurred. If the pointer is 0, the argument will be
      *         ignored
-     * @param dbusService On success, @p dcopService contains the DBus service name
+     * @param dbusService On success, @p dbusService contains the DBus service name
      *         under which this service is available. If the pointer is 0 the argument
      *         will be ignored
      * @param flags for future extensions (currently unused)
