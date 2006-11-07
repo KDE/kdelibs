@@ -421,7 +421,7 @@ public:
      * @short Time zone phase
      * @author David Jarvie <software@astrojar.org.uk>.
      */
-    class Phase
+    class KDECORE_EXPORT Phase
     {
     public:
         Phase();
@@ -501,7 +501,7 @@ public:
      * @short Time zone transition
      * @author David Jarvie <software@astrojar.org.uk>.
      */
-    class Transition
+    class KDECORE_EXPORT Transition
     {
     public:
         Transition();
@@ -548,7 +548,7 @@ public:
      * @ingroup timezones
      * @author David Jarvie <software@astrojar.org.uk>.
      */
-    class LeapSeconds
+    class KDECORE_EXPORT LeapSeconds
     {
     public:
         LeapSeconds();
