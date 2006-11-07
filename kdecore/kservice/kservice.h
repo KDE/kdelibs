@@ -196,24 +196,24 @@ public:
   QString storageId() const;
 
   /**
-   * Describes the DCOP type of the service.
-   * @li None - This service has no DCOP support
-   * @li Unique - This service provides a unique DCOP service.
+   * Describes the DBUS Startup type of the service.
+   * @li None - This service has no DBUS support
+   * @li Unique - This service provides a unique DBUS service.
    *              The service name is equal to the desktopEntryName.
-   * @li Multi - This service provides a DCOP service which can be run
+   * @li Multi - This service provides a DBUS service which can be run
    *             with multiple instances in parallel. The service name of
    *             an instance is equal to the desktopEntryName + "-" +
    *             the PID of the process.
-   * @li Wait - This service has no DCOP support, the launcher will wait
+   * @li Wait - This service has no DBUS support, the launcher will wait
    *            till it is finished.
    */
-  enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi, DCOP_Wait };
+  enum DBUSStartupType_t { DBUS_None = 0, DBUS_Unique, DBUS_Multi, DBUS_Wait };
 
   /**
-   * Returns the DCOPServiceType supported by this service.
-   * @return the DCOPServiceType supported by this service
+   * Returns the DBUSStartupType supported by this service.
+   * @return the DBUSStartupType supported by this service
    */
-  DCOPServiceType_t DCOPServiceType() const { return m_DCOPServiceType; }
+  DBUSStartupType_t DBUSStartupType() const { return m_DBUSStartusType; }
 
   /**
    * Returns the working directory to run the program in.
@@ -581,7 +581,7 @@ private:
   QStringList m_lstServiceTypes;
   int m_initialPreference;
   QString m_strDesktopEntryName;
-  DCOPServiceType_t m_DCOPServiceType;
+  DBUSStartupType_t m_DBUSStartusType;
   QMap<QString,QVariant> m_mapProps;
   QStringList m_lstKeywords;
   QString m_strGenName;

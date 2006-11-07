@@ -95,7 +95,7 @@ int KLauncherAdaptor::start_service_by_desktop_name(const QString &serviceName, 
     // handle method call org.kde.KLauncher.start_service_by_desktop_name
     KLauncher *p = static_cast<KLauncher *>(parent());
     p->start_service_by_desktop_name(serviceName, urls, envs, startup_id, blind, msg);
-    dbusServiceName = p->requestResult.dcopName;
+    dbusServiceName = p->requestResult.dbusName;
     error = p->requestResult.error;
     pid = p->requestResult.pid;
     return p->requestResult.result;
@@ -106,7 +106,7 @@ int KLauncherAdaptor::start_service_by_desktop_path(const QString &serviceName, 
     // handle method call org.kde.KLauncher.start_service_by_desktop_path
     KLauncher *p = static_cast<KLauncher *>(parent());
     p->start_service_by_desktop_path(serviceName, urls, envs, startup_id, blind, msg);
-    dbusServiceName = p->requestResult.dcopName;
+    dbusServiceName = p->requestResult.dbusName;
     error = p->requestResult.error;
     pid = p->requestResult.pid;
     return p->requestResult.result;
@@ -117,7 +117,7 @@ int KLauncherAdaptor::start_service_by_name(const QString &serviceName, const QS
     // handle method call org.kde.KLauncher.start_service_by_name
     KLauncher *p = static_cast<KLauncher *>(parent());
     p->start_service_by_name(serviceName, urls, envs, startup_id, blind, msg);
-    dbusServiceName = p->requestResult.dcopName;
+    dbusServiceName = p->requestResult.dbusName;
     error = p->requestResult.error;
     pid = p->requestResult.pid;
     return p->requestResult.result;

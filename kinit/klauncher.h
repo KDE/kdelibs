@@ -85,12 +85,12 @@ class KLaunchRequest
 public:
    QString name;
    QStringList arg_list;
-   QString dcop_name;
+   QString dbus_name;
    enum status_t { Init = 0, Launching, Running, Error, Done };
    pid_t pid;
    status_t status;
    QDBusMessage transaction;
-   KService::DCOPServiceType_t dcop_service_type;
+   KService::DBUSStartupType_t dbus_startup_type;
    bool autoStart;
    QString errorMsg;
 #ifdef Q_WS_X11
@@ -104,7 +104,7 @@ public:
 struct serviceResult
 {
   int result;        // 0 means success. > 0 means error (-1 means pending)
-  QString dcopName; // Contains DCOP name on success
+  QString dbusName; // Contains DBUS name on success
   QString error;     // Contains error description on failure.
   pid_t pid;
 };

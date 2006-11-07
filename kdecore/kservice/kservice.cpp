@@ -211,16 +211,22 @@ KService::init( const KDesktopFile *config )
     // Applications implement the service type "Application" ;-)
     m_lstServiceTypes += "Application";
 
-  QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").toLower();
-  entryMap.remove("X-DCOP-ServiceType");
-  if (dcopServiceType == "unique")
-     m_DCOPServiceType = DCOP_Unique;
-  else if (dcopServiceType == "multi")
-     m_DCOPServiceType = DCOP_Multi;
-  else if (dcopServiceType == "wait")
-     m_DCOPServiceType = DCOP_Wait;
+  QString dbusStartupType = config->readEntry("X-DBUS-StartupType").toLower();
+  //Compatibility
+  if( dbusStartupType.isEmpty() && config->hasKey("X-DCOP-ServiceType"))
+  {
+	  dbusStartupType = config->readEntry("X-DCOP-ServiceType").toLower();
+	  entryMap.remove("X-DCOP-ServiceType");
+  }
+  entryMap.remove("X-DBUS-StartupType");
+  if (dbusStartupType == "unique")
+     m_DBUSStartusType = DBUS_Unique;
+  else if (dbusStartupType == "multi")
+     m_DBUSStartusType = DBUS_Multi;
+  else if (dbusStartupType == "wait")
+     m_DBUSStartusType = DBUS_Wait;
   else
-     m_DCOPServiceType = DCOP_None;
+     m_DBUSStartusType = DBUS_None;
 
   m_strDesktopEntryName = _name.toLower();
 
@@ -290,7 +296,7 @@ void KService::load( QDataStream& s )
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
-  m_DCOPServiceType = (DCOPServiceType_t) dst;
+  m_DBUSStartusType = (DBUSStartupType_t) dst;
   m_initialPreference = initpref;
 
   m_bValid = true;
@@ -301,7 +307,7 @@ void KService::save( QDataStream& s )
   KSycocaEntry::save( s );
   qint8 def = m_bAllowAsDefault, initpref = m_initialPreference;
   qint8 term = m_bTerminal;
-  qint8 dst = (qint8) m_DCOPServiceType;
+  qint8 dst = (qint8) m_DBUSStartusType;
 
   // WARNING: THIS NEEDS TO REMAIN COMPATIBLE WITH PREVIOUS KDE 4.x VERSIONS!
   // !! This data structure should remain binary compatible at all times !!

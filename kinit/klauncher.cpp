@@ -330,27 +330,27 @@ KLauncher::slotKDEInitData(int)
      lastRequest->pid = (pid_t) (*request_data);
      kDebug(7016) << lastRequest->name << " (pid " << lastRequest->pid <<
         ") up and running." << endl;
-     switch(lastRequest->dcop_service_type)
+     switch(lastRequest->dbus_startup_type)
      {
-       case KService::DCOP_None:
+       case KService::DBUS_None:
        {
          lastRequest->status = KLaunchRequest::Running;
          break;
        }
 
-       case KService::DCOP_Unique:
+       case KService::DBUS_Unique:
        {
          lastRequest->status = KLaunchRequest::Launching;
          break;
        }
 
-       case KService::DCOP_Wait:
+       case KService::DBUS_Wait:
        {
          lastRequest->status = KLaunchRequest::Launching;
          break;
        }
 
-       case KService::DCOP_Multi:
+       case KService::DBUS_Multi:
        {
          lastRequest->status = KLaunchRequest::Launching;
          break;
@@ -379,9 +379,9 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
    {
       if (request->pid == pid)
       {
-         if (request->dcop_service_type == KService::DCOP_Wait)
+         if (request->dbus_startup_type == KService::DBUS_Wait)
             request->status = KLaunchRequest::Done;
-         else if ((request->dcop_service_type == KService::DCOP_Unique) && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dcop_name))
+         else if ((request->dbus_startup_type == KService::DBUS_Unique) && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name))
             request->status = KLaunchRequest::Running;
          else
             request->status = KLaunchRequest::Error;
@@ -405,16 +405,16 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
          continue;
 
       // For unique services check the requested service name first
-      if ((request->dcop_service_type == KService::DCOP_Unique) &&
-          ((appId == request->dcop_name) ||
-           QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dcop_name)))
+      if ((request->dbus_startup_type == KService::DBUS_Unique) &&
+          ((appId == request->dbus_name) ||
+           QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)))
       {
          request->status = KLaunchRequest::Running;
          requestDone(request);
          continue;
       }
 
-      const QString rAppId = request->dcop_name;
+      const QString rAppId = request->dbus_name;
       if (rAppId.isEmpty())
           return;
 
@@ -424,7 +424,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       if (appId.startsWith(rAppId) && ((appId.length() == rAppId.length()) ||
                   (c == QLatin1Char('-'))))
       {
-         request->dcop_name = appId;
+         request->dbus_name = appId;
          request->status = KLaunchRequest::Running;
          requestDone(request);
          continue;
@@ -484,14 +484,14 @@ KLauncher::requestDone(KLaunchRequest *request)
        (request->status == KLaunchRequest::Done))
    {
       requestResult.result = 0;
-      requestResult.dcopName = request->dcop_name;
+      requestResult.dbusName = request->dbus_name;
       requestResult.error = "";
       requestResult.pid = request->pid;
    }
    else
    {
       requestResult.result = 1;
-      requestResult.dcopName = "";
+      requestResult.dbusName = "";
       requestResult.error = i18n("KDEInit could not launch '%1'.",
 	  request->name);
       if (!request->errorMsg.isEmpty())
@@ -527,11 +527,11 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
-      if ( requestResult.dcopName.isNull() ) // null strings can't be sent
-          requestResult.dcopName = "";
+      if ( requestResult.dbusName.isNull() ) // null strings can't be sent
+          requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
       QDBusConnection::sessionBus().send(request->transaction.createReply(QVariantList() << requestResult.result
-                                     << requestResult.dcopName
+                                     << requestResult.dbusName
                                      << requestResult.error
                                      << requestResult.pid));
    }
@@ -597,7 +597,7 @@ void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, con
    request->autoStart = false;
    request->name = name;
    request->arg_list =  arg_list;
-   request->dcop_service_type = KService::DCOP_None;
+   request->dbus_startup_type = KService::DBUS_None;
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
    request->envs = envs;
@@ -725,17 +725,17 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    request->name = request->arg_list.first();
    request->arg_list.removeFirst(); //(request->arg_list.begin());
 
-   request->dcop_service_type =  service->DCOPServiceType();
+   request->dbus_startup_type =  service->DBUSStartupType();
 
-   if ((request->dcop_service_type == KService::DCOP_Unique) ||
-       (request->dcop_service_type == KService::DCOP_Multi))
+   if ((request->dbus_startup_type == KService::DBUS_Unique) ||
+       (request->dbus_startup_type == KService::DBUS_Multi))
    {
       QVariant v = service->property("X-DCOP-ServiceName");
       if (v.isValid())
-         request->dcop_name = v.toString().toUtf8();
-      if (request->dcop_name.isEmpty())
+         request->dbus_name = v.toString().toUtf8();
+      if (request->dbus_name.isEmpty())
       {
-         request->dcop_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
+         request->dbus_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
       }
    }
 
@@ -856,9 +856,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->name = app.toLocal8Bit();
 
    if (wait)
-      request->dcop_service_type = KService::DCOP_Wait;
+      request->dbus_startup_type = KService::DBUS_Wait;
    else
-      request->dcop_service_type = KService::DCOP_None;
+      request->dbus_startup_type = KService::DBUS_None;
    request->pid = 0;
 #ifdef Q_WS_X11
    request->startup_id = startup_id;
@@ -1018,7 +1018,7 @@ KLauncher::requestSlave(const QString &protocol,
     request->autoStart = false;
     request->name = name;
     request->arg_list =  arg_list;
-    request->dcop_service_type = KService::DCOP_None;
+    request->dbus_startup_type = KService::DBUS_None;
     request->pid = 0;
 #ifdef Q_WS_X11
     request->startup_id = "0";

@@ -791,7 +791,7 @@ private:
   QString m_origCommandStr;
   QString m_terminalOptionStr;
   QString m_suidUserStr;
-  QString m_dcopServiceType;
+  QString m_dbusStartusType;
   bool m_terminalBool;
   bool m_terminalCloseBool;
   bool m_suidBool;

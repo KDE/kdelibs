@@ -8,5 +8,5 @@ Comment=KDE Notification Daemon
 Comment[fr]=Démon de notifications de KDE
 Comment[x-test]=xxKDE Notification Daemonxx
 Icon=knotify
-X-DCOP-ServiceType=Unique
+X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false

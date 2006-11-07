@@ -9,5 +9,5 @@ Comment[fr]=Serveur graphique d'infos de progression de KDE
 Comment[x-test]=xxKDE's Progress Info UI serverxx
 ServiceTypes=
 # It is a server
-X-DCOP-ServiceType=Unique
+X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false

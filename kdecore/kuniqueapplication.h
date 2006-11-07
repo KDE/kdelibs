@@ -28,12 +28,12 @@
  * instance of a running application at a time.
  *
  * If another instance
- * is started, it will determine (via DCOP) whether it is the first instance
+ * is started, it will determine (via DBUS) whether it is the first instance
  * or a second instance.  If it is a second instance, it will forward on
  * the information to the first instance and then quit.
  *
- * The .desktop file for the application should state X-DCOP-ServiceType=Unique,
- * see kapplication.h
+ * The .desktop file for the application should state X-DBUS-StartupType=Unique,
+ * see ktoolinvocation.h
  *
  * If your application is used to open files, it should also support the --tempfile
  * option (see KCmdLineArgs::addTempFileOption()), to delete tempfiles after use.

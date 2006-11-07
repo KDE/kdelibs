@@ -76,20 +76,6 @@ class KUrl;
 * @li It can start new services
 *
 *
-* The way a service gets started depends on the 'X-DCOP-ServiceType'
-* entry in the desktop file of the service:
-*
-* There are three possibilities:
-* @li X-DCOP-ServiceType=None (default)
-*    Always start a new service,
-*    don't wait till the service registers with dcop.
-* @li X-DCOP-ServiceType=Multi
-*    Always start a new service,
-*    wait until the service has registered with dcop.
-* @li X-DCOP-ServiceType=Unique
-*    Only start the service if it isn't already running,
-*    wait until the service has registered with dcop.
-*
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */

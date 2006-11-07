@@ -3141,7 +3141,10 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     m_startupBool = config.readEntry( "StartupNotify", true );
   else
     m_startupBool = config.readEntry( "X-KDE-StartupNotify", true );
-  m_dcopServiceType = config.readEntry("X-DCOP-ServiceType").toLower();
+  m_dbusStartusType = config.readEntry("X-DBUS-StartupType").toLower();
+  //Compatibility
+  if( m_dbusStartusType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
+         m_dbusStartusType = config.readEntry("X-DCOP-ServiceType").toLower();
 
   QStringList mimeTypes = config.readEntry( "MimeType", QStringList(), ';' );
 
@@ -3319,7 +3322,7 @@ void KDesktopPropsPlugin::checkCommandChanged()
       KRun::binaryName(m_origCommandStr, true))
   {
     QString m_origCommandStr = w->commandEdit->text();
-    m_dcopServiceType.clear(); // Reset
+    m_dbusStartusType.clear(); // Reset
   }
 }
 
@@ -3379,7 +3382,7 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry("X-KDE-SubstituteUID", m_suidBool);
   config.writeEntry("X-KDE-Username", m_suidUserStr);
   config.writeEntry("StartupNotify", m_startupBool);
-  config.writeEntry("X-DCOP-ServiceType", m_dcopServiceType);
+  config.writeEntry("X-DBUS-StartupType", m_dbusStartusType);
   config.sync();
 
   // KSycoca update needed?
@@ -3461,14 +3464,14 @@ void KDesktopPropsPlugin::slotAdvanced()
   w.startupInfoCheck->setChecked(m_startupBool);
   w.systrayCheck->setChecked(m_systrayBool);
 
-  if (m_dcopServiceType == "unique")
-    w.dcopCombo->setCurrentIndex(2);
-  else if (m_dcopServiceType == "multi")
-    w.dcopCombo->setCurrentIndex(1);
-  else if (m_dcopServiceType == "wait")
-    w.dcopCombo->setCurrentIndex(3);
+  if (m_dbusStartusType == "unique")
+    w.dbusCombo->setCurrentIndex(2);
+  else if (m_dbusStartusType == "multi")
+    w.dbusCombo->setCurrentIndex(1);
+  else if (m_dbusStartusType == "wait")
+    w.dbusCombo->setCurrentIndex(3);
   else
-    w.dcopCombo->setCurrentIndex(0);
+    w.dbusCombo->setCurrentIndex(0);
 
   // Provide username completion up to 1000 users.
   KCompletion *kcom = new KCompletion;
@@ -3504,7 +3507,7 @@ void KDesktopPropsPlugin::slotAdvanced()
            this, SIGNAL( changed() ) );
   connect( w.systrayCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w.dcopCombo, SIGNAL( highlighted( int ) ),
+  connect( w.dbusCombo, SIGNAL( highlighted( int ) ),
            this, SIGNAL( changed() ) );
 
   if ( dlg.exec() == QDialog::Accepted )
@@ -3521,12 +3524,12 @@ void KDesktopPropsPlugin::slotAdvanced()
       m_terminalOptionStr.append(" --noclose");
     }
 
-    switch(w.dcopCombo->currentIndex())
+    switch(w.dbusCombo->currentIndex())
     {
-      case 1:  m_dcopServiceType = "multi"; break;
-      case 2:  m_dcopServiceType = "unique"; break;
-      case 3:  m_dcopServiceType = "wait"; break;
-      default: m_dcopServiceType = "none"; break;
+      case 1:  m_dbusStartusType = "multi"; break;
+      case 2:  m_dbusStartusType = "unique"; break;
+      case 3:  m_dbusStartusType = "wait"; break;
+      default: m_dbusStartusType = "none"; break;
     }
   }
 }

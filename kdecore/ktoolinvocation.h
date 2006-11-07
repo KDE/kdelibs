@@ -31,6 +31,21 @@
 #include <QtCore/QStringList>
 
 class OrgKdeKLauncherInterface;
+/**
+ * The way a service gets started depends on the 'X-DBUS-StartupType'
+ * entry in the desktop file of the service:
+ *
+ * There are three possibilities:
+ * @li X-DBUS-StartupType=None (default)
+ *    Always start a new service,
+ *    don't wait till the service registers with dbus.
+ * @li X-DBUS-StartupType=Multi
+ *    Always start a new service,
+ *    wait until the service has registered with dbus.
+ * @li X-DBUS-StartupType=Unique
+ *    Only start the service if it isn't already running,
+ *    wait until the service has registered with dbus.
+ */
 
 /**
  *The static members (exception is the self() member, have to be called from the QApplication main thread.
