@@ -1,6 +1,6 @@
 
 project(kutils)
-
+KDE4_NO_ENABLE_FINAL(kutils)
 include_directories( ${KDE4_KIO_INCLUDES} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )

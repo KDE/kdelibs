@@ -1,4 +1,5 @@
 project(kdoctools)
+KDE4_NO_ENABLE_FINAL(kdoctools)
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
