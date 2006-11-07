@@ -76,7 +76,7 @@ class ForwardingSlaveBasePrivate;
  *
  * If you want view on directories to be correctly refreshed when
  * something changes on a forwarded URL, you'll need a companion kded
- * module to emit the KDirNotify Files*() DBUS signals.
+ * module to emit the KDirNotify Files*() D-Bus signals.
  *
  * This class was initially used for media:/ ioslave. This ioslave code
  * and the MediaDirNotify class of its companion kded module can be a
