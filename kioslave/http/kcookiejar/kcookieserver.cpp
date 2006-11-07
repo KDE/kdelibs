@@ -357,7 +357,7 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
     return false;
 }
 
-// DCOP function
+// DBUS function
 QString
 KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &msg)
 {
@@ -381,7 +381,7 @@ KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &
    return cookies;
 }
 
-// DCOP function
+// DBUS function
 QStringList
 KCookieServer::findDomains()
 {
@@ -399,7 +399,7 @@ KCookieServer::findDomains()
    return result;
 }
 
-// DCOP function
+// DBUS function
 QStringList
 KCookieServer::findCookies(QList<int> fields,
                            QString domain,
@@ -431,14 +431,14 @@ KCookieServer::findCookies(QList<int> fields,
    return result;
 }
 
-// DCOP function
+// DBUS function
 QString
 KCookieServer::findDOMCookies(QString url)
 {
    return findDOMCookies(url, 0);
 }
 
-// DCOP function
+// DBUS function
 QString
 KCookieServer::findDOMCookies(QString url, qlonglong windowId)
 {
@@ -451,14 +451,14 @@ KCookieServer::findDOMCookies(QString url, qlonglong windowId)
    return mCookieJar->findCookies(url, true, windowId, &pendingCookies);
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::addCookies(QString arg1, QByteArray arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, false);
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::deleteCookie(QString domain, QString fqdn,
                             QString path, QString name)
@@ -480,7 +480,7 @@ KCookieServer::deleteCookie(QString domain, QString fqdn,
    }
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::deleteCookiesFromDomain(QString domain)
 {
@@ -497,7 +497,7 @@ KCookieServer::slotDeleteSessionCookies( qlonglong windowId )
    deleteSessionCookies(windowId);
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::deleteSessionCookies( qlonglong windowId )
 {
@@ -514,7 +514,7 @@ KCookieServer::deleteSessionCookiesFor(QString fqdn, qlonglong windowId)
     saveCookieJar();
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::deleteAllCookies()
 {
@@ -523,14 +523,14 @@ KCookieServer::deleteAllCookies()
       saveCookieJar();
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::addDOMCookies(QString arg1, QByteArray arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, true);
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::setDomainAdvice(QString url, QString advice)
 {
@@ -548,7 +548,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    }
 }
 
-// DCOP function
+// DBUS function
 QString
 KCookieServer::getDomainAdvice(QString url)
 {
@@ -576,14 +576,14 @@ KCookieServer::getDomainAdvice(QString url)
    return KCookieJar::adviceToStr(advice);
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::reloadPolicy()
 {
    mCookieJar->loadConfig( mConfig, true );
 }
 
-// DCOP function
+// DBUS function
 void
 KCookieServer::shutdown()
 {
