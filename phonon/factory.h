@@ -226,7 +226,7 @@ class PHONONCORE_EXPORT Factory : public QObject
 	private Q_SLOTS:
 		/**
 		 * \internal
-		 * This is called via DCOP when the user changes the Phonon Backend.
+		 * This is called via DBUS when the user changes the Phonon Backend.
 		 */
 		void phononBackendChanged();
 

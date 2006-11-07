@@ -109,7 +109,7 @@ void KCMultiDialog::Private::_k_dialogClosed()
   kDebug(710) << k_funcinfo << endl;
 
   /**
-   * If we don't delete them, the DCOP registration stays, and trying to load the KCMs
+   * If we don't delete them, the DBUS registration stays, and trying to load the KCMs
    * in other situations will lead to "module already loaded in Foo," while to the user
    * doesn't appear so(the dialog is hidden)
    */

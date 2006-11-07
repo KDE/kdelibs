@@ -457,25 +457,25 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 	private Q_SLOTS:
 		/**
 		 *  @internal
-		 *  DCOP slot for signals emitted by the wallet service.
+		 *  DBUS slot for signals emitted by the wallet service.
 		 */
 		void slotWalletClosed(int handle);
 
 		/**
 		 *  @internal
-		 *  DCOP slot for signals emitted by the wallet service.
+		 *  DBUS slot for signals emitted by the wallet service.
 		 */
 		void slotFolderUpdated(const QString& wallet, const QString& folder);
 
 		/**
 		 *  @internal
-		 *  DCOP slot for signals emitted by the wallet service.
+		 *  DBUS slot for signals emitted by the wallet service.
 		 */
 		void slotFolderListUpdated(const QString& wallet);
 
 		/**
 		 *  @internal
-		 *  DCOP slot for signals emitted by the wallet service.
+		 *  DBUS slot for signals emitted by the wallet service.
 		 */
 		void slotApplicationDisconnected(const QString& wallet, const QString& application);
 

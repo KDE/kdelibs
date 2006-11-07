@@ -187,10 +187,12 @@ public:
 	const KCModuleInfo& moduleInfo() const;
 
 	/**
-	 * Returns the DCOP the module's DCOPClient
-	 * and DCOPObject has(they are identical).
+	 * Returns the DBUS Service name
 	 */
 	QString dbusService() const;
+    /**
+     * Returns the DBUS Path
+     */
 	QString dbusPath() const;
 
 public Q_SLOTS:
