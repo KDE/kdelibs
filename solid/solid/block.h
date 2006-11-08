@@ -72,6 +72,7 @@ namespace Solid
          *
          * @return the device major number
          */
+	//FIXME: rename this method
         int major() const;
 
         /**
@@ -80,6 +81,7 @@ namespace Solid
          *
          * @return the device minor number
          */
+	//FIXME: rename this method
         int minor() const;
 
         /**

@@ -49,6 +49,7 @@ namespace Ifaces
          *
          * @return the device major number
          */
+	//FIXME: rename this method
         virtual int major() const = 0;
 
         /**
@@ -57,6 +58,7 @@ namespace Ifaces
          *
          * @return the device minor number
          */
+	//FIXME: rename this method
         virtual int minor() const = 0;
 
         /**
