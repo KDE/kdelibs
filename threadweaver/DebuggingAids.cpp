@@ -17,9 +17,10 @@
 #include <QMutex>
 
 #include "DebuggingAids.h"
+#include <kdelibs_export.h>
 
 /** A global mutex for the ThreadWeaver objects.
     Generally, you should not use it in your own code. */
-QMutex ThreadWeaver::GlobalMutex;
-bool ThreadWeaver::Debug = true;
-int ThreadWeaver::DebugLevel = 01;
+THREADWEAVER_EXPORT QMutex ThreadWeaver::GlobalMutex;
+THREADWEAVER_EXPORT bool ThreadWeaver::Debug = true;
+THREADWEAVER_EXPORT int ThreadWeaver::DebugLevel = 01;
