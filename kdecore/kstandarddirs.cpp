@@ -429,14 +429,6 @@ QString KStandardDirs::findResourceDir( const char *type,
     for (QStringList::ConstIterator it = candidates.begin();
       it != candidates.end(); ++it) {
       if (exists(*it + filename)) {
-#ifdef Q_WS_WIN //this ensures we're using installed .la files
-          if ((*it).isEmpty() && filename.endsWith(".la")) {
-#ifndef NDEBUG
-              kDebug(180) << "KStandardDirs::findResourceDir() found .la in cwd: skipping. (fname=" << filename  << ")" << endl;
-#endif
-              continue;
-          }
-#endif //Q_WS_WIN
           return *it;
       }
     }
@@ -453,10 +445,10 @@ bool KStandardDirs::exists(const QString &fullPath)
 {
     KDE_struct_stat buff;
     if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0)
-	if (fullPath.at(fullPath.length() - 1) != '/') {
+        if (fullPath.at(fullPath.length() - 1) != '/') {
 	    if (S_ISREG( buff.st_mode ))
-		return true;
-	} else
+                return true;
+        } else
 	    if (S_ISDIR( buff.st_mode ))
 		return true;
     return false;
@@ -1284,12 +1276,7 @@ static QString readEnvPath(const char *env)
    QByteArray c_path = getenv(env);
    if (c_path.isEmpty())
       return QString();
-#ifdef Q_OS_WIN
-   //win32 paths are case-insensitive: avoid duplicates on various dir lists
-   return QFile::decodeName(c_path).toLower();
-#else
    return QFile::decodeName(c_path);
-#endif
 }
 
 #ifdef __linux__
@@ -1327,7 +1314,7 @@ QString KStandardDirs::kfsstnd_defaultprefix()
 #ifdef Q_WS_WIN
    s->defaultprefix = readEnvPath("KDEDIR");
    if (s->defaultprefix.isEmpty()) {
-      s->defaultprefix = QFile::decodeName("c:\\kde");
+      s->defaultprefix = QFile::decodeName(KDEDIR);
       //TODO: find other location (the Registry?)
    }
 #else //UNIX
@@ -1396,9 +1383,7 @@ void KStandardDirs::addKDEDefaults()
            kdedirList.append(kdedir);
         }
     }
-#ifndef Q_OS_WIN //no default KDEDIR on win32 defined
-    kdedirList.append(KDEDIR);
-#endif
+	kdedirList.append(QFile::decodeName(KDEDIR));
 
 #ifdef __KDE_EXECPREFIX
     QString execPrefix(__KDE_EXECPREFIX);
