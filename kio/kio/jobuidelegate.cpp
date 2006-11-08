@@ -101,7 +101,7 @@ void KIO::JobUiDelegate::showErrorMessage()
     }
 }
 
-void KIO::JobUiDelegate::slotFinished( KJob */*job*/, int /*id*/ )
+void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )
 {
     // If we are displaying a progress dialog, remove it first.
     if ( job()->progressId() ) // Did we get an ID from the observer ?
@@ -110,7 +110,7 @@ void KIO::JobUiDelegate::slotFinished( KJob */*job*/, int /*id*/ )
         showErrorMessage();
 }
 
-void KIO::JobUiDelegate::slotWarning( KJob */*job*/, const QString &errorText )
+void KIO::JobUiDelegate::slotWarning( KJob * /*job*/, const QString &errorText )
 {
     if (isAutoWarningHandlingEnabled())
     {

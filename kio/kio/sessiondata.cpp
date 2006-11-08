@@ -174,12 +174,10 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
   if ( !d  || d->persist )
     return;
 
-  bool ok;
-  int count;
-  QByteArray ref_key = d->key + "-refcount";
-
 #ifdef Q_OS_UNIX
-  count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
+  bool ok;
+  QByteArray ref_key = d->key + "-refcount";
+  int count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
   if ( ok )
   {
     if ( count > 1 )
