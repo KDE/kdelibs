@@ -778,16 +778,15 @@ VFolderMenu::locateMenuFile(const QString &fileName)
       if (!fileNameOnly.startsWith(xdgMenuPrefix))
          fileNameOnly = xdgMenuPrefix + fileNameOnly;
 
-      QString baseName = QDir::cleanDirPath(m_docInfo.baseDir +
-                                            fileInfo.dirPath() + "/" +
-                                            fileNameOnly);
-      result = locate("xdgconf-menu", baseName);
+      QString baseName = QDir::cleanPath(m_docInfo.baseDir +
+                                         fileInfo.path() + "/" + fileNameOnly);
+      result = KStandardDirs::locate("xdgconf-menu", baseName);
    }
 
    if (result.isEmpty())
    {
-       QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
-       result = locate("xdgconf-menu", baseName);
+       QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
+       result = KStandardDirs::locate("xdgconf-menu", baseName);
    }
 
    return result;
