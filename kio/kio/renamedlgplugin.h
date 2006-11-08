@@ -50,7 +50,7 @@ public:
      * File Representation consisting of the KUrl, MimeType and filesize and
      * the times of the last changes.
      */
-    class FileItem {
+    class KIO_EXPORT FileItem {
     public:
         FileItem( const KUrl& url, const QString& mimeSrc, KIO::filesize_t, time_t ctime, time_t mtime);
 
