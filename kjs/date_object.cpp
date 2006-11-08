@@ -417,7 +417,6 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     case GetSeconds:
     case GetMilliSeconds:
     case GetTimezoneOffset:
-    case SetTime:
     case SetMilliSeconds:
     case SetSeconds:
     case SetMinutes:
@@ -427,6 +426,12 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     case SetFullYear:
       return Number(NaN);
     }
+  }
+
+  if (id == SetTime) {
+    result = Number(roundValue(exec,args[0]));
+    thisObj.setInternalValue(result);
+    return result;
   }
 
   // check whether time value is outside time_t's usual range
@@ -537,11 +542,6 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     break;
   case GetTimezoneOffset:
     result = Number(timeZoneOffset(t));
-    break;
-  case SetTime:
-    milli = roundValue(exec,args[0]);
-    result = Number(milli);
-    thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
     fillStructuresUsingTimeArgs(exec, args, 1, &ms, t);
