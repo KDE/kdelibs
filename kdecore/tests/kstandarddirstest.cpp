@@ -60,7 +60,7 @@ void KStandarddirsTest::testFindResource()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QString bin = KGlobal::dirs()->findResource( "exe", "kioslsave" );
+    const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" );
     QVERIFY( !bin.isEmpty() );
     QVERIFY( bin.endsWith( "bin/kdeinit" ) );
     QVERIFY( bin.startsWith( "/" ) );
