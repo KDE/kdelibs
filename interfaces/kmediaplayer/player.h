@@ -42,7 +42,7 @@ namespace KMediaPlayer
  * the user interface facets, for those who wish to provide their own
  * interface.
  */
-class KDE_EXPORT Player : public KParts::ReadOnlyPart
+class KMEDIAPLAYER_EXPORT Player : public KParts::ReadOnlyPart
 {
 Q_OBJECT
 Q_PROPERTY(bool hasLength READ hasLength)

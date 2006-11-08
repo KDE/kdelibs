@@ -31,7 +31,7 @@ namespace KMediaPlayer
 {
 
 /** View is part of the user interface of a Player. */
-class KDE_EXPORT View : public QWidget
+class KMEDIAPLAYER_EXPORT View : public QWidget
 {
 Q_OBJECT
 

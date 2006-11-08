@@ -406,6 +406,15 @@
 # endif
 #endif
 
+#ifndef KMEDIAPLAYER_EXPORT
+# ifdef MAKE_KMEDIAPLAYER_LIB
+#  define KMEDIAPLAYER_EXPORT KDE_EXPORT
+# else
+#  define KMEDIAPLAYER_EXPORT KDE_IMPORT
+# endif
+#endif
+
+
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
