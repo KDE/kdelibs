@@ -246,11 +246,6 @@
       <item> inline-block </item>
       <item> block </item>
       <item> list-item </item>
-      <item> nth-child </item>
-      <item> nth-last-child </item>
-      <item> nth-of-type </item>
-      <item> nth-last-of-type </item>
-      <item> not </item>
       <item> run-in </item>
       <item> compact </item>
       <item> marker </item>
@@ -454,6 +449,11 @@
       <item> disabled </item>
       <item> checked </item>
       <item> indeterminate </item>
+      <item> nth-child </item>
+      <item> nth-last-child </item>
+      <item> nth-of-type </item>
+      <item> nth-last-of-type </item>
+      <item> not </item>
     </list>
 
     <contexts>
