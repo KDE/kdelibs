@@ -1602,7 +1602,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     return url;
 }
 
-void KFileDialog::show()
+void KFileDialog::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
         ops->setView(KFile::Default);
@@ -1610,7 +1610,7 @@ void KFileDialog::show()
         d->hasView = true;
     }
 
-    KDialog::show();
+    KDialog::showEvent(event);
 }
 
 void KFileDialog::setMode( KFile::Modes m )

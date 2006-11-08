@@ -588,8 +588,6 @@ public:
                                  QWidget *parent = 0,
                                  const QString& caption = QString() );
 
-    virtual void show();
-
     /**
      * Sets the mode of the dialog.
      *
@@ -747,6 +745,8 @@ protected:
     KUrlComboBox *locationEdit;
 
     KFileFilterCombo *filterWidget;
+
+    virtual void showEvent(QShowEvent* event);
 
     /**
      * Reimplemented to animate the cancel button.
