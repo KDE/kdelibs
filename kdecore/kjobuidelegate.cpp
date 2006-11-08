@@ -24,8 +24,9 @@
 
 #include <kdebug.h>
 
-struct KJobUiDelegate::Private
+class KJobUiDelegate::Private
 {
+public:
     Private() : job( 0 ), autoErrorHandling( false ),
                 autoWarningHandling( true ) { }
     KJob *job;
@@ -95,13 +96,13 @@ void KJobUiDelegate::connectJob( KJob *job )
              this, SLOT( slotWarning( KJob*, const QString& ) ) );
 }
 
-void KJobUiDelegate::slotFinished( KJob */*job*/, int /*id*/ )
+void KJobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )
 {
     if ( d->job->error() && d->autoErrorHandling )
         showErrorMessage();
 }
 
-void KJobUiDelegate::slotWarning( KJob */*job*/, const QString &/*errorText*/ )
+void KJobUiDelegate::slotWarning( KJob * /*job*/, const QString &/*errorText*/ )
 {
 
 }
