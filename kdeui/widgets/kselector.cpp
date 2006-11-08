@@ -37,8 +37,9 @@
 
 #define ARROWWINGSIZE 2
 
-struct KSelector::Private
+class KSelector::Private
 {
+public:
   QPoint m_previousPos;
   bool m_indent;
 };

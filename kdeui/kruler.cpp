@@ -566,7 +566,7 @@ KRuler::slotEndOffset(int offset)
 }
 
 void
-KRuler::paintEvent(QPaintEvent */*e*/)
+KRuler::paintEvent(QPaintEvent * /*e*/)
 {
   //  debug ("KRuler::drawContents, %s",(horizontal==dir)?"horizontal":"vertical");
 
