@@ -60,11 +60,6 @@ void KStandarddirsTest::testFindResource()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QString module = KGlobal::dirs()->findResource( "module", "libkhtmlpart.la" );
-    QVERIFY( !module.isEmpty() );
-    QVERIFY( module.endsWith( "libkhtmlpart.la" ) );
-    QVERIFY( module.startsWith( "/" ) );
-
     const QString bin = KGlobal::dirs()->findResource( "exe", "kdeinit" );
     QVERIFY( !bin.isEmpty() );
     QVERIFY( bin.endsWith( "bin/kdeinit" ) );
