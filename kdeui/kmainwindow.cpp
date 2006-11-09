@@ -909,6 +909,9 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   if (isMaximized()) {
     w = desk.width() + 1;
     h = desk.height() + 1;
+  } else {
+    w = width();
+    h = height();
   }
   //TODO: add "Maximized" property instead "+1" hack
 #endif
