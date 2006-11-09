@@ -72,7 +72,7 @@ void KPrinterWrapper::setMargins( uint top, uint left, uint bottom, uint right )
 	// QPainter::pageRect() is actually taken from e.g. CUPs or whether a full
 	// page is being used.
 	
-	QRect pageRect = paperRect().adjusted( left, top, -right, -bottom );
+	QRect pageRect = paperRect().adjusted( left, top, 0U-right, 0U-bottom );
 	printEngine()->setProperty( QPrintEngine::PPK_PageRect, pageRect );
 }
 
