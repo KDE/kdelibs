@@ -28,12 +28,13 @@ extern "C"
 
 #include <QMutex>
 #include <QString>
+#include "kdelibs_export.h"
 
 namespace ThreadWeaver {
 
-    extern bool Debug;
-    extern int DebugLevel;
-    extern QMutex GlobalMutex;
+    extern THREADWEAVER_EXPORT bool Debug;
+    extern THREADWEAVER_EXPORT int DebugLevel;
+    extern THREADWEAVER_EXPORT QMutex GlobalMutex;
 
     /** Set the debug log level.
 	@see debug
