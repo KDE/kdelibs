@@ -24,7 +24,19 @@
 /* needed for KDE_EXPORT macros */
 #include <kdemacros.h>
 
+#if defined Q_OS_WIN
+
+#ifndef EDUPLOT_EXPORT
+# ifdef MAKE_EDUPLOT_LIB
+#  define EDUPLOT_EXPORT KDE_EXPORT
+# else
+#  define EDUPLOT_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#else
 /* export statements for unix */
 #define EDUPLOT_EXPORT KDE_EXPORT
+#endif
 
 #endif
