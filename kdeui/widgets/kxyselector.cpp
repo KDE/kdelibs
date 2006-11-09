@@ -32,8 +32,9 @@
  * The contents of the selector are drawn by derived class.
  */
 
-struct KXYSelector::Private
+class KXYSelector::Private
 {
+public:
   QColor m_markerColor;
 };
 
