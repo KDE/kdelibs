@@ -19,6 +19,7 @@
 #define KHE_BYTESEDITINTERFACE_H
 
 // kde specific
+#include <kdelibs_export.h>
 #include <kservicetypetrader.h>
 
 class QWidget;
