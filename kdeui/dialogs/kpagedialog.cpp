@@ -23,6 +23,7 @@
  */
 
 #include <QTimer>
+#include <QLayout>
 
 #include "kpagedialog.h"
 
@@ -43,6 +44,7 @@ class KPageDialog::Private
                mParent, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
 
       mParent->setMainWidget( mPageWidget );
+      mPageWidget->layout()->setMargin(0);
     }
 };
 
