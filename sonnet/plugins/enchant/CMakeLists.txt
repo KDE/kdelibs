@@ -11,7 +11,6 @@ kde4_add_plugin(kspell_enchant ${kspell_enchant_PART_SRCS})
 
 target_link_libraries(kspell_enchant  ${KDE4_KDECORE_LIBS} kspell2 ${ENCHANT_LIBRARIES} )
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kspell_enchant )
 install(TARGETS kspell_enchant  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
