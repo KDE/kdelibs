@@ -410,6 +410,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
       cb->setCurrentIndex(i);
     else
       cb->setEditText(v.toString());
+    return;
   }
 
   QByteArray userproperty = getUserProperty( w );
