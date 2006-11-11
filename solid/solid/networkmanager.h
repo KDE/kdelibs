@@ -64,7 +64,7 @@ namespace Solid
          * @param uni the identifier of the network interface to find
          * @returns a valid NetworkInterface object if there's a device having the given UNI, an invalid one otherwise
          */
-        const NetworkInterface &findNetworkInterface( const QString & udi ) const;
+        const NetworkInterface &findNetworkInterface( const QString & uni ) const;
 
         /**
          * Retrieves the activation status of networking (as a whole) in the system.
@@ -85,14 +85,14 @@ namespace Solid
         /**
          * Activates or deactivates networking (as a whole).
          *
-         * @param true to activate networking, false otherwise
+         * @param enabled true to activate networking, false otherwise
          */
         void setNetworkingEnabled( bool enabled );
 
         /**
          * Activates or deactivates wireless networking.
          *
-         * @param true to activate wireless networking, false otherwise
+         * @param enabled true to activate wireless networking, false otherwise
          */
         void setWirelessEnabled( bool enabled );
 

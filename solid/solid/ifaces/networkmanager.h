@@ -101,7 +101,7 @@ namespace Ifaces
         /**
          * Activates or deactivates wireless networking.
          *
-         * @param true to activate wireless networking, false otherwise
+         * @param enabled true to activate wireless networking, false otherwise
          */
         virtual void setWirelessEnabled( bool enabled ) = 0;
 

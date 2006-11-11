@@ -80,7 +80,6 @@ namespace Solid
          * Device::as().
          *
          * @param backendObject the capability object provided by the backend
-         * @param parent the parent QObject
          * @see Solid::Device::as()
          */
         explicit Storage( QObject *backendObject );
