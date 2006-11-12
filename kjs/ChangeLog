@@ -1,7 +1,9 @@
 2006-11-04  Harri Porten  <porten@kde.org>
 
-	* number_object.cpp: Fixed toPrecision(n) calls on negative zero.
+	* number_object.cpp: Fixed toFixed(n) calls on negative zero.
 
+	* number_object.cpp: Fixed toPrecision(n) calls on 1.0.
+	
 2005-09-17  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp: MSVC equivalent for strncasecmp().
