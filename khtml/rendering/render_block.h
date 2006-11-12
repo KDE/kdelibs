@@ -119,6 +119,8 @@ public:
     void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
     void checkLinesForOverflow();
+    void deleteEllipsisLineBoxes();
+    void checkLinesForTextOverflow();
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
@@ -178,6 +180,9 @@ public:
 
     virtual int getBaselineOfFirstLineBox();
     virtual InlineFlowBox* getFirstLineBox();
+
+    RootInlineBox* firstRootBox() { return static_cast<RootInlineBox*>(m_firstLineBox); }
+    RootInlineBox* lastRootBox() { return static_cast<RootInlineBox*>(m_lastLineBox); }
 
     bool inRootBlockContext() const;
 

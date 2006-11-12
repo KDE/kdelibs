@@ -135,7 +135,8 @@ RenderObject::SelectionState InlineTextBox::selectionState()
 
 void InlineTextBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
 {
-    if (object()->isBR() || object()->style()->visibility() != VISIBLE || i.phase == PaintActionOutline)
+    if (object()->isBR() || object()->style()->visibility() != VISIBLE ||
+        m_truncation == cFullTruncation || i.phase == PaintActionOutline)
         return;
 
     if (i.phase == PaintActionSelection && object()->selectionState() == RenderObject::SelectionNone)
@@ -165,10 +166,13 @@ void InlineTextBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
         i.p->setPen(styleToUse->color());
 
     if (m_len > 0 && i.phase != PaintActionSelection) {
+        int endPoint = m_len;
+        if (m_truncation != cNoTruncation)
+            endPoint = m_truncation - m_start;
         if (styleToUse->textShadow())
             paintShadow(i.p, font, tx, ty, styleToUse->textShadow());
         if (!haveSelection || sPos != 0 || ePos != m_len) {
-            font->drawText(i.p, m_x + tx, m_y + ty + m_baseline, renderText()->string()->s, renderText()->string()->l, m_start, m_len,
+            font->drawText(i.p, m_x + tx, m_y + ty + m_baseline, renderText()->string()->s, renderText()->string()->l, m_start, endPoint,
                            m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR);
         }
     }
@@ -266,7 +270,13 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     _tx += m_x;
     _ty += m_y;
 
+    if (m_truncation == cFullTruncation)
+        return;
+
     int width = m_width - 1;
+    if (m_truncation != cNoTruncation) {
+        width = static_cast<RenderText*>(m_object)->width(m_start, m_truncation - m_start, m_firstLine);
+    }
 
     RenderObject *p = object();
 
@@ -571,6 +581,50 @@ long InlineTextBox::minOffset() const
 long InlineTextBox::maxOffset() const
 {
   return m_start + m_len;
+}
+
+int InlineTextBox::placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox)
+{
+    if (foundBox) {
+        m_truncation = cFullTruncation;
+        return -1;
+    }
+
+    int ellipsisX = ltr ? blockEdge - ellipsisWidth : blockEdge + ellipsisWidth;
+
+    // For LTR, if the left edge of the ellipsis is to the left of our text run, then we are the run that will get truncated.
+    if (ltr) {
+        if (ellipsisX <= m_x) {
+            // Too far.  Just set full truncation, but return -1 and let the ellipsis just be placed at the edge of the box.
+            m_truncation = cFullTruncation;
+            foundBox = true;
+            return -1;
+        }
+
+        if (ellipsisX < m_x + m_width) {
+            if (m_reversed)
+                return -1; // FIXME: Support LTR truncation when the last run is RTL someday.
+
+            foundBox = true;
+
+            int ax;
+            int offset = offsetForPoint(ellipsisX, ax) - 1;
+            if (offset <= m_start) {
+                // No characters should be rendered.  Set ourselves to full truncation and place the ellipsis at the min of our start
+                // and the ellipsis edge.
+                m_truncation = cFullTruncation;
+                return kMin(ellipsisX, (int)m_x);
+            }
+
+            // Set the truncation index on the text run.  The ellipsis needs to be placed just after the last visible character.
+            m_truncation = offset;
+            return widthFromStart(offset - m_start);
+        }
+    }
+    else {
+        // FIXME: Support RTL truncation someday, including both modes (when the leftmost run on the line is either RTL or LTR)
+    }
+    return -1;
 }
 
 // -----------------------------------------------------------------------------

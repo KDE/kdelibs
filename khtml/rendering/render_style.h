@@ -916,7 +916,10 @@ protected:
                 unsigned _pseudoBits : 8;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 16;
+                // non CSS2 non-inherited
+                bool _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
+
+                unsigned int unused : 15;
             } f;
             Q_UINT64 _niflags;
         };
@@ -983,6 +986,7 @@ protected:
 	noninherited_flags.f._hasClip = false;
         noninherited_flags.f._pseudoBits = 0;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
+	noninherited_flags.f._textOverflow = initialTextOverflow();
         noninherited_flags.f.unused = 0;
     }
 
@@ -1194,6 +1198,7 @@ public:
     int marqueeLoopCount() { return css3NonInheritedData->marquee->loops; }
     EMarqueeBehavior marqueeBehavior() { return css3NonInheritedData->marquee->behavior; }
     EMarqueeDirection marqueeDirection() { return css3NonInheritedData->marquee->direction; }
+    bool textOverflow() const { return noninherited_flags.f._textOverflow; }
     // End CSS3 Getters
 
 // attribute setter methods
@@ -1344,6 +1349,7 @@ public:
     void setMarqueeDirection(EMarqueeDirection d) { SET_VAR(css3NonInheritedData.access()->marquee, direction, d); }
     void setMarqueeBehavior(EMarqueeBehavior b) { SET_VAR(css3NonInheritedData.access()->marquee, behavior, b); }
     void setMarqueeLoopCount(int i) { SET_VAR(css3NonInheritedData.access()->marquee, loops, i); }
+    void setTextOverflow(bool b) { noninherited_flags.f._textOverflow = b; }
     // End CSS3 Setters
 
     QPalette palette() const { return visual->palette; }
@@ -1455,6 +1461,7 @@ public:
     static Length initialMarqueeIncrement() { return Length(6, Fixed); }
     static EMarqueeBehavior initialMarqueeBehavior() { return MSCROLL; }
     static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
+    static bool initialTextOverflow() { return false; }
 };
 
 class RenderPageStyle {

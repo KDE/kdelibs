@@ -104,6 +104,7 @@ table-layout
 text-align
 text-decoration
 text-indent
+text-overflow
 text-shadow
 text-transform
 top

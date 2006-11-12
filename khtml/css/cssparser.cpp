@@ -972,6 +972,10 @@ bool CSSParser::parseValue( int propId, bool important )
         else
             valid_primitive = validUnit(value, FTime|FInteger|FNonNeg, strict&(!nonCSSHint));
         break;
+    case CSS_PROP_TEXT_OVERFLOW: // clip | ellipsis
+        if (id == CSS_VAL_CLIP || id == CSS_VAL_ELLIPSIS)
+            valid_primitive = true;
+        break;
     // End of CSS3 properties
 
         /* shorthand properties */

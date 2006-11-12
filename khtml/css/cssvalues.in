@@ -386,6 +386,10 @@ alternate
 unfurl
 
 #
+# CSS_PROP_TEXT_OVERFLOW
+#
+clip
+ellipsis
 
 #
 # CSS_PROP_BACKGROUND_CLIP/ORIGIN

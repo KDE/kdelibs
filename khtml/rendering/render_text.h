@@ -39,6 +39,9 @@ class QFontMetrics;
 // Define a constant for soft hyphen's unicode value.
 #define SOFT_HYPHEN 173
 
+const int cNoTruncation = -1;
+const int cFullTruncation = -2;
+
 namespace khtml
 {
     class RenderText;
@@ -50,11 +53,14 @@ public:
     InlineTextBox(RenderObject *obj)
     	:InlineBox(obj),
     	// ### necessary as some codepaths (<br>) do *not* initialize these (LS)
-    	m_start(0), m_len(0), m_reversed(false), m_toAdd(0)
+    	m_start(0), m_len(0), m_truncation(cNoTruncation), m_reversed(false), m_toAdd(0)
     {
     }
 
     void detach(RenderArena* renderArena);
+
+    virtual void clearTruncation() { m_truncation = cNoTruncation; }
+    virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox);
 
     // Overloaded new operator.  Derived classes must override operator new
     // in order to allocate out of the RenderArena.
@@ -122,6 +128,10 @@ public:
 
     int m_start;
     unsigned short m_len;
+
+    int m_truncation; // Where to truncate when text overflow is applied.
+                      // We use special constants to denote no truncation (the whole run paints)
+                      // and full truncation (nothing paints at all).
 
     bool m_reversed : 1;
     unsigned m_toAdd : 14; // for justified text

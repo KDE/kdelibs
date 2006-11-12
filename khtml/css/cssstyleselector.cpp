@@ -3865,6 +3865,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 break;
         }
         break;
+    case CSS_PROP_TEXT_OVERFLOW: {
+        // This property is supported by WinIE, and so we leave off the "-khtml-" in order to
+        // work with WinIE-specific pages that use the property.
+        HANDLE_INHERIT_AND_INITIAL(textOverflow, TextOverflow)
+        if (!primitiveValue || !primitiveValue->getIdent())
+            return;
+        style->setTextOverflow(primitiveValue->getIdent() == CSS_VAL_ELLIPSIS);
+        break;
+    }
     }
     default:
         return;

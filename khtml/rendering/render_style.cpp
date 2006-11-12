@@ -764,7 +764,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
          !(inherited->border_hspacing == other->inherited->border_hspacing) ||
          !(inherited->border_vspacing == other->inherited->border_vspacing) ||
          !(inherited_flags.f._visuallyOrdered == other->inherited_flags.f._visuallyOrdered) ||
-         !(inherited_flags.f._htmlHacks == other->inherited_flags.f._htmlHacks) )
+         !(inherited_flags.f._htmlHacks == other->inherited_flags.f._htmlHacks) ||
+         !(noninherited_flags.f._textOverflow == other->noninherited_flags.f._textOverflow) )
         return CbLayout;
 
     // changes causing Layout changes:

@@ -278,10 +278,12 @@ DOM::DOMString getValueName(unsigned short id) KDE_NO_EXPORT;
 #define CSS_VAL_SLIDE 267
 #define CSS_VAL_ALTERNATE 268
 #define CSS_VAL_UNFURL 269
-#define CSS_VAL_BORDER 270
-#define CSS_VAL_CONTENT 271
-#define CSS_VAL_PADDING 272
+#define CSS_VAL_CLIP 270
+#define CSS_VAL_ELLIPSIS 271
+#define CSS_VAL_BORDER 272
+#define CSS_VAL_CONTENT 273
+#define CSS_VAL_PADDING 274
 
-#define CSS_VAL_TOTAL 273
+#define CSS_VAL_TOTAL 275
 #endif
 

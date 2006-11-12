@@ -1385,6 +1385,14 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
     // Clear out our line boxes.
     deleteInlineBoxes();
 
+    // Text truncation only kicks in if your overflow isn't visible and your
+    // text-overflow-mode isn't clip.
+    bool hasTextOverflow = style()->textOverflow() && hasOverflowClip();
+
+    // Walk all the lines and delete our ellipsis line boxes if they exist.
+    if (hasTextOverflow)
+         deleteEllipsisLineBoxes();
+
     if (firstChild()) {
         // layout replaced elements
         RenderObject *o = first( this, bidi, false );
@@ -1600,6 +1608,11 @@ redo_linebreak:
 
     // See if any lines spill out of the block.  If so, we need to update our overflow width.
     checkLinesForOverflow();
+
+    // See if we have any lines that spill out of our block.  If we do, then we will
+    // possibly need to truncate text.
+    if (hasTextOverflow)
+        checkLinesForTextOverflow();
 
 #if BIDI_DEBUG > 1
     kdDebug(6041) << " ------- bidi end " << this << " -------" << endl;
@@ -2197,6 +2210,42 @@ void RenderBlock::checkLinesForOverflow()
         m_overflowTop = kMin(curr->topOverflow(), m_overflowTop);
 //         m_overflowWidth = max(curr->rightOverflow(), m_overflowWidth);
         m_overflowHeight = kMax(curr->bottomOverflow(), m_overflowHeight);
+    }
+}
+
+void RenderBlock::deleteEllipsisLineBoxes()
+{
+    for (RootInlineBox* curr = firstRootBox(); curr; curr = curr->nextRootBox())
+        curr->clearTruncation();
+}
+
+void RenderBlock::checkLinesForTextOverflow()
+{
+    // Determine the width of the ellipsis using the current font.
+    QChar ellipsis = 0x2026; // FIXME: CSS3 says this is configurable, also need to use 0x002E (FULL STOP) if 0x2026 not renderable
+    static QString ellipsisStr(ellipsis);
+    const Font& firstLineFont = style(true)->htmlFont();
+    const Font& font = style()->htmlFont();
+    int firstLineEllipsisWidth = firstLineFont.width(&ellipsis, 1, 0);
+    int ellipsisWidth = (font == firstLineFont) ? firstLineEllipsisWidth : font.width(&ellipsis, 1, 0);
+
+    // For LTR text truncation, we want to get the right edge of our padding box, and then we want to see
+    // if the right edge of a line box exceeds that.  For RTL, we use the left edge of the padding box and
+    // check the left edge of the line box to see if it is less
+    // Include the scrollbar for overflow blocks, which means we want to use "contentWidth()"
+    bool ltr = style()->direction() == LTR;
+    for (RootInlineBox* curr = firstRootBox(); curr; curr = curr->nextRootBox()) {
+        int blockEdge = ltr ? rightOffset(curr->yPos()) : leftOffset(curr->yPos());
+        int lineBoxEdge = ltr ? curr->xPos() + curr->width() : curr->xPos();
+        if ((ltr && lineBoxEdge > blockEdge) || (!ltr && lineBoxEdge < blockEdge)) {
+            // This line spills out of our box in the appropriate direction.  Now we need to see if the line
+            // can be truncated.  In order for truncation to be possible, the line must have sufficient space to
+            // accommodate our truncation string, and no replaced elements (images, tables) can overlap the ellipsis
+            // space.
+            int width = curr == firstRootBox() ? firstLineEllipsisWidth : ellipsisWidth;
+            if (curr->canAccommodateEllipsis(ltr, blockEdge, lineBoxEdge, width))
+                curr->placeEllipsis(ellipsisStr, ltr, blockEdge, width);
+        }
     }
 }
 
