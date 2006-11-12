@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=ServiceType
-X-KDE-ServiceType=DCOP/Text-to-Speech
-Comment=Text-to-Speech Service with a DCOP interface
-Comment[fr]=Service de synthèse vocale munie d'une interface DCOP
-Comment[x-test]=xxText-to-Speech Service with a DCOP interfacexx
+X-KDE-ServiceType=DBUS/Text-to-Speech
+Comment=Text-to-Speech Service with a D-Bus interface
+Comment[fr]=Service de synthèse vocale munie d'une interface D-Bus
+Comment[x-test]=xxText-to-Speech Service with a D-Bus interfacexx

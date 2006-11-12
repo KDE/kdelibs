@@ -297,7 +297,7 @@
  * use this code.
  *
    @verbatim
-     KTrader::OfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
+     KTrader::OfferList offers = KTrader::self()->query("DBUS/Text-to-Speech", "Name == 'KTTSD'");
      if (offers.count() > 0)
      {
        // KTTSD is installed.
