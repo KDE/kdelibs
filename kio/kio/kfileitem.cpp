@@ -745,6 +745,7 @@ QString KFileItem::getStatusBarInfo()
       text += "  ";
       text += mimeComment();
   }
+  text.replace('\n', " "); // replace any newlines with a space, so the statusbar doesn't get a two-line string which messes the display up, Alex
   return text;
 }
 
