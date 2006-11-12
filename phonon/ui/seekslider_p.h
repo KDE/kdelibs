@@ -44,6 +44,8 @@ class SeekSliderPrivate
 			, iconPixmap( SmallIcon( "player_time", 16, K3Icon::DefaultState ) )
 			, disabledIconPixmap( SmallIcon( "player_time", 16, K3Icon::DisabledState ) )
 		{
+			slider.setPageStep( 5000 ); // 5 sec
+			slider.setSingleStep( 500 ); // 0.5 sec
 		}
 
 		SeekSlider* q_ptr;

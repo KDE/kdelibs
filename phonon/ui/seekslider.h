@@ -45,6 +45,37 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 	 * By default the icon is visible.
 	 */
 	Q_PROPERTY( bool iconVisible READ isIconVisible WRITE setIconVisible )
+
+	/**
+	 * This property holds whether slider tracking is enabled.
+	 *
+	 * If tracking is enabled (the default), the media seeks
+	 * while the slider is being dragged. If tracking is
+	 * disabled, the media seeks only when the user
+	 * releases the slider.
+	 */
+	Q_PROPERTY( bool tracking READ hasTracking WRITE setTracking )
+
+	/**
+	 * This property holds the page step.
+	 *
+	 * The larger of two natural steps that a slider provides and
+	 * typically corresponds to the user pressing PageUp or PageDown.
+	 *
+	 * Defaults to 5 seconds.
+	 */
+	Q_PROPERTY( int pageStep READ pageStep WRITE setPageStep )
+
+	/**
+	 * This property holds the single step.
+	 *
+	 * The smaller of two natural steps that a slider provides and
+	 * typically corresponds to the user pressing an arrow key.
+	 *
+	 * Defaults to 0.5 seconds.
+	 */
+	Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
+
 	public:
 		/**
 		 * Constructs a new seek slider with a \p parent.
@@ -53,6 +84,12 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 		~SeekSlider();
 
 		bool isIconVisible() const;
+		bool hasTracking() const;
+		void setTracking( bool tracking );
+		int pageStep() const;
+		void setPageStep( int milliseconds );
+		int singleStep() const;
+		void setSingleStep( int milliseconds );
 
 	public Q_SLOTS:
 		void setIconVisible( bool );

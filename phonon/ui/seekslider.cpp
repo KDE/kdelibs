@@ -133,6 +133,36 @@ void SeekSlider::mediaDestroyed()
 	d->setEnabled( false );
 }
 
+bool SeekSlider::hasTracking() const
+{
+	return d_ptr->slider.hasTracking();
+}
+
+void SeekSlider::setTracking( bool tracking )
+{
+	d_ptr->slider.setTracking( tracking );
+}
+
+int SeekSlider::pageStep() const
+{
+	return d_ptr->slider.pageStep();
+}
+
+void SeekSlider::setPageStep( int milliseconds )
+{
+	d_ptr->slider.setPageStep( milliseconds );
+}
+
+int SeekSlider::singleStep() const
+{
+	return d_ptr->slider.singleStep();
+}
+
+void SeekSlider::setSingleStep( int milliseconds )
+{
+	d_ptr->slider.setSingleStep( milliseconds );
+}
+
 bool SeekSlider::isIconVisible() const
 {
 	Q_D( const SeekSlider );
