@@ -51,16 +51,39 @@ namespace KJS {
     // RegExp.exec, so it has to store $1 etc.
     // bool test(const UString &s, int i = -1);
     unsigned int subPatterns() const { return nrSubPatterns; }
+    
+    //These methods should be called around the match of the same string..
+    void prepareMatch(const UString &s);
+    void doneMatch();
   private:
     const UString pat;
-    int flgs;
+    int flgs : 8;
     bool m_notEmpty;
     bool valid;
+    
+    // Cached encoding info...
+    char* buffer;
+    int*  originalPos;
+    int   bufferSize;
+
+    void prepareUtf8  (const UString& s);
+    void prepareASCII (const UString& s);
+#ifndef NDEBUG
+    UString originalS; // the original string, used for sanity-checking
+#endif
 
 #ifndef HAVE_PCREPOSIX
     regex_t preg;
 #else
     pcre *pcregex;
+    
+    enum UTF8SupportState {
+      Unknown,
+      Supported,
+      Unsupported
+    };
+    
+    static UTF8SupportState utf8Support;
 #endif
     unsigned int nrSubPatterns;
 

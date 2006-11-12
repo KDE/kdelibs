@@ -120,7 +120,9 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( re, s.value() );
 
+    re->prepareMatch(s.value());
     str = re->match(s.value(), i, 0L, ovector);
+    re->doneMatch();
     regExpObj->setSubPatterns(re->subPatterns());
 
     if (id == Test)

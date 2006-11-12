@@ -294,6 +294,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp(reg, s);
+    reg->prepareMatch(s);
     UString mstr = reg->match(s, -1, &pos, ovector);
     if (id == Search) {
       result = Number(pos);
@@ -316,6 +317,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	result = exec->lexicalInterpreter()->builtinArray().construct(exec, list);
       }
     }
+    reg->doneMatch();
     delete tmpReg;
     break;
   }
@@ -337,13 +339,17 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       else
         u3 = a1.toString(exec); // 2nd arg is the replacement string
 
+      UString out;
+      
       // This is either a loop (if global is set) or a one-way (if not).
+      reg->prepareMatch(s);
       do {
         int **ovector = regExpObj->registerRegexp( reg, s );
         UString mstr = reg->match(s, lastIndex, &pos, ovector);
         regExpObj->setSubPatterns(reg->subPatterns());
         if (pos == -1)
           break;
+          
         len = mstr.size();
 
         UString rstr;
@@ -381,12 +387,27 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
           Object thisObj = exec->interpreter()->globalObject();
           rstr = o1.call( exec, thisObj, l ).toString(exec);
         }
-        lastIndex = pos + rstr.size();
-        s = s.substr(0, pos) + rstr + s.substr(pos + len);
-        //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,s=%s\n",pos,len,lastIndex,s.ascii());
+
+        // Append the stuff we skipped over to get to the match --
+        // that would be [lastIndex, pos) of the original..
+        if (pos != lastIndex)
+          out += s.substr(lastIndex, pos - lastIndex);
+
+        // Append the replacement..
+        out += rstr;
+        
+        lastIndex = pos + len; // Skip over the matched stuff...
       } while (global);
 
-      result = String(s);
+      // Append the rest of the string to the output...
+      if (lastIndex == 0 && out.size() == 0) // Don't copy stuff if nothing changed
+        out = s;
+      else
+        out += s.substr(lastIndex, s.size() - lastIndex);
+
+      reg->doneMatch();
+
+      result = String(out);
     } else { // First arg is a string
       u2 = a0.toString(exec);
       pos = s.find(u2);
@@ -433,8 +454,10 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (a0.type() == ObjectType && Object::dynamicCast(a0).inherits(&RegExpImp::info)) {
       Object obj0 = Object::dynamicCast(a0);
       RegExp reg(obj0.get(exec,"source").toString(exec));
+      reg.prepareMatch(s);
       if (s.isEmpty() && !reg.match(s, 0).isNull()) {
 	// empty string matched by regexp -> empty array
+        reg.doneMatch();
 	res.put(exec, lengthPropertyName, Number(0), DontDelete|ReadOnly|DontEnum);
 	break;
       }
@@ -454,6 +477,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
+      reg.doneMatch();
     } else {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {
