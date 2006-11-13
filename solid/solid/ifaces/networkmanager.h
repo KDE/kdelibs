@@ -94,7 +94,7 @@ namespace Ifaces
         /**
          * Activates or deactivates networking (as a whole).
          *
-         * @param true to activate networking, false otherwise
+         * @param enabled true to activate networking, false otherwise
          */
         virtual void setNetworkingEnabled( bool enabled ) = 0;
 
