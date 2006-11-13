@@ -46,7 +46,7 @@ bool KPDriverPage::isValid(QString& msg)
 	if (m_view->hasConflict())
 	{
 		msg = i18n("<qt>Some options selected are in conflict. You must resolve those conflicts "
- 			   "before continuing. See <b>Advanced</b> tab for detailed information.</qt>");
+ 			   "before continuing. See <b>Driver Settings</b> tab for detailed information.</qt>");
 		return false;
 	}
 	return true;
