@@ -30,12 +30,12 @@ FakeBlock::~FakeBlock()
 
 }
 
-int FakeBlock::major() const
+int FakeBlock::deviceMajor() const
 {
     return fakeDevice()->property("major").toInt();
 }
 
-int FakeBlock::minor() const
+int FakeBlock::deviceMinor() const
 {
     return fakeDevice()->property("minor").toInt();
 }

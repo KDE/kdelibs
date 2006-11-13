@@ -31,14 +31,14 @@ Solid::Block::~Block()
 {
 }
 
-int Solid::Block::major() const
+int Solid::Block::deviceMajor() const
 {
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, major() );
+    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, deviceMajor() );
 }
 
-int Solid::Block::minor() const
+int Solid::Block::deviceMinor() const
 {
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, minor() );
+    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, deviceMinor() );
 }
 
 QString Solid::Block::device() const

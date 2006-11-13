@@ -49,8 +49,7 @@ namespace Ifaces
          *
          * @return the device major number
          */
-	//FIXME: rename this method
-        virtual int major() const = 0;
+        virtual int deviceMajor() const = 0;
 
         /**
          * Retrieves the minor number of the node file to interact with
@@ -58,8 +57,7 @@ namespace Ifaces
          *
          * @return the device minor number
          */
-	//FIXME: rename this method
-        virtual int minor() const = 0;
+        virtual int deviceMinor() const = 0;
 
         /**
          * Retrieves the absolute path of the special file to interact

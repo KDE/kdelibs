@@ -36,8 +36,8 @@ namespace Solid
     class SOLID_EXPORT Block : public Capability
     {
         Q_OBJECT
-        Q_PROPERTY( int major READ major )
-        Q_PROPERTY( int minor READ minor )
+        Q_PROPERTY( int major READ deviceMajor )
+        Q_PROPERTY( int minor READ deviceMinor )
         Q_PROPERTY( QString device READ device )
 
     public:
@@ -72,8 +72,7 @@ namespace Solid
          *
          * @return the device major number
          */
-	//FIXME: rename this method
-        int major() const;
+        int deviceMajor() const;
 
         /**
          * Retrieves the minor number of the node file to interact with
@@ -81,8 +80,7 @@ namespace Solid
          *
          * @return the device minor number
          */
-	//FIXME: rename this method
-        int minor() const;
+        int deviceMinor() const;
 
         /**
          * Retrieves the absolute path of the special file to interact
