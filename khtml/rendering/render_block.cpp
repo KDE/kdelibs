@@ -694,7 +694,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
             m_layer->showScrollbar( Qt::Horizontal, true );
         if (style()->overflowY() == OSCROLL)
             m_layer->showScrollbar( Qt::Vertical, true );
-        }
+    }
 
     setContainsPageBreak(false);
 
