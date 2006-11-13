@@ -213,7 +213,7 @@ short RenderBox::contentWidth() const
     short w = m_width - style()->borderLeftWidth() - style()->borderRightWidth();
     w -= paddingLeft() + paddingRight();
 
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && scrollsOverflowY())
         w -= m_layer->verticalScrollbarWidth();
 
     //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
@@ -225,7 +225,7 @@ int RenderBox::contentHeight() const
     int h = m_height - style()->borderTopWidth() - style()->borderBottomWidth();
     h -= paddingTop() + paddingBottom();
 
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && scrollsOverflowX())
         h -= m_layer->horizontalScrollbarHeight();
 
     return h;
@@ -1051,14 +1051,14 @@ void RenderBox::calcHeight()
             height = calcBoxHeight(h.value());
         }
 
-        if (height<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
+        if (height<m_height && !overhangingContents() && !style()->hidesOverflow())
             setOverhangingContents();
 
         m_height = height;
     }
 
     // Unfurling marquees override with the furled height.
-    if (style()->overflow() == OMARQUEE && m_layer && m_layer->marquee() &&
+    if (style()->overflowX() == OMARQUEE && m_layer && m_layer->marquee() &&
         m_layer->marquee()->isUnfurlMarquee() && !m_layer->marquee()->isHorizontal()) {
         m_layer->marquee()->setEnd(m_height);
         m_height = kMin(m_height, m_layer->marquee()->unfurlPos());

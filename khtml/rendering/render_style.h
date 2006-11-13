@@ -900,7 +900,8 @@ protected:
             struct {
                 EDisplay _display : 5;
                 EDisplay _originalDisplay: 5;
-                EOverflow _overflow : 4 ;
+                EOverflow _overflowX : 4 ;
+                EOverflow _overflowY : 4 ;
                 EVerticalAlign _vertical_align : 4;
                 EClear _clear : 2;
                 EPosition _position : 2;
@@ -919,7 +920,7 @@ protected:
                 // non CSS2 non-inherited
                 bool _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
 
-                unsigned int unused : 15;
+                unsigned int unused : 11;
             } f;
             Q_UINT64 _niflags;
         };
@@ -973,7 +974,8 @@ protected:
 	                                  // makes use of uninitialised bits according to valgrind
 
         noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
-	noninherited_flags.f._overflow = initialOverflow();
+	noninherited_flags.f._overflowX = initialOverflowX();
+	noninherited_flags.f._overflowY = initialOverflowY();
 	noninherited_flags.f._vertical_align = initialVerticalAlign();
 	noninherited_flags.f._clear = initialClear();
 	noninherited_flags.f._position = initialPosition();
@@ -1084,9 +1086,12 @@ public:
     bool outlineStyleIsAuto() const { return background->m_outline._auto; }
     const QColor &  outlineColor() const {  return background->m_outline.color; }
 
-    EOverflow overflow() const { return  noninherited_flags.f._overflow; }
-    bool hidesOverflow() const { return overflow() != OVISIBLE; }
-    bool scrollsOverflow() const { return overflow() == OSCROLL || overflow() == OAUTO; }
+    EOverflow overflowX() const { return  noninherited_flags.f._overflowX; }
+    EOverflow overflowY() const { return  noninherited_flags.f._overflowY; }
+    bool hidesOverflow() const {
+        // either both overflow are visible or none are
+        return overflowX() != OVISIBLE;
+    }
 
     EVisibility visibility() const { return inherited_flags.f._visibility; }
     EVerticalAlign verticalAlign() const { return  noninherited_flags.f._vertical_align; }
@@ -1249,7 +1254,8 @@ public:
     }
     void setOutlineColor(const QColor & v) {  SET_VAR(background,m_outline.color,v) }
 
-    void setOverflow(EOverflow v) {  noninherited_flags.f._overflow = v; }
+    void setOverflowX(EOverflow v) {  noninherited_flags.f._overflowX = v; }
+    void setOverflowY(EOverflow v) {  noninherited_flags.f._overflowY = v; }
     void setVisibility(EVisibility v) { inherited_flags.f._visibility = v; }
     void setVerticalAlign(EVerticalAlign v) { noninherited_flags.f._vertical_align = v; }
     void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
@@ -1420,7 +1426,8 @@ public:
     static EFloat initialFloating() { return FNONE; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return LDISC; }
-    static EOverflow initialOverflow() { return OVISIBLE; }
+    static EOverflow initialOverflowX() { return OVISIBLE; }
+    static EOverflow initialOverflowY() { return OVISIBLE; }
     static EPageBreak initialPageBreak() { return PBAUTO; }
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }

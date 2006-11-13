@@ -1379,7 +1379,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
 
     m_height = borderTop() + paddingTop();
     int toAdd = borderBottom() + paddingBottom();
-    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
+    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
 
     // Clear out our line boxes.

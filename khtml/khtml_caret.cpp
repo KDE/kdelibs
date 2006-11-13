@@ -167,7 +167,7 @@ static inline bool isIndicatedFlow(RenderObject *r)
 //	|| s->paddingLeft().value() || s->paddingRight().value()
 //	|| s->paddingTop().value() || s->paddingBottom().value()
 //	|| s->marginLeft().value() || s->marginRight().value()
-	|| s->hasClip() || s->overflow() != OVISIBLE
+	|| s->hasClip() || s->hidesOverflow()
 	|| s->backgroundColor().isValid() || s->backgroundImage();
 }
 

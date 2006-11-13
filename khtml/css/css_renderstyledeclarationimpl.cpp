@@ -92,6 +92,8 @@ static const int computedProperties[] = {
     CSS_PROP_ORPHANS,
     CSS_PROP_OUTLINE_STYLE,
     CSS_PROP_OVERFLOW,
+    CSS_PROP_OVERFLOW_X,
+    CSS_PROP_OVERFLOW_Y,
     CSS_PROP_PADDING_TOP,
     CSS_PROP_PADDING_RIGHT,
     CSS_PROP_PADDING_BOTTOM,
@@ -776,8 +778,20 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_OUTLINE_WIDTH:
         break;
     case CSS_PROP_OVERFLOW:
-    {
-        switch (style->overflow()) {
+    case CSS_PROP_OVERFLOW_X:
+    case CSS_PROP_OVERFLOW_Y: {
+        EOverflow overflow;
+        switch (propertyID) {
+        case CSS_PROP_OVERFLOW_X:
+            overflow = style->overflowX();
+            break;
+        case CSS_PROP_OVERFLOW_Y:
+            overflow = style->overflowY();
+            break;
+        default:
+            overflow = kMax(style->overflowX(), style->overflowY());
+        }
+        switch (overflow) {
         case OVISIBLE:
             return new CSSPrimitiveValueImpl(CSS_VAL_VISIBLE);
         case OHIDDEN:

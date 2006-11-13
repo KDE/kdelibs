@@ -1,3 +1,17 @@
+2006-11-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement overflow-x and overflow-y
+
+        * css/*.*: New properties
+        * rendering/render_style.{h,cpp}: New properties
+        * rendering/render_object.h: New functions scrollsOverflowX() and scrollsOverflowY
+        * rendering/render_layer.h: Remove depricated function moveScrollbarsAside()
+        * rendering/render_layer.cpp: More fine grained creation of scrollbars
+        * khtmlview.cpp: More fine grained creation of scrollbars
+        * rendering/render_block.cpp: Use new functions
+        * rendering/render_box.cpp: Use new functions
+        * rendering/bidi.cpp: Use new functions
+
 2006-11-13  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge text-overflow:ellipis from WebCore

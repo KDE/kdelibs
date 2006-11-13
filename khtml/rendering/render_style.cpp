@@ -812,6 +812,11 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	)
         return Layout;
 
+    // Overflow returns a layout hint.
+    if (noninherited_flags.f._overflowX != other->noninherited_flags.f._overflowX ||
+        noninherited_flags.f._overflowY != other->noninherited_flags.f._overflowY)
+        return Layout;
+
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
@@ -832,12 +837,10 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     // Visible:
 // 	EVisibility _visibility : 2;
-//     EOverflow _overflow : 4 ;
 // 	int _text_decorations : 4;
 //     DataRef<StyleBackgroundData> background;
     if (inherited->color != other->inherited->color ||
         !(inherited_flags.f._visibility == other->inherited_flags.f._visibility) ||
-        !(noninherited_flags.f._overflow == other->noninherited_flags.f._overflow) ||
         !(inherited_flags.f._text_decorations == other->inherited_flags.f._text_decorations) ||
         !(noninherited_flags.f._hasClip == other->noninherited_flags.f._hasClip) ||
         visual->textDecoration != other->visual->textDecoration ||

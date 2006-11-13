@@ -659,14 +659,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-	if (w && rw && !rw->isKHTMLWidget()) { 
+	if (w && rw && !rw->isKHTMLWidget()) {
             int x, y;
             rw->absolutePosition(x, y);
             contentsToViewport(x, y, x, y);
             int pbx = rw->borderLeft()+rw->paddingLeft();
             int pby = rw->borderTop()+rw->paddingTop();
-            QRect g = QRect(x+pbx, y+pby, 
-                            rw->width()-pbx-rw->borderRight()-rw->paddingRight(), 
+            QRect g = QRect(x+pbx, y+pby,
+                            rw->width()-pbx-rw->borderRight()-rw->paddingRight(),
                             rw->height()-pby-rw->borderBottom()-rw->paddingBottom());
             if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
                                     (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
@@ -783,7 +783,7 @@ void KHTMLView::layout()
 
         d->layoutSchedulingEnabled=false;
 
-        // the reference object for the overflow property on canvas 
+        // the reference object for the overflow property on canvas
         RenderObject * ref = 0;
         RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
 
@@ -802,21 +802,22 @@ void KHTMLView::layout()
                  if (!d->tooltip)
                      d->tooltip = new KHTMLToolTip( this, d );
                  // only apply body's overflow to canvas if root as a visible overflow
-                 if (root) 
+                 if (root)
                      ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
              }
         } else {
             ref = root;
         }
-        
+
         if (ref) {
-            if( ref->style()->overflow() == OHIDDEN ) {
-                if (d->vmode == Auto) QScrollView::setVScrollBarMode(AlwaysOff);
+            if( ref->style()->overflowX() == OHIDDEN )
                 if (d->hmode == Auto) QScrollView::setHScrollBarMode(AlwaysOff);
-            } else {
-                if (QScrollView::vScrollBarMode() == AlwaysOff) QScrollView::setVScrollBarMode(d->vmode);
+            else
                 if (QScrollView::hScrollBarMode() == AlwaysOff) QScrollView::setHScrollBarMode(d->hmode);
-            }            
+            if ( ref->style()->overflowY() == OHIDDEN )
+                if (d->vmode == Auto) QScrollView::setVScrollBarMode(AlwaysOff);
+            else
+                if (QScrollView::vScrollBarMode() == AlwaysOff) QScrollView::setVScrollBarMode(d->vmode);
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -1674,9 +1675,9 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
-    if (d->accessKeysEnabled) 
+    if (d->accessKeysEnabled)
     {
-        if (d->accessKeysPreActivate && _ke->key() != Key_Control) 
+        if (d->accessKeysPreActivate && _ke->key() != Key_Control)
             d->accessKeysPreActivate=false;
         if (d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
         {
@@ -1687,7 +1688,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
             _ke->accept();
             return;
         }
-	else if (d->accessKeysActivated) 
+	else if (d->accessKeysActivated)
         {
             accessKeysTimeout();
             _ke->accept();
@@ -2031,11 +2032,11 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
-    
-    // See whether we're in the middle of detach. If so, we want to 
-    // clear focus... The document code will be careful to not 
+
+    // See whether we're in the middle of detach. If so, we want to
+    // clear focus... The document code will be careful to not
     // emit events in that case..
-    if (oldFocusNode && oldFocusNode->renderer() && 
+    if (oldFocusNode && oldFocusNode->renderer() &&
         !oldFocusNode->renderer()->parent()) {
         doc->setFocusNode(0);
         return true;
@@ -2649,7 +2650,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             if( !url.isEmpty() && !url.startsWith( "javascript:", false )) {
                 for( QValueList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
-                     ) {                   
+                     ) {
                     if( (*it2).url == url ) {
                         ret[ (*it2).element ] = key;
                         if( it == it2 )
@@ -3343,7 +3344,7 @@ void KHTMLView::slotScrollBarMoved()
         // ensure quick reset of contentsMoving flag
         scheduleRepaint(0, 0, 0, 0);
     }
-    
+
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 }

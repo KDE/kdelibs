@@ -198,7 +198,6 @@ public:
     QScrollBar* verticalScrollbar() { return m_vBar; }
     int verticalScrollbarWidth();
     int horizontalScrollbarHeight();
-    void moveScrollbarsAside();
     void positionScrollbars(const QRect &damageRect);
     void paintScrollbars(RenderObject::PaintInfo& pI);
     void checkScrollbarsAfterLayout();
