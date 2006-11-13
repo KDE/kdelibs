@@ -494,7 +494,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
           if (rend->style()->hidesOverflow())
             rend->layer()->scrollToXOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
-            Q3ScrollView* sview = node.getDocument()->view();
+            KHTMLView* sview = node.getDocument()->view();
             if (sview)
               sview->setContentsPos(value->toInt32(exec), sview->contentsY());
           }
@@ -505,7 +505,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
           if (rend->style()->hidesOverflow())
             rend->layer()->scrollToYOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
-            Q3ScrollView* sview = node.getDocument()->view();
+            KHTMLView* sview = node.getDocument()->view();
             if (sview)
               sview->setContentsPos(sview->contentsX(), value->toInt32(exec));
           }

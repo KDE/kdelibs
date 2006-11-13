@@ -240,7 +240,7 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
     frameBorderSet = false;
     marginWidth = -1;
     marginHeight = -1;
-    scrolling = Q3ScrollView::Auto;
+    scrolling = Qt::ScrollBarAsNeeded;
     noresize = false;
     url = "about:blank";
 }
@@ -282,11 +282,11 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_SCROLLING:
         if( strcasecmp( attr->value(), "auto" ) == 0 )
-            scrolling = Q3ScrollView::Auto;
+            scrolling = Qt::ScrollBarAsNeeded;
         else if( strcasecmp( attr->value(), "yes" ) == 0 )
-            scrolling = Q3ScrollView::AlwaysOn;
+            scrolling = Qt::ScrollBarAlwaysOn;
         else if( strcasecmp( attr->value(), "no" ) == 0 )
-            scrolling = Q3ScrollView::AlwaysOff;
+            scrolling = Qt::ScrollBarAlwaysOff;
         // when attached, has no effect
         break;
     case ATTR_ONLOAD:

@@ -56,7 +56,7 @@ RenderApplet::RenderApplet(HTMLElementImpl *applet, const QMap<QString, QString>
 
     if ( context ) {
         //kDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
-        setQWidget( new KJavaAppletWidget(context, _view->viewport()) );
+        setQWidget( new KJavaAppletWidget(context, _view->widget()) );
         processArguments(args);
     }
 }

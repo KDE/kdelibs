@@ -673,18 +673,15 @@ RenderFrame::RenderFrame( DOM::HTMLFrameElementImpl *frame )
 
 void RenderFrame::slotViewCleared()
 {
-#ifdef __GNUC__
-#warning "Adjust this once we're a QAbstractScrollWidget (and in RenderPartObject)!"
-#endif
-    if(m_widget->inherits("Q3ScrollView")) {
+    if(m_widget->inherits("QScrollArea")) {
 #ifdef DEBUG_LAYOUT
         kDebug(6031) << "frame is a scrollview!" << endl;
 #endif
-        Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
+        QScrollArea *view = static_cast<QScrollArea *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
-	    view->setVScrollBarMode(element()->scrolling );
-	    view->setHScrollBarMode(element()->scrolling );
+	    view->setVerticalScrollBarPolicy(element()->scrolling ); // ?? ###
+	    view->setHorizontalScrollBarPolicy(element()->scrolling );
         if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
             kDebug(6031) << "frame is a KHTMLview!" << endl;
@@ -978,13 +975,13 @@ void RenderPartObject::layout( )
 
 void RenderPartObject::slotViewCleared()
 {
-  if(m_widget->inherits("Q3ScrollView") ) {
+  if(m_widget->inherits("QScrollArea") ) {
 #ifdef DEBUG_LAYOUT
       kDebug(6031) << "iframe is a scrollview!" << endl;
 #endif
-      Q3ScrollView *view = static_cast<Q3ScrollView *>(m_widget);
+      QScrollArea *view = static_cast<QScrollArea *>(m_widget);
       int frameStyle = QFrame::NoFrame;
-      Q3ScrollView::ScrollBarMode scroll = Q3ScrollView::Auto;
+      Qt::ScrollBarPolicy scroll = Qt::ScrollBarAsNeeded;
       int marginw = -1;
       int marginh = -1;
       if ( element()->id() == ID_IFRAME) {
@@ -996,8 +993,8 @@ void RenderPartObject::slotViewCleared()
 	  marginh = frame->marginHeight;
       }
       view->setFrameStyle(frameStyle);
-      view->setVScrollBarMode(scroll );
-      view->setHScrollBarMode(scroll );
+      view->setVerticalScrollBarPolicy(scroll );
+      view->setHorizontalScrollBarPolicy(scroll );
       if(view->inherits("KHTMLView")) {
 #ifdef DEBUG_LAYOUT
           kDebug(6031) << "frame is a KHTMLview!" << endl;

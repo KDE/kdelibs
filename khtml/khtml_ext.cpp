@@ -380,10 +380,10 @@ void KHTMLPartBrowserExtension::print()
 
 void KHTMLPartBrowserExtension::disableScrolling()
 {
-  Q3ScrollView *scrollView = m_part->view();
-  if (scrollView) {
-    scrollView->setVScrollBarMode(Q3ScrollView::AlwaysOff);
-    scrollView->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+  QScrollArea *scrollArea = m_part->view();
+  if (scrollArea) {
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   }
 }
 

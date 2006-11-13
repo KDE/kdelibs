@@ -114,7 +114,7 @@ public:
 
     int marginWidth;
     int marginHeight;
-    Q3ScrollView::ScrollBarMode scrolling;
+    Qt::ScrollBarPolicy scrolling;
 
     bool frameBorder : 1;
     bool frameBorderSet : 1;

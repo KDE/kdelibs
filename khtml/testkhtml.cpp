@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "decoder.h"
 #include "kapplication.h"
+#include "khtmlview.h"
 #include "html_document.h"
 #include "htmltokenizer.h"
 // to be able to delete a static protected member pointer in kbrowser...
@@ -120,7 +121,8 @@ int main(int argc, char *argv[])
 		     doc->widget()->topLevelWidget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
     toplevel->show();
-    ((Q3ScrollView *)doc->widget())->viewport()->show();
+    ((QScrollArea *)doc->widget())->viewport()->show();
+    ((QScrollArea *)doc->widget())->widget()->show();
 
 
     int ret = a.exec();

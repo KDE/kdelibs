@@ -30,11 +30,15 @@
 #include "khtml_part.h"
 #include <kdebug.h>
 #include <kglobal.h>
+#include <QScrollBar>
 
 using namespace khtml;
 
 //#define BOX_DEBUG
 //#define SPEED_DEBUG
+#ifdef SPEED_DEBUG
+  #include <QTime>
+#endif
 
 RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     : RenderBlock(node)
@@ -134,8 +138,6 @@ void RenderCanvas::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-//#define SPEED_DEBUG
-
 void RenderCanvas::layout()
 {
     if (m_pagedMode) {
@@ -212,8 +214,12 @@ void RenderCanvas::updateDocumentSize()
 
         bool vss = !m_view->verticalScrollBar()->isHidden();
         bool hss = !m_view->horizontalScrollBar()->isHidden();
-        QSize s = m_view->viewportSize(m_cachedDocWidth, m_cachedDocHeight);
-
+        QSize s = m_view->maximumViewportSize();
+        if ( m_cachedDocWidth > s.width() )
+            s.setWidth( s.width()-m_view->verticalScrollBar()->sizeHint().width() );
+        if ( m_cachedDocHeight > s.height() )
+            s.setHeight( s.height()-m_view->horizontalScrollBar()->sizeHint().height() );
+   
         // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
         // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
 
@@ -351,10 +357,7 @@ void RenderCanvas::repaintRectangle(int x, int y, int w, int h, Priority p, bool
     if (m_view && ur.intersects(vr)) {
 
         if (p == RealtimePriority)
-	// ### KWQ's updateContents has an additional parameter "now".
-	// It's not clear what the difference between updateContents(...,true)
-	// and repaintContents(...) is. As Qt doesn't have this, I'm leaving it out. (LS)
-            m_view->updateContents(ur/*, true*/);
+            m_view->updateContents(ur);
         else if (p == HighPriority)
             m_view->scheduleRepaint(x, y, w, h, true /*asap*/);
         else
@@ -390,7 +393,7 @@ void RenderCanvas::repaint(Priority p)
             }
 	    // ### same as in repaintRectangle
             m_view->updateContents(m_view->contentsX(), m_view->contentsY(),
-                                   m_view->visibleWidth(), m_view->visibleHeight()/*, true*/);
+                                   m_view->visibleWidth(), m_view->visibleHeight());
         }
         else if (p == HighPriority)
             m_view->scheduleRepaint(m_view->contentsX(), m_view->contentsY(),

@@ -50,7 +50,6 @@
 
 #include "render_object.h"
 
-class QScrollBar;
 //template <class T*> class QVector;
 
 namespace khtml {
@@ -62,6 +61,7 @@ namespace khtml {
     class RenderFrameSet;
     class RenderObject;
     class RenderScrollMediator;
+    class ScrollBarWidget;
 
 class RenderScrollMediator: public QObject
 {
@@ -127,9 +127,7 @@ private:
 class RenderLayer
 {
 public:
-#ifdef APPLE_CHANGES
-    static QScrollBar* gScrollBar;
-#endif
+    static ScrollBarWidget* gScrollBar;
 
     RenderLayer(RenderObject* object);
     ~RenderLayer();
@@ -192,8 +190,8 @@ public:
     void scrollToXOffset(int x) { scrollToOffset(x, m_scrollY); }
     void scrollToYOffset(int y) { scrollToOffset(m_scrollX, y); }
     void showScrollbar(Qt::Orientation, bool);
-    QScrollBar* horizontalScrollbar() { return m_hBar; }
-    QScrollBar* verticalScrollbar() { return m_vBar; }
+    ScrollBarWidget* horizontalScrollbar() { return m_hBar; }
+    ScrollBarWidget* verticalScrollbar() { return m_vBar; }
     int verticalScrollbarWidth();
     int horizontalScrollbarHeight();
     void moveScrollbarsAside();
@@ -310,8 +308,8 @@ protected:
     int m_scrollHeight;
 
     // For layers with overflow, we have a pair of scrollbars.
-    QScrollBar* m_hBar;
-    QScrollBar* m_vBar;
+    ScrollBarWidget* m_hBar;
+    ScrollBarWidget* m_vBar;
     RenderScrollMediator* m_scrollMediator;
 
     // For layers that establish stacking contexts, m_posZOrderList holds a sorted list of all the

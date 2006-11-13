@@ -52,22 +52,20 @@
 #include "render_canvas.h"
 #include "render_arena.h"
 #include "render_replaced.h"
+#include "render_form.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
 #include "html/html_blockimpl.h"
 #include "xml/dom_restyler.h"
 
-#include <qscrollbar.h>
 #include <q3ptrvector.h>
 #include <qstyle.h>
 
 using namespace DOM;
 using namespace khtml;
 
-#ifdef APPLE_CHANGES
-QScrollBar* RenderLayer::gScrollBar = 0;
-#endif
+ScrollBarWidget* RenderLayer::gScrollBar = 0;
 
 #ifndef NDEBUG
 static bool inRenderLayerDetach;
@@ -262,8 +260,8 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
         bool needUpdate = (count || !m_region.isEmpty());
         if (count) {
-            Q3ScrollView* sv = m_object->element()->getDocument()->view();
-            m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());
+            KHTMLView* sa = m_object->element()->getDocument()->view();
+            m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
 
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
@@ -604,13 +602,12 @@ void RenderLayer::updateScrollPositionFromScrollbars()
 void
 RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 {
-    QScrollBar *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
+    ScrollBarWidget *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
 
     if (show && !sb) {
-        Q3ScrollView* scrollView = m_object->element()->getDocument()->view();
-        sb = new QScrollBar(o, scrollView );
-        sb->setObjectName("__khtml");
-        scrollView->addChild(sb, 0, -50000);
+        KHTMLView* view = m_object->element()->getDocument()->view();
+        sb = new ScrollBarWidget(o, view->widget());
+        sb->move(0, -50000);
         sb->setAttribute(Qt::WA_NoSystemBackground);
         sb->show();
         if (!m_scrollMediator)
@@ -656,18 +653,20 @@ int RenderLayer::horizontalScrollbarHeight()
 
 void RenderLayer::moveScrollbarsAside()
 {
-    Q3ScrollView* scrollView = m_object->element()->getDocument()->view();
-  if (m_hBar)
-        scrollView->addChild(m_hBar, 0, -50000);
+    return;
+/*    
+    if (m_hBar)
+        m_hBar->move(0, -50000);
     if (m_vBar)
-        scrollView->addChild(m_vBar, 0, -50000);
+        m_vBar->move(0, -50000);
+*/
 }
 
 void RenderLayer::positionScrollbars(const QRect& absBounds)
 {
 #ifdef APPLE_CHANGES
     if (m_vBar) {
-        scrollView->addChild(m_vBar, absBounds.x()+absBounds.width()-m_object->borderRight()-m_vBar->width(),
+        view->addChild(m_vBar, absBounds.x()+absBounds.width()-m_object->borderRight()-m_vBar->width(),
                      absBounds.y()+m_object->borderTop());
         m_vBar->resize(m_vBar->width(), absBounds.height() -
                        (m_object->borderTop()+m_object->borderBottom()) -
@@ -675,7 +674,7 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     }
 
     if (m_hBar) {
-        scrollView->addChild(m_hBar, absBounds.x()+m_object->borderLeft(),
+        view->addChild(m_hBar, absBounds.x()+m_object->borderLeft(),
                      absBounds.y()+absBounds.height()-m_object->borderBottom()-m_hBar->height());
         m_hBar->resize(absBounds.width() - (m_object->borderLeft()+m_object->borderRight()) -
                        (m_vBar ? m_vBar->width()-1 : 0), m_hBar->height());
@@ -691,12 +690,12 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     if (w <= 0 || h <= 0 || (!m_vBar && !m_hBar))
 	return;
 
-    Q3ScrollView* scrollView = m_object->element()->getDocument()->view();
+    KHTMLView* view = m_object->element()->getDocument()->view();
 
     tx += bl;
     ty += bt;
 
-    QScrollBar *b = m_hBar;
+    ScrollBarWidget *b = m_hBar;
     if (!m_hBar)
 	b = m_vBar;
     int sw = b->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
@@ -704,13 +703,13 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     if (m_vBar) {
 	QRect vBarRect = QRect(tx + w - sw + 1, ty, sw, h - (m_hBar ? sw : 0) + 1);
         m_vBar->resize(vBarRect.width(), vBarRect.height());
-        scrollView->addChild(m_vBar, vBarRect.x(), vBarRect.y());
+        m_vBar->m_kwp->setPos(QPoint(vBarRect.x(), vBarRect.y()));
     }
 
     if (m_hBar) {
 	QRect hBarRect = QRect(tx, ty + h - sw + 1, w - (m_vBar ? sw : 0) + 1, sw);
         m_hBar->resize(hBarRect.width(), hBarRect.height());
-        scrollView->addChild(m_hBar, hBarRect.x(), hBarRect.y());
+        m_hBar->m_kwp->setPos(QPoint(hBarRect.x(), hBarRect.y()));
     }
 #endif
 }
@@ -801,18 +800,14 @@ void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
     if (!m_object->element())
        return;
 
-    Q3ScrollView* scrollView = m_object->element()->getDocument()->view();
+    KHTMLView* view = m_object->element()->getDocument()->view();
     if (m_hBar) {
-	int x = m_hBar->x();
-	int y = m_hBar->y();
-	scrollView->viewportToContents(x, y, x, y);
-	RenderWidget::paintWidget(pI, m_hBar, x, y);
+	QPoint p = m_hBar->m_kwp->absolutePos();
+	RenderWidget::paintWidget(pI, m_hBar, p.x(), p.y());
     }
     if (m_vBar) {
-	int x = m_vBar->x();
-	int y = m_vBar->y();
-	scrollView->viewportToContents(x, y, x, y);
-	RenderWidget::paintWidget(pI, m_vBar, x, y);
+        QPoint p = m_vBar->m_kwp->absolutePos();
+	RenderWidget::paintWidget(pI, m_vBar, p.x(), p.y());
     }
 #endif
 }
@@ -831,7 +826,7 @@ static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipR
 #ifdef APPLE_CHANGES
     p->addClip(clipRect);
 #else
-    p->setClipRegion(clipRect, Qt::IntersectClip);
+    p->setClipRect(clipRect, Qt::IntersectClip);
 #endif
 
 }
@@ -962,10 +957,8 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 
 bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
 {
-#ifdef APPLE_CHANGES
     // Clear our our scrollbar variable
     RenderLayer::gScrollBar = 0;
-#endif
 
     int stx = m_x;
     int sty = m_y;

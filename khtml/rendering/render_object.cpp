@@ -2285,13 +2285,26 @@ void RenderObject::updateWidgetMasks() {
                                   curr->width()-pbx-curr->borderRight()-curr->paddingRight(),
                                   curr->height()-pby-curr->borderBottom()-curr->paddingBottom()));
 #ifdef MASK_DEBUG
-                QMemArray<QRect> ar = r.rects();
-                kdDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
+                QVector<QRect> ar = r.rects();
+                kDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
                 for (int i = 0; i < ar.size() ; ++i) {
-                    kdDebug(6040) << "		" <<  ar[i] << endl;
+                    kDebug(6040) << "		" <<  ar[i] << endl;
                 }
 #endif
                 r.translate(-x,-y);
+
+                // ### Scrollarea's widget doesn't update when mask change. 
+                // Might be a Qt bug. Might be the way we handle updates. Investigate.
+                if (::qobject_cast<QScrollArea*>(w)) {
+                    QScrollArea* sa = static_cast<QScrollArea*>(w);
+                    if (!w->mask().isEmpty()) {
+                      QPoint off( sa->horizontalScrollBar()->value(), 
+                                  sa->verticalScrollBar()->value() );
+                      sa->widget()->update(w->mask().translated(off));
+                      sa->horizontalScrollBar()->update();
+                      sa->verticalScrollBar()->update();
+                    }
+                }
                 w->setMask(r);
             } else {
                 w->clearMask();

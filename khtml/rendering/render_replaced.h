@@ -2,6 +2,7 @@
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 2006 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +27,7 @@
 #include <qobject.h>
 #include <q3scrollview.h>
 #include <QAbstractScrollArea>
+#include <QScrollBar>
 
 class KHTMLView;
 class QWidget;
@@ -111,7 +113,7 @@ public:
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool wantMouseEvents() const { return m_wantMouseEvents; }
-    bool isKHTMLWidget() const { return m_isKHTMLWidget; }
+    bool isOverlaidWidget() const { return m_isOverlaidWidget; }
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -147,7 +149,7 @@ protected:
 
     bool m_resizePending;
     bool m_discardResizes;
-    bool m_isKHTMLWidget;
+    bool m_isOverlaidWidget;
     bool m_needsMask;
 
 private:
@@ -169,14 +171,20 @@ public:
     };
 };
 
-class KHTMLWidget
+class KHTMLWidgetPrivate
 {
 public:
-    KHTMLWidget(): m_rw(0) {}
-    QRect absoluteRect();
+    KHTMLWidgetPrivate(): m_rw(0), m_overlaid(false) {}
+    QPoint absolutePos();
     RenderWidget* renderWidget() const { return m_rw; }
     void setRenderWidget(RenderWidget* rw) { m_rw = rw; }
+    bool isOverlaid() const { return m_overlaid; }
+    void setIsOverlaid( bool b ) { m_overlaid = b; }
+    void setPos( const QPoint& p ) { m_pos = p; }
+private:
+    QPoint m_pos;
     RenderWidget *m_rw;
+    bool m_overlaid;
 };
 
 extern bool allowWidgetPaintEvents;

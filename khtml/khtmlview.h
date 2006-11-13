@@ -5,6 +5,7 @@
              (C) 1998, 1999 Torben Weis (weis@kde.org)
              (C) 1999 Lars Knoll (knoll@kde.org)
              (C) 1999 Antti Koivisto (koivisto@kde.org)
+             (C) 2006 Germain Garand (germain@ebooksfrance.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,7 +27,7 @@
 #define KHTMLVIEW_H
 
 // qt includes and classes
-#include <q3scrollview.h>
+#include <QScrollArea>
 
 #include <kdelibs_export.h>
 
@@ -64,18 +65,30 @@ namespace khtml {
     class CSSStyleSelector;
     class LineEditWidget;
     class CaretBox;
+    class KHTMLWidgetPrivate;
+    class KHTMLWidget
+    {
+    public:
+        KHTMLWidget();
+        ~KHTMLWidget();
+        KHTMLWidgetPrivate* m_kwp;
+    };
     void applyRule(DOM::CSSProperty *prop);
 }
 
 class KHTMLPart;
 class KHTMLViewPrivate;
 
+namespace khtml {
+
+}
+
 /**
- * Renders and displays HTML in a QScrollView.
+ * Renders and displays HTML in a QScrollArea.
  *
  * Suitable for use as an application's main view.
  **/
-class KHTML_EXPORT KHTMLView : public Q3ScrollView
+class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
 {
     Q_OBJECT
 
@@ -103,7 +116,7 @@ public:
     /**
      * Constructs a KHTMLView.
      */
-    KHTMLView( KHTMLPart *part, QWidget *parent, const char *name=0 );
+    KHTMLView( KHTMLPart *part, QWidget *parent );
     virtual ~KHTMLView();
 
     /**
@@ -141,12 +154,12 @@ public:
     /**
      * Sets verticals scrollbar mode. Reimplemented for internal reasons.
      */
-    virtual void setVScrollBarMode ( ScrollBarMode mode );
+    virtual void setVerticalScrollBarPolicy( Qt::ScrollBarPolicy policy );
 
     /**
      * Sets horizontal scrollbar mode. Reimplemented for internal reasons.
      */
-    virtual void setHScrollBarMode ( ScrollBarMode mode );
+    virtual void setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy policy );
 
     /**
      * Prints the HTML document.
@@ -155,15 +168,110 @@ public:
     void print( bool quick = false ); 
 
     /**
-     * ensure the display is up to date
-     */
-    void layout(); // KDE 4.0: make private
-    /**
      * Display all accesskeys in small tooltips
      */
     void displayAccessKeys();
 
+    /**
+     * Returns the contents area's width
+     */
+    int contentsWidth() const;
 
+    /**
+     * Returns the contents area's height
+     */
+    int contentsHeight() const;
+
+    /**
+     * Returns the x coordinate of the contents area point
+     * that is currently located at the top left in the viewport
+     */
+    int contentsX() const;
+
+    /**
+     * Returns the y coordinate of the contents area point
+     * that is currently located at the top left in the viewport
+     */
+    int contentsY() const;
+
+    /**
+     * Returns the width of the viewport
+     */
+    int visibleWidth() const;
+
+    /**
+     * Returns the height of the viewport
+     */
+    int visibleHeight() const;
+    
+    /**
+     *  Place the contents area point x/y
+     *  at the top left of the viewport
+     */
+    void setContentsPos(int x, int y);
+
+    /**
+     * Returns a point translated to viewport coordinates
+     * @param p the contents area point to translate
+     *
+     */
+    QPoint contentsToViewport(const QPoint& p) const;
+
+    /**
+     * Returns a point translated to contents area coordinates
+     * @param p the viewport point to translate
+     *
+     */
+    QPoint viewportToContents(const QPoint& p) const;
+
+    /**
+     * Returns a point translated to contents area coordinates
+     * @param x x coordinate of viewport point to translate
+     * @param y y coordinate of viewport point to translate
+     * @param cx resulting x coordinate 
+     * @param cy resulting y coordinate
+     *
+     */
+    void viewportToContents(int x, int y, int& cx, int& cy) const;
+
+    /**
+     * Returns a point translated to viewport coordinates
+     * @param x x coordinate of contents area point to translate
+     * @param y y coordinate of contents area point to translate
+     * @param cx resulting x coordinate 
+     * @param cy resulting y coordinate
+     *
+     */
+    void contentsToViewport(int x, int y, int& cx, int& cy) const;
+
+    /**
+     * Scrolls the content area by a given amount
+     * @param x x offset
+     * @param y y offset
+     */
+    void scrollBy(int x, int y);
+    
+    /**
+     * Requests an update of the content area
+     * @param r the content area rectangle to update
+     */
+    void updateContents( const QRect& r );
+    void updateContents(int x, int y, int w, int h);
+
+    /**
+     * Requests an immediate repaint of the content area
+     * @param r the content area rectangle to repaint
+     */
+    void repaintContents( const QRect& r );
+    void repaintContents(int x, int y, int w, int h);
+
+public Q_SLOTS:
+    /**
+     * Resize the contents area
+     * @param w the new width
+     * @param h the new height
+     */
+    virtual void resizeContents(int w, int h);
 
 Q_SIGNALS:
     /**
@@ -181,35 +289,39 @@ protected:
     void clear();
 
     virtual bool event ( QEvent * event );
+    virtual void paintEvent( QPaintEvent * );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void showEvent ( QShowEvent * );
     virtual void hideEvent ( QHideEvent *);
     virtual bool focusNextPrevChild( bool next );
-    virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
-    virtual void drawContents( QPainter* );
-    virtual void viewportMousePressEvent( QMouseEvent * );
+    virtual void mousePressEvent( QMouseEvent * );
     virtual void focusInEvent( QFocusEvent * );
     virtual void focusOutEvent( QFocusEvent * );
-    virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
-    virtual void viewportMouseMoveEvent(QMouseEvent *);
-    virtual void viewportMouseReleaseEvent(QMouseEvent *);
-    virtual void viewportResizeEvent(QResizeEvent*);
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void mouseMoveEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
 #ifndef QT_NO_WHEELEVENT
-    virtual void viewportWheelEvent(QWheelEvent*);
+    virtual void wheelEvent(QWheelEvent*);
 #endif
     virtual void dragEnterEvent( QDragEnterEvent* );
     virtual void dropEvent( QDropEvent* );
     virtual void closeEvent ( QCloseEvent * );
+    virtual bool widgetEvent( QEvent * );
+    virtual bool viewportEvent( QEvent * e );
     virtual bool eventFilter(QObject *, QEvent *);
+    virtual void scrollContentsBy( int dx, int dy );
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
-    void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
+    /**
+     * ensure the display is up to date
+     */
+    void layout();
+
 protected Q_SLOTS:
     void slotPaletteChanged();
-    void slotScrollBarMoved();
 
 private Q_SLOTS:
     void tripleClickTimeout();
@@ -234,6 +346,7 @@ private:
 
     void closeChildDialogs();
     bool dialogsAllowed();
+
 
     /**
      * Paints the HTML document to a QPainter.

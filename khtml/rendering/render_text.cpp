@@ -1236,7 +1236,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
 
     if ( f == &style()->htmlFont() && from == 0 && len == str->l )
  	 return m_maxWidth;
-
+    
     int w = f->width(str->s, str->l, from, len );
 
     //kDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;

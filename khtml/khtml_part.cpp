@@ -6454,11 +6454,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           khtml::RenderObject *r = i->renderer();
           if(r)
           {
-            int absx, absy, vx, vy;
+            int absx, absy;
             r->absolutePosition(absx, absy);
-            view()->contentsToViewport( absx, absy, vx, vy );
-
-            int x(_mouse->x() - vx), y(_mouse->y() - vy);
+            int x(_mouse->x() - absx), y(_mouse->y() - absy);
 
             d->m_overURL = url.string() + QString("?%1,%2").arg(x).arg(y);
             d->m_overURLTarget = target.string();

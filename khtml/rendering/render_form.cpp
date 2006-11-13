@@ -145,8 +145,7 @@ short RenderButton::baselinePosition( bool f ) const
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new QCheckBox(view()->viewport());
-    b->setObjectName( "__khtml" );
+    CheckBoxWidget* b = new CheckBoxWidget(view()->widget());
     //b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -193,8 +192,7 @@ void RenderCheckBox::slotStateChanged(int state)
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new QRadioButton(view()->viewport());
-    b->setObjectName( "__khtml" );
+    RadioButtonWidget* b = new RadioButtonWidget(view()->widget());
     b->setMouseTracking(true);
     b->setAutoExclusive(false);
     setQWidget(b);
@@ -240,8 +238,7 @@ void RenderRadioButton::slotToggled(bool activated)
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new QPushButton(view()->viewport());
-    p->setObjectName( "__khtml" );
+    PushButtonWidget* p = new PushButtonWidget(view()->widget());
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -325,7 +322,7 @@ RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
     : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
-    setObjectName( "__khtml" );
+    m_kwp->setIsOverlaid( true );
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
     m_spellAction = KStdAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
@@ -476,7 +473,7 @@ void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
 RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    LineEditWidget *edit = new LineEditWidget(element, view(), view()->viewport());
+    LineEditWidget *edit = new LineEditWidget(element, view(), view()->widget());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
@@ -794,8 +791,7 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KUrlRequester* w = new KUrlRequester( view()->viewport() );
-    w->setObjectName( "__khtml" );
+    FileButtonWidget* w = new FileButtonWidget( view()->widget() );
 
     w->setMode(KFile::File | KFile::ExistingOnly);
     w->completionObject()->setDir(KGlobalSettings::documentPath());
@@ -891,7 +887,7 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent)
 {
-    setObjectName( "__khtml" );
+    m_kwp->setIsOverlaid( true );
     //setAutoMask(true);
     if (view()) view()->installEventFilter(this);
     setMouseTracking(true);
@@ -901,13 +897,13 @@ void ComboBoxWidget::showPopup()
 {
     KComboBox::showPopup();
     QWidget* w = parentWidget();
-    while (w && !qobject_cast<Q3ScrollView*>(w))
+    while (w && !qobject_cast<KHTMLView*>(w))
         w = w->parentWidget();
-    Q3ScrollView* sv = static_cast<Q3ScrollView*>(w);
-    w = sv->viewport();
+    if (!w) return;
+    KHTMLView* sv = static_cast<KHTMLView*>(w);
+    w = sv->widget();
     view()->parentWidget()->setParent( w );
-//    view()->parentWidget()->move( absoluteRect().bottomLeft() );
-    sv->addChild(view()->parentWidget(), absoluteRect().bottomLeft().x(), absoluteRect().bottomLeft().y());
+    view()->parentWidget()->move( m_kwp->absolutePos() + QPoint(0, height()) );
     view()->parentWidget()->raise();
     view()->parentWidget()->show();
 }
@@ -916,7 +912,6 @@ void ComboBoxWidget::hidePopup()
 {
     view()->parentWidget()->setParent( this );
     KComboBox::hidePopup();
-  
 }
 
 
@@ -1261,15 +1256,11 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
     m_optionsChanged = _optionsChanged;
 }
 
-KListBox* RenderSelect::createListBox()
+ListBoxWidget* RenderSelect::createListBox()
 {
-    KListBox *lb = new KListBox(view()->viewport());
-    lb->setObjectName( "__khtml" );
+    ListBoxWidget *lb = new ListBoxWidget(view()->widget());
     lb->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
-    // ### looks broken
-    //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-//     connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 
@@ -1278,7 +1269,7 @@ KListBox* RenderSelect::createListBox()
 
 ComboBoxWidget *RenderSelect::createComboBox()
 {
-    ComboBoxWidget *cb = new ComboBoxWidget(view()->viewport());
+    ComboBoxWidget *cb = new ComboBoxWidget(view()->widget());
     connect(cb, SIGNAL(activated(int)), this, SLOT(slotSelected(int)));
     return cb;
 }
@@ -1321,7 +1312,7 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
-    setObjectName( "__khtml" );
+    m_kwp->setIsOverlaid( true );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setLineWrapMode(QTextEdit::WidgetWidth);
         setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );

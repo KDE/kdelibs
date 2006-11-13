@@ -42,6 +42,7 @@
 #include "rendering/render_canvas.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_replaced.h"
+#include "rendering/render_form.h"
 #include "rendering/render_layer.h"
 #include "rendering/render_line.h"
 #include "rendering/render_table.h"
@@ -93,8 +94,6 @@
 #include <Q3ListBox>
 #include <QAbstractScrollArea>
 
-//#define DEBUG_NO_PAINT_BUFFER
-
 //#define DEBUG_FLICKER
 
 //#define DEBUG_PIXEL
@@ -105,8 +104,6 @@
 #elif defined(Q_WS_WIN)
 #include <Windows.h>
 #endif
-
-#define PAINT_BUFFER_HEIGHT 128
 
 #if 0
 namespace khtml {
@@ -145,11 +142,8 @@ public:
 #endif // KHTML_NO_CARET
         postponed_autorepeat = NULL;
         reset();
-        vmode = Q3ScrollView::Auto;
- 	hmode = Q3ScrollView::Auto;
-        tp=0;
-        paintBuffer=0;
-        vertPaintBuffer=0;
+        vpolicy = Qt::ScrollBarAsNeeded;
+ 	hpolicy = Qt::ScrollBarAsNeeded;
         formCompletions=0;
         prevScrollbarVisible = true;
 
@@ -162,9 +156,6 @@ public:
     ~KHTMLViewPrivate()
     {
         delete formCompletions;
-        delete tp; tp = 0;
-        delete paintBuffer; paintBuffer =0;
-        delete vertPaintBuffer;
         delete postponed_autorepeat;
         if (underMouse)
 	    underMouse->deref();
@@ -198,8 +189,8 @@ public:
 	//off, then chances are they want them turned
 	//off always - even after a reset.
 #else
-        vmode = Q3ScrollView::AlwaysOff;
-        hmode = Q3ScrollView::AlwaysOff;
+        vpolicy = ScrollBarAlwaysOff;
+        hpolicy = ScrollBarAlwaysOff;
 #endif
 #ifdef DEBUG_PIXEL
         timer.start();
@@ -216,6 +207,8 @@ public:
 	clickY = -1;
         prevMouseX = -1;
         prevMouseY = -1;
+        contentsX = 0;
+        contentsY = 0;
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
@@ -311,9 +304,6 @@ public:
     unsigned int repaintbooth;
 #endif
 
-    QPainter *tp;
-    QPixmap  *paintBuffer;
-    QPixmap  *vertPaintBuffer;
     NodeImpl *underMouse;
     NodeImpl *underMouseNonShared;
 
@@ -323,8 +313,8 @@ public:
     bool scrollBarMoved:1;
     bool contentsMoving:1;
 
-    Q3ScrollView::ScrollBarMode vmode;
-    Q3ScrollView::ScrollBarMode hmode;
+    Qt::ScrollBarPolicy vpolicy;
+    Qt::ScrollBarPolicy hpolicy;
     bool prevScrollbarVisible:1;
     bool linkPressed:1;
     bool useSlowRepaints:1;
@@ -339,6 +329,7 @@ public:
     bool isDoubleClick;
 
     int prevMouseX, prevMouseY;
+    int contentsX, contentsY;
     bool scrollingSelf;
     int layoutTimerId;
     QKeyEvent* postponed_autorepeat;
@@ -460,41 +451,26 @@ bool KHTMLView::event( QEvent* e )
         }
         return true;
     }
-    return Q3ScrollView::event(e);
+    return QScrollArea::event(e);
 }
 #endif
 
-KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : Q3ScrollView( parent, name, Qt::WResizeNoErase | Qt::WNoAutoErase ),d(new KHTMLViewPrivate)
+KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
+    : QScrollArea( parent ), d( new KHTMLViewPrivate )
 {
     m_medium = "screen";
 
     m_part = part;
-    Q3ScrollView::setVScrollBarMode(d->vmode);
-    Q3ScrollView::setHScrollBarMode(d->hmode);
+    QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
+    QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
     connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
-    connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
-
-    // initialize QScrollView
-    enableClipper(true);
-    // hack to get unclipped painting on the viewport.
-    static_cast<KHTMLView *>(static_cast<QWidget *>(viewport()))->setAttribute(Qt::WA_PaintUnclipped);
-
-    setResizePolicy(Manual);
-    viewport()->setMouseTracking(true);
-    viewport()->setAttribute(Qt::WA_NoSystemBackground);
-
-    // Should this just be removed??
-    // KImageIO::registerFormats();
-
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
     init();
-
-    viewport()->show();
+    widget()->setMouseTracking(true);
 }
 
 KHTMLView::~KHTMLView()
@@ -502,8 +478,6 @@ KHTMLView::~KHTMLView()
     closeChildDialogs();
     if (m_part)
     {
-        //WABA: Is this Ok? Do I need to deref it as well?
-        //Does this need to be done somewhere else?
         DOM::DocumentImpl *doc = m_part->xmlDocImpl();
         if (doc)
             doc->detach();
@@ -513,11 +487,6 @@ KHTMLView::~KHTMLView()
 
 void KHTMLView::init()
 {
-    if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
-    if(!d->vertPaintBuffer)
-        d->vertPaintBuffer = new QPixmap(10, PAINT_BUFFER_HEIGHT);
-    if(!d->tp) d->tp = new QPainter();
-
     setFocusPolicy(Qt::StrongFocus);
     viewport()->setFocusProxy(this);
 
@@ -529,18 +498,17 @@ void KHTMLView::init()
     installEventFilter(this);
 
     setAcceptDrops(true);
-    QSize s = viewportSize(4095, 4095);
+    if (!widget())
+        setWidget( new QWidget(this) );
+    QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
 }
 
 void KHTMLView::clear()
 {
-    // work around QScrollview's unbelievable bugginess
-    setStaticBackground(true);
 #ifndef KHTML_NO_CARET
     if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
 #endif
-
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     if( d->typeAheadActivated )
         findTimeout();
@@ -554,20 +522,115 @@ void KHTMLView::clear()
     QAbstractEventDispatcher::instance()->unregisterTimers(this);
     emit cleared();
 
-    Q3ScrollView::setHScrollBarMode(d->hmode);
-    Q3ScrollView::setVScrollBarMode(d->vmode);
+    QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
+    QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     verticalScrollBar()->setEnabled( false );
     horizontalScrollBar()->setEnabled( false );
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
 {
-    Q3ScrollView::hideEvent(e);
+    QScrollArea::hideEvent(e);
 }
 
 void KHTMLView::showEvent(QShowEvent* e)
 {
-    Q3ScrollView::showEvent(e);
+    QScrollArea::showEvent(e);
+}
+
+int KHTMLView::contentsWidth() const
+{
+    return widget() ? widget()->width() : 0;
+}
+
+int KHTMLView::contentsHeight() const
+{
+    return widget() ? widget()->height() : 0;
+}
+
+void KHTMLView::resizeContents(int w, int h)
+{
+    if (!widget()) 
+        return;
+    widget()->resize(w, h);
+}
+
+int KHTMLView::contentsX() const
+{
+    return d->contentsX;
+}
+
+int KHTMLView::contentsY() const
+{
+    return d->contentsY;
+}
+
+int KHTMLView::visibleWidth() const
+{
+    return viewport()->width();
+}
+
+int KHTMLView::visibleHeight() const
+{
+    return viewport()->height();
+}
+
+void KHTMLView::setContentsPos( int x, int y)
+{
+   horizontalScrollBar()->setValue( x );
+   verticalScrollBar()->setValue( y );
+}
+
+void KHTMLView::scrollBy(int x, int y)
+{
+   horizontalScrollBar()->setValue( horizontalScrollBar()->value()+x );
+   verticalScrollBar()->setValue( verticalScrollBar()->value()+y );
+}
+
+QPoint KHTMLView::contentsToViewport(const QPoint& p) const
+{
+    return QPoint(p.x()-contentsX(), p.y()-contentsY());
+}
+
+void KHTMLView::contentsToViewport(int x, int y, int& cx, int& cy) const
+{
+    QPoint p(x,y);
+    p = contentsToViewport(p);
+    cx = p.x();
+    cy = p.y();
+}
+
+QPoint KHTMLView::viewportToContents(const QPoint& p) const
+{
+    return QPoint(p.x()+contentsX(), p.y()+contentsY());
+}
+
+void KHTMLView::viewportToContents(int x, int y, int& cx, int& cy) const 
+{ 
+    QPoint p(x,y);
+    p = viewportToContents(p);
+    cx = p.x();
+    cy = p.y();
+}
+
+void KHTMLView::updateContents(int x, int y, int w, int h)
+{
+    widget()->update(x, y, w, h);
+}
+
+void KHTMLView::updateContents( const QRect& r )
+{
+    updateContents( r.x(), r.y(), r.width(), r.height() );
+}
+
+void KHTMLView::repaintContents(int x, int y, int w, int h)
+{
+    widget()->repaint(x, y, w, h);
+}
+
+void KHTMLView::repaintContents( const QRect& r )
+{
+    repaintContents( r.x(), r.y(), r.width(), r.height() );
 }
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
@@ -582,54 +645,36 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
     resizeContents(dw, dh);
 
-    Q3ScrollView::resizeEvent(e);
-
-    if ( m_part && m_part->xmlDocImpl() )
-        m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
-}
-
-void KHTMLView::viewportResizeEvent (QResizeEvent* e)
-{
-    Q3ScrollView::viewportResizeEvent(e);
-
-    //int w = visibleWidth();
-    //int h = visibleHeight();
-
     if (d->layoutSchedulingEnabled)
         layout();
 #ifndef KHTML_NO_CARET
     else {
         hideCaret();
         recalcAndStoreCaretPos();
-	showCaret();
+        showCaret();
     }/*end if*/
 #endif
 
     KApplication::sendPostedEvents(viewport(), QEvent::Paint);
+
+    if ( m_part && m_part->xmlDocImpl() )
+        m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
 }
 
-// this is to get rid of a compiler virtual overload mismatch warning. do not remove
-void KHTMLView::drawContents( QPainter*)
+void KHTMLView::paintEvent( QPaintEvent *e )
 {
-}
+    QPainter p(widget());
 
-void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
-{
-#ifdef DEBUG_PIXEL
+    QRect r = e->rect();
+    if (!r.isValid()) return;
 
-    if ( d->timer.elapsed() > 5000 ) {
-        qDebug( "drawed %d pixels in %d repaints the last %d milliseconds",
-                d->pixelbooth, d->repaintbooth,  d->timer.elapsed() );
-        d->timer.restart();
-        d->pixelbooth = 0;
-        d->repaintbooth = 0;
-    }
-    d->pixelbooth += ew*eh;
-    d->repaintbooth++;
-#endif
-    // kDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+    int ex = r.x();
+    int ey = r.y();
+    int ew = r.width();
+    int eh = r.height();
+    
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
-        p->fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
+        p.fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
         return;
     } else if ( d->complete && static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
         // an external update request happens while we have a layout scheduled
@@ -638,88 +683,31 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
 
     if (d->painting) {
-        kDebug( 6000 ) << "WARNING: drawContents reentered! " << endl;
+        kDebug( 6000 ) << "WARNING: paintEvent reentered! " << endl;
         kDebug( 6000 ) << kBacktrace() << endl;
         return;
     }
     d->painting = true;
 
-    QPoint pt = contentsToViewport(QPoint(ex, ey));
-
-#ifndef DEBUG_NO_PAINT_BUFFER
-
-    if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
-        if ( d->vertPaintBuffer->height() < visibleHeight() )
-        {
-            QPixmap newp( 10, visibleHeight() );
-            QPainter p(&newp);
-            p.drawPixmap(0, 0, *d->vertPaintBuffer, 0, 0, 10, d->vertPaintBuffer->height());
-            *d->vertPaintBuffer = newp;
-        }
-        d->tp->begin(d->vertPaintBuffer);
-        d->tp->translate(-ex, -ey);
-        d->tp->fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
-        m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey, ew, eh));
-        d->tp->end();
-	p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
-    }
-    else {
-        if ( d->paintBuffer->width() < visibleWidth() )
-        {
-            QPixmap newp( visibleWidth(), PAINT_BUFFER_HEIGHT);
-            QPainter p(&newp);
-            p.drawPixmap(0, 0, *d->paintBuffer, 0, 0, d->paintBuffer->width(), qMin( PAINT_BUFFER_HEIGHT, d->paintBuffer->height() ) );
-            *d->paintBuffer = newp;
-        }
-
-        int py=0;
-        while (py < eh) {
-            int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
-            d->tp->begin(d->paintBuffer);
-            d->tp->translate(-ex, -ey-py);
-            d->tp->fillRect(ex, ey+py, ew, ph, palette().brush(QPalette::Active, QPalette::Base));
-            m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey+py, ew, ph));
-            d->tp->end();
-
-	    p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
-            py += PAINT_BUFFER_HEIGHT;
-        }
-    }
-#else // !DEBUG_NO_PAINT_BUFFER
-static int cnt=0;
-	ex = contentsX(); ey = contentsY();
-	ew = visibleWidth(); eh = visibleHeight();
-	QRect pr(ex,ey,ew,eh);
-	kDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
-//	p->setClipRegion(QRect(0,0,ew,eh));
-//        p->translate(-ex, -ey);
-        p->fillRect(ex, ey, ew, eh, palette().active().brush(QPalette::Base));
-        m_part->xmlDocImpl()->renderer()->layer()->paint(p, pr);
-#endif // DEBUG_NO_PAINT_BUFFER
+    m_part->xmlDocImpl()->renderer()->layer()->paint(&p, r);
 
 #ifndef KHTML_NO_CARET
     if (d->m_caretViewContext && d->m_caretViewContext->visible) {
         QRect pos(d->m_caretViewContext->x, d->m_caretViewContext->y,
 		d->m_caretViewContext->width, d->m_caretViewContext->height);
         if (pos.intersects(QRect(ex, ey, ew, eh))) {
-#ifdef __GNUC__
-    #warning "FIXME: What to do instead of restart op here?"
-#endif
-            //p->setRasterOp(XorROP);
-	    p->setPen(Qt::white);
+            p.setCompositionMode(QPainter::CompositionMode_Xor);
+	    p.setPen(Qt::white);
 	    if (pos.width() == 1)
-              p->drawLine(pos.topLeft(), pos.bottomRight());
+              p.drawLine(pos.topLeft(), pos.bottomRight());
 	    else {
-	      p->fillRect(pos, Qt::white);
-	    }/*end if*/
-	}/*end if*/
-    }/*end if*/
+	      p.fillRect(pos, Qt::white);
+	    }
+	}
+    }
 #endif // KHTML_NO_CARET
 
-//    p->setPen(QPen(magenta,0,DashDotDotLine));
-//    p->drawRect(dbg_paint_rect);
-
-    khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
+    khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
     d->painting = false;
@@ -754,15 +742,11 @@ void KHTMLView::layout()
         if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
-                 Q3ScrollView::setVScrollBarMode(AlwaysOff);
-                 Q3ScrollView::setHScrollBarMode(AlwaysOff);
+                 QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                 QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                  body->renderer()->setNeedsLayout(true);
-//                  if (d->tooltip) {
-//                      delete d->tooltip;
-//                      d->tooltip = 0;
-//                  }
              }
-             else if (root) // only apply body's overflow to canvas if root as a visible overflow
+             else if (root) // only apply body's overflow to canvas if root has a visible overflow
                      ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
         } else {
             ref = root;
@@ -770,11 +754,11 @@ void KHTMLView::layout()
 
         if (ref) {
             if( ref->style()->overflow() == OHIDDEN ) {
-                if (d->vmode == Auto) Q3ScrollView::setVScrollBarMode(AlwaysOff);
-                if (d->hmode == Auto) Q3ScrollView::setHScrollBarMode(AlwaysOff);
+                if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             } else {
-                if (Q3ScrollView::vScrollBarMode() == AlwaysOff) Q3ScrollView::setVScrollBarMode(d->vmode);
-                if (Q3ScrollView::hScrollBarMode() == AlwaysOff) Q3ScrollView::setHScrollBarMode(d->hmode);
+                if (QScrollArea::verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
+                if (QScrollArea::horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
             }
         }
         d->needsFullRepaint = d->firstRelayout;
@@ -783,8 +767,7 @@ void KHTMLView::layout()
             _height = visibleHeight();
             _width = visibleWidth();
         }
-        //QTime qt;
-        //qt.start();
+
         canvas->layout();
 
         emit finishedLayout();
@@ -795,11 +778,6 @@ void KHTMLView::layout()
             verticalScrollBar()->setEnabled( true );
             horizontalScrollBar()->setEnabled( true );
         }
-#if 0
-    ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
-    if (listitem) kDebug(6000) << "after layout, before repaint" << endl;
-    if (listitem) dumpLineBoxes(static_cast<RenderFlow *>(listitem->renderer()));
-#endif
 #ifndef KHTML_NO_CARET
         hideCaret();
         if ((m_part->isCaretMode() || m_part->isEditable())
@@ -815,7 +793,6 @@ void KHTMLView::layout()
             emit hideAccessKeys();
             displayAccessKeys();
         }
-        //kDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     }
     else
        _width = visibleWidth();
@@ -860,7 +837,7 @@ bool KHTMLView::dialogsAllowed() {
 void KHTMLView::closeEvent( QCloseEvent* ev )
 {
     closeChildDialogs();
-    Q3ScrollView::closeEvent( ev );
+    QScrollArea::closeEvent( ev );
 }
 
 //
@@ -868,18 +845,19 @@ void KHTMLView::closeEvent( QCloseEvent* ev )
 //
 /////////////////
 
-void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
+void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
 {
     if (!m_part->xmlDocImpl()) return;
     if (d->possibleTripleClick && ( _mouse->button() & Qt::MouseButtonMask ) == Qt::LeftButton)
     {
-        viewportMouseDoubleClickEvent( _mouse ); // it handles triple clicks too
+        mouseDoubleClickEvent( _mouse ); // it handles triple clicks too
         return;
     }
 
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    //kDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()<<"/"<<_mouse->y()<<"), contents=(" << xm << "/" << ym << ")\n";
+    int xm = _mouse->x();
+    int ym = _mouse->y();
+
+    // kDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()-contentsX()<<"/"<<_mouse->y()-contentsY()<<"), contents=(" << xm << "/" << ym << ")\n";
 
     d->isDoubleClick = false;
 
@@ -972,9 +950,9 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
             d->m_mouseScrollIndicator->hide();
     }
 
-	d->clickCount = 1;
-	d->clickX = xm;
-	d->clickY = ym;
+    d->clickCount = 1;
+    d->clickX = xm;
+    d->clickY = ym;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
@@ -992,21 +970,21 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     }
 }
 
-void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
+void KHTMLView::mouseDoubleClickEvent( QMouseEvent *_mouse )
 {
     if(!m_part->xmlDocImpl()) return;
 
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
+    int xm = _mouse->x();
+    int ym = _mouse->y();
 
-    kDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
+    // kDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
     d->isDoubleClick = true;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
+    // We do the same thing as mousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
@@ -1038,7 +1016,7 @@ void KHTMLView::tripleClickTimeout()
     d->clickCount = 0;
 }
 
-void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
+void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( d->m_mouseScrollTimer ) {
         QPoint point = mapFromGlobal( _mouse->globalPos() );
@@ -1065,16 +1043,16 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     if(!m_part->xmlDocImpl()) return;
 
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
+    int xm = _mouse->x();
+    int ym = _mouse->y();
 
     DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseMove );
     // Do not modify :hover/:active state while mouse is pressed.
     m_part->xmlDocImpl()->prepareMouseEvent( _mouse->buttons() /*readonly ?*/, xm, ym, &mev );
 
-//     kDebug(6000) << "mouse move: " << _mouse->pos()
-// 		  << " button " << _mouse->button()
-// 		  << " state " << _mouse->state() << endl;
+    // kDebug(6000) << "mouse move: " << _mouse->pos()
+    //		  << " button " << _mouse->button()
+    // 		  << " state " << _mouse->state() << endl;
 
     DOM::NodeImpl* target = mev.innerNode.handle();
     DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
@@ -1218,11 +1196,13 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 }
 
-void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
+void KHTMLView::mouseReleaseEvent( QMouseEvent * _mouse )
 {
     bool swallowEvent = false;
-    int xm, ym;
-    viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
+
+    int xm = _mouse->x();
+    int ym = _mouse->y();
+
     DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseRelease );
 
     if ( m_part->xmlDocImpl() )
@@ -1432,12 +1412,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         return;
     }
 
-    int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
+    int offs = (viewport()->height() < 30) ? viewport()->height() : 30; // ### ??
     if (_ke->modifiers() & Qt::ShiftModifier)
       switch(_ke->key())
         {
         case Qt::Key_Space:
-            scrollBy( 0, -clipper()->height() + offs );
+            verticalScrollBar()->setValue( verticalScrollBar()->value() -viewport()->height() + offs );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
             break;
@@ -1468,36 +1448,35 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Qt::Key_Down:
         case Qt::Key_J:
             if (!d->scrollTimerId || d->scrollSuspended)
-                scrollBy( 0, 10 );
+                verticalScrollBar()->setValue( verticalScrollBar()->value()+10 );
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
             break;
 
         case Qt::Key_Space:
         case Qt::Key_PageDown:
-            scrollBy( 0, clipper()->height() - offs );
+            verticalScrollBar()->setValue( verticalScrollBar()->value() +viewport()->height() - offs );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
             break;
 
-
         case Qt::Key_Up:
         case Qt::Key_K:
             if (!d->scrollTimerId || d->scrollSuspended)
-                scrollBy( 0, -10 );
+                verticalScrollBar()->setValue( verticalScrollBar()->value()-10 );
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
             break;
 
         case Qt::Key_PageUp:
-            scrollBy( 0, -clipper()->height() + offs );
+            verticalScrollBar()->setValue( verticalScrollBar()->value() -viewport()->height() + offs );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
             break;
         case Qt::Key_Right:
         case Qt::Key_L:
             if (!d->scrollTimerId || d->scrollSuspended)
-                scrollBy( 10, 0 );
+                 horizontalScrollBar()->setValue( horizontalScrollBar()->value()+10 );
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
             break;
@@ -1505,7 +1484,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Qt::Key_Left:
         case Qt::Key_H:
             if (!d->scrollTimerId || d->scrollSuspended)
-                scrollBy( -10, 0 );
+                horizontalScrollBar()->setValue( horizontalScrollBar()->value()-10 );
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
             break;
@@ -1520,12 +1499,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    }
             break;
         case Qt::Key_Home:
-            setContentsPos( 0, 0 );
+            verticalScrollBar()->setValue( 0 );
+            horizontalScrollBar()->setValue( 0 );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
             break;
         case Qt::Key_End:
-            setContentsPos( 0, contentsHeight() - visibleHeight() );
+            verticalScrollBar()->setValue( contentsHeight() - visibleHeight() );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
             break;
@@ -1673,34 +1653,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         return;
     }
 
-    Q3ScrollView::keyReleaseEvent(_ke);
-}
-
-void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent * /*ce*/ )
-{
-// ### what kind of c*** is that ?
-#if 0
-    if (!m_part->xmlDocImpl()) return;
-    int xm = _ce->x();
-    int ym = _ce->y();
-
-    DOM::NodeImpl::MouseEvent mev( _ce->state(), DOM::NodeImpl::MouseMove ); // ### not a mouse event!
-    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, &mev );
-
-    NodeImpl *targetNode = mev.innerNode.handle();
-    if (targetNode && targetNode->renderer() && targetNode->renderer()->isWidget()) {
-        int absx = 0;
-        int absy = 0;
-        targetNode->renderer()->absolutePosition(absx,absy);
-        QPoint pos(xm-absx,ym-absy);
-
-        QWidget *w = static_cast<RenderWidget*>(targetNode->renderer())->widget();
-        QContextMenuEvent cme(_ce->reason(),pos,_ce->globalPos(),_ce->state());
-        setIgnoreEvents(true);
-        QApplication::sendEvent(w,&cme);
-        setIgnoreEvents(false);
-    }
-#endif
+    QScrollArea::keyReleaseEvent(_ke);
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
@@ -1725,7 +1678,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 void KHTMLView::doAutoScroll()
 {
     QPoint pos = QCursor::pos();
-    pos = viewport()->mapFromGlobal( pos );
+    pos = widget()->mapFromGlobal( pos );
 
     int xm, ym;
     viewportToContents(pos.x(), pos.y(), xm, ym);
@@ -1784,15 +1737,38 @@ public:
     }
 };
 
+bool  KHTMLView::viewportEvent ( QEvent * e )
+{
+    switch (e->type()) {
+      // those must not be dispatched to the specialized handlers
+      // as widgetEvent() already took care of that
+      case QEvent::MouseButtonPress:
+      case QEvent::MouseButtonRelease:
+      case QEvent::MouseButtonDblClick:
+      case QEvent::MouseMove:
+      case QEvent::Paint:
+#ifndef QT_NO_WHEELEVENT
+      case QEvent::Wheel:
+#endif
+      case QEvent::ContextMenu:
+      case QEvent::DragEnter:
+      case QEvent::DragMove:
+      case QEvent::DragLeave:
+      case QEvent::Drop:
+        return false;
+      default:
+        break;
+    }
+    return QScrollArea::viewportEvent(e);
+}
+
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::ShortcutOverride ) {
 	QKeyEvent* ke = (QKeyEvent*) e;
-//kDebug(6200) << "QEvent::AccelOverride" << endl;
 	if (m_part->isEditable() || m_part->isCaretMode()
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
-//kDebug(6200) << "editable/navigable" << endl;
 	    if ( (ke->modifiers() & Qt::ControlModifier) || (ke->modifiers() & Qt::ShiftModifier) ) {
 		switch ( ke->key() ) {
 		case Qt::Key_Left:
@@ -1802,7 +1778,6 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		case Qt::Key_Home:
 		case Qt::Key_End:
 		    ke->accept();
-//kDebug(6200) << "eaten" << endl;
 		    return true;
 		default:
 		    break;
@@ -1814,24 +1789,10 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     if ( e->type() == QEvent::Leave && d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
 
-    QWidget *view = viewport();
-
+    QWidget *view = widget();
     if (o == view) {
-	// we need to install an event filter on all children of the viewport to
-	// be able to get correct stacking of children within the document.
-	if(e->type() == QEvent::ChildInserted) {
-	    QObject *c = static_cast<QChildEvent *>(e)->child();
-	    if (c->isWidgetType()) {
-		QWidget *w = static_cast<QWidget *>(c);
-		// don't install the event filter on toplevels
-		if (w->parentWidget() == view) {
-		    if (!strcmp(w->objectName(), "__khtml")) {
-			w->unsetCursor();
-			handleWidget(w, this);
-		    }
-		}
-	    }
-	}
+        if (widgetEvent(e)) 
+            return true;
     } else if (o->isWidgetType()) {
 	QWidget *v = static_cast<QWidget *>(o);
         QWidget *c = v;
@@ -1839,8 +1800,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
             c = v;
 	    v = v->parentWidget();
 	}
-
-	if (v && !strcmp(c->objectName(), "__khtml")) {
+	KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(c);
+	if (v && k && k->m_kwp->isOverlaid()) {
 	    bool block = false;
 	    bool isUpdate = false;
 	    QWidget *w = static_cast<QWidget *>(o);
@@ -1860,24 +1821,16 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    // gets repainted.
 		    block = true;
 		    int x = 0, y = 0;
+                    QWidget *v = w;
+                    while (v && v->parentWidget() != view) {
+                        x += v->x();
+                        y += v->y();
+                        v = v->parentWidget();
+                    }                                                                                                                                    
 		    
-		    if (dynamic_cast<KHTMLWidget*>(c)) {
-		        QRect ar = dynamic_cast<KHTMLWidget*>(c)->absoluteRect();
-		        x = ar.x();
-		        y = ar.y();
-                    }
-		    // ### FIXME: need something more efficient
-		    // ### FIXME: layers scrollbars don't have associated RenderWidget
-                    else
-                    for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
-                        if (c == it.current()) {
-                            RenderWidget*rw=static_cast<RenderWidget*>( it.currentKey() );
-                            rw->absolutePosition(x, y);
-                            x += rw->borderLeft()+rw->paddingLeft();
-                            y += rw->borderTop()+rw->paddingTop();
-                            break;
-                        }
-                    }
+                    QPoint ap = k->m_kwp->absolutePos();
+		    x += ap.x();
+		    y += ap.y();
 
 		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent *>(e)->rect();
                     bool asap = !isUpdate && !d->contentsMoving && (qobject_cast<Q3ScrollView*>(c) || qobject_cast<QAbstractScrollArea*>(c));
@@ -1897,8 +1850,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
                         d->painting = true;
 		        repaintContents(x + pr.x(), y + pr.y(),
-	                                        pr.width(), pr.height()+1, true); // ### investigate that +1 (shows up when
-	                                                                          // updating e.g a textarea's blinking cursor)
+	                                        pr.width(), pr.height()+1); // ### investigate that +1 (shows up when
+	                                                                    // updating e.g a textarea's blinking cursor)
                         d->painting = false;
                     } else if (!d->painting) {
  		        scheduleRepaint(x + pr.x(), y + pr.y(),
@@ -1917,13 +1870,13 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    QMouseEvent me2(me->type(), pt, me->button(), me->buttons(), me->modifiers());
 
 		    if (e->type() == QEvent::MouseMove)
-			viewportMouseMoveEvent(&me2);
+			mouseMoveEvent(&me2);
 		    else if(e->type() == QEvent::MouseButtonPress)
-			viewportMousePressEvent(&me2);
+			mousePressEvent(&me2);
 		    else if(e->type() == QEvent::MouseButtonRelease)
-			viewportMouseReleaseEvent(&me2);
+			mouseReleaseEvent(&me2);
 		    else
-			viewportMouseDoubleClickEvent(&me2);
+			mouseDoubleClickEvent(&me2);
 		    block = true;
                 }
 		break;
@@ -1954,9 +1907,48 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     }
 
 //    kDebug(6000) <<"passing event on to sv event filter object=" << o->className() << " event=" << e->type() << endl;
-    return Q3ScrollView::eventFilter(o, e);
+    return QScrollArea::eventFilter(o, e);
 }
 
+
+bool KHTMLView::widgetEvent(QEvent* e)
+{
+    switch (e->type()) {
+      case QEvent::MouseButtonPress:
+      case QEvent::MouseButtonRelease:
+      case QEvent::MouseButtonDblClick:
+      case QEvent::MouseMove:
+      case QEvent::Paint:
+#ifndef QT_NO_WHEELEVENT
+      case QEvent::Wheel:
+#endif
+      case QEvent::ContextMenu:
+      case QEvent::DragEnter:
+      case QEvent::DragMove:
+      case QEvent::DragLeave:
+      case QEvent::Drop:
+        return QFrame::event(e);
+      case QEvent::ChildInserted: {      
+        // we need to install an event filter on all children of the widget() to
+        // be able to get correct stacking of children within the document.
+        QObject *c = static_cast<QChildEvent *>(e)->child();
+        if (c->isWidgetType()) {
+            QWidget *w = static_cast<QWidget *>(c);
+	    // don't install the event filter on toplevels
+	    if (w->parentWidget() == widget()) {
+	        KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(w);
+	        if (k && k->m_kwp->isOverlaid()) {
+	            w->unsetCursor();
+		    handleWidget(w, this);
+                }
+            }
+        }
+      }
+      default:
+        break;
+    }
+    return false;
+}
 
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
@@ -2013,7 +2005,7 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     int maxx = curWidth-d->borderX;
     int maxy = curHeight-d->borderY;
 
-    int scrollX,scrollY;
+    int scrollX, scrollY;
 
     scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
     scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
@@ -2028,7 +2020,8 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     else if (contentsHeight() - visibleHeight() - contentsY() < scrollY)
 	scrollY = contentsHeight() - visibleHeight() - contentsY();
 
-    scrollBy(scrollX, scrollY);
+    horizontalScrollBar()->setValue( horizontalScrollBar()->value()+scrollX );
+    verticalScrollBar()->setValue( verticalScrollBar()->value()+scrollY ); 
 
     d->scrollingSelf = false;
 
@@ -2228,10 +2221,11 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
 	        lab->setFrameStyle(QFrame::Box | QFrame::Plain);
 	        lab->setMargin(3);
 	        lab->adjustSize();
-	        addChild(lab,
+                lab->setParent( widget() );
+	        lab->move(
                     qMin(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
                     qMin(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
-	        showChild(lab);
+	        lab->show();
                 taken.append( accesskey[ 0 ] );
 	    }
         }
@@ -2950,34 +2944,34 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 void KHTMLView::useSlowRepaints()
 {
     d->useSlowRepaints = true;
-    setStaticBackground(true);
+//    setStaticBackground(true); ### ?? FIXME
 }
 
 
-void KHTMLView::setVScrollBarMode ( ScrollBarMode mode )
+void KHTMLView::setVerticalScrollBarPolicy( Qt::ScrollBarPolicy policy )
 {
 #ifndef KHTML_NO_SCROLLBARS
-    d->vmode = mode;
-    Q3ScrollView::setVScrollBarMode(mode);
+    d->vpolicy = policy;
+    QScrollArea::setVerticalScrollBarPolicy(policy);
 #else
-    Q_UNUSED( mode );
+    Q_UNUSED( policy );
 #endif
 }
 
-void KHTMLView::setHScrollBarMode ( ScrollBarMode mode )
+void KHTMLView::setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy policy )
 {
 #ifndef KHTML_NO_SCROLLBARS
-    d->hmode = mode;
-    Q3ScrollView::setHScrollBarMode(mode);
+    d->hpolicy = policy;
+    QScrollArea::setHorizontalScrollBarPolicy(policy);
 #else
-    Q_UNUSED( mode );
+    Q_UNUSED( policy );
 #endif
 }
 
 void KHTMLView::restoreScrollBar()
 {
     int ow = visibleWidth();
-    Q3ScrollView::setVScrollBarMode(d->vmode);
+    QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     if (visibleWidth() != ow)
         layout();
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
@@ -3078,9 +3072,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	d->underMouseNonShared->ref();
 
     int exceptioncode = 0;
-    int pageX = 0;
-    int pageY = 0;
-    viewportToContents(_mouse->x(), _mouse->y(), pageX, pageY);
+    int pageX = _mouse->x();
+    int pageY = _mouse->y();
     int clientX = pageX - contentsX();
     int clientY = pageY - contentsY();
     int screenX = _mouse->globalX();
@@ -3166,10 +3159,20 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0, _mouse, dblclick );
         me->ref();
-        targetNode->dispatchEvent(me,exceptioncode,true);
-	bool defaultHandled = me->defaultHandled();
-        if (defaultHandled || me->defaultPrevented())
+        if ( RenderLayer::gScrollBar ) {
+            // point is in layer scrollbar
+            // ### temporary. We'll use the dom eventually.
+            KHTMLWidget*w = dynamic_cast<KHTMLWidget*>(RenderLayer::gScrollBar);
+            QPoint p = w->m_kwp->absolutePos();
+            QMouseEvent fw(_mouse->type(), _mouse->pos()-p, _mouse->button(), _mouse->buttons(), _mouse->modifiers());
+            static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(RenderLayer::gScrollBar))->sendEvent(&fw);
             swallowEvent = true;
+        } else {
+            targetNode->dispatchEvent(me,exceptioncode,true);
+	    bool defaultHandled = me->defaultHandled();
+            if (defaultHandled || me->defaultPrevented())
+                swallowEvent = true;
+        }
         me->deref();
 
         if (eventId == EventImpl::MOUSEDOWN_EVENT) {
@@ -3196,7 +3199,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 #ifndef QT_NO_WHEELEVENT
 
-void KHTMLView::viewportWheelEvent(QWheelEvent* e)
+void KHTMLView::wheelEvent(QWheelEvent* e)
 {
     if (d->accessKeysEnabled && d->accessKeysPreActivate) d->accessKeysPreActivate=false;
 
@@ -3227,10 +3230,10 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     else
     {
         d->scrollBarMoved = true;
-        Q3ScrollView::viewportWheelEvent( e );
+        QScrollArea::wheelEvent( e );
 
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->buttons(), e->modifiers() );
-        emit viewportMouseMoveEvent ( tempEvent );
+        emit mouseMoveEvent ( tempEvent );
         delete tempEvent;
     }
 
@@ -3247,7 +3250,7 @@ void KHTMLView::dragEnterEvent( QDragEnterEvent* ev )
     	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
 	return;
     }
-    Q3ScrollView::dragEnterEvent( ev );
+    QScrollArea::dragEnterEvent( ev );
 }
 
 void KHTMLView::dropEvent( QDropEvent *ev )
@@ -3260,7 +3263,7 @@ void KHTMLView::dropEvent( QDropEvent *ev )
     	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
 	return;
     }
-    Q3ScrollView::dropEvent( ev );
+    QScrollArea::dropEvent( ev );
 }
 
 void KHTMLView::focusInEvent( QFocusEvent *e )
@@ -3290,7 +3293,7 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
     }/*end if*/
     showCaret();
 #endif // KHTML_NO_CARET
-    Q3ScrollView::focusInEvent( e );
+    QScrollArea::focusInEvent( e );
 }
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
@@ -3336,10 +3339,10 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
 
-    Q3ScrollView::focusOutEvent( e );
+    QScrollArea::focusOutEvent( e );
 }
 
-void KHTMLView::slotScrollBarMoved()
+void KHTMLView::scrollContentsBy( int dx, int dy ) 
 {
     if ( !d->firstRelayout && !d->complete && m_part->xmlDocImpl() &&
           d->layoutSchedulingEnabled) {
@@ -3359,6 +3362,12 @@ void KHTMLView::slotScrollBarMoved()
     
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
+
+    d->contentsX = QApplication::isRightToLeft() ? 
+                     horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
+    d->contentsY = verticalScrollBar()->value();
+
+    QScrollArea::scrollContentsBy(dx, dy);
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
@@ -3372,25 +3381,25 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
                 if (contentsY() + visibleHeight () >= contentsHeight())
                     d->newScrollTimer(this, 0);
                 else
-                    scrollBy( 0, d->scrollBy );
+                    verticalScrollBar()->setValue( verticalScrollBar()->value() +d->scrollBy );
                 break;
             case KHTMLViewPrivate::ScrollUp:
                 if (contentsY() <= 0)
                     d->newScrollTimer(this, 0);
                 else
-                    scrollBy( 0, -d->scrollBy );
+                    verticalScrollBar()->setValue( verticalScrollBar()->value() -d->scrollBy );
                 break;
             case KHTMLViewPrivate::ScrollRight:
                 if (contentsX() + visibleWidth () >= contentsWidth())
                     d->newScrollTimer(this, 0);
                 else
-                    scrollBy( d->scrollBy, 0 );
+                    horizontalScrollBar()->setValue( horizontalScrollBar()->value() +d->scrollBy );
                 break;
             case KHTMLViewPrivate::ScrollLeft:
                 if (contentsX() <= 0)
                     d->newScrollTimer(this, 0);
                 else
-                    scrollBy( -d->scrollBy, 0 );
+                    horizontalScrollBar()->setValue( horizontalScrollBar()->value() -d->scrollBy );
                 break;
         }
         return;
@@ -3433,7 +3442,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	}
     }
 
-    setStaticBackground(d->useSlowRepaints);
+//    setStaticBackground(d->useSlowRepaints); ?? ### FIXME
 
 //        kDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     if (d->repaintTimerId)
@@ -3484,7 +3493,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
         foreach (RenderWidget* r, toRemove)
             if ( (w = d->visibleWidgets.take(r) ) )
-                addChild(w, 0, -500000);
+                w->move( 0, -500000);
     }
 
     emit repaintAccessKeys();
@@ -3595,7 +3604,8 @@ void KHTMLView::complete( bool pendingAction )
 
 void KHTMLView::slotMouseScrollTimer()
 {
-    scrollBy( d->m_mouseScroll_byX, d->m_mouseScroll_byY );
+     horizontalScrollBar()->setValue( horizontalScrollBar()->value() +d->m_mouseScroll_byX );
+     verticalScrollBar()->setValue( verticalScrollBar()->value() +d->m_mouseScroll_byY); 
 }
 
 #ifndef KHTML_NO_CARET
@@ -4374,9 +4384,9 @@ void KHTMLView::moveCaretByPage(bool next)
 //  kDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
-  int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
+  int offs = (viewport()->height() < 30) ? viewport()->height() : 30;
   // Minimum distance the caret must be moved
-  int mindist = clipper()->height() - offs;
+  int mindist = viewport()->height() - offs;
 
   CaretViewContext *cv = d->caretViewContext();
 //  int y = cv->y;		// we always measure the top border

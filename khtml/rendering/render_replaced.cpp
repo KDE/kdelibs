@@ -142,7 +142,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;
-    m_isKHTMLWidget = false;
+    m_isOverlaidWidget = false;
     m_needsMask = false;
     m_wantMouseEvents = false;
     m_pTarget = 0;
@@ -161,7 +161,6 @@ void RenderWidget::detach()
     if ( m_widget ) {
         if ( m_view ) {
             m_view->setWidgetVisible(this, false);
-            m_view->removeChild( m_widget );
         }
 
         m_widget->removeEventFilter( this );
@@ -199,7 +198,7 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = isKHTMLWidget();
+        m_resizePending = isOverlaidWidget();
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -251,12 +250,16 @@ void RenderWidget::setQWidget(QWidget *widget)
         }
         m_widget = widget;
         if (m_widget) {
+            m_widget->setParent(m_view->widget());
             KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
-            if (k) k->setRenderWidget(this);
+            if (k) {
+                k->m_kwp->setRenderWidget(this);
+                m_isOverlaidWidget = k->m_kwp->isOverlaid();
+            }
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( (m_isKHTMLWidget = (k||!strcmp(m_widget->objectName(), "__khtml"))) && !qobject_cast<QFrame*>(m_widget))
+            if ( m_isOverlaidWidget && !qobject_cast<QFrame*>(m_widget))
                 m_widget->setAttribute( Qt::WA_NoSystemBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
@@ -272,8 +275,10 @@ void RenderWidget::setQWidget(QWidget *widget)
                 setPos(xPos(), -500000);
         }
         m_view->setWidgetVisible(this, false);
-        m_view->addChild( m_widget, 0, -500000);
-        if ( m_widget ) m_widget->hide();
+        if ( m_widget ) {        
+            m_widget->move(0, -500000);
+            m_widget->hide();
+        }
         m_resizePending = false;
     }
 }
@@ -285,7 +290,7 @@ void RenderWidget::layout( )
     if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-        if (!isKHTMLWidget() && !isFrame() && !m_needsMask) {
+        if (!isOverlaidWidget() && !isFrame() && !m_needsMask) {
             m_needsMask = true;
             RenderLayer* rl = enclosingStackingContext();
             RenderLayer* el = enclosingLayer();
@@ -321,7 +326,7 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                if (!isKHTMLWidget()) {
+                if (!isOverlaidWidget()) {
                     QPalette palette;
                     palette.setColor(widget()->backgroundRole(), backgroundColor);
                     widget()->setPalette(palette);
@@ -445,7 +450,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
-    bool khtmlw = isKHTMLWidget();
+    bool khtmlw = isOverlaidWidget();
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
@@ -454,8 +459,8 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         int ch = m_view->visibleHeight();
 
 
-        int childx = m_view->childX( m_widget );
-        int childy = m_view->childY( m_widget );
+        int childx = m_widget->pos().x();
+        int childy = m_widget->pos().y();
 
         int xNew = xPos;
         int yNew = childy;
@@ -481,9 +486,9 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     }
     m_view->setWidgetVisible(this, true);
     if (!khtmlw)
-        m_view->addChild(m_widget, xPos, yPos );
+        m_widget->move( xPos, yPos );
     else
-        m_view->addChild(m_widget, xPos, -500000 +yPos);
+        m_widget->move( xPos, -500000 +yPos);
     m_widget->show();
     if (khtmlw)
         paintWidget(paintInfo, m_widget, xPos, yPos);
@@ -516,12 +521,10 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QMatrix m = p->matrix();
     thePoint = thePoint * m;
     QPaintDevice *d = p->device();
-    p->end();
     QPainter::setRedirected(widget, d, -thePoint);
     QPaintEvent e( r );
     QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
-    p->begin(d);
     p->setMatrix( m );
     
     widget->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible hack - FIXME
@@ -583,7 +586,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         break;
 
     case QEvent::Wheel:
-        if (widget()->parentWidget() == view()->viewport()) {
+        if (widget()->parentWidget() == view()->widget()) {
             // don't allow the widget to react to wheel event unless its
             // currently focused. this avoids accidentally changing a select box
             // or something while wheeling a webpage.
@@ -873,18 +876,24 @@ void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 
 // -----------------------------------------------------------------------------
 
-QRect KHTMLWidget::absoluteRect() 
+QPoint KHTMLWidgetPrivate::absolutePos()
 {
         if (!m_rw)
-            return QRect();
-        int x, y, w, h;
+            return m_pos;
+        int x, y;
         m_rw->absolutePosition(x, y);
         x += m_rw->borderLeft()+m_rw->paddingLeft();
         y += m_rw->borderTop()+m_rw->paddingTop();
-        w = m_rw->width() -m_rw->borderLeft()-m_rw->paddingLeft()-m_rw->borderRight()-m_rw->paddingRight();
-        h = m_rw->height()-m_rw->borderTop()-m_rw->paddingTop()-m_rw->borderBottom()-m_rw->paddingBottom();
-        return QRect( x, y, w, h);
+        return QPoint(x, y);
 }
+
+// -----------------------------------------------------------------------------
+
+KHTMLWidget::KHTMLWidget() 
+    : m_kwp(new KHTMLWidgetPrivate()) {}
+
+KHTMLWidget::~KHTMLWidget() 
+    { delete m_kwp; }
 
 #include "render_replaced.moc"
 

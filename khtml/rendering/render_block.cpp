@@ -2515,9 +2515,7 @@ bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
                        m_layer->verticalScrollbarWidth(),
                        height() + borderTopExtra() + borderBottomExtra()-borderTop()-borderBottom());
         if (vertRect.contains(_x, _y)) {
-#ifdef APPLE_CHANGES
             RenderLayer::gScrollBar = m_layer->verticalScrollbar();
-#endif
             return true;
         }
     }
@@ -2528,9 +2526,7 @@ bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
                         width()-borderLeft()-borderRight(),
                         m_layer->horizontalScrollbarHeight());
         if (horizRect.contains(_x, _y)) {
-#ifdef APPLE_CHANGES
             RenderLayer::gScrollBar = m_layer->horizontalScrollbar();
-#endif
             return true;
         }
     }

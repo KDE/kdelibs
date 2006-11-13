@@ -510,7 +510,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     int clientX = pageX;
     int clientY = pageY;
     if ( getDocument()->view() )
-        getDocument()->view()->viewportToContents( clientX, clientY, pageX, pageY );
+        getDocument()->view()->contentsToViewport( pageX, pageY, pageX, pageY );
 
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
