@@ -525,7 +525,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     
     if ( w != xWidth  || h != xHeight )
     {
-//         kdDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
+//         kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
         QPixmap* oldbg = bg;
         bg = new QPixmap(w, h);
         bg->fill(bgColor);

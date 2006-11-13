@@ -605,8 +605,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         }
         ch = qMin(ch, cliph);
 
-//         kdDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
-//         kdDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")" << endl;
+//         kDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
+//         kDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")" << endl;
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
 

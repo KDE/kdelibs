@@ -87,7 +87,7 @@ void DynamicDomRestyler::restyleDepedent(ElementImpl* dependency, StructuralDepe
 
     for (dependent.first(); dependent.current() ; dependent.next())
     {
-//         kdDebug() << "Restyling dependent" << endl;
+//         kDebug() << "Restyling dependent" << endl;
         dependent.current()->setChanged(true);
     }
 }
@@ -95,10 +95,10 @@ void DynamicDomRestyler::restyleDepedent(ElementImpl* dependency, StructuralDepe
 void DynamicDomRestyler::dumpStats() const
 {
 /*
-    kdDebug() << "Keys in structural dependencies: " << dependency_map[StructuralDependency].size() << endl;
-    kdDebug() << "Keys in attribute dependencies: " << dependency_map[AttributeDependency].size() << endl;
+    kDebug() << "Keys in structural dependencies: " << dependency_map[StructuralDependency].size() << endl;
+    kDebug() << "Keys in attribute dependencies: " << dependency_map[AttributeDependency].size() << endl;
 
-    kdDebug() << "Keys in reverse map: " << reverse_map.size() << endl;
+    kDebug() << "Keys in reverse map: " << reverse_map.size() << endl;
     */
 }
 

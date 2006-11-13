@@ -1393,7 +1393,7 @@ bool RenderObject::attemptDirectLayerTranslation()
         // we'll need a layout.
         setWidth(oldWidth);
         setHeight(oldHeight);
-        // kdDebug() << "Layer translation failed for " << information() << endl;
+        // kDebug() << "Layer translation failed for " << information() << endl;
         return false;
     }
     layer()->updateLayerPosition();

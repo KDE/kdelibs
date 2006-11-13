@@ -198,7 +198,7 @@ void RenderCanvas::layout()
     setNeedsLayout(false);
 
 #ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
+    kDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
 }
 
