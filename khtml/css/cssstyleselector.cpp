@@ -633,8 +633,8 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
                 style->setDisplay(TABLE_CELL);
                 style->setFloating(FNONE);
             }
-//             else if (e->id() == ID_TABLE)
-//                 style->setDisplay(style->isDisplayInlineType() ? INLINE_TABLE : TABLE);
+            else if (e->id() == ID_TABLE)
+                style->setDisplay(style->isDisplayInlineType() ? INLINE_TABLE : TABLE);
         }
 
         // Table headers with a text-align of auto will change the text-align to center.
