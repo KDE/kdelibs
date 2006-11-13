@@ -845,14 +845,11 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         Q_ASSERT(0);
         break;
     case CSS_PROP_PAGE_BREAK_INSIDE:
-        switch (style->pageBreakInside()) {
-        case PBAUTO:
+        if (style->pageBreakInside())
             return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
-        case PBAVOID:
+        else
             return new CSSPrimitiveValueImpl(CSS_VAL_AVOID);
-        case PBALWAYS:
-            break; // not allowed
-        }
+        Q_ASSERT(0);
         break;
     case CSS_PROP_POSITION:
         switch (style->position()) {

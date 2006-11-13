@@ -2511,7 +2511,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_PAGE_BREAK_INSIDE: {
-        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakInside, PageBreakInside, PageBreak)
+        HANDLE_INHERIT_AND_INITIAL(pageBreakInside, PageBreakInside)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_AUTO)
             style->setPageBreakInside(true);
