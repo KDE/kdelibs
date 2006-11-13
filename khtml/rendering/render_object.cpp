@@ -1274,6 +1274,7 @@ void RenderObject::setStyle(RenderStyle *style)
         if ( d >= RenderStyle::Visible && !isText() && m_parent &&
              ( d == RenderStyle::Position ||
                m_style->outlineWidth() > style->outlineWidth() ||
+               (!m_style->hidesOverflow() && style->hidesOverflow()) ||
                ( m_style->hasClip() && !(m_style->clip() == style->clip()) ) ) ) {
             // schedule a repaint with the old style
             if (layer() && !isInlineFlow())
