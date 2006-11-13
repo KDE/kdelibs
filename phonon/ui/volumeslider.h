@@ -26,6 +26,7 @@
 namespace Phonon
 {
 class AudioOutput;
+class VolumeSliderPrivate;
 
 /**
  * \short Widget providing a slider to control the volume of an AudioOutput.
@@ -35,6 +36,7 @@ class AudioOutput;
 class PHONONUI_EXPORT VolumeSlider : public QWidget
 {
 	Q_OBJECT
+    Q_DECLARE_PRIVATE(VolumeSlider)
 	/**
 	 * This property holds the maximum volume that can be set with this slider.
 	 *
@@ -53,6 +55,36 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 	 * The orientation must be Qt::Vertical (the default) or Qt::Horizontal.
 	 */
 	Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+
+    /**
+     * This property holds whether slider tracking is enabled.
+     *
+     * If tracking is enabled (the default), the volume changes
+     * while the slider is being dragged. If tracking is
+     * disabled, the volume changes only when the user
+     * releases the slider.
+     */
+    Q_PROPERTY( bool tracking READ hasTracking WRITE setTracking )
+
+    /**
+     * This property holds the page step.
+     *
+     * The larger of two natural steps that a slider provides and
+     * typically corresponds to the user pressing PageUp or PageDown.
+     *
+     * Defaults to 5 (5% of the voltage).
+     */
+    Q_PROPERTY( int pageStep READ pageStep WRITE setPageStep )
+
+    /**
+     * This property holds the single step.
+     *
+     * The smaller of two natural steps that a slider provides and
+     * typically corresponds to the user pressing an arrow key.
+     *
+     * Defaults to 1 (1% of the voltage).
+     */
+    Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
 	public:
 		/**
 		 * Constructs a new volume slider with a \p parent.
@@ -60,6 +92,12 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 		VolumeSlider( QWidget* parent = 0 );
 		~VolumeSlider();
 
+        bool hasTracking() const;
+        void setTracking( bool tracking );
+        int pageStep() const;
+        void setPageStep( int milliseconds );
+        int singleStep() const;
+        void setSingleStep( int milliseconds );
 		float maximumVolume() const;
 		bool isIconVisible() const;
 		Qt::Orientation orientation() const;
@@ -79,12 +117,11 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 		void sliderChanged( int );
 		void volumeChanged( float );
 
-	private:
-		class Private;
-		Private* d;
+    protected:
+        VolumeSliderPrivate* d_ptr;
 };
 
 } // namespace Phonon
 
-// vim: sw=4 ts=4 tw=80
+// vim: sw=4 tw=80 et
 #endif // PHONON_UI_VOLUMESLIDER_H
