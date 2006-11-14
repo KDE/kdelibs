@@ -37,11 +37,13 @@ RegExp::RegExp(const UString &p, int f)
   : pat(p), flgs(f), m_notEmpty(false), valid(true), buffer(0), originalPos(0)
 {
   // Determine whether libpcre has unicode support if need be..
+#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Unknown) {
     int supported;
     pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
     utf8Support = supported ? Supported : Unsupported;
   }
+#endif
 
   nrSubPatterns = 0; // determined in match() with POSIX regex.
 
