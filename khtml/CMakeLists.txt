@@ -405,7 +405,6 @@ if (BUILD_TESTREGRESSION)
     kde4_add_executable(testregression ${testregression_SRCS})
 
     target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} khtml)
-endif (BUILD_TESTREGRESSION)
 
     ########### next target ###############
 
@@ -423,6 +422,7 @@ endif (BUILD_TESTREGRESSION)
     kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
 
     target_link_libraries(testregressiongui  ${KDE4_KDECORE_LIBS} khtml)
+endif (BUILD_TESTREGRESSION)
 
 endif(KDE4_BUILD_TESTS AND NOT WIN32)
 
