@@ -176,7 +176,7 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
         convertToLayerCoords(rootLayer,x,y);
         QRect cr(x,y,width(),height());
         if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
-             s->scrollsOverflow() || renderer()->isReplaced() ) {
+             renderer()->scrollsOverflow() || renderer()->isReplaced() ) {
             r += cr;
         } else {
             r += renderer()->visibleFlowRegion(x, y);
@@ -535,7 +535,7 @@ void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
 
 void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint)
 {
-    if (renderer()->style()->overflow() != OMARQUEE) {
+    if (renderer()->style()->overflowX() != OMARQUEE) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
 
@@ -651,17 +651,6 @@ int RenderLayer::horizontalScrollbarHeight()
 
 }
 
-void RenderLayer::moveScrollbarsAside()
-{
-    return;
-/*    
-    if (m_hBar)
-        m_hBar->move(0, -50000);
-    if (m_vBar)
-        m_vBar->move(0, -50000);
-*/
-}
-
 void RenderLayer::positionScrollbars(const QRect& absBounds)
 {
 #ifdef APPLE_CHANGES
@@ -719,12 +708,12 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
 
 void RenderLayer::checkScrollbarsAfterLayout()
 {
-    int rightPos = m_object->rightmostPosition(true, false);
-    int bottomPos = m_object->lowestPosition(true, false);
-    
+    int rightPos = m_object->rightmostPosition(true);
+    int bottomPos = m_object->lowestPosition(true);
+
 /*  TODO
-    m_scrollLeft = m_object->leftmostPosition(true, false);
-    m_scrollTop = m_object->highestPosition(true, false);
+    m_scrollLeft = m_object->leftmostPosition(true);
+    m_scrollTop = m_object->highestPosition(true);
 */
 
     int clientWidth = m_object->clientWidth();
@@ -740,21 +729,24 @@ void RenderLayer::checkScrollbarsAfterLayout()
     bool needHorizontalBar = rightPos > width();
     bool needVerticalBar = bottomPos > height();
 
-    bool haveHorizontalBar = m_hBar;
-    bool haveVerticalBar = m_vBar;
+    bool haveHorizontalBar = m_hBar && m_hBar->isEnabled();
+    bool haveVerticalBar = m_vBar && m_vBar->isEnabled();
 
     // overflow:scroll should just enable/disable.
-    if (m_object->style()->overflow() == OSCROLL) {
+    if (m_object->style()->overflowX() == OSCROLL)
         m_hBar->setEnabled(needHorizontalBar);
+    if (m_object->style()->overflowY() == OSCROLL)
         m_vBar->setEnabled(needVerticalBar);
-    }
 
     // overflow:auto may need to lay out again if scrollbars got added/removed.
-    bool scrollbarsChanged = (m_object->style()->overflow() == OAUTO) &&
+    bool scrollbarsChanged = (m_object->style()->overflowX() == OAUTO ||
+                              m_object->style()->overflowY() == OAUTO) &&
         (haveHorizontalBar != needHorizontalBar || haveVerticalBar != needVerticalBar);
     if (scrollbarsChanged) {
-        showScrollbar(Qt::Horizontal, needHorizontalBar);
-        showScrollbar(Qt::Vertical, needVerticalBar);
+        if (m_object->style()->overflowX() == OAUTO)
+            showScrollbar(Qt::Horizontal, needHorizontalBar);
+        if (m_object->style()->overflowY() == OAUTO)
+            showScrollbar(Qt::Vertical, needVerticalBar);
 
         m_object->setNeedsLayout(true);
 	if (m_object->isRenderBlock())
@@ -1454,7 +1446,7 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
 
     if (shouldPaint)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
-        
+
     if (ovfList) {
         for (QVector<RenderLayer*>::iterator it = ovfList->begin(); it != ovfList->end(); ++it)
             writeLayers(ts, rootLayer, *it, paintDirtyRect, indent);
@@ -1497,7 +1489,7 @@ void RenderLayer::styleChanged()
             sc->dirtyZOrderLists();
     }
 
-    if (m_object->style()->overflow() == OMARQUEE && m_object->style()->marqueeBehavior() != MNONE) {
+    if (m_object->style()->overflowX() == OMARQUEE && m_object->style()->marqueeBehavior() != MNONE) {
         if (!m_marquee)
             m_marquee = new Marquee(this);
         m_marquee->updateMarqueeStyle();

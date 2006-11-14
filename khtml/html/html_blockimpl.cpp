@@ -159,7 +159,7 @@ void HTMLPreElementImpl::setWidth( long /*w*/ )
  // WinIE uses 60ms as the minimum delay by default.
 const int defaultMinimumDelay = 60;
 
-HTMLMarqueeElementImpl::HTMLMarqueeElementImpl(DocumentPtr *doc)
+HTMLMarqueeElementImpl::HTMLMarqueeElementImpl(DocumentImpl *doc)
 : HTMLElementImpl(doc),
   m_minimumDelay(defaultMinimumDelay)
 {
@@ -256,7 +256,7 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
 
 // ------------------------------------------------------------------------
 
-HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc, ushort _tagid)
+HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentImpl *doc, ushort _tagid)
     : HTMLDivElementImpl( doc, _tagid )
 {
     transparent = fixed = false;

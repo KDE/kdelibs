@@ -73,6 +73,10 @@ public:
     int borderRight() const;
     int borderTop() const;
     int borderBottom() const;
+    int paddingLeft() const { return collapseBorders() ? 0 : RenderBlock::paddingLeft(); }
+    int paddingRight() const { return collapseBorders() ? 0 : RenderBlock::paddingRight(); }
+    int paddingTop() const { return collapseBorders() ? 0 : RenderBlock::paddingTop(); }
+    int paddingBottom() const { return collapseBorders() ? 0 : RenderBlock::paddingBottom(); }
 
     const QColor &bgColor() const { return style()->backgroundColor(); }
 
@@ -243,6 +247,11 @@ public:
     virtual int rightmostPosition(bool includeOverflowInterior, bool includeSelf) const;
     virtual int leftmostPosition(bool includeOverflowInterior, bool includeSelf) const;
     virtual int highestPosition(bool includeOverflowInterior, bool includeSelf) const;
+
+    int borderLeft() const { return table()->collapseBorders() ? 0 : RenderBox::borderLeft(); }
+    int borderRight() const { return table()->collapseBorders() ? 0 : RenderBox::borderRight(); }
+    int borderTop() const { return table()->collapseBorders() ? 0 : RenderBox::borderTop(); }
+    int borderBottom() const { return table()->collapseBorders() ? 0 : RenderBox::borderBottom(); }
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 

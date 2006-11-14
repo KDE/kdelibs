@@ -36,7 +36,7 @@ namespace DOM {
 class HTMLDivElementImpl : public HTMLGenericElementImpl
 {
 public:
-    HTMLDivElementImpl(DocumentPtr *doc, ushort _tagid)
+    HTMLDivElementImpl(DocumentImpl *doc, ushort _tagid)
         : HTMLGenericElementImpl(doc, _tagid) {}
 
     virtual void parseAttribute(AttributeImpl *token);
@@ -47,7 +47,7 @@ public:
 class HTMLHRElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHRElementImpl(DocumentPtr *doc)
+    HTMLHRElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     virtual NodeImpl::Id id() const;
@@ -60,7 +60,7 @@ public:
 class HTMLPreElementImpl : public HTMLGenericElementImpl
 {
 public:
-    HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid)
+    HTMLPreElementImpl(DocumentImpl *doc, ushort _tagid)
         : HTMLGenericElementImpl(doc, _tagid) {}
 
     long width() const;
@@ -72,7 +72,7 @@ public:
 class HTMLMarqueeElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMarqueeElementImpl(DocumentPtr *doc);
+    HTMLMarqueeElementImpl(DocumentImpl *doc);
 
     virtual NodeImpl::Id id() const;
     virtual void parseAttribute(AttributeImpl *token);
@@ -88,7 +88,7 @@ private:
 class HTMLLayerElementImpl : public HTMLDivElementImpl
 {
 public:
-    HTMLLayerElementImpl( DocumentPtr *doc, ushort _tagid );
+    HTMLLayerElementImpl( DocumentImpl *doc, ushort _tagid );
 
     virtual void parseAttribute(AttributeImpl *);
     virtual NodeImpl *addChild(NodeImpl *child);

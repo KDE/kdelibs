@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
@@ -59,8 +59,8 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(DOM::NodeImpl *node, long offset,
 using namespace DOM;
 using namespace khtml;
 
-NodeImpl::NodeImpl(DocumentPtr *doc)
-    : document(doc),
+NodeImpl::NodeImpl(DocumentImpl *doc)
+    : m_document(doc),
       m_previous(0),
       m_next(0),
       m_render(0),
@@ -82,16 +82,12 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_hasClassList( false ),
       m_hasClass( false )
 {
-    if (document)
-        document->ref();
 }
 
 NodeImpl::~NodeImpl()
 {
     if (m_render)
         detach();
-    if (document)
-        document->deref();
     if (m_previous)
         m_previous->setNextSibling(0);
     if (m_next)
@@ -346,7 +342,7 @@ void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
     evt->setTarget(this);
 
     // Since event handling code could cause this object to be deleted, grab a reference to the view now
-    KHTMLView *view = document->document()->view();
+    KHTMLView *view = getDocument()->view();
 
     dispatchGenericEvent( evt, exceptioncode );
 
@@ -412,7 +408,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     }
 
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
-    DocumentPtr *doc = document;
+    DocumentImpl *doc = m_document.get();
     doc->ref();
 
     // deref all nodes in chain
@@ -441,20 +437,20 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
-    DocumentPtr *doc = document;
+    DocumentImpl *doc = getDocument();
     doc->ref();
     dispatchGenericEvent( evt, exceptioncode );
-    if (!evt->defaultPrevented() && doc->document())
-	doc->document()->defaultEventHandler(evt);
+    if (!evt->defaultPrevented() && doc)
+	doc->defaultEventHandler(evt);
 
-    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped() && doc->document()) {
+    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped() && doc) {
         // For onload events, send them to the enclosing frame only.
         // This is a DOM extension and is independent of bubbling/capturing rules of
         // the DOM.  You send the event only to the enclosing frame.  It does not
         // bubble through the parent document.
-        DOM::ElementImpl* elt = doc->document()->ownerElement();
+        DOM::ElementImpl* elt = doc->ownerElement();
         if (elt && (elt->getDocument()->domain().isNull() ||
-                    elt->getDocument()->domain() == doc->document()->domain())) {
+                    elt->getDocument()->domain() == doc->domain())) {
             // We also do a security check, since we don't want to allow the enclosing
             // iframe to see loads of child documents in other domains.
             evt->setCurrentTarget(elt);
@@ -1943,10 +1939,10 @@ Node NamedNodeMapImpl::removeNamedItemNS( const DOMString &namespaceURI, const D
 
 // ----------------------------------------------------------------------------
 
-GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
+GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentImpl* doc)
     : NamedNodeMapImpl()
 {
-    m_doc = doc->document();
+    m_doc = doc;
     m_contents = new Q3PtrList<NodeImpl>;
 }
 

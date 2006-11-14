@@ -91,18 +91,16 @@ void XMLIncrementalSource::setFinished( bool finished )
     m_finished = finished;
 }
 
-XMLHandler::XMLHandler(DocumentPtr *_doc, KHTMLView *_view)
+XMLHandler::XMLHandler(DocumentImpl *_doc, KHTMLView *_view)
     : errorLine(0)
 {
     m_doc = _doc;
-    if ( m_doc ) m_doc->ref();
     m_view = _view;
-    pushNode( _doc->document() );
+    pushNode( _doc );
 }
 
 XMLHandler::~XMLHandler()
 {
-    if ( m_doc ) m_doc->deref();
 }
 
 void XMLHandler::pushNode( NodeImpl *node )
@@ -176,7 +174,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     else
         // No namespace declared, default to the no namespace
         nsURI = DOMString("");
-    ElementImpl *newElement = m_doc->document()->createElementNS(nsURI,qName);
+    ElementImpl *newElement = m_doc->createElementNS(nsURI,qName);
     if (!newElement)
         return false;
     int i;
@@ -207,7 +205,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
             break;
     }
     if (attached) {
-        if (m_view && !newElement->attached() && !m_doc->document()->hasPendingSheets())
+        if (m_view && !newElement->attached() && !m_doc->hasPendingSheets())
             newElement->attach();
         pushNode( newElement );
         return true;
@@ -245,9 +243,9 @@ bool XMLHandler::startCDATA()
     if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
 
-    NodeImpl *newNode = m_doc->document()->createCDATASection(new DOMStringImpl(""));
+    NodeImpl *newNode = m_doc->createCDATASection(new DOMStringImpl(""));
     if (currentNode()->addChild(newNode)) {
-        if (m_view && !newNode->attached() && !m_doc->document()->hasPendingSheets())
+        if (m_view && !newNode->attached() && !m_doc->hasPendingSheets())
             newNode->attach();
         pushNode( newNode );
         return true;
@@ -291,7 +289,7 @@ bool XMLHandler::comment(const QString & ch)
     if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
-    currentNode()->addChild(m_doc->document()->createComment(new DOMStringImpl(ch.unicode(), ch.length())));
+    currentNode()->addChild(m_doc->createComment(new DOMStringImpl(ch.unicode(), ch.length())));
     return true;
 }
 
@@ -301,7 +299,7 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
         exitText();
     // ### handle exceptions
     ProcessingInstructionImpl *pi =
-        m_doc->document()->createProcessingInstruction(target, new DOMStringImpl(data.unicode(), data.length()));
+        m_doc->createProcessingInstruction(target, new DOMStringImpl(data.unicode(), data.length()));
     currentNode()->addChild(pi);
     pi->checkStyleSheet();
     return true;
@@ -330,7 +328,7 @@ bool XMLHandler::fatalError( const QXmlParseException& exception )
 
 bool XMLHandler::enterText()
 {
-    NodeImpl *newNode = m_doc->document()->createTextNode("");
+    NodeImpl *newNode = m_doc->createTextNode("");
     if (currentNode()->addChild(newNode)) {
         pushNode( newNode );
         return true;
@@ -343,7 +341,7 @@ bool XMLHandler::enterText()
 
 void XMLHandler::exitText()
 {
-    if ( m_view && !currentNode()->attached() && !m_doc->document()->hasPendingSheets() )
+    if ( m_view && !currentNode()->attached() && !m_doc->hasPendingSheets() )
         currentNode()->attach();
     popNode();
 }
@@ -366,9 +364,9 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
 {
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
-    e->addChild(m_doc->document()->createTextNode(new DOMStringImpl(value.unicode(), value.length())));
-     if (m_doc->document()->doctype())
-         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
+    e->addChild(m_doc->createTextNode(new DOMStringImpl(value.unicode(), value.length())));
+     if (m_doc->doctype())
+         static_cast<GenericRONamedNodeMapImpl*>(m_doc->doctype()->entities())->addNode(e);
     return true;
 }
 
@@ -392,11 +390,10 @@ bool XMLHandler::unparsedEntityDecl(const QString &/*name*/, const QString &/*pu
 
 //------------------------------------------------------------------------------
 
-XMLTokenizer::XMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
+XMLTokenizer::XMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     : m_handler(_doc,_view)
 {
     m_doc = _doc;
-    if ( m_doc ) m_doc->ref();
     m_view = _view;
     m_scriptsIt = 0;
     m_cachedScript = 0;
@@ -411,7 +408,6 @@ XMLTokenizer::XMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
 
 XMLTokenizer::~XMLTokenizer()
 {
-    if (m_doc) m_doc->deref();
     if (m_scriptsIt)
         delete m_scriptsIt;
     if (m_cachedScript)
@@ -457,8 +453,8 @@ void XMLTokenizer::finish()
 
         // Clear the document
         int exceptioncode = 0;
-        while (m_doc->document()->hasChildNodes())
-            static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
+        while (m_doc->hasChildNodes())
+            static_cast<NodeImpl*>(m_doc)->removeChild(m_doc->firstChild(),exceptioncode);
 
         QString line, errorLocPtr;
         if ( m_handler.errorLine ) {
@@ -474,7 +470,7 @@ void XMLTokenizer::finish()
         }
 
         // Create elements for display
-        DocumentImpl *doc = m_doc->document();
+        DocumentImpl *doc = m_doc;
         NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html");
         NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body");
         NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
@@ -512,15 +508,15 @@ void XMLTokenizer::finish()
         if ( pre ) pre->close();
         body->close();
 
-        m_doc->document()->recalcStyle( NodeImpl::Inherit );
-        m_doc->document()->updateRendering();
+        m_doc->recalcStyle( NodeImpl::Inherit );
+        m_doc->updateRendering();
 
         end();
     }
     else {
         // Parsing was successful. Now locate all html <script> tags in the document and execute them
         // one by one
-        addScripts(m_doc->document());
+        addScripts(m_doc);
         m_scriptsIt = new Q3PtrListIterator<HTMLScriptElementImpl>(m_scripts);
         executeScripts();
     }
@@ -553,7 +549,7 @@ void XMLTokenizer::executeScripts()
 
         if (!scriptSrc.isEmpty()) {
             // we have a src attribute
-            m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
+            m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);
             if (m_cachedScript) {
                 m_cachedScript->ref(this); // will call executeScripts() again if already cached
@@ -583,7 +579,7 @@ void XMLTokenizer::executeScripts()
 
     // All scripts have finished executing, so calculate the style for the document and close
     // the last element
-    m_doc->document()->updateStyleSelector();
+    m_doc->updateStyleSelector();
 
     // We are now finished parsing
     end();

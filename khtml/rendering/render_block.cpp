@@ -224,7 +224,7 @@ void RenderBlock::updateFirstLetter()
         if(oldText->l >= 1) {
             oldText->ref();
             // begin: we need skip leading whitespace so that RenderBlock::findNextLineBreak
-            // won't think we're continuing from a previous run 
+            // won't think we're continuing from a previous run
             unsigned int begin = 0; // the position that first-letter begins
             unsigned int length = 0; // the position that "the rest" begins
             while ( length < oldText->l && (oldText->s+length)->isSpace() )
@@ -688,16 +688,12 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
             m_maxBottomPosMargin = m_maxBottomNegMargin = 0;
     }
 
-    if (style()->scrollsOverflow() && m_layer) {
+    if (scrollsOverflow() && m_layer) {
         // For overflow:scroll blocks, ensure we have both scrollbars in place always.
-        if (style()->overflow() == OSCROLL) {
+        if (style()->overflowX() == OSCROLL)
             m_layer->showScrollbar( Qt::Horizontal, true );
+        if (style()->overflowY() == OSCROLL)
             m_layer->showScrollbar( Qt::Vertical, true );
-        }
-
-        // Move the scrollbars aside during layout.  The layer will move them back when it
-        // does painting or event handling.
-        m_layer->moveScrollbarsAside();
     }
 
     setContainsPageBreak(false);
@@ -709,7 +705,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     // Expand our intrinsic height to encompass floats.
     int toAdd = borderBottom() + paddingBottom();
-    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
+    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
     if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
         m_overflowHeight = m_height = floatBottom() + toAdd;
@@ -717,14 +713,12 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int oldHeight = m_height;
     calcHeight();
     if (oldHeight != m_height) {
-        // If the block got expanded in size, then increase our overflowheight to match.
-        if (m_overflowHeight > m_height) {
-            if (style()->scrollsOverflow())
-                // overflow-height only includes padding-bottom when it scrolls
-                m_overflowHeight -= borderBottom();
-            else
-                m_overflowHeight -= (borderBottom()+paddingBottom());
+        m_overflowHeight -= toAdd;
+        if (m_layer && scrollsOverflowY()) {
+            // overflow-height only includes padding-bottom when it scrolls
+            m_overflowHeight += paddingBottom();
         }
+        // If the block got expanded in size, then increase our overflowheight to match.
         if (m_overflowHeight < m_height)
             m_overflowHeight = m_height;
     }
@@ -932,7 +926,7 @@ void RenderBlock::adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo&
         RenderObject* compactChild = compactInfo.compact();
         if (compactChild->height() > child->height())
             m_height += compactChild->height() - child->height();
-    } 
+    }
 }
 
 void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo)
@@ -1276,7 +1270,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
         child->setPos(chPos, child->yPos());
     } else {
         int xPos = m_width - borderRight() - paddingRight();
-        if (m_layer && style()->scrollsOverflow())
+        if (m_layer && scrollsOverflowY())
             xPos -= m_layer->verticalScrollbarWidth();
         int chPos = xPos - (child->width() + child->marginRight());
         if (child->flowAroundFloats()) {
@@ -1352,7 +1346,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
     int top = borderTop() + paddingTop();
     int bottom = borderBottom() + paddingBottom();
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
         bottom += m_layer->horizontalScrollbarHeight();
 
     m_height = m_overflowHeight = top;
@@ -1898,7 +1892,6 @@ void RenderBlock::positionNewFloats()
                 _height = o->height() + o->marginTop() + o->marginBottom();
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
-            if (fx<0) fx=0;
             f->left = fx;
             //kDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx << endl;
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
@@ -1923,14 +1916,18 @@ void RenderBlock::positionNewFloats()
                 _height = o->height() + o->marginTop() + o->marginBottom();
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
-            if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
             //kDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 
-        if ( m_layer && style()->hidesOverflow() && (o->xPos()+o->width() > m_overflowWidth) )
-            m_overflowWidth = o->xPos()+o->width();
+        if ( m_layer && style()->hidesOverflow()) {
+            if (o->xPos()+o->width() > m_overflowWidth)
+                m_overflowWidth = o->xPos()+o->width();
+            else
+            if (o->xPos() < m_overflowLeft)
+                m_overflowLeft = o->xPos();
+        }
 
         f->startY = y;
         f->endY = f->startY + _height;
@@ -2012,7 +2009,7 @@ int
 RenderBlock::rightOffset() const
 {
     int right = m_width - borderRight() - paddingRight();
-    if (style()->scrollsOverflow() && m_layer)
+    if (m_layer && scrollsOverflowY())
         right -= m_layer->verticalScrollbarWidth();
     return right;
 }
@@ -2506,7 +2503,7 @@ int RenderBlock::getClearDelta(RenderObject *child)
 
 bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
 {
-    if (!style()->scrollsOverflow() || !m_layer)
+    if (!scrollsOverflow() || !m_layer)
         return false;
 
     if (m_layer->verticalScrollbarWidth()) {
@@ -2581,7 +2578,7 @@ void RenderBlock::calcMinMaxWidth()
          m_minWidth = m_maxWidth;
 
         // A horizontal marquee with inline children has no minimum width.
-        if (style()->overflow() == OMARQUEE && m_layer && m_layer->marquee() &&
+        if (style()->overflowX() == OMARQUEE && m_layer && m_layer->marquee() &&
             m_layer->marquee()->isHorizontal() && !m_layer->marquee()->isUnfurlMarquee())
             m_minWidth = 0;
     }

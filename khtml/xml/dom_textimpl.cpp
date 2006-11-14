@@ -42,7 +42,7 @@ static DOMString escapeHTML( const DOMString& in )
     return in.implementation()->escapeHTML();
 }
 
-CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)
+CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, DOMStringImpl* _text)
     : NodeImpl(doc)
 {
     str = _text ? _text : new DOMStringImpl(0, 0);

@@ -534,6 +534,8 @@ bool CSSParser::parseValue( int propId, bool important )
         break;
 
     case CSS_PROP_OVERFLOW:             // visible | hidden | scroll | auto | marquee | inherit
+    case CSS_PROP_OVERFLOW_X:
+    case CSS_PROP_OVERFLOW_Y:
         if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_SCROLL || id == CSS_VAL_AUTO ||
             id == CSS_VAL_MARQUEE)
             valid_primitive = true;
@@ -955,6 +957,10 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         else
             valid_primitive = validUnit(value, FTime|FInteger|FNonNeg, strict&(!nonCSSHint));
+        break;
+    case CSS_PROP_TEXT_OVERFLOW: // clip | ellipsis
+        if (id == CSS_VAL_CLIP || id == CSS_VAL_ELLIPSIS)
+            valid_primitive = true;
         break;
     // End of CSS3 properties
 

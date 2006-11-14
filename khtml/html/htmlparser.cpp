@@ -126,7 +126,7 @@ public:
  *
  */
 
-KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
+KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentImpl *doc)
 {
     //kDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
@@ -135,7 +135,6 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
 
     HTMLWidget    = _parent;
     document      = doc;
-    document->ref();
 
     blockStack = 0;
     current = 0;
@@ -146,11 +145,10 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
     reset();
 }
 
-KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
+KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentImpl *doc )
 {
     HTMLWidget = 0;
     document = doc;
-    document->ref();
 
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
@@ -174,15 +172,13 @@ KHTMLParser::~KHTMLParser()
 
     if (current) current->deref();
 
-    document->deref();
-
     delete [] forbiddenTag;
     delete isindex;
 }
 
 void KHTMLParser::reset()
 {
-    setCurrent ( document->document() );
+    setCurrent ( document );
 
     freeBlock();
 
@@ -231,7 +227,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(t->tid == ID_BR+ID_CLOSE_TAG && document->document()->inCompatMode())
+    if(t->tid == ID_BR+ID_CLOSE_TAG && document->inCompatMode())
         t->tid -= ID_CLOSE_TAG;
 
     if(t->tid > ID_CLOSE_TAG)
@@ -350,8 +346,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             if(!n->attached() && HTMLWidget)
                 n->attach();
             if (n->maintainsState()) {
-                document->document()->registerMaintainsState(n);
-                QString state(document->document()->nextState());
+                document->registerMaintainsState(n);
+                QString state(document->nextState());
                 if (!state.isNull()) n->restoreState(state);
             }
             n->close();
@@ -887,8 +883,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             // we can't implement that behavior now because it could cause too many
             // regressions and the headaches are not worth the work as long as there is
             // no site actually relying on that detail (Dirk)
-            if (static_cast<HTMLDocumentImpl*>(document->document())->body())
-                static_cast<HTMLDocumentImpl*>(document->document())->body()
+            if (static_cast<HTMLDocumentImpl*>(document)->body())
+                static_cast<HTMLDocumentImpl*>(document)->body()
                     ->addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
             inBody = false;
         }
@@ -1317,18 +1313,21 @@ bool KHTMLParser::isAffectedByResidualStyle(int _id)
 
 void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 {
-    // Find the element that crosses over to a higher level.   For now, if there is more than
-    // one, we will just give up and not attempt any sort of correction.  It's highly unlikely that
-    // there will be more than one, since <p> tags aren't allowed to be nested.
+    // Find the element that crosses over to a higher level.
+    // ### For now, if there is more than one, we will only make sure we close the residual style.
     int exceptionCode = 0;
     HTMLStackElem* curr = blockStack;
     HTMLStackElem* maxElem = 0;
+    HTMLStackElem* endElem = 0;
     HTMLStackElem* prev = 0;
     HTMLStackElem* prevMaxElem = 0;
+    bool advancedResidual = false; // ### if set we only close the residual style
     while (curr && curr != elem) {
         if (curr->level > elem->level) {
-            if (maxElem)
-                return;
+            if (!isAffectedByResidualStyle(curr->id)) return;
+            if (maxElem) advancedResidual = true;
+            else
+                endElem = curr;
             maxElem = curr;
             prevMaxElem = prev;
         }
@@ -1337,7 +1336,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         curr = curr->next;
     }
 
-    if (!curr || !maxElem || !isAffectedByResidualStyle(maxElem->id)) return;
+    if (!curr || !maxElem ) return;
 
     NodeImpl* residualElem = prev->node;
     NodeImpl* blockElem = prevMaxElem ? prevMaxElem->node : current;
@@ -1350,7 +1349,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     if (!parentElem->childAllowed(blockElem))
         return;
 
-    if (maxElem->node->parentNode() != elem->node) {
+    if (maxElem->node->parentNode() != elem->node && !advancedResidual) {
         // Walk the stack and remove any elements that aren't residual style tags.  These
         // are basically just being closed up.  Example:
         // <font><span>Moo<p>Goo</font></p>.
@@ -1384,6 +1383,8 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
             if (isResidualStyleTag(currElem->node->id())) {
                 // Create a clone of this element.
                 currNode = currElem->node->cloneNode(false);
+                currElem->node->close();
+                removeForbidden(currElem->id, forbiddenTag);
 
                 // Change the stack element's node to point to the clone.
                 currElem->setNode(currNode);
@@ -1416,6 +1417,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     SharedPtr<NodeImpl> guard(blockElem);
     blockElem->parentNode()->removeChild(blockElem, exceptionCode);
 
+    if (!advancedResidual) {
     // Step 2: Clone |residualElem|.
     NodeImpl* newNode = residualElem->cloneNode(false); // Shallow clone. We don't pick up the same kids.
 
@@ -1442,6 +1444,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     // Step 4: Place |newNode| under |blockElem|.  |blockElem| is still out of the document, so no
     // attachment can occur yet.
     blockElem->appendChild(newNode, exceptionCode);
+    }
 
     // Step 5: Reparent |blockElem|.  Now the full attachment of the fixed up tree takes place.
     parentElem->appendChild(blockElem, exceptionCode);
@@ -1463,7 +1466,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     // In the above example, Goo should stay italic.
     curr = blockStack;
     HTMLStackElem* residualStyleStack = 0;
-    while (curr && curr != maxElem) {
+    while (curr && curr != endElem) {
         // We will actually schedule this tag for reopening
         // after we complete the close of this entire block.
         NodeImpl* currNode = current;
@@ -1636,9 +1639,9 @@ void KHTMLParser::popOneBlock(bool delBlock)
 
 #if SPEED_DEBUG < 1
     if((Elem->node != current)) {
-        if (current->maintainsState() && document->document()){
-            document->document()->registerMaintainsState(current);
-            QString state(document->document()->nextState());
+        if (current->maintainsState() && document){
+            document->registerMaintainsState(current);
+            QString state(document->nextState());
             if (!state.isNull()) current->restoreState(state);
         }
         current->close();

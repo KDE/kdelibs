@@ -51,7 +51,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
+HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc), ismap(false), loadEventSent(true), m_image(0), m_form(f)
 {
     if (m_form)
@@ -281,12 +281,7 @@ long HTMLImageElementImpl::width() const
             return 0;
     }
 
-    // ### make a unified call for this
-    if (changed()) {
-        getDocument()->updateRendering();
-        if (getDocument()->view())
-            getDocument()->view()->layout();
-    }
+    getDocument()->updateRendering();
 
     return m_render ? m_render->contentWidth() :
                       getAttribute(ATTR_WIDTH).toInt();
@@ -304,12 +299,7 @@ long HTMLImageElementImpl::height() const
             return 0;
     }
 
-    // ### make a unified call for this
-    if (changed()) {
-        getDocument()->updateRendering();
-        if (getDocument()->view())
-            getDocument()->view()->layout();
-    }
+    getDocument()->updateRendering();
 
     return m_render ? m_render->contentHeight() :
                       getAttribute(ATTR_HEIGHT).toInt();
@@ -375,7 +365,7 @@ bool HTMLImageElementImpl::complete() const
 
 // -------------------------------------------------------------------------
 
-HTMLMapElementImpl::HTMLMapElementImpl(DocumentPtr *doc)
+HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -472,7 +462,7 @@ HTMLCollectionImpl* HTMLMapElementImpl::areas()
 
 // -------------------------------------------------------------------------
 
-HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
+HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     : HTMLAnchorElementImpl(doc)
 {
     m_coords=0;

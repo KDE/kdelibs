@@ -92,6 +92,8 @@ static const int computedProperties[] = {
     CSS_PROP_ORPHANS,
     CSS_PROP_OUTLINE_STYLE,
     CSS_PROP_OVERFLOW,
+    CSS_PROP_OVERFLOW_X,
+    CSS_PROP_OVERFLOW_Y,
     CSS_PROP_PADDING_TOP,
     CSS_PROP_PADDING_RIGHT,
     CSS_PROP_PADDING_BOTTOM,
@@ -330,12 +332,12 @@ static CSSValueImpl *getPositionOffsetValue(RenderObject *renderer, int property
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl(0), m_node(node)
 {
-    kDebug() << "Render Style Declaration created" << endl;
+    //kDebug() << "Render Style Declaration created" << endl;
 }
 
 RenderStyleDeclarationImpl::~RenderStyleDeclarationImpl()
 {
-    kDebug() << "Render Style Declaration destroyed" << endl;
+    //kDebug() << "Render Style Declaration destroyed" << endl;
 }
 
 DOM::DOMString RenderStyleDeclarationImpl::cssText() const
@@ -776,8 +778,20 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_OUTLINE_WIDTH:
         break;
     case CSS_PROP_OVERFLOW:
-    {
-        switch (style->overflow()) {
+    case CSS_PROP_OVERFLOW_X:
+    case CSS_PROP_OVERFLOW_Y: {
+        EOverflow overflow;
+        switch (propertyID) {
+        case CSS_PROP_OVERFLOW_X:
+            overflow = style->overflowX();
+            break;
+        case CSS_PROP_OVERFLOW_Y:
+            overflow = style->overflowY();
+            break;
+        default:
+            overflow = qMax(style->overflowX(), style->overflowY());
+        }
+        switch (overflow) {
         case OVISIBLE:
             return new CSSPrimitiveValueImpl(CSS_VAL_VISIBLE);
         case OHIDDEN:
@@ -831,14 +845,11 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         Q_ASSERT(0);
         break;
     case CSS_PROP_PAGE_BREAK_INSIDE:
-        switch (style->pageBreakInside()) {
-        case PBAUTO:
+        if (style->pageBreakInside())
             return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
-        case PBAVOID:
+        else
             return new CSSPrimitiveValueImpl(CSS_VAL_AVOID);
-        case PBALWAYS:
-            break; // not allowed
-        }
+        Q_ASSERT(0);
         break;
     case CSS_PROP_POSITION:
         switch (style->position()) {

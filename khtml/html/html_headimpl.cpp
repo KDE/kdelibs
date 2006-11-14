@@ -323,7 +323,7 @@ void HTMLMetaElementImpl::process()
 
 // -------------------------------------------------------------------------
 
-HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentPtr *doc)
+HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc), m_cachedScript(0), m_createdByParser(false), m_evaluated(false)
 {
 }

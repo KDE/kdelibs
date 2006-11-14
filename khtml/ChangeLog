@@ -1,11 +1,35 @@
+2006-11-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement overflow-x and overflow-y
+
+        * css/*.*: New properties
+        * rendering/render_style.{h,cpp}: New properties
+        * rendering/render_object.h: New functions scrollsOverflowX() and scrollsOverflowY
+        * rendering/render_layer.h: Remove depricated function moveScrollbarsAside()
+        * rendering/render_layer.cpp: More fine grained creation of scrollbars
+        * khtmlview.cpp: More fine grained creation of scrollbars
+        * rendering/render_block.cpp: Use new functions
+        * rendering/render_box.cpp: Use new functions
+        * rendering/bidi.cpp: Use new functions
+
+2006-11-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge text-overflow:ellipis from WebCore
+
+        * css/*.*: New property and values
+        * rendering/render_style.{h,cpp}: New property and values
+        * rendering/render_line.{h,cpp}: New line-box for ellipsis
+        * rendering/bidi.cpp: Two functions to remove and create ellipsis boxes
+        * rendering/render_text.{h,cpp}: Add the ability to truncate text at a certain point.
+
 2006-06-28  Germain Garand  <germain@ebooksfrance.org>
 
         make updating of addRule/removeRule/insertRule work
         cf. http://www.quirksmode.org/dom/w3c_css.html#change
 
-        * css/css_stylesheetimpl.cpp 
+        * css/css_stylesheetimpl.cpp
             (insertRule/deleteRule): shallow update of styleselector.
-        * xml/dom_docimpl.{h,cpp} 
+        * xml/dom_docimpl.{h,cpp}
             (updateStyleSelector): new boolean argument for shallow recalculation, when all sheets are known.
             (DocumentImpl::recalcStyleSelector): split.
             (DocumentImpl::rebuildStyleSelector): new from split. Recreate styleselector with known sheets.
@@ -13,17 +37,17 @@
 2006-06-27  Germain Garand  <germain@ebooksfrance.org>
 
         . Correct drawing of borders on iframes and objects (#118277/#56109)
-        . Frameborder attribute for iframes (http://www.w3.org/TR/html401/present/frames.html#adef-frameborder) 
+        . Frameborder attribute for iframes (http://www.w3.org/TR/html401/present/frames.html#adef-frameborder)
         . Fix widget counter-mask not being updated in time, thus sometimes missing a repaint (e.g: http://lequipe.fr)
 
         * html/html_baseimpl.{h,cpp} (HTMLIFrameElementImpl::parseAttribute): parse frameborder attribute. Defaults to true as per specification.
         (HTMLIFrameElementImpl::updateFrame/attach): apply/remove frameborder style at attachment time.
-        * khtmlview.cpp (drawContents): fix counter-mask problem. Widget geometry is not accurate before painting, so we must 
+        * khtmlview.cpp (drawContents): fix counter-mask problem. Widget geometry is not accurate before painting, so we must
         use the RenderObject's.
         * rendering/render_frames.h (paddingTop/paddingBottom/paddingLeft/paddingRight): reimplement. Frames have no padding.
         (RenderPartObject::canHaveBorder): reimplement. True.
         * rendering/render_object.cpp (RenderObject::updateWidgetMasks): clip mask to correct width/height, though it doesn't matter much on X11.
-        * rendering/render_replaced.h (RenderWidget::borderTop/borderBottom/borderLeft/borderRight): percolated down from RenderForm. 
+        * rendering/render_replaced.h (RenderWidget::borderTop/borderBottom/borderLeft/borderRight): percolated down from RenderForm.
         Frames/Iframes also need that reimplementation.
 
 2006-06-22  Germain Garand  <germain@ebooksfrance.org>
@@ -31,7 +55,7 @@
         Implement floating auto-width table quirk
 
         * rendering/render_block.cpp (positionNewFloats): in quirkmode, floated auto-width
-        tables try to fit within remaining linewidth, so look for minWidth, and relayout if 
+        tables try to fit within remaining linewidth, so look for minWidth, and relayout if
         position found ends up being narrower than current table width.
 
 2006-06-20  Germain Garand  <germain@ebooksfrance.org>
@@ -41,7 +65,7 @@
         * rendering/render_block.cpp (calcInlineMinMaxWidth/calcBlockMinMaxWidth): lazzily check available width
         so floats don't overflow it if they can break line.
         * rendering/render_box.{h,cpp} (availableWidth{,Using}): new. Like availableHeight{,Using}
-        * rendering/render_canvas.cpp (RenderCanvas::layout): set m_viewportWidth before recalculating minmax, as 
+        * rendering/render_canvas.cpp (RenderCanvas::layout): set m_viewportWidth before recalculating minmax, as
         availableWidth needs it.
 
 2006-06-15  Allan Sandfeld Jensen <kde@carewolf.com>

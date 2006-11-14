@@ -40,7 +40,7 @@ class HTMLObjectBaseElementImpl : public QObject, public HTMLElementImpl
 {
     Q_OBJECT
 public:
-    HTMLObjectBaseElementImpl(DocumentPtr *doc);
+    HTMLObjectBaseElementImpl(DocumentImpl *doc);
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
@@ -72,7 +72,7 @@ protected:
 class HTMLAppletElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
-    HTMLAppletElementImpl(DocumentPtr *doc);
+    HTMLAppletElementImpl(DocumentImpl *doc);
 
     ~HTMLAppletElementImpl();
 
@@ -89,7 +89,7 @@ protected:
 class HTMLEmbedElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
-    HTMLEmbedElementImpl(DocumentPtr *doc);
+    HTMLEmbedElementImpl(DocumentImpl *doc);
     ~HTMLEmbedElementImpl();
 
     virtual Id id() const;
@@ -106,7 +106,7 @@ public:
 class HTMLObjectElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
-    HTMLObjectElementImpl(DocumentPtr *doc);
+    HTMLObjectElementImpl(DocumentImpl *doc);
 
     ~HTMLObjectElementImpl();
 
@@ -127,7 +127,7 @@ class HTMLParamElementImpl : public HTMLElementImpl
 {
     friend class HTMLAppletElementImpl;
 public:
-    HTMLParamElementImpl(DocumentPtr* _doc) : HTMLElementImpl(_doc) {}
+    HTMLParamElementImpl(DocumentImpl* _doc) : HTMLElementImpl(_doc) {}
 
     virtual Id id() const;
 

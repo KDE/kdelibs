@@ -46,6 +46,30 @@ using namespace khtml;
 static bool inInlineBoxDetach;
 #endif
 
+class khtml::EllipsisBox : public InlineBox
+{
+public:
+    EllipsisBox(RenderObject* obj, const DOM::DOMString& ellipsisStr, InlineFlowBox* p,
+                int w, int y, int h, int b, bool firstLine, InlineBox* markupBox)
+    :InlineBox(obj), m_str(ellipsisStr) {
+        m_parent = p;
+        m_width = w;
+        m_y = y;
+        m_height = h;
+        m_baseline = b;
+        m_firstLine = firstLine;
+        m_constructed = true;
+        m_markupBox = markupBox;
+    }
+
+    void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
+    bool nodeAtPoint(RenderObject::NodeInfo& info, int _x, int _y, int _tx, int _ty);
+
+private:
+    DOM::DOMString m_str;
+    InlineBox* m_markupBox;
+};
+
 void InlineBox::detach(RenderArena* renderArena)
 {
     if (m_parent)
@@ -152,6 +176,23 @@ void InlineFlowBox::removeFromLine(InlineBox *child)
     }
 
     child->setParent(0);
+}
+
+bool InlineBox::canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth)
+{
+    // Non-replaced elements can always accommodate an ellipsis.
+    if (!m_object || !m_object->isReplaced())
+        return true;
+
+    QRect boxRect(m_x, 0, m_width, 10);
+    QRect ellipsisRect(ltr ? blockEdge - ellipsisWidth : blockEdge, 0, ellipsisWidth, 10);
+    return !(boxRect.intersects(ellipsisRect));
+}
+
+int InlineBox::placeEllipsisBox(bool /*ltr*/, int /*blockEdge*/, int /*ellipsisWidth*/, bool&)
+{
+    // Use -1 to mean "we didn't set the position."
+    return -1;
 }
 
 int InlineFlowBox::marginLeft() const
@@ -781,3 +822,175 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
         }
     }
 }
+
+bool InlineFlowBox::canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth)
+{
+    for (InlineBox *box = firstChild(); box; box = box->nextOnLine()) {
+        if (!box->canAccommodateEllipsisBox(ltr, blockEdge, ellipsisWidth))
+            return false;
+    }
+    return true;
+}
+
+int InlineFlowBox::placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox)
+{
+    int result = -1;
+    for (InlineBox *box = firstChild(); box; box = box->nextOnLine()) {
+        int currResult = box->placeEllipsisBox(ltr, blockEdge, ellipsisWidth, foundBox);
+        if (currResult != -1 && result == -1)
+            result = currResult;
+    }
+    return result;
+}
+
+void InlineFlowBox::clearTruncation()
+{
+    for (InlineBox *box = firstChild(); box; box = box->nextOnLine())
+        box->clearTruncation();
+}
+
+void EllipsisBox::paint(RenderObject::PaintInfo& i, int _tx, int _ty)
+{
+    QPainter* p = i.p;
+    RenderStyle* _style = m_firstLine ? m_object->style(true) : m_object->style();
+    if (_style->font() != p->font())
+        p->setFont(_style->font());
+
+    const Font* font = &_style->htmlFont();
+    QColor textColor = _style->color();
+    if (textColor != p->pen().color())
+        p->setPen(textColor);
+    /*
+    bool setShadow = false;
+    if (_style->textShadow()) {
+        p->setShadow(_style->textShadow()->x, _style->textShadow()->y,
+                     _style->textShadow()->blur, _style->textShadow()->color);
+        setShadow = true;
+    }*/
+
+    const DOMString& str = m_str.string();
+    font->drawText(p, m_x + _tx,
+                      m_y + _ty + m_baseline,
+                      (str.implementation())->s,
+                      str.length(), 0, str.length(),
+                      0,
+                      Qt::LeftToRight, _style->visuallyOrdered());
+
+    /*
+    if (setShadow)
+        p->clearShadow();
+    */
+
+    if (m_markupBox) {
+        // Paint the markup box
+        _tx += m_x + m_width - m_markupBox->xPos();
+        _ty += m_y + m_baseline - (m_markupBox->yPos() + m_markupBox->baseline());
+        m_markupBox->object()->paint(i, _tx, _ty);
+    }
+}
+
+bool EllipsisBox::nodeAtPoint(RenderObject::NodeInfo& info, int _x, int _y, int _tx, int _ty)
+{
+    // Hit test the markup box.
+    if (m_markupBox) {
+        _tx += m_x + m_width - m_markupBox->xPos();
+        _ty += m_y + m_baseline - (m_markupBox->yPos() + m_markupBox->baseline());
+        if (m_markupBox->nodeAtPoint(info, _x, _y, _tx, _ty)) {
+            object()->setInnerNode(info);
+            return true;
+        }
+    }
+
+    QRect rect(_tx + m_x, _ty + m_y, m_width, m_height);
+    if (object()->style()->visibility() == VISIBLE && rect.contains(_x, _y)) {
+        object()->setInnerNode(info);
+        return true;
+    }
+    return false;
+}
+
+void RootInlineBox::detach(RenderArena* arena)
+{
+    detachEllipsisBox(arena);
+    InlineFlowBox::detach(arena);
+}
+
+void RootInlineBox::detachEllipsisBox(RenderArena* arena)
+{
+    if (m_ellipsisBox) {
+        m_ellipsisBox->detach(arena);
+        m_ellipsisBox = 0;
+    }
+}
+
+void RootInlineBox::clearTruncation()
+{
+    if (m_ellipsisBox) {
+        detachEllipsisBox(m_object->renderArena());
+        InlineFlowBox::clearTruncation();
+    }
+}
+
+bool RootInlineBox::canAccommodateEllipsis(bool ltr, int blockEdge, int lineBoxEdge, int ellipsisWidth)
+{
+    // First sanity-check the unoverflowed width of the whole line to see if there is sufficient room.
+    int delta = ltr ? lineBoxEdge - blockEdge : blockEdge - lineBoxEdge;
+    if (width() - delta < ellipsisWidth)
+        return false;
+
+    // Next iterate over all the line boxes on the line.  If we find a replaced element that intersects
+    // then we refuse to accommodate the ellipsis.  Otherwise we're ok.
+    return InlineFlowBox::canAccommodateEllipsisBox(ltr, blockEdge, ellipsisWidth);
+}
+
+void RootInlineBox::placeEllipsis(const DOMString& ellipsisStr,  bool ltr, int blockEdge, int ellipsisWidth, InlineBox* markupBox)
+{
+    // Create an ellipsis box.
+    m_ellipsisBox = new (m_object->renderArena()) EllipsisBox(m_object, ellipsisStr, this,
+                                                              ellipsisWidth - (markupBox ? markupBox->width() : 0),
+                                                              yPos(), height(), baseline(), !prevRootBox(),
+                                                              markupBox);
+
+    if (ltr && (xPos() + width() + ellipsisWidth) <= blockEdge) {
+        m_ellipsisBox->m_x = xPos() + width();
+        return;
+    }
+
+    // Now attempt to find the nearest glyph horizontally and place just to the right (or left in RTL)
+    // of that glyph.  Mark all of the objects that intersect the ellipsis box as not painting (as being
+    // truncated).
+    bool foundBox = false;
+    m_ellipsisBox->m_x = placeEllipsisBox(ltr, blockEdge, ellipsisWidth, foundBox);
+}
+
+int RootInlineBox::placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox)
+{
+    int result = InlineFlowBox::placeEllipsisBox(ltr, blockEdge, ellipsisWidth, foundBox);
+    if (result == -1)
+        result = ltr ? blockEdge - ellipsisWidth : blockEdge;
+    return result;
+}
+
+void RootInlineBox::paintEllipsisBox(RenderObject::PaintInfo& i, int _tx, int _ty) const
+{
+    if (m_ellipsisBox)
+        m_ellipsisBox->paint(i, _tx, _ty);
+}
+
+void RootInlineBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
+{
+    InlineFlowBox::paint(i, tx, ty);
+    paintEllipsisBox(i, tx, ty);
+}
+
+bool RootInlineBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty)
+{
+    if (m_ellipsisBox && object()->style()->visibility() == VISIBLE) {
+        if (m_ellipsisBox->nodeAtPoint(i, x, y, tx, ty)) {
+            object()->setInnerNode(i);
+            return true;
+        }
+    }
+    return InlineFlowBox::nodeAtPoint(i, x, y, tx, ty);
+}
+

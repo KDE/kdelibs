@@ -304,10 +304,12 @@ Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257),
+    : NodeBaseImpl( 0 ), m_domtree_version(0), m_counterDict(257),
       m_imageLoadEventTimer(0)
 {
-    document->doc = this;
+    m_document.resetSkippingRef(this); //Make getDocument return us..
+    m_selfOnlyRefCount = 0;
+
     m_paintDeviceMetrics = 0;
     m_paintDevice = 0;
     //m_decoderMibEnum = 0;
@@ -333,7 +335,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     // ### this should be created during parsing a <!DOCTYPE>
     // not during construction. Not sure who added that and why (Dirk)
-    m_doctype = new DocumentTypeImpl(_implementation, document,
+    m_doctype = new DocumentTypeImpl(_implementation, getDocument(),
                                      DOMString() /* qualifiedName */,
                                      DOMString() /* publicId */,
                                      DOMString() /* systemId */);
@@ -379,8 +381,60 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
 }
 
+void DocumentImpl::removedLastRef()
+{
+    if (m_selfOnlyRefCount) {
+        /* In this case, the only references to us are from children,
+           so we have a cycle. We'll try to break it by disconnecting the
+           children from us; this sucks/is wrong, but it's pretty much 
+           the best we can do without tracing. 
+
+           Of course, if dumping the children causes the refcount from them to 
+           drop to 0 we can get killed right here, so better hold
+           a temporary reference, too
+        */
+        DocPtr<DocumentImpl> guard(this);
+
+        // we must make sure not to be retaining any of our children through
+        // these extra pointers or we will create a reference cycle
+        if (m_doctype) {
+            m_doctype->deref(); 
+            m_doctype = 0;
+        }
+        
+        if (m_cssTarget) {
+            m_cssTarget->deref();
+            m_cssTarget = 0;
+        }
+
+        if (m_focusNode) {
+            m_focusNode->deref();
+            m_focusNode = 0;
+        }
+
+        if (m_hoverNode) {
+            m_hoverNode->deref();
+            m_hoverNode = 0;
+        }
+        
+        if (m_activeNode) {
+            m_activeNode->deref();
+            m_activeNode = 0;
+        }
+
+        removeChildren();
+
+        delete m_tokenizer;
+        m_tokenizer = 0;
+    } else {
+        delete this;
+    }
+}
+
 DocumentImpl::~DocumentImpl()
 {
+    //Important: if you need to remove stuff here,
+    //you may also have to fix removedLastRef() above - M.O.
     assert( !m_render );
 
     Q3IntDictIterator<NodeListImpl::Cache> it(m_nodeListCache);
@@ -392,7 +446,7 @@ DocumentImpl::~DocumentImpl()
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
     delete m_tokenizer;
-    document->doc = 0;
+    m_document.resetSkippingRef(0);
     delete m_styleSelector;
     delete m_docLoader;
     if (m_elemSheet )  m_elemSheet->deref();
@@ -414,6 +468,8 @@ DocumentImpl::~DocumentImpl()
         m_focusNode->deref();
     if ( m_hoverNode )
         m_hoverNode->deref();
+    if (m_activeNode)
+        m_activeNode->deref();
 
     m_renderArena.reset();
 
@@ -447,7 +503,7 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pException
     if ( pExceptioncode && *pExceptioncode )
         return 0;
 
-    XMLElementImpl* e = new XMLElementImpl( document, id );
+    XMLElementImpl* e = new XMLElementImpl( getDocument(), id );
     e->setHTMLCompat( htmlMode() != XHtml ); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
     return e;
 }
@@ -458,7 +514,7 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExcepti
                   false /* allocate */, isHTMLDocument(), pExceptioncode);
     if ( pExceptioncode && *pExceptioncode )
         return 0;
-    AttrImpl* attr = new AttrImpl( 0, document, id, DOMString("").implementation());
+    AttrImpl* attr = new AttrImpl( 0, getDocument(), id, DOMString("").implementation());
     attr->setHTMLCompat( htmlMode() != XHtml );
     return attr;
 }
@@ -559,8 +615,12 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	result = createComment(static_cast<CommentImpl*>(importedNode)->string());
 	deep = false;
     }
+    else if (importedNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
+	result = createDocumentFragment();
     else
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	
+    //### FIXME: This should handle Attributes, and a few other things
 
     if(deep && result)
     {
@@ -601,7 +661,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     if (!e) {
         Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
                       localName.implementation(), false, false /*HTML already looked up*/);
-        e = new XMLElementImpl( document, id, prefix.implementation() );
+        e = new XMLElementImpl( getDocument(), id, prefix.implementation() );
     }
 
     return e;
@@ -620,7 +680,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
     Id id = getId(NodeImpl::AttributeId, _namespaceURI.implementation(), prefix.implementation(),
                   localName.implementation(), false, true /*lookupHTML*/);
-    AttrImpl* attr = new AttrImpl(0, document, id, DOMString("").implementation(),
+    AttrImpl* attr = new AttrImpl(0, getDocument(), id, DOMString("").implementation(),
                          prefix.implementation());
     attr->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
     return attr;
@@ -2181,6 +2241,13 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
     // don't process focus changes while detaching
     if( !m_render ) return;
+    
+    // We do want to blur if a widget is being detached,
+    // but we don't want to emit events since that 
+    // triggers updateLayout() and may recurse detach()
+    bool widgetDetach = m_focusNode && m_focusNode != this &&
+              m_focusNode->renderer() && !m_focusNode->renderer()->parent();
+      
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->getDocument() != this))
         return;
@@ -2195,8 +2262,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 oldFocusNode->setActive(false);
 
             oldFocusNode->setFocus(false);
-	    oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-	    oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
+            
+            if (!widgetDetach) {
+                oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+                oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
+            }
             if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
                 oldFocusNode->deref(); // deletes this
                 return;
@@ -2226,9 +2296,14 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                         static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
                 }
             }
+        } else {
+            //We're blurring. Better clear the Qt focus/give it to the view...
+            if (view())
+                view()->setFocus();
         }
 
-        updateRendering();
+        if (!widgetDetach)
+            updateRendering();
     }
 }
 
@@ -2654,7 +2729,7 @@ void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
 
 // ----------------------------------------------------------------------------
 
-DocumentFragmentImpl::DocumentFragmentImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
+DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
 }
 
@@ -2712,7 +2787,7 @@ NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep )
 
 // ----------------------------------------------------------------------------
 
-DocumentTypeImpl::DocumentTypeImpl(DOMImplementationImpl *implementation, DocumentPtr *doc,
+DocumentTypeImpl::DocumentTypeImpl(DOMImplementationImpl *implementation, DocumentImpl *doc,
                                    const DOMString &qualifiedName, const DOMString &publicId,
                                    const DOMString &systemId)
     : NodeImpl(doc), m_implementation(implementation),

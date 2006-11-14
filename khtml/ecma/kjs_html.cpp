@@ -2932,8 +2932,9 @@ ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, Ob
     break;
   }
   default:
-    return Undefined();
+    break;
   }
+  return Undefined();
 }
 
 

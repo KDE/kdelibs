@@ -41,7 +41,7 @@ class HTMLImageElementImpl
 {
     friend class HTMLFormElementImpl;
 public:
-    HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
+    HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     ~HTMLImageElementImpl();
 
     virtual Id id() const;
@@ -103,7 +103,7 @@ public:
 
     enum Shape { Default, Poly, Rect, Circle, Unknown };
 
-    HTMLAreaElementImpl(DocumentPtr *doc);
+    HTMLAreaElementImpl(DocumentImpl *doc);
     ~HTMLAreaElementImpl();
 
     virtual Id id() const;
@@ -135,7 +135,7 @@ protected:
 class HTMLMapElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMapElementImpl(DocumentPtr *doc);
+    HTMLMapElementImpl(DocumentImpl *doc);
 
     ~HTMLMapElementImpl();
 

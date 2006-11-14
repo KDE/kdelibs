@@ -213,7 +213,7 @@ short RenderBox::contentWidth() const
     short w = m_width - style()->borderLeftWidth() - style()->borderRightWidth();
     w -= paddingLeft() + paddingRight();
 
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && scrollsOverflowY())
         w -= m_layer->verticalScrollbarWidth();
 
     //kDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
@@ -225,7 +225,7 @@ int RenderBox::contentHeight() const
     int h = m_height - style()->borderTopWidth() - style()->borderBottomWidth();
     h -= paddingTop() + paddingBottom();
 
-    if (m_layer && style()->scrollsOverflow())
+    if (m_layer && scrollsOverflowX())
         h -= m_layer->horizontalScrollbarHeight();
 
     return h;
@@ -568,24 +568,26 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > scaledImageWidth ) {
-                cw = scaledImageWidth;
-                cx = vr.x() + bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth);
+            int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+            if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
+                cw = qMin(scaledImageWidth, pw - xPosition);
+                cx = vr.x() + xPosition;
             } else {
                 cw = pw;
                 cx = vr.x();
                 if (scaledImageWidth > 0)
-                    sx = scaledImageWidth - bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth) % scaledImageWidth;
+                    sx = scaledImageWidth - xPosition % scaledImageWidth;
             }
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > scaledImageHeight ) {
-                ch = scaledImageHeight;
-                cy = vr.y() + bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+            int yPosition = bgLayer->backgroundYPosition().minWidth(ph-scaledImageHeight);
+            if (bgr == NO_REPEAT || bgr == REPEAT_X) {
+                ch = qMin(scaledImageHeight, ph - yPosition);
+                cy = vr.y() + yPosition;
             } else {
                 ch = ph;
                 cy = vr.y();
                 if (scaledImageHeight > 0)
-                    sy = scaledImageHeight - bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight) % scaledImageHeight;
+                    sy = scaledImageHeight - yPosition % scaledImageHeight;
             }
 
             QRect fix(cx, cy, cw, ch);
@@ -705,6 +707,10 @@ short RenderBox::containingBlockWidth() const
     }
 
     RenderBlock* cb = containingBlock();
+    if (isRenderBlock() && cb->isTable()) {
+        //captions are not affected by table border or padding
+        return cb->width();
+    }
     if (usesLineWidth())
         return cb->lineWidth(m_y);
     else
@@ -964,7 +970,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     }
     else
     {
-        if ( (ml.isVariable() && mr.isVariable()) ||
+        if ( (ml.isVariable() && mr.isVariable() && m_width<cw) ||
              (!ml.isVariable() && !mr.isVariable() &&
                 containingBlock()->style()->textAlign() == KHTML_CENTER) )
         {
@@ -972,14 +978,14 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
             if (m_marginLeft<0) m_marginLeft=0;
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (mr.isVariable() ||
+        else if ( (mr.isVariable() && m_width<cw) ||
                  (!ml.isVariable() && containingBlock()->style()->direction() == RTL &&
                   containingBlock()->style()->textAlign() == KHTML_LEFT))
         {
             m_marginLeft = ml.width(cw);
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (ml.isVariable() ||
+        else if ( (ml.isVariable() && m_width<cw) ||
                  (!mr.isVariable() && containingBlock()->style()->direction() == LTR &&
                   containingBlock()->style()->textAlign() == KHTML_RIGHT))
         {
@@ -988,6 +994,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
         }
         else
         {
+           // this makes auto margins 0 if we failed a m_width<cw test above (css2.1, 10.3.3)
             m_marginLeft = ml.minWidth(cw);
             m_marginRight = mr.minWidth(cw);
         }
@@ -1044,14 +1051,14 @@ void RenderBox::calcHeight()
             height = calcBoxHeight(h.value());
         }
 
-        if (height<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
+        if (height<m_height && !overhangingContents() && !style()->hidesOverflow())
             setOverhangingContents();
 
         m_height = height;
     }
 
     // Unfurling marquees override with the furled height.
-    if (style()->overflow() == OMARQUEE && m_layer && m_layer->marquee() &&
+    if (style()->overflowX() == OMARQUEE && m_layer && m_layer->marquee() &&
         m_layer->marquee()->isUnfurlMarquee() && !m_layer->marquee()->isHorizontal()) {
         m_layer->marquee()->setEnd(m_height);
         m_height = qMin(m_height, m_layer->marquee()->unfurlPos());
@@ -1709,10 +1716,6 @@ void RenderBox::calcAbsoluteVertical()
 
     height += bordersPlusPadding;
 
-    // If our natural/content height exceeds the new height once we've set it, then we
-    // need to make sure to update overflow to track the spillout.
-    if (m_height > height && isRenderBlock())
-        static_cast<RenderBlock*>(this)->setOverflowHeight(m_height);
     // Set final height value.
     m_height = height;
 }

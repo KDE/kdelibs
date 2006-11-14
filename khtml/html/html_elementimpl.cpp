@@ -56,10 +56,10 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
+HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc)
     : ElementImpl( doc )
 {
-    m_htmlCompat = doc && doc->document() ? doc->document()->htmlMode() != DocumentImpl::XHtml : false;
+    m_htmlCompat = doc && doc->htmlMode() != DocumentImpl::XHtml;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
@@ -460,7 +460,7 @@ DOMString HTMLElementImpl::innerHTML() const
 
 DOMString HTMLElementImpl::innerText() const
 {
-    DOMString text = "";
+    QString text = "";
     if(!firstChild())
         return text;
 
@@ -481,7 +481,8 @@ DOMString HTMLElementImpl::innerText() const
             n = next;
         }
         if(n->isTextNode() ) {
-            text += static_cast<const TextImpl *>(n)->data();
+            DOMStringImpl* data = static_cast<const TextImpl *>(n)->string();
+            text += QConstString(data->s, data->l).string();
         }
     }
  end:
@@ -663,7 +664,7 @@ DOMString HTMLElementImpl::toString() const
 }
 
 // -------------------------------------------------------------------------
-HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)
+HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
     _id = i;

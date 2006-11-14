@@ -35,7 +35,7 @@ class HTMLCollection;
 class HTMLBaseFontElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBaseFontElementImpl(DocumentPtr *doc);
+    HTMLBaseFontElementImpl(DocumentImpl *doc);
 
     ~HTMLBaseFontElementImpl();
 

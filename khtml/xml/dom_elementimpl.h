@@ -53,7 +53,7 @@ class AttrImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
 
 public:
-    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
+    AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attrId,
 	     DOMStringImpl *value, DOMStringImpl *prefix = 0);
     ~AttrImpl();
 
@@ -121,7 +121,7 @@ struct AttributeImpl
     DOMString name() { return m_attrId ? DOMString() : m_data.attr->name(); }
 
     void setValue(DOMStringImpl *value, ElementImpl *element);
-    AttrImpl *createAttr(ElementImpl *element, DocumentPtr *docPtr);
+    AttrImpl *createAttr(ElementImpl *element, DocumentImpl *docPtr);
     void free();
 
     NodeImpl::Id m_attrId;
@@ -139,7 +139,7 @@ class ElementImpl : public NodeBaseImpl
     friend class NodeImpl;
     friend class khtml::CSSStyleSelector;
 public:
-    ElementImpl(DocumentPtr *doc);
+    ElementImpl(DocumentImpl *doc);
     ~ElementImpl();
     
     //Higher-level DOM stuff
@@ -276,8 +276,8 @@ class XMLElementImpl : public ElementImpl
 {
 
 public:
-    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id);
-    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName);
+    XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id);
+    XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName);
     ~XMLElementImpl();
 
     // DOM methods overridden from  parent classes

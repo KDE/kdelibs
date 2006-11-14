@@ -453,307 +453,307 @@ static const struct spool_attr_t spool_attr_contents =
 
 static const struct attrs wordlist_attr[] =
   {
-#line 137 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str0, ATTR_SRC},
-#line 43 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str1, ATTR_COLS},
-#line 42 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str2, ATTR_COLOR},
-#line 97 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str3, ATTR_ONERROR},
-#line 146 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str4, ATTR_TOP},
-#line 78 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str5, ATTR_LOOP},
-#line 48 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str6, ATTR_COORDS},
-#line 108 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str7, ATTR_ONRESET},
-#line 110 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str8, ATTR_ONSELECT},
-#line 39 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str9, ATTR_CODE},
-#line 129 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str10, ATTR_SCOPE},
-#line 123 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str11, ATTR_REL},
-#line 58 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str12, ATTR_FOR},
-#line 149 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str13, ATTR_TYPE},
-#line 71 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str14, ATTR_LABEL},
-#line 26 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str15, ATTR_BORDER},
-#line 127 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str16, ATTR_RULES},
-#line 27 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str17, ATTR_BORDERCOLOR},
-#line 57 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str18, ATTR_FACE},
-#line 121 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str19, ATTR_PROMPT},
-#line 133 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str20, ATTR_SELECTED},
-#line 74 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str21, ATTR_LEFT},
-#line 102 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str22, ATTR_ONLOAD},
-#line 124 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str23, ATTR_REV},
-#line 11 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str24, ATTR_ABBR},
-#line 93 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str25, ATTR_ONBLUR},
-#line 92 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str26, ATTR_ONABORT},
-#line 49 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str27, ATTR_DATA},
-#line 52 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str28, ATTR_DEFER},
-#line 13 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str29, ATTR_ACCEPT},
-#line 69 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str30, ATTR_ID},
-#line 143 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str31, ATTR_TARGET},
-#line 98 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str32, ATTR_ONFOCUS},
-#line 18 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str33, ATTR_ALT},
-#line 36 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str34, ATTR_CLASS},
-#line 148 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str35, ATTR_TRUESPEED},
-#line 38 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str36, ATTR_CLEAR},
-#line 51 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str37, ATTR_DECLARE},
-#line 40 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str38, ATTR_CODEBASE},
-#line 144 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str39, ATTR_TEXT},
-#line 139 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str40, ATTR_START},
-#line 158 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str41, ATTR_VSPACE},
-#line 45 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str42, ATTR_COMPACT},
-#line 153 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str43, ATTR_VALUE},
-#line 109 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str44, ATTR_ONRESIZE},
-#line 120 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str45, ATTR_PROFILE},
-#line 30 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str46, ATTR_CHAR},
-#line 59 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str47, ATTR_FRAME},
-#line 85 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str48, ATTR_NAME},
-#line 33 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str49, ATTR_CHARSET},
-#line 136 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str50, ATTR_SPAN},
-#line 134 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str51, ATTR_SHAPE},
-#line 44 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str52, ATTR_COLSPAN},
-#line 72 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str53, ATTR_LANG},
-#line 106 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str54, ATTR_ONMOUSEOVER},
-#line 50 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str55, ATTR_DATETIME},
-#line 105 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str56, ATTR_ONMOUSEOUT},
-#line 151 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str57, ATTR_USEMAP},
-#line 20 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str58, ATTR_AUTOCOMPLETE},
-#line 77 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str59, ATTR_LONGDESC},
-#line 107 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str60, ATTR_ONMOUSEUP},
-#line 114 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str61, ATTR_PAGEX},
-#line 60 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str62, ATTR_FRAMEBORDER},
-#line 46 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str63, ATTR_CONTENT},
-#line 84 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str64, ATTR_MULTIPLE},
-#line 70 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str65, ATTR_ISMAP},
-#line 37 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str66, ATTR_CLASSID},
-#line 88 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str67, ATTR_NOSAVE},
-#line 24 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str68, ATTR_BGCOLOR},
-#line 111 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str69, ATTR_ONSUBMIT},
-#line 104 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str70, ATTR_ONMOUSEMOVE},
-#line 32 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str71, ATTR_CHAROFF},
-#line 112 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str72, ATTR_ONUNLOAD},
-#line 125 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str73, ATTR_ROWS},
-#line 113 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str74, ATTR_OVERSRC},
-#line 87 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str75, ATTR_NORESIZE},
-#line 64 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str76, ATTR_HREF},
-#line 82 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str77, ATTR_MEDIA},
-#line 15 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str78, ATTR_ACTION},
-#line 53 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str79, ATTR_DIR},
-#line 35 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str80, ATTR_CITE},
-#line 145 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str81, ATTR_TITLE},
-#line 91 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str82, ATTR_OBJECT},
-#line 155 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str83, ATTR_VERSION},
-#line 132 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str84, ATTR_SCROLLING},
-#line 128 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str85, ATTR_SCHEME},
-#line 95 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str86, ATTR_ONCLICK},
-#line 66 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str87, ATTR_HSPACE},
-#line 130 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str88, ATTR_SCROLLAMOUNT},
-#line 135 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str89, ATTR_SIZE},
-#line 83 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str90, ATTR_METHOD},
-#line 56 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str91, ATTR_ENCTYPE},
-#line 160 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str92, ATTR_WRAP},
-#line 116 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str93, ATTR_PLAIN},
-#line 34 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str94, ATTR_CHECKED},
-#line 67 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str95, ATTR_HTML},
-#line 96 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str96, ATTR_ONDBLCLICK},
-#line 41 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str97, ATTR_CODETYPE},
-#line 152 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str98, ATTR_VALIGN},
-#line 61 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str99, ATTR_HEADERS},
-#line 161 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str100, ATTR_Z_INDEX},
-#line 142 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str101, ATTR_TABINDEX},
-#line 140 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str102, ATTR_STYLE},
-#line 31 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str103, ATTR_CHALLENGE},
-#line 86 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str104, ATTR_NOHREF},
-#line 25 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str105, ATTR_BGPROPERTIES},
-#line 16 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str106, ATTR_ALIGN},
-#line 131 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str107, ATTR_SCROLLDELAY},
-#line 55 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str108, ATTR_DISABLED},
-#line 115 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str109, ATTR_PAGEY},
-#line 29 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str110, ATTR_CELLSPACING},
-#line 12 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str111, ATTR_ACCEPT_CHARSET},
-#line 89 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str112, ATTR_NOSHADE},
-#line 147 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str113, ATTR_TOPMARGIN},
-#line 28 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str114, ATTR_CELLPADDING},
-#line 73 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str115, ATTR_LANGUAGE},
-#line 90 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str116, ATTR_NOWRAP},
-#line 126 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str117, ATTR_ROWSPAN},
-#line 19 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str118, ATTR_ARCHIVE},
-#line 21 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str119, ATTR_AXIS},
-#line 47 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str120, ATTR_CONTENTEDITABLE},
-#line 154 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str121, ATTR_VALUETYPE},
-#line 94 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str122, ATTR_ONCHANGE},
-#line 119 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str123, ATTR_PLUGINURL},
-#line 75 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str124, ATTR_LEFTMARGIN},
-#line 157 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str125, ATTR_VLINK},
-#line 103 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str126, ATTR_ONMOUSEDOWN},
-#line 23 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str127, ATTR_BEHAVIOR},
-#line 54 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str128, ATTR_DIRECTION},
-#line 22 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str129, ATTR_BACKGROUND},
-#line 141 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str130, ATTR_SUMMARY},
-#line 122 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str131, ATTR_READONLY},
-#line 17 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str132, ATTR_ALINK},
-#line 65 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str133, ATTR_HREFLANG},
-#line 100 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str134, ATTR_ONKEYPRESS},
-#line 68 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str135, ATTR_HTTP_EQUIV},
-#line 138 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str136, ATTR_STANDBY},
-#line 76 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str137, ATTR_LINK},
-#line 101 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str138, ATTR_ONKEYUP},
-#line 81 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str139, ATTR_MAXLENGTH},
-#line 117 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str140, ATTR_PLUGINPAGE},
-#line 118 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str141, ATTR_PLUGINSPAGE},
-#line 14 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str142, ATTR_ACCESSKEY},
-#line 63 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str143, ATTR_HIDDEN},
-#line 62 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str144, ATTR_HEIGHT},
-#line 150 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str145, ATTR_UNKNOWN},
-#line 159 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str146, ATTR_WIDTH},
-#line 99 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str147, ATTR_ONKEYDOWN},
-#line 80 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str148, ATTR_MARGINWIDTH},
 #line 156 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str149, ATTR_VISIBILITY},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str0, ATTR_SRC},
+#line 33 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str1, ATTR_COLS},
+#line 32 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str2, ATTR_COLOR},
+#line 72 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str3, ATTR_ONERROR},
+#line 100 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str4, ATTR_TOP},
+#line 59 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str5, ATTR_LOOP},
+#line 37 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str6, ATTR_COORDS},
+#line 149 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str7, ATTR_ONRESET},
+#line 150 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str8, ATTR_ONSELECT},
+#line 122 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str9, ATTR_CODE},
+#line 87 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str10, ATTR_SCOPE},
+#line 82 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str11, ATTR_REL},
+#line 127 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str12, ATTR_FOR},
+#line 103 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str13, ATTR_TYPE},
+#line 131 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str14, ATTR_LABEL},
+#line 21 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str15, ATTR_BORDER},
+#line 86 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str16, ATTR_RULES},
+#line 22 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str17, ATTR_BORDERCOLOR},
+#line 44 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str18, ATTR_FACE},
+#line 154 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str19, ATTR_PROMPT},
+#line 91 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str20, ATTR_SELECTED},
+#line 56 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str21, ATTR_LEFT},
+#line 143 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str22, ATTR_ONLOAD},
+#line 83 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str23, ATTR_REV},
+#line 114 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str24, ATTR_ABBR},
+#line 135 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str25, ATTR_ONBLUR},
+#line 71 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str26, ATTR_ONABORT},
+#line 125 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str27, ATTR_DATA},
+#line 39 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str28, ATTR_DEFER},
+#line 12 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str29, ATTR_ACCEPT},
+#line 130 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str30, ATTR_ID},
+#line 98 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str31, ATTR_TARGET},
+#line 139 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str32, ATTR_ONFOCUS},
+#line 116 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str33, ATTR_ALT},
+#line 120 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str34, ATTR_CLASS},
+#line 102 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str35, ATTR_TRUESPEED},
+#line 30 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str36, ATTR_CLEAR},
+#line 38 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str37, ATTR_DECLARE},
+#line 123 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str38, ATTR_CODEBASE},
+#line 99 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str39, ATTR_TEXT},
+#line 95 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str40, ATTR_START},
+#line 110 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str41, ATTR_VSPACE},
+#line 35 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str42, ATTR_COMPACT},
+#line 161 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str43, ATTR_VALUE},
+#line 73 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str44, ATTR_ONRESIZE},
+#line 153 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str45, ATTR_PROFILE},
+#line 25 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str46, ATTR_CHAR},
+#line 45 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str47, ATTR_FRAME},
+#line 133 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str48, ATTR_NAME},
+#line 28 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str49, ATTR_CHARSET},
+#line 94 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str50, ATTR_SPAN},
+#line 92 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str51, ATTR_SHAPE},
+#line 34 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str52, ATTR_COLSPAN},
+#line 54 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str53, ATTR_LANG},
+#line 147 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str54, ATTR_ONMOUSEOVER},
+#line 126 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str55, ATTR_DATETIME},
+#line 146 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str56, ATTR_ONMOUSEOUT},
+#line 160 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str57, ATTR_USEMAP},
+#line 16 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str58, ATTR_AUTOCOMPLETE},
+#line 132 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str59, ATTR_LONGDESC},
+#line 148 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str60, ATTR_ONMOUSEUP},
+#line 75 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str61, ATTR_PAGEX},
+#line 46 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str62, ATTR_FRAMEBORDER},
+#line 124 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str63, ATTR_CONTENT},
+#line 65 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str64, ATTR_MULTIPLE},
+#line 53 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str65, ATTR_ISMAP},
+#line 121 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str66, ATTR_CLASSID},
+#line 68 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str67, ATTR_NOSAVE},
+#line 19 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str68, ATTR_BGCOLOR},
+#line 151 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str69, ATTR_ONSUBMIT},
+#line 145 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str70, ATTR_ONMOUSEMOVE},
+#line 27 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str71, ATTR_CHAROFF},
+#line 152 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str72, ATTR_ONUNLOAD},
+#line 84 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str73, ATTR_ROWS},
+#line 74 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str74, ATTR_OVERSRC},
+#line 67 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str75, ATTR_NORESIZE},
+#line 129 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str76, ATTR_HREF},
+#line 63 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str77, ATTR_MEDIA},
+#line 115 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str78, ATTR_ACTION},
+#line 40 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str79, ATTR_DIR},
+#line 119 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str80, ATTR_CITE},
+#line 159 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str81, ATTR_TITLE},
+#line 134 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str82, ATTR_OBJECT},
+#line 107 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str83, ATTR_VERSION},
+#line 90 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str84, ATTR_SCROLLING},
+#line 155 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str85, ATTR_SCHEME},
+#line 137 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str86, ATTR_ONCLICK},
+#line 50 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str87, ATTR_HSPACE},
+#line 88 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str88, ATTR_SCROLLAMOUNT},
+#line 93 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str89, ATTR_SIZE},
+#line 64 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str90, ATTR_METHOD},
+#line 43 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str91, ATTR_ENCTYPE},
+#line 112 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str92, ATTR_WRAP},
+#line 77 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str93, ATTR_PLAIN},
+#line 29 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str94, ATTR_CHECKED},
+#line 51 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str95, ATTR_HTML},
+#line 138 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str96, ATTR_ONDBLCLICK},
+#line 31 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str97, ATTR_CODETYPE},
+#line 105 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str98, ATTR_VALIGN},
+#line 128 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str99, ATTR_HEADERS},
+#line 113 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str100, ATTR_Z_INDEX},
+#line 97 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str101, ATTR_TABINDEX},
+#line 96 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str102, ATTR_STYLE},
+#line 26 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str103, ATTR_CHALLENGE},
+#line 66 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str104, ATTR_NOHREF},
+#line 20 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str105, ATTR_BGPROPERTIES},
+#line 14 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str106, ATTR_ALIGN},
+#line 89 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str107, ATTR_SCROLLDELAY},
+#line 42 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str108, ATTR_DISABLED},
+#line 76 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str109, ATTR_PAGEY},
+#line 24 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str110, ATTR_CELLSPACING},
+#line 11 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str111, ATTR_ACCEPT_CHARSET},
+#line 69 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str112, ATTR_NOSHADE},
+#line 101 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str113, ATTR_TOPMARGIN},
+#line 23 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str114, ATTR_CELLPADDING},
+#line 55 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str115, ATTR_LANGUAGE},
+#line 70 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str116, ATTR_NOWRAP},
+#line 85 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str117, ATTR_ROWSPAN},
+#line 117 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str118, ATTR_ARCHIVE},
+#line 17 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str119, ATTR_AXIS},
+#line 36 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str120, ATTR_CONTENTEDITABLE},
+#line 106 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str121, ATTR_VALUETYPE},
+#line 136 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str122, ATTR_ONCHANGE},
+#line 80 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str123, ATTR_PLUGINURL},
+#line 57 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str124, ATTR_LEFTMARGIN},
+#line 109 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str125, ATTR_VLINK},
+#line 144 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str126, ATTR_ONMOUSEDOWN},
+#line 18 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str127, ATTR_BEHAVIOR},
+#line 41 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str128, ATTR_DIRECTION},
+#line 118 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str129, ATTR_BACKGROUND},
+#line 158 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str130, ATTR_SUMMARY},
+#line 81 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str131, ATTR_READONLY},
+#line 15 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str132, ATTR_ALINK},
+#line 49 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str133, ATTR_HREFLANG},
+#line 141 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str134, ATTR_ONKEYPRESS},
+#line 52 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str135, ATTR_HTTP_EQUIV},
+#line 157 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str136, ATTR_STANDBY},
+#line 58 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str137, ATTR_LINK},
+#line 142 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str138, ATTR_ONKEYUP},
+#line 62 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str139, ATTR_MAXLENGTH},
+#line 78 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str140, ATTR_PLUGINPAGE},
 #line 79 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str141, ATTR_PLUGINSPAGE},
+#line 13 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str142, ATTR_ACCESSKEY},
+#line 48 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str143, ATTR_HIDDEN},
+#line 47 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str144, ATTR_HEIGHT},
+#line 104 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str145, ATTR_UNKNOWN},
+#line 111 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str146, ATTR_WIDTH},
+#line 140 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str147, ATTR_ONKEYDOWN},
+#line 61 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str148, ATTR_MARGINWIDTH},
+#line 108 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str149, ATTR_VISIBILITY},
+#line 60 "htmlattrs.gperf"
     {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str150, ATTR_MARGINHEIGHT}
   };
 
@@ -843,18 +843,13 @@ findAttr (register const char *str, register unsigned int len)
 
 static const unsigned short attrList[] = {
     65535,
-    24,
     135,
     29,
     142,
-    78,
     106,
     132,
-    33,
-    118,
     58,
     119,
-    129,
     127,
     68,
     105,
@@ -867,22 +862,14 @@ static const unsigned short attrList[] = {
     71,
     49,
     94,
-    80,
-    34,
-    66,
     36,
-    9,
-    38,
     97,
     2,
     1,
     52,
     42,
-    63,
     120,
     6,
-    27,
-    55,
     37,
     28,
     79,
@@ -890,26 +877,20 @@ static const unsigned short attrList[] = {
     108,
     91,
     18,
-    12,
     47,
     62,
-    99,
     144,
     143,
-    76,
     133,
     87,
     95,
     135,
-    30,
     65,
-    14,
     53,
     115,
     21,
     124,
     137,
-    59,
     5,
     150,
     148,
@@ -917,19 +898,79 @@ static const unsigned short attrList[] = {
     77,
     90,
     64,
-    48,
     104,
     75,
     67,
     112,
     116,
-    82,
     26,
+    3,
+    44,
+    74,
+    61,
+    109,
+    93,
+    140,
+    141,
+    123,
+    131,
+    11,
+    23,
+    73,
+    117,
+    16,
+    10,
+    88,
+    107,
+    84,
+    20,
+    51,
+    89,
+    50,
+    40,
+    102,
+    101,
+    31,
+    39,
+    4,
+    113,
+    35,
+    13,
+    145,
+    98,
+    121,
+    83,
+    149,
+    125,
+    41,
+    146,
+    92,
+    135,
+    24,
+    78,
+    33,
+    118,
+    129,
+    80,
+    34,
+    66,
+    9,
+    38,
+    63,
+    27,
+    55,
+    12,
+    99,
+    76,
+    30,
+    14,
+    59,
+    48,
+    82,
     25,
     122,
     86,
     96,
-    3,
     32,
     147,
     134,
@@ -941,59 +982,18 @@ static const unsigned short attrList[] = {
     54,
     60,
     7,
-    44,
     8,
     69,
     72,
-    74,
-    61,
-    109,
-    93,
-    140,
-    141,
-    123,
     45,
     19,
-    131,
-    11,
-    23,
-    73,
-    117,
-    16,
     85,
-    10,
-    88,
-    107,
-    84,
-    20,
-    51,
-    89,
-    50,
     0,
     136,
-    40,
-    102,
     130,
-    101,
-    31,
-    39,
     81,
-    4,
-    113,
-    35,
-    13,
-    145,
     57,
-    98,
     43,
-    121,
-    83,
-    149,
-    125,
-    41,
-    146,
-    92,
-    135,
     65535
 };
 

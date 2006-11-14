@@ -33,7 +33,7 @@ class DOMString;
 class HTMLAnchorElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLAnchorElementImpl(DocumentPtr *doc)
+    HTMLAnchorElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc), m_hasTarget(false) {}
 
     virtual bool isFocusable() const { return m_hasAnchor; }
@@ -53,7 +53,7 @@ protected:
 class HTMLBRElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBRElementImpl(DocumentPtr *doc)
+    HTMLBRElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
@@ -66,7 +66,7 @@ public:
 class HTMLFontElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFontElementImpl(DocumentPtr *doc)
+    HTMLFontElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;

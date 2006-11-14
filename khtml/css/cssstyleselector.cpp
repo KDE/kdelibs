@@ -637,8 +637,8 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
                 style->setDisplay(TABLE_CELL);
                 style->setFloating(FNONE);
             }
-//             else if (e->id() == ID_TABLE)
-//                 style->setDisplay(style->isDisplayInlineType() ? INLINE_TABLE : TABLE);
+            else if (e->id() == ID_TABLE)
+                style->setDisplay(style->isDisplayInlineType() ? INLINE_TABLE : TABLE);
         }
 
         // Table headers with a text-align of auto will change the text-align to center.
@@ -702,12 +702,25 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
     else
         style->addToTextDecorationsInEffect(style->textDecoration());
 
+    // If either overflow value is not visible, change to auto.
+    if (style->overflowX() == OMARQUEE && style->overflowY() != OMARQUEE)
+        style->setOverflowY(OMARQUEE);
+    else if (style->overflowY() == OMARQUEE && style->overflowX() != OMARQUEE)
+        style->setOverflowX(OMARQUEE);
+    else if (style->overflowX() == OVISIBLE && style->overflowY() != OVISIBLE)
+        style->setOverflowX(OAUTO);
+    else if (style->overflowY() == OVISIBLE && style->overflowX() != OVISIBLE)
+        style->setOverflowY(OAUTO);
+
     // Table rows, sections and the table itself will support overflow:hidden and will ignore scroll/auto.
     // FIXME: Eventually table sections will support auto and scroll.
-    if (style->overflow() != OVISIBLE && style->overflow() != OHIDDEN &&
-        (style->display() == TABLE || style->display() == INLINE_TABLE ||
-         style->display() == TABLE_ROW_GROUP || style->display() == TABLE_ROW))
-        style->setOverflow(OVISIBLE);
+    if (style->display() == TABLE || style->display() == INLINE_TABLE ||
+        style->display() == TABLE_ROW_GROUP || style->display() == TABLE_ROW) {
+        if (style->overflowX() != OVISIBLE && style->overflowX() != OHIDDEN)
+            style->setOverflowX(OVISIBLE);
+        if (style->overflowY() != OVISIBLE && style->overflowY() != OHIDDEN)
+            style->setOverflowY(OVISIBLE);
+    }
 
     // Cull out any useless layers and also repeat patterns into additional layers.
     style->adjustBackgroundLayers();
@@ -1090,27 +1103,28 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         DOMStringImpl* value = e->getAttributeImpl(sel->attr);
         if(!value) return false; // attribute is not set
 
+        // attributes are always case-sensitive in XHTML
+        // attributes are sometimes case-sensitive in HTML
+        // we only treat id and class selectors as case-sensitive in HTML strict
+        // for compatibility reasons
+        bool caseSensitive = e->getDocument()->htmlMode() == DocumentImpl::XHtml;
+        bool caseSensitive_alt = strictParsing || caseSensitive;
+        caseSensitive |= (sel->attr > ATTR_LAST_CI_ATTR);
+
         switch(sel->match)
         {
-        case CSSSelector::Exact:
-            /* attribute values are case insensitive in all HTML modes,
-               even in the strict ones */
-            if ( e->getDocument()->htmlMode() != DocumentImpl::XHtml ) {
-                if ( strcasecmp(sel->value, value) )
-                    return false;
-            } else {
-                if ( strcmp(sel->value, value) )
-                    return false;
-            }
+        case CSSSelector::Set:
+            // True if we make it this far
             break;
         case CSSSelector::Id:
-	    if( (strictParsing && strcmp(sel->value, value) ) ||
-                (!strictParsing && strcasecmp(sel->value, value)))
-                return false;
-            break;
-        case CSSSelector::Set:
+            caseSensitive = caseSensitive_alt;
+            // no break
+        case CSSSelector::Exact:
+            return (caseSensitive && !strcmp(sel->value, value)) ||
+                   (!caseSensitive && !strcasecmp(sel->value, value));
             break;
         case CSSSelector::Class:
+            caseSensitive = caseSensitive_alt;
             // no break
         case CSSSelector::List:
         {
@@ -1121,8 +1135,8 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Selector string may not contain spaces
             if ((sel->attr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
             if (sel_len == val_len)
-                return (strictParsing && !strcmp(sel->value, value)) ||
-		       (!strictParsing && !strcasecmp(sel->value, value));
+                return (caseSensitive && !strcmp(sel->value, value)) ||
+		       (!caseSensitive && !strcasecmp(sel->value, value));
             // else the value is longer and can be a list
             if ( sel->match == CSSSelector::Class && !e->hasClassList() ) return false;
 
@@ -1150,21 +1164,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             //kDebug( 6080 ) << "checking for contains match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.contains(sel_str);
+            return val_str.contains(sel_str, caseSensitive);
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.startsWith(sel_str);
+            return val_str.startsWith(sel_str, caseSensitive);
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.endsWith(sel_str);
+            return val_str.endsWith(sel_str, caseSensitive);
         }
         case CSSSelector::Hyphen:
         {
@@ -1175,7 +1189,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             const QString& selStr = sel_str;
             if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
-            if(str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive)) != 0) return false;
+            if(str.indexOf(selStr, 0, (caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive)) != 0) return false;
             // It does. Check for exact match or following '-':
             if(str.length() != selStr.length()
                 && str[selStr.length()] != '-') return false;
@@ -2382,7 +2396,18 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_OVERFLOW:
     {
-        HANDLE_INHERIT_AND_INITIAL(overflow, Overflow)
+        if (isInherit) {
+            style->setOverflowX(parentStyle->overflowX());
+            style->setOverflowY(parentStyle->overflowY());
+            return;
+        }
+
+        if (isInitial) {
+            style->setOverflowX(RenderStyle::initialOverflowX());
+            style->setOverflowY(RenderStyle::initialOverflowY());
+            return;
+        }
+
         if (!primitiveValue) return;
         EOverflow o;
         switch(primitiveValue->getIdent())
@@ -2400,10 +2425,52 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         default:
             return;
         }
-        style->setOverflow(o);
+        style->setOverflowX(o);
+        style->setOverflowY(o);
         return;
     }
-    break;
+    case CSS_PROP_OVERFLOW_X:
+    {
+        HANDLE_INHERIT_AND_INITIAL(overflowX, OverflowX)
+        if (!primitiveValue) return;
+        EOverflow o;
+        switch(primitiveValue->getIdent())
+        {
+        case CSS_VAL_VISIBLE:
+            o = OVISIBLE; break;
+        case CSS_VAL_HIDDEN:
+            o = OHIDDEN; break;
+        case CSS_VAL_SCROLL:
+	    o = OSCROLL; break;
+        case CSS_VAL_AUTO:
+	    o = OAUTO; break;
+        default:
+            return;
+        }
+        style->setOverflowX(o);
+        return;
+    }
+    case CSS_PROP_OVERFLOW_Y:
+    {
+        HANDLE_INHERIT_AND_INITIAL(overflowY, OverflowY)
+        if (!primitiveValue) return;
+        EOverflow o;
+        switch(primitiveValue->getIdent())
+        {
+        case CSS_VAL_VISIBLE:
+            o = OVISIBLE; break;
+        case CSS_VAL_HIDDEN:
+            o = OHIDDEN; break;
+        case CSS_VAL_SCROLL:
+            o = OSCROLL; break;
+        case CSS_VAL_AUTO:
+            o = OAUTO; break;
+        default:
+            return;
+        }
+        style->setOverflowY(o);
+        return;
+    }
     case CSS_PROP_PAGE_BREAK_BEFORE:
     {
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakBefore, PageBreakBefore, PageBreak)
@@ -2447,7 +2514,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_PAGE_BREAK_INSIDE: {
-        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakInside, PageBreakInside, PageBreak)
+        HANDLE_INHERIT_AND_INITIAL(pageBreakInside, PageBreakInside)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_AUTO)
             style->setPageBreakInside(true);
@@ -3865,6 +3932,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 break;
         }
         break;
+    case CSS_PROP_TEXT_OVERFLOW: {
+        // This property is supported by WinIE, and so we leave off the "-khtml-" in order to
+        // work with WinIE-specific pages that use the property.
+        HANDLE_INHERIT_AND_INITIAL(textOverflow, TextOverflow)
+        if (!primitiveValue || !primitiveValue->getIdent())
+            return;
+        style->setTextOverflow(primitiveValue->getIdent() == CSS_VAL_ELLIPSIS);
+        break;
+    }
     }
     default:
         return;

@@ -85,8 +85,10 @@ RenderFlow* RenderFlow::continuationBefore(RenderObject* beforeChild)
 void RenderFlow::addChildWithContinuation(RenderObject* newChild, RenderObject* beforeChild)
 {
     RenderFlow* flow = continuationBefore(beforeChild);
-    KHTMLAssert(!beforeChild || beforeChild->parent()->isRenderBlock() ||
-                beforeChild->parent()->isRenderInline());
+    while(beforeChild && beforeChild->parent() != this && !beforeChild->parent()->isAnonymousBlock()) {
+        // skip implicit containers around beforeChild
+        beforeChild = beforeChild->parent();
+    }
     RenderFlow* beforeChildParent = beforeChild ? static_cast<RenderFlow*>(beforeChild->parent()) :
                                     (flow->continuation() ? flow->continuation() : flow);
 
@@ -259,7 +261,7 @@ bool RenderFlow::hitTestLines(NodeInfo& i, int x, int y, int tx, int ty, HitTest
             }
         }
     }
-    
+
     return false;
 }
 
@@ -319,7 +321,7 @@ RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int lp = c->yPos() + c->lowestPosition(false);
             bottom = qMax(bottom, lp);
         }
@@ -344,7 +346,7 @@ int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int rp = c->xPos() + c->rightmostPosition(false);
             right = qMax(right, rp);
         }
@@ -369,7 +371,7 @@ int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf)
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int lp = c->xPos() + c->leftmostPosition(false);
             left = qMin(left, lp);
         }
@@ -394,7 +396,7 @@ int RenderFlow::highestPosition(bool includeOverflowInterior, bool includeSelf) 
     // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
     // the abs div.
     for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
-        if (!c->isFloatingOrPositioned() && !c->isText()) {
+        if (!c->isFloatingOrPositioned() && !c->isText() && !c->isInlineFlow()) {
             int hp = c->yPos() + c->highestPosition(false);
             top = qMin(top, hp);
         }

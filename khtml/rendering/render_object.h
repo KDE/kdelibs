@@ -176,6 +176,10 @@ public:
     bool hasClip() const { return isPositioned() &&  style()->hasClip(); }
     bool hasOverflowClip() const { return style()->hidesOverflow(); }
 
+    bool scrollsOverflow() const { return scrollsOverflowX() || scrollsOverflowY(); }
+    bool scrollsOverflowX() const { return (style()->overflowX() == OSCROLL || style()->overflowX() == OAUTO); }
+    bool scrollsOverflowY() const { return (style()->overflowY() == OSCROLL || style()->overflowY() == OAUTO); }
+
     virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
     virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
 

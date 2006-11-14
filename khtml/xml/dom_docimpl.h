@@ -236,12 +236,12 @@ public:
 
     /**
      * This method returns true if all top-level stylesheets have loaded (including
-     * any @imports that they may be loading).
+     * any \@imports that they may be loading).
      */
     bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0 || m_ignorePendingStylesheets; }
 
     /**
-     * Increments the number of pending sheets.  The <link> elements
+     * Increments the number of pending sheets.  The \<link\> elements
      * invoke this to add themselves to the loading list.
      */
     void addPendingSheet() { m_pendingStylesheets++; }
@@ -256,8 +256,8 @@ public:
      * Called when one or more stylesheets in the document may have been added, removed or changed.
      *
      * Creates a new style selector and assign it to this document. This is done by iterating through all nodes in
-     * document (or those before <BODY> in a HTML document), searching for stylesheets. Stylesheets can be contained in
-     * <LINK>, <STYLE> or <BODY> elements, as well as processing instructions (XML documents only). A list is
+     * document (or those before \<BODY\> in a HTML document), searching for stylesheets. Stylesheets can be contained in
+     * \<LINK\>, \<STYLE\> or \<BODY\> elements, as well as processing instructions (XML documents only). A list is
      * constructed from these which is used to create the a new style selector which collates all of the stylesheets
      * found and is used to calculate the derived styles for all rendering objects.
      *
@@ -675,12 +675,29 @@ protected:
     SharedPtr<khtml::RenderArena> m_renderArena;
 private:
     mutable DOMString m_domain;
+    int m_selfOnlyRefCount;
+public:
+    // Nodes belonging to this document hold "self-only" references -
+    // these are enough to keep the document from being destroyed, but
+    // not enough to keep it from removing its children. This allows a
+    // node that outlives its document to still have a valid document
+    // pointer without introducing reference cycles
+
+    void selfOnlyRef() { ++m_selfOnlyRefCount; }
+    void selfOnlyDeref() {
+        --m_selfOnlyRefCount;
+        if (!m_selfOnlyRefCount && !refCount())
+            delete this;
+    }
+    
+    // This is called when our last outside reference dies
+    virtual void removedLastRef();
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
-    DocumentFragmentImpl(DocumentPtr *doc);
+    DocumentFragmentImpl(DocumentImpl *doc);
     DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     // DOM methods overridden from  parent classes
@@ -698,7 +715,7 @@ public:
 class DocumentTypeImpl : public NodeImpl
 {
 public:
-    DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentPtr *doc,
+    DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentImpl *doc,
                      const DOMString &qualifiedName, const DOMString &publicId,
                      const DOMString &systemId);
     ~DocumentTypeImpl();

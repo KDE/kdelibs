@@ -656,7 +656,7 @@ bool RenderObject::sizesToMaxWidth() const
 
     // Children of a horizontal marquee do not fill the container by default.
     // FIXME: Need to deal with MAUTO value properly.  It could be vertical.
-    if (parent()->style()->overflow() == OMARQUEE) {
+    if (parent()->style()->overflowX() == OMARQUEE) {
         EMarqueeDirection dir = parent()->style()->marqueeDirection();
         if (dir == MAUTO || dir == MFORWARD || dir == MBACKWARD || dir == MLEFT || dir == MRIGHT)
             return true;
@@ -1290,6 +1290,7 @@ void RenderObject::setStyle(RenderStyle *style)
         if ( d >= RenderStyle::Visible && !isText() && m_parent &&
              ( d == RenderStyle::Position ||
                m_style->outlineWidth() > style->outlineWidth() ||
+               (!m_style->hidesOverflow() && style->hidesOverflow()) ||
                ( m_style->hasClip() && !(m_style->clip() == style->clip()) ) ) ) {
             // schedule a repaint with the old style
             if (layer() && !isInlineFlow())

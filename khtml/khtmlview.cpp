@@ -262,8 +262,8 @@ public:
             {28,1}, {20,1}, {20,2}, {20,3}, {20,4}, {20,6}, {20,8}, {0,0}
         };
         if (!scrollTimerId ||
-            (scrollDirection != direction &&
-             (scrollDirection != oppositedir || scrollSuspended))) {
+            (static_cast<int>(scrollDirection) != direction &&
+             (static_cast<int>(scrollDirection) != oppositedir || scrollSuspended))) {
             scrollTiming = 6;
             scrollBy = timings[scrollTiming].pixels;
             scrollDirection = direction;
@@ -753,13 +753,14 @@ void KHTMLView::layout()
         }
 
         if (ref) {
-            if( ref->style()->overflow() == OHIDDEN ) {
-                if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            } else {
-                if (QScrollArea::verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
+            if( ref->style()->overflowX() == OHIDDEN )
+                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+            else
                 if (QScrollArea::horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
-            }
+            if ( ref->style()->overflowY() == OHIDDEN )
+                if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+            else
+                if (QScrollArea::verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -2042,6 +2043,15 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
+
+    // See whether we're in the middle of detach. If so, we want to
+    // clear focus... The document code will be careful to not
+    // emit events in that case..
+    if (oldFocusNode && oldFocusNode->renderer() &&
+        !oldFocusNode->renderer()->parent()) {
+        doc->setFocusNode(0);
+        return true;
+    }
 
 #if 1
     // If the user has scrolled the document, then instead of picking
@@ -3359,7 +3369,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         // ensure quick reset of contentsMoving flag
         scheduleRepaint(0, 0, 0, 0);
     }
-    
+
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 

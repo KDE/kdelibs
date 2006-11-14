@@ -1,4 +1,4 @@
-/**
+/*
  * css_renderstyleimpl.h
  *
  * Copyright 2004  Zack Rusin <zack@kde.org>

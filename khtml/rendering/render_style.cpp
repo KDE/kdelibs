@@ -658,7 +658,7 @@ RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid) const
     if (noninherited_flags.f._styleType==NOPSEUDO)
         for (ps = pseudoStyle; ps; ps = ps->pseudoStyle)
             if (ps->noninherited_flags.f._styleType==pid)
-		break;
+                break;
     return ps;
 }
 
@@ -764,7 +764,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
          !(inherited->border_hspacing == other->inherited->border_hspacing) ||
          !(inherited->border_vspacing == other->inherited->border_vspacing) ||
          !(inherited_flags.f._visuallyOrdered == other->inherited_flags.f._visuallyOrdered) ||
-         !(inherited_flags.f._htmlHacks == other->inherited_flags.f._htmlHacks) )
+         !(inherited_flags.f._htmlHacks == other->inherited_flags.f._htmlHacks) ||
+         !(noninherited_flags.f._textOverflow == other->noninherited_flags.f._textOverflow) )
         return CbLayout;
 
     // changes causing Layout changes:
@@ -811,6 +812,11 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	)
         return Layout;
 
+    // Overflow returns a layout hint.
+    if (noninherited_flags.f._overflowX != other->noninherited_flags.f._overflowX ||
+        noninherited_flags.f._overflowY != other->noninherited_flags.f._overflowY)
+        return Layout;
+
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
@@ -831,12 +837,10 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     // Visible:
 // 	EVisibility _visibility : 2;
-//     EOverflow _overflow : 4 ;
 // 	int _text_decorations : 4;
 //     DataRef<StyleBackgroundData> background;
     if (inherited->color != other->inherited->color ||
         !(inherited_flags.f._visibility == other->inherited_flags.f._visibility) ||
-        !(noninherited_flags.f._overflow == other->noninherited_flags.f._overflow) ||
         !(inherited_flags.f._text_decorations == other->inherited_flags.f._text_decorations) ||
         !(noninherited_flags.f._hasClip == other->noninherited_flags.f._hasClip) ||
         visual->textDecoration != other->visual->textDecoration ||

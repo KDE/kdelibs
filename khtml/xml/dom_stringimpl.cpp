@@ -87,7 +87,7 @@ void DOMStringImpl::append(DOMStringImpl *str)
     }
 }
 
-void DOMStringImpl::insert(DOMStringImpl *str, uint pos)
+void DOMStringImpl::insert(DOMStringImpl *str, unsigned int pos)
 {
     if(pos > l)
     {
@@ -119,7 +119,7 @@ void DOMStringImpl::truncate(int len)
     l = len;
 }
 
-void DOMStringImpl::remove(uint pos, int len)
+void DOMStringImpl::remove(unsigned int pos, int len)
 {
   if(pos >= l ) return;
   if(pos+len > l)
@@ -134,7 +134,7 @@ void DOMStringImpl::remove(uint pos, int len)
   l = newLen;
 }
 
-DOMStringImpl *DOMStringImpl::split(uint pos)
+DOMStringImpl *DOMStringImpl::split(unsigned int pos)
 {
   if( pos >=l ) return new DOMStringImpl();
 
@@ -144,7 +144,7 @@ DOMStringImpl *DOMStringImpl::split(uint pos)
   return str;
 }
 
-DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
+DOMStringImpl *DOMStringImpl::substring(unsigned int pos, unsigned int len)
 {
   if( pos >=l ) return new DOMStringImpl();
   if(pos+len > l)

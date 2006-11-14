@@ -24,6 +24,7 @@
 
 namespace khtml {
 
+class EllipsisBox;
 class InlineFlowBox;
 class RootInlineBox;
 
@@ -106,6 +107,11 @@ public:
 
     virtual long minOffset() const { return 0; }
     virtual long maxOffset() const { return 0; }
+
+    virtual void clearTruncation() {};
+
+    virtual bool canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth);
+    virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool&);
 
 public: // FIXME: Would like to make this protected, but methods are accessing these
         // members over in the part.
@@ -194,6 +200,9 @@ public:
                 p->m_hasTextDescendant = true;
         }
     }
+
+    virtual void clearTruncation();
+
     void removeFromLine(InlineBox* child);
     virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty);
     void paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
@@ -243,6 +252,9 @@ public:
     void setAfterPageBreak(bool b = true) { m_afterPageBreak = b; }
     bool afterPageBreak() const { return m_afterPageBreak; }
 
+    virtual bool canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth);
+    virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool&);
+
 protected:
     InlineBox* m_firstChild;
     InlineBox* m_lastChild;
@@ -256,20 +268,41 @@ protected:
 class RootInlineBox : public InlineFlowBox
 {
 public:
-    RootInlineBox(RenderObject* obj)
-    :InlineFlowBox(obj)
+    RootInlineBox(RenderObject* obj) : InlineFlowBox(obj), m_ellipsisBox(0)
     {
         m_topOverflow = m_bottomOverflow = 0;
     }
+
+    virtual void detach(RenderArena* renderArena);
+    void detachEllipsisBox(RenderArena* renderArena);
+
+    RootInlineBox* nextRootBox() { return static_cast<RootInlineBox*>(m_nextLine); }
+    RootInlineBox* prevRootBox() { return static_cast<RootInlineBox*>(m_prevLine); }
 
     virtual bool isRootInlineBox() const { return true; }
     virtual int topOverflow() const { return m_topOverflow; }
     virtual int bottomOverflow() const { return m_bottomOverflow; }
     virtual void setOverflowPositions(int top, int bottom) { m_topOverflow = top; m_bottomOverflow = bottom; }
 
+    bool canAccommodateEllipsis(bool ltr, int blockEdge, int lineBoxEdge, int ellipsisWidth);
+    void placeEllipsis(const DOM::DOMString& ellipsisStr, bool ltr, int blockEdge, int ellipsisWidth, InlineBox* markupBox = 0);
+    virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool&);
+
+    EllipsisBox* ellipsisBox() const { return m_ellipsisBox; }
+    void paintEllipsisBox(RenderObject::PaintInfo& i, int _tx, int _ty) const;
+    bool hitTestEllipsisBox(RenderObject::NodeInfo& info, int _x, int _y, int _tx, int _ty);
+
+    virtual void clearTruncation();
+
+    virtual void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
+    virtual bool nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty);
+
 protected:
     int m_topOverflow;
     int m_bottomOverflow;
+
+    // An inline text box that represents our text truncation string.
+    EllipsisBox* m_ellipsisBox;
 };
 
 } //namespace

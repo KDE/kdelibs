@@ -36,7 +36,9 @@ namespace KJS {
   public:
     /**
      * @param _listener the function object, that will be called when the event is emitted
+     * @param _compareListenerImp Compare Listener implementation.
      * @param _win Window object, for memory management and caching.
+     * @param _html \c true if it is HTML. 
      * Never create a JSEventListener directly, use Window::getJSEventListener.
      */
     JSEventListener(ObjectImp* _listener, ObjectImp *_compareListenerImp, ObjectImp* _win, bool _html = false);

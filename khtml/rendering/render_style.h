@@ -899,7 +899,8 @@ protected:
             struct {
                 EDisplay _display : 5;
                 EDisplay _originalDisplay: 5;
-                EOverflow _overflow : 4 ;
+                EOverflow _overflowX : 4 ;
+                EOverflow _overflowY : 4 ;
                 EVerticalAlign _vertical_align : 4;
                 EClear _clear : 2;
                 EPosition _position : 2;
@@ -915,7 +916,10 @@ protected:
                 unsigned _pseudoBits : 8;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 16;
+                // non CSS2 non-inherited
+                bool _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
+
+                unsigned int unused : 11;
             } f;
             quint64 _niflags;
         };
@@ -969,7 +973,8 @@ protected:
 	                                  // makes use of uninitialised bits according to valgrind
 
         noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
-	noninherited_flags.f._overflow = initialOverflow();
+	noninherited_flags.f._overflowX = initialOverflowX();
+	noninherited_flags.f._overflowY = initialOverflowY();
 	noninherited_flags.f._vertical_align = initialVerticalAlign();
 	noninherited_flags.f._clear = initialClear();
 	noninherited_flags.f._position = initialPosition();
@@ -982,6 +987,7 @@ protected:
 	noninherited_flags.f._hasClip = false;
         noninherited_flags.f._pseudoBits = 0;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
+	noninherited_flags.f._textOverflow = initialTextOverflow();
         noninherited_flags.f.unused = 0;
     }
 
@@ -1079,9 +1085,12 @@ public:
     bool outlineStyleIsAuto() const { return background->m_outline._auto; }
     const QColor &  outlineColor() const {  return background->m_outline.color; }
 
-    EOverflow overflow() const { return  noninherited_flags.f._overflow; }
-    bool hidesOverflow() const { return overflow() != OVISIBLE; }
-    bool scrollsOverflow() const { return overflow() == OSCROLL || overflow() == OAUTO; }
+    EOverflow overflowX() const { return  noninherited_flags.f._overflowX; }
+    EOverflow overflowY() const { return  noninherited_flags.f._overflowY; }
+    bool hidesOverflow() const {
+        // either both overflow are visible or none are
+        return overflowX() != OVISIBLE;
+    }
 
     EVisibility visibility() const { return inherited_flags.f._visibility; }
     EVerticalAlign verticalAlign() const { return  noninherited_flags.f._vertical_align; }
@@ -1193,6 +1202,7 @@ public:
     int marqueeLoopCount() { return css3NonInheritedData->marquee->loops; }
     EMarqueeBehavior marqueeBehavior() { return css3NonInheritedData->marquee->behavior; }
     EMarqueeDirection marqueeDirection() { return css3NonInheritedData->marquee->direction; }
+    bool textOverflow() const { return noninherited_flags.f._textOverflow; }
     // End CSS3 Getters
 
 // attribute setter methods
@@ -1243,7 +1253,8 @@ public:
     }
     void setOutlineColor(const QColor & v) {  SET_VAR(background,m_outline.color,v) }
 
-    void setOverflow(EOverflow v) {  noninherited_flags.f._overflow = v; }
+    void setOverflowX(EOverflow v) {  noninherited_flags.f._overflowX = v; }
+    void setOverflowY(EOverflow v) {  noninherited_flags.f._overflowY = v; }
     void setVisibility(EVisibility v) { inherited_flags.f._visibility = v; }
     void setVerticalAlign(EVerticalAlign v) { noninherited_flags.f._vertical_align = v; }
     void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
@@ -1343,6 +1354,7 @@ public:
     void setMarqueeDirection(EMarqueeDirection d) { SET_VAR(css3NonInheritedData.access()->marquee, direction, d); }
     void setMarqueeBehavior(EMarqueeBehavior b) { SET_VAR(css3NonInheritedData.access()->marquee, behavior, b); }
     void setMarqueeLoopCount(int i) { SET_VAR(css3NonInheritedData.access()->marquee, loops, i); }
+    void setTextOverflow(bool b) { noninherited_flags.f._textOverflow = b; }
     // End CSS3 Setters
 
     QPalette palette() const { return visual->palette; }
@@ -1413,8 +1425,10 @@ public:
     static EFloat initialFloating() { return FNONE; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return LDISC; }
-    static EOverflow initialOverflow() { return OVISIBLE; }
+    static EOverflow initialOverflowX() { return OVISIBLE; }
+    static EOverflow initialOverflowY() { return OVISIBLE; }
     static EPageBreak initialPageBreak() { return PBAUTO; }
+    static bool initialPageBreakInside() { return true; }
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
@@ -1454,6 +1468,7 @@ public:
     static Length initialMarqueeIncrement() { return Length(6, Fixed); }
     static EMarqueeBehavior initialMarqueeBehavior() { return MSCROLL; }
     static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
+    static bool initialTextOverflow() { return false; }
 };
 
 class RenderPageStyle {

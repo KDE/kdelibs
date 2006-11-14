@@ -49,7 +49,7 @@ using namespace DOM;
 using namespace khtml;
 
 // -------------------------------------------------------------------------
-HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
+HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
@@ -222,7 +222,7 @@ void HTMLObjectBaseElementImpl::attach() {
 
 // -------------------------------------------------------------------------
 
-HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentPtr *doc)
+HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
   : HTMLObjectBaseElementImpl(doc)
 {
     serviceType = "application/x-java-applet";
@@ -288,7 +288,7 @@ void HTMLAppletElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
+HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentImpl *doc)
     : HTMLObjectBaseElementImpl(doc)
 {
 }
@@ -363,7 +363,7 @@ void HTMLEmbedElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc)
+HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentImpl *doc)
     : HTMLObjectBaseElementImpl(doc)
 {
 }

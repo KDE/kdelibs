@@ -44,7 +44,7 @@ class KCharsets;
 class KHTMLView;
 
 namespace DOM {
-    class DocumentPtr;
+    class DocumentImpl;
     class DocumentFragmentImpl;
 }
 
@@ -122,8 +122,8 @@ class HTMLTokenizer : public Tokenizer, public CachedObjectClient
 {
     friend class KHTMLParser;
 public:
-    HTMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
-    HTMLTokenizer(DOM::DocumentPtr *, DOM::DocumentFragmentImpl *frag);
+    HTMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
+    HTMLTokenizer(DOM::DocumentImpl *, DOM::DocumentFragmentImpl *frag);
     virtual ~HTMLTokenizer();
 
     void begin();
@@ -133,10 +133,10 @@ public:
     void timerEvent( QTimerEvent *e );
     virtual void setOnHold(bool _onHold);
     void abort() { m_abort = true; }
-    virtual void setAutoClose(bool b=true);    
+    virtual void setAutoClose(bool b=true);
     virtual bool isWaitingForScripts() const;
     virtual bool isExecutingScript() const;
-      
+
 protected:
     void reset();
     void addPending();
@@ -342,6 +342,7 @@ protected:
 #define CBUFLEN 1024
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
+    unsigned int entityLen;
 
     khtml::TokenizerString src;
 
