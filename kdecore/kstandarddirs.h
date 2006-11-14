@@ -107,9 +107,6 @@ class KStandardDirsPrivate;
  *          search for resources. The directories should be separated
  *          by <tt>':'</tt>. The directories are searched in the order they are
  *          specified.
- * @li @c KDEDIR - Used for backwards compatibility. As @c KDEDIRS but only a single
- *          directory may be specified. If @c KDEDIRS is set @c KDEDIR is
- *          ignored.
  * @li @c KDEHOME - The directory where changes are saved to. This directory is
  *          used to search for resources first. If @c KDEHOME is not
  *          specified it defaults to @c "$HOME/.kde"
@@ -185,7 +182,7 @@ public:
 	 * Adds another search dir to front of the @p fsstnd list.
 	 *
 	 * @li When compiling kdelibs, the prefix is added to this.
-	 * @li @c KDEDIRS or @c KDEDIR is taken into account
+	 * @li @c KDEDIRS is taken into account
 	 * @li Additional dirs may be loaded from kdeglobals.
 	 *
 	 * @param dir The directory to append relative paths to.

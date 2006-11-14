@@ -1312,14 +1312,12 @@ QString KStandardDirs::kfsstnd_defaultprefix()
    if (!s->defaultprefix.isEmpty())
       return s->defaultprefix;
 #ifdef Q_WS_WIN
-   s->defaultprefix = readEnvPath("KDEDIR");
-   if (s->defaultprefix.isEmpty()) {
-      s->defaultprefix = QFile::decodeName(KDEDIR);
-      //TODO: find other location (the Registry?)
-   }
+   s->defaultprefix = QFile::decodeName(KDEDIR);
+   //TODO: find other location (the Registry?)
 #else //UNIX
    s->defaultprefix = KDEDIR;
 #endif
+
    if (s->defaultprefix.isEmpty())
       kWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
    return s->defaultprefix;
@@ -1373,15 +1371,6 @@ void KStandardDirs::addKDEDefaults()
     if (!kdedirs.isEmpty())
     {
         tokenize(kdedirList, kdedirs, QString(QChar(KPATH_SEPARATOR)));
-    }
-    else
-    {
-        QString kdedir = readEnvPath("KDEDIR");
-        if (!kdedir.isEmpty())
-        {
-           kdedir = KShell::tildeExpand(kdedir);
-           kdedirList.append(kdedir);
-        }
     }
 	kdedirList.append(QFile::decodeName(KDEDIR));
 
