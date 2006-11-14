@@ -273,6 +273,12 @@ public Q_SLOTS:
      */
     virtual void resizeContents(int w, int h);
 
+    /**
+     * ensure the display is up to date
+     */
+    void layout();
+
+
 Q_SIGNALS:
     /**
      * This signal is used for internal layouting. Don't use it to check if rendering finished.
@@ -315,10 +321,6 @@ protected:
     void keyReleaseEvent ( QKeyEvent *_ke );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
-    /**
-     * ensure the display is up to date
-     */
-    void layout();
 
 protected Q_SLOTS:
     void slotPaletteChanged();
