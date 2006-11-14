@@ -161,7 +161,7 @@ public:
      * application. To get the name of the temporary file where data
      * can be saved, use fileName() (after you have called open()).
      */
-    KUrl manageFile() const;
+    KUrl managedFile() const;
 
     /**
      * Sets the URL of the file managed by KAutoSaveFile. This should
