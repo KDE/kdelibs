@@ -922,6 +922,9 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 #ifdef Q_WS_X11
     return isOnDesktop( KWin::currentDesktop());
 #else
+#ifdef Q_WS_WIN
+    return true;
+#endif
     return false;
 #endif
 }
@@ -933,6 +936,9 @@ bool KWin::WindowInfo::isOnDesktop( int _desktop ) const
         << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 #else
+#ifdef Q_WS_WIN
+    return true;
+#endif    
     return false;
 #endif
 }
