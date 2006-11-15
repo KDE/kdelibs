@@ -308,7 +308,8 @@ bool KateNormalIndent::isBalanced (KateDocCursor &begin, const KateDocCursor &en
     if (atLeastOne && parenOpen <= 0)
       return true;
 
-    begin.moveForward(1);
+    if (!begin.moveForward(1))
+      break;
   }
 
   return (atLeastOne) ? false : true;
