@@ -31,7 +31,7 @@
  * @author Andreas Nicolai
  * @version 1.0
  */
-class EDUPLOT_EXPORT KPlotAxis {
+class KDEEDUPLOT_EXPORT KPlotAxis {
 public:
 
 	/**

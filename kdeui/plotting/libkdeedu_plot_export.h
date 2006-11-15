@@ -26,17 +26,17 @@
 
 #if defined Q_OS_WIN
 
-#ifndef EDUPLOT_EXPORT
-# ifdef MAKE_EDUPLOT_LIB
-#  define EDUPLOT_EXPORT KDE_EXPORT
+#ifndef KDEEDUPLOT_EXPORT
+# ifdef MAKE_KDEEDUPLOT_LIB
+#  define KDEEDUPLOT_EXPORT KDE_EXPORT
 # else
-#  define EDUPLOT_EXPORT KDE_IMPORT
+#  define KDEEDUPLOT_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #else
 /* export statements for unix */
-#define EDUPLOT_EXPORT KDE_EXPORT
+#define KDEEDUPLOT_EXPORT KDE_EXPORT
 #endif
 
 #endif

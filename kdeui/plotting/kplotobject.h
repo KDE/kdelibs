@@ -39,7 +39,7 @@ class KPlotWidget;
  * bar-widths are omitted, then the widths will be set automatically, 
  * based on the halfway-mark between adjacent points.
  */
-class EDUPLOT_EXPORT KPlotPoint {
+class KDEEDUPLOT_EXPORT KPlotPoint {
  public:
 	/** 
 	 *Default constructor.
@@ -136,7 +136,7 @@ class EDUPLOT_EXPORT KPlotPoint {
  * @author Jason Harris
  * @version 1.1
  */
-class EDUPLOT_EXPORT KPlotObject{
+class KDEEDUPLOT_EXPORT KPlotObject{
 public:
 	/**
 	 * @enum PlotType

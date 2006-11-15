@@ -73,7 +73,7 @@ class KPlotPoint;
  *@author Jason Harris
  *@version 1.1
  */
-class EDUPLOT_EXPORT KPlotWidget : public QFrame {
+class KDEEDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
 	Q_PROPERTY(int leftPadding READ leftPadding)
 	Q_PROPERTY(int rightPadding READ rightPadding)
