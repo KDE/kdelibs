@@ -48,7 +48,7 @@ class KAutoSaveFilePrivate;
  *
  * KAutoSaveFile holds a lock on the autosave file, so it's safe to
  * delete the file and recreate it later. Because of that, disposing
- * of stale autosave files should be done with dropLock().
+ * of stale autosave files should be done with releaseLock().
  *
  * Examples:
  * Opening a new file:
@@ -180,13 +180,13 @@ public:
      * This function calls remove(), so the autosave temporary file
      * will be removed too.
      */
-    virtual void dropLock();
+    virtual void releaseLock();
 
     /**
      * Opens the autosave file and locks it if it wasn't already
      * locked. The name of the temporary file where data can be saved
      * to will be set by this function and can be retrieved with
-     * fileName(). It will not change unless dropLock() is called. No
+     * fileName(). It will not change unless releaseLock() is called. No
      * other application will attempt to edit such a file either while
      * the lock is held.
      *
@@ -210,7 +210,7 @@ public:
      *
      * This function returns a list of unopened KAutoSaveFile
      * objects. By calling open() on them, the application will steal
-     * the lock. Subsequent dropLock() or deleting of the object will
+     * the lock. Subsequent releaseLock() or deleting of the object will
      * then erase the stale autosave file.
      */
     static QList<KAutoSaveFile *> staleFiles(const QString &filename);
