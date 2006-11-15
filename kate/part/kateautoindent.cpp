@@ -215,6 +215,8 @@ void KateNormalIndent::updateConfig ()
   normalAttrib = 255;
   extensionAttrib = 255;
   preprocessorAttrib = 255;
+  stringAttrib = 255;
+  charAttrib = 255;
 
   KateHlItemDataList items;
   doc->highlight()->getKateHlItemDataListCopy (0, items);
@@ -265,6 +267,14 @@ void KateNormalIndent::updateConfig ()
     else if (name.find("Preprocessor") != -1 && preprocessorAttrib == 255)
     {
       preprocessorAttrib = i;
+    }
+    else if (name.find("String") != -1 && stringAttrib == 255)
+    {
+      stringAttrib = i;
+    }
+    else if (name.find("Char") != -1 && charAttrib == 255)
+    {
+      charAttrib = i;
     }
   }
 }
@@ -654,6 +664,45 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
   }
 }
 
+/**
+ * Returns true when the given attribute matches any "colon influence immune"
+ * attribute
+ */
+static inline bool isColonImmune(const KateNormalIndent &indenter,
+                                 uchar attr)
+{
+  return attr == indenter.preprocessorAttrib
+      || attr == indenter.commentAttrib
+      || attr == indenter.doxyCommentAttrib
+      || attr == indenter.stringAttrib
+      || attr == indenter.charAttrib;
+}
+
+/**
+ * Returns true when the colon is allowed to reindent the current line
+ * @param indenter current indenter
+ * @param line current line
+ * @param curCol column of most recently input character
+ */
+static inline bool colonPermitsReindent(const KateNormalIndent &indenter,
+                                        const KateTextLine::Ptr &line,
+                                        int curCol
+                                       )
+{
+  const QString txt = line->string(0,curCol);
+  // do we have any significant preceding colon?
+  for (int pos = 0; (pos = txt.find(':', pos)) >= 0; pos++) {
+    if (line->attribute(pos) == indenter.symbolAttrib)
+      // yes, it has already contributed to this line's indentation, don't
+      // indent again
+      return false;
+  }
+
+  // otherwise, check whether this colon is not within an influence
+  // immune attribute range
+  return !isColonImmune(indenter, line->attribute(curCol - 1));
+}
+
 void KateCSmartIndent::processChar(QChar c)
 {
   // You may be curious about 'n' among the triggers:
@@ -666,14 +715,29 @@ void KateCSmartIndent::processChar(QChar c)
     return;
 
   KateView *view = doc->activeView();
+  int curCol = view->cursorColumnReal() - 1;
   KateDocCursor begin(view->cursorLine(), 0, doc);
 
   KateTextLine::Ptr textLine = doc->plainKateTextLine(begin.line());
+  const QChar curChar = textLine->getChar(curCol);
   const int first = textLine->firstChar();
   const QChar firstChar = textLine->getChar(first);
+
+#if 0 // nice try
+  // Only indent on symbols or preprocessing directives -- never on
+  // anything else
+  kdDebug() << "curChar " << curChar << " curCol " << curCol << " textlen " << textLine->length() << " a " << textLine->attribute( curCol ) << " sym " << symbolAttrib << " pp " << preprocessorAttrib << endl;
+  if (!(((curChar == '#' || curChar == 'n')
+         && textLine->attribute( curCol ) == preprocessorAttrib)
+        || textLine->attribute( curCol ) == symbolAttrib)
+     )
+    return;
+  kdDebug() << "curChar " << curChar << endl;
+#endif
+
   if (c == 'n')
   {
-    if (firstChar != '#')
+    if (firstChar != '#' || textLine->string(curCol-5, 5) != QString::fromLatin1("regio"))
       return;
   }
 
@@ -699,8 +763,10 @@ void KateCSmartIndent::processChar(QChar c)
   // any reindentation if any of those characters appear amidst some section
   // of the line
   const QChar lastChar = textLine->getChar(textLine->lastChar());
-  if ((c == firstChar && firstTriggers.find(firstChar) >= 0)
-      || (c == lastChar && lastTriggers.find(lastChar) >= 0))
+  int pos;
+  if (((c == firstChar && firstTriggers.find(firstChar) >= 0)
+        || (c == lastChar && lastTriggers.find(lastChar) >= 0))
+      && (c != ':' || colonPermitsReindent(*this, textLine, curCol)))
     processLine(begin);
 }
 

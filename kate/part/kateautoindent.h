@@ -323,6 +323,7 @@ protected:
   uint  tabWidth;     //!< The number of characters simulated for a tab
   uint  indentWidth;  //!< The number of characters used when tabs are replaced by spaces
 
+public:
     // Attributes that we should skip over or otherwise know about
   uchar commentAttrib;
   uchar doxyCommentAttrib;
@@ -335,7 +336,10 @@ protected:
   uchar normalAttrib;
   uchar extensionAttrib;
   uchar preprocessorAttrib;
+  uchar stringAttrib;
+  uchar charAttrib;
 
+protected:
   bool  useSpaces;    //!< Should we use spaces or tabs to indent
   bool  mixedIndent;  //!< Optimize indent by mixing spaces and tabs, ala emacs
   bool  keepProfile;  //!< Always try to honor the leading whitespace of lines already in the file
