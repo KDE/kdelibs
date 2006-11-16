@@ -490,7 +490,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
                        text, QStringList(),
                        dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
-    if ( result==KDialog::Cancel ) return Cancel;
+    if ( result==QDialog::Rejected ) return Cancel;
     res = (result==KDialog::Yes ? Yes : No);
 
     if (checkboxResult)
@@ -730,7 +730,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
                        dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
-    if ( result==KDialog::Cancel ) return Cancel;
+    if ( result==QDialog::Rejected ) return Cancel;
     res = (result==KDialog::Yes ? Yes : No);
 
     if (checkboxResult)
