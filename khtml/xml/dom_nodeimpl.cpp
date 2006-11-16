@@ -440,10 +440,10 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     DocumentImpl *doc = getDocument();
     doc->ref();
     dispatchGenericEvent( evt, exceptioncode );
-    if (!evt->defaultPrevented() && doc)
+    if (!evt->defaultPrevented())
 	doc->defaultEventHandler(evt);
 
-    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped() && doc) {
+    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped()) {
         // For onload events, send them to the enclosing frame only.
         // This is a DOM extension and is independent of bubbling/capturing rules of
         // the DOM.  You send the event only to the enclosing frame.  It does not
