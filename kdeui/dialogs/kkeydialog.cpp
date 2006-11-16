@@ -251,7 +251,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
 	pParentItem = pProgramItem = pItem = new QTreeWidgetItem( d->ui->list, QStringList() << str );
 	d->ui->list->expandItem(pParentItem);
-	//pParentItem->setFlags(pParentItem->flags() & !Qt::ItemIsSelectable);
+	pParentItem->setFlags(pParentItem->flags() & ~Qt::ItemIsSelectable);
 
 	foreach (KAction* action, pList) {
 		ActionTypes thisType = 0;
@@ -278,7 +278,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 		if( sName.startsWith( "Program:" ) ) {
 			pItem = new QTreeWidgetItem( d->ui->list, pProgramItem );
 			pItem->setText(0, action->text());
-			//pItem->setFlags(pItem->flags() & !Qt::ItemIsSelectable);
+			pItem->setFlags(pItem->flags() & ~Qt::ItemIsSelectable);
 			d->ui->list->expandItem(pItem);
 			if( !pProgramItem->childCount() )
 				delete pProgramItem;
@@ -286,7 +286,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 		} else if( sName.startsWith( "Group:" ) ) {
 			pItem = new QTreeWidgetItem( pProgramItem, pParentItem );
 			pItem->setText(0, action->text());
-			//pItem->setFlags(pItem->flags() & !Qt::ItemIsSelectable);
+			pItem->setFlags(pItem->flags() & ~Qt::ItemIsSelectable);
 			d->ui->list->expandItem(pItem);
 			if( pGroupItem && !pGroupItem->childCount() )
 				delete pGroupItem;
@@ -783,7 +783,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 		case 0:
 			switch(role) {
 				case Qt::DisplayRole:
-					return m_action->text().remove("&");
+					return m_action->text().remove('&');
 				case Qt::DecorationRole:
 					return m_action->icon();
 				case Qt::WhatsThisRole:
@@ -793,6 +793,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 				case Qt::StatusTipRole:
 					return m_action->statusTip();
 			}
+			break;
 
 		case 1:
 		case 2:
@@ -811,7 +812,6 @@ QVariant KKeyChooserItem::data(int column, int role) const
 				case Qt::ForegroundRole:
 					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1))
 						return QColor(Qt::blue);
-				default:
 					break;
 			}
 			break;
@@ -836,8 +836,6 @@ QVariant KKeyChooserItem::data(int column, int role) const
 				case Qt::BackgroundRole:
 					if (!m_action->globalShortcutAllowed())
 						return QColor(Qt::gray);
-					break;
-				default:
 					break;
 			}
 			break;
