@@ -199,7 +199,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
           used_width = document.idealWidth();
           pref_height = (int) document.size().height();
        }
-       if (used_width <= pref_width)
+       if (used_width > 0 && used_width <= pref_width)
        {
           while(true)
           {
