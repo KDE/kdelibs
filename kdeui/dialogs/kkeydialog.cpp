@@ -983,21 +983,7 @@ void KKeyChooserItem::setGlobalShortcut( const KShortcut & cut )
 
 bool KKeyChooserItem::checkChanged( const KShortcut & cut1, const KShortcut & cut2, int sequence ) const
 {
-	if (cut1.count() == cut2.count())
-		if (sequence < cut1.count())
-			return cut1.seq(sequence) != cut2.seq(sequence);
-		else
-			return false;
-	else if (cut1.count() < cut2.count())
-		if (sequence < cut1.count())
-			return cut1.seq(sequence) != cut2.seq(sequence);
-		else
-			return false;
-	else
-		if (sequence < cut2.count())
-			return cut1.seq(sequence) != cut2.seq(sequence);
-		else
-			return true;
+	return cut1.seq(sequence) != cut2.seq(sequence);
 }
 
 KAction * KKeyChooserItem::action( ) const
