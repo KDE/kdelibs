@@ -48,7 +48,7 @@ namespace KJS {
     // Its ctor and dtor take care of the refcounting on the static lists.
     class PluginBase : public ObjectImp {
     public:
-        PluginBase(ExecState *exec);
+        PluginBase(ExecState *exec, bool loadPluginInfo);
         virtual ~PluginBase();
 
         struct MimeClassInfo;
@@ -78,36 +78,45 @@ namespace KJS {
 
     class Plugins : public PluginBase {
     public:
-        Plugins(ExecState *exec) : PluginBase(exec) {};
+        Plugins(ExecState *exec, bool pluginsEnabled)
+          : PluginBase(exec, pluginsEnabled),
+            m_pluginsEnabled(pluginsEnabled) {};
+
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         ValueImp *getValueProperty(ExecState *exec, int token) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
         static ValueImp *pluginByName( ExecState* exec, const QString& name );
+        bool pluginsEnabled() const { return m_pluginsEnabled; };
     private:
         static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        bool m_pluginsEnabled;
     };
 
 
     class MimeTypes : public PluginBase {
     public:
-        MimeTypes(ExecState *exec) : PluginBase(exec) { };
+        MimeTypes(ExecState *exec, bool pluginsEnabled)
+          : PluginBase(exec, pluginsEnabled),
+            m_pluginsEnabled(pluginsEnabled) {};
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
         ValueImp *getValueProperty(ExecState *exec, int token) const;
         static ValueImp *mimeTypeByName( ExecState* exec, const QString& name );
+        bool pluginsEnabled() const { return m_pluginsEnabled; };
     private:
         static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        bool m_pluginsEnabled;
     };
 
 
     class Plugin : public PluginBase {
     public:
         Plugin( ExecState *exec, PluginBase::PluginInfo *info )
-          : PluginBase( exec )
+          : PluginBase( exec, true )
         { m_info = info; };
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
@@ -125,7 +134,7 @@ namespace KJS {
     class MimeType : public PluginBase {
     public:
         MimeType( ExecState *exec, PluginBase::MimeClassInfo *info )
-          : PluginBase( exec )
+          : PluginBase( exec, true )
         { m_info = info; };
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
@@ -269,9 +278,9 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
       return String("x86");
   }
   case _Plugins:
-    return new Plugins(exec);
+    return new Plugins(exec, m_part->pluginsEnabled());
   case _MimeTypes:
-    return new MimeTypes(exec);
+    return new MimeTypes(exec, m_part->pluginsEnabled());
   case CookieEnabled:
     return Boolean(true); /// ##### FIXME
   default:
@@ -282,19 +291,14 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
 
 /*******************************************************************/
 
-PluginBase::PluginBase(ExecState *exec)
+PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
   : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype() )
 {
-    if ( !plugins ) {
+    if ( loadPluginInfo && !plugins ) {
         plugins = new Q3PtrList<PluginInfo>;
         mimes = new Q3PtrList<MimeClassInfo>;
         plugins->setAutoDelete( true );
         mimes->setAutoDelete( true );
-
-        // FIXME: add domain support here
-        KConfig kc("konquerorrc", true);
-        if (!KConfigGroup(&kc, "Java/JavaScript Settings").readEntry("EnablePlugins", true))
-            return; // plugins disabled
 
         // read in using KServiceTypeTrader
         const KService::List offers = KServiceTypeTrader::self()->query("Browser/View");
@@ -385,17 +389,19 @@ KJS_IMPLEMENT_PROTOFUNC(PluginsFunc)
 ValueImp *Plugins::getValueProperty(ExecState *exec, int token) const
 {
   assert(token == Plugins_Length);
-  return Number(plugins->count());
+  if (pluginsEnabled())
+    return Number(plugins->count());
+  else
+    return Number(0);
 }
 
 ValueImp *Plugins::indexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
-    return new Plugin(exec, plugins->at(slot.index()));
+  return new Plugin(exec, plugins->at(slot.index()));
 }
 
 ValueImp *Plugins::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
-
   return pluginByName(exec, propertyName.qstring());
 }
 
@@ -407,20 +413,22 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
   if (getStaticOwnPropertySlot<PluginsFunc, Plugins>(&PluginsTable, this, propertyName, slot))
       return true;
 
-  // plugins[#]
-  bool ok;
-  unsigned int i = propertyName.toUInt32(&ok);
-  if (ok && i < plugins->count()) {
+  if (pluginsEnabled()) {
+    // plugins[#]
+    bool ok;
+    unsigned int i = propertyName.toUInt32(&ok);
+    if (ok && i < plugins->count()) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
-  }
+    }
 
-  // plugin[name]
-  for (PluginInfo *pl = plugins->first(); pl; pl = plugins->next()) {
+    // plugin[name]
+    for (PluginInfo *pl = plugins->first(); pl; pl = plugins->next()) {
       if (pl->name == propertyName.qstring()) {
-          slot.setCustom(this, nameGetter);
-          return true;
+        slot.setCustom(this, nameGetter);
+        return true;
       }
+    }
   }
 
   return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
@@ -438,7 +446,10 @@ ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
 ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::Plugins, thisObj );
+
   KJS::Plugins* base = static_cast<KJS::Plugins *>(thisObj);
+  if (!base->pluginsEnabled()) return jsUndefined();
+
   switch( id ) {
   case Plugins_Refresh:
     return Undefined(); //## TODO
@@ -475,12 +486,12 @@ KJS_IMPLEMENT_PROTOFUNC(MimeTypesFunc)
 
 ValueImp *MimeTypes::indexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
-    return new MimeType(exec, mimes->at(slot.index()));
+  return new MimeType(exec, mimes->at(slot.index()));
 }
 
 ValueImp *MimeTypes::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
-    return mimeTypeByName(exec, propertyName.qstring());
+  return mimeTypeByName(exec, propertyName.qstring());
 }
 
 bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
@@ -491,20 +502,22 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
   if (getStaticOwnPropertySlot<MimeTypesFunc, MimeTypes>(&MimeTypesTable, this, propertyName, slot))
       return true;
 
-  // mimeTypes[#]
-  bool ok;
-  unsigned int i = propertyName.toUInt32(&ok);
-  if (ok && i < mimes->count()) {
+  if (pluginsEnabled()) {
+    // mimeTypes[#]
+    bool ok;
+    unsigned int i = propertyName.toUInt32(&ok);
+    if (ok && i < mimes->count()) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
-  }
+    }
 
-  // mimeTypes[name]
-  for (MimeClassInfo *m = mimes->first(); m; m = mimes->next()) {
+    // mimeTypes[name]
+    for (MimeClassInfo *m = mimes->first(); m; m = mimes->next()) {
       if (m->type == propertyName.qstring()) {
-          slot.setCustom(this, nameGetter);
-          return true;
+        slot.setCustom(this, nameGetter);
+        return true;
       }
+    }
   }
 
   return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
@@ -523,13 +536,19 @@ ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 ValueImp *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
 {
   assert(token == MimeTypes_Length);
-  return Number(mimes->count());
+  if (pluginsEnabled())
+    return Number(mimes->count());
+  else
+    return Number(0);
 }
 
 ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MimeTypes, thisObj );
   KJS::MimeTypes* base = static_cast<KJS::MimeTypes *>(thisObj);
+
+  if (!base->pluginsEnabled()) return jsUndefined();
+  
   switch( id ) {
   case MimeTypes_Item:
   {
