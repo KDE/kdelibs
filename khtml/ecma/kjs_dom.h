@@ -75,6 +75,7 @@ namespace KJS {
 
   DEFINE_CONSTANT_TABLE(DOMNodeConstants)
   KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMNodeProto, DOMNodeConstants)
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   class DOMNodeList : public DOMObject {
   public:
@@ -151,6 +152,7 @@ namespace KJS {
   public:
     // Build a DOMElement
     DOMElement(ExecState *exec, DOM::ElementImpl* e);
+    DOMElement(ObjectImp *proto, DOM::ElementImpl* e);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     ValueImp* getValueProperty(ExecState *exec, int token) const;
 
@@ -168,6 +170,8 @@ namespace KJS {
 
   DOM::AttrImpl    *toAttr   (ValueImp *); // returns 0 if passed-in value is not a DOMAtt object
   DOM::ElementImpl *toElement(ValueImp *); // returns 0 if passed-in value is not a DOMElement object
+
+  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
   DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
 
   class DOMDOMImplementation : public DOMObject {
@@ -256,8 +260,6 @@ namespace KJS {
     static const ClassInfo info;
     enum { PublicId, SystemId, NotationName };
   };
-
-  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {

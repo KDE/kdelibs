@@ -350,6 +350,8 @@ namespace KJS {
      virtual const ClassInfo* classInfo() const { return &info; } \
      static const ClassInfo info; \
      static ObjectImp* self(ExecState *exec);\
+     static Identifier* s_name; \
+     static Identifier* name(); \
    }; 
 
 // Emits an implementation of a constant table 
@@ -363,9 +365,41 @@ namespace KJS {
         return Number((unsigned int)token); \
      }  \
      ObjectImp* Class::self(ExecState *exec) { \
-        return cacheGlobalObject<Class>(exec, "[[" ClassName ".constant_table]]"); \
+        return cacheGlobalObject<Class>(exec,  *name()); \
      } \
+    Identifier* Class::s_name = 0; \
+    Identifier* Class::name() { \
+        if (!s_name) s_name = new Identifier("[[" ClassName ".constant_table]]"); \
+        return s_name; \
+    } \
    const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
+
+#define KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ProtoCode) \
+      class ClassProto : public ObjectImp { \
+      friend ObjectImp* cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
+      public: \
+        static ObjectImp* self(ExecState *exec) { \
+          return cacheGlobalObject<ClassProto>(exec, *name()); \
+        } \
+        virtual const ClassInfo *classInfo() const { return &info; } \
+        static const ClassInfo info; \
+      protected: \
+        ClassProto( ExecState *exec ) \
+          : ObjectImp( ProtoCode ) {} \
+        \
+        static Identifier* s_name; \
+        static Identifier* name() { \
+            if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
+            return s_name; \
+        }\
+      }; \
+      Identifier* ClassProto::s_name = 0; \
+      const ClassInfo ClassProto::info = { ClassName, 0, 0, 0 };
+
+#define KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE(ClassName, ClassProto, ClassProtoProto) \
+  KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ClassProtoProto::self(exec))
+
+
 } // namespace
 
 

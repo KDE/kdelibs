@@ -795,6 +795,7 @@ ValueImp* DOMNodeListProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
 
 // -------------------------------------------------------------------------
 
+//### FIXME: link to the node prototype.
 const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 
 /* Source for DOMAttrTable.
@@ -1134,7 +1135,6 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc)
 
@@ -1152,6 +1152,10 @@ DOMElement::DOMElement(ExecState *exec, DOM::ElementImpl* e)
 {
     setPrototype(DOMElementProto::self(exec));
 }
+
+DOMElement::DOMElement(ObjectImp *proto, DOM::ElementImpl* e)
+  : DOMNode(proto, e)
+{}
 
 ValueImp* DOMElement::getValueProperty(ExecState *exec, int token) const
 {
@@ -1493,7 +1497,7 @@ ValueImp* DOMNamedNodeMapProtoFunc::callAsFunction(ExecState *exec, ObjectImp *t
 }
 
 // -------------------------------------------------------------------------
-
+//### FIXME: proto
 const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, &DOMProcessingInstructionTable, 0 };
 
 /* Source for DOMProcessingInstructionTable.

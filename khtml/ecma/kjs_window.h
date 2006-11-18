@@ -155,7 +155,21 @@ namespace KJS {
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onselect, Onsubmit, Onunload,
            MutationEventCtor, KeyboardEventCtor, EventExceptionCtor,
-           ElementCtor, DocumentCtor, HTMLElementCtor, HTMLDocumentCtor,
+           ElementCtor, DocumentCtor, HTMLDocumentCtor,
+           HTMLElementCtor, HTMLHtmlElementCtor, HTMLHeadElementCtor, HTMLLinkElementCtor,
+           HTMLTitleElementCtor, HTMLMetaElementCtor, HTMLBaseElementCtor, HTMLIsIndexElementCtor,
+           HTMLStyleElementCtor, HTMLBodyElementCtor, HTMLFormElementCtor, HTMLSelectElementCtor,
+           HTMLOptGroupElementCtor, HTMLOptionElementCtor, HTMLInputElementCtor, HTMLTextAreaElementCtor,
+           HTMLButtonElementCtor, HTMLLabelElementCtor, HTMLFieldSetElementCtor, HTMLLegendElementCtor,
+           HTMLUListElementCtor, HTMLOListElementCtor, HTMLDListElementCtor, HTMLDirectoryElementCtor,
+           HTMLMenuElementCtor, HTMLLIElementCtor, HTMLDivElementCtor, HTMLParagraphElementCtor,
+           HTMLHeadingElementCtor, HTMLBlockQuoteElementCtor, HTMLQuoteElementCtor, HTMLPreElementCtor,
+           HTMLBRElementCtor, HTMLBaseFontElementCtor, HTMLFontElementCtor, HTMLHRElementCtor, HTMLModElementCtor,
+           HTMLAnchorElementCtor, HTMLImageElementCtor, HTMLObjectElementCtor, HTMLParamElementCtor,
+           HTMLAppletElementCtor, HTMLMapElementCtor, HTMLAreaElementCtor, HTMLScriptElementCtor,
+           HTMLTableElementCtor, HTMLTableCaptionElementCtor, HTMLTableColElementCtor,
+           HTMLTableSectionElementCtor, HTMLTableRowElementCtor, HTMLTableCellElementCtor,
+           HTMLFrameSetElementCtor, HTMLLayerElementCtor, HTMLFrameElementCtor, HTMLIFrameElementCtor,
            CSSStyleDeclarationCtor};
     WindowQObject *winq;
 

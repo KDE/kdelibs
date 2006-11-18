@@ -554,8 +554,13 @@ const ClassInfo KJS::HTMLElement::tablecell_info = { "HTMLTableCellElement", &KJ
 const ClassInfo KJS::HTMLElement::frameSet_info = { "HTMLFrameSetElement", &KJS::HTMLElement::info, &HTMLFrameSetElementTable, 0 };
 const ClassInfo KJS::HTMLElement::frame_info = { "HTMLFrameElement", &KJS::HTMLElement::info, &HTMLFrameElementTable, 0 };
 const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTMLElement::info, &HTMLIFrameElementTable, 0 };
-const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, &HTMLMarqueeElementTable, 0 };
+const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, 0, 0 };
 const ClassInfo KJS::HTMLElement::layer_info = { "HTMLLayerElement", &KJS::HTMLElement::info, &HTMLLayerElementTable, 0 };
+
+static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id);
+
+KJS::HTMLElement::HTMLElement(ExecState *exec, DOM::HTMLElementImpl* e) :
+        DOMElement(prototypeForID(exec, e->id()), e) { }
 
 const ClassInfo* KJS::HTMLElement::classInfo() const
 {
@@ -665,15 +670,12 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   case ID_COLGROUP:
     return &col_info;
   case ID_THEAD:
-    return &tablesection_info;
   case ID_TBODY:
-    return &tablesection_info;
   case ID_TFOOT:
     return &tablesection_info;
   case ID_TR:
     return &tr_info;
   case ID_TH:
-    return &tablecell_info;
   case ID_TD:
     return &tablecell_info;
   case ID_FRAMESET:
@@ -704,6 +706,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
   all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
+@end
+@begin HTMLElementProtoTable 1
   scrollIntoView KJS::HTMLElement::ElementScrollIntoView DontDelete|Function 0
 @end
 @begin HTMLHtmlElementTable 1
@@ -768,6 +772,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   enctype	KJS::HTMLElement::FormEncType	DontDelete
   method	KJS::HTMLElement::FormMethod	DontDelete
   target	KJS::HTMLElement::FormTarget	DontDelete
+@end
+@begin HTMLFormElementProtoTable 2
   submit	KJS::HTMLElement::FormSubmit	DontDelete|Function 0
   reset		KJS::HTMLElement::FormReset	DontDelete|Function 0
 @end
@@ -784,6 +790,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   name		KJS::HTMLElement::SelectName	DontDelete
   size		KJS::HTMLElement::SelectSize	DontDelete
   tabIndex	KJS::HTMLElement::SelectTabIndex	DontDelete
+@end
+@begin HTMLSelectElementProtoTable 4
   add		KJS::HTMLElement::SelectAdd	DontDelete|Function 2
   remove	KJS::HTMLElement::SelectRemove	DontDelete|Function 1
   blur		KJS::HTMLElement::SelectBlur	DontDelete|Function 0
@@ -826,6 +834,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   value		KJS::HTMLElement::InputValue		DontDelete
   selectionStart KJS::HTMLElement::InputSelectionStart  DontDelete
   selectionEnd   KJS::HTMLElement::InputSelectionEnd    DontDelete
+@end
+@begin HTMLInputElementProtoTable 5
   blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::InputFocus		DontDelete|Function 0
   select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
@@ -847,6 +857,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selectionStart KJS::HTMLElement::TextAreaSelectionStart DontDelete
   selectionEnd   KJS::HTMLElement::TextAreaSelectionEnd   DontDelete
   textLength     KJS::HTMLElement::TextAreaTextLength     DontDelete|ReadOnly
+@end
+@begin HTMLTextAreaElementProtoTable 4
   blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
   select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
@@ -860,6 +872,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   tabIndex	KJS::HTMLElement::ButtonTabIndex	DontDelete
   type		KJS::HTMLElement::ButtonType		DontDelete|ReadOnly
   value		KJS::HTMLElement::ButtonValue		DontDelete
+@end
+@begin HTMLButtonElementProtoTable 2
   blur		KJS::HTMLElement::ButtonBlur            DontDelete|Function 0
   focus		KJS::HTMLElement::ButtonFocus           DontDelete|Function 0
 @end
@@ -960,6 +974,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   target	KJS::HTMLElement::AnchorTarget		DontDelete
   text		KJS::HTMLElement::AnchorText		DontDelete|ReadOnly
   type		KJS::HTMLElement::AnchorType		DontDelete
+@end
+@begin HTMLAnchorElementProtoTable 3
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
   click		KJS::HTMLElement::AnchorClick		DontDelete|Function 0
@@ -1066,6 +1082,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   rules		KJS::HTMLElement::TableRules		DontDelete
   summary	KJS::HTMLElement::TableSummary		DontDelete
   width		KJS::HTMLElement::TableWidth		DontDelete
+@end
+@begin HTMLTableElementProtoTable 8
   createTHead	KJS::HTMLElement::TableCreateTHead	DontDelete|Function 0
   deleteTHead	KJS::HTMLElement::TableDeleteTHead	DontDelete|Function 0
   createTFoot	KJS::HTMLElement::TableCreateTFoot	DontDelete|Function 0
@@ -1092,6 +1110,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   chOff		KJS::HTMLElement::TableSectionChOff		DontDelete
   vAlign	KJS::HTMLElement::TableSectionVAlign		DontDelete
   rows		KJS::HTMLElement::TableSectionRows		DontDelete|ReadOnly
+@end
+@begin HTMLTableSectionElementProtoTable 2
   insertRow	KJS::HTMLElement::TableSectionInsertRow		DontDelete|Function 1
   deleteRow	KJS::HTMLElement::TableSectionDeleteRow		DontDelete|Function 1
 @end
@@ -1104,6 +1124,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   ch		KJS::HTMLElement::TableRowCh			DontDelete
   chOff		KJS::HTMLElement::TableRowChOff			DontDelete
   vAlign	KJS::HTMLElement::TableRowVAlign		DontDelete
+@end
+@begin HTMLTableRowElementProtoTable 2
   insertCell	KJS::HTMLElement::TableRowInsertCell		DontDelete|Function 1
   deleteCell	KJS::HTMLElement::TableRowDeleteCell		DontDelete|Function 1
 @end
@@ -1168,7 +1190,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   width		  KJS::HTMLElement::IFrameWidth			DontDelete
 @end
 
-@begin HTMLMarqueeElementTable 2
+@begin HTMLMarqueeElementProtoTable 2
   start           KJS::HTMLElement::MarqueeStart		DontDelete|Function 0
   stop            KJS::HTMLElement::MarqueeStop                 DontDelete|Function 0
 @end
@@ -1246,7 +1268,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
-  if (getStaticOwnPropertySlot<HTMLElementFunction, HTMLElement>(table, this, propertyName, slot))
+  if (table && getStaticOwnPropertySlot<HTMLElementFunction, HTMLElement>(table, this, propertyName, slot))
     return true;
 
   // Base HTMLElement stuff or parent class forward, as usual
@@ -2327,7 +2349,7 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
-  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  const HashEntry* entry = table ? Lookup::findEntry(table, propertyName) : 0;
   if (entry) {
       if (entry->attr & Function) { // function: put as override property
           ObjectImp::put(exec, propertyName, value, attr);
@@ -2544,6 +2566,315 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
     kDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
   }
 }
+
+
+//Prototype mess for this...
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLElementProto, DOMElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLElement", HTMLElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLElementPseudoCtor, "HTMLElement", HTMLElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLHtmlElement", HTMLHtmlElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLHtmlElementPseudoCtor, "HTMLHtmlElement", HTMLHtmlElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLHeadElement", HTMLHeadElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLHeadElementPseudoCtor, "HTMLHeadElement", HTMLHeadElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLinkElement", HTMLLinkElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLinkElementPseudoCtor, "HTMLLinkElement", HTMLLinkElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTitleElement", HTMLTitleElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTitleElementPseudoCtor, "HTMLTitleElement", HTMLTitleElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLMetaElement", HTMLMetaElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMetaElementPseudoCtor, "HTMLMetaElement", HTMLMetaElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBaseElement", HTMLBaseElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBaseElementPseudoCtor, "HTMLBaseElement", HTMLBaseElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLIsIndexElement", HTMLIsIndexElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIsIndexElementPseudoCtor, "HTMLIsIndexElement", HTMLIsIndexElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLStyleElement", HTMLStyleElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLStyleElementPseudoCtor, "HTMLStyleElement", HTMLStyleElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBodyElement", HTMLBodyElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBodyElementPseudoCtor, "HTMLBodyElement", HTMLBodyElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLFormElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLFormElement", HTMLFormElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFormElementPseudoCtor, "HTMLFormElement", HTMLFormElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLSelectElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLSelectElement", HTMLSelectElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLSelectElementPseudoCtor, "HTMLSelectElement", HTMLSelectElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLOptGroupElement", HTMLOptGroupElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLOptGroupElementPseudoCtor, "HTMLOptGroupElement", HTMLOptGroupElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLOptionElement", HTMLOptionElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLOptionElementPseudoCtor, "HTMLOptionElement", HTMLOptionElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLInputElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLInputElement", HTMLInputElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLInputElementPseudoCtor, "HTMLInputElement", HTMLInputElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTextAreaElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTextAreaElement", HTMLTextAreaElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTextAreaElementPseudoCtor, "HTMLTextAreaElement", HTMLTextAreaElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLButtonElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLButtonElement", HTMLButtonElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLButtonElementPseudoCtor, "HTMLButtonElement", HTMLButtonElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLabelElement", HTMLLabelElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLabelElementPseudoCtor, "HTMLLabelElement", HTMLLabelElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLFieldSetElement", HTMLFieldSetElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFieldSetElementPseudoCtor, "HTMLFieldSetElement", HTMLFieldSetElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLegendElement", HTMLLegendElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLegendElementPseudoCtor, "HTMLLegendElement", HTMLLegendElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLUListElement", HTMLUListElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLUListElementPseudoCtor, "HTMLUListElement", HTMLUListElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLOListElement", HTMLOListElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLOListElementPseudoCtor, "HTMLOListElement", HTMLOListElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLDListElement", HTMLDListElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDListElementPseudoCtor, "HTMLDListElement", HTMLDListElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLDirectoryElement", HTMLDirectoryElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDirectoryElementPseudoCtor, "HTMLDirectoryElement", HTMLDirectoryElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLMenuElement", HTMLMenuElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMenuElementPseudoCtor, "HTMLMenuElement", HTMLMenuElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLIElement", HTMLLIElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLIElementPseudoCtor, "HTMLLIElement", HTMLLIElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLDivElement", HTMLDivElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDivElementPseudoCtor, "HTMLDivElement", HTMLDivElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLParagraphElement", HTMLParagraphElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLParagraphElementPseudoCtor, "HTMLParagraphElement", HTMLParagraphElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLHeadingElement", HTMLHeadingElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLHeadingElementPseudoCtor, "HTMLHeadingElement", HTMLHeadingElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBlockQuoteElement", HTMLBlockQuoteElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBlockQuoteElementPseudoCtor, "HTMLBlockQuoteElement", HTMLBlockQuoteElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLQuoteElement", HTMLQuoteElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLQuoteElementPseudoCtor, "HTMLQuoteElement", HTMLQuoteElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLPreElement", HTMLPreElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLPreElementPseudoCtor, "HTMLPreElement", HTMLPreElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBRElement", HTMLBRElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBRElementPseudoCtor, "HTMLBRElement", HTMLBRElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBaseFontElement", HTMLBaseFontElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBaseFontElementPseudoCtor, "HTMLBaseFontElement", HTMLBaseFontElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLFontElement", HTMLFontElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFontElementPseudoCtor, "HTMLFontElement", HTMLFontElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLHRElement", HTMLHRElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLHRElementPseudoCtor, "HTMLHRElement", HTMLHRElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLModElement", HTMLModElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLModElementPseudoCtor, "HTMLModElement", HTMLModElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLAnchorElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLAnchorElement", HTMLAnchorElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAnchorElementPseudoCtor, "HTMLAnchorElement", HTMLAnchorElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLImageElement", HTMLImageElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLImageElementPseudoCtor, "HTMLImageElement", HTMLImageElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLObjectElement", HTMLObjectElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLObjectElementPseudoCtor, "HTMLObjectElement", HTMLObjectElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLParamElement", HTMLParamElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLParamElementPseudoCtor, "HTMLParamElement", HTMLParamElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLAppletElement", HTMLAppletElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAppletElementPseudoCtor, "HTMLAppletElement", HTMLAppletElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLMapElement", HTMLMapElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMapElementPseudoCtor, "HTMLMapElement", HTMLMapElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLAreaElement", HTMLAreaElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAreaElementPseudoCtor, "HTMLAreaElement", HTMLAreaElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLScriptElement", HTMLScriptElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLScriptElementPseudoCtor, "HTMLScriptElement", HTMLScriptElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableElement", HTMLTableElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableElementPseudoCtor, "HTMLTableElement", HTMLTableElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableCaptionElement", HTMLTableCaptionElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableCaptionElementPseudoCtor, "HTMLTableCaptionElement", HTMLTableCaptionElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableColElement", HTMLTableColElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableColElementPseudoCtor, "HTMLTableColElement", HTMLTableColElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableSectionElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableSectionElement", HTMLTableSectionElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableSectionElementPseudoCtor, "HTMLTableSectionElement", HTMLTableSectionElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableRowElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableRowElement", HTMLTableRowElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableRowElementPseudoCtor, "HTMLTableRowElement", HTMLTableRowElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableCellElement", HTMLTableCellElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableCellElementPseudoCtor, "HTMLTableCellElement", HTMLTableCellElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLFrameSetElement", HTMLFrameSetElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFrameSetElementPseudoCtor, "HTMLFrameSetElement", HTMLFrameSetElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLayerElement", HTMLLayerElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLayerElementPseudoCtor, "HTMLLayerElement", HTMLLayerElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLFrameElement", HTMLFrameElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor, "HTMLFrameElement", HTMLFrameElementProto)
+
+KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLIFrameElement", HTMLIFrameElementProto, HTMLElementProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor, "HTMLIFrameElement", HTMLIFrameElementProto)
+
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLMarqueeElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLMarqueeElement", HTMLMarqueeElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor, "HTMLMarqueeElement", HTMLMarqueeElementProto)
+
+static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
+  switch (id) {
+  case ID_HTML:
+    return HTMLHtmlElementProto::self(exec);
+  case ID_HEAD:
+    return HTMLHeadElementProto::self(exec);
+  case ID_LINK:
+    return HTMLLinkElementProto::self(exec);
+  case ID_TITLE:
+    return HTMLTitleElementProto::self(exec);
+  case ID_META:
+    return HTMLMetaElementProto::self(exec);
+  case ID_BASE:
+    return HTMLBaseElementProto::self(exec);
+  case ID_ISINDEX:
+    return HTMLIsIndexElementProto::self(exec);
+  case ID_STYLE:
+    return HTMLStyleElementProto::self(exec);
+  case ID_BODY:
+    return HTMLBodyElementProto::self(exec);
+  case ID_FORM:
+    return HTMLFormElementProto::self(exec);
+  case ID_SELECT:
+    return HTMLSelectElementProto::self(exec);
+  case ID_OPTGROUP:
+    return HTMLOptGroupElementProto::self(exec);
+  case ID_OPTION:
+    return HTMLOptionElementProto::self(exec);
+  case ID_INPUT:
+    return HTMLInputElementProto::self(exec);
+  case ID_TEXTAREA:
+    return HTMLTextAreaElementProto::self(exec);
+  case ID_BUTTON:
+    return HTMLButtonElementProto::self(exec);
+  case ID_LABEL:
+    return HTMLLabelElementProto::self(exec);
+  case ID_FIELDSET:
+    return HTMLFieldSetElementProto::self(exec);
+  case ID_LEGEND:
+    return HTMLLegendElementProto::self(exec);
+  case ID_UL:
+    return HTMLUListElementProto::self(exec);
+  case ID_OL:
+    return HTMLOListElementProto::self(exec);
+  case ID_DL:
+    return HTMLDListElementProto::self(exec);
+  case ID_DIR:
+    return HTMLDirectoryElementProto::self(exec);
+  case ID_MENU:
+    return HTMLMenuElementProto::self(exec);
+  case ID_LI:
+    return HTMLLIElementProto::self(exec);
+  case ID_DIV:
+    return HTMLDivElementProto::self(exec);
+  case ID_P:
+    return HTMLParagraphElementProto::self(exec);
+  case ID_H1:
+  case ID_H2:
+  case ID_H3:
+  case ID_H4:
+  case ID_H5:
+  case ID_H6:
+    return HTMLHeadingElementProto::self(exec);
+  case ID_BLOCKQUOTE:
+    return HTMLBlockQuoteElementProto::self(exec);
+  case ID_Q:
+    return HTMLQuoteElementProto::self(exec);
+  case ID_PRE:
+    return HTMLPreElementProto::self(exec);
+  case ID_BR:
+    return HTMLBRElementProto::self(exec);
+  case ID_BASEFONT:
+    return HTMLBaseFontElementProto::self(exec);
+  case ID_FONT:
+    return HTMLFontElementProto::self(exec);
+  case ID_HR:
+    return HTMLHRElementProto::self(exec);
+  case ID_INS:
+  case ID_DEL:
+    return HTMLModElementProto::self(exec);
+  case ID_A:
+    return HTMLAnchorElementProto::self(exec);
+  case ID_IMG:
+    return HTMLImageElementProto::self(exec);
+  case ID_OBJECT:
+    return HTMLObjectElementProto::self(exec);
+  case ID_PARAM:
+    return HTMLParamElementProto::self(exec);
+  case ID_APPLET:
+    return HTMLAppletElementProto::self(exec);
+  case ID_MAP:
+    return HTMLMapElementProto::self(exec);
+  case ID_AREA:
+    return HTMLAreaElementProto::self(exec);
+  case ID_SCRIPT:
+    return HTMLScriptElementProto::self(exec);
+  case ID_TABLE:
+    return HTMLTableElementProto::self(exec);
+  case ID_CAPTION:
+    return HTMLTableCaptionElementProto::self(exec);
+  case ID_COL:
+  case ID_COLGROUP:
+    return HTMLTableColElementProto::self(exec);
+  case ID_THEAD:
+  case ID_TBODY:
+  case ID_TFOOT:
+    return HTMLTableSectionElementProto::self(exec);
+  case ID_TR:
+    return HTMLTableRowElementProto::self(exec);
+  case ID_TD:
+  case ID_TH:
+    return HTMLTableCellElementProto::self(exec);
+  case ID_FRAMESET:
+    return HTMLFrameSetElementProto::self(exec);
+  case ID_LAYER:
+    return HTMLLayerElementProto::self(exec);
+  case ID_FRAME:
+    return HTMLFrameElementProto::self(exec);
+  case ID_IFRAME:
+    return HTMLIFrameElementProto::self(exec);
+  case ID_MARQUEE:
+    return HTMLMarqueeElementProto::self(exec);
+  default:
+    return HTMLElementProto::self(exec);
+  }
+}
+
 
 // -------------------------------------------------------------------------
 /* Source for HTMLCollectionProtoTable.
