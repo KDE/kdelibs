@@ -320,6 +320,7 @@ namespace KJS {
           virtual const ClassInfo* classInfo() const { return &info; } \
           static const ClassInfo info; \
           static ObjectImp* self(ExecState *exec); \
+          virtual bool implementsHasInstance() const; \
   };
 
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProto) \
@@ -330,6 +331,9 @@ namespace KJS {
     }\
     ObjectImp* Class::self(ExecState *exec) { \
         return cacheGlobalObject<Class>(exec, "[[" ClassName ".constructor]]"); \
+    } \
+    bool Class::implementsHasInstance() const { \
+        return true; \
     }
 
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR(Class,ClassName,ProtoClass) \
