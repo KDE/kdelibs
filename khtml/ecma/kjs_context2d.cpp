@@ -67,6 +67,7 @@
 #include <QGradient>
 #include <QColor>
 #include <QtDebug>
+#include <QLocale>
 
 #include <math.h>
 
@@ -158,6 +159,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         if (args.size() != 0)
             return throwError(exec, SyntaxError);
         contextObject->setPath( QPainterPath() );
+        contextObject->path().setFillRule( Qt::WindingFill );
         break;
     }
     case Context2D::ClosePath: {
@@ -874,7 +876,9 @@ QPainter *Context2D::drawingContext()
 static QList<qreal> parseNumbersList(QString::const_iterator &itr)
 {
     QList<qreal> points;
+    QLocale c(QLocale::C);
     QString temp;
+    bool percent = false;
     while ((*itr).isSpace())
         ++itr;
     while ((*itr).isNumber() ||
@@ -893,12 +897,17 @@ static QList<qreal> parseNumbersList(QString::const_iterator &itr)
             temp += *itr++;
         while ((*itr).isSpace())
             ++itr;
+        if ((*itr) == '%')
+            ++itr, percent = true;
+        while ((*itr).isSpace())
+            ++itr;
         if ((*itr) == ',')
             ++itr;
-        points.append(temp.toDouble());
+        points.append(c.toDouble(temp) * (percent ? 2.55 : 1));
         //eat spaces
         while ((*itr).isSpace())
             ++itr;
+        percent = false;
     }
 
     return points;
@@ -906,23 +915,27 @@ static QList<qreal> parseNumbersList(QString::const_iterator &itr)
 
 QColor colorFromValue(ExecState *exec, ValueImp *value)
 {
-    QString name = value->toString(exec).qstring();
+    QString name = value->toString(exec).qstring().trimmed();
     QString::const_iterator itr = name.constBegin();
     QList<qreal> compo;
-    if ( name.startsWith( "rgba(" ) ) {
+    if ( name.startsWith( "rgba(" ) || name.startsWith( "hsva(" ) ) {
         ++itr; ++itr; ++itr; ++itr; ++itr;
         compo = parseNumbersList(itr);
         if ( compo.size() != 4 ) {
             return QColor();
         }
-        return QColor( compo[0], compo[1], compo[2], compo[3] );
-    } else if ( name.startsWith( "rgb(" ) ) {
+        return name.startsWith('h') ?
+            QColor::fromHsvF( compo[0]/255, compo[1]/255, compo[2]/255, compo[3] ) :
+            QColor::fromRgbF( compo[0]/255, compo[1]/255, compo[2]/255, compo[3] );
+    } else if ( name.startsWith( "rgb(" ) ||  name.startsWith( "hsv(" ) ) {
         ++itr; ++itr; ++itr; ++itr;
         compo = parseNumbersList(itr);
         if ( compo.size() != 3 ) {
             return QColor();
         }
-        return QColor( compo[0], compo[1], compo[2] );
+        return name.startsWith('h') ?
+            QColor::fromHsv( compo[0], compo[1], compo[2] ) :
+            QColor::fromRgb( compo[0], compo[1], compo[2] );
     } else {
         QRgb color;
         DOM::CSSParser::parseColor(name, color);
@@ -970,6 +983,8 @@ QPen Context2D::constructPen(ExecState* exec)
 {
     //### FIXME: caching and such
     QPen pen = drawingContext()->pen();
+    float w = (float)_lineWidth->toNumber(exec);
+    pen.setWidth(w);
     if (_strokeStyle->isString()) {
         QColor qc = colorFromValue(exec, _strokeStyle);
         pen.setColor( qc );

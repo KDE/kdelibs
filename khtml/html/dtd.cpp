@@ -317,6 +317,7 @@ static const ushort tag_list_inline[] = {
     ID_ILAYER,      // deprecated
     ID_NOBR,        // ?
     ID_WBR,         // ?
+    ID_CANVAS,
     0
 };
 
