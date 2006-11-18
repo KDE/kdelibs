@@ -44,6 +44,7 @@
 #include "rendering/render_style.h"
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
+#include <QProcess>
 #include <QWindowsStyle>
 #include <QStyleOptionSlider>
 
@@ -1293,6 +1294,17 @@ static QString makeRelativePath(const QString &base, const QString &path)
     return rel;
 }
 
+static QString getDiff(QString cmdLine)
+{
+    QProcess p;
+    p.start(cmdLine, QIODevice::ReadOnly);
+    p.waitForFinished();
+    QString text = QString::fromLocal8Bit(p.readAllStandardOutput());
+    text = text.replace( '<', "&lt;" );
+    text = text.replace( '>', "&gt;" );
+    return text;
+}
+
 void RegressionTest::doFailureReport( const QString& test, int failures )
 {
     if ( failures == NoFailure ) {
@@ -1322,33 +1334,15 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
-                            .arg ( test, test, relOutputDir ).toLatin1(), "r" );
-        QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
-            QString line = is->readLine();
-            line = line.replace( '<', "&lt;" );
-            line = line.replace( '>', "&gt;" );
-            renderDiff += line + "\n";
-        }
-        delete is;
-        pclose( pipe );
+        renderDiff += getDiff( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
+                            .arg ( test, test, relOutputDir ) );
         renderDiff += "</pre>";
     }
 
     if ( failures & DomFailure ) {
         domDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
-                            .arg ( test, test, relOutputDir ).toLatin1(), "r" );
-        QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
-            QString line = is->readLine();
-            line = line.replace( '<', "&lt;" );
-            line = line.replace( '>', "&gt;" );
-            domDiff += line  + "\n";
-        }
-        delete is;
-        pclose( pipe );
+        domDiff += getDiff( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
+                            .arg ( test, test, relOutputDir ) );
         domDiff += "</pre>";
     }
 
