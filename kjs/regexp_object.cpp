@@ -58,7 +58,7 @@ RegExpPrototype::RegExpPrototype(ExecState *exec,
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Exec, 0, execPropertyName), DontEnum);
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Test, 0, testPropertyName), DontEnum);
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
-  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Compile,  0, compilePropertyName), DontEnum);
+  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Compile,  1, compilePropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFunc ---------------------------
