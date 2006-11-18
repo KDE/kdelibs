@@ -2930,8 +2930,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         // length, percent
     case CSS_PROP_MAX_WIDTH:
         // +none +inherit
-        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE)
+        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
             apply = true;
+            l = Length(UNDEFINED, Fixed);
+        }
     case CSS_PROP_TOP:
     case CSS_PROP_LEFT:
     case CSS_PROP_RIGHT:
@@ -3049,8 +3051,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_MAX_HEIGHT:
-        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE)
+        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
             apply = true;
+            l = Length(UNDEFINED, Fixed);
+        }
     case CSS_PROP_HEIGHT:
     case CSS_PROP_MIN_HEIGHT:
         if(id != CSS_PROP_MAX_HEIGHT && primitiveValue &&
