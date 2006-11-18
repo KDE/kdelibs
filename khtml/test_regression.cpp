@@ -606,7 +606,12 @@ int main(int argc, char *argv[])
     setenv( "KDEHOME", kh.toLatin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
-
+    
+    // We want KIO to be in the slave-forking mode since 
+    // then it'll ask KProtocolInfo::exec for the binary to run,
+    // and we intercept that, limiting the I/O to file://
+    // and the magic data://. See Slave::createSlave in KIO's slave.cpp
+    setenv( "KDE_FORK_SLAVES", "true", 1);
     signal( SIGALRM, signal_handler );
 
     // workaround various Qt crashes by always enforcing a TrueColor visual
