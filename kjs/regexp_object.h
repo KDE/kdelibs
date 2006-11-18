@@ -44,7 +44,7 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
-    enum { Exec, Test, ToString };
+    enum { Exec, Test, ToString, Compile };
   private:
     int id;
   };
@@ -53,11 +53,12 @@ namespace KJS {
   public:
     RegExpImp(RegExpPrototype *regexpProto);
     ~RegExpImp();
-    void setRegExp(RegExp *r) { reg = r; }
+    void setRegExp(RegExp *r);
     RegExp* regExp() const { return reg; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+
   private:
     RegExp *reg;
   };
@@ -82,6 +83,13 @@ namespace KJS {
     JSObject *arrayOfMatches(ExecState *exec, const UString &result) const;
     
     virtual const ClassInfo *classInfo() const { return &info; }
+    
+    /*
+     Attempts to create a new regular expression engine for the string p
+     and the flags stored in flagsInput. If this succeeds, it returns the 
+     engine. If not, it returns 0, and raises an exception in exec
+    */
+    static RegExp* makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput);    
   private:
     JSValue *getBackref(unsigned) const;
     JSValue *getLastMatch() const;

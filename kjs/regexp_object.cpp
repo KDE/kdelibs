@@ -54,9 +54,11 @@ RegExpPrototype::RegExpPrototype(ExecState *exec,
 
   static const Identifier execPropertyName("exec");
   static const Identifier testPropertyName("test");
+  static const Identifier compilePropertyName("compile");
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Exec, 0, execPropertyName), DontEnum);
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Test, 0, testPropertyName), DontEnum);
   putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
+  putDirectFunction(new RegExpProtoFunc(exec, funcProto, RegExpProtoFunc::Compile,  0, compilePropertyName), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFunc ---------------------------
@@ -103,7 +105,9 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     }
 
     int foundIndex;
+    regExp->prepareMatch(input);
     UString match = regExpObj->performMatch(regExp, input, static_cast<int>(lastIndex), &foundIndex);
+    regExp->doneMatch();
     bool didMatch = !match.isNull();
 
     // Test
@@ -122,7 +126,7 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     }
   }
   break;
-  case ToString:
+  case ToString: {
     UString result = "/" + thisObj->get(exec, "source")->toString(exec) + "/";
     if (thisObj->get(exec, "global")->toBoolean(exec)) {
       result += "g";
@@ -134,6 +138,15 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       result += "m";
     }
     return jsString(result);
+  }
+  case Compile: { // JS1.2 legacy, but still in use in the wild somewhat
+      RegExpImp* instance = static_cast<RegExpImp*>(thisObj);
+      RegExp* newEngine   = RegExpObjectImp::makeEngine(exec, args[0]->toString(exec), args[1]);
+      if (!newEngine)
+        return exec->exception();
+      instance->setRegExp(newEngine);
+      return instance;
+    }
   }
 
   return jsUndefined();
@@ -151,6 +164,18 @@ RegExpImp::RegExpImp(RegExpPrototype *regexpProto)
 RegExpImp::~RegExpImp()
 {
   delete reg;
+}
+
+void RegExpImp::setRegExp(RegExp *r)
+{
+  delete reg;
+  reg = r;
+
+  putDirect("global", jsBoolean(r->flags() & RegExp::Global), DontDelete | ReadOnly | DontEnum);
+  putDirect("ignoreCase", jsBoolean(r->flags() & RegExp::IgnoreCase), DontDelete | ReadOnly | DontEnum);
+  putDirect("multiline",  jsBoolean(r->flags() & RegExp::Multiline),  DontDelete | ReadOnly | DontEnum);
+  putDirect("source",     jsString (r->pattern()), DontDelete | ReadOnly | DontEnum);
+  putDirect("lastIndex",  jsNumber(0), DontDelete | DontEnum);
 }
 
 // ------------------------------ RegExpObjectImp ------------------------------
@@ -367,6 +392,48 @@ bool RegExpObjectImp::implementsConstruct() const
   return true;
 }
 
+RegExp* RegExpObjectImp::makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput)
+{
+  UString flags = flagsInput->isUndefined() ? UString("") : flagsInput->toString(exec);
+
+  // Check for validity of flags
+  for (int pos = 0; pos < flags.size(); ++pos) {
+    switch (flags[pos].unicode()) {
+    case 'g':
+    case 'i':
+    case 'm':
+      break;
+    default: {
+        throwError(exec, SyntaxError,
+                    "Invalid regular expression flags");
+        return 0;
+      }
+    }
+  }
+
+  bool global = (flags.find("g") >= 0);
+  bool ignoreCase = (flags.find("i") >= 0);
+  bool multiline = (flags.find("m") >= 0);
+
+  int reflags = RegExp::None;
+  if (global)
+      reflags |= RegExp::Global;
+  if (ignoreCase)
+      reflags |= RegExp::IgnoreCase;
+  if (multiline)
+      reflags |= RegExp::Multiline;
+
+  RegExp *re = new RegExp(p, reflags);
+  if (!re->isValid()) {
+    throwError(exec, SyntaxError,
+               "Invalid regular expression");
+    delete re;
+    return 0;
+  }
+  return re;
+}
+
+
 // ECMA 15.10.4
 JSObject *RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
@@ -378,35 +445,15 @@ JSObject *RegExpObjectImp::construct(ExecState *exec, const List &args)
   }
   
   UString p = args[0]->isUndefined() ? UString("") : args[0]->toString(exec);
-  UString flags = args[1]->isUndefined() ? UString("") : args[1]->toString(exec);
+
+  RegExp* re = makeEngine(exec, p, args[1]);
+  if (!re)
+    return exec->exception()->toObject(exec);
+
 
   RegExpPrototype *proto = static_cast<RegExpPrototype*>(exec->lexicalInterpreter()->builtinRegExpPrototype());
   RegExpImp *dat = new RegExpImp(proto);
 
-  bool global = (flags.find("g") >= 0);
-  bool ignoreCase = (flags.find("i") >= 0);
-  bool multiline = (flags.find("m") >= 0);
-  // TODO: throw a syntax error on invalid flags
-
-  dat->putDirect("global", jsBoolean(global), DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("ignoreCase", jsBoolean(ignoreCase), DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("multiline", jsBoolean(multiline), DontDelete | ReadOnly | DontEnum);
-
-  dat->putDirect("source", jsString(p), DontDelete | ReadOnly | DontEnum);
-  dat->putDirect("lastIndex", jsNumber(0), DontDelete | DontEnum);
-
-  int reflags = RegExp::None;
-  if (global)
-      reflags |= RegExp::Global;
-  if (ignoreCase)
-      reflags |= RegExp::IgnoreCase;
-  if (multiline)
-      reflags |= RegExp::Multiline;
-  RegExp* re = new RegExp(p, reflags);
-  if (!re->isValid()) {
-    delete re;
-    return throwError(exec, SyntaxError, "Invalid regular expression");
-  }
   dat->setRegExp(re);
 
   return dat;

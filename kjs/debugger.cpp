@@ -63,6 +63,7 @@ void Debugger::attach(Interpreter* interp)
   if (other)
     other->detach(interp);
   interp->setDebugger(this);
+
   rep->interps = new AttachedInterpreter(interp, rep->interps);
 }
 

@@ -88,8 +88,9 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #endif
 
   if (++depth > KJS_MAX_STACK) {
-    --depth;
+    depth -= 11; //Give the debugger some room..
     return throwError(exec, RangeError, "Maximum call stack size exceeded.");
+    depth += 10; //Put it back..
   }
 #endif
 

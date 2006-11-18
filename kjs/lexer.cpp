@@ -26,6 +26,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "dtoa.h"
 #include "interpreter.h"
 #include "nodes.h"
 #include <kxmlcore/unicode/Unicode.h>
@@ -459,7 +460,7 @@ int Lexer::lex()
 
   double dval = 0;
   if (state == Number) {
-    dval = strtod(buffer8, 0L);
+    dval = kjs_strtod(buffer8, 0L);
   } else if (state == Hex) { // scan hex numbers
     const char *p = buffer8 + 2;
     while (char c = *p++) {

@@ -2,6 +2,8 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001,2004 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003,2004 Apple Computer, Inc.
+ *  Copyright (C) 2006      Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,14 +34,28 @@ using KXMLCore::Vector;
 
 namespace KJS {
 
+RegExp::UTF8SupportState RegExp::utf8Support = RegExp::Unknown;
+
 RegExp::RegExp(const UString &p, char flags)
-  : _flags(flags), _valid(true), _numSubPatterns(0)
+  : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
 {
+  // Determine whether libpcre has unicode support if need be..
+#ifdef PCRE_CONFIG_UTF8
+  if (utf8Support == Unknown) {
+    int supported;
+    pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
+    utf8Support = supported ? Supported : Unsupported;
+  }
+#endif
+
   // JS regexps can contain Unicode escape sequences (\uxxxx) which
   // are rather uncommon elsewhere. As our regexp libs don't understand
   // them we do the unescaping ourselves internally.
+  // Also make sure to expand out any nulls as pcre_compile 
+  // expects null termination..
   UString intern;
-  if (p.find("\\u") >= 0) {
+  const char* const nil = "\\x00";
+  if (p.find("\\u") >= 0 || p.find(KJS::UChar('\0')) >= 0) {
     bool escape = false;
     for (int i = 0; i < p.size(); ++i) {
       UChar c = p[i];
@@ -54,7 +70,12 @@ RegExp::RegExp(const UString &p, char flags)
           if (Lexer::isHexDigit(c0) && Lexer::isHexDigit(c1) &&
               Lexer::isHexDigit(c2) && Lexer::isHexDigit(c3)) {
             c = Lexer::convertUnicode(c0, c1, c2, c3);
-            intern += UString(&c, 1);
+            if (c.unicode() == 0) {
+                // Make sure to encode 0, to avoid terminating the string
+                intern += UString(nil);
+            } else {
+                intern += UString(&c, 1);
+            }
             i += 4;
             continue;
           }
@@ -64,6 +85,8 @@ RegExp::RegExp(const UString &p, char flags)
       } else {
         if (c == '\\')
           escape = true;
+        else if (c == '\0')
+          intern += UString(nil);
         else
           intern += UString(&c, 1);
       }
@@ -74,7 +97,7 @@ RegExp::RegExp(const UString &p, char flags)
 
 #ifdef HAVE_PCREPOSIX
 
-  int options = PCRE_UTF8;
+  int options = 0;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute.
   // FIXME: That last comment is dubious. Not all RegExps get run through RegExpProtoFunc::execute.
   if (flags & IgnoreCase)
@@ -82,16 +105,17 @@ RegExp::RegExp(const UString &p, char flags)
   if (flags & Multiline)
     options |= PCRE_MULTILINE;
 
+  if (utf8Support == Supported)
+    options |= PCRE_UTF8;
+
   const char *errorMessage;
   int errorOffset;
-  UString nullTerminated(intern);
-  char null(0);
-  nullTerminated.append(null);
-#ifdef APPLE_CHANGES
-  _regex = pcre_compile(reinterpret_cast<const uint16_t *>(nullTerminated.data()), options, &errorMessage, &errorOffset, NULL);
-#else
-  _regex = pcre_compile(nullTerminated.ascii(), options, &errorMessage, &errorOffset, NULL);
-#endif
+
+  // Fill our buffer with an encoded version, whether utf-8, or, 
+  // if PCRE is incapable, truncated.
+  prepareMatch(intern);
+  _regex = pcre_compile(_buffer, options, &errorMessage, &errorOffset, NULL);
+  doneMatch(); //Cleanup buffers
   if (!_regex) {
 #ifndef NDEBUG
     fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", errorMessage);
@@ -135,6 +159,7 @@ RegExp::RegExp(const UString &p, char flags)
 
 RegExp::~RegExp()
 {
+  doneMatch(); // Be 100% sure buffers are freed
 #ifdef HAVE_PCREPOSIX
   pcre_free(_regex);
 #else
@@ -143,39 +168,96 @@ RegExp::~RegExp()
 #endif
 }
 
-
-/*
- Compute mapping from position in utf-8 to that one in the original string.
- This echoes the structure of UString::UTF8String()
-*/ 
-static void computeUtf8Offsets(const UString& s, Vector<int, 128>& originalPos)
+void RegExp::prepareUtf8(const UString& s)
 {
-    const int length = s.size();
-    originalPos.reserveCapacity(length);
-    const UChar *d   = s.data();
-    
-    for (int i = 0; i != length; ++i) {
-        unsigned short c = d[i].unicode();
-        int len;
-        if (c < 0x80)
-            len = 1;
-        else if (c < 0x800)
-            len = 2; 
-        else if (c >= 0xD800 && c <= 0xDBFF && i < length && d[i+1].uc >= 0xDC00 && d[i+1].uc <= 0xDFFF)
-            len = 4; //Surrogate pair --- 4 bytes
-        else
-            len = 3;
+  // Allocate a buffer big enough to hold all the characters plus \0
+  const int length = s.size();
+  _buffer = new char[length * 3 + 1];
 
-        while (len > 0)  {
-            originalPos.append(i);
-            --len;
-        }
+  // Also create buffer for positions. We need one extra character in there,
+  // even past the \0 since the non-empty handling may jump one past the end
+  _originalPos = new int[length * 3 + 2];
+
+  // Convert to runs of 8-bit characters, and generate indeces
+  // Note that we do NOT combine surrogate pairs here, as 
+  // regexps operate on them as separate characters
+  char *p      = _buffer;
+  int  *posOut = _originalPos;
+  const UChar *d = s.data();
+  for (int i = 0; i != length; ++i) {
+    unsigned short c = d[i].unicode();
+
+    int sequenceLen;
+    if (c < 0x80) {
+      *p++ = (char)c;
+      sequenceLen = 1;
+    } else if (c < 0x800) {
+      *p++ = (char)((c >> 6) | 0xC0); // C0 is the 2-byte flag for UTF-8
+      *p++ = (char)((c | 0x80) & 0xBF); // next 6 bits, with high bit set
+      sequenceLen = 2;
+    } else {
+      *p++ = (char)((c >> 12) | 0xE0); // E0 is the 3-byte flag for UTF-8
+      *p++ = (char)(((c >> 6) | 0x80) & 0xBF); // next 6 bits, with high bit set
+      *p++ = (char)((c | 0x80) & 0xBF); // next 6 bits, with high bit set
+      sequenceLen = 3;
     }
-    originalPos.append(length); //Since code does "character after"
+
+    while (sequenceLen > 0) {
+      *posOut = i;
+      ++posOut;
+      --sequenceLen;
+    }
+  }
+
+  _bufferSize = p - _buffer;
+
+  *p++ = '\0';
+
+  // Record positions for \0, and the fictional character after that.
+  *posOut     = length;
+  *(posOut+1) = length+1;
+}
+
+void RegExp::prepareASCII (const UString& s)
+{
+  _originalPos = 0;
+
+  // Best-effort attempt to get something done
+  // when we don't have utf 8 available -- use 
+  // truncated version, and pray for the best 
+  CString truncated = s.cstring();
+  _buffer = new char[truncated.size() + 1];
+  memcpy(_buffer, truncated.c_str(), truncated.size());
+  _buffer[truncated.size()] = '\0'; // For _compile use
+  _bufferSize = truncated.size();
+}
+
+void RegExp::prepareMatch(const UString &s)
+{
+  delete[] _originalPos; // Just to be sure..
+  delete[] _buffer;
+  if (utf8Support == Supported)
+    prepareUtf8(s);
+  else
+    prepareASCII(s);
+
+#ifndef NDEBUG
+  _originalS = s;
+#endif
+}
+
+void RegExp::doneMatch() 
+{
+  delete[] _originalPos; _originalPos = 0;
+  delete[] _buffer;      _buffer      = 0;
 }
 
 UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 {
+#ifndef NDEBUG
+  assert(s.data() == _originalS.data()); // Make sure prepareMatch got called right..
+#endif
+
   if (i < 0)
     i = 0;
   int dummyPos;
@@ -206,25 +288,21 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     offsetVector = new int [offsetVectorSize];
   }
 
-#ifdef APPLE_CHANGES
-  const int numMatches = pcre_exec(_regex, NULL, reinterpret_cast<const uint16_t *>(s.data()), s.size(), i, 0, offsetVector, offsetVectorSize);
-#else
-  CString str = s.UTF8String();
-  Vector<int, 128> originalPos;
-  computeUtf8Offsets(s, originalPos);
-  
-  //Look up where the i we want starts up... it's guaranteed to be at least the input i..
-  int relI = i;
-  while (originalPos[relI] != i)
-    ++relI;
+  int startPos;
+  if (utf8Support == Supported) {
+    startPos = i;
+    while (_originalPos[startPos] < i)
+      ++startPos;
+  } else {
+    startPos = i;
+  }
 
-  const int numMatches = pcre_exec(_regex, NULL, str.c_str(), str.size(), relI, 0, offsetVector, offsetVectorSize);
+  const int numMatches = pcre_exec(_regex, NULL, _buffer, _bufferSize, startPos, 0, offsetVector, offsetVectorSize);
 
   //Now go through and patch up the offsetVector
   for (int c = 0; c < 2 * numMatches; ++c)
     if (offsetVector[c] != -1)
-        offsetVector[c] = originalPos[offsetVector[c]];
-#endif
+        offsetVector[c] = _originalPos[offsetVector[c]];
 
   if (numMatches < 0) {
 #ifndef NDEBUG

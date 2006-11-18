@@ -305,6 +305,7 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
     int replacementCapacity = 0;
 
     // This is either a loop (if global is set) or a one-way (if not).
+    reg->prepareMatch(source);
     do {
       int *ovector;
       UString matchString = regExpObj->performMatch(reg, source, startPosition, &matchIndex, &ovector);
@@ -347,6 +348,8 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
           break;
       }
     } while (global);
+    
+    reg->doneMatch();
 
     if (lastIndex < source.size())
       pushSourceRange(sourceRanges, sourceRangeCount, sourceRangeCapacity, UString::Range(lastIndex, source.size() - lastIndex));
@@ -482,6 +485,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       reg = tmpReg = new RegExp(a0->toString(exec), RegExp::None);
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
+    reg->prepareMatch(u);
     UString mstr = regExpObj->performMatch(reg, u, 0, &pos);
     if (id == Search) {
       result = jsNumber(pos);
@@ -519,6 +523,8 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 	}
       }
     }
+    reg->doneMatch();
+
     delete tmpReg;
     break;
   }
@@ -552,6 +558,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     uint32_t limit = a1->isUndefined() ? 0xFFFFFFFFU : a1->toUInt32(exec);
     if (a0->isObject() && static_cast<JSObject *>(a0)->inherits(&RegExpImp::info)) {
       RegExp *reg = static_cast<RegExpImp *>(a0)->regExp();
+      reg->prepareMatch(u);
       if (u.isEmpty() && !reg->match(u, 0).isNull()) {
 	// empty string matched by regexp -> empty array
 	res->put(exec,lengthPropertyName, jsNumber(0));
@@ -573,6 +580,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 	  i++;
 	}
       }
+      reg->doneMatch();
     } else {
       u2 = a0->toString(exec);
       if (u2.isEmpty()) {

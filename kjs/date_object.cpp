@@ -561,7 +561,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case GetSeconds:
       case GetMilliSeconds:
       case GetTimezoneOffset:
-      case SetTime:
       case SetMilliSeconds:
       case SetSeconds:
       case SetMinutes:
@@ -571,6 +570,13 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case SetFullYear:
         return jsNaN();
     }
+  }
+  
+  if (id == SetTime) {
+    double milli = roundValue(exec, args[0]);
+    result = jsNumber(milli);
+    thisDateObj->setInternalValue(result);
+    return result;
   }
 
   double secs = floor(milli / msPerSecond);
@@ -642,11 +648,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     return jsNumber(ms);
   case GetTimezoneOffset:
     return jsNumber(-gmtoffset(t) / 60);
-  case SetTime:
-    milli = roundValue(exec, args[0]);
-    result = jsNumber(milli);
-    thisDateObj->setInternalValue(result);
-    break;
   case SetMilliSeconds:
     fillStructuresUsingTimeArgs(exec, args, 1, &ms, &t);
     break;

@@ -50,6 +50,11 @@ namespace KJS {
 
     UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
     unsigned subPatterns() const { return _numSubPatterns; }
+    UString  pattern() const { return _pat; }
+
+    //These methods should be called around the match of the same string..
+    void prepareMatch(const UString &s);
+    void doneMatch();
 
   private:
 #ifdef HAVE_PCREPOSIX
@@ -57,12 +62,32 @@ namespace KJS {
 #else
     regex_t _regex;
 #endif
+    UString _pat;
     char _flags;
     bool _valid;
     unsigned _numSubPatterns;
+    
+    // Cached encoding info...
+    char* _buffer;
+    int*  _originalPos;
+    int   _bufferSize;
+
+    void prepareUtf8  (const UString& s);
+    void prepareASCII (const UString& s);
+#ifndef NDEBUG
+    UString _originalS; // the original string, used for sanity-checking
+#endif
 
     RegExp(const RegExp &);
     RegExp &operator=(const RegExp &);
+    
+    enum UTF8SupportState {
+      Unknown,
+      Supported,
+      Unsupported
+    };
+    
+    static UTF8SupportState utf8Support;
   };
 
 } // namespace
