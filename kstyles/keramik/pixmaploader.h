@@ -82,7 +82,7 @@ namespace Keramik
 
 			int key()
 			{
-				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
+                               return (m_disabled ? 1 : 0) ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
 			}
 
 			bool operator == (const KeramikCacheEntry& other)
