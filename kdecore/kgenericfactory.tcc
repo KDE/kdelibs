@@ -129,7 +129,7 @@ namespace KDEPrivate
             const QMetaObject* metaObject = &Product::staticMetaObject;
             while ( metaObject )
             {
-                kDebug(150) << "className=" << className << "metaObject->className()=" << metaObject->className() << endl;
+                kDebug(150) << "className=" << className << " metaObject->className()=" << metaObject->className() << endl;
                 if ( !qstrcmp( className, metaObject->className() ) )
                     return create( parentWidget,
                                    parent, args, Type2Type<BaseType>() );
