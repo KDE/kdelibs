@@ -760,7 +760,7 @@ JSObject *StringObjectImp::construct(ExecState *exec, const List &args)
 }
 
 // ECMA 15.5.1
-JSValue *StringObjectImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
+JSValue *StringObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
     return jsString("");
@@ -779,7 +779,7 @@ StringObjectFuncImp::StringObjectFuncImp(ExecState*, FunctionPrototype* funcProt
   putDirect(lengthPropertyName, jsNumber(1), DontDelete|ReadOnly|DontEnum);
 }
 
-JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
+JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   UString s;
   if (args.size()) {

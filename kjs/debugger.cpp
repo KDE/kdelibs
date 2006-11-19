@@ -83,19 +83,19 @@ void Debugger::detach(Interpreter* interp)
   }
 }
 
-bool Debugger::sourceParsed(ExecState */*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
+bool Debugger::sourceParsed(ExecState * /*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
                            const UString &/*source*/, int /*startingLineNumber*/, int /*errorLine*/, const UString & /*errorMsg*/)
 {
   return true;
 }
 
-bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
+bool Debugger::sourceUnused(ExecState * /*exec*/, int /*sourceId*/)
 {
   return true;
 }
 
-bool Debugger::exception(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         JSObject */*exceptionObj*/)
+bool Debugger::exception(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                         JSObject * /*exceptionObj*/)
 {
   return true;
 }
