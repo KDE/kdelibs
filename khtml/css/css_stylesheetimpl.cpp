@@ -111,7 +111,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     : StyleSheetImpl(parentSheet, href)
 {
     m_lstChildren = new QPtrList<StyleBaseImpl>;
-    m_doc = 0;
+    m_doc = parentSheet->doc();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -131,7 +131,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
     m_lstChildren = new QPtrList<StyleBaseImpl>;
-    m_doc = 0;
+    m_doc = static_cast<CSSStyleSheetImpl*>(ownerRule->stylesheet())->doc();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -164,7 +164,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
-    m_doc  = 0;
+    m_doc = static_cast<CSSStyleSheetImpl*>(ownerRule->stylesheet())->doc();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
