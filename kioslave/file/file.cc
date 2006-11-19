@@ -1278,6 +1278,8 @@ void FileProtocol::listDir( const KUrl& url)
             error( ERR_SLAVE_DEFINED,
                    i18n( "No media in device for %1" ,  url.path() ) );
             break;
+#else
+        case ENOENT: // just to avoid the warning
 #endif
         default:
             error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );

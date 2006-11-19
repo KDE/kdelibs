@@ -213,32 +213,32 @@ QTime KJSEmbed::extractQTime( KJS::ExecState* /*exec*/, const KJS::List& /*args*
 }
 
 
-QTime KJSEmbed::extractQTime( KJS::ExecState */*exec*/, KJS::JSValue* /*value*/, const QTime &/*defaultValue*/  )
+QTime KJSEmbed::extractQTime( KJS::ExecState * /*exec*/, KJS::JSValue* /*value*/, const QTime &/*defaultValue*/  )
 {
     return QTime();
 }
 
 
-KJS::JSValue *KJSEmbed::createQTime( KJS::ExecState */*exec*/, const QTime &/*value*/  )
+KJS::JSValue *KJSEmbed::createQTime( KJS::ExecState * /*exec*/, const QTime &/*value*/  )
 {
 //    return new KJS::JSValue();
     return 0;
 }
 
 
-QStringList KJSEmbed::extractQStringList( KJS::ExecState */*exec*/, const KJS::List &/*args*/, int /*idx*/, const QStringList &/*defaultValue*/ )
+QStringList KJSEmbed::extractQStringList( KJS::ExecState * /*exec*/, const KJS::List &/*args*/, int /*idx*/, const QStringList &/*defaultValue*/ )
 {
     return QStringList();
 }
 
 
-QStringList KJSEmbed::extractQStringList( KJS::ExecState */*exec*/, KJS::JSValue* /*value*/, const QStringList &/*defaultValue*/ )
+QStringList KJSEmbed::extractQStringList( KJS::ExecState * /*exec*/, KJS::JSValue* /*value*/, const QStringList &/*defaultValue*/ )
 {
     return QStringList();
 }
 
 
-KJS::JSValue *KJSEmbed::createQStringList( KJS::ExecState */*exec*/, const QStringList &/*value*/  )
+KJS::JSValue *KJSEmbed::createQStringList( KJS::ExecState * /*exec*/, const QStringList &/*value*/  )
 {
 //    return new KJS::JSValue();
     return 0;
