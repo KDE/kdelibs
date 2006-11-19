@@ -83,6 +83,7 @@ StyleSheetImpl *StyleSheetImpl::parentStyleSheet() const
 {
     if( !m_parent ) return 0;
     if( m_parent->isStyleSheet() ) return static_cast<StyleSheetImpl *>(m_parent);
+    if( m_parent->isRule() ) return m_parent->stylesheet();
     return 0;
 }
 
