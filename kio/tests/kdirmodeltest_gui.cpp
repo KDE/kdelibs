@@ -27,6 +27,7 @@
 #include <QListView>
 #include <QDir>
 #include <QFile>
+#include <kmimetyperesolver.h>
 
 //#include "kdirmodeltest_gui.h"
 
@@ -48,16 +49,19 @@ int main (int argc, char **argv)
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   KDirModel *dirmodel = new KDirModel(0);
+  dirmodel->dirLister()->setDelayedMimeTypes(true);
 
   QTreeView* treeView = new QTreeView(0);
   treeView->setModel(dirmodel);
   treeView->resize(500, 500);
   treeView->show();
+  KMimeTypeResolver* treeViewResolver = new KMimeTypeResolver(treeView, dirmodel);
 
 #if 1
   QListView* listView = new QListView(0);
   listView->setModel(dirmodel);
   listView->show();
+  KMimeTypeResolver* listViewResolver = new KMimeTypeResolver(listView, dirmodel);
 #endif
 
 #if 1
@@ -66,14 +70,16 @@ int main (int argc, char **argv)
   iconView->setSelectionMode(QListView::ExtendedSelection);
   iconView->setViewMode(QListView::IconMode);
   iconView->show();
+  KMimeTypeResolver* iconViewResolver = new KMimeTypeResolver(iconView, dirmodel);
 #endif
+
+  if (args->count() == 0)
+      dirmodel->dirLister()->openUrl( QDir::homePath() );
 
   for(int i = 0; i < args->count(); i++) {
       kDebug() << "Adding: " << args->url(i) << endl;
       dirmodel->dirLister()->openUrl( args->url(i), true /*keep*/ );
   }
-
-  dirmodel->dirLister()->openUrl( QDir::homePath() );
 
   return a.exec();
 }

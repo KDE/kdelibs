@@ -26,7 +26,7 @@ class QWidget;
 class QKeyEvent;
 
 #include <k3listview.h>
-#include <kmimetyperesolver.h>
+#include <k3mimetyperesolver.h>
 
 #include "kfileview.h"
 
@@ -137,7 +137,7 @@ public:
 
     void ensureItemVisible( const KFileItem * );
 
-    // for KMimeTypeResolver
+    // for K3MimeTypeResolver
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileListViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
@@ -198,7 +198,7 @@ private:
 
 
     bool m_blockSortingSignal;
-    KMimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
+    K3MimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
 
 private:
     class KFileDetailViewPrivate;

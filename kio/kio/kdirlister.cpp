@@ -1536,7 +1536,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     fileItems.insert( (*kit)->url().url(), *kit );
   }
 
-  KFileItem *item = 0, *tmp;
+  KFileItem *tmp;
 
   KIO::UDSEntryList buf = jobs.value( job );
   KIO::UDSEntryList::ConstIterator it = buf.begin();
@@ -1544,12 +1544,9 @@ void KDirListerCache::slotUpdateResult( KJob * j )
   for ( ; it != end; ++it )
   {
     // Form the complete url
-    if ( !item )
-      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
-    else
-      item->setUDSEntry( *it, jobUrl, delayedMimeTypes, true );
+    KFileItem item( *it, jobUrl, delayedMimeTypes, true );
 
-    const QString name = item->name();
+    const QString name = item.name();
     Q_ASSERT( !name.isEmpty() );
 
     // we duplicate the check for dotdot here, to avoid iterating over
@@ -1563,30 +1560,28 @@ void KDirListerCache::slotUpdateResult( KJob * j )
       // there is no root item yet
       if ( !dir->rootItem )
       {
-        dir->rootItem = item;
-        item = 0;
+        dir->rootItem = new KFileItem(item);
 
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
           if ( !kdl->d->rootFileItem && kdl->d->url == jobUrl )
             kdl->d->rootFileItem = dir->rootItem;
       }
-
       continue;
     }
 
     // Find this item
-    if ( (tmp = fileItems[item->url().url()]) )
+    if ( (tmp = fileItems[item.url().url()]) )
     {
       tmp->mark();
 
       // check if something changed for this file
-      if ( !tmp->cmp( *item ) )
+      if ( !tmp->cmp( item ) )
       {
         for ( kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->aboutToRefreshItem( tmp );
 
         //kDebug(7004) << "slotUpdateResult: file changed: " << tmp->name() << endl;
-        tmp->assign( *item );
+        *tmp = item;
 
         for ( kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->addRefreshItem( tmp );
@@ -1596,19 +1591,14 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     {
       //kDebug(7004) << "slotUpdateResult: new file: " << name << endl;
 
-      item->mark();
-      dir->lstItems.append( item );
+      KFileItem* pitem = new KFileItem(item); // we're not using kfileitem by value yet
+      pitem->mark();
+      dir->lstItems.append( pitem );
 
       for ( kdl = listers->first(); kdl; kdl = listers->next() )
-        kdl->addNewItem( item );
-
-      // item used, we need a new one for the next iteration
-      item = 0;
+        kdl->addNewItem( pitem );
     }
   }
-
-  if ( item )
-    delete item;
 
   jobs.remove( job );
 
@@ -1822,14 +1812,12 @@ void KDirListerCache::printDebug()
 /*********************** -- The new KDirLister -- ************************/
 
 
-KDirLister::KDirLister( bool _delayedMimeTypes )
-	:d(new KDirListerPrivate)
+KDirLister::KDirLister( QObject* parent )
+    : QObject(parent), d(new KDirListerPrivate)
 {
   kDebug(7003) << "+KDirLister" << endl;
 
-
   d->complete = true;
-  d->delayedMimeTypes = _delayedMimeTypes;
 
   setAutoUpdate( true );
   setDirOnlyMode( false );
@@ -2480,6 +2468,16 @@ KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
         }
         return result;
     }
+}
+
+bool KDirLister::delayedMimeTypes() const
+{
+    return d->delayedMimeTypes;
+}
+
+void KDirLister::setDelayedMimeTypes( bool delayedMimeTypes )
+{
+    d->delayedMimeTypes = delayedMimeTypes;
 }
 
 #include "kdirlister.moc"

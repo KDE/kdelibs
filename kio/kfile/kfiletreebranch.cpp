@@ -38,7 +38,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KUrl& url,
 				  const QPixmap& pix, bool showHidden,
 				  KFileTreeViewItem *branchRoot )
 
-    : KDirLister( false ),
+    : KDirLister(),
       m_root( branchRoot ),
       m_startURL( url ),
       m_name ( name ),

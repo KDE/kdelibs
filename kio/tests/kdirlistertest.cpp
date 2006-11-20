@@ -33,7 +33,7 @@
 KDirListerTest::KDirListerTest( QWidget *parent )
   : QWidget( parent )
 {
-  lister = new KDirLister( false /* true */ );
+  lister = new KDirLister(this);
   debug = new PrintSignals;
 
   QVBoxLayout* layout = new QVBoxLayout( this );
@@ -95,7 +95,6 @@ KDirListerTest::KDirListerTest( QWidget *parent )
 
 KDirListerTest::~KDirListerTest()
 {
-  delete lister;
 }
 
 void KDirListerTest::startHome()

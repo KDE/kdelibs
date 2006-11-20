@@ -28,7 +28,7 @@ class QLabel;
 #include <k3iconview.h>
 #include <kiconloader.h>
 #include <kfileview.h>
-#include <kmimetyperesolver.h>
+#include <k3mimetyperesolver.h>
 #include <kfile.h>
 
 /**
@@ -138,7 +138,7 @@ public:
     virtual void readConfig( KConfigGroup *configGroup );
     virtual void writeConfig( KConfigGroup *configGroup );
 
-    // for KMimeTypeResolver
+    // for K3MimeTypeResolver
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileIconViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
@@ -212,7 +212,7 @@ Q_SIGNALS:
     void dropped(QDropEvent *event, const KUrl::List &urls, const KUrl &url);
 
 private:
-    KMimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;
+    K3MimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;
 
     int th;
     int myIconSize;

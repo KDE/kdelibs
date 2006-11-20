@@ -1231,6 +1231,11 @@ in the drop/paste side.</li>
 <li>KBookmarkMannager::managerForFile() requires a DBus Name as the second parameter.</li>
 </ul>
 
+<h4>KDirLister class</h4>
+<ul>
+<li>The constructor argument is now a separate setter, so: KDirLister(false) -&gt; KDirLister(); KDirLister(true) -&gt; KDirLister() + setDelayedMimeTypes(true). On the other hand, KDirLister being a QObject, it takes a QObject* parent argument.</li>
+</ul>
+
 <h4>KDESasl class</h4>
 <ul>
 <li>This class is removed due to its inflexiblity, use cyrus-sasl or the upcoming QCA SASL implementation</li>

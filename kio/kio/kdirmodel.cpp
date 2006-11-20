@@ -198,12 +198,11 @@ KDirModel::KDirModel(QObject* parent)
     : QAbstractItemModel(parent),
       d(new KDirModelPrivate(this))
 {
-    setDirLister(new KDirLister);
+    setDirLister(new KDirLister(this));
 }
 
 KDirModel::~KDirModel()
 {
-    delete d->m_dirLister;
 }
 
 void KDirModel::setDirLister(KDirLister* dirLister)
@@ -213,6 +212,7 @@ void KDirModel::setDirLister(KDirLister* dirLister)
         delete d->m_dirLister;
     }
     d->m_dirLister = dirLister;
+    d->m_dirLister->setParent(this);
     connect( d->m_dirLister, SIGNAL(newItems(KFileItemList)),
              this, SLOT(slotNewItems(KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem*)),
@@ -309,6 +309,13 @@ void KDirModel::slotClear()
     //emit layoutAboutToBeChanged();
     d->clear();
     //emit layoutChanged();
+}
+
+void KDirModel::itemChanged( const KFileItem& fileItem )
+{
+    QModelIndex index = indexForItem(&fileItem);
+    if (index.isValid())
+        emit dataChanged(index, index);
 }
 
 int KDirModel::columnCount( const QModelIndex & ) const
@@ -416,7 +423,7 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
     Q_ASSERT(childNode);
     KDirModelNode* parentNode = childNode->parent();
     Q_ASSERT(parentNode);
-    return d->indexForNode(parentNode);
+    return d->indexForNode(parentNode); // O(n)
 }
 
 QStringList KDirModel::mimeTypes( ) const
@@ -450,14 +457,16 @@ KFileItem* KDirModel::itemForIndex( const QModelIndex& index ) const
 
 QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
 {
+    // Note that we can only use the URL here, not the pointer.
+    // KFileItems can be copied.
     return d->indexForUrl(item->url()); // O(n*m)
 }
 
 QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) const
 {
-    KDirModelNode* parentNode = d->nodeForIndex(parent);
+    KDirModelNode* parentNode = d->nodeForIndex(parent); // O(1)
     Q_ASSERT(parentNode);
-    KDirModelNode* childNode = parentNode->m_childNodes.value(row);
+    KDirModelNode* childNode = parentNode->m_childNodes.value(row); // O(1)
     if (childNode)
         return createIndex(row, column, childNode);
     else

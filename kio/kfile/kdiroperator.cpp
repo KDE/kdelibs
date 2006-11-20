@@ -122,7 +122,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
         currUrl.addPath("/"); // make sure we have a trailing slash!
     }
 
-    setDirLister( new KDirLister( true ) );
+    setDirLister( new KDirLister() );
 
     connect(&myCompletion, SIGNAL(match(const QString&)),
             SLOT(slotCompletionMatch(const QString&)));
@@ -1109,6 +1109,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
     dir = lister;
 
     dir->setAutoUpdate( true );
+    dir->setDelayedMimeTypes(true);
 
     QWidget* mainWidget = topLevelWidget();
     dir->setMainWindow (mainWidget);

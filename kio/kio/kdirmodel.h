@@ -41,6 +41,9 @@ class KIO_EXPORT KDirModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+    /**
+     * @param parent parent qobject
+     */
     explicit KDirModel( QObject* parent = 0 );
     ~KDirModel();
 
@@ -61,9 +64,17 @@ public:
     KFileItem* itemForIndex( const QModelIndex& index ) const;
 
     /**
-     * Return the index for a given kfileitem. This is slow.
+     * Return the index for a given kfileitem. This can be slow.
      */
     QModelIndex indexForItem( const KFileItem* ) const;
+
+    /**
+     * Notify the model that an item has changed.
+     * For instance because KMimeTypeResolver called determineMimeType on it.
+     * This makes the model emit its dataChanged signal at the index for this item.
+     * Note that for most things (renaming, changing size etc.), KDirLister's signals tell the model already.
+     */
+    void itemChanged( const KFileItem& item );
 
     /***
      * Useful "default" columns. Views can use a proxy to have more control over this.
@@ -82,20 +93,36 @@ public:
         FileItemRole = 0x07A263FF  ///< returns the KFileItem* for a given index
     };
 
+    /// Reimplemented from QAbstractItemModel. Returns true for empty directories.
     virtual bool canFetchMore ( const QModelIndex & parent ) const;
+    /// Reimplemented from QAbstractItemModel. Returns ColumnCount.
     virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
+    /// Reimplemented from QAbstractItemModel.
     virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+    /// Reimplemented from QAbstractItemModel. Not implemented yet.
     virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent );
+    /// Reimplemented from QAbstractItemModel. Lists the subdirectory.
     virtual void fetchMore ( const QModelIndex & parent );
+    /// Reimplemented from QAbstractItemModel.
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+    /// Reimplemented from QAbstractItemModel. Returns true for directories.
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    /// Reimplemented from QAbstractItemModel. Returns the column titles.
     virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+    /// Reimplemented from QAbstractItemModel. O(1)
     virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+    /// Reimplemented from QAbstractItemModel.
     virtual QMimeData * mimeData ( const QModelIndexList & indexes ) const;
+    /// Reimplemented from QAbstractItemModel.
     virtual QStringList mimeTypes () const;
+    /// Reimplemented from QAbstractItemModel.
     virtual QModelIndex parent ( const QModelIndex & index ) const;
+    /// Reimplemented from QAbstractItemModel.
     virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+    /// Reimplemented from QAbstractItemModel.
+    /// Call this to set a new icon, e.g. a preview
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+    /// Reimplemented from QAbstractItemModel. Not implemented.
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
 private slots:

@@ -64,16 +64,15 @@ class KIO_EXPORT KDirLister : public QObject
   Q_PROPERTY( bool showingDotFiles READ showingDotFiles WRITE setShowingDotFiles )
   Q_PROPERTY( bool dirOnlyMode READ dirOnlyMode WRITE setDirOnlyMode )
   Q_PROPERTY( bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled )
+  Q_PROPERTY( bool delayedMimeTypes READ delayedMimeTypes WRITE setDelayedMimeTypes )
   Q_PROPERTY( QString nameFilter READ nameFilter WRITE setNameFilter )
   Q_PROPERTY( QStringList mimeFilter READ mimeFilters WRITE setMimeFilter RESET clearMimeFilter )
 
 public:
   /**
    * Create a directory lister.
-   * @param _delayedMimeTypes if true, mime types will be fetched on demand. If false,
-   *                          they will always be fetched immediately
    */
-  KDirLister( bool _delayedMimeTypes = false );
+  KDirLister( QObject* parent = 0 );
 
   /**
    * Destroy the directory lister.
@@ -124,6 +123,23 @@ public:
    * @param _url the directory URL
    */
   virtual void stop( const KUrl& _url );
+
+  /**
+   * @return true if the "delayed mimetypes" feature was enabled
+   * @see setDelayedMimeTypes
+   */
+  bool delayedMimeTypes() const;
+
+  /**
+   * Delayed mimetypes feature:
+   * If enabled, mime types will be fetched on demand, which leads to a
+   * faster initial directory listing, where icons get progressively replaced
+   * with the correct one while KMimeTypeResolver is going through the items
+   * with unknown or imprecise mimetype (e.g. files with no extension or an
+   * unknown extension).
+   */
+  void setDelayedMimeTypes( bool delayedMimeTypes );
+
 
   /**
    * Checks whether KDirWatch will automatically update directories. This is

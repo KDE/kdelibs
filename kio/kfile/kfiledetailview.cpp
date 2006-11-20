@@ -120,7 +120,7 @@ KFileDetailView::KFileDetailView(QWidget *parent)
     setSorting( sorting() );
 
     m_resolver =
-        new KMimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
+        new K3MimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
 }
 
 KFileDetailView::~KFileDetailView()

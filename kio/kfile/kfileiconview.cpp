@@ -169,7 +169,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 		 SLOT( highlighted( Q3IconViewItem * )));
 
     // for mimetype resolving
-    m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
+    m_resolver = new K3MimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
 }
 
 KFileIconView::~KFileIconView()

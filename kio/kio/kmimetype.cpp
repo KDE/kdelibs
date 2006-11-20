@@ -274,7 +274,7 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
   }
 
   // Do some magic for local files
-  //kDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
+  kDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
 
   // If we still did not find it, we must assume the default mime type
@@ -677,5 +677,5 @@ void KMimeType::virtual_hook( int id, void* data )
 void KFolderType::virtual_hook( int id, void* data )
 { KMimeType::virtual_hook( id, data ); }
 
-#include "kmimetyperesolver.moc"
+#include "k3mimetyperesolver.moc"
 

@@ -122,6 +122,7 @@ set(kiocore_STAT_SRCS
   kio/kbuildsycocaprogressdialog.cpp
   kio/safesite.cpp
   kio/kdirmodel.cpp
+  kio/kmimetyperesolver.cpp
 )
 
 set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)
@@ -343,6 +344,7 @@ install( FILES
   kio/kfilefilter.h
   kio/kfilemetainfo.h
   kio/kmimetyperesolver.h
+  kio/k3mimetyperesolver.h
   kio/kdbusservicestarter.h
   kio/kremoteencoding.h
   kio/kmimetypechooser.h
