@@ -111,7 +111,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     : StyleSheetImpl(parentSheet, href)
 {
     m_lstChildren = new QPtrList<StyleBaseImpl>;
-    m_doc = parentSheet->doc();
+    m_doc = parentSheet ? parentSheet->doc() : 0;
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
