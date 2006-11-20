@@ -706,8 +706,9 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             if(Entity == SearchSemicolon) {
                 if(cBufferPos > 1) {
                     const entity *e = kde_findEntity(cBuffer, cBufferPos);
-                    // IE only accepts unterminated entities < 256, Gecko accepts them all
-                    if(e) {
+                    // IE only accepts unterminated entities < 256,
+                    // Gecko accepts them all, but only outside tags
+                    if(e && ( tag == NoTag || e->code < 256 || *src == ';' )) {
                         EntityChar = e->code;
                         entityLen = cBufferPos;
                     }
