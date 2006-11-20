@@ -726,18 +726,11 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
 
             if ( !EntityChar.isNull() ) {
                 checkBuffer();
-                // Just insert it
-                *dest++ = EntityChar;
                 if (entityLen > 0 && entityLen < cBufferPos) {
                     int rem = cBufferPos - entityLen;
-                    for(int i = 0; i < rem; i++)
-                        dest[i] = cBuffer[i+entityLen];
-                    dest += rem;
-                    if (pre)
-                        prePos += rem;
+                    src.prepend( TokenizerString(QString::fromAscii(cBuffer+entityLen, rem)) );
                 }
-                if (pre)
-                    prePos++;
+                src.push( EntityChar );
             } else {
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "unknown entity!" << endl;
