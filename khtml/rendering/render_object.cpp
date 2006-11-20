@@ -371,12 +371,12 @@ RenderLayer* RenderObject::findNextLayer(RenderLayer* parentLayer, RenderObject*
     // Error check the parent layer passed in.  If it's null, we can't find anything.
     if (!parentLayer)
         return 0;
-    
+
     // Step 1: If our layer is a child of the desired parent, then return our layer.
     RenderLayer* ourLayer = layer();
     if (ourLayer && ourLayer->parent() == parentLayer)
         return ourLayer;
-    
+
     // Step 2: If we don't have a layer, or our layer is the desired parent, then descend
     // into our siblings trying to find the next layer whose parent is the desired parent.
     if (!ourLayer || ourLayer == parentLayer) {
@@ -387,17 +387,17 @@ RenderLayer* RenderObject::findNextLayer(RenderLayer* parentLayer, RenderObject*
                 return nextLayer;
         }
     }
-    
+
     // Step 3: If our layer is the desired parent layer, then we're finished.  We didn't
     // find anything.
     if (parentLayer == ourLayer)
         return 0;
-    
+
     // Step 4: If |checkParent| is set, climb up to our parent and check its siblings that
     // follow us to see if we can locate a layer.
     if (checkParent && parent())
         return parent()->findNextLayer(parentLayer, this, true);
-    
+
     return 0;
 }
 
@@ -474,7 +474,7 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
-    if (isBody()) 
+    if (isBody())
         return 0;
 
     // can't really use containing blocks here (#113280)
@@ -1395,7 +1395,7 @@ bool RenderObject::attemptDirectLayerTranslation()
         }
         if (needsDocSizeUpdate && canvas()) {
             bool posXOffset = (xPos()-oldXPos >= 0);
-            bool posYOffset = (yPos()-oldYPos >= 0);                         
+            bool posYOffset = (yPos()-oldYPos >= 0);
             canvas()->updateDocSizeAfterLayerTranslation(this, posXOffset, posYOffset);
         }
     }
@@ -1809,7 +1809,7 @@ void RenderObject::setInnerNode(NodeInfo& info)
 
     if (!info.innerNode() && element())
         info.setInnerNode(element());
-            
+
     if(!info.innerNonSharedNode() && element())
         info.setInnerNonSharedNode(element());
 }
@@ -2098,6 +2098,9 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
     if (style()->hasCounterReset(counter) || isRoot()) {
         i = new CounterReset(this);
         val = style()->counterReset(counter);
+        if (style()->hasCounterIncrement(counter)) {
+            val += style()->counterIncrement(counter);
+        }
 //         kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
     }
     else
