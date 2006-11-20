@@ -349,8 +349,6 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return item->user();
             case Group:
                 return item->group();
-            case FileItemRole:
-                return item;
             }
             break;
         case Qt::DecorationRole:
@@ -365,6 +363,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return KIcon(item->iconName(), 0, overlays);
             }
             break;
+        case FileItemRole:
+            return item;
         }
     }
     return QVariant();
