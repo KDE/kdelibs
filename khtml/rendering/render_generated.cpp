@@ -108,8 +108,8 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
         }
         decimals = kMax(decimals, 2);
         QString num = QString::number(value);
-        m_item.fill('0',decimals-num.length());
-        m_item.append(num);
+        item.fill('0',decimals-num.length());
+        item.append(num);
         break;
     }
     case ARABIC_INDIC:
@@ -202,7 +202,7 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
 void RenderCounter::generateContent()
 {
     bool counters;
-    counters = !m_counter->separator().isEmpty();
+    counters = !m_counter->separator().isNull();
 
     if (!m_counterNode)
         m_counterNode = getCounter(m_counter->identifier().string(), true, counters);
@@ -306,12 +306,12 @@ void RenderGlyph::setStyle(RenderStyle *_style)
             break;
         default:
             // not a glyph !
-            assert(false); 
+            assert(false);
             break;
     }
 }
 
-void RenderGlyph::calcMinMaxWidth() 
+void RenderGlyph::calcMinMaxWidth()
 {
     m_minWidth = m_width;
     m_maxWidth = m_width;
