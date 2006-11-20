@@ -309,10 +309,7 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
   {
     if( kill( pid, 0 ) < 0 )
       _exit(253);
-    struct timeval tm;
-    tm.tv_sec = 8;
-    tm.tv_usec = 0;
-    select(0, 0, 0, 0, &tm);
+    sleep(1);
     // the debugger should stop this process anyway
   }
 }
