@@ -237,6 +237,10 @@ void KDirModelTest::testData()
     int size1 = m_dirModel.data(idx1col1, Qt::DisplayRole).toInt();
     QCOMPARE(size1, 11);
 
+    KFileItem* item = m_dirModel.data(m_fileIndex, KDirModel::FileItemRole).value<KFileItem *>();
+    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    QCOMPARE(item, fileItem);
+
     //QModelIndex idx1col2 = m_dirModel.index(0, 2, QModelIndex());
 
 

@@ -90,6 +90,8 @@ public:
     };
 
     enum AdditionalRoles {
+        // Note: use   printf "0x%08X\n" $(($RANDOM*$RANDOM))
+        // to define additional roles.
         FileItemRole = 0x07A263FF  ///< returns the KFileItem* for a given index
     };
 

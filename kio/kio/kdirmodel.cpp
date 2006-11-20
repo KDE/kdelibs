@@ -364,7 +364,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             }
             break;
         case FileItemRole:
-            return item;
+            return QVariant::fromValue(item);
         }
     }
     return QVariant();
