@@ -47,18 +47,24 @@ public:
     enum { Unknown = (mode_t) - 1 };
 
     /**
+     * Null KFileItem. Doesn't represent any file, only exists for convenience.
+     */
+    KFileItem();
+
+    /**
      * Creates an item representing a file, from a UDSEntry.
      * This is the preferred constructor when using KIO::listDir().
      *
      * @param entry the KIO entry used to get the file, contains info about it
      * @param url the file url
-     * @param determineMimeTypeOnDemand specifies if the mimetype of the given
-     *       URL should be determined immediately or on demand
+     * @param delayedMimeTypes specifies if the mimetype of the given
+     *       URL should be determined immediately or on demand.
+     *       See the bool delayedMimeTypes in the KDirLister constructor.
      * @param urlIsDirectory specifies if the url is just the directory of the
      *       fileitem and the filename from the UDSEntry should be used.
      */
     KFileItem( const KIO::UDSEntry& entry, const KUrl& url,
-               bool determineMimeTypeOnDemand = false,
+               bool delayedMimeTypes = false,
                bool urlIsDirectory = false );
 
     /**
@@ -71,11 +77,11 @@ public:
      * Set to KFileItem::Unknown if you don't know the mode or the permission.
      * @param url the file url
      *
-     * @param determineMimeTypeOnDemand specify if the mimetype of the given URL
+     * @param delayedMimeTypes specify if the mimetype of the given URL
      *       should be determined immediately or on demand
      */
     KFileItem( mode_t mode, mode_t permissions, const KUrl& url,
-               bool determineMimeTypeOnDemand = false );
+               bool delayedMimeTypes = false );
 
     /**
      * Creates an item representing a file, for which the mimetype is already known.
@@ -282,7 +288,7 @@ public:
 
     /**
      * Returns the mimetype of the file item.
-     * If @p determineMimeTypeOnDemand was used in the constructor, this will determine
+     * If @p delayedMimeTypes was used in the constructor, this will determine
      * the mimetype first. Equivalent to determineMimeType()->name()
      * @return the mime type of the file
      */
@@ -290,7 +296,7 @@ public:
 
     /**
      * Returns the mimetype of the file item.
-     * If determineMimeTypeOnDemand was used in the constructor, this will determine
+     * If delayedMimeTypes was used in the constructor, this will determine
      * the mimetype first.
      * @return the mime type
      */
@@ -514,7 +520,7 @@ public:
      *
      * @param entry the UDSEntry to assign to this KFileItem
      * @param url the file url
-     * @param determineMimeTypeOnDemand specifies if the mimetype of the given
+     * @param delayedMimeTypes specifies if the mimetype of the given
      *        URL should be determined immediately or on demand
      * @param urlIsDirectory specifies if the url is just the directory of the
      *        fileitem and the filename from the UDSEntry should be used.
@@ -523,7 +529,7 @@ public:
      * now that it's a value class?
      */
     KDE_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
-                                     bool determineMimeTypeOnDemand = false,
+                                     bool delayedMimeTypes = false,
                                      bool urlIsDirectory = false );
 
     /**
@@ -532,7 +538,10 @@ public:
      */
     KUrl mostLocalUrl(bool &local) const; // KDE4 TODO: bool* local = 0
 
-    /////////////
+    /**
+     * Return true if default-constructed
+     */
+    bool isNull() const;
 
 private:
     QSharedDataPointer<KFileItemPrivate> d;

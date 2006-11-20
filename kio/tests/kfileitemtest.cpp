@@ -58,6 +58,18 @@ void KFileItemTest::testPermissionsString()
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));
 }
 
+void KFileItemTest::testNull()
+{
+    KFileItem null;
+    QVERIFY(null.isNull());
+    KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
+    QVERIFY(!fileItem.isNull());
+    fileItem.mark();
+    null = fileItem;
+    QVERIFY(!null.isNull());
+    QVERIFY(null.isMarked());
+}
+
 void KFileItemTest::testDetach()
 {
     KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);

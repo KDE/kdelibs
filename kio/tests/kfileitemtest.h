@@ -27,6 +27,7 @@ class KFileItemTest : public QObject
 private Q_SLOTS:
     void initTestCase();
     void testPermissionsString();
+    void testNull();
     void testDetach();
     void testBasic();
     void testMimeTypeOnDemand();

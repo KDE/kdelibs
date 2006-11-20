@@ -55,7 +55,7 @@ public:
     KFileItemPrivate(const KIO::UDSEntry& entry,
                      mode_t mode, mode_t permissions,
                      const KUrl& url, bool urlIsDirectory,
-                     bool determineMimeTypeOnDemand)
+                     bool delayedMimeTypes)
         : m_entry( entry ),
           m_url( url ),
           m_pMimeType( 0 ),
@@ -65,7 +65,7 @@ public:
           m_bLink( false ),
           m_bIsLocalUrl( url.isLocalFile() ),
           m_bMimeTypeKnown( false ),
-          m_bDetermineMimeTypeOnDemand( determineMimeTypeOnDemand ),
+          m_delayedMimeTypes( delayedMimeTypes ),
           m_hidden( Auto )
     {
         if (!entry.isEmpty()) {
@@ -159,7 +159,7 @@ public:
     bool m_bIsLocalUrl:1;
 
     mutable bool m_bMimeTypeKnown:1;
-    bool m_bDetermineMimeTypeOnDemand:1;
+    bool m_delayedMimeTypes:1;
 
     // Auto: check leading dot.
     enum { Auto, Hidden, Shown } m_hidden:3;
@@ -434,22 +434,27 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
 
 ///////
 
+KFileItem::KFileItem()
+    : d(0)
+{
+}
+
 KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& url,
-                      bool determineMimeTypeOnDemand, bool urlIsDirectory ) :
-    d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown,
-                           url, urlIsDirectory, determineMimeTypeOnDemand))
+                      bool delayedMimeTypes, bool urlIsDirectory )
+    : d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown,
+                             url, urlIsDirectory, delayedMimeTypes))
 {
 }
 
-KFileItem::KFileItem( mode_t mode, mode_t permissions, const KUrl& url, bool determineMimeTypeOnDemand ) :
-    d(new KFileItemPrivate(KIO::UDSEntry(), mode, permissions,
-                           url, false, determineMimeTypeOnDemand))
+KFileItem::KFileItem( mode_t mode, mode_t permissions, const KUrl& url, bool delayedMimeTypes )
+    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, permissions,
+                             url, false, delayedMimeTypes))
 {
 }
 
-KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode ) :
-    d(new KFileItemPrivate(KIO::UDSEntry(), mode, KFileItem::Unknown,
-                           url, false, false))
+KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode )
+    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, KFileItem::Unknown,
+                             url, false, false))
 {
     d->m_bMimeTypeKnown = !mimeType.isEmpty();
     if (d->m_bMimeTypeKnown)
@@ -665,8 +670,8 @@ QString KFileItem::iconName() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    //kDebug() << "finding icon for " << url.url() << " : " << d->m_pMimeType->name() << endl;
-    return determineMimeType()->iconName(url);
+    //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name() << endl;
+    return mimeTypePtr()->iconName(url);
 }
 
 int KFileItem::overlays() const
@@ -692,7 +697,7 @@ int KFileItem::overlays() const
         }
     }
 
-    if ( mimetype() == "application/x-gzip" && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
+    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
         _state |= K3Icon::ZipOverlay;
     return _state;
 }
@@ -960,7 +965,7 @@ bool KFileItem::cmp( const KFileItem & item ) const
 }
 
 void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
-                             bool _determineMimeTypeOnDemand, bool _urlIsDirectory )
+                             bool _delayedMimeTypes, bool _urlIsDirectory )
 {
     d->m_entry = _entry;
     d->m_url = _url;
@@ -977,7 +982,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_hidden = KFileItemPrivate::Auto;
     d->m_guessedMimeType.clear();
     d->m_metaInfo = KFileMetaInfo();
-    d->m_bDetermineMimeTypeOnDemand = _determineMimeTypeOnDemand;
+    d->m_delayedMimeTypes = _delayedMimeTypes;
 
     d->readUDSEntry( _urlIsDirectory );
     d->init();
@@ -1132,7 +1137,7 @@ const QString& KFileItem::name( bool lowerCase ) const
  *   set m_pMimeType but not m_bMimeTypeKnown (-> Intermediate state)
  * Intermediate state: determineMimeType() does the real determination -> Final state.
  *
- * If determineMimeTypeOnDemand isn't set, then we always go to the Final state directly.
+ * If delayedMimeTypes isn't set, then we always go to the Final state directly.
  */
 
 KMimeType::Ptr KFileItem::mimeTypePtr() const
@@ -1146,11 +1151,11 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
 
         d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl,
                                                // use fast mode if not mimetype on demand
-                                               d->m_bDetermineMimeTypeOnDemand, &accurate );
+                                               d->m_delayedMimeTypes, &accurate );
         //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
         // if we didn't use fast mode, or if we got a result, then this is the mimetype
         // otherwise, determineMimeType will be able to do better.
-        d->m_bMimeTypeKnown = (!d->m_bDetermineMimeTypeOnDemand) || accurate;
+        d->m_bMimeTypeKnown = (!d->m_delayedMimeTypes) || accurate;
     }
     return d->m_pMimeType;
 }
@@ -1179,4 +1184,9 @@ KFileItem& KFileItem::operator=(const KFileItem& other)
 {
     d = other.d;
     return *this;
+}
+
+bool KFileItem::isNull() const
+{
+    return d == 0;
 }
