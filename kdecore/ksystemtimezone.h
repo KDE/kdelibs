@@ -27,16 +27,12 @@
 #ifndef _KSYSTEMTIMEZONE_H
 #define _KSYSTEMTIMEZONE_H
 
-#include <ctime>
 #include <QtCore/QDateTime>
-#include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
-#include <QtCore/QSharedDataPointer>
 #include "kdelibs_export.h"
 #include "ktimezones.h"
-#include "ktzfiletimezone.h"
 
 class KSystemTimeZoneSource;
 class KSystemTimeZonePrivate;

@@ -38,7 +38,7 @@
 #include <ktemporaryfile.h>
 #include <kdebug.h>
 #include <ksystemtimezone.h>
-
+#include <ktzfiletimezone.h>
 
 
 /* Return the offset to UTC in the current time zone at the specified UTC time.
