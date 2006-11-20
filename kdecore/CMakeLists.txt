@@ -187,6 +187,7 @@ set(kdecore_LIB_SRCS
    kconfigskeleton.cpp
    klockfile.cpp
    ktimezones.cpp
+   ksystemtimezone.cpp
    ktzfiletimezone.cpp
    kdatetime.cpp
    kfilterbase.cpp
@@ -365,6 +366,7 @@ install( FILES
    kxerrorhandler.h
    kde_file.h
    ktimezones.h
+   ksystemtimezone.h
    ktzfiletimezone.h
    kfilterbase.h
    kfilterdev.h

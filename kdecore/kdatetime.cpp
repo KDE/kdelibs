@@ -30,6 +30,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
+#include <ksystemtimezone.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 #include "kdatetime.h"
