@@ -96,6 +96,7 @@ public:
     static KSystemTimeZonesPrivate *instance();
     const KTimeZone *local();
     static QString zoneinfoDir()   { instance();  return m_zoneinfoDir; }
+    static KTimeZone *readZone(const QString &name);
 
 private:
     KSystemTimeZonesPrivate() {}
@@ -106,6 +107,7 @@ private:
 
     static KSystemTimeZonesPrivate *m_instance;
     static KSystemTimeZoneSource *m_source;
+    static KTzfileTimeZoneSource *m_tzfileSource;
     static QString m_zoneinfoDir;
     typedef QMap<QString, QString> MD5Map;    // zone name, checksum
     static MD5Map  m_md5Sums;
@@ -113,6 +115,7 @@ private:
 
 KSystemTimeZonesPrivate         *KSystemTimeZonesPrivate::m_instance = 0;
 KSystemTimeZoneSource           *KSystemTimeZonesPrivate::m_source = 0;
+KTzfileTimeZoneSource           *KSystemTimeZonesPrivate::m_tzfileSource = 0;
 QString                          KSystemTimeZonesPrivate::m_zoneinfoDir;
 KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
 
@@ -134,8 +137,14 @@ KTimeZones *KSystemTimeZones::timeZones()
 
 KTimeZone *KSystemTimeZones::readZone(const QString &name)
 {
-    KTzfileTimeZoneSource tzsrc(KSystemTimeZonesPrivate::zoneinfoDir());
-    return new KTzfileTimeZone(&tzsrc, name);
+    return KSystemTimeZonesPrivate::readZone(name);
+}
+
+KTimeZone *KSystemTimeZonesPrivate::readZone(const QString &name)
+{
+    if (!m_tzfileSource)
+        m_tzfileSource = new KTzfileTimeZoneSource(zoneinfoDir());
+    return new KTzfileTimeZone(m_tzfileSource, name);
 }
 
 /*
