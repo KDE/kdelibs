@@ -45,10 +45,22 @@ void KUrlTest::testEmptyURL()
   QVERIFY( !emptyURL.isValid() );
   QVERIFY( emptyURL.isEmpty() );
   QVERIFY( emptyURL.prettyUrl().isEmpty() );
+  QCOMPARE( emptyURL.url(), QString() );
+  QVERIFY( emptyURL.url().isEmpty() );
+  QVERIFY( !emptyURL.url().isNull() ); // well, a null string would be correct too...
 
-  emptyURL = "";
-  QVERIFY( !emptyURL.isValid() );
-  QVERIFY( emptyURL.isEmpty() );
+  KUrl emptyStringURL("");
+  QVERIFY( !emptyStringURL.isValid() );
+  QVERIFY( emptyStringURL.isEmpty() );
+  QVERIFY( emptyStringURL.url().isEmpty() );
+  QVERIFY( !emptyStringURL.url().isNull() );
+  QCOMPARE( emptyURL, emptyStringURL );
+
+  // Roundtrip via .url()
+  KUrl emptyCopy( emptyURL.url() );
+  QCOMPARE( emptyURL, emptyCopy );
+  KUrl emptyStringCopy = KUrl( emptyStringURL.url() );
+  QCOMPARE( emptyStringURL, emptyCopy );
 
   KUrl fileURL( "file:/" );
   QVERIFY( !fileURL.isEmpty() );

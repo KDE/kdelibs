@@ -322,7 +322,7 @@ KUrl::KUrl( const QString &str )
 KUrl::KUrl( const char * str )
   : QUrl(), d(0)
 {
-  if ( str ) {
+  if ( str && str[0] ) {
     if ( str[0] == '/' || str[0] == '~' )
       setPath( QString::fromUtf8( str ) );
     else
@@ -452,6 +452,8 @@ KUrl& KUrl::operator=( const KUrl& _u )
 
 bool KUrl::operator==( const KUrl& _u ) const
 {
+  if (isEmpty() && _u.isEmpty())
+    return true;
   if ( !isValid() || !_u.isValid() )
     return false;
   return QUrl::operator==( _u );;
