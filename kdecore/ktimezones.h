@@ -120,10 +120,12 @@ class KTimeZoneLeapSecondsPrivate;
  *
  * @warning The KSystemTimeZone class uses the standard system libraries to
  * access time zone data, and its functionality is limited to what these libraries
- * provide. On many systems, dates earlier than 1970 are not handled, and on
+ * provide. On many systems, dates earlier than 1902 are not handled, and on
  * non-GNU systems there is no guarantee that the time zone abbreviation returned
  * for a given date will be correct if the abbreviations applicable then were
- * not those currently in use.
+ * not those currently in use. The KSystemTimeZones::readZone() method overcomes
+ * these restrictions by reading the time zone definition directly from the
+ * system time zone database files.
  *
  * \section tzfile Tzfile access
  *
@@ -132,8 +134,10 @@ class KTimeZoneLeapSecondsPrivate;
  * for current information, it is easier to use the KSystemTimeZones class to
  * access system tzfile data. However, for dealing with past data the
  * KTzfileTimeZone class provides better guarantees of accurary, although it
- * cannot handle dates earlier than 1970. It also provides more detailed
- * information, and allows you to read non-system tzfile files.
+ * cannot handle dates earlier than 1902. It also provides more detailed
+ * information, and allows you to read non-system tzfile files. Alternatively,
+ * the KSystemTimeZones::readZone() method uses the KTzfileTimeZone class to 
+ * read system time zone definition files.
  *
  * KTzfileTimeZone uses the KTzfileTimeZoneSource and KTzfileTimeZoneData classes
  * to obtain time zone data from tzfile files.

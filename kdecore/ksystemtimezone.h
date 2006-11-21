@@ -1,7 +1,6 @@
 /*
    This file is part of the KDE libraries
    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
-   Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -64,16 +63,18 @@ class KSystemTimeZoneDataPrivate;
  * \endcode
  *
  * @warning The time zones in the KSystemTimeZones collection are by default
- * instances of the KSystemTimeZone class, which uses the standard system libraries
- * to access time zone data, and whose functionality is limited to what these
- * libraries provide. For guaranteed accuracy for past dates, especially for time
- * zone abbreviations or dates before 1970, you should use the KTzfileTimeZone
- * class instead.
+ * instances of the KSystemTimeZone class, which uses the standard system
+ * libraries to access time zone data, and whose functionality is limited to
+ * what these libraries provide. For guaranteed accuracy for past time change
+ * dates and time zone abbreviations, you should use KSystemTimeZones::readZone()
+ * or the KTzfileTimeZone class instead, which provide accurate information from
+ * the time zone definition files (but are likely to incur more overhead).
  *
  * @short System time zone access
  * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
+ * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KSystemTimeZones
 {
@@ -125,6 +126,12 @@ public:
      * this routine is to actually return "Europe/London" (or rather, the
      * corresponding KTimeZone).
      *
+     * Note that depending on how the system stores its current time zone, this
+     * routine may return a synonym of the expected time zone. For example,
+     * "Europe/London", "Europe/Guernsey" and some other time zones are all
+     * identical and there may be no way for the routine to distinguish which
+     * of these is the correct zone name from the user's point of view.
+     *
      * @return local system time zone. If necessary, we will use a series of
      *         heuristics which end by returning UTC. We will never return NULL.
      *         Note that if UTC is returned as a default, it may not belong to the
@@ -165,8 +172,9 @@ private:
  * provide. On many systems, dates earlier than 1970 are not handled, and on
  * non-GNU systems there is no guarantee that the time zone abbreviation returned
  * for a given date will be correct if the abbreviations applicable then were
- * not those currently in use. Consider using the KTzfileTimeZone class instead,
- * which always provides accurate information from the time zone definition files.
+ * not those currently in use. Consider using KSystemTimeZones::readZone() or the
+ * KTzfileTimeZone class instead, which provide accurate information from the time
+ * zone definition files (but are likely to incur more overhead).
  *
  * @short System time zone
  * @see KSystemTimeZones, KSystemTimeZoneSource, KSystemTimeZoneData, KTzfileTimeZone
