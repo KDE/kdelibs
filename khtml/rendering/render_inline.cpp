@@ -535,7 +535,7 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
 static QPoint *linkEndToBegin(QValueVector<QPoint> &pointArray)
 {
     uint index = 0;
-    Q_ASSERT(pointArray.size() >= 3);
+    assert(pointArray.size() >= 3);
 
     // if first and last points match, ignore the last one.
     bool linkup = false; QPoint linkupPnt;
@@ -581,6 +581,8 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
         collectHorizontalBoxCoordinates(curr, path, true, offset);
         // collect left outline
         collectVerticalBoxCoordinates(curr, path, true, offset);
+
+        if (path.size() < 3) continue;
 
         const QPoint *begin = linkEndToBegin(path);
 
