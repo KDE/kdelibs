@@ -69,6 +69,16 @@ ArrayInstance::~ArrayInstance()
   fastFree(storage);
 }
 
+JSValue* ArrayInstance::getItem(unsigned i) const
+{ 
+    if (i >= length)
+        return jsUndefined();
+    JSValue* val = (i < storageLength) ?
+                            storage[i] :
+                            getDirect(Identifier::from(i));
+    return val ? val : jsUndefined();
+}
+
 JSValue *ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   return jsNumber(static_cast<ArrayInstance *>(slot.slotBase())->length);

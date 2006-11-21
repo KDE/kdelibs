@@ -33,6 +33,7 @@
 #include "qobject_binding.h"
 #include "variant_binding.h"
 
+#include <kjs/array_instance.h>
 #include <kjs/function_object.h>
 #include <kjs/property_slot.h>
 
@@ -396,7 +397,6 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
     //qDebug("Index %d, args size %d, types size %d", idx, args.size(), types.size() );
     if ( args.size() <= idx )
         return new NullPtr();
-
     if( types.size() == 0 && idx == 0 )
         return new NullPtr();
 
@@ -411,6 +411,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         //                        .arg(types.size() ) );
         return new NullPtr();
     }
+    qDebug( QString("type=%1 argtype=%2").arg(types[idx].constData()).arg(args[idx]->type()).toLatin1() );
     switch( args[idx]->type() )
     {
         case KJS::StringType:
@@ -435,7 +436,29 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case KJS::ObjectType:
             {
-                if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
+                if(types[idx] == "QStringList")
+                {
+                    KJS::ArrayInstance* arrayImp = KJSEmbed::extractBindingImp<KJS::ArrayInstance>(exec, args[idx]);
+                    if(arrayImp) {
+                        QStringList list;
+                        const unsigned numItems = arrayImp->getLength();
+                        for (unsigned i = 0; i < numItems; ++i)
+                            list.append( KJSEmbed::extractVariant(exec, arrayImp->getItem(i)).toString() );
+                        return new Value<QStringList>(list);
+                    }
+                }
+                else if(types[idx] == "QVariantList")
+                {
+                    KJS::ArrayInstance* arrayImp = KJSEmbed::extractBindingImp<KJS::ArrayInstance>(exec, args[idx]);
+                    if(arrayImp) {
+                        QVariantList list;
+                        const unsigned numItems = arrayImp->getLength();
+                        for (unsigned i = 0; i < numItems; ++i)
+                            list.append( KJSEmbed::extractVariant(exec, arrayImp->getItem(i)) );
+                        return new Value<QVariantList>(list);
+                    }
+                }
+                else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
                     return new Value<void*>(objImp->voidStar());
                 }
