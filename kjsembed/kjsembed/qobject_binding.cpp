@@ -411,7 +411,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         //                        .arg(types.size() ) );
         return new NullPtr();
     }
-    qDebug( QString("type=%1 argtype=%2").arg(types[idx].constData()).arg(args[idx]->type()).toLatin1() );
+    //qDebug( QString("type=%1 argtype=%2").arg(types[idx].constData()).arg(args[idx]->type()).toLatin1() );
     switch( args[idx]->type() )
     {
         case KJS::StringType:
