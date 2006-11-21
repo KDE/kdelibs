@@ -21,7 +21,9 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
-#include "kdatetime.h"
+#include <ksystemtimezone.h>
+#include <kdatetime.h>
+
 #include "kdatetimetest.moc"
 
 //TODO: test new methods
