@@ -1026,7 +1026,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   bool neg = (tmpString[0] == '-');
   if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
 
-  kDebug(173)<<"tmpString:"<<tmpString<<endl;
+  //kDebug(173)<<"tmpString:"<<tmpString<<endl;
 
   // Split off exponential part (including 'e'-symbol)
   QString mantString = tmpString.section('e', 0, 0,
@@ -1036,8 +1036,8 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 					QString::SectionIncludeLeadingSep);
   if (expString.length()==1) expString.clear();
 
-  kDebug(173)<<"mantString:"<<mantString<<endl;
-  kDebug(173)<<"expString:"<<expString<<endl;
+  //kDebug(173)<<"mantString:"<<mantString<<endl;
+  //kDebug(173)<<"expString:"<<expString<<endl;
 
 
   if (round) _round(mantString, precision);
