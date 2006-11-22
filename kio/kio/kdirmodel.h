@@ -76,12 +76,12 @@ public:
     QModelIndex indexForItem( const KFileItem& ) const;
 
     /**
-     * Notify the model that an item has changed.
+     * Notify the model that the item at this index has changed.
      * For instance because KMimeTypeResolver called determineMimeType on it.
-     * This makes the model emit its dataChanged signal at the index for this item.
+     * This makes the model emit its dataChanged signal at this index, so that views repaint.
      * Note that for most things (renaming, changing size etc.), KDirLister's signals tell the model already.
      */
-    void itemChanged( const KFileItem& item );
+    void itemChanged( const QModelIndex& index );
 
     /***
      * Useful "default" columns. Views can use a proxy to have more control over this.

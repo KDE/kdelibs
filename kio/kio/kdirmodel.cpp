@@ -311,11 +311,9 @@ void KDirModel::slotClear()
     //emit layoutChanged();
 }
 
-void KDirModel::itemChanged( const KFileItem& fileItem )
+void KDirModel::itemChanged( const QModelIndex& index )
 {
-    QModelIndex index = indexForItem(fileItem);
-    if (index.isValid())
-        emit dataChanged(index, index);
+    emit dataChanged(index, index);
 }
 
 int KDirModel::columnCount( const QModelIndex & ) const

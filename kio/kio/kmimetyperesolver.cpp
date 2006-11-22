@@ -122,7 +122,7 @@ void KMimeTypeResolver::slotProcessMimeIcons()
     if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
         kDebug() << k_funcinfo << "Determining mimetype for " << item.url() << endl;
         item.determineMimeType();
-        d->m_dirModel->itemChanged(item);
+        d->m_dirModel->itemChanged(index);
     }
     d->m_timer.start( nextDelay ); // singleshot
 }
