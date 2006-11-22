@@ -452,10 +452,6 @@ KUrl& KUrl::operator=( const KUrl& _u )
 
 bool KUrl::operator==( const KUrl& _u ) const
 {
-  if (isEmpty() && _u.isEmpty())
-    return true;
-  if ( !isValid() || !_u.isValid() )
-    return false;
   return QUrl::operator==( _u );;
 }
 
