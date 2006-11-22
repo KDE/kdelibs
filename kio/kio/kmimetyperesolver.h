@@ -58,6 +58,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotRowsInserted(const QModelIndex&,int,int);
+    void slotViewportAdjusted();
 
     /**
      * Connected to the timer
