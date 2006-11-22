@@ -51,27 +51,30 @@ int main (int argc, char **argv)
   KDirModel *dirmodel = new KDirModel(0);
   dirmodel->dirLister()->setDelayedMimeTypes(true);
 
+#if 0
   QTreeView* treeView = new QTreeView(0);
   treeView->setModel(dirmodel);
   treeView->setUniformRowHeights(true); // makes visualRect() much faster
   treeView->resize(500, 500);
   treeView->show();
-  KMimeTypeResolver* treeViewResolver = new KMimeTypeResolver(treeView, dirmodel);
+  new KMimeTypeResolver(treeView, dirmodel);
+#endif
 
 #if 0
   QListView* listView = new QListView(0);
   listView->setModel(dirmodel);
+  listView->setUniformItemSizes(true); // true in list mode, not in icon mode.
   listView->show();
-  KMimeTypeResolver* listViewResolver = new KMimeTypeResolver(listView, dirmodel);
+  new KMimeTypeResolver(listView, dirmodel);
 #endif
 
-#if 0
+#if 1
   QListView* iconView = new QListView(0);
   iconView->setModel(dirmodel);
   iconView->setSelectionMode(QListView::ExtendedSelection);
   iconView->setViewMode(QListView::IconMode);
   iconView->show();
-  KMimeTypeResolver* iconViewResolver = new KMimeTypeResolver(iconView, dirmodel);
+  new KMimeTypeResolver(iconView, dirmodel);
 #endif
 
   if (args->count() == 0)

@@ -33,7 +33,7 @@ public:
         : m_delayForNonVisibleIcons(10), // TODO set me to 0 when image preview is enabled
           m_noVisibleIcon(false)
     {
-        m_timer.setSingleShot( true );
+        m_timer.setSingleShot(true);
     }
 
     QModelIndex findVisibleIcon();
@@ -124,7 +124,7 @@ void KMimeTypeResolver::slotProcessMimeIcons()
         item.determineMimeType();
         d->m_dirModel->itemChanged(index);
     }
-    d->m_timer.start( nextDelay ); // singleshot
+    d->m_timer.start(nextDelay); // singleshot
 }
 
 void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, int last)
@@ -136,13 +136,13 @@ void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, i
             d->m_pendingIndexes.append(idx);
     }
     d->m_noVisibleIcon = false;
-    d->m_timer.start( d->m_delayForNonVisibleIcons ); // singleshot
+    d->m_timer.start(d->m_delayForNonVisibleIcons); // singleshot
 }
 
 void KMimeTypeResolver::slotViewportAdjusted()
 {
     d->m_noVisibleIcon = false;
-    slotProcessMimeIcons();
+    d->m_timer.start(0);
 }
 
 #include "kmimetyperesolver.moc"
