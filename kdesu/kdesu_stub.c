@@ -241,7 +241,7 @@ int main()
     if( kdesu_lc_all != NULL )
         xsetenv("LC_ALL",kdesu_lc_all);
     else
-        xsetenv("LC_ALL","");
+        unsetenv("LC_ALL");
 
     /* Do we need to change uid? */
 
