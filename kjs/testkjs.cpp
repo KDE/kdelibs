@@ -40,7 +40,9 @@
 
 #if PLATFORM(WIN_OS)
 #include <windows.h>
+#ifdef HAVE_CRTDBG_H
 #include <crtdbg.h>
+#endif
 #endif
 
 using namespace KJS;
@@ -163,7 +165,7 @@ JSValue* TestFunctionImp::callAsFunction(ExecState* exec, JSObject*, const List 
   return 0;
 }
 
-#if PLATFORM(WIN_OS)
+#if PLATFORM(WIN_OS) && defined(HAVE_CRTDBG_H)
 
 // Use SEH for Release builds only to get rid of the crash report dialog
 // (luckyly the same tests fail in Release and Debug builds so far). Need to
