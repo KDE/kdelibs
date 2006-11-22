@@ -62,7 +62,7 @@ void KStandarddirsTest::testFindResource()
 
     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" );
     QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "bin/kdeinit" ) );
+    QVERIFY( bin.endsWith( "bin/kioslave" ) );
     QVERIFY( bin.startsWith( "/" ) );
 
     const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
