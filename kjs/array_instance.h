@@ -27,7 +27,7 @@
 
 namespace KJS {
 
-  class ArrayInstance : public JSObject {
+  class KJS_EXPORT ArrayInstance : public JSObject {
   public:
     ArrayInstance(JSObject *proto, unsigned initialLength);
     ArrayInstance(JSObject *proto, const List &initialValues);
