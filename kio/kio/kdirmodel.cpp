@@ -254,7 +254,7 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     kDebug() << k_funcinfo << items.count() << " in " << dir
              << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
     const int newItemsCount = items.count();
-    beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 );
+    beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
     endInsertRows();
 }
 
@@ -313,7 +313,7 @@ void KDirModel::slotClear()
 
 void KDirModel::itemChanged( const KFileItem& fileItem )
 {
-    QModelIndex index = indexForItem(&fileItem);
+    QModelIndex index = indexForItem(fileItem);
     if (index.isValid())
         emit dataChanged(index, index);
 }
@@ -460,6 +460,13 @@ QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
     // Note that we can only use the URL here, not the pointer.
     // KFileItems can be copied.
     return d->indexForUrl(item->url()); // O(n*m)
+}
+
+QModelIndex KDirModel::indexForItem( const KFileItem& item ) const
+{
+    // Note that we can only use the URL here, not the pointer.
+    // KFileItems can be copied.
+    return d->indexForUrl(item.url()); // O(n*m)
 }
 
 QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) const

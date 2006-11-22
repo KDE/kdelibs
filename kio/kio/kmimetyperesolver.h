@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <kdelibs_export.h>
+class QModelIndex;
 class KFileItemList;
 class QAbstractItemView;
 class KDirModel;
@@ -56,7 +57,7 @@ Q_SIGNALS:
     // void mimeTypeDeterminationFinished();
 
 private Q_SLOTS:
-    void slotNewItems( const KFileItemList& );
+    void slotRowsInserted(const QModelIndex&,int,int);
 
     /**
      * Connected to the timer

@@ -34,25 +34,50 @@ public:
         m_timer.setSingleShot( true );
     }
 
+    QModelIndex findVisibleIcon() const;
+
     QAbstractItemView* m_view;
     KDirModel* m_dirModel;
     int m_delayForNonVisibleIcons;
-    QList<KFileItem> m_pendingFileItems;
+    QList<QPersistentModelIndex> m_pendingIndexes;
     QTimer m_timer;
 };
+
+
+QModelIndex KMimeTypeResolverPrivate::findVisibleIcon() const
+{
+    if (m_pendingIndexes.count() < 20) { // for few items, it's faster to not bother
+        kDebug() << k_funcinfo << "Few items, returning first one" << endl;
+        return m_pendingIndexes.first();
+    }
+
+    const QRect visibleArea = m_view->viewport()->rect();
+    QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.begin();
+    const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.end();
+    for ( ; it != end ; ++it ) {
+        const QRect rect = m_view->visualRect(*it);
+        if (rect.intersects(visibleArea)) {
+            kDebug() << k_funcinfo << "found item at " << rect << " in visibleArea " << visibleArea << endl;
+            return *it;
+        }
+    }
+
+    kDebug() << k_funcinfo << "no more visible icon found" << endl;
+    return QModelIndex();
+}
+
+////
 
 KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
     : QObject(view), d(new KMimeTypeResolverPrivate)
 {
     d->m_view = view;
     d->m_dirModel = model;
-    // We could use the rowInserted type of signals, but then we'd need a lot of
-    // "creating an index for each row and calling itemForIndex for each".
-    // Well that's O(1) in itself, but it would have to be done for N items...
-    connect(d->m_dirModel->dirLister(), SIGNAL(newItems(KFileItemList)),
-            this, SLOT(slotNewItems(KFileItemList)));
-
+    connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(slotRowsInserted(QModelIndex,int,int)));
     connect(&d->m_timer, SIGNAL(timeout()), this, SLOT(slotProcessMimeIcons()));
+    // TODO notice changes of viewport - see K3MimeTypeResolver for an event-filter solution.
+    // TODO bool m_noVisibleIcon
 }
 
 KMimeTypeResolver::~KMimeTypeResolver()
@@ -62,35 +87,39 @@ KMimeTypeResolver::~KMimeTypeResolver()
 
 void KMimeTypeResolver::slotProcessMimeIcons()
 {
-    KFileItem item;
+    QModelIndex index;
     int nextDelay = 0;
-    if (!d->m_pendingFileItems.isEmpty())
+    if (!d->m_pendingIndexes.isEmpty())
     {
-        // findVisibleIcon();
-        //QModelIndex index; // TODO
-        //item = d->m_dirModel->itemForIndex(index);
-        //d->m_pendingFileItems.removeAll(item);
+        index = d->findVisibleIcon();
+        if (index.isValid()) {
+            const int numFound = d->m_pendingIndexes.removeAll(index);
+            Q_ASSERT(numFound == 1);
+        }
     }
     // No more visible items.
-    if (item.isNull())
+    if (!index.isValid())
     {
         // Do the unvisible ones, then, but with a bigger delay, if so configured
-        if (!d->m_pendingFileItems.isEmpty())
+        if (!d->m_pendingIndexes.isEmpty())
         {
-            item = d->m_pendingFileItems.takeFirst();
+            index = d->m_pendingIndexes.takeFirst();
             nextDelay = d->m_delayForNonVisibleIcons;
         } else {
+            // Finished
             return;
         }
     }
+    KFileItem item = * d->m_dirModel->itemForIndex(index);
     if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
         kDebug() << k_funcinfo << "Determining mimetype for " << item.url() << endl;
         item.determineMimeType();
         d->m_dirModel->itemChanged(item);
     }
-    d->m_timer.start( nextDelay );
+    d->m_timer.start( nextDelay ); // singleshot
 }
 
+#if 0
 void KMimeTypeResolver::slotNewItems( const KFileItemList& items )
 {
     // KFileItemList is still KFileItem*, we want QList<KFileItem> instead.
@@ -99,9 +128,21 @@ void KMimeTypeResolver::slotNewItems( const KFileItemList& items )
     for ( ; it != end ; ++it ) {
         KFileItem* item = *it;
         if (!item->isMimeTypeKnown())
-            d->m_pendingFileItems.append(*item);
+            d->m_pendingIndexes.append(*item);
     }
-    d->m_timer.start( d->m_delayForNonVisibleIcons );
+    d->m_timer.start( d->m_delayForNonVisibleIcons ); // singleshot
+}
+#endif
+
+void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, int last)
+{
+    for (int row = first; row <= last; ++row) {
+        QModelIndex idx = d->m_dirModel->index(row, 0, parent);
+        KFileItem* item = d->m_dirModel->itemForIndex(idx);
+        if (!item->isMimeTypeKnown())
+            d->m_pendingIndexes.append(idx);
+    }
+    d->m_timer.start( d->m_delayForNonVisibleIcons ); // singleshot
 }
 
 #include "kmimetyperesolver.moc"

@@ -33,6 +33,7 @@ private Q_SLOTS:
     void testIndex();
     void testNames();
     void testItemForIndex();
+    void testIndexForItem();
     void testData();
     void testReload();
     void testDeleteFile();

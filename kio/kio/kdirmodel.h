@@ -58,6 +58,7 @@ public:
      */
     KDirLister* dirLister() const;
 
+    // TODO make it return a KFileItem by value.
     /**
      * Return the fileitem for a given index. This is O(1), i.e. fast.
      */
@@ -65,8 +66,14 @@ public:
 
     /**
      * Return the index for a given kfileitem. This can be slow.
+     * @deprecated use the method that takes a KFileItem by value
      */
-    QModelIndex indexForItem( const KFileItem* ) const;
+    KDE_DEPRECATED QModelIndex indexForItem( const KFileItem* ) const;
+
+    /**
+     * Return the index for a given kfileitem. This can be slow.
+     */
+    QModelIndex indexForItem( const KFileItem& ) const;
 
     /**
      * Notify the model that an item has changed.

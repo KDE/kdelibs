@@ -53,18 +53,19 @@ int main (int argc, char **argv)
 
   QTreeView* treeView = new QTreeView(0);
   treeView->setModel(dirmodel);
+  treeView->setUniformRowHeights(true); // makes visualRect() much faster
   treeView->resize(500, 500);
   treeView->show();
   KMimeTypeResolver* treeViewResolver = new KMimeTypeResolver(treeView, dirmodel);
 
-#if 1
+#if 0
   QListView* listView = new QListView(0);
   listView->setModel(dirmodel);
   listView->show();
   KMimeTypeResolver* listViewResolver = new KMimeTypeResolver(listView, dirmodel);
 #endif
 
-#if 1
+#if 0
   QListView* iconView = new QListView(0);
   iconView->setModel(dirmodel);
   iconView->setSelectionMode(QListView::ExtendedSelection);

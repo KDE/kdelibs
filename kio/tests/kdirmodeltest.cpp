@@ -230,6 +230,29 @@ void KDirModelTest::testItemForIndex()
     QCOMPARE(fileInSubdirItem->url().path(), m_tempDir.name() + "subdir/subsubdir/testfile");
 }
 
+void KDirModelTest::testIndexForItem()
+{
+    KFileItem* rootItem = m_dirModel.itemForIndex(QModelIndex());
+    QModelIndex rootIndex = m_dirModel.indexForItem(*rootItem);
+    QVERIFY(!rootIndex.isValid());
+
+    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    QModelIndex fileIndex = m_dirModel.indexForItem(*fileItem);
+    QCOMPARE(fileIndex, m_fileIndex);
+
+    KFileItem* dirItem = m_dirModel.itemForIndex(m_dirIndex);
+    QModelIndex dirIndex = m_dirModel.indexForItem(*dirItem);
+    QCOMPARE(dirIndex, m_dirIndex);
+
+    KFileItem* fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
+    QModelIndex fileInDirIndex = m_dirModel.indexForItem(*fileInDirItem);
+    QCOMPARE(fileInDirIndex, m_fileInDirIndex);
+
+    KFileItem* fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
+    QModelIndex fileInSubdirIndex = m_dirModel.indexForItem(*fileInSubdirItem);
+    QCOMPARE(fileInSubdirIndex, m_fileInSubdirIndex);
+}
+
 void KDirModelTest::testData()
 {
     // Index of the first file
