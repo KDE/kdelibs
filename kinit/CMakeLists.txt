@@ -10,20 +10,25 @@ include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
 ########### next target ###############
 if (WIN32)
-MESSAGE("-- warning: fix targets in kinit")
+  set(kdeinit_SRCS kinit_win.cpp  )
+  set(kdeinit_LIBS kparts psapi)
 else (WIN32)
-set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
-
+  set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
+  set(kdeinit_LIBS kparts)
+endif (WIN32)
 kde4_automoc(${kdeinit_SRCS})
 
 kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
 
-target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
 
 install(TARGETS kdeinit DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
+if (WIN32)
+MESSAGE("-- warning: fix targets in kinit")
+else (WIN32)
 set(kdeinit_wrapper_SRCS wrapper.c )
 
 kde4_add_executable(kdeinit_wrapper NOGUI ${kdeinit_wrapper_SRCS})
