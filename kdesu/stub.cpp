@@ -93,11 +93,13 @@ int StubProcess::ConverseStub(int check)
 	    writeLine(m_Command);
 	} else if (line == "path") {
 	    QByteArray path = getenv("PATH");
-	    if (m_User == "root")
+            if (!path.isEmpty() && path[0] == ':')
+                path = path.mid(1);
+	    if (m_User == "root") 
 		if (!path.isEmpty())
-		    path = "/sbin:/usr/sbin:" + path;
+		    path = "/sbin:/bin:/usr/sbin:/usr/bin:" + path;
 		else
-		    path = "/sbin:/usr/sbin";
+		    path = "/sbin:/bin:/usr/sbin:/usr/bin";
 	    writeLine(path);
 	} else if (line == "user") {
 	    writeLine(m_User);
