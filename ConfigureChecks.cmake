@@ -91,9 +91,7 @@ check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, er
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
-if (WIN32)
-  check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
-endif (WIN32)
+check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
 
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
