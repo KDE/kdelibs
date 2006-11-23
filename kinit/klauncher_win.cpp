@@ -175,7 +175,7 @@ int handle_request(klauncher_header request_header, char *request_data)
       char path[MAX_PATH];
       LPSTR lpFile;
 
-		  if (!SearchPath(NULL, name, ".exe", sizeof(path), path, &lpFile)) {
+		  if (!SearchPathA(NULL, name, ".exe", sizeof(path), path, &lpFile)) {
 	      printf ("could not find %s\n",name);
 	      return 0;
 	    }
