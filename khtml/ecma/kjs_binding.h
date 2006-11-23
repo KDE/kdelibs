@@ -378,12 +378,13 @@ namespace KJS {
     } \
    const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
 
+// cacheGlobalObject<> is not in namepsace KJS - need to use ::cacheGlobalObject<>
 #define KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ProtoCode) \
       class ClassProto : public ObjectImp { \
-      friend ObjectImp* cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
+      friend ObjectImp* ::cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
       public: \
         static ObjectImp* self(ExecState *exec) { \
-          return cacheGlobalObject<ClassProto>(exec, *name()); \
+          return ::cacheGlobalObject<ClassProto>(exec, *name()); \
         } \
         virtual const ClassInfo *classInfo() const { return &info; } \
         static const ClassInfo info; \
