@@ -51,7 +51,7 @@ int main (int argc, char **argv)
   KDirModel *dirmodel = new KDirModel(0);
   dirmodel->dirLister()->setDelayedMimeTypes(true);
 
-#if 0
+#if 1
   QTreeView* treeView = new QTreeView(0);
   treeView->setModel(dirmodel);
   treeView->setUniformRowHeights(true); // makes visualRect() much faster

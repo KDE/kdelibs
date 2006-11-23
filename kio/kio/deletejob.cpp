@@ -42,7 +42,7 @@
 
 using namespace KIO;
 
-DeleteJob::DeleteJob( const KUrl::List& src, bool /*shred*/, bool showProgressInfo )
+DeleteJob::DeleteJob( const KUrl::List& src, bool showProgressInfo )
 : Job(showProgressInfo), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
@@ -414,17 +414,17 @@ void DeleteJob::slotResult( KJob *job )
     }
 }
 
-DeleteJob *KIO::del( const KUrl& src, bool shred, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl& src, bool /*shred*/, bool showProgressInfo )
 {
   KUrl::List srcList;
   srcList.append( src );
-  DeleteJob *job = new DeleteJob( srcList, shred, showProgressInfo );
+  DeleteJob *job = new DeleteJob( srcList, showProgressInfo );
   return job;
 }
 
-DeleteJob *KIO::del( const KUrl::List& src, bool shred, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl::List& src, bool /*shred*/, bool showProgressInfo )
 {
-  DeleteJob *job = new DeleteJob( src, shred, showProgressInfo );
+  DeleteJob *job = new DeleteJob( src, showProgressInfo );
   return job;
 }
 

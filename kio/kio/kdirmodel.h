@@ -102,6 +102,18 @@ public:
         FileItemRole = 0x07A263FF  ///< returns the KFileItem* for a given index
     };
 
+    enum DropsAllowedFlag {
+        NoDrops = 0,
+        DropOnDirectory = 1, ///< allow drops on any directory
+        DropOnAnyFile = 2, ///< allow drops on any file
+        DropOnLocalExecutable = 4 ///< allow drops on local executables, shell scripts and desktop files. Can be used with DropOnDirectory.
+    };
+    Q_DECLARE_FLAGS(DropsAllowed, DropsAllowedFlag)
+
+    /// Set whether dropping onto items should be allowed, and for which kind of item
+    /// Drops are disabled by default.
+    void setDropsAllowed(DropsAllowed dropsAllowed);
+
     /// Reimplemented from QAbstractItemModel. Returns true for empty directories.
     virtual bool canFetchMore ( const QModelIndex & parent ) const;
     /// Reimplemented from QAbstractItemModel. Returns ColumnCount.
@@ -153,6 +165,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(KFileItem*)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDirModel::DropsAllowed)
 
 #endif /* KDIRMODEL_H */
-

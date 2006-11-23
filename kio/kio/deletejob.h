@@ -49,11 +49,10 @@ namespace KIO {
 	 * instead.
 	 *
 	 * @param src the list of URLs to delete
-	 * @param shred true to shred (make sure that data is not recoverable)a
 	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::del()
 	 */
-        DeleteJob( const KUrl::List& src, bool shred, bool showProgressInfo );
+        DeleteJob( const KUrl::List& src, bool showProgressInfo );
 
 	/**
 	 * Returns the list of URLs.

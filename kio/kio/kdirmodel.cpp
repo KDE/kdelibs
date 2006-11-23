@@ -25,6 +25,9 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <QMimeData>
+#include <sys/types.h>
+#include <unistd.h> // ::access
+#include <QFile>
 
 class KDirModelNode;
 
@@ -68,7 +71,10 @@ class KDirModelPrivate
 {
 public:
     KDirModelPrivate( KDirModel* model )
-        : q(model), m_dirLister(0), m_rootNode(new KDirModelNode(0, 0)) {
+        : q(model), m_dirLister(0),
+          m_rootNode(new KDirModelNode(0, 0)),
+          m_dropsAllowed(KDirModel::NoDrops)
+    {
     }
     ~KDirModelPrivate() {
         delete m_rootNode;
@@ -85,6 +91,7 @@ public:
     KDirModel* q;
     KDirLister* m_dirLister;
     KDirModelNode* m_rootNode;
+    KDirModel::DropsAllowed m_dropsAllowed;
 };
 
 // If we want to support arbitrary trees like "home:/ as a child of system:/" then,
@@ -515,12 +522,27 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
 {
     Qt::ItemFlags f = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
 
-    if (index.isValid()) {
-        KFileItem* item = static_cast<KDirModelNode*>(index.internalPointer())->item();
-        if (item->isDir())
-            f |= Qt::ItemIsDropEnabled;
-    } else {
-        f |= Qt::ItemIsDropEnabled;
+    // Allow dropping onto this item?
+    if (d->m_dropsAllowed != NoDrops) {
+        KFileItem* item = itemForIndex(index);
+        if (!item || item->isDir()) {
+            if (d->m_dropsAllowed & DropOnDirectory) {
+                f |= Qt::ItemIsDropEnabled;
+            }
+        } else { // regular file item
+            if (d->m_dropsAllowed & DropOnAnyFile)
+                f |= Qt::ItemIsDropEnabled;
+            else if (d->m_dropsAllowed & DropOnLocalExecutable) {
+                if (item->isLocalFile()) {
+                    // Desktop file?
+                    if (item->mimeTypePtr()->is("application/x-desktop"))
+                        f |= Qt::ItemIsDropEnabled;
+                    // Executable, shell script ... ?
+                    else if ( ::access( QFile::encodeName(item->localPath()), X_OK ) == 0 )
+                        f |= Qt::ItemIsDropEnabled;
+                }
+            }
+        }
     }
 
     return f;
@@ -561,8 +583,19 @@ void KDirModel::fetchMore( const QModelIndex & parent )
 
 bool KDirModel::dropMimeData( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
 {
-    // TODO
-    return QAbstractItemModel::dropMimeData(data, action, row, column, parent);
+    // Not sure we want to implement any drop handling at this level,
+    // but for sure the default QAbstractItemModel implementation makes no sense for a dir model.
+    Q_UNUSED(data);
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    Q_UNUSED(parent);
+    return false;
+}
+
+void KDirModel::setDropsAllowed(DropsAllowed dropsAllowed)
+{
+    d->m_dropsAllowed = dropsAllowed;
 }
 
 #include "kdirmodel.moc"

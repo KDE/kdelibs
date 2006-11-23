@@ -172,13 +172,11 @@ public:
 
     enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
     mutable time_t m_time[3]; // TODO remove, UDSEntry is fast now
-    mutable KIO::filesize_t m_size; // TODO remove, UDSEntry is fast now
 };
 
 void KFileItemPrivate::init()
 {
     m_access.clear();
-    m_size = (KIO::filesize_t) -1;
     //  metaInfo = KFileMetaInfo();
     for ( int i = 0; i < NumFlags; i++ )
         m_time[i] = (time_t) -1;
@@ -245,7 +243,6 @@ KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
     m_metaInfo          = other.m_metaInfo;
     for ( int i = 0; i < NumFlags; i++ )
         m_time[i] = other.m_time[i];
-    m_size = other.m_size;
     // note: m_extra is NOT copied, as we'd have no control over who is
     // deleting the data or not.
 
@@ -288,24 +285,19 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 
 KIO::filesize_t KFileItemPrivate::size() const
 {
-  if ( m_size != (KIO::filesize_t) -1 )
-    return m_size;
+    // Extract it from the KIO::UDSEntry
+    long long fieldVal = m_entry.numberValue( KIO::UDS_SIZE, -1 );
+    if ( fieldVal != -1 ) {
+        return fieldVal;
+    }
 
-  // Extract it from the KIO::UDSEntry
-  long long fieldVal = m_entry.numberValue( KIO::UDS_SIZE, -1 );
-  if ( fieldVal != -1 ) {
-    m_size = fieldVal;
-    return m_size;
-  }
-
-  // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
-  if ( m_bIsLocalUrl )
-  {
-    KDE_struct_stat buf;
-    if ( KDE_stat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buf ) == 0 )
-        return buf.st_size;
-  }
-  return 0L;
+    // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
+    if ( m_bIsLocalUrl ) {
+        KDE_struct_stat buf;
+        if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
+            return buf.st_size;
+    }
+    return 0;
 }
 
 time_t KFileItemPrivate::time( unsigned int which ) const

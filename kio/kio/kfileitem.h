@@ -371,8 +371,12 @@ public:
      * Contrary to popular belief, not only dirs will return true :)
      * Executables, .desktop files, will do so as well.
      * @return true if you can drop files over the item
+     *
+     * @deprecated This logic is application-dependent, the behavior described above
+     * mostly makes sense for file managers only.
+     * KDirModel has setDropsAllowed for similar (but configurable) logic.
      */
-    bool acceptsDrops() const;
+    KDE_DEPRECATED bool acceptsDrops() const;
 
     /**
      * Let's "KRun" this file !
