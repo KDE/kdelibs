@@ -57,7 +57,8 @@
 
 QList<QProcess *>processList;
 
-#ifdef Q_WS_WIN
+#define TRACE() printf("%s\n",__FUNCTION__)
+
 /* note: 
    this is an initial version of klauncher for win32
    by replacing all kdeinit related calls (mywrite/myread) to a local handler 
@@ -71,9 +72,13 @@ QList<QProcess *>processList;
 */
 klauncher_header response_header;
 char response_data[1024];
-   
+
+/*
+  @TODO: need some cleanup
+*/    
 int handle_request(klauncher_header request_header, char *request_data)
 {
+   TRACE();
    if (request_header.cmd == LAUNCHER_OK)
    {
       return true;
@@ -85,11 +90,9 @@ int handle_request(klauncher_header request_header, char *request_data)
        (request_header.cmd == LAUNCHER_KWRAPPER) ||
        (request_header.cmd == LAUNCHER_EXEC_NEW)))
    {
-			QStringList arglist;
-			QStringList envlist;
+      QStringList arglist;
+      QStringList envlist;
       pid_t pid;
-//      klauncher_header response_header;
-//      long response_data;
       long l;
       memcpy( &l, request_data, sizeof( long ));
       int argc = l;
@@ -102,8 +105,8 @@ int handle_request(klauncher_header request_header, char *request_data)
       int avoid_loops = 0;
       const char *startup_id_str = "0";
 
-//#ifndef NDEBUG
-		int launcher;
+//#ifndef NTRACE
+    int launcher;
      fprintf(stderr, "kdeinit: Got %s '%s' from %s.\n",
         (request_header.cmd == LAUNCHER_EXEC ? "EXEC" :
         (request_header.cmd == LAUNCHER_EXT_EXEC ? "EXT_EXEC" :
@@ -115,7 +118,7 @@ int handle_request(klauncher_header request_header, char *request_data)
       char *arg_n = args;
       for(int i = 1; i < argc; i++)
       {
-				arglist << arg_n;
+        arglist << arg_n;
         arg_n = arg_n + strlen(arg_n) + 1;
       }
 
@@ -167,48 +170,48 @@ int handle_request(klauncher_header request_header, char *request_data)
 
      if ((arg_n - request_data) != request_header.arg_length)
      {
-//#ifndef NDEBUG
+//#ifndef NTRACE
        fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
 //#endif
        return 0;
      }
 
-			printf("argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
-      	argc, name, args, cwd, envc, envs);
+      printf("argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
+        argc, name, args, cwd, envc, envs);
 
 /*
       char path[MAX_PATH];
       LPSTR lpFile;
 
-		  if (!SearchPathA(NULL, name, ".exe", sizeof(path), path, &lpFile)) {
-	      printf ("could not find %s\n",name);
-	      return 0;
-	    }
-			myargs[0] = path;
+      if (!SearchPathA(NULL, name, ".exe", sizeof(path), path, &lpFile)) {
+        printf ("could not find %s\n",name);
+        return 0;
+      }
+      myargs[0] = path;
 
-			char *_envs[1];
+      char *_envs[1];
 
-			_envs[0] = 0;
-			
-			int handle = spawnve (P_WAIT, name,
+      _envs[0] = 0;
+      
+      int handle = spawnve (P_WAIT, name,
                            myargs,
                            _envs//envs
-                        	);      
+                          );      
 
-			printf("handle %d",handle); 
+      printf("handle %d",handle); 
 */
-			QProcess *process  = new QProcess;
-//			process.setEnvironment(envlist);
-			process->start(name,arglist);
-			QByteArray _stderr = process->readAllStandardError();
-			QByteArray _stdout = process->readAllStandardOutput();
-			printf("%s",_stdout.data());
-			printf("%s",_stderr.data());
+      QProcess *process  = new QProcess;
+//      process.setEnvironment(envlist);
+      process->start(name,arglist);
+      QByteArray _stderr = process->readAllStandardError();
+      QByteArray _stdout = process->readAllStandardOutput();
+      printf("%s",_stdout.data());
+      printf("%s",_stderr.data());
 
-			_PROCESS_INFORMATION* _pid = process->pid();
-			pid = _pid ? _pid->dwProcessId : 0;
+      _PROCESS_INFORMATION* _pid = process->pid();
+      pid = _pid ? _pid->dwProcessId : 0;
 
-			printf("pid = %d\n",pid);
+      printf("pid = %d\n",pid);
 /*
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -217,89 +220,92 @@ int handle_request(klauncher_header request_header, char *request_data)
 */   
 
     if (pid) {
-			response_header.cmd = LAUNCHER_OK;
-	    response_header.arg_length = sizeof(long);
-	    *((long*)response_data) = pid;
-	    printf("return pid\n");
-		}
-		else {
-			char *error = "error occured";
-			response_header.cmd = LAUNCHER_ERROR;
-			response_header.arg_length = strlen(error)+1;
-			strcpy(response_data,error);
-	    printf("return error\n");
-		}
-		return 0;     
-	}
+      response_header.cmd = LAUNCHER_OK;
+      response_header.arg_length = sizeof(long);
+      *((long*)response_data) = pid;
+      printf("return pid\n");
+    }
+    else {
+      char *error = "error occured";
+      response_header.cmd = LAUNCHER_ERROR;
+      response_header.arg_length = strlen(error)+1;
+      strcpy(response_data,error);
+      printf("return error\n");
+    }
+    return 0;     
+  }
 }
 
 
 int mywrite(int sock, void *p, int len)
 {
-	char *buf = (char *)p;
-	printf("write len:%d data:\n",len);
-	for (int i = 0; i < len; i++)
-		printf("%02x '%c'\n",buf[i],buf[i] >= 0x20 ? buf[i] : ' ');
-	printf("\n");
+   TRACE();
+  char *buf = (char *)p;
+  printf("write len:%d data:\n",len);
+  for (int i = 0; i < len; i++)
+    printf("%02x '%c'\n",buf[i],buf[i] >= 0x20 ? buf[i] : ' ');
+  printf("\n");
 
   char *request_data = 0;
-	static klauncher_header request_header;
-	static int waitforData = 0;
-	if (!waitforData) {
-	  request_header = *(klauncher_header*)p;
-  	if ( request_header.arg_length != 0 )
-  		waitforData = 1;
-  	else {
-  		char *data = "";
-			handle_request(request_header,data);
-			return 0;
-		}
- 	}
- 	else {
-  	waitforData = 0;
-		handle_request(request_header,buf);
-	}  
-	return len;
+  static klauncher_header request_header;
+  static int waitforData = 0;
+  if (!waitforData) {
+    request_header = *(klauncher_header*)p;
+    if ( request_header.arg_length != 0 )
+      waitforData = 1;
+    else {
+      char *data = "";
+      handle_request(request_header,data);
+      return 0;
+    }
+  }
+  else {
+    waitforData = 0;
+    handle_request(request_header,buf);
+  }  
+  return len;
 }
 int myread(int sock, void *buf, int len)
 {
-	static int sendData = 0;
+   TRACE();
+  static int sendData = 0;
   klauncher_header *request_header = (klauncher_header*)buf;
-	printf("cmd=%d",response_header.cmd);
-	
+  printf("cmd=%d",response_header.cmd);
+  
   if (response_header.cmd && sendData) {
-	  memcpy(buf,response_data,response_header.arg_length);
-	  sendData = 0;
-	  response_header.cmd = 0;
-		printf("read data len=%d return len=%d\n",len,response_header.arg_length);
-		return sizeof(response_header.arg_length);
-	} 
-	else if (response_header.cmd) {
-		printf("return header\n");
-	  request_header->cmd = response_header.cmd;
-	  request_header->arg_length = response_header.arg_length;
-	  if (response_header.arg_length)
-	  	sendData = 1;
-		printf("read header len=%d return len=%d\n",len,sizeof(*request_header));
-		return sizeof(*request_header);
+    memcpy(buf,response_data,response_header.arg_length);
+    sendData = 0;
+    response_header.cmd = 0;
+    printf("read data len=%d return len=%d\n",len,response_header.arg_length);
+    return sizeof(response_header.arg_length);
+  } 
+  else if (response_header.cmd) {
+    printf("return header\n");
+    request_header->cmd = response_header.cmd;
+    request_header->arg_length = response_header.arg_length;
+    if (response_header.arg_length)
+      sendData = 1;
+    printf("read header len=%d return len=%d\n",len,sizeof(*request_header));
+    return sizeof(*request_header);
   }
-	else {
-	  request_header->cmd = LAUNCHER_OK;
-	  request_header->arg_length = 0;
-		printf("read default len=%d return len=%d\n",len,sizeof(*request_header));
-		return sizeof(*request_header);
-	}
+  else {
+    request_header->cmd = LAUNCHER_OK;
+    request_header->arg_length = 0;
+    printf("read default len=%d return len=%d\n",len,sizeof(*request_header));
+    return sizeof(*request_header);
+  }
 }
 #endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
-#define SLAVE_MAX_IDLE	30
+#define SLAVE_MAX_IDLE  30
 
 using namespace KIO;
 using namespace KNetwork;
 
 IdleSlave::IdleSlave(KStreamSocket *socket)
 {
+   TRACE();
    mConn.init(socket);
    mConn.connect(this, SLOT(gotInput()));
    mConn.send( CMD_SLAVE_STATUS );
@@ -311,6 +317,7 @@ IdleSlave::IdleSlave(KStreamSocket *socket)
 void
 IdleSlave::gotInput()
 {
+   TRACE();
    int cmd;
    QByteArray data;
    if (mConn.read( &cmd, data) == -1)
@@ -356,6 +363,7 @@ IdleSlave::gotInput()
 void
 IdleSlave::connect(const QString &app_socket)
 {
+   TRACE();
    QByteArray data;
    QDataStream stream( &data, QIODevice::WriteOnly);
    stream << app_socket;
@@ -366,12 +374,14 @@ IdleSlave::connect(const QString &app_socket)
 void
 IdleSlave::reparseConfiguration()
 {
+   TRACE();
    mConn.send( CMD_REPARSECONFIGURATION );
 }
 
 bool
 IdleSlave::match(const QString &protocol, const QString &host, bool connected)
 {
+   TRACE();
    if (mOnHold) return false;
    if (protocol != mProtocol) return false;
    if (host.isEmpty()) return true;
@@ -384,6 +394,7 @@ IdleSlave::match(const QString &protocol, const QString &host, bool connected)
 bool
 IdleSlave::onHold(const KUrl &url)
 {
+   TRACE();
    if (!mOnHold) return false;
    return (url == mUrl);
 }
@@ -391,6 +402,7 @@ IdleSlave::onHold(const KUrl &url)
 int
 IdleSlave::age(time_t now)
 {
+   TRACE();
    return (int) difftime(now, mBirthDate);
 }
 
@@ -398,6 +410,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
   : KApplication( false ), // No GUI
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
+   TRACE();
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
 #endif
@@ -447,7 +460,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    lastRequest = 0;
    bProcessingQueue = false;
 
-   mSlaveDebug = getenv("KDE_SLAVE_DEBUG_WAIT");
+   mSlaveDebug = getenv("KDE_SLAVE_TRACE_WAIT");
    if (!mSlaveDebug.isEmpty())
    {
       qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", qPrintable(mSlaveDebug));
@@ -462,16 +475,18 @@ KLauncher::KLauncher(int _kdeinitSocket)
    request_header.cmd = LAUNCHER_OK;
    request_header.arg_length = 0;
    mywrite(kdeinitSocket, &request_header, sizeof(request_header));
-	 qDebug("LAUNCHER_OK");
+   qDebug("LAUNCHER_OK");
 }
 
 KLauncher::~KLauncher()
 {
+   TRACE();
    close();
 }
 
 void KLauncher::close()
 {
+   TRACE();
    if (!mPoolSocketName.isEmpty())
    {
       const QByteArray filename = QFile::encodeName(mPoolSocketName);
@@ -486,6 +501,7 @@ void KLauncher::close()
 void
 KLauncher::destruct(int exit_code)
 {
+   TRACE();
    if (kapp) ((KLauncher*)kapp)->close();
    // We don't delete kapp here, that's intentional.
    ::_exit(exit_code);
@@ -493,6 +509,7 @@ KLauncher::destruct(int exit_code)
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 {
+   TRACE();
    klauncher_header request_header;
    QByteArray requestData;
    requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
@@ -509,6 +526,7 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 static int
 read_socket(int sock, char *buffer, int len)
 {
+   TRACE();
   ssize_t result;
   int bytes_left = len;
   while ( bytes_left > 0)
@@ -531,6 +549,7 @@ read_socket(int sock, char *buffer, int len)
 void
 KLauncher::slotKDEInitData(int)
 {
+   TRACE();
    klauncher_header request_header;
    QByteArray requestData;
 /*
@@ -603,6 +622,7 @@ KLauncher::slotKDEInitData(int)
          break;
        }
      }
+     requestDone(lastRequest);
      lastRequest = 0;
      return;
    }
@@ -611,6 +631,7 @@ KLauncher::slotKDEInitData(int)
      lastRequest->status = KLaunchRequest::Error;
      if (!requestData.isEmpty())
         lastRequest->errorMsg = QString::fromUtf8((char *) requestData.data());
+     requestDone(lastRequest);
      lastRequest = 0;
      return;
    }
@@ -622,6 +643,7 @@ KLauncher::slotKDEInitData(int)
 void
 KLauncher::processDied(pid_t pid, long /* exitStatus */)
 {
+   TRACE();
    foreach (KLaunchRequest *request, requestList)
    {
       if (request->pid == pid)
@@ -642,6 +664,7 @@ void
 KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
                                 const QString &newOwner)
 {
+   TRACE();
    Q_UNUSED(oldOwner);
    if (appId.isEmpty() || newOwner.isEmpty())
       return;
@@ -682,6 +705,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
 void
 KLauncher::autoStart(int phase)
 {
+   TRACE();
    if( mAutoStart.phase() >= phase )
        return;
    mAutoStart.setPhase(phase);
@@ -693,6 +717,7 @@ KLauncher::autoStart(int phase)
 void
 KLauncher::slotAutoStart()
 {
+   TRACE();
    KService::Ptr s;
    do
    {
@@ -700,9 +725,9 @@ KLauncher::slotAutoStart()
       if (service.isEmpty())
       {
          // Done
-	 if( !mAutoStart.phaseDone())
-	 {
-	    mAutoStart.setPhaseDone();
+   if( !mAutoStart.phaseDone())
+   {
+      mAutoStart.setPhaseDone();
             switch( mAutoStart.phase())
                 {
                 case 0:
@@ -715,7 +740,7 @@ KLauncher::slotAutoStart()
                     emit autoStart2Done();
                     break;
                 }
-	 }
+   }
          return;
       }
       s = new KService(service);
@@ -727,6 +752,7 @@ KLauncher::slotAutoStart()
 void
 KLauncher::requestDone(KLaunchRequest *request)
 {
+   TRACE();
    if ((request->status == KLaunchRequest::Running) ||
        (request->status == KLaunchRequest::Done))
    {
@@ -740,7 +766,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       requestResult.result = 1;
       requestResult.dbusName = "";
       requestResult.error = i18n("KDEInit could not launch '%1'.",
-	  request->name);
+    request->name);
       if (!request->errorMsg.isEmpty())
          requestResult.error += ":\n" + request->errorMsg;
       requestResult.pid = 0;
@@ -774,7 +800,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
-			printf("%s return dbus message\n",__FUNCTION__);
+      printf("%s return dbus message\n",__FUNCTION__);
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
@@ -789,6 +815,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
 static void appendLong(QByteArray &ba, long l)
 {
+   TRACE();
    const int sz = ba.size();
    ba.resize(sz + sizeof(long));
    memcpy(ba.data() + sz, &l, sizeof(long));
@@ -797,6 +824,7 @@ static void appendLong(QByteArray &ba, long l)
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
+   TRACE();
    requestList.append( request );
    // Send request to kdeinit.
    klauncher_header request_header;
@@ -866,6 +894,7 @@ bool
 KLauncher::start_service_by_name(const QString &serviceName, const QStringList &urls,
     const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg)
 {
+   TRACE();
    KService::Ptr service;
    // Find service
    service = KService::serviceByName(serviceName);
@@ -883,6 +912,7 @@ bool
 KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
     const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg)
 {
+   TRACE();
    KService::Ptr service;
    // Find service
    if (serviceName.startsWith(QLatin1Char('/')))
@@ -908,6 +938,7 @@ bool
 KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
     const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg)
 {
+   TRACE();
    KService::Ptr service = KService::serviceByDesktopName(serviceName);
    if (!service)
    {
@@ -924,6 +955,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
     const QStringList &envs, const QString &startup_id,
     bool blind, bool autoStart, const QDBusMessage &msg)
 {
+   TRACE();
    QStringList urls = _urls;
    if (!service->isValid())
    {
@@ -1005,6 +1037,7 @@ void
 KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QString& startup_id,
     const QStringList &envs )
 {
+   TRACE();
     return;
 }
 
@@ -1012,12 +1045,14 @@ void
 KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& startup_id,
     const QStringList &envs )
 {
+   TRACE();
 }
 
 bool
 KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    const QStringList &envs, const QString &startup_id, bool wait, const QDBusMessage &msg)
 {
+   TRACE();
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
 
@@ -1056,6 +1091,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
 void
 KLauncher::queueRequest(KLaunchRequest *request)
 {
+   TRACE();
    requestQueue.append( request );
    if (!bProcessingQueue)
    {
@@ -1067,6 +1103,7 @@ KLauncher::queueRequest(KLaunchRequest *request)
 void
 KLauncher::slotDequeue()
 {
+   TRACE();
    do {
       KLaunchRequest *request = requestQueue.takeFirst();
       // process request
@@ -1086,6 +1123,7 @@ void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
                        const QStringList &urls)
 {
+   TRACE();
   const QStringList params = KRun::processDesktopExec(*service, urls);
 
   for(QStringList::ConstIterator it = params.begin();
@@ -1101,6 +1139,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 pid_t
 KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
 {
+   TRACE();
     IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
@@ -1123,6 +1162,7 @@ KLauncher::requestSlave(const QString &protocol,
                         const QString &app_socket,
                         QString &error)
 {
+   TRACE();
     IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
@@ -1155,7 +1195,7 @@ KLauncher::requestSlave(const QString &protocol,
     QString name = KProtocolInfo::exec(protocol);
     if (name.isEmpty())
     {
-	error = i18n("Unknown protocol '%1'.\n", protocol);
+  error = i18n("Unknown protocol '%1'.\n", protocol);
         return 0;
     }
 
@@ -1184,7 +1224,7 @@ KLauncher::requestSlave(const QString &protocol,
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
        } else
-	   arg_list.prepend(QLatin1String("--tool=memcheck"));
+     arg_list.prepend(QLatin1String("--tool=memcheck"));
     }
 
     KLaunchRequest *request = new KLaunchRequest;
@@ -1214,6 +1254,7 @@ KLauncher::requestSlave(const QString &protocol,
 void
 KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
 {
+   TRACE();
     foreach (IdleSlave *slave, mSlaveList)
     {
         if (slave->pid() == static_cast<pid_t>(pid))
@@ -1229,6 +1270,7 @@ KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
 void
 KLauncher::acceptSlave()
 {
+   TRACE();
     // the cast is safe, because KServerSocket promises us so
     KStreamSocket* slaveSocket = static_cast<KStreamSocket*>(mPoolSocket.accept());
     IdleSlave *slave = new IdleSlave(slaveSocket);
@@ -1236,7 +1278,7 @@ KLauncher::acceptSlave()
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     connect(slave, SIGNAL(statusUpdate(IdleSlave *)),
-	    this, SLOT(slotSlaveStatus(IdleSlave *)));
+      this, SLOT(slotSlaveStatus(IdleSlave *)));
     if (!mTimer.isActive())
     {
        mTimer.start(1000*10);
@@ -1246,6 +1288,7 @@ KLauncher::acceptSlave()
 void
 KLauncher::slotSlaveStatus(IdleSlave *slave)
 {
+   TRACE();
     QMutableListIterator<SlaveWaitRequest *> it(mSlaveWaitRequest);
     while(it.hasNext())
     {
@@ -1262,6 +1305,7 @@ KLauncher::slotSlaveStatus(IdleSlave *slave)
 void
 KLauncher::slotSlaveGone()
 {
+   TRACE();
     IdleSlave *slave = (IdleSlave *) sender();
     mSlaveList.removeAll(slave);
     if ((mSlaveList.count() == 0) && (mTimer.isActive()))
@@ -1273,6 +1317,7 @@ KLauncher::slotSlaveGone()
 void
 KLauncher::idleTimeout()
 {
+   TRACE();
     bool keepOneFileSlave=true;
     time_t now = time(0);
     foreach (IdleSlave *slave, mSlaveList)
@@ -1289,6 +1334,7 @@ KLauncher::idleTimeout()
 
 void KLauncher::reparseConfiguration()
 {
+   TRACE();
    KProtocolManager::reparseConfiguration();
    foreach (IdleSlave *slave, mSlaveList)
       slave->reparseConfiguration();
