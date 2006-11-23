@@ -48,11 +48,14 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 #include "klauncher_adaptor.h"
+#include <windows.h>
 
 #ifdef Q_WS_X11
 #include <kstartupinfo.h>
 #include <X11/Xlib.h>
 #endif
+
+QList<QProcess *>processList;
 
 #ifdef Q_WS_WIN
 /* note: 
@@ -66,6 +69,8 @@
    better to use QProcess or CreateProcess.    
    args and envs are not handled full. 
 */
+klauncher_header response_header;
+char response_data[1024];
    
 int handle_request(klauncher_header request_header, char *request_data)
 {
@@ -80,9 +85,11 @@ int handle_request(klauncher_header request_header, char *request_data)
        (request_header.cmd == LAUNCHER_KWRAPPER) ||
        (request_header.cmd == LAUNCHER_EXEC_NEW)))
    {
+			QStringList arglist;
+			QStringList envlist;
       pid_t pid;
-      klauncher_header response_header;
-      long response_data;
+//      klauncher_header response_header;
+//      long response_data;
       long l;
       memcpy( &l, request_data, sizeof( long ));
       int argc = l;
@@ -94,8 +101,6 @@ int handle_request(klauncher_header request_header, char *request_data)
       const char *tty = 0;
       int avoid_loops = 0;
       const char *startup_id_str = "0";
-			// myargs is a hack 
-      char *myargs[100]; 
 
 //#ifndef NDEBUG
 		int launcher;
@@ -108,13 +113,11 @@ int handle_request(klauncher_header request_header, char *request_data)
 //#endif
 
       char *arg_n = args;
-      int j = 1;
       for(int i = 1; i < argc; i++)
       {
-				myargs[j++] = arg_n;
+				arglist << arg_n;
         arg_n = arg_n + strlen(arg_n) + 1;
       }
-			myargs[j] = NULL;
 
       if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER )
       {
@@ -130,6 +133,7 @@ int handle_request(klauncher_header request_header, char *request_data)
          envs = arg_n;
          for(int i = 0; i < envc; i++)
          {
+           envlist << arg_n;
            arg_n = arg_n + strlen(arg_n) + 1;
          }
          if( request_header.cmd == LAUNCHER_KWRAPPER )
@@ -172,6 +176,7 @@ int handle_request(klauncher_header request_header, char *request_data)
 			printf("argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
       	argc, name, args, cwd, envc, envs);
 
+/*
       char path[MAX_PATH];
       LPSTR lpFile;
 
@@ -189,14 +194,41 @@ int handle_request(klauncher_header request_header, char *request_data)
                            myargs,
                            _envs//envs
                         	);      
-			printf("handle %d",handle); 
 
+			printf("handle %d",handle); 
+*/
+			QProcess *process  = new QProcess;
+//			process.setEnvironment(envlist);
+			process->start(name,arglist);
+			QByteArray _stderr = process->readAllStandardError();
+			QByteArray _stdout = process->readAllStandardOutput();
+			printf("%s",_stdout.data());
+			printf("%s",_stderr.data());
+
+			_PROCESS_INFORMATION* _pid = process->pid();
+			pid = _pid ? _pid->dwProcessId : 0;
+
+			printf("pid = %d\n",pid);
 /*
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
           tty, avoid_loops, startup_id_str );
 
 */   
+
+    if (pid) {
+			response_header.cmd = LAUNCHER_OK;
+	    response_header.arg_length = sizeof(long);
+	    *((long*)response_data) = pid;
+	    printf("return pid\n");
+		}
+		else {
+			char *error = "error occured";
+			response_header.cmd = LAUNCHER_ERROR;
+			response_header.arg_length = strlen(error)+1;
+			strcpy(response_data,error);
+	    printf("return error\n");
+		}
 		return 0;     
 	}
 }
@@ -231,11 +263,32 @@ int mywrite(int sock, void *p, int len)
 }
 int myread(int sock, void *buf, int len)
 {
-	printf("read %d\n",len);
+	static int sendData = 0;
   klauncher_header *request_header = (klauncher_header*)buf;
-  request_header->cmd = LAUNCHER_OK;
-  request_header->arg_length = 0;
-	return sizeof(*request_header);
+	printf("cmd=%d",response_header.cmd);
+	
+  if (response_header.cmd && sendData) {
+	  memcpy(buf,response_data,response_header.arg_length);
+	  sendData = 0;
+	  response_header.cmd = 0;
+		printf("read data len=%d return len=%d\n",len,response_header.arg_length);
+		return sizeof(response_header.arg_length);
+	} 
+	else if (response_header.cmd) {
+		printf("return header\n");
+	  request_header->cmd = response_header.cmd;
+	  request_header->arg_length = response_header.arg_length;
+	  if (response_header.arg_length)
+	  	sendData = 1;
+		printf("read header len=%d return len=%d\n",len,sizeof(*request_header));
+		return sizeof(*request_header);
+  }
+	else {
+	  request_header->cmd = LAUNCHER_OK;
+	  request_header->arg_length = 0;
+		printf("read default len=%d return len=%d\n",len,sizeof(*request_header));
+		return sizeof(*request_header);
+	}
 }
 #endif
 
@@ -480,6 +533,7 @@ KLauncher::slotKDEInitData(int)
 {
    klauncher_header request_header;
    QByteArray requestData;
+/*
    if( dontBlockReading )
    {
    // in case we get a request to start an application and data arrive
@@ -495,6 +549,7 @@ KLauncher::slotKDEInitData(int)
          return;
    }
    dontBlockReading = false;
+*/
    int result = read_socket(kdeinitSocket, (char *) &request_header,
                             sizeof( request_header));
    if (result == -1)
@@ -719,6 +774,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
+			printf("%s return dbus message\n",__FUNCTION__);
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
