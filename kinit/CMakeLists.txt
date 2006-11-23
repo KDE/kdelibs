@@ -8,9 +8,10 @@ include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
 
-if(NOT WIN32)
 ########### next target ###############
-
+if (WIN32)
+MESSAGE("-- warning: fix targets in kinit")
+else (WIN32)
 set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
 
 kde4_automoc(${kdeinit_SRCS})
@@ -20,7 +21,6 @@ kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
 target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} kparts )
 
 install(TARGETS kdeinit DESTINATION ${BIN_INSTALL_DIR} )
-
 
 ########### next target ###############
 
@@ -35,7 +35,6 @@ add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 install(TARGETS kdeinit_wrapper DESTINATION ${BIN_INSTALL_DIR} )
-
 
 ########### next target ###############
 
@@ -58,7 +57,6 @@ target_link_libraries(kdeinit_shutdown  ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS kdeinit_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
-
 ########### next target ###############
 
 set(kwrapper_SRCS kwrapper.c )
@@ -70,7 +68,6 @@ target_link_libraries(kwrapper  ${KDE4_KDECORE_LIBS} )
 install(TARGETS kwrapper DESTINATION ${BIN_INSTALL_DIR} )
 
 
-endif(NOT WIN32)
 ########### next target ###############
 
 set(lnusertemp_SRCS lnusertemp.c )
@@ -80,6 +77,7 @@ kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS lnusertemp DESTINATION ${BIN_INSTALL_DIR} )
+endif (WIN32)
 
 
 ########### next target ###############
