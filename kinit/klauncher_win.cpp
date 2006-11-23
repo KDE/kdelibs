@@ -50,14 +50,9 @@
 #include "klauncher_adaptor.h"
 #include <windows.h>
 
-#ifdef Q_WS_X11
-#include <kstartupinfo.h>
-#include <X11/Xlib.h>
-#endif
-
 QList<QProcess *>processList;
 
-#define TRACE() printf("%s\n",__FUNCTION__)
+#define TRACE() fprintf(stderr,"%s\n",__FUNCTION__)
 
 /* note: 
    this is an initial version of klauncher for win32
@@ -175,43 +170,21 @@ int handle_request(klauncher_header request_header, char *request_data)
 //#endif
        return 0;
      }
-
-      printf("argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
+      fprintf(stderr,"argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
         argc, name, args, cwd, envc, envs);
 
-/*
-      char path[MAX_PATH];
-      LPSTR lpFile;
-
-      if (!SearchPathA(NULL, name, ".exe", sizeof(path), path, &lpFile)) {
-        printf ("could not find %s\n",name);
-        return 0;
-      }
-      myargs[0] = path;
-
-      char *_envs[1];
-
-      _envs[0] = 0;
-      
-      int handle = spawnve (P_WAIT, name,
-                           myargs,
-                           _envs//envs
-                          );      
-
-      printf("handle %d",handle); 
-*/
       QProcess *process  = new QProcess;
 //      process.setEnvironment(envlist);
       process->start(name,arglist);
       QByteArray _stderr = process->readAllStandardError();
       QByteArray _stdout = process->readAllStandardOutput();
-      printf("%s",_stdout.data());
-      printf("%s",_stderr.data());
+      fprintf(stderr,"%s",_stdout.data());
+      fprintf(stderr,"%s",_stderr.data());
 
       _PROCESS_INFORMATION* _pid = process->pid();
       pid = _pid ? _pid->dwProcessId : 0;
 
-      printf("pid = %d\n",pid);
+      fprintf(stderr,"pid = %d\n",pid);
 /*
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -223,14 +196,14 @@ int handle_request(klauncher_header request_header, char *request_data)
       response_header.cmd = LAUNCHER_OK;
       response_header.arg_length = sizeof(long);
       *((long*)response_data) = pid;
-      printf("return pid\n");
+      fprintf(stderr,"return pid\n");
     }
     else {
       char *error = "error occured";
       response_header.cmd = LAUNCHER_ERROR;
       response_header.arg_length = strlen(error)+1;
       strcpy(response_data,error);
-      printf("return error\n");
+      fprintf(stderr,"return error\n");
     }
     return 0;     
   }
@@ -241,10 +214,10 @@ int mywrite(int sock, void *p, int len)
 {
    TRACE();
   char *buf = (char *)p;
-  printf("write len:%d data:\n",len);
+  fprintf(stderr,"write len:%d data:\n",len);
   for (int i = 0; i < len; i++)
-    printf("%02x '%c'\n",buf[i],buf[i] >= 0x20 ? buf[i] : ' ');
-  printf("\n");
+    fprintf(stderr,"%02x '%c'\n",buf[i],buf[i] >= 0x20 ? buf[i] : ' ');
+  fprintf(stderr,"\n");
 
   char *request_data = 0;
   static klauncher_header request_header;
@@ -270,32 +243,31 @@ int myread(int sock, void *buf, int len)
    TRACE();
   static int sendData = 0;
   klauncher_header *request_header = (klauncher_header*)buf;
-  printf("cmd=%d",response_header.cmd);
+  fprintf(stderr,"cmd=%d",response_header.cmd);
   
   if (response_header.cmd && sendData) {
     memcpy(buf,response_data,response_header.arg_length);
     sendData = 0;
     response_header.cmd = 0;
-    printf("read data len=%d return len=%d\n",len,response_header.arg_length);
+    fprintf(stderr,"read data len=%d return len=%d\n",len,response_header.arg_length);
     return sizeof(response_header.arg_length);
   } 
   else if (response_header.cmd) {
-    printf("return header\n");
+    fprintf(stderr,"return header\n");
     request_header->cmd = response_header.cmd;
     request_header->arg_length = response_header.arg_length;
     if (response_header.arg_length)
       sendData = 1;
-    printf("read header len=%d return len=%d\n",len,sizeof(*request_header));
+    fprintf(stderr,"read header len=%d return len=%d\n",len,sizeof(*request_header));
     return sizeof(*request_header);
   }
   else {
     request_header->cmd = LAUNCHER_OK;
     request_header->arg_length = 0;
-    printf("read default len=%d return len=%d\n",len,sizeof(*request_header));
+    fprintf(stderr,"read default len=%d return len=%d\n",len,sizeof(*request_header));
     return sizeof(*request_header);
   }
 }
-#endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE  30
@@ -800,7 +772,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
-      printf("%s return dbus message\n",__FUNCTION__);
+      fprintf(stderr,"%s return dbus message\n",__FUNCTION__);
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
