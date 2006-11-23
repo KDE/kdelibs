@@ -126,13 +126,21 @@ install(TARGETS kdostartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
-
+if (WIN32)
+set(klauncher_KDEINIT_SRCS
+   klauncher_win.cpp
+   klauncher_main.cpp
+   klauncher_adaptor.cpp
+   autostart.cpp
+   )
+else (WIN32)
 set(klauncher_KDEINIT_SRCS
    klauncher.cpp
    klauncher_main.cpp
    klauncher_adaptor.cpp
    autostart.cpp
    )
+endif (WIN32)
 
 # The adaptor is manually edited to add QDBusMessage arguments
 #qt4_add_dbus_adaptor(klauncher_KDEINIT_SRCS org.kde.KLauncher.xml klauncher.h KLauncher)

@@ -34,6 +34,7 @@
 
 #include "klauncher_cmds.h"
 
+#ifndef Q_WS_WIN
 static void sig_handler(int sig_num)
 {
    // No recursion
@@ -42,9 +43,11 @@ static void sig_handler(int sig_num)
 fprintf(stderr, "klauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
 }
+#endif
 
 extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 {
+#ifndef Q_WS_WIN
    // Started via kdeinit.
    if (fcntl(LAUNCHER_FD, F_GETFD) == -1)
    {
@@ -52,7 +55,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
                                  "klauncher: It is started automatically by kdeinit.\n").toLocal8Bit().data());
       return 1;
    }
-
+#endif
    KCmdLineArgs::init(argc, argv, "klauncher", "KLauncher", "A service launcher.",
                        "v1.0");
 
@@ -98,10 +101,12 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
    QDBusConnection::sessionBus().registerObject("/", launcher);
 
+#ifndef Q_WS_WIN
    KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);
    signal( SIGPIPE, SIG_IGN);
    signal( SIGTERM, sig_handler);
+#endif
 
    launcher->exec();
    return 0;
