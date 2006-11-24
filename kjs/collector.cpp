@@ -320,8 +320,9 @@ void Collector::markCurrentThreadConservatively()
     pthread_t thread = pthread_self();
     if (stackBase == 0 || thread != stackThread) {
         pthread_attr_t sattr;
-#if HAVE(PTHREAD_NP_H)
+#if HAVE(PTHREAD_NP_H) || __NetBSD__
         // e.g. on FreeBSD 5.4, neundorf@kde.org
+        // also on NetBSD 3 and 4, raphael.langerhorst@kdemail.net
         pthread_attr_get_np(thread, &sattr);
 #else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
