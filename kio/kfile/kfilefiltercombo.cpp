@@ -77,7 +77,7 @@ void KFileFilterCombo::setFilter(const QString& filter)
 	    index = tmp.indexOf('\n');
 	}
 	m_filters.append(tmp);
-    } 
+    }
     else
 	m_filters.append( d->defaultFilter );
 
@@ -116,7 +116,7 @@ void KFileFilterCombo::setCurrentFilter( const QString& filter )
     filterChanged();
 }
 
-void KFileFilterCombo::setMimeFilter( const QStringList& types, 
+void KFileFilterCombo::setMimeFilter( const QStringList& types,
                                       const QString& defaultType )
 {
     clear();
@@ -137,6 +137,13 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
 
 	kDebug(kfile_area) << *it << endl;
         KMimeType::Ptr type = KMimeType::mimeType( *it );
+
+        if (!type) {
+            kDebug(kfile_area) << "Could not create mimetype!\n";
+            continue;
+        }
+
+
         m_filters.append( type->name() );
         if ( m_allTypes )
         {
