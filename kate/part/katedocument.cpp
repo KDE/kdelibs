@@ -3671,10 +3671,7 @@ bool KateDocument::removeStartStopCommentFromSelection( KateView *view, int attr
     removeText (sl, sc, sl, sc + startCommentLen);
 
     editEnd ();
-
-    // Set the new selection
-    ec -= endCommentLen + ( (el == sl) ? startCommentLen : 0 );
-    view->setSelection(sl, sc, el, ec + 1);
+    // set new selection not necessary, as the selection cursors are KateSuperCursors
   }
 
   return remove;
@@ -3737,16 +3734,7 @@ bool KateDocument::removeStartLineCommentFromSelection( KateView *view, int attr
   }
 
   editEnd();
-
-  if (removed)
-  {
-    // Set the new selection
-    KateDocCursor end (view->selEnd());
-    end.setCol(view->selEndCol() - ((el == view->selEndLine()) ? removeLength : 0) );
-
-    setSelection(view->selStartLine(), view->selStartCol(), end.line(), end.col());
-  }
-
+  // updating selection already done by the KateSuperCursors
   return removed;
 }
 
