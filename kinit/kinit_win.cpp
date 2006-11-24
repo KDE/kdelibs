@@ -244,7 +244,7 @@ int main(int argc, char **argv, char **envp)
            printf("       --suicide              Terminate when no KDE applications are left running\n");
            printf("       --terminate            Terminate all running kde processes\n");
            printf("       --verbose              print verbose messages\n");
-           printf("       --list processes       print verbose messages\n");
+           printf("       --list                 list system process for which the user has the right to terminate\n");
       // printf("       --exit                    Terminate when kded has run\n");
            exit(0);
         }
