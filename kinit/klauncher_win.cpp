@@ -1,6 +1,7 @@
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+            (c) 2006 Ralf Habacker <ralf.habacker@freenet.de>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -16,30 +17,25 @@
   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301, USA.
 */
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+
+#include <windows.h>
 
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
-#include <sys/time.h>
 
-#include <qfile.h>
+#include <QFile>
 #include <QProcess>
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <klibloader.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
-#include <ktemporaryfile.h>
-#include <kurl.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -48,7 +44,7 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 #include "klauncher_adaptor.h"
-#include <windows.h>
+
 
 QList<QProcess *>processList;
 
@@ -61,9 +57,12 @@ QList<QProcess *>processList;
    
    The current state is, that klauncher is registrated in dbus, request are processed 
    but process fails to start because of missing shared libraries. 
-   It seems that spawnve does not search the full path environment var. May be it is 
-   better to use QProcess or CreateProcess.    
-   args and envs are not handled full. 
+   
+   @TODO: fix indention 
+   @TODO: remove TRACE, when debugging is over 
+   @TODO: implement kio slave starting
+   @TODO: added env support
+   
 */
 klauncher_header response_header;
 char response_data[1024];
