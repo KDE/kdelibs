@@ -16,7 +16,9 @@ macro_optional_find_package(Cups)
 
 macro_log_feature(CUPS_FOUND "CUPS" "The CUPS (Common UNIX Printing System)" "http://www.cups.org" FALSE "" "Provide CUPS support in kdeprint.")
 
-add_subdirectory( management )
+if (NOT WIN32)
+  add_subdirectory( management )
+endif (NOT WIN32)
 add_subdirectory( lpdunix )
 add_subdirectory( lpr )
 add_subdirectory( rlpr )
