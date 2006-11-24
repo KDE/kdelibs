@@ -118,7 +118,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), 
               &cbNeeded) )
        {
-             GetModuleBaseName( hProcess, hMod, szProcessName, 
+             GetModuleBaseNameA( hProcess, hMod, szProcessName, 
                                            sizeof(szProcessName)/sizeof(TCHAR) );
        }
     }
