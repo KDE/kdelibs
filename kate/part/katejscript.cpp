@@ -99,7 +99,7 @@ Value KateJSGlobalFunctions::call(ExecState *exec, Object &/*thisObj*/, const Li
 {
   switch (id) {
     case Debug:
-      kdDebug(13051) << args[0].toString(exec).ascii() << endl;
+      qDebug("Kate (KJS Scripting): %s", args[0].toString(exec).ascii());
       return Undefined();
     default:
       break;
