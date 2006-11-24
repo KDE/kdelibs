@@ -106,13 +106,13 @@ KActionSelector::KActionSelector( QWidget *parent )
   connect( d->btnRemove, SIGNAL(clicked()), this, SLOT(buttonRemoveClicked()) );
   connect( d->btnUp, SIGNAL(clicked()), this, SLOT(buttonUpClicked()) );
   connect( d->btnDown, SIGNAL(clicked()), this, SLOT(buttonDownClicked()) );
-  connect( d->availableListWidget, SIGNAL(doubleClicked(QListWidgetItem*)),
+  connect( d->availableListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
-  connect( d->selectedListWidget, SIGNAL(doubleClicked(QListWidgetItem*)),
+  connect( d->selectedListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
-  connect( d->availableListWidget, SIGNAL(currentChanged(QListWidgetItem*)),
+  connect( d->availableListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
            this, SLOT(slotCurrentChanged(QListWidgetItem *)) );
-  connect( d->selectedListWidget, SIGNAL(currentChanged(QListWidgetItem*)),
+  connect( d->selectedListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
            this, SLOT(slotCurrentChanged(QListWidgetItem *)) );
 
   d->availableListWidget->installEventFilter( this );
