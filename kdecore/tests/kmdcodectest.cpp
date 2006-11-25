@@ -29,7 +29,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+//#include <kapplication.h>
 
 #include <kcodecs.h>
 
@@ -336,8 +336,7 @@ int main (int argc, char *argv[])
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
 
-    //KApplication::disableAutoDcopRegistration();
-    KApplication app;
+    //KApplication app;
 
     if (!count)
     {

@@ -2,7 +2,7 @@
 #include <qwidget.h>
 #include <kinstance.h>
 #include <iostream>
-#include <qapplication.h>
+#include <QApplication>
 #include <qpen.h>
 #include <qvariant.h>
 

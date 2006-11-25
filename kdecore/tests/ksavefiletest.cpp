@@ -22,7 +22,6 @@
 #include <QDebug>
 #include <QTextStream>
 
-#include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -67,7 +66,7 @@ void KSaveFileTest::test_ksavefile()
 
         QVERIFY( saveFile.finalize() );
         QVERIFY( QFile::exists(targetFile) );
-        
+
         QFile::remove(targetFile);
         QVERIFY( !QFile::exists(targetFile) );
     }
@@ -80,7 +79,7 @@ void KSaveFileTest::test_ksavefile()
             QVERIFY( saveFile.open() );
             QVERIFY( !QFile::exists(targetFile) );
         }
-        
+
         QVERIFY( QFile::exists(targetFile) );
         QFile::remove(targetFile);
         QVERIFY( !QFile::exists(targetFile) );
@@ -98,7 +97,7 @@ void KSaveFileTest::test_ksavefile()
         QVERIFY( saveFile.finalize() );
         QVERIFY( QFile::exists(targetFile) );
         QVERIFY( !saveFile.finalize() ); //already finalized
-        
+
         QFile::remove(targetFile);
         QVERIFY( !QFile::exists(targetFile) );
     }
@@ -134,7 +133,7 @@ void KSaveFileTest::test_ksavefile()
         QFileInfo fi ( targetFile );
 
 #ifndef Q_WS_WIN
-        // Windows: qt_ntfs_permission_lookup is not set by default in 
+        // Windows: qt_ntfs_permission_lookup is not set by default in
         // qfsfileengine_win.cpp, could change in future Qt versions.
         QVERIFY( fi.permission( QFile::ExeUser ) );
 #endif
@@ -147,7 +146,7 @@ void KSaveFileTest::test_ksavefile()
         fi.refresh();
         QVERIFY( fi.size() == 0 );
         QVERIFY( saveFile.finalize() );
-        
+
         fi.refresh();
         QVERIFY( fi.size() != 0 );
 #ifndef Q_WS_WIN
@@ -161,7 +160,7 @@ void KSaveFileTest::test_ksavefile()
         QFileInfo fi ( targetFile );
         targetFile = fi.fileName();
         QDir::setCurrent(fi.path());
-        
+
         //one more time, this time with relative filenames
         KSaveFile saveFile ( targetFile );
         QVERIFY( saveFile.open() );
@@ -384,7 +383,7 @@ void KSaveFileTest::cleanupTestCase()
 
 void KSaveFileTest::test_fstream()
 {
-    // test to check portability 
+    // test to check portability
     // remove this test together with KSaveFile::fstream
     QString path=QDir::homePath();
     path = path + QLatin1String("/test_KSaveFileTest_fstream.tmp");

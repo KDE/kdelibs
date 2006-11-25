@@ -97,18 +97,6 @@ add_test(kdecore-kurltest ${EXECUTABLE_OUTPUT_PATH}/kurltest)
 
 ########### next target ###############
 
-set(kuniqueapptest_SRCS kuniqueapptest.cpp )
-
-kde4_automoc(${kuniqueapptest_SRCS})
-
-kde4_add_executable(kuniqueapptest NOGUI RUN_UNINSTALLED ${kuniqueapptest_SRCS})
-
-target_link_libraries(kuniqueapptest  ${KDE4_KDECORE_LIBS} )
-
-add_test(kdecore-kuniqueapptest ${EXECUTABLE_OUTPUT_PATH}/kuniqueapptest)
-
-########### next target ###############
-
 set(krandomsequencetest_SRCS krandomsequencetest.cpp )
 
 kde4_automoc(${krandomsequencetest_SRCS})
@@ -157,18 +145,6 @@ target_link_libraries(kcmdlineargstest  ${KDE4_KDECORE_LIBS})
 
 ########### next target ###############
 
-set(kapptest_SRCS kapptest.cpp )
-
-kde4_automoc(${kapptest_SRCS})
-
-kde4_add_executable(kapptest NOGUI RUN_UNINSTALLED ${kapptest_SRCS})
-
-target_link_libraries(kapptest  ${KDE4_KDECORE_LIBS})
-
-# add_test(kdecore-kapptest ${EXECUTABLE_OUTPUT_PATH}/kapptest)
-
-########### next target ###############
-
 set(kmemtest_SRCS kmemtest.cpp )
 
 kde4_automoc(${kmemtest_SRCS})
@@ -181,17 +157,25 @@ target_link_libraries(kmemtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(dbuskonqtest_SRCS dbuskonqtest.cpp )
+set(dbuscalltest_SRCS dbuscalltest.cpp )
 
-kde4_automoc(${dbuskonqtest_SRCS})
+kde4_automoc(${dbuscalltest_SRCS})
 
-kde4_add_executable(dbuskonqtest NOGUI RUN_UNINSTALLED ${dbuskonqtest_SRCS})
+kde4_add_executable(dbuscalltest NOGUI RUN_UNINSTALLED ${dbuscalltest_SRCS})
 
-target_link_libraries(dbuskonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(dbuscalltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-dbuskonqtest ${EXECUTABLE_OUTPUT_PATH}/dbuskonqtest)
+########### kglobalsettingsclient, helper program for kglobalsettingstest ###############
 
-########### next target ###############
+set(kglobalsettingsclient_SRCS kglobalsettingsclient.cpp )
+
+kde4_automoc(${kglobalsettingsclient_SRCS})
+
+kde4_add_executable(kglobalsettingsclient NOGUI RUN_UNINSTALLED ${kglobalsettingsclient_SRCS})
+
+target_link_libraries(kglobalsettingsclient ${KDE4_KDECORE_LIBS})
+
+########### kglobalsettingstest ###############
 
 set(kglobalsettingstest_SRCS kglobalsettingstest.cpp )
 
@@ -201,7 +185,7 @@ kde4_add_executable(kglobalsettingstest NOGUI RUN_UNINSTALLED ${kglobalsettingst
 
 target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
+add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
 
 ########### next target ###############
 
@@ -286,18 +270,6 @@ kde4_add_executable(krfcdatetest NOGUI RUN_UNINSTALLED ${krfcdatetest_SRCS})
 target_link_libraries(krfcdatetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-krfcdatetest ${EXECUTABLE_OUTPUT_PATH}/krfcdatetest)
-
-########### next target ###############
-
-set(testqtargs_SRCS testqtargs.cpp )
-
-kde4_automoc(${testqtargs_SRCS})
-
-kde4_add_executable(testqtargs NOGUI RUN_UNINSTALLED ${testqtargs_SRCS})
-
-target_link_libraries(testqtargs  ${KDE4_KDECORE_LIBS})
-
-# add_test(kdecore-testqtargs ${EXECUTABLE_OUTPUT_PATH}/testqtargs)
 
 ########### next target ###############
 

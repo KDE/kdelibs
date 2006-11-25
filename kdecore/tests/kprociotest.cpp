@@ -13,7 +13,8 @@
 #include <string.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <kinstance.h>
+#include <QApplication>
 
 #include <signal.h>
 
@@ -31,20 +32,21 @@ werke\nmerkt\nich\nund\nden\nbrauch\nund\nmit\ngeistesstaerke\ntu\nich\nwunder\n
 
 int main(int argc, char *argv[])
 {
- Dummy dummy; 
+ Dummy dummy;
 
  KAboutData about("kprociotest", "kprociotest", "version");
- KCmdLineArgs::init(argc, argv, &about);
+ //KCmdLineArgs::init(argc, argv, &about);
+ KInstance instance(&about);
 
- KApplication app;
+ QApplication app(argc, argv);
 
  printf("Welcome to the KProcIO Demo Application!\n");
 
 
  KProcIO p;
- 
+
  p << "rev";
- 
+
  p.connect(&p, SIGNAL(processExited(KProcess*)), &dummy, SLOT(printMessage(KProcess*)));
  p.connect(&p, SIGNAL(readReady(KProcIO*)), &dummy, SLOT(gotOutput(KProcIO*)));
 
@@ -58,12 +60,10 @@ int main(int argc, char *argv[])
 
  b = p.writeStdin(QString("This is a test. It should come out in reverse (esrever)"));
  printf("writeStdin returns %s\n", b ? "true" : "false");
- 
+
  p.closeWhenDone();
 
  printf("Entering man Qt event loop -- press <CTRL><C> to abort\n");
- app.exec();
-
- return 0;
+ return app.exec();
 }
 #include "kprociotest.moc"

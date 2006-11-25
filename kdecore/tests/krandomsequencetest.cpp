@@ -23,17 +23,16 @@
 #include "krandom.h"
 #include "kcmdlineargs.h"
 #include "kaboutdata.h"
-#include "kapplication.h"
+//#include "kapplication.h"
 
 #include <stdio.h>
 
 int
-main(int argc, char *argv[])
+main( /*int argc, char *argv[]*/ )
 {
-   KAboutData about("krandomsequencetest", "krandomsequencetest", "version");
-   KCmdLineArgs::init(argc, argv, &about);
-
-   KApplication a;
+   //KAboutData about("krandomsequencetest", "krandomsequencetest", "version");
+   //KCmdLineArgs::init(argc, argv, &about);
+   //KApplication a;
 
    long seed;
    KRandomSequence seq;
@@ -60,6 +59,7 @@ main(int argc, char *argv[])
    seq.setSeed(seed);printf("Seed = %4ld :", seed);
    for(int i = 0; i < 20; i++)
       printf("%3ld ", seq.getLong(100));
+   printf("\n");
 
    seq.setSeed(KRandom::random());
 
@@ -74,25 +74,23 @@ main(int argc, char *argv[])
 
    for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
       printf("%s", str->toLatin1().data());
-   printf("\n\n");
+   printf("\n");
 
    seq.randomize(list);
 
    for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
       printf("%s", str->toLatin1().data());
-   printf("\n\n");
+   printf("\n");
 
    seq.randomize(list);
 
    for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
       printf("%s", str->toLatin1().data());
-   printf("\n\n");
+   printf("\n");
 
    seq.randomize(list);
 
    for(QList<QString>::Iterator str = list.begin(); str != list.end(); str++)
       printf("%s", str->toLatin1().data());
-   printf("\n\n");
-
    printf("\n");
 }

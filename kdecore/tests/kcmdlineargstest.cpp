@@ -1,6 +1,5 @@
 #include <kcmdlineargs.h>
-#include <klocale.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <kurl.h>
 
 #include <stdio.h>
@@ -25,33 +24,33 @@ static KCmdLineOptions options[] =
 int
 main(int argc, char *argv[])
 {
-   KLocale::setMainCatalog("kdelibs");
    KCmdLineArgs::init( argc, argv, "testapp", "TestApp", description, version);
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
    // MyWidget::addCmdLineOptions();
 
-   KApplication k( false );
+   //KApplication app( false );
+   QApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), false );
 
    // Get application specific arguments
-   KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    // Check if an option is set
    if (args->isSet("test"))
    {
       // Do stuff
       printf("Option 'test' is set.\n");
-   }   
+   }
 
    if (args->isSet("baud"))
    {
       // Do stuff
       printf("Option 'baud' is set.\n");
-   }   
-   
-   // Read the value of an option. 
+   }
+
+   // Read the value of an option.
    QByteArray baudrate = args->getOption("baud"); // 9600 is the default value.
-   
+
    printf("Baudrate = %s\n", baudrate.data());
 
    printf("Full list of baudrates:\n");
@@ -71,9 +70,9 @@ main(int argc, char *argv[])
    }
 
    args->clear(); // Free up memory.
-  
-   
-//   k.exec();
+
+
+//   return app.exec();
    return 0;
 }
 #else
@@ -82,10 +81,9 @@ main(int argc, char *argv[])
 {
    KCmdLineArgs::init( argc, argv, "testapp", description, version);
 
-   KApplication k( true, true );
+   QApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), false );
 
-   k.exec();
-   return 0;
+   return app.exec();
 }
 #endif
 

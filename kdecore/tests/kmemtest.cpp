@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <kinstance.h>
+#include <QApplication>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -37,7 +38,7 @@ void showMem()
 
 long showTotalMem()
 {
-   long realMem = 0; 
+   long realMem = 0;
    char buf[257];
 
    FILE *fs = fopen("/proc/meminfo", "r");
@@ -55,7 +56,7 @@ long showTotalMem()
           long shared = 0;
           long buffers = 0;
           long cached = 0;
-          sscanf(buf, "Mem: %ld %ld %ld %ld %ld %ld", 
+          sscanf(buf, "Mem: %ld %ld %ld %ld %ld %ld",
              &total, &used, &free, &shared, &buffers, &cached);
           realMem = used-buffers-cached;
           printf("Actual Total Memory Usage: %0.1fKb\n", realMem/1024.0);
@@ -68,7 +69,7 @@ long showTotalMem()
 
 long memSize()
 {
-   long realMem = 0; 
+   long realMem = 0;
    char buf[257];
 
    FILE *fs = fopen("/proc/meminfo", "r");
@@ -86,7 +87,7 @@ long memSize()
           long shared = 0;
           long buffers = 0;
           long cached = 0;
-          sscanf(buf, "Mem: %ld %ld %ld %ld %ld %ld", 
+          sscanf(buf, "Mem: %ld %ld %ld %ld %ld %ld",
              &total, &used, &free, &shared, &buffers, &cached);
           realMem = total;
           done = true;
@@ -103,7 +104,7 @@ void *mmapFile(const char *file)
    {
       printf("open: %s\n", strerror(errno));
       exit(-1);
-   }   
+   }
 
    struct stat stat_s;
    int result = fstat(fd, &stat_s);
@@ -111,18 +112,18 @@ void *mmapFile(const char *file)
    {
       printf("stat: %s\n", strerror(errno));
       exit(-1);
-   }   
-     
+   }
+
    void *ptr = mmap(0, stat_s.st_size, PROT_READ, MAP_SHARED, fd, 0);
    if (ptr == 0)
    {
       printf("mmap: %s\n", strerror(errno));
       exit(-1);
-   }   
+   }
    return ptr;
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   if ((argc==2) && (strcmp(argv[1], "all")==0))
   {
@@ -158,14 +159,14 @@ int main(int argc, char *argv[])
      }
      exit(1);
   }
-  
+
 
   if ((argc>=2) && (strcmp(argv[1], "launch")==0))
   {
      showMem();
 
      char buf[200];
-  
+
      if (argc >=3)
         qsnprintf(buf, 200, "%s &", argv[2]);
      else
@@ -232,17 +233,18 @@ int main(int argc, char *argv[])
      long fifteenMem =  prev;
      showMem();
 
-     printf("Actual memory usage of 1 instance = %0.1f Kb\n", 
+     printf("Actual memory usage of 1 instance = %0.1f Kb\n",
            (fifteenMem - fiveMem) /10240.0);
   }
 //  showMem("second");
 
    KAboutData about("kmemtest", "kmemtest", "version");
-   KCmdLineArgs::init(argc, argv, &about);
+   //KCmdLineArgs::init(argc, argv, &about);
+   KInstance instance(&about);
 
-   KApplication a;
+   QApplication a(argc, argv);
 
-//  showMem("After KApplication constructor");
+//  showMem("After QApplication constructor");
 
 //  malloc(10*1024);
 

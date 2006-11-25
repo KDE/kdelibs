@@ -30,8 +30,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <kinstance.h>
+#include <QApplication>
 #include <qdialog.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -205,11 +205,12 @@ void KConfigTestView::writeButtonClicked()
 
 int main( int argc, char **argv )
 {
-   KAboutData about("kconfigtestgui", "kconfigtestgui", "version");
-   KCmdLineArgs::init(argc, argv, &about);
+    KAboutData about("kconfigtestgui", "kconfigtestgui", "version");
+    //KCmdLineArgs::init(argc, argv, &about);
+    KInstance instance(&about);
 
-   KApplication a;
+    QApplication app( argc, argv );
 
-  KConfigTestView *w = new KConfigTestView();
-  return w->exec();
+    KConfigTestView *w = new KConfigTestView();
+    return w->exec();
 }

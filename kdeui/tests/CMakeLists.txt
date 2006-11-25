@@ -819,6 +819,42 @@ target_link_libraries(kcommandtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 add_test(kcommandtest ${EXECUTABLE_OUTPUT_PATH}/kcommandtest)
 
 
-endif(KDE4_BUILD_TESTS)
+########### next target ###############
 
-########### install files ###############
+set(kapptest_SRCS kapptest.cpp )
+
+kde4_automoc(${kapptest_SRCS})
+
+kde4_add_executable(kapptest NOGUI RUN_UNINSTALLED ${kapptest_SRCS})
+
+target_link_libraries(kapptest  ${KDE4_KDEUI_LIBS})
+
+# add_test(kdeui-kapptest ${EXECUTABLE_OUTPUT_PATH}/kapptest)
+
+########### next target ###############
+
+set(kuniqueapptest_SRCS kuniqueapptest.cpp )
+
+kde4_automoc(${kuniqueapptest_SRCS})
+
+kde4_add_executable(kuniqueapptest NOGUI RUN_UNINSTALLED ${kuniqueapptest_SRCS})
+
+target_link_libraries(kuniqueapptest  ${KDE4_KDEUI_LIBS} )
+
+add_test(kdeui-kuniqueapptest ${EXECUTABLE_OUTPUT_PATH}/kuniqueapptest)
+
+########### next target ###############
+
+set(testqtargs_SRCS testqtargs.cpp )
+
+kde4_automoc(${testqtargs_SRCS})
+
+kde4_add_executable(testqtargs NOGUI RUN_UNINSTALLED ${testqtargs_SRCS})
+
+target_link_libraries(testqtargs  ${KDE4_KDEUI_LIBS})
+
+# add_test(kdeui-testqtargs ${EXECUTABLE_OUTPUT_PATH}/testqtargs)
+
+########### End of tests ###############
+
+endif(KDE4_BUILD_TESTS)

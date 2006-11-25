@@ -16,8 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
-
+#include <kinstance.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <ktoolinvocation.h>
@@ -27,9 +26,9 @@ int
 main(int argc, char *argv[])
 {
    KAboutData about("ktoolinvocationtest", "ktoolinvocationtest", "version");
-   KCmdLineArgs::init(argc, argv, &about);
-
-   KApplication a;
+   KInstance instance(&about);
+   //KCmdLineArgs::init(argc, argv, &about);
+   //KApplication a;
 
    QString error;
    QString dbusService;
