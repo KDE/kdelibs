@@ -54,6 +54,11 @@ set(phononcore_LIB_SRCS
 	factory.cpp
 	)
 
+if (WIN32 AND MINGW)
+# otherwise undefined symbol in phononcore.dll errors occurs
+  SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS " -shared -Wl,--export-all-symbols")
+endif (WIN32 AND MINGW)
+
 kde4_automoc(${phononcore_LIB_SRCS})
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
