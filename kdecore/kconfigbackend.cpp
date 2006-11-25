@@ -1013,7 +1013,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
   KDE_struct_stat buf;
   if (KDE_stat(QFile::encodeName(filename), &buf) == 0)
   {
-     if (buf.st_uid == getuid())
+     if (buf.st_uid == getuid() || buf.st_uid == -2)
      {
         // Preserve file mode if file exists and is owned by user.
         fileMode = buf.st_mode & 0777;
