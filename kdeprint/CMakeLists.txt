@@ -18,10 +18,10 @@ macro_log_feature(CUPS_FOUND "CUPS" "The CUPS (Common UNIX Printing System)" "ht
 
 if (NOT WIN32)
   add_subdirectory( management )
+  add_subdirectory( lpdunix )
+  add_subdirectory( lpr )
+  add_subdirectory( rlpr )
 endif (NOT WIN32)
-add_subdirectory( lpdunix )
-add_subdirectory( lpr )
-add_subdirectory( rlpr )
 add_subdirectory( ext )
 add_subdirectory( filters )
 add_subdirectory( pics )
