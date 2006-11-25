@@ -182,8 +182,13 @@ QString Addressee::uidLabel()
 
 --DEFINITIONS--
 
-void Addressee::setNameFromString( const QString &str )
+void Addressee::setNameFromString( const QString &s )
 {
+  QString str = s;
+  //remove enclosing quotes from string
+  if ( str.length() > 1  && s[ 0 ] == '"' && s[ s.length() - 1 ] == '"' )
+    str = s.mid( 1, s.length() - 2 );
+
   setFormattedName( str );
   setName( str );
 
