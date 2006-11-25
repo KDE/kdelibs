@@ -21,6 +21,8 @@
 #ifndef KDEEDU_PLOT_EXPORT_H
 #define KDEEDU_PLOT_EXPORT_H
 
+#ifndef QT4_ONLY
+
 /* needed for KDE_EXPORT macros */
 #include <kdemacros.h>
 
@@ -38,5 +40,12 @@
 /* export statements for unix */
 #define KDEEDUPLOT_EXPORT KDE_EXPORT
 #endif
+
+#else // QT4_ONLY
+
+#define KDEEDUPLOT_EXPORT QT_EXPORT
+
+#endif // QT4_ONLY
+
 
 #endif
