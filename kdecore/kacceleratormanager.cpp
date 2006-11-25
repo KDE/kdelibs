@@ -22,7 +22,7 @@
 #include <qapplication.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmenubar.h>
@@ -34,7 +34,7 @@
 #include <qradiobutton.h>
 #include <qspinbox.h>
 #include <qtabbar.h>
-#include <q3textview.h>
+#include <qtextedit.h>
 #include <qwidget.h>
 #include <QStackedWidget>
 #include <QDockWidget>
@@ -242,7 +242,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
             }
         }
         // we possibly reserved an accel, but we won't set it as it looks silly
-        if ( qobject_cast<Q3GroupBox*>( it->m_widget ) )
+        if ( qobject_cast<QGroupBox*>( it->m_widget ) )
              continue;
 
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
@@ -332,7 +332,8 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
   }
 
   if (qobject_cast<QComboBox*>(w) || qobject_cast<QLineEdit*>(w) ||
-      qobject_cast<Q3TextEdit*>(w) || qobject_cast<Q3TextView*>(w) ||
+      w->inherits("Q3TextEdit") ||
+      qobject_cast<QTextEdit*>(w) ||
       qobject_cast<QSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
@@ -349,7 +350,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       }
   }
 
-  if (w->focusPolicy() != Qt::NoFocus || label || qobject_cast<Q3GroupBox*>(w) || qobject_cast<QRadioButton*>( w ))
+  if (w->focusPolicy() != Qt::NoFocus || label || qobject_cast<QGroupBox*>(w) || qobject_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;
@@ -385,7 +386,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
             weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
         // don't put weight on group boxes, as usually the contents are more important
-        if (qobject_cast<Q3GroupBox*>(w))
+        if (qobject_cast<QGroupBox*>(w))
             weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
         // put a lot of extra weight on the KDialogBaseButton's
