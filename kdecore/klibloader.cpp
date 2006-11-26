@@ -418,14 +418,14 @@ static inline QString findLibraryInternal( const char * name, const KInstance * 
 //static
 QString KLibLoader::findLibrary( const char * _name, const KInstance * instance )
 {
-#ifdef Q_OS_WIN
+#ifndef Q_OS_WIN
+    return findLibraryInternal( _name, instance );
+#else
     QByteArray name( _name );
     name = name.replace( '\\', '/' );
-#endif
 
     QString libname = findLibraryInternal( name, instance );
 
-#ifdef Q_OS_WIN
     // we don't have 'lib' prefix on windows -> remove it and try again
     if( libname.isEmpty() )
     {
@@ -449,9 +449,9 @@ QString KLibLoader::findLibrary( const char * _name, const KInstance * instance 
 
       libname = findLibraryInternal( name, instance );
     }
-#endif
 
     return libname;
+#endif
 }
 
 
