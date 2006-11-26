@@ -25,8 +25,6 @@
 #include "kservicetypeprofile_p.h"
 
 #include <kconfig.h>
-#include <kapplication.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 

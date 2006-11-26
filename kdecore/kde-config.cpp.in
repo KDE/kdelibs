@@ -8,9 +8,9 @@
 #include <kglobalsettings.h>
 #include <stdio.h>
 #include <kaboutdata.h>
-#include <config.h>
-#include <kapplication.h>
+#include <kdeversion.h>
 #include <QDir>
+#include <config.h>
 
 static const char *description = I18N_NOOP("A little program to output installation paths");
 

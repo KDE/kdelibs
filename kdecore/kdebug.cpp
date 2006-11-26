@@ -32,7 +32,6 @@
 #undef kBacktrace
 #endif
 
-#include "kapplication.h"
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstandarddirs.h"
@@ -52,6 +51,7 @@
 #include <qpen.h>
 #include <qbrush.h>
 #include <qsize.h>
+#include <qapplication.h>
 
 #include <kurl.h>
 

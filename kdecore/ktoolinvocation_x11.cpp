@@ -38,7 +38,6 @@
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
-#include <kstartupinfo.h>
 #endif
 
 #include <sys/types.h>
@@ -46,10 +45,6 @@
 #include <sys/stat.h>
 #endif
 #include <sys/wait.h>
-
-#ifndef Q_WS_WIN
-#include "kwin.h"
-#endif
 
 #include <fcntl.h>
 #include <stdlib.h> // getenv(), srand(), rand()

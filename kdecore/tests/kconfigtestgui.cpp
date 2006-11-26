@@ -32,7 +32,6 @@
 #include <kaboutdata.h>
 #include <kinstance.h>
 #include <QApplication>
-#include <qdialog.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
@@ -45,19 +44,11 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <qtextstream.h>
 
 // KDE includes
 #include <kconfig.h>
 
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp/"
-#endif
-
-//
 // Construct the KConfigTestView with buttons
 //
 

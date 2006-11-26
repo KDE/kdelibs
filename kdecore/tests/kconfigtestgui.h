@@ -19,22 +19,13 @@
 #ifndef KCONFIGTESTGUI_H
 #define KCONFIGTESTGUI_H
 
-#include <kapplication.h>
 #include <qdialog.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <kdebug.h>
-#include <ksimpleconfig.h>
-#include <qtextstream.h>
-
-// Standard Qt widgets
-
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-
-#include <kconfig.h>
-
+class QTextStream;
+class QFile;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class KConfig;
 //
 // KConfigTestView contains lots of Qt widgets.
 //
