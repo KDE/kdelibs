@@ -23,6 +23,7 @@
 
 #include "kshell.h"
 
+#include <qdir.h>
 #include <qfile.h>
 #include <qstring.h>
 #include <qstringlist.h>

@@ -390,8 +390,7 @@ static inline QByteArray makeLibName( const char* name )
     return libname;
 }
 
-//static
-QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
+static inline QString findLibraryInternal( const char * name, const KInstance * instance )
 {
     QByteArray libname = makeLibName( name );
 
@@ -414,6 +413,45 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
       }
     }
     return libfile;
+}
+
+//static
+QString KLibLoader::findLibrary( const char * _name, const KInstance * instance )
+{
+#ifdef Q_OS_WIN
+    QByteArray name( _name );
+    name = name.replace( '\\', '/' );
+#endif
+
+    QString libname = findLibraryInternal( name, instance );
+
+#ifdef Q_OS_WIN
+    // we don't have 'lib' prefix on windows -> remove it and try again
+    if( libname.isEmpty() )
+    {
+      QByteArray ba( name );
+      QByteArray file, path;
+
+      int pos = ba.lastIndexOf( '/' );
+      if ( pos >= 0 )
+      {
+        file = ba.mid( pos + 1 );
+        path = ba.left( pos );
+        name = path + '/' + file.mid( 3 );
+      }
+      else
+      {
+        file = ba;
+        name = file.mid( 3 );
+      }
+      if( !file.startsWith( "lib" ) )
+          return libname;
+
+      libname = findLibraryInternal( name, instance );
+    }
+#endif
+
+    return libname;
 }
 
 
