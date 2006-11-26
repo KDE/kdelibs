@@ -147,7 +147,7 @@ MathFuncImp::MathFuncImp(ExecState* exec, int i, int l, const Identifier& name)
   putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
 }
 
-JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
+JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);
