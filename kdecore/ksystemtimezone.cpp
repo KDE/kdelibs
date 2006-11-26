@@ -95,7 +95,7 @@ class KSystemTimeZonesPrivate : public KTimeZones
 public:
     static KSystemTimeZonesPrivate *instance();
     const KTimeZone *local();
-    static QString zoneinfoDir()   { instance();  return m_zoneinfoDir; }
+    static QString zoneinfoDir()   { return instance()->m_zoneinfoDir; }
     static KTimeZone *readZone(const QString &name);
 
 private:
@@ -108,15 +108,14 @@ private:
     static KSystemTimeZonesPrivate *m_instance;
     static KSystemTimeZoneSource *m_source;
     static KTzfileTimeZoneSource *m_tzfileSource;
-    static QString m_zoneinfoDir;
     typedef QMap<QString, QString> MD5Map;    // zone name, checksum
     static MD5Map  m_md5Sums;
+    QString m_zoneinfoDir;
 };
 
 KSystemTimeZonesPrivate         *KSystemTimeZonesPrivate::m_instance = 0;
 KSystemTimeZoneSource           *KSystemTimeZonesPrivate::m_source = 0;
 KTzfileTimeZoneSource           *KSystemTimeZonesPrivate::m_tzfileSource = 0;
-QString                          KSystemTimeZonesPrivate::m_zoneinfoDir;
 KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
 
 
@@ -167,14 +166,14 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
     return m_instance;
 }
 
-bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
+bool KSystemTimeZonesPrivate::findZoneTab(QFile& f)
 {
 #if defined(SOLARIS) || defined(USE_SOLARIS)
-    const char *ZONE_TAB_FILE = "/tab/zone_sun.tab";
-    const char *ZONE_INFO_DIR = "/usr/share/lib/zoneinfo";
+    const QString ZONE_TAB_FILE = QLatin1String("/tab/zone_sun.tab");
+    const QString ZONE_INFO_DIR = QLatin1String("/usr/share/lib/zoneinfo");
 #else
-    const char *ZONE_TAB_FILE = "/zone.tab";
-    const char *ZONE_INFO_DIR = "/usr/share/zoneinfo";
+    const QString ZONE_TAB_FILE = QLatin1String("/zone.tab");
+    const QString ZONE_INFO_DIR = QLatin1String("/usr/share/zoneinfo");
 #endif
 
     // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
@@ -188,7 +187,7 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
         return true;
     kDebug() << "Can't open " << f.fileName() << endl;
 
-    zoneinfoDir = "/usr/lib/zoneinfo";
+    zoneinfoDir = QLatin1String("/usr/lib/zoneinfo");
     f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
     if ( dir.exists( zoneinfoDir ) )
         m_zoneinfoDir = zoneinfoDir;
@@ -207,8 +206,8 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
         kDebug() << "Can't open " << f.fileName() << endl;
     }
 
-    zoneinfoDir = "/usr/share/lib/zoneinfo";
-    if ( dir.exists( zoneinfoDir + "/src" ) )
+    zoneinfoDir = QLatin1String("/usr/share/lib/zoneinfo");
+    if (dir.exists(zoneinfoDir + QLatin1String("/src")))
     {
         m_zoneinfoDir = zoneinfoDir;
         // Solaris support. Synthesise something that looks like a zone.tab.
@@ -218,7 +217,7 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
         // where the country code is set to "??" and the latitude/longitude
         // values are dummies.
         //
-        QDir d(m_zoneinfoDir + "/src");
+        QDir d(m_zoneinfoDir + QLatin1String("/src"));
         d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
         QStringList fileList = d.entryList();
 
@@ -342,7 +341,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
     if (local)
         return local;
 
-    if (!m_zoneinfoDir.isEmpty())
+    if (!m_instance->m_zoneinfoDir.isEmpty())
     {
         // SOLUTION 2: DEFINITIVE.
         // Try to follow any /etc/localtime symlink to a zoneinfo file.
@@ -353,14 +352,14 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
         {
             // Get the path of the file which the symlink points to
             QString zoneInfoFileName = fi.canonicalFilePath();
-            if (zoneInfoFileName.startsWith(m_zoneinfoDir))
+            if (zoneInfoFileName.startsWith(m_instance->m_zoneinfoDir))
             {
                 QFileInfo fiz(zoneInfoFileName);
                 if (fiz.exists() && fiz.isReadable())
                 {
                     // We've got the zoneinfo file path.
                     // The time zone name is the part of the path after the zoneinfo directory.
-                    QString name = zoneInfoFileName.mid(m_zoneinfoDir.length() + 1);
+                    QString name = zoneInfoFileName.mid(m_instance->m_zoneinfoDir.length() + 1);
                     // kDebug() << "local=" << name << endl;
                     local = zone(name);
                 }
@@ -516,7 +515,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
     // None of the deterministic stuff above has worked: try a heuristic. We
     // try to find a pair of matching time zone abbreviations...that way, we'll
     // likely return a value in the user's own country.
-    if (!m_zoneinfoDir.isEmpty())
+    if (!m_instance->m_zoneinfoDir.isEmpty())
     {
         tzset();
         QByteArray tzname0(tzname[0]);   // store copies, because zone->parse() will change them
@@ -555,7 +554,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
 // The calculated checksum is cached.
 QString KSystemTimeZonesPrivate::calcChecksum(const QString &zoneName, qlonglong size)
 {
-    QString path = m_zoneinfoDir + '/' + zoneName;
+    QString path = m_instance->m_zoneinfoDir + '/' + zoneName;
     QFileInfo fi(path);
     if (static_cast<qlonglong>(fi.size()) == size)
     {
