@@ -277,6 +277,7 @@ informations
    * install man pages (e.g. doc/kdelibs/man-kbuildsycoca.8.docbook)
    * compile and install documentation (doc/kspell)
    * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
+   * win32: fix path delimiter problem generated *.bat wrapper (using ' ' instead of ';')
 
 - Increase version numbers in sonames of our libraries (*.so.version). 
   Unless we rename them all anyway, see next item.
