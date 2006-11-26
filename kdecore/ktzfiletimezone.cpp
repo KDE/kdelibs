@@ -21,6 +21,7 @@
 
 #include <QFile>
 #include <QDataStream>
+#include <QVector>
 
 #include <kdebug.h>
 #include <ktzfiletimezone.h>
@@ -293,9 +294,13 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         }
     }
 
-    // Compile the time type data into a list of KTimeZone::Phase instances
+    // Compile the time type data into a list of KTimeZone::Phase instances.
+    // Also check for local time types which are identical (this does happen)
+    // and use the same Phase instance for each.
     QByteArray abbrev;
     QList<KTimeZone::Phase> phases;
+    QList<QByteArray> phaseAbbrevs;
+    QVector<int> lttLookup(nLocalTimeTypes);
     ltt = localTimeTypes;
     for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
     {
@@ -306,7 +311,21 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         }
         else
             abbrev = abbreviations[ltt->abbrIndex];
-	phases += KTimeZone::Phase(ltt->gmtoff, abbrev, ltt->isdst);
+        // Check for an identical Phase
+        int phindex = 0;
+        for (int j = 0, jend = phases.count();  j < jend;  ++j, ++phindex)
+        {
+            if (ltt->gmtoff == phases[j].utcOffset()
+            &&  (bool)ltt->isdst == phases[j].isDst()
+            &&  abbrev == phaseAbbrevs[j])
+                break;
+        }
+        lttLookup[i] = phindex;
+        if (phindex == phases.count())
+        {
+            phases += KTimeZone::Phase(ltt->gmtoff, abbrev, ltt->isdst);
+            phaseAbbrevs += abbrev;
+        }
     }
     data->setPhases(phases, firstoffset);
 
@@ -340,7 +359,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         }
 
 //kDebug() << "Transition time "<<i<<": "<<tt->time<<endl;
-        KTimeZone::Phase phase = phases[tt->localTimeIndex];
+        KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
         transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);
     }
     data->setTransitions(transitions);
