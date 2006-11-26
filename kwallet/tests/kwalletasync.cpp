@@ -1,8 +1,9 @@
 #include <qtextstream.h>
+#include <qapplication.h>
 #include <qtimer.h>
 
 #include <kaboutdata.h>
-#include <kapplication.h>
+#include <kinstance.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -46,12 +47,12 @@ void WalletReceiver::walletOpened( bool got )
 int main( int argc, char *argv[] )
 {
 	KAboutData aboutData( "kwalletasync", "kwalletasync", "version" );
-	KCmdLineArgs::init( argc, argv, &aboutData );
-	KApplication app( "kwalletasync" );
+	KInstance instance(&aboutData);
+	QApplication app( argc, argv );
 
 	// force name with D-BUS
         QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply
-            = QDBusConnection::sessionBus().interface()->registerService( app.objectName(),
+            = QDBusConnection::sessionBus().interface()->registerService( "org.kde.kwalletasync",
                                                                 QDBusConnectionInterface::ReplaceExistingService );
 
         if ( !reply.isValid() )
