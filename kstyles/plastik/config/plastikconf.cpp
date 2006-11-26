@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
+#define QT3_SUPPORT
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <khbox.h>

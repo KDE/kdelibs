@@ -19,6 +19,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#define QT3_SUPPORT
 #include "kconfigdialogmanager.h"
 
 #include <Q3ButtonGroup>
