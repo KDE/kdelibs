@@ -323,11 +323,25 @@ public:
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
 
+Q_SIGNALS:
+  /**
+   * Hook for KApplication in kdeui
+   * @internal
+   */
+  void needNewStartupId(QByteArray& startup_id);
+
 private:
   /**
    * @internal
    */
   static void startKdeinit();
+
+#ifdef Q_WS_X11
+  int startServiceInternal(const char *_function,
+                           const QString& _name, const QStringList &URLs,
+                           QString *error, QString *serviceName, int *pid,
+                           const QByteArray& startup_id, bool noWait);
+#endif
 };
 
 #endif

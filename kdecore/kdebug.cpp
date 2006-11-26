@@ -82,6 +82,8 @@ struct KDebugEntry
 typedef QHash<unsigned int, KDebugEntry> debug_cache;
 static debug_cache *KDebugCache;
 
+KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface = false;
+
 static KStaticDeleter< debug_cache > kdd;
 
 static QByteArray getDescrFromNum(unsigned int _num)
@@ -195,8 +197,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // it would still get triggered by kioslaves that use enterLoop/exitLoop
       // to run kio jobs synchronously.
       //
-      // Let's just use kapp (kioslaves should use QCoreApplication but not KApplication).
-      if (!kDebugDBusIface && kapp)
+      // Solution: we have a bool that is set by KApplication
+      // (kioslaves should use QCoreApplication but not KApplication).
+      if (!kDebugDBusIface && kde_kdebug_enable_dbus_interface)
       {
           kDebugDBusIface = dbussd.setObject(kDebugDBusIface, new KDebugDBusIface);
       }

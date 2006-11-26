@@ -438,6 +438,7 @@ protected:
 private Q_SLOTS:
   void x11FilterDestroyed();
   void checkAppStartedSlot();
+  void slotNeedNewStartupId(QByteArray&);
 
 private:
   QString sessionConfigName() const;

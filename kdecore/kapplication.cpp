@@ -60,6 +60,7 @@
 #include "kstandarddirs.h"
 #include "kmimesourcefactory.h"
 #include "kstdaccel.h"
+#include "ktoolinvocation.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -506,6 +507,9 @@ void KApplication::init()
 
   (void) KClipboardSynchronizer::self();
 
+  extern bool kde_kdebug_enable_dbus_interface;
+  kde_kdebug_enable_dbus_interface = true;
+
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
@@ -609,6 +613,9 @@ void KApplication::init()
     }
 
     d->checkAccelerators = new KCheckAccelerators( this );
+
+    connect(KToolInvocation::self(), SIGNAL(needNewStartupId(QByteArray&)),
+            this, SLOT(slotNeedNewStartupId(QByteArray&)));
   }
 
 #ifdef Q_WS_MAC
@@ -1190,6 +1197,16 @@ void KApplication::read_app_startup_id()
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
     KStartupInfo::resetStartupEnv();
     d->startup_id = id.id();
+#endif
+}
+
+// Hook called by KToolInvocation
+void KApplication::slotNeedNewStartupId(QByteArray& startupId)
+{
+#ifdef Q_WS_X11
+    startupId = KStartupInfo::createNewStartupId();
+#else
+    Q_UNUSED(startupId);
 #endif
 }
 
