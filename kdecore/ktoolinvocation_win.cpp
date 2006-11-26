@@ -18,9 +18,9 @@
 */
 
 // TODO: http://mail.kde.org/pipermail/kde-buildsystem/2006-July/003147.html
-#include "ktoolinvocation_x11.cpp"
+//#include "ktoolinvocation_x11.cpp"
 
-#if 0
+#if 1
 
 #define THREADGUARD
 #include "config.h"
@@ -70,79 +70,6 @@
 #warning Implement the commented methods!
 #endif
 Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
-
-static int
-startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
-              const QString& _name, const QStringList &URLs,
-              QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
-{
-	qWarning("%s %s %s %s\n",__FUNCTION__,function.data(),_name.toLatin1(),URLs.join(" ").toLatin1());
-/*
-   struct serviceResult
-   {
-      int result;
-      DCOPCString dcopName;
-      QString error;
-      pid_t pid;
-   };
-
-   // Register app as able to send DCOP messages
-   if (!dcopClient) {
-         if (error)
-            *error = i18n("Could not register with DCOP.\n");
-         return -1;
-   }
-   QByteArray params;
-   QDataStream stream(&params, QIODevice::WriteOnly);
-   stream.setVersion(QDataStream::Qt_3_1);
-   stream << _name << URLs;
-   DCOPCString replyType;
-   QByteArray  replyData;
-   QByteArray _launcher = KToolInvocation::launcher();
-   QList<DCOPCString> envs;
-#ifdef Q_WS_X11
-   if (QX11Info::display()) {
-       QByteArray dpystring(XDisplayString(QX11Info::display()));
-       envs.append( QByteArray("DISPLAY=") + dpystring );
-   } else if( getenv( "DISPLAY" )) {
-       QByteArray dpystring( getenv( "DISPLAY" ));
-       envs.append( QByteArray("DISPLAY=") + dpystring );
-   }
-#endif
-   stream << envs;
-#if defined Q_WS_X11
-   // make sure there is id, so that user timestamp exists
-   stream << ( startup_id.isEmpty() ? DCOPCString(KStartupInfo::createNewStartupId()) :
-                                      DCOPCString(startup_id) );
-#endif
-   if( function.left( 12 ) != "kdeinit_exec" )
-       stream << noWait;
-
-   if (!dcopClient->call(_launcher, _launcher,
-        function, params, replyType, replyData))
-   {
-        if (error)
-           *error = i18n("KLauncher could not be reached via DCOP.\n");
-        return -1;
-   }
-
-   if (noWait)
-      return 0;
-
-   QDataStream stream2(&replyData, QIODevice::ReadOnly);
-   stream2.setVersion(QDataStream::Qt_3_1);
-   serviceResult result;
-   stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
-   if (dcopService)
-      *dcopService = result.dcopName;
-   if (error)
-      *error = result.error;
-   if (pid)
-      *pid = result.pid;
-   return result.result;
-*/
-	return 0;
-}
 
 int
 KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
