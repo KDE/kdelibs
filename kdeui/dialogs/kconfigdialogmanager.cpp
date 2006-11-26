@@ -403,14 +403,18 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
   }
 
   QComboBox *cb = qobject_cast<QComboBox *>(w);
-  if (cb && cb->isEditable())
-  {
-    int i = cb->findText(v.toString());
-    if (i != -1)
-      cb->setCurrentIndex(i);
-    else
-      cb->setEditText(v.toString());
-    return;
+  if (cb) {
+    if ( cb->isEditable() )
+    {
+      int i = cb->findText(v.toString());
+      if (i != -1)
+          cb->setCurrentIndex(i);
+      else
+          cb->setEditText(v.toString());
+      return;
+    } else {
+      cb->setCurrentIndex( v.toInt() );
+    }
   }
 
   QByteArray userproperty = getUserProperty( w );
@@ -428,9 +432,12 @@ QVariant KConfigDialogManager::property(QWidget *w)
     return QVariant(bg->selectedId());
 
   QComboBox *cb = qobject_cast<QComboBox *>(w);
-  if (cb && cb->isEditable())
+  if (cb) {
+    if ( cb->isEditable() )
       return QVariant(cb->currentText());
-
+    else
+      return QVariant(cb->currentIndex());
+  }
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
     kWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
