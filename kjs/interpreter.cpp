@@ -381,9 +381,9 @@ bool (*ExecState::confirmTerminate)() = defaultConfirm;
 bool ExecState::hadException()
 {
   if (terminate_request) {
+    terminate_request = false;
     if (confirmTerminate())
       _exception = Error::create((ExecState*)this);
-    terminate_request = false;
   }
   return _exception.isValid();
 }
