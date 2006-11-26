@@ -827,8 +827,9 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
     }
 }
 
-// Set by KApplication
-QString kde_overrideStyle;
+// Set by KApplication - which is now in kdeui so this needs to be exported
+// In the long run, KGlobalSettings probably belongs to kdeui as well...
+KDECORE_EXPORT QString kde_overrideStyle;
 
 void KGlobalSettings::applyGUIStyle()
 {
@@ -968,36 +969,42 @@ void KGlobalSettings::kdisplaySetPalette()
     if (cg.readEntry("nopaletteChange", false))
         return;
 
-    QApplication::setPalette( createApplicationPalette() );
-    emit kdisplayPaletteChanged();
-    emit appearanceChanged();
+    if (qApp && qApp->type() == QApplication::GuiClient) {
+        QApplication::setPalette( createApplicationPalette() );
+        emit kdisplayPaletteChanged();
+        emit appearanceChanged();
+    }
 }
 
 
 void KGlobalSettings::kdisplaySetFont()
 {
-    QApplication::setFont(KGlobalSettings::generalFont());
-    QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
-    QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
-    QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
+    if (qApp && qApp->type() == QApplication::GuiClient) {
+        QApplication::setFont(KGlobalSettings::generalFont());
+        QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
+        QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
+        QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
 
-    // "patch" standard QStyleSheet to follow our fonts
-    Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
-    sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
+        // "patch" standard QStyleSheet to follow our fonts
+        Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
+        sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
+        sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
+        sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
 
-    emit kdisplayFontChanged();
-    emit appearanceChanged();
+        emit kdisplayFontChanged();
+        emit appearanceChanged();
+    }
 }
 
 
 void KGlobalSettings::kdisplaySetStyle()
 {
-    applyGUIStyle();
-    emit kdisplayStyleChanged();
-    // already done by applyGUIStyle -> kdisplaySetPalette
-    //emit appearanceChanged();
+    if (qApp && qApp->type() == QApplication::GuiClient) {
+        applyGUIStyle();
+        emit kdisplayStyleChanged();
+        // already done by applyGUIStyle -> kdisplaySetPalette
+        //emit appearanceChanged();
+    }
 }
 
 
