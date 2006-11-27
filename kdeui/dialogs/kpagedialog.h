@@ -194,7 +194,7 @@ class KDEUI_EXPORT KPageDialog : public KDialog
     /**
      * This constructor can be used by subclasses to provide a custom page widget.
      */
-    KPageDialog( KPageWidget *widget, QWidget *parent = 0, Qt::WFlags flags = 0 );
+    explicit KPageDialog( KPageWidget *widget, QWidget *parent = 0, Qt::WFlags flags = 0 );
 
     /**
      * Returns the page widget of the dialog or 0 if no page widget is set.
