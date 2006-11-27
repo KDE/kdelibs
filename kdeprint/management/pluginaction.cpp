@@ -26,7 +26,7 @@ PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int 
 : KAction(txt, parent, name)
 {
   setIcon( KIcon( icon ) );
-  setShortcut( accel );
+  setShortcut( QKeySequence(accel) );
   setData( ID );
 }
 

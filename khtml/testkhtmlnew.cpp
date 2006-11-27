@@ -172,11 +172,11 @@ void TestKHTML::setupActions()
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
 
-    KToggleAction *ta = new KToggleAction("Navigable", "editclear", 0, actionCollection(), "navigable" );
+    KToggleAction *ta = new KToggleAction("Navigable", "editclear", KShortcut(), actionCollection(), "navigable" );
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT( toggleNavigable(bool) ));
 
-    ta = new KToggleAction( "Editable", "edit", 0, actionCollection(), "editable" );
+    ta = new KToggleAction( "Editable", "edit", KShortcut(), actionCollection(), "editable" );
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 

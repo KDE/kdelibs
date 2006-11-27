@@ -263,9 +263,9 @@ void JobCollection::internalJobDone ( Job* job )
     if (d->jobCounter == 0)
     {
         if (! success())
-	{
+	    {
             emit failed(this);
-	}
+	    }
 
         finalCleanup();
     }
@@ -287,17 +287,17 @@ void JobCollection::dequeueElements()
     if ( d->weaver != 0 )
     {
         for ( int index = 1; index < d->elements->size(); ++index )
-	{
-            if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) // ... a QPointer
 	    {
+            if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) // ... a QPointer
+	        {
                 debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
                        d->elements->at( index ) );
                 d->weaver->dequeue ( d->elements->at( index ) );
-	    } else {
+	        } else {
                 debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
                        d->elements->at( index ) );
+	        }
 	    }
-	}
 
         if (d->jobCounter != 0)
 	{ // if jobCounter is not zero, then we where waiting for the

@@ -151,10 +151,8 @@ void KShortcutDialog::setShortcut( const KShortcut & shortcut )
 void KShortcutDialog::updateShortcutDisplay()
 {
 	QString s[2];
-	if (d->shortcut.count())
-		s[0] = d->shortcut.seq(0).toString();
-	if (d->shortcut.count() > 1)
-		s[1] = d->shortcut.seq(1).toString();
+	s[0] = d->shortcut.primary().toString();
+	s[1] = d->shortcut.alternate().toString();
 
 	if( d->bRecording ) {
 		d->ptxtCurrent->setDefault( true );
@@ -197,17 +195,17 @@ void KShortcutDialog::updateShortcutDisplay()
 	d->adv->m_txtAlternate->setText( s[1] );
 
 	// Determine the enable state of the 'Less' button
-	bool bLessOk;
+	bool btnLessEn;
 	// If there is no shortcut defined,
-	if( d->shortcut.count() == 0 )
-		bLessOk = true;
+	if( d->shortcut.isEmpty() )
+		btnLessEn = true;
 	// If there is a single shortcut defined, and it is not a multi-key shortcut,
-	else if( d->shortcut.count() == 1 && d->shortcut.seq(0).count() <= 1 )
-		bLessOk = true;
+	else if( d->shortcut.alternate().isEmpty() && d->shortcut.primary().count() <= 1 )
+		btnLessEn = true;
 	// Otherwise, we have an alternate shortcut or multi-key shortcut(s).
 	else
-		bLessOk = false;
-	enableButton(Details, bLessOk);
+		btnLessEn = false;
+	enableButton(Details, btnLessEn);
 }
 
 void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
@@ -220,7 +218,7 @@ void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
 
 void KShortcutDialog::updateDetails()
 {
-	bool showAdvanced = s_showMore || (d->shortcut.count() > 1);
+	bool showAdvanced = s_showMore || (!d->shortcut.alternate().isEmpty());
 	setDetails(showAdvanced);
 	setRecording(false);
 	d->iSeq = 0;
@@ -268,21 +266,20 @@ void KShortcutDialog::slotSelectAlternate()
 
 void KShortcutDialog::slotClearShortcut()
 {
-	d->shortcut.setSeq( 0, QKeySequence() );
+	d->shortcut.clear();
 	updateShortcutDisplay();
 }
 
 void KShortcutDialog::slotClearPrimary()
 {
-	d->shortcut.setSeq( 0, QKeySequence() );
+	d->shortcut.setPrimary(QKeySequence());
 	d->adv->m_btnPrimary->setChecked( true );
 	slotSelectPrimary();
 }
 
 void KShortcutDialog::slotClearAlternate()
 {
-	if( d->shortcut.count() == 2 )
-		d->shortcut.init( d->shortcut.seq(0) );
+	d->shortcut.setAlternate(QKeySequence());
 	d->adv->m_btnAlternate->setChecked( true );
 	slotSelectAlternate();
 }
@@ -348,13 +345,17 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 			}
 			//accept
 			if (keyQt) {
-				QKeySequence seq;
+				int keyQtMod = keyQt;
 				if( d->iKey == 0 )
-					seq = keyQt | d->mod;
-				else
-					seq = appendToSequence(d->shortcut.seq( d->iSeq ), keyQt );
+					keyQtMod |= d->mod;
 
-				d->shortcut.setSeq( d->iSeq, seq );
+				if (d->iSeq == 0) {
+					QKeySequence seq = appendToSequence(d->shortcut.primary(), keyQtMod);
+					d->shortcut.setPrimary(seq);
+				} else if (d->iSeq == 1) {
+					QKeySequence seq = appendToSequence(d->shortcut.alternate(), keyQtMod);
+					d->shortcut.setAlternate(seq);
+				}
 
 				if(d->adv->m_btnMultiKey->isChecked())
 					d->iKey++;

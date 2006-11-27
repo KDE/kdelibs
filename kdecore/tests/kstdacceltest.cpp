@@ -61,27 +61,29 @@ void KStdAccelTest::testRemoveShortcut()
     cutShortCut.remove( Qt::SHIFT + Qt::Key_Delete );
     cutShortCut.remove( Qt::CTRL + Qt::Key_X );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
-    QVERIFY( cutShortCut.isNull() );
+    QVERIFY( cutShortCut.isEmpty() );
+
+    cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
+	//remove primary shortcut. We expect the alternate to become primary.
+    cutShortCut.remove( Qt::CTRL + Qt::Key_X );
+	QVERIFY( cutShortCut.primary() == QKeySequence(Qt::SHIFT + Qt::Key_Delete) );
+	QVERIFY( cutShortCut.alternate().isEmpty() );
 }
 
 void KStdAccelTest::testKShortcut()
 {
     KShortcut null;
-    QVERIFY( null.isNull() );
-    QVERIFY( null.count() == 0 );
+    QVERIFY( null.isEmpty() );
 
     KShortcut zero( 0 );
-    QVERIFY( zero.isNull() );
-    QVERIFY( zero.count() == 0 );
+    QVERIFY( zero.isEmpty() );
+    QVERIFY( zero.primary().isEmpty() );
+    QVERIFY( zero.alternate().isEmpty() );
 
     KShortcut quit( "Ctrl+X, Ctrl+C;Z, Z" ); // quit in emacs vs. quit in vi :)
-    QCOMPARE( (int)quit.count(), 2 );
-    QVERIFY( !quit.isNull() );
-    QCOMPARE( quit.seq(0).toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
-    QCOMPARE( quit.seq(1).toString(), QString::fromLatin1("Z, Z") );
-    QCOMPARE( quit.seq(0), QKeySequence(Qt::CTRL + Qt::Key_X, Qt::CTRL + Qt::Key_C) );
-    QVERIFY( quit.compare( null ) > 0 );
-    QVERIFY( null < quit );
+    QCOMPARE( quit.primary().toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
+    QCOMPARE( quit.alternate().toString(), QString::fromLatin1("Z, Z") );
+    QCOMPARE( quit.primary(), QKeySequence(Qt::CTRL + Qt::Key_X, Qt::CTRL + Qt::Key_C) );
     QVERIFY( quit != null );
     QVERIFY( !( quit == null ) );
 
@@ -92,12 +94,6 @@ void KStdAccelTest::testKShortcut()
     QVERIFY( quit.contains( seq ) );
     QVERIFY( !null.contains( seq ) );
 
-    quit.setSeq( 1, seq );
-    QCOMPARE( quit.seq(0).toString(), quit.seq(1).toString() );
-
-    QKeySequence casted = quit; // is this a good idea?
-    QCOMPARE( casted.toString(), seq.toString() );
-    QVERIFY( casted == seq );
-
-    QVERIFY( KShortcut::null() == null );
+    quit.setAlternate( seq );
+    QCOMPARE( quit.primary().toString(), quit.alternate().toString() );
 }

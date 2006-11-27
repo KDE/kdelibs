@@ -104,7 +104,7 @@ void KKeyButton::captureShortcut()
 			cut = dlg.shortcut();
 	} // emit the signal after the dialog is destroyed, otherwise it still has grab
 
-	if( !cut.isNull())
+	if( !cut.isEmpty() )
 		emit capturedShortcut( cut );
 
 	m_bEditing = false;

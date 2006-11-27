@@ -27,14 +27,13 @@
 #include "kaction.h"
 
 #include <kauthorized.h>
-#include <qapplication.h>
+#include "kapplication.h"
 #include <kdebug.h>
 
 #include "kactioncollection.h"
 #include "kglobalaccel.h"
 #include "kguiitem.h"
 #include "kicon.h"
-
 //---------------------------------------------------------------------
 // KActionPrivate
 //---------------------------------------------------------------------
@@ -43,9 +42,9 @@ class KActionPrivate
 {
 public:
   KActionPrivate()
+    :configurable(true),
+     globalShortcutAllowed(false)
   {
-    configurable = true;
-    globalShortcutAllowed = false;
   }
 
   KShortcut shortcut, defaultShortcut, globalShortcut, defaultGlobalShortcut;
@@ -162,6 +161,7 @@ void KAction::initPrivate( const KShortcut& cut,
         connect(this, SIGNAL(triggered(bool)), receiver, slot);
 
     setShortcut(cut);
+
 }
 
 bool KAction::isShortcutConfigurable() const
@@ -199,11 +199,6 @@ const KShortcut & KAction::shortcut(ShortcutTypes type) const
   return d->shortcut;
 }
 
-QString KAction::shortcutText() const
-{
-  return shortcut().toString();
-}
-
 void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
 {
   Q_ASSERT(type);
@@ -211,25 +206,23 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
   if (type & DefaultShortcut)
     d->defaultShortcut = shortcut;
 
-  if ((type & CustomShortcut) && d->shortcut != shortcut) {
+  if ((type & ActiveShortcut) && d->shortcut != shortcut) {
     d->shortcut = shortcut;
-
-    if (d->shortcut.count()) {
-      QList<QKeySequence> shortcuts;
-      shortcuts << shortcut.seq(0);
-
-      if (d->shortcut.count() > 1) {
-        for (int i = 1; i < shortcut.count(); ++i)
-          shortcuts.append(d->shortcut.seq(i));
-      }
-      setShortcuts(shortcuts);
-    }
+    setShortcuts(d->shortcut.toList());
   }
 }
 
-void KAction::setShortcutText(const QString& shortcutText)
+void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
 {
-  return setShortcut(KShortcut(shortcutText), CustomShortcut);
+  Q_ASSERT(type);
+
+  if (type & DefaultShortcut)
+    d->defaultShortcut.setPrimary(keySeq);
+
+  if ((type & ActiveShortcut) && d->shortcut.primary() != keySeq) {
+    d->shortcut.setPrimary(keySeq);
+    setShortcuts(d->shortcut.toList());
+  }
 }
 
 void KAction::slotTriggered()
@@ -321,7 +314,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type 
   if (type & DefaultShortcut)
     d->defaultGlobalShortcut = shortcut;
 
-  if ((type & CustomShortcut) && d->globalShortcut != shortcut) {
+  if ((type & ActiveShortcut) && d->globalShortcut != shortcut) {
     d->globalShortcut = shortcut;
 
     KGlobalAccel::self()->checkAction(this);

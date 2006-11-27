@@ -119,7 +119,7 @@ bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
         return m_delegate->setKeyBinding( item, cut );
 
 
-    if( !cut.isNull() )
+    if( !cut.isEmpty() )
     {
         for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
             if( it.value() == cut )  return false;
@@ -136,10 +136,10 @@ void KCompletionBase::useGlobalKeyBindings()
     }
     
     m_keyMap.clear();
-    m_keyMap.insert( TextCompletion, 0 );
-    m_keyMap.insert( PrevCompletionMatch, 0 );
-    m_keyMap.insert( NextCompletionMatch, 0 );
-    m_keyMap.insert( SubstringCompletion, 0 );
+    m_keyMap.insert( TextCompletion, KShortcut() );
+    m_keyMap.insert( PrevCompletionMatch, KShortcut() );
+    m_keyMap.insert( NextCompletionMatch, KShortcut() );
+    m_keyMap.insert( SubstringCompletion, KShortcut() );
 }
 
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )

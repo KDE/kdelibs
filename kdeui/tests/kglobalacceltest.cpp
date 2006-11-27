@@ -15,7 +15,7 @@ int main( int argc, char **argv )
 
     KAction* action = new KAction(coll, "test");
     action->setGlobalShortcutAllowed(true);
-    action->setGlobalShortcut(Qt::META + Qt::Key_F5);
+    action->setGlobalShortcut(KShortcut(Qt::META + Qt::Key_F5));
 
     QObject::connect(action, SIGNAL(triggered(bool)), &app, SLOT(quit()));
 

@@ -104,10 +104,10 @@ int main(int argc, char *argv[])
     KAction *kprint = new KAction(KIcon("print"),  "Print", doc->actionCollection(), "print" );
     QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT( print() ));
     kprint->setEnabled(true);
-    KToggleAction *ta = new KToggleAction( "Navigable", "editclear", 0, doc->actionCollection(), "navigable" );
+    KToggleAction *ta = new KToggleAction( "Navigable", "editclear", KShortcut(), doc->actionCollection(), "navigable" );
     ta->setChecked(doc->isCaretMode());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleNavigable(bool) ));
-    ta = new KToggleAction( "Editable", "edit", 0, doc->actionCollection(), "editable" );
+    ta = new KToggleAction( "Editable", "edit", KShortcut(), doc->actionCollection(), "editable" );
     ta->setChecked(doc->isEditable());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleEditable(bool) ));
     toplevel->guiFactory()->addClient( doc );

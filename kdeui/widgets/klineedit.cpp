@@ -803,7 +803,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         {
             // Handles completion.
             KShortcut cut;
-            if ( keys[TextCompletion].isNull() )
+            if ( keys[TextCompletion].isEmpty() )
                 cut = KStdAccel::shortcut(KStdAccel::TextCompletion);
             else
                 cut = keys[TextCompletion];
@@ -832,7 +832,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         {
             // Handles previous match
             KShortcut cut;
-            if ( keys[PrevCompletionMatch].isNull() )
+            if ( keys[PrevCompletionMatch].isEmpty() )
                 cut = KStdAccel::shortcut(KStdAccel::PrevCompletion);
             else
                 cut = keys[PrevCompletionMatch];
@@ -847,7 +847,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
 
             // Handles next match
-            if ( keys[NextCompletionMatch].isNull() )
+            if ( keys[NextCompletionMatch].isEmpty() )
                 cut = KStdAccel::shortcut(KStdAccel::NextCompletion);
             else
                 cut = keys[NextCompletionMatch];
@@ -866,7 +866,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( compObj() )
         {
             KShortcut cut;
-            if ( keys[SubstringCompletion].isNull() )
+            if ( keys[SubstringCompletion].isEmpty() )
                 cut = KStdAccel::shortcut(KStdAccel::SubstringCompletion);
             else
                 cut = keys[SubstringCompletion];
@@ -1222,7 +1222,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     int key = e->key() | e->modifiers();
     KeyBindingMap keys = getKeyBindings();
 
-    if (keys[TextCompletion].isNull())
+    if (keys[TextCompletion].isEmpty())
         scKey = KStdAccel::shortcut(KStdAccel::TextCompletion);
     else
         scKey = keys[TextCompletion];
@@ -1230,7 +1230,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (scKey.contains( key ))
         return true;
 
-    if (keys[NextCompletionMatch].isNull())
+    if (keys[NextCompletionMatch].isEmpty())
         scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
     else
         scKey = keys[NextCompletionMatch];
@@ -1238,7 +1238,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (scKey.contains( key ))
         return true;
 
-    if (keys[PrevCompletionMatch].isNull())
+    if (keys[PrevCompletionMatch].isEmpty())
         scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
     else
         scKey = keys[PrevCompletionMatch];

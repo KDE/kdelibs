@@ -38,11 +38,11 @@ namespace KStdAccel
 struct KStdAccelInfo
 {
 	StdAccel id;
-	const char* psName;
-	const char* psDesc;
+	const char* name;
+	const char* description;
 	int cutDefault, cutDefault2;
 	KShortcut cut;
-	bool bInitialized;
+	bool isInitialized;
 };
 
 #define CTRL(x) Qt::CTRL+Qt::Key_##x
@@ -54,9 +54,12 @@ struct KStdAccelInfo
     the "standard" accelerators. Each enum value from StdAccel
     should appear in this table.
 */
+// STUFF WILL BREAK IF YOU DON'T READ THIS!!!
+// Read the comments of the big enum in kstdaccel.h before you change anything!
 static KStdAccelInfo g_infoStdAccel[] =
 {
-	{AccelNone,            "Group:File", I18N_NOOP("File"), 0, 0, KShortcut(), false },
+//Group File,
+	{AccelNone,            0, 0, 0, 0, KShortcut(), false },
 	{ Open,                I18N_NOOP("Open"),  0,    CTRL(O), 0, KShortcut(), false },
 	{ New,                 I18N_NOOP("New"),   0,    CTRL(N), 0, KShortcut(), false },
 	{ Close,               I18N_NOOP("Close"), 0,    CTRL(W), CTRL(Escape), KShortcut(), false },
@@ -64,7 +67,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Print,               I18N_NOOP("Print"), 0,    CTRL(P), 0, KShortcut(), false },
 	{ Quit,                I18N_NOOP("Quit"),  0,    CTRL(Q), 0, KShortcut(), false },
 
-	{AccelNone,            "Group:Edit", I18N_NOOP("Edit"), 0, 0, KShortcut(), false },
+//Group Edit
 	{ Undo,                I18N_NOOP("Undo"),  0,           CTRL(Z), 0, KShortcut(), false },
 	{ Redo,                I18N_NOOP("Redo"),  0,           CTRLSHIFT(Z), 0, KShortcut(), false },
 	{ Cut,                 I18N_NOOP("Cut"),   0,           CTRL(X), SHIFT(Delete), KShortcut(), false },
@@ -82,37 +85,38 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ FindPrev,            "FindPrev", I18N_NOOP("Find Prev"), SHIFT(F3), 0, KShortcut(), false },
 	{ Replace,             I18N_NOOP("Replace"), 0,  CTRL(R), 0, KShortcut(), false },
 	
-	{AccelNone,            "Group:Navigation", I18N_NOOP("Navigation"), 0, 0, KShortcut(), false },
+//Group Navigation
 	{ Home,                I18N_NOOP2("Opposite to End","Home"), 0, CTRL(Home), Qt::Key_HomePage, KShortcut(), false },
 	{ End,                 I18N_NOOP("End"), 0,      CTRL(End), 0, KShortcut(), false },
-	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP("Beginning of Line"), Qt::Key_Home, 0, KShortcut(), false},
-	{ EndOfLine,           "EndOfLine", I18N_NOOP("End of Line"), Qt::Key_End, 0, KShortcut(), false},
 	{ Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
 	{ Next,                I18N_NOOP2("Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
-
-	{ GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), CTRL(G), 0, KShortcut(), false },
-	{ AddBookmark,         "AddBookmark", I18N_NOOP("Add Bookmark"), CTRL(B), 0, KShortcut(), false },
-	{ ZoomIn,              "ZoomIn", I18N_NOOP("Zoom In"), CTRL(Plus), 0, KShortcut(), false },
-	{ ZoomOut,             "ZoomOut", I18N_NOOP("Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
 
 	{ Up,                  I18N_NOOP("Up"), 0,       ALT(Up), 0, KShortcut(), false },
 	{ Back,                I18N_NOOP("Back"), 0,     ALT(Left), Qt::Key_Back, KShortcut(), false },
 	{ Forward,             I18N_NOOP("Forward"), 0,  ALT(Right), Qt::Key_Forward, KShortcut(), false },
 	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, Qt::Key_Refresh, KShortcut(), false },
+
+	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP("Beginning of Line"), Qt::Key_Home, 0, KShortcut(), false},
+	{ EndOfLine,           "EndOfLine", I18N_NOOP("End of Line"), Qt::Key_End, 0, KShortcut(), false},
+	{ GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), CTRL(G), 0, KShortcut(), false },
+	{ BackwardWord,        "BackwardWord", I18N_NOOP("Backward Word"), CTRL(Left), 0, KShortcut(), false },
+	{ ForwardWord,         "ForwardWord", I18N_NOOP("Forward Word"), CTRL(Right), 0, KShortcut(), false },
+
+	{ AddBookmark,         "AddBookmark", I18N_NOOP("Add Bookmark"), CTRL(B), 0, KShortcut(), false },
+	{ ZoomIn,              "ZoomIn", I18N_NOOP("Zoom In"), CTRL(Plus), 0, KShortcut(), false },
+	{ ZoomOut,             "ZoomOut", I18N_NOOP("Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
+	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
 	
 	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, KShortcut(), false },
 	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"),CTRL(M), 0, KShortcut(), false },
-	{ BackwardWord,        "BackwardWord", I18N_NOOP("Backward Word"), CTRL(Left), 0, KShortcut(), false },
-	{ ForwardWord,         "ForwardWord", I18N_NOOP("Forward Word"), CTRL(Right), 0, KShortcut(), false },
 	{ TabNext,             I18N_NOOP("Activate Next Tab"), 0, CTRL(Period), CTRL(BracketRight), KShortcut(), false },
 	{ TabPrev,             I18N_NOOP("Activate Previous Tab"), 0, CTRL(Comma), CTRL(BracketLeft), KShortcut(), false },
-	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
 
-	{AccelNone,            "Group:Help",      I18N_NOOP("Help"),        0,          0, KShortcut(), false },
+//Group Help
 	{ Help,                I18N_NOOP("Help"), 0,                        Qt::Key_F1, 0, KShortcut(), false },
 	{ WhatsThis,           "WhatsThis",       I18N_NOOP("What's This"), SHIFT(F1),  0, KShortcut(), false },
 
-	{AccelNone,            "Group:TextCompletion", I18N_NOOP("Text Completion"),           0,          0, KShortcut(), false },
+//Group TextCompletion
 	{ TextCompletion,      "TextCompletion",       I18N_NOOP("Text Completion"),           CTRL(E),    0, KShortcut(), false },
 	{ PrevCompletion,      "PrevCompletion",       I18N_NOOP("Previous Completion Match"), CTRL(Up),   0, KShortcut(), false },
 	{ NextCompletion,      "NextCompletion",       I18N_NOOP("Next Completion Match"),     CTRL(Down), 0, KShortcut(), false },
@@ -120,22 +124,22 @@ static KStdAccelInfo g_infoStdAccel[] =
 	
 	{ RotateUp,            "RotateUp",   I18N_NOOP("Previous Item in List"), Qt::Key_Up,   0, KShortcut(), false },
 	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"),     Qt::Key_Down, 0, KShortcut(), false },
+
+//dummy entry to catch simple off-by-one errors. Insert new entries before this line.
 	{ AccelNone,            0, 0, 0, 0, KShortcut(), false }
 };
 
-/** Search for the KStdAccelInfo object associated with the given @p id. */
-static KStdAccelInfo* infoPtr( StdAccel id )
+
+/** Search for the KStdAccelInfo object associated with the given @p id. 
+    Return a dummy entry with no name and an empty shortcut if @p id is invalid.
+*/
+static KStdAccelInfo *guardedStdAccelInfo( StdAccel id )
 {
-	if( id != AccelNone ) {
-		// Linear search. Changing the data structure doesn't seem possible
-		// (since we need groups for the config stuff), but maybe a little
-		// additional hashtable wouldn't hurt.
-		for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
-			if( g_infoStdAccel[i].id == id )
-				return &g_infoStdAccel[i];
-		}
-	}
-	return 0;
+	if ( id >= sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo) || id < 0  ) {
+		kWarning(125) << "KStdAccel: id not found!" << endl;
+		return &g_infoStdAccel[AccelNone];
+	} else
+		return &g_infoStdAccel[id];
 }
 
 /** Initialize the accelerator @p id by checking if it is overridden
@@ -145,98 +149,85 @@ static KStdAccelInfo* infoPtr( StdAccel id )
 */
 static void initialize( StdAccel id )
 {
-	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
-	KStdAccelInfo* pInfo = infoPtr( id );
+	KStdAccelInfo *info = guardedStdAccelInfo( id );
 
-	if( !pInfo ) {
-		kWarning(125) << "KStdAccel: id not found!" << endl; // -- ellis
-		return;
-	}
+	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
 
 #ifdef Q_WS_X11
 	// Code within this block breaks if we aren't running in GUI mode.
-	if( QX11Info::display() && cg.hasKey( pInfo->psName ) ) {
+	if( QX11Info::display() && cg.hasKey( info->name ) ) {
 #else
-	if( cg.hasKey( pInfo->psName ) ) {
+	if( cg.hasKey( info->name ) ) {
 #endif	
-		QString s = cg.readEntry( pInfo->psName );
+		QString s = cg.readEntry( info->name );
 		if( s != "none" )
-			pInfo->cut.init( s );
+			info->cut = KShortcut( s );
 		else
-			pInfo->cut.clear();
+			info->cut.clear();
 	} else
-		pInfo->cut = shortcutDefault( id );
-	pInfo->bInitialized = true;
+		info->cut = shortcutDefault( id );
+	
+	info->isInitialized = true;
 }
 
-void saveShortcut(StdAccel id, const KShortcut& newShortcut)
+void saveShortcut(StdAccel id, const KShortcut &newShortcut)
 {
-	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
-	KStdAccelInfo* pInfo = infoPtr( id );
-
-	if( !pInfo ) {
-		kWarning(125) << "KStdAccel: id not found!" << endl; // -- ellis
+	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	if( info->id == AccelNone )
 		return;
-	}
 	
-	pInfo->cut = newShortcut;
+	KConfigGroup cg( KGlobal::config(), "Shortcuts" );	
 	
+	info->cut = newShortcut;
 	bool sameAsDefault = (newShortcut == shortcutDefault( id ));
 	
 	if (sameAsDefault)
-		if( cg.hasKey( pInfo->psName ) )
-			cg.deleteEntry( pInfo->psName );
+		if( cg.hasKey( info->name ) )
+			cg.deleteEntry( info->name );
 		else
 			return;
 
-	cg.writeEntry( pInfo->psName, pInfo->cut.toStringInternal() );
+	cg.writeEntry( info->name, info->cut.toStringInternal() );
 }
 
 QString name( StdAccel id )
 {
-	KStdAccelInfo* pInfo = infoPtr( id );
-	if( !pInfo )
-		return QString();
-	return pInfo->psName;
+	return guardedStdAccelInfo( id )->name;
 }
 
 QString label( StdAccel id )
 {
-	KStdAccelInfo* pInfo = infoPtr( id );
-	if( !pInfo )
-		return QString();
-	return i18n((pInfo->psDesc) ? pInfo->psDesc : pInfo->psName);
+	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	return i18n((info->description) ? info->description : info->name);
 }
 
 // TODO: Add psWhatsThis entry to KStdAccelInfo
 QString whatsThis( StdAccel /*id*/ )
 {
-//	KStdAccelInfo* pInfo = infoPtr( id );
-//	if( pInfo && pInfo->psWhatsThis )
-//		return i18n(pInfo->psWhatsThis);
+//	KStdAccelInfo* info = guardedStdAccelInfo( id );
+//	if( info && info->whatsThis )
+//		return i18n(info->whatsThis);
 //	else
 		return QString();
 }
 
-const KShortcut& shortcut( StdAccel id )
+const KShortcut &shortcut( StdAccel id )
 {
-	KStdAccelInfo* pInfo = infoPtr( id );
-	if( !pInfo )
-		return KShortcut::null();
+	KStdAccelInfo *info = guardedStdAccelInfo( id );
 
-	if( !pInfo->bInitialized )
+	if( !info->isInitialized )
 		initialize( id );
 
-	return pInfo->cut;
+	return info->cut;
 }
 
-StdAccel findStdAccel( const QKeySequence& seq )
+StdAccel findStdAccel( const QKeySequence &seq )
 {
 	if( !seq.isEmpty() ) {
-		for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
+		for( uint i = 0; i < sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo); i++ ) {
 			StdAccel id = g_infoStdAccel[i].id;
 			if( id != AccelNone ) {
-				if( !g_infoStdAccel[i].bInitialized )
+				if( !g_infoStdAccel[i].isInitialized )
 					initialize( id );
 				if( g_infoStdAccel[i].cut.contains( seq ) )
 					return id;
@@ -246,10 +237,10 @@ StdAccel findStdAccel( const QKeySequence& seq )
 	return AccelNone;
 }
 
-StdAccel findStdAccel( const char* keyName )
+StdAccel findStdAccel( const char *keyName )
 {
-	for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ )
-		if (qstrcmp(g_infoStdAccel[i].psName, keyName))
+	for( uint i = 0; i < sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo); i++ )
+		if (qstrcmp(g_infoStdAccel[i].name, keyName))
 			return g_infoStdAccel[i].id;
 
 	return AccelNone;
@@ -258,22 +249,9 @@ StdAccel findStdAccel( const char* keyName )
 KShortcut shortcutDefault( StdAccel id )
 {
 	KShortcut cut;
+	KStdAccelInfo *info = guardedStdAccelInfo( id );
 
-	KStdAccelInfo* pInfo = infoPtr( id );
-	if( pInfo ) {
-		KStdAccelInfo& info = *pInfo;
-		QKeySequence key2;
-
-		cut.init( (info.cutDefault) ) ;
-
-		if( info.cutDefault2 )
-			key2 = QKeySequence(info.cutDefault2);
-
-		if( key2.count() )
-			cut.append( key2 );
-	}
-
-	return cut;
+	return KShortcut( info->cutDefault, info->cutDefault2 );
 }
 
 const KShortcut& open()                  { return shortcut( Open ); }

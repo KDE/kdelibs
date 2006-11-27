@@ -34,45 +34,49 @@ class QKeyEvent;
  * so do not hardcode the default behavior.
  */
 namespace KStdAccel
-{
-  // Always add new std-accels to the end of this enum, never in the middle!
+{ // STUFF WILL BREAK IF YOU DON'T READ THIS!!!
+  /*
+   *Always add new std-accels to the end of this enum, never in the middle!
+   *Don't forget to add the corresponding entries in g_infoStdAccel[] in kstdaccel.cpp, too.
+   *Values of elements here and positions of the corresponding entries in
+   *the big array g_infoStdAccel[] ABSOLUTELY MUST BE THE SAME.
+   * !!!    !!!!   !!!!!    !!!!
+   *    !!!!    !!!     !!!!    !!!!
+   */
+
   /**
    * Defines the identifier of all standard accelerators.
    */
   enum StdAccel {
-    AccelNone,
+    //C++ requires that the value of an enum symbol be one more than the previous one.
+	//This means that everything will be well-ordered from here on.
+    AccelNone=0,
     // File menu
     Open, New, Close, Save,
     // The Print item
     Print,
     Quit,
     // Edit menu
-    Undo, Redo, Cut, Copy, Paste, SelectAll, Deselect, DeleteWordBack,
-    DeleteWordForward, Find, FindNext, FindPrev, Replace,
+    Undo, Redo, Cut, Copy, Paste,     PasteSelection,
+    SelectAll, Deselect, DeleteWordBack, DeleteWordForward,
+    Find, FindNext, FindPrev, Replace,
     // Navigation
-    Home, End, Prior, Next, GotoLine, AddBookmark, ZoomIn, ZoomOut,
-    Up, Back, Forward, Reload, PopupMenuContext, ShowMenubar,
+    Home, End, Prior, Next,
+    Up, Back, Forward, Reload,
+    // Text Navigation
+    BeginningOfLine, EndOfLine, GotoLine,
+    BackwardWord, ForwardWord,
+    // View parameters
+    AddBookmark, ZoomIn, ZoomOut, FullScreen,
+    PopupMenuContext, ShowMenubar,
+    // Tabular navigation
+    TabNext, TabPrev,
     // Help menu
     Help, WhatsThis,
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
+
     RotateUp, RotateDown,
-
-    // Tabular navigation
-    TabNext,
-    TabPrev,
-
-    // Full screen mode
-    FullScreen,
-
-    // Text Navigation
-    BackwardWord,
-    ForwardWord,
-    BeginningOfLine,
-    EndOfLine,
-
-    PasteSelection
-
   };
 
   /**

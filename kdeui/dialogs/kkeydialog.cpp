@@ -94,7 +94,6 @@ class KKeyChooserItem : public QTreeWidgetItem
 
  private:
 	void checkModified();
-	bool checkChanged(const KShortcut& cut1, const KShortcut& cut2, int sequence) const;
 
 	KAction* m_action;
 	bool m_modified;
@@ -333,14 +332,14 @@ void KKeyChooser::updateButtons()
 		d->ui->globalDefault->setText( i18nc("Default (default shortcut)", "De&fault (%1)" , globalKeyStrDef.isEmpty() ? i18n("none") : globalKeyStrDef) );
 
 		// Select the appropriate radio button.
-		if (pItem->shortcut().isNull())
+		if (pItem->shortcut().isEmpty())
 			d->ui->localNone->setChecked( true );
 		else if (pItem->shortcut() == pItem->defaultShortcut())
 			d->ui->localDefault->setChecked( true );
 		else
 			d->ui->localCustom->setChecked( true );
 
-		if (pItem->globalShortcut().isNull())
+		if (pItem->globalShortcut().isEmpty())
 			d->ui->globalNone->setChecked( true );
 		else if (pItem->globalShortcut() == pItem->defaultGlobalShortcut())
 			d->ui->globalDefault->setChecked( true );
@@ -350,10 +349,10 @@ void KKeyChooser::updateButtons()
 		// Enable buttons if this key is configurable.
 		// The 'Default Key' button must also have a default key.
 		d->ui->localGroup->setEnabled( pItem->isConfigurable() );
-		d->ui->localDefault->setEnabled( pItem->isConfigurable() && pItem->defaultShortcut().count() != 0 );
+		d->ui->localDefault->setEnabled( pItem->isConfigurable() && !pItem->defaultShortcut().isEmpty() );
 
 		d->ui->globalGroup->setEnabled( pItem->action()->globalShortcutAllowed() );
-		d->ui->globalDefault->setEnabled( pItem->action()->globalShortcutAllowed() && pItem->defaultGlobalShortcut().count() != 0 );
+		d->ui->globalDefault->setEnabled( pItem->action()->globalShortcutAllowed() && !pItem->defaultGlobalShortcut().isEmpty() );
 	}
 }
 
@@ -448,7 +447,7 @@ void KKeyChooser::captureCurrentItem()
 
 void KKeyChooser::slotLocalCapturedShortcut( const KShortcut& cut )
 {
-	if( cut.isNull() )
+	if( cut.isEmpty() )
 		slotLocalNoKey();
 	else
 		setLocalShortcut( cut );
@@ -456,7 +455,7 @@ void KKeyChooser::slotLocalCapturedShortcut( const KShortcut& cut )
 
 void KKeyChooser::slotGlobalCapturedShortcut( const KShortcut& cut )
 {
-	if( cut.isNull() )
+	if( cut.isEmpty() )
 		slotGlobalNoKey();
 	else
 		setGlobalShortcut( cut );
@@ -469,10 +468,7 @@ void KKeyChooser::setLocalShortcut( const KShortcut& cut )
 	if( !pItem )
 		return;
 
-	foreach (const QKeySequence& seq, cut.sequences()) {
-		if (seq.isEmpty())
-			continue;
-
+	foreach (const QKeySequence& seq, cut.toList()) {
 		int key = seq[0];
 
 		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
@@ -502,7 +498,7 @@ void KKeyChooser::setGlobalShortcut( const KShortcut& cut )
 	if( !pItem )
 		return;
 
-	foreach (const QKeySequence& seq, cut.sequences()) {
+	foreach (const QKeySequence& seq, cut.toList()) {
 		if (seq.isEmpty())
 			continue;
 
@@ -530,22 +526,39 @@ void KKeyChooser::setGlobalShortcut( const KShortcut& cut )
 
 // Returns iSeq index if cut2 has a sequence of equal or higher priority to a sequence in cut.
 // else -1
-static int keyConflict( const KShortcut& cut, const KShortcut& cut2 )
+static QKeySequence keyConflict( const KShortcut& cut, const KShortcut& cut2 )
 {
-	for( int iSeq = 0; iSeq < cut.count(); iSeq++ ) {
-		for( int iSeq2 = 0; iSeq2 < cut2.count(); iSeq2++ ) {
-			if( cut.seq(iSeq) == cut2.seq(iSeq2) )
-				return iSeq;
+/*	QList<QKeySequence> sl = seqList(cut);
+	QList<QKeySequence> sl2 = seqList(cut2);
+	for( int iSeq = 0; iSeq < sl.count(); iSeq++ ) {
+		for( int iSeq2 = 0; iSeq2 < sl2.count(); iSeq2++ ) {
+			if( sl[iSeq] == sl2[iSeq2] )
+				return sl[iSeq];
 		}
 	}
-	return -1;
+	return QKeySequence();*/
+
+//looks stupid but probably runs faster
+	const QKeySequence &cPri = cut.primary();
+	const QKeySequence &cAlt = cut.alternate();
+	const QKeySequence &c2Pri = cut2.primary();
+	const QKeySequence &c2Alt = cut2.alternate();
+	if (!cPri.isEmpty()) {
+		if (cPri == c2Pri || cPri == c2Alt)
+			return cPri;
+	}
+	if (!cAlt.isEmpty()) {
+		if (cAlt == c2Pri || cAlt == c2Alt)
+			return cAlt;
+	}
+	return QKeySequence();
 }
 
 // Removes the sequences in cut2 from cut1
-static void removeFromShortcut(  KShortcut & cut1, const KShortcut &cut2)
+static void removeFromShortcut( KShortcut & cut1, const KShortcut &cut2 )
 {
-	for( int iSeq2 = 0; iSeq2 < cut2.count(); iSeq2++ )
-		cut1.remove(cut2.seq(iSeq2));
+	cut1.remove(cut2.primary());
+	cut1.remove(cut2.alternate());
 }
 
 bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
@@ -602,10 +615,10 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 	for( QTreeWidgetItemIterator it( d->ui->list ); *it; ++it ) {
 		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(*it);
 		if( pItem2 && pItem2 != ignoreItem ) {
-			int iSeq = keyConflict( cut, pItem2->shortcut() );
-			if( iSeq > -1 ) {
+			QKeySequence conflict = keyConflict( cut, pItem2->shortcut() );
+			if( !conflict.isEmpty() ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), WindowAction, this ))
+					if( !promptForReassign( conflict, pItem2->actionName(), WindowAction, this ))
 						return true;
 					// else remove the shortcut from it
 					KShortcut cut2 = pItem2->shortcut();
@@ -615,10 +628,10 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 					emit keyChange();
 				}
 			}
-			iSeq = keyConflict( cut, pItem2->globalShortcut() );
-			if( iSeq > -1 ) {
+			conflict = keyConflict( cut, pItem2->globalShortcut() );
+			if( !conflict.isEmpty() ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), pItem2->actionName(), WindowAction, this ))
+					if( !promptForReassign( conflict, pItem2->actionName(), WindowAction, this ))
 						return true;
 					// else remove the shortcut from it
 					KShortcut cut2 = pItem2->globalShortcut();
@@ -636,10 +649,10 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent )
 {
 	// For each key sequence in the shortcut,
-	foreach (const QKeySequence& seq, cut.sequences()) {
+	foreach (const QKeySequence& seq, cut.toList()) {
 		KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
 		if( id != KStdAccel::AccelNone
-			&& keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
+			&& !keyConflict( cut, KStdAccel::shortcut( id ) ).isEmpty() ) {
 			if( bWarnUser ) {
 				if( !promptForReassign( seq, KStdAccel::label(id), WidgetAction, parent ))
 					return true;
@@ -653,11 +666,11 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 bool KKeyChooser::checkGlobalShortcutsConflictInternal( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction )
 {
 	foreach (KAction* action, KGlobalAccel::self()->actionsWithGlobalShortcut()) {
-		int iSeq = keyConflict( cut, action->globalShortcut() );
-		if( iSeq > -1 ) {
+		QKeySequence conflict = keyConflict( cut, action->globalShortcut() );
+		if( !conflict.isEmpty() ) {
 			if( ignoreAction.isEmpty() || action->objectName() != ignoreAction ) {
 				if( bWarnUser ) {
-					if( !promptForReassign( cut.seq(iSeq), action->objectName(), GlobalAction, parent ))
+					if( !promptForReassign( conflict, action->objectName(), GlobalAction, parent ))
 						return true;
 					removeGlobalShortcut( action, dynamic_cast< KKeyChooser* >( parent ), cut);
 				}
@@ -799,10 +812,16 @@ QVariant KKeyChooserItem::data(int column, int role) const
 		case 2:
 			switch (role) {
 				case Qt::DisplayRole:
-					if (column - 1 < m_newLocalShortcut.count())
-						return m_newLocalShortcut.seq(column - 1).toString();
+					/*if (column - 1 < m_newLocalShortcut.count())
+						//return m_newLocalShortcut.seq(column - 1).toString();
+						return m_newLocalShortcut.toString();*/
+					//H4X
+					/*else
+						return "loc:none";*/
+					//else
+						return shortcut().toString();
 					break;
-				case Qt::FontRole:
+/*				case Qt::FontRole:
 					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1)) {
 						QFont parentFont = treeWidget()->font();
 						parentFont.setBold(true);
@@ -811,7 +830,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 					break;
 				case Qt::ForegroundRole:
 					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1))
-						return QColor(Qt::blue);
+					return QColor(Qt::blue);*/
 					break;
 			}
 			break;
@@ -819,10 +838,15 @@ QVariant KKeyChooserItem::data(int column, int role) const
 		case 3:
 			switch (role) {
 				case Qt::DisplayRole:
-					if (m_newGlobalShortcut.count())
-						return m_newGlobalShortcut.seq(0).toString();
+					if (!m_newGlobalShortcut.isEmpty())
+						return m_newGlobalShortcut.toString();
+					//H4X
+					/*else
+						return "glob:none";*/
+					/*else
+						return globalShortcut().seq(column - 1).toString();*/
 					break;
-				case Qt::FontRole:
+/*				case Qt::FontRole:
 					if (checkChanged(m_newGlobalShortcut, m_action->globalShortcut(), 0)) {
 						QFont parentFont = treeWidget()->font();
 						parentFont.setBold(true);
@@ -835,7 +859,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 					break;
 				case Qt::BackgroundRole:
 					if (!m_action->globalShortcutAllowed())
-						return QColor(Qt::gray);
+					return QColor(Qt::gray);*/
 					break;
 			}
 			break;
@@ -859,9 +883,9 @@ void KKeyChooserItem::commitChanges()
 {
 	if( m_modified ) {
 		if ( m_newLocalShortcut != m_action->shortcut() )
-			m_action->setShortcut( m_newLocalShortcut, KAction::CustomShortcut );
+			m_action->setShortcut( m_newLocalShortcut, KAction::ActiveShortcut );
 		if ( m_newGlobalShortcut != m_action->globalShortcut() )
-			m_action->setGlobalShortcut( m_newGlobalShortcut, KAction::CustomShortcut );
+			m_action->setGlobalShortcut( m_newGlobalShortcut, KAction::ActiveShortcut );
 	}
 }
 
@@ -979,11 +1003,6 @@ void KKeyChooserItem::setGlobalShortcut( const KShortcut & cut )
 {
 	m_newGlobalShortcut = cut;
 	checkModified();
-}
-
-bool KKeyChooserItem::checkChanged( const KShortcut & cut1, const KShortcut & cut2, int sequence ) const
-{
-	return cut1.seq(sequence) != cut2.seq(sequence);
 }
 
 KAction * KKeyChooserItem::action( ) const

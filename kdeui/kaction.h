@@ -117,6 +117,16 @@ class KIcon;
  * @li Add the action into whatever GUI element you want.  Typically,
  *      this will be a menu or toolbar.
  *
+ * \section kaction_general The kinds of shortcuts
+ *
+ * Local shortcuts are active
+ * in their context, global shortcus are active everywhere, usually even if
+ * another program has focus.
+ * 
+ * @li Active shortcuts trigger a KAction if activated.
+ * @li Default shortcuts are what the active shortcuts revert to if the user chooses
+ * to reset shortcuts to default.
+ *
  * \section kaction_example Detailed Example
  *
  * Here is an example of enabling a "New [document]" action
@@ -158,7 +168,11 @@ class KIcon;
  * when you have finished with it - the destructor takes care of all
  * of the cleanup.
  *
- * Note: if you are using a "standard" action like "new", "paste",
+ * \note calling QAction::setShortcut() on a KAction may lead to unexpected
+ * behavior. There is nothing we can do about it because QAction::setShortcut()
+*  is not virtual.
+ *
+ * \note if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
  * please use the methods in the KStdAction class rather than
  * defining your own.
@@ -171,23 +185,19 @@ class KIcon;
  * does that for you.
  *
  * @see KStdAction
+ * \todo test changes!
  */
 class KDEUI_EXPORT KAction : public QWidgetAction
 {
   Q_OBJECT
 
-  // Needed for save/load of shortcut - as XMLGui sets properties from XML attributes
-  // FIXME KAction port : replace (this hides QAction::shortcut)
-  Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
-
-  Q_PROPERTY( KShortcut customShortcut READ customShortcut WRITE setCustomShortcut )
+  Q_PROPERTY( KShortcut activeShortcut READ activeShortcut WRITE setActiveShortcut )
   Q_PROPERTY( KShortcut defaultShortcut READ defaultShortcut WRITE setDefaultShortcut )
   Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
   Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
-  Q_PROPERTY( KShortcut customGlobalShortcut READ customGlobalShortcut WRITE setCustomGlobalShortcut )
+  Q_PROPERTY( KShortcut activeGlobalShortcut READ activeGlobalShortcut WRITE setActiveGlobalShortcut )
   Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
-  Q_PROPERTY( QString shortcutText READ shortcutText WRITE setShortcutText )
   Q_PROPERTY( bool hasIcon READ hasIcon )
   Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
   Q_PROPERTY( bool plugged READ isPlugged )
@@ -195,14 +205,16 @@ class KDEUI_EXPORT KAction : public QWidgetAction
 
 public:
     /**
-     * A simple enumeration to define the type of shortcut, whether default or customized.
+     * A simple enumeration to define the type of shortcut, default (revert to this if
+     * the user presses "default") or active, i.e. comes in effect immediately.
      * Used primarily so setShortcut() and setGlobalShortcut() can be made to also set the
      * default shortcut by default.
      */
     enum ShortcutType {
-      /// The shortcut is a custom shortcut
-      CustomShortcut = 0x1,
-      /// The shortcut is a default shortcut
+      /// The shortcut will immediately become active but may be reset to "default".
+      ActiveShortcut = 0x1,
+      /// The shortcut is a default shortcut - becomes active when somebody decides to
+      /// reset shortcuts to default.
       DefaultShortcut = 0x2
     };
     Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
@@ -365,22 +377,27 @@ public:
     KActionCollection* parentCollection() const;
 
     /**
-     * Get the kde shortcut for this action.
+     * Get the shortcut for this action.
      *
      * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts
-     * per action.
+     * per action. The first and second shortcut as reported by shortcuts() will be the
+     * primary and alternate shortcut of the shortcut returned.
      *
-     * \param types the type of shortcut to return.  Should both be specified, only the 
-     *             custom shortcut will be returned.  Defaults to the custom shortcut, if one exists.
+     * \param types the type of shortcut to return. Should both be specified, only the 
+     *             active shortcut will be returned. Defaults to the active shortcut, if one exists.
+     * \sa shortcuts()
      */
-    const KShortcut& shortcut(ShortcutTypes types = CustomShortcut) const;
+    const KShortcut& shortcut(ShortcutTypes types = ActiveShortcut) const;
 
     /**
-     * Get the text version of the kde shortcut for this action.
-     *
-     * \sa shortcut()
+     * Convenience function to retrieve the default shortcut for this action.
      */
-    QString shortcutText() const;
+    inline const KShortcut& defaultShortcut() const { return shortcut(DefaultShortcut); }
+
+    /**
+     * Convenience function to retrieve the active shortcut for this action.
+     */
+    inline const KShortcut& activeShortcut() const { return shortcut(ActiveShortcut); }
 
     /**
      * Set the shortcut for this action.
@@ -389,32 +406,29 @@ public:
      * per action.
      *
      * \param shortcut shortcut(s) to use for this action in its specified shortcutContext()
-     * \param type type of shortcut to be set, whether the custom shortcut, the default shortcut,
-     *            or both (the default).
+     * \param type type of shortcut to be set: active shortcut,
+     *  default shortcut, or both (default argument value).
      */
-    void setShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(CustomShortcut | DefaultShortcut));
+    void setShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
 
     /**
      * \overload void setShortcut(const KShortcut& shortcut)
      *
-     * Allows for a KShortcut to be created from text before assignment to this action's shortcut.
+     * Set the primary shortcut only for this action.
+     *
+     * This function is there to explicitly override QAction::setShortcut(const QKeySequence&).
+     * QAction::setShortcut() will bypass everything in KAction and may lead to unexpected behavior.
+     *
+     * \param shortcut shortcut(s) to use for this action in its specified shortcutContext()
+     * \param type type of shortcut to be set: active shortcut,
+     *  default shortcut, or both (default argument value).
      */
-    void setShortcutText(const QString& shortcutText);
+    void setShortcut(const QKeySequence& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
 
     /**
-     * Convenience function to retrieve the custom shortcut for this action.
+     * Convenience function to set the active shortcut for this action.
      */
-    inline const KShortcut& customShortcut() const { return shortcut(CustomShortcut); }
-
-    /**
-     * Convenience function to set the custom shortcut for this action.
-     */
-    inline void setCustomShortcut(const KShortcut& shortcut) { setShortcut(shortcut, CustomShortcut); }
-
-    /**
-     * Convenience function to retrieve the default shortcut for this action.
-     */
-    inline const KShortcut& defaultShortcut() const { return shortcut(DefaultShortcut); }
+    inline void setActiveShortcut(const KShortcut& shortcut) { setShortcut(shortcut, DefaultShortcut); }
 
     /**
      * Convenience function to set the default shortcut for this action.
@@ -440,13 +454,13 @@ public:
      * for them to be activated.
      *
      * \param type the type of shortcut to be returned. Should both be specified, only the 
-     *             custom shortcut will be returned.  Defaults to the custom shortcut,
+     *             active shortcut will be returned.  Defaults to the active shortcut,
      *             if one exists.
      *
      * \sa KGlobalAccel
      * \sa setGlobalShortcut()
      */
-    const KShortcut& globalShortcut(ShortcutTypes type = CustomShortcut) const;
+    const KShortcut& globalShortcut(ShortcutTypes type = ActiveShortcut) const;
 
     /**
      * Assign a global shortcut for this action. Global shortcuts
@@ -455,34 +469,34 @@ public:
      * for them to be activated.
      *
      * \param shortcut shortcut(s) to grab as global accelerators.
-     * \param type the type of shortcut to be set, whether the custom shortcut, the default shortcut,
+     * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
      *            or both (the default).
      *
      * \note For convenience, passing a shortcut also sets the default (as this is by far
-     *       the most common use case; mostly custom shortcuts are loaded from configuration
+     *       the most common use case; mostly active shortcuts are loaded from configuration
      *       files).  Pass \b false for \a isDefault to just set this
      *       shortcut.
      *
      * \sa KGlobalAccel
      * \sa globalShortcut()
      */
-    void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(CustomShortcut | DefaultShortcut));
+    void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
 
     /**
-     * Convenience function to retrieve the custom global shortcut for this action, if one exists.
+     * Convenience function to retrieve the active global shortcut for this action, if one exists.
      *
      * \sa globalShortcut()
      */
-    inline const KShortcut& customGlobalShortcut() const { return globalShortcut(CustomShortcut); }
+    inline const KShortcut& activeGlobalShortcut() const { return globalShortcut(ActiveShortcut); }
 
     /**
-     * Convenience function to set the custom global shortcut for this action.
+     * Convenience function to set the active global shortcut for this action.
      *
-     * \param shortcut custom global shortcut(s).
+     * \param shortcut active global shortcut(s).
      *
-     * \sa customGlobalShortcut()
+     * \sa activeGlobalShortcut()
      */
-    inline void setCustomGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, CustomShortcut); }
+    inline void setActiveGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, ActiveShortcut); }
 
     /**
      * Convenience function to retrieve the default global shortcut for this action, if one exists.
@@ -610,6 +624,10 @@ public:
      * \param index index to the widget requested.
      */
     QWidget* container( int index ) const;
+
+private:
+	void testing_hack();
+public:
 
 signals:
 #ifdef KDE3_SUPPORT

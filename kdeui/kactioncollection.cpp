@@ -442,9 +442,9 @@ void KActionCollection::readSettings( KConfigBase* config )
       QString entry = cg.readEntry( action->objectName(), QString() );
       if( !entry.isEmpty() ) {
         if( entry == "none" )
-          action->setShortcut( KShortcut(), KAction::CustomShortcut );
+          action->setShortcut( KShortcut(), KAction::ActiveShortcut );
         else
-          action->setShortcut( KShortcut(entry), KAction::CustomShortcut );
+          action->setShortcut( KShortcut(entry), KAction::ActiveShortcut );
       }
       else // default shortcut
         action->setShortcut( action->defaultShortcut() );

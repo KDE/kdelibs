@@ -873,13 +873,13 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
     toolbar->addAction( coll->action( "reload" ) );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
-    coll->action( "mkdir" )->setShortcut(Qt::Key_F10);
+    coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
     toolbar->addAction( coll->action( "mkdir" ) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), coll,"toggleSpeedbar");
-    showSidebarAction->setShortcut( Qt::Key_F9 );
+    showSidebarAction->setShortcut( QKeySequence(Qt::Key_F9) );
     showSidebarAction->setCheckedState(KGuiItem(i18n("Hide Quick Access Navigation Panel")));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
@@ -901,18 +901,18 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
                             "<li>separating folders from files</li></ul></qt>"));
     menu->addAction( coll->action( "sorting menu" ));
     menu->addSeparator();
-    coll->action( "short view" )->setShortcut(Qt::Key_F6);
+    coll->action( "short view" )->setShortcut( QKeySequence(Qt::Key_F6) );
     menu->addAction( coll->action( "short view" ));
-    coll->action( "detailed view" )->setShortcut(Qt::Key_F7);
+    coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
     menu->addAction( coll->action( "detailed view" ));
     menu->addSeparator();
-    coll->action( "show hidden" )->setShortcut(Qt::Key_F8);
+    coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));
     menu->addAction( showSidebarAction );
     menu->addAction( showBookmarksAction );
-    coll->action( "preview" )->setShortcut(Qt::Key_F11);
+    coll->action( "preview" )->setShortcut( QKeySequence(Qt::Key_F11) );
     menu->addAction( coll->action( "preview" ));
-    coll->action( "separate dirs" )->setShortcut(Qt::Key_F12);
+    coll->action( "separate dirs" )->setShortcut( QKeySequence(Qt::Key_F12) );
     menu->addAction( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );

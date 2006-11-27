@@ -83,7 +83,7 @@ void KMenuMenuHandler::slotSetShortcut()
 
   KShortcutDialog dialog(action->shortcut() , m_builder->widget() );
   dialog.exec();
-  action->setShortcut(dialog.shortcut(), KAction::CustomShortcut); 
+  action->setShortcut(dialog.shortcut(), KAction::ActiveShortcut); 
 
   if(action->parentCollection())
     action->parentCollection()->writeSettings();

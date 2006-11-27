@@ -119,7 +119,7 @@ bool KGlobalAccel::readSettings( KConfigBase* config )
 		it.next();
 		foreach (KActionCollection* collection, KActionCollection::allCollections()) {
 			if (KAction* action = collection->action(it.key().toAscii().constData())) {
-				action->setGlobalShortcut(KShortcut(it.value()), KAction::CustomShortcut);
+				action->setGlobalShortcut(KShortcut(it.value()), KAction::ActiveShortcut);
 				goto found;
 			}
 
@@ -169,7 +169,7 @@ KGlobalAccel * KGlobalAccel::self( )
 
 void KGlobalAccel::checkAction( KAction* action )
 {
-	if (!action->globalShortcutAllowed() ||action->globalShortcut().isNull()) {
+	if (!action->globalShortcutAllowed() ||action->globalShortcut().isEmpty()) {
 		if (d->actionsWithGlobalShortcuts.contains(action)) {
 			disconnect(action, SIGNAL(changed()), this, SLOT(actionChanged()));
 			d->actionsWithGlobalShortcuts.remove(action);
@@ -190,10 +190,16 @@ void KGlobalAccel::checkAction( KAction* action )
 	QList<int> currentlyGrabbed = d->grabbedActions.values(action);
 	
 	QList<int> needToGrab;
-	if (action->isEnabled() && action->globalShortcutAllowed())
-		foreach (const KShortcut& cut, action->globalShortcut().sequences())
+	if (action->isEnabled() && action->globalShortcutAllowed()) {
+/*		foreach (const KShortcut& cut, action->globalShortcut().sequences())
 			if (!cut.isNull() && cut.seq(0))
-				needToGrab.append(cut.seq(0));
+				needToGrab.append(cut.seq(0));*/
+		KShortcut cut =  action->globalShortcut();
+		if (!cut.primary().isEmpty())
+			needToGrab.append(cut.primary());
+		if (!cut.alternate().isEmpty())
+			needToGrab.append(cut.alternate());
+	}
 	
 	foreach (int key, currentlyGrabbed)
 		if (needToGrab.contains(key))

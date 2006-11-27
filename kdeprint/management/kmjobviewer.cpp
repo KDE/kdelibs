@@ -269,7 +269,7 @@ void KMJobViewer::initActions()
 
 	KAction	*dact = new KAction(i18n("Remo&ve"), actionCollection(),"job_remove");
   dact->setIcon( KIcon( "edittrash" ) );
-  dact->setShortcut( Qt::Key_Delete );
+  dact->setShortcut( QKeySequence(Qt::Key_Delete) );
   connect( dact, SIGNAL( triggered( bool ) ), this,SLOT(slotRemove()) );
 
 	KAction *sact = new KAction(i18n("Res&tart"), actionCollection(),"job_restart");

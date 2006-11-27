@@ -168,27 +168,27 @@ void KDateTable::initAccels()
   localCollection->setAssociatedWidget(this);
 
   KAction* next = new KAction(localCollection, 0);
-  next->setShortcut(KStdAccel::Next);
+  next->setShortcut(KStdAccel::next());
   connect(next, SIGNAL(triggered(bool)), SLOT(nextMonth()));
 
   KAction* prior = new KAction(localCollection, 0);
-  prior->setShortcut(KStdAccel::Prior);
+  prior->setShortcut(KStdAccel::prior());
   connect(prior, SIGNAL(triggered(bool)), SLOT(previousMonth()));
 
   KAction* beginMonth = new KAction(localCollection, 0);
-  beginMonth->setShortcut(KStdAccel::Home);
+  beginMonth->setShortcut(KStdAccel::home());
   connect(beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()));
 
   KAction* endMonth = new KAction(localCollection, 0);
-  endMonth->setShortcut(KStdAccel::End);
+  endMonth->setShortcut(KStdAccel::end());
   connect(endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()));
 
   KAction* beginWeek = new KAction(localCollection, 0);
-  beginWeek->setShortcut(KStdAccel::BeginningOfLine);
+  beginWeek->setShortcut(KStdAccel::beginningOfLine());
   connect(beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()));
 
   KAction* endWeek = new KAction(localCollection, 0);
-  endWeek->setShortcut(KStdAccel::EndOfLine);
+  endWeek->setShortcut(KStdAccel::endOfLine());
   connect(endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()));
 
   localCollection->readSettings();

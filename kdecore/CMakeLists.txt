@@ -379,4 +379,3 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    kmessage.h DESTINATION ${INCLUDE_INSTALL_DIR}
 )
-

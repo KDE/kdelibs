@@ -143,7 +143,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
     }
 
     KShortcut cut = KStdAccel::shortcut( pInfo->idAccel );
-    if ( !cut.isNull() )
+    if ( !cut.isEmpty() )
         pAction->setShortcut( cut );
   }
 
@@ -400,7 +400,7 @@ KAction *buildAutomaticAction( KActionCollection* parent, StdAction id, const ch
   if ( !p )
     return 0;
 
-  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel, KStdAccel::shortcut( p->idAccel ),
+  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel, KStdAccel::shortcut( p->idAccel ).primary(),
                                                  slot, parent, p->psName );
   action->setWhatsThis( p->psWhatsThis );
 

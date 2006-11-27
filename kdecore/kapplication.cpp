@@ -969,7 +969,6 @@ KApplication::~KApplication()
 #endif
 }
 
-
 #ifdef Q_WS_X11
 class KAppX11HackWidget: public QWidget
 {

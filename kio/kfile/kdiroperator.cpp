@@ -1271,12 +1271,12 @@ void KDirOperator::setupActions()
 
     KAction* trash = new KAction( i18n( "Move to Trash" ), myActionCollection, "trash" );
     trash->setIcon( KIcon( "edittrash" ) );
-    trash->setShortcut( Qt::Key_Delete );
+    trash->setShortcut( KShortcut(Qt::Key_Delete) );
     connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
 
     KAction* action = new KAction( i18n( "Delete" ), myActionCollection, "delete" );
     action->setIcon( KIcon( "editdelete" ) );
-    action->setShortcut( Qt::SHIFT+Qt::Key_Delete );
+    action->setShortcut( KShortcut(Qt::SHIFT+Qt::Key_Delete) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT( deleteSelected() ) );
 
     // the sort menu actions

@@ -1,6 +1,7 @@
 /*  This file is part of the KDE libraries
     Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
+    Copyright (C) 2006 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,290 +30,212 @@
 #include "kdelibs_export.h"
 
 #include <QtGui/QKeySequence>
-#include <QtCore/QSharedDataPointer>
+
+class KShortcutPrivate;
 
 /**
 * @short Represents a keyboard shortcut
 *
 * The KShortcut class is used to represent a keyboard shortcut to an action.
 * A shortcut is normally a single key with modifiers, such as Ctrl+V.
-* A KShortcut object may also contain multiple alternate keys which will also
+* A KShortcut object may also contain an alternate key sequence which will also
 * activate the action it's associated to, as long as no other actions have
-* defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
+* defined that key as their primary key. Ex: Ctrl+V;Shift+Insert.
 *
-* This can be used to add additional accelerators to a KAction.  For example,
+* This can be used to add additional accelerators to a KAction. For example,
 * the below code binds the escape key to the close action.
 *
 * \code
 *  KAction *closeAction = KStdAction::close(this, SLOT( close() ), actionCollection());
 *  KShortcut closeShortcut = closeAction->shortcut();
-*  closeShortcut.append(Qt::Key_Escape);
+*  closeShortcut.setAlternate(Qt::Key_Escape);
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
-*
-* \note This class is implicitly shared, and all functions are reentrant.
-*
-* \todo make constructors explicit
-* \todo needs serious cleaning up (rodda@kde.org)
 */
 class KDECORE_EXPORT KShortcut
 {
 public:
 	/**
-	 * Creates a new null shortcut.
-	 * @see null()
-	 * @see isNull()
+	 * Creates a new empty shortcut.
+	 * @see isEmpty()
 	 * @see clear()
 	 */
 	KShortcut();
 
 	/**
-	 * Creates a new shortcut with the given Qt key code
-	 * as the only key sequence.
-	 * @param keyQt the qt keycode
+	 * Creates a new shortcut that contains the given Qt key
+	 * sequence as primary shortcut.
+	 * @param primary Qt key sequence to add
+	 */
+	explicit KShortcut(const QKeySequence &primary);
+
+	/**
+	 * Creates a new shortcut with the given Qt key sequences
+	 * as primary and secondary shortcuts.
+	 * @param primary Qt keycode of primary shortcut
+	 * @param alternate Qt keycode of alternate shortcut
 	 * @see Qt::Key
 	 */
-	KShortcut( int keyQt );
+	KShortcut(const QKeySequence &primary, const QKeySequence &alternate);
 
 	/**
-	 * Creates a new shortcut that contains only the given qt key
-	 * sequence.
-	 * @param keySeq the qt key sequence to add
+	 * Creates a new shortcut with the given Qt key codes
+	 * as primary and secondary shortcuts.
+     * You can only assign single-key shortcuts this way.
+	 * @param keyQtPri Qt keycode of primary shortcut
+	 * @param keyQtAlt Qt keycode of alternate shortcut
+	 * @see Qt::Key
 	 */
-	KShortcut( const QKeySequence& keySeq );
+	explicit KShortcut(int keyQtPri, int keyQtAlt = 0);
 
 	/**
-	 * Creates a new shortcut that contains only the given qt key
-	 * sequences.
-	 * @param keySeq1 the first sequence
-	 * @param keySeq2 the second sequence
+	 * Creates a new shortcut that contains the key sequences described
+	 * in @p description. The format of description is the same as
+	 * used in QKeySequence::fromString(const QString&).
+     * Up to two key sequences separated by a semicolon ";" may be given.
+	 * @param descripton the description of key sequence(s)
+	 * @see QKeySequence::fromString(const QString&, SequenceFormat)
 	 */
-	KShortcut( const QKeySequence& keySeq1, const QKeySequence& keySeq2 );
+	explicit KShortcut(const QString &description);
 
 	/**
 	 * Copies the given shortcut.
-	 * @param shortcut the shortcut to add
+	 * @param other shortcut to copy
 	 */
-	KShortcut( const KShortcut& shortcut );
+	KShortcut(const KShortcut &other);
 
-	/**
-	 * Creates a new key sequence that contains the given key sequence.
-	 * The description consists of semicolon-separated keys as
-	 * used in QKeySequence::fromString(const QString&, SequenceFormat).
-	 * @param shortcut the description of the key
-	 * @see QKeySequence::fromString(const QString&, SequenceFormat).
-	 */
-	KShortcut( const QString& shortcut );
-	
 	/**
 	 * Destructor.
 	 */
 	~KShortcut();
 
-	/** @name Initialization methods */
-	/** @{ */
-
-	/**
-	 * Clears the shortcut. The shortcut is null after calling this
-	 * function.
-	 * @see isNull()
-	 */
-	void clear();
-
-	/**
-	 * Initializes the shortcut with the given Qt key code
-	 * as the only key sequence.
-	 * @param keyQt the qt keycode
-	 * @see Qt::Key
-	 */
-	bool init( int keyQt );
-
-	/**
-	 * Initializes the shortcut with the given qt key sequence.
-	 * @param keySeq the qt key sequence to add
-	 */
-	bool init( const QKeySequence& keySeq );
-
-	/**
-	 * Copies the given shortcut.
-	 * @param shortcut the shortcut to add
-	 */
-	bool init( const KShortcut& shortcut );
-
-	/**
-	 * Initializes the key sequence with the given key sequence.
-	 * The description consists of semicolon-separated keys as
-	 * used in QKeySequence::fromString(const QString&, SequenceFormat).
-	 * @param shortcut the description of the key
-	 * @see QKeySequence::fromString(const QString&, SequenceFormat).
-	 */
-	bool init( const QString& shortcut );
-
-	/**
-	 * Copies the given shortcut over this shortcut.
-	 * @param cut the shortcut to copy
-	 */
-	KShortcut& operator =( const KShortcut& cut )
-		{ init( cut ); return *this; }
-
-	/** @} */
 	/** @name Query methods */
 	/** @{ */
 
 	/**
-	 * Returns the number of sequences that are in this
-	 * shortcut.
-	 * @return the number of sequences
-	 * MAX_SEQUENCES
+	 * Returns the primary key sequence of this shortcut.
+	 * @return primary key sequence
 	 */
-	int count() const;
+	const QKeySequence &primary() const;
 
 	/**
-	 * Returns the @p i'th key sequence of this shortcut.
-	 * @param i the number of the key sequence to retrieve
-	 * @return the @p i'th sequence or a null QKeySequence if
-	 *         there are less than @p i key sequences
-	 * @see MAX_SEQUENCES
+	 * Returns the alternate key sequence of this shortcut.
+	 * @return alternate key sequence
 	 */
-	const QKeySequence seq( int i ) const;
-	
-	/**
-	 * Returns all key sequences in order.
-	 */
-	const QList<QKeySequence>& sequences() const;
+	const QKeySequence &alternate() const;
 
 	/**
-	 * Returns the key code of the first key sequence, or
-	 * null if there is no first key sequence.
-	 * @return the key code of the first sequence's first key
-	 * @see Qt::Key
-	 */
-	int keyQt() const;
-
-	/**
-	 * Returns @c true if the shortcut is null (after clear() or empty
-	 * constructor).
-	 * @return @c true if the shortcut is null, @c false otherwise
+	 * Returns @c true if the shortcut is empty.
+	 * A shortcut is empty if both its primary and secondary key
+	 * sequences are empty.
+	 * @return @c true if the shortcut is empty, @c false otherwise
 	 * @see clear()
-	 * @see null()
 	 */
-	bool isNull() const;
+	bool isEmpty() const;
 
 	/**
-	 * Checks whether this shortcut contains the given sequence.
-	 * @param keySeq the key sequence to check
-	 * @return @c true if the shortcut has the given key sequence,
-	 *         @c false otherwise
+	 * Returns @c true if at least one of this shortcut's key sequences
+     * is equal to the given key sequence.
+     * @param keySeq key sequence to search
+	 * @return @c true if this shortcut contains @p keySeq, @c false otherwise
 	 */
-	bool contains( const QKeySequence& keySeq ) const;
+	bool contains(const QKeySequence &keySeq) const;
 
 	/** @} */
-	/** @name Comparison methods */
+	/** @name Mutator methods */
 	/** @{ */
 
 	/**
-	 * Compares this object with the given shortcut. Returns a negative
-	 * number if the given shortcut is larger, 0 if they are equal and
-	 * a positive number this shortcut is larger. Shortcuts are
-	 * compared by comparing the individual key sequences, starting from the
-	 * beginning until an unequal key sequences has been found. If a shortcut
-	 * contains more key sequences, it is considered larger.
-	 * @param shortcut the shortcut to compare to
-	 * @return a negative number if the given KShortcut is larger, 0 if
-	 * they are equal and a positive number this KShortcut is larger
+	 * Set the primary key sequence of this shortcut to the given key sequence.
+     * @param keySeq set primary key sequence to this
 	 */
-	int compare( const KShortcut& shortcut ) const;
+	void setPrimary(const QKeySequence &keySeq);
 
 	/**
-	 * Compares the sequences of both shortcuts.
-	 * @param cut the shortcut to compare to
-	 * @return @c true, if both shortcuts are equal, @c false otherwise
-	 * @see compare()
+	 * Set the alternate key sequence of this shortcut to the given key sequence.
+     * @param keySeq set alternate key sequence to this
 	 */
-	bool operator == ( const KShortcut& cut ) const;
+	void setAlternate(const QKeySequence &keySeq);
 
 	/**
-	 * Compares the sequences of both shortcuts.
-	 * @param cut the shortcut to compare to
-	 * @return @c true, if the shortcuts are not equal, @c false otherwise
-	 * @see compare()
-	 */
-	bool operator != ( const KShortcut& cut ) const
-		{ return !operator==( cut ); }
-
-	/**
-	 * Compares the sequences of both shortcuts.
-	 * @param cut the shortcut to compare to
-	 * @return @c true, if @c this is smaller than @p cut, @c false otherwise
-	 * @see compare()
-	 */
-	bool operator < ( const KShortcut& cut ) const
-		{ return compare( cut ) < 0; }
-
-	/** @} */
-	/** @name Operation methods */
-	/** @{ */
-
-	/**
-	 * Sets the @p i 'th key sequence of the shortcut. You can not introduce
-	 * gaps in the list of sequences, so you must use an @p i <= count().
-	 * Also note that the maximum number of key sequences is MAX_SEQUENCES.
-	 * @param i the position of the new key sequence. if i is at or greater than
-	 *        count(), the sequence will be appended instead.
-	 * @param keySeq the key sequence to set
-	 */
-	void setSeq( int i, const QKeySequence& keySeq );
-
-	/**
-	 * Appends the given key sequence.  This sets it as either the keysequence or
-	 * the alternate keysequence.  If the shortcut already has MAX_SEQUENCES
-	 * sequences then this call does nothing, and returns false.
-	 *
-	 * @param keySeq the key sequence to add
-	 * @see setSeq()
-	*/
-	void append( const QKeySequence& keySeq );
-
-	/**
-	 * Removes the given key sequence from this shortcut
+	 * Removes the given key sequence from this shortcut.
+     * If this leads to an empty primary shortcut and nonempty
+     * alternate shortcut, the alternate shortcut will be moved to primary.
 	 * @param keySeq the key sequence to remove
-	*/
-	void remove( const QKeySequence& keySeq );
+	 */
+	void remove(const QKeySequence &keySeq);
+
+	/**
+	 * Clears the shortcut. The shortcut will be empty after calling this
+	 * function.
+	 * @see isEmpty()
+	 */
+	void clear();
 
 	/** @} */
 	/** @name Conversion methods */
 	/** @{ */
 
 	/**
-	 * Converts this shortcut to a key sequence. The first key sequence
-	 * will be taken.
-	 */
-	operator QKeySequence () const;
-
-	/**
 	 * Returns a description of the shortcut as semicolon-separated
-	 * key sequences, as returned by QKeySequence::toString().
+	 * list key sequences, as returned by QKeySequence::toString().
 	 * @return the string represenation of this shortcut
 	 * @see QKeySequence::toString()
+	 * @see KShortcut(const QString &description)
 	 */
 	QString toString() const;
 
-	/// \internal
-	QString toStringInternal( const KShortcut* pcutDefault = 0L ) const;
-
-	/** @} */
+	/**
+	 * Returns a description of the shortcut as semicolon-separated
+	 * list key sequences, as returned by QKeySequence::toString().
+     * This is a function used in old code; its usefulness is not clear...
+	 * @return the string represenation of this shortcut
+	 * @see QKeySequence::toString()
+	 * @see KShortcut(const QString &description)
+	 */
+	QString toStringInternal() const; //TODO: seems to be unused. Remove?
 
 	/**
-	 * Returns a null shortcut.
-	 * @return the null shortcut
-	 * @see isNull()
-	 * @see clear()
+	 * Returns a list of all non-empty key sequences in this shortcut.
+	 * @return list of nonempty shortcuts
+     * @see QKeySequence::isEmpty()
 	 */
-	static const KShortcut& null();
+	QList<QKeySequence> toList() const;
 
+	/** @} */
+	/** @name Operators */
+	/** @{ */
+
+	/**
+	 * Copies the sequences of the other shortcut to this one.
+	 * @param cut the shortcut to copy
+	 */
+	KShortcut &operator=(const KShortcut &other);
+
+	/**
+	 * Compares the sequences of both shortcuts.
+	 * @param cut the shortcut to compare to
+	 * @return @c true, if both shortcuts are equal, @c false otherwise
+	 * @see operator!=()
+	 */
+    bool operator==(const KShortcut &other) const;
+
+	/**
+	 * Compares the sequences of both shortcuts.
+	 * @param cut the shortcut to compare to
+	 * @return @c false, if both shortcuts are equal, @c true otherwise
+	 * @see operator==()
+	 */
+	bool operator != ( const KShortcut &cut ) const
+		{ return !operator==( cut ); }
 private:
-	QSharedDataPointer<class KShortcutPrivate> d;
+	KShortcutPrivate *const d;
 };
+uint qHash(int);
+inline uint qHash(const KShortcut &key)
+{
+	return qHash(key.primary()[0]) + qHash(key.primary()[1]);
+}
 
 #endif // KSHORTCUT_H
 

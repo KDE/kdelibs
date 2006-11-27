@@ -254,14 +254,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bRightMousePressed = false;
   d->m_bCleared = false;
   d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), actionCollection(), "viewDocumentSource" );
-  d->m_paViewDocument->setShortcut( Qt::CTRL + Qt::Key_U );
+  d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
   connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
 
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), actionCollection(), "viewFrameSource" );
   connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
 
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), actionCollection(), "viewPageInfo" );
-  d->m_paViewInfo->setShortcut( Qt::CTRL+Qt::Key_I );
+  d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
   connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
 
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), actionCollection(), "saveBackground" );
@@ -379,7 +379,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
 
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "viewmag-", i18n( "Shrink Font" ), actionCollection(), "decFontSizes" );
-      d->m_paDecZoomFactor->setShortcut(Qt::CTRL + Qt::Key_Minus);
+      d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecZoomFast() ));
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<p>"
                                                 "Make the font in this window smaller. "
@@ -432,7 +432,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), actionCollection(), "caretMode");
-  d->m_paToggleCaretMode->setShortcut( Qt::Key_F7 );
+  d->m_paToggleCaretMode->setShortcut( QKeySequence(Qt::Key_F7) );
   connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())

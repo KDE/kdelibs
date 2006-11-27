@@ -141,7 +141,7 @@ KMenu* KHelpMenu::menu()
     if (KAuthorized::authorizeKAction("help_contents"))
     {
       d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", K3Icon::SizeSmall),
-                     i18n("%1 &Handbook", appName) ,this, SLOT(appHelpActivated()),KStdAccel::shortcut(KStdAccel::Help));
+                     i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStdAccel::shortcut(KStdAccel::Help).primary());
       need_separator = true;
     }
 

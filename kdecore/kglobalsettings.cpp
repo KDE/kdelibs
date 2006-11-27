@@ -182,7 +182,7 @@ int KGlobalSettings::contextMenuKey ()
 {
     KConfigGroup g(KGlobal::config(), "Shortcuts");
     KShortcut cut (g.readEntry ("PopupMenuContext", "Menu"));
-    return cut.keyQt();
+    return cut.primary()[0];
 }
 
 QColor KGlobalSettings::toolBarHighlightColor()

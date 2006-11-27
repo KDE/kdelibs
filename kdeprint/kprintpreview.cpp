@@ -159,17 +159,17 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
     KAction *action = 0;
     action = new KAction(i18n("Print"), d->actions_, "continue_print");
     action->setIcon( KIcon( "fileprint" ) );
-    action->setShortcut( Qt::Key_Return );
+    action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
     action = new KAction(i18n("Print"), d->actions_, "continue_print");
     action->setIcon( KIcon( "fileprint" ) );
-    action->setShortcut( Qt::Key_Return );
+    action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
     action = new KAction(i18n("Cancel"), d->actions_, "stop_print");
     action->setIcon( KIcon( "stop" ) );
-    action->setShortcut( Qt::Key_Escape );
+    action->setShortcut( QKeySequence(Qt::Key_Escape) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(reject()) );
 	}
 
