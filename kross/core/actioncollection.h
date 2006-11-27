@@ -20,14 +20,13 @@
 #ifndef KROSS_ACTIONCOLLECTION_H
 #define KROSS_ACTIONCOLLECTION_H
 
+#include "krossconfig.h"
+
 #include <QString>
 #include <QObject>
 #include <QDir>
 
 #include <kactioncollection.h>
-//#include <kaction.h>
-//#include <kurl.h>
-#include <koffice_export.h>
 
 class QDomElement;
 class QIODevice;

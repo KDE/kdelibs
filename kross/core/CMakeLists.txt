@@ -1,4 +1,9 @@
-include_directories( ${KOFFICECORE_INCLUDES} )
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${KDE4_KDECORE_INCLUDES}
+    ${KDE4_KDEUI_INCLUDES}
+    ${KDE4_KIO_INCLUDES}
+)
 
 ########### next target ###############
 

@@ -21,9 +21,35 @@
 #define KROSS_MAIN_KROSSCONFIG_H
 
 #include <QString>
-#include <koffice_export.h>
+#include <kdemacros.h>
 
 namespace Kross {
+
+    /// define the KROSS_EXPORT and KROSSCORE_EXPORT macros
+    #ifdef Q_WS_WIN
+        #ifndef KROSSCORE_EXPORT
+        # ifdef MAKE_KROSSCORE_LIB
+        #  define KROSSCORE_EXPORT KDE_EXPORT
+        # elif KDE_MAKE_LIB
+        #  define KROSSCORE_EXPORT KDE_IMPORT
+        # else
+        #  define KROSSCORE_EXPORT
+        # endif
+        #endif
+
+        #ifndef KROSS_EXPORT
+        # ifdef MAKE_KROSS_LIB
+        #  define KROSS_EXPORT KDE_EXPORT
+        # elif KDE_MAKE_LIB
+        #  define KROSS_EXPORT KDE_IMPORT
+        # else
+        #  define KROSS_EXPORT
+        # endif
+        #endif
+    #else
+        #define KROSS_EXPORT KDE_EXPORT
+        #define KROSSCORE_EXPORT KDE_EXPORT
+    #endif
 
     /// Debugging enabled.
     #define KROSS_DEBUG_ENABLED

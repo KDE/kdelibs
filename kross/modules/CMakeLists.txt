@@ -1,4 +1,9 @@
-include_directories( ${CMAKE_SOURCE_DIR}/libs/kross ${KDE4_INCLUDES} )
+include_directories(
+    ${CMAKE_SOURCE_DIR}/kross
+    ${KDE4_KDECORE_INCLUDES}
+    ${KDE4_KDEUI_INCLUDES}
+    ${KDE4_KIO_INCLUDES}
+)
 
 # the scriptmanager module
 set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp)

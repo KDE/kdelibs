@@ -33,7 +33,7 @@ namespace Kross {
     /**
      * The FormFileWidget class provides a in a widget embedded KFileDialog.
      */
-    class KROSS_EXPORT FormFileWidget : public QWidget
+    class FormFileWidget : public QWidget
     {
             Q_OBJECT
             Q_ENUMS(Mode)
@@ -112,7 +112,7 @@ namespace Kross {
      *         print mywidget["QLineEdit"].text
      * \endcode
      */
-    class KROSS_EXPORT FormDialog : public KPageDialog
+    class FormDialog : public KPageDialog
     {
             Q_OBJECT
 
@@ -222,7 +222,7 @@ namespace Kross {
      *     forms.showMessageBox("Information", "Okay...", "The Ok-button was pressed")
      * \endcode
      */
-    class KROSS_EXPORT FormModule : public QObject
+    class FormModule : public QObject
     {
             Q_OBJECT
 

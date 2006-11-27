@@ -43,7 +43,7 @@ namespace Kross {
     * \a ActionCollection is displayed and some buttons to run, stop, install,
     * uninstall and to get new scripts.
     */
-    class KROSS_EXPORT ScriptManagerCollection : public QWidget
+    class ScriptManagerCollection : public QWidget
     {
             Q_OBJECT
         public:
@@ -73,7 +73,7 @@ namespace Kross {
     * The ScriptManagerModule provides access to the Script Manager
     * functionality like the "Script Manager" KDialog.
     */
-    class KROSS_EXPORT ScriptManagerModule : public QObject
+    class ScriptManagerModule : public QObject
     {
             Q_OBJECT
         public:
