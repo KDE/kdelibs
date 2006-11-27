@@ -38,7 +38,7 @@ void KStandarddirsTest::testLocateLocal()
 void KStandarddirsTest::testSaveLocation()
 {
     const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
-    QCOMPARE( saveLoc, QDir::homePath() + "/.kde-unit-test/share/apps/qttest/" );
+    QCOMPARE( saveLoc, QDir::home().canonicalPath() + "/.kde-unit-test/share/apps/qttest/" );
 }
 
 void KStandarddirsTest::testAppData()
@@ -46,7 +46,7 @@ void KStandarddirsTest::testAppData()
     // In addition to testSaveLocation(), we want to also check other KInstances
     KInstance instance( "foo" );
     const QString fooAppData = instance.dirs()->saveLocation( "appdata" );
-    QCOMPARE( fooAppData, QDir::homePath() + "/.kde-unit-test/share/apps/foo/" );
+    QCOMPARE( fooAppData, QDir::home().canonicalPath() + "/.kde-unit-test/share/apps/foo/" );
 }
 
 static bool isKdelibsInstalled()
