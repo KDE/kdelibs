@@ -177,8 +177,8 @@ public:
 	/** @{ */
 
 	/**
-	 * Returns a description of the shortcut as semicolon-separated
-	 * list key sequences, as returned by QKeySequence::toString().
+	 * Returns a description of the shortcut as a semicolon-separated
+	 * list of key sequences, as returned by QKeySequence::toString().
 	 * @return the string represenation of this shortcut
 	 * @see QKeySequence::toString()
 	 * @see KShortcut(const QString &description)
@@ -186,9 +186,9 @@ public:
 	QString toString() const;
 
 	/**
-	 * Returns a description of the shortcut as semicolon-separated
-	 * list key sequences, as returned by QKeySequence::toString().
-     * This is a function used in old code; its usefulness is not clear...
+	 * Returns a description of the shortcut as a semicolon-separated
+	 * list of key sequences, as returned by QKeySequence::toString().
+	 * This is a function used in old code; its usefulness is not clear...
 	 * @return the string represenation of this shortcut
 	 * @see QKeySequence::toString()
 	 * @see KShortcut(const QString &description)
