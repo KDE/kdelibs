@@ -138,6 +138,12 @@ instead.</li>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 </ul>
 
+<h4>KAction</h4>
+<ul>
+<li>Renamed "Custom" shortcuts to "Active" shortcuts.</li>
+<li>Added setShortcut(QKeySequence &amp;) to explicitly override QAction::setShortcut.</li>
+</ul>
+
 <h4>KAudioPlayer</h4>
 <p>Removed, use now Phonon::AudioPlayer</p>
 
@@ -389,8 +395,13 @@ Desktop Entry Spec</a>
 
 <h4>KShortcut</h4>
 <ul>
-<li>Now implicitly shared and reentrant</li>
+<li>Now reentrant</li>
 <li>Only uses QKeySequences now</li>
+<li>Removed list semantics; remove() still has somewhat list-like behavior.</li>
+<li>Introduced "primary" and "alternate" shortcuts to replace the arbitrary list of shortcuts</li>
+<li>Removed casting operators</li>
+<li>Removed operator&lt; and operator&gt;</li>
+<li>Added a qHash(const KShortcut &amp;) function so you can use QHash with KShortcut instead of QMap</li>
 </ul>
 
 <h4>KShortcutList and derivatives</h4>
