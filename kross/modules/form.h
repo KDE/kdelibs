@@ -26,8 +26,6 @@
 #include <kpagedialog.h>
 #include <kfiledialog.h>
 
-#include <koffice_export.h>
-
 namespace Kross {
 
     /**

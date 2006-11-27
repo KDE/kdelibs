@@ -1,3 +1,11 @@
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${KDE4_KDECORE_INCLUDES}
+    ${KDE4_KDEUI_INCLUDES}
+    ${KDE4_KIO_INCLUDES}
+)
+
 ########### next target ###############
 
 set(krosstest_SRCS 

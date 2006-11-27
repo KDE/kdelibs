@@ -30,8 +30,6 @@
 #include <kdialog.h>
 #include <kactioncollection.h>
 
-#include <koffice_export.h>
-
 namespace Kross {
 
     class Action;

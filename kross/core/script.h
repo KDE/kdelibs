@@ -23,7 +23,6 @@
 #include <QString>
 #include <QStringList>
 #include <QVariant>
-#include <koffice_export.h>
 
 #include "errorinterface.h"
 

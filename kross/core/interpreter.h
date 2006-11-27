@@ -26,7 +26,6 @@
 #include <QMap>
 
 #include "errorinterface.h"
-#include <koffice_export.h>
 
 namespace Kross {
 

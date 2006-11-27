@@ -21,7 +21,6 @@
 #define KROSS_ERRORINTERFACE_H
 
 #include <QString>
-#include <koffice_export.h>
 
 #include "krossconfig.h"
 

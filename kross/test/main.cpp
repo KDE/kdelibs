@@ -197,7 +197,6 @@ int main(int argc, char **argv)
             initTestEnvironment();
 
             TestWindow *mainWin = new TestWindow(interpretername, scriptcode);
-            app->setMainWidget(mainWin);
             mainWin->show();
             args->clear();
             result = app->exec();

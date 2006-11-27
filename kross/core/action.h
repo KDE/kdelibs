@@ -27,7 +27,6 @@
 
 #include <kaction.h>
 #include <kurl.h>
-#include <koffice_export.h>
 
 #include "errorinterface.h"
 #include "childreninterface.h"

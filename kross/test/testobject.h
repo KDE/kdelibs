@@ -20,11 +20,11 @@
 #ifndef KROSS_TEST_TESTOBJECT_H
 #define KROSS_TEST_TESTOBJECT_H
 
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QVariant>
-#include <QMetaType>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
+#include <QtCore/QMetaType>
 
 #include <kdebug.h>
 

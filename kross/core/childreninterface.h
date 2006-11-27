@@ -23,7 +23,6 @@
 #include <QString>
 #include <QHash>
 #include <QObject>
-#include <koffice_export.h>
 
 #include "krossconfig.h"
 
