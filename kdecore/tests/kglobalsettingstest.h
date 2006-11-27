@@ -26,6 +26,7 @@ class KGlobalSettingsTest : public QObject
     Q_OBJECT
 public:
 private Q_SLOTS:
+    void initTestCase();
     void testPaletteChange();
     void testFontChange();
     void testSettingsChange();

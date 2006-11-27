@@ -26,6 +26,7 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 #include <kdebug.h>
 #include <kprocess.h>
 #include <QEventLoop>
+#include <QtDBus/QtDBus>
 
 /**
  * The strategy of this test is:
@@ -36,6 +37,14 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
  *
  * As a nice side-effect we automatically test a bit of KProcess as well :)
  */
+
+void KGlobalSettingsTest::initTestCase()
+{
+    QDBusConnectionInterface *bus = 0;
+    if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
+        QFAIL("Session bus not found");
+    }
+}
 
 #define CREATE_ALL_SPYS \
     KGlobalSettings* settings = KGlobalSettings::self(); \
