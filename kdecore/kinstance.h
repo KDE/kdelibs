@@ -25,7 +25,6 @@ class QString;
 class KAboutData;
 class KConfig;
 class KIconLoader;
-class K3MimeSourceFactory;
 class KSharedConfig;
 class KStandardDirs;
 
@@ -163,13 +162,6 @@ class KDECORE_EXPORT KInstance
      */
     static QString makeStdCaption( const QString &userCaption,
                                    CaptionFlags flags = HIGCompliantCaption );
-
-    /**
-     * Returns the K3MimeSourceFactory of the instance.
-     * @deprecated since Q3MimeSourceFactory is deprecated
-     * @return the K3MimeSourceFactory set as default for this application.
-     */
-    KDE_DEPRECATED K3MimeSourceFactory* mimeSourceFactory () const;
 
 protected:
     /**

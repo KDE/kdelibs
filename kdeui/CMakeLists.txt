@@ -12,6 +12,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/util
+ ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
@@ -90,10 +91,14 @@ set(kdeui_LIB_SRCS
  itemviews/k3listviewsearchline.cpp
  itemviews/klistbox.cpp
  itemviews/ktreewidgetsearchline.cpp
+ kernel/kapplication.cpp
+ kernel/kuniqueapplication.cpp
+ kernel/kstartupinfo.cpp
  util/kcolormimedata.cpp
  util/kcommand.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
+ util/kcrash.cpp
  util/kcursor.cpp
  util/kglobalaccel.cpp
  util/kicon.cpp
@@ -109,6 +114,7 @@ set(kdeui_LIB_SRCS
  util/kstringvalidator.cpp
  util/ksystemtrayicon.cpp
  util/kwordwrap.cpp
+ util/kxmessages.cpp
  widgets/kbuttonbox.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
@@ -164,8 +170,12 @@ if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_win.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
+
+if (UNIX)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwin.cpp util/kwinmodule.cpp )
+endif (UNIX)
 
 
 SET_SOURCE_FILES_PROPERTIES(liveui/kliveui.cpp PROPERTIES SKIP_AUTOMOC TRUE)
@@ -299,10 +309,14 @@ install( FILES
  itemviews/k3listviewsearchline.h
  itemviews/klistbox.h
  itemviews/ktreewidgetsearchline.h
+ kernel/kapplication.h
+ kernel/kuniqueapplication.h
+ kernel/kstartupinfo.h
  util/kaccelgen.h
  util/kcolormimedata.h
  util/kcommand.h
  util/kcompletion.h
+ util/kcrash.h
  util/kcursor.h
  util/kglobalaccel.h
  util/kiconengine.h
@@ -318,6 +332,9 @@ install( FILES
  util/kstringvalidator.h
  util/ksystemtrayicon.h
  util/kwordwrap.h
+ util/kxmessages.h
+ util/kwinmodule.h
+ util/kwin.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)

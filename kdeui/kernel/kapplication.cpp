@@ -58,7 +58,6 @@
 #include "klibloader.h"
 #include "klocale.h"
 #include "kstandarddirs.h"
-#include "kmimesourcefactory.h"
 #include "kstdaccel.h"
 #include "ktoolinvocation.h"
 
@@ -598,20 +597,6 @@ void KApplication::init()
     // Trigger initial settings
     KGlobalSettings::self();
 
-    // Set default mime-source factory
-    // XXX: This is a hack. Make our factory the default factory, but add the
-    // previous default factory to the list of factories. Why? When the default
-    // factory can't resolve something, it iterates in the list of factories.
-    // But it QWhatsThis only uses the default factory. So if there was already
-    // a default factory (which happens when using an image library using uic),
-    // we prefer KDE's factory and so we put that old default factory in the
-    // list and use KDE as the default. This may speed up things as well.
-    Q3MimeSourceFactory* oldDefaultFactory = Q3MimeSourceFactory::takeDefaultFactory();
-    Q3MimeSourceFactory::setDefaultFactory( mimeSourceFactory() );
-    if ( oldDefaultFactory ) {
-        Q3MimeSourceFactory::addFactory( oldDefaultFactory );
-    }
-
     d->checkAccelerators = new KCheckAccelerators( this );
 
     connect(KToolInvocation::self(), SIGNAL(needNewStartupId(QByteArray&)),
@@ -968,6 +953,7 @@ KApplication::~KApplication()
   // FIXME(E): Implement for Qt Embedded
 #endif
 }
+
 
 #ifdef Q_WS_X11
 class KAppX11HackWidget: public QWidget

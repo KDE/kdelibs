@@ -54,7 +54,6 @@ class QPixmap;
 class KSessionManaged;
 class KStyle;
 class KUrl;
-//class KGestureMap;
 
 #define kapp KApplication::kApplication()
 

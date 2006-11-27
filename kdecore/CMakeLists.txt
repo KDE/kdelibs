@@ -58,12 +58,9 @@ endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kapplication_win.cpp 
       ktoolinvocation_win.cpp 
       netsupp.cpp
       )
-
-    add_definitions(-DKIO_EXPORT=)
 endif (WIN32)
 
 
@@ -74,8 +71,6 @@ if (UNIX)
       netsupp.cpp
       netwm.cpp
       kpty.cpp
-      kwin.cpp
-      kwinmodule.cpp 
       network/khttpproxysocketdevice.cpp
       network/ksockssocketdevice.cpp
       fakes.c )
@@ -107,7 +102,6 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   kapplication.cpp
    kascii.cpp
    kauthorized.cpp
    kautostart.cpp
@@ -131,7 +125,6 @@ set(kdecore_LIB_SRCS
    kckey.cpp
    kshortcut.cpp
    kstdaccel.cpp
-   kcrash.cpp
    kurl.cpp
    kjob.cpp
    kcompositejob.cpp
@@ -139,12 +132,10 @@ set(kdecore_LIB_SRCS
    kglobal.cpp
    kglobalsettings.cpp
    kallocator.cpp
-   kmimesourcefactory.cpp
    kinstance.cpp
    kpalette.cpp
    klibloader.cpp
    ktemporaryfile.cpp
-   kuniqueapplication.cpp
    kacceleratormanager.cpp
    ksavefile.cpp
    krandomsequence.cpp
@@ -161,8 +152,6 @@ set(kdecore_LIB_SRCS
    ksycoca.cpp
    ksycocadict.cpp
    ksycocafactory.cpp
-   kxmessages.cpp
-   kstartupinfo.cpp
    kcatalog.cpp
    kstaticdeleter.cpp
    kclipboard.cpp
@@ -296,11 +285,9 @@ install( FILES
    kjobuidelegate.h
    kcmdlineargs.h
    kconfigbackend.h
-   kapplication.h
    kauthorized.h
    klauncher_iface.h
    ktoolinvocation.h
-   kuniqueapplication.h
    kcharsets.h
    kdeversion.h
    kpty.h
@@ -312,8 +299,6 @@ install( FILES
    kiconloader.h
    ksvgrenderer.h
    kdebug.h
-   kwinmodule.h
-   kwin.h
    kshortcut.h
    kstdaccel.h
    kcatalog.h
@@ -323,7 +308,6 @@ install( FILES
    kglobalsettings.h
    ksharedptr.h
    kallocator.h
-   kcrash.h
    krfcdate.h
    kinstance.h
    kpalette.h
@@ -340,14 +324,11 @@ install( FILES
    kstaticdeleter.h
    kprocio.h
    krandom.h
-   kmimesourcefactory.h
    kcodecs.h
    ksocks.h
    ksycoca.h
    ksycocaentry.h
    ksycocatype.h
-   kxmessages.h
-   kstartupinfo.h
    kgenericfactory.h
    kgenericfactory.tcc
    ktypelist.h

@@ -22,7 +22,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 
-#include "kmimesourcefactory.h"
+#include "k3mimesourcefactory.h"
 
 class K3MimeSourceFactoryPrivate
 {
@@ -30,9 +30,27 @@ public:
   inline K3MimeSourceFactoryPrivate (KIconLoader* loader)
 	: kil (loader)
   {}
-  
+
   KIconLoader* kil;
 };
+
+void K3MimeSourceFactory::install()
+{
+    // Set default mime-source factory
+    // XXX: This is a hack. Make our factory the default factory, but add the
+    // previous default factory to the list of factories. Why? When the default
+    // factory can't resolve something, it iterates in the list of factories.
+    // But it QWhatsThis only uses the default factory. So if there was already
+    // a default factory (which happens when using an image library using uic),
+    // we prefer KDE's factory and so we put that old default factory in the
+    // list and use KDE as the default. This may speed up things as well.
+    Q3MimeSourceFactory* oldDefaultFactory = Q3MimeSourceFactory::takeDefaultFactory();
+    K3MimeSourceFactory* mimeSourceFactory = new K3MimeSourceFactory(KGlobal::iconLoader());
+    Q3MimeSourceFactory::setDefaultFactory( mimeSourceFactory );
+    if ( oldDefaultFactory ) {
+        Q3MimeSourceFactory::addFactory( oldDefaultFactory );
+    }
+}
 
 K3MimeSourceFactory::K3MimeSourceFactory (KIconLoader* loader)
   : Q3MimeSourceFactory (),
@@ -64,7 +82,7 @@ QString K3MimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QS
 	  result = d->kil->iconPath (myName, K3Icon::Desktop);
 	}
   else if (myContext == "toolbar")
-	{	 
+	{
 	  result = d->kil->iconPath (myName, K3Icon::Toolbar);
 	}
   else if (myContext == "maintoolbar")
@@ -76,13 +94,13 @@ QString K3MimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QS
 	  result = d->kil->iconPath (myName, K3Icon::Small);
 	}
   else if (myContext == "user")
-	{	  
+	{
 	  result = d->kil->iconPath (myName, K3Icon::User);
 	}
 
   if (result.isEmpty())
 	result = Q3MimeSourceFactory::makeAbsolute (absOrRelName, context);
-  
+
   return result;
 }
 

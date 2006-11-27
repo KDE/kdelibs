@@ -41,6 +41,11 @@ class KDECORE_EXPORT K3MimeSourceFactory : public Q3MimeSourceFactory
 public:
 
   /**
+   * Set up a K3MimeSourceFactory instance as the default mimesource factory.
+   */
+  static void install();
+
+  /**
    * Constructor.
    *
    * @param loader is the iconloader used to find images.

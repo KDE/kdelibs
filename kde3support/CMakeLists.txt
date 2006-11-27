@@ -11,10 +11,6 @@ include_directories( ${KDE4_KPARTS_INCLUDES} )
 
 add_definitions ( -DQT3_SUPPORT )
 
-add_subdirectory( kdeui )
-add_subdirectory( kio )
-add_subdirectory( kparts )
-
 if(UNIX)
    add_subdirectory( kunittest )
    add_subdirectory( tests )
@@ -22,57 +18,32 @@ endif(UNIX)
 
 add_definitions(-DKDE3_SUPPORT)
 
-# kde3support/kdecore/Makefile.am: kde3core
-
-set(kde3core_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3urldrag.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3tempfile.cpp
-)
-
-install( FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdecore/k3sqlpropertymap.h kdecore/k3tempfile.h DESTINATION  ${INCLUDE_INSTALL_DIR} )
-
-# kde3support/kdeui/Makefile.am: kde3ui
-
-set(kde3ui_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget_private.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3popupmenu.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3textedit.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3colordrag.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3syntaxhighlighter.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3wizard.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spell.cpp  
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spelldlg.cpp
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3sconfig.cpp
-)
-
-set(kde3ui_UI
-    ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spellui.ui
-)
-
-kde4_add_ui_files(kde3ui_STAT_SRCS ${kde3ui_UI} )
-
-# kde3support/kio/Makefile.am: k3io
-
-set(k3io_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kio/k3bookmarkdrag.cpp
-)
-
-# kde3support/kparts/Makefile.am: k3parts
-
-set(k3parts_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kde3support/kparts/dockmainwindow3.cpp
-)
-
 ########### next target ###############
 
 set(kde3support_LIB_SRCS
-${k3parts_STAT_SRCS}
-${kde3core_STAT_SRCS}
-${kde3ui_STAT_SRCS}
-${k3io_STAT_SRCS}
+  kdecore/k3urldrag.cpp
+  kdecore/k3multipledrag.cpp
+  kdecore/k3tempfile.cpp
+  kdecore/k3mimesourcefactory.cpp
+  kdeui/k3dockwidget.cpp
+  kdeui/k3dockwidget_private.cpp
+  kdeui/k3popupmenu.cpp
+  kdeui/k3textedit.cpp
+  kdeui/k3colordrag.cpp
+  kdeui/k3syntaxhighlighter.cpp
+  kdeui/k3wizard.cpp
+  kdeui/k3spell.cpp
+  kdeui/k3spelldlg.cpp
+  kdeui/k3sconfig.cpp
+  kio/k3bookmarkdrag.cpp
+  kparts/dockmainwindow3.cpp
 )
+
+set(kde3ui_UI
+    kdeui/k3spellui.ui
+)
+
+kde4_add_ui_files( kde3support_LIB_SRCS ${kde3ui_UI} )
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DKDE_DEPRECATED_WARNINGS)
 kde4_automoc(${kde3support_LIB_SRCS})
@@ -87,4 +58,21 @@ install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-
+install( FILES
+  kdecore/k3urldrag.h
+  kdecore/k3multipledrag.h
+  kdecore/k3sqlpropertymap.h
+  kdecore/k3tempfile.h
+  kdecore/k3mimesourcefactory.h
+  kdeui/k3dockwidget.h
+  kdeui/k3popupmenu.h
+  kdeui/k3textedit.h
+  kdeui/k3colordrag.h
+  kdeui/k3syntaxhighlighter.h
+  kdeui/k3wizard.h
+  kdeui/k3spell.h
+  kdeui/k3spelldlg.h
+  kdeui/k3sconfig.h
+  kio/k3bookmarkdrag.h
+  kparts/dockmainwindow3.h
+DESTINATION  ${INCLUDE_INSTALL_DIR} )

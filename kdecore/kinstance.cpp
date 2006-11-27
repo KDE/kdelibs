@@ -31,7 +31,6 @@
 #include "kiconloader.h"
 #include "kinstance.h"
 #include "klocale.h"
-#include "kmimesourcefactory.h"
 #include "kstandarddirs.h"
 
 #ifndef NDEBUG
@@ -73,7 +72,6 @@ public:
 	config = 0;
 	iconLoader = 0;
 	aboutData = 0;
-        mimeSourceFactory = 0L;
     }
 
     ~Private ()
@@ -87,8 +85,6 @@ public:
 	config = 0;
 	delete dirs;
 	dirs = 0;
-        delete mimeSourceFactory;
-	mimeSourceFactory = 0;
     }
 
     KStandardDirs*      dirs;
@@ -101,7 +97,6 @@ public:
 #define _name d->name
     const KAboutData*   aboutData;
 #define _aboutData d->aboutData
-    K3MimeSourceFactory* mimeSourceFactory;
     QString             configName;
     bool                ownAboutdata;
     KSharedConfig::Ptr  sharedConfig;
@@ -318,17 +313,6 @@ QString KInstance::makeStdCaption( const QString &userCaption,
   }
 
   return captionString;
-}
-
-K3MimeSourceFactory* KInstance::mimeSourceFactory () const
-{
-  DEBUG_CHECK_ALIVE
-  if (!d->mimeSourceFactory)
-  {
-    d->mimeSourceFactory = new K3MimeSourceFactory(iconLoader());
-  }
-
-  return d->mimeSourceFactory;
 }
 
 void KInstance::virtual_hook( int, void* )

@@ -20,7 +20,7 @@ kde4_automoc(${kio_uiserver_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_uiserver  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_kio_uiserver  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kdeinit_kio_uiserver  DESTINATION ${LIB_INSTALL_DIR} )
 
@@ -35,7 +35,7 @@ kde4_automoc(${kmailservice_SRCS})
 
 kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
-target_link_libraries(kmailservice  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kmailservice  ${KDE4_KDEUI_LIBS} )
 
 install(TARGETS kmailservice DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -48,7 +48,7 @@ kde4_automoc(${ktelnetservice_SRCS})
 
 kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
-target_link_libraries(ktelnetservice  ${KDE4_KDECORE_LIBS} kdeui )
+target_link_libraries(ktelnetservice  ${KDE4_KDEUI_LIBS} )
 
 install(TARGETS ktelnetservice DESTINATION ${BIN_INSTALL_DIR} )
 

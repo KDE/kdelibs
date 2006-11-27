@@ -333,6 +333,14 @@ Desktop Entry Spec</a>
 
 <h4>KMD5</h4>
 
+<h4>KMimeSourceFactory</h4>
+<ul>
+  <li>KMimeSourceFactory was automatically instanciated by KApplication which allowed the use of "icon:name" in Qt richtext.
+      Q3MimeSourceFactory being in Qt3Support, and this feature being very rarely used, K3MimeSourceFactory isn't instanciated
+      automatically anymore, you need to call K3MimeSourceFactory::install() in your main if you still depend on this feature.</li>
+  <li>
+</ul>
+
 <h4>KNetwork::KResolver</h4>
 <ul>
 <li>the signal finished(KResolverResults) is now finished(const KNetwork::KResolverResults&amp;)</li>
