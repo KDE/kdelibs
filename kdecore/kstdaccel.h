@@ -76,7 +76,7 @@ namespace KStdAccel
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
 
-    RotateUp, RotateDown,
+    RotateUp, RotateDown
   };
 
   /**
