@@ -625,8 +625,6 @@ public:
      */
     QWidget* container( int index ) const;
 
-private:
-	void testing_hack();
 public:
 
 signals:
