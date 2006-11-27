@@ -24,21 +24,22 @@
 #include <qmap.h>
 #include <qstringlist.h>
 #include <qsettings.h>
+#include <qcoreapplication.h>
 
-#include <kapplication.h>
+#include <kinstance.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 
-static const char desc[] = I18N_NOOP("KDE Tool to build a cache list of all pixmap themes installed");
-static const char ver[] = "0.9.1";
+//static const char desc[] = I18N_NOOP("KDE Tool to build a cache list of all pixmap themes installed");
+//static const char ver[] = "0.9.1";
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kinstalltheme", I18N_NOOP("KInstalltheme"), desc, ver);
-    KApplication qapp(false);
+    KInstance instance("kinstalltheme"); // TODO use KAboutData
+    QCoreApplication qapp(argc, argv);
 
     KGlobal::dirs()->addResourceType("themercs", KGlobal::dirs()->kde_default("data")+QString("kstyle/themes"));
     QStringList themercs = KGlobal::dirs()->findAllResources("themercs","*.themerc");
