@@ -506,7 +506,7 @@ void KApplication::init()
 
   (void) KClipboardSynchronizer::self();
 
-  extern bool kde_kdebug_enable_dbus_interface;
+  extern KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface;
   kde_kdebug_enable_dbus_interface = true;
 
   QApplication::setDesktopSettingsAware( false );
@@ -872,7 +872,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("style"))
     {
-        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        extern KDECORE_EXPORT QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
         QStringList styles = QStyleFactory::keys();
         QString reqStyle(QLatin1String(args->getOption("style").toLower()));
 
