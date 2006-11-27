@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "test2.h"
 #include "kinstance.h"
 
-int main( int, char* )
+int main( int, char** )
 {
   KInstance i("test");
   Test2 *t = new Test2();
