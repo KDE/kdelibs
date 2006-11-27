@@ -22,29 +22,13 @@
 #ifndef _KDEBUG_H_
 #define _KDEBUG_H_
 
+#include <qdebug.h>
 #include <qstring.h>
 #include "kdelibs_export.h"
 
 class QWidget;
 class KDateTime;
-class QDateTime;
-class QDate;
-class QTime;
-class QPoint;
-class QPointF;
-class QSize;
-class QSizeF;
-class QRect;
-class QRectF;
-class QRegion;
 class KUrl;
-class QStringList;
-class QColor;
-class QPen;
-class QBrush;
-class QVariant;
-template <class T>
-class QList;
 
 class kdbgstream;
 class kndbgstream;
@@ -277,115 +261,10 @@ class KDECORE_EXPORT kdbgstream {
 
     /**
      * Prints the given value.
-     * @param dateTime the datetime to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QDateTime& dateTime );
-
-    /**
-     * Prints the given value.
-     * @param date the date to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QDate& date );
-
-    /**
-     * Prints the given value.
-     * @param time the time to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QTime& time );
-
-    /**
-     * Prints the given value.
-     * @param point the point to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QPoint& point );
-
-    /**
-     * Prints the given value.
-     * @param point the point to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QPointF& point );
-
-    /**
-     * Prints the given value.
-     * @param size the QSize to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QSize& size );
-
-    /**
-     * Prints the given value.
-     * @param size the QSize to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QSizeF& size );
-
-    /**
-     * Prints the given value.
-     * @param rect the QRect to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QRect& rect);
-
-    /**
-     * Prints the given value.
-     * @param rect the QRect to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QRectF& rect);
-
-    /**
-     * Prints the given value.
-     * @param region the QRegion to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QRegion& region);
-
-    /**
-     * Prints the given value.
      * @param url the url to print
      * @return this stream
      */
     kdbgstream& operator << ( const KUrl& url );
-
-    /**
-     * Prints the given value.
-     * @param list the stringlist to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QStringList& list);
-
-    /**
-     * Prints the given value.
-     * @param color the color to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QColor& color);
-
-    /**
-     * Prints the given value.
-     * @param pen the pen to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QPen& pen );
-
-    /**
-     * Prints the given value.
-     * @param brush the brush to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QBrush& brush );
-
-    /**
-     * Prints the given value.
-     * @param variant the variant to print
-     * @return this stream
-     */
-    kdbgstream& operator << ( const QVariant& variant );
 
     /**
      * Prints the given bytearray value, interpreting it as either
@@ -397,31 +276,30 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream& operator << ( const QByteArray& data );
 
     /**
-     * Prints the given value
-     * @param list the list to print
+     * Fallback that invokes QDebug for all types that don't have
+     * a kdebstream operator.
+     * @param t the value to be printed
      * @return this stream
      */
-    template <class T>
-    kdbgstream& operator << ( const QList<T> &list );
+    template <typename T>
+    kdbgstream& operator << (const T &t);
 
  private:
     class Private;
     mutable Private* d;
 };
 
-template <class T>
-kdbgstream &kdbgstream::operator<<( const QList<T> &list )
+template <typename T>
+kdbgstream &kdbgstream::operator<<(const T &t)
 {
-    *this << "(";
-    if ( !list.isEmpty() ) {
-      typename QList<T>::ConstIterator it = list.begin();
-      *this << *it;
-      while (++it != list.end()) {
-        *this << "," << *it;
-      }
-    }
-    *this << ")";
+#if defined(QT_NO_DEBUG_STREAM)
     return *this;
+#else
+    QString out;
+    QDebug qdbg(&out);
+    qdbg << t;
+    return operator<<(out);
+#endif
 }
 
 /**

@@ -44,13 +44,6 @@
 #include <qpixmap.h>
 
 #include <qstring.h>
-#include <qpoint.h>
-#include <qrect.h>
-#include <qregion.h>
-#include <qstringlist.h>
-#include <qpen.h>
-#include <qbrush.h>
-#include <qsize.h>
 #include <qapplication.h>
 
 #include <kurl.h>
@@ -162,7 +155,7 @@ enum DebugLevels {
 
 struct kDebugPrivate {
   kDebugPrivate() :
-  	oldarea(0), config(0) { }
+	oldarea(0), config(0) { }
 
   ~kDebugPrivate() { delete config; }
 
@@ -514,76 +507,9 @@ kdbgstream& kdbgstream::operator<<( const KDateTime& time) {
     }
     return *this;
 }
-kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
-    if ( d->print )
-        d->output += time.toString();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QDate& date) {
-    if ( d->print )
-        d->output += date.toString();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QTime& time ) {
-    if ( d->print )
-        d->output += time.toString();
-    return *this;
-}
 kdbgstream& kdbgstream::operator<<( KDBGFUNC f ) {
     if ( d->print )
         return (*f)(*this);
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
-    if ( d->print )
-        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QPointF& p ) {
-    if ( d->print )
-        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QSize& s ) {
-    if ( d->print )
-        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
-	                 .arg(s.height());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QSizeF& s ) {
-    if ( d->print )
-        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
-                         .arg(s.height());
-    return *this;
-}
-template <class Rect>
-static QString s_rectString(const Rect& r)
-{
-    QString str = QString::fromAscii("[%1,%2 - %3x%4]");
-    return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
-}
-kdbgstream& kdbgstream::operator<<( const QRect& r ) {
-    if( d->print )
-        d->output += s_rectString( r );
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QRectF& r ) {
-    if( d->print )
-        d->output += s_rectString( r );
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
-    if( !d->print )
-        return *this;
-
-    d->output += QLatin1String( "[ " );
-
-    QVector<QRect>rs=reg.rects();
-    for (int i=0;i<rs.size();++i)
-        d->output += s_rectString( rs[i] ) + QLatin1Char( ' ' );
-
-    d->output += QLatin1String( "]" );
-
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const KUrl& u ) {
@@ -591,78 +517,6 @@ kdbgstream& kdbgstream::operator<<( const KUrl& u ) {
         d->output += u.prettyUrl();
     return *this;
 }
-kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
-    if ( !d->print ) return *this;
-    return *this << static_cast<QList<QString> >(l);
-}
-static QString s_makeColorName(const QColor& c) {
-    QString s = QLatin1String("(invalid/default)");
-    if ( c.isValid() )
-        s = c.name();
-    return s;
-}
-kdbgstream& kdbgstream::operator<<( const QColor& c ) {
-    if ( d->print )
-        d->output += s_makeColorName( c );
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QPen& p ) {
-    static const char* const s_penStyles[] = {
-        "NoPen", "SolidLine", "DashLine", "DotLine", "DashDotLine",
-        "DashDotDotLine" };
-    static const char* const s_capStyles[] = {
-        "FlatCap", "SquareCap", "RoundCap" };
-
-    if ( !d->print )
-        return *this;
-
-    d->output += QLatin1String("[ style:");
-    d->output += QLatin1String(s_penStyles[ p.style() ]);
-    d->output += QString::fromAscii(" width:%1").arg(p.width());
-    d->output += QLatin1String(" color:") + s_makeColorName( p.color() );
-    if ( p.width() > 0 ) // cap style doesn't matter, otherwise
-    {
-        d->output += QLatin1String(" capstyle:") +
-	             QLatin1String(s_capStyles[ p.capStyle() >> 4 ]);
-        // join style omitted
-    }
-    d->output += QLatin1String(" ]");
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QBrush& b) {
-    static const char* const s_brushStyles[] = {
-        "NoBrush", "SolidPattern", "Dense1Pattern", "Dense2Pattern", "Dense3Pattern",
-        "Dense4Pattern", "Dense5Pattern", "Dense6Pattern", "Dense7Pattern",
-        "HorPattern", "VerPattern", "CrossPattern", "BDiagPattern", "FDiagPattern",
-        "DiagCrossPattern", "LinearGradientPattern", "ConicalGradientPattern",
-        "RadialGradientPattern", "TexturePattern"
-    };
-
-    d->output += QLatin1String("[ style: ");
-    d->output += QLatin1String(s_brushStyles[ b.style() ]);
-    d->output += QLatin1String(" color: ");
-    d->output += s_makeColorName( b.color() );
-    if ( !b.texture().isNull() )
-        d->output += QLatin1String(" has a pixmap");
-    d->output += QLatin1String(" ]");
-    return *this;
-}
-
-kdbgstream& kdbgstream::operator<<( const QVariant& v) {
-    if ( !d->print )
-        return *this;
-
-    d->output += QLatin1String("[variant: ") +
-                 QLatin1String( v.typeName() );
-
-    // For now we just attempt a conversion to string.
-    // Feel free to switch(v.type()) and improve the output.
-    if ( v.canConvert(QVariant::String) )
-        *this << QLatin1String(" toString=") + v.toString();
-    d->output += QLatin1Char(']');
-    return *this;
-}
-
 kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!d->print) return *this;
     bool isBinary = false;
