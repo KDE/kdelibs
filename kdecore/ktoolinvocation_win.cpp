@@ -18,7 +18,6 @@
 */
 
 // TODO: http://mail.kde.org/pipermail/kde-buildsystem/2006-July/003147.html
-//#include "ktoolinvocation_x11.cpp"
 
 #if 1
 
@@ -70,121 +69,6 @@
 #warning Implement the commented methods!
 #endif
 Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
-
-int
-KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
-                                 QString *error, QString *serviceNAme, int *pid,
-                                 const QByteArray &startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   QStringList URLs;
-   if (!URL.isEmpty())
-      URLs.append(URL);
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-int
-KToolInvocation::startServiceByName( const QString& _name, const QStringList &URLs,
-                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-int
-KToolInvocation::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   QStringList URLs;
-   if (!URL.isEmpty())
-      URLs.append(URL);
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-int
-KToolInvocation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-int
-KToolInvocation::startServiceByDesktopName( const QString& _name, const QString &URL,
-                  QString *error, QString *serviceName, int *pid, const QByteArray& startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   QStringList URLs;
-   if (!URL.isEmpty())
-      URLs.append(URL);
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-int
-KToolInvocation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                  QString *error, QString *serviceName, int *pid, const QByteArray& startup_id, bool noWait )
-{
-/*
-   THREADGUARD;
-   return startServiceInternal(dcopClient(),
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
-                      _name, URLs, error, dcopService, pid, startup_id, noWait);
-*/
-	return 0;
-}
-
-
-int
-KToolInvocation::kdeinitExec( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const QByteArray& startup_id )
-{
-/*
-   THREADGUARD;
-   return startServiceInternal(dcopClient(),"kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
-        name, args, error, 0, pid, startup_id, false);
-*/
-	return 0;
-}
-
-
-int
-KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
-                           QString *error, int *pid, const QByteArray& startup_id )
-{
-/*
-   THREADGUARD;
-   return startServiceInternal(dcopClient(),"kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
-        name, args, error, 0, pid, startup_id, false);
-*/
-	return 0;
-}
-
 
 #if 1  // TODO: merge with relating parts from x11
 

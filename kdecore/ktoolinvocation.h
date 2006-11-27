@@ -336,12 +336,11 @@ private:
    */
   static void startKdeinit();
 
-#ifdef Q_WS_X11
   int startServiceInternal(const char *_function,
                            const QString& _name, const QStringList &URLs,
                            QString *error, QString *serviceName, int *pid,
                            const QByteArray& startup_id, bool noWait);
-#endif
+  static bool isMainThreadActive(QString* error = 0);
 };
 
 #endif
