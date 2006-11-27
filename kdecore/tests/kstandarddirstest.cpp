@@ -31,7 +31,8 @@ QTEST_KDEMAIN( KStandarddirsTest, NoGUI )
 void KStandarddirsTest::testLocateLocal()
 {
     const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
-    QCOMPARE( configLocal, QDir::homePath() + "/.kde-unit-test/share/config/ksomethingrc" );
+    // KStandardDirs resolves symlinks, so we must compare with canonicalPath()
+    QCOMPARE( configLocal, QDir::home().canonicalPath() + "/.kde-unit-test/share/config/ksomethingrc" );
 }
 
 void KStandarddirsTest::testSaveLocation()
