@@ -35,7 +35,7 @@ class QString;
  * be called by the default crash handler, giving the application a chance
  * to save its data.
  */
-class KDECORE_EXPORT KCrash
+class KDEUI_EXPORT KCrash
 {
  public:
   /**

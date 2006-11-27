@@ -60,7 +60,7 @@ class KStartupInfoData;
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDECORE_EXPORT KStartupInfo
+class KDEUI_EXPORT KStartupInfo
     : public QObject
     {
     Q_OBJECT
@@ -378,7 +378,7 @@ class KDECORE_EXPORT KStartupInfo
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDECORE_EXPORT KStartupInfoId
+class KDEUI_EXPORT KStartupInfoId
     {
     public:
 	/**
@@ -449,7 +449,7 @@ class KDECORE_EXPORT KStartupInfoId
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDECORE_EXPORT KStartupInfoData
+class KDEUI_EXPORT KStartupInfoData
     {
     public:
 	/**

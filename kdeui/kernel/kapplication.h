@@ -79,7 +79,7 @@ class KUrl;
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */
-class KDECORE_EXPORT KApplication : public QApplication, public KInstance
+class KDEUI_EXPORT KApplication : public QApplication, public KInstance
 {
     /**
       @port4 isRestored() should now use qApp->isSessionRestored().
@@ -548,7 +548,7 @@ private:
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
  */
-class KDECORE_EXPORT KSessionManaged
+class KDEUI_EXPORT KSessionManaged
 {
 public:
   KSessionManaged();

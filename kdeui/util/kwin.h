@@ -58,7 +58,7 @@ class QString;
  * @see NetWinInfo
  * @author Matthias Ettrich (ettrich@kde.org)
 */
-class KDECORE_EXPORT KWin
+class KDEUI_EXPORT KWin
 {
 public:
 
@@ -437,7 +437,7 @@ public:
 /**
  * Information about a window.
  */
-class KDECORE_EXPORT KWin::WindowInfo
+class KDEUI_EXPORT KWin::WindowInfo
 {
 public:
     /**

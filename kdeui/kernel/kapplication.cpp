@@ -127,7 +127,7 @@ static Atom kde_xdnd_drop;
 
 // duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
 // replaced by unpatched one
-KDECORE_EXPORT bool qt_qclipboard_bailout_hack = false;
+KDEUI_EXPORT bool qt_qclipboard_bailout_hack = false;
 
 template class QList<KSessionManaged*>;
 

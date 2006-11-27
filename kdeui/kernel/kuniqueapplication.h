@@ -42,7 +42,7 @@
  * @see KApplication DCOPObject
  * @author Preston Brown <pbrown@kde.org>
  */
-class KDECORE_EXPORT KUniqueApplication : public KApplication
+class KDEUI_EXPORT KUniqueApplication : public KApplication
 {
   Q_OBJECT
 public:
