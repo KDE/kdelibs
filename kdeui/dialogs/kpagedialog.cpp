@@ -121,7 +121,7 @@ KPageWidgetItem* KPageDialog::currentPage() const
   return d->mPageWidget->currentPage();
 }
 
-KPageWidget* KPageDialog::pageWidget() const
+KPageWidget* KPageDialog::pageWidget()
 {
   return d->mPageWidget;
 }
