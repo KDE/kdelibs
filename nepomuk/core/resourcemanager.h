@@ -72,7 +72,7 @@ namespace Nepomuk {
       public Q_SLOTS:
 	/**
 	 * Enable or disable autosync. If autosync is enabled (which is the default)
-	 * all Resource objects wil be synced with the local storage automatically.
+	 * all Resource objects will be synced with the local storage automatically.
 	 */
 	void setAutoSync( bool enabled );
 
