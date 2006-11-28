@@ -431,6 +431,13 @@
 # endif
 #endif
 
+#ifndef KROSSCORE_EXPORT
+# ifdef MAKE_KROSSCORE_LIB
+#  define KROSSCORE_EXPORT KDE_EXPORT
+# else
+#  define KROSSCORE_EXPORT KDE_IMPORT
+# endif
+#endif
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
