@@ -97,7 +97,7 @@ void KMimeMagic::initStatic()
 #define MIME_INODE_CDEV        "inode/chardevice"
 #define MIME_INODE_BDEV        "inode/blockdevice"
 #define MIME_INODE_FIFO        "inode/fifo"
-#define MIME_INODE_LINK        "inode/link"
+#define MIME_INODE_LINK        "inode/symlink"
 #define MIME_INODE_SOCK        "inode/socket"
 // Following should go in magic-file - Fritz
 #define MIME_APPL_TROFF        "application/x-troff"
