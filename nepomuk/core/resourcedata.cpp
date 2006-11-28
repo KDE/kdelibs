@@ -14,9 +14,12 @@
 
 #include "resourcedata.h"
 #include "resourcemanager.h"
+#include "ontology.h"
 
 #include <knep/knep.h>
 #include <knep/services/tripleservice.h>
+#include <knep/services/statementlistiterator.h>
+
 
 using namespace Nepomuk::Backbone::Services;
 using namespace Nepomuk::Backbone::Services::RDF;
@@ -52,28 +55,53 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
   TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
   
   // the resource has to exists either as a subject or as an object
-  return( !ts.contains( "FIXME: proper graph id", Statement( uri, Node(), Node() ) ) || 
-	  !ts.contains( "FIXME: proper graph id", Statement( Node(), Node(), uri ) ) );
+  return( !ts.contains( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) || 
+	  !ts.contains( Ontology::defaultGraph(), Statement( Node(), Node(), uri ) ) );
 }
 
 
-/**
- * \return false if the resource does not exist in the local NEPOMUK DB.
- */
 bool Nepomuk::KMetaData::ResourceData::load()
 {
-  // FIXME: load everything from the store and mark it as non-modified
-  // Do not load recursively. Instead load other resources on first access.
-  return false;
+  properties.clear();
+
+  TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
+
+  StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ), &ts );
+  while( it.hasNext() ) {
+    const Statement& s = it.next();
+    if( s.object.type == NodeResource )
+      properties.insert( s.predicate.value, qMakePair<Variant, int>( Resource( s.object.value ), 0 ) );
+    else // FIXME: how do we handle integers and so on?
+      properties.insert( s.predicate.value, qMakePair<Variant, int>( s.object.value, 0 ) );
+  }
+
+  return true;
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::save()
 {
-  // FIXME: save everything back to the store.
-  //        Should we make this recursive or not?
-  // problem: what if it was created in the meantime but has another type?
-  return false;
+  TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
+
+  // save the type
+  if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) )
+    return false;
+
+  // save the properties
+  for( PropertiesMap::const_iterator it = properties.constBegin();
+       it != properties.constEnd(); ++it ) {
+    QString predicate = it.key();
+    if( it.value().first.isResource() ) {
+      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, it.value().first.toResource().uri() ) ) )
+	return false;
+    }
+    else {
+      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( it.value().first.toString(), NodeLiteral ) ) ) )
+	return false;
+    }
+  }
+
+  return true;
 }
 
 

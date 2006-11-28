@@ -72,6 +72,7 @@ namespace Nepomuk {
 	Variant( const QRegExp& regExp );
 	Variant( Qt::GlobalColor color );
 
+	bool isResource() const;
 	Variant( const Resource& r );
 	Resource toResource() const;
       };

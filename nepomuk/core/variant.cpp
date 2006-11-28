@@ -241,3 +241,9 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::Variant::toResource() const
 {
   return value<Resource>();
 }
+
+
+bool Nepomuk::KMetaData::Variant::isResource() const
+{
+  return( userType() == qMetaTypeId<Resource>() );
+}

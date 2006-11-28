@@ -12,6 +12,7 @@ set(kmetadata_LIB_SRCS
   resource.cpp
   resourcedata.cpp
   resourcemanager.cpp
+  ontology.cpp
 )
 
 kde4_automoc(kmetadata ${kmetadata_LIB_SRCS})
@@ -27,5 +28,6 @@ install(FILES
   resource.h
   resourcemanager.h
   kmetadata.h
+  ontology.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
 )
