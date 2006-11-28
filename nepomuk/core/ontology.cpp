@@ -14,15 +14,29 @@
 
 #include "ontology.h"
 
-QString Nepomuk::Ontology::defaultGraph()
+QString Nepomuk::KMetaData::Ontology::defaultGraph()
 {
   // FIXME: replace this with the real thing
   return "http://nepomuk.semanticdesktop.org/metadata";
 }
 
 
-QString Nepomuk::Ontology::typePredicate()
+QString Nepomuk::KMetaData::Ontology::typePredicate()
 {
   // FIXME: replace this with the real thing
   return "http://nepomuk.semanticdesktop.org/ontology/type";
+}
+
+
+QString Nepomuk::KMetaData::Ontology::valueToRDFLiteral( const Variant& v )
+{
+  // FIXME: replace this with the real thing
+  return v.toString();
+}
+
+
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Ontology::RDFLiteralToValue( const QString& s )
+{
+  // FIXME: replace this with the real thing
+  return Variant( s );
 }

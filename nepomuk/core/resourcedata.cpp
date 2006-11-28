@@ -71,8 +71,8 @@ bool Nepomuk::KMetaData::ResourceData::load()
     const Statement& s = it.next();
     if( s.object.type == NodeResource )
       properties.insert( s.predicate.value, qMakePair<Variant, int>( Resource( s.object.value ), 0 ) );
-    else // FIXME: how do we handle integers and so on?
-      properties.insert( s.predicate.value, qMakePair<Variant, int>( s.object.value, 0 ) );
+    else
+      properties.insert( s.predicate.value, qMakePair<Variant, int>( Ontology::RDFLiteralToValue( s.object.value ), 0 ) );
   }
 
   return true;
@@ -96,7 +96,9 @@ bool Nepomuk::KMetaData::ResourceData::save()
 	return false;
     }
     else {
-      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( it.value().first.toString(), NodeLiteral ) ) ) )
+      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, 
+								predicate, 
+								Node( Ontology::valueToRDFLiteral( it.value().first ), NodeLiteral ) ) ) )
 	return false;
     }
   }
