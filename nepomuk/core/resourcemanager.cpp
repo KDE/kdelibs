@@ -1,0 +1,94 @@
+/* 
+ *
+ * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
+ *
+ * This file is part of the Nepomuk KDE project.
+ * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * See the file "COPYING" for the exact licensing terms.
+ */
+
+#include "resourcemanager.h"
+#include "resource.h"
+#include "resourcedata.h"
+
+#include <knep/knep.h>
+
+#include <kstaticdeleter.h>
+
+
+class Nepomuk::KMetaData::ResourceManager::Private
+{
+public:
+  Private()
+    : autoSync(true) {
+  }
+
+  bool autoSync;
+  Nepomuk::Backbone::Registry* registry;
+};
+
+
+Nepomuk::KMetaData::ResourceManager::ResourceManager()
+  : QObject()
+{
+  d = new Private();
+  d->registry = new Backbone::Registry( this );
+}
+
+
+Nepomuk::KMetaData::ResourceManager::~ResourceManager()
+{
+  delete d;
+}
+
+
+KStaticDeleter<Nepomuk::KMetaData::ResourceManager> s_resourceManagerDeleter;
+
+Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instance()
+{
+  static ResourceManager* s_instance = 0;
+  if( !s_instance )
+    s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
+  return s_instance;
+}
+
+
+Nepomuk::Backbone::Registry* Nepomuk::KMetaData::ResourceManager::serviceRegistry() const
+{
+  return d->registry;
+}
+
+
+bool Nepomuk::KMetaData::ResourceManager::autoSync() const
+{
+  return d->autoSync;
+}
+
+
+Nepomuk::KMetaData::Resource Nepomuk::KMetaData::ResourceManager::createResourceFromUri( const QString& uri )
+{
+  return Resource( uri, QString() );
+}
+
+
+void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
+{
+  d->autoSync = enabled;
+}
+
+
+void Nepomuk::KMetaData::ResourceManager::syncAll()
+{
+  for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
+       it != ResourceData::s_data.end(); ++it ) {
+    if( it.value()->merge() )
+      it.value()->save();
+  }
+}
+
+#include "resourcemanager.moc"
