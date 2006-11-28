@@ -29,4 +29,17 @@ install(TARGETS krosscore  DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 
-install( FILES krossconfig.h errorinterface.h childreninterface.h metatype.h interpreter.h script.h action.h actioncollection.h manager.h guiclient.h model.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
+install( FILES 
+	krossconfig.h 
+	errorinterface.h 
+	childreninterface.h 
+	metatype.h 
+	interpreter.h 
+	script.h 
+	action.h 
+	actioncollection.h 
+	manager.h 
+	guiclient.h 
+	model.h 
+	DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
+
