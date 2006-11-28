@@ -41,7 +41,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kprotocolinfo.h>
 #include <kinstance.h>
 #include "kclipboard.h"
-//#include "../kdeui/util/kglobalaccel.h"
 #include "kstaticdeleter.h"
 
 #include <qcolor.h>
@@ -53,7 +52,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <qfontinfo.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
-#include <q3stylesheet.h> // no equivalent in Qt4
+//#include <q3stylesheet.h> // no equivalent in Qt4
 #include <QApplication>
 #include <QtDBus/QtDBus>
 #include <qstylefactory.h>
@@ -638,7 +637,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
                     s.handed = KMouseSettings::LeftHanded;
             }
 #else
-        // FIXME(E): Implement in Qt Embedded
+        // FIXME: Implement on other platforms
 #endif
         }
 #endif //Q_WS_WIN
@@ -985,11 +984,13 @@ void KGlobalSettings::kdisplaySetFont()
         QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
         QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
 
+#if 0
         // "patch" standard QStyleSheet to follow our fonts
         Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
         sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
         sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
         sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
+#endif
 
         emit kdisplayFontChanged();
         emit appearanceChanged();
