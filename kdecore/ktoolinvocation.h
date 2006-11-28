@@ -21,17 +21,21 @@
 #ifndef _KTOOLINVOCATION_H
 #define _KTOOLINVOCATION_H
 
-// Version macros. Never put this further down.
-#include "kdeversion.h"
+#include "kdeversion.h" // TODO remove
 #include "kdelibs_export.h"
 
-#include "kurl.h"
+#include "kurl.h" // TODO replace with class KUrl;
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
 
 class OrgKdeKLauncherInterface;
+
 /**
+ * KToolInvocation: for starting other programs
+ *
+ * \section desktopfiles Desktop files for startServiceBy
+ *
  * The way a service gets started depends on the 'X-DBUS-StartupType'
  * entry in the desktop file of the service:
  *
@@ -45,14 +49,17 @@ class OrgKdeKLauncherInterface;
  * @li X-DBUS-StartupType=Unique
  *    Only start the service if it isn't already running,
  *    wait until the service has registered with dbus.
- */
-
-/**
- *The static members (exception is the self() member, have to be called from the QApplication main thread.
- *Calls to members are only allowed if there is a Q(Core)Application object created
- *If you call the members with signal/slot connections across threads, you can't use the return values
- *If a function is called from the wrong thread and it has a return value -1 is returned
- *Investigate if this is really needed or if DCOP/DBUS is threadsafe anyway
+ * The .desktop file can specify the name that the application will use when registering
+ * using X-DBUS-ServiceName=org.domain.mykapp. Otherwise org.kde.binaryname is assumed.
+ *
+ * \section thread Multi-threading
+ *
+ * The static members (apart from self()), have to be called from the QApplication main thread.
+ * Calls to members are only allowed if there is a Q(Core)Application object created
+ * If you call the members with signal/slot connections across threads, you can't use the return values
+ * If a function is called from the wrong thread and it has a return value -1 is returned
+ * Investigate if this is really needed or if DCOP/DBUS is threadsafe anyway
+ *
  */
 class KDECORE_EXPORT KToolInvocation : public QObject
 {
