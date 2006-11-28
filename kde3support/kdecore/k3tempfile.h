@@ -52,7 +52,7 @@ class KSaveFile;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT_DEPRECATED K3TempFile
+class KDE3SUPPORT_EXPORT K3TempFile
 {
    friend class KSaveFile;
 public:

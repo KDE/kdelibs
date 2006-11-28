@@ -36,7 +36,7 @@ class K3MimeSourceFactoryPrivate;
  *
  * @author Peter Putzer <putzer@kde.org>
  */
-class KDECORE_EXPORT K3MimeSourceFactory : public Q3MimeSourceFactory
+class KDE3SUPPORT_EXPORT K3MimeSourceFactory : public Q3MimeSourceFactory
 {
 public:
 
