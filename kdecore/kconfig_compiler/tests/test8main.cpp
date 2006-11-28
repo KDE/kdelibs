@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "test8b.h"
 #include "kinstance.h"
 
-int main( int, char )
+int main( int, char** )
 {
   KInstance i("test");
   Test8a *config1 = new Test8a( KSharedConfig::openConfig( QString::null ) );

@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "test6.h"
 #include "kinstance.h"
 
-int main( int, char )
+int main( int, char** )
 {
   KInstance i("test");
   Test6 *t = new Test6(QString::null);

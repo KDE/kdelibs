@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <qdir.h>
 
-int main( int, char )
+int main( int, char** )
 {
   KInstance i("test");
   Test9 *t = new Test9( QString::null, QString::null );
