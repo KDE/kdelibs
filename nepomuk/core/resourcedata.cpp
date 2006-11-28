@@ -18,6 +18,7 @@
 
 #include <knep/knep.h>
 #include <knep/services/tripleservice.h>
+#include <knep/services/resourceidservice.h>
 #include <knep/services/statementlistiterator.h>
 
 
@@ -221,9 +222,17 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
 
 Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uri, const QString& type )
 {
-  QHash<QString, ResourceData*>::iterator it = s_data.find( uri );
+  // Do some URI matching maybe using the ResourceIdent Service
+  ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
+  QString uniqueUri = resids.toUniqueUrl( uri );
+  if( uniqueUri.isEmpty() ) {
+    qDebug() << "(ResourceData) determining unique URI failed. Falling back to plain URI." << endl;
+    uniqueUri = uri;
+  }
+
+  QHash<QString, ResourceData*>::iterator it = s_data.find( uniqueUri );
   if( it == s_data.end() ) {
-    ResourceData* d = new ResourceData( uri, type );
+    ResourceData* d = new ResourceData( uniqueUri, type );
 
     s_data[uri] = d;
 

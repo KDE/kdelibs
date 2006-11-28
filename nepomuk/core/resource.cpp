@@ -25,7 +25,6 @@ Nepomuk::KMetaData::Resource::Resource()
 
 Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
 {
-  // FIXME: Do some URI matching maybe using the ResourceIdent Service
   d = ResourceData::data( uri, type );
 }
 
