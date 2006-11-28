@@ -29,7 +29,10 @@ Type=QString
 [PropertyDef::X-KDE-StartupNotify]
 Type=bool
 
-[PropertyDef::X-DCOP-ServiceName]
+[PropertyDef::X-DBUS-ServiceName]
+Type=QString
+
+[PropertyDef::X-DBUS-StartupType]
 Type=QString
 
 [PropertyDef::X-KDE-ParentApp]
