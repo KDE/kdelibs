@@ -50,26 +50,26 @@ QList<QProcess *>processList;
 
 #define TRACE() fprintf(stderr,"%s\n",__FUNCTION__)
 
-/* note: 
+/* note:
    this is an initial version of klauncher for win32
-   by replacing all kdeinit related calls (mywrite/myread) to a local handler 
-   handle_request() which is mostly taken from the related parts of kinit.cpp 
-   
-   The current state is, that klauncher is registrated in dbus, request are processed 
-   but process fails to start because of missing shared libraries. 
-   
-   @TODO: fix indention 
-   @TODO: remove TRACE, when debugging is over 
+   by replacing all kdeinit related calls (mywrite/myread) to a local handler
+   handle_request() which is mostly taken from the related parts of kinit.cpp
+
+   The current state is, that klauncher is registrated in dbus, request are processed
+   but process fails to start because of missing shared libraries.
+
+   @TODO: fix indention
+   @TODO: remove TRACE, when debugging is over
    @TODO: implement kio slave starting
    @TODO: added env support
-   
+
 */
 klauncher_header response_header;
 char response_data[1024];
 
 /*
   @TODO: need some cleanup
-*/    
+*/
 int handle_request(klauncher_header request_header, char *request_data)
 {
    TRACE();
@@ -189,7 +189,7 @@ int handle_request(klauncher_header request_header, char *request_data)
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
           tty, avoid_loops, startup_id_str );
 
-*/   
+*/
 
     if (pid) {
       response_header.cmd = LAUNCHER_OK;
@@ -204,7 +204,7 @@ int handle_request(klauncher_header request_header, char *request_data)
       strcpy(response_data,error);
       fprintf(stderr,"return error\n");
     }
-    return 0;     
+    return 0;
   }
 }
 
@@ -234,7 +234,7 @@ int mywrite(int sock, void *p, int len)
   else {
     waitforData = 0;
     handle_request(request_header,buf);
-  }  
+  }
   return len;
 }
 int myread(int sock, void *buf, int len)
@@ -243,14 +243,14 @@ int myread(int sock, void *buf, int len)
   static int sendData = 0;
   klauncher_header *request_header = (klauncher_header*)buf;
   fprintf(stderr,"cmd=%d",response_header.cmd);
-  
+
   if (response_header.cmd && sendData) {
     memcpy(buf,response_data,response_header.arg_length);
     sendData = 0;
     response_header.cmd = 0;
     fprintf(stderr,"read data len=%d return len=%d\n",len,response_header.arg_length);
     return sizeof(response_header.arg_length);
-  } 
+  }
   else if (response_header.cmd) {
     fprintf(stderr,"return header\n");
     request_header->cmd = response_header.cmd;
@@ -570,30 +570,18 @@ KLauncher::slotKDEInitData(int)
      switch(lastRequest->dbus_startup_type)
      {
        case KService::DBUS_None:
-       {
          lastRequest->status = KLaunchRequest::Running;
          break;
-       }
-
        case KService::DBUS_Unique:
-       {
-         lastRequest->status = KLaunchRequest::Launching;
-         break;
-       }
-
        case KService::DBUS_Wait:
-       {
-         lastRequest->status = KLaunchRequest::Launching;
-         break;
-       }
-
        case KService::DBUS_Multi:
-       {
          lastRequest->status = KLaunchRequest::Launching;
          break;
-       }
      }
-     requestDone(lastRequest);
+     // ######### BUG:
+     requestDone(lastRequest); // #### This is wrong, if status==Launching! We have to wait for DBUS registration!
+     // #########
+
      lastRequest = 0;
      return;
    }
@@ -973,20 +961,18 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       return false;
    }
 
-   request->name = request->arg_list.first();
-   request->arg_list.removeFirst(); //(request->arg_list.begin());
-
+   request->name = request->arg_list.takeFirst();
    request->dbus_startup_type =  service->DBUSStartupType();
 
    if ((request->dbus_startup_type == KService::DBUS_Unique) ||
        (request->dbus_startup_type == KService::DBUS_Multi))
    {
-      QVariant v = service->property("X-DCOP-ServiceName");
+      QVariant v = service->property("X-DBUS-ServiceName");
       if (v.isValid())
          request->dbus_name = v.toString().toUtf8();
       if (request->dbus_name.isEmpty())
       {
-         request->dbus_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
+         request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
       }
    }
 

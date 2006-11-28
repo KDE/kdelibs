@@ -333,28 +333,13 @@ KLauncher::slotKDEInitData(int)
      switch(lastRequest->dbus_startup_type)
      {
        case KService::DBUS_None:
-       {
          lastRequest->status = KLaunchRequest::Running;
          break;
-       }
-
        case KService::DBUS_Unique:
-       {
-         lastRequest->status = KLaunchRequest::Launching;
-         break;
-       }
-
        case KService::DBUS_Wait:
-       {
-         lastRequest->status = KLaunchRequest::Launching;
-         break;
-       }
-
        case KService::DBUS_Multi:
-       {
          lastRequest->status = KLaunchRequest::Launching;
          break;
-       }
      }
      lastRequest = 0;
      return;
@@ -492,8 +477,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       requestResult.result = 1;
       requestResult.dbusName = "";
-      requestResult.error = i18n("KDEInit could not launch '%1'.",
-	  request->name);
+      requestResult.error = i18n("KDEInit could not launch '%1'.", request->name);
       if (!request->errorMsg.isEmpty())
          requestResult.error += ":\n" + request->errorMsg;
       requestResult.pid = 0;
@@ -722,20 +706,18 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       return false;
    }
 
-   request->name = request->arg_list.first();
-   request->arg_list.removeFirst(); //(request->arg_list.begin());
-
+   request->name = request->arg_list.takeFirst();
    request->dbus_startup_type =  service->DBUSStartupType();
 
    if ((request->dbus_startup_type == KService::DBUS_Unique) ||
        (request->dbus_startup_type == KService::DBUS_Multi))
    {
-      QVariant v = service->property("X-DCOP-ServiceName");
+      QVariant v = service->property("X-DBUS-ServiceName");
       if (v.isValid())
          request->dbus_name = v.toString().toUtf8();
       if (request->dbus_name.isEmpty())
       {
-         request->dbus_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
+         request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
       }
    }
 
