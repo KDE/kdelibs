@@ -973,8 +973,14 @@ void QXEmbed::embed(WId w)
             XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
             QApplication::flushX();
             // L1711: See L1610
-            while (!wstate_withdrawn(window))
+            for (int i=0; i < 10000; ++i) {
+                if (wstate_withdrawn(window)) {
+                    Window parent = 0;
+                    get_parent(w, &parent);
+                    if (parent == qt_xrootwin()) break;
+                }
                 USLEEP(1000);
+            }
         }
         // L1710: It would be sufficient in principle to reparent
         //        window w into winId(). Everything else happens in L2020.
