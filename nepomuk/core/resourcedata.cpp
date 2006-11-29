@@ -84,6 +84,11 @@ bool Nepomuk::KMetaData::ResourceData::save()
 {
   TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
 
+  // make sure our graph exists
+  if( !ts.listGraphs().contains( Ontology::defaultGraph() ) )
+    if( ts.addGraph( Ontology::defaultGraph() ) )
+      return false;
+
   // save the type
   if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) )
     return false;
