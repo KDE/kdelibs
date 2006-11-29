@@ -1331,7 +1331,7 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.display = qt_xdisplay();
         c.send_event = True;
         c.event = window;
-        c.window = winId();
+        c.window = window;
         c.x = globalPos.x();
         c.y = globalPos.y();
         c.width = width();
