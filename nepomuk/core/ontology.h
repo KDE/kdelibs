@@ -18,6 +18,7 @@
 #include <QtCore>
 
 #include <kmetadata/variant.h>
+#include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
   namespace KMetaData {
@@ -25,13 +26,17 @@ namespace Nepomuk {
      * This class represents the basic NEPOMUK meta data ontology.
      * It provides information about types and stuff.
      */
-    class Ontology
+    class KMETADATA_EXPORT Ontology
       {
       public:
 	static QString defaultGraph();
 	static QString typePredicate();
 	static QString valueToRDFLiteral( const Variant& );
 	static Variant RDFLiteralToValue( const QString& );
+
+	static QString rdfNamespace();
+	static QString rdfsNamespace();
+	static QString nrlNamespace();
       };
   }
 }

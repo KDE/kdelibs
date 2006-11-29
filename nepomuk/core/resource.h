@@ -56,6 +56,12 @@ namespace Nepomuk {
 	 *
 	 * The actual resource data is loaded on demand. Thus, it is possible to work
 	 * with Resources as if they were in memory all the time.
+	 *
+	 * \param uri The URI identifying the resource in question. This might also be 
+	 *            a file path.
+	 * \param type The URI identifying the type of the resource. If it is empty
+	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema#Resource.
+	 *             In case the resource already exists the type will be ignored.
 	 */
 	Resource( const QString& uri, const QString& type = QString() );
 	virtual ~Resource();

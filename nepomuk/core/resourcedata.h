@@ -83,6 +83,7 @@ namespace Nepomuk {
 	bool m_initialized;
 
 	static QHash<QString, ResourceData*> s_data;
+	static QString s_defaultType;
 
 	friend class ResourceManager;
       };

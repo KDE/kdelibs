@@ -27,6 +27,8 @@ using namespace Nepomuk::Backbone::Services::RDF;
 
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
 
+QString Nepomuk::KMetaData::ResourceData::s_defaultType = Nepomuk::KMetaData::Ontology::rdfsNamespace() + QString("Resource");
+
 
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QString& type_ )
   : uri( uri_ ),
@@ -34,6 +36,8 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QStri
     m_ref(1),
     m_initialized( false )
 {
+  if( !uri.isEmpty() && type.isEmpty() )
+    type = s_defaultType;
 }
 
 

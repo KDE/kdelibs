@@ -14,17 +14,21 @@
 
 #include "ontology.h"
 
+static const QString NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+static const QString NS_RDFS = "http://www.w3.org/2000/01/rdf-schema#";
+
 QString Nepomuk::KMetaData::Ontology::defaultGraph()
 {
   // FIXME: replace this with the real thing
-  return "http://nepomuk.semanticdesktop.org/metadata";
+  static QString s = "http://nepomuk.semanticdesktop.org/metadata";
+  return s;
 }
 
 
 QString Nepomuk::KMetaData::Ontology::typePredicate()
 {
-  // FIXME: replace this with the real thing
-  return "http://nepomuk.semanticdesktop.org/ontology/type";
+  static QString s = NS_RDF + "type";
+  return s;
 }
 
 
@@ -39,4 +43,23 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Ontology::RDFLiteralToValue( con
 {
   // FIXME: replace this with the real thing
   return Variant( s );
+}
+
+
+QString Nepomuk::KMetaData::Ontology::rdfNamespace()
+{
+  return NS_RDF;
+}
+
+
+QString Nepomuk::KMetaData::Ontology::rdfsNamespace()
+{
+  return NS_RDFS;
+}
+
+
+QString Nepomuk::KMetaData::Ontology::nrlNamespace()
+{
+  // FIXME
+  return QString();
 }
