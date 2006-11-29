@@ -1366,18 +1366,18 @@ void Cache::clear()
     bool crash = false;
     for (Q3DictIterator<CachedObject> it(*cache); it.current(); ++it) {
         if (!it.current()->canDelete()) {
-            kdDebug( 6060 ) << " Object in cache still linked to" << endl;
-            kdDebug( 6060 ) << " -> URL: " << it.current()->url() << endl;
-            kdDebug( 6060 ) << " -> #clients: " << it.current()->count() << endl;
+            kDebug( 6060 ) << " Object in cache still linked to" << endl;
+            kDebug( 6060 ) << " -> URL: " << it.current()->url() << endl;
+            kDebug( 6060 ) << " -> #clients: " << it.current()->count() << endl;
             crash = true;
 //         assert(it.current()->canDelete());
         }
     }
     foreach (CachedObject* co, *freeList) {
         if (!co->canDelete()) {
-            kdDebug( 6060 ) << " Object in freelist still linked to" << endl;
-            kdDebug( 6060 ) << " -> URL: " << co->url() << endl;
-            kdDebug( 6060 ) << " -> #clients: " << co->count() << endl;
+            kDebug( 6060 ) << " Object in freelist still linked to" << endl;
+            kDebug( 6060 ) << " -> URL: " << co->url() << endl;
+            kDebug( 6060 ) << " -> #clients: " << co->count() << endl;
             crash = true;
             /*
             QPtrDictIterator<CachedObjectClient> it(freeList->current()->m_clients);
