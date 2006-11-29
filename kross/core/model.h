@@ -39,7 +39,7 @@ namespace Kross {
     class KROSSCORE_EXPORT ActionCollectionModel : public QAbstractItemModel
     {
         public:
-            ActionCollectionModel(QObject* parent, ActionCollection* collection = 0);
+            explicit ActionCollectionModel(QObject* parent, ActionCollection* collection = 0);
             virtual ~ActionCollectionModel();
 
             virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;

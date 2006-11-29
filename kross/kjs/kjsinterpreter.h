@@ -49,7 +49,7 @@ namespace Kross {
              *        which describes the \a KjsInterpreter for
              *        applications using Kross.
              */
-            KjsInterpreter(Kross::InterpreterInfo* info);
+            explicit KjsInterpreter(Kross::InterpreterInfo* info);
 
             /**
              * Destructor.

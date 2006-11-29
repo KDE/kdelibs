@@ -74,7 +74,7 @@ namespace Kross {
              * and \a getCode should return it's content and it's also
              * tried to determinate the \a getInterpreterName ).
              */
-            Action(const QString& file);
+            explicit Action(const QString& file);
 
             /**
              * Constructor.

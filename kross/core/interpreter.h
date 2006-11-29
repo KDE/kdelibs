@@ -158,7 +158,7 @@ namespace Kross {
              * \param info is the \a InterpreterInfo instance
              *        that describes this interpreter.
              */
-            Interpreter(InterpreterInfo* info);
+            explicit Interpreter(InterpreterInfo* info);
 
             /**
              * Destructor.

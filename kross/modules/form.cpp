@@ -298,7 +298,7 @@ bool FormDialog::setFaceType(const QString& facetype)
 QString FormDialog::currentPage() const
 {
     KPageWidgetItem* item = KPageDialog::currentPage();
-    return item ? item->name() : QString::null;
+    return item ? item->name() : QString();
 }
 
 bool FormDialog::setCurrentPage(const QString& name)
