@@ -30,7 +30,14 @@ namespace Nepomuk {
     class Resource;
 
     /**
-     * CAUTION: AutoSync is not implemented yet!
+     * \brief The ResourceManager is the central \a %KMetaData configuration point.
+     *
+     * For now it only provides the possibility to disbable auto syncing and get informed 
+     * of Resource changes via the resourceModified signal.
+     *
+     * At the moment auto syncing is not complete and will only write back changes once 
+     * all instances of a Resource have been deleted. In the future auto syncing will try
+     * to keep in sync with external changes also.
      */
     class KMETADATA_EXPORT ResourceManager : public QObject
       {
@@ -40,6 +47,18 @@ namespace Nepomuk {
 	~ResourceManager();
 
 	static ResourceManager* instance();
+
+	/**
+	 * The main purpose of the init method is to check for errors in the initialization.
+	 * There is no real need to call it before using Resource.
+	 * It checks if the NEPOMUK-KDE Registry is running and provides the RDF storage services
+	 * used by libKMetaData.
+	 *
+	 * \return 0 if all necessary components could be found and -1 otherwise.
+	 *
+	 * FIXME: introduce error codes and human readable translated error messages.
+	 */
+	int init();
 
 	/**
 	 * The NEPOMUK Service Registry used.
@@ -68,6 +87,8 @@ namespace Nepomuk {
 	 * does not result in a resourceModified signal being emitted.
 	 */
 	void resourceModified( const Resource& );
+
+	// FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
 
       public Q_SLOTS:
 	/**

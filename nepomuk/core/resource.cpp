@@ -14,6 +14,7 @@
 
 #include "resource.h"
 #include "resourcedata.h"
+#include "resourcemanager.h"
 
 
 Nepomuk::KMetaData::Resource::Resource()
@@ -31,9 +32,11 @@ Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  // FIXME: if( autosync ) sync();
-  if( d->deref() )
+  if( d->deref() ) {
+    if( ResourceManager::instance()->autoSync() && modified() )
+      sync();
     delete d;
+  }
 }
 
 

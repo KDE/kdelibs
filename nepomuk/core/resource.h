@@ -27,15 +27,17 @@ namespace Nepomuk {
     class Variant;
 
     /**
-     * Resource is the central object type in libKMetaData. It represents a piece of
-     * information of any kind. Resources are identified by their unique URI (which 
+     * \brief Resource is the central object type in libKMetaData. It represents a piece of
+     * information of any kind.
+     *
+     * Resources are identified by their unique URI (which 
      * correlates directly with the URI in the local NEPOMUK RDF storage.
      *
      * Resource objects with the same URI are synced automatically.
      *
      * Normally they are also synced with the local storage automatically.
      *
-     * See the NDL Ontology for more information.
+     * See the NDL %Ontology for more information.
      *
      * \see ResourceManager
      */

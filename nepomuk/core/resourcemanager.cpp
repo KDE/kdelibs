@@ -58,6 +58,27 @@ Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instan
 }
 
 
+int Nepomuk::KMetaData::ResourceManager::init()
+{
+//   if( serviceRegistry()->status() != VALID ) {
+//     qDebug() << "(ResourceManager) failed to initialize registry." << endl;
+//     return -1;
+//  }
+
+  if( !serviceRegistry()->discoverTripleService() ) {
+    qDebug() << "(ResourceManager) No NEPOMUK Triple service found." << endl;
+    return -1;
+  }
+
+  if( !serviceRegistry()->discoverResourceIdService() ) {
+    qDebug() << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
+    return -1;
+  }
+
+  return 0;
+}
+
+
 Nepomuk::Backbone::Registry* Nepomuk::KMetaData::ResourceManager::serviceRegistry() const
 {
   return d->registry;

@@ -29,5 +29,6 @@ install(FILES
   resourcemanager.h
   kmetadata.h
   ontology.h
+  kmetadata_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
 )
