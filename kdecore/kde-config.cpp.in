@@ -189,6 +189,7 @@ int main(int argc, char **argv)
             "wallpaper", I18N_NOOP("Wallpapers"),
             "xdgdata-apps", I18N_NOOP("XDG Application menu (.desktop files)"),
             "xdgdata-dirs", I18N_NOOP("XDG Menu descriptions (.directory files)"),
+            "xdgdata-icon", I18N_NOOP("XDG Icons"),
             "xdgconf-menu", I18N_NOOP("XDG Menu layout (.menu files)"),
             "tmp", I18N_NOOP("Temporary files (specific for both current host and current user)"),
             "socket", I18N_NOOP("UNIX Sockets (specific for both current host and current user)"),
