@@ -17,8 +17,14 @@ int socktype;
 KSocketDevice* testserving()
 {
   cout << "Testing creation of a server socket" << endl;
+#ifdef Q_WS_WIN
+  @TODO: fix me 
+  KInetSocketAddress addrV6(KIpAddress::localhostV6, 0),
+    addrV4(KIpAddress::localhostV4, 0);
+#else
   KInetSocketAddress addrV6(KIpAddress::anyhostV6, 0),
     addrV4(KIpAddress::anyhostV4, 0);
+#endif
 
   KSocketDevice* socket = new KSocketDevice;
   cout << "Trying to bind to " << addrV6.toString().toLatin1().constData() << endl;
