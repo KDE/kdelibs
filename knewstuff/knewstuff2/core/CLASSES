@@ -9,6 +9,7 @@ Container classes:
 
 Parser/dumper classes:
  EntryHandler
+ ProviderHandler
 
 Engine classes (asynchronous, therefore qobjects):
  ProviderLoader
