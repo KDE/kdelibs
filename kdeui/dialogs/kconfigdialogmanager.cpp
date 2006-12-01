@@ -19,10 +19,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#define QT3_SUPPORT
 #include "kconfigdialogmanager.h"
 
-#include <Q3ButtonGroup>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QLabel>
@@ -30,6 +28,7 @@
 #include <QMetaProperty>
 #include <QTimer>
 #include <QRadioButton>
+#include <QButtonGroup>
 
 #include <kconfigskeleton.h>
 #include <kdebug.h>
@@ -396,10 +395,12 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
 
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
-  Q3ButtonGroup *bg = qobject_cast<Q3ButtonGroup *>(w);
+  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
   if (bg)
   {
-    bg->setButton(v.toInt());
+    QAbstractButton *b = bg->button(v.toInt());
+    if (b)
+        b->setDown(true);
     return;
   }
 
@@ -428,9 +429,9 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
 QVariant KConfigDialogManager::property(QWidget *w)
 {
-  Q3ButtonGroup *bg = qobject_cast<Q3ButtonGroup *>(w);
-  if (bg)
-    return QVariant(bg->selectedId());
+  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
+  if (bg && bg->checkedButton())
+    return QVariant(bg->id(bg->checkedButton()));
 
   QComboBox *cb = qobject_cast<QComboBox *>(w);
   if (cb) {
