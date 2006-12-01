@@ -1,5 +1,5 @@
 #ifndef KWALLETWIZARD_H
-#define KWAlLETWIZARD_H
+#define KWALLETWIZARD_H
 
 #include "ui_kwalletwizardbase.h"
 
