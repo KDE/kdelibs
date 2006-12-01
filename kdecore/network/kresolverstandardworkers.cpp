@@ -44,6 +44,9 @@
 #include <QMutex>
 #include <QTextStream>
 #include <QThread>
+#ifdef Q_WS_WIN
+#include <winsock2.h>
+#endif
 
 #include "kdebug.h"
 #include "kglobal.h"
@@ -61,6 +64,10 @@ using namespace KNetwork::Internal;
 
 static bool hasIPv6()
 {
+#ifdef Q_WS_WIN
+  extern void KNetwork_initSocket();
+  KNetwork_initSocket();
+#endif 
 #ifndef AF_INET6
   return false;
 #else

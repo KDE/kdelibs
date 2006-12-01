@@ -30,6 +30,22 @@
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
 
+#ifdef Q_WS_WIN
+#include <winsock2.h>
+
+void KNetwork_initSocket()
+{
+	static bool hasStarted = false; 
+  if (!hasStarted) 
+    {
+      WSADATA wsaData;
+      WORD wVersionRequested = MAKEWORD( 2, 2 );
+      WSAStartup( wVersionRequested, &wsaData );
+      hasStarted = true;
+	  }
+}
+#endif 
+
 using namespace KNetwork;
 
 class KNetwork::KSocketBasePrivate
@@ -55,6 +71,9 @@ KSocketBase::KSocketBase()
   d->socketError = 0;
   d->device = 0L;
   d->capabilities = 0;
+#ifdef Q_WS_WIN
+  KNetwork_initSocket();
+#endif 
 }
 
 KSocketBase::~KSocketBase()
