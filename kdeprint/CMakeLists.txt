@@ -1,5 +1,6 @@
 
 project(kdeprint)
+KDE4_NO_ENABLE_FINAL(kdeprint)
 
 add_definitions(-D_KDEPRINT_COMPILE )
 
