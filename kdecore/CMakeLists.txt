@@ -59,7 +59,6 @@ endif (APPLE)
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       ktoolinvocation_win.cpp 
-      netsupp.cpp
       )
 endif (WIN32)
 
@@ -68,7 +67,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       ktoolinvocation_x11.cpp 
       ksocks.cpp
-      netsupp.cpp
       netwm.cpp
       kpty.cpp
       network/khttpproxysocketdevice.cpp
@@ -184,6 +182,7 @@ set(kdecore_LIB_SRCS
    kdedmodule.cpp
    kgzipfilter.cpp
    kmessage.cpp
+   netsupp.cpp
    network/kresolver.cpp
    network/kresolvermanager.cpp
    network/kresolverworkerbase.cpp
