@@ -1,6 +1,5 @@
 
 project(kio)
-KDE4_NO_ENABLE_FINAL(kio)
 macro_optional_find_package(FAM)
 
 add_definitions(-D_LARGEFILE64_SOURCE )
