@@ -1,5 +1,4 @@
 project(kdoctools)
-KDE4_NO_ENABLE_FINAL(kdoctools)
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
@@ -51,7 +50,12 @@ kde4_automoc(${meinproc_SRCS})
 kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
 
 target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
-set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+
+if(KDE4_ENABLE_FINAL)
+   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+else(KDE4_ENABLE_FINAL)
+   set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+endif(KDE4_ENABLE_FINAL)
 
 install(TARGETS meinproc DESTINATION ${BIN_INSTALL_DIR} )
 
