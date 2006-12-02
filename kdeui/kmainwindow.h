@@ -560,7 +560,7 @@ public:
      *
      * @see StandardWindowOptions
      */
-    void setupGUI( QSize defaultSize, StandardWindowOptions options = StandardWindowOptions(ToolBar | Keys | StatusBar | Save | Create), const QString& xmlfile = QString() );
+    void setupGUI( QSize defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
