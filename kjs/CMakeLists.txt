@@ -112,6 +112,15 @@ endif(PCRE_FOUND)
 set_target_properties(kjs PROPERTIES VERSION 2.0.0 SOVERSION 2 )
 install(TARGETS kjs  DESTINATION ${LIB_INSTALL_DIR} )
 
+########### js - basic shell ###############
+
+set(js_SRCS kjs.cpp)
+
+kde4_add_executable(js NOGUI ${js_SRCS})
+
+target_link_libraries(js kjs)
+
+install(TARGETS js DESTINATION ${BIN_INSTALL_DIR})
 
 if(KDE4_BUILD_TESTS)
 
