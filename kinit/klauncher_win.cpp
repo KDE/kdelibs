@@ -36,6 +36,7 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
+#include <qglobal.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -50,6 +51,7 @@ QList<QProcess *>processList;
 
 #define TRACE() fprintf(stderr,"%s %d\n",__FUNCTION__,__LINE__)
 
+#if 0
 /* note:
    this is an initial version of klauncher for win32
    by replacing all kdeinit related calls (mywrite/myread) to a local handler
@@ -262,6 +264,7 @@ int myread(int sock, void *buf, int len)
     return sizeof(*request_header);
   }
 }
+#endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE  30
@@ -783,6 +786,17 @@ static void appendLong(QByteArray &ba, long l)
    memcpy(ba.data() + sz, &l, sizeof(long));
 }
 
+// handles all output from launched clients
+void KLauncher::gotStdout()
+{
+	qDebug("got stdout signal");
+	QByteArray _stdout;
+  foreach (QProcess *p, processList) {
+    _stdout = p->readAllStandardOutput();
+    fprintf(stderr,"%s",_stdout.data());
+	}
+}
+
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
@@ -790,20 +804,19 @@ KLauncher::requestStart(KLaunchRequest *request)
     requestList.append( request );
    
     QProcess *process  = new QProcess;
+    process->setProcessChannelMode(QProcess::MergedChannels);
+    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(gotStdout()) );
+    processList << process;
+   
 //  process.setEnvironment(envlist);
     QStringList args;
     foreach (QString arg, request->arg_list)
        args << arg;
 
     process->start(request->name,args);
-    QByteArray _stderr = process->readAllStandardError();
-    QByteArray _stdout = process->readAllStandardOutput();
-    fprintf(stderr,"%s",_stdout.data());
-    fprintf(stderr,"%s",_stderr.data());
-		int pid ;
 		
     _PROCESS_INFORMATION* _pid = process->pid();
-     pid = _pid ? _pid->dwProcessId : 0;
+     int pid = _pid ? _pid->dwProcessId : 0;
 
    if (pid)
    {
@@ -821,56 +834,14 @@ KLauncher::requestStart(KLaunchRequest *request)
          request->status = KLaunchRequest::Launching;
          break;
      }
-     return;
    }
    else 
    {
      request->status = KLaunchRequest::Error;
      request->errorMsg = "could not start process";
-     return;
    }
-
-/*  
-   // Send request to kdeinit.
-   klauncher_header request_header;
-   QByteArray requestData;
-   requestData.reserve(1024);
-
-   appendLong(requestData, request->arg_list.count() + 1);
-   requestData.append(request->name.toLocal8Bit());
-   requestData.append('\0');
-   foreach (QString arg, request->arg_list)
-       requestData.append(arg.toLocal8Bit()).append('\0');
-   appendLong(requestData, request->envs.count());
-   foreach (QString env, request->envs)
-       requestData.append(env.toLocal8Bit()).append('\0');
-   appendLong(requestData, 0); // avoid_loops, always false here
-#ifdef Q_WS_X11
-   bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
-   if( startup_notify )
-       requestData.append(request->startup_id.toLocal8Bit()).append('\0');
-#endif
-   if (!request->cwd.isEmpty())
-       requestData.append(request->cwd.toLocal8Bit()).append('\0');
-
-#ifdef Q_WS_X11
-   request_header.cmd = startup_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC_NEW;
-#else
-   request_header.cmd = LAUNCHER_EXEC_NEW;
-#endif
-   request_header.arg_length = requestData.length();
-   mywrite(kdeinitSocket, &request_header, sizeof(request_header));
-   mywrite(kdeinitSocket, requestData.data(), requestData.length());
-
-   // Wait for pid to return.
-   lastRequest = request;
-   dontBlockReading = false;
-   do {
-      slotKDEInitData( kdeinitSocket );
-   }
-   while (lastRequest != 0);
-   dontBlockReading = true;
-*/
+   qDebug("request->status %d", request->status);
+   return;
 }
 
 void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id)
@@ -1113,7 +1084,8 @@ KLauncher::slotDequeue()
       // process request
       request->status = KLaunchRequest::Launching;
       requestStart(request);
-      if (request->status != KLaunchRequest::Launching)
+      // @TODO: wait for launching state or send intermediate answer 
+      if (1 || request->status != KLaunchRequest::Launching)
       {
          // Request handled.
          requestDone( request );

@@ -202,5 +202,10 @@ protected:
 #ifdef Q_WS_X11
    Display *mCached_dpy;
 #endif
+
+#ifdef Q_WS_WIN
+protected Q_SLOTS:
+    void gotStdout();
+#endif
 };
 #endif
