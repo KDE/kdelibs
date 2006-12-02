@@ -18,7 +18,7 @@ KSocketDevice* testserving()
 {
   cout << "Testing creation of a server socket" << endl;
 #ifdef Q_WS_WIN
-  @TODO: fix me 
+  // @TODO: fix me 
   KInetSocketAddress addrV6(KIpAddress::localhostV6, 0),
     addrV4(KIpAddress::localhostV4, 0);
 #else
