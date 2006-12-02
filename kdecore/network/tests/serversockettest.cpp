@@ -19,10 +19,19 @@ Test::Test(const QString &host, const QString &service, bool blocking)
 		   this, SLOT(boundSlot(const KResolverEntry&)));
   QObject::connect(&socket, SIGNAL(closed()), this, SLOT(closedSlot()));
   QObject::connect(&socket, SIGNAL(readyAccept()), this, SLOT(readyAcceptSlot()));
+#ifdef Q_WS_WIN
+  socket.setFamily(KResolver::InetFamily);
+#endif
   socket.setBlocking(blocking);
   socket.setAcceptBuffered(false);
-  if (!socket.listen())
-    exit(1);
+  if (!socket.listen()) 
+    {
+      cout << "could not listen" << endl;
+      exit(1);
+    }
+#ifdef Q_WS_WIN
+	cout << socket.localAddress().toString().toLatin1().constData() << endl;
+#endif
   if (blocking)
     readyAcceptSlot();
 }
@@ -38,6 +47,12 @@ void Test::hostFoundSlot()
 {
   cout << "Socket name lookup finished; got "
        << socket.resolverResults().count() << " results" << endl;
+#ifdef Q_WS_WIN
+ KResolverResults a = socket.resolverResults();
+ KResolverResults::iterator i;
+ for (i = a.begin(); i != a.end(); ++i)
+     cout << i->address().toString().toLatin1().constData() << endl;
+#endif
 }
 
 void Test::boundSlot(const KResolverEntry& target)
@@ -93,9 +108,11 @@ int main(int argc, char **argv)
 	break;
       }
 
-  if (argc - optind < 2)
-    return 1;
-
+  if (argc - optind < 2) 
+    {
+      cout << "not enough parameters" << endl;
+      return 1;
+    }
   Test test(QString::fromLocal8Bit(argv[optind]), QString::fromLocal8Bit(argv[optind + 1]), 
 	    blocking);
 
