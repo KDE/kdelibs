@@ -90,7 +90,7 @@ static KUrl rootUrl(const KUrl &url)
 KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
                                    QWidget *parent)
 #ifdef Q_WS_WIN
-    : KDialog( parent , Qt::WindowMinMaxButtonsHint)
+    : KDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
     : KDialog( parent ),
 #endif
