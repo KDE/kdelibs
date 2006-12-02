@@ -84,8 +84,11 @@ namespace KIO {
 	 * Returns the output file descriptor.
 	 * @return the output file descriptor
 	 */
+#ifdef Q_WS_WIN
+        int fd_to() const { return f_out;  }
+#else
         int fd_to() const { return fileno( f_out ); }
-
+#endif
         /**
 	 * Checks whether the connection has been initialized.
 	 * @return true if the initialized
@@ -142,7 +145,11 @@ namespace KIO {
 
     private:
 	int fd_in;
+#ifdef Q_WS_WIN
+	int f_out;
+#else
 	FILE *f_out;
+#endif
 	KNetwork::KStreamSocket *socket;
 	QSocketNotifier *notifier;
 	QObject *receiver;

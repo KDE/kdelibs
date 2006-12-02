@@ -239,7 +239,6 @@ SlaveBase::~SlaveBase()
 
 void SlaveBase::dispatchLoop()
 {
-#ifdef Q_OS_UNIX //TODO: WIN32
     fd_set rfds;
     int retval;
 
@@ -306,13 +305,16 @@ void SlaveBase::dispatchLoop()
           return;
        }
     }
-#endif
 }
 
 void SlaveBase::connectSlave(const QString& path)
 {
-#ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
+#ifdef Q_WS_WIN
+    // @TODO: localhost does not work yet
+    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(getenv("COMPUTERNAME"),
+#else
     KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(),
+#endif
 						QFile::encodeName(path));
     appconn->init(sock);
 
@@ -325,7 +327,6 @@ void SlaveBase::connectSlave(const QString& path)
     }
 
     setConnection(appconn);
-#endif
 }
 
 void SlaveBase::disconnectSlave()

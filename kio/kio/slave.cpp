@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
+#include <qglobal.h>
 #include <qfile.h>
 #include <qtimer.h>
 #include <QtDBus/QtDBus>
@@ -87,10 +88,8 @@ namespace KIO {
 
 void Slave::accept()
 {
-#ifndef Q_WS_WIN
     KStreamSocket *socket = serv->accept();
     slaveconn.init(socket);
-#endif
     serv->deleteLater();
     serv = 0;
     slaveconn.connect(this, SLOT(gotInput()));
@@ -148,13 +147,11 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     idle_since = contact_started;
     m_pid = 0;
     m_port = 0;
-#ifndef Q_WS_WIN
     if (serv != 0) {
         serv->setAcceptBuffered(false);
         connect(serv, SIGNAL(readyAccept()),
 	        SLOT(accept() ) );
     }
-#endif
 }
 
 Slave::~Slave()
@@ -286,11 +283,18 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
 {
-    //kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyUrl() << endl;
+    kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyUrl() << endl;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
-
+#ifdef Q_WS_WIN
+    // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
+    // autoselect free tcp port 
+    KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
+    kss->setFamily(KResolver::InetFamily);
+    kss->listen();
+		QString sockname = kss->localAddress().serviceName();
+#else
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
     KTemporaryFile *socketfile = new KTemporaryFile();
     socketfile->setPrefix(prefix);
@@ -306,15 +310,11 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     QString sockname = socketfile->fileName();
     delete socketfile; // can't bind if there is such a file
 
-#ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
     kss->setFamily(KResolver::LocalFamily);
     kss->listen();
-
-    Slave *slave = new Slave(kss, protocol, sockname);
-#else
-    Slave *slave = 0;
 #endif
+    Slave *slave = new Slave(kss, protocol, sockname);
 
     // WABA: if the dcopserver is running under another uid we don't ask
     // klauncher for a slave, because the slave might have that other uid
@@ -335,6 +335,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     }
 #endif
 
+#ifdef Q_OS_UNIX
     if (bForkSlaves)
     {
        QString _name = KProtocolInfo::exec(protocol);
@@ -366,9 +367,10 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 #endif
        return slave;
     }
-
+#endif
     org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
+  	qDebug() << __FUNCTION__ << protocol  << " " << url.host() << " " << sockname;
     QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), sockname, errorStr);
     if (!reply.isValid()) {
 	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
@@ -384,10 +386,8 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
         delete slave;
         return 0;
     }
-#ifndef Q_WS_WIN
     slave->setPID(pid);
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
-#endif
     return slave;
 }
 
@@ -397,7 +397,12 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;
-
+#ifdef Q_WS_WIN
+    // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
+    // autoselect free tcp port 
+    KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
+    QString sockname = kss->localAddress().serviceName();
+#else
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
     KTemporaryFile *socketfile = new KTemporaryFile();
     socketfile->setPrefix(prefix);
@@ -410,14 +415,9 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     QString sockname = socketfile->fileName();
     delete socketfile; // can't bind if there is such a file
 
-#ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
-
-    Slave *slave = new Slave(kss, protocol, sockname);
-#else
-    Slave *slave = 0;
 #endif
-
+    Slave *slave = new Slave(kss, protocol, sockname);
     QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), sockname);
     if (!reply.isValid()) {
         delete slave;
@@ -429,10 +429,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
         delete slave;
         return 0;
     }
-#ifndef Q_WS_WIN
     slave->setPID(pid);
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
-#endif
     return slave;
 }
 

@@ -93,8 +93,10 @@ void Connection::close()
     // As a result we close the file descriptor twice, but that should
     // be harmless
     // KDE4: fix this
+#ifndef Q_WS_WIN
     if (f_out)
        fclose(f_out);
+#endif
     f_out = 0;
     fd_in = -1;
     m_tasks.clear();
@@ -126,16 +128,22 @@ void Connection::dequeue()
 
 void Connection::init(KNetwork::KStreamSocket *sock)
 {
+#ifdef Q_WS_WIN
+    sock->setFamily(KNetwork::KResolver::InetFamily);
+#else
     sock->setFamily(KNetwork::KResolver::LocalFamily);
+#endif
     sock->setBlocking(true);
     sock->connect();
 
     delete notifier;
     notifier = 0;
-#ifdef Q_OS_UNIX //TODO: not yet available on WIN32
     delete socket;
     socket = sock;
     fd_in = socket->socketDevice()->socket();
+#ifdef Q_WS_WIN
+    f_out = fd_in;
+#else
     f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
 #endif
     if (receiver && ( fd_in != -1 )) {
@@ -154,7 +162,11 @@ void Connection::init(int _fd_in, int fd_out)
     delete notifier;
     notifier = 0;
     fd_in = _fd_in;
+#ifdef Q_WS_WIN
+    f_out = fd_out;
+#else
     f_out = KDE_fdopen( fd_out, "wb" );
+#endif
     if (receiver && ( fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
 	if ( m_suspended ) {
@@ -196,23 +208,29 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
-
+#ifdef Q_WS_WIN
+    size_t n = ::send( f_out, buffer,10, 0 );
+#else
     size_t n = fwrite( buffer, 1, 10, f_out );
-
+#endif
     if ( n != 10 ) {
 	kError(7017) << "Could not send header" << endl;
 	return false;
     }
 
+#ifdef Q_WS_WIN
+    n = ::send( f_out, data.data(), data.size(), 0);
+#else
     n = fwrite( data.data(), 1, data.size(), f_out );
-
+#endif
     if ( n != (size_t)data.size() ) {
 	kError(7017) << "Could not write data" << endl;
 	return false;
     }
 
+#ifndef Q_WS_WIN
     fflush( f_out );
-
+#endif
     return true;
 }
 
@@ -226,10 +244,20 @@ int Connection::read( int* _cmd, QByteArray &data )
     static char buffer[ 10 ];
 
  again1:
+#ifdef Q_WS_WIN
+    ssize_t n = ::recv( fd_in, buffer, 10, 0);
+#else
     ssize_t n = ::read( fd_in, buffer, 10);
+#endif
     if ( n == -1 && errno == EINTR )
 	goto again1;
-
+#ifdef Q_WS_WIN
+  // there should be a select call before recv to avoid this error
+	if ( n == -1 && errno == WSAEWOULDBLOCK ) {
+    	kError(7017) << "Header read would block detected" << endl;
+      return 0;
+    }
+#endif
     if ( n == -1) {
 	kError(7017) << "Header read failed, errno=" << errno << endl;
     }
@@ -257,11 +285,21 @@ int Connection::read( int* _cmd, QByteArray &data )
 	size_t bytesToGo = len;
 	size_t bytesRead = 0;
 	do {
+#ifdef Q_WS_WIN
+      n = ::recv(fd_in, data.data()+bytesRead, bytesToGo, 0);
+#else
 	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
+#endif
 	    if (n == -1) {
 		if (errno == EINTR)
 		    continue;
-
+#ifdef Q_WS_WIN
+		if (errno == WSAEWOULDBLOCK) {
+        kError(7017) << "Would block detect" << endl;
+        Sleep(1);
+	  	  continue;
+    }
+#endif
 		kError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }

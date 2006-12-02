@@ -48,7 +48,7 @@
 
 QList<QProcess *>processList;
 
-#define TRACE() fprintf(stderr,"%s\n",__FUNCTION__)
+#define TRACE() fprintf(stderr,"%s %d\n",__FUNCTION__,__LINE__)
 
 /* note:
    this is an initial version of klauncher for win32
@@ -167,29 +167,23 @@ int handle_request(klauncher_header request_header, char *request_data)
 //#ifndef NTRACE
        fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
 //#endif
-       return 0;
+       return false;
      }
-      fprintf(stderr,"argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
-        argc, name, args, cwd, envc, envs);
+    fprintf(stderr,"argc %d, name %s, args %s, cwd %s, envc %s, envs %s\n",
+      argc, name, args, cwd, envc, envs);
 
-      QProcess *process  = new QProcess;
+    QProcess *process  = new QProcess;
 //      process.setEnvironment(envlist);
-      process->start(name,arglist);
-      QByteArray _stderr = process->readAllStandardError();
-      QByteArray _stdout = process->readAllStandardOutput();
-      fprintf(stderr,"%s",_stdout.data());
-      fprintf(stderr,"%s",_stderr.data());
+    process->start(name,arglist);
+    QByteArray _stderr = process->readAllStandardError();
+    QByteArray _stdout = process->readAllStandardOutput();
+    fprintf(stderr,"%s",_stdout.data());
+    fprintf(stderr,"%s",_stderr.data());
 
-      _PROCESS_INFORMATION* _pid = process->pid();
-      pid = _pid ? _pid->dwProcessId : 0;
+    _PROCESS_INFORMATION* _pid = process->pid();
+    pid = _pid ? _pid->dwProcessId : 0;
 
-      fprintf(stderr,"pid = %d\n",pid);
-/*
-      pid = launch( argc, name, args, cwd, envc, envs,
-          request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
-          tty, avoid_loops, startup_id_str );
-
-*/
+    fprintf(stderr,"pid = %d\n",pid);
 
     if (pid) {
       response_header.cmd = LAUNCHER_OK;
@@ -206,6 +200,7 @@ int handle_request(klauncher_header request_header, char *request_data)
     }
     return 0;
   }
+  return true;     
 }
 
 
@@ -442,10 +437,12 @@ KLauncher::KLauncher(int _kdeinitSocket)
       mSlaveValgrindSkin = getenv("KDE_SLAVE_VALGRIND_SKIN");
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", qPrintable(mSlaveValgrind));
    }
+#if 0   
    klauncher_header request_header;
    request_header.cmd = LAUNCHER_OK;
    request_header.arg_length = 0;
    mywrite(kdeinitSocket, &request_header, sizeof(request_header));
+#endif
    qDebug("LAUNCHER_OK");
 }
 
@@ -486,10 +483,14 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
    requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
    request_header.cmd = LAUNCHER_SETENV;
    request_header.arg_length = requestData.size();
+   qDebug() << __FUNCTION__;
+#if 0
    mywrite(kdeinitSocket, &request_header, sizeof(request_header));
    mywrite(kdeinitSocket, requestData.data(), request_header.arg_length);
+#endif
 }
 
+#if 0
 /*
  * Read 'len' bytes from 'sock' into buffer.
  * returns -1 on failure, 0 on no data.
@@ -515,11 +516,12 @@ read_socket(int sock, char *buffer, int len)
   }
   return 0;
 }
-
+#endif
 
 void
 KLauncher::slotKDEInitData(int)
 {
+#if 0
    TRACE();
    klauncher_header request_header;
    QByteArray requestData;
@@ -597,6 +599,7 @@ KLauncher::slotKDEInitData(int)
 
    kWarning(7016) << "Unexpected command from KDEInit (" << (unsigned int) request_header.cmd
                  << ")" << endl;
+#endif
 }
 
 void
@@ -783,8 +786,51 @@ static void appendLong(QByteArray &ba, long l)
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
-   TRACE();
-   requestList.append( request );
+    TRACE();
+    requestList.append( request );
+   
+    QProcess *process  = new QProcess;
+//  process.setEnvironment(envlist);
+    QStringList args;
+    foreach (QString arg, request->arg_list)
+       args << arg;
+
+    process->start(request->name,args);
+    QByteArray _stderr = process->readAllStandardError();
+    QByteArray _stdout = process->readAllStandardOutput();
+    fprintf(stderr,"%s",_stdout.data());
+    fprintf(stderr,"%s",_stderr.data());
+		int pid ;
+		
+    _PROCESS_INFORMATION* _pid = process->pid();
+     pid = _pid ? _pid->dwProcessId : 0;
+
+   if (pid)
+   {
+     request->pid = pid;
+     kDebug(7016) << request->name << " (pid " << request->pid <<
+        ") up and running." << endl;
+     switch(request->dbus_startup_type)
+     {
+       case KService::DBUS_None:
+         request->status = KLaunchRequest::Running;
+         break;
+       case KService::DBUS_Unique:
+       case KService::DBUS_Wait:
+       case KService::DBUS_Multi:
+         request->status = KLaunchRequest::Launching;
+         break;
+     }
+     return;
+   }
+   else 
+   {
+     request->status = KLaunchRequest::Error;
+     request->errorMsg = "could not start process";
+     return;
+   }
+
+/*  
    // Send request to kdeinit.
    klauncher_header request_header;
    QByteArray requestData;
@@ -824,6 +870,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    }
    while (lastRequest != 0);
    dontBlockReading = true;
+*/
 }
 
 void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id)
@@ -1120,6 +1167,7 @@ KLauncher::requestSlave(const QString &protocol,
                         QString &error)
 {
    TRACE();
+    fprintf(stderr,"%s %s %s\n",protocol.toAscii().data(),host.toAscii().data(),app_socket.toAscii().data());
     IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
@@ -1128,6 +1176,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (!slave)
     {
+       TRACE();
        foreach (slave, mSlaveList)
        {
           if (slave->match(protocol, host, false))
@@ -1136,6 +1185,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (!slave)
     {
+       TRACE();
        foreach (slave, mSlaveList)
        {
           if (slave->match(protocol, QString(), false))
@@ -1144,6 +1194,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (slave)
     {
+       TRACE();
        mSlaveList.removeAll(slave);
        slave->connect(app_socket);
        return slave->pid();
@@ -1152,37 +1203,22 @@ KLauncher::requestSlave(const QString &protocol,
     QString name = KProtocolInfo::exec(protocol);
     if (name.isEmpty())
     {
+       TRACE();
   error = i18n("Unknown protocol '%1'.\n", protocol);
         return 0;
     }
 
-    QString arg1 = protocol;
-    QString arg2 = QString::fromLocal8Bit(QFile::encodeName(mPoolSocketName));
-    QString arg3 = QString::fromLocal8Bit(QFile::encodeName(app_socket));
+    TRACE();
     QStringList arg_list;
-    arg_list.append(arg1);
-    arg_list.append(arg2);
-    arg_list.append(arg3);
+    arg_list << name;
+    arg_list << protocol;
+    arg_list << "";
+    arg_list << QString::fromLocal8Bit(QFile::encodeName(app_socket));
+    name = "kioslave";
 
     kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
         << " args=" << arg_list << endl;
-    if (mSlaveDebug == arg1)
-    {
-       klauncher_header request_header;
-       request_header.cmd = LAUNCHER_DEBUG_WAIT;
-       request_header.arg_length = 0;
-       mywrite(kdeinitSocket, &request_header, sizeof(request_header));
-    }
-    if (mSlaveValgrind == arg1)
-    {
-       arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name.toLocal8Bit())));
-       arg_list.prepend(QFile::encodeName(KStandardDirs::locate("exe", "kioslave")));
-       name = "valgrind";
-       if (!mSlaveValgrindSkin.isEmpty()) {
-           arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
-       } else
-     arg_list.prepend(QLatin1String("--tool=memcheck"));
-    }
+   TRACE();
 
     KLaunchRequest *request = new KLaunchRequest;
     request->autoStart = false;
@@ -1197,7 +1233,8 @@ KLauncher::requestSlave(const QString &protocol,
     requestStart(request);
     pid_t pid = request->pid;
 
-//    kDebug(7016) << "Slave launched, pid = " << pid << endl;
+    TRACE();
+    kDebug(7016) << "Slave launched, pid = " << pid << endl;
 
     // We don't care about this request any longer....
     requestDone(request);
