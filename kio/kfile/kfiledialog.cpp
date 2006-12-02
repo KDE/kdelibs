@@ -168,7 +168,11 @@ static KStaticDeleter<KUrl> ldd;
 
 KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
                           QWidget *parent, QWidget* widget)
+#ifdef Q_WS_WIN
+    : KDialog( parent , Qt::WindowMinMaxButtonsHint)
+#else
     : KDialog( parent )
+#endif
 {
     init( startDir, filter, widget );
 }
