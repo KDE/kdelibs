@@ -279,7 +279,7 @@ QDomElement ActionCollection::writeXml()
         element.appendChild(e);
     }
 
-    foreach(QAction* action, actions()) {
+    foreach(KAction* action, actions()) {
         Action* a = dynamic_cast< Action* >(action);
         if( ! a ) continue;
 

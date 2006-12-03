@@ -1386,7 +1386,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
   }
 
   if ( d->m_paLoadImages ) {
-    QList<QAction*> lst;
+    QList<KAction*> lst;
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -4324,7 +4324,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
 
       // See if we want to replace content with javascript: output..
-      QVariant res = p->executeScript( DOM::Node(),
+      QVariant res = p->executeScript( DOM::Node(), 
                                        KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
       if ( res.type() == QVariant::String ) {
         p->begin();
@@ -6634,7 +6634,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-        QList<QAction*> lst;
+        QList<KAction*> lst;
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -7350,7 +7350,7 @@ void KHTMLPart::setDebugScript( bool enable )
       connect( d->m_paDebugScript, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugScript() ) );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
-    QList<QAction*> lst;
+    QList<KAction*> lst;
     lst.append( d->m_paDebugScript );
     plugActionList( "debugScriptList", lst );
   }

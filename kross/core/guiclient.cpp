@@ -201,7 +201,7 @@ void GUIClient::setDOMDocument(const QDomDocument &document, bool merge)
 void GUIClient::slotMenuAboutToShow()
 {
     d->scriptsmenu->menu()->clear();
-    foreach(QAction* a, Manager::self().actionCollection()->actions())
+    foreach(KAction* a, Manager::self().actionCollection()->actions())
         d->scriptsmenu->menu()->addAction(a);
 }
 

@@ -25,7 +25,7 @@
 
 #include <kdelibs_export.h>
 
-class QAction;
+class KAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
@@ -127,7 +127,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    */
   void removeClient( KXMLGUIClient *client );
 
-  void plugActionList( KXMLGUIClient *client, const QString &name, const QList<QAction*> &actionList );
+  void plugActionList( KXMLGUIClient *client, const QString &name, const QList<KAction*> &actionList );
   void unplugActionList( KXMLGUIClient *client, const QString &name );
 
   /**
@@ -208,8 +208,8 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   QList<QWidget*> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
 
   void applyActionProperties( const QDomElement &element );
-  void configureAction( QAction *action, const QDomNamedNodeMap &attributes );
-  void configureAction( QAction *action, const QDomAttr &attribute );
+  void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
+  void configureAction( KAction *action, const QDomAttr &attribute );
 
 private:
   KXMLGUIFactoryPrivate *const d;

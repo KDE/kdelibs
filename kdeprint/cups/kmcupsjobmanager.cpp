@@ -310,7 +310,7 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QLis
 			/*&& !it.current()->isRemote()*/);
 	}
 	flag = (flag && joblist.count() > 0);
-	QAction *a;
+	KAction *a;
 	if ( ( a = coll->action( "plugin_ipp" ) ) )
 		a->setEnabled( joblist.count() == 1 );
 	if ( ( a = coll->action( "plugin_prioup" ) ) )

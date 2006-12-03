@@ -565,7 +565,7 @@ public:
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
      */
-    QAction *toolBarMenuAction();
+    KAction *toolBarMenuAction();
 
     /**
      * @internal for KToolBar

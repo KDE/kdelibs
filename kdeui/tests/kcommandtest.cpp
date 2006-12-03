@@ -77,13 +77,13 @@ void KCommandTest::testCommandHistoryAdd()
         connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
 
         // Checking the empty state
-        QAction* undo = actionCollection.action( "edit_undo" );
+        KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
         QVERIFY( !undo->isEnabled() );
         QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( ch.undoCommands().isEmpty() );
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
-        QAction* redo = actionCollection.action( "edit_redo" );
+        KAction* redo = actionCollection.action( "edit_redo" );
         QVERIFY( redo );
         QVERIFY( !redo->isEnabled() );
         QVERIFY( !ch.isRedoAvailable() );
@@ -252,7 +252,7 @@ void KCommandTest::testUndoLimit()
         KTestCommand* c3 = new KTestCommand( "3" );
         ch.addCommand( c3 );
 
-        QAction* undo = actionCollection.action( "edit_undo" );
+        KAction* undo = actionCollection.action( "edit_undo" );
         QVERIFY( undo );
         // c1 should have been removed now; let's check that we can only undo twice.
         //ch.undo();
@@ -263,7 +263,7 @@ void KCommandTest::testUndoLimit()
 
         QVERIFY( !undo->isEnabled() );
         QVERIFY( !ch.isUndoAvailable() );
-        QAction* redo = actionCollection.action( "edit_redo" );
+        KAction* redo = actionCollection.action( "edit_redo" );
         QVERIFY( redo );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );

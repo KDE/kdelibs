@@ -30,7 +30,7 @@
 
 #include <kdelibs_export.h>
 
-class QAction;
+class KAction;
 class KConfigBase;
 class KInstance;
 class KXMLGUIClient;
@@ -83,7 +83,7 @@ public:
   void clear();
 
   /**
-   * Returns whether this action collection as a whole has been disabled via
+   * Returns whether this action collection as a whole has been disabled via 
    * setEnabled() or not.
    *
    * \note this does not check each action to see if its state has been changed
@@ -135,7 +135,7 @@ public:
   void applyDefaultShortcutContext();
 
   /**
-   * Set an associated widget (clears any others).  Associated widgets automatically have all actions
+   * Set an associated widget (clears any others).  Associated widgets automatically have all actions 
    * in the action collection added to themselves.
    *
    * Shortcut context will automatically be set to Qt::WidgetShortcut, if no defaultShortcutContext() has been set.
@@ -145,7 +145,7 @@ public:
   void setAssociatedWidget(QWidget* widget);
 
   /**
-   * Add an associated widget.  Associated widgets automatically have all actions
+   * Add an associated widget.  Associated widgets automatically have all actions 
    * in the action collection added to themselves.
    *
    * Shortcut context will automatically be set to Qt::WidgetShortcut, if no defaultShortcutContext() has been set.
@@ -155,7 +155,7 @@ public:
   void addAssociatedWidget(QWidget* widget);
 
   /**
-   * Remove an associated widget.  Removes all actions in this collection from
+   * Remove an associated widget.  Removes all actions in this collection from 
    * the removed associated widget.
    *
    * Shortcut context will not be reverted from Qt::WidgetShortcut, which would have been
@@ -230,7 +230,7 @@ public:
     * \param oneAction pass an action here if you just want to save the values for one action, eg.
     *                  if you know that action is the only one which has changed.
     */
-  void writeSettings( KConfigBase* config = 0, bool writeDefaults = false, QAction* oneAction = 0L ) const;
+  void writeSettings( KConfigBase* config = 0, bool writeDefaults = false, KAction* oneAction = 0L ) const;
 
   /**
    * Doc/View model.  This lets you add the action collection of a document
@@ -251,11 +251,11 @@ public:
   inline bool isEmpty() const { return actions().isEmpty(); }
 
   /**
-   * Return the QAction* at position "index" in the action collection.
+   * Return the KAction* at position "index" in the action collection.
    *
    * \deprecated use actions().value(int index) instead
    */
-  KDE_DEPRECATED QAction* action( int index ) const;
+  KDE_DEPRECATED KAction* action( int index ) const;
 
   /**
    * Find the first action with a given \a name in the action collection.
@@ -264,7 +264,7 @@ public:
    * @return A pointer to the first KAction in the collection which matches the parameters or
    * null if nothing matches.
    */
-  QAction* action( const QString& name ) const;
+  KAction* action( const QString& name ) const;
 
   /**
    * Find all actions with a given \a name in the action collection.
@@ -272,7 +272,7 @@ public:
    * @param name Name of the KAction, or null to match all actions
    * @return A list of all KActions in the collection which match the parameters
    */
-  QList<QAction*> actions( const QString& name ) const;
+  QList<KAction*> actions( const QString& name ) const;
 
   /**
    * Find the first action of a given subclass of KAction in the action collection.
@@ -282,7 +282,7 @@ public:
    * null if nothing matches.
    */
   template <class T>
-  QAction* actionOfType( const QString& name ) const
+  KAction* actionOfType( const QString& name ) const
   { return actionOfTypeInternal(name, ((T)0)->staticMetaObject); }
 
   /**
@@ -292,18 +292,18 @@ public:
    * @return A list of all KActions in the collection which match the parameters
    */
   template <class T>
-  QAction* actionsOfType( const QString& name ) const
+  KAction* actionsOfType( const QString& name ) const
   { return actionsOfTypeInternal(name, ((T)0)->staticMetaObject); }
 
   /**
    * Returns the list of KActions which belong to this action collection.
    */
-  const QList<QAction*>& actions() const;
+  const QList<KAction*>& actions() const;
 
   /**
    * Returns the list of KActions without an QAction::actionGroup() which belong to this action collection.
    */
-  const QList<QAction*> actionsWithoutGroup() const;
+  const QList<KAction*> actionsWithoutGroup() const;
 
   /**
    * Returns the list of all QActionGroups associated with actions in this action collection.
@@ -314,7 +314,7 @@ public:
    * Returns all KActions which are both within the supplied \a group, and
    * part of this action collection.
    */
-  const QList<QAction*> actionsInGroup(QActionGroup* group) const;
+  const QList<KAction*> actionsInGroup(QActionGroup* group) const;
 
   /**
    * Set the \a instance associated with this action collection.
@@ -335,22 +335,22 @@ Q_SIGNALS:
   /**
    * Indicates that \a action was inserted into this action collection.
    */
-  void inserted( QAction* action );
+  void inserted( KAction* action );
 
   /**
    * Indicates that \a action was removed from this action collection.
    */
-  void removed( QAction* action );
+  void removed( KAction* action );
 
   /**
    * Indicates that \a action was highlighted
    */
-  void actionHighlighted(QAction* action);
+  void actionHighlighted(KAction* action);
 
   /**
    * Indicates that \a action was triggered
    */
-  void actionTriggered(QAction* action);
+  void actionTriggered(KAction* action);
 
 protected:
   /// Overridden to perform connections when someone wants to know whether an action was highlighted or triggered
@@ -370,7 +370,7 @@ public:
    * again before destroying the collection.
    * @param action The KAction to add.
    */
-  void insert( QAction* action);
+  void insert( KAction* action);
 
   /**
    * Removes an action from the collection and deletes it.
@@ -378,7 +378,7 @@ public:
    * don't have to call this.
    * @param action The KAction to remove.
    */
-  void remove( QAction* action );
+  void remove( KAction* action );
 
   /**
    * Removes an action from the collection.
@@ -387,11 +387,11 @@ public:
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
    */
-  QAction* take( QAction* action );
+  KAction* take( KAction* action );
 
 private:
-  QAction* actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
-  QList<QAction*> actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
+  KAction* actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
+  QList<KAction*> actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 

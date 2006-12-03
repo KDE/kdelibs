@@ -56,7 +56,7 @@ class ToolBarHandler : public QObject, public KXMLGUIClient
     /**
      * Returns the action which is responsible for the tool bar menu.
      */
-    QAction *toolBarMenuAction();
+    KAction *toolBarMenuAction();
 
   public Q_SLOTS:
     void setupActions();

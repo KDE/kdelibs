@@ -233,9 +233,9 @@ void KDataToolAction::slotActivated()
     emit toolActivated( m_info, m_command );
 }
 
-QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent )
+QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent )
 {
-    QList<QAction*> actionList;
+    QList<KAction*> actionList;
     if ( tools.isEmpty() )
         return actionList;
 

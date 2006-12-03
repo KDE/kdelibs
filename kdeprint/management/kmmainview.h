@@ -36,7 +36,7 @@ class QMenu;
 class QTimer;
 class QSplitter;
 class KToolBar;
-class QAction;
+class KAction;
 class PluginComboBox;
 class QBoxLayout;
 class MessageWindow;
@@ -61,7 +61,7 @@ public:
 	void setViewType(int);
 	int viewType() const;
 	void enableToolbar(bool on = true);
-	QAction* action(const char *name);
+	KAction* action(const char *name);
 	void showPrinterInfos(bool on);
 	bool printerInfosShown() const;
 

@@ -214,7 +214,7 @@ public:
      * @param parent the parent action collection for the actions to be created
      * @return the KActions
      */
-    static QList<QAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent );
+    static QList<KAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent );
 
 Q_SIGNALS:
     /**

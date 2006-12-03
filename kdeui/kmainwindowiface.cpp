@@ -42,9 +42,9 @@ KMainWindowInterface::~KMainWindowInterface()
 QStringList KMainWindowInterface::actions()
 {
 	QStringList tmp_actions;
-	QList<QAction *> lst = m_MainWindow->actionCollection()->actions();
-	foreach( QAction* it, lst ) {
-		if (it->associatedWidgets().count()>0)
+	QList<KAction *> lst = m_MainWindow->actionCollection()->actions();
+	foreach( KAction* it, lst ) {
+		if (it->isPlugged())
 			tmp_actions.append( it->objectName() );
 	}
 	return tmp_actions;
@@ -52,7 +52,7 @@ QStringList KMainWindowInterface::actions()
 
 bool KMainWindowInterface::activateAction( const QString& action )
 {
-	QAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
+	KAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
 	if (tmp_Action)
 	{
 		tmp_Action->trigger();
@@ -64,7 +64,7 @@ bool KMainWindowInterface::activateAction( const QString& action )
 
 bool KMainWindowInterface::disableAction( const QString& action)
 {
-	QAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
+	KAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
 	if (tmp_Action)
 	{
 		tmp_Action->setEnabled(false);
@@ -76,7 +76,7 @@ bool KMainWindowInterface::disableAction( const QString& action)
 
 bool KMainWindowInterface::enableAction( const QString& action)
 {
-	QAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
+	KAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
 	if (tmp_Action)
 	{
 		tmp_Action->setEnabled(true);
@@ -88,7 +88,7 @@ bool KMainWindowInterface::enableAction( const QString& action)
 
 bool KMainWindowInterface::actionIsEnabled( const QString& action)
 {
-	QAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
+	KAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
 	if (tmp_Action)
 	{
 		return tmp_Action->isEnabled();
@@ -99,7 +99,7 @@ bool KMainWindowInterface::actionIsEnabled( const QString& action)
 
 QString KMainWindowInterface::actionToolTip( const QString& action)
 {
-	QAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
+	KAction *tmp_Action = m_MainWindow->actionCollection()->action(action);
 	if (tmp_Action)
 	{
 		return tmp_Action->toolTip().toUtf8();
