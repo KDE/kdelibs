@@ -25,6 +25,7 @@ class OntologyParser::Private
 public:
   QMap<QString, ResourceClass> resources;
   QMap<QString, Property> properties;
+  QMap<QString, QString> comments;
   Soprano::Parser* rdfParser;
 
   ResourceClass& getResource( const QString& uri ) {
@@ -63,6 +64,9 @@ bool OntologyParser::parse( const QString& filename )
   Soprano::Model* model = d->rdfParser->parse( filename );
   bool success = true;
 
+  if( !model )
+    return false;
+
   Soprano::StatementIterator* it = model->listStatements();
   while( it->hasNext() ) {
     const Soprano::Statement& s = it->next();
@@ -86,6 +90,19 @@ bool OntologyParser::parse( const QString& filename )
     else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ) {
       d->properties[s.subject().uri().toString()].list = ( s.object().literal().toInt() > 1 );
     }
+    else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
+      d->comments[s.subject().uri().toString()] = s.object().literal();
+    }
+  }
+
+  // now assign the comments to resources and properties
+  QMapIterator<QString, QString> commentsIt( d->comments );
+  while( commentsIt.hasNext() ) {
+    commentsIt.next();
+    if( d->resources.contains( commentsIt.key() ) )
+      d->resources[commentsIt.key()].comment = commentsIt.value();
+    else if( d->properties.contains( commentsIt.key() ) )
+      d->properties[commentsIt.key()].comment = commentsIt.value();
   }
 
   delete it;
@@ -104,10 +121,38 @@ bool OntologyParser::parse( const QString& filename )
 //     }
 //   }
 
+  return success;
+}
+
+
+bool OntologyParser::writeSources( const QString& dir )
+{
+  bool success = true;
+
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it ) {
-    (*it).write( "/tmp/trueg/rctest/" );
+    success &= (*it).write( dir );
   }
 
   return success;
+}
+
+
+QStringList OntologyParser::listHeader()
+{
+  QStringList l;
+  for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+       it != d->resources.constEnd(); ++it )
+    l.append( (*it).headerName() );
+  return l;
+}
+
+
+QStringList OntologyParser::listSources()
+{
+  QStringList l;
+  for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+       it != d->resources.constEnd(); ++it )
+    l.append( (*it).sourceName() );
+  return l;
 }

@@ -34,6 +34,8 @@ class Property
    */
   QString type;
 
+  QString comment;
+
   bool list;
 
   QString name() const;
@@ -59,6 +61,7 @@ class ResourceClass
 
   QString name() const;
   QString uri;
+  QString comment;
 
   QMap<QString, Property*> properties;
 

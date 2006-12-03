@@ -19,6 +19,43 @@
 ResourceClass* ResourceClass::s_defaultResource = new ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" );
 
 
+static QString writeComment( const QString& comment, int indent )
+{
+  static const int maxLine = 50;
+
+  QString s;
+
+  if( !comment.isEmpty() ) {
+    s += QString().fill( ' ', indent );
+    s += "/**\n"
+      + QString().fill( ' ', indent+1 )
+      + "* ";
+
+    QStringList words = comment.split( QRegExp("\\s") );
+    int cnt = 0;
+    for( int i = 0; i < words.count(); ++i ) {
+      if( cnt >= maxLine ) {
+	s += '\n'
+	  + QString().fill( ' ', indent+1 )
+	  + "* ";
+	cnt = 0;
+      }
+
+      s += words[i] + ' ';
+      cnt += words[i].length();
+    }
+
+    if( cnt > 0 )
+      s += '\n';
+    s += QString().fill( ' ', indent+1 )
+      + "*/";
+  }
+
+  return s;
+}
+
+
+
 Property::Property()
   : list(true)
 {
@@ -192,6 +229,7 @@ QString ResourceClass::sourceName() const
 bool ResourceClass::writeHeader( QTextStream& stream ) const
 {
   QString s = headerTemplate;
+  s.replace( "RESOURCECOMMENT", writeComment( comment, 0 ) );
   s.replace( "RESOURCENAMEUPPER", name().toUpper() );
   s.replace( "RESOURCENAME", name() );
   s.replace( "PARENTRESOURCELOWER", parent->name().toLower() );
@@ -204,10 +242,19 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
   while( it.hasNext() ) {
     it.next();
     const Property* p = it.value();
-    ms << p->getterDeclaration() << endl
-       << p->setterDeclaration() << endl;
-    if( p->list )
+    ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
+    ms << p->getterDeclaration() << endl;
+    ms << endl;
+
+    ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
+    ms << p->setterDeclaration() << endl;
+    ms << endl;
+
+    if( p->list ) {
+      ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
       ms << p->adderDeclaration() << endl;
+      ms << endl;
+    }
   }
 
   s.replace( "METHODS", methods );
@@ -233,6 +280,11 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
   while( it.hasNext() ) {
     it.next();
     const Property* p = it.value();
+
+    if( p->type.isEmpty() ) {
+      qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+      continue;
+    }
 
     ms << p->getterDefinition( name() ) << endl
        << p->setterDefinition( name() ) << endl;
