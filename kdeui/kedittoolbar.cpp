@@ -968,7 +968,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // iterate through this client's actions
     // This used to iterate through _all_ actions, but we don't support
     // putting any action into any client...
-    foreach (KAction* action, actionCollection->actions())
+    foreach (QAction* action, actionCollection->actions())
     {
       // do we have a match?
       if (it.attribute( attrName ) == action->objectName())
@@ -976,7 +976,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
         act->setText(1, action->text().remove(QChar('&')));
-        if (action->hasIcon())
+        if (!action->icon().isNull())
           act->setIcon(0, action->icon());
 
         active_list.insert(action->objectName(), true);
@@ -986,7 +986,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  foreach (KAction* action, actionCollection->actions())
+  foreach (QAction* action, actionCollection->actions())
   {
     // skip our active ones
     if (active_list.contains(action->objectName()))
@@ -994,7 +994,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
     act->setText(1, action->text().remove(QChar('&')));
-    if (action->hasIcon())
+    if (!action->icon().isNull())
       act->setIcon(0, action->icon());
   }
 

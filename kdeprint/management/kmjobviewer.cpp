@@ -617,7 +617,7 @@ void KMJobViewer::loadPluginActions()
 	if (m_standalone)
 	{
 		// standalone window, insert actions into main menubar
-		KAction	*act = actionCollection()->action("job_restart");
+		QAction	*act = actionCollection()->action("job_restart");
         item = act;
 		foreach (QWidget* container, act->associatedWidgets())
 		{
@@ -638,11 +638,11 @@ void KMJobViewer::loadPluginActions()
 		// should add it to the toolbar and menubar
 // 		action->plug(toolBar(), toolbarindex++);
 		toolBar()->addAction( action );
-		
+
 		if (m_pop)
 // 			action->plug(m_pop, mpopindex++);
 			m_pop->addAction( action );
-		
+
 		if (item && item->menu())
 // 			action->plug(item->menu(), menuindex++);
 			item->menu()->addAction( action );

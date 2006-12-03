@@ -92,7 +92,7 @@ public:
 	{
 		if (gvpart_) delete gvpart_;
 	}
-	void plugAction(KAction *act)
+	void plugAction(QAction *act)
 	{
 		toolbar_->addAction( act );
 	}
@@ -205,13 +205,13 @@ void KPrintPreview::initView(KLibFactory *factory)
 				QDomElement a = acts.item( i ).toElement();
 				if ( a.attribute( "name" ) == "goToPage" )
 					continue;
-				KAction *act = d->gvpart_->action( a );
+				QAction *act = d->gvpart_->action( a );
 				if ( act != 0 )
 					d->plugAction( act );
 			}
 		}
 		/*
-		KAction	*act;
+		QAction	*act;
 		d->toolbar_->insertLineSeparator();
 		if ((act = d->gvpart_->action("zoomIn")) != 0)
 			d->plugAction(act);

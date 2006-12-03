@@ -28,7 +28,7 @@ class QDomDocument;
 class QDomElement;
 class QWidget;
 
-class KAction;
+class QAction;
 class KActionCollection;
 class KInstance;
 class KXMLGUIClientPrivate;
@@ -75,14 +75,14 @@ public:
    * This method is provided for convenience, as it uses actionCollection()
    * to get the action object.
    */
-  KAction* action( const char* name ) const;
+  QAction* action( const char* name ) const;
 
   /**
    * Retrieves an action for a given QDomElement. The default
    * implementation uses the "name" attribute to query the action
    * object via the other action() method.
    */
-  virtual KAction *action( const QDomElement &element ) const;
+  virtual QAction *action( const QDomElement &element ) const;
 
   /**
    * Retrieves the entire action collection for the GUI client.
@@ -229,7 +229,7 @@ public:
    *       plugActionList() would leave the previous actions in the
    *       menu too..
    */
-  void plugActionList( const QString &name, const QList<KAction*> &actionList );
+  void plugActionList( const QString &name, const QList<QAction*> &actionList );
 
   /**
    * The complement of plugActionList() ...

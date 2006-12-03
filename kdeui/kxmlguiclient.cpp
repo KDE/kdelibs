@@ -91,9 +91,9 @@ KXMLGUIClient::~KXMLGUIClient()
   delete d;
 }
 
-KAction *KXMLGUIClient::action( const char *name ) const
+QAction *KXMLGUIClient::action( const char *name ) const
 {
-  KAction* act = actionCollection()->action( name );
+  QAction* act = actionCollection()->action( name );
   if ( !act ) {
     foreach (KXMLGUIClient* client, d->m_children) {
       act = client->actionCollection()->action( name );
@@ -114,7 +114,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
   return d->m_actionCollection;
 }
 
-KAction *KXMLGUIClient::action( const QDomElement &element ) const
+QAction *KXMLGUIClient::action( const QDomElement &element ) const
 {
   static const QString &attrName = KGlobal::staticQString( "name" );
   return actionCollection()->action( qPrintable(element.attribute( attrName )) );
@@ -594,7 +594,7 @@ KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const
   return d->m_builder;
 }
 
-void KXMLGUIClient::plugActionList( const QString &name, const QList<KAction*> &actionList )
+void KXMLGUIClient::plugActionList( const QString &name, const QList<QAction*> &actionList )
 {
   if ( !d->m_factory )
     return;
@@ -897,7 +897,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
   for ( QStringList::Iterator it = stateChange.actionsToEnable.begin();
         it != stateChange.actionsToEnable.end(); ++it ) {
 
-    KAction *action = actionCollection()->action(qPrintable((*it)));
+    QAction *action = actionCollection()->action(qPrintable((*it)));
     if (action) action->setEnabled(setTrue);
   }
 
@@ -906,7 +906,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
   for ( QStringList::Iterator it = stateChange.actionsToDisable.begin();
         it != stateChange.actionsToDisable.end(); ++it ) {
 
-    KAction *action = actionCollection()->action(qPrintable((*it)));
+    QAction *action = actionCollection()->action(qPrintable((*it)));
     if (action) action->setEnabled(setFalse);
   }
 

@@ -76,9 +76,9 @@ namespace
         return m_needsRebuild;
       }
 
-      QList<KAction*> create()
+      QList<QAction*> create()
       {
-        QList<KAction*> actions;
+        QList<QAction*> actions;
 
         if ( !m_needsRebuild )
           return actions;
@@ -97,7 +97,7 @@ namespace
 
         KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
 
-        foreach ( KAction* action, m_toolBarActions )
+        foreach ( QAction* action, m_toolBarActions )
           menuAction->menu()->addAction( action );
 
         actions.append( menuAction );
@@ -127,7 +127,7 @@ namespace
       KMainWindow *m_mainWindow;
 
       QLinkedList<KToolBar*> m_toolBars;
-      QList<KAction*> m_toolBarActions;
+      QList<QAction*> m_toolBarActions;
 
       bool m_needsRebuild : 1;
   };
@@ -151,12 +151,12 @@ class ToolBarHandler::Private
 
     void init( KMainWindow *mainWindow );
     void connectToActionContainers();
-    void connectToActionContainer( KAction *action );
+    void connectToActionContainer( QAction *action );
     void connectToActionContainer( QWidget *container );
 
     ToolBarHandler *parent;
     QPointer<KMainWindow> mainWindow;
-    QList<KAction*> actions;
+    QList<QAction*> actions;
     QLinkedList<KToolBar*> toolBars;
 };
 
@@ -178,16 +178,16 @@ void ToolBarHandler::Private::init( KMainWindow *mw )
 
 void ToolBarHandler::Private::connectToActionContainers()
 {
-  foreach ( KAction* action, actions )
+  foreach ( QAction* action, actions )
     connectToActionContainer( action );
 }
 
-void ToolBarHandler::Private::connectToActionContainer( KAction *action )
+void ToolBarHandler::Private::connectToActionContainer( QAction *action )
 {
   uint containerCount = action->associatedWidgets().count();
 
   for ( uint i = 0; i < containerCount; ++i )
-    connectToActionContainer( action->container( i ) );
+    connectToActionContainer( action->associatedWidgets().value( i ) );
 }
 
 void ToolBarHandler::Private::connectToActionContainer( QWidget *container )
@@ -222,7 +222,7 @@ ToolBarHandler::~ToolBarHandler()
   delete d;
 }
 
-KAction *ToolBarHandler::toolBarMenuAction()
+QAction *ToolBarHandler::toolBarMenuAction()
 {
   assert( d->actions.count() == 1 );
   return d->actions.first();

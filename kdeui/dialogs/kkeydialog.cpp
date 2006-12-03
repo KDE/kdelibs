@@ -117,7 +117,7 @@ class KKeyChooserPrivate
 		delete ui;
 	}
 
-	QList< QList<KAction*> > rgpLists;
+	QList< QList<QAction*> > rgpLists;
 	QList< KActionCollection* > collections;
 
 	Ui::KKeyDialog* ui;
@@ -243,7 +243,7 @@ void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcut
 // Add all shortcuts to the list
 void KKeyChooser::buildListView( uint iList, const QString &title )
 {
-	const QList<KAction*> pList = d->rgpLists[iList];
+	const QList<QAction*> pList = d->rgpLists[iList];
 
 	QTreeWidgetItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
@@ -252,7 +252,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 	d->ui->list->expandItem(pParentItem);
 	pParentItem->setFlags(pParentItem->flags() & ~Qt::ItemIsSelectable);
 
-	foreach (KAction* action, pList) {
+	foreach (QAction* action, pList) {
 		ActionTypes thisType = 0;
 		switch (action->shortcutContext()) {
 			case Qt::ApplicationShortcut:
@@ -266,7 +266,9 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 				break;
 		}
 
-		if (action->globalShortcutAllowed())
+                KAction *kaction = qobject_cast<KAction*>(action);
+
+		if (kaction!=0 && kaction->globalShortcutAllowed())
 			thisType &= GlobalAction;
 
 		if (!(thisType & d->type))
@@ -290,8 +292,8 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 			if( pGroupItem && !pGroupItem->childCount() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !sName.isEmpty() && sName != "unnamed"  && action->isShortcutConfigurable() ) {
-			pItem = new KKeyChooserItem( pParentItem, pItem, action );
+		} else if( !sName.isEmpty() && sName != "unnamed"  && kaction!=0 && kaction->isShortcutConfigurable() ) {
+			pItem = new KKeyChooserItem( pParentItem, pItem, kaction );
 		}
 	}
 	if( !pProgramItem->childCount() )

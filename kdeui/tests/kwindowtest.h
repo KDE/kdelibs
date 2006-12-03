@@ -19,7 +19,7 @@ class testWindow  : public KMainWindow
 public:
     testWindow (QWidget *parent=0);
     ~testWindow ();
-    
+
 public Q_SLOTS:
     void beFixed();
     void beYFixed();
@@ -59,8 +59,8 @@ protected:
     KToolBar *tb1;
     class KLineEdit* testLineEdit;
     class KComboBox* testComboBox;
-    KAction* fileNewAction;
-    KAction* exitAction;
+    QAction* fileNewAction;
+    QAction* exitAction;
     bool lineL;
     bool exitB;
     bool greenF;
