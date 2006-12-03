@@ -164,7 +164,7 @@ set(kfile_STAT_SRCS
   kfile/kfilepreview.cpp
   kfile/kurlcombobox.cpp
   kfile/kurlrequesterdlg.cpp
-  kfile/kopenwith.cpp
+  kfile/kopenwithdialog.cpp
   kfile/kpropertiesdialog.cpp
   kfile/kicondialog.cpp
   kfile/kdirsize.cpp

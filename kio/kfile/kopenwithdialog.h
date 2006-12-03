@@ -1,4 +1,3 @@
-//
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 
@@ -17,8 +16,9 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef __open_with_h__
-#define __open_with_h__
+
+#ifndef OPENWITHDIALOG_H
+#define OPENWITHDIALOG_H
 
 #include <kdialog.h>
 #include <kurl.h>
@@ -28,19 +28,17 @@
 class KApplicationTree;
 class KUrlRequester;
 
-class QWidget;
 class QCheckBox;
-class QPushButton;
 class QLabel;
 
-class KOpenWithDlgPrivate;
+class KOpenWithDialogPrivate;
 
 /**
  * "Open with" dialog box.
  *
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KOpenWithDlg : public KDialog
+class KIO_EXPORT KOpenWithDialog : public KDialog
 {
     Q_OBJECT
 public:
@@ -53,7 +51,7 @@ public:
      * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
-    KOpenWithDlg( const KUrl::List& urls, QWidget *parent = 0L );
+    KOpenWithDialog( const KUrl::List& urls, QWidget *parent = 0 );
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -64,8 +62,8 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const KUrl::List& urls, const QString& text, const QString& value,
-                  QWidget *parent = 0L );
+    KOpenWithDialog( const KUrl::List& urls, const QString& text, const QString& value,
+                  QWidget *parent = 0 );
 
     /**
      * Create a dialog to select a service for a given mimetype.
@@ -75,8 +73,8 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const QString& mimeType, const QString& value,
-                  QWidget *parent = 0L );
+    KOpenWithDialog( const QString& mimeType, const QString& value,
+                  QWidget *parent = 0 );
 
     /**
      * Create a dialog to select an application
@@ -84,12 +82,12 @@ public:
      *
      * @param parent parent widget
      */
-    KOpenWithDlg( QWidget *parent = 0L );
+    KOpenWithDialog( QWidget *parent = 0 );
 
     /**
      * Destructor
      */
-    ~KOpenWithDlg();
+    ~KOpenWithDialog();
 
     /**
      * @return the text the user entered
@@ -120,10 +118,6 @@ public:
     void setSaveNewApplications(bool b);
 
 public Q_SLOTS:
-    /**
-    * The slot for clearing the edit widget
-    */
-    void slotClear();
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
     void slotTextChanged();
@@ -162,12 +156,10 @@ protected:
     QString qName, qMimeType;
     bool m_terminaldirty;
     QCheckBox   *terminal, *remember, *nocloseonexit;
-    QPushButton *UNUSED;
-    QPushButton *UNUSED2;
 
     KService::Ptr m_pService;
 
-    KOpenWithDlgPrivate* const d;
+    KOpenWithDialogPrivate* const d;
 };
 
 #endif

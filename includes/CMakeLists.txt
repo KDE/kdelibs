@@ -323,7 +323,7 @@ install( FILES
   KOCRDialog
   KOCRDialogFactory
   KOpenSSLProxy
-  KOpenWithDlg
+  KOpenWithDialog
   KOperaBookmarkExporterImpl
   KOperaBookmarkImporter
   KOperaBookmarkImporterImpl

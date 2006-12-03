@@ -381,13 +381,13 @@ Desktop Entry Spec</a>
 
 <h4>KSaveFile</h4>
 <ul>
-<li>KSaveFile has been modified from its KDE 3.x behavior to allow for new backup methods:</li>
+<li>KSaveFile has been modified from its KDE 3.x behavior to allow for new backup methods:
 <ul>
 <li>KSaveFile::backupFile() will use the backup behavior specified in KConfig.</li>
 <li>KSaveFile::simpleBackupFile() will emulate the KDE 3.x behavior</li>
 <li>KSaveFile::numberedBackupFile() will create a numbered set of backup files (default: 10)</li>
 <li>KSaveFile::rcsBackupFile() will use rcs to maintain the backup file</li>
-</ul>
+</ul></li>
 <li>KSaveFile now derives from QFile. See the class documentation for more info.</li>
 <li>KSaveFile::close() is now KSaveFile::finalize()</li>
 <li>You must call KSaveFile::open() to create the file.</li>
@@ -1400,6 +1400,11 @@ instead of returning the application/octet-stream mimetype. Test for null!</li>
 <ul>
 <li>The previous KMimeTypeResolver has been renamed to K3MimeTypeResolver.</li>
 <li>A new KMimeTypeResolver must be used together with a KDirModel.</li>
+</ul>
+
+<h4>KOpenWithDlg</h4>
+<ul>
+<li>Has been renamed to KOpenWithDialog. Use #include &lt;kopenwithdialog.h&gt;</li>
 </ul>
 
 <h4>KProtocolInfo</h4>

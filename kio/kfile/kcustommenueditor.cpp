@@ -32,7 +32,7 @@
 #include <kservice.h>
 #include <kstandarddirs.h>
 #include <kconfigbase.h>
-#include <kopenwith.h>
+#include <kopenwithdialog.h>
 
 #include "kcustommenueditor.h"
 
@@ -181,7 +181,7 @@ KCustomMenuEditor::slotNewItem()
 {
    Q3ListViewItem *item = m_listView->currentItem();
 
-   KOpenWithDlg dlg(this);
+   KOpenWithDialog dlg(this);
    dlg.setSaveNewApplications(true);
 
    if (dlg.exec())

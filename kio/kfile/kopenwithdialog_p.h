@@ -1,4 +1,3 @@
-//
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 
@@ -17,22 +16,11 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef __open_with_p_h__
-#define __open_with_p_h__
 
-#include <kurl.h>
+#ifndef OPENWITHDIALOG_P_H
+#define OPENWITHDIALOG_P_H
+
 #include <k3listview.h>
-
-class KUrlRequester;
-
-class QWidget;
-class QCheckBox;
-class QPushButton;
-class QLabel;
-class QStringList;
-
-
-/* ------------------------------------------------------------------------- */
 
 /**
  * @internal
@@ -45,7 +33,7 @@ class KAppTreeListItem : public Q3ListViewItem
     QString exec;
 
 protected:
-	int compare(Q3ListViewItem *i, int col, bool ascending ) const;
+    int compare(Q3ListViewItem *i, int col, bool ascending ) const;
     QString key(int column, bool ascending) const;
 
     void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
@@ -64,7 +52,6 @@ protected:
     friend class KApplicationTree;
 };
 
-/* ------------------------------------------------------------------------- */
 
 /**
  * @internal
@@ -85,7 +72,7 @@ public:
 protected:
     void resizeEvent( QResizeEvent *_ev );
     KAppTreeListItem* currentitem;
-	void cleanupTree();
+    void cleanupTree();
 
 public Q_SLOTS:
     void slotItemHighlighted(Q3ListViewItem* i);
@@ -95,7 +82,5 @@ Q_SIGNALS:
     void selected( const QString& _name, const QString& _exec );
     void highlighted( const QString& _name, const  QString& _exec );
 };
-
-/* ------------------------------------------------------------------------- */
 
 #endif

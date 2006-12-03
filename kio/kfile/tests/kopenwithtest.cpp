@@ -22,7 +22,7 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 #include <qdir.h>
-#include <kopenwith.h>
+#include <kopenwithdialog.h>
 #include <kurl.h>
 #include <kdebug.h>
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     list += KUrl("file:///tmp/testfile.txt");
 
     // Test with one URL
-    KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+    KOpenWithDialog* dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     // Test with two URLs
     list += KUrl("http://www.kde.org/index.html");
-    dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+    dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     // Test with a mimetype
     QString mimetype = "text/plain";
-    dlg = new KOpenWithDlg( mimetype, "kedit", 0);
+    dlg = new KOpenWithDialog( mimetype, "kedit", 0);
     if(dlg->exec()) {
         kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }

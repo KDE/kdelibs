@@ -20,29 +20,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qdir.h>
-#include <qdialog.h>
-#include <qimage.h>
-#include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
-#include <qtoolbutton.h>
 #include <qcheckbox.h>
-#include <qstyle.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
-#include <kbuttonbox.h>
 #include <kcombobox.h>
-#include <kdesktopfile.h>
-#include <kdialog.h>
-#include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kmimemagic.h>
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
@@ -51,19 +38,13 @@
 #include <kurlrequester.h>
 #include <kmimetype.h>
 #include <kservicegroup.h>
-#include <k3listview.h>
-#include <ksycoca.h>
-#include <kstdguiitem.h>
 
-#include "kopenwith.h"
-#include "kopenwith_p.h"
+#include "kopenwithdialog.h"
+#include "kopenwithdialog_p.h"
 
-#include <kdebug.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <kbuildsycocaprogressdialog.h>
-
-#define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
 template <> inline
 void KConfigBase::writeEntry( const char *pKey,
@@ -310,19 +291,19 @@ void KApplicationTree::cleanupTree()
 
 /***************************************************************
  *
- * KOpenWithDlg
+ * KOpenWithDialog
  *
  ***************************************************************/
-class KOpenWithDlgPrivate
+class KOpenWithDialogPrivate
 {
 public:
-    KOpenWithDlgPrivate() : saveNewApps(false) { };
+    KOpenWithDialogPrivate() : saveNewApps(false) { };
     bool saveNewApps;
     KService::Ptr curService;
 };
 
-KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
-             :KDialog( parent ),d(new KOpenWithDlgPrivate)
+KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, QWidget* parent )
+             :KDialog( parent ),d(new KOpenWithDialogPrivate)
 {
     setObjectName( QLatin1String( "openwith" ) );
     setModal( true );
@@ -342,9 +323,9 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
     init( text, QString() );
 }
 
-KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
+KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :KDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDialogPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
@@ -356,9 +337,9 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
   init( _text, _value );
 }
 
-KOpenWithDlg::KOpenWithDlg( const QString &mimeType, const QString& value,
+KOpenWithDialog::KOpenWithDialog( const QString &mimeType, const QString& value,
                             QWidget *parent)
-             :KDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDialogPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
@@ -372,8 +353,8 @@ KOpenWithDlg::KOpenWithDlg( const QString &mimeType, const QString& value,
       remember->hide();
 }
 
-KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :KDialog( parent ),d(new KOpenWithDlgPrivate)
+KOpenWithDialog::KOpenWithDialog( QWidget *parent)
+             :KDialog( parent ),d(new KOpenWithDialogPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
@@ -385,7 +366,7 @@ KOpenWithDlg::KOpenWithDlg( QWidget *parent)
   init( text, QString() );
 }
 
-void KOpenWithDlg::setMimeType( const KUrl::List& _urls )
+void KOpenWithDialog::setMimeType( const KUrl::List& _urls )
 {
   if ( _urls.count() == 1 )
   {
@@ -397,7 +378,7 @@ void KOpenWithDlg::setMimeType( const KUrl::List& _urls )
       qMimeType.clear();
 }
 
-void KOpenWithDlg::init( const QString& _text, const QString& _value )
+void KOpenWithDialog::init( const QString& _text, const QString& _value )
 {
   bool bReadOnly = kapp && !KAuthorized::authorize("shell_access");
   m_terminaldirty = false;
@@ -418,21 +399,13 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   label->setWordWrap(true);
   topLayout->addWidget(label);
 
-  QHBoxLayout* hbox = new QHBoxLayout();
-  topLayout->addLayout( hbox );
-
-  QToolButton *clearButton = new QToolButton( mainWidget );
-  clearButton->setIcon( BarIcon( "locationbar_erase" ) );
-  clearButton->setFixedSize( clearButton->sizeHint() );
-  connect( clearButton, SIGNAL( clicked() ), SLOT( slotClear() ) );
-  clearButton->setToolTip( i18n( "Clear input field" ) );
-
-  hbox->addWidget( clearButton );
-
   if (!bReadOnly)
   {
     // init the history combo and insert it into the URL-Requester
     KHistoryCombo *combo = new KHistoryCombo();
+    KLineEdit *lineEdit = new KLineEdit();
+    lineEdit->setClearButtonShown(true);
+    combo->setLineEdit(lineEdit);
     combo->setDuplicatesEnabled( false );
     KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
     int max = cg.readEntry( QString::fromLatin1("Maximum history"), 15 );
@@ -446,7 +419,6 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   }
   else
   {
-    clearButton->hide();
     edit = new KUrlRequester( mainWidget );
     edit->lineEdit()->setReadOnly(true);
     edit->button()->hide();
@@ -466,7 +438,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     "%m - the mini-icon\n"
     "%c - the comment"));
 
-  hbox->addWidget(edit);
+  topLayout->addWidget(edit);
 
   if ( edit->comboBox() ) {
     KUrlCompletion *comp = new KUrlCompletion( KUrlCompletion::ExeCompletion );
@@ -535,25 +507,17 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
 // ----------------------------------------------------------------------
 
-KOpenWithDlg::~KOpenWithDlg()
+KOpenWithDialog::~KOpenWithDialog()
 {
     delete d;
 }
 
-// ----------------------------------------------------------------------
-
-void KOpenWithDlg::slotClear()
-{
-    edit->setUrl(KUrl());
-    edit->setFocus();
-}
-
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
+void KOpenWithDialog::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
-    kDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
+    kDebug(250)<<"KOpenWithDialog::slotSelected"<<endl;
     KService::Ptr pService = d->curService;
     edit->setUrl( KUrl(_exec) ); // calls slotTextChanged :(
     d->curService = pService;
@@ -562,9 +526,9 @@ void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec 
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
+void KOpenWithDialog::slotHighlighted( const QString& _name, const QString& )
 {
-    kDebug(250)<<"KOpenWithDlg::slotHighlighted"<<endl;
+    kDebug(250)<<"KOpenWithDialog::slotHighlighted"<<endl;
     qName = _name;
     d->curService = KService::serviceByName( qName );
     if (!m_terminaldirty)
@@ -579,9 +543,9 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotTextChanged()
+void KOpenWithDialog::slotTextChanged()
 {
-    kDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
+    kDebug(250)<<"KOpenWithDialog::slotTextChanged"<<endl;
     // Forget about the service
     d->curService = 0L;
     enableButton( Ok, !edit->url().isEmpty());
@@ -589,7 +553,7 @@ void KOpenWithDlg::slotTextChanged()
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotTerminalToggled(bool)
+void KOpenWithDialog::slotTerminalToggled(bool)
 {
     // ### indicate that default value was overridden
     m_terminaldirty = true;
@@ -598,18 +562,18 @@ void KOpenWithDlg::slotTerminalToggled(bool)
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotDbClick()
+void KOpenWithDialog::slotDbClick()
 {
    if (m_pTree->isDirSel() ) return; // check if a directory is selected
    slotOK();
 }
 
-void KOpenWithDlg::setSaveNewApplications(bool b)
+void KOpenWithDialog::setSaveNewApplications(bool b)
 {
   d->saveNewApps = b;
 }
 
-void KOpenWithDlg::slotOK()
+void KOpenWithDialog::slotOK()
 {
   QString typedExec(edit->url().pathOrUrl());
   QString fullExec(typedExec);
@@ -794,7 +758,7 @@ void KOpenWithDlg::slotOK()
   accept();
 }
 
-QString KOpenWithDlg::text() const
+QString KOpenWithDialog::text() const
 {
     if (!m_command.isEmpty())
         return m_command;
@@ -802,20 +766,20 @@ QString KOpenWithDlg::text() const
         return edit->url().url();
 }
 
-void KOpenWithDlg::hideNoCloseOnExit()
+void KOpenWithDialog::hideNoCloseOnExit()
 {
     // uncheck the checkbox because the value could be used when "Run in Terminal" is selected
     nocloseonexit->setChecked( false );
     nocloseonexit->hide();
 }
 
-void KOpenWithDlg::hideRunInTerminal()
+void KOpenWithDialog::hideRunInTerminal()
 {
     terminal->hide();
     hideNoCloseOnExit();
 }
 
-void KOpenWithDlg::accept()
+void KOpenWithDialog::accept()
 {
     KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
     if ( combo ) {
@@ -823,8 +787,7 @@ void KOpenWithDlg::accept()
 
         KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
         cg.writeEntry( QString::fromLatin1("History"), combo->historyItems() );
-	cg.writeEntry(QString::fromLatin1("CompletionMode"),
-		       combo->completionMode());
+        cg.writeEntry(QString::fromLatin1("CompletionMode"), combo->completionMode());
         // don't store the completion-list, as it contains all of KUrlCompletion's
         // executables
         cg.sync();
@@ -833,6 +796,5 @@ void KOpenWithDlg::accept()
     QDialog::accept();
 }
 
-#include "kopenwith.moc"
-#include "kopenwith_p.moc"
-
+#include "kopenwithdialog.moc"
+#include "kopenwithdialog_p.moc"

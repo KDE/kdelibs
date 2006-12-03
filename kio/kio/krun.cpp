@@ -39,7 +39,7 @@
 #include "kio/global.h"
 #include "kio/scheduler.h"
 #include "kio/netaccess.h"
-#include "kfile/kopenwith.h"
+#include "kfile/kopenwithdialog.h"
 #include "kfile/krecentdocument.h"
 #include "kdedesktopmimetype.h"
 
@@ -166,7 +166,7 @@ pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   {
     // Open-with dialog
     // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog !
-    // Hmm, in fact KOpenWithDlg::setServiceType already guesses the mimetype from the first URL of the list...
+    // Hmm, in fact KOpenWithDialog::setServiceType already guesses the mimetype from the first URL of the list...
     return displayOpenWithDialog( lst, window, tempFile, suggestedFileName );
   }
 
@@ -181,7 +181,7 @@ bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool t
        return false;
     }
 
-    KOpenWithDlg l( lst, i18n("Open with:"), QString(), window );
+    KOpenWithDialog l( lst, i18n("Open with:"), QString(), window );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
