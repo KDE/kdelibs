@@ -214,7 +214,7 @@ ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
 
 void ProviderLoader::load( const QString &type, const QString &providersList )
 {
-  kdDebug(5850) << "ProviderLoader::load()" << endl;
+  kdDebug() << "ProviderLoader::load()" << endl;
 
   mProviders.clear();
   mJobData = "";
@@ -234,7 +234,7 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
     providersUrl = server + "/knewstuff/" + type + "/providers.xml";
   }
 
-  kdDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
+  kdDebug() << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
   
   KIO::TransferJob *job = KIO::get( KURL( providersUrl ), false, false );
   connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -247,7 +247,7 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
 
 void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kdDebug(5850) << "ProviderLoader::slotJobData()" << endl;
+  kdDebug() << "ProviderLoader::slotJobData()" << endl;
 
   if ( data.size() == 0 ) return;
 
@@ -262,7 +262,7 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
     job->showErrorDialog( static_cast<QWidget *>(parent()) );
   }
 
-  kdDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
+  kdDebug() << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
             << endl;
 
   QDomDocument doc;
@@ -274,7 +274,7 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
   QDomElement providers = doc.documentElement();
 
   if ( providers.isNull() ) {
-    kdDebug(5850) << "No document in Providers.xml." << endl;
+    kdDebug() << "No document in Providers.xml." << endl;
   }
 
   QDomNode n;

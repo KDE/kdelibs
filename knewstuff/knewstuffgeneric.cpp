@@ -49,14 +49,14 @@ KNewStuffGeneric::~KNewStuffGeneric()
 
 bool KNewStuffGeneric::install( const QString &fileName )
 {
-  kdDebug(5850) << "KNewStuffGeneric::install(): " << fileName << endl;
+  kdDebug() << "KNewStuffGeneric::install(): " << fileName << endl;
   QStringList list, list2;
 
   mConfig->setGroup("KNewStuff");
 
   QString uncompress = mConfig->readEntry( "Uncompress" );
   if ( !uncompress.isEmpty() ) {
-    kdDebug(5850) << "Uncompression method: " << uncompress << endl;
+    kdDebug() << "Uncompression method: " << uncompress << endl;
     KTar tar(fileName, uncompress);
     tar.open(IO_ReadOnly);
     const KArchiveDirectory *dir = tar.directory();
@@ -67,7 +67,7 @@ bool KNewStuffGeneric::install( const QString &fileName )
 
   QString cmd = mConfig->readEntry( "InstallationCommand" );
   if ( !cmd.isEmpty() ) {
-    kdDebug(5850) << "InstallationCommand: " << cmd << endl;
+    kdDebug() << "InstallationCommand: " << cmd << endl;
     list = QStringList::split( " ", cmd );
     for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
         list2 << (*it).replace("%f", fileName);

@@ -39,16 +39,16 @@ using namespace std;
 
 bool TestNewStuff::install( const QString &fileName )
 {
-  kdDebug(5850) << "TestNewStuff::install(): " << fileName << endl;
+  kdDebug() << "TestNewStuff::install(): " << fileName << endl;
   QFile f( fileName );
   if ( !f.open( IO_ReadOnly ) ) {
-    kdDebug(5850) << "Error opening file." << endl;
+    kdDebug() << "Error opening file." << endl;
     return false;
   }
   QTextStream ts( &f );
-  kdDebug(5850) << "--BEGIN-NEW_STUFF--" << endl;
+  kdDebug() << "--BEGIN-NEW_STUFF--" << endl;
   cout << ts.read().utf8();
-  kdDebug(5850) << "---END-NEW_STUFF---" << endl;
+  kdDebug() << "---END-NEW_STUFF---" << endl;
   return true;
 }
 
@@ -57,7 +57,7 @@ bool TestNewStuff::createUploadFile( const QString &fileName )
   KProcess p;
   p << "touch" << fileName;
   p.start(KProcess::Block);
-  kdDebug(5850) << "TestNewStuff::createUploadFile(): " << fileName << endl;
+  kdDebug() << "TestNewStuff::createUploadFile(): " << fileName << endl;
   return true;
 }
 
@@ -92,14 +92,14 @@ MyWidget::~MyWidget()
 
 void MyWidget::download()
 {
-  kdDebug(5850) << "MyWidget::download()" << endl;
+  kdDebug() << "MyWidget::download()" << endl;
 
   mNewStuff->download();
 }
 
 void MyWidget::upload()
 {
-  kdDebug(5850) << "MyWidget::download()" << endl;
+  kdDebug() << "MyWidget::download()" << endl;
 
   mNewStuff->upload();
 }

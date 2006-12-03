@@ -80,7 +80,7 @@ Engine::~Engine()
 
 void Engine::download()
 {
-  kdDebug(5850) << "Engine::download()" << endl;
+  kdDebug() << "Engine::download()" << endl;
 
   connect( mProviderLoader,
            SIGNAL( providersLoaded( Provider::List * ) ),
@@ -119,7 +119,7 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 {
   if ( data.isEmpty() ) return;
 
-  kdDebug(5850) << "Engine:slotNewStuffJobData()" << endl;
+  kdDebug() << "Engine:slotNewStuffJobData()" << endl;
 
   QCString str( data, data.size() + 1 );
 
@@ -129,24 +129,24 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 void Engine::slotNewStuffJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    kdDebug(5850) << "Error downloading new stuff descriptions." << endl;
+    kdDebug() << "Error downloading new stuff descriptions." << endl;
     job->showErrorDialog( mParentWidget );
   } else {
     QString knewstuffDoc = mNewStuffJobData[ job ];
 
-    kdDebug(5850) << "---START---" << endl << knewstuffDoc << "---END---" << endl;
+    kdDebug() << "---START---" << endl << knewstuffDoc << "---END---" << endl;
 
     mDownloadDialog->addProvider( mProviderJobs[ job ] );
 
     QDomDocument doc;
     if ( !doc.setContent( knewstuffDoc ) ) {
-      kdDebug(5850) << "Error parsing knewstuff.xml." << endl;
+      kdDebug() << "Error parsing knewstuff.xml." << endl;
       return;
     } else {
       QDomElement knewstuff = doc.documentElement();
 
       if ( knewstuff.isNull() ) {
-        kdDebug(5850) << "No document in knewstuffproviders.xml." << endl;
+        kdDebug() << "No document in knewstuffproviders.xml." << endl;
       } else {
         QDomNode p;
         for ( p = knewstuff.firstChild(); !p.isNull(); p = p.nextSibling() ) {
@@ -160,14 +160,14 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
 
           mDownloadDialog->addEntry( entry );
 
-          kdDebug(5850) << "KNEWSTUFF: " << entry->name() << endl;
+          kdDebug() << "KNEWSTUFF: " << entry->name() << endl;
 
-          kdDebug(5850) << "  SUMMARY: " << entry->summary() << endl;
-          kdDebug(5850) << "  VERSION: " << entry->version() << endl;
-          kdDebug(5850) << "  RELEASEDATE: " << entry->releaseDate().toString() << endl;
-          kdDebug(5850) << "  RATING: " << entry->rating() << endl;
+          kdDebug() << "  SUMMARY: " << entry->summary() << endl;
+          kdDebug() << "  VERSION: " << entry->version() << endl;
+          kdDebug() << "  RELEASEDATE: " << entry->releaseDate().toString() << endl;
+          kdDebug() << "  RATING: " << entry->rating() << endl;
 
-          kdDebug(5850) << "  LANGS: " << entry->langs().join(", ") << endl;
+          kdDebug() << "  LANGS: " << entry->langs().join(", ") << endl;
         }
       }
     }
@@ -184,20 +184,20 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
 
 void Engine::download( Entry *entry )
 {
-  kdDebug(5850) << "Engine::download(entry)" << endl;
+  kdDebug() << "Engine::download(entry)" << endl;
 
   KURL source = entry->payload();
   mDownloadDestination = d->mNewStuff->downloadDestination( entry );
 
   if ( mDownloadDestination.isEmpty() ) {
-    kdDebug(5850) << "Empty downloadDestination. Cancelling download." << endl;
+    kdDebug() << "Empty downloadDestination. Cancelling download." << endl;
     return;
   }
 
   KURL destination = KURL( mDownloadDestination );
 
-  kdDebug(5850) << "  SOURCE: " << source.url() << endl;
-  kdDebug(5850) << "  DESTINATION: " << destination.url() << endl;
+  kdDebug() << "  SOURCE: " << source.url() << endl;
+  kdDebug() << "  DESTINATION: " << destination.url() << endl;
 
   KIO::FileCopyJob *job = KIO::file_copy( source, destination, -1, true );
   connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -207,7 +207,7 @@ void Engine::download( Entry *entry )
 void Engine::slotDownloadJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    kdDebug(5850) << "Error downloading new stuff payload." << endl;
+    kdDebug() << "Error downloading new stuff payload." << endl;
     job->showErrorDialog( mParentWidget );
     return;
   }
@@ -237,7 +237,7 @@ void Engine::upload(const QString &fileName, const QString &previewName )
 
 void Engine::selectUploadProvider( Provider::List *providers )
 {
-  kdDebug(5850) << "Engine:selectUploadProvider()" << endl;
+  kdDebug() << "Engine:selectUploadProvider()" << endl;
 
   mProviderLoader->disconnect();
 
@@ -341,7 +341,7 @@ bool Engine::createMetaFile( Entry *entry )
   entry->setType(type());
   de.appendChild( entry->createDomElement( doc, de ) );
 
-  kdDebug(5850) << "--DOM START--" << endl << doc.toString()
+  kdDebug() << "--DOM START--" << endl << doc.toString()
             << "--DOM_END--" << endl;
 
   if ( mUploadMetaFile.isNull() ) {
@@ -367,7 +367,7 @@ bool Engine::createMetaFile( Entry *entry )
 void Engine::slotUploadPayloadJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    kdDebug(5850) << "Error uploading new stuff payload." << endl;
+    kdDebug() << "Error uploading new stuff payload." << endl;
     job->showErrorDialog( mParentWidget );
     emit uploadFinished( false );
     return;
@@ -391,7 +391,7 @@ void Engine::slotUploadPayloadJobResult( KIO::Job *job )
 void Engine::slotUploadPreviewJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    kdDebug(5850) << "Error uploading new stuff preview." << endl;
+    kdDebug() << "Error uploading new stuff preview." << endl;
     job->showErrorDialog( mParentWidget );
     emit uploadFinished( true );
     return;
@@ -411,7 +411,7 @@ void Engine::slotUploadMetaJobResult( KIO::Job *job )
 {
   mUploadMetaFile = QString::null;
   if ( job->error() ) {
-    kdDebug(5850) << "Error uploading new stuff metadata." << endl;
+    kdDebug() << "Error uploading new stuff metadata." << endl;
     job->showErrorDialog( mParentWidget );
     emit uploadFinished( false );
     return;
