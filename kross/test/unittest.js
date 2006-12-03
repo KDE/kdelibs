@@ -30,16 +30,46 @@ function UnitTest()
 			println("Array-Length does not match");
 		}
 		else {
-			var failed = 0;
+			var failed = false;
 			for(i=0;i<actual.length;i++) {
 				if(actual[i] != expected[i]) {
-					failed = 1;
+					failed = true;
 					this.failed(actual, expected);
 					println("Array-Item actual[i]=" + actual[i] + " expected[i]=" + expected[i]);
 					break;
 				}
 			}
-			if(failed == 0)
+			if(! failed)
+				this.passed(actual, expected);
+		}
+	}
+
+	this.assertMap = function(actual, expected) {
+		var failed = false
+		for(i in actual) {
+			if(expected[i] == undefined) {
+				failed = true;
+				this.failed(actual, expected);
+				println("Map-Item i=" + i + " is unexpected");
+				break;
+			}
+			if(actual[i] != expected[i]) {
+				failed = true;
+				this.failed(actual, expected);
+				println("Map-Item i=" + i + " actual[i]=" + actual[i] + " expected[i]=" + expected[i]);
+				break;
+			}
+		}
+		if(! failed) {
+			for(i in expected) {
+				if(actual[i] == undefined) {
+					failed = true;
+					this.failed(actual, expected);
+					println("Map-Item i=" + i + " is missing");
+					break;
+				}
+			}
+			if(! failed)
 				this.passed(actual, expected);
 		}
 	}
@@ -115,17 +145,18 @@ tester.assertArray(testobj1.func_qvariantlist_qvariantlist([]), []);
 tester.assertArray(testobj1.func_qvariantlist_qvariantlist(["abc","def",426,-842,96.23,-275.637]), ["abc","def",426,-842,96.23,-275.637]);
 
 //variantmap
-//TODO
-//var v = new Array;
-//v["key1"] = "value1";
-//v["key2"] = "value2";
-//aa = testobj1.func_qvariantmap_qvariantmap( v )
-//for(i in v) { println("1 =======> i=" + i + " aa[i]=" + aa[i]); }
-//for(i in aa) { println("2 =======> i=" + i + " aa[i]=" + aa[i]); }
-//aa = testobj1.func_qvariantmap_qvariantmap( ["key1":"value1","key2":"value"] )
-//aa = testobj1.func_qvariantmap_qvariantmap( ["key1"="value1","key2"="value"] )
-//aa = testobj1.func_qvariantmap_qvariantmap( ["key1"=>"value1","key2"=>"value"] )
-//for(i in aa) { println("2 =======> i=" + i + " aa[i]=" + aa[i]); }
+var v = new Array;
+v["key2"] = "";
+v["key1"] = " MyValue ";
+v["key5"] = true;
+v["key6"] = false;
+v["key3"] = 1764;
+v["key4"] = -8772;
+v["key7"] = 978.216;
+v["key8"] = -692.967;
+v["key9"] = [];
+v["key10"] = ["one","two"];
+tester.assertMap(testobj1.func_qvariantmap_qvariantmap(v), v)
 
 //TODO test following cases
 //variant
