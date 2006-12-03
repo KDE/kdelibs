@@ -128,12 +128,18 @@ KPixmapIO::KPixmapIO()
     if ((bpp == 32) && (red_shift == 16) && (green_shift == 8) &&
 	    (blue_shift == 0))
 	d->byteorder = bo32_ARGB;
+    else if ((bpp == 32) && (red_shift == 0) && (green_shift == 8) &&
+           (blue_shift == 16))
+       d->byteorder = bo32_BGRA;
     else if ((bpp == 33) && (red_shift == 16) && (green_shift == 8) &&
 	    (blue_shift == 0))
 	d->byteorder = bo32_BGRA;
     else if ((bpp == 24) && (red_shift == 16) && (green_shift == 8) &&
 	    (blue_shift == 0))
 	d->byteorder = bo24_RGB;
+    else if ((bpp == 24) && (red_shift == 0) && (green_shift == 8) &&
+           (blue_shift == 16))
+       d->byteorder = bo24_BGR;
     else if ((bpp == 25) && (red_shift == 16) && (green_shift == 8) &&
 	    (blue_shift == 0))
 	d->byteorder = bo24_BGR;
