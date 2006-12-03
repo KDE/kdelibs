@@ -31,6 +31,7 @@
 #if PLATFORM(WIN_OS)
 #  include <windows.h>
 #  include <io.h>
+#  include <fcntl.h>
 #else
 #  include <unistd.h>
 #  include <fcntl.h>
