@@ -16,7 +16,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
-add_subdirectory( liveui/tests )
 add_subdirectory( about )
 add_subdirectory( tests )
 
@@ -84,7 +83,6 @@ set(kdeui_LIB_SRCS
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
- liveui/kliveui.cpp
  itemviews/k3iconview.cpp
  itemviews/k3iconviewsearchline.cpp
  itemviews/k3listview.cpp
@@ -177,8 +175,6 @@ if (UNIX)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwin.cpp util/kwinmodule.cpp )
 endif (UNIX)
 
-
-SET_SOURCE_FILES_PROPERTIES(liveui/kliveui.cpp PROPERTIES SKIP_AUTOMOC TRUE)
 
 kde4_automoc(${kdeui_LIB_SRCS})
 
@@ -336,9 +332,6 @@ install( FILES
  util/kwinmodule.h
  util/kwin.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
-
-QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
-MACRO_ADD_FILE_DEPENDENCIES(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
