@@ -18,28 +18,20 @@
 */
 
 #include <QtCore/QPointer>
-#include <QtCore/QStringList>
 #include <QtGui/QCheckBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QMessageBox>
-#include <QtGui/QStyle>
 #include <QtGui/QTextEdit>
-#include <QtGui/QTextDocument>
+#include <QtGui/QListWidget>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kglobalsettings.h>
-#include <kguiitem.h>
-#include <klistbox.h>
 #include <klocale.h>
 #include <knotification.h>
-#include <kstdguiitem.h>
 #include <kiconloader.h>
-#include <kvbox.h>
-#include <kpushbutton.h>
 
 #include "kmessagebox.h"
 
@@ -59,7 +51,7 @@
 
 static bool KMessageBox_queue = false;
 
-static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
+static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 {
     QString icon_name;
 
@@ -81,7 +73,7 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QPixmap ret = KGlobal::instance()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
+   QIcon ret = KGlobal::instance()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
 
    if (ret.isNull())
        return QMessageBox::standardIcon(icon);
@@ -145,7 +137,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                       ask, checkboxReturn, options, details, icon);
 }
 
-int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
+int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)
@@ -163,7 +155,10 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     QLabel *label1 = new QLabel( contents);
 
     if (!icon.isNull())
-       label1->setPixmap(icon);
+    {
+       int size = IconSize(K3Icon::Desktop);
+       label1->setPixmap(icon.pixmap(size, size));
+    }
 
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
@@ -230,14 +225,14 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     lay->addWidget( label2 );
     lay->addStretch();
 
-    KListBox *listbox = 0;
+    QListWidget *listwidget = 0;
     if (!strlist.isEmpty())
     {
-       listbox=new KListBox( topcontents );
-       toplayout->addWidget(listbox);
-       listbox->insertStringList( strlist );
-       listbox->setSelectionMode( Q3ListBox::NoSelection );
-       toplayout->setStretchFactor(listbox, 1);
+       listwidget=new QListWidget(topcontents);
+       toplayout->addWidget(listwidget);
+       listwidget->addItems(strlist);
+       listwidget->setSelectionMode(QListWidget::NoSelection);
+       toplayout->setStretchFactor(listwidget, 1);
     }
 
     QPointer<QCheckBox> checkbox = 0;
@@ -272,7 +267,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
     dialog->setMainWidget(topcontents);
     dialog->showButtonSeparator(false);
-    if (!listbox)
+    if (!listwidget)
         dialog->layout()->setSizeConstraint( QLayout::SetFixedSize );
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
@@ -1011,9 +1006,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
         dialog->setWindowIcon(ret);
     }
 
-    int size = IconSize(K3Icon::Desktop);
-    QPixmap icon = qApp->windowIcon().pixmap(size,size);
-    createKMessageBox(dialog, icon, text, QStringList(), QString(), 0, options);
+    createKMessageBox(dialog, qApp->windowIcon(), text, QStringList(), QString(), 0, options);
     return;
 }
 
@@ -1024,14 +1017,6 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
 {
     return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
         buttonYes, buttonNo, dontShowAskAgainName, options );
-}
-
-int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text,
-                             const QString &caption, const KGuiItem &buttonYes,
-                             const KGuiItem &buttonNo, Options options )
-{
-    return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
-        buttonYes, buttonNo, QString(), options );
 }
 
 int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &text,
