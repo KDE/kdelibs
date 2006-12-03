@@ -71,7 +71,7 @@ GhnsWidget::~GhnsWidget()
 
 void GhnsWidget::downloadWallpapers()
 {
-  kDebug(5850) << "downloadWallpapers()" << endl;
+  kDebug() << "downloadWallpapers()" << endl;
 
   mWallpapers->download();
 }

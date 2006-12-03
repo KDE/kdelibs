@@ -214,7 +214,7 @@ ProviderLoader::~ProviderLoader()
 
 void ProviderLoader::load( const QString &category, const QString &providersList )
 {
-  kDebug(5850) << "ProviderLoader::load()" << endl;
+  kDebug() << "ProviderLoader::load()" << endl;
 
   mProviders.clear();
   mJobData = "";
@@ -234,7 +234,7 @@ void ProviderLoader::load( const QString &category, const QString &providersList
     providersUrl = server + "/knewstuff/" + category + "/providers.xml";
   }
 
-  kDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
+  kDebug() << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
 
   KIO::TransferJob *job = KIO::get( KUrl( providersUrl ), false, false );
   connect( job, SIGNAL( result( KJob * ) ),
@@ -247,7 +247,7 @@ void ProviderLoader::load( const QString &category, const QString &providersList
 
 void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kDebug(5850) << "ProviderLoader::slotJobData()" << endl;
+  kDebug() << "ProviderLoader::slotJobData()" << endl;
 
   if ( data.size() == 0 ) return;
 
@@ -260,7 +260,7 @@ void ProviderLoader::slotJobResult( KJob *job )
      job->uiDelegate()->showErrorMessage();
   }
 
-  kDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
+  kDebug() << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
             << endl;
 
   QDomDocument doc;
@@ -272,7 +272,7 @@ void ProviderLoader::slotJobResult( KJob *job )
   QDomElement providers = doc.documentElement();
 
   if ( providers.isNull() ) {
-    kDebug(5850) << "No document in Providers.xml." << endl;
+    kDebug() << "No document in Providers.xml." << endl;
   }
 
   QDomNode n;

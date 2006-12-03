@@ -85,7 +85,7 @@ Engine::~Engine()
 
 void Engine::download()
 {
-  kDebug(5850) << "Engine::download()" << endl;
+  kDebug() << "Engine::download()" << endl;
 
   connect( mProviderLoader,
            SIGNAL( providersLoaded( Provider::List * ) ),
@@ -125,7 +125,7 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 {
   if ( data.isEmpty() ) return;
 
-  kDebug(5850) << "Engine:slotNewStuffJobData()" << endl;
+  kDebug() << "Engine:slotNewStuffJobData()" << endl;
 
   mNewStuffJobData[ job ].append( QString::fromUtf8( data ) ); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
@@ -133,24 +133,24 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 void Engine::slotNewStuffJobResult( KJob *job )
 {
   if ( job->error() ) {
-    kDebug(5850) << "Error downloading new stuff descriptions." << endl;
+    kDebug() << "Error downloading new stuff descriptions." << endl;
     job->uiDelegate()->showErrorMessage();
   } else {
     QString knewstuffDoc = mNewStuffJobData[ job ];
 
-    kDebug(5850) << "---START---" << endl << knewstuffDoc << "---END---" << endl;
+    kDebug() << "---START---" << endl << knewstuffDoc << "---END---" << endl;
 
     mDownloadDialog->addProvider( mProviderJobs[ job ] );
 
     QDomDocument doc;
     if ( !doc.setContent( knewstuffDoc ) ) {
-      kDebug(5850) << "Error parsing knewstuff.xml." << endl;
+      kDebug() << "Error parsing knewstuff.xml." << endl;
       return;
     } else {
       QDomElement knewstuff = doc.documentElement();
 
       if ( knewstuff.isNull() ) {
-        kDebug(5850) << "No document in knewstuffproviders.xml." << endl;
+        kDebug() << "No document in knewstuffproviders.xml." << endl;
       } else {
         QDomNode p;
         for ( p = knewstuff.firstChild(); !p.isNull(); p = p.nextSibling() ) {
@@ -169,14 +169,14 @@ void Engine::slotNewStuffJobResult( KJob *job )
 
           mDownloadDialog->addEntry( entry );
 
-          kDebug(5850) << "KNEWSTUFF: " << entry->name() << endl;
+          kDebug() << "KNEWSTUFF: " << entry->name() << endl;
 
-          kDebug(5850) << "  SUMMARY: " << entry->summary() << endl;
-          kDebug(5850) << "  VERSION: " << entry->version() << endl;
-          kDebug(5850) << "  RELEASEDATE: " << entry->releaseDate().toString() << endl;
-          kDebug(5850) << "  RATING: " << entry->rating() << endl;
+          kDebug() << "  SUMMARY: " << entry->summary() << endl;
+          kDebug() << "  VERSION: " << entry->version() << endl;
+          kDebug() << "  RELEASEDATE: " << entry->releaseDate().toString() << endl;
+          kDebug() << "  RATING: " << entry->rating() << endl;
 
-          kDebug(5850) << "  LANGS: " << entry->langs().join(", ") << endl;
+          kDebug() << "  LANGS: " << entry->langs().join(", ") << endl;
         }
       }
     }
@@ -193,20 +193,20 @@ void Engine::slotNewStuffJobResult( KJob *job )
 
 void Engine::download( Entry *entry )
 {
-  kDebug(5850) << "Engine::download(entry)" << endl;
+  kDebug() << "Engine::download(entry)" << endl;
 
   KUrl source = entry->payload();
   mDownloadDestination = d->mNewStuff->downloadDestination( entry );
 
   if ( mDownloadDestination.isEmpty() ) {
-    kDebug(5850) << "Empty downloadDestination. Cancelling download." << endl;
+    kDebug() << "Empty downloadDestination. Cancelling download." << endl;
     return;
   }
 
   KUrl destination = KUrl( mDownloadDestination );
 
-  kDebug(5850) << "  SOURCE: " << source.url() << endl;
-  kDebug(5850) << "  DESTINATION: " << destination.url() << endl;
+  kDebug() << "  SOURCE: " << source.url() << endl;
+  kDebug() << "  DESTINATION: " << destination.url() << endl;
 
   KIO::FileCopyJob *job = KIO::file_copy( source, destination, -1, true );
   connect( job, SIGNAL( result( KJob * ) ),
@@ -216,7 +216,7 @@ void Engine::download( Entry *entry )
 void Engine::slotDownloadJobResult( KJob *job )
 {
   if ( job->error() ) {
-    kDebug(5850) << "Error downloading new stuff payload." << endl;
+    kDebug() << "Error downloading new stuff payload." << endl;
     job->uiDelegate()->showErrorMessage();
     return;
   }
@@ -246,7 +246,7 @@ void Engine::upload(const QString &fileName, const QString &previewName )
 
 void Engine::selectUploadProvider( Provider::List *providers )
 {
-  kDebug(5850) << "Engine:selectUploadProvider()" << endl;
+  kDebug() << "Engine:selectUploadProvider()" << endl;
 
   mProviderLoader->disconnect();
 
@@ -350,7 +350,7 @@ bool Engine::createMetaFile( Entry *entry )
   entry->setCategory(category());
   de.appendChild( entry->createDomElement( doc, de ) );
 
-  kDebug(5850) << "--DOM START--" << endl << doc.toString()
+  kDebug() << "--DOM START--" << endl << doc.toString()
             << "--DOM_END--" << endl;
 
   if ( mUploadMetaFile.isNull() ) {
@@ -376,7 +376,7 @@ bool Engine::createMetaFile( Entry *entry )
 void Engine::slotUploadPayloadJobResult( KJob *job )
 {
   if ( job->error() ) {
-    kDebug(5850) << "Error uploading new stuff payload." << endl;
+    kDebug() << "Error uploading new stuff payload." << endl;
     job->uiDelegate()->showErrorMessage();
     emit uploadFinished( false );
     return;
@@ -400,7 +400,7 @@ void Engine::slotUploadPayloadJobResult( KJob *job )
 void Engine::slotUploadPreviewJobResult( KJob *job )
 {
   if ( job->error() ) {
-    kDebug(5850) << "Error uploading new stuff preview." << endl;
+    kDebug() << "Error uploading new stuff preview." << endl;
     job->uiDelegate()->showErrorMessage();
     emit uploadFinished( true );
     return;
@@ -420,7 +420,7 @@ void Engine::slotUploadMetaJobResult( KJob *job )
 {
   mUploadMetaFile.clear();
   if ( job->error() ) {
-    kDebug(5850) << "Error uploading new stuff metadata." << endl;
+    kDebug() << "Error uploading new stuff metadata." << endl;
     job->uiDelegate()->showErrorMessage();
     emit uploadFinished( false );
     return;
