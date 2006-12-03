@@ -35,7 +35,6 @@
 
 #include <kjs/array_instance.h>
 #include <kjs/function_object.h>
-#include <kjs/property_slot.h>
 
 using namespace KJSEmbed;
 
@@ -438,25 +437,15 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             {
                 if(types[idx] == "QStringList")
                 {
-                    KJS::ArrayInstance* arrayImp = KJSEmbed::extractBindingImp<KJS::ArrayInstance>(exec, args[idx]);
-                    if(arrayImp) {
-                        QStringList list;
-                        const unsigned numItems = arrayImp->getLength();
-                        for (unsigned i = 0; i < numItems; ++i)
-                            list.append( KJSEmbed::extractVariant(exec, arrayImp->getItem(i)).toString() );
-                        return new Value<QStringList>(list);
-                    }
+                    return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
                 }
                 else if(types[idx] == "QVariantList")
                 {
-                    KJS::ArrayInstance* arrayImp = KJSEmbed::extractBindingImp<KJS::ArrayInstance>(exec, args[idx]);
-                    if(arrayImp) {
-                        QVariantList list;
-                        const unsigned numItems = arrayImp->getLength();
-                        for (unsigned i = 0; i < numItems; ++i)
-                            list.append( KJSEmbed::extractVariant(exec, arrayImp->getItem(i)) );
-                        return new Value<QVariantList>(list);
-                    }
+                    return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
+                }
+                else if(types[idx] == "QVariantMap")
+                {
+                    return new Value<QVariantMap>( convertArrayToMap(exec, args[idx]) );
                 }
                 else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
