@@ -74,7 +74,7 @@ public:
 static KUrl rootUrl(const KUrl &url)
 {
     KUrl root = url;
-    root.setPath( "/" );
+    root.setPath( QDir::rootPath() );
 
     if (!KAuthorized::authorizeUrlAction("list", KUrl(), root))
     {
