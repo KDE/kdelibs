@@ -38,7 +38,7 @@ void ActionList::plug( QWidget *container, int index ) const
     else if (index)
         kWarning() << k_funcinfo << "Index " << index << " is not within range (0 - " << container->actions().count() << endl;
 
-    foreach (KAction* action, *this) {
+    foreach (QAction* action, *this) {
         container->insertAction(before, action);
         before = action;
     }
@@ -46,7 +46,7 @@ void ActionList::plug( QWidget *container, int index ) const
 
 void ActionList::unplug( QWidget *container ) const
 {
-    foreach (KAction* action, *this)
+    foreach (QAction* action, *this)
         container->removeAction( action );
 }
 
@@ -615,7 +615,7 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     assert( m_state.guiClient );
 
     // look up the action and plug it in
-    KAction *action = m_state.guiClient->action( e );
+    QAction *action = m_state.guiClient->action( e );
 
     //kDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")" << endl;
     if ( !action )

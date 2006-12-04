@@ -136,7 +136,7 @@ void KSystemTrayIcon::contextMenuAboutToShow( )
         // we need to add the actions to the menu afterwards so that these items
         // appear at the _END_ of the menu
         d->menu->addSeparator();
-        KAction* action = d->actionCollection->action( "minimizeRestore" );
+        QAction* action = d->actionCollection->action( "minimizeRestore" );
 
         if ( action )
         {
@@ -155,7 +155,7 @@ void KSystemTrayIcon::contextMenuAboutToShow( )
 
     if ( d->window )
     {
-        KAction* action = d->actionCollection->action("minimizeRestore");
+        QAction* action = d->actionCollection->action("minimizeRestore");
         if ( d->window->isVisible() )
         {
             action->setText( i18n("&Minimize") );

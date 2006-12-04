@@ -310,7 +310,7 @@ void KMainWindow::setUniqueName()
 
 }
 
-KAction *KMainWindow::toolBarMenuAction()
+QAction *KMainWindow::toolBarMenuAction()
 {
     if ( !d->toolBarHandler )
 	return 0;

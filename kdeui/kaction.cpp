@@ -42,14 +42,13 @@ class KActionPrivate
 {
 public:
   KActionPrivate()
-    :configurable(true),
-     globalShortcutAllowed(false)
+    :globalShortcutAllowed(false)
   {
   }
 
-  KShortcut shortcut, defaultShortcut, globalShortcut, defaultGlobalShortcut;
+  KShortcut globalShortcut, defaultGlobalShortcut;
 
-  bool configurable, globalShortcutAllowed;
+  bool globalShortcutAllowed;
 };
 
 //---------------------------------------------------------------------
@@ -161,17 +160,17 @@ void KAction::initPrivate( const KShortcut& cut,
         connect(this, SIGNAL(triggered(bool)), receiver, slot);
 
     setShortcut(cut);
-
+    setProperty("isShortcutConfigurable", true);
 }
 
 bool KAction::isShortcutConfigurable() const
 {
-  return d->configurable;
+    return property("isShortcutConfigurable").toBool();
 }
 
 void KAction::setShortcutConfigurable( bool b )
 {
-    d->configurable = b;
+    setProperty("isShortcutConfigurable", b);
 }
 
 bool KAction::hasIcon() const
@@ -189,26 +188,32 @@ void KAction::setIconName( const QString & icon )
   setIcon(KIcon(icon));
 }
 
-const KShortcut & KAction::shortcut(ShortcutTypes type) const
+KShortcut KAction::shortcut(ShortcutTypes type) const
 {
   Q_ASSERT(type);
 
-  if (type == DefaultShortcut)
-    return d->defaultShortcut;
+  if (type == DefaultShortcut) {
+      QKeySequence primary = property("defaultPrimaryShortcut").value<QKeySequence>();
+      QKeySequence secondary = property("defaultAlternateShortcut").value<QKeySequence>();
+      return KShortcut(primary, secondary);
+  }
 
-  return d->shortcut;
+  QKeySequence primary = shortcuts().value(0);
+  QKeySequence secondary = shortcuts().value(1);
+  return KShortcut(primary, secondary);
 }
 
 void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
 {
   Q_ASSERT(type);
 
-  if (type & DefaultShortcut)
-    d->defaultShortcut = shortcut;
+  if (type & DefaultShortcut) {
+      setProperty("defaultPrimaryShortcut", shortcut.primary());
+      setProperty("defaultAlternateShortcut", shortcut.primary());
+  }
 
-  if ((type & ActiveShortcut) && d->shortcut != shortcut) {
-    d->shortcut = shortcut;
-    setShortcuts(d->shortcut.toList());
+  if (type & ActiveShortcut) {
+      setShortcuts(shortcut.toList());
   }
 }
 
@@ -217,11 +222,10 @@ void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
   Q_ASSERT(type);
 
   if (type & DefaultShortcut)
-    d->defaultShortcut.setPrimary(keySeq);
+      setProperty("defaultPrimaryShortcut", keySeq);
 
-  if ((type & ActiveShortcut) && d->shortcut.primary() != keySeq) {
-    d->shortcut.setPrimary(keySeq);
-    setShortcuts(d->shortcut.toList());
+  if (type & ActiveShortcut) {
+      QAction::setShortcut(keySeq);
   }
 }
 

@@ -223,7 +223,7 @@ void KDirOperator::insertViewDependentActions()
          // first insert the normal actions, then the grouped ones
          QList<QActionGroup*> groups = viewActionCollection->actionGroups();
 
-         foreach (KAction* action, viewActionCollection->actionsWithoutGroup())
+         foreach (QAction* action, viewActionCollection->actionsWithoutGroup())
             viewActionMenu->addAction( action );
 
          foreach (QActionGroup* group, groups)

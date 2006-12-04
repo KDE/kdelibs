@@ -57,7 +57,7 @@ public:
 	QMap<int, KAction*> grabbedKeys;
 	QMultiMap<KAction*, int> grabbedActions;
 	QSet<KAction*> actionsWithGlobalShortcuts;
-	
+
 	QString configGroup;
 	bool enabled, implEnabled;
 };
@@ -72,7 +72,7 @@ KGlobalAccel::~KGlobalAccel()
 {
 	foreach (int key, d->grabbedKeys.keys())
 		i->grabKey(key, false);
-	
+
 	delete i;
 	delete d;
 }
@@ -89,7 +89,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 	if (enabled) {
 		foreach (KAction* action, d->actionsWithGlobalShortcuts)
 			checkAction(action);
-	
+
 	} else {
 		foreach (int key, d->grabbedKeys.keys())
 			i->grabKey(key, false);
@@ -118,9 +118,12 @@ bool KGlobalAccel::readSettings( KConfigBase* config )
 	while (it.hasNext()) {
 		it.next();
 		foreach (KActionCollection* collection, KActionCollection::allCollections()) {
-			if (KAction* action = collection->action(it.key().toAscii().constData())) {
-				action->setGlobalShortcut(KShortcut(it.value()), KAction::ActiveShortcut);
-				goto found;
+			if (QAction* action = collection->action(it.key().toAscii().constData())) {
+                            KAction *kaction = qobject_cast<KAction*>(action);
+                            if (kaction!=0) {
+				kaction->setGlobalShortcut(KShortcut(it.value()), KAction::ActiveShortcut);
+                            }
+                            goto found;
 			}
 
 			kDebug(125) << k_funcinfo << "Warning: Could not find action '" << it.key() << "' - was this function called too early?" << endl;
@@ -155,7 +158,7 @@ bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KActi
 	}
 
 	config->sync();
-	
+
 	return true;
 }
 
@@ -173,11 +176,11 @@ void KGlobalAccel::checkAction( KAction* action )
 		if (d->actionsWithGlobalShortcuts.contains(action)) {
 			disconnect(action, SIGNAL(changed()), this, SLOT(actionChanged()));
 			d->actionsWithGlobalShortcuts.remove(action);
-			
+
 			if (d->actionsWithGlobalShortcuts.isEmpty())
 				enableImpl(false);
 		}
-	
+
 	} else {
 		if (!d->actionsWithGlobalShortcuts.contains(action)) {
 			connect(action, SIGNAL(changed()), SLOT(actionChanged()));
@@ -188,7 +191,7 @@ void KGlobalAccel::checkAction( KAction* action )
 	}
 
 	QList<int> currentlyGrabbed = d->grabbedActions.values(action);
-	
+
 	QList<int> needToGrab;
 	if (action->isEnabled() && action->globalShortcutAllowed()) {
 /*		foreach (const KShortcut& cut, action->globalShortcut().sequences())
@@ -200,13 +203,13 @@ void KGlobalAccel::checkAction( KAction* action )
 		if (!cut.alternate().isEmpty())
 			needToGrab.append(cut.alternate());
 	}
-	
+
 	foreach (int key, currentlyGrabbed)
 		if (needToGrab.contains(key))
 			needToGrab.removeAll(key);
 		else
 			grabKey(key, false, action);
-	
+
 	foreach (int key, needToGrab)
 		grabKey(key, true, action);
 }
@@ -219,12 +222,12 @@ void KGlobalAccel::actionChanged( )
 	KAction* action = qobject_cast<KAction*>(sender());
 	if (!action)
 		return;
-	
+
 	if (d->actionsWithGlobalShortcuts.contains(action)) {
 		if (action->isEnabled() == d->grabbedActions.contains(action))
 			// Nothing to do
 			return;
-		
+
 		// Action has been enabled or disabled, grab / release
 		if (action->isEnabled())
 			checkAction(action);

@@ -155,7 +155,7 @@ class KToolBar::Private
     int OffsetDefault;
     QString PositionDefault;
 
-    QList<KAction*> actionsBeingDragged;
+    QList<QAction*> actionsBeingDragged;
     QAction* dropIndicatorAction;
 
     KMenu* context;
@@ -458,13 +458,13 @@ void KToolBar::Private::slotContextAboutToShow()
   if ( kmw ) {
     kmw->setupToolbarMenuActions();
     // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
-    KAction *tbAction = kmw->toolBarMenuAction();
+    QAction *tbAction = kmw->toolBarMenuAction();
     if ( !parent->toolBarsLocked() && tbAction && tbAction->associatedWidgets().count() > 0 )
       contextMenu()->addAction( tbAction );
   }
 
   // try to find "configure toolbars" action
-  KAction *configureAction = 0;
+  QAction *configureAction = 0;
   const char* actionName = KStdAction::name( KStdAction::ConfigureToolbars );
   if ( xmlguiClient )
     configureAction = xmlguiClient->actionCollection()->action( actionName );
@@ -530,7 +530,7 @@ void KToolBar::Private::slotContextAboutToHide()
       contextMenu()->removeAction( kmw->toolBarMenuAction() );
 
   // Unplug the configure toolbars action too, since it's afterwards anyway
-  KAction *configureAction = 0;
+  QAction *configureAction = 0;
   const char* actionName = KStdAction::name( KStdAction::ConfigureToolbars );
   if ( xmlguiClient )
     configureAction = xmlguiClient->actionCollection()->action( actionName );
@@ -1056,7 +1056,7 @@ void KToolBar::dragEnterEvent( QDragEnterEvent *event )
 
     foreach ( const QString& actionName, actionNames ) {
       foreach ( KActionCollection* ac, KActionCollection::allCollections() ) {
-        KAction* newAction = ac->action( actionName.toAscii().constData() );
+        QAction* newAction = ac->action( actionName.toAscii().constData() );
         if ( newAction ) {
           d->actionsBeingDragged.append( newAction );
           break;
@@ -1139,7 +1139,7 @@ void KToolBar::dragLeaveEvent( QDragLeaveEvent *event )
 void KToolBar::dropEvent( QDropEvent *event )
 {
   if ( toolBarsEditable() ) {
-    foreach ( KAction* action, d->actionsBeingDragged ) {
+    foreach ( QAction* action, d->actionsBeingDragged ) {
       if ( actions().contains( action ) )
         removeAction( action );
       insertAction( d->dropIndicatorAction, action );

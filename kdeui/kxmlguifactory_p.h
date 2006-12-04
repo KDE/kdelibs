@@ -36,15 +36,15 @@ namespace KXMLGUI
 
 struct BuildState;
 
-class ActionList : public QList<KAction*>
+class ActionList : public QList<QAction*>
 {
 public:
     ActionList() {}
-    ActionList( const QList<KAction*> &rhs )
-        : QList<KAction*>( rhs )
+    ActionList( const QList<QAction*> &rhs )
+        : QList<QAction*>( rhs )
     {}
-    ActionList &operator=( const QList<KAction*> &rhs )
-    { QList<KAction*>::operator=( rhs ); return *this; }
+    ActionList &operator=( const QList<QAction*> &rhs )
+    { QList<QAction*>::operator=( rhs ); return *this; }
 
     void plug( QWidget *container, int index ) const;
     void unplug( QWidget *container ) const;

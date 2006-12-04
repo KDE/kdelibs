@@ -122,7 +122,7 @@ class KIcon;
  * Local shortcuts are active
  * in their context, global shortcus are active everywhere, usually even if
  * another program has focus.
- * 
+ *
  * @li Active shortcuts trigger a KAction if activated.
  * @li Default shortcuts are what the active shortcuts revert to if the user chooses
  * to reset shortcuts to default.
@@ -383,21 +383,21 @@ public:
      * per action. The first and second shortcut as reported by shortcuts() will be the
      * primary and alternate shortcut of the shortcut returned.
      *
-     * \param types the type of shortcut to return. Should both be specified, only the 
+     * \param types the type of shortcut to return. Should both be specified, only the
      *             active shortcut will be returned. Defaults to the active shortcut, if one exists.
      * \sa shortcuts()
      */
-    const KShortcut& shortcut(ShortcutTypes types = ActiveShortcut) const;
+    KShortcut shortcut(ShortcutTypes types = ActiveShortcut) const;
 
     /**
      * Convenience function to retrieve the default shortcut for this action.
      */
-    inline const KShortcut& defaultShortcut() const { return shortcut(DefaultShortcut); }
+    inline KShortcut defaultShortcut() const { return shortcut(DefaultShortcut); }
 
     /**
      * Convenience function to retrieve the active shortcut for this action.
      */
-    inline const KShortcut& activeShortcut() const { return shortcut(ActiveShortcut); }
+    inline KShortcut activeShortcut() const { return shortcut(ActiveShortcut); }
 
     /**
      * Set the shortcut for this action.
@@ -453,7 +453,7 @@ public:
      * Unlike regular shortcuts, the application's window does not need focus
      * for them to be activated.
      *
-     * \param type the type of shortcut to be returned. Should both be specified, only the 
+     * \param type the type of shortcut to be returned. Should both be specified, only the
      *             active shortcut will be returned.  Defaults to the active shortcut,
      *             if one exists.
      *

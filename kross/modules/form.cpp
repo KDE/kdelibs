@@ -94,7 +94,7 @@ namespace Kross {
                 KFileDialog::setMode( KFile::File | KFile::LocalOnly );
 
                 if( actionCollection() ) {
-                    KAction* a = actionCollection()->action("toggleSpeedbar");
+                    QAction* a = actionCollection()->action("toggleSpeedbar");
                     if( a && a->isCheckable() && a->isChecked() ) a->toggle();
                     a = actionCollection()->action("toggleBookmarks");
                     if( a && a->isCheckable() && a->isChecked() ) a->toggle();

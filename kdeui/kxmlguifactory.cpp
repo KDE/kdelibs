@@ -302,7 +302,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 /*
     QString unaddedActions;
     foreach (KActionCollection* ac, KActionCollection::allCollections())
-      foreach (KAction* action, ac->actions())
+      foreach (QAction* action, ac->actions())
         if (action->associatedWidgets().isEmpty())
           unaddedActions += action->objectName() + ' ';
 
@@ -452,7 +452,7 @@ QList<QWidget*> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
 }
 
 void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
-                                     const QList<KAction*> &actionList )
+                                     const QList<QAction*> &actionList )
 {
     d->pushState();
     d->guiClient = client;
@@ -490,7 +490,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
         if ( e.tagName().toLower() != tagAction )
             continue;
 
-        KAction *action = d->guiClient->action( e );
+        QAction *action = d->guiClient->action( e );
         if ( !action )
             continue;
 
@@ -498,7 +498,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
     }
 }
 
-void KXMLGUIFactory::configureAction( KAction *action, const QDomNamedNodeMap &attributes )
+void KXMLGUIFactory::configureAction( QAction *action, const QDomNamedNodeMap &attributes )
 {
     for ( uint i = 0; i < attributes.length(); i++ )
     {
@@ -510,7 +510,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomNamedNodeMap &a
     }
 }
 
-void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute )
+void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute )
 {
     static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
 

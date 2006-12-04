@@ -536,8 +536,8 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		}
 		if (!printer->isSpecial())
 		{
-			QList<KAction*>	pactions = m_actions->actionsInGroup(m_manager->pluginGroup());
-			foreach (KAction* action, pactions)
+			QList<QAction*>	pactions = m_actions->actionsInGroup(m_manager->pluginGroup());
+			foreach (QAction* action, pactions)
 				m_pop->addAction(action);
 			if (pactions.count() > 0)
 				m_pop->addSeparator();
@@ -828,7 +828,7 @@ void KMMainView::enableToolbar(bool on)
 		m_toolbar->hide();
 }
 
-KAction* KMMainView::action(const char *name)
+QAction* KMMainView::action(const char *name)
 {
 	return m_actions->action(name);
 }
@@ -867,11 +867,11 @@ bool KMMainView::printerInfosShown() const
 void KMMainView::loadPluginActions()
 {
 	KMFactory::self()->manager()->createPluginActions(m_actions);
-	QList<KAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	QList<QAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
 	QAction*	before = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
 	QMenu *menu = static_cast<KActionMenu*>(m_menubar->actions().at( 1 ))->menu();
-	foreach (KAction* action, pactions)
+	foreach (QAction* action, pactions)
 	{
 		m_toolbar->insertAction(before, action);
 		menu->addAction(action);
@@ -881,7 +881,7 @@ void KMMainView::loadPluginActions()
 
 void KMMainView::removePluginActions()
 {
-	QList<KAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	QList<QAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
 	qDeleteAll(pactions);
 }
 
