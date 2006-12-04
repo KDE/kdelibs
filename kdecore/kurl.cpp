@@ -314,7 +314,7 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
     if ( str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
-    	  setPath(str.mid(1));
+    	  setPath(str.mid(2));
     else if ( str[0].isLetter() &&  str[1] == QLatin1Char(':') )
         setPath( str );
 #else
@@ -330,8 +330,15 @@ KUrl::KUrl( const char * str )
   : QUrl(), d(0)
 {
   if ( str && str[0] ) {
+#ifdef Q_WS_WIN
+    if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
+    	setPath( QString::fromUtf8( str+1 ) );
+    else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
+      setPath( QString::fromUtf8( str ) );
+#else
     if ( str[0] == '/' || str[0] == '~' )
       setPath( QString::fromUtf8( str ) );
+#endif
     else
       setEncodedUrl( str, QUrl::TolerantMode );
   }
@@ -343,7 +350,7 @@ KUrl::KUrl( const QByteArray& str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
-    	  setPath( QString::fromUtf8( str.mid(1) ) );
+    	  setPath( QString::fromUtf8( str.mid(2) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
         setPath( QString::fromUtf8( str ) );
 #else
@@ -1415,6 +1422,9 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 
 void KUrl::setPath( const QString& _path )
 {
+#ifdef Q_WS_WIN
+		qDebug("%s %s",__FUNCTION__,_path.toAscii().data());
+#endif
     if ( scheme().isEmpty() )
         setScheme( "file" );
 #ifndef KDE_QT_ONLY
