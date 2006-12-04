@@ -201,6 +201,11 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     KPageWidget *pageWidget();
 
+    /**
+     * Returns the page widget of the dialog or 0 if no page widget is set.
+     */
+    const KPageWidget *pageWidget() const;
+
   private:
     class Private;
     Private* const d;

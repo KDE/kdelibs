@@ -126,4 +126,9 @@ KPageWidget* KPageDialog::pageWidget()
   return d->mPageWidget;
 }
 
+const KPageWidget* KPageDialog::pageWidget() const
+{
+  return d->mPageWidget;
+}
+
 #include "kpagedialog.moc"
