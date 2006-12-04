@@ -1,5 +1,8 @@
 project(kmetadata)
 
+find_package(KNep REQUIRED)
+
+
 # We use a dummy source file to force cmake to execute rcgen during the building process
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
@@ -35,6 +38,7 @@ include_directories(
   ${CMAKE_BINARY_DIR}
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
+  ${KNEP_INCLUDE_DIR}
 )
 
 set(kmetadata_LIB_SRCS
@@ -53,7 +57,7 @@ kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
 
 add_dependencies(kmetadata rcgen)
 
-target_link_libraries(kmetadata knepclient ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${KDE4_KDECORE_LIBRARY})
+target_link_libraries(kmetadata ${KNEP_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${KDE4_KDECORE_LIBRARY})
 
 set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )

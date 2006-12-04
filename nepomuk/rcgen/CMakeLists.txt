@@ -1,6 +1,13 @@
 project(tools)
 
-include_directories(${CMAKE_SOURCE_DIR} ${QT_INCLUDES} ${KDE4_INCLUDES})
+find_package(Soprano REQUIRED)
+
+include_directories(
+  ${CMAKE_SOURCE_DIR}
+  ${QT_INCLUDES}
+  ${KDE4_INCLUDES}
+  ${SOPRANO_INCLUDE_DIR}
+)
 
 set(rcgen_SRCS
   rcgen.cpp
@@ -9,4 +16,4 @@ set(rcgen_SRCS
 
 kde4_automoc(rcgen ${rcgen_SRCS})
 kde4_add_executable(rcgen ${rcgen_SRCS})
-target_link_libraries(rcgen soprano ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
+target_link_libraries(rcgen ${SOPRANO_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
