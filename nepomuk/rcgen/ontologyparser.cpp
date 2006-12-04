@@ -87,7 +87,8 @@ bool OntologyParser::parse( const QString& filename )
     else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
       d->properties[s.subject().uri().toString()].type = s.object().uri().toString();
     }
-    else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ) {
+    else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ||
+	     s.predicate().uri().toString().endsWith( "#cardinality" ) ) {
       d->properties[s.subject().uri().toString()].list = ( s.object().literal().toInt() > 1 );
     }
     else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
