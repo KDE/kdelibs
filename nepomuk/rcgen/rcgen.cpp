@@ -21,8 +21,10 @@ static int usage()
 {
   QTextStream( stderr, QIODevice::WriteOnly )
     << "Usage:" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] 
-    << " [--writeall <sourcefolder>] [--listheader] [--listsources] <ontologyfile>" << endl;
+    << "   " << QCoreApplication::instance()->arguments()[0] << "--writeall <sourcefolder> <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << "--listincludes <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << "--listheaders [--prefix <listprefix>] <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << "--listsources [--prefix <listprefix>] <ontologyfile>" << endl;
   return 1;
 }
 
@@ -33,27 +35,47 @@ int main( int argc, char** argv )
   // stuff. If not, who cares, we don't do anything time relevant here
   QCoreApplication app( argc, argv );
 
-  bool writeAll = false, listHeader = false, listSource = false;
-  QString ontoFile, targetDir;
+  bool writeAll = false, listHeader = false, listSource = false, listIncludes = false;
+  QString ontoFile, targetDir, prefix;
 
   QStringList args = app.arguments();
-  if( args[1] == "--listheader" ) {
-    listHeader = true;
+  if( args.count() < 2 )
+    return usage();
+  
+  if( args[1] == "--writeall" ) {
+    writeAll = true;
+    if( args.count() != 4 )
+      return usage();
+    targetDir = args.at(2);
+    ontoFile = args.at(3);
+  }
+  else if( args[1] == "--listincludes" ) {
+    listIncludes = true;
     if( args.count() != 3 )
       return usage();
     ontoFile = args.at(2);
+  }
+  else if( args[1] == "--listheaders" ) {
+    listHeader = true;
+    if( args.count() == 3 )
+      ontoFile = args.at(2);
+    else if( args.count() == 5 && args[2] == "--prefix" ) {
+      ontoFile = args.at(4);
+      prefix = args.at(3);
+    }
+    else
+      return usage(); 
   }
   else if( args[1] == "--listsources" ) {
     listSource = true;
-    if( args.count() != 3 )
-      return usage();
-    ontoFile = args.at(2);
-  }
-  else if( args[1] == "--writeall" ) {
-    if( args.count() != 4 )
-      return usage();
-    targetDir = args.at(3);
-    ontoFile = args.at(3);
+    if( args.count() == 3 )
+      ontoFile = args.at(2);
+    else if( args.count() == 5 && args[2] == "--prefix" ) {
+      ontoFile = args.at(4);
+      prefix = args.at(3);
+    }
+    else
+      return usage(); 
   }
   else
     return usage();
@@ -77,8 +99,9 @@ int main( int argc, char** argv )
   }
 
   if( writeAll ) {
+    qDebug() << "Writing sources to " << targetDir << endl;
     if( !prsr.writeSources( targetDir ) ) {
-      qDebug() << "Writing sources to " << argv[2] << " failed." << endl;
+      qDebug() << "Writing sources to " << targetDir << " failed." << endl;
       return usage();
     }
   }
@@ -87,14 +110,21 @@ int main( int argc, char** argv )
     QTextStream s( stdout, QIODevice::WriteOnly );
     QStringListIterator it( l );
     while( it.hasNext() )
-      s << it.next() << endl;
+      s << prefix << it.next() << ";";
   }
   else if( listHeader ) {
     QStringList l = prsr.listHeader();
     QTextStream s( stdout, QIODevice::WriteOnly );
     QStringListIterator it( l );
     while( it.hasNext() )
-      s << it.next() << endl;
+      s << prefix << it.next() << ";";
+  }
+  else if( listIncludes ) {
+    QStringList l = prsr.listHeader();
+    QTextStream s( stdout, QIODevice::WriteOnly );
+    QStringListIterator it( l );
+    while( it.hasNext() )
+      s << "#include <kmetadata/" << it.next() << ">" << endl;
   }
 
   return 0;

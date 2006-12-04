@@ -17,6 +17,8 @@
 
 #include <QtCore>
 
+class ResourceClass;
+
 class Property
 {
  public:
@@ -39,14 +41,16 @@ class Property
   bool list;
 
   QString name() const;
-  QString typeString( bool simple = false ) const;
-  QString setterDeclaration() const;
-  QString getterDeclaration() const;
-  QString adderDeclaration() const;
+  QString typeString( bool simple = false, bool withNamespace = false ) const;
+  QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+  QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+  QString adderDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
 
-  QString setterDefinition( const QString& ) const;
-  QString getterDefinition( const QString& ) const;
-  QString adderDefinition( const QString& ) const;
+  QString setterDefinition( const ResourceClass* rc ) const;
+  QString getterDefinition( const ResourceClass* rc ) const;
+  QString adderDefinition( const ResourceClass* rc ) const;
+
+  bool hasSimpleType() const;
 };
 
 

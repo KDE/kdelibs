@@ -95,6 +95,9 @@ bool OntologyParser::parse( const QString& filename )
     }
   }
 
+  delete it;
+  delete model;
+
   // now assign the comments to resources and properties
   QMapIterator<QString, QString> commentsIt( d->comments );
   while( commentsIt.hasNext() ) {
@@ -104,9 +107,6 @@ bool OntologyParser::parse( const QString& filename )
     else if( d->properties.contains( commentsIt.key() ) )
       d->properties[commentsIt.key()].comment = commentsIt.value();
   }
-
-  delete it;
-  delete model;
 
   // testing stuff
 //   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
@@ -131,7 +131,8 @@ bool OntologyParser::writeSources( const QString& dir )
 
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it ) {
-    success &= (*it).write( dir );
+    if( (*it).name() != "Resource" )
+      success &= (*it).write( dir + '/' );
   }
 
   return success;
@@ -143,7 +144,8 @@ QStringList OntologyParser::listHeader()
   QStringList l;
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it )
-    l.append( (*it).headerName() );
+    if( (*it).name() != "Resource" )
+      l.append( (*it).headerName() );
   return l;
 }
 
@@ -153,6 +155,7 @@ QStringList OntologyParser::listSources()
   QStringList l;
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it )
-    l.append( (*it).sourceName() );
+    if( (*it).name() != "Resource" )
+      l.append( (*it).sourceName() );
   return l;
 }

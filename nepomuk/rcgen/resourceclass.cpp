@@ -18,6 +18,13 @@
 // dummy resource for low level resource inheritance
 ResourceClass* ResourceClass::s_defaultResource = new ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" );
 
+static const QString s_typeComment =
+"   // We always store all Resource types as plain Resource objects.\n"
+"   // It does not introduce any overhead (due to the implicit sharing of\n"
+"   // the data and has the advantage that we can mix setProperty calls\n"
+"   // with the special Resource subclass methods.\n"
+"   // More importantly Resource loads the data as Resource objects anyway.\n";
+
 
 static QString writeComment( const QString& comment, int indent )
 {
@@ -85,15 +92,18 @@ QString Property::name() const
 }
 
 
-QString Property::typeString( bool simple ) const
+QString Property::typeString( bool simple, bool withNamespace ) const
 {
   QString t;
   if( type.endsWith( "#Literal" ) ) {
     // FIXME: map to all the simple types somehow
     t = "QString";
   }
-  else
+  else {
     t = type.section( '#', -1 );
+    if( withNamespace )
+      t.prepend( "Nepomuk::KMetaData::" );
+  }
 
   if( !simple && list ) {
     if( t == "QString" )
@@ -106,88 +116,160 @@ QString Property::typeString( bool simple ) const
 }
 
 
-QString Property::setterDeclaration() const
+bool Property::hasSimpleType() const
 {
-  return QString( "   void set%1%2%3( const %4& value );" )
-    .arg( name()[0].toUpper() )
-    .arg( name().mid(1) )
-    .arg( list ? QString("s") : QString() )
-    .arg( typeString() );
+  return ( typeString( true ) == "QString" );
 }
 
 
-QString Property::getterDeclaration() const
+QString Property::setterDeclaration( const ResourceClass* rc, bool withNamespace ) const
 {
-  return QString( "   %1 get%2%3%4() const;" )
-    .arg( typeString() )
+  return QString( "void %1set%2%3%4( const %5& value )" )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
+    .arg( name()[0].toUpper() )
+    .arg( name().mid(1) )
+    .arg( list ? QString("s") : QString() )
+    .arg( typeString( false, withNamespace ) );
+}
+
+
+QString Property::getterDeclaration( const ResourceClass* rc, bool withNamespace ) const
+{
+  return QString( "%1 %2get%3%4%5() const" )
+    .arg( typeString( false, withNamespace ) )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
     .arg( name()[0].toUpper() )
     .arg( name().mid(1) )
     .arg( list ? QString("s") : QString() );
 }
 
 
-QString Property::adderDeclaration() const
+QString Property::adderDeclaration( const ResourceClass* rc, bool withNamespace ) const
 {
-  return QString( "   void add%1%2( const %3& value );" )
+  return QString( "void %1add%2%3( const %4& value )" )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
     .arg( name()[0].toUpper() )
     .arg( name().mid(1) )
-    .arg( typeString( true ) );
+    .arg( typeString( true, withNamespace ) );
 }
 
 
-QString Property::setterDefinition( const QString& resname ) const
+QString Property::setterDefinition( const ResourceClass* rc ) const
 {
-  return QString( "void Nepomuk::KMetaData::%1::set%2%3%4( const %5& value )\n"
-		  "{\n"
-		  "   Variant v;\n"
-		  "   v.setValue( value );\n"
-		  "   setProperty( \"%6\", v );\n"
+  QString s = setterDeclaration( rc, true ) + "\n";
+
+  if( hasSimpleType() || typeString( true ) == "Resource" || !list ) {
+    s += QString("{\n"
+		 "   setProperty( \"%1\", Variant( value ) );\n"
+		 "}\n" )
+      .arg( uri );
+  }
+  else if( list ) {
+    s += QString("{\n"
+		 "%1"
+		 "   QList<Resource> l;\n"
+		 "   for( %2::const_iterator it = value.constBegin();\n"
+		 "        it != value.constEnd(); ++it )\n"
+		 "      l.append( Resource( (*it) ) );\n"
+		 "   setProperty( \"%3\", Variant( l ) );\n"
+		 "}\n" )
+      .arg( s_typeComment )
+      .arg( typeString() )
+      .arg( uri );
+  }
+  else {
+    s += QString("{\n"
+		 "%1"
+		 "   setProperty( \"%2\", Variant( Resource( value ) ) );\n"
+		 "}\n" )
+      .arg( s_typeComment )
+      .arg( uri );
+  }
+
+  return s;
+}
+
+
+QString Property::getterDefinition( const ResourceClass* rc ) const
+{
+  QString s = getterDeclaration( rc, true ) + "\n";
+
+  if( hasSimpleType() || typeString( true ) == "Resource" ) {
+    s += QString( "{\n"
+		  "   return getProperty( \"%2\" ).value<%1 >();\n" // The space before the ">" is necessary in case we handle a QList
 		  "}\n" )
-    .arg( resname )
-    .arg( name()[0].toUpper() )
-    .arg( name().mid(1) )
-    .arg( list ? QString("s") : QString() )
-    .arg( typeString() )
+    .arg( typeString( false ) )
     .arg( uri );
+  }
+  else if( list ) {
+    s += QString("{\n"
+		 "%1"
+		 "   QList<Resource> valueList = getProperty( \"%2\" ).toResourceList();\n"
+		 "   QList<%3> l;\n"
+		 "   for( QList<Resource>::const_iterator it = valueList.constBegin();\n"
+		 "        it != valueList.constEnd(); ++it )\n"
+		 "      l.append( %3( (*it).uri() ) );\n"
+		 "   return l;\n"
+		 "}\n" )
+      .arg( s_typeComment )
+      .arg( uri )
+      .arg( typeString( true ) );
+  }
+  else {
+    s += QString("{\n"
+		 "%1"
+		 "   return %2( getProperty( \"%3\" ).toResource().uri() );\n"
+		 "}\n" )
+      .arg( s_typeComment )
+      .arg( typeString( true ) )
+      .arg( uri );
+  }
+
+  return s;
 }
 
 
-QString Property::getterDefinition( const QString& resname ) const
+QString Property::adderDefinition( const ResourceClass* rc ) const
 {
-  return QString( "%1 Nepomuk::KMetaData::%2::get%4%5%6() const\n"
-		  "{\n"
-		  "   return getProperty( \"%7\" ).value<%1 >();\n" // The space before the ">" is necessary in case we handle a QList
-		  "}\n" )
-    .arg( typeString() )
-    .arg( resname )
-    .arg( name()[0].toUpper() )
-    .arg( name().mid(1) )
-    .arg( list ? QString("s") : QString() )
-    .arg( uri );
-}
+  QString s = adderDeclaration( rc, true ) + "\n";
 
-
-QString Property::adderDefinition( const QString& resname ) const
-{
-  return QString( "void Nepomuk::KMetaData::%1::add%2%3( const %5& value )\n"
-		  "{\n"
-		  "   Variant v = getProperty( \"%6\" );\n"
-		  "   if( v.userType() == qMetaTypeId<%5>() ) {\n"
-		  "      QList<%5> l( v.value<%5>() );\n"
+  if( hasSimpleType() ) {
+    s += QString( "{\n"
+		  "   Variant v = getProperty( \"%1\" );\n"
+		  "   if( v.userType() == qMetaTypeId<%2>() ) {\n"
+		  "      %3 l;\n"
+		  "      l.append( v.value<%2>() );\n"
 		  "      v.setValue( l );\n"
 		  "   }\n"
-		  "   QList<%5> l = v.value<QList<%5> >();\n"
+		  "   %3 l = v.value<%3 >();\n"
 		  "   l.append( value );\n"
 		  "   v.setValue( l );\n"
-		  "   setProperty( \"%6\", v );\n"
+		  "   setProperty( \"%1\", v );\n"
 		  "}\n" )
-    .arg( resname )
-    .arg( name()[0].toUpper() )
-    .arg( name().mid(1) )
-    .arg( typeString( true ) )
-    .arg( uri );
-}
+      .arg( uri )
+      .arg( typeString( true ) )
+      .arg( typeString( false ) );
+  }
+  else {
+    s += QString( "{\n"
+		  "%1"
+		  "   Variant v = getProperty( \"%2\" );\n"
+		  "   if( v.isResource() ) {\n"
+		  "      QList<Resource> l;\n"
+		  "      l.append( v.toResource() );\n"
+		  "      v.setValue( l );\n"
+		  "   }\n"
+		  "   QList<Resource> l = v.toResourceList();\n"
+		  "   l.append( Resource( value ) );\n"
+		  "   v.setValue( l );\n"
+		  "   setProperty( \"%2\", v );\n"
+		  "}\n" )
+      .arg( s_typeComment )
+      .arg( uri );
+  }
 
+  return s;
+}
 
 
 ResourceClass::ResourceClass()
@@ -237,26 +319,43 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
 
   QString methods;
   QTextStream ms( &methods );
+  QSet<QString> includes;
 
   QMapIterator<QString, Property*> it( properties );
   while( it.hasNext() ) {
     it.next();
-    const Property* p = it.value();
+    Property* p = it.value();
+
+    if( p->type.isEmpty() ) {
+      qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+      continue;
+    }
+
     ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-    ms << p->getterDeclaration() << endl;
+    ms << "   " << p->getterDeclaration( this ) << ";" << endl;
     ms << endl;
 
     ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-    ms << p->setterDeclaration() << endl;
+    ms << "   " << p->setterDeclaration( this ) << ";" << endl;
     ms << endl;
 
     if( p->list ) {
       ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-      ms << p->adderDeclaration() << endl;
+      ms << "   " << p->adderDeclaration( this ) << ";" << endl;
       ms << endl;
     }
+
+    if( !p->hasSimpleType() )
+      includes.insert( p->typeString( true ) );
   }
 
+  QString includeString;
+  QSetIterator<QString> includeIt( includes );
+  while( includeIt.hasNext() ) {
+    includeString += "class " + includeIt.next() + ";\n";
+  }
+
+  s.replace( "OTHERCLASSES", includeString );
   s.replace( "METHODS", methods );
 
   stream << s;
@@ -286,10 +385,10 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
       continue;
     }
 
-    ms << p->getterDefinition( name() ) << endl
-       << p->setterDefinition( name() ) << endl;
+    ms << p->getterDefinition( this ) << endl
+       << p->setterDefinition( this ) << endl;
     if( p->list )
-      ms << p->adderDefinition( name() ) << endl;
+      ms << p->adderDefinition( this ) << endl;
   }
 
   s.replace( "METHODS", methods );
