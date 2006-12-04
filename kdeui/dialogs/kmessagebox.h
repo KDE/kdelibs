@@ -935,12 +935,36 @@ public:
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox.
      */
+    static int messageBox( QWidget *parent, DialogType type, const QString &text,
+                    const QString &caption,
+                    const KGuiItem &buttonYes,
+                    const KGuiItem &buttonNo,
+                    const QString &dontShowAskAgainName,
+                    Options options = Notify);
 
+    /**
+     * Alternate method to show a messagebox:
+     *
+     * @param parent  If @p parent is 0, then the message box becomes an
+     *                application-global modal dialog box. If @p parent is a
+     *                widget, the message box becomes modal relative to parent.
+     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     * @param text Message string.
+     * @param caption Message box title.
+     * @param buttonYes The text for the first button.
+     *                  The default is i18n("&Yes").
+     * @param buttonNo  The text for the second button.
+     *                  The default is i18n("&No").
+     * @param options  see Options
+     * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
+     *       and for Information, none is used.
+     * @return a button code, as defined in KMessageBox.
+     */
+    // KDE4 - merge with above?
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no(),
-                    const QString &dontShowAskAgainName = QString(),
                     Options options = Notify);
 
     /**
@@ -1092,11 +1116,13 @@ public:
      * @note   The @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialog *dialog, QIcon icon,
+    static int createKMessageBox(KDialog *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information);
+
+    // KDE4 make a constructor that takes a QIcon
 
 private:
     static KConfig* againConfig;

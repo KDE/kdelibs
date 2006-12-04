@@ -52,7 +52,6 @@ set(kdeui_LIB_SRCS
  kpageview_p.cpp
  kpagewidget.cpp
  kpagewidgetmodel.cpp
- kmessagebox.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
  kxmlguiclient.cpp
@@ -60,11 +59,9 @@ set(kdeui_LIB_SRCS
  kxmlguifactory_p.cpp
  kxmlguibuilder.cpp
  kmenumenuhandler_p.cpp
- kedittoolbar.cpp
  kanimwidget.cpp
  kcmodule.cpp
  kwindowlistmenu.cpp
- ktip.cpp
  karrowbutton.cpp
  kmainwindowiface.cpp
  kguiitem.cpp
@@ -78,7 +75,6 @@ set(kdeui_LIB_SRCS
  kpixmapregionselectorwidget.cpp
  ktoolbarlabelaction.cpp
  ktoolbarspaceraction.cpp
- kmessageboxmessagehandler.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -146,15 +142,19 @@ set(kdeui_LIB_SRCS
  dialogs/kassistantdialog.cpp
  dialogs/kbugreport.cpp
  dialogs/kdialog.cpp
+ dialogs/kedittoolbar.cpp
  dialogs/kcolordialog.cpp
  dialogs/kfontdialog.cpp
  dialogs/kinputdialog.cpp
  dialogs/kkeydialog.cpp
+ dialogs/kmessagebox.cpp
+ dialogs/kmessageboxmessagehandler.cpp
  dialogs/kpagedialog.cpp
  dialogs/kaboutapplication.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kprogressdialog.cpp
  dialogs/kshortcutdialog.cpp
+ dialogs/ktip.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kaboutkde.cpp
  dialogs/kconfigdialog.cpp
@@ -196,7 +196,7 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES dialogs/aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
+install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kdatetable.h
@@ -213,7 +213,6 @@ install( FILES
  kpageview.h
  kpagewidget.h
  kpagewidgetmodel.h
- kmessagebox.h
  ktextbrowser.h
  kaction.h
  kactioncollection.h
@@ -234,10 +233,8 @@ install( FILES
  kxmlguiclient.h
  kxmlguibuilder.h
  kxmlguifactory.h
- kedittoolbar.h
  kanimwidget.h
  kwindowlistmenu.h
- ktip.h
  karrowbutton.h
  kguiitem.h
  kstdguiitem.h
@@ -247,7 +244,6 @@ install( FILES
  kpixmapregionselectorwidget.h
  ktoolbarlabelaction.h
  ktoolbarspaceraction.h
- kmessageboxmessagehandler.h
  widgets/kdatepicker.h
  widgets/kmenu.h
  widgets/kfontrequester.h
@@ -280,20 +276,24 @@ install( FILES
  dialogs/kaboutapplication.h
  dialogs/kaboutdialog.h
  dialogs/kaboutkde.h
+ dialogs/kassistantdialog.h
+ dialogs/kbugreport.h
  dialogs/kcolordialog.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
  dialogs/kdialog.h
+ dialogs/kedittoolbar.h
  dialogs/kfontdialog.h
  dialogs/kinputdialog.h
  dialogs/kkeydialog.h
+ dialogs/kmessagebox.h
+ dialogs/kmessageboxmessagehandler.h
  dialogs/kpagedialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h
  dialogs/kshortcutdialog.h
- dialogs/kassistantdialog.h
- dialogs/kbugreport.h
+ dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
  findreplace/kfinddialog.h

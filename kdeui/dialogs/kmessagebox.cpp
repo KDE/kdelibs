@@ -18,20 +18,28 @@
 */
 
 #include <QtCore/QPointer>
+#include <QtCore/QStringList>
 #include <QtGui/QCheckBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
+#include <QtGui/QMessageBox>
+#include <QtGui/QStyle>
 #include <QtGui/QTextEdit>
-#include <QtGui/QListWidget>
+#include <QtGui/QTextDocument>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kglobalsettings.h>
+#include <kguiitem.h>
+#include <klistbox.h>
 #include <klocale.h>
 #include <knotification.h>
+#include <kstdguiitem.h>
 #include <kiconloader.h>
+#include <kvbox.h>
+#include <kpushbutton.h>
 
 #include "kmessagebox.h"
 
@@ -51,7 +59,7 @@
 
 static bool KMessageBox_queue = false;
 
-static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
+static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
 {
     QString icon_name;
 
@@ -73,7 +81,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KGlobal::instance()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
+   QPixmap ret = KGlobal::instance()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
 
    if (ret.isNull())
        return QMessageBox::standardIcon(icon);
@@ -137,7 +145,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                       ask, checkboxReturn, options, details, icon);
 }
 
-int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
+int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)
@@ -155,10 +163,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
     QLabel *label1 = new QLabel( contents);
 
     if (!icon.isNull())
-    {
-       int size = IconSize(K3Icon::Desktop);
-       label1->setPixmap(icon.pixmap(size, size));
-    }
+       label1->setPixmap(icon);
 
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
@@ -194,7 +199,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
           used_width = document.idealWidth();
           pref_height = (int) document.size().height();
        }
-       if (used_width > 0 && used_width <= pref_width)
+       if (used_width <= pref_width)
        {
           while(true)
           {
@@ -225,14 +230,14 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
     lay->addWidget( label2 );
     lay->addStretch();
 
-    QListWidget *listwidget = 0;
+    KListBox *listbox = 0;
     if (!strlist.isEmpty())
     {
-       listwidget=new QListWidget(topcontents);
-       toplayout->addWidget(listwidget);
-       listwidget->addItems(strlist);
-       listwidget->setSelectionMode(QListWidget::NoSelection);
-       toplayout->setStretchFactor(listwidget, 1);
+       listbox=new KListBox( topcontents );
+       toplayout->addWidget(listbox);
+       listbox->insertStringList( strlist );
+       listbox->setSelectionMode( Q3ListBox::NoSelection );
+       toplayout->setStretchFactor(listbox, 1);
     }
 
     QPointer<QCheckBox> checkbox = 0;
@@ -267,7 +272,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
 
     dialog->setMainWidget(topcontents);
     dialog->showButtonSeparator(false);
-    if (!listwidget)
+    if (!listbox)
         dialog->layout()->setSizeConstraint( QLayout::SetFixedSize );
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
@@ -485,7 +490,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
                        text, QStringList(),
                        dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
-    if ( result==QDialog::Rejected ) return Cancel;
+    if ( result==KDialog::Cancel ) return Cancel;
     res = (result==KDialog::Yes ? Yes : No);
 
     if (checkboxResult)
@@ -725,7 +730,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
                        dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
-    if ( result==QDialog::Rejected ) return Cancel;
+    if ( result==KDialog::Cancel ) return Cancel;
     res = (result==KDialog::Yes ? Yes : No);
 
     if (checkboxResult)
@@ -1006,7 +1011,9 @@ KMessageBox::about(QWidget *parent, const QString &text,
         dialog->setWindowIcon(ret);
     }
 
-    createKMessageBox(dialog, qApp->windowIcon(), text, QStringList(), QString(), 0, options);
+    int size = IconSize(K3Icon::Desktop);
+    QPixmap icon = qApp->windowIcon().pixmap(size,size);
+    createKMessageBox(dialog, icon, text, QStringList(), QString(), 0, options);
     return;
 }
 
@@ -1017,6 +1024,14 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
 {
     return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
         buttonYes, buttonNo, dontShowAskAgainName, options );
+}
+
+int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text,
+                             const QString &caption, const KGuiItem &buttonYes,
+                             const KGuiItem &buttonNo, Options options )
+{
+    return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
+        buttonYes, buttonNo, QString(), options );
 }
 
 int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &text,

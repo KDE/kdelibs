@@ -37,10 +37,10 @@
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
+#include <kinstance.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
@@ -451,9 +451,22 @@ int KDialog::spacingHint()
 
 void KDialog::setCaption( const QString &_caption )
 {
-  QString caption = kapp ? kapp->makeStdCaption( _caption ) : _caption;
+  QString caption = KInstance::makeStandardCaption( _caption, this );
   setPlainCaption( caption );
 }
+
+void KDialog::setCaption( const QString &caption, bool modified )
+{
+    KInstance::CaptionFlags flags = KInstance::HIGCompliantCaption;
+
+    if ( modified )
+    {
+        flags |= KInstance::ModifiedCaption;
+    }
+
+    setPlainCaption( KInstance::makeStandardCaption(caption, this, flags) );
+}
+
 
 void KDialog::setPlainCaption( const QString &caption )
 {
