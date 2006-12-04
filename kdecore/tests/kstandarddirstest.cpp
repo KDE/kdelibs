@@ -61,15 +61,26 @@ void KStandarddirsTest::testFindResource()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" );
+#ifdef Q_WS_WIN
+#define EXT ".exe"
+#else
+#define EXT ""
+#endif
+    const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
     QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "bin/kioslave" ) );
+    QVERIFY( bin.endsWith( "bin/kioslave" EXT ) );
+#ifndef Q_WS_WIN
+		// @TODO unix specific
     QVERIFY( bin.startsWith( "/" ) );
+#endif
 
     const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
     QVERIFY( !data.isEmpty() );
     QVERIFY( data.endsWith( "share/apps/katepart/syntax/sql.xml" ) );
+#ifndef Q_WS_WIN
+		// @TODO unix specific
     QVERIFY( data.startsWith( "/" ) );
+#endif
 }
 
 static bool oneEndsWith( const QStringList& lst, const QString& str)
