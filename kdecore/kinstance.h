@@ -22,6 +22,7 @@
 
 class QByteArray;
 class QString;
+class QWidget;
 class KAboutData;
 class KConfig;
 class KIconLoader;
@@ -152,16 +153,25 @@ class KDECORE_EXPORT KInstance
      * Builds a caption that contains the application name along with the
      * userCaption using a standard layout.
      *
-     * To make a compliant caption
-     * for your window, simply do: @p setCaption(KGlobal::instance()->makeStdCaption(yourCaption));
+     * To make a compliant caption for your window, simply do:
+     * @p setWindowTitle(KInstance::makeStandardCaption(yourCaption));
+     *
+     * To ensure that the caption is appropriate to the desktop in which the
+     * application is running, pass in a pointer to the window the caption will
+     * be applied to.
+     *
+     * If using a KDialog or KMainWindow subclass, call setCaption instead and
+     * an appropraite standard caption will be created for you
      *
      * @param userCaption The caption string you want to display in the
      * window caption area. Do not include the application name!
+     * @param window a pointer to the window this application will apply to
      * @param flags 
      * @return the created caption
      */
-    static QString makeStdCaption( const QString &userCaption,
-                                   CaptionFlags flags = HIGCompliantCaption );
+    static QString makeStandardCaption( const QString &userCaption,
+                                        QWidget* window = 0,
+                                        CaptionFlags flags = HIGCompliantCaption );
 
 protected:
     /**
