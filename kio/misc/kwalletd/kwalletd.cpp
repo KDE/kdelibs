@@ -492,15 +492,19 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 	}
 
 	if (!implicitAllow(wallet, thisApp)) {
-		KBetterThanKDialog *dialog = new KBetterThanKDialog;
-		if (appid.isEmpty()) {
+		KConfig cfg("kwalletrc");
+		cfg.setGroup("Auto Allow");
+		if (!cfg.entryIsImmutable(wallet)) {
+		    KBetterThanKDialog *dialog = new KBetterThanKDialog;
+		    if (appid.isEmpty()) {
 			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.", Qt::escape(wallet)));
-		} else {
+		    } else {
 			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.", Qt::escape(QString(appid)), Qt::escape(wallet)));
+		    }
+		    setupDialog( dialog, w, appid, false );
+		    response = dialog->exec();
+		    delete dialog;
 		}
-		setupDialog( dialog, w, appid, false );
-		response = dialog->exec();
-		delete dialog;
 	}
 
 	if (response == 0 || response == 1) {
@@ -509,6 +513,9 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 			cfg.setGroup("Auto Allow");
 			QStringList apps = cfg.readEntry(wallet, QStringList());
 			if (!apps.contains(thisApp)) {
+				if (cfg.entryIsImmutable(wallet)) {
+					return false;
+				}
 				apps += thisApp;
 				_implicitAllowMap[wallet] += thisApp;
 				cfg.writeEntry(wallet, apps);
