@@ -143,6 +143,10 @@ void KUrlTest::testQUrl()
 {
   QUrl url1( "file:///home/dfaure/my#%2f" );
   QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
+#ifdef Q_WS_WIN
+  QUrl url2( "file:///c:/home/dfaure/my#%2f" );
+  QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#%2f" ) );
+#endif
 }
 
 
@@ -163,9 +167,20 @@ void KUrlTest::testIsLocalFile()
   KUrl local_file_4("file:///my/file");
   QVERIFY( local_file_4.isLocalFile() );
 
+#ifdef Q_WS_WIN
+  KUrl local_file_4a("file:///c:/my/file");
+  QVERIFY( local_file_4a.isLocalFile() );
+#endif
+
   KUrl local_file_5;
   local_file_5.setPath("/foo?bar");
   QCOMPARE( local_file_5.url(), QString("file:///foo%3Fbar") );
+
+#ifdef Q_WS_WIN
+  KUrl local_file_5a;
+  local_file_5a.setPath("c:/foo?bar");
+  QCOMPARE( local_file_5a.url(), QString("file:///c:/foo%3Fbar") );
+#endif
 }
 
 void KUrlTest::testSimpleMethods() // to test parsing, mostly
@@ -288,6 +303,9 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   KUrl charles2("file:/home/charles/foo%20moo");
   QCOMPARE( charles2.path(), QString("/home/charles/foo moo") );
 
+#ifdef Q_WS_WIN
+#warning port KUser
+#else
   KUrl tilde;
   KUser currentUser;
   const QString userName = currentUser.loginName();
@@ -295,6 +313,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   tilde.setPath( QString::fromUtf8( "~%1/Matériel" ).arg( userName ) );
   QString homeDir = currentUser.homeDir();
   QCOMPARE( tilde.url(), QString("file://%1/Mat%C3%A9riel").arg(homeDir));
+#endif
 }
 
 void KUrlTest::testEmptyQueryOrRef()
@@ -1397,11 +1416,15 @@ void KUrlTest::testPathOrURL()
   QVERIFY( uloc.isValid() ); // KDE3: was invalid; same as above
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
+#ifdef Q_WS_WIN
+#warning port KUser
+#else
   KUser currentUser;
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
   uloc = KUrl(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
+#endif
 
   // pathOrUrl tests
   uloc = KUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
@@ -1436,6 +1459,9 @@ void KUrlTest::testAssignment()
   QVERIFY( uloc.isValid() );
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
+#ifdef Q_WS_WIN
+#warning port KUser
+#else
   KUser currentUser;
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
@@ -1450,6 +1476,7 @@ void KUrlTest::testAssignment()
   uloc = KUrl(qurl);
   QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
+#endif
 }
 
 void KUrlTest::testQueryItem()

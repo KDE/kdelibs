@@ -312,8 +312,15 @@ KUrl::KUrl( const QString &str )
   : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
+#ifdef Q_WS_WIN
+    if ( str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
+    	  setPath(str.mid(1));
+    else if ( str[0].isLetter() &&  str[1] == QLatin1Char(':') )
+        setPath( str );
+#else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
+#endif     
     else
       setEncodedUrl( str.toUtf8(), QUrl::TolerantMode );
   }
@@ -334,8 +341,15 @@ KUrl::KUrl( const QByteArray& str )
    : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
+#ifdef Q_WS_WIN
+    if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
+    	  setPath( QString::fromUtf8( str.mid(1) ) );
+    else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
+        setPath( QString::fromUtf8( str ) );
+#else
     if ( str[0] == '/' || str[0] == '~' )
       setPath( QString::fromUtf8( str ) );
+#endif
     else
       setEncodedUrl( str, QUrl::TolerantMode );
   }
@@ -420,7 +434,11 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     else
     {
        if ( strPath.isEmpty() )
+#ifdef Q_WS_WIN
+          strPath = QLatin1Char('\\');
+#else
           strPath = QLatin1Char('/');
+#endif
     }
     setPath( strPath );
     //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl << endl;
