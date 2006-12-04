@@ -237,6 +237,13 @@ Nepomuk::KMetaData::Variant::Variant( const Nepomuk::KMetaData::Resource& r )
 }
 
 
+Nepomuk::KMetaData::Variant::Variant( const QList<Resource>& r )
+  : QVariant()
+{
+  setValue( r );
+}
+
+
 Nepomuk::KMetaData::Resource Nepomuk::KMetaData::Variant::toResource() const
 {
   return value<Resource>();
@@ -246,4 +253,16 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::Variant::toResource() const
 bool Nepomuk::KMetaData::Variant::isResource() const
 {
   return( userType() == qMetaTypeId<Resource>() );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isResourceList() const
+{
+  return( userType() == qMetaTypeId<QList<Resource> >() );
+}
+
+
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Variant::toResourceList() const
+{
+  return value<QList<Resource> >();
 }

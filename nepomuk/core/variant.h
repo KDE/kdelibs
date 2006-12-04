@@ -75,10 +75,12 @@ namespace Nepomuk {
 	bool isResource() const;
 	Variant( const Resource& r );
 	Resource toResource() const;
+
+	bool isResourceList() const;
+	Variant( const QList<Resource>& r );
+	QList<Resource> toResourceList() const;
       };
   }
 }
-
-Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
 
 #endif

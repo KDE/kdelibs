@@ -40,6 +40,22 @@ Nepomuk::KMetaData::Resource::~Resource()
 }
 
 
+Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
+{
+  if( d != res.d ) {
+    if( d->deref() ) {
+      if( ResourceManager::instance()->autoSync() && modified() )
+	sync();
+      delete d;
+    }
+    d = res.d;
+    d->ref();
+  }
+
+  return *this;
+}
+
+
 const QString& Nepomuk::KMetaData::Resource::uri() const
 {
   return d->uri;
@@ -49,6 +65,12 @@ const QString& Nepomuk::KMetaData::Resource::uri() const
 const QString& Nepomuk::KMetaData::Resource::type() const
 {
   return d->type;
+}
+
+
+QString Nepomuk::KMetaData::Resource::className() const
+{
+  return type().section( '#', -1 );
 }
 
 
@@ -64,7 +86,7 @@ int Nepomuk::KMetaData::Resource::sync()
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri )
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
   d->init();
 

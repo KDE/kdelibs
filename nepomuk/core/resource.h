@@ -66,9 +66,26 @@ namespace Nepomuk {
 	Resource( const QString& uri, const QString& type = QString() );
 	virtual ~Resource();
 
+	Resource& operator=( const Resource& );
+
+	/**
+	 * The URI of the resource, uniquely identifying it.
+	 */
 	const QString& uri() const;
+
+	/**
+	 * The type URI.
+	 * \sa name()
+	 */
 	const QString& type() const;
-	
+
+	/**
+	 * The name of the class this Resource represents an object of.
+	 * 
+	 * \sa type()
+	 */
+	QString className() const;
+
 	/**
 	 * Resync the data with the local storage.
 	 *
@@ -76,7 +93,7 @@ namespace Nepomuk {
 	 */
 	int sync();
 
-	Variant getProperty( const QString& uri );
+	Variant getProperty( const QString& uri ) const;
 
 	/**
 	 * Set a property of the resource.
@@ -127,5 +144,8 @@ namespace Nepomuk {
       };
   }
 }
+
+Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
+Q_DECLARE_METATYPE(QList<Nepomuk::KMetaData::Resource>)
 
 #endif

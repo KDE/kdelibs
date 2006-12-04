@@ -12,12 +12,4 @@
  * See the file "COPYING" for the exact licensing terms.
  */
 
-/**
- * \mainpage The NEPOMUK-KDE Meta Data library (KMetaData)
- *
- */
-
-#include <kmetadata/resource.h>
-#include <kmetadata/variant.h>
-#include <kmetadata/resourcemanager.h>
-#include <kmetadata/allresources.h>
+${ALLRESOURCES_INCLUDES}
