@@ -31,9 +31,11 @@
 #include <QLibrary>
 #include <QFile>
 
+#ifndef Q_WS_WIN
 /* These are to link libkio even if 'smart' linker is used */
 #include <kio/authinfo.h>
 extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
+#endif 
 
 int main(int argc, char **argv)
 {
