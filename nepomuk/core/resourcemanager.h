@@ -95,7 +95,7 @@ namespace Nepomuk {
 	 * Be aware that modifying resources locally via the Resource::setProperty method
 	 * does not result in a resourceModified signal being emitted.
 	 */
-	void resourceModified( const Resource& );
+	void resourceModified( Resource );
 
 	// FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
 
