@@ -304,7 +304,11 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( charles2.path(), QString("/home/charles/foo moo") );
 
 #ifdef Q_WS_WIN
+#ifdef Q_CC_MSVC
+#pragma message ("port KUser")
+#else
 #warning port KUser
+#endif
 #else
   KUrl tilde;
   KUser currentUser;
@@ -1417,7 +1421,11 @@ void KUrlTest::testPathOrURL()
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
 #ifdef Q_WS_WIN
+#ifdef Q_CC_MSVC
+#pragma message ("port KUser")
+#else
 #warning port KUser
+#endif
 #else
   KUser currentUser;
   const QString userName = currentUser.loginName();
@@ -1460,7 +1468,11 @@ void KUrlTest::testAssignment()
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
 #ifdef Q_WS_WIN
+#ifdef Q_CC_MSVC
+#pragma message ("port KUser")
+#else
 #warning port KUser
+#endif
 #else
   KUser currentUser;
   const QString userName = currentUser.loginName();
