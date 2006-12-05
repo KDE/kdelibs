@@ -51,7 +51,7 @@ set(kmetadata_LIB_SRCS
   ${ALLRESOURCES_SOURCES}
 )
 
-kde4_automoc(kmetadata ${kmetadata_LIB_SRCS})
+kde4_automoc(${kmetadata_LIB_SRCS})
 
 kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
 

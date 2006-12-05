@@ -14,6 +14,6 @@ set(rcgen_SRCS
   resourceclass.cpp
   ontologyparser.cpp)
 
-kde4_automoc(rcgen ${rcgen_SRCS})
+kde4_automoc(${rcgen_SRCS})
 kde4_add_executable(rcgen ${rcgen_SRCS})
 target_link_libraries(rcgen ${SOPRANO_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
