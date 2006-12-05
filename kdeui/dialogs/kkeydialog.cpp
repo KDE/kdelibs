@@ -78,15 +78,15 @@ class KKeyChooserItem : public QTreeWidgetItem
 
 	KAction* action() const;
 	QString actionName() const;
-	const KShortcut& shortcut() const;
+	KShortcut shortcut() const;
 	bool isConfigurable() const;
-	const KShortcut& defaultShortcut() const;
+	KShortcut defaultShortcut() const;
 
 	void setLocalShortcut( const KShortcut& cut );
 	void setGlobalShortcut( const KShortcut& cut );
 
-	const KShortcut& globalShortcut() const;
-	const KShortcut& defaultGlobalShortcut() const;
+        KShortcut globalShortcut() const;
+	KShortcut defaultGlobalShortcut() const;
 
 	void commitChanges();
 
@@ -955,7 +955,7 @@ int KKeyDialog::configure( KActionCollection* coll, KKeyChooser::LetterShortcuts
 }
 
 
-const KShortcut& KKeyChooserItem::shortcut( ) const
+KShortcut KKeyChooserItem::shortcut( ) const
 {
 	return m_newLocalShortcut;
 }
@@ -965,7 +965,7 @@ bool KKeyChooserItem::isConfigurable( ) const
 	return m_action->isShortcutConfigurable();
 }
 
-const KShortcut& KKeyChooserItem::defaultShortcut( ) const
+KShortcut KKeyChooserItem::defaultShortcut( ) const
 {
 	return m_action->defaultShortcut();
 }
@@ -983,12 +983,12 @@ void KKeyChooser::showEvent( QShowEvent * event )
 	QTimer::singleShot(0, this, SLOT(resizeColumns()));
 }
 
-const KShortcut & KKeyChooserItem::globalShortcut( ) const
+KShortcut KKeyChooserItem::globalShortcut( ) const
 {
 	return m_newGlobalShortcut;
 }
 
-const KShortcut & KKeyChooserItem::defaultGlobalShortcut( ) const
+KShortcut KKeyChooserItem::defaultGlobalShortcut( ) const
 {
 	return m_action->defaultGlobalShortcut();
 }
