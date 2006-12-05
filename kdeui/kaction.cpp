@@ -149,6 +149,8 @@ void KAction::initPrivate(const QString& name)
         ac->insert( this );
 
     connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered()));
+
+    setProperty("isShortcutConfigurable", true);
 }
 
 void KAction::initPrivate( const KShortcut& cut,
@@ -160,7 +162,6 @@ void KAction::initPrivate( const KShortcut& cut,
         connect(this, SIGNAL(triggered(bool)), receiver, slot);
 
     setShortcut(cut);
-    setProperty("isShortcutConfigurable", true);
 }
 
 bool KAction::isShortcutConfigurable() const
@@ -209,7 +210,7 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
 
   if (type & DefaultShortcut) {
       setProperty("defaultPrimaryShortcut", shortcut.primary());
-      setProperty("defaultAlternateShortcut", shortcut.primary());
+      setProperty("defaultAlternateShortcut", shortcut.alternate());
   }
 
   if (type & ActiveShortcut) {
