@@ -262,13 +262,19 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   const int BUFSIZE = 4096;
   char buf[BUFSIZE];
+#ifdef Q_WS_WIN
+  sprintf(buf,"[%d] ",getpid());
+#else
+  strlcpy(buf,"",BUFSIZE);
+#endif
+
   if ( !kDebug_data->aAreaName.isEmpty() ) {
-      strlcpy( buf, kDebug_data->aAreaName.data(), BUFSIZE );
+      strlcat( buf, kDebug_data->aAreaName.data(), BUFSIZE );
       strlcat( buf, ": ", BUFSIZE );
       strlcat( buf, data, BUFSIZE );
   }
   else
-      strlcpy( buf, data, BUFSIZE );
+      strlcat( buf, data, BUFSIZE );
 
 
   // Output
