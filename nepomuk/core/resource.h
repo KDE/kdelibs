@@ -138,7 +138,7 @@ namespace Nepomuk {
 	 * mainly intended for testing and debugging purposes.
 	 */
 	bool operator==( const Resource& ) const;
-
+	
       private:
 	ResourceData* d;
       };

@@ -80,6 +80,15 @@ namespace Nepomuk {
 	 */
 	Resource createResourceFromUri( const QString& uri );
 
+
+	/**
+	 * Retrieve a list of all resources of the specified \a type.
+	 *
+	 * This includes Resources that are not synced yet so it might
+	 * not represent exactly the state as in the RDF store.
+	 */
+	QList<Resource> allResourcesOfType( const QString& type ) const;
+
       Q_SIGNALS:
 	/**
 	 * This signal gets emitted whenever a Resource changes due to a sync procedure.

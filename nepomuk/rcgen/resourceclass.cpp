@@ -308,6 +308,32 @@ QString ResourceClass::sourceName() const
 }
 
 
+QString ResourceClass::allResourcesDeclaration( bool withNamespace ) const
+{
+  return QString( "QList<%1%2> %3all%2s()" )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::") : QString() )
+    .arg( name() )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg( name() ) : QString() );
+}
+
+
+QString ResourceClass::allResourcesDefinition() const
+{
+  return QString( "%1\n"
+		  "{\n"
+		  "   QList<Resource> resources = ResourceManager::instance()->allResourcesOfType( \"%2\" );\n"
+		  "   QList<%3> l;\n"
+		  "   for( QList<Resource>::const_iterator it = resources.constBegin();\n"
+		  "        it != resources.constEnd(); ++it )\n"
+		  "      l.append( %3( (*it).uri() ) );\n"
+		  "   return l;\n"
+		  "}\n" )
+    .arg( allResourcesDeclaration( true ) )
+    .arg( uri )
+    .arg( name() );
+}
+
+
 bool ResourceClass::writeHeader( QTextStream& stream ) const
 {
   QString s = headerTemplate;
@@ -348,6 +374,13 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
     if( !p->hasSimpleType() )
       includes.insert( p->typeString( true ) );
   }
+
+  ms << writeComment( QString("Retrieve a list of all available %1 resources. "
+			      "This list consists of all resource of type %1 that are stored "
+			      "in the local Nepomuk meta data storage and any changes made locally. "
+			      "Be aware that in some cases this list can get very big. Then it might "
+			      "be better to use libKNep directly.").arg( name() ), 3 ) << endl;
+  ms << "   static " << allResourcesDeclaration( false ) << ";" << endl;
 
   QString includeString;
   QSetIterator<QString> includeIt( includes );
@@ -390,6 +423,8 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
     if( p->list )
       ms << p->adderDefinition( this ) << endl;
   }
+
+  ms << allResourcesDefinition() << endl;
 
   s.replace( "METHODS", methods );
 

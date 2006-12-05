@@ -75,6 +75,9 @@ class ResourceClass
   bool writeHeader( QTextStream& ) const;
   bool writeSource( QTextStream& ) const;
 
+  QString allResourcesDeclaration( bool withNamespace = false ) const;
+  QString allResourcesDefinition() const;
+
   bool write( const QString& folder ) const;
 
   static ResourceClass* s_defaultResource;

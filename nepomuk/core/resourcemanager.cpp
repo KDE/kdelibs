@@ -15,10 +15,16 @@
 #include "resourcemanager.h"
 #include "resource.h"
 #include "resourcedata.h"
+#include "ontology.h"
 
 #include <knep/knep.h>
+#include <knep/services/tripleservice.h>
+#include <knep/services/statementlistiterator.h>
 
 #include <kstaticdeleter.h>
+
+using namespace Nepomuk::Backbone::Services;
+using namespace Nepomuk::Backbone::Services::RDF;
 
 
 class Nepomuk::KMetaData::ResourceManager::Private
@@ -110,6 +116,21 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
     if( it.value()->merge() )
       it.value()->save();
   }
+}
+
+
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesOfType( const QString& type ) const
+{
+  QList<Resource> l;
+
+  TripleService ts( serviceRegistry()->discoverTripleService() );
+  StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), 
+					       Statement( Node(), Ontology::typePredicate(), Node(type) ) ), 
+			    &ts );
+  while( it.hasNext() )
+    l.append( Resource( it.next().subject.value ) );
+
+  return l;
 }
 
 #include "resourcemanager.moc"
