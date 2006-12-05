@@ -315,7 +315,6 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
     }
 
     slotDictionaryChanged();
-    startTimer( 2 * 1000 );
 }
 
 K3DictSpellingHighlighter::~K3DictSpellingHighlighter()
