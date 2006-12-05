@@ -126,7 +126,7 @@ const unsigned numComputedProperties = sizeof(computedProperties) / sizeof(compu
 static CSSValueImpl *valueForLength(const Length &length, int max)
 {
     if (length.isPercent()) {
-        return new CSSPrimitiveValueImpl(length._length, CSSPrimitiveValue::CSS_PERCENTAGE);
+        return new CSSPrimitiveValueImpl(length.value(), CSSPrimitiveValue::CSS_PERCENTAGE);
     }
     else {
         return new CSSPrimitiveValueImpl(length.minWidth(max), CSSPrimitiveValue::CSS_PX);
@@ -412,13 +412,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         DOMString string;
         Length length(style->backgroundXPosition());
         if (length.isPercent())
-            string = QString::number(length._length) + "%";
+            string = QString::number(length.value()) + "%";
         else
             string = QString::number(length.minWidth(renderer->contentWidth()));
         string += " ";
         length = style->backgroundYPosition();
         if (length.isPercent())
-            string += QString::number(length._length) + "%";
+            string += QString::number(length.value()) + "%";
         else
             string += QString::number(length.minWidth(renderer->contentWidth()));
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
