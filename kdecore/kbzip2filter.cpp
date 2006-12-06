@@ -132,7 +132,7 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
     if ( result != BZ_OK )
     {
         kDebug(7118) << "bzDecompress returned " << result << endl;
-        kDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) ) << endl;
+        kDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_STREAM_END ? END : ERROR ) << endl;
     }
 
     switch (result) {
