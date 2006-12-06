@@ -21,7 +21,6 @@ install( FILES
   kopenwithdialog.h
   kpropsdlg.h
   kicondialog.h
-  kdirsize.h
   kpreviewwidgetbase.h
   kimagefilepreview.h
   kfilesharedlg.h

@@ -48,6 +48,7 @@
 #include <utime.h>
 #include <kprotocolinfo.h>
 #include <kio/scheduler.h>
+#include <kio/directorysizejob.h>
 
 QTEST_KDEMAIN( JobTest, GUI )
 
@@ -486,14 +487,14 @@ void JobTest::moveDirectoryNoPermissions()
 
 void JobTest::listRecursive()
 {
+    // Note: many other tests must have been run before since we rely on the files they created
+
     const QString src = homeTmpDir();
     // Add a symlink to a dir, to make sure we don't recurse into those
     bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
     QVERIFY( symlinkOk );
 
-    KUrl u;
-    u.setPath( src );
-    KIO::ListJob* job = KIO::listRecursive( u );
+    KIO::ListJob* job = KIO::listRecursive( KUrl(src) );
     job->setUiDelegate( 0 );
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
              SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
@@ -506,6 +507,34 @@ void JobTest::listRecursive()
             "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/dirFromHome/testlink,"
             "dirFromHome_copied/testfile,dirFromHome_copied/testlink,dirFromHome_link,"
             "fileFromHome,fileFromHome_copied" ) );
+}
+
+void JobTest::directorySize()
+{
+    // Note: many other tests must have been run before since we rely on the files they created
+
+    const QString src = homeTmpDir();
+
+    KIO::DirectorySizeJob* job = KIO::directorySize( KUrl(src) );
+    job->setUiDelegate( 0 );
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    QVERIFY( ok );
+    kDebug() << "totalSize: " << job->totalSize() << endl;
+    kDebug() << "totalFiles: " << job->totalFiles() << endl;
+    kDebug() << "totalSubdirs: " << job->totalSubdirs() << endl;
+    QCOMPARE(job->totalFiles(), 8ULL); // see expected result in listRecursive() above
+    QCOMPARE(job->totalSubdirs(), 4ULL); // see expected result in listRecursive() above
+    QVERIFY(job->totalSize() > 512);
+
+    // TODO test error case
+}
+
+void JobTest::directorySizeError()
+{
+    KIO::DirectorySizeJob* job = KIO::directorySize( KUrl("/I/Dont/Exist") );
+    job->setUiDelegate( 0 );
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    QVERIFY( !ok );
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )

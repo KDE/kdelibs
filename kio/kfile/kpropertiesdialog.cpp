@@ -81,7 +81,6 @@ extern "C" {
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kdialog.h>
-#include <kdirsize.h>
 #include <kdirwatch.h>
 #include <kdirnotify.h>
 #include <kdiskfreesp.h>
@@ -97,6 +96,7 @@ extern "C" {
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kio/chmodjob.h>
+#include <kio/directorysizejob.h>
 #include <kio/renamedlg.h>
 #include <kio/netaccess.h>
 #include <kfiledialog.h>
@@ -690,7 +690,7 @@ public:
       dirSizeJob->kill();
   }
 
-  KDirSize * dirSizeJob;
+  KIO::DirectorySizeJob * dirSizeJob;
   QTimer *dirSizeUpdateTimer;
   QFrame *m_frame;
   bool bMultiple;
@@ -1209,7 +1209,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
 {
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
     KIO::filesize_t totalFiles = d->dirSizeJob->totalFiles();
-         KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
+    KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
     m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4",
 			   KIO::convertSize(totalSize),
                           KGlobal::locale()->formatNumber(totalSize, 0),
@@ -1223,9 +1223,9 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
     m_sizeLabel->setText( job->errorString() );
   else
   {
-    KIO::filesize_t totalSize = static_cast<KDirSize*>(job)->totalSize();
-	KIO::filesize_t totalFiles = static_cast<KDirSize*>(job)->totalFiles();
-	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
+    KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
+    KIO::filesize_t totalFiles = d->dirSizeJob->totalFiles();
+    KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
 			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
@@ -1236,9 +1236,9 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
   // just in case you change something and try again :)
   m_sizeDetermineButton->setText( i18n("Refresh") );
   m_sizeDetermineButton->setEnabled(true);
-  d->dirSizeJob = 0L;
+  d->dirSizeJob = 0;
   delete d->dirSizeUpdateTimer;
-  d->dirSizeUpdateTimer = 0L;
+  d->dirSizeUpdateTimer = 0;
 }
 
 void KFilePropsPlugin::slotSizeDetermine()
@@ -1246,7 +1246,7 @@ void KFilePropsPlugin::slotSizeDetermine()
   m_sizeLabel->setText( i18n("Calculating...") );
   kDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
   kDebug(250) << " URL=" << properties->item()->url().url() << endl;
-  d->dirSizeJob = KDirSize::dirSizeJob( properties->items() );
+  d->dirSizeJob = KIO::directorySize( properties->items() );
   d->dirSizeUpdateTimer = new QTimer(this);
   connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
            SLOT( slotDirSizeUpdate() ) );

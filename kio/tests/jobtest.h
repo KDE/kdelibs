@@ -43,6 +43,8 @@ private Q_SLOTS:
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
     void listRecursive();
+    void directorySize();
+    void directorySizeError();
     void moveFileToSamePartition();
     void moveDirectoryToSamePartition();
     void moveFileToOtherPartition();

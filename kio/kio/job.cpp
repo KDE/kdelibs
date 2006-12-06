@@ -366,7 +366,7 @@ SimpleJob::~SimpleJob()
 {
     if (m_slave) // was running
     {
-        kDebug(7007) << "SimpleJob::~SimpleJob: Killing running job in destructor!"  << endl;
+        kDebug(7007) << "SimpleJob::~SimpleJob: Killing running job in destructor!"  << kdBacktrace() << endl;
 #if 0
         m_slave->kill();
         Scheduler::jobFinished( this, m_slave ); // deletes the slave

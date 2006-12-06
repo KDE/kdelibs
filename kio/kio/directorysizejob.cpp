@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2000 David Faure <faure@kde.org>
+    Copyright (C) 2000, 2006 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,38 +17,39 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kdirsize.h"
+#include "directorysizejob.h"
 #include <kdebug.h>
-#include <kglobal.h>
-#include <qapplication.h>
 #include <qtimer.h>
-#include <config-kfile.h>
 
 using namespace KIO;
 
-KDirSize::KDirSize( const KUrl & directory )
-    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L)
+DirectorySizeJob::DirectorySizeJob( const KUrl & directory )
+    : KIO::Job(false /*No GUI*/), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_currentItem(0)
 {
     startNextJob( directory );
 }
 
-KDirSize::KDirSize( const KFileItemList & lstItems )
-    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems)
+DirectorySizeJob::DirectorySizeJob( const KFileItemList & lstItems )
+    : KIO::Job(false /*No GUI*/), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems), m_currentItem(0)
 {
-    QTimer::singleShot( 0, this, SLOT(processList()) );
+    QTimer::singleShot( 0, this, SLOT(processNextItem()) );
 }
 
-void KDirSize::processList()
+
+DirectorySizeJob::~DirectorySizeJob()
 {
-    while (!m_lstItems.isEmpty())
+}
+
+void DirectorySizeJob::processNextItem()
+{
+    while (m_currentItem < m_lstItems.count())
     {
-        KFileItem * item = m_lstItems.first();
-        m_lstItems.removeFirst();
+        KFileItem * item = m_lstItems[m_currentItem++];
 	if ( !item->isLink() )
 	{
             if ( item->isDir() )
             {
-                kDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
+                kDebug(7007) << "DirectorySizeJob::processNextItem dir -> listing" << endl;
                 KUrl url = item->url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
@@ -56,19 +57,17 @@ void KDirSize::processList()
             else
             {
                 m_totalSize += item->size();
-// no long long with kDebug()
-//            kDebug(kfile_area) << "KDirSize::processList file -> " << m_totalSize << endl;
+                kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << m_totalSize << endl;
             }
 	}
     }
-    kDebug(kfile_area) << "KDirSize::processList finished" << endl;
-    if ( !m_bAsync )
-        qApp->exit_loop();
+    kDebug(7007) << "DirectorySizeJob::processNextItem finished" << endl;
     emitResult();
 }
 
-void KDirSize::startNextJob( const KUrl & url )
+void DirectorySizeJob::startNextJob( const KUrl & url )
 {
+    kDebug(7007) << "DirectorySizeJob::startNextJob " << url << endl;
     KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
     connect( listJob, SIGNAL(entries( KIO::Job *,
                                       const KIO::UDSEntryList& )),
@@ -77,7 +76,7 @@ void KDirSize::startNextJob( const KUrl & url )
     addSubjob( listJob );
 }
 
-void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
+void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
     KIO::UDSEntryList::ConstIterator it = list.begin();
     const KIO::UDSEntryList::ConstIterator end = list.end();
@@ -96,47 +95,39 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
               m_totalFiles++;
             else
               m_totalSubdirs++;
-            //kDebug(kfile_area) << name << ":" << size << endl;
+            //kDebug(7007) << name << ":" << size << endl;
         }
     }
 }
 
-//static
-KDirSize * KDirSize::dirSizeJob( const KUrl & directory )
+void DirectorySizeJob::slotResult( KJob * job )
 {
-    return new KDirSize( directory ); // useless - but consistent with other jobs
-}
-
-//static
-KDirSize * KDirSize::dirSizeJob( const KFileItemList & lstItems )
-{
-    return new KDirSize( lstItems );
-}
-
-//static
-KIO::filesize_t KDirSize::dirSize( const KUrl & directory )
-{
-    KDirSize * dirSize = dirSizeJob( directory );
-    dirSize->setSync();
-    qApp->enter_loop();
-    return dirSize->totalSize();
-}
-
-
-void KDirSize::slotResult( KJob * job )
-{
-    kDebug(kfile_area) << " KDirSize::slotResult( KJob * job ) m_lstItems:" << m_lstItems.count() << endl;
-    if ( !m_lstItems.isEmpty() )
+    kDebug(7007) << " DirectorySizeJob::slotResult()" << endl;
+    if (m_currentItem < m_lstItems.count())
     {
         removeSubjob(job);
-        processList();
+        processNextItem();
     }
     else
     {
-        if ( !m_bAsync )
-            qApp->exit_loop();
-        KIO::Job::slotResult( job );
+        if (job->error()) {
+            setError( job->error() );
+            setErrorText( job->errorText() );
+        }
+        emitResult();
     }
 }
 
-#include "kdirsize.moc"
+//static
+DirectorySizeJob * KIO::directorySize( const KUrl & directory )
+{
+    return new DirectorySizeJob( directory ); // useless - but consistent with other jobs
+}
+
+//static
+DirectorySizeJob * KIO::directorySize( const KFileItemList & lstItems )
+{
+    return new DirectorySizeJob( lstItems );
+}
+
+#include "directorysizejob.moc"

@@ -27,11 +27,14 @@ include_directories(
    ${ZLIB_INCLUDE_DIR}
 )
 
+macro_bool_to_01(FAM_FOUND HAVE_FAM)
+check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)
+configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kdirwatch.h )
+
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
-add_subdirectory( kio )
 add_subdirectory( bookmarks )
 add_subdirectory( kfile )
 add_subdirectory( kpasswdserver )
@@ -122,6 +125,7 @@ set(kiocore_STAT_SRCS
   kio/safesite.cpp
   kio/kdirmodel.cpp
   kio/kmimetyperesolver.cpp
+  kio/directorysizejob.cpp
 )
 
 set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)
@@ -167,7 +171,6 @@ set(kfile_STAT_SRCS
   kfile/kopenwithdialog.cpp
   kfile/kpropertiesdialog.cpp
   kfile/kicondialog.cpp
-  kfile/kdirsize.cpp
   kfile/krecentdirs.cpp
   kfile/kdiskfreesp.cpp
   kfile/kimagefilepreview.cpp
@@ -307,6 +310,7 @@ install(  FILES
   kio/thumbcreator.h
   kio/metainfojob.h
   kio/davjob.h
+  kio/directorysizejob.h
   kio/renamedlg.h
   kio/renamedlgplugin.h
   kio/skipdlg.h
