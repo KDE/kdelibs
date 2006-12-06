@@ -27,9 +27,9 @@
 #include <qsocketnotifier.h>
 #include <qtimer.h>
 #include <qlist.h>
+#include <qobject.h>
 
 #include <kurl.h>
-#include <kuniqueapplication.h>
 #include <kstreamsocket.h>
 #include <kserversocket.h>
 
@@ -38,10 +38,12 @@
 #include <kservice.h>
 
 #include <QtDBus/QtDBus>
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#include <fixx11h.h>
+#endif
 
 #include "autostart.h"
-
-// ### FIXME: output values for D-BUS calls are missing!
 
 class IdleSlave : public QObject
 {
@@ -109,7 +111,7 @@ struct serviceResult
   pid_t pid;
 };
 
-class KLauncher : public KApplication
+class KLauncher : public QObject
 {
    Q_OBJECT
 

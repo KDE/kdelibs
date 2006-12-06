@@ -22,9 +22,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "kapplication.h"
 #include "klauncher.h"
-#include "kcmdlineargs.h"
+#include <kinstance.h>
 #include "kcrash.h"
 #include "kdebug.h"
 #include <stdio.h>
@@ -33,6 +32,7 @@
 #include <klocale.h>
 
 #include "klauncher_cmds.h"
+#include <QCoreApplication>
 
 #ifndef Q_WS_WIN
 static void sig_handler(int sig_num)
@@ -56,16 +56,16 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       return 1;
    }
 #endif
-   KCmdLineArgs::init(argc, argv, "klauncher", "KLauncher", "A service launcher.",
-                       "v1.0");
-
-   //KLauncher::addCmdLineOptions(); already done by kcmdlineargs
+   KInstance instance("klauncher");
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
 
    // Allow the locale to initialize properly
    KLocale::setMainCatalog("kdelibs");
+
+   // We need a QCoreApplication to get a DBus event loop
+   QCoreApplication app(argc, argv);
 
    int maxTry = 3;
    while(true)
@@ -74,7 +74,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       if (!QDBusConnection::sessionBus().isConnected()) {
          kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server." << endl;
          return 1;
-      } 
+      }
       QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
           QDBusConnection::sessionBus().interface()->registerService(service);
       if (!reply.isValid())
@@ -90,14 +90,14 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
          kWarning() << "Another instance of klauncher is already running!" << endl;
          return 1;
       }
-      
+
       // Wait a bit...
       kWarning() << "Waiting for already running klauncher to exit." << endl;
       sleep(1);
 
       // Try again...
    }
-   
+
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
    QDBusConnection::sessionBus().registerObject("/", launcher);
 
@@ -108,6 +108,5 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    signal( SIGTERM, sig_handler);
 #endif
 
-   launcher->exec();
-   return 0;
+   return app.exec();
 }

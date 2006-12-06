@@ -16,9 +16,8 @@
   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301, USA.
 */
-#ifdef HAVE_CONFIG_H
+
 #include <config.h>
-#endif
 
 #include <stdio.h>
 #include <unistd.h>
@@ -156,7 +155,7 @@ IdleSlave::age(time_t now)
 }
 
 KLauncher::KLauncher(int _kdeinitSocket)
-  : KApplication( false ), // No GUI
+  : QObject(0),
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
 #ifdef Q_WS_X11
@@ -241,8 +240,8 @@ void KLauncher::close()
 void
 KLauncher::destruct(int exit_code)
 {
-   if (kapp) ((KLauncher*)kapp)->close();
-   // We don't delete kapp here, that's intentional.
+   if (qApp) ((KLauncher*)qApp)->close();
+   // We don't delete qApp here, that's intentional.
    ::_exit(exit_code);
 }
 
