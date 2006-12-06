@@ -44,7 +44,7 @@ Nepomuk::KMetaData::Resource::~Resource()
   if( !d->deref() ) {
     if( ResourceManager::instance()->autoSync() && modified() )
       sync();
-    delete d;
+    d->deleteData();
   }
 }
 
@@ -55,7 +55,7 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
     if( !d->deref() ) {
       if( ResourceManager::instance()->autoSync() && modified() )
 	sync();
-      delete d;
+      d->deleteData();
     }
     d = res.d;
     d->ref();
@@ -86,6 +86,8 @@ QString Nepomuk::KMetaData::Resource::className() const
 
 int Nepomuk::KMetaData::Resource::sync()
 {
+  // FIXME: inform the manager about failures
+
   d->init();
 
   if( d->merge() )
@@ -141,12 +143,7 @@ bool Nepomuk::KMetaData::Resource::modified() const
 
 bool Nepomuk::KMetaData::Resource::inSync() const
 {
-  d->init();
-
-  ResourceData* currentData = new ResourceData( d->uri );
-  bool ins = ( currentData->load() && *currentData == *d );
-  delete currentData;
-  return ins;
+  return d->inSync();
 }
 
 

@@ -43,7 +43,13 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QStri
 
 Nepomuk::KMetaData::ResourceData::~ResourceData()
 {
+}
+
+
+void Nepomuk::KMetaData::ResourceData::deleteData()
+{
   s_data.remove( uri );
+  delete this;
 }
 
 
@@ -76,6 +82,17 @@ bool Nepomuk::KMetaData::ResourceData::isValid() const
 }
 
 
+bool Nepomuk::KMetaData::ResourceData::inSync()
+{
+  init();
+
+  ResourceData* currentData = new ResourceData( uri );
+  bool ins = ( currentData->load() && *currentData == *this );
+  delete currentData;
+  return ins;
+}
+
+
 bool Nepomuk::KMetaData::ResourceData::load()
 {
   if( isValid() ) {
@@ -92,16 +109,38 @@ bool Nepomuk::KMetaData::ResourceData::load()
 	if( type.isEmpty() )
 	  type = s.object.value;
       }
-      else if( s.object.type == NodeResource )
-	properties.insert( s.predicate.value, qMakePair<Variant, int>( Resource( s.object.value ), 0 ) );
-      else
-	properties.insert( s.predicate.value, qMakePair<Variant, int>( Ontology::RDFLiteralToValue( s.object.value ), 0 ) );
+      else {
+	PropertiesMap::iterator oldProp = properties.find( s.predicate.value );
+	if( s.object.type == NodeResource ) {
+	  loadProperty( s.predicate.value, Resource( s.object.value ) );
+	}
+	else {
+	  loadProperty( s.predicate.value, Ontology::RDFLiteralToValue( s.object.value ) );
+	}
+      }
     }
    
     return true;
   }
   else
     return false;
+}
+
+
+bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const Variant& val )
+{
+  PropertiesMap::iterator oldProp = properties.find( name );
+  if( oldProp == properties.end() ) {
+    properties.insert( name, qMakePair<Variant, int>( val, 0 ) );
+  }
+  else if( val.type() != oldProp.value().first.simpleType() ) {
+    return false;
+  }
+  else {
+    oldProp.value().first.append( val );
+  }
+
+  return true;
 }
 
 
@@ -118,7 +157,8 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
     // remove everything about this resource from the store (FIXME: better and faster syncing)
     // =======================================================================================
-    ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) );
+    if( ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) )
+      return false;
 
     // save the type
     // =============
@@ -129,6 +169,9 @@ bool Nepomuk::KMetaData::ResourceData::save()
     // ===================
     for( PropertiesMap::const_iterator it = properties.constBegin();
 	 it != properties.constEnd(); ++it ) {
+
+      if( it.value().second & Deleted )
+	continue;
 
       QString predicate = it.key();
       const Variant& val = it.value().first;

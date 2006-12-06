@@ -26,7 +26,11 @@ namespace Nepomuk {
       {
       public:
 	ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
-	~ResourceData();
+
+	/**
+	 * Uses instead of the destructor in Resource
+	 */
+	void deleteData();
 
 	inline int ref() {
 	  return ++m_ref;
@@ -51,6 +55,8 @@ namespace Nepomuk {
 	bool exists() const;
 
 	bool isValid() const;
+
+	bool inSync();
 
 	/**
 	 * Initializes the data object, i.e. loads it for the first time.
@@ -98,6 +104,9 @@ namespace Nepomuk {
 	QString type;
 
       private:
+	~ResourceData();
+	bool loadProperty( const QString& name, const Variant& val );
+
 	int m_ref;
 	bool m_initialized;
 

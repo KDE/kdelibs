@@ -44,35 +44,32 @@ template<typename T> QStringList convertList( const QList<T>& vl )
 {
   QStringList l;
   QListIterator<T> it( vl );
-  while( it.hasNext() ) {
-    Nepomuk::KMetaData::Variant val;
-    val.setValue( it.next() );
-    l.append( Nepomuk::KMetaData::Ontology::valueToRDFLiteral( val ) );
-  }
+  while( it.hasNext() )
+    l.append( Nepomuk::KMetaData::Ontology::valueToRDFLiteral( Nepomuk::KMetaData::Variant( it.next() ) ) );
   return l;
 }
 
 
 QStringList Nepomuk::KMetaData::Ontology::valuesToRDFLiterals( const Variant& v )
 {
-  if( v.userType() == qMetaTypeId<QList<int> >() )
-    return convertList( v.value<QList<int> >() );
-  if( v.userType() == qMetaTypeId<QList<double> >() )
-    return convertList( v.value<QList<double> >() );
-  if( v.userType() == qMetaTypeId<QList<bool> >() )
-    return convertList( v.value<QList<bool> >() );
-  if( v.userType() == qMetaTypeId<QList<QDate> >() )
-    return convertList( v.value<QList<QDate> >() );
-  if( v.userType() == qMetaTypeId<QList<QTime> >() )
-    return convertList( v.value<QList<QTime> >() );
-  if( v.userType() == qMetaTypeId<QList<QDateTime> >() )
-    return convertList( v.value<QList<QDateTime> >() );
-  if( v.userType() == qMetaTypeId<QList<QUrl> >() )
-    return convertList( v.value<QList<QUrl> >() );
-  if( v.type() == QVariant::StringList )
-    return v.value<QStringList>();
+  if( v.simpleType() == qMetaTypeId<int>() )
+    return convertList( v.toIntList() );
+  else if( v.simpleType() == qMetaTypeId<double>() )
+    return convertList( v.toDoubleList() );
+  else if( v.simpleType() == qMetaTypeId<bool>() )
+    return convertList( v.toBoolList() );
+  else if( v.simpleType() == qMetaTypeId<QDate>() )
+    return convertList( v.toDateList() );
+  else if( v.simpleType() == qMetaTypeId<QTime>() )
+    return convertList( v.toTimeList() );
+  else if( v.simpleType() == qMetaTypeId<QDateTime>() )
+    return convertList( v.toDateTimeList() );
+  else if( v.simpleType() == qMetaTypeId<QUrl>() )
+    return convertList( v.toUrlList() );
+  else if( v.simpleType() == QVariant::String )
+    return v.toStringList();
   else {
-    qDebug() << "(Ontology) ERROR: unknown list type: " << v.userType() << endl;
+    qDebug() << "(Ontology) ERROR: unknown list type: " << v.simpleType() << endl;
     return QStringList();
   }
 }

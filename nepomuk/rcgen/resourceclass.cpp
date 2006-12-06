@@ -194,12 +194,19 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
 {
   QString s = getterDeclaration( rc, true ) + "\n";
 
-  if( hasSimpleType() || typeString( true ) == "Resource" ) {
-    s += QString( "{\n"
-		  "   return getProperty( \"%2\" ).value<%1 >();\n" // The space before the ">" is necessary in case we handle a QList
-		  "}\n" )
-    .arg( typeString( false ) )
-    .arg( uri );
+  if( hasSimpleType() ) {
+    if( list )
+      s += QString( "{\n"
+		    "   return getProperty( \"%2\" ).listValue<%1>();\n"
+		    "}\n" )
+	.arg( typeString( true ) )
+	.arg( uri );
+    else
+      s += QString( "{\n"
+		    "   return getProperty( \"%2\" ).value<%1>();\n"
+		    "}\n" )
+	.arg( typeString( true ) )
+	.arg( uri );
   }
   else if( list ) {
     s += QString("{\n"
@@ -236,32 +243,16 @@ QString Property::adderDefinition( const ResourceClass* rc ) const
   if( hasSimpleType() ) {
     s += QString( "{\n"
 		  "   Variant v = getProperty( \"%1\" );\n"
-		  "   if( v.userType() == qMetaTypeId<%2>() ) {\n"
-		  "      %3 l;\n"
-		  "      l.append( v.value<%2>() );\n"
-		  "      v.setValue( l );\n"
-		  "   }\n"
-		  "   %3 l = v.value<%3 >();\n"
-		  "   l.append( value );\n"
-		  "   v.setValue( l );\n"
+		  "   v.append( value );\n"
 		  "   setProperty( \"%1\", v );\n"
 		  "}\n" )
-      .arg( uri )
-      .arg( typeString( true ) )
-      .arg( typeString( false ) );
+      .arg( uri );
   }
   else {
     s += QString( "{\n"
 		  "%1"
 		  "   Variant v = getProperty( \"%2\" );\n"
-		  "   if( v.isResource() ) {\n"
-		  "      QList<Resource> l;\n"
-		  "      l.append( v.toResource() );\n"
-		  "      v.setValue( l );\n"
-		  "   }\n"
-		  "   QList<Resource> l = v.toResourceList();\n"
-		  "   l.append( Resource( value ) );\n"
-		  "   v.setValue( l );\n"
+		  "   v.append( Resource( value ) );\n"
 		  "   setProperty( \"%2\", v );\n"
 		  "}\n" )
       .arg( s_typeComment )
