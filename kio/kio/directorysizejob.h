@@ -103,6 +103,6 @@ KIO_EXPORT DirectorySizeJob * directorySize( const KUrl & directory );
  */
 KIO_EXPORT DirectorySizeJob * directorySize( const KFileItemList & lstItems );
 
-};
+}
 
 #endif
