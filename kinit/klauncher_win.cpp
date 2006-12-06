@@ -26,8 +26,10 @@
 #include <errno.h>
 #include <signal.h>
 
+#include <qglobal.h>
 #include <QFile>
 #include <QProcess>
+#include <QCoreApplication>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -36,7 +38,6 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
-#include <qglobal.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -376,7 +377,7 @@ IdleSlave::age(time_t now)
 }
 
 KLauncher::KLauncher(int _kdeinitSocket)
-  : KApplication( false ), // No GUI
+  : QObject(0),
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
    TRACE();
@@ -473,8 +474,8 @@ void
 KLauncher::destruct(int exit_code)
 {
    TRACE();
-   if (kapp) ((KLauncher*)kapp)->close();
-   // We don't delete kapp here, that's intentional.
+   if (qApp) ((KLauncher*)qApp)->close();
+   // We don't delete qApp here, that's intentional.   
    ::_exit(exit_code);
 }
 
