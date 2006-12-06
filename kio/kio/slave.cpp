@@ -293,7 +293,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
     kss->setFamily(KResolver::InetFamily);
     kss->listen();
-		QString sockname = kss->localAddress().serviceName();
+    QString sockname = kss->localAddress().serviceName();
 #else
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
     KTemporaryFile *socketfile = new KTemporaryFile();
