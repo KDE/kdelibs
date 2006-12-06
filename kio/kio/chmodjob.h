@@ -28,14 +28,6 @@
 #include <kio/job.h>
 #include <kfileitem.h>
 
-/*
-
- NOTE : This job is currently in ksycoca because kfileitem needs to know
- about mimetypes. For KDE 3.0, make a base class for KFileItem, that holds
- all the information except the mimetype, so that jobs can use it.
-
-*/
-
 namespace KIO {
 
     /**
