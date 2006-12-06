@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include <kjs/PropertyNameArray.h>
+#include <kjs/array_instance.h>
 
 #include <QBitArray>
 #include <QByteArray>
@@ -165,6 +166,7 @@ QMap<QString, QVariant> KJSEmbed::convertArrayToMap( KJS::ExecState *exec, KJS::
 QList<QVariant> KJSEmbed::convertArrayToList( KJS::ExecState *exec, KJS::JSValue *value )
 {
     QList<QVariant> returnList;
+    /*
     KJS::JSObject *obj = value->toObject( exec );
     if ( obj->className().qstring() == "Array" )
     {
@@ -180,12 +182,21 @@ QList<QVariant> KJSEmbed::convertArrayToList( KJS::ExecState *exec, KJS::JSValue
                 returnList += QVariant();
         }
     }
+    */
+    KJS::ArrayInstance* arrayImp = extractBindingImp<KJS::ArrayInstance>(exec, value);
+    if(arrayImp)
+    {
+        const unsigned numItems = arrayImp->getLength();
+        for ( unsigned i = 0; i < numItems; ++i )
+            returnList.append( convertToVariant(exec, arrayImp->getItem(i)) );
+    }
     return returnList;
 }
 
 QStringList KJSEmbed::convertArrayToStringList( KJS::ExecState *exec, KJS::JSValue *value )
 {
     QStringList returnList;
+    /*
     KJS::JSObject *obj = value->toObject( exec );
     if ( obj->className().qstring() == "Array" )
     {
@@ -200,6 +211,14 @@ QStringList KJSEmbed::convertArrayToStringList( KJS::ExecState *exec, KJS::JSVal
             else
                 returnList += QString();
         }
+    }
+    */
+    KJS::ArrayInstance* arrayImp = extractBindingImp<KJS::ArrayInstance>(exec, value);
+    if(arrayImp)
+    {
+        const unsigned numItems = arrayImp->getLength();
+        for ( unsigned i = 0; i < numItems; ++i )
+            returnList.append( convertToVariant(exec, arrayImp->getItem(i)).toString() );
     }
     return returnList;
 }
