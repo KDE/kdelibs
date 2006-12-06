@@ -29,7 +29,7 @@
  * @short Base class for KStaticDeleter
  *
  * Don't use this class directly; this class is used as a base class for
- * the KStaticDeleter template to allow polymprphism.
+ * the KStaticDeleter template to allow polymorphism.
  *
  * @see KStaticDeleter
  * @see KGlobal::registerStaticDeleter()
@@ -50,22 +50,22 @@ public:
 /**
  * @short Automatically deletes an object on termination
  *
- * Little helper class to clean up static objects that are held as pointer.
+ * Little helper class to clean up static objects that are held as a pointer.
  *
  * Static deleters are used to manage static resources. They can register
  * themselves with KGlobal. KGlobal will call destructObject() when
- * KGlobal::deleteStaticDeleters() is called or when it the process
+ * KGlobal::deleteStaticDeleters() is called or when the process
  * finishes.
  *
- * When the library is unloaded, or the app terminated, all static deleters
- * are destroyed, which in turn destroys those static objects properly.
- * There are some rules which you should accept in the KStaticDeleter managed
+ * When the library is unloaded, or the app is terminated, all static deleters
+ * will be destroyed, which in turn destroys those static objects properly.
+ * There are some rules that you should accept in the KStaticDeleter managed
  * class:
  * @li Don't rely on the global reference variable in the destructor of the
  * object, it will be '0' at destruction time.
  * @li Don't rely on other KStaticDeleter managed objects in the destructor
  * of the object, because they may be destroyed before your destructor get called.
- * This one can be tricky, because you might not know that you actually use a
+ * This one can be tricky, because you might not know that you are actually using a
  * KStaticDeleter managed class. So try to keep your destructor simple.
  *
  * A typical use is
@@ -90,9 +90,9 @@ public:
     KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
 
     /**
-     * Sets the object to delete and registers the object to be
-     * deleted to KGlobal. If the given object is 0, the former
-     * registration is unregistered.
+     * Sets the object to delete and registers that object to
+     * KGlobal. If the given object is 0, the formerly registered
+     * object is unregistered.
      * @param obj the object to delete
      * @param isArray tells the destructor to delete an array instead of an object
      * @deprecated See the other setObject variant.
@@ -100,18 +100,18 @@ public:
     KDE_DEPRECATED type *setObject( type *obj, bool isArray = false) {
         deleteit = obj;
         globalReference = 0;
-	array = isArray;
-	if (obj)
+        array = isArray;
+        if (obj)
             KGlobal::registerStaticDeleter(this);
-	else
-	    KGlobal::unregisterStaticDeleter(this);
+        else
+            KGlobal::unregisterStaticDeleter(this);
         return obj;
     }
 
     /**
      * Sets the object to delete and registers the object to be
-     * deleted to KGlobal. If the given object is 0, the former
-     * registration is unregistered.
+     * deleted to KGlobal. If the given object is 0, the previously
+     * registered object is unregistered.
      * @param globalRef the static pointer where this object is stored.
      * This pointer will be reset to 0 after deletion of the object.
      * @param obj the object to delete
@@ -121,36 +121,36 @@ public:
     type *setObject( type* & globalRef, type *obj, bool isArray = false) {
         globalReference = &globalRef;
         deleteit = obj;
-	array = isArray;
-	if (obj)
+        array = isArray;
+        if (obj)
             KGlobal::registerStaticDeleter(this);
-	else
-	    KGlobal::unregisterStaticDeleter(this);
+        else
+            KGlobal::unregisterStaticDeleter(this);
         globalRef = obj;
-	return obj;
+        return obj;
     }
 
     /**
-     * Destructs the object. This has the same effect as deleting
+     * Destructs the registered object. This has the same effect as deleting
      * the KStaticDeleter.
      */
     virtual void destructObject() {
         if (globalReference)
            *globalReference = 0;
-	if (array)
-	   delete [] deleteit;
-	else
-	   delete deleteit;
-    	deleteit = 0;
+        if (array)
+            delete [] deleteit;
+        else
+            delete deleteit;
+        deleteit = 0;
     }
 
     /**
-     * Destructor. Unregisters the static deleter and destroys the
+     * Destructor. Unregisters the static deleter and destroys the registered
      * object by calling destructObject().
      */
     virtual ~KStaticDeleter() {
-    	KGlobal::unregisterStaticDeleter(this);
-	destructObject();
+        KGlobal::unregisterStaticDeleter(this);
+        destructObject();
     }
 private:
     type *deleteit;
