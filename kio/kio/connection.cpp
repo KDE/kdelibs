@@ -252,10 +252,9 @@ int Connection::read( int* _cmd, QByteArray &data )
     if ( n == -1 && errno == EINTR )
 	goto again1;
 #ifdef Q_WS_WIN
-  // there should be a select call before recv to avoid this error
-	if ( n == -1 && errno == WSAEWOULDBLOCK ) {
-    	kError(7017) << "Header read would block detected" << endl;
-      return 0;
+	if ( n == -1 && WSAGetLastError() == WSAEWOULDBLOCK ) {
+        kDebug(7017) << "Header read would block detected" << endl;
+        return 0;
     }
 #endif
     if ( n == -1) {
@@ -294,11 +293,11 @@ int Connection::read( int* _cmd, QByteArray &data )
 		if (errno == EINTR)
 		    continue;
 #ifdef Q_WS_WIN
-		if (errno == WSAEWOULDBLOCK) {
-        kError(7017) << "Would block detect" << endl;
-        Sleep(1);
-	  	  continue;
-    }
+		if (WSAGetLastError() == WSAEWOULDBLOCK) {
+            kDebug(7017) << "Would block detect" << endl;
+            Sleep(20);
+            continue;
+        }
 #endif
 		kError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
