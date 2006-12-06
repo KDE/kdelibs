@@ -269,9 +269,17 @@ void SlaveBase::dispatchLoop()
        }
        if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
        { // dispatch application messages
+#ifdef Q_WS_WIN
+          kDebug(7019) << "dispatch application message" << endl;
+#endif
           int cmd;
           QByteArray data;
-          if ( appconn->read(&cmd, data) != -1 )
+          int ret = appconn->read(&cmd, data);
+#ifdef Q_WS_WIN
+          if ( ret == 0 )
+          	continue;
+#endif
+          if ( ret != -1 )
           {
              dispatch(cmd, data);
           }
