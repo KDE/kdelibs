@@ -1103,4 +1103,9 @@ void KLauncher::reparseConfiguration()
       slave->reparseConfiguration();
 }
 
+void 
+KLauncher::slotGotOutput()
+{
+}
+
 #include "klauncher.moc"

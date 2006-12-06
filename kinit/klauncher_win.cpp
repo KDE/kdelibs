@@ -787,9 +787,10 @@ static void appendLong(QByteArray &ba, long l)
 }
 
 // handles all output from launched clients
-void KLauncher::gotStdout()
+void 
+KLauncher::slotGotOutput()
 {
-	qDebug("got stdout signal");
+	qDebug("got output signal");
 	QByteArray _stdout;
   foreach (QProcess *p, processList) {
     _stdout = p->readAllStandardOutput();
@@ -805,7 +806,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    
     QProcess *process  = new QProcess;
     process->setProcessChannelMode(QProcess::MergedChannels);
-    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(gotStdout()) );
+    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
     processList << process;
    
 //  process.setEnvironment(envlist);

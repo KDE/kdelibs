@@ -203,9 +203,7 @@ protected:
    Display *mCached_dpy;
 #endif
 
-#ifdef Q_WS_WIN
 protected Q_SLOTS:
-    void gotStdout();
-#endif
+    void slotGotOutput();
 };
 #endif
