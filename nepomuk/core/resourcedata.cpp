@@ -33,7 +33,7 @@ QString Nepomuk::KMetaData::ResourceData::s_defaultType = Nepomuk::KMetaData::On
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QString& type_ )
   : uri( uri_ ),
     type( type_ ),
-    m_ref(1),
+    m_ref(0),
     m_initialized( false )
 {
   if( !uri.isEmpty() && type.isEmpty() )
@@ -57,63 +57,120 @@ bool Nepomuk::KMetaData::ResourceData::init()
 
 bool Nepomuk::KMetaData::ResourceData::exists() const
 {
-  TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
-  
-  // the resource has to exists either as a subject or as an object
-  return( !ts.contains( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) || 
-	  !ts.contains( Ontology::defaultGraph(), Statement( Node(), Node(), uri ) ) );
+  if( isValid() ) {
+    TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
+    
+    // the resource has to exists either as a subject or as an object
+    return( !ts.contains( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) || 
+	    !ts.contains( Ontology::defaultGraph(), Statement( Node(), Node(), uri ) ) );
+  }
+  else
+    return false;
+}
+
+
+bool Nepomuk::KMetaData::ResourceData::isValid() const
+{
+  // FIXME: check namespaces and stuff
+  return( !uri.isEmpty() && !type.isEmpty() );
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::load()
 {
-  properties.clear();
+  if( isValid() ) {
+    properties.clear();
 
-  TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
+    TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
 
-  StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ), &ts );
-  while( it.hasNext() ) {
-    const Statement& s = it.next();
-    if( s.object.type == NodeResource )
-      properties.insert( s.predicate.value, qMakePair<Variant, int>( Resource( s.object.value ), 0 ) );
-    else
-      properties.insert( s.predicate.value, qMakePair<Variant, int>( Ontology::RDFLiteralToValue( s.object.value ), 0 ) );
+    StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ), &ts );
+    while( it.hasNext() ) {
+      const Statement& s = it.next();
+
+      // load the type
+      if( s.predicate.value == Ontology::typePredicate() ) {
+	if( type.isEmpty() )
+	  type = s.object.value;
+      }
+      else if( s.object.type == NodeResource )
+	properties.insert( s.predicate.value, qMakePair<Variant, int>( Resource( s.object.value ), 0 ) );
+      else
+	properties.insert( s.predicate.value, qMakePair<Variant, int>( Ontology::RDFLiteralToValue( s.object.value ), 0 ) );
+    }
+   
+    return true;
   }
-
-  return true;
+  else
+    return false;
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::save()
 {
-  TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
+  if( m_initialized ) {
+    TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
 
-  // make sure our graph exists
-  if( !ts.listGraphs().contains( Ontology::defaultGraph() ) )
-    if( ts.addGraph( Ontology::defaultGraph() ) )
+    // make sure our graph exists
+    // ==========================
+    if( !ts.listGraphs().contains( Ontology::defaultGraph() ) )
+      if( ts.addGraph( Ontology::defaultGraph() ) )
+	return false;
+
+    // remove everything about this resource from the store (FIXME: better and faster syncing)
+    // =======================================================================================
+    ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) );
+
+    // save the type
+    // =============
+    if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) )
       return false;
 
-  // save the type
-  if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) )
-    return false;
+    // save the properties
+    // ===================
+    for( PropertiesMap::const_iterator it = properties.constBegin();
+	 it != properties.constEnd(); ++it ) {
 
-  // save the properties
-  for( PropertiesMap::const_iterator it = properties.constBegin();
-       it != properties.constEnd(); ++it ) {
-    QString predicate = it.key();
-    if( it.value().first.isResource() ) {
-      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, it.value().first.toResource().uri() ) ) )
-	return false;
+      QString predicate = it.key();
+      const Variant& val = it.value().first;
+
+      // one-to-one Resource
+      if( val.isResource() ) {
+	if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, val.toResource().uri() ) ) )
+	  return false;
+      }
+
+      // one-to-many Resource
+      else if( val.isResourceList() ) {
+	const QList<Resource>& l = val.toResourceList();
+	for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
+	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, (*resIt).uri() ) ) )
+	    return false;
+	}
+      }
+
+      // one-to-many literals
+      else if( val.isList() ) {
+	QStringList l = Ontology::valuesToRDFLiterals( val );
+	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
+	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( *valIt, NodeLiteral ) ) ) )
+	    return false;
+	}
+      }
+
+      // one-to-one literal
+      else {
+	if( ts.addStatement( Ontology::defaultGraph(), 
+			     Statement( uri, 
+					predicate, 
+					Node( Ontology::valueToRDFLiteral( val ), NodeLiteral ) ) ) )
+	  return false;
+      }
     }
-    else {
-      if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, 
-								predicate, 
-								Node( Ontology::valueToRDFLiteral( it.value().first ), NodeLiteral ) ) ) )
-	return false;
-    }
+
+    return true;
   }
-
-  return true;
+  else
+    return false;
 }
 
 
@@ -243,7 +300,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
   if( it == s_data.end() ) {
     ResourceData* d = new ResourceData( uniqueUri, type );
 
-    s_data[uri] = d;
+    s_data.insert( uniqueUri, d );
 
     return d;
   }

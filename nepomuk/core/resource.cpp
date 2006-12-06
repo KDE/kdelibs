@@ -21,18 +21,27 @@ Nepomuk::KMetaData::Resource::Resource()
 {
   // invalid data
   d = new ResourceData();
+  d->ref();
+}
+
+
+Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource::Resource& res )
+{
+  d = res.d;
+  d->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
 {
   d = ResourceData::data( uri, type );
+  d->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  if( d->deref() ) {
+  if( !d->deref() ) {
     if( ResourceManager::instance()->autoSync() && modified() )
       sync();
     delete d;
@@ -43,7 +52,7 @@ Nepomuk::KMetaData::Resource::~Resource()
 Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
 {
   if( d != res.d ) {
-    if( d->deref() ) {
+    if( !d->deref() ) {
       if( ResourceManager::instance()->autoSync() && modified() )
 	sync();
       delete d;
@@ -64,6 +73,7 @@ const QString& Nepomuk::KMetaData::Resource::uri() const
 
 const QString& Nepomuk::KMetaData::Resource::type() const
 {
+  d->init();
   return d->type;
 }
 
@@ -148,8 +158,7 @@ bool Nepomuk::KMetaData::Resource::exists() const
 
 bool Nepomuk::KMetaData::Resource::isValid() const
 {
-  // FIXME: check namespaces and stuff
-  return( !d->uri.isEmpty() && !d->type.isEmpty() );
+  return d->isValid();
 }
 
 

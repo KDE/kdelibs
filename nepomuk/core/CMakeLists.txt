@@ -3,34 +3,26 @@ project(kmetadata)
 find_package(KNep REQUIRED)
 
 
-# We use a dummy source file to force cmake to execute rcgen during the building process
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
-  COMMAND ${CMAKE_BINARY_DIR}/tools/rcgen --writeall ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
-  COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
-)  
-
-# FIXME: we need to run rcgen during the build. Maybe it is impossible to change the sources during build?
 execute_process(
-  COMMAND ${CMAKE_BINARY_DIR}/tools/rcgen --listheaders --prefix ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
+  COMMAND ${RCGEN} --listheaders --prefix ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
   OUTPUT_VARIABLE ALLRESOURCES_HEADERS
 )
 
 execute_process(
-  COMMAND ${CMAKE_BINARY_DIR}/tools/rcgen --listsources --prefix ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
+  COMMAND ${RCGEN} --listsources --prefix ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
   OUTPUT_VARIABLE ALLRESOURCES_SOURCES
 )
 
 execute_process(
-  COMMAND ${CMAKE_BINARY_DIR}/tools/rcgen --listincludes ${CMAKE_SOURCE_DIR}/ontology.rdf
+  COMMAND ${RCGEN} --listincludes ${CMAKE_SOURCE_DIR}/ontology.rdf
   OUTPUT_VARIABLE ALLRESOURCES_INCLUDES
 )
 
 configure_file(allresources.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/allresources.h)
 
-#execute_process(
-#  COMMAND ${CMAKE_BINARY_DIR}/tools/rcgen --writeall ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
-#)
+execute_process(
+  COMMAND ${CMAKE_BINARY_DIR}/rcgen/rcgen --writeall ${CMAKE_CURRENT_BINARY_DIR}/ ${CMAKE_SOURCE_DIR}/ontology.rdf
+)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}
@@ -47,7 +39,6 @@ set(kmetadata_LIB_SRCS
   resourcedata.cpp
   resourcemanager.cpp
   ontology.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
   ${ALLRESOURCES_SOURCES}
 )
 

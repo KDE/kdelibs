@@ -49,6 +49,8 @@ namespace Nepomuk {
 	 */
 	Resource();
 
+	Resource( const Resource& );
+
 	/**
 	 * Creates a new Resource object representing the data referenced by \a uri
 	 * which is of type \a type. If the uri already exists the type is ignored and
@@ -60,8 +62,9 @@ namespace Nepomuk {
 	 * \param uri The URI identifying the resource in question. This might also be 
 	 *            a file path.
 	 * \param type The URI identifying the type of the resource. If it is empty
-	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema#Resource.
-	 *             In case the resource already exists the type will be ignored.
+	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema#Resource or
+	 *             in case the resource already exists the type will be read from the 
+	 *             store.
 	 */
 	Resource( const QString& uri, const QString& type = QString() );
 	virtual ~Resource();
@@ -144,8 +147,5 @@ namespace Nepomuk {
       };
   }
 }
-
-Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
-Q_DECLARE_METATYPE(QList<Nepomuk::KMetaData::Resource>)
 
 #endif

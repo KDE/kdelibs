@@ -50,6 +50,8 @@ namespace Nepomuk {
 
 	bool exists() const;
 
+	bool isValid() const;
+
 	/**
 	 * Initializes the data object, i.e. loads it for the first time.
 	 * Does nothing on subsequent calls.

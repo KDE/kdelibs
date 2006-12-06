@@ -36,7 +36,7 @@ namespace Nepomuk {
 	~Variant();
 	Variant( Type type );
 	Variant( int typeOrUserType, const void *copy );
-	Variant( const QVariant& other );
+	Variant( const Variant& other );
 	Variant( int i );
 	Variant( uint ui );
 	Variant( qlonglong ll );
@@ -46,8 +46,6 @@ namespace Nepomuk {
 #ifndef QT_NO_CAST_FROM_ASCII
 	QT_ASCII_CAST_WARN_CONSTRUCTOR Variant( const char *str );
 #endif
-	Variant( const QByteArray& bytearray );
-	Variant( const QBitArray& bitarray );
 	Variant( const QString& string );
 	Variant( const QLatin1String& string );
 	Variant( const QStringList& stringlist );
@@ -56,31 +54,44 @@ namespace Nepomuk {
 	Variant( const QTime& time );
 	Variant( const QDateTime& datetime );
 	Variant( const QList<QVariant>& list );
-	Variant( const QMap<QString,QVariant>& map );
-#ifndef QT_NO_GEOM_VARIANT
-	Variant( const QSize& size );
-	Variant( const QSizeF& size );
-	Variant( const QPoint& pt );
-	Variant( const QPointF& pt );
-	Variant( const QLine& line );
-	Variant( const QLineF& line );
-	Variant( const QRect& rect );
-	Variant( const QRectF& rect );
-#endif
 	Variant( const QUrl& url );
-	Variant( const QLocale& locale );
-	Variant( const QRegExp& regExp );
-	Variant( Qt::GlobalColor color );
+
+	Variant( const Resource& r );
+	Variant( const QList<Resource>& r );
+
+	/**
+	 * This methods does not handle all list types.
+	 * It checks the following:
+	 * \li QList<Resource>
+	 * \li QList<int>
+	 * \li QList<double>
+	 * \li QList<bool>
+	 * \li QList<QDate>
+	 * \li QList<QTime>
+	 * \li QList<QDateTime>
+	 * \li QList<QUrl>
+	 * \li QList<String> (QStringList)
+	 */
+	bool isList() const;
 
 	bool isResource() const;
-	Variant( const Resource& r );
-	Resource toResource() const;
-
 	bool isResourceList() const;
-	Variant( const QList<Resource>& r );
+
+	Resource toResource() const;
 	QList<Resource> toResourceList() const;
       };
   }
 }
+
+
+Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
+Q_DECLARE_METATYPE(QList<Nepomuk::KMetaData::Resource>)
+Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<double>)
+Q_DECLARE_METATYPE(QList<bool>)
+Q_DECLARE_METATYPE(QList<QDate>)
+Q_DECLARE_METATYPE(QList<QTime>)
+Q_DECLARE_METATYPE(QList<QDateTime>)
+Q_DECLARE_METATYPE(QList<QUrl>)
 
 #endif

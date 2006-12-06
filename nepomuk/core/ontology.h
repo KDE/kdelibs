@@ -32,6 +32,7 @@ namespace Nepomuk {
 	static QString defaultGraph();
 	static QString typePredicate();
 	static QString valueToRDFLiteral( const Variant& );
+	static QStringList valuesToRDFLiterals( const Variant& );
 	static Variant RDFLiteralToValue( const QString& );
 
 	static QString rdfNamespace();

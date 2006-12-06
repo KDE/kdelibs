@@ -39,7 +39,7 @@ Nepomuk::KMetaData::Variant::Variant( int typeOrUserType, const void *copy )
 }
 
 
-Nepomuk::KMetaData::Variant::Variant( const QVariant& other )
+Nepomuk::KMetaData::Variant::Variant( const Variant& other )
   : QVariant( other )
 {
 }
@@ -87,18 +87,6 @@ Nepomuk::KMetaData::Variant::Variant( const char *str )
 {
 }
 #endif
-
-
-Nepomuk::KMetaData::Variant::Variant( const QByteArray& bytearray )
-  : QVariant( bytearray )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QBitArray& bitarray )
-  : QVariant( bitarray )
-{
-}
 
 
 Nepomuk::KMetaData::Variant::Variant( const QString& string )
@@ -149,85 +137,10 @@ Nepomuk::KMetaData::Variant::Variant( const QList<QVariant>& list )
 }
 
 
-Nepomuk::KMetaData::Variant::Variant( const QMap<QString,QVariant>& map )
-  : QVariant( map )
-{
-}
-
-
-#ifndef QT_NO_GEOM_VARIANT
-Nepomuk::KMetaData::Variant::Variant( const QSize& size )
-  : QVariant( size )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QSizeF& size )
-  : QVariant( size )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QPoint& pt )
-  : QVariant( pt )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QPointF& pt )
-  : QVariant( pt )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QLine& line )
-  : QVariant( line )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QLineF& line )
-  : QVariant( line )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QRect& rect )
-  : QVariant( rect )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QRectF& rect )
-  : QVariant( rect )
-{
-}
-
-
-#endif
 Nepomuk::KMetaData::Variant::Variant( const QUrl& url )
   : QVariant( url )
 {
 }
-
-
-Nepomuk::KMetaData::Variant::Variant( const QLocale& locale )
-  : QVariant( locale )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( const QRegExp& regExp )
-  : QVariant( regExp )
-{
-}
-
-
-Nepomuk::KMetaData::Variant::Variant( Qt::GlobalColor color )
-  : QVariant( color )
-{
-}
-
 
 
 Nepomuk::KMetaData::Variant::Variant( const Nepomuk::KMetaData::Resource& r )
@@ -265,4 +178,18 @@ bool Nepomuk::KMetaData::Variant::isResourceList() const
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Variant::toResourceList() const
 {
   return value<QList<Resource> >();
+}
+
+
+bool Nepomuk::KMetaData::Variant::isList() const
+{
+  return( isResourceList() ||
+	  userType() == qMetaTypeId<QList<int> >() ||
+	  userType() == qMetaTypeId<QList<double> >() ||
+	  userType() == qMetaTypeId<QList<bool> >() ||
+	  userType() == qMetaTypeId<QList<QDate> >() ||
+	  userType() == qMetaTypeId<QList<QTime> >() ||
+	  userType() == qMetaTypeId<QList<QDateTime> >() ||
+	  userType() == qMetaTypeId<QList<QUrl> >() ||
+	  userType() == qMetaTypeId<QStringList>() );
 }

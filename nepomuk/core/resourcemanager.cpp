@@ -123,12 +123,34 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 {
   QList<Resource> l;
 
-  TripleService ts( serviceRegistry()->discoverTripleService() );
-  StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), 
-					       Statement( Node(), Ontology::typePredicate(), Node(type) ) ), 
-			    &ts );
-  while( it.hasNext() )
-    l.append( Resource( it.next().subject.value ) );
+  if( !type.isEmpty() ) {
+    // check local data
+    for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_data.begin();
+	 rdIt != ResourceData::s_data.end(); ++rdIt ) {
+
+      if( rdIt.value()->type.isEmpty() )
+	rdIt.value()->init();
+
+      if( rdIt.value()->type == type )
+	l.append( Resource( rdIt.key() ) );
+    }
+
+    qDebug() << "(ResourceManager::allResourcesOfType) added local resources: " << l.count() << endl;
+
+    // check remote data
+    TripleService ts( serviceRegistry()->discoverTripleService() );
+    StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), 
+						 Statement( Node(), Ontology::typePredicate(), Node(type) ) ), 
+			      &ts );
+    while( it.hasNext() ) {
+      const Statement& s = it.next();
+      Resource res( s.subject.value );
+      if( !l.contains( res ) )
+	l.append( res );
+    }
+
+    qDebug() << "(ResourceManager::allResourcesOfType) added remote resources: " << l.count() << endl;
+  }
 
   return l;
 }
