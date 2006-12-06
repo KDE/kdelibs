@@ -30,6 +30,9 @@
 #include <qstring.h>
 #include <QLibrary>
 #include <QFile>
+#ifdef Q_WS_WIN
+#include <QStringList>
+#endif
 
 #ifndef Q_WS_WIN
 /* These are to link libkio even if 'smart' linker is used */
@@ -56,9 +59,26 @@ int main(int argc, char **argv)
 
      if (!lib.load() || !lib.isLoaded() )
      {
+#ifdef Q_WS_WIN
+        QString pathes = getenv("KDEDIRS");
+        QStringList pathlist = pathes.split(";");
+          for (int i = 0; i < pathlist.size(); ++i) 
+          {
+            lib.setFileName(pathlist.at(i) + "/lib/kde4/" + libpath.data());
+		    if (lib.load() && !lib.isLoaded() ) 
+              break;
+           }
+           if (!lib.load() || !lib.isLoaded()) 
+           {
+             fprintf(stderr, "could not open %s: %s", libpath.data(),
+                     qPrintable (lib.errorString()) );
+             exit(1);
+           }
+#else
         fprintf(stderr, "could not open %s: %s", libpath.data(),
                 qPrintable (lib.errorString()) );
         exit(1);
+#endif
      }  
 
      void* sym = lib.resolve("kdemain");
