@@ -1,4 +1,3 @@
-//#include "kdxs.h"
 #include "kdxsview.h"
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -7,10 +6,10 @@
 
 int main(int argc, char **argv)
 {
-	KAboutData about("kdxs",
-		I18N_NOOP("KDXS"),
+	KAboutData about("kdxspreview",
+		I18N_NOOP("KDXS Preview"),
 		"0.1",
-		I18N_NOOP("KNewstuff DXS Preview"),
+		I18N_NOOP("KNewstuff2 DXS Preview"),
 		KAboutData::License_GPL,
 		"(C) 2005, 2006 Josef Spillner",
 		0,
@@ -20,11 +19,7 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, &about);
 	KApplication app;
 
-	/*KDXS *widget = new KDXS();
-	app.setMainWidget(widget);
-	widget->show();
-	return app.exec();*/
-
-	KDXSView view(NULL);
+	KDXSView view;
+	app.setMainWidget(&view);
 	return view.exec();
 }

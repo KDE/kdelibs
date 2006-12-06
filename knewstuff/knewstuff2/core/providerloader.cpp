@@ -40,6 +40,8 @@ ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
 
 void ProviderLoader::load( const QString &type, const QString &providersList )
 {
+  Q_UNUSED(type);
+
   kdDebug(5850) << "ProviderLoader::load()" << endl;
 
   mProviders.clear();
@@ -53,11 +55,8 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
   	providersUrl = cfg->readEntry( "ProvidersUrl" );
 
   if ( providersUrl.isEmpty() ) {
-    // TODO: Replace the default by the real one.
-    QString server = cfg->readEntry( "MasterServer",
-                                     "http://korganizer.kde.org" );
-  
-    providersUrl = server + "/knewstuff/" + type + "/providers.xml";
+    emit signalProvidersFailed();
+    return;
   }
 
   kdDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
@@ -80,12 +79,15 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
   QCString str( data, data.size() + 1 );
 
   mJobData.append( QString::fromUtf8( str ) );
+// FIXME: utf-8 conversion only at the end!!!
 }
 
 void ProviderLoader::slotJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    job->showErrorDialog( mParentWidget );
+    //job->showErrorDialog( mParentWidget );
+    emit signalProvidersFailed();
+    return;
   }
 
   kdDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
@@ -113,7 +115,7 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
     }
   }
   
-  emit providersLoaded( &mProviders );
+  emit signalProvidersLoaded( &mProviders );
 }
 
 #include "providerloader.moc"

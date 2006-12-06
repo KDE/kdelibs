@@ -3,15 +3,19 @@
 
 #include <kdialogbase.h>
 
+#include <knewstuff2/providerloader.h>
+
 class QComboBox;
 
 class KDXSView : public KDialogBase
 {
 Q_OBJECT
 public:
-	KDXSView(QWidget *parent);
+	KDXSView(QWidget *parent = NULL);
 private slots:
 	void slotRun();
+	void slotProvidersLoaded(KNS::Provider::List *providers);
+	void slotProvidersFailed();
 private:
 	enum Access
 	{

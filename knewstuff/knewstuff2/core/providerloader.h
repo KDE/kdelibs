@@ -70,7 +70,8 @@ class KDE_EXPORT ProviderLoader : public QObject
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
-    void providersLoaded( Provider::List * );
+    void signalProvidersLoaded( KNS::Provider::List * );
+    void signalProvidersFailed();
 
   protected slots:
     void slotJobData( KIO::Job *, const QByteArray & );

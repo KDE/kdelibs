@@ -41,3 +41,6 @@ noinst_HEADERS = \
 	qnowtooltip.h
 
 METASOURCES = AUTO
+
+kde_conf_DATA = kdxspreviewrc
+

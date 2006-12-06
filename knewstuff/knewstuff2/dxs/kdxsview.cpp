@@ -4,6 +4,7 @@
 
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 #include <qlayout.h>
 #include <qlabel.h>
@@ -61,7 +62,18 @@ KDXSView::KDXSView(QWidget *parent)
 
 	connect(button, SIGNAL(clicked()), SLOT(slotRun()));
 
-	root->resize(500, 300);
+	show();
+	root->setMinimumSize(root->size());
+	disableResize();
+
+	ProviderLoader *pl = new ProviderLoader(this);
+	connect(pl,
+		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
+		SLOT(slotProvidersLoaded(KNS::Provider::List*)));
+	connect(pl,
+		SIGNAL(signalProvidersFailed()),
+		SLOT(slotProvidersFailed()));
+	pl->load("desktop/wallpaper");
 }
 
 void KDXSView::slotRun()
@@ -84,6 +96,16 @@ void KDXSView::slotRun()
 
 	// FIXME: provide queueing/update mechanism for dialog
 	dxs->call_categories();
+}
+
+void KDXSView::slotProvidersLoaded(KNS::Provider::List*)
+{
+	kdDebug() << "(loaded)" << endl;
+}
+
+void KDXSView::slotProvidersFailed()
+{
+	kdDebug() << "(failed)" << endl;
 }
 
 #include "kdxsview.moc"
