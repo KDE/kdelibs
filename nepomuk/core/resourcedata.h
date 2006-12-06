@@ -59,10 +59,20 @@ namespace Nepomuk {
 	bool init();
 
 	/**
+	 * Load all properties stored in the local Nepomuk DB that have subject \a uri
+	 * into this object.
+	 *
 	 * \return false if the resource does not exist in the local NEPOMUK DB.
 	 */
 	bool load();
 
+	/**
+	 * Save all properties and the type back into the local NEPOMUK DB overwriting
+	 * any existing entries.
+	 * Entries in the DB that do not exist in this object will be removed.
+	 *
+	 * Use merge() to preserve non-existing propreties.
+	 */
 	bool save();
 
 	/**
@@ -75,6 +85,13 @@ namespace Nepomuk {
 	 */
 	bool operator==( const ResourceData& other ) const;
 
+	/**
+	 * The KMetaData lib is based on the fact that for each uri only one ResourceData object is
+	 * created at all times. This method searches for an existing data object to reuse or creates
+	 * a new one if none exists.
+	 *
+	 * The Resource constructors use this method in combination with ref()
+	 */
 	static ResourceData* data( const QString& uri, const QString& type );
 
 	QString uri;

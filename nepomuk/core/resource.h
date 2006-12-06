@@ -124,7 +124,7 @@ namespace Nepomuk {
 
 	/**
 	 * \return true if this resource (i.e. the uri of this resource) exists in the local
-	 * NEPOMUK RDF store.
+	 * NEPOMUK RDF store, either as subject or as object.
 	 *
 	 * \sa inSync()
 	 */
