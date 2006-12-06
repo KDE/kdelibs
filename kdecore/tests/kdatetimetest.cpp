@@ -2606,7 +2606,8 @@ void KDateTimeTest::dstShifts()
     ::tzset();
 
     // Shift from DST to standard time for the UK in 2005 was at 2005-10-30 01:00 UTC.
-    KDateTime dt(QDateTime(QDate(2005,10,29), QTime(23,59,59), Qt::UTC), london);
+    QDateTime qdt(QDate(2005,10,29), QTime(23,59,59), Qt::UTC);
+    KDateTime dt(qdt, london);
     QVERIFY(!dt.isSecondOccurrence());
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,10,30), QTime(0,59,59), Qt::LocalTime));
     dt = KDateTime(QDateTime(QDate(2005,10,30), QTime(0,0,0), Qt::UTC), london);
