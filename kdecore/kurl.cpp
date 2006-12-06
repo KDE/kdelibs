@@ -313,10 +313,10 @@ KUrl::KUrl( const QString &str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << __PRETTY_FUNCTION__ << " " << str.toAscii().data() << endl;
+   kDebug(126) << "KUrl::KUrl " << str.toAscii().data() << endl;
 		// file:///c:/...
    if ( str.startsWith("file:") && str[7] == '/' ) {
-     kDebug(126) << __PRETTY_FUNCTION__ << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) << endl;
+     kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) << endl;
      setPath( QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) );
    	}
     else if ( str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
@@ -337,7 +337,7 @@ KUrl::KUrl( const char * str )
 {
   if ( str && str[0] ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << __PRETTY_FUNCTION__ << " " << str << endl;
+    kDebug(126) << "KUrl::KUrl " << " " << str << endl;
 
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	setPath( QString::fromUtf8( str+1 ) );
@@ -357,7 +357,7 @@ KUrl::KUrl( const QByteArray& str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << __PRETTY_FUNCTION__ << " " << str.data() << endl;
+    kDebug(126) << "KUrl::KUrl " << " " << str.data() << endl;
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	  setPath( QString::fromUtf8( str.mid(2) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
@@ -1432,7 +1432,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << __PRETTY_FUNCTION__ << " " << _path.toAscii().data() << endl;
+    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data() << endl;
 #endif
     if ( scheme().isEmpty() )
         setScheme( "file" );
