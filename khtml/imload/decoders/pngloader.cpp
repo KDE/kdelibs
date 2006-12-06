@@ -50,8 +50,8 @@ private:
     
     bool        interlaced;
     
-    unsigned int width;
-    unsigned int height;
+    png_uint_32  width;
+    png_uint_32  height;
     unsigned int depth;
     
     unsigned char* scanlineBuf; //Used only for interlaced images
@@ -82,7 +82,7 @@ private:
     {
         int bitDepth, colorType, interlaceType;
     
-        png_get_IHDR(pngReadStruct, pngInfoStruct, (png_uint_32*)&width, (png_uint_32*)&height, &bitDepth, 
+        png_get_IHDR(pngReadStruct, pngInfoStruct, &width, &height, &bitDepth,
                      &colorType, &interlaceType, 0, 0);
         
         //Ask libPNG to change bit depths we don't support
