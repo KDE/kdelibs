@@ -811,31 +811,13 @@ QVariant KKeyChooserItem::data(int column, int role) const
 			break;
 
 		case 1:
+                    if (role==Qt::DisplayRole)
+                        return shortcut().primary();
+                    break;
 		case 2:
-			switch (role) {
-				case Qt::DisplayRole:
-					/*if (column - 1 < m_newLocalShortcut.count())
-						//return m_newLocalShortcut.seq(column - 1).toString();
-						return m_newLocalShortcut.toString();*/
-					//H4X
-					/*else
-						return "loc:none";*/
-					//else
-						return shortcut().toString();
-					break;
-/*				case Qt::FontRole:
-					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1)) {
-						QFont parentFont = treeWidget()->font();
-						parentFont.setBold(true);
-						return parentFont;
-					}
-					break;
-				case Qt::ForegroundRole:
-					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1))
-					return QColor(Qt::blue);*/
-					break;
-			}
-			break;
+                    if (role==Qt::DisplayRole)
+                        return shortcut().alternate();
+                    break;
 
 		case 3:
 			switch (role) {
