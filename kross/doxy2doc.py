@@ -23,6 +23,8 @@ class Class:
             d = self.node.getElementsByTagName("definition")[0].childNodes[0].data #e.g. "virtual QString sheet"
             d = d.replace("virtual ","")
             a = self.node.getElementsByTagName("argsstring")[0].childNodes[0].data #e.g. "(const QString &amp;name)"
+            a = re.sub("=[\s]*0$","",a)
+            a = re.sub("const","",a).strip()
             self.definition = "%s%s".strip() % (d,a)
 
     def __init__(self, node):
@@ -58,7 +60,7 @@ class Writer:
             #prot = node.getAttribute("prot") #e.g. "public"
             name = node.getElementsByTagName("compoundname")[0].childNodes[0].data #e.g. "ScriptingPart"
 
-            if name.startswith('Q'):
+            if name.startswith('Q') or name.startswith('KPart'):
                 continue
 
             if kind == "class":
@@ -96,7 +98,7 @@ class Writer:
                 return "<%sh3%s>" % (m.group(1),m.group(3))
 
         parser = HtmlParser(self)
-        def replacer( match ):
+        def htmlReplacer( match ):
             tagname = match.group(2).strip()
             try:
                 tagname = tagname[ : tagname.index(' ') ]
@@ -107,8 +109,12 @@ class Writer:
             #raise AttributeError, tagname
             return ""
 
-        desc = self.CompoundDict["indexpage"].description
-        desc = re.compile( "<([\/\s]*)(.*?)([\/\s]*)>" ).sub(replacer, desc)
+        def parseToHtml( xmlstring ):
+            xmlstring = re.compile( "<([\/\s]*)(.*?)([\/\s]*)>" ).sub(htmlReplacer, xmlstring)
+            xmlstring = re.sub("(?<!\")((http|https|ftp)://[a-zA-Z0-9\.\_\-\;\?\&\/\=]*)", "<a href=\"\\1\">\\1</a>", xmlstring)
+            xmlstring = re.sub("<li>[\s]*<p>","<li>", xmlstring)
+            xmlstring = re.sub("</p>[\s]*</li>","</li>", xmlstring)
+            return xmlstring
 
         file.write( "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" )
         file.write( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" )
@@ -144,7 +150,7 @@ class Writer:
         file.write("</ol>")
 
         file.write("<h2><a name=\"indexpage\" />%s</h2>" % self.CompoundDict["indexpage"].name)
-        file.write(desc)
+        file.write( parseToHtml( self.CompoundDict["indexpage"].description ) )
 
         file.write("<h2><a name=\"objects\" />Objects</h2>")
         for i in self.CompoundList:
@@ -153,15 +159,8 @@ class Writer:
             for m in self.CompoundDict[i].memberList:
                 s = self.CompoundDict[i].memberDict[m].definition
                 if len(self.CompoundDict[i].memberDict[m].description) > 0:
-                    s += "<br /><blockquote>%s</blockquote>" % self.CompoundDict[i].memberDict[m].description
+                    s += "<br /><blockquote>%s</blockquote>" % parseToHtml( self.CompoundDict[i].memberDict[m].description )
                 file.write("<li class=\"member\">%s</li>" % s)
-            #self.CompoundDict[i]
-            #file.write(  )
-        #for r in reader.compounds():
-            #if reader.refs[r].name.startswith("Q"): continue
-            #if reader.refs[r].kind != "class": continue
-            #file.write( "<li><a href=\"#%s\">%s</a></li>" % (r, reader.refs[r].name) )
-        #file.write("</ol></li>")
 
         file.write("</table></body></html>")
 
