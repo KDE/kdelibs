@@ -136,20 +136,17 @@ KUniqueApplication::start()
 
      // Check to make sure that we're actually able to register with the D-Bus session
      // server.
-
-#ifndef Q_WS_WIN //TODO
      if (dbusService->registerService(appName) != QDBusConnectionInterface::ServiceRegistered)
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
         ::exit(255);
      }
-#endif
 
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
-
+#ifndef Q_WS_WIN
   int fd[2];
   signed char result;
   if (0 > pipe(fd))
@@ -241,6 +238,7 @@ KUniqueApplication::start()
      if (result != 0)
         ::exit(result); // Error occurred in child.
 
+#endif
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
      if (!dbusService->isServiceRegistered(appName))
      {
@@ -271,9 +269,11 @@ KUniqueApplication::start()
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
      }
+#ifndef Q_WS_WIN
      ::exit(reply);
      break;
   }
+#endif
   return false; // make insure++ happy
 }
 
