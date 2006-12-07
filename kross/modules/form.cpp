@@ -28,6 +28,8 @@
 #include <QKeyEvent>
 #include <QDialog>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QStackedLayout>
 #include <QSizePolicy>
 #include <QApplication>
 #include <QProgressDialog>
@@ -323,7 +325,7 @@ QWidget* FormDialog::addPage(const QString& name, const QString& header, const Q
     widget->setLayout(boxlayout);
 
     KPageWidgetItem* item = KPageDialog::addPage(widget, name);
-    item->setHeader(header);
+    item->setHeader(header.isNull() ? name : header);
     if( ! iconname.isEmpty() )
         item->setIcon( KIcon(iconname) );
     d->items.insert(name, item);
@@ -477,6 +479,20 @@ QWidget* FormModule::showProgressDialog(const QString& caption, const QString& l
 QWidget* FormModule::createDialog(const QString& caption)
 {
     return new FormDialog(caption);
+}
+
+QObject* FormModule::createLayout(QWidget* parent, const QString& layout)
+{
+    QLayout* l = 0;
+    if( layout == "QVBoxLayout" )
+        l = new QVBoxLayout();
+    else if( layout == "QHBoxLayout" )
+        l = new QHBoxLayout();
+    else if( layout == "QStackedLayout" )
+        l = new QStackedLayout();
+    if( parent && l )
+        parent->setLayout(l);
+    return l;
 }
 
 QWidget* FormModule::createWidget(QWidget* parent, const QString& className, const QString& name)

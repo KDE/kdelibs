@@ -169,7 +169,7 @@ namespace Kross {
              * iconname known by KDE.
              * \return the new QWidget page instance.
              */
-            QWidget* addPage(const QString& name, const QString& header, const QString& iconname);
+            QWidget* addPage(const QString& name, const QString& header = QString(), const QString& iconname = QString());
 
             /**
              * Shows the dialog as a modal dialog, blocking until the user
@@ -287,9 +287,23 @@ namespace Kross {
              * Create and return a new QWidget instance.
              *
              * \param parent the parent QWidget the new QWidget is a child of.
+             * \param layout the layout style the widget has. This could be one
+             * of the following strings;
+             *        \li QVBoxLayout
+             *        \li QHBoxLayout
+             *        \li QStackedLayout
+             * \return the new QLayout instance or NULL.
+             */
+            QObject* createLayout(QWidget* parent, const QString& layout);
+
+            /**
+             * Create and return a new QWidget instance.
+             *
+             * \param parent the parent QWidget the new QWidget is a child of.
              * \param className the name of the class that should be created
              * and returned. For example "QLabel" or "QForm".
              * \param name the objectName the new widget has.
+             * \return the new QWidget instance or NULL.
              */
             QWidget* createWidget(QWidget* parent, const QString& className, const QString& name = QString());
 
