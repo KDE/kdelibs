@@ -397,6 +397,10 @@ void KEditToolbar::init()
     connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
     enableButtonApply(false);
 
+    connect(this, SIGNAL(okClicked()), SLOT(slotOk()));
+    connect(this, SIGNAL(applyClicked()), SLOT(slotApply()));
+    connect(this, SIGNAL(defaultClicked()), SLOT(slotDefault()));
+
     setMinimumSize(sizeHint());
     s_defaultToolbar = 0L;
 }
