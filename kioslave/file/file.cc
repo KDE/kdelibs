@@ -1252,9 +1252,14 @@ void FileProtocol::listDir( const KUrl& url)
 	finished();
 	return;
     }
-
+#ifdef Q_WS_WIN
+    kDebug(7101) << "========= path " << url.path() << " =========" << endl;
+    kDebug(7101) << "win32: fix KUrl::path()" << endl;
+    int start = (url.path()[0] == '/') ? 1 : 0;
+    QByteArray _path( QFile::encodeName(url.path().mid(start)));
+#else
     QByteArray _path( QFile::encodeName(url.path()));
-
+#endif
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
