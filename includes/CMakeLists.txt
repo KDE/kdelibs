@@ -194,6 +194,7 @@ install( FILES
   KFileIconViewItem
   KFileItem
   KFileItemList
+  KFileItemDelegate
   KFileListViewItem
   KFileMetaInfo
   KFileMetaInfoGroup
