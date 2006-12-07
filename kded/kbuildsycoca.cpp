@@ -799,7 +799,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    bool checkfiles = bGlobalDatabase || args->isSet("checkfiles");
 
+#ifdef Q_WS_WIN
+   // incremental does not work under win32 because of shared access violation 
+   bool incremental = 0;
+#else
    bool incremental = !bGlobalDatabase && args->isSet("incremental") && checkfiles;
+#endif
    if (incremental || !checkfiles)
    {
      KSycoca::self()->disableAutoRebuild(); // Prevent deadlock
