@@ -34,6 +34,8 @@
 
 #include <QString>
 #include <QProcess>
+#include <QtDBus/QtDBus>
+
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -48,7 +50,7 @@ int verbose=0;
 QList<QProcess*> startedProcesses;
 
 // internal launch function
-int launch(QString cmd, int required=0) 
+int launch(QString cmd) 
 {
     QProcess *proc = new QProcess();
     proc->start(cmd);
@@ -67,10 +69,28 @@ int launch(QString cmd, int required=0)
     else {
        if (verbose)
            fprintf(stderr, "kdeinit: could not launch %s, exiting",cmd.toAscii().data());
-       if (required)
-           exit(1);
     }
     return pid;
+}
+
+/// check dbus registration
+bool checkIfRegisteredInDBus(QString name, int _timeout=10)
+{
+    int timeout = _timeout * 5;
+    while(timeout) {
+    	if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( name ) )
+    	    break;
+    	Sleep(200);
+    	timeout--;
+    }
+		if (!timeout) {
+			if (verbose)
+			    fprintf(stderr,"not registered %s in dbus after %d secs\n",name.toAscii().data(),_timeout);
+			return false;
+		}
+		if (verbose)
+		    fprintf(stderr,"%s is registered in dbus\n",name.toAscii().data());
+    return true;
 }
 
 class ProcessListEntry {
@@ -269,17 +289,24 @@ int main(int argc, char **argv, char **envp)
 
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {
-          pid = launch("dbus-launch.bat",1);
+          pid = launch("dbus-launch.bat");
+          if (!pid) 
+              exit(1);
     }
 
     if (launch_klauncher && !processList.hasProcessInList("klauncher"))
     {
-          pid = launch("klauncher",1);
+          pid = launch("klauncher");
+          if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10)) 
+			        exit(1);
     }
+
 
     if (launch_kded && !processList.hasProcessInList("kded"))
     {
-          pid = launch("kded",1);
+          pid = launch("kded");
+		      if (!pid || !checkIfRegisteredInDBus("org.kde.kded",10))
+			        exit(1);
     }
 
     for(i = 1; i < argc; i++)
