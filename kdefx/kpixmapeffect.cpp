@@ -5,8 +5,11 @@
 
 */
 
-#include <qimage.h>
-#include <qpainter.h>
+#include <QApplication>
+#include <QImage>
+#include <QPainter>
+#include <QPaintEngine>
+#include <QDesktopWidget>
 
 #include "kpixmapeffect.h"
 #include "kimageeffect.h"
@@ -314,9 +317,27 @@ QPixmap& KPixmapEffect::dither(QPixmap &pixmap, const QColor *palette, int size)
 
 QPixmap KPixmapEffect::selectedPixmap( const QPixmap &pix, const QColor &col )
 {
-    QImage img = pix.toImage();
-    KImageEffect::selectedImage(img, col);
     QPixmap outPix;
-    outPix = QPixmap::fromImage(img);
+
+    if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::PorterDuff))
+    {
+        outPix = pix;
+
+        QColor highlight = col;
+        highlight.setAlphaF(.5);
+
+        QPainter p;
+        p.begin(&outPix);
+        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        p.fillRect(pix.rect(), highlight);
+        p.end();
+    }
+    else
+    {
+        QImage image = pix.toImage();
+        KImageEffect::selectedImage(image, col);
+        outPix = QPixmap::fromImage(image);
+    }
+
     return outPix;
 }
