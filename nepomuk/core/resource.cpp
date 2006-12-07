@@ -16,6 +16,8 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 
+#include <klocale.h>
+
 
 Nepomuk::KMetaData::Resource::Resource()
 {
@@ -165,4 +167,19 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
     return true;
 
   return( *d == *other.d );
+}
+
+
+QString Nepomuk::KMetaData::errorString( int code )
+{
+  switch( code ) {
+  case ERROR_SUCCESS:
+    return i18n("Success");
+  case ERROR_COMMUNICATION:
+    return i18n("Communication error");
+  case ERROR_INVALID_TYPE:
+    return i18n("Invalid type in Database");
+  default:
+    return i18n("Unknown error");
+  }
 }

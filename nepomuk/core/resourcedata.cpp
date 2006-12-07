@@ -112,10 +112,12 @@ bool Nepomuk::KMetaData::ResourceData::load()
       else {
 	PropertiesMap::iterator oldProp = properties.find( s.predicate.value );
 	if( s.object.type == NodeResource ) {
-	  loadProperty( s.predicate.value, Resource( s.object.value ) );
+	  if( !loadProperty( s.predicate.value, Resource( s.object.value ) ) )
+	    return false;
 	}
 	else {
-	  loadProperty( s.predicate.value, Ontology::RDFLiteralToValue( s.object.value ) );
+	  if( !loadProperty( s.predicate.value, Ontology::RDFLiteralToValue( s.object.value ) ) )
+	    return false;
 	}
       }
     }
@@ -134,6 +136,7 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
     properties.insert( name, qMakePair<Variant, int>( val, 0 ) );
   }
   else if( val.type() != oldProp.value().first.simpleType() ) {
+    ResourceManager::instance()->notifyError( uri, ERROR_INVALID_TYPE );
     return false;
   }
   else {
@@ -152,18 +155,24 @@ bool Nepomuk::KMetaData::ResourceData::save()
     // make sure our graph exists
     // ==========================
     if( !ts.listGraphs().contains( Ontology::defaultGraph() ) )
-      if( ts.addGraph( Ontology::defaultGraph() ) )
+      if( ts.addGraph( Ontology::defaultGraph() ) ) {
+	ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	return false;
+      }
 
     // remove everything about this resource from the store (FIXME: better and faster syncing)
     // =======================================================================================
-    if( ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) )
+    if( ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) ) {
+      ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
       return false;
+    }
 
     // save the type
     // =============
-    if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) )
+    if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) ) {
+      ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
       return false;
+    }
 
     // save the properties
     // ===================
@@ -178,16 +187,20 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
       // one-to-one Resource
       if( val.isResource() ) {
-	if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, val.toResource().uri() ) ) )
+	if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, val.toResource().uri() ) ) ) {
+	  ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	  return false;
+	}
       }
 
       // one-to-many Resource
       else if( val.isResourceList() ) {
 	const QList<Resource>& l = val.toResourceList();
 	for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, (*resIt).uri() ) ) )
+	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, (*resIt).uri() ) ) ) {
+	    ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	    return false;
+	  }
 	}
       }
 
@@ -195,8 +208,10 @@ bool Nepomuk::KMetaData::ResourceData::save()
       else if( val.isList() ) {
 	QStringList l = Ontology::valuesToRDFLiterals( val );
 	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
-	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( *valIt, NodeLiteral ) ) ) )
+	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( *valIt, NodeLiteral ) ) ) ) {
+	    ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	    return false;
+	  }
 	}
       }
 
@@ -205,8 +220,10 @@ bool Nepomuk::KMetaData::ResourceData::save()
 	if( ts.addStatement( Ontology::defaultGraph(), 
 			     Statement( uri, 
 					predicate, 
-					Node( Ontology::valueToRDFLiteral( val ), NodeLiteral ) ) ) )
+					Node( Ontology::valueToRDFLiteral( val ), NodeLiteral ) ) ) ) {
+	  ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	  return false;
+	}
       }
     }
 

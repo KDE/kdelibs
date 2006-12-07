@@ -119,6 +119,12 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
 }
 
 
+void Nepomuk::KMetaData::ResourceManager::notifyError( const QString& uri, int errorCode )
+{
+  emit error( uri, errorCode );
+}
+
+
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesOfType( const QString& type ) const
 {
   QList<Resource> l;

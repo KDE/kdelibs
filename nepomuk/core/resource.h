@@ -26,6 +26,17 @@ namespace Nepomuk {
     class ResourceData;
     class Variant;
 
+    enum ErrorCode {
+      ERROR_SUCCESS = 0,
+      ERROR_COMMUNICATION, /**< A commication error, i.e. libKNepCLient connection failure */
+      ERROR_INVALID_TYPE
+    };
+
+    /**
+     * \return A human-readble string.
+     */
+    QString errorString( int code );
+
     /**
      * \brief Resource is the central object type in libKMetaData. It represents a piece of
      * information of any kind.

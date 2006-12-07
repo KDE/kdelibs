@@ -89,13 +89,31 @@ namespace Nepomuk {
 	 */
 	QList<Resource> allResourcesOfType( const QString& type ) const;
 
+	/**
+	 * Non-public API. Used by Resource to signalize errors.
+	 */
+	KMETADATA_NO_EXPORT void notifyError( const QString& uri, int errorCode );
+
       Q_SIGNALS:
 	/**
 	 * This signal gets emitted whenever a Resource changes due to a sync procedure.
 	 * Be aware that modifying resources locally via the Resource::setProperty method
 	 * does not result in a resourceModified signal being emitted.
+	 *
+	 * \param uri The URI of the modified resource.
+	 *
+	 * NOT IMPLEMENTED YET
 	 */
-	void resourceModified( Resource );
+	void resourceModified( const QString& uri );
+
+	/**
+	 * Whenever a problem occurs (like for example failed resource syncing) this 
+	 * signal is emitted.
+	 *
+	 * \param uri The resource related to the error.
+	 * \param errorCode The type of the error (Resource::ErrorCode)
+	 */
+	void error( const QString& uri, int errorCode );
 
 	// FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
 
