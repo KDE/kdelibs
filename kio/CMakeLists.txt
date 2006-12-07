@@ -69,6 +69,7 @@ set(kiocore_STAT_SRCS
   kio/kurlcompletion.cpp
   kio/krun.cpp
   kio/kfileitem.cpp
+  kio/kfileitemdelegate.cpp
   kio/kdirlister.cpp
   kio/kimageio.cpp
   kio/chmodjob.cpp
@@ -332,6 +333,7 @@ install( FILES
   kio/kurlcompletion.h
   kio/kshellcompletion.h
   kio/kfileitem.h
+  kio/kfileitemdelegate.h
   kio/kfileshare.h
   kio/ksambashare.h
   kio/knfsshare.h
