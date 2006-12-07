@@ -31,7 +31,7 @@ class Class:
 
     def __init__(self, node):
         self.node = node
-        self.description = node.getElementsByTagName("detaileddescription")[0].toxml()
+        self.description = " ".join( [ n.toxml() for n in node.childNodes if n.nodeName == "detaileddescription" ] )
         self.memberDict = {}
         self.memberList = []
         for n in self.node.getElementsByTagName("memberdef"):
@@ -47,7 +47,7 @@ class Class:
 class Page:
     def __init__(self, node):
         self.title = node.getElementsByTagName("title")[0].childNodes[0].data #e.g. "KSpread Scripting Plugin"
-        self.description = node.getElementsByTagName("detaileddescription")[0].toxml()
+        self.description = " ".join( [ n.toxml() for n in node.childNodes if n.nodeName == "detaileddescription" ] )
 
 class Writer:
 
@@ -158,6 +158,7 @@ class Writer:
         for i in self.CompoundList:
             if self.CompoundDict[i].kind != "class": continue
             file.write("<h3><a name=\"%s\" />%s</h3>" % (i,self.CompoundDict[i].name))
+            file.write( "%s<br />" % parseToHtml( self.CompoundDict[i].description ) )
             for m in self.CompoundDict[i].memberList:
                 s = self.CompoundDict[i].memberDict[m].definition
                 if len(self.CompoundDict[i].memberDict[m].description) > 0:
