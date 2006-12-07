@@ -265,6 +265,7 @@ bool KSystemTimeZonesPrivate::findZoneTab(QFile& f)
             kError() << "Could not reopen temp file for reading." << endl;
             return false;
         }
+        return true;
     }
     return false;
 }
