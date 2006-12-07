@@ -24,8 +24,10 @@ class Class:
             d = d.replace("virtual ","")
             a = self.node.getElementsByTagName("argsstring")[0].childNodes[0].data #e.g. "(const QString &amp;name)"
             a = re.sub("=[\s]*0$","",a)
-            a = re.sub("const","",a).strip()
-            self.definition = "%s%s".strip() % (d,a)
+            a = re.sub("(^|[^a-zA-Z0-9])const($|[^a-zA-Z0-9])", "\\1\\2", "%s%s" % (d,a))
+            a = re.sub("&|\*","",a)
+            a = re.sub("[\s]*(\(|\))[\s]*","\\1",a)
+            self.definition = a.strip()
 
     def __init__(self, node):
         self.node = node
