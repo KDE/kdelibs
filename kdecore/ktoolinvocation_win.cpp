@@ -1,6 +1,7 @@
 /*
    This file is part of the KDE libraries
    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2006 Ralf Habacker <ralf.habacker@freenet.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -35,6 +36,7 @@
 #include <qmessagebox.h>
 #include <qapplication.h>
 #include <qhash.h>
+#include <QProcess>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -181,7 +183,9 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
 void KToolInvocation::startKdeinit()
 {
-    // TODO
+   QProcess kdeinit;
+   kdeinit.start("kdeinit");
+   kdeinit.waitForFinished();
 }
 
 #endif
