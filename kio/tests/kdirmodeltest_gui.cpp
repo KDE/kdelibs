@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QFile>
 #include <kmimetyperesolver.h>
+#include <kfileitemdelegate.h>
 
 //#include "kdirmodeltest_gui.h"
 
@@ -58,6 +59,7 @@ int main (int argc, char **argv)
   treeView->resize(500, 500);
   treeView->show();
   new KMimeTypeResolver(treeView, dirmodel);
+  treeView->setItemDelegate( new KFileItemDelegate(treeView) );
 #endif
 
 #if 0
@@ -66,6 +68,7 @@ int main (int argc, char **argv)
   listView->setUniformItemSizes(true); // true in list mode, not in icon mode.
   listView->show();
   new KMimeTypeResolver(listView, dirmodel);
+  listView->setItemDelegate( new KFileItemDelegate(listView) );
 #endif
 
 #if 1
@@ -75,6 +78,7 @@ int main (int argc, char **argv)
   iconView->setViewMode(QListView::IconMode);
   iconView->show();
   new KMimeTypeResolver(iconView, dirmodel);
+  iconView->setItemDelegate( new KFileItemDelegate(iconView) );
 #endif
 
   if (args->count() == 0)
