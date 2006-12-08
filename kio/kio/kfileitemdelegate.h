@@ -19,6 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef __KFILEITEMDELEGATE_H
+#define __KFILEITEMDELEGATE_H
+
 #include <QItemDelegate>
 #include <kio/global.h>
 
@@ -160,5 +163,7 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
         class Private;
         Private * const d; /// @internal
 };
+
+#endif // __KFILEITEMDELEGATE_H
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
