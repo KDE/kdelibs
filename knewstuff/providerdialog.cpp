@@ -70,6 +70,7 @@ ProviderDialog::ProviderDialog( Engine *engine, QWidget *parent ) :
   mListWidget = new QTreeWidget( topPage );
   mListWidget->setHeaderLabels( QStringList( i18n("Name") ) );
   topLayout->addWidget( mListWidget );
+  connect(this, SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void ProviderDialog::clear()

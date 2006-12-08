@@ -55,6 +55,8 @@ void ConfigDialog::init( Loader::Ptr loader )
 {
     d->ui = new ConfigWidget( loader, this );
     setMainWidget( d->ui );
+    connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
+    connect(this,SIGNAL(applyClicked()), this, SLOT(slotApply()));
 }
 
 void ConfigDialog::slotOk()

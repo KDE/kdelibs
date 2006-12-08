@@ -502,6 +502,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
         slotUpdateAllowedUsersAndGroups();
     }
     incrementInitialSize(  QSize( 100, 0 ) );
+    connect(this,SIGNAL(okClicked()), this, SLOT(slotOk()));
 }
 
 void EditACLEntryDialog::slotUpdateAllowedTypes()

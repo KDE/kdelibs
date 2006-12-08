@@ -106,6 +106,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
 
   KUser user;
   mAuthorEdit->setText(user.fullName());
+  connect(this,SIGNAL(okClicked()), this, SLOT(slotOk()));
 }
 
 UploadDialog::~UploadDialog()

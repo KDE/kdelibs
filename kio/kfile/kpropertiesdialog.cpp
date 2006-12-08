@@ -3423,7 +3423,6 @@ void KDesktopPropsPlugin::slotAdvanced()
   dlg.setCaption( i18n("Advanced Options for %1", properties->kurl().fileName()) );
   dlg.setButtons( KDialog::Ok | KDialog::Cancel );
   dlg.setDefaultButton( KDialog::Ok );
-
   Ui_KPropertiesDesktopAdvBase w;
   w.setupUi(&dlg);
 
