@@ -85,6 +85,7 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
          * @li Qt::FontRole        The font that should be used for the display role.
          * @li Qt::AlignmentRole   The alignment of the display role.
          * @li Qt::ForegroundRole  The text color for the display role.
+         * @li Qt::BackgroundRole  The background color for the item.
          *
          * This function is reimplemented from @ref QItemDelegate.
          *

@@ -69,6 +69,7 @@ class KFileItemDelegate::Private
         QPixmap inline selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QColor &color) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const;
+        QBrush inline brush(const QVariant &value) const;
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         bool inline alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -308,19 +309,30 @@ QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItem &option,
 }
 
 
+// Converts a QVariant of type Brush or Color to a QBrush
+QBrush KFileItemDelegate::Private::brush(const QVariant &value) const
+{
+    switch (value.type())
+    {
+        case QVariant::Color:
+            return QBrush(qvariant_cast<QColor>(value));
+
+        case QVariant::Brush:
+            return qvariant_cast<QBrush>(value);
+
+        default:
+            return QBrush(Qt::NoBrush);
+    }
+}
+
+
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // If the model provides its own foreground color/brush for this index,
+    // If the model provides its own foreground color/brush for this item,
     // return it instead of the one in option.
     const QVariant value = index.model()->data(index, Qt::ForegroundRole);
     if (value.isValid())
-    {
-        if (value.type() == QVariant::Color)
-            return QBrush(qvariant_cast<QColor>(value));
-
-        if (value.type() == QVariant::Brush)
-            return qvariant_cast<QBrush>(value);
-    }
+        return brush(value);
 
     QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
             QPalette::Normal : QPalette::Disabled;
@@ -334,13 +346,21 @@ QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &o
 
 QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // ### Qt::BackgroundRole from the model ?
+    // If the model provides its own background color/brush for this item,
+    // return it instead of the one in option.
+    const QVariant value = index.model()->data(index, Qt::BackgroundRole);
+    if (value.isValid())
+        return brush(value);
 
+    if (!(option.state & QStyle::State_Selected) && !alternateBackground(option, index))
+        return QBrush(Qt::NoBrush);
+
+    // If we get to this point, the item is either selected, or has its background alternated
     QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
             QPalette::Normal : QPalette::Disabled;
 
-    QPalette::ColorRole role = option.state & QStyle::State_Selected ? QPalette::Highlight :
-            (alternateBackground(option, index) ? QPalette::AlternateBase : QPalette::Base);
+    QPalette::ColorRole role = option.state & QStyle::State_Selected ?
+            QPalette::Highlight : QPalette::AlternateBase;
 
     return option.palette.brush(group, role);
 }
@@ -562,7 +582,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QRect selectionRect = QStyle::alignedRect(option.direction, alignment, size, labelRect);
     QPoint labelPos(labelRect.x(), selectionRect.y());
 
-#ifdef DEBUG_RECTS 
+
+#ifdef DEBUG_RECTS
     painter->drawRect(option.rect);
 
     painter->setPen(Qt::blue);
@@ -572,22 +593,23 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->drawRect(selectionRect);
 #endif
 
+
     // Draw the background
     // ========================================================================
-    if (option.showDecorationSelected)
+    const QBrush brush = d->backgroundBrush(option, index);
+
+    if (brush.style() != Qt::NoBrush)
     {
-        // Fill the entire rectangle with the background color if the item
-        // is selected or the item background is alternated
-        if ((option.state & QStyle::State_Selected) || d->alternateBackground(option, index))
-            painter->fillRect(option.rect, d->backgroundBrush(option, index));
-    }
-    else if (option.state & QStyle::State_Selected)
-    {
-        // Fill the label background with the selection color
-        const QRect r = selectionRect.adjusted(-selectionHMargin, -selectionVMargin,
-                                               +selectionHMargin, +selectionVMargin);
-        const QPainterPath path = d->roundedRectangle(r, 5);
-        painter->fillPath(path, d->backgroundBrush(option, index));
+        // If the selection rectangle should only cover the text label
+        if (!option.showDecorationSelected)
+        {
+            const QRect r = selectionRect.adjusted(-selectionHMargin, -selectionVMargin,
+                                                   +selectionHMargin, +selectionVMargin);
+            const QPainterPath path = d->roundedRectangle(r, 5);
+            painter->fillPath(path, brush);
+        }
+        else
+            painter->fillRect(option.rect, brush);
     }
 
 
