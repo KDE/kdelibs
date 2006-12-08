@@ -132,6 +132,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
 	filename_ = "";
 	conf_ = 0;
 	constructDialog();
+	connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
 
 CupsdDialog::~CupsdDialog()

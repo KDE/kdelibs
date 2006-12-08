@@ -105,6 +105,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 
 	resize(250,130);
 	setCaption(i18n("Scan Configuration"));
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 SocketConfig::~SocketConfig()
