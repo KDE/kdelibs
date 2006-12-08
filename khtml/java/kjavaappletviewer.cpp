@@ -158,6 +158,7 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
         table->setItem (count, 1, tit);
     }
     setMainWidget (table);
+    connect(this,SIGNAL(closeClicked()),this,SLOT(slotClose()));
 }
 
 void AppletParameterDialog::slotClose () {

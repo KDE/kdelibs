@@ -332,6 +332,7 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
 void KPropertiesDialog::init(bool modal, bool autoShow)
 {
   m_pageList.setAutoDelete( true );
+  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 
   insertPages();
 

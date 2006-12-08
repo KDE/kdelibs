@@ -328,6 +328,7 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
   topLayout->addStretch(10);
 
   m_debugSelected = false;
+  connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
 
 KJSErrorDialog::~KJSErrorDialog()

@@ -754,6 +754,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
              this,         SLOT( slotDoubleClicked(QTreeWidgetItem *) ) );
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
   }
+  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void KBookmarkEditDialog::slotDoubleClicked( QTreeWidgetItem * item )

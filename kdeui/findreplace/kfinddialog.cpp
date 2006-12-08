@@ -298,6 +298,8 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
             "Search backwards.") );
     m_promptOnReplace->setWhatsThis(i18n(
             "Ask before replacing each match found.") );
+
+    connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void KFindDialog::textSearchChanged( const QString & text)
