@@ -31,6 +31,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kpixmapeffect.h>
+#include <kdirmodel.h>
+#include <kfileitem.h>
 
 #include "kfileitemdelegate.h"
 
@@ -54,25 +56,26 @@ class KFileItemDelegate::Private
 
         QSize decorationSizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QSize displaySizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-        bool inline wordWrapText(const QStyleOptionViewItem &options) const;
-        Qt::Alignment inline alignment(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        inline bool wordWrapText(const QStyleOptionViewItem &options) const;
+        inline Qt::Alignment alignment(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QString replaceNewlines(const QString &string) const;
+        inline KFileItem *fileItem(const QModelIndex &index) const;
         inline QFont font(const QStyleOptionViewItem &options, const QModelIndex &index) const;
         QString elideText(QTextLayout &layout, const QStyleOptionViewItem &option,
                           const QString &text, const QSize maxSize) const;
         QString elidedWordWrappedText(QTextLayout &layout, const QString &text, const QSize &maxSize) const;
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
-        void inline setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &options,
+        inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &options,
                                      const QModelIndex &index) const;
-        bool inline verticalLayout(const QStyleOptionViewItem &option) const;
+        inline bool verticalLayout(const QStyleOptionViewItem &option) const;
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
-        QPixmap inline selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
+        inline QPixmap selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QColor &color) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const;
-        QBrush inline brush(const QVariant &value) const;
+        inline QBrush brush(const QVariant &value) const;
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-        bool inline alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        inline bool alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     private:
         KFileItemDelegate * const q;
@@ -106,15 +109,31 @@ QString KFileItemDelegate::Private::elideText(QTextLayout &layout, const QStyleO
 }
 
 
+// Returns the KFileItem for the index
+KFileItem *KFileItemDelegate::Private::fileItem(const QModelIndex &index) const
+{
+    const QVariant value = index.model()->data(index, KDirModel::FileItemRole);
+    return qvariant_cast<KFileItem*>(value);
+}
+
+
 // Returns the font that should be used to render the display role.
 QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // Try to get the font from the model first
+    QFont font = option.font;
+
+    // Try to get the font from the model
     const QVariant value = index.model()->data(index, Qt::FontRole);
     if (value.isValid())
-        return qvariant_cast<QFont>(value).resolve(option.font);
+        font = qvariant_cast<QFont>(value).resolve(option.font);
 
-    return option.font;
+    KFileItem *item = fileItem(index);
+
+    // Use an italic font for symlinks
+    if (item && item->isLink())
+        font.setItalic(true);
+
+    return font;
 }
 
 
