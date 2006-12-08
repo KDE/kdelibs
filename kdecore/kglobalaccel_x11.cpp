@@ -169,7 +169,9 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	uchar keyCodeX = key.code();
 	uint keyModX = key.mod() & g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
 	// HACK: make Alt+Print work
-	if( key.sym() == XK_Sys_Req ) {
+	// only do this for the Xorg default keyboard keycodes,
+	// other mappings (e.g. evdev) don't need or want it
+	if( key.sym() == XK_Sys_Req && XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print ) {
 	    keyModX |= KKeyServer::modXAlt();
 	    keyCodeX = 111;
 	}

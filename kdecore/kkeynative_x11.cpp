@@ -106,12 +106,15 @@ bool KKeyNative::init( const KKey& key )
 		return false;
 	}
 
-	// FIXME: Accomadate non-standard layouts
 	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
 	// Specifically, it returns the code for SysReq instead of Print
-	if( m_sym == XK_Print && !(m_mod & Mod1Mask) )
+	// Only do this for the default Xorg layout, other keycode mappings
+	// (e.g. evdev) don't need or want it.
+	if( m_sym == XK_Print && !(m_mod & Mod1Mask) &&
+                XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
 		m_code = 111; // code for Print
-	else if( m_sym == XK_Break || (m_sym == XK_Pause && (m_mod & ControlMask)) )
+	else if( m_sym == XK_Break || (m_sym == XK_Pause && (m_mod & ControlMask)) &&
+                XKeycodeToKeysym( qt_xdisplay(), 114, 0 ) == XK_Pause )
 		m_code = 114;
 	else
 		m_code = XKeysymToKeycode( qt_xdisplay(), m_sym );
