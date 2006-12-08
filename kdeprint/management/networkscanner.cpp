@@ -367,6 +367,7 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 
 	resize(250,130);
 	setCaption(i18n("Scan Configuration"));
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 NetworkScannerConfig::~NetworkScannerConfig()

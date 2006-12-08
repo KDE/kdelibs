@@ -35,7 +35,7 @@ KMDriverDialog::KMDriverDialog(QWidget *parent, const char *name)
 
 	m_view = new DriverView(0);
 	setMainWidget(m_view);
-
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 	resize(400,450);
 }
 

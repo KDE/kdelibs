@@ -992,6 +992,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 	setMainWidget(topmain);
 	setDetailsWidget(dummy);
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)

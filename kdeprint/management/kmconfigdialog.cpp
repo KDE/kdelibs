@@ -64,6 +64,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 
 	// resize dialog
 	resize(450,400);
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 }
 
 void KMConfigDialog::addConfigPage(KMConfigPage *page)

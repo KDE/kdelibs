@@ -156,7 +156,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l6->addWidget(m_extension, 2, 1);
 
 	enableButton(Ok, !m_name->text().isEmpty());
-
+	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 	// resize dialog
 	resize(400,100);
 }
