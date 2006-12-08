@@ -328,41 +328,40 @@ QBrush KFileItemDelegate::Private::brush(const QVariant &value) const
 
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // If the model provides its own foreground color/brush for this item,
-    // return it instead of the one in option.
+    const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
+            QPalette::Normal : QPalette::Disabled;
+
+    // Always use the highlight color for selected items
+    if (option.state & QStyle::State_Selected)
+        return option.palette.brush(group, QPalette::HighlightedText);
+
+    // If the model provides its own foreground color/brush for this item
     const QVariant value = index.model()->data(index, Qt::ForegroundRole);
     if (value.isValid())
         return brush(value);
 
-    QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
-            QPalette::Normal : QPalette::Disabled;
-
-    QPalette::ColorRole role = (option.state & QStyle::State_Selected) ?
-            QPalette::HighlightedText : QPalette::Text;
-
-    return option.palette.brush(group, role);
+    return option.palette.brush(group, QPalette::Text);
 }
 
 
 QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // If the model provides its own background color/brush for this item,
-    // return it instead of the one in option.
+    const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
+            QPalette::Normal : QPalette::Disabled;
+
+    // Always use the highlight color for selected items
+    if (option.state & QStyle::State_Selected)
+        return option.palette.brush(group, QPalette::Highlight);
+
+    // If the model provides its own background color/brush for this item
     const QVariant value = index.model()->data(index, Qt::BackgroundRole);
     if (value.isValid())
         return brush(value);
 
-    if (!(option.state & QStyle::State_Selected) && !alternateBackground(option, index))
-        return QBrush(Qt::NoBrush);
+    if (alternateBackground(option, index))
+        return option.palette.brush(group, QPalette::AlternateBase);
 
-    // If we get to this point, the item is either selected, or has its background alternated
-    QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
-            QPalette::Normal : QPalette::Disabled;
-
-    QPalette::ColorRole role = option.state & QStyle::State_Selected ?
-            QPalette::Highlight : QPalette::AlternateBase;
-
-    return option.palette.brush(group, role);
+    return QBrush(Qt::NoBrush);
 }
 
 
