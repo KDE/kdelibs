@@ -66,6 +66,7 @@
 #include "kjs_css.h"
 #include "kjs_events.h"
 #include "kjs_views.h"
+#include "kjs_audio.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
@@ -234,7 +235,7 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
 const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable, 0 };
 
 /*
-@begin WindowTable 162
+@begin WindowTable 233
   atob		Window::AToB		DontDelete|Function 1
   btoa		Window::BToA		DontDelete|Function 1
   closed	Window::Closed		DontDelete|ReadOnly
@@ -342,6 +343,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   MutationEvent Window::MutationEventCtor   DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontDelete
   EventException Window::EventExceptionCtor DontDelete
+  Audio		Window::Audio		DontDelete|ReadOnly
   Image		Window::Image		DontDelete|ReadOnly
   Option	Window::Option		DontDelete|ReadOnly
   XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
@@ -995,6 +997,8 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
     case _Screen:
       return screen ? screen :
                    (const_cast<Window*>(this)->screen = new Screen(exec));
+    case Audio:
+      return new AudioConstructorImp(exec, part->xmlDocImpl());
     case Image:
       return new ImageConstructorImp(exec, part->xmlDocImpl());
     case Option:
