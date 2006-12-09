@@ -923,6 +923,48 @@ void CachedImage::error( int /*err*/, const char* /*text*/ )
         it()->notifyFinished(this);
 }
 
+// -------------------------------------------------------------------------------------------
+
+CachedSound::CachedSound(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
+    : CachedObject(url, Sound, _cachePolicy, 0)
+{
+    setAccept( QLatin1String("*/*") ); // should be whatever phonon would accept...
+    Cache::loader()->load(dl, this, false);
+    m_loading = true;
+}
+
+void CachedSound::ref(CachedObjectClient *c)
+{
+    CachedObject::ref(c);
+
+    if(!m_loading) c->notifyFinished(this);
+}
+
+void CachedSound::data( QBuffer &buffer, bool eof )
+{
+    if(!eof) return;
+    buffer.close();
+    setSize(buffer.buffer().size());
+
+    m_sound = buffer.buffer();
+    m_loading = false;
+    checkNotify();
+}
+
+void CachedSound::checkNotify()
+{
+    if(m_loading) return;
+
+    for (Q3PtrDictIterator<CachedObjectClient> it( m_clients); it.current();)
+        it()->notifyFinished(this);
+}
+
+void CachedSound::error( int /*err*/, const char* /*text*/ )
+{
+    m_loading = false;
+    checkNotify();
+}
+
 // ------------------------------------------------------------------------------------------
 
 Request::Request(DocLoader* dl, CachedObject *_object, bool _incremental)
@@ -1058,6 +1100,13 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
     if ( s && !charset.isEmpty() )
         s->setCharset( charset );
+    return s;
+}
+
+CachedSound *DocLoader::requestSound( const DOM::DOMString &url )
+{
+    DOCLOADER_SECCHECK(true);
+    CachedSound* s = Cache::requestObject<CachedSound, CachedObject::Sound>( this, fullURL, 0 );
     return s;
 }
 

@@ -92,7 +92,8 @@ namespace khtml
 	enum Type {
 	    Image,
 	    CSSStyleSheet,
-	    Script
+	    Script,
+	    Sound
 	};
 
 	enum Status {
@@ -345,6 +346,29 @@ namespace khtml
     };
 
     /**
+     * a cached sound
+     */
+    class CachedSound : public CachedObject
+    {
+    public:
+	CachedSound(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept );
+
+	QByteArray sound() const { return m_sound; }
+
+	virtual void ref(CachedObjectClient *consumer);
+	virtual void data( QBuffer &buffer, bool eof );
+	virtual void error( int err, const char *text );
+        virtual bool schedule() const { return false; }
+
+	void checkNotify();
+
+        bool isLoaded() const { return !m_loading; }
+
+    protected:
+	QByteArray m_sound;
+    };
+
+    /**
      * @internal
      *
      * Manages the loading of scripts/images/stylesheets for a particular document
@@ -359,6 +383,7 @@ namespace khtml
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charsetHint,
 						const char *accept = "text/css", bool userSheet = false );
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
+        CachedSound *requestSound( const DOM::DOMString &url );
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }

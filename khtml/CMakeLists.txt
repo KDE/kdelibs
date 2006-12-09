@@ -107,6 +107,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlserializer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/domparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_context2d.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_audio.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
@@ -284,6 +285,7 @@ create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
 create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
 create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
+create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
 
 
 ########### libkhtml ###############
@@ -321,7 +323,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
+target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kwalletclient kjs phononcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
