@@ -502,6 +502,10 @@ void KHTMLView::init()
         setWidget( new QWidget(this) );
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
+
+    // ### we'll enable redirection of khtmlview here
+    //     when event and painting issues have been thoroughly worked out
+    // m_kwp->setIsRedirected(true);
 }
 
 void KHTMLView::clear()
@@ -666,7 +670,11 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     QPainter p(widget());
 
     QRect r = e->rect();
-    if (!r.isValid()) return;
+    QRect v(contentsX(), contentsY(), visibleWidth(), visibleHeight());
+
+    r = r.intersect(v);
+    if (!r.isValid() || r.isEmpty()) return;
+    p.setClipRect(v);
 
     int ex = r.x();
     int ey = r.y();
@@ -1747,7 +1755,6 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
       case QEvent::MouseButtonRelease:
       case QEvent::MouseButtonDblClick:
       case QEvent::MouseMove:
-      case QEvent::Paint:
 #ifndef QT_NO_WHEELEVENT
       case QEvent::Wheel:
 #endif
@@ -1757,6 +1764,14 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
       case QEvent::DragLeave:
       case QEvent::Drop:
         return false;
+      case QEvent::Paint: {
+          QRect r = static_cast<QPaintEvent*>(e)->rect();
+          r.setX(r.x() +contentsX());
+          r.setY(r.y() +contentsY());
+          QPaintEvent pe(r);
+          paintEvent(&pe);
+          return true;
+      }
       default:
         break;
     }
@@ -1802,7 +1817,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    v = v->parentWidget();
 	}
 	KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(c);
-	if (v && k && k->m_kwp->isOverlaid()) {
+	if (v && k && k->m_kwp->isRedirected()) {
 	    bool block = false;
 	    bool isUpdate = false;
 	    QWidget *w = static_cast<QWidget *>(o);
@@ -1938,7 +1953,7 @@ bool KHTMLView::widgetEvent(QEvent* e)
 	    // don't install the event filter on toplevels
 	    if (w->parentWidget() == widget()) {
 	        KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(w);
-	        if (k && k->m_kwp->isOverlaid()) {
+	        if (k && k->m_kwp->isRedirected()) {
 	            w->unsetCursor();
 		    handleWidget(w, this);
                 }
@@ -3377,6 +3392,13 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
                      horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
     d->contentsY = verticalScrollBar()->value();
 
+    if (d->useSlowRepaints) {
+        widget()->blockSignals( true );
+        widget()->move( widget()->pos().x() + dx, widget()->pos().y() +dy );
+        widget()->blockSignals( false );
+        widget()->repaint();
+        return;
+    }
     QScrollArea::scrollContentsBy(dx, dy);
 }
 

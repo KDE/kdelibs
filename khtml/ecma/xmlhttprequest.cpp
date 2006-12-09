@@ -494,7 +494,7 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
 
 
   if (headerLinePos == -1) {
-    return Undefined();
+    return Null();
   }
 
   int endOfLine = responseHeaders.indexOf("\n", headerLinePos + matchLength);

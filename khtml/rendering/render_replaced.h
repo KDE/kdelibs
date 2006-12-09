@@ -113,7 +113,7 @@ public:
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool wantMouseEvents() const { return m_wantMouseEvents; }
-    bool isOverlaidWidget() const { return m_isOverlaidWidget; }
+    bool isRedirectedWidget() const;
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -149,7 +149,6 @@ protected:
 
     bool m_resizePending;
     bool m_discardResizes;
-    bool m_isOverlaidWidget;
     bool m_needsMask;
 
 private:
@@ -174,17 +173,17 @@ public:
 class KHTMLWidgetPrivate
 {
 public:
-    KHTMLWidgetPrivate(): m_rw(0), m_overlaid(false) {}
+    KHTMLWidgetPrivate(): m_rw(0), m_redirected(false) {}
     QPoint absolutePos();
     RenderWidget* renderWidget() const { return m_rw; }
     void setRenderWidget(RenderWidget* rw) { m_rw = rw; }
-    bool isOverlaid() const { return m_overlaid; }
-    void setIsOverlaid( bool b ) { m_overlaid = b; }
+    bool isRedirected() const { return m_redirected; }
+    void setIsRedirected( bool b ) { m_redirected = b; }
     void setPos( const QPoint& p ) { m_pos = p; }
 private:
     QPoint m_pos;
     RenderWidget *m_rw;
-    bool m_overlaid;
+    bool m_redirected;
 };
 
 extern bool allowWidgetPaintEvents;

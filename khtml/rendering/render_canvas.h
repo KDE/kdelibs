@@ -127,7 +127,7 @@ public:
     void setMaximalOutlineSize(int o) { m_maximalOutlineSize = o; }
     int maximalOutlineSize() const { return m_maximalOutlineSize; }
     
-    void setNeedsWidgetMasks( bool b=true) { m_needsWidgetMasks = b; }
+    void setNeedsWidgetMasks( bool b=true);
     bool needsWidgetMasks() const { return m_needsWidgetMasks; }
 
     void updateDocSizeAfterLayerTranslation( RenderObject* o, bool posXOffset, bool posYOffset );

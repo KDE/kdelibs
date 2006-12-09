@@ -127,7 +127,7 @@ protected:
 class CheckBoxWidget: public QCheckBox, public KHTMLWidget 
 { 
 public:
-    CheckBoxWidget(QWidget *p): QCheckBox(p) { m_kwp->setIsOverlaid(true); }
+    CheckBoxWidget(QWidget *p): QCheckBox(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderCheckBox : public RenderButton
@@ -153,7 +153,7 @@ public Q_SLOTS:
 class RadioButtonWidget: public QRadioButton, public KHTMLWidget 
 { 
 public:
-    RadioButtonWidget(QWidget* p): QRadioButton(p) { m_kwp->setIsOverlaid(true); }
+    RadioButtonWidget(QWidget* p): QRadioButton(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderRadioButton : public RenderButton
@@ -180,7 +180,7 @@ public Q_SLOTS:
 class PushButtonWidget: public QPushButton, public KHTMLWidget 
 { 
 public:
-    PushButtonWidget(QWidget* p): QPushButton(p) { m_kwp->setIsOverlaid(true); }
+    PushButtonWidget(QWidget* p): QPushButton(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderSubmitButton : public RenderButton
@@ -325,7 +325,7 @@ protected:
 class FileButtonWidget: public KUrlRequester, public KHTMLWidget
 {
 public:
-    FileButtonWidget(QWidget* p): KUrlRequester(p) { m_kwp->setIsOverlaid(true); }
+    FileButtonWidget(QWidget* p): KUrlRequester(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderFileButton : public RenderFormElement
@@ -403,7 +403,7 @@ protected:
 class ListBoxWidget: public KListBox, public KHTMLWidget 
 { 
 public:
-    ListBoxWidget(QWidget* p): KListBox(p) { m_kwp->setIsOverlaid(true); }
+    ListBoxWidget(QWidget* p): KListBox(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderSelect : public RenderFormElement
@@ -528,8 +528,8 @@ protected:
 class ScrollBarWidget: public QScrollBar, public KHTMLWidget
 {
 public:
-    ScrollBarWidget( QWidget * parent = 0 ): QScrollBar(parent) { m_kwp->setIsOverlaid( true ); };
-    ScrollBarWidget( Qt::Orientation orientation, QWidget * parent = 0 ): QScrollBar(orientation, parent) { m_kwp->setIsOverlaid( true ); };
+    ScrollBarWidget( QWidget * parent = 0 ): QScrollBar(parent) { m_kwp->setIsRedirected( true ); };
+    ScrollBarWidget( Qt::Orientation orientation, QWidget * parent = 0 ): QScrollBar(orientation, parent) { m_kwp->setIsRedirected( true ); };
 };
 
 } //namespace

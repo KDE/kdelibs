@@ -390,7 +390,6 @@ ValueImp* RegTestFunction::callAsFunction(ExecState *exec, ObjectImp* /*thisObj*
             if ( docimpl && docimpl->view() && docimpl->renderer() )
             {
                 docimpl->updateRendering();
-                docimpl->view()->layout();
             }
             QString filename = args[0]->toString(exec).qstring();
             filename = RegressionTest::curr->m_currentCategory+"/"+filename;

@@ -322,7 +322,7 @@ RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
     : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
-    m_kwp->setIsOverlaid( true );
+    m_kwp->setIsRedirected( true );
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
     m_spellAction = KStdAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
@@ -887,7 +887,7 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent)
 {
-    m_kwp->setIsOverlaid( true );
+    m_kwp->setIsRedirected( true );
     //setAutoMask(true);
     if (view()) view()->installEventFilter(this);
     setMouseTracking(true);
@@ -895,22 +895,20 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 
 void ComboBoxWidget::showPopup()
 {
+    QPoint p = pos();
+    blockSignals(true);
+    move( m_kwp->absolutePos() );
+    blockSignals(false);
+
     KComboBox::showPopup();
-    QWidget* w = parentWidget();
-    while (w && !qobject_cast<KHTMLView*>(w))
-        w = w->parentWidget();
-    if (!w) return;
-    KHTMLView* sv = static_cast<KHTMLView*>(w);
-    w = sv->widget();
-    view()->parentWidget()->setParent( w );
-    view()->parentWidget()->move( m_kwp->absolutePos() + QPoint(0, height()) );
-    view()->parentWidget()->raise();
-    view()->parentWidget()->show();
+
+    blockSignals(true);
+    move( p );
+    blockSignals(false);
 }
 
 void ComboBoxWidget::hidePopup()
 {
-    view()->parentWidget()->setParent( this );
     KComboBox::hidePopup();
 }
 
@@ -1312,7 +1310,7 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
-    m_kwp->setIsOverlaid( true );
+    m_kwp->setIsRedirected( true );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setLineWrapMode(QTextEdit::WidgetWidth);
         setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );

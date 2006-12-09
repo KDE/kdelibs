@@ -142,7 +142,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;
-    m_isOverlaidWidget = false;
     m_needsMask = false;
     m_wantMouseEvents = false;
     m_pTarget = 0;
@@ -198,7 +197,7 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = isOverlaidWidget();
+        m_resizePending = isRedirectedWidget();
         ref();
         element()->ref();
         QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
@@ -237,6 +236,12 @@ void RenderWidget::flushWidgetResizes() //static
     QApplication::sendPostedEvents( 0, QWidgetResizeEvent::Type );
 }
 
+bool RenderWidget::isRedirectedWidget() const
+{
+    KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
+    return k ? k->m_kwp->isRedirected() : false;   
+}
+
 void RenderWidget::setQWidget(QWidget *widget)
 {
     if (widget != m_widget)
@@ -252,14 +257,12 @@ void RenderWidget::setQWidget(QWidget *widget)
         if (m_widget) {
             m_widget->setParent(m_view->widget());
             KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
-            if (k) {
+            if (k)
                 k->m_kwp->setRenderWidget(this);
-                m_isOverlaidWidget = k->m_kwp->isOverlaid();
-            }
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( m_isOverlaidWidget && !qobject_cast<QFrame*>(m_widget))
+            if ( isRedirectedWidget() && !qobject_cast<QFrame*>(m_widget))
                 m_widget->setAttribute( Qt::WA_NoSystemBackground );
 
             if (m_widget->focusPolicy() > Qt::StrongFocus)
@@ -290,7 +293,7 @@ void RenderWidget::layout( )
     if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-        if (!isOverlaidWidget() && !isFrame() && !m_needsMask) {
+        if (!isRedirectedWidget() && !isFrame() && !m_needsMask) {
             m_needsMask = true;
             RenderLayer* rl = enclosingStackingContext();
             RenderLayer* el = enclosingLayer();
@@ -326,7 +329,7 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
-                if (!isOverlaidWidget()) {
+                if (!isRedirectedWidget()) {
                     QPalette palette;
                     palette.setColor(widget()->backgroundRole(), backgroundColor);
                     widget()->setPalette(palette);
@@ -450,7 +453,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int xPos = _tx+borderLeft()+paddingLeft();
     int yPos = _ty+borderTop()+paddingTop();
 
-    bool khtmlw = isOverlaidWidget();
+    bool khtmlw = isRedirectedWidget();
     int childw = m_widget->width();
     int childh = m_widget->height();
     if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {

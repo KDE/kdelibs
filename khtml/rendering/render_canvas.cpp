@@ -24,6 +24,7 @@
 
 #include "rendering/render_canvas.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_replaced.h"
 #include "xml/dom_docimpl.h"
 
 #include "khtmlview.h"
@@ -202,6 +203,16 @@ void RenderCanvas::layout()
 #ifdef SPEED_DEBUG
     kDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
 #endif
+}
+
+void RenderCanvas::setNeedsWidgetMasks( bool b ) 
+{
+    if (b == m_needsWidgetMasks)
+        return;
+    m_needsWidgetMasks = b;
+    KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_view);
+    if (k)
+        k->m_kwp->setIsRedirected(!b);
 }
 
 void RenderCanvas::updateDocumentSize()
@@ -411,7 +422,6 @@ static QRect enclosingPositionedRect (RenderObject *n)
     if (enclosingParent) {
         int ox, oy;
         enclosingParent->absolutePosition(ox, oy);
-        int off = 0;
         if (!enclosingParent->hasOverflowClip()) {
             ox += enclosingParent->overflowLeft();
             oy += enclosingParent->overflowTop();

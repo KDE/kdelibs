@@ -1320,9 +1320,8 @@ void RenderObject::setStyle(RenderStyle *style)
         m_paintBackground = false;
     }
 
-    // only honour z-index for non-static objects
-    // ### and objects with opacity
-    if ( style->position() == STATIC ) {
+    // only honour z-index for non-static objects and objects with opacity
+    if ( style->position() == STATIC && style->opacity() == 1.0f ) {
         if ( isRoot() )
             style->setZIndex( 0 );
         else
