@@ -948,7 +948,7 @@ void KStartupInfo::clean_all_noncompliant()
          it != d->startups.end();
          )
         {
-        if( ( *it ).WMClass() != QLatin1String("0") )
+        if( ( *it ).WMClass() != "0" )
             {
             ++it;
             continue;
@@ -1099,7 +1099,7 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
 
 bool KStartupInfoId::none() const
     {
-    return d->id.isEmpty() || d->id == QLatin1String("0");
+    return d->id.isEmpty() || d->id == "0";
     }
 
 unsigned long KStartupInfoId::timestamp() const
@@ -1362,7 +1362,7 @@ void KStartupInfoData::setWMClass( const QByteArray& wmclass_P )
 
 const QByteArray KStartupInfoData::findWMClass() const
     {
-    if( !WMClass().isEmpty() && WMClass() != QLatin1String("0") )
+    if( !WMClass().isEmpty() && WMClass() != "0" )
         return WMClass();
     return bin().toUtf8();
     }
