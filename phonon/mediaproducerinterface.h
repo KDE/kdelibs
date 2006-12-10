@@ -30,6 +30,15 @@ class QObject;
 namespace Phonon
 {
 
+/**
+ * \short Backend interface for media source classes.
+ *
+ * Backend classes providing MediaObject, MediaQueue, ByteStream, AvCapture,
+ * etc. need to implement this interface.
+ *
+ * \author Matthias Kretz <kretz@kde.org>
+ * \see AbstractMediaProducer
+ */
 class PHONONCORE_EXPORT MediaProducerInterface
 {
 	public:
@@ -52,10 +61,50 @@ class PHONONCORE_EXPORT MediaProducerInterface
 		virtual void selectVideoStream(const QString&,const QObject*) = 0;
 		virtual void selectSubtitleStream(const QString&,const QObject*) = 0;
 
-		virtual void play() = 0;
-		virtual void pause() = 0;
-		virtual void stop() = 0;
-		virtual void seek(qint64) = 0;
+        /**
+         * Requests the playback to start.
+         *
+         * The backend should react immediately
+         * by either going into \ref PlayingState or \ref BufferingState if the
+         * former is not possible.
+         */
+        virtual void play() = 0;
+
+        /**
+         * Requests the playback to pause.
+         *
+         * The backend should react as fast as possible. Go to \ref PausedState
+         * as soon as playback is paused.
+         */
+        virtual void pause() = 0;
+
+        /**
+         * Requests the playback to be stopped.
+         *
+         * The backend should react as fast as possible. Go to \ref StoppedState
+         * as soon as playback is stopped.
+         *
+         * A subsequent call to play() will start playback at the beginning of
+         * the media.
+         */
+        virtual void stop() = 0;
+
+        /**
+         * Requests the playback to be seeked to the given time.
+         *
+         * The backend does not have to finish seeking while in this function
+         * (i.e. the backend does not need to block the thread until the seek is
+         * finished; even worse it might lead to deadlocks when using a
+         * ByteStream which gets its data from the thread this function would
+         * block).
+         *
+         * As soon as the seek is done the currentTime() function and
+         * the tick() signal will report it.
+         *
+         * \param milliseconds The time where playback should seek to in
+         * milliseconds.
+         */
+        virtual void seek(qint64 milliseconds) = 0;
 
 		virtual qint32 tickInterval() const = 0;
 		virtual void setTickInterval(qint32) = 0;
