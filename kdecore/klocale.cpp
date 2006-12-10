@@ -1103,6 +1103,23 @@ QString KLocale::formatByteSize( double size ) const
     return s;
 }
 
+QString KLocale::formatDuration( unsigned long mSec) const
+{
+   if( mSec >= 24*3600000) {
+      return i18n( "%1 days", formatNumber( mSec/(24*3600000), 3));
+   } else if(mSec >= 3600000)
+   {
+      return i18n( "%1 hours", formatNumber( mSec/3600000.0, 2));
+   } else if(mSec >= 60000)
+   {
+      return i18n( "%1 minutes", formatNumber( mSec/60000.0, 2));
+   } else if(mSec >= 1000)
+   {
+      return i18n( "%1 seconds", formatNumber( mSec/1000.0, 2));
+   }
+   
+   return i18n( "%1 milliseconds", formatNumber(mSec, 0));
+}
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 {
   const QString rst = shortFormat?dateFormatShort():dateFormat();

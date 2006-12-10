@@ -424,6 +424,16 @@ public:
   QString formatByteSize( double size ) const;
 
   /**
+   * Given a number of milliseconds, converts that to a string containing
+   * the localized equivalent
+   *
+   * e.g. given formatDuration(60000), returns "1.0 minutes"
+   *
+   * @param mSec Time duration in milliseconds
+   * @return converted duration as a string - e.g. "5.5 seconds" "23.0 minutes"
+   */
+  QString formatDuration( unsigned long mSec) const;
+  /**
    * Use this to determine whether nouns are declined in
    * locale's language. This property should remain
    * read-only (no setter function)
