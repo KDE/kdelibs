@@ -48,3 +48,22 @@ In the Frontend all that is needed is a name and a description of the device
 (both translated to the current locale) and a unique identifier to talk to the
 backend. This identifier could be the same as used internally by the Backend,
 but doesn't have to be.
+
+ "lowlevel" audio I/O
+======================
+ByteStream is a buffered stream, and as therefore completely useless for cases
+where an application wants to write audio data to the soundcard/-system with low
+latency.
+=> PcmInStream and PcmOutStream
+
+
+============================================================================
+= Ideas for "useless but nice" things (until somebody can convince me that =
+= they're useful)                                                          =
+============================================================================
+
+ Video Output
+==============
+Add another VideoOutput that can be used directly with QGraphicsView by creating
+a QGraphicsItem subclass.
+
