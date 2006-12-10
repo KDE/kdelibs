@@ -37,4 +37,4 @@ class PHONONCORE_EXPORT ByteStreamInterface
 Q_DECLARE_INTERFACE( Phonon::ByteStreamInterface, "org.kde.Phonon.ByteStreamInterface/0.1" )
 
 #endif // PHONON_BYTESTREAMINTERFACE_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

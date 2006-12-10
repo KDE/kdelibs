@@ -74,4 +74,4 @@ void BrightnessControl::setupIface()
 } // namespace Phonon
 
 #include "brightnesscontrol.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

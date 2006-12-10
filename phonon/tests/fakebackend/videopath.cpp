@@ -96,4 +96,4 @@ void VideoPath::processFrame( Phonon::VideoFrame& frame )
 }}
 
 #include "videopath.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

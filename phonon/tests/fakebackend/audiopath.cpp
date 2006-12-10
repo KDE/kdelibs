@@ -97,4 +97,4 @@ void AudioPath::processBuffer( const QVector<float>& _buffer )
 }}
 
 #include "audiopath.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

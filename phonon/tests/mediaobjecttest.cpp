@@ -483,4 +483,4 @@ void MediaObjectTest::cleanupTestCase()
 
 QTEST_KDEMAIN( MediaObjectTest, NoGUI )
 #include "mediaobjecttest.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

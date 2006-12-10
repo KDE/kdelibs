@@ -109,4 +109,4 @@ void AudioDataOutput::processBuffer( const QVector<float>& buffer )
 }} //namespace Phonon::Fake
 
 #include "audiodataoutput.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

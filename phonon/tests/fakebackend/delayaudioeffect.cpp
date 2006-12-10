@@ -99,4 +99,4 @@ void DelayAudioEffect::processBuffer( QVector<float>& buffer )
 
 }} //namespace Phonon::Fake
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

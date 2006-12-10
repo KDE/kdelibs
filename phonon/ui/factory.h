@@ -94,4 +94,4 @@ class PHONONUI_EXPORT UiFactory : public QObject
 } // namespace Phonon
 
 #endif // Phonon_UiFACTORY_H
-// vim: sw=4 ts=4 tw=80 noet
+// vim: sw=4 ts=4 tw=80

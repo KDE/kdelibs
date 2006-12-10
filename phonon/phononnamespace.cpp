@@ -70,4 +70,4 @@ kdbgstream& operator<<( kdbgstream & stream, const Phonon::State state )
 	return stream;
 }
 */
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

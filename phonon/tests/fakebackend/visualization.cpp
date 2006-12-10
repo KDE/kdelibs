@@ -60,4 +60,4 @@ void Visualization::setVideoOutput( QObject* videoOutputIface )
 }} //namespace Phonon::Fake
 
 #include "visualization.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

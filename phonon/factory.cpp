@@ -333,4 +333,4 @@ QObject* Factory::registerQObject( QObject* o )
 
 #include "factory.moc"
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

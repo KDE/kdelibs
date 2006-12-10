@@ -188,4 +188,4 @@ void AudioPathPrivate::phononObjectDestroyed( Base* o )
 
 #include "audiopath.moc"
 
-// vim: sw=4 ts=4 tw=80 noet
+// vim: sw=4 ts=4 tw=80

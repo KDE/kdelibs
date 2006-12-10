@@ -187,4 +187,4 @@ void MediaControls::mediaDestroyed()
 } // namespace Phonon
 
 #include "mediacontrols.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

@@ -72,4 +72,4 @@ void MethodTest::checkMethods( QObject* backendObject )
 
 QTEST_KDEMAIN( MethodTest, GUI )
 #include "methodtest.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

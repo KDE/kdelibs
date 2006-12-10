@@ -116,4 +116,4 @@ void VideoWidget::resizeEvent( QResizeEvent* ev )
 }} //namespace Phonon::Fake
 
 #include "videowidget.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

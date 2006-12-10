@@ -155,4 +155,4 @@ class MainWidget : public QWidget
 };
 
 #endif // TESTWIDGET_H
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

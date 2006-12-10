@@ -55,4 +55,4 @@ class MediaQueue : public QObject
 }} // namespace Phonon::Fake
 
 #endif // PHONON_FAKE_MEDIAQUEUE_H
-// vim: sw=4 ts=4 tw=80 noet
+// vim: sw=4 ts=4 tw=80

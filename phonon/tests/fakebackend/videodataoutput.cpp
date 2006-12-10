@@ -90,4 +90,4 @@ void VideoDataOutput::processFrame( Phonon::VideoFrame& frame )
 }} //namespace Phonon::Fake
 
 #include "videodataoutput.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

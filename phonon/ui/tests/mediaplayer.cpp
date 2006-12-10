@@ -111,5 +111,5 @@ int main( int argc, char ** argv )
 	return 1;
 }
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4
 #include "mediaplayer.moc"

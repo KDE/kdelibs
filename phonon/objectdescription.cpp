@@ -119,4 +119,4 @@ template class ObjectDescription<ContainerFormatType>;
 template class ObjectDescription<VisualizationType>;
 
 } //namespace Phonon
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

@@ -47,4 +47,4 @@ void AudioOutputDeviceTest::cleanupTestCase()
 
 QTEST_KDEMAIN( AudioOutputDeviceTest, NoGUI )
 #include "audiooutputdevicetest.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

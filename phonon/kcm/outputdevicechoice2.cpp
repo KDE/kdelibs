@@ -157,4 +157,4 @@ void OutputDeviceChoice::on_communicationCombo_activated()
 }
 
 #include "outputdevicechoice2.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

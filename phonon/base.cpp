@@ -67,4 +67,4 @@ namespace Phonon
 		return( iface() != 0 );
 	}
 } //namespace Phonon
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

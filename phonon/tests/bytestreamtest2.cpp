@@ -578,4 +578,4 @@ QByteArray ByteStreamTest::pcmBlock() const
 
 QTEST_KDEMAIN( ByteStreamTest, NoGUI )
 #include "bytestreamtest2.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

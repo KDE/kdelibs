@@ -72,4 +72,4 @@ void AudioFftOutputTest::cleanupTestCase()
 
 QTEST_KDEMAIN( AudioFftOutputTest, NoGUI )
 #include "audiofftoutputtest.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

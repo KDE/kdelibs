@@ -61,4 +61,4 @@ void MediaQueue::setDoCrossfade( bool doCrossfade )
 
 }} // namespace Phonon::Fake
 #include "mediaqueue.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

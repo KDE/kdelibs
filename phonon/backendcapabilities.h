@@ -225,4 +225,4 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 } // namespace Phonon
 
 #endif // Phonon_BACKENDCAPABILITIES_H
-// vim: sw=4 ts=4 tw=80 noet
+// vim: sw=4 ts=4 tw=80

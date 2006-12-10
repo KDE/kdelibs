@@ -72,4 +72,4 @@ class PHONONCORE_EXPORT Effect
 } // namespace Phonon
 
 #endif // PHONON_EFFECT_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

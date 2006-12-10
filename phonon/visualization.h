@@ -96,4 +96,4 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base
 } // namespace Phonon
 
 #endif // PHONON_VISUALIZATION_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

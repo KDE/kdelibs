@@ -159,5 +159,5 @@ inline PHONONCORE_EXPORT kdbgstream& operator<<( kdbgstream & stream, const Phon
 	return stream;
 }
 
-// vim: sw=4 ts=4 tw=80 noet
+// vim: sw=4 ts=4 tw=80
 #endif // PHONONNAMESPACE_H

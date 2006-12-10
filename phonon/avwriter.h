@@ -75,4 +75,4 @@ class PHONONCORE_EXPORT AvWriter : public QObject
 } // namespace Phonon
 
 #endif // PHONON_AVWRITER_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

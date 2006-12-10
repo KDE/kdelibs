@@ -493,4 +493,4 @@ int main( int argc, char **argv )
 
 #include "guitest.moc"
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

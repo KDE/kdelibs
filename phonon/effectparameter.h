@@ -259,4 +259,4 @@ class PHONONCORE_EXPORT EffectParameter
 Q_DECLARE_OPERATORS_FOR_FLAGS( Phonon::EffectParameter::Hints )
 
 #endif // PHONON_EFFECTPARAMETER_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

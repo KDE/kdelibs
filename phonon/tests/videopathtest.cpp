@@ -97,4 +97,4 @@ void VideoPathTest::cleanupTestCase()
 
 QTEST_KDEMAIN( VideoPathTest, NoGUI )
 #include "videopathtest.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

@@ -51,4 +51,4 @@ class PHONONCORE_EXPORT AudioWriter : public AbstractAudioOutput
 } // namespace Phonon
 
 #endif // PHONON_AUDIOWRITER_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

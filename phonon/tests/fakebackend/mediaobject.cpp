@@ -127,4 +127,4 @@ void MediaObject::emitTick()
 }}
 
 #include "mediaobject.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

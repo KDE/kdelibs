@@ -77,4 +77,4 @@ void VolumeFaderEffect::fadeTo( float volume, int fadeTime )
 }} //namespace Phonon::Fake
 
 #include "volumefadereffect.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

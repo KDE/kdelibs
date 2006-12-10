@@ -79,5 +79,5 @@ namespace Fake
 	};
 }} // namespace Phonon::Ifaces
 
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80
 #endif // Phonon_FAKE_BACKEND_H

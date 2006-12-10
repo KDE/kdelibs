@@ -37,4 +37,4 @@ class PHONONCORE_EXPORT MediaObjectInterface
 Q_DECLARE_INTERFACE( Phonon::MediaObjectInterface, "org.kde.Phonon.MediaObjectInterface/0.1" )
 
 #endif // PHONON_MEDIAOBJECTINTERFACE_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

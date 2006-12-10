@@ -138,4 +138,4 @@ typedef ObjectDescription<VisualizationType> VisualizationDescription;
 } //namespace Phonon
 
 #endif // PHONON_OBJECTDESCRIPTION_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

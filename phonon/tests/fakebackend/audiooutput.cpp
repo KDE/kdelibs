@@ -141,4 +141,4 @@ void AudioOutput::closeDevice()
 }} //namespace Phonon::Fake
 
 #include "audiooutput.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

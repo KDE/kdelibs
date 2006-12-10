@@ -165,4 +165,4 @@ class PHONONUI_EXPORT VideoPlayer : public QWidget
 } //namespace Phonon
 
 #endif // Phonon_AUDIOPLAYER_H
-// vim: sw=4 ts=4 noet tw=80
+// vim: sw=4 ts=4 tw=80

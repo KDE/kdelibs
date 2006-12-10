@@ -359,4 +359,4 @@ void AbstractMediaProducer::fillFrameData( Phonon::VideoFrame* frame )
 
 }}
 #include "abstractmediaproducer.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

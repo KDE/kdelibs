@@ -162,4 +162,4 @@ int EffectParameter::id() const
 
 }
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4

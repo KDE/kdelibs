@@ -161,4 +161,4 @@ void BackendCapabilities::_k_slotBackendChanged()
 
 } // namespace Phonon
 #include "backendcapabilities.moc"
-// vim: sw=4 ts=4 noet
+// vim: sw=4 ts=4
