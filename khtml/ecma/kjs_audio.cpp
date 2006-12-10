@@ -90,6 +90,10 @@ Audio::~Audio()
 {
     if (m_cs) 
         m_cs->deref(this);
+    if (m_onErrorListener)
+        m_onErrorListener->deref();
+    if (m_onLoadListener)
+        m_onLoadListener->deref();
     delete m_qObj;
 }
 
@@ -129,11 +133,15 @@ void Audio::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*
 {
     switch(token) {
       case Onerror:
+        if (m_onErrorListener)
+            m_onErrorListener->deref();
         m_onErrorListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
         if (m_onErrorListener) 
             m_onErrorListener->ref();
         break;
       case Onload:
+        if (m_onLoadListener)
+            m_onLoadListener->deref();
         m_onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
         if (m_onLoadListener)
             m_onLoadListener->ref();

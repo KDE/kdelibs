@@ -206,10 +206,12 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
 {
   switch(token) {
   case Onreadystatechange:
+    if (onReadyStateChangeListener) onReadyStateChangeListener->deref();
     onReadyStateChangeListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
     if (onReadyStateChangeListener) onReadyStateChangeListener->ref();
     break;
   case Onload:
+    if (onLoadListener) onLoadListener->deref();
     onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
     if (onLoadListener) onLoadListener->ref();
     break;
@@ -236,6 +238,10 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
 
 XMLHttpRequest::~XMLHttpRequest()
 {
+  if (onLoadListener) 
+      onLoadListener->deref();
+  if (onReadyStateChangeListener) 
+      onReadyStateChangeListener->deref();
   delete qObject;
   qObject = 0;
   delete decoder;
