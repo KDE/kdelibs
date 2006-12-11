@@ -33,6 +33,8 @@
 #include <QStringList>
 #include <QTextStream>
 
+#include <kglobal.h>
+#include <klocale.h>
 #include <kcodecs.h>
 #include <kstringhandler.h>
 #include <ktemporaryfile.h>
@@ -99,17 +101,19 @@ public:
     static KTimeZone *readZone(const QString &name);
 
 private:
+    typedef QMap<QString, QString> MD5Map;    // zone name, checksum
     KSystemTimeZonesPrivate() {}
     bool findZoneTab( QFile& f );
     void readZoneTab();
+    bool checkChecksum(MD5Map::ConstIterator, const QString &referenceMd5Sum, qlonglong size);
     static QString calcChecksum(const QString &zoneName, qlonglong size);
     static float convertCoordinate(const QString &coordinate);
 
     static KSystemTimeZonesPrivate *m_instance;
     static KSystemTimeZoneSource *m_source;
     static KTzfileTimeZoneSource *m_tzfileSource;
-    typedef QMap<QString, QString> MD5Map;    // zone name, checksum
     static MD5Map  m_md5Sums;
+    static bool    m_haveCountryCodes;   // true if zone.tab contains any country codes
     QString m_zoneinfoDir;
 };
 
@@ -117,6 +121,7 @@ KSystemTimeZonesPrivate         *KSystemTimeZonesPrivate::m_instance = 0;
 KSystemTimeZoneSource           *KSystemTimeZonesPrivate::m_source = 0;
 KTzfileTimeZoneSource           *KSystemTimeZonesPrivate::m_tzfileSource = 0;
 KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
+bool                             KSystemTimeZonesPrivate::m_haveCountryCodes = false;
 
 
 const KTimeZone *KSystemTimeZones::local()
@@ -179,27 +184,30 @@ bool KSystemTimeZonesPrivate::findZoneTab(QFile& f)
     // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QDir dir;
     QString zoneinfoDir = ZONE_INFO_DIR;
-    f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
     // make a note if the dir exists; whether it contains zone.tab or not
-    if ( dir.exists( zoneinfoDir ) )
+    if (dir.exists(zoneinfoDir))
+    {
         m_zoneinfoDir = zoneinfoDir;
-    if (f.open(QIODevice::ReadOnly))
-        return true;
-    kDebug() << "Can't open " << f.fileName() << endl;
+        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
+        if (f.open(QIODevice::ReadOnly))
+            return true;
+        kDebug() << "Can't open " << f.fileName() << endl;
+    }
 
     zoneinfoDir = QLatin1String("/usr/lib/zoneinfo");
-    f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
-    if ( dir.exists( zoneinfoDir ) )
+    if (dir.exists(zoneinfoDir))
+    {
         m_zoneinfoDir = zoneinfoDir;
-    if (f.open(QIODevice::ReadOnly))
-        return true;
-    kDebug() << "Can't open " << f.fileName() << endl;
+        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
+        if (f.open(QIODevice::ReadOnly))
+            return true;
+        kDebug() << "Can't open " << f.fileName() << endl;
+    }
 
     zoneinfoDir = ::getenv("TZDIR");
-    if ( !zoneinfoDir.isEmpty() )
+    if (!zoneinfoDir.isEmpty() && dir.exists(zoneinfoDir))
     {
-        if ( dir.exists( zoneinfoDir ) )
-            m_zoneinfoDir = zoneinfoDir;
+        m_zoneinfoDir = zoneinfoDir;
         f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
         if (f.open(QIODevice::ReadOnly))
             return true;
@@ -312,6 +320,8 @@ void KSystemTimeZonesPrivate::readZoneTab()
         // Add entry to list.
         if (tokens[0] == "??")
             tokens[0] = "";
+        else if (!tokens[0].isEmpty())
+            m_haveCountryCodes = true;
         // Solaris sets the empty Comments field to '-', making it not empty.
         // Clean it up.
         if (n > 3  &&  tokens[3] == "-")
@@ -338,9 +348,9 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
         if (envZone[0] == ':')
             ++envZone;
         local = zone(envZone);
+        if (local)
+            return local;
     }
-    if (local)
-        return local;
 
     if (!m_instance->m_zoneinfoDir.isEmpty())
     {
@@ -376,41 +386,73 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
             context.reset();
             context.update(f);
             qlonglong referenceSize = f.size();
+            MD5Map::ConstIterator it5, end5;
             QString referenceMd5Sum = context.hexDigest();
             f.close();
 
+            if (m_haveCountryCodes)
+            {
+                /* Look for time zones with the user's country code.
+                 * This has two advantages: 1) it shortens the search;
+                 * 2) it increases the chance of the correctly titled time zone
+                 * being found, since multiple time zones can have identical
+                 * definitions. For example, Europe/Guernsey is identical to
+                 * Europe/London, but the latter is more likely to be the right
+                 * zone for a user with 'gb' country code.
+                 */
+                QString country = KGlobal::locale()->country().toUpper();
+                const ZoneMap zmap = zones();
+                for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
+                {
+                    const KTimeZone *tzone = zit.value();
+                    if (tzone->countryCode() == country)
+                    {
+                        QString zonename = tzone->name();
+                        it5 = m_md5Sums.find(zonename);
+                        if (it5 == m_md5Sums.end())
+                        {
+                            QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
+                            if (candidateMd5Sum == referenceMd5Sum)
+                            {
+                                // kDebug() << "local=" << zonename << endl;
+                                return tzone;
+                            }
+                        }
+                        else
+                        {
+                            if (it5.value() == referenceMd5Sum)
+                            {
+                                // The cached checksum matches. Ensure that the file hasn't changed.
+                                if (checkChecksum(it5, referenceMd5Sum, referenceSize))
+                                {
+                                    local = zone(it5.key());
+                                    if (local)
+                                        return local;
+                                }
+                                break;    // cache has been cleared
+                            }
+                        }
+                    }
+                }
+            }
+
             // Look for a checksum match with the cached checksum values
-            bool changed = false;
             MD5Map oldChecksums = m_md5Sums;   // save a copy of the existing checksums
-            for (MD5Map::ConstIterator it5 = m_md5Sums.begin(), end5 = m_md5Sums.end();  it5 != end5;  ++it5)
+            for (it5 = m_md5Sums.begin(), end5 = m_md5Sums.end();  it5 != end5;  ++it5)
             {
                 if (it5.value() == referenceMd5Sum)
                 {
                     // The cached checksum matches. Ensure that the file hasn't changed.
-                    QString zoneName = it5.key();
-                    QString candidateMd5Sum = calcChecksum(zoneName, referenceSize);
-                    if (candidateMd5Sum.isNull())
+                    if (checkChecksum(it5, referenceMd5Sum, referenceSize))
                     {
-                        m_md5Sums.remove(zoneName);    // no match - wrong file size
-                        changed = true;
+                        local = zone(it5.key());
+                        if (local)
+                            return local;
                     }
-                    else if (candidateMd5Sum != referenceMd5Sum)
-                        changed = true;
-                    else
-                        local = zone(zoneName);    // file still matches
-
-                    // File(s) have changed, so clear the cache
-                    if (changed)
-                    {
-                        oldChecksums.clear();
-                        m_md5Sums.clear();
-                        m_md5Sums[zoneName] = candidateMd5Sum;    // reinsert the newly calculated checksum
-                   }
+                    oldChecksums.clear();    // the cache has been cleared
                     break;
                 }
             }
-            if (local)
-                return local;
 
             // The checksum didn't match any in the cache.
             // Continue building missing entries in the cache on the assumption that
@@ -426,13 +468,10 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
                     if (candidateMd5Sum == referenceMd5Sum)
                     {
                         // kDebug() << "local=" << zone->name() << endl;
-                        local = zone;
-                        break;
+                        return zone;
                     }
                 }
             }
-            if (local)
-                return local;
 
             // Didn't find the file, so presumably a previously cached checksum must
             // have changed. Delete all the old checksums.
@@ -549,6 +588,24 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
 
     // SOLUTION 7: FAILSAFE.
     return KTimeZones::utc();
+}
+
+// Check whether a checksum matches a given saved checksum.
+// Returns false if file no longer matches and cache was cleared.
+bool KSystemTimeZonesPrivate::checkChecksum(MD5Map::ConstIterator it5, const QString &referenceMd5Sum, qlonglong size)
+{
+    // The cached checksum matches. Ensure that the file hasn't changed.
+    QString zoneName = it5.key();
+    QString candidateMd5Sum = calcChecksum(zoneName, size);
+    if (candidateMd5Sum.isNull())
+        m_md5Sums.remove(zoneName);    // no match - wrong file size
+    else if (candidateMd5Sum == referenceMd5Sum)
+        return true;
+
+    // File(s) have changed, so clear the cache
+    m_md5Sums.clear();
+    m_md5Sums[zoneName] = candidateMd5Sum;    // reinsert the newly calculated checksum
+    return false;
 }
 
 // Calculate the MD5 checksum for the given zone file, provided that its size matches.
