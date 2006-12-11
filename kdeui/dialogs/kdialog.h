@@ -400,6 +400,51 @@ class KDEUI_EXPORT KDialog : public QDialog
     static int spacingHint();
 
     /**
+     * @enum StandardCaptionFlag
+     * Used to specify how to construct a window caption
+     *
+     * @value AppName Indicates that the method shall include
+     * the application name when making the caption string.
+     * @value Modified Causes a 'modified' sign will be included in the
+     * returned string. This is useful when indicating that a file is
+     * modified, i.e., it contains data that has not been saved.
+     * @value HIGCompliant The base minimum flags required to align a
+     * caption with the KDE Human Interface Guidelines
+     */
+    enum CaptionFlag
+    {
+        NoCaptionFlags = 0,
+        AppNameCaption = 1,
+        ModifiedCaption = 2,
+        HIGCompliantCaption = AppNameCaption
+    };
+    Q_DECLARE_FLAGS(CaptionFlags, CaptionFlag)
+
+    /**
+     * Builds a caption that contains the application name along with the
+     * userCaption using a standard layout.
+     *
+     * To make a compliant caption for your window, simply do:
+     * @p setWindowTitle(KInstance::makeStandardCaption(yourCaption));
+     *
+     * To ensure that the caption is appropriate to the desktop in which the
+     * application is running, pass in a pointer to the window the caption will
+     * be applied to.
+     *
+     * If using a KDialog or KMainWindow subclass, call setCaption instead and
+     * an appropraite standard caption will be created for you
+     *
+     * @param userCaption The caption string you want to display in the
+     * window caption area. Do not include the application name!
+     * @param window a pointer to the window this application will apply to
+     * @param flags
+     * @return the created caption
+     */
+    static QString makeStandardCaption( const QString &userCaption,
+                                        QWidget* window = 0,
+                                        CaptionFlags flags = HIGCompliantCaption );
+
+    /**
      * Resize every layout manager used in @p widget and its nested children.
      *
      * @param widget The widget used.
@@ -731,6 +776,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::CaptionFlags)
 
 
 /**

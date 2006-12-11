@@ -119,7 +119,7 @@ class KDEUI_EXPORT KApplication : public QApplication, public KInstance
       }
     </pre>
       @port4 caption() has moved to KInstance
-      @port4 makeStdCaption(const QString&, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&, CaptionFlags)
+      @port4 makeStdCaption(const QString&, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&, CaptionFlags)
       @port4 addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()
     */
   Q_OBJECT

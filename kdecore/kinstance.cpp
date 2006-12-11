@@ -295,31 +295,5 @@ QString KInstance::caption()
         return qApp->applicationName();
 }
 
-// 1999-09-20: Espen Sand
-// An attempt to simplify consistent captions.
-//
-QString KInstance::makeStandardCaption( const QString &userCaption,
-                                        QWidget* window,
-                                        CaptionFlags flags )
-{
-  QString captionString = userCaption.isEmpty() ? caption() : userCaption;
-
-  // If the document is modified, add '[modified]'.
-  if (flags & ModifiedCaption)
-      captionString += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
-
-  if ( !userCaption.isEmpty() ) {
-      // Add the application name if:
-      // User asked for it, it's not a duplication  and the app name (caption()) is not empty
-      if ( flags & AppNameCaption && !caption().isNull() && !userCaption.endsWith(caption())  ) {
-           // TODO: check to see if this is a transient/secondary window before trying to add the app name
-           //       on platforms that need this
-          captionString += QString::fromUtf8(" - ") + caption();
-      }
-  }
-
-  return captionString;
-}
-
 void KInstance::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

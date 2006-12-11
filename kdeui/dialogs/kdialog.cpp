@@ -449,22 +449,48 @@ int KDialog::spacingHint()
   return Private::mSpacingSize;
 }
 
+QString KDialog::makeStandardCaption( const QString &userCaption,
+                                      QWidget* window,
+                                      CaptionFlags flags )
+{
+  QString caption = KInstance::caption();
+  QString captionString = userCaption.isEmpty() ? caption : userCaption;
+
+  // If the document is modified, add '[modified]'.
+  if (flags & ModifiedCaption)
+      captionString += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
+
+  if ( !userCaption.isEmpty() ) {
+      // Add the application name if:
+      // User asked for it, it's not a duplication  and the app name (caption()) is not empty
+      if ( flags & AppNameCaption &&
+           !caption.isEmpty() &&
+           !userCaption.endsWith(caption)  ) {
+           // TODO: check to see if this is a transient/secondary window before trying to add the app name
+           //       on platforms that need this
+          captionString += QString::fromUtf8(" - ") + caption;
+      }
+  }
+
+  return captionString;
+}
+
 void KDialog::setCaption( const QString &_caption )
 {
-  QString caption = KInstance::makeStandardCaption( _caption, this );
+  QString caption = makeStandardCaption( _caption, this );
   setPlainCaption( caption );
 }
 
 void KDialog::setCaption( const QString &caption, bool modified )
 {
-    KInstance::CaptionFlags flags = KInstance::HIGCompliantCaption;
+    CaptionFlags flags = HIGCompliantCaption;
 
     if ( modified )
     {
-        flags |= KInstance::ModifiedCaption;
+        flags |= ModifiedCaption;
     }
 
-    setPlainCaption( KInstance::makeStandardCaption(caption, this, flags) );
+    setPlainCaption( makeStandardCaption(caption, this, flags) );
 }
 
 
