@@ -37,6 +37,11 @@ namespace Phonon
 	 * This class holds common functionality of all objects that produce a media
 	 * stream, like MediaObject or SoundcardCapture.
 	 *
+     * Some functions of this class (and its subclasses) are asynchronous.
+     * That means if you call play() the object only starts playing when the
+     * stateChanged() signal tells you that the object changed into \ref PlayingState.
+     * The states you can expect are documented for those methods.
+     *
 	 * @author Matthias Kretz <kretz@kde.org>
 	 * @see MediaObject
 	 */
@@ -72,6 +77,9 @@ namespace Phonon
 		 */
 		Q_PROPERTY( qint32 tickInterval READ tickInterval WRITE setTickInterval )
 		public:
+            /**
+             * Destroys the MediaProducer.
+             */
 			~AbstractMediaProducer();
 
 			/**
@@ -295,35 +303,59 @@ namespace Phonon
 
 			void setTickInterval( qint32 newTickInterval );
 
-			/**
-			 * Start playback of the media data.
-			 */
-			void play();
+            /**
+             * Requests playback of the media data to start. Playback only
+             * starts when stateChanged() signals that it goes into \ref PlayingState,
+             * though.
+             *
+             * Possible states right after this call:
+             * \li \ref BufferingState
+             * \li \ref PlayingState
+             * \li (\ref ErrorState)
+             */
+            void play();
 
-			/**
-			 * Pause a playing media. If it was paused before nothing changes.
-			 */
-			void pause();
+            /**
+             * Requests playback to pause. If it was paused before nothing changes.
+             *
+             * Possible states right after this call:
+             * \li \ref PlayingState
+             * \li \ref PausedState
+             * \li (\ref ErrorState)
+             */
+            void pause();
 
-			/**
-			 * Stop a playback. If it was stopped before nothing changes.
-			 */
-			void stop();
+            /**
+             * Requests playback to stop. If it was stopped before nothing changes.
+             *
+             * Possible states right after this call:
+             * \li the state it was in before (e.g. \ref PlayingState)
+             * \li \ref StoppedState
+             * \li (\ref ErrorState)
+             */
+            void stop();
 
-			/**
-			 * Seek to the time indicated.
-			 *
-			 * You can only seek if playing, buffering or in pause.
-			 *
-			 * @param time The time in milliseconds where to continue playing.
-			 */
-			void seek( qint64 time );
+            /**
+             * Requests a seek to the time indicated.
+             *
+             * You can only seek if state() == \ref PlayingState, \ref BufferingState or \ref PausedState.
+             *
+             * The call is asynchronous, so currentTime can still be the old
+             * value right after this method was called. If all you need is a
+             * slider that shows the current position and allows the user to
+             * seek use the class SeekSlider.
+             *
+             * @param time The time in milliseconds where to continue playing.
+             *
+             * \see SeekSlider
+             */
+            void seek( qint64 time );
 
 		Q_SIGNALS:
 			/**
 			 * Emitted when the state of the MediaObject has changed.
 			 * In case you're not interested in the old state you can also
-			 * connect to a slot that only has one State argument.
+             * connect to a slot that only has one \ref State argument.
 			 *
 			 * @param newstate The state the Player is in now.
 			 * @param oldstate The state the Player was in before.
