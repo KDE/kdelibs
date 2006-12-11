@@ -308,7 +308,7 @@ namespace Phonon
              * starts when stateChanged() signals that it goes into \ref PlayingState,
              * though.
              *
-             * Possible states right after this call:
+             * \par Possible states right after this call:
              * \li \ref BufferingState
              * \li \ref PlayingState
              * \li (\ref ErrorState)
@@ -318,7 +318,7 @@ namespace Phonon
             /**
              * Requests playback to pause. If it was paused before nothing changes.
              *
-             * Possible states right after this call:
+             * \par Possible states right after this call:
              * \li \ref PlayingState
              * \li \ref PausedState
              * \li (\ref ErrorState)
@@ -328,7 +328,7 @@ namespace Phonon
             /**
              * Requests playback to stop. If it was stopped before nothing changes.
              *
-             * Possible states right after this call:
+             * \par Possible states right after this call:
              * \li the state it was in before (e.g. \ref PlayingState)
              * \li \ref StoppedState
              * \li (\ref ErrorState)
@@ -346,6 +346,11 @@ namespace Phonon
              * seek use the class SeekSlider.
              *
              * @param time The time in milliseconds where to continue playing.
+             *
+             * \par Possible states right after this call:
+             * \li \ref BufferingState
+             * \li \ref PlayingState
+             * \li (\ref ErrorState)
              *
              * \see SeekSlider
              */

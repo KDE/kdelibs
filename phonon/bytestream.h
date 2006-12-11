@@ -29,10 +29,55 @@ class QStringList;
 namespace Phonon
 {
 	class ByteStreamPrivate;
-	namespace Ifaces
-	{
-		class ByteStream;
-	}
+
+    /*
+     * loud thinking about async parts of this interface
+     *                     =============================
+     *
+     * Let us go over all the methods to make sure we will not get in trouble
+     * (i.e. deadlocks or necessary processEvents calls)
+     *
+     * The following functions are safe because they don't have anything to do
+     * with the stream data
+     * - stop
+     * - pause
+     * - state
+     * - currentTime
+     * - videoPaths/audioPaths
+     * - streamSize/setStreamSize
+     * - tickInterval/setTickInterval
+     * - streamSeekable/setStreamSeekable
+     * - aboutToFinishTime/setAboutToFinishTime
+     * - selectAudioStream/selectVideoStream/selectSubtitleStream
+     * - selectedAudioStream/selectedVideoStream/selectedSubtitleStream
+     *
+     * - metaDataKeys/metaDataItem/metaDataItems
+     *   Safe because the meta data is sent to the frontend async (calls don't
+     *   call any functions on the backend object)
+     *
+     * - addVideoPath/addAudioPath
+     *   flow graph setup calls, sometimes depend on stream data:
+     *   With xine you need to create a new xine_stream which might need to do
+     *   seeks and reads. In this case the backend should go into LoadingState
+     *   or BufferingState (or ErrorState if the stream is not seekable).
+     *
+     * - hasVideo
+     * - isSeekable
+     * - availableAudioStreams/availableVideoStreams/availableSubtitleStreams
+     *   Needs the stream data to know the "correct answer".
+     *   Returns false if not enough data has been sent. TODO: might need a
+     *   Q_SIGNAL to make it work async.
+     *
+     * - totalTime/remainingTime
+     *   Needs the stream data to know the "correct answer".
+     *   Returns -1 if not enough data has been sent. Has the length signal for
+     *   async notification.
+     *
+     * - play
+     * - seek
+     *   if not enough data is available to start playback the backend goes into
+     *   BufferingState
+     */
 
 	/**
 	 * \short Send media data to be decoded and played back.
