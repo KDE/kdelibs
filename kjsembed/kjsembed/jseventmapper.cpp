@@ -19,7 +19,7 @@
 */
 
 
-#include "global.h"
+#include "kjseglobal.h"
 #include "jseventmapper.h"
 namespace KJSEmbed {
 

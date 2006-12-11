@@ -23,7 +23,7 @@
 #include "qobject_binding.h"
 #include <kjs/interpreter.h>
 
-#include "global.h"
+#include "kjseglobal.h"
 #include "jseventmapper.h"
 #include "jseventutils.h"
 

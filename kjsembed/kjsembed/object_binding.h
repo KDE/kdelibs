@@ -27,7 +27,7 @@
 #include "static_binding.h"
 #include "variant_binding.h"
 #include "pointer.h"
-#include "global.h"
+#include "kjseglobal.h"
 
 /**
 * A simple pointer syle method.

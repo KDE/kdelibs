@@ -112,7 +112,9 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticBinding::publish( exec, parent, FileDialog::methods() ); // Global methods
     StaticBinding::publish( exec, parent, BuiltinsFactory::methods() ); // Global methods
 
+#ifdef KJSEMBED_FORMBUILDER_BINDING
     StaticConstructor::add( exec, parent, FormBuilder::constructor() ); // Ctor
+#endif
     StaticConstructor::add( exec, parent, Widget::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Layout::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Action::constructor() ); // Ctor

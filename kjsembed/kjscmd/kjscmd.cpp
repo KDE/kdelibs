@@ -32,7 +32,7 @@
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 
-#include <kjsembed/global.h>
+#include <kjsembed/kjseglobal.h>
 #include <kjsembed/kjsembed.h>
 
 #include <QTime>

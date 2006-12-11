@@ -25,7 +25,7 @@
 #include <QDateTime>
 #include <QStringList>
 
-#include <kjsembed/kjsembed/global.h>
+#include <kjsembed/kjseglobal.h>
 #include <kjs/object.h>
 #include <kdemacros.h>
 

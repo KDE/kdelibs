@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-# include "global.h"
+#include "kjseglobal.h"
 
 #ifdef QT_ONLY
 # include <QObject>

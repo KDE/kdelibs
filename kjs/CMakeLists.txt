@@ -97,20 +97,27 @@ set(kjs_LIB_SRCS
 
 kde4_automoc(${kjs_LIB_SRCS})
 
-kde4_add_library(kjs SHARED ${kjs_LIB_SRCS})
+if (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME kjs)
+else (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME qkjs)
+endif (NOT DEFINED QT_ONLY)
+
+
+kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(UNIX)
-   target_link_libraries(kjs  ${KDE4_KDECORE_LIBS} m )
+   target_link_libraries(${KJSLIBNAME}  ${KDE4_KDECORE_LIBS} m )
 else(UNIX)
-   target_link_libraries(kjs  ${KDE4_KDECORE_LIBS})
+   target_link_libraries(${KJSLIBNAME}  ${KDE4_KDECORE_LIBS})
 endif(UNIX)
 
 if(PCRE_FOUND)
-   target_link_libraries(kjs ${PCRE_LIBRARIES})
+   target_link_libraries(${KJSLIBNAME} ${PCRE_LIBRARIES})
 endif(PCRE_FOUND)
 
-set_target_properties(kjs PROPERTIES VERSION 2.0.0 SOVERSION 2 )
-install(TARGETS kjs  DESTINATION ${LIB_INSTALL_DIR} )
+set_target_properties(${KJSLIBNAME} PROPERTIES VERSION 2.0.0 SOVERSION 2 )
+install(TARGETS ${KJSLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### js - basic shell ###############
 
@@ -118,7 +125,7 @@ set(js_SRCS kjs.cpp)
 
 kde4_add_executable(js NOGUI ${js_SRCS})
 
-target_link_libraries(js kjs)
+target_link_libraries(js ${KJSLIBNAME})
 
 install(TARGETS js DESTINATION ${BIN_INSTALL_DIR})
 
@@ -132,7 +139,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
 
-   target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
+   target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} ${KJSLIBNAME})
 
    ########### testkjs ###############
 
@@ -142,7 +149,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
 
-   target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
+   target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} ${KJSLIBNAME} )
 
 endif(KDE4_BUILD_TESTS)
 

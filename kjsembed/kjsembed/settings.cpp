@@ -19,7 +19,7 @@
 */
 #include "settings.h"
 #include <QSettings>
-#include "global.h"
+#include "kjseglobal.h"
 
 using namespace KJSEmbed;
 

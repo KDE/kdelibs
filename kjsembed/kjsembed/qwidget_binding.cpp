@@ -19,7 +19,7 @@
 */
 #include "qwidget_binding.h"
 #include "static_binding.h"
-#include "global.h"
+#include "kjseglobal.h"
 
 #include <kjs/object.h>
 #include <qdebug.h>
@@ -28,6 +28,7 @@
 #include <QAction>
 #include <QLayout>
 #include <QtUiTools/QUiLoader>
+#include <QtDebug>
 
 #include <QFile>
 
@@ -139,6 +140,7 @@ NO_STATICS( Widget )
 QWidgetBinding::QWidgetBinding( KJS::ExecState *exec, QWidget *widget )
     : QObjectBinding( exec, widget)
 {
+//	qDebug() << "QWidgetBinding::QWidgetBinding(" << exec << "," << widget << ")";
     StaticBinding::publish( exec, this, Widget::methods() );
 }
 

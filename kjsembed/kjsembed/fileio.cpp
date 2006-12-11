@@ -19,7 +19,7 @@
 */
 #include "fileio.h"
 #include <QFile>
-#include "global.h"
+#include "kjseglobal.h"
 #include <QTemporaryFile>
 #include <QDebug>
 

@@ -27,7 +27,7 @@
 #include "qformbuilder_binding.h"
 #include "static_binding.h"
 #include "qwidget_binding.h"
-#include "global.h"
+#include "kjseglobal.h"
 
 using namespace KJSEmbed;
 NO_METHODS( FormBuilder )

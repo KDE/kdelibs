@@ -27,7 +27,7 @@
 #include <QByteArray>
 #include <QDebug>
 
-#include "global.h"
+#include "kjseglobal.h"
 #include "static_binding.h"
 #include "variant_binding.h"
 
@@ -318,6 +318,9 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
     KJS::JSValue *returnValue;
     switch( value.type() )
     {
+        case QVariant::Invalid:
+            returnValue = KJS::Null();
+            break;
         case QVariant::Bool:
             returnValue = KJS::Boolean( value.value<bool>() );
             break;

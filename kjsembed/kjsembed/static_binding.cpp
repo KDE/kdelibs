@@ -135,7 +135,7 @@ KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject
             return ctor->construct( exec, args );
         }
     }
-    qDebug("cannot create %s", className.ascii() );
+    qDebug("cannot create '%s'", className.ascii() );
     return KJS::throwError( exec, KJS::TypeError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
 }
 

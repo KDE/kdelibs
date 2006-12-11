@@ -3,17 +3,16 @@ project(kjsembed-kjsembed)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/kjsembed
+    ${CMAKE_SOURCE_DIR}/kjsembed 
+    ${CMAKE_BINARY_DIR}/kjs
     ${KDE4_KDECORE_INCLUDES}
 )
 
 
 ########### next target ###############
 
-add_definitions(-DKJSEMBED_WITH_KDE)
-
 set(kjsembed_LIB_SRCS
-   global.cpp
+   kjseglobal.cpp
    binding_support.cpp
    static_binding.cpp
    variant_binding.cpp
@@ -29,7 +28,6 @@ set(kjsembed_LIB_SRCS
    value_binding.cpp
    iosupport.cpp
    qwidget_binding.cpp
-   qformbuilder_binding.cpp
    qpainter_binding.cpp
    settings.cpp
    svg_binding.cpp
@@ -43,19 +41,27 @@ set(kjsembed_LIB_SRCS
    QBrush_bind.cpp
    )
 
-kde4_automoc(${kjsembed_LIB_SRCS})
+kde4_automoc(${kjsembed_LIB_SRCS} ) 
 
-kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
+if (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME kjs)
+   set(KJSEMBEDLIBNAME kjsembed)
+else (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME qkjs)
+   set(KJSEMBEDLIBNAME qkjsembed)
+endif (NOT DEFINED QT_ONLY)
 
-target_link_libraries(kjsembed ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} kjs)
+kde4_add_library(${KJSEMBEDLIBNAME} SHARED ${kjsembed_LIB_SRCS})
 
-set_target_properties(kjsembed PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kjsembed  DESTINATION ${LIB_INSTALL_DIR} )
+target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KJSLIBNAME})
+
+set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+install(TARGETS ${KJSEMBEDLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install( FILES global.h binding_support.h static_binding.h variant_binding.h
+install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
                object_binding.h builtins.h fileio.h jseventmapper.h
                eventproxy.h slotproxy.h jseventutils.h qobject_binding.h
                kjsembed.h value_binding.h iosupport.h qwidget_binding.h

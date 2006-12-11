@@ -1,4 +1,12 @@
 KDE4_NO_ENABLE_FINAL(kjsembed)
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/kjsembed 
+		${CMAKE_BINARY_DIR}/kjs
+    ${KDE4_KDECORE_INCLUDES}
+)
+
 add_subdirectory( kjsembed )
 add_subdirectory( kjscmd )
 add_subdirectory( console )

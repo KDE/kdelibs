@@ -18,12 +18,21 @@ kde4_automoc(${kjscmd_SRCS})
 
 qt4_add_resources(kjscmd_SRCS kjscmd.qrc )
 
-kde4_add_executable(kjscmd ${kjscmd_SRCS})
+if (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME kjs)
+   set(KJSEMBEDLIBNAME kjsembed)
+	 set(KJSCMDNAME kjscmd)
+else (NOT DEFINED QT_ONLY)
+   set(KJSLIBNAME qkjs)
+   set(KJSEMBEDLIBNAME qkjsembed)
+	 set(KJSCMDNAME qjscmd)
+endif (NOT DEFINED QT_ONLY)
 
-target_link_libraries(kjscmd ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} kjsembed )
+kde4_add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
-install(TARGETS kjscmd DESTINATION ${BIN_INSTALL_DIR} )
+target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KJSEMBEDLIBNAME} )
 
+install(TARGETS ${KJSCMDNAME} DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 

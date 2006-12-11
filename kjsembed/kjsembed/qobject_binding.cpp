@@ -536,7 +536,10 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     }
 
     //TODO use the QMetaType-stuff ( defined as QVariant::UserType ) to handle also other cases
-    return KJSEmbed::convertToValue(exec, returnValue);
+		if (returnTypeId == QVariant::Invalid)
+			return KJS::Null();
+		else
+			return KJSEmbed::convertToValue(exec, returnValue);
 }
 
 SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
