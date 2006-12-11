@@ -2195,7 +2195,7 @@ void KFileDialog::toggleBookmarks(bool show)
         connect( d->bookmarkHandler, SIGNAL( openUrl( const QString& )),
                     SLOT( enterUrl( const QString& )));
 
-        d->bookmarkButton = new KActionMenu(i18n("Bookmarks"), actionCollection(), "bookmark");
+        d->bookmarkButton = new KActionMenu(KIcon("bookmark"),i18n("Bookmarks"),actionCollection(), "bookmark");
         d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
         d->bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
