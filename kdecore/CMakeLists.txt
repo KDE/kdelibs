@@ -7,9 +7,6 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 include(network/ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
-# hack for kacceleratormanager
-include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
-
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )

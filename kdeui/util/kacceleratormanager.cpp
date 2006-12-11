@@ -46,7 +46,7 @@
 
 
 #include "kacceleratormanager_private.h"
-#include "../kdeui/kstdaction_p.h"
+#include <kstdaction_p.h>
 
 
 /*********************************************************************

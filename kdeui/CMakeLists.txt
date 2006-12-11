@@ -8,12 +8,14 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${KDE4_KDECORE_INCLUDES}
+ ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+ ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
+ ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/util
- ${CMAKE_CURRENT_SOURCE_DIR}/kernel
- ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
+ ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
 )
 
 add_subdirectory( about )
@@ -24,29 +26,11 @@ add_subdirectory( tests )
 
 set(kdeui_LIB_SRCS
  ktoolbar.cpp
- kaction.cpp
- kstdaction.cpp
- kactioncollection.cpp
- ktoggleaction.cpp
- kselectaction.cpp
- krecentfilesaction.cpp
- kfontaction.cpp
- kfontsizeaction.cpp
- kcodecaction.cpp
- kactionmenu.cpp
- ktoolbarpopupaction.cpp
- ktoggletoolbaraction.cpp
- ktogglefullscreenaction.cpp
- kpastetextaction.cpp
- kseparatoraction.cpp
  kurllabel.cpp
  kmenubar.cpp
- kdatetable.cpp
  kstatusbar.cpp
  kmainwindow.cpp
- kseparator.cpp
  krestrictedline.cpp
- kruler.cpp
  kpagemodel.cpp
  kpageview.cpp
  kpageview_p.cpp
@@ -54,27 +38,34 @@ set(kdeui_LIB_SRCS
  kpagewidgetmodel.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- kxmlguiclient.cpp
- kxmlguifactory.cpp
- kxmlguifactory_p.cpp
- kxmlguibuilder.cpp
  kmenumenuhandler_p.cpp
- kanimwidget.cpp
  kcmodule.cpp
  kwindowlistmenu.cpp
- karrowbutton.cpp
  kmainwindowiface.cpp
- kguiitem.cpp
  kstdguiitem.cpp
  kactivelabel.cpp
  ktoolbarhandler.cpp
  ksplashscreen.cpp
- kactionselector.cpp
  klanguagebutton.cpp
  kwhatsthismanager.cpp
  kpixmapregionselectorwidget.cpp
- ktoolbarlabelaction.cpp
- ktoolbarspaceraction.cpp
+ actions/kactioncollection.cpp
+ actions/kaction.cpp
+ actions/kactionmenu.cpp
+ actions/kcodecaction.cpp
+ actions/kfontaction.cpp
+ actions/kfontsizeaction.cpp
+ actions/kpastetextaction.cpp
+ actions/krecentfilesaction.cpp
+ actions/kselectaction.cpp
+ actions/kseparatoraction.cpp
+ actions/kstdaction.cpp
+ actions/ktoggleaction.cpp
+ actions/ktoggletoolbaraction.cpp
+ actions/ktogglefullscreenaction.cpp
+ actions/ktoolbarlabelaction.cpp
+ actions/ktoolbarpopupaction.cpp
+ actions/ktoolbarspaceraction.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -97,6 +88,7 @@ set(kdeui_LIB_SRCS
  util/kcrash.cpp
  util/kcursor.cpp
  util/kglobalaccel.cpp
+ util/kguiitem.cpp
  util/kicon.cpp
  util/kiconengine.cpp
  util/kkeyserver.cpp
@@ -112,6 +104,9 @@ set(kdeui_LIB_SRCS
  util/ksystemtrayicon.cpp
  util/kwordwrap.cpp
  util/kxmessages.cpp
+ widgets/kactionselector.cpp
+ widgets/kanimatedbutton.cpp
+ widgets/karrowbutton.cpp
  widgets/kbuttonbox.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
@@ -122,6 +117,7 @@ set(kdeui_LIB_SRCS
  widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
  widgets/kdatepicker.cpp
+ widgets/kdatetable.cpp
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
  widgets/keditlistbox.cpp
@@ -133,7 +129,9 @@ set(kdeui_LIB_SRCS
  widgets/kmenu.cpp
  widgets/knuminput.cpp
  widgets/kpushbutton.cpp
+ widgets/kruler.cpp
  widgets/kselector.cpp
+ widgets/kseparator.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
@@ -162,6 +160,10 @@ set(kdeui_LIB_SRCS
  dialogs/kaboutkde.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
+ xmlgui/kxmlguiclient.cpp
+ xmlgui/kxmlguifactory.cpp
+ xmlgui/kxmlguifactory_p.cpp
+ xmlgui/kxmlguibuilder.cpp
 )
 
 if (Q_WS_X11)
@@ -202,80 +204,42 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
- kdatetable.h
  kstatusbar.h
  kmainwindow.h
  ktoolbar.h
  kmenubar.h
- kseparator.h
  krestrictedline.h
  kurllabel.h
- kruler.h
  kactivelabel.h
  kpagemodel.h
  kpageview.h
  kpagewidget.h
  kpagewidgetmodel.h
  ktextbrowser.h
- kaction.h
- kactioncollection.h
- kseparatoraction.h
- ktoggleaction.h
- kselectaction.h
- krecentfilesaction.h
- kfontaction.h
- kfontsizeaction.h
- kactionmenu.h
- ktoolbarpopupaction.h
- ktoggletoolbaraction.h
- ktogglefullscreenaction.h
- kpastetextaction.h
  khelpmenu.h
  kcmodule.h
- kstdaction.h
- kxmlguiclient.h
- kxmlguibuilder.h
- kxmlguifactory.h
- kanimwidget.h
  kwindowlistmenu.h
- karrowbutton.h
- kguiitem.h
  kstdguiitem.h
  ksplashscreen.h
- kactionselector.h
  klanguagebutton.h
  kpixmapregionselectorwidget.h
- ktoolbarlabelaction.h
- ktoolbarspaceraction.h
- widgets/kdatepicker.h
- widgets/kmenu.h
- widgets/kfontrequester.h
- widgets/knuminput.h
- widgets/klineedit.h
- widgets/kcolorbutton.h
- widgets/kbuttonbox.h
- widgets/kdialogbuttonbox.h
- widgets/kled.h
- widgets/keditlistbox.h
- widgets/kkeybutton.h
- widgets/kcharselect.h
- widgets/kcombobox.h
- widgets/kpushbutton.h
- widgets/kcolorcombo.h
- widgets/kcompletionbox.h
- widgets/ksqueezedtextlabel.h
- widgets/kdatewidget.h
- widgets/ktextedit.h
- widgets/kdatetimewidget.h
- widgets/ktimezonewidget.h
- widgets/ktabbar.h
- widgets/ktabwidget.h
- widgets/khbox.h
- widgets/kvbox.h
- widgets/kbuttongroup.h
- widgets/kselector.h
- widgets/kcolorvalueselector.h
- widgets/kxyselector.h
+ actions/kactioncollection.h
+ actions/kaction.h
+ actions/kactionmenu.h
+ actions/kcodecaction.h
+ actions/kfontaction.h
+ actions/kfontsizeaction.h
+ actions/kpastetextaction.h
+ actions/krecentfilesaction.h
+ actions/kselectaction.h
+ actions/kseparatoraction.h
+ actions/kstdaction.h
+ actions/ktoggleaction.h
+ actions/ktoggletoolbaraction.h
+ actions/ktogglefullscreenaction.h
+ actions/ktoolbarlabelaction.h
+ actions/ktoolbarpopupaction.h
+ actions/ktoolbarspaceraction.h
  dialogs/kaboutapplication.h
  dialogs/kaboutdialog.h
  dialogs/kaboutkde.h
@@ -319,6 +283,7 @@ install( FILES
  util/kcrash.h
  util/kcursor.h
  util/kglobalaccel.h
+ util/kguiitem.h
  util/kiconengine.h
  util/kicon.h
  util/kkeyserver.h
@@ -336,6 +301,44 @@ install( FILES
  util/kxmessages.h
  util/kwinmodule.h
  util/kwin.h
+ widgets/kactionselector.h
+ widgets/kanimatedbutton.h
+ widgets/karrowbutton.h
+ widgets/kdatepicker.h
+ widgets/kmenu.h
+ widgets/kfontrequester.h
+ widgets/knuminput.h
+ widgets/klineedit.h
+ widgets/kcolorbutton.h
+ widgets/kbuttonbox.h
+ widgets/kdialogbuttonbox.h
+ widgets/kled.h
+ widgets/keditlistbox.h
+ widgets/kkeybutton.h
+ widgets/kcharselect.h
+ widgets/kcombobox.h
+ widgets/kpushbutton.h
+ widgets/kcolorcombo.h
+ widgets/kcompletionbox.h
+ widgets/kseparator.h
+ widgets/ksqueezedtextlabel.h
+ widgets/kdatewidget.h
+ widgets/kdatetable.h
+ widgets/ktextedit.h
+ widgets/kdatetimewidget.h
+ widgets/ktimezonewidget.h
+ widgets/ktabbar.h
+ widgets/ktabwidget.h
+ widgets/khbox.h
+ widgets/kvbox.h
+ widgets/kbuttongroup.h
+ widgets/kruler.h
+ widgets/kselector.h
+ widgets/kcolorvalueselector.h
+ widgets/kxyselector.h
+ xmlgui/kxmlguiclient.h
+ xmlgui/kxmlguibuilder.h
+ xmlgui/kxmlguifactory.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )

@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kanimwidget.h>
+#include <kanimatedbutton.h>
 
 #include <QAction>
 #include <QPixmap>
@@ -136,4 +136,4 @@ int KAnimatedButton::iconDimensions() const
   return qMin(iconSize().width(), iconSize().height());
 }
 
-#include "kanimwidget.moc"
+#include "kanimatedbutton.moc"
