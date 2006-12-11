@@ -706,8 +706,9 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             if(Entity == SearchSemicolon) {
                 if(cBufferPos > 1) {
                     const entity *e = kde_findEntity(cBuffer, cBufferPos);
-                    // IE only accepts unterminated entities < 256, Gecko accepts them all
-                    if(e) {
+                    // IE only accepts unterminated entities < 256,
+                    // Gecko accepts them all, but only outside tags
+                    if(e && ( tag == NoTag || e->code < 256 || *src == ';' )) {
                         EntityChar = e->code;
                         entityLen = cBufferPos;
                     }
@@ -726,18 +727,11 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
 
             if ( !EntityChar.isNull() ) {
                 checkBuffer();
-                // Just insert it
-                *dest++ = EntityChar;
                 if (entityLen > 0 && entityLen < cBufferPos) {
                     int rem = cBufferPos - entityLen;
-                    for(int i = 0; i < rem; i++)
-                        dest[i] = cBuffer[i+entityLen];
-                    dest += rem;
-                    if (pre)
-                        prePos += rem;
+                    src.prepend( TokenizerString(QString::fromAscii(cBuffer+entityLen, rem)) );
                 }
-                if (pre)
-                    prePos++;
+                src.push( EntityChar );
             } else {
 #ifdef TOKEN_DEBUG
                 kDebug( 6036 ) << "unknown entity!" << endl;

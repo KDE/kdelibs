@@ -83,6 +83,7 @@ StyleSheetImpl *StyleSheetImpl::parentStyleSheet() const
 {
     if( !m_parent ) return 0;
     if( m_parent->isStyleSheet() ) return static_cast<StyleSheetImpl *>(m_parent);
+    if( m_parent->isRule() ) return m_parent->stylesheet();
     return 0;
 }
 
@@ -110,7 +111,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     : StyleSheetImpl(parentSheet, href)
 {
     m_lstChildren = new Q3PtrList<StyleBaseImpl>;
-    m_doc = 0;
+    m_doc = parentSheet ? parentSheet->doc() : 0;
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -130,7 +131,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
     m_lstChildren = new Q3PtrList<StyleBaseImpl>;
-    m_doc = 0;
+    m_doc = static_cast<CSSStyleSheetImpl*>(ownerRule->stylesheet())->doc();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -163,7 +164,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
-    m_doc  = 0;
+    m_doc = static_cast<CSSStyleSheetImpl*>(ownerRule->stylesheet())->doc();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -194,7 +195,7 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an
     //@import rule is inserted after a standard rule set or other at-rule.
     m_lstChildren->insert(index, r);
-    if (m_doc) 
+    if (m_doc)
         m_doc->updateStyleSelector(true /*shallow*/);
     return index;
 }
@@ -212,7 +213,9 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return;
     }
-    b->deref();
+    // TreeShared requires delete not deref when removed from tree
+    b->setParent(0);
+    if( !b->refCount() ) delete b;
     if (m_doc)
         m_doc->updateStyleSelector(true /*shallow*/);
 }

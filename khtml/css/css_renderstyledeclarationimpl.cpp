@@ -126,7 +126,7 @@ const unsigned numComputedProperties = sizeof(computedProperties) / sizeof(compu
 static CSSValueImpl *valueForLength(const Length &length, int max)
 {
     if (length.isPercent()) {
-        return new CSSPrimitiveValueImpl(length._length, CSSPrimitiveValue::CSS_PERCENTAGE);
+        return new CSSPrimitiveValueImpl(length.value(), CSSPrimitiveValue::CSS_PERCENTAGE);
     }
     else {
         return new CSSPrimitiveValueImpl(length.minWidth(max), CSSPrimitiveValue::CSS_PX);
@@ -412,13 +412,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         DOMString string;
         Length length(style->backgroundXPosition());
         if (length.isPercent())
-            string = QString::number(length._length) + "%";
+            string = QString::number(length.value()) + "%";
         else
             string = QString::number(length.minWidth(renderer->contentWidth()));
         string += " ";
         length = style->backgroundYPosition();
         if (length.isPercent())
-            string += QString::number(length._length) + "%";
+            string += QString::number(length.value()) + "%";
         else
             string += QString::number(length.minWidth(renderer->contentWidth()));
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
@@ -666,16 +666,21 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl(style->letterSpacing(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_LINE_HEIGHT:
     {
+        // Note: internally a specified <number> value gets encoded as a percentage,
+        // so the isPercent() case corresponds to the <number> case; 
+        // values < 0  are used to mark "normal"; and specified %%
+        // get computed down to px by the time they get to RenderStyle 
+        // already
         Length length(style->lineHeight());
-        if (length.value() < 0)
+        if (length.value() < 0) 
             return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
         if (length.isPercent()) {
             //XXX: merge from webcore the computedStyle/specifiedStyle distinction in rendering/font.h
             float computedSize = style->htmlFont().getFontDef().size;
-            return new CSSPrimitiveValueImpl((int)(length._length * computedSize) / 100, CSSPrimitiveValue::CSS_PX);
+            return new CSSPrimitiveValueImpl((int)(length.value() * computedSize) / 100, CSSPrimitiveValue::CSS_PX);
         }
         else {
-            return new CSSPrimitiveValueImpl(length._length, CSSPrimitiveValue::CSS_PX);
+            return new CSSPrimitiveValueImpl(length.value(), CSSPrimitiveValue::CSS_PX);
         }
     }
     case CSS_PROP_LIST_STYLE_IMAGE:
