@@ -54,11 +54,11 @@ class PHONONUI_EXPORT UiFactory : public QObject
 		 */
 		static UiFactory* self();
 
-		/**
-		 * Create a new Ifaces::VideoWidget.
-		 *
-		 * \return a pointer to the Ifaces::VideoWidget the backend provides
-		 */
+        /**
+         * Create a new backend object for a VideoWidget.
+         *
+         * \return a pointer to the VideoWidget the backend provides.
+         */
 		QObject* createVideoWidget( QWidget* parent = 0 );
 
 		/**
