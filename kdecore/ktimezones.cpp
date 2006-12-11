@@ -410,7 +410,7 @@ KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
                  const QString &country, float lat, float lon, const QString &cmnt)
   : source(src),
     name(nam),
-    countryCode(country),
+    countryCode(country.toUpper()),
     comment(cmnt),
     latitude(lat),
     longitude(lon),

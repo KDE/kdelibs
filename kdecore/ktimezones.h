@@ -613,7 +613,7 @@ public:
     /**
      * Returns the two-letter country code of the time zone.
      *
-     * @return ISO 3166 2-character country code, empty if unknown
+     * @return upper case ISO 3166 2-character country code, empty if unknown
      */
     QString countryCode() const;
 
