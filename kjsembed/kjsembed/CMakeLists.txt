@@ -53,7 +53,7 @@ endif (NOT DEFINED QT_ONLY)
 
 kde4_add_library(${KJSEMBEDLIBNAME} SHARED ${kjsembed_LIB_SRCS})
 
-target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KJSLIBNAME})
+target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${KJSLIBNAME})
 
 set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSEMBEDLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )
@@ -65,7 +65,7 @@ install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
                object_binding.h builtins.h fileio.h jseventmapper.h
                eventproxy.h slotproxy.h jseventutils.h qobject_binding.h
                kjsembed.h value_binding.h iosupport.h qwidget_binding.h
-               qformbuilder_binding.h qpainter_binding.h
+               qpainter_binding.h
                settings.h svg_binding.h filedialog_binding.h
                brush.h color.h dom.h font.h image.h pen.h
                pixmap.h point.h rect.h size.h url.h pointer.h
