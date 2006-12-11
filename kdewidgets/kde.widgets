@@ -249,7 +249,7 @@ Group=Buttons (KDE)
 ConstructorArgs=(parent,Qt::UpArrow)
 
 [KAnimatedButton]
-IncludeFile=kanimwidget.h
+IncludeFile=kanimatedbutton.h
 ToolTip=An extended version of QToolButton which can display an animated icon.
 Group=Display (KDE)
 ConstructorArgs=(parent)
