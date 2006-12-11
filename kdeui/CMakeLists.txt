@@ -105,6 +105,7 @@ set(kdeui_LIB_SRCS
  util/knumvalidator.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
+ util/kpixmapprovider.cpp
  util/kstringvalidator.cpp
  util/ksystemtrayicon.cpp
  util/kwordwrap.cpp
@@ -188,7 +189,7 @@ kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
+target_link_libraries(kdeui  ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
 
 set_target_properties(kdeui PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
@@ -325,6 +326,7 @@ install( FILES
  util/knumvalidator.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
+ util/kpixmapprovider.h
  util/kstringvalidator.h
  util/ksystemtrayicon.h
  util/kwordwrap.h

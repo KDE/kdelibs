@@ -143,7 +143,6 @@ set(kdecore_LIB_SRCS
    knotifyclient.cpp
    kprocio.cpp
    krandom.cpp
-   kpixmapprovider.cpp
    ktoolinvocation.cpp
    klauncher_iface.cpp
    kcodecs.cpp
@@ -319,7 +318,6 @@ install( FILES
    netwm.h
    kacceleratormanager.h
    netwm_def.h
-   kpixmapprovider.h
    kstaticdeleter.h
    kprocio.h
    krandom.h
