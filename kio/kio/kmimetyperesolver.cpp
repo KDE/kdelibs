@@ -111,18 +111,19 @@ void KMimeTypeResolver::slotProcessMimeIcons()
         const int numFound = d->m_pendingIndexes.removeAll(index);
         Q_ASSERT(numFound == 1);
     }
-    if (!index.isValid())
-    {
+    if (!index.isValid()) {
         // No more visible items.
         // Do the unvisible ones, then, but with a bigger delay, if so configured
         index = d->m_pendingIndexes.takeFirst();
         nextDelay = d->m_delayForNonVisibleIcons;
     }
-    KFileItem item = * d->m_dirModel->itemForIndex(index);
-    if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
-        kDebug() << k_funcinfo << "Determining mimetype for " << item.url() << endl;
-        item.determineMimeType();
-        d->m_dirModel->itemChanged(index);
+    KFileItem* item = d->m_dirModel->itemForIndex(index);
+    if (item) { // check that item still exists
+        if (!item->isMimeTypeKnown()) { // check if someone did it meanwhile
+            kDebug() << k_funcinfo << "Determining mimetype for " << item->url() << endl;
+            item->determineMimeType();
+            d->m_dirModel->itemChanged(index);
+        }
     }
     d->m_timer.start(nextDelay); // singleshot
 }
