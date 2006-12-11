@@ -192,14 +192,14 @@ public:
 	 * @return the label of point i
 	 * @param i the index of the point
 	 */
-	QString label( int i ) const;
+	inline QString label( int i ) const { if (pList.size() > i) return pList.at(i)->label(); }
 
 	/**
 	 * Set the label text for point i
 	 * @param i the index of the point
 	 * @param n the new name
 	 */
-	void setLabel( int i, const QString &n );
+	inline void setLabel( int i, const QString &n ) { if (pList.size() > i) pList.at(i)->setLabel(n); }
 
 	/**
 	 * @return true if points will be drawn for this object

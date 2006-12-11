@@ -330,39 +330,38 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 		}
 	}
 
-	painter->drawText( bestRect, textFlags, pp->label() );
+	if ( ! bestRect.isNull() ) {
+		painter->drawText( bestRect, textFlags, pp->label() );
 
-	//Is a line needed to connect the label to the point?
-	if ( rbest > 2.0 ) {
-		//Draw a rectangle around the label 
-		painter->setBrush( QBrush() );
-		//QPen pen = painter->pen();
-		//pen.setStyle( Qt::DotLine );
-		//painter->setPen( pen );
-		painter->drawRoundRect( bestRect );
-
-		//Now connect the label to the point with a line.
-		//The line is drawn from the center of the near edge of the rectangle
-		float xline = bestRect.center().x();
-		if ( bestRect.left() > pos.x() )
-			xline = bestRect.left();
-		if ( bestRect.right() < pos.x() )
-			xline = bestRect.right();
-
-		float yline = bestRect.center().y();
-		if ( bestRect.top() > pos.y() )
-			yline = bestRect.top();
-		if ( bestRect.bottom() < pos.y() )
-			yline = bestRect.bottom();
-
-		//DEBUG
-		kDebug() << pp->label() << ": ( " << xline << ", " << yline << " )  " << bestRect << endl;
-
-		painter->drawLine( QPointF( xline, yline ), pos );
+		//Is a line needed to connect the label to the point?
+		if ( rbest > 2.0 ) {
+			//Draw a rectangle around the label 
+			painter->setBrush( QBrush() );
+			//QPen pen = painter->pen();
+			//pen.setStyle( Qt::DotLine );
+			//painter->setPen( pen );
+			painter->drawRoundRect( bestRect );
+	
+			//Now connect the label to the point with a line.
+			//The line is drawn from the center of the near edge of the rectangle
+			float xline = bestRect.center().x();
+			if ( bestRect.left() > pos.x() )
+				xline = bestRect.left();
+			if ( bestRect.right() < pos.x() )
+				xline = bestRect.right();
+	
+			float yline = bestRect.center().y();
+			if ( bestRect.top() > pos.y() )
+				yline = bestRect.top();
+			if ( bestRect.bottom() < pos.y() )
+				yline = bestRect.bottom();
+	
+			painter->drawLine( QPointF( xline, yline ), pos );
+		}
+												
+		//Mask the label's rectangle so other labels won't overlap it.
+		maskRect( bestRect );
 	}
-											 
-	//Mask the label's rectangle so other labels won't overlap it.
-	maskRect( bestRect );
 }
 
 float KPlotWidget::rectCost ( const QRectF &r ) {

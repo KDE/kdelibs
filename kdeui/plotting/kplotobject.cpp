@@ -136,92 +136,94 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 		foreach( KPlotPoint *pp, pList ) {
 			//q is the position of the point in screen pixel coordinates
 			QPointF q = pw->toScreen( pp->position() );
-			double x1 = q.x() - size();
-			double y1 = q.y() - size();
-			QRectF qr = QRectF( x1, y1, 2*size(), 2*size() );
-
-			//Mask out this rect in the plot for label avoidance
-			pw->maskRect( qr, 2.0 );
-
-			painter->setPen( pen() );
-			painter->setBrush( brush() );
-
-			switch ( pointStyle() ) {
-			case CIRCLE:
-				painter->drawEllipse( qr );
-				break;
-
-			case LETTER:
-				painter->drawText( qr, Qt::AlignCenter, pp->label().left(1) );
-				break;
-
-			case TRIANGLE:
-				{
-					QPolygonF tri;
-					tri << QPointF( q.x() - size(), q.y() + size() ) 
-							<< QPointF( q.x(), q.y() - size() ) 
-							<< QPointF( q.x() + size(), q.y() + size() );
-					painter->drawPolygon( tri );
+			if ( pw->pixRect().contains( q.toPoint(), false ) ) {
+				double x1 = q.x() - size();
+				double y1 = q.y() - size();
+				QRectF qr = QRectF( x1, y1, 2*size(), 2*size() );
+	
+				//Mask out this rect in the plot for label avoidance
+				pw->maskRect( qr, 2.0 );
+	
+				painter->setPen( pen() );
+				painter->setBrush( brush() );
+	
+				switch ( pointStyle() ) {
+				case CIRCLE:
+					painter->drawEllipse( qr );
+					break;
+	
+				case LETTER:
+					painter->drawText( qr, Qt::AlignCenter, pp->label().left(1) );
+					break;
+	
+				case TRIANGLE:
+					{
+						QPolygonF tri;
+						tri << QPointF( q.x() - size(), q.y() + size() ) 
+								<< QPointF( q.x(), q.y() - size() ) 
+								<< QPointF( q.x() + size(), q.y() + size() );
+						painter->drawPolygon( tri );
+						break;
+					}
+	
+				case SQUARE:
+					painter->drawRect( qr );
+					break;
+	
+				case PENTAGON:
+					{
+						QPolygonF pent;
+						pent << QPointF( q.x(), q.y() - size() ) 
+								<< QPointF( q.x() + size(), q.y() - 0.309*size() )
+								<< QPointF( q.x() + 0.588*size(), q.y() + size() )
+								<< QPointF( q.x() - 0.588*size(), q.y() + size() )
+								<< QPointF( q.x() - size(), q.y() - 0.309*size() );
+						painter->drawPolygon( pent );
+						break;
+					}
+	
+				case HEXAGON:
+					{
+						QPolygonF hex;
+						hex << QPointF( q.x(), q.y() + size() ) 
+								<< QPointF( q.x() + size(), q.y() + 0.5*size() )
+								<< QPointF( q.x() + size(), q.y() - 0.5*size() )
+								<< QPointF( q.x(), q.y() - size() )
+								<< QPointF( q.x() - size(), q.y() + 0.5*size() )
+								<< QPointF( q.x() - size(), q.y() - 0.5*size() );
+						painter->drawPolygon( hex );
+						break;
+					}
+	
+				case ASTERISK:
+					painter->drawLine( q, QPointF( q.x(), q.y() + size() ) );
+					painter->drawLine( q, QPointF( q.x() + size(), q.y() + 0.5*size() ) );
+					painter->drawLine( q, QPointF( q.x() + size(), q.y() - 0.5*size() ) );
+					painter->drawLine( q, QPointF( q.x(), q.y() - size() ) );
+					painter->drawLine( q, QPointF( q.x() - size(), q.y() + 0.5*size() ) );
+					painter->drawLine( q, QPointF( q.x() - size(), q.y() - 0.5*size() ) );
+					break;
+	
+				case STAR:
+					{
+						QPolygonF star;
+						star << QPointF( q.x(), q.y() - size() ) 
+								<< QPointF( q.x() + 0.2245*size(), q.y() - 0.309*size() )
+								<< QPointF( q.x() + size(), q.y() - 0.309*size() )
+								<< QPointF( q.x() + 0.363*size(), q.y() + 0.118*size() )
+								<< QPointF( q.x() + 0.588*size(), q.y() + size() )
+								<< QPointF( q.x(), q.y() + 0.382*size() )
+								<< QPointF( q.x() - 0.588*size(), q.y() + size() )
+								<< QPointF( q.x() - 0.363*size(), q.y() + 0.118*size() )
+								<< QPointF( q.x() - size(), q.y() - 0.309*size() )
+								<< QPointF( q.x() - 0.2245*size(), q.y() - 0.309*size() );
+						painter->drawPolygon( star );
+						break;
+					}
+	
+				default:
 					break;
 				}
-
-			case SQUARE:
-				painter->drawRect( qr );
-				break;
-
-			case PENTAGON:
-				{
-					QPolygonF pent;
-					pent << QPointF( q.x(), q.y() - size() ) 
-							 << QPointF( q.x() + size(), q.y() - 0.309*size() )
-							 << QPointF( q.x() + 0.588*size(), q.y() + size() )
-							 << QPointF( q.x() - 0.588*size(), q.y() + size() )
-							 << QPointF( q.x() - size(), q.y() - 0.309*size() );
-					painter->drawPolygon( pent );
-					break;
-				}
-
-			case HEXAGON:
-				{
-					QPolygonF hex;
-					hex << QPointF( q.x(), q.y() + size() ) 
-							<< QPointF( q.x() + size(), q.y() + 0.5*size() )
-							<< QPointF( q.x() + size(), q.y() - 0.5*size() )
-							<< QPointF( q.x(), q.y() - size() )
-							<< QPointF( q.x() - size(), q.y() + 0.5*size() )
-							<< QPointF( q.x() - size(), q.y() - 0.5*size() );
-					painter->drawPolygon( hex );
-					break;
-				}
-
-			case ASTERISK:
-				painter->drawLine( q, QPointF( q.x(), q.y() + size() ) );
-				painter->drawLine( q, QPointF( q.x() + size(), q.y() + 0.5*size() ) );
-				painter->drawLine( q, QPointF( q.x() + size(), q.y() - 0.5*size() ) );
-				painter->drawLine( q, QPointF( q.x(), q.y() - size() ) );
-				painter->drawLine( q, QPointF( q.x() - size(), q.y() + 0.5*size() ) );
-				painter->drawLine( q, QPointF( q.x() - size(), q.y() - 0.5*size() ) );
-				break;
-
-			case STAR:
-				{
-					QPolygonF star;
-					star << QPointF( q.x(), q.y() - size() ) 
-							 << QPointF( q.x() + 0.2245*size(), q.y() - 0.309*size() )
-							 << QPointF( q.x() + size(), q.y() - 0.309*size() )
-							 << QPointF( q.x() + 0.363*size(), q.y() + 0.118*size() )
-							 << QPointF( q.x() + 0.588*size(), q.y() + size() )
-							 << QPointF( q.x(), q.y() + 0.382*size() )
-							 << QPointF( q.x() - 0.588*size(), q.y() + size() )
-							 << QPointF( q.x() - 0.363*size(), q.y() + 0.118*size() )
-							 << QPointF( q.x() - size(), q.y() - 0.309*size() )
-							 << QPointF( q.x() - 0.2245*size(), q.y() - 0.309*size() );
-					painter->drawPolygon( star );
-					break;
-				}
-
-			default:
-				break;
 			}
 		}
 	}
@@ -230,7 +232,8 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	painter->setPen( labelPen() );
 
 	foreach ( KPlotPoint *pp, pList ) {
-		if ( ! pp->label().isEmpty() ) {
+		QPoint q = pw->toScreen( pp->position() ).toPoint();
+		if ( pw->pixRect().contains(q, false) && ! pp->label().isEmpty() ) {
 			pw->placeLabel( painter, pp );
 		}
 	}

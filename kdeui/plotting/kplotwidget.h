@@ -362,6 +362,8 @@ public:
 	 */
 	KPlotAxis* axis( Axis a );
 
+	inline QRect& pixRect() { return PixRect; }
+
 public slots:
 	/**
 	 * Toggle whether grid lines are drawn at major tickmarks.
