@@ -31,10 +31,6 @@ template<typename Key, typename T> class QMap;
 namespace Phonon
 {
 	class AudioDataOutputPrivate;
-	namespace Ifaces
-	{
-		class AudioDataOutput;
-	}
 
 	/**
 	 * \short This class gives you the audio data (for visualizations).

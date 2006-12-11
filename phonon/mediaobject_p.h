@@ -30,10 +30,6 @@
 
 namespace Phonon
 {
-namespace Ifaces
-{
-	class ByteStream;
-}
 class MediaObjectPrivate : public AbstractMediaProducerPrivate
 {
 	K_DECLARE_PUBLIC( MediaObject )

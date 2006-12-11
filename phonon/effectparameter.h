@@ -32,11 +32,6 @@ class Effect;
 class EffectParameterPrivate;
 class AudioEffect;
 
-namespace Ifaces
-{
-	class Effect;
-}
-
 /**
  * \brief This class describes one parameter of an effect.
  *

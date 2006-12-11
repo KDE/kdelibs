@@ -26,10 +26,6 @@ template<class T> class QVector;
 namespace Phonon
 {
 	class AudioFftOutputPrivate;
-	namespace Ifaces
-	{
-		class AudioFftOutput;
-	}
 
 	/**
 	 * @short Fourier transforms the audio data for visualizations.

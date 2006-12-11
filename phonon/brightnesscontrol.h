@@ -26,10 +26,6 @@
 namespace Phonon
 {
 	class BrightnessControlPrivate;
-	namespace Ifaces
-	{
-		class BrightnessControl;
-	}
 
 	/**
 	 * Video effect to control the brightness of the image.

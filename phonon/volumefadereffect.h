@@ -26,10 +26,6 @@
 namespace Phonon
 {
 	class VolumeFaderEffectPrivate;
-	namespace Ifaces
-	{
-		class VolumeFaderEffect;
-	}
 
 	/**
 	 * Audio effect to gradually fade the audio volume.
