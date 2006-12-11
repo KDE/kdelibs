@@ -29,3 +29,11 @@
 - don't crash:
   - when no backend is available
   - when an iface object isn't available
+
+- add bufferingProgress(int) signal to AbstractMediaProducer so that the UI can show the progress
+
+- consider whether to add a signal to notify when the information for
+  hasVideo/isSeekable/availableAudioStreams/availableVideoStreams/availableSubtitleStreams
+  is available
+
+look at pavucontrol, gsmartmix
