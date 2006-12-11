@@ -20,6 +20,7 @@ configure_file(config-phonon.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-phonon.h
 add_subdirectory( ui )
 add_subdirectory( tests )
 add_subdirectory( kcm )
+add_subdirectory( examples )
 
 ########### next target ###############
 
@@ -96,6 +97,7 @@ install( FILES
 	backendcapabilities.h
 	phonondefs.h
 	bytestreaminterface.h
+	backendinterface.h
 	mediaproducerinterface.h
 	mediaobjectinterface.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)

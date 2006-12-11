@@ -23,8 +23,14 @@
 #include <phonon/bytestreaminterface.h>
 #include <phonon/mediaproducerinterface.h>
 #include <phonon/mediaobjectinterface.h>
+#include <phonon/backendinterface.h>
 
 using namespace Phonon;
+
+void MethodTest::checkBackendInterface()
+{
+    QVERIFY(qobject_cast<Phonon::BackendInterface*>(Factory::self()->backend()) != 0);
+}
 
 void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
 #include "methods/abstractaudiooutput.cpp"
@@ -141,7 +147,7 @@ void MethodTest::checkMethods( QObject* backendObject )
 {
 	if( !backendObject )
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
-	meta = backendObject->metaObject();
+    const QMetaObject *meta = backendObject->metaObject();
 
 	QFETCH( QByteArray, returnType );
 	QFETCH( QByteArray, signature );

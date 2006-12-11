@@ -35,6 +35,7 @@
 #include "volumefadereffect.h"
 #include <QSet>
 #include "videodataoutput.h"
+#include <QVariant>
 
 typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Fake::Backend> FakeBackendFactory;
 K_EXPORT_COMPONENT_FACTORY( phonon_fake, FakeBackendFactory( "fakebackend" ) )
@@ -53,76 +54,50 @@ Backend::~Backend()
 {
 }
 
-QObject*      Backend::createMediaObject( QObject* parent )
+QObject* Backend::createObject0(BackendInterface::Class0 c, QObject *parent)
 {
-	return new MediaObject( parent );
+    switch (c) {
+        case MediaObjectClass:
+            return new MediaObject(parent);
+        case MediaQueueClass:
+            return new MediaQueue(parent);
+        case AvCaptureClass:
+            return new AvCapture(parent);
+        case ByteStreamClass:
+            return new ByteStream(parent);
+        case AudioPathClass:
+            return new AudioPath(parent);
+        case VolumeFaderEffectClass:
+            return new VolumeFaderEffect(parent);
+        case AudioOutputClass:
+            {
+                AudioOutput *ao = new AudioOutput(parent);
+                m_audioOutputs.append(ao);
+                return ao;
+            }
+        case AudioDataOutputClass:
+            return new AudioDataOutput(parent);
+        case VisualizationClass:
+            return new Visualization(parent);
+        case VideoPathClass:
+            return new VideoPath(parent);
+        case BrightnessControlClass:
+            return new BrightnessControl(parent);
+        case VideoDataOutputClass:
+            return new VideoDataOutput(parent);
+    }
+    return 0;
 }
 
-QObject*       Backend::createMediaQueue( QObject* parent )
+QObject* Backend::createObject1(BackendInterface::Class1 c, QObject *parent, QVariant arg1)
 {
-	return new MediaQueue( parent );
-}
-
-QObject*        Backend::createAvCapture( QObject* parent )
-{
-	return new AvCapture( parent );
-}
-
-QObject*       Backend::createByteStream( QObject* parent )
-{
-	return new ByteStream( parent );
-}
-
-QObject*        Backend::createAudioPath( QObject* parent )
-{
-	return new AudioPath( parent );
-}
-
-QObject*      Backend::createAudioEffect( int effectId, QObject* parent )
-{
-	return new AudioEffect( effectId, parent );
-}
-
-QObject*      Backend::createVolumeFaderEffect( QObject* parent )
-{
-	return new VolumeFaderEffect( parent );
-}
-
-QObject*      Backend::createAudioOutput( QObject* parent )
-{
-	AudioOutput* ao = new AudioOutput( parent );
-	m_audioOutputs.append( ao );
-	return ao;
-}
-
-QObject*  Backend::createAudioDataOutput( QObject* parent )
-{
-	return new AudioDataOutput( parent );
-}
-
-QObject*    Backend::createVisualization( QObject* parent )
-{
-	return new Visualization( parent );
-}
-
-QObject*        Backend::createVideoPath( QObject* parent )
-{
-	return new VideoPath( parent );
-}
-
-QObject*      Backend::createVideoEffect( int effectId, QObject* parent )
-{
-	return new VideoEffect( effectId, parent );
-}
-
-QObject* Backend::createBrightnessControl( QObject* parent )
-{
-	return new BrightnessControl( parent );
-}
-
-QObject*  Backend::createVideoDataOutput( QObject* parent )
-{
-	return new VideoDataOutput( parent );
+    switch (c) {
+        case AudioEffectClass:
+            return new AudioEffect(arg1.toInt(), parent);
+        case VideoEffectClass:
+            return new VideoEffect(arg1.toInt(), parent);
+    }
+    return 0;
 }
 
 bool Backend::supportsVideo() const

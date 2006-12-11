@@ -31,6 +31,7 @@
 #include <kstaticdeleter.h>
 
 #include <QtDBus/QtDBus>
+#include "backendinterface.h"
 
 static KStaticDeleter<Phonon::Factory> sd;
 
@@ -210,38 +211,34 @@ QObject* Factory::create ## classname( QObject* parent ) \
 { \
 	if( backend() ) \
 	{ \
-		QObject* ret; \
-		if( QMetaObject::invokeMethod( d->backend, "create"#classname, Qt::DirectConnection, Q_RETURN_ARG( QObject*, ret ), Q_ARG( QObject*, parent ) ) ) \
-			return registerQObject( ret ); \
+        return registerQObject(qobject_cast<BackendInterface*>(backend())->createObject0(BackendInterface::classname##Class, parent)); \
 	} \
 	return 0; \
 }
-#define FACTORY_IMPL_1ARG( type1, classname ) \
-QObject* Factory::create ## classname( type1 name1, QObject* parent ) \
+#define FACTORY_IMPL_1ARG( classname ) \
+QObject* Factory::create ## classname( int arg1, QObject* parent ) \
 { \
 	if( backend() ) \
 	{ \
-		QObject* ret; \
-		if( QMetaObject::invokeMethod( d->backend, "create"#classname, Qt::DirectConnection, Q_RETURN_ARG( QObject*, ret ), Q_ARG( type1, name1 ), Q_ARG( QObject*, parent ) ) ) \
-			return registerQObject( ret ); \
+        return registerQObject(qobject_cast<BackendInterface*>(backend())->createObject1(BackendInterface::classname##Class, parent, arg1)); \
 	} \
 	return 0; \
 }
 
-FACTORY_IMPL( MediaObject )
-FACTORY_IMPL( MediaQueue )
-FACTORY_IMPL( AvCapture )
-FACTORY_IMPL( ByteStream )
-FACTORY_IMPL( AudioPath )
-FACTORY_IMPL_1ARG( int, AudioEffect )
-FACTORY_IMPL( VolumeFaderEffect )
-FACTORY_IMPL( AudioOutput )
-FACTORY_IMPL( AudioDataOutput )
-FACTORY_IMPL( Visualization )
-FACTORY_IMPL( VideoPath )
-FACTORY_IMPL_1ARG( int, VideoEffect )
-FACTORY_IMPL( BrightnessControl )
-FACTORY_IMPL( VideoDataOutput )
+FACTORY_IMPL(MediaObject)
+FACTORY_IMPL(MediaQueue)
+FACTORY_IMPL(AvCapture)
+FACTORY_IMPL(ByteStream)
+FACTORY_IMPL(AudioPath)
+FACTORY_IMPL_1ARG(AudioEffect)
+FACTORY_IMPL(VolumeFaderEffect)
+FACTORY_IMPL(AudioOutput)
+FACTORY_IMPL(AudioDataOutput)
+FACTORY_IMPL(Visualization)
+FACTORY_IMPL(VideoPath)
+FACTORY_IMPL_1ARG(VideoEffect)
+FACTORY_IMPL(BrightnessControl)
+FACTORY_IMPL(VideoDataOutput)
 
 #undef FACTORY_IMPL
 

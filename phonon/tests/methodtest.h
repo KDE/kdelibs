@@ -26,6 +26,8 @@ class MethodTest : public QObject
 {
 	Q_OBJECT
 	private slots:
+        void checkBackendInterface();
+
 		void checkAudioDataOutputMethods_data();
 		void checkAudioDataOutputMethods();
 		void checkAudioEffectMethods_data();
@@ -64,7 +66,7 @@ class MethodTest : public QObject
 		void addColumns();
 		void addMethod( const char* returnType, const char* signature, bool optional = false );
 		void checkMethods( QObject* backendObject );
-		QObject* backendObject;
-		const QMetaObject* meta;
 };
 #endif // PHONON_METHODTEST_H
+
+// vim: ts=4
