@@ -291,6 +291,8 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
 void
 KCmdLineArgs::loadAppArgs( QDataStream &ds)
 {
+   parsed = true; // don't reparse argc/argv!
+
    // Remove Qt and KDE options.
    removeArgs("qt");
    removeArgs("kde");
