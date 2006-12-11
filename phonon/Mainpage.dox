@@ -113,7 +113,7 @@ throughout this documentation simply called Backend:
 
 \subsection phonon_mediaproducingclasses The classes producing media data (sources)
 
-\li \ref phonon_AbstractMediaProducer "common methods/signals for media producing classes"
+\li \ref Phonon::MediaProducerInterface "common methods/signals for media producing classes"
 \li \ref phonon_AvCapture "AvCapture"
 \li \ref phonon_ByteStream "ByteStream"
 \li \ref phonon_MediaObject "MediaObject"
@@ -139,6 +139,10 @@ throughout this documentation simply called Backend:
 
 
 */
-// DOXYGEN_REFERENCES = kdecore kdeui kio phonon/ui
-// DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR
+// DOXYGEN_REFERENCES = kdecore kdeui kio
+// DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_OBJECT PHONON_HEIR
+// DOXYGEN_SET_HIDE_SCOPE_NAMES = YES
+// DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
+// DOXYGEN_SET_PROJECT_NAME = Phonon
+// DOXYGEN_SET_EXCLUDE += kcm DESIGN
 // vim: tw=80
