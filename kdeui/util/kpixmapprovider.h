@@ -35,7 +35,7 @@
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short an abstract interface for looking up icons
  */
-class KDECORE_EXPORT KPixmapProvider
+class KDEUI_EXPORT KPixmapProvider
 {
 public:
     virtual ~KPixmapProvider();
