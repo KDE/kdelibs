@@ -1776,6 +1776,18 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 		case SH_ComboBox_ListMouseTracking:
 		case SH_ScrollBar_MiddleClickAbsolutePosition:
 			return 1;
+		case SH_LineEdit_PasswordCharacter:
+		{
+			if (w) {
+				const QFontMetrics &fm = w->fontMetrics();
+				if (fm.inFont(QChar(0x25CF))) {
+					return 0x25CF;
+				} else if (fm.inFont(QChar(0x2022))) {
+					return 0x2022;
+				}
+			}
+			return '*';
+		}
 
 		default:
 			return QCommonStyle::styleHint(sh, w, opt, shr);
