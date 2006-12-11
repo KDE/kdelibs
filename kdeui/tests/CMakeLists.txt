@@ -705,19 +705,6 @@ target_link_libraries(kglobalacceltest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kactivelabeltest_SRCS
-kactivelabeltest.cpp
-)
-
-kde4_automoc(${kactivelabeltest_SRCS})
-
-kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
-
-target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(knotificationrestrictionstest_SRCS
 knotificationrestrictionstest.cpp
 )

@@ -25,6 +25,7 @@ set(kde3support_LIB_SRCS
   kdecore/k3multipledrag.cpp
   kdecore/k3tempfile.cpp
   kdecore/k3mimesourcefactory.cpp
+  kdeui/k3activelabel.cpp
   kdeui/k3dockwidget.cpp
   kdeui/k3dockwidget_private.cpp
   kdeui/k3popupmenu.cpp
@@ -64,6 +65,8 @@ install( FILES
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
   kdecore/k3mimesourcefactory.h
+  kdeui/kactivelabel.h
+  kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
   kdeui/k3popupmenu.h
   kdeui/k3textedit.h

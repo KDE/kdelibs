@@ -1,5 +1,5 @@
 /*
-* Tests the KActiveLabel Widget class
+* Tests the K3ActiveLabel Widget class
 *
 * Copyright 2006 by Tobias Koenig <tokoe@kde.org>
 *
@@ -12,18 +12,18 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 
-#include "kactivelabel.h"
+#include "k3activelabel.h"
 
 #include "kactivelabeltest.h"
 
 KActiveLabelTest::KActiveLabelTest(QWidget *parent)
     : QWidget(parent)
 {
-  setWindowTitle( "KActiveLabel test application" );
+  setWindowTitle( "K3ActiveLabel test application" );
 
   QVBoxLayout *layout = new QVBoxLayout( this );
 
-  KActiveLabel *label = new KActiveLabel( this );
+  K3ActiveLabel *label = new K3ActiveLabel( this );
   label->setHtml( "That's a small test text ;) <a href=\"whatsthis:click me if you can\">Click me</a>" );
 
   layout->addWidget( label );

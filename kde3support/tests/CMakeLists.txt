@@ -5,6 +5,18 @@ if(KDE4_BUILD_TESTS)
    
    
    ########### next target ###############
+
+   set(kactivelabeltest_SRCS
+   kactivelabeltest.cpp
+   )
+
+   kde4_automoc(${kactivelabeltest_SRCS})
+
+   kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
+
+   target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS} kde3support)
+
+   ########### next target ###############
    
    set(kdockwidgetdemo_SRCS kdockwidgetdemo.cpp )
    

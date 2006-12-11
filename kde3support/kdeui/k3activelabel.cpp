@@ -26,19 +26,19 @@
 
 #include <ktoolinvocation.h>
 
-#include "kactivelabel.h"
+#include "k3activelabel.h"
 
-class KActiveLabelPrivate
+class K3ActiveLabelPrivate
 {
 public:
-    KActiveLabelPrivate(KActiveLabel *qq);
+    K3ActiveLabelPrivate(K3ActiveLabel *qq);
 
     void updatePalette();
 
-    KActiveLabel *q;
+    K3ActiveLabel *q;
 };
 
-KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
+K3ActiveLabelPrivate::K3ActiveLabelPrivate(K3ActiveLabel *qq)
     : q(qq)
 {
    q->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -48,7 +48,7 @@ KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
    updatePalette();
 }
 
-void KActiveLabelPrivate::updatePalette()
+void K3ActiveLabelPrivate::updatePalette()
 {
     QPalette p = q->palette();
     p.setBrush(QPalette::Base, p.brush(QPalette::Normal, QPalette::Background));
@@ -56,37 +56,37 @@ void KActiveLabelPrivate::updatePalette()
     q->setPalette(p);
 }
 
-KActiveLabel::KActiveLabel(QWidget * parent)
- : KTextBrowser(parent),d(new KActiveLabelPrivate(this))
+K3ActiveLabel::K3ActiveLabel(QWidget * parent)
+ : KTextBrowser(parent),d(new K3ActiveLabelPrivate(this))
 {
 }
 
-KActiveLabel::KActiveLabel(const QString &text, QWidget * parent)
- : KTextBrowser(parent),d(new KActiveLabelPrivate(this))
+K3ActiveLabel::K3ActiveLabel(const QString &text, QWidget * parent)
+ : KTextBrowser(parent),d(new K3ActiveLabelPrivate(this))
 {
     setHtml(text);
 }
 
-KActiveLabel::~KActiveLabel()
+K3ActiveLabel::~K3ActiveLabel()
 {
     delete d;
 }
 
-void KActiveLabel::focusInEvent( QFocusEvent* fe )
+void K3ActiveLabel::focusInEvent( QFocusEvent* fe )
 {
    KTextBrowser::focusInEvent(fe);
    if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
       selectAll();
 }
 
-void KActiveLabel::focusOutEvent( QFocusEvent* fe )
+void K3ActiveLabel::focusOutEvent( QFocusEvent* fe )
 {
    KTextBrowser::focusOutEvent(fe);
    if(fe->reason() == Qt::TabFocusReason || fe->reason() == Qt::BacktabFocusReason)
       selectAll(); //TODO reimplement: deselect text
 }
 
-void KActiveLabel::keyPressEvent( QKeyEvent *e )
+void K3ActiveLabel::keyPressEvent( QKeyEvent *e )
 {
     switch ( e->key() )
     {
@@ -103,7 +103,7 @@ void KActiveLabel::keyPressEvent( QKeyEvent *e )
     }
 }
 
-bool KActiveLabel::event(QEvent *e)
+bool K3ActiveLabel::event(QEvent *e)
 {
     // call the base implementation first so it updates
     // our palette
@@ -114,7 +114,7 @@ bool KActiveLabel::event(QEvent *e)
     return result;
 }
 
-QSize KActiveLabel::minimumSizeHint() const
+QSize K3ActiveLabel::minimumSizeHint() const
 {
    QSize ms = minimumSize();
    if ((ms.width() > 0) && (ms.height() > 0))
@@ -137,9 +137,9 @@ QSize KActiveLabel::minimumSizeHint() const
    return QSize(w, h);
 }
 
-QSize KActiveLabel::sizeHint() const
+QSize K3ActiveLabel::sizeHint() const
 {
    return minimumSizeHint();
 }
 
-#include "kactivelabel.moc"
+#include "k3activelabel.moc"

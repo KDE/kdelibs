@@ -22,7 +22,7 @@
 
 #include <ktextbrowser.h>
 
-class KActiveLabelPrivate;
+class K3ActiveLabelPrivate;
  /**
   * Label with support for selection and clickable links.
   *
@@ -32,21 +32,21 @@ class KActiveLabelPrivate;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT_DEPRECATED KActiveLabel : public KTextBrowser
+class KDEUI_EXPORT_DEPRECATED K3ActiveLabel : public KTextBrowser
 {
     Q_OBJECT
 public:
     /**
      * Constructor.
      */
-    explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(QWidget * parent = 0);
+    explicit KDE_CONSTRUCTOR_DEPRECATED K3ActiveLabel(QWidget * parent = 0);
 
     /**
      * Constructor.
      */
-    explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(const QString & text, QWidget * parent = 0);
+    explicit KDE_CONSTRUCTOR_DEPRECATED K3ActiveLabel(const QString & text, QWidget * parent = 0);
 
-    virtual ~KActiveLabel();
+    virtual ~K3ActiveLabel();
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -57,7 +57,7 @@ protected:
     virtual void keyPressEvent ( QKeyEvent * e );
     virtual bool event(QEvent *e);
 private:
-    KActiveLabelPrivate *const d;
+    K3ActiveLabelPrivate *const d;
 };
 
 #endif

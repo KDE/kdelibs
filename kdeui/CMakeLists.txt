@@ -43,7 +43,6 @@ set(kdeui_LIB_SRCS
  kwindowlistmenu.cpp
  kmainwindowiface.cpp
  kstdguiitem.cpp
- kactivelabel.cpp
  ktoolbarhandler.cpp
  ksplashscreen.cpp
  klanguagebutton.cpp
@@ -210,7 +209,6 @@ install( FILES
  kmenubar.h
  krestrictedline.h
  kurllabel.h
- kactivelabel.h
  kpagemodel.h
  kpageview.h
  kpagewidget.h
