@@ -554,7 +554,7 @@ apidox_subdir()
 	# Mainpage.doxs may contain overrides to our settings,
 	# so copy them in.
 	grep '^//[[:space:]]*DOXYGEN_SET_' "$srcdir/Mainpage.dox" | \
-		sed -e 's+//\s*DOXYGEN_SET_++' >> "$subdir/Doxyfile"
+		sed -e 's+//[[:space:]]*DOXYGEN_SET_++' >> "$subdir/Doxyfile"
 	apidox_specials "$srcdir/Mainpage.dox" "$subdir/Doxyfile"
 
 	excludes=`extract_line DOXYGEN_EXCLUDE`
