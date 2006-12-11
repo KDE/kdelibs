@@ -88,6 +88,8 @@ set(kdeui_LIB_SRCS
  kernel/kapplication.cpp
  kernel/kuniqueapplication.cpp
  kernel/kstartupinfo.cpp
+ util/kacceleratormanager.cpp
+ util/kcheckaccelerators.cpp
  util/kcolormimedata.cpp
  util/kcommand.cpp
  util/kcompletion.cpp
@@ -309,6 +311,7 @@ install( FILES
  kernel/kapplication.h
  kernel/kuniqueapplication.h
  kernel/kstartupinfo.h
+ util/kacceleratormanager.h
  util/kaccelgen.h
  util/kcolormimedata.h
  util/kcommand.h

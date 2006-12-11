@@ -62,7 +62,7 @@ class QTextBrowser;
  there are shown all conflicts grouped by accelerator, and a list of all used
  accelerators.
 */
-class KDECORE_EXPORT KCheckAccelerators : public QObject
+class KDEUI_EXPORT KCheckAccelerators : public QObject
 {
     Q_OBJECT
 public:

@@ -134,7 +134,6 @@ set(kdecore_LIB_SRCS
    kpalette.cpp
    klibloader.cpp
    ktemporaryfile.cpp
-   kacceleratormanager.cpp
    ksavefile.cpp
    krandomsequence.cpp
    kstringhandler.cpp
@@ -152,7 +151,6 @@ set(kdecore_LIB_SRCS
    kcatalog.cpp
    kstaticdeleter.cpp
    kclipboard.cpp
-   kcheckaccelerators.cpp
    kdeversion.cpp
    kdebugdbusiface.cpp
    kcalendarsystem.cpp
@@ -316,7 +314,6 @@ install( FILES
    knotifyclient.h
    kiconeffect.h
    netwm.h
-   kacceleratormanager.h
    netwm_def.h
    kstaticdeleter.h
    kprocio.h

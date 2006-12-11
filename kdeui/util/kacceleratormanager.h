@@ -35,7 +35,7 @@ class QString;
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
 */
 
-class KDECORE_EXPORT KAcceleratorManager
+class KDEUI_EXPORT KAcceleratorManager
 {
 public:
 
