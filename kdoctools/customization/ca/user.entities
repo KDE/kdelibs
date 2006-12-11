@@ -34,6 +34,7 @@
 <!ENTITY Maj	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
 <!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
 <!ENTITY Tab	"<keycap>Tabulador</keycap>">
+<!ENTITY IGU	"<acronym>IGU</acronym>"><!-- English: &GUI; -->
 
 <!-- ROLES OF TRANSLATORS -->
 <!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>bella5@teleline.es</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
