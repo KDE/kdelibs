@@ -45,10 +45,10 @@ AbstractMediaProducer::~AbstractMediaProducer()
 	Phonon::State s = state();
 	if( s != ErrorState || s != StoppedState || s != LoadingState )
 		stop();
-	foreach( VideoPath* vp, d->videoPaths )
-		vp->removeDestructionHandler( d );
-	foreach( AudioPath* ap, d->audioPaths )
-		ap->removeDestructionHandler( d );
+    foreach(VideoPath* vp, d->videoPaths)
+        d->removeDestructionHandler(vp, d);
+    foreach(AudioPath* ap, d->audioPaths)
+        d->removeDestructionHandler(ap, d);
 }
 
 bool AbstractMediaProducer::addVideoPath( VideoPath* videoPath )
@@ -61,7 +61,7 @@ bool AbstractMediaProducer::addVideoPath( VideoPath* videoPath )
 	{
 		if( qobject_cast<MediaProducerInterface*>( d->backendObject )->addVideoPath( videoPath->iface() ) )
 		{
-			videoPath->addDestructionHandler( d );
+            d->addDestructionHandler(videoPath, d);
 			d->videoPaths.append( videoPath );
 			return true;
 		}
@@ -79,7 +79,7 @@ bool AbstractMediaProducer::addAudioPath( AudioPath* audioPath )
 	{
 		if( qobject_cast<MediaProducerInterface*>( d->backendObject )->addAudioPath( audioPath->iface() ) )
 		{
-			audioPath->addDestructionHandler( d );
+            d->addDestructionHandler(audioPath, d);
 			d->audioPaths.append( audioPath );
 			return true;
 		}

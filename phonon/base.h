@@ -29,12 +29,12 @@ namespace Phonon
 	class BasePrivate;
 	class BaseDestructionHandler;
 
-	/**
-	 * \internal
-	 * Base class for all %Phonon frontend classes.
-	 *
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
+    /**
+     * Base class for all %Phonon frontend classes. This class is mostly an
+     * implementation detail, except for the isValid() method.
+     *
+     * \author Matthias Kretz <kretz@kde.org>
+     */
 	class PHONONCORE_EXPORT Base
 	{
 		K_DECLARE_PRIVATE( Base )
@@ -45,31 +45,14 @@ namespace Phonon
 			 */
 			Base( BasePrivate& d );
 
+            /**
+             * \internal
+             * Delete the object.
+             * calls phononObjectDestroyed for all registered BaseDestructionHandler objects.
+             */
 			virtual ~Base();
 
 		public:
-			/**
-			 * \internal
-			 * This class has its own destroyed signal since some cleanup calls
-			 * need the pointer to the Ifaces object intact. The
-			 * QObject::destroyed signals comes after the Ifaces object was
-			 * deleted.
-			 *
-			 * As this class cannot derive from QObject a simple handler
-			 * interface is used.
-			 */
-			void addDestructionHandler( BaseDestructionHandler* handler );
-			/**
-			 * \internal
-			 * This class has its own destroyed signal since some cleanup calls
-			 * need the pointer to the Ifaces object intact. The
-			 * QObject::destroyed signals comes after the Ifaces object was
-			 * deleted.
-			 *
-			 * As this class cannot derive from QObject a simple handler
-			 * interface is used.
-			 */
-			void removeDestructionHandler( BaseDestructionHandler* handler );
 
 			/**
 			 * Tells whether the backend provides an implementation of this

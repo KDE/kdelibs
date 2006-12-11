@@ -38,7 +38,7 @@ class BaseDestructionHandler
 		/**
 		 * \internal
 		 * called from Base::~Base if this object was registered
-		 * using Base::addDestructionHandler().
+		 * using BasePrivate::addDestructionHandler().
 		 */
 		virtual void phononObjectDestroyed( Base* ) = 0;
 };

@@ -32,10 +32,10 @@ PHONON_OBJECT_IMPL
 Visualization::~Visualization()
 {
 	K_D( Visualization );
-	if( d->audioPath )
-		d->audioPath->removeDestructionHandler( d );
-	if( d->videoOutput )
-		d->videoOutput->removeDestructionHandler( d );
+    if(d->audioPath)
+        d->removeDestructionHandler(d->audioPath, d);
+    if(d->videoOutput)
+        d->removeDestructionHandler(d->videoOutput, d);
 }
 
 AudioPath* Visualization::audioPath() const
@@ -48,7 +48,7 @@ void Visualization::setAudioPath( AudioPath* audioPath )
 {
 	K_D( Visualization );
 	d->audioPath = audioPath;
-	d->audioPath->addDestructionHandler( d );
+    d->addDestructionHandler(d->audioPath, d);
 	if( iface() )
 		BACKEND_CALL1( "setAudioPath", QObject*, audioPath->iface() );
 }
@@ -63,7 +63,7 @@ void Visualization::setVideoOutput( AbstractVideoOutput* videoOutput )
 {
 	K_D( Visualization );
 	d->videoOutput = videoOutput;
-	d->videoOutput->addDestructionHandler( d );
+    d->addDestructionHandler(videoOutput, d);
 	if( iface() )
 		BACKEND_CALL1( "setVideoOutput", QObject*, videoOutput->iface() );
 }

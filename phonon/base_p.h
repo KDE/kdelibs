@@ -82,6 +82,37 @@ class BasePrivate
 		Base* q_ptr;
 		QObject* backendObject;
 
+    protected:
+        /**
+         * \internal
+         * This class has its own destroyed signal since some cleanup calls
+         * need the pointer to the backend object intact. The
+         * QObject::destroyed signals comes after the backend object was
+         * deleted.
+         *
+         * As this class cannot derive from QObject a simple handler
+         * interface is used.
+         */
+        void addDestructionHandler(Base *to, BaseDestructionHandler *handler)
+        {
+            to->k_ptr->handlers.append(handler);
+        }
+
+        /**
+         * \internal
+         * This class has its own destroyed signal since some cleanup calls
+         * need the pointer to the backend object intact. The
+         * QObject::destroyed signals comes after the backend object was
+         * deleted.
+         *
+         * As this class cannot derive from QObject a simple handler
+         * interface is used.
+         */
+        void removeDestructionHandler(Base *from, BaseDestructionHandler *handler)
+        {
+            from->k_ptr->handlers.removeAll(handler);
+        }
+
 	private:
 		QList<BaseDestructionHandler*> handlers;
 };

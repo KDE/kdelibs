@@ -32,10 +32,10 @@ PHONON_OBJECT_IMPL
 AudioPath::~AudioPath()
 {
 	K_D( AudioPath );
-	foreach( AbstractAudioOutput* ao, d->outputs )
-		ao->removeDestructionHandler( d );
-	foreach( AudioEffect* ae, d->effects )
-		ae->removeDestructionHandler( d );
+    foreach(AbstractAudioOutput *ao, d->outputs)
+        d->removeDestructionHandler(ao, d);
+    foreach(AudioEffect *ae, d->effects)
+        d->removeDestructionHandler(ae, d);
 }
 
 bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
@@ -50,7 +50,7 @@ bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
 		BACKEND_GET1( bool, success, "addOutput", QObject*, audioOutput->iface() );
 		if( success )
 		{
-			audioOutput->addDestructionHandler( d );
+            d->addDestructionHandler(audioOutput, d);
 			d->outputs << audioOutput;
 			return true;
 		}
@@ -97,7 +97,7 @@ bool AudioPath::insertEffect( AudioEffect* newEffect, AudioEffect* insertBefore 
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
 		{
-			newEffect->addDestructionHandler( d );
+            d->addDestructionHandler(newEffect, d);
 			if( insertBefore )
 				d->effects.insert( d->effects.indexOf( insertBefore ), newEffect );
 			else

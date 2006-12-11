@@ -42,18 +42,6 @@ namespace Phonon
 		k_ptr = 0;
 	}
 
-	void Base::addDestructionHandler( BaseDestructionHandler* handler )
-	{
-		K_D( Base );
-		d->handlers.append( handler );
-	}
-
-	void Base::removeDestructionHandler( BaseDestructionHandler* handler )
-	{
-		K_D( Base );
-		d->handlers.removeAll( handler );
-	}
-
 	QObject* Base::iface()
 	{
 		K_D( Base );

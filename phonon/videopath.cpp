@@ -32,10 +32,10 @@ PHONON_OBJECT_IMPL
 VideoPath::~VideoPath()
 {
 	K_D( VideoPath );
-	foreach( AbstractVideoOutput* vo, d->outputs )
-		vo->removeDestructionHandler( d );
-	foreach( VideoEffect* ve, d->effects )
-		ve->removeDestructionHandler( d );
+    foreach(AbstractVideoOutput* vo, d->outputs)
+        d->removeDestructionHandler(vo, d);
+    foreach(VideoEffect* ve, d->effects)
+        d->removeDestructionHandler(ve, d);
 }
 
 bool VideoPath::addOutput( AbstractVideoOutput* videoOutput )
@@ -50,7 +50,7 @@ bool VideoPath::addOutput( AbstractVideoOutput* videoOutput )
 		BACKEND_GET1( bool, success, "addOutput", QObject*, videoOutput->iface() );
 		if( success )
 		{
-			videoOutput->addDestructionHandler( d );
+            d->addDestructionHandler(videoOutput, d);
 			d->outputs << videoOutput;
 			return true;
 		}
@@ -97,7 +97,7 @@ bool VideoPath::insertEffect( VideoEffect* newEffect, VideoEffect* insertBefore 
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
 		{
-			newEffect->addDestructionHandler( d );
+            d->addDestructionHandler(newEffect, d);
 			if( insertBefore )
 				d->effects.insert( d->effects.indexOf( insertBefore ), newEffect );
 			else
