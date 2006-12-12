@@ -78,8 +78,6 @@ Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
 #include <klocale.h>
 #include <kurl.h>
 
-#include "kcheckaccelerators.h"
-
 #include <qassistantclient.h>
 #include <qdir.h>
 
