@@ -32,7 +32,7 @@ class K3ActiveLabelPrivate;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT_DEPRECATED K3ActiveLabel : public KTextBrowser
+class KDE3SUPPORT_EXPORT K3ActiveLabel : public KTextBrowser
 {
     Q_OBJECT
 public:
