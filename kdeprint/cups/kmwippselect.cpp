@@ -75,7 +75,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 	IppRequest	req;
 	QString		uri;
 	req.setOperation(CUPS_GET_PRINTERS);
-	uri = QString::fromLatin1("ipp://%1:%2/printers/").arg(url.host()).arg(url.port());
+	uri = QString::fromLatin1("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QString::fromLatin1("printer-name"));
 	if (req.doRequest("/printers/"))

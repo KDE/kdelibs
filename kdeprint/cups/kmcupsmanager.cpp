@@ -60,9 +60,9 @@
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
-void extractMaticData(QString& buf, const QString& filename);
-QString printerURI(KMPrinter *p, bool useExistingURI = false);
-QString downloadDriver(KMPrinter *p);
+static void extractMaticData(QString& buf, const QString& filename);
+static QString printerURI(KMPrinter *p, bool useExistingURI = false);
+static QString downloadDriver(KMPrinter *p);
 
 static int trials = 5;
 
@@ -912,7 +912,9 @@ QString KMCupsManager::stateInformation()
 {
 	return QString("%1: %2")
 		.arg(i18n("Server"))
-		.arg(CupsInfos::self()->hostaddr());
+		.arg(CupsInfos::self()->host()[0] != '/' ?
+			QString("%1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port())
+			: CupsInfos::self()->host());
 }
 
 void KMCupsManager::checkUpdatePossibleInternal()
@@ -1012,7 +1014,7 @@ void KMCupsManager::hostPingFailedSlot() {
 
 //*****************************************************************************************************
 
-void extractMaticData(QString& buf, const QString& filename)
+static void extractMaticData(QString& buf, const QString& filename)
 {
 	QFile	f(filename);
 	if (f.exists() && f.open(IO_ReadOnly))
@@ -1028,7 +1030,7 @@ void extractMaticData(QString& buf, const QString& filename)
 	}
 }
 
-QString printerURI(KMPrinter *p, bool use)
+static QString printerURI(KMPrinter *p, bool use)
 {
 	QString	uri;
 	if (use && !p->uri().isEmpty())
@@ -1038,7 +1040,7 @@ QString printerURI(KMPrinter *p, bool use)
 	return uri;
 }
 
-QString downloadDriver(KMPrinter *p)
+static QString downloadDriver(KMPrinter *p)
 {
 	QString	driverfile, prname = p->printerName();
 	bool	changed(false);

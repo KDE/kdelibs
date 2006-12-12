@@ -73,7 +73,7 @@ QString CupsInfos::hostaddr() const
 {
     if (host_[0] != '/')
         return host_ + ":" + QString::number(port_);
-    return host_;
+    return "localhost";
 }
 
 void CupsInfos::setHost(const QString& s)

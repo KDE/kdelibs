@@ -20,23 +20,6 @@
 #include "util.h"
 #include <qstringlist.h>
 
-KURL smbToUrl(const QString& work, const QString& server, const QString& printer)
-{
-	KURL	url;
-	url.setProtocol("smb");
-	if (!work.isEmpty())
-	{
-		url.setHost(work);
-		url.setPath("/" + server + "/" + printer);
-	}
-	else
-	{
-		url.setHost(server);
-		url.setPath("/" + printer);
-	}
-	return url;
-}
-
 void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 {
 	if (url.protocol() != "smb")
@@ -83,21 +66,6 @@ KURL smbToUrl(const QString& s)
 		}
 	}
 	return url;
-}
-
-QString urlToSmb(const KURL& url)
-{
-	// do not encode special chars in login/password
-	QString	s = "smb://";
-	if (!url.user().isEmpty())
-	{
-		s.append(url.user());
-		if (!url.pass().isEmpty())
-			s.append(":").append(url.pass());
-		s.append("@");
-	}
-	s.append(url.host()).append(KURL::decode_string(url.path()));
-	return s;
 }
 
 int findIndex(int ID)
@@ -168,24 +136,4 @@ bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& p
 		return true;
 	}
 	return false;
-}
-
-QString shadowPassword( const QString& uri )
-{
-	QString result = uri;
-	int p = result.find( ':' );
-	if ( p != -1 )
-	{
-		while ( result[ ++p ] == '/' );
-		int p1 = result.find( '@', p );
-		if ( p1 != -1 )
-		{
-			int p2 = result.find( ':', p );
-			if ( p2 != -1 && p2 < p1 )
-			{
-				result.replace( p2, p1-p2, "" );
-			}
-		}
-	}
-	return result;
 }

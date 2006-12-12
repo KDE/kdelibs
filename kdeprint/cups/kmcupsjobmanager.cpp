@@ -92,7 +92,9 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 			case KMJob::Move:
 				if (argstr.isEmpty()) return false;
 				req.setOperation(CUPS_MOVE_JOB);
-				uri = QString::fromLatin1("ipp://%1:%2/printers/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(argstr);
+				uri =
+				    QString::fromLatin1("ipp://%1/printers/%2").arg(CupsInfos::self()->hostaddr(),
+					    argstr);
 				req.addURI(IPP_TAG_OPERATION, "job-printer-uri", uri);
 				break;
 			default:
@@ -109,7 +111,6 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType type, int limit)
 {
 	IppRequest	req;
-	QString		uri("ipp://%1:%2/%3/%4");
 	QStringList	keys;
 	CupsInfos	*infos = CupsInfos::self();
 
@@ -143,7 +144,8 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 		*/
 	}
 	else
-		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri.arg(infos->host()).arg(infos->port()).arg(((mp&&mp->isClass())?"classes":"printers")).arg(prname));
+		req.addURI(IPP_TAG_OPERATION, "printer-uri", QString("ipp://%1/%2/%3").arg(infos->hostaddr(),
+                            (mp&&mp->isClass())?"classes":"printers", prname));
 
 	// other attributes
 	req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
