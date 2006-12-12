@@ -141,8 +141,9 @@ void HTMLObjectBaseElementImpl::renderAlternative()
 
 void HTMLObjectBaseElementImpl::slotRenderAlternative()
 {
-    // an unbelievable hack. FIXME!!
-    if ( m_renderAlternative ) return;
+    // the singleshot timer might have fired after we're removed
+    // from the document, but not yet deleted due to references
+    if ( !inDocument() || m_renderAlternative ) return;
 
     // ### there can be a m_render if this is called from our attach indirectly
     if ( attached() || m_render)
