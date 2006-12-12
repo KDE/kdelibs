@@ -146,7 +146,7 @@ instead.</li>
 anymore but instead operate on QAction pointers. If you get compilation errors with code like the
 following then just replace KAction with QAction:
 <pre>
-KAction *a = actionCollection()->action("foo");
+KAction *a = actionCollection()-&gt;action("foo");
 ...
 </pre>
 Also if you get errors about KAction being an unknown type it is often enough to forward declare
