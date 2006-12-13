@@ -31,6 +31,7 @@
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdialog.h>
