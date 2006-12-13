@@ -40,17 +40,17 @@
 //#define DEBUG_RECTS
 
 
-namespace
+struct Margin
 {
-    const int selectionHMargin = 6;
-    const int selectionVMargin = 2;
-    const int textHMargin = 5;
-}
+    int left, right, top, bottom;
+};
 
 
 class KFileItemDelegate::Private
 {
     public:
+        enum MarginType { ItemMargin = 0, TextMargin, IconMargin, NMargins };
+
         Private(KFileItemDelegate *parent) : q(parent) {}
         ~Private() {}
 
@@ -76,10 +76,87 @@ class KFileItemDelegate::Private
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         inline bool alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        inline void setActiveMargins(Qt::Orientation layout);
+        void setVerticalMargin(MarginType type, int left, int right, int top, int bottom);
+        void setHorizontalMargin(MarginType type, int left, int right, int top, int bottom);
+        inline void setVerticalMargin(MarginType type, int hor, int ver);
+        inline void setHorizontalMargin(MarginType type, int hor, int ver);
+        inline QRect addMargin(const QRect &rect, MarginType type) const;
+        inline QRect subtractMargin(const QRect &rect, MarginType type) const;
+        inline QSize addMargin(const QSize &size, MarginType type) const;
+        inline QSize subtractMargin(const QSize &size, MarginType type) const;
 
     private:
         KFileItemDelegate * const q;
+        Margin verticalMargin[NMargins];
+        Margin horizontalMargin[NMargins];
+        Margin *activeMargins;
 };
+
+
+void KFileItemDelegate::Private::setActiveMargins(Qt::Orientation layout)
+{
+    activeMargins = (layout == Qt::Horizontal ?
+            horizontalMargin : verticalMargin);
+}
+
+
+void KFileItemDelegate::Private::setVerticalMargin(MarginType type, int left, int top, int right, int bottom)
+{
+    verticalMargin[type].left   = left;
+    verticalMargin[type].right  = right;
+    verticalMargin[type].top    = top;
+    verticalMargin[type].bottom = bottom;
+}
+
+
+void KFileItemDelegate::Private::setHorizontalMargin(MarginType type, int left, int top, int right, int bottom)
+{
+    horizontalMargin[type].left   = left;
+    horizontalMargin[type].right  = right;
+    horizontalMargin[type].top    = top;
+    horizontalMargin[type].bottom = bottom;
+}
+
+
+void KFileItemDelegate::Private::setVerticalMargin(MarginType type, int horizontal, int vertical)
+{
+    setVerticalMargin(type, horizontal, vertical, horizontal, vertical);
+}
+
+
+void KFileItemDelegate::Private::setHorizontalMargin(MarginType type, int horizontal, int vertical)
+{
+    setHorizontalMargin(type, horizontal, vertical, horizontal, vertical);
+}
+
+
+QRect KFileItemDelegate::Private::addMargin(const QRect &rect, MarginType type) const
+{
+    const Margin &m = activeMargins[type];
+    return rect.adjusted(-m.left, -m.top, m.right, m.bottom);
+}
+
+
+QRect KFileItemDelegate::Private::subtractMargin(const QRect &rect, MarginType type) const
+{
+    const Margin &m = activeMargins[type];
+    return rect.adjusted(m.left, m.top, -m.right, -m.bottom);
+}
+
+
+QSize KFileItemDelegate::Private::addMargin(const QSize &size, MarginType type) const
+{
+    const Margin &m = activeMargins[type];
+    return QSize(size.width() + m.left + m.right, size.height() + m.top + m.bottom);
+}
+
+
+QSize KFileItemDelegate::Private::subtractMargin(const QSize &size, MarginType type) const
+{
+    const Margin &m = activeMargins[type];
+    return QSize(size.width() - m.left - m.right, size.height() - m.top - m.bottom);
+}
 
 
 bool KFileItemDelegate::Private::wordWrapText(const QStyleOptionViewItem &option) const
@@ -255,11 +332,7 @@ QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItem &op
     setLayoutOptions(layout, option, index);
 
     QSize size = layoutText(layout, label, maxWidth);
-
-    size.rwidth()  += selectionHMargin * 2;
-    size.rheight() += selectionVMargin * 2;
-
-    return size;
+    return addMargin(size, TextMargin);
 }
 
 
@@ -268,10 +341,7 @@ QSize KFileItemDelegate::Private::decorationSizeHint(const QStyleOptionViewItem 
 {
     Q_UNUSED(index)
 
-    int focusHMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
-    int focusVMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameVMargin);
-
-    return option.decorationSize + QSize(focusHMargin * 2, focusVMargin * 2);
+    return addMargin(option.decorationSize, IconMargin);
 }
 
 
@@ -405,6 +475,18 @@ bool KFileItemDelegate::Private::alternateBackground(const QStyleOptionViewItem 
 KFileItemDelegate::KFileItemDelegate(QObject *parent)
     : QItemDelegate(parent), d(new Private(this))
 {
+    int focusHMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
+    int focusVMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameVMargin);
+
+    // Margins for horizontal mode (list views, tree views, table views)
+    d->setHorizontalMargin(Private::TextMargin, focusHMargin, focusVMargin);
+    d->setHorizontalMargin(Private::IconMargin, focusHMargin, focusVMargin);
+    d->setHorizontalMargin(Private::ItemMargin, 0, 0);
+
+    // Margins for vertical mode (icon views)
+    d->setVerticalMargin(Private::TextMargin, 6, 2);
+    d->setVerticalMargin(Private::IconMargin, focusHMargin, focusVMargin);
+    d->setVerticalMargin(Private::ItemMargin, 0, 0);
 }
 
 
@@ -421,15 +503,25 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     if (value.isValid())
         return qvariant_cast<QSize>(value);
 
+    d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
+
     const QSize displaySize    = d->displaySizeHint(option, index);
     const QSize decorationSize = d->decorationSizeHint(option, index);
 
+    QSize size;
+
     if (d->verticalLayout(option))
-        return QSize(qMax(decorationSize.width(), displaySize.width()),
-                     decorationSize.height() + displaySize.height() + 1);
+    {
+        size.rwidth()  = qMax(decorationSize.width(), displaySize.width());
+        size.rheight() = decorationSize.height() + displaySize.height() + 1;
+    }
     else
-        return QSize(decorationSize.width() + displaySize.width() + 1,
-                     qMax(decorationSize.height(), displaySize.height()));
+    {
+        size.rwidth()  = decorationSize.width() + displaySize.width() + 1;
+        size.rheight() = qMax(decorationSize.height(), displaySize.height());
+    }
+
+    return d->addMargin(size, Private::ItemMargin);
 }
 
 
@@ -492,45 +584,40 @@ QRect KFileItemDelegate::labelRectangle(const QStyleOptionViewItem &option, cons
 {
     Q_UNUSED(string)
 
-    int focusHMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
-    int focusVMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameVMargin);
-    int decoHeight   = option.decorationSize.height() + focusHMargin * 2 + 1;
-    int decoWidth    = option.decorationSize.width()  + focusVMargin * 2 + 1;
-
     if (icon.isNull())
         return option.rect;
 
-    QRect textArea(QPoint(0, 0), option.rect.size());
+    const QSize decoSize = d->addMargin(option.decorationSize, Private::IconMargin);
+    const QRect itemRect = d->subtractMargin(option.rect, Private::ItemMargin);
+    QRect textArea(QPoint(0, 0), itemRect.size());
 
     switch (option.decorationPosition)
     {
         case QStyleOptionViewItem::Top:
-            textArea.setTop(decoHeight);
+            textArea.setTop(decoSize.height() + 1);
             break;
 
         case QStyleOptionViewItem::Bottom:
-            textArea.setBottom(option.rect.height() - decoHeight);
+            textArea.setBottom(itemRect.height() - decoSize.height() - 1);
             break;
 
         case QStyleOptionViewItem::Left:
-            textArea.setLeft(decoWidth);
+            textArea.setLeft(decoSize.width() + 1);
             break;
 
         case QStyleOptionViewItem::Right:
-            textArea.setRight(option.rect.width() - decoWidth);
+            textArea.setRight(itemRect.width() - decoSize.width() - 1);
             break;
     }
 
-    textArea.translate(option.rect.topLeft());
+    textArea.translate(itemRect.topLeft());
     return QStyle::visualRect(option.direction, option.rect, textArea);
 }
 
 
 QPoint KFileItemDelegate::iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const
 {
-    int focusHMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
-    int focusVMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameVMargin);
-
+    const QRect itemRect = d->subtractMargin(option.rect, Private::ItemMargin);
     Qt::Alignment alignment;
 
     // Convert decorationPosition to the alignment the decoration will have in option.rect
@@ -554,8 +641,8 @@ QPoint KFileItemDelegate::iconPosition(const QStyleOptionViewItem &option, const
     }
 
     // Compute the nominal decoration rectangle
-    const QSize size = option.decorationSize + QSize(focusHMargin * 2, focusVMargin * 2);
-    const QRect rect = QStyle::alignedRect(option.direction, alignment, size, option.rect);
+    const QSize size = d->addMargin(option.decorationSize, Private::IconMargin);
+    const QRect rect = QStyle::alignedRect(option.direction, alignment, size, itemRect);
 
     // Position the pixmap in the center of the rectangle
     QRect pixRect = pixmap.rect();
@@ -582,9 +669,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QTextLayout layout;
     d->setLayoutOptions(layout, option, index);
 
-    QRect textArea = labelRectangle(option, pixmap, label);
-    QRect labelRect = textArea.adjusted(+selectionHMargin, +selectionVMargin,
-                                        -selectionHMargin, -selectionVMargin);
+    d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
+
+    const QRect textArea = labelRectangle(option, pixmap, label);
+    QRect labelRect = d->subtractMargin(textArea, Private::TextMargin);
 
     // Layout the text in labelRect
     QSize size = d->layoutText(layout, label, labelRect.width());
@@ -621,8 +709,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         // If the selection rectangle should only cover the text label
         if (!option.showDecorationSelected)
         {
-            const QRect r = selectionRect.adjusted(-selectionHMargin, -selectionVMargin,
-                                                   +selectionHMargin, +selectionVMargin);
+            const QRect r = d->addMargin(selectionRect, Private::TextMargin);
             const QPainterPath path = d->roundedRectangle(r, 5);
             painter->fillPath(path, brush);
         }
