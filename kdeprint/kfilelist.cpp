@@ -102,34 +102,34 @@ KFileList::KFileList(QWidget *parent)
 	connect(m_files, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QToolButton(this);
-	m_add->setIcon(SmallIconSet("fileopen"));
+	m_add->setIcon(KIcon("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
 	m_add->setToolTip(i18n("Add file"));
 	m_add->setWhatsThis(whatsThisAddFileButton);
 
 	m_remove = new QToolButton(this);
-	m_remove->setIcon(SmallIconSet("remove"));
+	m_remove->setIcon(KIcon("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
 	m_remove->setToolTip(i18n("Remove file"));
 	m_remove->setWhatsThis(whatsThisRemoveFileButton);
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
-	m_open->setIcon(SmallIconSet("filefind"));
+	m_open->setIcon(KIcon("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
 	m_open->setToolTip(i18n("Open file"));
 	m_open->setWhatsThis(whatsThisOpenFileButton);
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
-	m_up->setIcon(SmallIconSet("up"));
+	m_up->setIcon(KIcon("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
 	m_up->setToolTip(i18n("Move up"));
 	m_up->setWhatsThis(whatsThisMoveFileUpButton);
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
-	m_down->setIcon(SmallIconSet("down"));
+	m_down->setIcon(KIcon("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
 	m_down->setToolTip(i18n("Move down"));
 	m_down->setWhatsThis(whatsThisMoveFileDownButton);

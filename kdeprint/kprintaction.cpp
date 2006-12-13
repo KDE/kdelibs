@@ -87,7 +87,7 @@ void KPrintAction::slotAboutToShow()
 						menu()->addSeparator();
 					first = true;
 				}
-				QAction *action = menu()->addAction(SmallIconSet(printer->pixmap()), printer->name());
+				QAction *action = menu()->addAction(KIcon(printer->pixmap()), printer->name());
 				action->setData(ID++);
 				d->printers.append(printer->name());
 			}

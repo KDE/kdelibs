@@ -54,7 +54,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	m_edit->setToolTip( i18n("Edit command"));
 	m_shortinfo = new QLabel(this);
 	m_helpbtn = new KPushButton( this );
-	m_helpbtn->setIcon( SmallIconSet( "help" ) );
+	m_helpbtn->setIcon( KIcon( "help" ) );
 	connect( m_helpbtn, SIGNAL( clicked() ), SLOT( slotHelpCommand() ) );
 	m_helpbtn->setToolTip( i18n( "Information" ) );
         m_helpbtn->setEnabled( false );

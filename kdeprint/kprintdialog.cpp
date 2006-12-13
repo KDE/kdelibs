@@ -891,7 +891,7 @@ void KPrintDialog::expandDialog(bool on)
 			if (d->b_systemEnabled)
 				d->m_plugin->show();
 		}
-		d->m_extbtn->setIcon(SmallIconSet("up"));
+		d->m_extbtn->setIcon(KIcon("up"));
 		d->m_extbtn->setText(i18n("&Options <<"));
 		d->m_reduced = false;
 	}
@@ -903,7 +903,7 @@ void KPrintDialog::expandDialog(bool on)
 			if (d->b_systemEnabled)
 				d->m_plugin->hide();
 		}
-		d->m_extbtn->setIcon(SmallIconSet("down"));
+		d->m_extbtn->setIcon(KIcon("down"));
 		d->m_extbtn->setText(i18n("&Options >>"));
 		d->m_reduced = true;
 	}
