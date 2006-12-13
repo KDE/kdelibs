@@ -790,7 +790,17 @@ kde4_automoc(${kassistantdialogtest_SRCS})
 
 kde4_add_executable(kassistantdialogtest RUN_UNINSTALLED ${kassistantdialogtest_SRCS})
 
-target_link_libraries(kassistantdialogtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kassistantdialogtest ${KDE4_KDEUI_LIBS})
+
+########### kactionselectortest ###############
+
+set(kactionselectortest_SRCS kactionselectortest.cpp )
+
+kde4_automoc(${kactionselectortest_SRCS})
+
+kde4_add_executable(kactionselectortest RUN_UNINSTALLED ${kactionselectortest_SRCS})
+
+target_link_libraries(kactionselectortest ${KDE4_KDEUI_LIBS})
 
 
 ########### kcommandtest ###############
