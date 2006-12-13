@@ -41,6 +41,7 @@ set(kjsembed_LIB_SRCS
    bind_qtimer.cpp
    brush.cpp
    QBrush_bind.cpp
+   quiloader_binding.cpp
    )
 
 kde4_automoc(${kjsembed_LIB_SRCS} ) 
@@ -72,7 +73,7 @@ install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
                settings.h svg_binding.h filedialog_binding.h
                brush.h color.h dom.h font.h image.h pen.h
                pixmap.h point.h rect.h size.h url.h pointer.h
-               bind_qlcdnumber.h bind_qtimer.h
+               bind_qlcdnumber.h bind_qtimer.h quiloader_binding.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kjsembed )
 
 

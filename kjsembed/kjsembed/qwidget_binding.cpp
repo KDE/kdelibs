@@ -143,6 +143,7 @@ NO_ENUMS( QWidgetBinding )
 NO_STATICS( QWidgetBinding )
 
 START_CTOR( QWidgetBinding, QWidget, 0 )
+    //qDebug() << "QWidgetBinding::CTOR args.size()=" << args.size();
     if( args.size() > 0 )
     {
         QString widgetName = args[0]->toString(exec).qstring();
@@ -153,13 +154,19 @@ START_CTOR( QWidgetBinding, QWidget, 0 )
             parentWidget = parentImp->object<QWidget>();
         }
 
-        QWidget *widget = uiLoader()->createWidget(widgetName, parentWidget, "QWidget");
+        QWidget* widget = uiLoader()->createWidget(widgetName, parentWidget, "QWidget");
         if( widget )
-        {
             return new QWidgetBinding(exec, widget);
-        }
+
         return KJS::throwError(exec, KJS::TypeError, i18n("'%1' is not a valid QWidget.", widgetName));
     }
+    else
+    {
+        QWidget* widget = new QWidget();
+        if (widget)
+            return new QWidgetBinding(exec, widget);
+    }
+
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a widget name."));
 END_CTOR
 

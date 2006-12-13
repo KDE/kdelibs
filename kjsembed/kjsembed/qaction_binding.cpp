@@ -43,26 +43,19 @@ NO_ENUMS( Action )
 NO_STATICS( Action )
 
 START_CTOR( Action, QAction, 0 )
-    if( args.size() == 2 )
-    {
-        QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
-        QString actionName = KJSEmbed::extractQString(exec, args, 1);
+    QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
+    QString actionName = KJSEmbed::extractQString(exec, args, 1);
 
-        QAction *action = uiLoader()->createAction(parent, actionName);
-        if( action )
-        {
-            KJS::JSObject *actionObject = KJSEmbed::createQObject( exec, action );
-            return actionObject;
-        }
-        else
-        {
-            return KJS::throwError(exec, KJS::GeneralError, i18n("Action takes 2 args."));
-            // return KJSEmbed::throwError(exec, i18n("Action takes 2 args."));
-        }
+    QAction *action = uiLoader()->createAction(parent, actionName);
+    if( action )
+    {
+        KJS::JSObject *actionObject = new Action( exec, action );
+        return actionObject;
     }
-    // Trow error incorrect args
-    return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a valid parent."));
-    // return KJSEmbed::throwError(exec, i18n("Must supply a valid parent."));
+    else
+    {
+        return KJS::throwError(exec, KJS::GeneralError, i18n("Action takes 2 args."));
+		}
 END_CTOR
 
 
@@ -81,7 +74,7 @@ START_CTOR( ActionGroup, QActionGroup, 0 )
         QActionGroup *action = uiLoader()->createActionGroup(parent, actionName);
         if( action )
         {
-            KJS::JSObject *actionObject = KJSEmbed::createQObject( exec, action );
+            KJS::JSObject *actionObject = new ActionGroup( exec, action );
             return actionObject;
         }
         else

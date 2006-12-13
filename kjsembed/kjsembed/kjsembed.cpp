@@ -25,7 +25,10 @@
 #include "static_binding.h"
 
 #include "iosupport.h"
+#include "quiloader_binding.h"
+#ifdef KJSEMBED_FORMBUILDER_BINDING
 #include "qformbuilder_binding.h"
+#endif
 #include "qpainter_binding.h"
 #include "qwidget_binding.h"
 #include "qaction_binding.h"
@@ -117,6 +120,7 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
 #ifdef KJSEMBED_FORMBUILDER_BINDING
     StaticConstructor::add( exec, parent, FormBuilder::constructor() ); // Ctor
 #endif
+    StaticConstructor::add( exec, parent, UiLoaderBinding::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, QWidgetBinding::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Layout::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Action::constructor() ); // Ctor

@@ -132,7 +132,7 @@ namespace KJSEmbed
             {
                 if( m_owner == JSOwned )
                 {
-                    qDebug("object cleans up");
+                  //qDebug("object cleans up");
                     m_value->cleanup();
                 }
                 delete m_value;

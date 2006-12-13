@@ -19,29 +19,36 @@
     Boston, MA 02110-1301, USA.
 */
 
-// create the loader
+// Create the loader
 var loader = new QUiLoader();
-
-// display loader info
 println( "loader value: " + loader );
 for( y in loader ) println("loader property: " + y);
 
-// get and display the UILoader's pluginPaths
-paths = loader.pluginPaths();
-println( "pluginPath value:" + paths );
-println( "pluginPath len:" + paths.length );
-for ( var x = 0; x < paths.length; x++ ) 
-	println( "path " + x + ": " + paths[x] );
+// create the containing frame and it's layout
+var box = loader.createWidget("QFrame", 0 );
+var layout = loader.createLayout("QVBoxLayout", box);
 
-// load a UI from test.ui
-var widget = loader.load("test.ui");
-println( "widget value: " + widget );
+// create and add the child labels
+for ( var x = 0; x < 10; ++x)
+{
+	var lab = loader.createWidget("QLabel", box);
+	lab.text = "This is a test of box " + x;
+	layout.addWidget(lab);
+}
 
-// iterate through the base widgets properties
-for( y in widget ) println("widget property: " + y);
+// adjust the box size and show it
+box.adjustSize();
 
-// show it
-widget.show();
+// display layout info
+println( "layout value: " + layout );
+for( l in layout ) println("layout property: " + l);
+
+// display box info
+println( "box value: " + box );
+for( y in box ) println("box property: " + y);
+
+// show the base box
+box.show();
 
 // give the user time to see it
-exec();
+exec()

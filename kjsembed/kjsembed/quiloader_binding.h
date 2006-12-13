@@ -1,4 +1,3 @@
-#!/bin/env kjscmd
 /* This file is part of the KDE libraries
     Copyright (C) 2005, 2006 KJSEmbed Authors
     See included AUTHORS file.
@@ -19,29 +18,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-// create the loader
-var loader = new QUiLoader();
+#ifndef QUILOADER_BINDING_H
+#define QUILOADER_BINDING_H
 
-// display loader info
-println( "loader value: " + loader );
-for( y in loader ) println("loader property: " + y);
+#include "qobject_binding.h"
+#include <QtUiTools/QUiLoader>
 
-// get and display the UILoader's pluginPaths
-paths = loader.pluginPaths();
-println( "pluginPath value:" + paths );
-println( "pluginPath len:" + paths.length );
-for ( var x = 0; x < paths.length; x++ ) 
-	println( "path " + x + ": " + paths[x] );
+namespace KJSEmbed
+{
+    KJSO_BINDING( UiLoaderBinding, QUiLoader, QObjectBinding )
+}
 
-// load a UI from test.ui
-var widget = loader.load("test.ui");
-println( "widget value: " + widget );
+#endif
 
-// iterate through the base widgets properties
-for( y in widget ) println("widget property: " + y);
-
-// show it
-widget.show();
-
-// give the user time to see it
-exec();
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

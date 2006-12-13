@@ -36,6 +36,8 @@
 #include <kjs/array_instance.h>
 #include <kjs/function_object.h>
 
+//#define CREATEQOBJ_DIAG
+
 using namespace KJSEmbed;
 
 QByteArray createSignal( const QByteArray &sig )
@@ -552,7 +554,7 @@ SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
 }
 
 
-KJS::JSObject *KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner)
+KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner)
 {
     if ( 0 == value )
         return new KJS::JSObject();
@@ -567,12 +569,14 @@ KJS::JSObject *KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
         clazz = meta->className();
         if ( parent->hasProperty( exec, KJS::Identifier(clazz) ) )
         {
-//          qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+#ifdef CREATEQOBJ_DIAG
+          qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+#endif
             returnValue = StaticConstructor::construct( exec, parent, clazz );
             if( returnValue )
             {
                 // If its a value type setValue
-                KJSEmbed::QObjectBinding *imp = extractBindingImp<KJSEmbed::QObjectBinding>(exec, returnValue );
+                KJSEmbed::QObjectBinding *imp = extractBindingImp<QObjectBinding>(exec, returnValue );
                 if( imp )
                 {
                     imp->setObject( value );
@@ -595,7 +599,9 @@ KJS::JSObject *KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
         }
         else
         {
-//            qDebug("%s not a bound type, move up the chain", meta->className() );
+#ifdef CREATEQOBJ_DIAG
+            qDebug("%s not a bound type, move up the chain", meta->className() );
+#endif
             meta = meta->superClass();
         }
 
