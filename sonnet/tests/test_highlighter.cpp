@@ -40,7 +40,7 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 	kDebug()<<"TestSpell::contextMenuEvent\n";
 	QMenu *popup = createStandardContextMenu();
   QMenu *subMenu = new QMenu( popup );
-  subMenu->setTitle( "Text Completion" );
+  subMenu->setTitle( "Text highlighting" );
 	connect( subMenu, SIGNAL( triggered ( QAction* ) ),
     	this, SLOT( slotActivate( ) ) );
 	QAction *action = new QAction( "active or not", popup );
