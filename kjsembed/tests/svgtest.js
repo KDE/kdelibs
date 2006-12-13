@@ -19,6 +19,19 @@
 */
 
 var svg = new QSvgWidget( this );
+
+// test QSvgWidget method
 svg.load("test.svg");
 svg.show();
+
+// test QWidget method
+var hfw = svg.heightForWidth(200);
+println( "svg.heightForWidth(200) = " + hfw );
+
+// test retrieving QSvgRenderer for QSvgWidget method
+var svgr = svg.renderer(); 
+
+// access the QSvgRenderer object
+println( "svg.renderer() = '" + svgr + "' svgr.isWidgetType() = " + svgr.isWidgetType() );
+
 exec();
