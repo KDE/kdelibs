@@ -49,7 +49,7 @@ class KToggleFullScreenAction;
  * for regular actions.  For example, if you previously had:
  *
  * \code
- * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
+ * KAction *newAct = new KAction(i18n("&New"), KIcon("filenew"),
  *                               KStdAccel::shortcut(KStdAccel::New), this,
  *                               SLOT(fileNew()), actionCollection());
  * \endcode
