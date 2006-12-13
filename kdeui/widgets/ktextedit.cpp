@@ -38,7 +38,7 @@
 
 class KSpell;
 
-//TODO: Use kspell2 in the future. 
+//TODO: Use kspell2 in the future.
 //Use ksyntaxhighlighter from kspell2
 
 
@@ -308,33 +308,33 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   if ( !lstAction.isEmpty() ) {
     enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
     if ( isReadOnly() )
-      lstAction[0]->setIcon( SmallIconSet("editcopy") );
+      lstAction[0]->setIcon( KIcon("editcopy") );
     else {
-      lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
-      lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
-      lstAction[CutAct]->setIcon( SmallIconSet("editcut") );
-      lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
-      lstAction[PasteAct]->setIcon( SmallIconSet("editpaste") );
-      lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
+      lstAction[UndoAct]->setIcon( KIcon("undo") );
+      lstAction[RedoAct]->setIcon( KIcon("redo") );
+      lstAction[CutAct]->setIcon( KIcon("editcut") );
+      lstAction[CopyAct]->setIcon( KIcon("editcopy") );
+      lstAction[PasteAct]->setIcon( KIcon("editpaste") );
+      lstAction[ClearAct]->setIcon( KIcon("editclear") );
     }
   }
 
-  if( !isReadOnly() ) 
+  if( !isReadOnly() )
   {
-  popup->addSeparator();
-  d->spellCheckAction = popup->addAction( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ) );
+      popup->addSeparator();
+      d->spellCheckAction = popup->addAction( KIcon( "spellcheck" ), i18n( "Check Spelling..." ) );
 
-  if ( document()->isEmpty() )
-      d->spellCheckAction->setEnabled( false );
+      if ( document()->isEmpty() )
+          d->spellCheckAction->setEnabled( false );
 
-  d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
-  d->autoSpellCheckAction->setCheckable( true );
-  d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
-  popup->addSeparator();
+      d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
+      d->autoSpellCheckAction->setCheckable( true );
+      d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
+      popup->addSeparator();
 
-  d->allowTab = popup->addAction( i18n("Allow Tabulations") );
-  d->allowTab->setCheckable( true );
-  d->allowTab->setChecked( !tabChangesFocus() );
+      d->allowTab = popup->addAction( i18n("Allow Tabulations") );
+      d->allowTab->setCheckable( true );
+      d->allowTab->setChecked( !tabChangesFocus() );
   }
   popup->exec( event->globalPos() );
 
@@ -359,7 +359,7 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
   // off we should remove the old one.
 
   d->checkSpellingEnabled = check;
-#if 0	
+#if 0
     if ( check )
     {
         if ( hasFocus() )

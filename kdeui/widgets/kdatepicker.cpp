@@ -149,7 +149,7 @@ void KDatePicker::init( const QDate &dt )
 
   d->selectWeek = new QComboBox(this);  // read only week selection
   d->todayButton = new QToolButton(this);
-  d->todayButton->setIcon(SmallIconSet("today"));
+  d->todayButton->setIcon(KIcon("today"));
 
   yearForward->setToolTip(i18n("Next year"));
   yearBackward->setToolTip(i18n("Previous year"));
@@ -164,20 +164,21 @@ void KDatePicker::init( const QDate &dt )
   setFontSize(fontsize);
   line->setValidator(val);
   line->installEventFilter( this );
-  if (  QApplication::isRightToLeft() )
+  if ( QApplication::isRightToLeft() )
   {
-      yearForward->setIcon(BarIconSet(QLatin1String("2leftarrow")));
-      yearBackward->setIcon(BarIconSet(QLatin1String("2rightarrow")));
-      monthForward->setIcon(BarIconSet(QLatin1String("1leftarrow")));
-      monthBackward->setIcon(BarIconSet(QLatin1String("1rightarrow")));
+      yearForward->setIcon(KIcon(QLatin1String("2leftarrow")));
+      yearBackward->setIcon(KIcon(QLatin1String("2rightarrow")));
+      monthForward->setIcon(KIcon(QLatin1String("1leftarrow")));
+      monthBackward->setIcon(KIcon(QLatin1String("1rightarrow")));
   }
   else
   {
-      yearForward->setIcon(BarIconSet(QLatin1String("2rightarrow")));
-      yearBackward->setIcon(BarIconSet(QLatin1String("2leftarrow")));
-      monthForward->setIcon(BarIconSet(QLatin1String("1rightarrow")));
-      monthBackward->setIcon(BarIconSet(QLatin1String("1leftarrow")));
+      yearForward->setIcon(KIcon(QLatin1String("2rightarrow")));
+      yearBackward->setIcon(KIcon(QLatin1String("2leftarrow")));
+      monthForward->setIcon(KIcon(QLatin1String("1rightarrow")));
+      monthBackward->setIcon(KIcon(QLatin1String("1leftarrow")));
   }
+
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
   connect(monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
@@ -353,7 +354,7 @@ KDatePicker::selectMonthClicked()
   QAction *item=popup.actions()[calendar->month(date)-1];
   if (item) // if this happens the above should already given an assertion
     popup.setActiveAction(item);
- 
+
   if ( (item = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), item)) == 0 ) return;  // canceled
 
   int day = calendar->day(date);
@@ -489,7 +490,7 @@ KDatePicker::setFontSize(int s)
     }
 
   QStyleOptionToolButton opt;
-  
+
   // stolen from KToolBarButton
   opt.init(this);
   opt.font      = selectMonth->font();
@@ -498,9 +499,9 @@ KDatePicker::setFontSize(int s)
   opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
   opt.subControls       = QStyle::SC_All;
   opt.activeSubControls = 0; //### FIXME: !!
-  
+
   QSize metricBound = style()->sizeFromContents(QStyle::CT_ToolButton,
-                                               &opt, 
+                                               &opt,
                                                maxMonthRect, selectMonth);
   selectMonth->setMinimumSize(metricBound);
 

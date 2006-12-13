@@ -20,7 +20,7 @@
 #include "kactionselector.h"
 
 #include <klocale.h>
-#include <kiconloader.h>
+#include <kicon.h>
 #include <kdialog.h> // for spacingHint()
 #include <kdebug.h>
 #include <qapplication.h>
@@ -36,7 +36,6 @@ class KActionSelectorPrivate {
   QToolButton *btnAdd, *btnRemove, *btnUp, *btnDown;
   QLabel *lAvailable, *lSelected;
   bool moveOnDoubleClick, keyboardEnabled;
-  KActionSelector::ButtonIconSize iconSize;
   QString addIcon, removeIcon, upIcon, downIcon;
   KActionSelector::InsertionPolicy availableInsertionPolicy, selectedInsertionPolicy;
   bool showUpDownButtons;
@@ -50,7 +49,6 @@ KActionSelector::KActionSelector( QWidget *parent )
   d = new KActionSelectorPrivate();
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
-  d->iconSize = SmallIcon;
   d->addIcon = QApplication::isRightToLeft()? "back" : "forward";
   d->removeIcon = QApplication::isRightToLeft()? "forward" : "back";
   d->upIcon = "up";
@@ -58,8 +56,6 @@ KActionSelector::KActionSelector( QWidget *parent )
   d->availableInsertionPolicy = Sorted;
   d->selectedInsertionPolicy = BelowCurrent;
   d->showUpDownButtons = true;
-
-  //int isz = IconSize( K3Icon::Small );
 
   QHBoxLayout *lo = new QHBoxLayout( this );
   lo->setSpacing( KDialog::spacingHint() );
@@ -144,19 +140,19 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
   {
     case ButtonAdd:
     d->addIcon = icon;
-    d->btnAdd->setIcon( SmallIconSet( icon, d->iconSize ) );
+    d->btnAdd->setIcon( KIcon( icon ) );
     break;
     case ButtonRemove:
     d->removeIcon = icon;
-    d->btnRemove->setIcon( SmallIconSet( icon, d->iconSize ) );
+    d->btnRemove->setIcon( KIcon( icon ) );
     break;
     case ButtonUp:
     d->upIcon = icon;
-    d->btnUp->setIcon( SmallIconSet( icon, d->iconSize ) );
+    d->btnUp->setIcon( KIcon( icon ) );
     break;
     case ButtonDown:
     d->downIcon = icon;
-    d->btnDown->setIcon( SmallIconSet( icon, d->iconSize ) );
+    d->btnDown->setIcon( KIcon( icon ) );
     break;
     default:
     kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!"<<endl;
@@ -281,18 +277,6 @@ QString KActionSelector::selectedLabel() const
 void KActionSelector::setSelectedLabel( const QString &text )
 {
   d->lSelected->setText( text );
-}
-
-KActionSelector::ButtonIconSize KActionSelector::buttonIconSize() const
-{
-  return d->iconSize;
-}
-
-void KActionSelector::setButtonIconSize( ButtonIconSize size )
-{
-  d->iconSize = size;
-  // reload icons
-  loadIcons();
 }
 
 KActionSelector::InsertionPolicy KActionSelector::availableInsertionPolicy() const
@@ -483,10 +467,10 @@ void KActionSelector::itemDoubleClicked( QListWidgetItem *item )
 
 void KActionSelector::loadIcons()
 {
-  d->btnAdd->setIcon( SmallIconSet( d->addIcon, d->iconSize ) );
-  d->btnRemove->setIcon( SmallIconSet( d->removeIcon, d->iconSize ) );
-  d->btnUp->setIcon( SmallIconSet( d->upIcon, d->iconSize ) );
-  d->btnDown->setIcon( SmallIconSet( d->downIcon, d->iconSize ) );
+  d->btnAdd->setIcon( KIcon( d->addIcon ) );
+  d->btnRemove->setIcon( KIcon( d->removeIcon ) );
+  d->btnUp->setIcon( KIcon( d->upIcon ) );
+  d->btnDown->setIcon( KIcon( d->downIcon ) );
 }
 
 void KActionSelector::moveItem( QListWidgetItem *item )

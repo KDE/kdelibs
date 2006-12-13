@@ -65,7 +65,7 @@ class KActionSelectorPrivate;
     for the buttons. See setButtonTooltip() and setButtonWhatsThis().
 
     To set whatsthis or tooltips for the listboxes, access them through
-    availableListbox() and selectedListWidget().
+    availableListWidget() and selectedListWidget().
 
     All the moving buttons are automatically set enabled as expected.
 
@@ -78,12 +78,11 @@ class KActionSelectorPrivate;
 
 class KDEUI_EXPORT KActionSelector : public QWidget {
   Q_OBJECT
-  Q_ENUMS( ButtonIconSize InsertionPolicy MoveButton )
+  Q_ENUMS( InsertionPolicy MoveButton )
   Q_PROPERTY( bool moveOnDoubleClick READ moveOnDoubleClick WRITE setMoveOnDoubleClick )
   Q_PROPERTY( bool keyboardEnabled READ keyboardEnabled WRITE setKeyboardEnabled )
   Q_PROPERTY( QString availableLabel READ availableLabel WRITE setAvailableLabel )
   Q_PROPERTY( QString selectedLabel READ selectedLabel WRITE setSelectedLabel )
-  Q_PROPERTY( ButtonIconSize buttonIconSize READ buttonIconSize WRITE setButtonIconSize )
   Q_PROPERTY( InsertionPolicy availableInsertionPolicy READ availableInsertionPolicy WRITE setAvailableInsertionPolicy )
   Q_PROPERTY( InsertionPolicy selectedInsertionPolicy READ selectedInsertionPolicy WRITE setSelectedInsertionPolicy )
   Q_PROPERTY( bool showUpDownButtons READ showUpDownButtons WRITE setShowUpDownButtons )
@@ -113,24 +112,6 @@ public:
   };
 
   /**
-    This enum identifies the icon sizes, used for the move buttons.
-    The values correspond to the following pixel sizes:
-    @li SmallIcon - the return value of IconSize( K3Icon::Small ), the user defined size
-                of a small icon in KDE. This is the default setting.
-    @li Small - 16px
-    @li Medium - 22px
-    @li Large - 32px
-    @li XLarge - 48px
-  */
-  enum ButtonIconSize {
-    SmallIcon,
-    Small,
-    Medium,
-    Large,
-    XLarge
-  };
-
-  /**
     This enum defines policies for where to insert moved items in a listbox.
     The following policies are currently defined:
     @li BelowCurrent - The item is inserted below the listbox'
@@ -150,10 +131,11 @@ public:
   };
 
   /**
-    @return Wheather moveOnDoubleClcik is enabled.
+    @return Whether moveOnDoubleClcik is enabled.
 
     If enabled, an item in any listbox will be moved to the other one whenever
     doubleclicked.
+    This feature is enabled by default.
     @sa setMoveOnDoubleClick()
   */
   bool moveOnDoubleClick() const;
@@ -217,17 +199,6 @@ public:
   void setSelectedLabel( const QString & text );
 
   /**
-    @return the current ButtonIconSize.
-  */
-  ButtonIconSize buttonIconSize() const;
-
-  /**
-    Sets the button icon size.
-    See ButtonIconSize for the possible values and their pixel meaning.
-  */
-  void setButtonIconSize( ButtonIconSize size );
-
-  /**
     @return The current insertion policy for the available listbox.
     The default policy for the available listbox is Sorted.
     See also InsertionPolicy, setAvailableInsertionPolicy().
@@ -254,12 +225,12 @@ public:
   void setSelectedInsertionPolicy( InsertionPolicy policy );
 
   /**
-    @return wheather the Up and Down buttons should be displayed.
+    @return whether the Up and Down buttons should be displayed.
   */
   bool showUpDownButtons() const;
 
   /**
-    Sets wheather the Up and Down buttons should be displayed
+    Sets whether the Up and Down buttons should be displayed
     according to @p show
   */
   void setShowUpDownButtons( bool show );

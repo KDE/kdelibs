@@ -25,13 +25,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtCore/QTimer>
-#include <QtGui/QClipboard>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOption>
+#include "klineedit.h"
 
 #include <kconfig.h>
 #include <qtooltip.h>
@@ -45,8 +39,16 @@
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kauthorized.h>
+#include <kicon.h>
 
-#include "klineedit.h"
+#include <QtCore/QTimer>
+#include <QtGui/QClipboard>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QLabel>
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOption>
+
 #include "klineedit.moc"
 
 
@@ -963,12 +965,12 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     if ( !lstAction.isEmpty() )
     {
         enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
-        lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
-        lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
-        lstAction[CutAct]->setIcon( SmallIconSet("editcut") );
-        lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
-        lstAction[PasteAct]->setIcon( SmallIconSet("editpaste") );
-        lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
+        lstAction[UndoAct]->setIcon( KIcon("undo") );
+        lstAction[RedoAct]->setIcon( KIcon("redo") );
+        lstAction[CutAct]->setIcon( KIcon("editcut") );
+        lstAction[CopyAct]->setIcon( KIcon("editcopy") );
+        lstAction[PasteAct]->setIcon( KIcon("editpaste") );
+        lstAction[ClearAct]->setIcon( KIcon("editclear") );
     }
 
 
@@ -977,7 +979,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = popup->addMenu( SmallIconSet("completion"), i18n("Text Completion") );
+        QMenu *subMenu = popup->addMenu( KIcon("completion"), i18n("Text Completion") );
         connect( subMenu, SIGNAL( triggered ( QAction* ) ),
                  this, SLOT( completionMenuActivated( QAction* ) ) );
 
