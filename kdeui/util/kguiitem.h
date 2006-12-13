@@ -26,6 +26,7 @@
 
 #include <kglobal.h>
 #include <kicontheme.h>
+#include <kicon.h>
 
 class QIcon;
 
