@@ -551,6 +551,63 @@ SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
     setFunctionName( KJS::Identifier( m_memberName ) );
 }
 
+
+KJS::JSObject *KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner)
+{
+    if ( 0 == value )
+        return new KJS::JSObject();
+    
+    const QMetaObject *meta = value->metaObject();
+    KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
+    KJS::JSObject *returnValue;
+
+    QString clazz;
+    do
+    {
+        clazz = meta->className();
+        if ( parent->hasProperty( exec, KJS::Identifier(clazz) ) )
+        {
+//          qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+            returnValue = StaticConstructor::construct( exec, parent, clazz );
+            if( returnValue )
+            {
+                // If its a value type setValue
+                KJSEmbed::QObjectBinding *imp = extractBindingImp<KJSEmbed::QObjectBinding>(exec, returnValue );
+                if( imp )
+                {
+                    imp->setObject( value );
+                    imp->watchObject( value );
+                    imp->setOwnership( owner );
+                    KJSEmbed::QObjectBinding::publishQObject( exec, returnValue, value);
+                }
+                else
+                {
+	                KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
+                    return new KJS::JSObject();
+                }
+            }
+            else
+            {
+                KJS::throwError(exec, KJS::TypeError, i18n("Could not construct value"));
+                return new KJS::JSObject();
+            }
+            return returnValue;
+        }
+        else
+        {
+//            qDebug("%s not a bound type, move up the chain", meta->className() );
+            meta = meta->superClass();
+        }
+
+    }
+    while( meta );
+
+    KJSEmbed::QObjectBinding *imp = new KJSEmbed::QObjectBinding(exec, value);
+    imp->setOwnership( owner );
+
+    return imp;
+}
+
 START_QOBJECT_METHOD( callParent, QObject )
     //TODO it would be better, if each QObjectBinding remembers it's parent rather then
     //creating a new instance each time. That wouldn't only be more logical, but also

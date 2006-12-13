@@ -18,20 +18,21 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifndef QACTION_BINDING_H
+#define QACTION_BINDING_H
 
-var slider1 = new QWidget("QSlider", this);
-var slider2 = new QWidget("QSlider", this);
+#include <QObject>
+#include <QAction>
+//#include <QActionGroup>
 
-slider1.show();
-slider2.show();
+#include "qobject_binding.h"
 
-connect( slider1, "valueChanged(int)", slider2, "setValue(int)");
-connect( slider2, "valueChanged(int)", slider1, "setValue(int)");
-if( slider1.isWidgetType() )
+
+namespace KJSEmbed
 {
-	print("This is a widget");
+    KJSO_BINDING( Action, QAction, QObjectBinding )
+    KJSO_BINDING( ActionGroup, QActionGroup, QObjectBinding )
 }
+#endif
 
-exec();
-
-
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

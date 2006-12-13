@@ -127,6 +127,7 @@ const Constructor *StaticConstructor::constructor( const KJS::UString &className
 
 KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject *parent, const KJS::UString &className, const KJS::List &args )
 {
+//    qDebug("StaticConstructor::construct('%s')", className.ascii() );
     if( parent->hasProperty( exec, className.ascii() ) )
     {
         KJS::JSObject *ctor = parent->get(exec,className.ascii())->toObject(exec);

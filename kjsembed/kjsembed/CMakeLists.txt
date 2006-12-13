@@ -28,6 +28,8 @@ set(kjsembed_LIB_SRCS
    value_binding.cpp
    iosupport.cpp
    qwidget_binding.cpp
+   qaction_binding.cpp
+   qlayout_binding.cpp
    qpainter_binding.cpp
    settings.cpp
    svg_binding.cpp
@@ -65,6 +67,7 @@ install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
                object_binding.h builtins.h fileio.h jseventmapper.h
                eventproxy.h slotproxy.h jseventutils.h qobject_binding.h
                kjsembed.h value_binding.h iosupport.h qwidget_binding.h
+							 qaction_binding.h qlayout_binding.h
                qpainter_binding.h
                settings.h svg_binding.h filedialog_binding.h
                brush.h color.h dom.h font.h image.h pen.h

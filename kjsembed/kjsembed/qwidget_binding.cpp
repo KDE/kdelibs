@@ -19,6 +19,7 @@
 */
 #include "qwidget_binding.h"
 #include "static_binding.h"
+#include "qpainter_binding.h"
 #include "kjseglobal.h"
 
 #include <kjs/object.h>
@@ -85,7 +86,8 @@ START_QOBJECT_METHOD( focusWidget, QWidget )
     result = KJSEmbed::createQObject(exec, object->focusWidget() );
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( heightForWidth, QWidget )
-    int width = KJSEmbed::extractVariant<int>(exec, args, 0);
+//	  qDebug() << "heightForWidth() object=" << object << " imp=" << imp;
+    int width = KJSEmbed::extractInt(exec, args, 0);
     result = KJS::Number( object->heightForWidth(width));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapFrom, QWidget )
@@ -117,7 +119,10 @@ END_QOBJECT_METHOD
 
 }
 
-START_METHOD_LUT( Widget )
+KJSO_START_BINDING_CTOR( QWidgetBinding, QWidget, QObjectBinding )
+KJSO_END_BINDING_CTOR
+
+START_METHOD_LUT( QWidgetBinding )
     {"adjustSize", 0, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::adjustSize},
     {"grabMouse", 0, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::grabMouse},
     {"grabKeyboard", 0, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::grabKeyboard},
@@ -134,17 +139,10 @@ START_METHOD_LUT( Widget )
     {"mapToGlobal", 1, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::mapToGlobal}
 END_METHOD_LUT
 
-NO_ENUMS( Widget )
-NO_STATICS( Widget )
+NO_ENUMS( QWidgetBinding )
+NO_STATICS( QWidgetBinding )
 
-QWidgetBinding::QWidgetBinding( KJS::ExecState *exec, QWidget *widget )
-    : QObjectBinding( exec, widget)
-{
-//	qDebug() << "QWidgetBinding::QWidgetBinding(" << exec << "," << widget << ")";
-    StaticBinding::publish( exec, this, Widget::methods() );
-}
-
-START_CTOR( Widget, Widget, 0 )
+START_CTOR( QWidgetBinding, QWidget, 0 )
     if( args.size() > 0 )
     {
         QString widgetName = args[0]->toString(exec).qstring();
@@ -163,86 +161,6 @@ START_CTOR( Widget, Widget, 0 )
         return KJS::throwError(exec, KJS::TypeError, i18n("'%1' is not a valid QWidget.", widgetName));
     }
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a widget name."));
-END_CTOR
-
-namespace LayoutNS
-{
-START_QOBJECT_METHOD( addWidget, QLayout )
-    QWidget *w = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
-    object->addWidget(w);
-END_QOBJECT_METHOD
-START_QOBJECT_METHOD( removeWidget, QLayout )
-    QWidget *w = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
-    object->removeWidget(w);
-END_QOBJECT_METHOD
-START_QOBJECT_METHOD( parentWidget, QLayout )
-    QWidget *w = object->parentWidget();
-    result = KJSEmbed::createQObject(exec,w);
-END_QOBJECT_METHOD
-
-}
-START_METHOD_LUT( Layout )
-    {"addWidget", 1, KJS::DontDelete|KJS::ReadOnly, &LayoutNS::addWidget},
-    {"removeWidget", 1, KJS::DontDelete|KJS::ReadOnly, &LayoutNS::removeWidget},
-    {"parentWidget", 0, KJS::DontDelete|KJS::ReadOnly, &LayoutNS::parentWidget}
-END_METHOD_LUT
-
-NO_ENUMS( Layout )
-NO_STATICS( Layout )
-
-START_CTOR( Layout, Layout, 0 )
-    if( args.size() > 0 )
-    {
-        QString layoutName = args[0]->toString(exec).qstring();
-        QObject *parentObject = 0;
-        KJSEmbed::QObjectBinding *parentImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[1] );
-        if( parentImp )
-        {
-            parentObject = parentImp->object<QObject>();
-        }
-
-        QLayout *layout = uiLoader()->createLayout(layoutName, parentObject, "QLayout");
-        if( layout )
-        {
-            KJS::JSObject *layoutObject = KJSEmbed::createQObject(exec, layout);
-            StaticBinding::publish( exec, layoutObject, Layout::methods() );
-            return layoutObject;
-        }
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QLayout.",
-	                            layoutName));
-        // return KJSEmbed::throwError(exec, i18n("'%1' is not a valid QLayout.").arg(layoutName));
-    }
-    // Trow error incorrect args
-    return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a layout name."));
-    // return KJSEmbed::throwError(exec, i18n("Must supply a layout name."));
-END_CTOR
-
-NO_METHODS( Action )
-NO_ENUMS( Action )
-NO_STATICS( Action )
-
-START_CTOR( Action, Action, 0 )
-    if( args.size() == 2 )
-    {
-        QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
-        QString actionName = KJSEmbed::extractQString(exec, args, 1);
-
-        QAction *action = uiLoader()->createAction(parent, actionName);
-        if( action )
-        {
-            KJS::JSObject *actionObject = KJSEmbed::createQObject( exec, action );
-            StaticBinding::publish( exec, actionObject, Action::methods() );
-            return actionObject;
-        }
-        else
-        {
-            return KJS::throwError(exec, KJS::GeneralError, i18n("Action takes 2 args."));
-            // return KJSEmbed::throwError(exec, i18n("Action takes 2 args."));
-        }
-    }
-    // Trow error incorrect args
-    return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a valid parent."));
-    // return KJSEmbed::throwError(exec, i18n("Must supply a valid parent."));
 END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

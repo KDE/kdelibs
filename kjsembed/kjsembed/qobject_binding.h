@@ -33,6 +33,7 @@
 #include "binding_support.h"
 #include "object_binding.h"
 
+
 /**
 * A simple pointer syle method.
 * This will extract the pointer, cast it to the native type and place it in "value".
@@ -47,7 +48,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, self ); \
         if( imp ) \
         { \
-            TYPE *object = imp->object<TYPE>(); \
+            TYPE *object = imp->qobject<TYPE>(); \
             if( object ) \
             {
 
@@ -57,7 +58,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 #define END_QOBJECT_METHOD \
             } \
             else \
-                KJS::throwError(exec, KJS::ReferenceError, QString("The internal object died."));\
+                KJS::throwError(exec, KJS::ReferenceError, QString("QO: The internal object died %1:%2.").arg(__FILE__).arg(__LINE__));\
         } \
         else \
            KJS::throwError(exec, KJS::ReferenceError, QString("QObject died."));\
@@ -166,6 +167,20 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         */
         void watchObject( QObject *object );
 
+        /**
+         * \return the internal object as a pointer to type T to the 
+         * internal object that is derived from QObject.
+         */
+        template <typename T>
+        T *qobject() const
+        {
+          QObject* object = QObjectBinding::object<QObject>();
+          if (object)
+            return qobject_cast<T*>(object);
+          else
+            return 0;
+        }
+
     private:
         EventProxy *m_evproxy;
         QObjectCleanupHandler *m_cleanupHandler;
@@ -192,61 +207,7 @@ class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 * There should always be some kind of binding possible even if it is just
 * the QObject binding.
 */
-template< typename T>
-KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned)
-{
-    if ( 0 == value )
-        return new KJS::JSObject();
-    
-    const QMetaObject *meta = value->metaObject();
-    KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
-    KJS::JSObject *returnValue;
-
-    QString clazz;
-    do
-    {
-        clazz = meta->className();
-        if ( parent->hasProperty( exec, KJS::Identifier(clazz) ) )
-        {
-            returnValue = StaticConstructor::construct( exec, parent, clazz );
-            if( returnValue )
-            {
-                // If its a value type setValue
-                KJSEmbed::QObjectBinding *imp = extractBindingImp<KJSEmbed::QObjectBinding>(exec, returnValue );
-                if( imp )
-                {
-                    imp->setObject( value );
-                    imp->watchObject( value );
-                    imp->setOwnership( owner );
-                    KJSEmbed::QObjectBinding::publishQObject( exec, returnValue, value);
-                }
-                else
-                {
-	                KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
-                    return new KJS::JSObject();
-                }
-            }
-            else
-            {
-                KJS::throwError(exec, KJS::TypeError, i18n("Could not construct value"));
-                return new KJS::JSObject();
-            }
-            return returnValue;
-        }
-        else
-        {
-            // qDebug("%s not a bound type, move up the chain", meta->className() );
-            meta = meta->superClass();
-        }
-
-    }
-    while( meta );
-
-    KJSEmbed::QObjectBinding *imp = new KJSEmbed::QObjectBinding(exec, value);
-    imp->setOwnership( owner );
-
-    return imp;
-}
+KJS::JSObject *createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned);
 
 
 }

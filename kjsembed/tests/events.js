@@ -19,7 +19,7 @@
 */
 
 
-var frame = new Widget("QFrame", this);
+var frame = new QWidget("QFrame", this);
 frame.show();
 frame.onResizeEvent = function ( ev )
 {

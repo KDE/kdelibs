@@ -21,19 +21,13 @@
 #ifndef QWIDGET_BINDING_H
 #define QWIDGET_BINDING_H
 
+#include <QWidget>
+
 #include "qobject_binding.h"
 
 namespace KJSEmbed
 {
-    class KJSEMBED_EXPORT QWidgetBinding : public QObjectBinding
-    {
-        public:
-            QWidgetBinding( KJS::ExecState *exec, QWidget *widget );
-    };
-    
-    KJS_BINDING( Widget )
-    KJS_BINDING( Layout )
-    KJS_BINDING( Action )
+    KJSO_BINDING( QWidgetBinding, QWidget, QObjectBinding )
 }
 #endif
 

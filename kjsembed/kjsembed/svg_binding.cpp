@@ -17,7 +17,6 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QtSvg/QSvgRenderer>
 #include <QtSvg/QSvgWidget>
 #include <QDebug>
 
@@ -48,6 +47,8 @@ START_QOBJECT_METHOD( animated, QSvgRenderer )
 END_QOBJECT_METHOD
 }
 
+KJSO_SIMPLE_BINDING_CTOR( SvgRenderer, QSvgRenderer, QObjectBinding )
+
 START_METHOD_LUT( SvgRenderer )
     {"animationDuration", 0, KJS::DontDelete|KJS::ReadOnly, &SvgRendererNS::animationDuration},
     {"defaultSize", 0, KJS::DontDelete|KJS::ReadOnly, &SvgRendererNS::defaultSize},
@@ -76,17 +77,18 @@ START_CTOR( SvgRenderer, QSvgRenderer, 0 )
         renderer = new QSvgRenderer();
     }
 
-    KJS::JSObject *rendererObject = new QObjectBinding( exec, renderer );
-    StaticBinding::publish( exec, rendererObject, SvgRenderer::methods() );
+    KJS::JSObject *rendererObject = new SvgRenderer( exec, renderer );
     return rendererObject;
 END_CTOR
 
 namespace SvgWidgetNS
 {
 START_QOBJECT_METHOD( renderer, QSvgWidget )
-    result = KJSEmbed::createQObject( exec, object->renderer() );
+    result = KJSEmbed::createQObject( exec, object->renderer(), ObjectBinding::QObjOwned );
 END_QOBJECT_METHOD
 }
+
+KJSO_SIMPLE_BINDING_CTOR( SvgWidget, QSvgWidget, QWidgetBinding )
 
 START_METHOD_LUT( SvgWidget )
     {"renderer", 0, KJS::DontDelete|KJS::ReadOnly, &SvgWidgetNS::renderer}
@@ -113,9 +115,7 @@ START_CTOR( SvgWidget, QSvgWidget, 0 )
         widget = new QSvgWidget();
     }
 
-    KJS::JSObject *rendererObject = new QObjectBinding( exec, widget );
-    StaticBinding::publish( exec, rendererObject, Widget::methods() );
-    StaticBinding::publish( exec, rendererObject, SvgWidget::methods() );
+    KJS::JSObject *rendererObject = new SvgWidget( exec, widget );
     return rendererObject;
 END_CTOR
 

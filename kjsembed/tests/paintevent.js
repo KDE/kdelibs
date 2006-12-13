@@ -19,7 +19,7 @@
 */
 
 
-var label = new Widget("QLabel", this );
+var label = new QWidget("QLabel", this );
 label.width = 0;
 label.height = 0;
 label.onResizeEvent = function ( ev )
@@ -32,7 +32,7 @@ label.onResizeEvent = function ( ev )
 label.onPaintEvent = function ( ev )
 {
   try {
-    var painter = new QPainter();
+    var painter = new QPainter(this);
     if (painter.begin( this ) )
     {
       painter.drawLine( 0,0,this.width,this.height );

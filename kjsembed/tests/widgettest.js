@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-var button = new Widget("QPushButton", this );
+var button = new QWidget("QPushButton", this );
 button.height = 100;
 button.width = 100;
 button.text = "Test";

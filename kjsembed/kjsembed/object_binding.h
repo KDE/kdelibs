@@ -55,7 +55,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 #define END_OBJECT_METHOD \
             } \
             else \
-                KJS::throwError(exec, KJS::ReferenceError, QString("The internal object died."));\
+                KJS::throwError(exec, KJS::ReferenceError, QString("O: The internal object died."));\
         } \
         else \
             KJS::throwError(exec, KJS::GeneralError, QString("Object cast failed."));\
@@ -110,6 +110,9 @@ namespace KJSEmbed
 
             const char *typeName() const;
 
+            /**
+             * \return the internal object as a pointer of type T
+             */
             template <typename T>
             T *object() const
             {

@@ -46,6 +46,38 @@ class NAME \
                                     { return (*p_constructor.construct)(exec,args); } \
 };
 
+#define KJSO_BINDING( NAME, TYPE, BASENAME ) \
+class KJSEMBED_EXPORT NAME : public BASENAME \
+{ \
+    public: \
+    NAME(KJS::ExecState *exec, TYPE * obj); \
+    static const KJSEmbed::Method p_methods[]; \
+    static const KJSEmbed::Method p_statics[]; \
+    static const KJSEmbed::Enumerator p_enums[]; \
+    static const KJSEmbed::Constructor p_constructor; \
+    static KJS::JSObject *ctorMethod( KJS::ExecState *exec, const KJS::List &args );\
+    static const KJSEmbed::Enumerator *enums() { return p_enums;} \
+    static const KJSEmbed::Method *methods() { return p_methods;} \
+    static const KJSEmbed::Method *statics() { return p_statics;} \
+    static const KJSEmbed::Constructor *constructor() { return &p_constructor;} \
+};
+
+#define KJSO_START_BINDING_CTOR( NAME, TYPE, BASENAME ) \
+    NAME::NAME(KJS::ExecState *exec, TYPE * obj) \
+        : BASENAME( exec, obj ) \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); 
+
+#define KJSO_END_BINDING_CTOR \
+    }
+
+#define KJSO_SIMPLE_BINDING_CTOR( NAME, TYPE, BASENAME ) \
+    NAME::NAME(KJS::ExecState *exec, TYPE * obj) \
+        : BASENAME( exec, obj ) \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); \
+    }
+
 #define START_METHOD_LUT( TYPE ) \
 const Method TYPE::p_methods[] = \
 {

@@ -28,6 +28,8 @@
 #include "qformbuilder_binding.h"
 #include "qpainter_binding.h"
 #include "qwidget_binding.h"
+#include "qaction_binding.h"
+#include "qlayout_binding.h"
 #include "svg_binding.h"
 #include "filedialog_binding.h"
 #include "settings.h"
@@ -115,9 +117,10 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
 #ifdef KJSEMBED_FORMBUILDER_BINDING
     StaticConstructor::add( exec, parent, FormBuilder::constructor() ); // Ctor
 #endif
-    StaticConstructor::add( exec, parent, Widget::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, QWidgetBinding::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Layout::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Action::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, ActionGroup::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Font::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Pen::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Brush::constructor() ); // Ctor
@@ -138,7 +141,7 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticConstructor::add( exec, parent, DomNamedNodeMap::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, DomText::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Url::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Settings::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, SettingsBinding::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, SvgRenderer::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, LCDNumber::constructor() ); // Ctor

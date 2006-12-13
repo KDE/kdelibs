@@ -18,12 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-var box = new Widget("QFrame", 0);
-var layout = new Layout("QVBoxLayout", box);
+var box = new QWidget("QFrame", 0);
+var layout = new QLayout("QVBoxLayout", box);
 
 for ( var x = 0; x < 10; ++x)
 {
-	var lab = new Widget("QLabel", box);
+	var lab = new QWidget("QLabel", box);
 	lab.text = "This is a test of box " + x;
 	layout.addWidget(lab);
 }

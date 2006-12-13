@@ -23,11 +23,7 @@
 
 using namespace KJSEmbed;
 
-SettingsBinding::SettingsBinding( KJS::ExecState *exec, QSettings *settings )
-    : QObjectBinding(exec, settings)
-{
-    StaticBinding::publish( exec, this, Settings::methods() );
-}
+KJSO_SIMPLE_BINDING_CTOR( SettingsBinding, QSettings, QObjectBinding )
 
 START_QOBJECT_METHOD( callAllKeys, QSettings )
     QStringList keys = object->allKeys();
@@ -72,7 +68,7 @@ START_STATIC_OBJECT_METHOD( callSetPath )
     return KJS::Null();
 END_STATIC_OBJECT_METHOD
 
-START_METHOD_LUT( Settings )
+START_METHOD_LUT( SettingsBinding )
     {"allKeys", 0, KJS::DontDelete|KJS::ReadOnly, &callAllKeys },
     {"setValue", 2, KJS::DontDelete|KJS::ReadOnly, &callSetValue },
     {"value", 1, KJS::DontDelete|KJS::ReadOnly, &callValue },
@@ -81,7 +77,7 @@ START_METHOD_LUT( Settings )
     {"remove", 1,KJS::DontDelete|KJS::ReadOnly, &callRemove }
 END_METHOD_LUT
 
-START_ENUM_LUT( Settings )
+START_ENUM_LUT( SettingsBinding )
     {"NativeFormat", QSettings::NativeFormat},
     {"IniFormat", QSettings::IniFormat},
     //{"InvalidFormat", QSettings::InvalidFormat},
@@ -89,11 +85,11 @@ START_ENUM_LUT( Settings )
     {"SystemScope", QSettings::SystemScope}
 END_ENUM_LUT
 
-START_STATIC_METHOD_LUT( Settings )
+START_STATIC_METHOD_LUT( SettingsBinding )
     {"setPath", 3, KJS::DontDelete|KJS::ReadOnly, &callSetPath }
 END_METHOD_LUT
 
-START_CTOR( Settings, QSettings, 1 )
+START_CTOR( SettingsBinding, QSettings, 1 )
     QSettings *settings = 0;
     if( args.size() == 1)
     {

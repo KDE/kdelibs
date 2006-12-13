@@ -21,12 +21,15 @@
 #ifndef QSVG_BINDING_H
 #define QSVG_BINDING_H
 
+#include <QtSvg/QSvgRenderer>
+#include <QtSvg/QSvgWidget>
+#include "qwidget_binding.h"
 #include "qobject_binding.h"
 
 namespace KJSEmbed
 {
-    KJS_BINDING( SvgRenderer )
-    KJS_BINDING( SvgWidget )
+    KJSO_BINDING( SvgRenderer, QSvgRenderer, QObjectBinding )
+    KJSO_BINDING( SvgWidget, QSvgWidget, QWidgetBinding )
 }
 #endif
 

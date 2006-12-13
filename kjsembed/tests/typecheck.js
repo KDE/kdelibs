@@ -18,7 +18,7 @@ var color = new QColor("red");
 println('color ');
 isObjectOrVariant(color);
 
-var frame = new Widget("QFrame", this );
+var frame = new QWidget("QFrame", this );
 println('frame ');
 isObjectOrVariant(frame);
 

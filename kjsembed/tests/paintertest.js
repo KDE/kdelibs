@@ -30,7 +30,7 @@ if (painter.begin( pix ) )
 else
 	println("Could not paint to " + pix );
 
-var label = new Widget("QLabel", this );
+var label = new QWidget("QLabel", this );
 label.pixmap = pix;
 label.show();
 exec();

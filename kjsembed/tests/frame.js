@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-var frame = new Widget("QFrame", this );
+var frame = new QWidget("QFrame", this );
 frame.frameShape = frame.StyledPanel;
 frame.frameShadow = frame.Sunken;
 frame.lineWidth = 4;
