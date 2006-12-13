@@ -291,7 +291,6 @@ void KEditListBox::addItem()
             alreadyInList = m_model->stringList().contains( currentTextLE, Qt::CaseSensitive );
         }
     }
-
     if ( servNewButton )
         servNewButton->setEnabled(false);
 
@@ -299,15 +298,22 @@ void KEditListBox::addItem()
     m_lineEdit->blockSignals(true);
     m_lineEdit->clear();
     m_lineEdit->blockSignals(block);
-
+   
     selection->setCurrentIndex(currentIndex, QItemSelectionModel::Deselect);
 
     if (!alreadyInList)
     {
         block = m_listView->signalsBlocked();
+
         if ( currentIndex.isValid() ) {
-          m_model->setData( currentIndex, currentTextLE );
+          m_model->setData(currentIndex, currentTextLE );
         }
+	else{
+	  QStringList lst;
+	  lst<<currentTextLE;
+	  lst<<m_model->stringList();
+	  m_model->setStringList(lst);
+	}
         emit changed();
         emit added( currentTextLE );
     }
