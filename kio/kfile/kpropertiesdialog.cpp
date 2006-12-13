@@ -3281,8 +3281,10 @@ void KDesktopPropsPlugin::slotAddFiletype()
                     }
                     item = item->nextSibling();
                  }
-                 if (!found)
+                 if (!found) {
                     new QListViewItem(w->filetypeList, p->name(), p->comment());
+                    emit changed();
+                 }
               }
            }
            minorItem = minorItem->nextSibling();
@@ -3297,6 +3299,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
 void KDesktopPropsPlugin::slotDelFiletype()
 {
   delete w->filetypeList->currentItem();
+  emit changed();
 }
 
 void KDesktopPropsPlugin::checkCommandChanged()
