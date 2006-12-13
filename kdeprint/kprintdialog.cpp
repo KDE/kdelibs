@@ -45,6 +45,7 @@
 
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kicon.h>
 #include <kfiledialog.h>
 #include <kurlrequester.h>
 #include <klineedit.h>
@@ -292,14 +293,14 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	d->m_default->setWhatsThis(whatsThisSetDefaultPrinter);
 	d->m_filter = new QPushButton(m_pbox);
-	d->m_filter->setIcon(SmallIcon("filter"));
+	d->m_filter->setIcon(KIcon("filter"));
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_filter->setCheckable(true);
 	d->m_filter->setDown(KMManager::self()->isFilterEnabled());
 	d->m_filter->setToolTip(i18n("Toggle selective view on printer list"));
 	d->m_filter->setWhatsThis(whatsThisPrinterFilter);
 	d->m_wizard = new QPushButton(m_pbox);
-	d->m_wizard->setIcon(SmallIcon("wizard"));
+	d->m_wizard->setIcon(KIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_wizard->setToolTip(i18n("Add printer..."));
 	d->m_wizard->setWhatsThis(whatsThisAddPrinterWizard);
