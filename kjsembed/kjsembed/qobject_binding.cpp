@@ -454,27 +454,6 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         case QVariant::UserType:
         default:
             if( args[idx]->type() == KJS::ObjectType ) {
-#if 0
-                if(varianttype == QVariant::UserType) {
-                    int tp = QMetaType::type( types[idx].constData() );
-                    switch( tp ) {
-                        case QMetaType::QObjectStar:
-                        case QMetaType::QWidgetStar:
-                            QObjectBinding *qobjectImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, args[idx]);
-                            QObject* object = qobjImp->qobject<QObject>();
-                            return new Value<QObject*>(obj);
-                        default:
-                            break;
-                    }
-                }
-                if()
-                {
-                    //QWidget* widget = qobjImp->qobject<QWidget>();
-                    //if( widget ) return new Value<QWidget*>(obj);
-
-                    if( obj ) return new Value<QObject*>(obj);
-                }
-#endif
                 if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
                     return new Value<void*>(objImp->voidStar());
