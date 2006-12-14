@@ -1,4 +1,8 @@
 if(KDE4_BUILD_TESTS)
+
+# Tests don't need to go into toplevel/bin, they are fine in the current dir.
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
 set(seekslider_SRCS seekslider.cpp )
 kde4_automoc(${seekslider_SRCS})
 kde4_add_executable(seekslider ${seekslider_SRCS})
