@@ -55,7 +55,7 @@ class MediaObjectTest : public QObject
 		void cleanupTestCase();
 
 	private:
-		void startPlayback();
+        void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
 

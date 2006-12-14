@@ -40,16 +40,16 @@ static const qint32 castQVariantToInt32( const QVariant& variant )
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
 
-void MediaObjectTest::startPlayback()
+void MediaObjectTest::startPlayback(Phonon::State currentState)
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+	QCOMPARE( m_media->state(), currentState);
 	m_media->play();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
 	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::StoppedState );
+	QCOMPARE( oldstate, currentState);
 	QCOMPARE( newstate, m_media->state() );
 	if( newstate == Phonon::BufferingState )
 	{
@@ -70,6 +70,12 @@ void MediaObjectTest::startPlayback()
 void MediaObjectTest::stopPlayback( Phonon::State currentState )
 {
 	m_media->stop();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -86,6 +92,12 @@ void MediaObjectTest::stopPlayback( Phonon::State currentState )
 void MediaObjectTest::pausePlayback( Phonon::State currentState )
 {
 	m_media->pause();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -225,16 +237,7 @@ void MediaObjectTest::pauseToPlay()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
-
-	m_media->play();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
-	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
-	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
-	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::PausedState );
-	QCOMPARE( newstate, Phonon::PlayingState );
-	QCOMPARE( m_media->state(), Phonon::PlayingState );
-
+    startPlayback(Phonon::PausedState);
 	stopPlayback( Phonon::PlayingState );
 }
 
