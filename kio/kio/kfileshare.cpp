@@ -219,7 +219,10 @@ KFileShare::Authorization KFileShare::authorization()
 QString KFileShare::findExe( const char* exeName )
 {
    // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
-   QString path = QString::fromLocal8Bit(getenv("PATH")) + QLatin1String(":/usr/sbin");
+   QString path = QString::fromLocal8Bit(getenv("PATH"));
+#ifndef Q_WS_WIN
+   path += QLatin1String(":/usr/sbin");
+#endif
    QString exe = KStandardDirs::findExe( exeName, path );
    if (exe.isEmpty())
        kError() << exeName << " not found in " << path << endl;
