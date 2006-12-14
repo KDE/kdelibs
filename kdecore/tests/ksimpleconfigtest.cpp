@@ -8,15 +8,12 @@
 #include <kcmdlineargs.h>
 #include <kinstance.h>
 #include <QApplication>
+#include <QDir>
 #include <unistd.h>
 #include <stdio.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
-#endif
-
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp/"
 #endif
 
 int main( int argc, char **argv )
@@ -27,7 +24,7 @@ int main( int argc, char **argv )
   //KApplication a;
 
 
-  KSimpleConfig aConfig( _PATH_TMP"/simpleconfig.cfg" );
+  KSimpleConfig aConfig( QDir::tempPath() + "/simpleconfig.cfg" );
 
   aConfig.setGroup( "Test group" );
   aConfig.writeEntry( "key1", "value1" );
