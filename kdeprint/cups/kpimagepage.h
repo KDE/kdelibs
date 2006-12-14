@@ -24,9 +24,10 @@
 
 class KIntNumInput;
 class QComboBox;
-class Q3ButtonGroup;
 class ImagePreview;
 class ImagePosition;
+class QButtonGroup;
+class QRadioButton;
 
 class KPImagePage : public KPrintDialogPage
 {
@@ -48,9 +49,16 @@ private:
 	KIntNumInput	*m_brightness, *m_hue, *m_saturation, *m_gamma;
 	QComboBox		*m_sizetype;
 	KIntNumInput	*m_size;
-	Q3ButtonGroup	*m_vertgrp, *m_horizgrp;
+	QButtonGroup	*m_vertgrp, *m_horizgrp;
 	ImagePreview	*m_preview;
 	ImagePosition	*m_position;
+        QRadioButton    *m_bottom; 
+        QRadioButton    *m_top;
+        QRadioButton    *m_vcenter; 
+        QRadioButton    *m_left; 
+        QRadioButton    *m_right; 
+        QRadioButton    *m_hcenter; 
+
 };
 
 #endif

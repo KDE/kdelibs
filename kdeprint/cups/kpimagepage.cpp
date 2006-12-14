@@ -23,7 +23,7 @@
 #include "driver.h"
 
 #include <qcombobox.h>
-#include <q3buttongroup.h>
+#include <QButtonGroup>
 #include <qradiobutton.h>
 #include <QGroupBox>
 #include <qpushbutton.h>
@@ -309,45 +309,43 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	m_position = new ImagePosition(positionbox);
 	  m_position->setWhatsThis(whatsThisPreviewPositionImagePage);
 
-	QRadioButton	*bottom = new QRadioButton(positionbox);
-	QRadioButton	*top = new QRadioButton(positionbox);
-	QRadioButton	*vcenter = new QRadioButton(positionbox);
-	QRadioButton	*left = new QRadioButton(positionbox);
-	QRadioButton	*right = new QRadioButton(positionbox);
-	QRadioButton	*hcenter = new QRadioButton(positionbox);
-	QSize	sz = bottom->sizeHint();
-	bottom->setFixedSize(sz);
-	vcenter->setFixedSize(sz);
-	top->setFixedSize(sz);
-	left->setFixedSize(sz);
-	hcenter->setFixedSize(sz);
-	right->setFixedSize(sz);
+	m_bottom = new QRadioButton(positionbox);
+	m_top = new QRadioButton(positionbox);
+	m_vcenter = new QRadioButton(positionbox);
+	m_left = new QRadioButton(positionbox);
+	m_right = new QRadioButton(positionbox);
+	m_hcenter = new QRadioButton(positionbox);
+	QSize	sz = m_bottom->sizeHint();
+	m_bottom->setFixedSize(sz);
+	m_vcenter->setFixedSize(sz);
+	m_top->setFixedSize(sz);
+	m_left->setFixedSize(sz);
+	m_hcenter->setFixedSize(sz);
+	m_right->setFixedSize(sz);
 
-	m_vertgrp = new Q3ButtonGroup(positionbox);
-	m_vertgrp->hide();
+	m_vertgrp = new QButtonGroup(positionbox);
 
-	m_horizgrp = new Q3ButtonGroup(positionbox);
-	m_horizgrp->hide();
+	m_horizgrp = new QButtonGroup(positionbox);
 
-	m_vertgrp->insert(top, 0);
-	m_vertgrp->insert(vcenter, 1);
-	m_vertgrp->insert(bottom, 2);
+	m_vertgrp->addButton(m_top, 0);
+	m_vertgrp->addButton(m_vcenter, 1);
+	m_vertgrp->addButton(m_bottom, 2);
 	if ( QApplication::isRightToLeft() )
 	{
-	    m_horizgrp->insert(left, 2);
-	    m_horizgrp->insert(hcenter, 1);
-	    m_horizgrp->insert(right, 0);
+	    m_horizgrp->addButton(m_left, 2);
+	    m_horizgrp->addButton(m_hcenter, 1);
+	    m_horizgrp->addButton(m_right, 0);
 	}
 	else
 	{
-	    m_horizgrp->insert(left, 0);
-	    m_horizgrp->insert(hcenter, 1);
-	    m_horizgrp->insert(right, 2);
+	    m_horizgrp->addButton(m_left, 0);
+	    m_horizgrp->addButton(m_hcenter, 1);
+	    m_horizgrp->addButton(m_right, 2);
 	}
-	connect(m_vertgrp, SIGNAL(clicked(int)), SLOT(slotPositionChanged()));
-	connect(m_horizgrp, SIGNAL(clicked(int)), SLOT(slotPositionChanged()));
-	m_vertgrp->setButton(1);
-	m_horizgrp->setButton(1);
+	connect(m_vertgrp, SIGNAL(buttonClicked(int)), SLOT(slotPositionChanged()));
+	connect(m_horizgrp, SIGNAL(buttonClicked(int)), SLOT(slotPositionChanged()));
+	m_vcenter->setChecked(true);
+	m_hcenter->setChecked(true);
 	slotPositionChanged();
 
 	QGridLayout	*l0 = new QGridLayout(this);
@@ -388,12 +386,12 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	l3->addLayout(l4, 0, 1);
 	l3->addLayout(l5, 1, 0);
 	l3->addWidget(m_position, 1, 1);
-	l4->addWidget(left, Qt::AlignLeft);
-	l4->addWidget(hcenter, Qt::AlignCenter);
-	l4->addWidget(right, Qt::AlignRight);
-	l5->addWidget(top, Qt::AlignTop);
-	l5->addWidget(vcenter, Qt::AlignVCenter);
-	l5->addWidget(bottom, Qt::AlignBottom);
+	l4->addWidget(m_left, Qt::AlignLeft);
+	l4->addWidget(m_hcenter, Qt::AlignCenter);
+	l4->addWidget(m_right, Qt::AlignRight);
+	l5->addWidget(m_top, Qt::AlignTop);
+	l5->addWidget(m_vcenter, Qt::AlignVCenter);
+	l5->addWidget(m_bottom, Qt::AlignBottom);
 }
 
 KPImagePage::~KPImagePage()
@@ -429,8 +427,47 @@ void KPImagePage::setOptions(const QMap<QString,QString>& opts)
 	{
 		m_position->setPosition(value.toLatin1().constData());
 		int	pos = m_position->position();
-		m_vertgrp->setButton(pos/3);
-		m_horizgrp->setButton(pos%3);
+		int value = pos/3;
+
+		switch(pos)
+		{
+			case 0:
+			  m_top->setChecked(true);
+			  break;
+		  	case 1:
+			  m_vcenter->setChecked(true);
+		          break;
+		        case 2:
+			  m_bottom->setChecked(true);
+		          break;
+		        default:
+		          break;	  
+		}
+		value = pos%3;
+                switch(pos)
+                {
+                        case 0:
+			{
+			  if(QApplication::isRightToLeft())
+                          	m_right->setChecked(true);
+			  else
+				m_left->setChecked(true);
+			}
+                          break;
+                        case 1:
+                          m_hcenter->setChecked(true);
+                          break;
+                        case 2:
+                        {
+			  if(QApplication::isRightToLeft())
+                          	m_left->setChecked(true);
+			  else
+				m_right->setChecked(true);
+			}
+                          break;
+                        default:
+                          break;
+                }
 	}
 }
 
@@ -494,7 +531,7 @@ void KPImagePage::slotSizeTypeChanged(int t)
 
 void KPImagePage::slotPositionChanged()
 {
-	int	h = m_horizgrp->id(m_horizgrp->selected()), v = m_vertgrp->id(m_vertgrp->selected());
+	int	h = m_horizgrp->checkedId(), v = m_vertgrp->checkedId();
 	m_position->setPosition(h, v);
 }
 

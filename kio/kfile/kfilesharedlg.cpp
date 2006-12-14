@@ -136,17 +136,16 @@ void KFileSharePropsPlugin::init()
             vbox->setSpacing( KDialog::spacingHint() );
             vbox->setMargin( KDialog::marginHint() );
 
-            Q3ButtonGroup *rbGroup = new Q3ButtonGroup( m_widget );
-            rbGroup->hide();
+            QButtonGroup *rbGroup = new QButtonGroup( m_widget );
             m_rbUnShare = new QRadioButton( i18n("Not shared"), m_widget );
             connect( m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
             vbox->addWidget( m_rbUnShare, 0 );
-            rbGroup->insert( m_rbUnShare );
+            rbGroup->addButton( m_rbUnShare );
 
             m_rbShare = new QRadioButton( i18n("Shared"), m_widget );
             connect( m_rbShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
             vbox->addWidget( m_rbShare, 0 );
-            rbGroup->insert( m_rbShare );
+            rbGroup->addButton( m_rbShare );
 
             // Activate depending on status
             if ( d->m_bAllShared )
