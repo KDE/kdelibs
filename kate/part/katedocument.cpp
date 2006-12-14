@@ -68,6 +68,7 @@
 #include <kencodingfiledialog.h>
 #include <ktempfile.h>
 #include <kmdcodec.h>
+#include <kstandarddirs.h>
 
 #include <qtimer.h>
 #include <qfile.h>
