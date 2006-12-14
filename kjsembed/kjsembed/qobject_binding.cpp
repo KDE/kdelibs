@@ -453,12 +453,16 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case QVariant::UserType:
         default:
+            if( args[idx]->type() == KJS::NullType )
+            {
+                return new NullPtr();
+            }
             if( args[idx]->type() == KJS::ObjectType ) {
                 if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
                     return new Value<void*>(objImp->voidStar());
                 }
-                else if(VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]))
+                if(VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]))
                 {
                     return new Value<void*>(valImp->variant().data());
                 }
