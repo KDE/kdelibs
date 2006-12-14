@@ -254,7 +254,7 @@ bool KDesktopFile::tryExec() const
       // Environment PATH may contain filenames in 8bit locale cpecified
       // encoding (Like a filenames).
       QStringList dirs = QFile::decodeName(::getenv("PATH"))
-	      .split(':',QString::SkipEmptyParts);
+	      .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
