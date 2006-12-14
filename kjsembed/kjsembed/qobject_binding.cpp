@@ -21,6 +21,7 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaMethod>
+#include <QMetaType>
 #include <QVariant>
 #include <QVector>
 #include <QDebug>
@@ -412,44 +413,69 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         //                        .arg(types.size() ) );
         return new NullPtr();
     }
+
+    QVariant::Type varianttype = QVariant::nameToType( types[idx].constData() );
     //qDebug( QString("type=%1 argtype=%2").arg(types[idx].constData()).arg(args[idx]->type()).toLatin1() );
-    switch( args[idx]->type() )
-    {
-        case KJS::StringType:
-            return new Value<QString>( args[idx]->toString(exec).qstring() );
-            break;
-        case KJS::NumberType:
-            if( types[idx] == "int" )
+    switch( varianttype ) {
+        case QVariant::Int:
+            if( args[idx]->type() == KJS::NumberType )
                 return new Value<int>( int( args[idx]->toInteger(exec) ) );
-            else if ( types[idx] == "double" )
-                return new Value<double>( args[idx]->toNumber(exec) );
-            else if ( types[idx] == "float" )
-                return new Value<float>( args[idx]->toNumber(exec) );
-            else if ( types[idx] == "qreal" )
-                return new Value<qreal>( args[idx]->toNumber(exec) );
-            else if ( types[idx] == "uint" )
+            break;
+        case QVariant::UInt:
+            if( args[idx]->type() == KJS::NumberType )
                 return new Value<uint>( uint( args[idx]->toInteger(exec) ) );
-            else
-                return new NullPtr();
             break;
-        case KJS::BooleanType:
-            return new Value<bool>( args[idx]->toBoolean(exec) );
+        case QVariant::Double:
+            if( args[idx]->type() == KJS::NumberType )
+                return new Value<double>( args[idx]->toNumber(exec) );
+            //if ( types[idx] == "float" ) return new Value<float>( args[idx]->toNumber(exec) );
+            //if ( types[idx] == "qreal" ) return new Value<qreal>( args[idx]->toNumber(exec) );
             break;
-        case KJS::ObjectType:
-            {
-                if(types[idx] == "QStringList")
-                {
-                    return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
+        case QVariant::Bool:
+            if( args[idx]->type() == KJS::BooleanType )
+                return new Value<bool>( args[idx]->toBoolean(exec) );
+            break;
+        case QVariant::String:
+            if( args[idx]->type() == KJS::StringType )
+                return new Value<QString>( args[idx]->toString(exec).qstring() );
+            break;
+        case QVariant::StringList:
+            if( args[idx]->type() == KJS::ObjectType )
+                return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
+            break;
+        case QVariant::List:
+            if( args[idx]->type() == KJS::ObjectType )
+                return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
+            break;
+        case QVariant::Map:
+            if( args[idx]->type() == KJS::ObjectType )
+                return new Value<QVariantMap>( convertArrayToMap(exec, args[idx]) );
+            break;
+        case QVariant::UserType:
+        default:
+            if( args[idx]->type() == KJS::ObjectType ) {
+#if 0
+                if(varianttype == QVariant::UserType) {
+                    int tp = QMetaType::type( types[idx].constData() );
+                    switch( tp ) {
+                        case QMetaType::QObjectStar:
+                        case QMetaType::QWidgetStar:
+                            QObjectBinding *qobjectImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, args[idx]);
+                            QObject* object = qobjImp->qobject<QObject>();
+                            return new Value<QObject*>(obj);
+                        default:
+                            break;
+                    }
                 }
-                else if(types[idx] == "QVariantList")
+                if()
                 {
-                    return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
+                    //QWidget* widget = qobjImp->qobject<QWidget>();
+                    //if( widget ) return new Value<QWidget*>(obj);
+
+                    if( obj ) return new Value<QObject*>(obj);
                 }
-                else if(types[idx] == "QVariantMap")
-                {
-                    return new Value<QVariantMap>( convertArrayToMap(exec, args[idx]) );
-                }
-                else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
+#endif
+                if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
                     return new Value<void*>(objImp->voidStar());
                 }
@@ -459,12 +485,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 }
             }
             break;
-        case KJS::NullType:
-            return new NullPtr();
-            break;
-        default:
-            break;
     }
+
     qDebug("Cast failure %s value Type %d", types[idx].constData(), args[idx]->type() );
     KJS::throwError(exec, KJS::GeneralError, i18n("Cast failure %1 value Type %2",
                     types[idx].constData() ,
@@ -537,11 +559,25 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         //return KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
     }
 
-    //TODO use the QMetaType-stuff ( defined as QVariant::UserType ) to handle also other cases
-		if (returnTypeId == QVariant::Invalid)
-			return KJS::Null();
-		else
-			return KJSEmbed::convertToValue(exec, returnValue);
+    switch( returnTypeId ) {
+        case QVariant::Invalid:
+            return KJS::Null();
+        case QVariant::UserType: {
+            int tp = QMetaType::type( metaMember.typeName() );
+            switch( tp ) {
+                case QMetaType::QWidgetStar:
+                case QMetaType::QObjectStar: {
+                    QVariant v(tp, param[0]);
+                    QObject* obj = v.value< QObject* >();
+                    if( obj )
+                        return KJSEmbed::createQObject(exec, obj);
+                } break;
+                default: break;
+            }
+        } // fall through
+        default:
+            return KJSEmbed::convertToValue(exec, returnValue);
+    }
 }
 
 SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
