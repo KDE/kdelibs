@@ -50,7 +50,11 @@
 
 QList<QProcess *>processList;
 
+#ifdef DEBUG
 #define TRACE() fprintf(stderr,"%s %d\n",__FUNCTION__,__LINE__)
+#else
+#define TRACE()
+#endif
 
 #if 0
 /* note:
@@ -791,7 +795,9 @@ static void appendLong(QByteArray &ba, long l)
 void 
 KLauncher::slotGotOutput()
 {
+#ifdef DEBUG
 	qDebug("got output signal");
+#endif
 	QByteArray _stdout;
   foreach (QProcess *p, processList) {
     _stdout = p->readAllStandardOutput();
