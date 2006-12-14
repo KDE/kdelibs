@@ -19,8 +19,9 @@
 
 #include "testobject.h"
 
-TestObject::TestObject(const QString& name)
-    : QObject()
+
+TestObject::TestObject(QObject* parent, const QString& name)
+    : QObject(parent)
 {
     setObjectName(name);
     //kDebug() << "TestObject(const QString&) objectName=" << objectName() << endl;
@@ -34,20 +35,6 @@ TestObject::TestObject(const QString& name)
     //Action->addSlot("stderr", this, SLOT(stderrSlot(const QString&)));
     //Action->addSignal("myTestSignal", this, SIGNAL(testSignal()));
     //Action->addSlot("myTestSlot", this, SLOT(testSlot()));
-}
-
-TestObject::TestObject()
-    : QObject()
-{
-    setObjectName("!!!EMPTY!!!");
-    //kDebug() << "TestObject() objectName=" << objectName() << endl;
-}
-
-TestObject::TestObject(const TestObject& obj)
-    : QObject()
-{
-    setObjectName( "!!!|" + obj.objectName() );
-    //kDebug() << "TestObject(const TestObject& obj) objectName=" << objectName() << endl;
 }
 
 TestObject::~TestObject()
@@ -170,6 +157,11 @@ Kross::Object::Ptr TestObject::func_krossobject_krossobject(Kross::Object::Ptr o
     return obj;
 }
 */
+
+QObject* TestObject::func_createChildTestObject(const QString& objectname)
+{
+    return new TestObject(this, objectname);
+}
 
 void TestObject::func_void_qobject(QObject*)
 {

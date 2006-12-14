@@ -17,8 +17,13 @@ function UnitTest()
         numfailed = numfailed + 1;
     }
 
-    this.missingException = function(exception) {
-        println("EXPECTED EXCEPTION: " + exception);
+    this.missingException = function(message) {
+        println("MISSING EXCEPTION: " + message);
+        numfailed = numfailed + 1;
+    }
+
+    this.unexpectedException = function(message, exception) {
+        println("UNEXPECTED EXCEPTION: " + message + "\n" + exception);
         numfailed = numfailed + 1;
     }
 
@@ -105,7 +110,22 @@ var testobj2 = TestObject2
         tester.missingException("testobj1.noSuchMethodName()");
     } catch(error) { tester.passed(); }
 
-    testobj1.func_void_qobject(testobj2)
+    try {
+        testobj1.func_void_qobject(testobj2);
+        tester.passed();
+    } catch(error) { tester.unexpectedException("testobj1.func_void_qobject(testobj2)", error); }
+
+    try {
+        obj1 = testobj1.func_createChildTestObject("MyChildObject")
+        tester.passed();
+        tester.assert(obj1.name(), "MyChildObject");
+    } catch(error) { tester.unexpectedException("testobj1.func_createChildTestObject(\"MyChildObject\")", error); }
+
+    try {
+        testobj3 = testobj1.func_qobject_qobject(testobj2);
+        tester.passed();
+        tester.assert(testobj2.name(), testobj3.name());
+    } catch(error) { tester.unexpectedException("testobj1.func_qobject_qobject(testobj2)", error); }
 }
 
 // bool

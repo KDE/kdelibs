@@ -43,9 +43,7 @@ class TestObject : public QObject
         Q_ENUMS(TestEnum)
 
     public:
-        TestObject();
-        TestObject(const QString& name);
-        TestObject(const TestObject& obj);
+        explicit TestObject(QObject* parent = 0, const QString& name = QString());
         virtual ~TestObject();
 
         enum TestEnum { TESTENUM1 = 1, TESTENUM2 = 2, TESTENUM3 = 4, TESTENUM4 = 8 };
@@ -116,6 +114,7 @@ class TestObject : public QObject
         //Kross::Object::Ptr func_krossobject_krossobject(Kross::Object::Ptr);
 
         // QObject
+        QObject* func_createChildTestObject(const QString& objectname);
         void func_void_qobject(QObject*);
         QObject* func_qobject_qobject(QObject*);
 

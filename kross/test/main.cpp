@@ -96,8 +96,8 @@ void finishTestEnvironment()
 void initTestEnvironment()
 {
     // Create the testobject instances.
-    testobj1 = new TestObject("TestObject1");
-    testobj2 = new TestObject("TestObject2");
+    testobj1 = new TestObject(0, "TestObject1");
+    testobj2 = new TestObject(0, "TestObject2");
 
     // Publish both testobject instances.
     Kross::Manager::self().addObject( testobj1 );
@@ -116,8 +116,8 @@ int runScriptFile(const QString& scriptfile)
     QString interpretername = getInterpreterName(scriptfile);
 
     // Create the testobject instances.
-    TestObject* testobj3 = new TestObject("TestObject3");
-    TestObject* testobj4 = new TestObject("TestObject4");
+    TestObject* testobj3 = new TestObject(0, "TestObject3");
+    TestObject* testobj4 = new TestObject(0, "TestObject4");
 
     // First we need a Action and fill it.
     Kross::Action* action = new Kross::Action( scriptfile );
