@@ -56,24 +56,28 @@ int main(int argc, char **argv)
      }
 
      QLibrary lib(QFile::decodeName(libpath.data()));
-
+#ifdef Q_WS_WIN
+     qDebug("trying to load '%s'",libpath.data());
+#endif
      if (!lib.load() || !lib.isLoaded() )
      {
 #ifdef Q_WS_WIN
         QString pathes = getenv("KDEDIRS");
         QStringList pathlist = pathes.split(";");
-          for (int i = 0; i < pathlist.size(); ++i) 
-          {
-            lib.setFileName(pathlist.at(i) + "/lib/kde4/" + libpath.data());
-		    if (lib.load() && !lib.isLoaded() ) 
-              break;
-           }
-           if (!lib.load() || !lib.isLoaded()) 
-           {
-             fprintf(stderr, "could not open %s: %s", libpath.data(),
-                     qPrintable (lib.errorString()) );
-             exit(1);
-           }
+        for (int i = 0; i < pathlist.size(); ++i) 
+        {
+          QString slave_path = pathlist.at(i) + "/lib/kde4/" + libpath.data();
+          qDebug("trying to load '%s'",slave_path.toAscii().data());
+          lib.setFileName(slave_path);
+          if (lib.load() && lib.isLoaded() ) 
+            break;
+        }
+        if (!lib.isLoaded()) 
+        {
+          fprintf(stderr, "could not open %s: %s", libpath.data(),
+                  qPrintable (lib.errorString()) );
+          exit(1);
+        }
 #else
         fprintf(stderr, "could not open %s: %s", libpath.data(),
                 qPrintable (lib.errorString()) );
