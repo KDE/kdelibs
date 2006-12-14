@@ -20,6 +20,7 @@
 
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <QDir>
 
 #include <kapplication.h>
 #include <kdirlister.h>
@@ -38,8 +39,8 @@ KDirListerTest::KDirListerTest( QWidget *parent )
 
   QVBoxLayout* layout = new QVBoxLayout( this );
 
-  QPushButton* startH = new QPushButton( "Start listing $HOME", this );
-  QPushButton* startR= new QPushButton( "Start listing /", this );
+  QPushButton* startH = new QPushButton( "Start listing Home", this );
+  QPushButton* startR= new QPushButton( "Start listing Root", this );
   QPushButton* test = new QPushButton( "Many", this );
   QPushButton* startT = new QPushButton( "tarfile", this );
 
@@ -99,29 +100,33 @@ KDirListerTest::~KDirListerTest()
 
 void KDirListerTest::startHome()
 {
-  KUrl home( getenv( "HOME" ) );
+  KUrl home( QDir::homePath() );
   lister->openUrl( home, false, false );
 //  lister->stop();
 }
 
 void KDirListerTest::startRoot()
 {
-  KUrl root( "file:/" );
+  KUrl root( "file://" + QDir::rootPath() );
   lister->openUrl( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
-  KUrl root( "file:/home/jowenn/aclocal_1.tgz" );
+  KUrl root( "file://" + QDir::homePath()+"/jowenn/aclocal_1.tgz" );
   lister->openUrl( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::test()
 {
-  KUrl home( getenv( "HOME" ) );
-  KUrl root( "file:/" );
+  KUrl home( QDir::homePath() );
+  KUrl root( "file://" + QDir::rootPath() );
+#ifdef Q_WS_WIN
+  lister->openUrl( home, true, false );
+  lister->openUrl( root, true, true );
+#else
 /*  lister->openUrl( home, true, false );
   lister->openUrl( root, true, true );
   lister->openUrl( KUrl("file:/etc"), true, true );
@@ -134,17 +139,18 @@ void KDirListerTest::test()
   lister->openUrl( KUrl("file:/usr/"), true, true );
 */
   lister->openUrl( KUrl("file:/dev"), true, true );
+#endif
 }
 
 void KDirListerTest::completed()
 {
-    if ( lister->url().path() == "/")
+    if ( lister->url().path() == QDir::rootPath() )
     {
-        KFileItem* item = lister->findByUrl( KUrl( "/tmp" ) );
+        KFileItem* item = lister->findByUrl( KUrl( QDir::tempPath() ) );
         if ( item )
-            kDebug() << "Found /tmp: " << item << endl;
+            kDebug() << "Found " << QDir::tempPath() << ": " << item << endl;
         else
-            kWarning() << "/tmp not found! Bug in findByURL?" << endl;
+            kWarning() << QDir::tempPath() << " not found! Bug in findByURL?" << endl;
     }
 }
 
