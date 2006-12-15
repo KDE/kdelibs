@@ -57,7 +57,6 @@ install(FILES
   resource.h
   resourcemanager.h
   kmetadata.h
-  ontology.h
   kmetadata_export.h
   ${CMAKE_CURRENT_BINARY_DIR}/allresources.h
   ${ALLRESOURCES_HEADERS}
