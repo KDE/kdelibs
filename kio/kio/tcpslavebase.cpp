@@ -157,10 +157,8 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->write(data, len);
     }
-    return d->socket.write(data, len);
-#else
-    return 0;
 #endif
+    return d->socket.write(data, len);
 }
 
 ssize_t TCPSlaveBase::read(char* data, ssize_t len)
@@ -172,10 +170,8 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->read(data, len);
     }
-    return d->socket.read(data, len);
-#else
-    return 0;
 #endif
+    return d->socket.read(data, len);
 }
 
 
@@ -258,11 +254,6 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
     }
   }
 } else {                                                      // NON SSL CASE
-
-#ifndef Q_OS_UNIX
-  return -1;
-#endif
-
   while (true) {
     rc = d->socket.bytesAvailable();
 
@@ -325,8 +316,8 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                   const QString &service,
                                   bool sendError )
 {
-#ifdef Q_OS_UNIX
     d->userAborted = false;
+#ifdef Q_OS_UNIX
 
     //  - leaving SSL - warn before we even connect
     if (metaData("main_frame_request") == "TRUE" &&
@@ -363,7 +354,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
           }
        }
     }
-
+#endif
     d->status = -1;
     d->host = host;
     d->needSSLHandShake = m_bIsSSL;
@@ -403,9 +394,6 @@ bool TCPSlaveBase::connectToHost( const QString &host,
         setMetaData("ssl_in_use", "FALSE");
 
     return true;
-#else //!Q_OS_UNIX
-    return false;
-#endif //Q_OS_UNIX
 }
 
 void TCPSlaveBase::closeDescriptor()
