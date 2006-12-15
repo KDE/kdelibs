@@ -107,14 +107,22 @@ void KDirListerTest::startHome()
 
 void KDirListerTest::startRoot()
 {
-  KUrl root( "file://" + QDir::rootPath() );
+#ifdef Q_WS_WIN
+  KUrl root( "file:///" + QDir::rootPath() );
+#else
+  KUrl root( "file:///" );
+#endif
   lister->openUrl( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
-  KUrl root( "file://" + QDir::homePath()+"/jowenn/aclocal_1.tgz" );
+#ifdef Q_WS_WIN
+  KUrl root( "file:///" + QDir::homePath()+"/jowenn/aclocal_1.tgz" );
+#else
+  KUrl root( "file:///home/jowenn/aclocal_1.tgz" );
+#endif
   lister->openUrl( root, true, true );
 // lister->stop( root );
 }
@@ -122,11 +130,12 @@ void KDirListerTest::startTar()
 void KDirListerTest::test()
 {
   KUrl home( QDir::homePath() );
-  KUrl root( "file://" + QDir::rootPath() );
 #ifdef Q_WS_WIN
+  KUrl root( "file:///" + QDir::rootPath() );
   lister->openUrl( home, true, false );
   lister->openUrl( root, true, true );
 #else
+  KUrl root( "file:///" );
 /*  lister->openUrl( home, true, false );
   lister->openUrl( root, true, true );
   lister->openUrl( KUrl("file:/etc"), true, true );
