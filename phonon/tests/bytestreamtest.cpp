@@ -39,16 +39,16 @@ static const qint32 castQVariantToInt32( const QVariant& variant )
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
 
-void ByteStreamTest::startPlayback()
+void ByteStreamTest::startPlayback(Phonon::State currentState)
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+	QCOMPARE( m_media->state(), currentState);
 	m_media->play();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
 	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::StoppedState );
+	QCOMPARE( oldstate, currentState);
 	QCOMPARE( newstate, m_media->state() );
 	if( newstate == Phonon::BufferingState )
 	{
@@ -69,6 +69,12 @@ void ByteStreamTest::startPlayback()
 void ByteStreamTest::stopPlayback( Phonon::State currentState )
 {
 	m_media->stop();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -81,6 +87,12 @@ void ByteStreamTest::stopPlayback( Phonon::State currentState )
 void ByteStreamTest::pausePlayback( Phonon::State currentState )
 {
 	m_media->pause();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -219,6 +231,9 @@ void ByteStreamTest::stopToPause()
 	m_media->pause();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
+	initByteStream();
+	initOutput();
+	setMedia();
 }
 
 void ByteStreamTest::stopToPlay()
@@ -282,16 +297,7 @@ void ByteStreamTest::pauseToPlay()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
-
-	m_media->play();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
-	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
-	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
-	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::PausedState );
-	QCOMPARE( newstate, Phonon::PlayingState );
-	QCOMPARE( m_media->state(), Phonon::PlayingState );
-
+    startPlayback(Phonon::PausedState);
 	stopPlayback( Phonon::PlayingState );
 	initByteStream();
 	initOutput();
@@ -444,7 +450,9 @@ void ByteStreamTest::testTickSignal()
 				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
 					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
 							.arg( lastCount ).arg( s2 ).arg( ( lastCount + 1 ) * m_media->tickInterval() ) ) );
-			}
+            } else if (lastCount == 0 && s2 > 20 * m_media->tickInterval()) {
+                QFAIL("no tick signals are being received");
+            }
 			s2 = start2.elapsed();
 			QCoreApplication::processEvents();
 		}
@@ -464,7 +472,7 @@ void ByteStreamTest::addPaths()
 	VideoPath *v2 = new VideoPath( this );
 	QCOMPARE( m_media->audioPaths().size(), 0 );
 	QCOMPARE( m_media->videoPaths().size(), 0 );
-	m_media->addAudioPath( a1 );
+	QVERIFY( m_media->addAudioPath( a1 ) );
 	QCOMPARE( m_media->audioPaths().size(), 1 ); // one should always work
 	QVERIFY( m_media->audioPaths().contains( a1 ) );
 	QCOMPARE( m_media->addAudioPath( a1 ), false ); // adding the same one should not work
@@ -500,7 +508,7 @@ void ByteStreamTest::addPaths()
 	QCOMPARE( m_media->audioPaths().size(), 0 );
 	a1 = 0;
 
-	m_media->addVideoPath( v1 );
+	QVERIFY( m_media->addVideoPath( v1 ) );
 	QCOMPARE( m_media->videoPaths().size(), 1 ); // one should always work
 	QVERIFY( m_media->videoPaths().contains( v1 ) );
 	QCOMPARE( m_media->addVideoPath( v1 ), false ); // adding the same one should not work
@@ -544,10 +552,9 @@ void ByteStreamTest::initOutput()
 	{
 		m_audioPath = new AudioPath( this );
 		m_audioOutput = new AudioOutput( Phonon::MusicCategory, this );
-		m_audioOutput->setVolume( 0.0f );
+		//m_audioOutput->setVolume( 0.0f );
 		m_audioPath->addOutput( m_audioOutput );
 	}
-	qDebug() << "m_media->addAudioPath()";
 	QVERIFY( m_media->addAudioPath( m_audioPath ) );
 }
 

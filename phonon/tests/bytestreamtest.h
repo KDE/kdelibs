@@ -72,7 +72,7 @@ class ByteStreamTest : public QObject
 	private:
 		void initByteStream();
 
-		void startPlayback();
+        void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
 

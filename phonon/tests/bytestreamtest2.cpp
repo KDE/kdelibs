@@ -23,8 +23,6 @@
 #include <QTime>
 #include <QtDebug>
 #include <phonon/videopath.h>
-#include <kio/job.h>
-#include <QDataStream>
 
 using namespace Phonon;
 
@@ -40,16 +38,16 @@ static const qint32 castQVariantToInt32( const QVariant& variant )
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
 
-void ByteStreamTest::startPlayback()
+void ByteStreamTest::startPlayback(Phonon::State currentState)
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+	QCOMPARE( m_media->state(), currentState);
 	m_media->play();
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
 	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::StoppedState );
+	QCOMPARE( oldstate, currentState);
 	QCOMPARE( newstate, m_media->state() );
 	if( newstate == Phonon::BufferingState )
 	{
@@ -70,6 +68,12 @@ void ByteStreamTest::startPlayback()
 void ByteStreamTest::stopPlayback( Phonon::State currentState )
 {
 	m_media->stop();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -82,6 +86,12 @@ void ByteStreamTest::stopPlayback( Phonon::State currentState )
 void ByteStreamTest::pausePlayback( Phonon::State currentState )
 {
 	m_media->pause();
+    if (m_stateChangedSignalSpy->count() == 0) {
+        QCOMPARE(m_media->state(), currentState);
+        while (m_stateChangedSignalSpy->count() == 0) {
+            QCoreApplication::processEvents();
+        }
+    }
 	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
 	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
 	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
@@ -270,16 +280,7 @@ void ByteStreamTest::pauseToPlay()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
-
-	m_media->play();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
-	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
-	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
-	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::PausedState );
-	QCOMPARE( newstate, Phonon::PlayingState );
-	QCOMPARE( m_media->state(), Phonon::PlayingState );
-
+    startPlayback(Phonon::PausedState);
 	stopPlayback( Phonon::PlayingState );
 }
 
@@ -420,7 +421,9 @@ void ByteStreamTest::testTickSignal()
 				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
 					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
 							.arg( lastCount ).arg( s2 ).arg( ( lastCount + 1 ) * m_media->tickInterval() ) ) );
-			}
+            } else if (lastCount == 0 && s2 > 20 * m_media->tickInterval()) {
+                QFAIL("no tick signals are being received");
+            }
 			s2 = start2.elapsed();
 			QCoreApplication::processEvents();
 		}

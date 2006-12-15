@@ -378,7 +378,9 @@ void MediaObjectTest::testTickSignal()
 				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
 					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
 							.arg( lastCount ).arg( s2 ).arg( ( lastCount + 1 ) * m_media->tickInterval() ) ) );
-			}
+            } else if (lastCount == 0 && s2 > 20 * m_media->tickInterval()) {
+                QFAIL("no tick signals are being received");
+            }
 			s2 = start2.elapsed();
 			QCoreApplication::processEvents();
 		}
