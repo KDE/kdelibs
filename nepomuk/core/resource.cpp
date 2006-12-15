@@ -22,45 +22,45 @@
 Nepomuk::KMetaData::Resource::Resource()
 {
   // invalid data
-  d = new ResourceData();
-  d->ref();
+  m_data = new ResourceData();
+  m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource::Resource& res )
 {
-  d = res.d;
-  d->ref();
+  m_data = res.m_data;
+  m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
 {
-  d = ResourceData::data( uri, type );
-  d->ref();
+  m_data = ResourceData::data( uri, type );
+  m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  if( !d->deref() ) {
+  if( !m_data->deref() ) {
     if( ResourceManager::instance()->autoSync() && modified() )
       sync();
-    d->deleteData();
+    m_data->deleteData();
   }
 }
 
 
 Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
 {
-  if( d != res.d ) {
-    if( !d->deref() ) {
+  if( m_data != res.m_data ) {
+    if( !m_data->deref() ) {
       if( ResourceManager::instance()->autoSync() && modified() )
 	sync();
-      d->deleteData();
+      m_data->deleteData();
     }
-    d = res.d;
-    d->ref();
+    m_data = res.m_data;
+    m_data->ref();
   }
 
   return *this;
@@ -69,14 +69,14 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 
 const QString& Nepomuk::KMetaData::Resource::uri() const
 {
-  return d->uri;
+  return m_data->uri;
 }
 
 
 const QString& Nepomuk::KMetaData::Resource::type() const
 {
-  d->init();
-  return d->type;
+  m_data->init();
+  return m_data->type;
 }
 
 
@@ -90,10 +90,10 @@ int Nepomuk::KMetaData::Resource::sync()
 {
   // FIXME: inform the manager about failures
 
-  d->init();
+  m_data->init();
 
-  if( d->merge() )
-    if( d->save() )
+  if( m_data->merge() )
+    if( m_data->save() )
       return 0;
 
   return -1;
@@ -102,10 +102,10 @@ int Nepomuk::KMetaData::Resource::sync()
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
-  d->init();
+  m_data->init();
 
-  ResourceData::PropertiesMap::iterator it = d->properties.find( uri );
-  if( it != d->properties.end() )
+  ResourceData::PropertiesMap::iterator it = m_data->properties.find( uri );
+  if( it != m_data->properties.end() )
     if( !( it.value().second & ResourceData::Deleted ) )
       return it.value().first;
   
@@ -115,27 +115,27 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QSt
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
-  d->init();
+  m_data->init();
 
   // mark the value as modified
-  d->properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
+  m_data->properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
-  d->init();
+  m_data->init();
 
-  ResourceData::PropertiesMap::iterator it = d->properties.find( uri );
-  if( it != d->properties.end() )
+  ResourceData::PropertiesMap::iterator it = m_data->properties.find( uri );
+  if( it != m_data->properties.end() )
     it.value().second = ResourceData::Modified|ResourceData::Deleted;
 }
 
 
 bool Nepomuk::KMetaData::Resource::modified() const
 {
-  for( ResourceData::PropertiesMap::const_iterator it = d->properties.constBegin();
-       it != d->properties.constEnd(); ++it )
+  for( ResourceData::PropertiesMap::const_iterator it = m_data->properties.constBegin();
+       it != m_data->properties.constEnd(); ++it )
     if( it.value().second & ResourceData::Modified )
       return true;
 
@@ -145,19 +145,19 @@ bool Nepomuk::KMetaData::Resource::modified() const
 
 bool Nepomuk::KMetaData::Resource::inSync() const
 {
-  return d->inSync();
+  return m_data->inSync();
 }
 
 
 bool Nepomuk::KMetaData::Resource::exists() const
 {
-  return d->exists();
+  return m_data->exists();
 }
 
 
 bool Nepomuk::KMetaData::Resource::isValid() const
 {
-  return d->isValid();
+  return m_data->isValid();
 }
 
 
@@ -166,7 +166,7 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
   if( this == &other )
     return true;
 
-  return( *d == *other.d );
+  return( *m_data == *other.m_data );
 }
 
 

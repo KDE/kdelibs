@@ -155,7 +155,10 @@ namespace Nepomuk {
 	bool operator==( const Resource& ) const;
 	
       private:
-	ResourceData* d;
+	ResourceData* m_data;
+
+	class Private;
+	Private* d; // unused
       };
   }
 }
