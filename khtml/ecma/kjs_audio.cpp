@@ -230,8 +230,6 @@ using namespace Phonon;
 AudioQObject::AudioQObject(Audio* jObj)
   : m_jObj( jObj ),
     m_media(0), 
-    m_audioPath(0),
-    m_audioOutput(0),
     m_playCount(0)
 {
     // sound might be immediately available, so delay ref'ing until
@@ -242,8 +240,10 @@ AudioQObject::AudioQObject(Audio* jObj)
 AudioQObject::~AudioQObject()
 {
     delete m_media;
-    delete m_audioPath;
-    delete m_audioOutput;
+    if (!--s_refs) {
+        delete s_audioPath;
+        delete s_audioOutput;
+    }
 }
 
 void AudioQObject::refLoader()
@@ -251,14 +251,22 @@ void AudioQObject::refLoader()
     m_jObj->refLoader(); 
 }
 
+AudioPath* AudioQObject::s_audioPath = 0;
+AudioOutput* AudioQObject::s_audioOutput = 0;
+int AudioQObject::s_refs = 0;
+
 void AudioQObject::setupPlayer()
 {
     m_media = new ByteStream( this );
-    m_audioPath = new AudioPath( this );
-    m_audioOutput = new AudioOutput( MusicCategory, this );
+    if (!s_audioPath)
+        s_audioPath = new AudioPath();
+    if (!s_audioOutput)
+        s_audioOutput = new AudioOutput( MusicCategory );
 
-    m_media->addAudioPath( m_audioPath );
-    m_audioPath->addOutput( m_audioOutput );
+    s_refs++;
+
+    m_media->addAudioPath( AudioQObject::s_audioPath );
+    s_audioPath->addOutput( AudioQObject::s_audioOutput );
     
     m_media->setStreamSeekable( true );
 

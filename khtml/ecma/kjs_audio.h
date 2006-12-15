@@ -111,10 +111,12 @@ namespace KJS {
     Audio* m_jObj;
     
     Phonon::ByteStream*  m_media;
-    Phonon::AudioPath*   m_audioPath;
-    Phonon::AudioOutput* m_audioOutput;
     QByteArray m_sound;
     int m_playCount;
+
+    static Phonon::AudioPath*   s_audioPath;
+    static Phonon::AudioOutput* s_audioOutput;
+    static int s_refs;
 };
 
 } // namespace KJS
