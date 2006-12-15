@@ -139,7 +139,7 @@ NO_ENUMS( QWidgetBinding )
 NO_STATICS( QWidgetBinding )
 
 KJSO_SIMPLE_BINDING_CTOR( QWidgetBinding, QWidget, QObjectBinding )
-KJSO_QOBJECT_BIND(QWidgetBinding, QWidget);
+KJSO_QOBJECT_BIND(QWidgetBinding, QWidget)
 
 KJSO_START_CTOR( QWidgetBinding, QWidget, 0 )
     //qDebug() << "QWidgetBinding::CTOR args.size()=" << args.size();
