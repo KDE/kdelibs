@@ -171,7 +171,7 @@ Manager::~Manager()
     for(QHash<QString, InterpreterInfo* >::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it)
         delete it.value();
     for(QHash<QString, QPointer<QObject> >::Iterator it = d->modules.begin(); it != d->modules.end(); ++it)
-        delete it.value();
+        delete static_cast<QObject *>(it.value());
     delete d->collection;
     delete d;
 }
