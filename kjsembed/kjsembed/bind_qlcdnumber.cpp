@@ -113,7 +113,10 @@ END_METHOD_LUT
 
 NO_STATICS( LCDNumber )
 
-START_CTOR( LCDNumber, QLCDNumber, 0 )
+KJSO_SIMPLE_BINDING_CTOR( LCDNumber, QLCDNumber, QWidgetBinding )
+KJSO_QOBJECT_BIND( LCDNumber, QLCDNumber )
+
+KJSO_START_CTOR( LCDNumber, QLCDNumber, 0 )
     KJSEmbed::QObjectBinding *obj = 0;
     if ( args.size() < 2 )
     {
@@ -130,7 +133,7 @@ START_CTOR( LCDNumber, QLCDNumber, 0 )
     }
 
     return obj;
-END_CTOR
+KJSO_END_CTOR
 
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

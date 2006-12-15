@@ -125,6 +125,16 @@ const Constructor *StaticConstructor::constructor( const KJS::UString &className
     return KJSEmbed::g_ctorHash[className.qstring()];
 }
 
+KJS::JSObject* StaticConstructor::bind(KJS::ExecState* exec, const QString& className, PointerBase& objPtr)
+{
+    KJSEmbed::callBind mybind = KJSEmbed::g_ctorHash[className]->bind;
+//    qDebug() << "StaticConstructor::bind() className=" << className  << " mybind=" << mybind;
+    if (mybind)
+        return (*mybind)(exec, objPtr);
+    
+    return 0;
+}
+
 KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject *parent, const KJS::UString &className, const KJS::List &args )
 {
 //    qDebug("StaticConstructor::construct('%s')", className.ascii() );

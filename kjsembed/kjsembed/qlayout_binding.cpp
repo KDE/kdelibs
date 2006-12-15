@@ -55,8 +55,6 @@ END_QOBJECT_METHOD
 
 }
 
-KJSO_SIMPLE_BINDING_CTOR( Layout, QLayout, QObjectBinding )
-
 START_METHOD_LUT( Layout )
     {"addWidget", 1, KJS::DontDelete|KJS::ReadOnly, &LayoutNS::addWidget},
     {"removeWidget", 1, KJS::DontDelete|KJS::ReadOnly, &LayoutNS::removeWidget},
@@ -66,7 +64,10 @@ END_METHOD_LUT
 NO_ENUMS( Layout )
 NO_STATICS( Layout )
 
-START_CTOR( Layout, QLayout, 0 )
+KJSO_SIMPLE_BINDING_CTOR( Layout, QLayout, QObjectBinding )
+KJSO_QOBJECT_BIND( Layout, QLayout )
+
+KJSO_START_CTOR( Layout, QLayout, 0 )
 //  qDebug("Layout::CTOR(): args.size()=%d", args.size());
     QLayout *layout = 0;
     if( args.size() > 0 )
@@ -89,16 +90,10 @@ START_CTOR( Layout, QLayout, 0 )
                                                              layoutName));
         // return KJSEmbed::throwError(exec, i18n("'%1' is not a valid QLayout.").arg(layoutName));
     }
-    else
-    {
-      // ZBTODO: This is purely a hack to work around the binding constructor nonsense
-      layout = new QGridLayout(); 
-      return new Layout(exec, layout);
-    }
 
     // should Trow error incorrect args
-    //return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a layout name."));
+    return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a layout name."));
     // return KJSEmbed::throwError(exec, i18n("Must supply a layout name."));
-END_CTOR
+KJSO_END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

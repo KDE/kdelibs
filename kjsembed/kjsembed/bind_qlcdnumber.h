@@ -22,8 +22,12 @@
 
 #include <QLCDNumber>
 #include "qobject_binding.h"
+#include "qwidget_binding.h"
 
-KJS_BINDING( LCDNumber )
+namespace KJSEmbed
+{
+	KJSO_BINDING( LCDNumber, QLCDNumber, QWidgetBinding )
+}
 
 #endif // BIND_QLCDNUMBER_H
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

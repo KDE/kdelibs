@@ -47,8 +47,6 @@ START_QOBJECT_METHOD( animated, QSvgRenderer )
 END_QOBJECT_METHOD
 }
 
-KJSO_SIMPLE_BINDING_CTOR( SvgRenderer, QSvgRenderer, QObjectBinding )
-
 START_METHOD_LUT( SvgRenderer )
     {"animationDuration", 0, KJS::DontDelete|KJS::ReadOnly, &SvgRendererNS::animationDuration},
     {"defaultSize", 0, KJS::DontDelete|KJS::ReadOnly, &SvgRendererNS::defaultSize},
@@ -59,7 +57,10 @@ END_METHOD_LUT
 NO_ENUMS( SvgRenderer )
 NO_STATICS( SvgRenderer )
 
-START_CTOR( SvgRenderer, QSvgRenderer, 0 )
+KJSO_SIMPLE_BINDING_CTOR( SvgRenderer, QSvgRenderer, QObjectBinding )
+KJSO_QOBJECT_BIND( SvgRenderer, QSvgRenderer )
+
+KJSO_START_CTOR( SvgRenderer, QSvgRenderer, 0 )
     QSvgRenderer *renderer = 0;
     if( args.size() == 1 )
     {
@@ -79,7 +80,7 @@ START_CTOR( SvgRenderer, QSvgRenderer, 0 )
 
     KJS::JSObject *rendererObject = new SvgRenderer( exec, renderer );
     return rendererObject;
-END_CTOR
+KJSO_END_CTOR
 
 namespace SvgWidgetNS
 {
@@ -88,8 +89,6 @@ START_QOBJECT_METHOD( renderer, QSvgWidget )
 END_QOBJECT_METHOD
 }
 
-KJSO_SIMPLE_BINDING_CTOR( SvgWidget, QSvgWidget, QWidgetBinding )
-
 START_METHOD_LUT( SvgWidget )
     {"renderer", 0, KJS::DontDelete|KJS::ReadOnly, &SvgWidgetNS::renderer}
 END_METHOD_LUT
@@ -97,7 +96,10 @@ END_METHOD_LUT
 NO_ENUMS( SvgWidget )
 NO_STATICS( SvgWidget )
 
-START_CTOR( SvgWidget, QSvgWidget, 0 )
+KJSO_SIMPLE_BINDING_CTOR( SvgWidget, QSvgWidget, QWidgetBinding )
+KJSO_QOBJECT_BIND( SvgWidget, QSvgWidget )
+
+KJSO_START_CTOR( SvgWidget, QSvgWidget, 0 )
     QSvgWidget *widget = 0;
     if( args.size() == 1 )
     {
@@ -117,6 +119,6 @@ START_CTOR( SvgWidget, QSvgWidget, 0 )
 
     KJS::JSObject *rendererObject = new SvgWidget( exec, widget );
     return rendererObject;
-END_CTOR
+KJSO_END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

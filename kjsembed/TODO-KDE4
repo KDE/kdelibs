@@ -71,10 +71,6 @@ Comments from pmax:
 <richmoore> even now, we don't really do much with the internals of kjs - we just use a small number of bits of the api
 
 Erik's List:
-* Make it so bindings can be instantiated without containing objects for use in
-	auto-binding-assignment done by createQObject without having to create a 
-	temporary throw-away object.
-
 * Load sub-sets of the built-in bindings
   - core, file access, gui, etc.
 

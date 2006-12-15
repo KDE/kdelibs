@@ -22,30 +22,18 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <QApplication>
+#include <QCoreApplication>
 #include "qobject_binding.h"
 #include "static_binding.h"
-
-class QApplication;
-class QCoreApplication;
 
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QCoreApplication. */
-    class CoreApplicationBinding : public QObjectBinding
-    {
-      public:
-              CoreApplicationBinding( KJS::ExecState *exec, QCoreApplication *app );
-    };
+    KJSO_BINDING( CoreApplicationBinding, QCoreApplication, QObjectBinding )
     
     /** @internal Implements the binding for QApplication. */
-    class ApplicationBinding : public CoreApplicationBinding
-    {
-        public:
-            ApplicationBinding( KJS::ExecState *exec, QApplication *app );
-    };
-    
-    KJS_BINDING( CoreApplication )
-//     KJS_BINDING( Application )
+    KJSO_BINDING( ApplicationBinding, QApplication, CoreApplicationBinding )
 }
 #endif
 

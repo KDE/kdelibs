@@ -116,25 +116,7 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticBinding::publish( exec, parent, IoFactory::methods() ); // Global methods
     StaticBinding::publish( exec, parent, FileDialog::methods() ); // Global methods
     StaticBinding::publish( exec, parent, BuiltinsFactory::methods() ); // Global methods
-
-#ifdef KJSEMBED_FORMBUILDER_BINDING
-    StaticConstructor::add( exec, parent, FormBuilder::constructor() ); // Ctor
-#endif
-    StaticConstructor::add( exec, parent, UiLoaderBinding::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, QWidgetBinding::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Layout::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Action::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, ActionGroup::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Font::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Pen::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Brush::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Image::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Pixmap::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Point::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Size::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Rect::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Color::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Painter::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, Timer::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, FileIO::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, DomNode::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, DomDocument::constructor() ); // Ctor
@@ -146,18 +128,45 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticConstructor::add( exec, parent, DomText::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Url::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, SettingsBinding::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, SvgRenderer::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, LCDNumber::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, Timer::constructor() ); // Ctor
-    StaticConstructor::add( exec, parent, CoreApplication::constructor() );
+    StaticConstructor::add( exec, parent, CoreApplicationBinding::constructor() );
+    StaticConstructor::add( exec, parent, Point::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, Size::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, Rect::constructor() ); // Ctor
+
+    // check if this is a GUI application
+    QApplication* app = 
+        ::qobject_cast<QApplication*>(QCoreApplication::instance());
+    if (app && (app->type() != QApplication::Tty))
+    {
+        //qDebug("Loading GUI Bindings");
+
+#ifdef KJSEMBED_FORMBUILDER_BINDING
+        StaticConstructor::add( exec, parent, FormBuilder::constructor() ); // Ctor
+#endif
+        StaticConstructor::add( exec, parent, UiLoaderBinding::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, QWidgetBinding::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Layout::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Action::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, ActionGroup::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Font::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Pen::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Brush::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Image::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Pixmap::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Color::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, Painter::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, SvgRenderer::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, LCDNumber::constructor() ); // Ctor
+        StaticConstructor::add( exec, parent, ApplicationBinding::constructor() );
+    }
 }
 
 Engine::Engine( bool enableBindings )
 {
     dptr = new EnginePrivate( );
     if ( enableBindings )
-	setup( dptr->m_interpreter->globalExec(), dptr->m_interpreter->globalObject() );
+        setup( dptr->m_interpreter->globalExec(), dptr->m_interpreter->globalObject() );
     dptr->m_bindingsEnabled =  enableBindings;
 }
 

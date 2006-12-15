@@ -34,11 +34,14 @@ NO_ENUMS( Timer )
 NO_METHODS( Timer )
 NO_STATICS( Timer )
 
-START_CTOR( Timer, QTimer, 0 )
+KJSO_SIMPLE_BINDING_CTOR( Timer, QTimer, QObjectBinding )
+KJSO_QOBJECT_BIND( Timer, QTimer )
+
+KJSO_START_CTOR( Timer, QTimer, 0 )
     QObject *parent = KJSEmbed::extractObject<QObject>( exec, args, 0 );
     QTimer *a = new QTimer( parent );
     return new KJSEmbed::QObjectBinding( exec, a );
-END_CTOR
+KJSO_END_CTOR
 
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

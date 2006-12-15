@@ -222,7 +222,7 @@ const Enumerator KJSEmbed::QBrushData::p_enums[] = {{0, 0 }};
 
 NO_STATICS( KJSEmbed::QBrushData )
 const Constructor KJSEmbed::QBrushData::p_constructor = 
-{"QBrush", 0, KJS::DontDelete|KJS::ReadOnly, &QBrushData::ctorMethod, p_statics, p_enums, KJSEmbed::QBrushData::p_methods };
+{"QBrush", 0, KJS::DontDelete|KJS::ReadOnly, 0, &QBrushData::ctorMethod, p_statics, p_enums, KJSEmbed::QBrushData::p_methods };
 KJS::JSObject *KJSEmbed::QBrushData::ctorMethod( KJS::ExecState *exec, const KJS::List &args )
 {
     if (args.size() == 0 )

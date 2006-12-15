@@ -36,13 +36,14 @@ namespace KJSEmbed
 
 using namespace KJSEmbed;
 
-KJSO_SIMPLE_BINDING_CTOR( Action, QAction, QObjectBinding )
-
 NO_METHODS( Action )
 NO_ENUMS( Action )
 NO_STATICS( Action )
 
-START_CTOR( Action, QAction, 0 )
+KJSO_SIMPLE_BINDING_CTOR( Action, QAction, QObjectBinding )
+KJSO_QOBJECT_BIND( Action, QAction )
+
+KJSO_START_CTOR( Action, QAction, 0 )
     QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
     QString actionName = KJSEmbed::extractQString(exec, args, 1);
 
@@ -56,16 +57,18 @@ START_CTOR( Action, QAction, 0 )
     {
         return KJS::throwError(exec, KJS::GeneralError, i18n("Action takes 2 args."));
 		}
-END_CTOR
+KJSO_END_CTOR
 
 
-KJSO_SIMPLE_BINDING_CTOR( ActionGroup, QActionGroup, QObjectBinding )
 
 NO_METHODS( ActionGroup )
 NO_ENUMS( ActionGroup )
 NO_STATICS( ActionGroup )
 
-START_CTOR( ActionGroup, QActionGroup, 0 )
+KJSO_SIMPLE_BINDING_CTOR( ActionGroup, QActionGroup, QObjectBinding )
+KJSO_QOBJECT_BIND( ActionGroup, QActionGroup )
+
+KJSO_START_CTOR( ActionGroup, QActionGroup, 0 )
     if( args.size() == 2 )
     {
         QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);

@@ -45,7 +45,6 @@ namespace KJSEmbed
     }
 }
 
-
 using namespace KJSEmbed;
 
 namespace WidgetNS
@@ -119,9 +118,6 @@ END_QOBJECT_METHOD
 
 }
 
-KJSO_START_BINDING_CTOR( QWidgetBinding, QWidget, QObjectBinding )
-KJSO_END_BINDING_CTOR
-
 START_METHOD_LUT( QWidgetBinding )
     {"adjustSize", 0, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::adjustSize},
     {"grabMouse", 0, KJS::DontDelete|KJS::ReadOnly, &WidgetNS::grabMouse},
@@ -142,7 +138,10 @@ END_METHOD_LUT
 NO_ENUMS( QWidgetBinding )
 NO_STATICS( QWidgetBinding )
 
-START_CTOR( QWidgetBinding, QWidget, 0 )
+KJSO_SIMPLE_BINDING_CTOR( QWidgetBinding, QWidget, QObjectBinding )
+KJSO_QOBJECT_BIND(QWidgetBinding, QWidget);
+
+KJSO_START_CTOR( QWidgetBinding, QWidget, 0 )
     //qDebug() << "QWidgetBinding::CTOR args.size()=" << args.size();
     if( args.size() > 0 )
     {

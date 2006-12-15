@@ -32,8 +32,9 @@
 using namespace KJSEmbed;
 
 KJSO_SIMPLE_BINDING_CTOR( UiLoaderBinding, QUiLoader, QObjectBinding )
+KJSO_QOBJECT_BIND( UiLoaderBinding, QUiLoader )
 
-START_CTOR( UiLoaderBinding, QUiLoader, 1 )
+KJSO_START_CTOR( UiLoaderBinding, QUiLoader, 1 )
 {
   QUiLoader *uiLoader = 0;
   if ( args.size() == 0 )
@@ -52,7 +53,7 @@ START_CTOR( UiLoaderBinding, QUiLoader, 1 )
 //  qDebug() << "UiLoaderBinding::CTOR() args.size()=" << args.size() << " uiLoader=" << uiLoader << " uiLoaderBinding=" << uiLoaderBinding;
   return uiLoaderBinding;
 }
-END_CTOR
+KJSO_END_CTOR
 
 namespace UiLoaderNS {
 START_QOBJECT_METHOD(createAction, QUiLoader )
@@ -131,7 +132,7 @@ START_QOBJECT_METHOD(load, QUiLoader )
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD(pluginPaths, QUiLoader )
-  qDebug() << "UiLoader::pluginPaths(): " << object->pluginPaths();
+//  qDebug() << "UiLoader::pluginPaths(): " << object->pluginPaths();
   result = KJSEmbed::convertToValue( exec, QVariant(object->pluginPaths()) );
 END_QOBJECT_METHOD
 

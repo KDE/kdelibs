@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QFile>
 #include <QMessageBox>
 #include <QTextStream>
@@ -43,7 +43,7 @@ KJS::JSValue *callExec( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
     Q_UNUSED(exec);
     Q_UNUSED(self);
     Q_UNUSED(args);
-    return KJS::Boolean( QApplication::exec() );
+    return KJS::Boolean( QCoreApplication::exec() );
 }
 
 KJS::JSValue *callDump( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )

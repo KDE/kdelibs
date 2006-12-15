@@ -23,8 +23,6 @@
 
 using namespace KJSEmbed;
 
-KJSO_SIMPLE_BINDING_CTOR( SettingsBinding, QSettings, QObjectBinding )
-
 START_QOBJECT_METHOD( callAllKeys, QSettings )
     QStringList keys = object->allKeys();
     result = KJSEmbed::convertToValue( exec, keys );
@@ -89,7 +87,10 @@ START_STATIC_METHOD_LUT( SettingsBinding )
     {"setPath", 3, KJS::DontDelete|KJS::ReadOnly, &callSetPath }
 END_METHOD_LUT
 
-START_CTOR( SettingsBinding, QSettings, 1 )
+KJSO_SIMPLE_BINDING_CTOR( SettingsBinding, QSettings, QObjectBinding )
+KJSO_QOBJECT_BIND( SettingsBinding, QSettings )
+
+KJSO_START_CTOR( SettingsBinding, QSettings, 1 )
     QSettings *settings = 0;
     if( args.size() == 1)
     {
@@ -115,6 +116,6 @@ START_CTOR( SettingsBinding, QSettings, 1 )
         settings = new QSettings();
     
     return new SettingsBinding(exec,settings);
-END_CTOR
+KJSO_END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

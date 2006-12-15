@@ -26,6 +26,7 @@
 #include <QStringList>
 
 #include <kjsembed/kjseglobal.h>
+#include <kjsembed/pointer.h>
 #include <kjs/object.h>
 #include <kdemacros.h>
 
@@ -55,6 +56,7 @@ class KJSEMBED_EXPORT NAME : public BASENAME \
     static const KJSEmbed::Method p_statics[]; \
     static const KJSEmbed::Enumerator p_enums[]; \
     static const KJSEmbed::Constructor p_constructor; \
+    static KJS::JSObject *bindMethod( KJS::ExecState *exec, PointerBase& ptrObj );\
     static KJS::JSObject *ctorMethod( KJS::ExecState *exec, const KJS::List &args );\
     static const KJSEmbed::Enumerator *enums() { return p_enums;} \
     static const KJSEmbed::Method *methods() { return p_methods;} \
@@ -107,16 +109,67 @@ const Method TYPE::p_methods[] = { {0, 0, 0, 0 } };
 #define NO_STATICS( TYPE )\
 const Method TYPE::p_statics[] = { {0, 0, 0, 0 } };
 
+
 #define START_CTOR( TYPE, JSNAME, ARGS )\
 const Constructor TYPE::p_constructor = \
 { \
-#JSNAME, ARGS, KJS::DontDelete|KJS::ReadOnly, &TYPE::ctorMethod, p_statics, p_enums, p_methods };\
+#JSNAME, ARGS, KJS::DontDelete|KJS::ReadOnly, 0, &TYPE::ctorMethod, p_statics, p_enums, p_methods };\
 KJS::JSObject *TYPE::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\
 {\
         Q_UNUSED(exec);\
         Q_UNUSED(args);
 
 #define END_CTOR \
+}
+
+#define KJSO_START_CTOR( TYPE, JSNAME, ARGS )\
+const Constructor TYPE::p_constructor = \
+{ \
+#JSNAME, ARGS, KJS::DontDelete|KJS::ReadOnly, &TYPE::bindMethod, &TYPE::ctorMethod, p_statics, p_enums, p_methods };\
+KJS::JSObject *TYPE::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\
+{\
+        Q_UNUSED(exec);\
+        Q_UNUSED(args);
+
+#define KJSO_END_CTOR \
+}
+
+
+#define KJSO_START_BIND( NAME, TYPE )\
+KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
+{\
+        Q_UNUSED(exec);\
+        Q_UNUSED(ptrObj); \
+
+#define KJSO_END_BIND \
+}
+         
+
+#define KJSO_QOBJECT_START_BIND( NAME, TYPE )\
+KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
+{\
+        Q_UNUSED(exec);\
+        QObject* qobj = pointer_cast<QObject>(&ptrObj); \
+        if (! qobj ) \
+            return 0; \
+        TYPE* object = qobject_cast<TYPE*>(qobj); \
+        if (! object ) \
+            return 0; \
+
+#define KJSO_QOBJECT_END_BIND \
+}
+
+#define KJSO_QOBJECT_BIND( NAME, TYPE )\
+KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
+{\
+        Q_UNUSED(exec);\
+        QObject* qobj = pointer_cast<QObject>(&ptrObj); \
+        if (! qobj ) \
+            return 0; \
+        TYPE* object = qobject_cast<TYPE*>(qobj); \
+        if (! object ) \
+            return 0; \
+        return new NAME(exec, object); \
 }
 
 namespace KJSEmbed
@@ -204,6 +257,14 @@ namespace KJSEmbed
     };
 
     /**
+    * Bind signature
+    * @arg exec - the execution context
+    * @arg ptr - A PointerBase that points to a Pointer object that contains
+    * a pointer to the object to provide a javascript binding for.
+    */
+    typedef KJS::JSObject *(*callBind)(KJS::ExecState*, PointerBase&);
+
+    /**
     * Constructor signature
     * @arg exec - the execution context
     * @arg args - A KJS::List of KJS::JSValue objects that represents the arguments that where
@@ -226,6 +287,10 @@ namespace KJSEmbed
        * Flags for the member properties
        */
         const int flags;
+        /**
+       * The callback for the constructor.
+       */
+        const callBind bind;
         /**
        * The callback for the constructor.
        */

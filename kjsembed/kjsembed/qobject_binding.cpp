@@ -589,7 +589,15 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
         if ( parent->hasProperty( exec, KJS::Identifier(clazz) ) )
         {
 #ifdef CREATEQOBJ_DIAG
-          qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+            qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+#endif
+            Pointer<QObject> pov(value);
+            returnValue = StaticConstructor::bind(exec, clazz, pov);
+            if ( returnValue )
+              return returnValue;
+
+#ifdef CREATEQOBJ_DIAG
+            qDebug("\tresort to construct() method.");
 #endif
             returnValue = StaticConstructor::construct( exec, parent, clazz );
             if( returnValue )
@@ -605,7 +613,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
                 }
                 else
                 {
-	                KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
+                  KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
                     return new KJS::JSObject();
                 }
             }

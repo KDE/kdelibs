@@ -23,7 +23,10 @@
 #include <QTimer>
 #include "qobject_binding.h"
 
-KJS_BINDING( Timer )
+namespace KJSEmbed
+{
+	KJSO_BINDING( Timer, QTimer, QObjectBinding )
+}
 
 #endif // BIND_QTIMER_H
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
