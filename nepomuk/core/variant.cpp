@@ -519,7 +519,27 @@ double Nepomuk::KMetaData::Variant::toDouble() const
 
 QString Nepomuk::KMetaData::Variant::toString() const
 {
-  return value<QString>();
+  if( isList() )
+    return toStringList().join( ", " );
+
+  else if( isInt() )
+    return QString::number( toInt() );
+  else if( isBool() )
+    return ( toBool() ? QString("true") : QString("false" ) );
+  else if( isDouble() )
+    return QString::number( toDouble() );
+  else if( isDate() )
+    return toDate().toString();
+  else if( isTime() )
+    return toTime().toString();
+  else if( isDateTime() )
+    return toDateTime().toString();
+  else if( isUrl() )
+    return toUrl().toString();
+  else if( isResource() )
+    return toResource().uri();
+  else
+    return value<QString>();
 }
 
 
@@ -556,44 +576,55 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::Variant::toResource() const
 
 QList<int> Nepomuk::KMetaData::Variant::toIntList() const
 {
-  if( isInt() ) {
-    QList<int> l;
-    l.append( toInt() );
-    return l;
-  }
-  else
-    return value<QList<int> >();
+  return listValue<int>();
 }
 
 
 QList<bool> Nepomuk::KMetaData::Variant::toBoolList() const
 {
-  if( isBool() ) {
-    QList<bool> l;
-    l.append( toBool() );
-    return l;
-  }
-  else
-    return value<QList<bool> >();
+  return listValue<bool>();
 }
 
 
 QList<double> Nepomuk::KMetaData::Variant::toDoubleList() const
 {
-  if( isDouble() ) {
-    QList<double> l;
-    l.append( toDouble() );
-    return l;
-  }
-  else
-    return value<QList<double> >();
+  return listValue<double>();
 }
 
 
+template<typename T> QStringList convertToStringList( const QList<T>& l )
+{
+  QStringList sl;
+  QListIterator<T> it( l );
+  while( it.hasNext() )
+    sl.append( Nepomuk::KMetaData::Variant( it.next() ).toString() );
+//   for( QList<T>::const_iterator it = l.constBegin(); it != l.constEnd(); ++it )
+//     sl.append( Nepomuk::KMetaData::Variant( *it ).toString() );
+  return sl;
+}
+
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
-  if( isString() )
+  qDebug() << "(Variant::toStringList() converting... " << simpleType() << endl;
+  if( !isList() )
     return QStringList( toString() );
+
+  else if( isIntList() )
+    return convertToStringList<int>( toIntList() );
+  else if( isBoolList() )
+    return convertToStringList<bool>( toBoolList() );
+  else if( isDoubleList() )
+    return convertToStringList<double>( toDoubleList() );
+  else if( isDateList() )
+    return convertToStringList<QDate>( toDateList() );
+  else if( isTimeList() )
+    return convertToStringList<QTime>( toTimeList() );
+  else if( isDateTimeList() )
+    return convertToStringList<QDateTime>( toDateTimeList() );
+  else if( isUrlList() )
+    return convertToStringList<QUrl>( toUrlList() );
+  else if( isResourceList() )
+    return convertToStringList<Resource>( toResourceList() );
   else
     return value<QStringList>();
 }
@@ -601,61 +632,31 @@ QStringList Nepomuk::KMetaData::Variant::toStringList() const
 
 QList<QDate> Nepomuk::KMetaData::Variant::toDateList() const
 {
-  if( isDate() ) {
-    QList<QDate> l;
-    l.append( toDate() );
-    return l;
-  }
-  else
-    return value<QList<QDate> >();
+  return listValue<QDate>();
 }
 
 
 QList<QTime> Nepomuk::KMetaData::Variant::toTimeList() const
 {
-  if( isTime() ) {
-    QList<QTime> l;
-    l.append( toTime() );
-    return l;
-  }
-  else
-    return value<QList<QTime> >();
+  return listValue<QTime>();
 }
 
 
 QList<QDateTime> Nepomuk::KMetaData::Variant::toDateTimeList() const
 {
-  if( isDateTime() ) {
-    QList<QDateTime> l;
-    l.append( toDateTime() );
-    return l;
-  }
-  else
-    return value<QList<QDateTime> >();
+  return listValue<QDateTime>();
 }
 
 
 QList<QUrl> Nepomuk::KMetaData::Variant::toUrlList() const
 {
-  if( isUrl() ) {
-    QList<QUrl> l;
-    l.append( toUrl() );
-    return l;
-  }
-  else
-    return value<QList<QUrl> >();
+  return listValue<QUrl>();
 }
 
 
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Variant::toResourceList() const
 {
-  if( isResource() ) {
-    QList<Resource> l;
-    l.append( toResource() );
-    return l;
-  }
-  else
-    return value<QList<Resource> >();
+  return listValue<Resource>();
 }
 
 

@@ -151,6 +151,15 @@ namespace Nepomuk {
 	int toInt() const;
 	bool toBool() const;
 	double toDouble() const;
+
+	/**
+	 * The toString() method is a little more powerful than other
+	 * toXXX methods since it actually converts all values to string.
+	 * Thus, toString should work always (even list variants are converted 
+	 * to a comma-separated list)
+	 *
+	 * Resources are converted to a string representation of their URI.
+	 */
 	QString toString() const;
 	QDate toDate() const;
 	QTime toTime() const;
@@ -161,6 +170,11 @@ namespace Nepomuk {
 	QList<int> toIntList() const;
 	QList<bool> toBoolList() const;
 	QList<double> toDoubleList() const;
+
+	/**
+	 * Just like the toString method toStringList is able to convert all
+	 * supported types into a list of strings.
+	 */
 	QStringList toStringList() const;
 	QList<QDate> toDateList() const;
 	QList<QTime> toTimeList() const;
@@ -181,8 +195,11 @@ namespace Nepomuk {
 	}
 
 	template<typename T> QList<T> listValue() const {
-	  if( hasType<T>() )
-	    return QList<T>( value<T>() );
+	  if( hasType<T>() ) {
+	    QList<T> l;
+	    l.append( value<T>() );
+	    return l;
+	  }
 	  else
 	    return value<QList<T> >();
 	}
