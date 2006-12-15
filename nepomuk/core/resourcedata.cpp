@@ -348,7 +348,6 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
 
 Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uri, const QString& type )
 {
-  // Do some URI matching maybe using the ResourceIdent Service
   ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
   QString uniqueUri = resids.toUniqueUrl( uri );
   if( uniqueUri.isEmpty() ) {

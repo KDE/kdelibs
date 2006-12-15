@@ -35,6 +35,7 @@ namespace Nepomuk {
     /**
      * \return A human-readble string.
      */
+    // FIXME: add the uri of the resource as parameter
     QString errorString( int code );
 
     /**
