@@ -242,7 +242,9 @@ AudioQObject::~AudioQObject()
     delete m_media;
     if (!--s_refs) {
         delete s_audioPath;
+        s_audioPath = 0;
         delete s_audioOutput;
+        s_audioOutput = 0;
     }
 }
 
