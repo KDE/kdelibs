@@ -119,7 +119,8 @@ void KDirListerTest::startRoot()
 void KDirListerTest::startTar()
 {
 #ifdef Q_WS_WIN
-  KUrl root( "file:///" + QDir::homePath()+"/jowenn/aclocal_1.tgz" );
+	QString systemRoot = getenv("SYSTEMROOT");
+  KUrl root( "file:///" + systemRoot + "/temp/jowenn/aclocal_1.tgz" );
 #else
   KUrl root( "file:///home/jowenn/aclocal_1.tgz" );
 #endif
