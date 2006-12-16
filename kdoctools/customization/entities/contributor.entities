@@ -386,6 +386,8 @@
 <!ENTITY Stefan.Taferner.mail '<email>taferner@kde.org</email>'>
 <!ENTITY Thomas.Tanghus '<personname><firstname>Thomas</firstname><surname>Tanghus</surname></personname>'>
 <!ENTITY Thomas.Tanghus.mail '<email>tanghus@earthling.net</email>'>
+<!ENTITY John.Tapsell '<personname><firstname>John</firstname><surname>Tapsell</surname></personname>'>
+<!ENTITY John.Tapsell.mail '<email>john.tapsell@kde.org</email>'>
 <!ENTITY Krishna.Tateneni '<personname><firstname>Krishna</firstname><surname>Tateneni</surname></personname>'>
 <!ENTITY Krishna.Tateneni.mail '<email>tateneni@pluto.njcc.com</email>'>
 <!ENTITY Roberto.Teixeira '<personname><firstname>Roberto</firstname><surname>Teixeira</surname></personname>'>
