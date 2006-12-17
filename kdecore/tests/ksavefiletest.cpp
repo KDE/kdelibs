@@ -390,6 +390,7 @@ void KSaveFileTest::test_fstream()
     KSaveFile sf(path);
     FILE* fs = sf.fstream();
     sf.finalize();
+    filesToRemove << path;
 }
 
 
