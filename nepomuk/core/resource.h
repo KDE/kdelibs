@@ -45,11 +45,11 @@ namespace Nepomuk {
      * Resources are identified by their unique URI (which 
      * correlates directly with the URI in the local NEPOMUK RDF storage.
      *
-     * Resource objects with the same URI are synced automatically.
+     * Resource objects with the same URI share their data.
      *
      * Normally they are also synced with the local storage automatically.
      *
-     * See the NDL %Ontology for more information.
+     * See \ref hacking for details on how to use Resource.
      *
      * \see ResourceManager
      */
@@ -74,7 +74,7 @@ namespace Nepomuk {
 	 * \param uri The URI identifying the resource in question. This might also be 
 	 *            a file path.
 	 * \param type The URI identifying the type of the resource. If it is empty
-	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema#Resource or
+	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
 	 *             in case the resource already exists the type will be read from the 
 	 *             store.
 	 */
@@ -102,21 +102,42 @@ namespace Nepomuk {
 	QString className() const;
 
 	/**
-	 * Resync the data with the local storage.
+	 * Resync the data with the local storage. Unless autosync is disabled there
+	 * is normally no need to call this explicitely.
 	 *
 	 * \return Some error code which still has to be defined.
+	 *
+	 * \sa ResourceManager::setAutoSync
 	 */
 	int sync();
 
+	/**
+	 * \return A list of all defined properties
+	 */
+	QHash<QString, Variant> allProperties() const;
+
+	/**
+	 * Retrieve the value of property \a uri. If the property is not defined for
+	 * this resource an invalid, empty Variant object is returned.
+	 */
 	Variant getProperty( const QString& uri ) const;
 
 	/**
 	 * Set a property of the resource.
 	 * \param uri The URI which describes the property (i.e. the RDF predicate name)
 	 * \param value The value of the property (i.e. the object of the RDF triple)
+	 *
+	 * This method only changes the resource locally. The new data is not written
+	 * back to the Nepomuk store before a call to sync().
 	 */
 	void setProperty( const QString& uri, const Variant& value );
 
+	/**
+	 * Remove property \a uri from this resource object.
+	 *
+	 * This method only changes the resource locally. The new data is not written
+	 * back to the Nepomuk store before a call to sync().
+	 */
 	void removeProperty( const QString& uri );
 
 	/**

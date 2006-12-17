@@ -100,6 +100,18 @@ int Nepomuk::KMetaData::Resource::sync()
 }
 
 
+QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
+{
+  m_data->init();
+
+  QHash<QString, Variant> l;
+  for( ResourceData::PropertiesMap::const_iterator it = m_data->properties.constBegin();
+       it != m_data->properties.constEnd(); ++it )
+    l.insert( it.key(), it.value().first );
+  return l;
+}
+
+
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
   m_data->init();
