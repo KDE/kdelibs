@@ -1,15 +1,15 @@
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kicondialog.h>
 
 int main( int argc, char **argv )
 {
-    KApplication app;
+    QApplication app(argc, argv);
 
-//    KIconDialog::getIcon(); 
+//    KIconDialog::getIcon();
 
     KIconButton button;
     button.show();
- 
+
 
     return app.exec();
 }
