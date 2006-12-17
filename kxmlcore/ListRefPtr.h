@@ -23,11 +23,11 @@
 #ifndef KXMLCORE_LIST_REF_PTR_H
 #define KXMLCORE_LIST_REF_PTR_H
 
-#include <kxmlcore/RefPtr.h>
+#include "RefPtr.h"
 
 namespace KXMLCore {
 
-    // Specialized version of RefPtr desgined for use in singly-linked lists. 
+    // Specialized version of RefPtr desgined for use in singly-linked lists.
     // Derefs the list iteratively to avoid recursive derefing that can overflow the stack.
     template <typename T> class ListRefPtr : public RefPtr<T>
     {
@@ -43,7 +43,7 @@ namespace KXMLCore {
             while (reaper && reaper->refcount() == 1)
                 reaper = reaper->releaseNext(); // implicitly protects reaper->next, then derefs reaper
         }
-        
+
         ListRefPtr& operator=(T *optr) { RefPtr<T>::operator=(optr); return *this; }
         ListRefPtr& operator=(const RefPtr<T>& o) { RefPtr<T>::operator=(o); return *this; }
         ListRefPtr& operator=(const PassRefPtr<T>& o) { RefPtr<T>::operator=(o); return *this; }

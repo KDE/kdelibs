@@ -25,7 +25,7 @@
 
 #include <stdlib.h>
 #include <new>
-#include <kxmlcore/Platform.h>
+#include "Platform.h"
 
 namespace KXMLCore {
 
@@ -44,7 +44,7 @@ namespace KXMLCore {
     inline void *fastRealloc(void* p, size_t n) {
         return realloc(p, n);
     }
-    
+
 } // namespace KXMLCore
 
 using KXMLCore::fastMalloc;

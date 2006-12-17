@@ -23,8 +23,8 @@
 #define KXMLCORE_OWN_PTR_H
 
 #include <algorithm>
-#include <kxmlcore/Assertions.h>
-#include <kxmlcore/Noncopyable.h>
+#include "Assertions.h"
+#include "Noncopyable.h"
 
 namespace KXMLCore {
 
@@ -55,7 +55,7 @@ namespace KXMLCore {
 
         T* m_ptr;
     };
-    
+
     template <typename T> inline void swap(OwnPtr<T>& a, OwnPtr<T>& b) { a.swap(b); }
 
 } // namespace KXMLCore

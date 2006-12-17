@@ -95,8 +95,6 @@ set(kjs_LIB_SRCS
    JSWrapperObject.cpp
    )
 
-kde4_automoc(${kjs_LIB_SRCS})
-
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)
 else (NOT DEFINED QT_ONLY)
@@ -135,8 +133,6 @@ if(KDE4_BUILD_TESTS)
 
    set(testkjs_static_SRCS testkjs.cpp )
 
-   kde4_automoc(${testkjs_static_SRCS})
-
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
 
    target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} ${KJSLIBNAME})
@@ -144,8 +140,6 @@ if(KDE4_BUILD_TESTS)
    ########### testkjs ###############
 
    set(testkjs_SRCS testkjs.cpp )
-
-   kde4_automoc(${testkjs_SRCS})
 
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
 
