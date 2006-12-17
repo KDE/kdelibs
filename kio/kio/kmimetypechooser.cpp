@@ -272,9 +272,7 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
     : KDialog( parent )
 {
   setCaption( caption );
-  setButtons( Cancel | Ok );
-  setModal( true );
-  setDefaultButton( Ok );
+  init();
 
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, groupsToShow, visuals,
@@ -291,9 +289,7 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
     : KDialog( parent )
 {
   setCaption( caption );
-  setButtons( Cancel | Ok );
-  setModal( true );
-  setDefaultButton( Ok );
+  init();
 
   m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                   defaultGroup, QStringList(),
@@ -304,8 +300,12 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
 
 void KMimeTypeChooserDialog::init()
 {
+  setButtons( Cancel | Ok );
+  setModal( true );
+  setDefaultButton( Ok );
+
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
-  resize( group.readEntry("size", QSize(400,300)));
+  resize( group.readEntry("size", QSize(500,400)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
