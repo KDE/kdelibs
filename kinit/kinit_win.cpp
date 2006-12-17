@@ -64,11 +64,11 @@ int launch(QString cmd)
     }
     if (pid) {
        if (verbose)
-           fprintf(stderr, "kdeinit: Launched %s, pid = %ld\n", cmd.toAscii().data(),(long) pid);
+           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", cmd.toAscii().data(),(long) pid);
     }
     else {
        if (verbose)
-           fprintf(stderr, "kdeinit: could not launch %s, exiting",cmd.toAscii().data());
+           fprintf(stderr, "kdeinit4: could not launch %s, exiting",cmd.toAscii().data());
     }
     return pid;
 }

@@ -108,7 +108,7 @@ int handle_request(klauncher_header request_header, char *request_data)
 
 //#ifndef NTRACE
     int launcher;
-     fprintf(stderr, "kdeinit: Got %s '%s' from %s.\n",
+     fprintf(stderr, "kdeinit4: Got %s '%s' from %s.\n",
         (request_header.cmd == LAUNCHER_EXEC ? "EXEC" :
         (request_header.cmd == LAUNCHER_EXT_EXEC ? "EXT_EXEC" :
         (request_header.cmd == LAUNCHER_EXEC_NEW ? "EXEC_NEW" :
@@ -172,7 +172,7 @@ int handle_request(klauncher_header request_header, char *request_data)
      if ((arg_n - request_data) != request_header.arg_length)
      {
 //#ifndef NTRACE
-       fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
+       fprintf(stderr, "kdeinit4: EXEC request has invalid format.\n");
 //#endif
        return false;
      }
