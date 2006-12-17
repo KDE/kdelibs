@@ -27,14 +27,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #if PLATFORM(WIN_OS)
 #  include <windows.h>
 #  include <io.h>
-#  include <fcntl.h>
 #else
 #  include <unistd.h>
-#  include <fcntl.h>
 #endif
 
 enum ExitCode { ErrorNone,
