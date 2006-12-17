@@ -255,7 +255,7 @@ void KDirModelTest::testIndexForItem()
 
 void KDirModelTest::testData()
 {
-    // Index of the first file
+    // First file
     QModelIndex idx1col1 = m_dirModel.index(0, 1, QModelIndex());
     int size1 = m_dirModel.data(idx1col1, Qt::DisplayRole).toInt();
     QCOMPARE(size1, 11);
@@ -264,13 +264,21 @@ void KDirModelTest::testData()
     KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
     QCOMPARE(item, fileItem);
 
+    QCOMPARE(m_dirModel.data(m_fileIndex, KDirModel::ChildCountRole).toInt(), (int)KDirModel::ChildCountUnknown);
+
     //QModelIndex idx1col2 = m_dirModel.index(0, 2, QModelIndex());
 
 
-    // Index of the second file
+    // Second file
     QModelIndex idx2col0 = m_dirModel.index(1, 0, QModelIndex());
     QString display2 = m_dirModel.data(idx2col0, Qt::DisplayRole).toString();
     QCOMPARE(display2, QString("toplevelfile_2"));
+
+    // Subdir: check child count
+    QCOMPARE(m_dirModel.data(m_dirIndex, KDirModel::ChildCountRole).toInt(), 2);
+
+    // Subsubdir: check child count
+    QCOMPARE(m_dirModel.data(m_fileInSubdirIndex.parent(), KDirModel::ChildCountRole).toInt(), 1);
 }
 
 void KDirModelTest::testReload()

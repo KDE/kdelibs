@@ -96,10 +96,15 @@ public:
         ColumnCount
     };
 
+    /// Possible return value for data(ChildCountRole), meaning the item isn't a directory,
+    /// or we haven't calculated its child count yet
+    enum { ChildCountUnknown = -1 };
+
     enum AdditionalRoles {
         // Note: use   printf "0x%08X\n" $(($RANDOM*$RANDOM))
         // to define additional roles.
-        FileItemRole = 0x07A263FF  ///< returns the KFileItem* for a given index
+        FileItemRole = 0x07A263FF,  ///< returns the KFileItem* for a given index
+        ChildCountRole = 0x2C4D0A40 ///< returns the number of items in a directory, or ChildCountUnknown
     };
 
     enum DropsAllowedFlag {

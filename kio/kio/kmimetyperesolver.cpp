@@ -130,11 +130,15 @@ void KMimeTypeResolver::slotProcessMimeIcons()
 
 void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, int last)
 {
+    KDirModel* model = d->m_dirModel;
     for (int row = first; row <= last; ++row) {
-        QModelIndex idx = d->m_dirModel->index(row, 0, parent);
-        KFileItem* item = d->m_dirModel->itemForIndex(idx);
+        QModelIndex idx = model->index(row, 0, parent);
+        KFileItem* item = model->itemForIndex(idx);
         if (!item->isMimeTypeKnown())
             d->m_pendingIndexes.append(idx);
+        // TODO else if (item->isDir() && !item->isLocalFile() /*nor pseudo local...*/ &&
+        // TODO   model->data(idx, ChildCountRole).toInt() == KDirModel::ChildCountUnknown)
+        // TODO d->m_pendingIndexes.append(idx);
     }
     d->m_noVisibleIcon = false;
     d->m_timer.start(d->m_delayForNonVisibleIcons); // singleshot

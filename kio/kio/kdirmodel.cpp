@@ -25,54 +25,77 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <QMimeData>
+#include <QFile>
+#include <QDir>
 #include <sys/types.h>
 #include <unistd.h> // ::access
-#include <QFile>
 
 class KDirModelNode;
+class KDirModelDirNode;
 
 // We create our own tree behind the scenes to have fast lookup from an item to its parent,
 // and also to get the children of an item fast.
 class KDirModelNode
 {
 public:
-    KDirModelNode( KDirModelNode* parent, KFileItem* item ) :
-        m_childNodes(),
+    KDirModelNode( KDirModelDirNode* parent, KFileItem* item ) :
         m_item(item),
         m_parent(parent),
         m_preview()
     {
     }
-    ~KDirModelNode() {
-        qDeleteAll(m_childNodes);
-    }
     //KUrl url() const { return m_item->url(); }
     // Careful, m_item can be 0 for the root item
     KFileItem* item() const { return m_item; }
-    KDirModelNode* parent() const { return m_parent; }
+    KDirModelDirNode* parent() const { return m_parent; }
     // linear search
-    int rowNumber() const {
-        if (!m_parent) return 0;
-        return m_parent->m_childNodes.indexOf(const_cast<KDirModelNode*>(this));
-    }
+    int rowNumber() const;
     QIcon preview() const { return m_preview; }
     void addPreview( const QPixmap& pix ) { m_preview.addPixmap(pix); }
     void setPreview( const QIcon& icn ) { m_preview = icn; }
 
-    // TODO maybe move this field to a DirNode subclass to save 4 bytes per file?
-    QList<KDirModelNode *> m_childNodes;
 private:
     KFileItem* m_item;
-    KDirModelNode* const m_parent;
+    KDirModelDirNode* const m_parent;
     QIcon m_preview;
 };
+
+// Specialization for directory nodes
+class KDirModelDirNode : public KDirModelNode
+{
+public:
+    KDirModelDirNode( KDirModelDirNode* parent, KFileItem* item )
+        : KDirModelNode( parent, item),
+          m_childNodes(),
+          m_childCount(KDirModel::ChildCountUnknown)
+    {}
+    ~KDirModelDirNode() {
+        qDeleteAll(m_childNodes);
+    }
+    QList<KDirModelNode *> m_childNodes;
+
+    // If we listed the directory, the child count is known. Otherwise it can be set via setChildCount.
+    int childCount() const { return m_childNodes.isEmpty() ? m_childCount : m_childNodes.count(); }
+    void setChildCount(int count) { m_childCount = count; }
+
+private:
+    int m_childCount;
+};
+
+int KDirModelNode::rowNumber() const
+{
+    if (!m_parent) return 0;
+    return m_parent->m_childNodes.indexOf(const_cast<KDirModelNode*>(this));
+}
+
+////
 
 class KDirModelPrivate
 {
 public:
     KDirModelPrivate( KDirModel* model )
         : q(model), m_dirLister(0),
-          m_rootNode(new KDirModelNode(0, 0)),
+          m_rootNode(new KDirModelDirNode(0, 0)),
           m_dropsAllowed(KDirModel::NoDrops)
     {
     }
@@ -81,16 +104,19 @@ public:
     }
     void clear() {
         delete m_rootNode;
-        m_rootNode = new KDirModelNode(0, 0);
+        m_rootNode = new KDirModelDirNode(0, 0);
     }
     QPair<int /*row*/, KDirModelNode*> nodeForUrl(const KUrl& url) const;
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
     QModelIndex indexForUrl(const KUrl& url) const;
+    bool isDir(KDirModelNode* node) const {
+        return (node == m_rootNode) || node->item()->isDir();
+    }
 
     KDirModel* q;
     KDirLister* m_dirLister;
-    KDirModelNode* m_rootNode;
+    KDirModelDirNode* m_rootNode;
     KDirModel::DropsAllowed m_dropsAllowed;
 };
 
@@ -103,16 +129,16 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
     url.adjustPath(KUrl::RemoveTrailingSlash);
     //kDebug() << k_funcinfo << url << endl;
     if (url == m_dirLister->url())
-        return qMakePair(0, m_rootNode);
+        return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
 
     const QString urlStr = url.url();
-    KDirModelNode* node = m_rootNode;
+    KDirModelDirNode* dirNode = m_rootNode;
     KUrl nodeUrl = m_dirLister->url();
     while ( nodeUrl != url ) {
         Q_ASSERT( urlStr.startsWith(nodeUrl.url()) );
         bool foundChild = false;
-        QList<KDirModelNode *>::const_iterator it = node->m_childNodes.begin();
-        const QList<KDirModelNode *>::const_iterator end = node->m_childNodes.end();
+        QList<KDirModelNode *>::const_iterator it = dirNode->m_childNodes.begin();
+        const QList<KDirModelNode *>::const_iterator end = dirNode->m_childNodes.end();
         int row = 0;
         for ( ; it != end ; ++it, ++row ) {
             const KUrl u = (*it)->item()->url();
@@ -121,10 +147,10 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
                 return qMakePair(row, *it);
             }
             if ( urlStr.startsWith(u.url()+'/') ) {
-                node = *it;
-                foundChild = true;
                 //kDebug() << "going into " << node->item()->url() << endl;
-                Q_ASSERT( node->item()->isDir() );
+                Q_ASSERT( isDir(*it) );
+                dirNode = static_cast<KDirModelDirNode *>( *it );
+                foundChild = true;
                 break;
             }
         }
@@ -132,7 +158,7 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
             //kDebug() << "child equal or starting with " << url << " not found" << endl;
             return qMakePair(0, static_cast<KDirModelNode*>(0));
         }
-        nodeUrl = node->item()->url();
+        nodeUrl = dirNode->item()->url();
         //kDebug() << " " << nodeUrl << endl;
     }
     return qMakePair(0, static_cast<KDirModelNode*>(0));
@@ -246,13 +272,16 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     //kDebug() << k_funcinfo << "dir=" << dir << endl;
 
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
-    KDirModelNode* dirNode = result.second;
+    Q_ASSERT(result.second);
+    Q_ASSERT(d->isDir(result.second));
+    KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(result.second);
 
-    Q_ASSERT(dirNode);
     KFileItemList::const_iterator it = items.begin();
     const KFileItemList::const_iterator end = items.end();
     for ( ; it != end ; ++it ) {
-        KDirModelNode* node = new KDirModelNode( dirNode, *it );
+        KDirModelNode* node = (*it)->isDir()
+                              ? new KDirModelDirNode( dirNode, *it )
+                              : new KDirModelNode( dirNode, *it );
         dirNode->m_childNodes.append( node );
     }
 
@@ -278,7 +307,7 @@ void KDirModel::slotDeleteItem( KFileItem *item )
     if (!node)
         return;
 
-    KDirModelNode* dirNode = node->parent();
+    KDirModelDirNode* dirNode = node->parent();
     Q_ASSERT(dirNode);
     dirNode->m_childNodes.removeAt(rowNumber);
 
@@ -370,6 +399,23 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             break;
         case FileItemRole:
             return QVariant::fromValue(item);
+        case ChildCountRole:
+            if (!item->isDir())
+                return ChildCountUnknown;
+            else {
+                KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(node);
+                int count = dirNode->childCount();
+                if (count == ChildCountUnknown) {
+                    const QString path = item->localPath();
+                    if (!path.isEmpty()) {
+                        QDir dir(path);
+                        count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
+                        kDebug() << k_funcinfo << "child count for " << path << ":" << count << endl;
+                        dirNode->setChildCount(count);
+                    }
+                }
+                return count;
+            }
         }
     }
     return QVariant();
@@ -413,7 +459,8 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
 
 int KDirModel::rowCount( const QModelIndex & parent ) const
 {
-    KDirModelNode* parentNode = d->nodeForIndex(parent);
+    KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(d->nodeForIndex(parent));
+    Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
     //kDebug() << "rowCount for " << parentUrl << ": " << count << endl;;
     return count;
@@ -478,7 +525,8 @@ QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) 
 {
     KDirModelNode* parentNode = d->nodeForIndex(parent); // O(1)
     Q_ASSERT(parentNode);
-    KDirModelNode* childNode = parentNode->m_childNodes.value(row); // O(1)
+    Q_ASSERT(d->isDir(parentNode));
+    KDirModelNode* childNode = static_cast<KDirModelDirNode *>(parentNode)->m_childNodes.value(row); // O(1)
     if (childNode)
         return createIndex(row, column, childNode);
     else
@@ -561,7 +609,7 @@ bool KDirModel::canFetchMore( const QModelIndex & parent ) const
     KDirModelNode* node = static_cast<KDirModelNode*>(parent.internalPointer());
     KFileItem* item = node->item();
     return item->isDir() /*&& !node->m_populated*/
-        && node->m_childNodes.isEmpty();
+        && static_cast<KDirModelDirNode *>(node)->m_childNodes.isEmpty();
 }
 
 void KDirModel::fetchMore( const QModelIndex & parent )
