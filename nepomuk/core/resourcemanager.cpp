@@ -16,6 +16,7 @@
 #include "resource.h"
 #include "resourcedata.h"
 #include "ontology.h"
+#include "tools.h"
 
 #include <knep/knep.h>
 #include <knep/services/tripleservice.h>
@@ -36,6 +37,7 @@ public:
 
   bool autoSync;
   Nepomuk::Backbone::Registry* registry;
+  Nepomuk::KMetaData::Ontology* ontology;
 };
 
 
@@ -43,12 +45,14 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
   : QObject()
 {
   d = new Private();
+  d->ontology = new Ontology();
   d->registry = new Backbone::Registry( this );
 }
 
 
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
+  delete d->ontology;
   delete d;
 }
 
@@ -82,6 +86,12 @@ int Nepomuk::KMetaData::ResourceManager::init()
   }
 
   return 0;
+}
+
+
+Nepomuk::KMetaData::Ontology* Nepomuk::KMetaData::ResourceManager::ontology() const
+{
+  return d->ontology;
 }
 
 
@@ -145,8 +155,8 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
     // check remote data
     TripleService ts( serviceRegistry()->discoverTripleService() );
-    StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), 
-						 Statement( Node(), Ontology::typePredicate(), Node(type) ) ), 
+    StatementListIterator it( ts.listStatements( KMetaData::defaultGraph(), 
+						 Statement( Node(), KMetaData::typePredicate(), Node(type) ) ), 
 			      &ts );
     while( it.hasNext() ) {
       const Statement& s = it.next();

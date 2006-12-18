@@ -28,6 +28,7 @@ namespace Nepomuk {
   namespace KMetaData {
 
     class Resource;
+    class Ontology;
 
     /**
      * \brief The ResourceManager is the central \a %KMetaData configuration point.
@@ -59,6 +60,11 @@ namespace Nepomuk {
 	 * FIXME: introduce error codes and human readable translated error messages.
 	 */
 	int init();
+
+	/**
+	 * The Ontology instance representing the underlying Nepomuk desktop ontology.
+	 */
+	Ontology* ontology() const;
 
 	/**
 	 * The NEPOMUK Service Registry used.

@@ -14,6 +14,7 @@
 
 #include "resourcedata.h"
 #include "resourcemanager.h"
+#include "tools.h"
 #include "ontology.h"
 
 #include <knep/knep.h>
@@ -27,8 +28,6 @@ using namespace Nepomuk::Backbone::Services::RDF;
 
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
 
-QString Nepomuk::KMetaData::ResourceData::s_defaultType = Nepomuk::KMetaData::Ontology::rdfsNamespace() + QString("Resource");
-
 
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QString& type_ )
   : uri( uri_ ),
@@ -37,7 +36,7 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QStri
     m_initialized( false )
 {
   if( !uri.isEmpty() && type.isEmpty() )
-    type = s_defaultType;
+    type = ResourceManager::instance()->ontology()->defaultType();
 }
 
 
@@ -67,8 +66,8 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
     TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
     
     // the resource has to exists either as a subject or as an object
-    return( !ts.contains( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) || 
-	    !ts.contains( Ontology::defaultGraph(), Statement( Node(), Node(), uri ) ) );
+    return( !ts.contains( KMetaData::defaultGraph(), Statement( uri, Node(), Node() ) ) || 
+	    !ts.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), uri ) ) );
   }
   else
     return false;
@@ -100,12 +99,14 @@ bool Nepomuk::KMetaData::ResourceData::load()
 
     TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
 
-    StatementListIterator it( ts.listStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ), &ts );
+    StatementListIterator it( ts.listStatements( KMetaData::defaultGraph(), 
+						 Statement( uri, Node(), Node() ) ), 
+			      &ts );
     while( it.hasNext() ) {
       const Statement& s = it.next();
 
       // load the type
-      if( s.predicate.value == Ontology::typePredicate() ) {
+      if( s.predicate.value == KMetaData::typePredicate() ) {
 	if( type.isEmpty() )
 	  type = s.object.value;
       }
@@ -116,7 +117,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
 	    return false;
 	}
 	else {
-	  if( !loadProperty( s.predicate.value, Ontology::RDFLiteralToValue( s.object.value ) ) )
+	  if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object.value ) ) )
 	    return false;
 	}
       }
@@ -154,22 +155,23 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
     // make sure our graph exists
     // ==========================
-    if( !ts.listGraphs().contains( Ontology::defaultGraph() ) )
-      if( ts.addGraph( Ontology::defaultGraph() ) ) {
+    if( !ts.listGraphs().contains( KMetaData::defaultGraph() ) )
+      if( ts.addGraph( KMetaData::defaultGraph() ) ) {
 	ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	return false;
       }
 
     // remove everything about this resource from the store (FIXME: better and faster syncing)
     // =======================================================================================
-    if( ts.removeAllStatements( Ontology::defaultGraph(), Statement( uri, Node(), Node() ) ) ) {
+    if( ts.removeAllStatements( KMetaData::defaultGraph(), Statement( uri, Node(), Node() ) ) ) {
       ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
       return false;
     }
 
     // save the type
     // =============
-    if( ts.addStatement( Ontology::defaultGraph(), Statement( Node(uri), Node(Ontology::typePredicate()), Node(type) ) ) ) {
+    if( ts.addStatement( KMetaData::defaultGraph(), 
+			 Statement( Node(uri), Node(KMetaData::typePredicate()), Node(type) ) ) ) {
       ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
       return false;
     }
@@ -187,7 +189,8 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
       // one-to-one Resource
       if( val.isResource() ) {
-	if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, val.toResource().uri() ) ) ) {
+	if( ts.addStatement( KMetaData::defaultGraph(), 
+			     Statement( uri, predicate, val.toResource().uri() ) ) ) {
 	  ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	  return false;
 	}
@@ -197,7 +200,8 @@ bool Nepomuk::KMetaData::ResourceData::save()
       else if( val.isResourceList() ) {
 	const QList<Resource>& l = val.toResourceList();
 	for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, (*resIt).uri() ) ) ) {
+	  if( ts.addStatement( KMetaData::defaultGraph(), 
+			       Statement( uri, predicate, (*resIt).uri() ) ) ) {
 	    ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	    return false;
 	  }
@@ -206,9 +210,10 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
       // one-to-many literals
       else if( val.isList() ) {
-	QStringList l = Ontology::valuesToRDFLiterals( val );
+	QStringList l = KMetaData::valuesToRDFLiterals( val );
 	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
-	  if( ts.addStatement( Ontology::defaultGraph(), Statement( uri, predicate, Node( *valIt, NodeLiteral ) ) ) ) {
+	  if( ts.addStatement( KMetaData::defaultGraph(), 
+			       Statement( uri, predicate, Node( *valIt, NodeLiteral ) ) ) ) {
 	    ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	    return false;
 	  }
@@ -217,10 +222,10 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
       // one-to-one literal
       else {
-	if( ts.addStatement( Ontology::defaultGraph(), 
+	if( ts.addStatement( KMetaData::defaultGraph(), 
 			     Statement( uri, 
 					predicate, 
-					Node( Ontology::valueToRDFLiteral( val ), NodeLiteral ) ) ) ) {
+					Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) ) ) {
 	  ResourceManager::instance()->notifyError( uri, ERROR_COMMUNICATION );
 	  return false;
 	}

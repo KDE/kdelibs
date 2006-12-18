@@ -15,87 +15,72 @@
 #include "ontology.h"
 #include "variant.h"
 
-static const QString NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-static const QString NS_RDFS = "http://www.w3.org/2000/01/rdf-schema#";
+const QString Nepomuk::KMetaData::Ontology::RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+const QString Nepomuk::KMetaData::Ontology::RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 
-QString Nepomuk::KMetaData::Ontology::defaultGraph()
+// FIXME: insert final NRL namespace
+const QString Nepomuk::KMetaData::Ontology::NRL_NAMESPACE = "http://semanticdesktop.org/ontology/nrl-yyyymmdd#";
+
+
+
+class Nepomuk::KMetaData::Ontology::Private
 {
-  // FIXME: replace this with the real thing
-  static QString s = "http://nepomuk.semanticdesktop.org/metadata";
+public:
+  QStringList types;
+  QHash<QString, QStringList> properties;
+};
+
+
+#include <kmetadata/ontology_ctor.cpp>
+
+
+QString Nepomuk::KMetaData::Ontology::defaultNamespace() const
+{
+  // FIXME: replace with the real thing
+  return NRL_NAMESPACE;
+}
+
+
+QString Nepomuk::KMetaData::Ontology::defaultType() const
+{
+  static QString s = RDFS_NAMESPACE + QString("Resource");
   return s;
 }
 
 
-QString Nepomuk::KMetaData::Ontology::typePredicate()
+QStringList Nepomuk::KMetaData::Ontology::types() const
 {
-  static QString s = NS_RDF + "type";
-  return s;
+  return d->types;
 }
 
 
-QString Nepomuk::KMetaData::Ontology::valueToRDFLiteral( const Variant& v )
+QStringList Nepomuk::KMetaData::Ontology::properties( const QString& type ) const
 {
-  // FIXME: replace this with the real thing
-  return v.toString();
-}
-
-
-template<typename T> QStringList convertList( const QList<T>& vl )
-{
-  QStringList l;
-  QListIterator<T> it( vl );
-  while( it.hasNext() )
-    l.append( Nepomuk::KMetaData::Ontology::valueToRDFLiteral( Nepomuk::KMetaData::Variant( it.next() ) ) );
-  return l;
-}
-
-
-QStringList Nepomuk::KMetaData::Ontology::valuesToRDFLiterals( const Variant& v )
-{
-  if( v.simpleType() == qMetaTypeId<int>() )
-    return convertList( v.toIntList() );
-  else if( v.simpleType() == qMetaTypeId<double>() )
-    return convertList( v.toDoubleList() );
-  else if( v.simpleType() == qMetaTypeId<bool>() )
-    return convertList( v.toBoolList() );
-  else if( v.simpleType() == qMetaTypeId<QDate>() )
-    return convertList( v.toDateList() );
-  else if( v.simpleType() == qMetaTypeId<QTime>() )
-    return convertList( v.toTimeList() );
-  else if( v.simpleType() == qMetaTypeId<QDateTime>() )
-    return convertList( v.toDateTimeList() );
-  else if( v.simpleType() == qMetaTypeId<QUrl>() )
-    return convertList( v.toUrlList() );
-  else if( v.simpleType() == QVariant::String )
-    return v.toStringList();
-  else {
-    qDebug() << "(Ontology) ERROR: unknown list type: " << v.simpleType() << endl;
-    return QStringList();
+  if( type.isEmpty() ) {
+    QStringList l;
+    for( QHash<QString, QStringList>::const_iterator it = d->properties.constBegin();
+	 it != d->properties.constEnd(); ++it )
+      l += it.value();
+    return l;
   }
+  else
+    return d->properties[type];
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Ontology::RDFLiteralToValue( const QString& s )
+QString Nepomuk::KMetaData::Ontology::typeName( const QString& type ) const
 {
-  // FIXME: replace this with the real thing
-  return Variant( s );
+  // FIXME: use translated names generated from the ontology
+  return type.section( QRegExp( "[#:]" ), -1 );
 }
 
 
-QString Nepomuk::KMetaData::Ontology::rdfNamespace()
+QString Nepomuk::KMetaData::Ontology::propertyName( const QString& property ) const
 {
-  return NS_RDF;
-}
-
-
-QString Nepomuk::KMetaData::Ontology::rdfsNamespace()
-{
-  return NS_RDFS;
-}
-
-
-QString Nepomuk::KMetaData::Ontology::nrlNamespace()
-{
-  // FIXME
-  return QString();
+  // FIXME: use translated names generated from the ontology
+  QString n = property.section( QRegExp( "[#:]" ), -1 );
+  if( n.toLower().startsWith( "has" ) )
+    return n.mid( 3 );
+  else
+    return n;
 }

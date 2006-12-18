@@ -104,6 +104,10 @@ int main( int argc, char** argv )
       qDebug() << "Writing sources to " << targetDir << " failed." << endl;
       return usage();
     }
+    else if( !prsr.writeOntology( targetDir ) ) {
+      qDebug() << "Writing Ontology constructor to " << targetDir << " failed." << endl;
+      return usage();
+    }
   }
   else if( listSource ) {
     QStringList l = prsr.listSources();

@@ -25,6 +25,7 @@ class OntologyParser
 
   bool parse( const QString& filename );
   bool writeSources( const QString& dir );
+  bool writeOntology( const QString& dir );
 
   QStringList listHeader();
   QStringList listSources();

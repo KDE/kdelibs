@@ -23,21 +23,81 @@
 namespace Nepomuk {
   namespace KMetaData {
     /**
-     * This class represents the basic NEPOMUK meta data ontology.
-     * It provides information about types and stuff.
+     * \brief This class represents the \ref page_ontology.
+     *
+     * Ontology represents the %Nepomuk desktop ontology and as such can be used
+     * to retrieve information about the types and properties defined in it.
+     *
+     * The most important methods, and thus, most often used ones are
+     *
+     * - Ontology::typeName
+     * - Ontology::propertyName
+     *
+     * which return user-readable names for classes and properties in the ontology.
+     * This allows to create a GUI listing all properties defined for an arbitrary
+     * resource (See \ref examples).
      */
     class KMETADATA_EXPORT Ontology
       {
       public:
-	static QString defaultGraph();
-	static QString typePredicate();
-	static QString valueToRDFLiteral( const Variant& );
-	static QStringList valuesToRDFLiterals( const Variant& );
-	static Variant RDFLiteralToValue( const QString& );
+	/**
+	 * Constructs a new Ontology object.
+	 *
+	 * Normally there is no need to create an instance of Ontology.
+	 * Use ResourceManager::ontology instead.
+	 */
+	Ontology();
+	~Ontology();
 
-	static QString rdfNamespace();
-	static QString rdfsNamespace();
-	static QString nrlNamespace();
+	/**
+	 * The default namespace used in the ontology.
+	 */
+	QString defaultNamespace() const;
+
+	/**
+	 * The default type, i.e. the base type of all classes
+	 * in the ontology.
+	 * \return URI of the default type
+	 */
+	QString defaultType() const;
+
+	/**
+	 * All types defined in the ontology.
+	 * \return A list or type URIs
+	 */
+	QStringList types() const;
+
+	/**
+	 * All properties of \a type defined in the ontology.
+	 * \param type If not empty only the properties defined for the specified type
+	 *             will be returned.
+	 * \return A list of property URIs.
+	 */
+	QStringList properties( const QString& type = QString() ) const;
+
+	/**
+	 * \param type The URI of a type defined in \ref page_ontology.
+	 * \return A user-readable name for \a type.
+	 *
+	 * \sa types
+	 */
+	QString typeName( const QString& type ) const;
+
+	/**
+	 * \param property The URI of a property defined in \ref page_ontology.
+	 * \return A user-readable name for \a property.
+	 *
+	 * \sa properties
+	 */
+	QString propertyName( const QString& property ) const;
+
+	static const QString RDF_NAMESPACE;
+	static const QString RDFS_NAMESPACE;
+	static const QString NRL_NAMESPACE;
+
+      private:
+	class Private;
+	Private* d;
       };
   }
 }

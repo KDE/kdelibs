@@ -214,6 +214,19 @@
  * while( it.hasNext() )
  *   kdDebug() << "File tagged with tag: " << it.next().getName();
  * \endcode
+ *
+ * Present all defined properties of an arbitrary resource to the user:
+ *
+ * \code
+ * Nepomuk::KMetaData::Ontology* ont = Nepomuk::KMetaData::ResourceManager::instance()->ontology();
+ * Nepomuk::KMetaData::Resource f( "/home/foo/bar.txt" );
+ * QHash<QString, Variant> properties = f.allProperties();
+ * QHashIterator<QString, Variant> it( properties );
+ * while( it.hasNext() ) {
+ *   it.next();
+ *   kdDebug() << ont->propertyName( it.key() ) << ": " << it.value().toString() << endl;
+ * }
+ * \endcode
  */
 
 /**
@@ -228,4 +241,5 @@
 #include <kmetadata/resource.h>
 #include <kmetadata/variant.h>
 #include <kmetadata/resourcemanager.h>
+#include <kmetadata/ontology.h>
 #include <kmetadata/allresources.h>

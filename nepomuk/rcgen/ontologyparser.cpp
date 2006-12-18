@@ -14,6 +14,7 @@
 
 #include "ontologyparser.h"
 #include "resourceclass.h"
+#include "resourcetemplate.h"
 
 #include <soprano/Soprano.h>
 
@@ -159,4 +160,30 @@ QStringList OntologyParser::listSources()
     if( (*it).name() != "Resource" )
       l.append( (*it).sourceName() );
   return l;
+}
+
+
+bool OntologyParser::writeOntology( const QString& dir )
+{
+  QString s;
+  for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+       it != d->resources.constEnd(); ++it ) {
+    s.append( "   d->types.append( \"" + it.value().uri + "\" );\n" );
+    for( QMap<QString, Property*>::const_iterator it2 = it.value().properties.constBegin();
+	 it2 != it.value().properties.constEnd(); ++it2 ) {
+      s.append( "   d->properties[\"" + it.value().uri + "\"].append( \"" + it2.key() + "\" );\n" );
+    }
+  }
+
+  QString ctor = ontologySrcTemplate;
+  ctor.replace( "CONSTRUCTOR", s );
+
+  QFile f( dir + "/ontology_ctor.cpp" );
+  if( f.open( QIODevice::WriteOnly ) ) {
+    QTextStream fs( &f );
+    fs << ctor;
+    return true;
+  }
+
+  return false;
 }

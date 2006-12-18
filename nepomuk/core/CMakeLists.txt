@@ -39,6 +39,7 @@ set(kmetadata_LIB_SRCS
   resourcedata.cpp
   resourcemanager.cpp
   ontology.cpp
+  tools.cpp
   ${ALLRESOURCES_SOURCES}
 )
 
@@ -56,6 +57,7 @@ install(FILES
   variant.h
   resource.h
   resourcemanager.h
+  ontology.h
   kmetadata.h
   kmetadata_export.h
   ${CMAKE_CURRENT_BINARY_DIR}/allresources.h
