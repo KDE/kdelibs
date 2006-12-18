@@ -441,26 +441,26 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *v
   switch (token) {
     case Title:
       if (doc.title() != val) doc.setTitle(val);
-      break;
+      return;
     case Body: {
       DOM::NodeImpl* body = toNode(value);
       if (body->isHTMLElement())
         doc.setBody(static_cast<DOM::HTMLElementImpl*>(body), exception);
-      break;
+      return;
     }
     case Domain: { // not part of the DOM
       doc.setDomain(val);
-      break;
+      return;
     }
     case Cookie:
       doc.setCookie(val);
-      break;
+      return;
     case Location:
     {
       KHTMLView *view = doc.view();
       if ( view )
         Window::retrieveWindow(view->part())->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
-      break;
+      return;
     }
   }
 
