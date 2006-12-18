@@ -82,7 +82,7 @@ const QString& Nepomuk::KMetaData::Resource::type() const
 
 QString Nepomuk::KMetaData::Resource::className() const
 {
-  return type().section( '#', -1 );
+  return type().section( QRegExp( "[#:]" ), -1 );
 }
 
 

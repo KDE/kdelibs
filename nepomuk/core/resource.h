@@ -96,6 +96,9 @@ namespace Nepomuk {
 
 	/**
 	 * The name of the class this Resource represents an object of.
+	 * The classname is derived from the type URI (see Resource::uri).
+	 * For a translated user readable name of the resource see
+	 * Ontology::typeName.
 	 * 
 	 * \sa type()
 	 */
