@@ -66,6 +66,7 @@ install( FILES
   kdecore/k3tempfile.h
   kdecore/k3mimesourcefactory.h
   kdeui/kactivelabel.h
+  kdeui/kstdaction.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
   kdeui/k3popupmenu.h

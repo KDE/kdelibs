@@ -1,0 +1,1 @@
+#error kstdaction.h does not exist anymore. The KStdAction namespace has been renamed to KStandardAction and the header file to kstandardaction.h. See the KDE4 Porting Guide for more information.
