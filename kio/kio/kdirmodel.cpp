@@ -405,7 +405,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             else {
                 KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(node);
                 int count = dirNode->childCount();
-                if (count == ChildCountUnknown) {
+                if (count == ChildCountUnknown && item->isReadable()) {
                     const QString path = item->localPath();
                     if (!path.isEmpty()) {
                         QDir dir(path);
