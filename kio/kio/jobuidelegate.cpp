@@ -45,7 +45,9 @@ KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
 {
     d->showProgressInfo = showProgressInfo;
     d->errorParentWidget = 0L;
+#if defined Q_WS_X11
     d->userTimestamp = QX11Info::appUserTime();
+#endif
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()
