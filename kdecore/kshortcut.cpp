@@ -73,7 +73,7 @@ KShortcut::KShortcut(const QString &s)
 
 void KShortcut::setPrimary(const QKeySequence &newPrimary)
 {
-    while (count() < 0)
+    while (count() < 1)
         append(QKeySequence());
     operator[](0) = newPrimary;
 }
