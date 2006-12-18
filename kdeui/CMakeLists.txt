@@ -12,6 +12,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
+ ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/util
@@ -31,11 +32,6 @@ set(kdeui_LIB_SRCS
  kstatusbar.cpp
  kmainwindow.cpp
  krestrictedline.cpp
- kpagemodel.cpp
- kpageview.cpp
- kpageview_p.cpp
- kpagewidget.cpp
- kpagewidgetmodel.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
  kmenumenuhandler_p.cpp
@@ -65,6 +61,26 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ dialogs/kaboutdialog.cpp
+ dialogs/kassistantdialog.cpp
+ dialogs/kbugreport.cpp
+ dialogs/kdialog.cpp
+ dialogs/kedittoolbar.cpp
+ dialogs/kcolordialog.cpp
+ dialogs/kfontdialog.cpp
+ dialogs/kinputdialog.cpp
+ dialogs/kkeydialog.cpp
+ dialogs/kmessagebox.cpp
+ dialogs/kmessageboxmessagehandler.cpp
+ dialogs/kaboutapplication.cpp
+ dialogs/kpassworddialog.cpp
+ dialogs/kprogressdialog.cpp
+ dialogs/kshortcutdialog.cpp
+ dialogs/ktip.cpp
+ dialogs/kconfigdialogmanager.cpp
+ dialogs/kaboutkde.cpp
+ dialogs/kconfigdialog.cpp
+ dialogs/kpixmapregionselectordialog.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -78,6 +94,12 @@ set(kdeui_LIB_SRCS
  kernel/kapplication.cpp
  kernel/kuniqueapplication.cpp
  kernel/kstartupinfo.cpp
+ paged/kpagedialog.cpp
+ paged/kpagemodel.cpp
+ paged/kpageview.cpp
+ paged/kpageview_p.cpp
+ paged/kpagewidget.cpp
+ paged/kpagewidgetmodel.cpp
  util/kacceleratormanager.cpp
  util/kcheckaccelerators.cpp
  util/kcolormimedata.cpp
@@ -139,27 +161,6 @@ set(kdeui_LIB_SRCS
  widgets/ktimezonewidget.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
- dialogs/kaboutdialog.cpp
- dialogs/kassistantdialog.cpp
- dialogs/kbugreport.cpp
- dialogs/kdialog.cpp
- dialogs/kedittoolbar.cpp
- dialogs/kcolordialog.cpp
- dialogs/kfontdialog.cpp
- dialogs/kinputdialog.cpp
- dialogs/kkeydialog.cpp
- dialogs/kmessagebox.cpp
- dialogs/kmessageboxmessagehandler.cpp
- dialogs/kpagedialog.cpp
- dialogs/kaboutapplication.cpp
- dialogs/kpassworddialog.cpp
- dialogs/kprogressdialog.cpp
- dialogs/kshortcutdialog.cpp
- dialogs/ktip.cpp
- dialogs/kconfigdialogmanager.cpp
- dialogs/kaboutkde.cpp
- dialogs/kconfigdialog.cpp
- dialogs/kpixmapregionselectordialog.cpp
  xmlgui/kxmlguiclient.cpp
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
@@ -210,10 +211,6 @@ install( FILES
  kmenubar.h
  krestrictedline.h
  kurllabel.h
- kpagemodel.h
- kpageview.h
- kpagewidget.h
- kpagewidgetmodel.h
  ktextbrowser.h
  khelpmenu.h
  kcmodule.h
@@ -254,7 +251,6 @@ install( FILES
  dialogs/kkeydialog.h
  dialogs/kmessagebox.h
  dialogs/kmessageboxmessagehandler.h
- dialogs/kpagedialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h
@@ -274,6 +270,11 @@ install( FILES
  kernel/kapplication.h
  kernel/kuniqueapplication.h
  kernel/kstartupinfo.h
+ paged/kpagedialog.h
+ paged/kpagemodel.h
+ paged/kpageview.h
+ paged/kpagewidget.h
+ paged/kpagewidgetmodel.h
  util/kacceleratormanager.h
  util/kaccelgen.h
  util/kcolormimedata.h
