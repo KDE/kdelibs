@@ -66,8 +66,12 @@
 #include <QByteArray>
 #include <QVarLengthArray>
 #include <QCoreApplication>
-#include <qdatetime.h>
 #include <qregexp.h>
+#ifdef Q_WS_WIN
+#include <QDir>
+#include <QFileInfo>
+#include <QDateTime>
+#endif
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -1257,9 +1261,41 @@ void FileProtocol::listDir( const KUrl& url)
     kDebug(7101) << "win32: fix KUrl::path()" << endl;
     int start = (url.path()[0] == '/') ? 1 : 0;
     QByteArray _path( QFile::encodeName(url.path().mid(start)));
+
+    kDebug(7101) << "========= " << _path.data() << " =========" << endl;
+    QDir dir( _path );
+    dir.setFilter(QDir::AllEntries);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    if ( !dir.exists() ) {
+        kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========" << endl;
+        error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+        return; 
+    }
+
+   	// don't knwo how to check
+   	// error( KIO::ERR_IS_FILE, url.path() );
+
+    if ( !dir.isReadable() ) {
+        kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========" << endl;
+        error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
+        return; 
+    }
+    QFileInfoList list = dir.entryInfoList();
+    totalSize( list.size() );
+
+    UDSEntry entry;
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        entry.clear();
+        if ( createUDSEntry( fileInfo.fileName(),
+                             fileInfo.absoluteFilePath().toAscii() /* we can use the filename as relative path*/,
+                             entry, 2, true ) )
+            listEntry( entry, false);
+    }
 #else
     QByteArray _path( QFile::encodeName(url.path()));
-#endif
+
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
@@ -1297,7 +1333,6 @@ void FileProtocol::listDir( const KUrl& url)
     // should be passed intact to createUDSEntry to avoid problems with
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
     QList<QByteArray> entryNames;
-
     while ( ( ep = KDE_readdir( dp ) ) != 0L )
 	entryNames.append( ep->d_name );
 
@@ -1331,13 +1366,15 @@ void FileProtocol::listDir( const KUrl& url)
                              entry, 2, true ) )
           listEntry( entry, false);
     }
+#endif
 
     listEntry( entry, true ); // ready
 
     kDebug(7101) << "============= COMPLETED LIST ============" << endl;
 
+#ifndef Q_WS_WIN
     chdir(path_buffer);
-
+#endif
     finished();
 }
 
