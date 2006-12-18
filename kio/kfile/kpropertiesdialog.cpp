@@ -122,7 +122,6 @@ extern "C" {
 
 #include "ui_kpropertiesdesktopbase.h"
 #include "ui_kpropertiesdesktopadvbase.h"
-#include "ui_kpropertiesmimetypebase.h"
 #ifdef HAVE_POSIX_ACL
 #include "kacleditwidget.h"
 #endif
