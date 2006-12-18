@@ -462,8 +462,6 @@ protected Q_SLOTS:
 private:
     // Core initialization, including Kiosk authorization checking
     void initPrivate(const QString& name);
-    // Compatibility initialization functions here only
-    void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const QString& name );
 
     // You're not supposed to change the action name throughout its life - these methods are here to discourage you
     void setName ( const char * name );

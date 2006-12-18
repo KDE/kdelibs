@@ -103,17 +103,6 @@ void KAction::initPrivate(const QString& name)
     setProperty("isShortcutConfigurable", true);
 }
 
-void KAction::initPrivate( const KShortcut& cut,
-                  const QObject* receiver, const char* slot, const QString& name )
-{
-    initPrivate(name);
-
-    if (receiver && slot)
-        connect(this, SIGNAL(triggered(bool)), receiver, slot);
-
-    setShortcut(cut);
-}
-
 bool KAction::isShortcutConfigurable() const
 {
     return property("isShortcutConfigurable").toBool();
