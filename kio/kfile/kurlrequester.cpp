@@ -205,10 +205,9 @@ void KUrlRequester::init()
 	d->edit = new KLineEdit( this);
 
     myButton = new KUrlDragPushButton( this);
-    KIcon iconSet(QLatin1String("fileopen"));
-    myButton->setIcon( iconSet );
-    QPixmap pixMap = iconSet.pixmap( style()->pixelMetric(QStyle::PM_SmallIconSize) );
-    myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
+    myButton->setIcon( KIcon(QLatin1String("fileopen")) );
+    const int pixmapSize = style()->pixelMetric(QStyle::PM_SmallIconSize);
+    myButton->setFixedSize( pixmapSize+8, pixmapSize+8 );
     myButton->setToolTip(i18n("Open file dialog"));
 
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateUrl() ));

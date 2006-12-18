@@ -943,10 +943,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     //TODO: wrap for win32 or mac?
     QPushButton *button = new QPushButton(box);
 
-    QIcon iconSet = KIcon(QString::fromLatin1("configure"));
-    QPixmap pixMap = iconSet.pixmap( d->m_frame->style()->pixelMetric(QStyle::PM_SmallIconSize) );
-    button->setIcon( iconSet );
-    button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
+    button->setIcon( KIcon(QString::fromLatin1("configure")) );
+    const int pixmapSize = button->style()->pixelMetric(QStyle::PM_SmallIconSize);
+    button->setFixedSize( pixmapSize+8, pixmapSize+8 );
     if ( d->mimeType == KMimeType::defaultMimeType() )
        button->setToolTip(i18n("Create new file type"));
     else
