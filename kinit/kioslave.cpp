@@ -62,6 +62,11 @@ int main(int argc, char **argv)
      if (!lib.load() || !lib.isLoaded() )
      {
 #ifdef Q_WS_WIN
+        if (!getenv("KDEDIRS")) {
+          qDebug("not able to find '%s' because KDEDIRS environment variable is not set.\n"
+                 "Set KDEDIRS to the KDE installation root dir and restart klauncher to fix this problem.",libpath.data());
+          exit(1);
+        }
         QString pathes = getenv("KDEDIRS");
         QStringList pathlist = pathes.split(";");
         for (int i = 0; i < pathlist.size(); ++i) 
