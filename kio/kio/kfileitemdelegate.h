@@ -34,6 +34,19 @@
  * Qt::DecorationRole and Qt::DisplayRole for the icons and text labels,
  * just like QItemDelegate, and can thus be used with any standard model.
  *
+ * When used with KDirModel however, KFileItemDelegate can change the way
+ * the display and/or decoration roles are drawn, based on properties
+ * of the file items. For example, if the file item is a symbolic link,
+ * it will use an italic font to draw the file name.
+ *
+ * KFileItemDelegate also supports showing additional information about
+ * the file items below the icon labels.
+ *
+ * Which information should be shown, if any, is controlled by the
+ * @ref information property, which can be set by calling
+ * setAdditionalInformation(), and read by calling additionalInformation().
+ * The default value for this property is @ref NoInformation.
+ *
  * To use KFileItemDelegate, instantiate an object from the delegate,
  * and call setItemDelegate() in one of the standard item views in Qt:
  *
@@ -45,7 +58,57 @@
  */
 class KIO_EXPORT KFileItemDelegate : public QItemDelegate
 {
-     public:
+    Q_OBJECT
+
+    /**
+     * This property holds which additional information (if any) should be shown below
+     * items in icon views.
+     *
+     * Access functions:
+     * @li void setAdditionalInformation(AdditionalInformation information)
+     * @li Information additionalInformation() const
+     */
+    Q_PROPERTY(AdditionalInformation information READ additionalInformation WRITE setAdditionalInformation)
+    Q_ENUMS(AdditionalInformation)
+
+
+    public:
+        /**
+         * This enum defines the additional information that can be displayed below item
+         * labels in icon views.
+         *
+         * The information will only be shown for indexes for which the model provides
+         * a valid value for KDirModel::FileItemRole, and only when there's sufficient vertical
+         * space to display at least one line of the information, along with the display label.
+         *
+         * For the number of items to be shown for folders, the model must provide a valid
+         * value for KDirMode::ChildCountRole, in addition to KDirModel::FileItemRole.
+         *
+         * Note that KFileItemDelegate will not call KFileItem::determineMimeType() if
+         * KFileItem::isMimeTypeKnown() returns false, so if you want to display mime types
+         * you should use a KMimeTypeResolver with the model and the view, to ensure that mime
+         * types are resolved. If the mime type isn't known, "Unknown" will be displayed until
+         * the mime type has been successfully resolved.
+         *
+         * @see setAdditionalInformation()
+         * @see additionalInformation()
+         * @see information
+         */
+        enum AdditionalInformation {
+            NoInformation,     ///< No additional information will be shown for items.
+            Size,              ///< The file size for files, and the number of items for folders.
+            Permissions,       ///< A UNIX permissions string, e.g. -rwxr-xr-x.
+            OctalPermissions,  ///< The permissions as an octal value, e.g. 0644.
+            Owner,             ///< The user name of the file owner, e.g. root
+            OwnerAndGroup,     ///< The user and group that owns the file, e.g. root:root
+            CreationTime,      ///< The date and time the file/folder was created.
+            ModificationTime,  ///< The date and time the file/folder was last modified.
+            AccessTime,        ///< The date and time the file/folder was last accessed.
+            MimeType,          ///< The mime type for the item, e.g. text/html.
+            FriendlyMimeType   ///< The descriptive name for the mime type, e.g. HTML Document.
+        };
+
+
         /**
          * Constructs a new KFileItemDelegate.
          *
@@ -97,6 +160,20 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
          * @param index   The index to the item that should be painted.
          */
         virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+
+        /**
+         * Sets the additional information that should be shown below below item labels in icon views.
+         *
+         * @param information The information that should be shown
+         */
+        void setAdditionalInformation(AdditionalInformation information);
+
+
+        /**
+         * Returns the additional information that should be shown below item labels in icon views.
+         */
+        AdditionalInformation additionalInformation() const;
 
 
     protected:

@@ -35,6 +35,7 @@
 #include <kfileitem.h>
 
 #include "kfileitemdelegate.h"
+#include "kfileitemdelegate.moc"
 
 
 //#define DEBUG_RECTS
@@ -60,13 +61,15 @@ class KFileItemDelegate::Private
         inline Qt::Alignment alignment(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QString replaceNewlines(const QString &string) const;
         inline KFileItem *fileItem(const QModelIndex &index) const;
-        inline QFont font(const QStyleOptionViewItem &options, const QModelIndex &index) const;
+        inline QFont font(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem *item) const;
         QString elideText(QTextLayout &layout, const QStyleOptionViewItem &option,
                           const QString &text, const QSize maxSize) const;
         QString elidedWordWrappedText(QTextLayout &layout, const QString &text, const QSize &maxSize) const;
+        QSize layoutText(QTextLayout &layout, const QStyleOptionViewItem &option,
+                         const QString &text, const QSize &constraints) const;
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
         inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &options,
-                                     const QModelIndex &index) const;
+                                     const QModelIndex &index, const KFileItem *item) const;
         inline bool verticalLayout(const QStyleOptionViewItem &option) const;
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
         inline QPixmap selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
@@ -85,6 +88,11 @@ class KFileItemDelegate::Private
         inline QRect subtractMargin(const QRect &rect, MarginType type) const;
         inline QSize addMargin(const QSize &size, MarginType type) const;
         inline QSize subtractMargin(const QSize &size, MarginType type) const;
+        QString itemSize(const QModelIndex &index, const KFileItem *item) const;
+        QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem *item) const;
+
+    public:
+        KFileItemDelegate::AdditionalInformation additionalInformation;
 
     private:
         KFileItemDelegate * const q;
@@ -186,6 +194,69 @@ QString KFileItemDelegate::Private::elideText(QTextLayout &layout, const QStyleO
 }
 
 
+// Returns the size of a file, or the number of items in a directory, as a QString
+QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFileItem *item) const
+{
+    // Return a formatted string containing the file size, if the item is a file
+    if (item->isFile())
+        return KGlobal::locale()->formatByteSize(item->size());
+
+    // Return the number of items in the directory
+    const QVariant value = index.model()->data(index, KDirModel::ChildCountRole);
+    const int count = value.type() == QVariant::Int ? value.toInt() : KDirModel::ChildCountUnknown;
+
+    if (count == KDirModel::ChildCountUnknown)
+        return i18nc("Items in a folder", "? items");
+
+    return ki18ncp("Items in a folder", "1 item", "%n items").subs(count).toString();
+}
+
+
+// Returns the additional information string, if one should be shown, or an empty string otherwise
+QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &option, const QModelIndex &index,
+                                                const KFileItem *item) const
+{
+    if (additionalInformation == KFileItemDelegate::NoInformation || !item || !verticalLayout(option))
+        return QString::null;
+
+    switch (additionalInformation)
+    {
+        case KFileItemDelegate::Size:
+            return itemSize(index, item);
+
+        case KFileItemDelegate::Permissions:
+            return item->permissionsString();
+
+        case KFileItemDelegate::OctalPermissions:
+            return QString('0') + QString::number(item->permissions(), 8);
+
+        case KFileItemDelegate::Owner:
+            return item->user();
+
+        case KFileItemDelegate::OwnerAndGroup:
+            return item->user() + ':' + item->group();
+
+        case KFileItemDelegate::CreationTime:
+            return item->timeString(KIO::UDS_CREATION_TIME);
+
+        case KFileItemDelegate::ModificationTime:
+            return item->timeString(KIO::UDS_MODIFICATION_TIME);
+
+        case KFileItemDelegate::AccessTime:
+            return item->timeString(KIO::UDS_ACCESS_TIME);
+
+        case KFileItemDelegate::MimeType:
+            return item->isMimeTypeKnown() ? item->mimetype() : i18n("Unknown");
+
+        case KFileItemDelegate::FriendlyMimeType:
+            return item->isMimeTypeKnown() ? item->mimeComment() : i18n("Unknown");
+
+        default:
+            return QString::null;
+    }
+}
+
+
 // Returns the KFileItem for the index
 KFileItem *KFileItemDelegate::Private::fileItem(const QModelIndex &index) const
 {
@@ -195,7 +266,8 @@ KFileItem *KFileItemDelegate::Private::fileItem(const QModelIndex &index) const
 
 
 // Returns the font that should be used to render the display role.
-QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const QModelIndex &index,
+                                       const KFileItem *item) const
 {
     QFont font = option.font;
 
@@ -203,8 +275,6 @@ QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const
     const QVariant value = index.model()->data(index, Qt::FontRole);
     if (value.isValid())
         font = qvariant_cast<QFont>(value).resolve(option.font);
-
-    KFileItem *item = fileItem(index);
 
     // Use an italic font for symlinks
     if (item && item->isLink())
@@ -225,6 +295,21 @@ QString KFileItemDelegate::Private::replaceNewlines(const QString &text) const
             string[i] = QChar::LineSeparator;
 
     return string;
+}
+
+
+// Lays the text out in a rectangle no larger than constraints, eliding it as necessary
+QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QStyleOptionViewItem &option,
+                                             const QString &text, const QSize &constraints) const
+{
+    const QSize size = layoutText(layout, text, constraints.width());
+    if (size.width() > constraints.width() || size.height() > constraints.height())
+    {
+        const QString elided = elideText(layout, option, text, constraints);
+        return layoutText(layout, elided, constraints.width());
+    }
+
+    return size;
 }
 
 
@@ -270,8 +355,8 @@ QString KFileItemDelegate::Private::elidedWordWrappedText(QTextLayout &layout, c
 
     layout.setText(text);
 
-    // Keep laying out lines until we run out of vertical space, and mark
-    // the position in the string where the last line begins.
+    // Keep laying out lines until we run out of horizontal or vertical
+    // space, and mark the position in the string where that line begins.
     // We'll elide all the text from that position, using size.width().
     layout.beginLayout();
     while ((line = layout.createLine()).isValid())
@@ -279,7 +364,8 @@ QString KFileItemDelegate::Private::elidedWordWrappedText(QTextLayout &layout, c
         line.setLineWidth(maxWidth);
         height += metrics.leading() + int(line.height());
 
-        if (height + metrics.lineSpacing() > maxHeight)
+        if (height + metrics.lineSpacing() > maxHeight ||
+            line.naturalTextWidth() > maxWidth)
         {
             elideStart = line.textStart();
             break;
@@ -289,8 +375,11 @@ QString KFileItemDelegate::Private::elidedWordWrappedText(QTextLayout &layout, c
     }
     layout.endLayout();
 
-    return text.left(elideAfter) +
-            metrics.elidedText(text.mid(elideStart), Qt::ElideRight, maxWidth);
+    if (elideAfter > 0)
+        return text.left(elideAfter) +
+                metrics.elidedText(text.mid(elideStart), Qt::ElideRight, maxWidth);
+
+    return metrics.elidedText(text, Qt::ElideRight, maxWidth);
 }
 
 
@@ -309,14 +398,14 @@ Qt::Alignment KFileItemDelegate::Private::alignment(const QStyleOptionViewItem &
 
 
 void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &option,
-                                                  const QModelIndex &index) const
+                                                  const QModelIndex &index, const KFileItem *item) const
 {
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
     textoption.setAlignment(alignment(option, index));
     textoption.setWrapMode(wordWrapText(option) ? QTextOption::WordWrap : QTextOption::NoWrap);
 
-    layout.setFont(font(option, index));
+    layout.setFont(font(option, index, item));
     layout.setTextOption(textoption);
 }
 
@@ -324,12 +413,20 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
 QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItem &option,
                                                   const QModelIndex &index) const
 {
-    const QString label = q->display(index);
+    QString label = q->display(index);
     const int maxWidth = verticalLayout(option) && wordWrapText(option) ?
             option.decorationSize.width() + 10 : 32757;
 
+    KFileItem *item = fileItem(index);
+
+    // To compute the nominal size for the label + info, we'll just append
+    // the information string to the label
+    const QString info = information(option, index, item);
+    if (!info.isEmpty())
+        label += QString(QChar::LineSeparator) + info;
+
     QTextLayout layout;
-    setLayoutOptions(layout, option, index);
+    setLayoutOptions(layout, option, index, item);
 
     QSize size = layoutText(layout, label, maxWidth);
     return addMargin(size, TextMargin);
@@ -487,6 +584,8 @@ KFileItemDelegate::KFileItemDelegate(QObject *parent)
     d->setVerticalMargin(Private::TextMargin, 6, 2);
     d->setVerticalMargin(Private::IconMargin, focusHMargin, focusVMargin);
     d->setVerticalMargin(Private::ItemMargin, 0, 0);
+
+    setAdditionalInformation(NoInformation);
 }
 
 
@@ -544,6 +643,18 @@ QString KFileItemDelegate::display(const QModelIndex &index) const
         default:
             return QString::null;
     }
+}
+
+
+void KFileItemDelegate::setAdditionalInformation(AdditionalInformation value)
+{
+    d->additionalInformation = value;
+}
+
+
+KFileItemDelegate::AdditionalInformation KFileItemDelegate::additionalInformation() const
+{
+    return d->additionalInformation;
 }
 
 
@@ -661,32 +772,59 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    QString label  = display(index);
-    QPixmap pixmap = decoration(option, index);
+    const QString label  = display(index);
+    const QPixmap pixmap = decoration(option, index);
+    KFileItem *item      = d->fileItem(index);
+    const QString info   = d->information(option, index, item);
+    bool showInformation = false;
 
-    // Compute the metrics
+
+    // Compute the metrics, and lay out the text items
     // ========================================================================
-    QTextLayout layout;
-    d->setLayoutOptions(layout, option, index);
+    QTextLayout labelLayout, infoLayout;
+    d->setLayoutOptions(labelLayout, option, index, item);
 
     d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
 
+    QFontMetrics fm      = QFontMetrics(labelLayout.font());
     const QRect textArea = labelRectangle(option, pixmap, label);
-    QRect labelRect = d->subtractMargin(textArea, Private::TextMargin);
+    QRect textRect       = d->subtractMargin(textArea, Private::TextMargin);
 
-    // Layout the text in labelRect
-    QSize size = d->layoutText(layout, label, labelRect.width());
-    if (size.width() > labelRect.width() || size.height() > labelRect.height())
+    // Sizes and constraints for the different text parts
+    QSize maxLabelSize = textRect.size();
+    QSize maxInfoSize  = textRect.size();
+    QSize labelSize;
+    QSize infoSize;
+
+    // If we have additional info text, and there's space for at least two lines of text,
+    // adjust the max label size to make room for at least one line of the info text
+    if (!info.isEmpty() && textRect.height() >= fm.lineSpacing() * 2)
     {
-        // Elide the text if it won't fit in the rectangle, and redo the layout
-        label = d->elideText(layout, option, label, labelRect.size());
-        size  = d->layoutText(layout, label, labelRect.width());
+        infoLayout.setFont(labelLayout.font());
+        infoLayout.setTextOption(labelLayout.textOption());
+
+        maxLabelSize.rheight() -= fm.lineSpacing();
+        showInformation = true;
     }
 
-    // Compute the bounding rect of the text, and the position where we should draw the layout
-    const Qt::Alignment alignment = layout.textOption().alignment();
-    QRect selectionRect = QStyle::alignedRect(option.direction, alignment, size, labelRect);
-    QPoint labelPos(labelRect.x(), selectionRect.y());
+    // Lay out the label text, and adjust the max info size based on the label size
+    labelSize = d->layoutText(labelLayout, option, label, maxLabelSize);
+    maxInfoSize.rheight() -= labelSize.height();
+
+    // Lay out the info text
+    if (showInformation)
+        infoSize = d->layoutText(infoLayout, option, info, maxInfoSize);
+    else
+        infoSize = QSize(0, 0);
+
+    // Compute the bounding rect of the text
+    const Qt::Alignment alignment = labelLayout.textOption().alignment();
+    const QSize size(qMax(labelSize.width(), infoSize.width()), labelSize.height() + infoSize.height());
+    const QRect textBoundingRect = QStyle::alignedRect(option.direction, alignment, size, textRect);
+
+    // Compute the positions where we should draw the layouts
+    const QPoint labelPos(textRect.x(), textBoundingRect.y());
+    const QPoint infoPos(textRect.x(), textBoundingRect.y() + labelSize.height());
 
 
 #ifdef DEBUG_RECTS
@@ -709,7 +847,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         // If the selection rectangle should only cover the text label
         if (!option.showDecorationSelected)
         {
-            const QRect r = d->addMargin(selectionRect, Private::TextMargin);
+            const QRect r = d->addMargin(textBoundingRect, Private::TextMargin);
             const QPainterPath path = d->roundedRectangle(r, 5);
             painter->fillPath(path, brush);
         }
@@ -730,7 +868,21 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // Draw the label
     // ========================================================================
     painter->setPen(QPen(d->foregroundBrush(option, index), 0));
-    layout.draw(painter, labelPos);
+    labelLayout.draw(painter, labelPos);
+
+    if (showInformation)
+    {
+        QColor color;
+        if (option.state & QStyle::State_Selected)
+        {
+            color = option.palette.color(QPalette::HighlightedText);
+            color.setAlphaF(.5);
+        } else
+            color = option.palette.color(QPalette::Highlight);
+
+        painter->setPen(color);
+        infoLayout.draw(painter, infoPos);
+    }
 
     painter->restore();
 }
