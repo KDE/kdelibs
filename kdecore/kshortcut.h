@@ -29,6 +29,7 @@
 
 #include "kdelibs_export.h"
 
+#include <QtCore/QHash>
 #include <QtCore/QList>
 #include <QtGui/QKeySequence>
 
@@ -142,10 +143,9 @@ public:
     QString toString() const;
 };
 
-uint qHash(int);
-inline uint qHash(const KShortcut &key)
+inline uint qHash(const QKeySequence &key)
 {
-    return qHash(key.primary()[0]) + qHash(key.primary()[1]);
+    return qHash(key.toString());
 }
 
 #endif // KSHORTCUT_H
