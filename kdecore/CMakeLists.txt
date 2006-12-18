@@ -128,7 +128,6 @@ set(kdecore_LIB_SRCS
    kglobalsettings.cpp
    kallocator.cpp
    kinstance.cpp
-   kpalette.cpp
    klibloader.cpp
    ktemporaryfile.cpp
    ksavefile.cpp
@@ -303,7 +302,6 @@ install( FILES
    kallocator.h
    krfcdate.h
    kinstance.h
-   kpalette.h
    klibloader.h
    ktemporaryfile.h
    ksavefile.h

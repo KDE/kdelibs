@@ -41,9 +41,11 @@ class KPalettePrivate;
  *
  * This class is totally unrelated to QPalette.
  *
+ * @internal  This class is only used by KColorDialog.
+ *
  * @author Waldo Bastian (bastian@kde.org)
  **/
-class KDECORE_EXPORT KPalette
+class KPalette
 {
 public:
    /**
@@ -68,7 +70,7 @@ public:
    /**
     * KPalette destructor.
     **/
-   virtual ~KPalette();
+   ~KPalette();
    
    /**
     * KPalette assignment operator
@@ -212,7 +214,7 @@ public:
                    const QString &newColorName = QString())
    	{ return changeColor( findColor(oldColor), newColor, newColorName); }
 
-private:   
+private:
    struct ColorNode 
    {
        ColorNode(const QColor &c, const QString &n)
