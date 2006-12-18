@@ -64,13 +64,13 @@
 #endif
 
 #include <QByteArray>
+#include <QDateTime>
 #include <QVarLengthArray>
 #include <QCoreApplication>
 #include <qregexp.h>
 #ifdef Q_WS_WIN
 #include <QDir>
 #include <QFileInfo>
-#include <QDateTime>
 #endif
 
 #include <kdebug.h>
