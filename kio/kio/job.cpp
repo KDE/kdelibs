@@ -73,6 +73,9 @@ extern "C" {
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
+#if defined Q_WS_X11
+#include <netwm.h>
+#endif
 
 using namespace KIO;
 template class QPtrList<KIO::Job>;
@@ -87,7 +90,7 @@ class Job::JobPrivate
 public:
     JobPrivate() : m_autoErrorHandling( false ), m_autoWarningHandling( true ),
                    m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0),
-                   m_processedSize(0)
+                   m_processedSize(0), m_userTimestamp(0)
                    {}
 
     bool m_autoErrorHandling;
@@ -99,6 +102,7 @@ public:
     Job* m_parentJob;
     int m_extraFlags;
     KIO::filesize_t m_processedSize;
+    unsigned long m_userTimestamp;
 };
 
 Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
@@ -127,6 +131,8 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
     // Don't exit while this job is running
     if (kapp)
         kapp->ref();
+    if (kapp)
+        updateUserTimestamp( kapp->userTimestamp());
 }
 
 Job::~Job()
@@ -171,6 +177,7 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
     job->setWindow( m_window );
+    job->updateUserTimestamp( d->m_userTimestamp );
 }
 
 void Job::removeSubjob( Job *job )
@@ -352,6 +359,19 @@ QWidget *Job::window() const
   return m_window;
 }
 
+void Job::updateUserTimestamp( unsigned long time )
+{
+#if defined Q_WS_X11
+  if( d->m_userTimestamp == 0 || NET::timestampCompare( time, d->m_userTimestamp ) > 0 )
+      d->m_userTimestamp = time;
+#endif
+}
+
+unsigned long Job::userTimestamp() const
+{
+    return d->m_userTimestamp;
+}
+
 void Job::setParentJob(Job* job)
 {
   Q_ASSERT(d->m_parentJob == 0L);
@@ -511,6 +531,11 @@ void SimpleJob::start(Slave *slave)
     {
        QString id;
        addMetaData("window-id", id.setNum((ulong)m_window->winId()));
+    }
+    if (userTimestamp())
+    {
+       QString id;
+       addMetaData("user-timestamp", id.setNum(userTimestamp()));
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);

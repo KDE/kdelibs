@@ -824,6 +824,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
     long progressId = metaData("progress-id").toLong();
+    unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     kdDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << " progress-id=" << progressId << endl;
 
@@ -836,11 +837,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     QDataStream stream(params, IO_WriteOnly);
 
     if (metaData("no-auth-prompt").lower() == "true")
-       stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
+       stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr << userTimestamp;
     else
-       stream << info << errorMsg << windowId << s_seqNr;
+       stream << info << errorMsg << windowId << s_seqNr << userTimestamp;
 
-    bool callOK = d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
+    bool callOK = d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int, unsigned long int)",
                                         params, replyType, reply );
 
     if (progressId)
@@ -1170,15 +1171,16 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
+    unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     kdDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
     QDataStream stream(params, IO_WriteOnly);
-    stream << info << windowId;
+    stream << info << windowId << userTimestamp;
 
-    if ( !d->dcopClient->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
+    if ( !d->dcopClient->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int, unsigned long int)",
                                params, replyType, reply ) )
     {
        kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;

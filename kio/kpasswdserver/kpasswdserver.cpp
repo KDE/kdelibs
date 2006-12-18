@@ -178,8 +178,16 @@ static bool readFromWallet( KWallet::Wallet* wallet, const QString& key, const Q
 KIO::AuthInfo
 KPasswdServer::checkAuthInfo(KIO::AuthInfo info, long windowId)
 {
+    return checkAuthInfo(info, windowId, 0);
+}
+
+KIO::AuthInfo
+KPasswdServer::checkAuthInfo(KIO::AuthInfo info, long windowId, unsigned long usertime)
+{
     kdDebug(130) << "KPasswdServer::checkAuthInfo: User= " << info.username
               << ", WindowId = " << windowId << endl;
+    if( usertime != 0 )
+        kapp->updateUserTimestamp( usertime );
 
     QString key = createCacheKey(info);
 
@@ -237,10 +245,18 @@ KPasswdServer::checkAuthInfo(KIO::AuthInfo info, long windowId)
 KIO::AuthInfo
 KPasswdServer::queryAuthInfo(KIO::AuthInfo info, QString errorMsg, long windowId, long seqNr)
 {
+    return queryAuthInfo(info, errorMsg, windowId, seqNr, 0 );
+}
+
+KIO::AuthInfo
+KPasswdServer::queryAuthInfo(KIO::AuthInfo info, QString errorMsg, long windowId, long seqNr, unsigned long usertime)
+{
     kdDebug(130) << "KPasswdServer::queryAuthInfo: User= " << info.username
               << ", Message= " << info.prompt << ", WindowId = " << windowId << endl;
     if ( !info.password.isEmpty() ) // should we really allow the caller to pre-fill the password?
         kdDebug(130) <<  "password was set by caller" << endl;
+    if( usertime != 0 )
+        kapp->updateUserTimestamp( usertime );
 
     QString key = createCacheKey(info);
     Request *request = new Request;

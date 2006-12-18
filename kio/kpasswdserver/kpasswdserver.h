@@ -45,7 +45,10 @@ public:
   ~KPasswdServer();
 
 k_dcop:
+  // KDE4 merge
+  KIO::AuthInfo checkAuthInfo(KIO::AuthInfo, long, unsigned long);
   KIO::AuthInfo checkAuthInfo(KIO::AuthInfo, long);
+  KIO::AuthInfo queryAuthInfo(KIO::AuthInfo, QString, long, long, unsigned long);
   KIO::AuthInfo queryAuthInfo(KIO::AuthInfo, QString, long, long);
   void addAuthInfo(KIO::AuthInfo, long);
 

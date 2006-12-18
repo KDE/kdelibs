@@ -227,6 +227,13 @@ namespace KIO {
 	 * @see setWindow()
          */
         QWidget *window() const;
+        
+        /**
+         * Updates the last user action timestamp to the given time.
+         * See KApplication::updateUserTimestamp() .
+         * @since 3.5.6
+         */
+        void updateUserTimestamp( unsigned long time );
 
         /**
          * Set the parent Job.
@@ -479,6 +486,11 @@ namespace KIO {
          * @since 3.2
          */
         void setProcessedSize(KIO::filesize_t size);
+
+        /**
+         * @internal
+         */
+        unsigned long userTimestamp() const;
 
         /**
          * @internal
