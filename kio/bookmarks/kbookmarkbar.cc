@@ -220,7 +220,7 @@ void KBookmarkBar::removeTempSep()
 bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, QString text)
 {
     int pos = m_toolBar->orientation() == Qt::Horizontal ? p.x() : p.y();
-    Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
+    Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->associatedWidgets().value(0))) );
     m_toolBar->setUpdatesEnabled(false);
     removeTempSep();
 
