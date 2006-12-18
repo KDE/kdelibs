@@ -68,6 +68,17 @@ public:
      */
     QWidget *window() const;
 
+    /**
+     * Updates the last user action timestamp to the given time.
+     * See KApplication::updateUserTimestamp() .
+     */
+    void updateUserTimestamp( unsigned long time );
+
+    /**
+     * @internal
+     */
+    unsigned long userTimestamp() const;
+
     virtual void showErrorMessage();
 
 protected:

@@ -129,6 +129,7 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
     job->ui()->setWindow( ui()->window());
+    job->ui()->updateUserTimestamp( ui()->userTimestamp());
 }
 
 void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
@@ -417,6 +418,12 @@ void SimpleJob::start(Slave *slave)
     {
        QString id;
        addMetaData("window-id", id.setNum((ulong)ui()->window()->winId()));
+    }
+
+    if (ui() && ui()->userTimestamp())
+    {
+       QString id;
+       addMetaData("user-timestamp", id.setNum((ulong)ui()->userTimestamp()));
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForUrl(m_url);

@@ -27,11 +27,17 @@
 #include "kio/observer.h"
 #include "kio/scheduler.h"
 
+#if defined Q_WS_X11
+#include <QX11Info>
+#include <netwm.h>
+#endif
+
 class KIO::JobUiDelegate::Private
 {
 public:
     bool showProgressInfo;
     QPointer<QWidget> errorParentWidget;
+    unsigned long userTimestamp;
 };
 
 KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
@@ -39,6 +45,7 @@ KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
 {
     d->showProgressInfo = showProgressInfo;
     d->errorParentWidget = 0L;
+    d->userTimestamp = QX11Info::appUserTime();
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()
@@ -60,6 +67,19 @@ void KIO::JobUiDelegate::setWindow(QWidget *window)
 QWidget *KIO::JobUiDelegate::window() const
 {
     return d->errorParentWidget;
+}
+
+void KIO::JobUiDelegate::updateUserTimestamp( unsigned long time )
+{
+#if defined Q_WS_X11
+  if( d->userTimestamp == 0 || NET::timestampCompare( time, d->userTimestamp ) > 0 )
+      d->userTimestamp = time;
+#endif
+}
+
+unsigned long KIO::JobUiDelegate::userTimestamp() const
+{
+    return d->userTimestamp;
 }
 
 void KIO::JobUiDelegate::connectJob( KJob *job )

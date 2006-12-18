@@ -821,6 +821,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     AuthInfo authResult;
     const long windowId = metaData("window-id").toLong();
     const long progressId = metaData("progress-id").toLong();
+    const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     org::kde::KIO::UIServer uiserver("org.kde.kio_uiserver", "/UIServer", QDBusConnection::sessionBus());
     if (progressId)
@@ -839,9 +840,9 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     if (metaData("no-auth-prompt").toLower() == "true")
        reply = kps.call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
-                         qlonglong(windowId), s_seqNr);
+                         qlonglong(windowId), s_seqNr, qlonglong(userTimestamp));
     else
-       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
+       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr, qlonglong(userTimestamp));
 
     bool callOK = reply.type() == QDBusMessage::ReplyMessage;
     if (progressId)
@@ -1125,6 +1126,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
+    unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
@@ -1135,7 +1137,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
        QDataStream stream(&data, QIODevice::WriteOnly);
        stream << info;
     }
-    QDBusReply<QByteArray> reply = kps.call("checkAuthInfo", data, qlonglong(windowId));
+    QDBusReply<QByteArray> reply = kps.call("checkAuthInfo", data, qlonglong(windowId), qlonglong(userTimestamp));
 
     if ( !reply.isValid() )
     {
