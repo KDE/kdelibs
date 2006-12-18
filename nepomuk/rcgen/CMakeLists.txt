@@ -1,6 +1,6 @@
 project(rcgen)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake/modules)
+set(CMAKE_MODULE_PATH ${rcgen_SOURCE_DIR}/../cmake/modules)
 
 # search packages used by KDE
 find_package(KDE4 REQUIRED)
@@ -10,7 +10,7 @@ include(MacroLibrary)
 find_package(Soprano REQUIRED)
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}
+  ${rcgen_SOURCE_DIR}
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
@@ -23,4 +23,9 @@ set(rcgen_SRCS
 
 kde4_automoc(${rcgen_SRCS})
 kde4_add_executable(rcgen ${rcgen_SRCS})
-target_link_libraries(rcgen ${SOPRANO_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
+target_link_libraries(rcgen
+  ${SOPRANO_LIBRARIES}
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTTEST_LIBRARY}
+)
