@@ -151,6 +151,19 @@ KAction *a = actionCollection()-&gt;action("foo");
 </pre>
 Also if you get errors about KAction being an unknown type it is often enough to forward declare
 KAction in your header file.
+<li>plug() -&gt; QWidget::addAction()
+<li>unplug() -&gt; QWidget::removeAction()
+<li>isPlugged() -&gt; !action->associatedWidgets().isEmpty()
+<li>containerCount() -&gt; action->associatedWidgets().count()
+<li>container(int i) -&gt; action->associatedWidgets().value(i)
+<li>hasIcon() -&gt; !action->icon().isNull()
+<li>setIconName(string) -&gt; setIcon(KIcon(string))
+<li>unplugAll() -&gt; Rarely needed, but if you are sure that you need it replace it with the following
+code:
+<pre>
+foreach (QWidget *w, action-&gt;associatedWidgets())
+    w->removeAction(action);
+</pre>
 </ul>
 
 <h4>KAudioPlayer</h4>

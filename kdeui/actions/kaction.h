@@ -198,9 +198,7 @@ class KDEUI_EXPORT KAction : public QWidgetAction
   Q_PROPERTY( KShortcut activeGlobalShortcut READ activeGlobalShortcut WRITE setActiveGlobalShortcut )
   Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
-  Q_PROPERTY( bool hasIcon READ hasIcon )
   Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
-  Q_PROPERTY( bool plugged READ isPlugged )
   Q_FLAGS( ShortcutType )
 
 public:
@@ -255,116 +253,6 @@ public:
      * @param name The internal name for this action.
      */
     KAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    /**
-     * \overload KAction(const QIcon&, const QString&, KActionCollection*, const char*)
-     *
-     * This constructor differs from the above in that the icon is specified as
-     * a icon name which can be loaded by KIconLoader.
-     *
-     * @param icon The name of the icon to load via KIconLoader.
-     * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name The internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    /**
-     * Constructs an action with text, potential keyboard
-     * shortcut, and a SLOT to call when this action is invoked by
-     * the user.
-     *
-     * If you do not want or have a keyboard shortcut,
-     * set the @p cut param to 0.
-     *
-     * @param text The text that will be displayed.
-     * @param cut The corresponding keyboard shortcut.
-     * @param receiver The SLOT's parent.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     *
-     * \deprecated This constructor was deprecated in line with the
-     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
-     *  "The Convenience Trap")
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const QString& name );
-
-    /**
-     * Constructs an action with text, icon, potential keyboard
-     * shortcut, and a SLOT to call when this action is invoked by
-     * the user.
-     *
-     * If you do not want or have a keyboard shortcut, set the
-     * @p cut param to 0.
-     *
-     * This is the other common KAction used.  Use it when you
-     * @p do have a corresponding icon.
-     *
-     * @param text The text that will be displayed.
-     * @param pix The icon to display.
-     * @param cut The corresponding keyboard shortcut.
-     * @param receiver The SLOT's parent.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     *
-     * \deprecated This constructor was deprecated in line with the
-     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
-     *  "The Convenience Trap")
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const QString& name );
-
-    /**
-     * Constructs an action with text, icon, potential keyboard
-     * shortcut, and a SLOT to call when this action is invoked by
-     * the user.  The icon is loaded on demand later based on where it
-     * is plugged in.
-     *
-     * If you do not want or have a keyboard shortcut, set the
-     * @p cut param to 0.
-     *
-     * This is the other common KAction used.  Use it when you
-     * @p do have a corresponding icon.
-     *
-     * @param text The text that will be displayed.
-     * @param pix The icon to display.
-     * @param cut The corresponding keyboard shortcut (shortcut).
-     * @param receiver The SLOT's parent.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     *
-     * \deprecated This constructor was deprecated in line with the
-     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
-     *  "The Convenience Trap")
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KAction( const QString& text, const QString& pix, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const QString& name );
-
-    /**
-     * The same as the above constructor, but with a KGuiItem providing
-     * the text and icon.
-     *
-     * @param item The KGuiItem with the label and (optional) icon.
-     * @param cut The corresponding keyboard shortcut (shortcut).
-     * @param receiver The SLOT's parent.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     *
-     * \deprecated This constructor was deprecated in line with the
-     *  recommendation for constructors to be kept simple (Designing Qt-Style C++ APIs,
-     *  "The Convenience Trap")
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KAction( const KGuiItem& item, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const QString& name );
 
     /**
      * Standard destructor
@@ -529,11 +417,6 @@ public:
     void setGlobalShortcutAllowed(bool allowed);
 
     /**
-     * Convenience function to determine if this action has an associated icon.
-     */
-    bool hasIcon() const;
-
-    /**
      * Return the icon for this action.
      *
      * This function hides QAction::icon() to be able to return a KIcon.
@@ -550,80 +433,6 @@ public:
      * \param icon the KIcon to assign to this action
      */
     void setIcon(const KIcon& icon);
-
-    /**
-     * Set the icon for this action.
-     *
-     * \param icon the KDE icon name to pass to KIconLoader.
-     *
-     * \deprecated Use setIcon(KIcon("kdeiconname")) instead, or pass KIcon("kdeiconname") to the constructor.
-     */
-    KDE_DEPRECATED void setIconName(const QString& icon);
-
-    /**
-     * "Plug" or insert this action into a given widget.
-     *
-     * This will
-     * typically be a menu or a toolbar.  From this point on, you will
-     * never need to directly manipulate the item in the menu or
-     * toolbar.  You do all enabling/disabling/manipulation directly
-     * with your KAction object.
-     *
-     * @param widget The GUI element to display this action
-     * @param index The position into which the action is plugged. If
-     * this is negative, the action is inserted at the end.
-     *
-     * \deprecated use QWidget::addAction() and QWidget::insertAction() instead.
-     */
-    KDE_DEPRECATED int plug( QWidget *widget, int index = -1 );
-
-    /**
-     * "Unplug" or remove this action from a given widget.
-     *
-     * This will typically be a menu or a toolbar.  This is rarely
-     * used in "normal" application.  Typically, it would be used if
-     * your application has several views or modes, each with a
-     * completely different menu structure.  If you simply want to
-     * disable an action for a given period, use setEnabled()
-     * instead.
-     *
-     * @param w Remove the action from this GUI element.
-     *
-     * \deprecated use QWidget::removeAction() instead, or simply delete the action.
-     */
-    KDE_DEPRECATED void unplug( QWidget *w );
-
-    /**
-     * Convenience function to remove this action from all widgets.  This should
-     * rarely be needed, as deleting the action takes care of this automatically.
-     */
-    void unplugAll();
-
-    /**
-     * Returns whether the action is plugged into any container widget or not.
-     */
-    bool isPlugged() const;
-
-    /**
-     * Returns whether the action is plugged into the given container
-     */
-    bool isPlugged( QWidget *container ) const;
-
-    /**
-     * Returns how many widgets this action is added to.
-     *
-     * \deprecated use associatedWidgets().count() instead.
-     */
-    KDE_DEPRECATED int containerCount() const;
-
-    /**
-     * Convenience function to return a widget which this action is added to.
-     * Simply returns the widget specified in associatedWidgets(), if the
-     * index is valid.
-     *
-     * \param index index to the widget requested.
-     */
-    QWidget* container( int index ) const;
 
 public:
 

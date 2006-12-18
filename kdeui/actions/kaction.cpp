@@ -76,56 +76,6 @@ KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * 
   initPrivate(name);
 }
 
-KAction::KAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : QWidgetAction(parent), d(new KActionPrivate)
-{
-  setText(text);
-  initPrivate(name);
-  setIcon( KIcon(icon) );
-}
-
-KAction::KAction( const QString& text, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const QString& name )
-: QWidgetAction(parent), d(new KActionPrivate)
-{
-  setText(text);
-  initPrivate( cut, receiver, slot, name );
-}
-
-KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
-  const QObject* receiver, const char* slot,
-  KActionCollection* parent, const QString& name )
-: QWidgetAction(parent), d(new KActionPrivate)
-{
-  setText(text);
-  initPrivate( cut, receiver, slot, name );
-  setIcon( KIcon(sIconName) );
-}
-
-KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
-  const QObject* receiver, const char* slot,
-  KActionCollection* parent, const QString& name )
-: QWidgetAction(parent), d(new KActionPrivate)
-{
-  QAction::setIcon(icon);
-  setText(text);
-  initPrivate( cut, receiver, slot, name );
-}
-
-KAction::KAction( const KGuiItem& item, const KShortcut& cut,
-  const QObject* receiver, const char* slot,
-  KActionCollection* parent, const QString& name )
-: QWidgetAction(parent), d(new KActionPrivate)
-{
-  setText(item.text());
-  initPrivate( cut, receiver, slot, name );
-  if( item.hasIcon() )
-    setIcon( KIcon(item.iconName()) );
-  setToolTip( item.toolTip() );
-  setWhatsThis( item.whatsThis() );
-}
-
 KAction::~KAction()
 {
     if (KActionCollection* ac = parentCollection())
@@ -174,19 +124,9 @@ void KAction::setShortcutConfigurable( bool b )
     setProperty("isShortcutConfigurable", b);
 }
 
-bool KAction::hasIcon() const
-{
-  return !icon().isNull();
-}
-
 KActionCollection *KAction::parentCollection() const
 {
     return qobject_cast<KActionCollection*>(const_cast<QObject*>(parent()));
-}
-
-void KAction::setIconName( const QString & icon )
-{
-  setIcon(KIcon(icon));
 }
 
 KShortcut KAction::shortcut(ShortcutTypes type) const
@@ -236,51 +176,6 @@ void KAction::slotTriggered()
   emit activated();
 #endif
   emit triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
-}
-
-int KAction::plug( QWidget * widget, int index )
-{
-  QAction* before = 0L;
-  if (index > 0 && index < widget->actions().count())
-    before = widget->actions().at(index - 1);
-  widget->insertAction(before, this);
-  return widget->actions().lastIndexOf(this);
-}
-
-void KAction::unplug( QWidget * w )
-{
-  w->removeAction(this);
-}
-
-bool KAction::isPlugged( ) const
-{
-  return associatedWidgets().count();
-}
-
-bool KAction::isPlugged( QWidget * widget ) const
-{
-  return associatedWidgets().contains(widget);
-}
-
-void KAction::unplugAll()
-{
-  QList<QWidget*> aw = associatedWidgets();
-
-  foreach (QWidget* widget, aw)
-    widget->removeAction(this);
-}
-
-int KAction::containerCount() const
-{
-  return associatedWidgets().count();
-}
-
-QWidget* KAction::container( int index ) const
-{
-  if (index >= 0 && index < associatedWidgets().count())
-    return associatedWidgets().value(index);
-
-  return 0L;
 }
 
 void KAction::setName ( const char * )
