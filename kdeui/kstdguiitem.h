@@ -38,6 +38,8 @@ class QString;
  */
 class KDEUI_EXPORT KStdGuiItem
 {
+    Q_GADGET
+    Q_ENUMS(StdItem BidiMode)
 public:
     /**
      * The back and forward items by default use the RTL settings for Hebrew

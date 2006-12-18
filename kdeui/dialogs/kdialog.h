@@ -260,12 +260,12 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param id The button identifier.
      * @param icon Button icon.
      */
-    void setButtonIcon( ButtonCode id, const QIcon &icon );
+    void setButtonIcon( ButtonCode id, const KIcon &icon );
 
     /**
      * Returns the icon of any button.
      */
-    QIcon buttonIcon( ButtonCode id ) const;
+    KIcon buttonIcon( ButtonCode id ) const;
 
     /**
      * Sets the tooltip text of any button.

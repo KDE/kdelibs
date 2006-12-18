@@ -286,3 +286,5 @@ KGuiItem KStdGuiItem::overwrite()
 {
   return KGuiItem(i18n("&Overwrite"));
 }
+
+#include "kstdguiitem.moc"

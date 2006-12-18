@@ -739,20 +739,20 @@ QString KDialog::buttonText( ButtonCode id ) const
     return QString();
 }
 
-void KDialog::setButtonIcon( ButtonCode id, const QIcon &icon )
+void KDialog::setButtonIcon( ButtonCode id, const KIcon &icon )
 {
   KPushButton *button = this->button( id );
   if ( button )
     button->setIcon( icon );
 }
 
-QIcon KDialog::buttonIcon( ButtonCode id ) const
+KIcon KDialog::buttonIcon( ButtonCode id ) const
 {
   KPushButton *button = this->button( id );
   if ( button )
-    return button->icon();
+    return KIcon(button->icon());
   else
-    return QIcon();
+    return KIcon();
 }
 
 void KDialog::setButtonToolTip( ButtonCode id, const QString &text )

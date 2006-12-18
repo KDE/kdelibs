@@ -21,17 +21,18 @@
 
 #include <qdrag.h>
 #include <qevent.h>
+#include <qmenu.h>
 #include <qpointer.h>
 #include <qstyle.h>
 #include <qtimer.h>
 
 #include "config.h"
 
-#include <kguiitem.h>
-#include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <qmenu.h>
+#include <kglobalsettings.h>
+#include <kguiitem.h>
+#include <kicon.h>
 
 class KPushButton::KPushButtonPrivate
 {
@@ -56,12 +57,12 @@ KPushButton::KPushButton( const QString &text, QWidget *parent ) : QPushButton( 
     init( KGuiItem( text ) );
 }
 
-KPushButton::KPushButton( const QIcon &icon, const QString &text,
+KPushButton::KPushButton( const KIcon &icon, const QString &text,
                           QWidget *parent )
     : QPushButton( text, parent ),
       m_dragEnabled( false )
 {
-    init( KGuiItem( text, KIcon(icon) ) ); // TODO make the argument a KIcon?
+    init( KGuiItem( text, icon ) );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent )
@@ -151,14 +152,19 @@ void KPushButton::setText( const QString &text )
     d->item.setText(text);
 }
 
-void KPushButton::setIcon( const QIcon &icon ) // TODO take a KIcon instead?
+void KPushButton::setIcon( const KIcon &icon )
 {
-    d->item.setIcon(KIcon(icon));
+    d->item.setIcon(icon);
 
     if ( s_useIcons || text().isEmpty() )
         QPushButton::setIcon( icon );
     else
         QPushButton::setIcon( QIcon() );
+}
+
+void KPushButton::setIcon( const QIcon &qicon )
+{
+    d->item.setIcon(KIcon(qicon));
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )

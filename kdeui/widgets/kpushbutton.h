@@ -26,6 +26,7 @@
 
 class QDrag;
 class QMenu;
+class KIcon;
 
 /**
  * @brief A QPushButton with drag-support and KGuiItem support
@@ -39,7 +40,7 @@ class QMenu;
 class KDEUI_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY(int stdItem READ guiItm WRITE setGuiItm )
+    Q_PROPERTY(KStdGuiItem::StdItem stdItem READ guiItem WRITE setGuiItem)
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
 
 public:
@@ -57,7 +58,7 @@ public:
     /**
      * Constructor, that sets an icon and the button-text to @p text
      */
-    KPushButton( const QIcon &icon, const QString &text, QWidget *parent = 0 );
+    KPushButton( const KIcon &icon, const QString &text, QWidget *parent = 0 );
 
     /**
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
@@ -95,16 +96,18 @@ public:
      */
     KStdGuiItem::StdItem guiItem() const;
 
-    /// @internal Hack for Qt designer
-    void setGuiItm(int itm ) { setGuiItem( (KStdGuiItem::StdItem)itm );}
-    /// @internal Hack for Qt designer
-    int guiItm() const { return (int)guiItem(); }
-
     /**
      * Sets the Icon Set for this button. It also takes into account hte
      * KGlobalSettings::showIconsOnPushButtons() setting.
      */
-    void setIcon( const QIcon &iconSet );
+    void setIcon( const KIcon &icon );
+
+    /**
+     * Sets the pixmap for this button. Rarely used. This one exists mostly for usage in Qt designer,
+     * with icons embedded into the ui file. But you should rather save them separately, and load them
+     * with KIcon("name") so that the icons are themeable.
+     */
+    KDE_DEPRECATED void setIcon( const QIcon &pix );
 
     /**
     * Sets the text of the button
@@ -122,7 +125,7 @@ public:
      * since menu() isn't virtual
      */
      QMenu *delayedMenu();
-   
+
 protected:
     /**
      * Reimplement this and return the QDrag object that should be used
