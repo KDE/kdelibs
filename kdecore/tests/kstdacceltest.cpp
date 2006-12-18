@@ -58,14 +58,14 @@ void KStdAccelTest::testFindStdAccel()
 void KStdAccelTest::testRemoveShortcut()
 {
     KShortcut cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
-    cutShortCut.remove( Qt::SHIFT + Qt::Key_Delete );
-    cutShortCut.remove( Qt::CTRL + Qt::Key_X );
+    cutShortCut.removeAll( Qt::SHIFT + Qt::Key_Delete );
+    cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
     QVERIFY( cutShortCut.isEmpty() );
 
     cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
 	//remove primary shortcut. We expect the alternate to become primary.
-    cutShortCut.remove( Qt::CTRL + Qt::Key_X );
+    cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
 	QVERIFY( cutShortCut.primary() == QKeySequence(Qt::SHIFT + Qt::Key_Delete) );
 	QVERIFY( cutShortCut.alternate().isEmpty() );
 }

@@ -470,7 +470,7 @@ void KKeyChooser::setLocalShortcut( const KShortcut& cut )
 	if( !pItem )
 		return;
 
-	foreach (const QKeySequence& seq, cut.toList()) {
+	foreach (const QKeySequence& seq, cut) {
 		int key = seq[0];
 
 		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
@@ -500,7 +500,7 @@ void KKeyChooser::setGlobalShortcut( const KShortcut& cut )
 	if( !pItem )
 		return;
 
-	foreach (const QKeySequence& seq, cut.toList()) {
+	foreach (const QKeySequence& seq, cut) {
 		if (seq.isEmpty())
 			continue;
 
@@ -559,8 +559,8 @@ static QKeySequence keyConflict( const KShortcut& cut, const KShortcut& cut2 )
 // Removes the sequences in cut2 from cut1
 static void removeFromShortcut( KShortcut & cut1, const KShortcut &cut2 )
 {
-	cut1.remove(cut2.primary());
-	cut1.remove(cut2.alternate());
+	cut1.removeAll(cut2.primary());
+	cut1.removeAll(cut2.alternate());
 }
 
 bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
@@ -651,7 +651,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent )
 {
 	// For each key sequence in the shortcut,
-	foreach (const QKeySequence& seq, cut.toList()) {
+	foreach (const QKeySequence& seq, cut) {
 		KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
 		if( id != KStdAccel::AccelNone
 			&& !keyConflict( cut, KStdAccel::shortcut( id ) ).isEmpty() ) {

@@ -433,6 +433,9 @@ With KIcon(name), the small icon is picked up instead, which might look differen
 <li>Removed casting operators</li>
 <li>Removed operator&lt; and operator&gt;</li>
 <li>Added a qHash(const KShortcut &amp;) function so you can use QHash with KShortcut instead of QMap</li>
+<li>remove() -&gt; removeAll()</li>
+<li>toList() -&gt; Not needed anymore since KShortcut inherits QList<QKeySequence></li>
+<li>toStringInternal() -&gt; You shouldn't be using this! But use toString() instead</li>
 </ul>
 
 <h4>KShortcutList and derivatives</h4>

@@ -275,7 +275,7 @@ QString entityForAccel( KStdAccel::StdAccel accel )
 
 	markup += "\t\"";
 
-	QString internalStr = KStdAccel::shortcut( accel ).toStringInternal();
+	QString internalStr = KStdAccel::shortcut( accel ).toString();
 	QString firstSequence = internalStr.left( internalStr.indexOf( ';' ) );
 	const QStringList keys = firstSequence.split( '+',QString::SkipEmptyParts );
 	if ( keys.empty() ) {

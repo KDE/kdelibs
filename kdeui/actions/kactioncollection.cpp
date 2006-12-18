@@ -503,7 +503,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
             if( act_elem.attributes().count() == 1 )
                 elem.removeChild( act_elem );
         } else {
-            act_elem.setAttribute( attrShortcut, kaction->shortcut().toStringInternal() );
+            act_elem.setAttribute( attrShortcut, kaction->shortcut().toString() );
         }
     }
 
@@ -535,7 +535,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
           if (configIsGlobal())
               flags |= KConfigBase::Global;
           if( writeAll || !bSameAsDefault ) {
-              QString s = kaction->shortcut().toStringInternal();
+              QString s = kaction->shortcut().toString();
               if( s.isEmpty() )
                   s = "none";
               kDebug(125) << "\twriting " << kaction->objectName() << " = " << s << endl;

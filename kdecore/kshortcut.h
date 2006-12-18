@@ -29,6 +29,7 @@
 
 #include "kdelibs_export.h"
 
+#include <QtCore/QList>
 #include <QtGui/QKeySequence>
 
 class KShortcutPrivate;
@@ -52,7 +53,7 @@ class KShortcutPrivate;
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 */
-class KDECORE_EXPORT KShortcut
+class KDECORE_EXPORT KShortcut : public QList<QKeySequence>
 {
 public:
     /**
@@ -98,17 +99,6 @@ public:
      */
     explicit KShortcut(const QString &description);
 
-    /**
-     * Copies the given shortcut.
-     * @param other shortcut to copy
-     */
-    KShortcut(const KShortcut &other);
-
-    /**
-     * Destructor.
-     */
-    ~KShortcut();
-
     /** @name Query methods */
     /** @{ */
 
@@ -116,30 +106,15 @@ public:
      * Returns the primary key sequence of this shortcut.
      * @return primary key sequence
      */
-    const QKeySequence &primary() const;
+    inline QKeySequence primary() const
+    { return value(0); }
 
     /**
      * Returns the alternate key sequence of this shortcut.
      * @return alternate key sequence
      */
-    const QKeySequence &alternate() const;
-
-    /**
-     * Returns @c true if the shortcut is empty.
-     * A shortcut is empty if both its primary and secondary key
-     * sequences are empty.
-     * @return @c true if the shortcut is empty, @c false otherwise
-     * @see clear()
-     */
-    bool isEmpty() const;
-
-    /**
-     * Returns @c true if at least one of this shortcut's key sequences
-     * is equal to the given key sequence.
-     * @param keySeq key sequence to search
-     * @return @c true if this shortcut contains @p keySeq, @c false otherwise
-     */
-    bool contains(const QKeySequence &keySeq) const;
+    inline QKeySequence alternate() const
+    { return value(1); }
 
     /** @} */
     /** @name Mutator methods */
@@ -158,25 +133,6 @@ public:
     void setAlternate(const QKeySequence &keySeq);
 
     /**
-     * Removes the given key sequence from this shortcut.
-     * If this leads to an empty primary shortcut and nonempty
-     * alternate shortcut, the alternate shortcut will be moved to primary.
-     * @param keySeq the key sequence to remove
-     */
-    void remove(const QKeySequence &keySeq);
-
-    /**
-     * Clears the shortcut. The shortcut will be empty after calling this
-     * function.
-     * @see isEmpty()
-     */
-    void clear();
-
-    /** @} */
-    /** @name Conversion methods */
-    /** @{ */
-
-    /**
      * Returns a description of the shortcut as a semicolon-separated
      * list of key sequences, as returned by QKeySequence::toString().
      * @return the string represenation of this shortcut
@@ -184,53 +140,8 @@ public:
      * @see KShortcut(const QString &description)
      */
     QString toString() const;
-
-    /**
-     * Returns a description of the shortcut as a semicolon-separated
-     * list of key sequences, as returned by QKeySequence::toString().
-     * This is a function used in old code; its usefulness is not clear...
-     * @return the string represenation of this shortcut
-     * @see QKeySequence::toString()
-     * @see KShortcut(const QString &description)
-     */
-    QString toStringInternal() const; //TODO: seems to be unused. Remove?
-
-    /**
-     * Returns a list of all non-empty key sequences in this shortcut.
-     * @return list of nonempty shortcuts
-     * @see QKeySequence::isEmpty()
-     */
-    QList<QKeySequence> toList() const;
-
-    /** @} */
-    /** @name Operators */
-    /** @{ */
-
-    /**
-     * Copies the sequences of the other shortcut to this one.
-     * @param cut the shortcut to copy
-     */
-    KShortcut &operator=(const KShortcut &other);
-
-    /**
-     * Compares the sequences of both shortcuts.
-     * @param cut the shortcut to compare to
-     * @return @c true, if both shortcuts are equal, @c false otherwise
-     * @see operator!=()
-     */
-    bool operator==(const KShortcut &other) const;
-
-    /**
-     * Compares the sequences of both shortcuts.
-     * @param cut the shortcut to compare to
-     * @return @c false, if both shortcuts are equal, @c true otherwise
-     * @see operator==()
-     */
-    bool operator != ( const KShortcut &cut ) const
-    { return !operator==( cut ); }
-private:
-    KShortcutPrivate *const d;
 };
+
 uint qHash(int);
 inline uint qHash(const KShortcut &key)
 {

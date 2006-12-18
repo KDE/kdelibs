@@ -145,14 +145,14 @@ bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KActi
 
 	if (oneAction) {
 		if (writeDefaults || oneAction->globalShortcut() != oneAction->defaultGlobalShortcut())
-			cg.writeEntry(oneAction->objectName(), oneAction->globalShortcut().toStringInternal());
+			cg.writeEntry(oneAction->objectName(), oneAction->globalShortcut().toString());
 		else if (cg.hasKey(oneAction->objectName()))
 			cg.deleteEntry(oneAction->objectName());
 
 	} else {
 		foreach (KAction* action, d->actionsWithGlobalShortcuts)
 			if (writeDefaults || action->globalShortcut() != action->defaultGlobalShortcut())
-				cg.writeEntry(action->objectName(), action->globalShortcut().toStringInternal());
+				cg.writeEntry(action->objectName(), action->globalShortcut().toString());
 			else if (cg.hasKey(action->objectName()))
 				cg.deleteEntry(action->objectName());
 	}

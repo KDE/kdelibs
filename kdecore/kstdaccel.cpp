@@ -188,7 +188,7 @@ void saveShortcut(StdAccel id, const KShortcut &newShortcut)
 		else
 			return;
 
-	cg.writeEntry( info->name, info->cut.toStringInternal() );
+	cg.writeEntry( info->name, info->cut.toString() );
 }
 
 QString name( StdAccel id )

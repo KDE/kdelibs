@@ -154,7 +154,7 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
   }
 
   if (type & ActiveShortcut) {
-      setShortcuts(shortcut.toList());
+      setShortcuts(shortcut);
   }
 }
 
