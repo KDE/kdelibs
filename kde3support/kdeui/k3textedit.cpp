@@ -28,7 +28,7 @@
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
-#include <kiconloader.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <QKeyEvent>
 
@@ -218,18 +218,18 @@ Q3PopupMenu *K3TextEdit::createPopupMenu( const QPoint &pos )
     Q3PopupMenu *menu = Q3TextEdit::createPopupMenu( pos );
 
     if ( isReadOnly() )
-      menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
+      menu->changeItem( menu->idAt(0), KIcon("editcopy"), menu->text( menu->idAt(0) ) );
     else {
       int id = menu->idAt(0);
-      menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
-      menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
-      menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
-      menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
-      menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
-      menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
+      menu->changeItem( id - IdUndo, KIcon("undo"), menu->text( id - IdUndo) );
+      menu->changeItem( id - IdRedo, KIcon("redo"), menu->text( id - IdRedo) );
+      menu->changeItem( id - IdCut, KIcon("editcut"), menu->text( id - IdCut) );
+      menu->changeItem( id - IdCopy, KIcon("editcopy"), menu->text( id - IdCopy) );
+      menu->changeItem( id - IdPaste, KIcon("editpaste"), menu->text( id - IdPaste) );
+      menu->changeItem( id - IdClear, KIcon("editclear"), menu->text( id - IdClear) );
 
         menu->insertSeparator();
-        id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
+        id = menu->insertItem( KIcon( "spellcheck" ), i18n( "Check Spelling..." ),
                                    this, SLOT( checkSpelling() ) );
 
         if( text().isEmpty() )

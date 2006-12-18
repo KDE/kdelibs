@@ -38,12 +38,12 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
     KGuiItem back = KStdGuiItem::back( KStdGuiItem::UseRTL );
     KGuiItem forward = KStdGuiItem::forward( KStdGuiItem::UseRTL );
 
-    backButton()->setIcon( back.iconSet() );
-    nextButton()->setIcon( forward.iconSet() );
+    backButton()->setIcon( back.icon() );
+    nextButton()->setIcon( forward.icon() );
 
-    finishButton()->setIcon( SmallIconSet( "apply" ) );
-    cancelButton()->setIcon( SmallIconSet( "button_cancel" ) );
-    helpButton()->setIcon( SmallIconSet( "help" ) );
+    finishButton()->setIcon( KIcon( "apply" ) );
+    cancelButton()->setIcon( KIcon( "button_cancel" ) );
+    helpButton()->setIcon( KIcon( "help" ) );
 
     backButton()->setText( i18n( "&Back" ) );
     nextButton()->setText( i18nc( "Opposite to Back","&Next" ) );
