@@ -31,7 +31,7 @@
 #include <kurlrequester.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kapplication.h>
+#include <kglobal.h>
 #include <kuser.h>
 
 #include "engine.h"

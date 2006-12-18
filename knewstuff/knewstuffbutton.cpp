@@ -38,7 +38,7 @@ Button::Button(const QString& what,
       m_type(resourceType),
       m_downloadDialog(0)
 {
-	setObjectName(name);
+    setObjectName(name);
     setButtonText(what);
     init();
 }
@@ -48,14 +48,14 @@ Button::Button(QWidget* parent, const char* name)
       d(0),
       m_downloadDialog(0)
 {
-	setObjectName(name);
+    setObjectName(name);
     setButtonText(i18n("Download New Stuff"));
     init();
 }
 
 void Button::init()
 {
-    setIcon(SmallIconSet("knewstuff"));
+    setIcon(KIcon("knewstuff"));
     connect(this, SIGNAL(clicked()), SLOT(showDialog()));
 }
 

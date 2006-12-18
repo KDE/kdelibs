@@ -155,9 +155,11 @@ public:
      * been found.
      * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
+     *
+     * @deprecated use KIcon instead, which uses the iconloader internally
      */
-    QIcon loadIconSet(const QString& name, K3Icon::Group group, int size = 0,
-                         bool canReturnNull = false);
+    KDE_DEPRECATED QIcon loadIconSet(const QString& name, K3Icon::Group group, int size = 0,
+                                     bool canReturnNull = false);
 
     /**
      * Returns the path of an icon.
@@ -306,35 +308,6 @@ public:
      */
     bool extraDesktopThemesAdded() const;
 
-    /**
-     * Enables on-demand icon loading for QIconSets using QIconFactory.
-     * Icons loaded via loadIconSet() will be loaded as soon as they
-     * need to be displayed, not earlier.
-     *
-     * Note that enabling or disabling this only affects loadIconSet()
-     * calls after this setting is changed.
-     *
-     * The default is disabled, as the iconloader object must not be
-     * destroyed before all those iconsets are destroyed.
-     *
-     * (Some broken applications use temporary KIconLoader objects).
-     * Every KInstance 's iconloader has this feature enabled.
-     *
-     * @param enable true to enable delayed icon loading, false to disable
-     * @see isDelayedIconSetLoadingEnabled()
-     * @see QIconFactory
-     */
-    void enableDelayedIconSetLoading( bool enable );
-
-    /**
-     * Checks whether delayed loading for QIconSet is enabled.
-     * @return whether icons for QIconSets will be loaded on demand.
-     * @see enableDelayedIconSetLoading()
-     * @see QIconFactory
-     */
-    bool isDelayedIconSetLoadingEnabled() const;
-
-
  private:
     /**
      * @internal
@@ -352,7 +325,7 @@ public:
      * @internal
      * Loads and caches an overlay.
      */
-     QImage *loadOverlay(const QString& name, int size) const;
+    QImage *loadOverlay(const QString& name, int size) const;
 
     /**
      * @internal
@@ -379,12 +352,6 @@ public:
      */
     QString removeIconExtension(const QString &name) const;
 
-    /**
-     * Loads all the different sizes for an iconset.
-     */
-    QIcon loadIconSetNonDelayed( const QString& name, K3Icon::Group group,
-                                    int size, bool canReturnNull );
-
     // @internal the data object
     KIconLoaderPrivate *d;
 };
@@ -406,9 +373,10 @@ KDECORE_EXPORT QPixmap DesktopIcon(const QString& name, KInstance *instance);
 /**
  * \relates KIconLoader
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
+ * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT QIcon DesktopIconSet(const QString& name, int size=0,
-		    KInstance *instance=KGlobal::instance());
+KDECORE_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0,
+                                               KInstance *instance=KGlobal::instance());
 
 /**
  * \relates KIconLoader
@@ -426,8 +394,9 @@ KDECORE_EXPORT QPixmap BarIcon(const QString& name, KInstance *instance);
 /**
  * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
+ * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT QIcon BarIconSet(const QString& name, int size=0,
+KDECORE_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -447,8 +416,9 @@ KDECORE_EXPORT QPixmap SmallIcon(const QString& name, KInstance *instance);
 /**
  * \relates KIconLoader
  * Load a small icon, and apply the necessary effects to get an IconSet.
+ * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT QIcon SmallIconSet(const QString& name, int size=0,
+KDECORE_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -468,8 +438,9 @@ KDECORE_EXPORT QPixmap MainBarIcon(const QString& name, KInstance *instance);
 /**
  * \relates KIconLoader
  * Load a main toolbar icon, and apply the effects to get an IconSet.
+ * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT QIcon MainBarIconSet(const QString& name, int size=0,
+KDECORE_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
@@ -488,8 +459,9 @@ KDECORE_EXPORT QPixmap UserIcon(const QString& name, KInstance *instance);
 /**
  * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
+ * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT QIcon UserIconSet(const QString& name,
+KDECORE_EXPORT_DEPRECATED QIcon UserIconSet(const QString& name,
 	KInstance *instance=KGlobal::instance());
 
 /**

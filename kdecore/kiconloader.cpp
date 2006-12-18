@@ -125,7 +125,6 @@ struct KIconLoaderPrivate
     int lastIconThreshold; // see K3Icon::threshold
     QList<KIconThemeNode *> links;
     bool extraDesktopIconsLoaded :1;
-    bool delayedLoading :1;
 };
 
 #define KICONLOADER_CHECKS
@@ -137,7 +136,6 @@ struct KIconLoaderDebug
     KIconLoaderDebug( KIconLoader* l, const QString& a )
         : loader( l ), appname( a ), valid( true )
         {}
-    KIconLoaderDebug() {}; // this QValueList feature annoys me
     KIconLoader* loader;
     QString appname;
     bool valid;
@@ -180,7 +178,6 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
     d = new KIconLoaderPrivate;
     d->extraDesktopIconsLoaded=false;
-    d->delayedLoading=false;
 
     if (_dirs)
 	d->mpDirs = _dirs;
@@ -287,16 +284,6 @@ KIconLoader::~KIconLoader()
     qDeleteAll(d->imgDict);
     qDeleteAll(d->links);
     delete d;
-}
-
-void KIconLoader::enableDelayedIconSetLoading( bool enable )
-{
-    d->delayedLoading = enable;
-}
-
-bool KIconLoader::isDelayedIconSetLoadingEnabled() const
-{
-    return d->delayedLoading;
 }
 
 void KIconLoader::addAppDir(const QString& appname)
@@ -1018,19 +1005,19 @@ int KIconLoader::currentSize(K3Icon::Group group) const
 
 QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 {
-  QDir dir(iconsDir);
-  QStringList formats;
-  formats << "*.png" << "*.xpm";
-  QStringList lst = dir.entryList(formats, QDir::Files);
-  QStringList result;
-  QStringList::ConstIterator it;
-  for (it=lst.begin(); it!=lst.end(); ++it)
-    result += iconsDir + '/' + *it;
-  return result;
+    QDir dir(iconsDir);
+    QStringList formats;
+    formats << "*.png" << "*.xpm";
+    QStringList lst = dir.entryList(formats, QDir::Files);
+    QStringList result;
+    QStringList::ConstIterator it;
+    for (it=lst.begin(); it!=lst.end(); ++it)
+        result += iconsDir + '/' + *it;
+    return result;
 }
 
 QStringList KIconLoader::queryIconsByContext(int group_or_size,
-					    K3Icon::Context context) const
+                                             K3Icon::Context context) const
 {
     QStringList result;
     if (group_or_size >= K3Icon::LastGroup)
@@ -1133,65 +1120,9 @@ bool KIconLoader::alphaBlending(K3Icon::Group group) const
     return d->mpGroups[group].alphaBlending;
 }
 
-/*** class for delayed icon loading for QIconSet ***/
-
-#ifdef __GNUC__
-    #warning "Delayed loading not ported - cullmann"
-#endif
-
-#ifdef DELAYED_LOADING_PORTED
-
-class KIconFactory
-    : public QIconFactory
-    {
-    public:
-        KIconFactory( const QString& iconName_P, K3Icon::Group group_P,
-            int size_P, KIconLoader* loader_P );
-        virtual QPixmap* createPixmap( const QIcon&, QIcon::Size, QIcon::Mode, QIcon::State );
-    private:
-        QString iconName;
-        K3Icon::Group group;
-        int size;
-        KIconLoader* loader;
-    };
-
-#endif
-
+// deprecated
 QIcon KIconLoader::loadIconSet( const QString& name, K3Icon::Group g, int s,
-    bool canReturnNull)
-{
-#ifdef DELAYED_LOADING_PORTED
-    if ( !d->delayedLoading )
-#endif
-        return loadIconSetNonDelayed( name, g, s, canReturnNull );
-
-#ifdef DELAYED_LOADING_PORTED
-    if (g < -1 || g > 6) {
-        kDebug() << "KIconLoader::loadIconSet " << name << " " << (int)g << " " << s << endl;
-        qDebug("%s", qPrintable(kBacktrace());
-        abort();
-    }
-
-    if(canReturnNull)
-    { // we need to find out if the icon actually exists
-        QPixmap pm = loadIcon( name, g, s, K3Icon::DefaultState, NULL, true );
-        if( pm.isNull())
-            return QIcon();
-
-        QIcon ret( pm );
-        ret.installIconFactory( new KIconFactory( name, g, s, this ));
-        return ret;
-    }
-
-    QIcon ret;
-    ret.installIconFactory( new KIconFactory( name, g, s, this ));
-    return ret;
-#endif
-}
-
-QIcon KIconLoader::loadIconSetNonDelayed( const QString& name,
-                                             K3Icon::Group g,
-                                             int s, bool canReturnNull )
+                                bool canReturnNull )
 {
     QIcon iconset;
     QPixmap tmp = loadIcon(name, g, s, K3Icon::ActiveState, NULL, canReturnNull);
@@ -1203,78 +1134,6 @@ QIcon KIconLoader::loadIconSetNonDelayed( const QString& name,
     iconset.addPixmap( tmp, QIcon::Normal, QIcon::On );
     return iconset;
 }
-
-#ifdef DELAYED_LOADING_PORTED
-
-KIconFactory::KIconFactory( const QString& iconName_P, K3Icon::Group group_P,
-    int size_P, KIconLoader* loader_P )
-    : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
-{
-    setAutoDelete( true );
-}
-
-QPixmap* KIconFactory::createPixmap( const QIcon&, QIcon::Size, QIcon::Mode mode_P, QIcon::State )
-    {
-#ifdef KICONLOADER_CHECKS
-    bool found = false;
-    for( QList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
-         it != kiconloaders->end();
-         ++it )
-        {
-        if( (*it).loader == loader )
-            {
-            found = true;
-            if( !(*it).valid )
-                {
-#ifdef NDEBUG
-                loader = KGlobal::iconLoader();
-                iconName = "no_way_man_you_will_get_broken_icon";
-#else
-                kWarning() << "Using already destroyed KIconLoader for loading an icon!" << endl;
-                kWarning() << "Appname:" << (*it).appname << ", icon:" << iconName << endl;
-                kWarning() << "Deleted at:" << endl;
-                kWarning() << (*it).delete_bt << endl;
-                kWarning() << "Current:" << endl;
-                kWarning() << kBacktrace() << endl;
-                abort();
-                return NULL;
-#endif
-                }
-            break;
-            }
-        }
-    if( !found )
-        {
-#ifdef NDEBUG
-        loader = KGlobal::iconLoader();
-        iconName = "no_way_man_you_will_get_broken_icon";
-#else
-        kWarning() << "Using unknown KIconLoader for loading an icon!" << endl;
-        kWarning() << "Icon:" << iconName << endl;
-        kWarning() << kBacktrace() << endl;
-        abort();
-        return NULL;
-#endif
-        }
-#endif
-    // QIconSet::Mode to K3Icon::State conversion
-    static const K3Icon::States tbl[] = { K3Icon::DefaultState, K3Icon::DisabledState, K3Icon::ActiveState };
-    int state = K3Icon::DefaultState;
-    if( mode_P <= QIcon::Active )
-        state = tbl[ mode_P ];
-    if( group >= 0 && state == K3Icon::ActiveState )
-    { // active and normal icon are usually the same
-	if( loader->iconEffect()->fingerprint(group, K3Icon::ActiveState )
-            == loader->iconEffect()->fingerprint(group, K3Icon::DefaultState ))
-            return 0; // so let QIconSet simply duplicate it
-    }
-    // ignore passed size
-    // ignore passed state (i.e. on/off)
-    QPixmap pm = loader->loadIcon( iconName, group, size, state );
-    return new QPixmap( pm );
-    }
-
-#endif
 
 // Easy access functions
 
@@ -1290,6 +1149,7 @@ QPixmap DesktopIcon(const QString& name, KInstance *instance)
     return DesktopIcon(name, 0, K3Icon::DefaultState, instance);
 }
 
+// deprecated
 QIcon DesktopIconSet(const QString& name, int force_size, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
@@ -1308,6 +1168,7 @@ QPixmap BarIcon(const QString& name, KInstance *instance)
     return BarIcon(name, 0, K3Icon::DefaultState, instance);
 }
 
+// deprecated
 QIcon BarIconSet(const QString& name, int force_size, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
@@ -1326,6 +1187,7 @@ QPixmap SmallIcon(const QString& name, KInstance *instance)
     return SmallIcon(name, 0, K3Icon::DefaultState, instance);
 }
 
+// deprecated
 QIcon SmallIconSet(const QString& name, int force_size, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
@@ -1344,6 +1206,7 @@ QPixmap MainBarIcon(const QString& name, KInstance *instance)
     return MainBarIcon(name, 0, K3Icon::DefaultState, instance);
 }
 
+// deprecated
 QIcon MainBarIconSet(const QString& name, int force_size, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
@@ -1361,6 +1224,7 @@ QPixmap UserIcon(const QString& name, KInstance *instance)
     return UserIcon(name, K3Icon::DefaultState, instance);
 }
 
+// deprecated
 QIcon UserIconSet(const QString& name, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();

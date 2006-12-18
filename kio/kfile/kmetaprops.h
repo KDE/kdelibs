@@ -43,7 +43,7 @@ public:
   /**
    * Tests whether the file specified by _items has a 'MetaInfo' plugin.
    */
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private:
     void createLayout();

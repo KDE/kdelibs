@@ -129,6 +129,7 @@ extern "C" {
 
 #include "kpropertiesdialog.h"
 #include <kbuildsycocaprogressdialog.h>
+#include <kmimetypechooser.h>
 
 #ifdef Q_WS_WIN
 # include <win32_utils.h>
@@ -202,7 +203,7 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
   init (modal, false);
 }
 
-KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
+KPropertiesDialog::KPropertiesDialog (const KFileItemList& _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KPageDialog( parent ),d(new KPropertiesDialogPrivate)
@@ -222,8 +223,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
   m_singleUrl = _items.first()->url();
   assert(!m_singleUrl.isEmpty());
 
-  // Deep copy
-  // TODO: why don't we make KFileItem inherit QSharedData?
+  // Make copies
+  // TODO turn m_items into a list of KFileItems by values instead of by pointers
   KFileItemList::const_iterator kit = _items.begin();
   const KFileItemList::const_iterator kend = _items.end();
   for ( ; kit != kend; ++kit )
@@ -391,7 +392,7 @@ void KPropertiesDialog::insertPlugin (KPropsDlgPlugin* plugin)
   m_pageList.append (plugin);
 }
 
-bool KPropertiesDialog::canDisplay( KFileItemList _items )
+bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
 {
   // TODO: cache the result of those calls. Currently we parse .desktop files far too many times
   return KFilePropsPlugin::supports( _items ) ||
@@ -565,8 +566,7 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
   for ( Q3PtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it ) {
-   if ( qobject_cast<KExecPropsPlugin*>(it.current()) || // KDE4 remove me
-        qobject_cast<KUrlPropsPlugin*>(it.current()) ||
+   if ( qobject_cast<KUrlPropsPlugin*>(it.current()) ||
         qobject_cast<KDesktopPropsPlugin*>(it.current()) )
    {
      //kDebug(250) << "Setting page dirty" << endl;
@@ -777,8 +777,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       directory = properties->currentDir().prettyUrl();
     }
 
-    if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
-        d->bDesktopFile ||
+    if (d->bDesktopFile ||
         KBindingPropsPlugin::supports(properties->items())) {
       determineRelativePath( path );
     }
@@ -945,7 +944,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     //TODO: wrap for win32 or mac?
     QPushButton *button = new QPushButton(box);
 
-    QIcon iconSet = SmallIconSet(QString::fromLatin1("configure"));
+    QIcon iconSet = KIcon(QString::fromLatin1("configure"));
     QPixmap pixMap = iconSet.pixmap( d->m_frame->style()->pixelMetric(QStyle::PM_SmallIconSize) );
     button->setIcon( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
@@ -1278,7 +1277,7 @@ KFilePropsPlugin::~KFilePropsPlugin()
   delete d;
 }
 
-bool KFilePropsPlugin::supports( KFileItemList /*_items*/ )
+bool KFilePropsPlugin::supports( const KFileItemList& /*_items*/ )
 {
   return true;
 }
@@ -2159,7 +2158,7 @@ KFilePermissionsPropsPlugin::~KFilePermissionsPropsPlugin()
   delete d;
 }
 
-bool KFilePermissionsPropsPlugin::supports( KFileItemList /*_items*/ )
+bool KFilePermissionsPropsPlugin::supports( const KFileItemList& /*_items*/ )
 {
   return true;
 }
@@ -2580,7 +2579,7 @@ KUrlPropsPlugin::~KUrlPropsPlugin()
 //   return i18n ("U&RL");
 // }
 
-bool KUrlPropsPlugin::supports( KFileItemList _items )
+bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
@@ -2742,7 +2741,7 @@ KBindingPropsPlugin::~KBindingPropsPlugin()
 //   return i18n ("A&ssociation");
 // }
 
-bool KBindingPropsPlugin::supports( KFileItemList _items )
+bool KBindingPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
@@ -3032,7 +3031,7 @@ void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
   d->m_freeSpaceBar->show();
 }
 
-bool KDevicePropsPlugin::supports( KFileItemList _items )
+bool KDevicePropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
@@ -3164,6 +3163,10 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   w->pathEdit->lineEdit()->setText( pathStr );
   w->filetypeList->setAllColumnsShowFocus(true);
 
+  w->filetypeList->addColumn(i18n("Mimetype"));
+  w->filetypeList->addColumn(i18n("Description"));
+  w->filetypeList->setFullWidth(true);
+
   KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
   for(QStringList::ConstIterator it = mimeTypes.begin();
       it != mimeTypes.end(); )
@@ -3194,127 +3197,47 @@ KDesktopPropsPlugin::~KDesktopPropsPlugin()
   delete w;
 }
 
-void KDesktopPropsPlugin::slotSelectMimetype()
-{
-  Q3ListView *w = (Q3ListView*)sender();
-  Q3ListViewItem *item = w->firstChild();
-  while(item)
-  {
-     if (item->isSelected())
-        w->setSelected(item, false);
-     item = item->nextSibling();
-  }
-}
-
 void KDesktopPropsPlugin::slotAddFiletype()
 {
-  KDialog dlg( m_frame );
-  dlg.setObjectName( "KPropertiesMimetypes" );
-  dlg.setModal( true );
-  dlg.setCaption( i18n("Add File Type for %1", properties->kurl().fileName()) );
-  dlg.setButtons( KDialog::Ok | KDialog::Cancel );
-  dlg.setDefaultButton( KDialog::Ok );
+    KMimeTypeChooserDialog dlg( i18n("Add File Type for %1", properties->kurl().fileName()),
+                                i18n("Select one or more file types to add:"),
+                                QStringList(), // no preselected mimetypes
+                                QString(),
+                                QStringList(),
+                                KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns,
+                                m_frame );
 
-  KGuiItem okItem(i18n("&Add"), QString() /* no icon */,
-                  i18n("Add the selected file types to\nthe list of supported file types."),
-                  i18n("Add the selected file types to\nthe list of supported file types."));
-  dlg.setButtonGuiItem(KDialog::Ok,okItem);
-
-  Ui_KPropertiesMimetypeBase mw;
-  mw.setupUi(&dlg);
-
-  {
-     mw.listView->setRootIsDecorated(true);
-     mw.listView->setSelectionMode(Q3ListView::Extended);
-     mw.listView->setAllColumnsShowFocus(true);
-     mw.listView->setFullWidth(true);
-     mw.listView->setMinimumSize(500,400);
-
-     connect(mw.listView, SIGNAL(selectionChanged()),
-             this, SLOT(slotSelectMimetype()));
-     connect(mw.listView, SIGNAL(doubleClicked( Q3ListViewItem *, const QPoint &, int )),
-             &dlg, SLOT( slotOk()));
-
-     QMap<QString,Q3ListViewItem*> majorMap;
-     Q3ListViewItem *majorGroup;
-     KMimeType::List mimetypes = KMimeType::allMimeTypes();
-     KMimeType::List::const_iterator it = mimetypes.begin();
-     for (; it != mimetypes.end(); ++it) {
-        QString mimetype = (*it)->name();
-        if (mimetype == KMimeType::defaultMimeType())
-           continue;
-        int index = mimetype.indexOf("/");
-        QString maj = mimetype.left(index);
-        QString min = mimetype.mid(index+1);
-
-        QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( maj );
-        if ( mit == majorMap.end() ) {
-           majorGroup = new Q3ListViewItem( mw.listView, maj );
-           majorGroup->setExpandable(true);
-           mw.listView->setOpen(majorGroup, true);
-           majorMap.insert( maj, majorGroup );
-        }
-        else
+    if (dlg.exec() == KDialog::Accepted)
+    {
+        foreach(QString mimetype, dlg.chooser()->mimeTypes())
         {
-           majorGroup = mit.value();
+            KMimeType::Ptr p = KMimeType::mimeType(mimetype);
+            if (!p)
+                continue;
+
+            bool found = false;
+            Q3ListViewItem *item = w->filetypeList->firstChild();
+            while (item)
+            {
+                if (mimetype == item->text(0))
+                {
+                    found = true;
+                    break;
+                }
+                item = item->nextSibling();
+            }
+            if (!found) {
+                new Q3ListViewItem(w->filetypeList, p->name(), p->comment());
+            }
         }
-
-        Q3ListViewItem *item = new Q3ListViewItem(majorGroup, min, (*it)->comment());
-        item->setPixmap(0, (*it)->pixmap(K3Icon::Small, IconSize(K3Icon::Small)));
-     }
-     QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( "all" );
-     if ( mit != majorMap.end())
-     {
-        mw.listView->setCurrentItem(mit.value());
-        mw.listView->ensureItemVisible(mit.value());
-     }
-  }
-
-  if (dlg.exec() == KDialog::Accepted)
-  {
-     KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
-     Q3ListViewItem *majorItem = mw.listView->firstChild();
-     while(majorItem)
-     {
-        QString major = majorItem->text(0);
-
-        Q3ListViewItem *minorItem = majorItem->firstChild();
-        while(minorItem)
-        {
-           if (minorItem->isSelected())
-           {
-              QString mimetype = major + '/' + minorItem->text(0);
-              KMimeType::Ptr p = KMimeType::mimeType(mimetype);
-              if (p && (p != defaultMimetype))
-              {
-                 mimetype = p->name();
-                 bool found = false;
-                 Q3ListViewItem *item = w->filetypeList->firstChild();
-                 while (item)
-                 {
-                    if (mimetype == item->text(0))
-                    {
-                       found = true;
-                       break;
-                    }
-                    item = item->nextSibling();
-                 }
-                 if (!found)
-                    new Q3ListViewItem(w->filetypeList, p->name(), p->comment());
-              }
-           }
-           minorItem = minorItem->nextSibling();
-        }
-
-        majorItem = majorItem->nextSibling();
-     }
-
-  }
+    }
+    emit changed();
 }
 
 void KDesktopPropsPlugin::slotDelFiletype()
 {
-  delete w->filetypeList->currentItem();
+    delete w->filetypeList->currentItem();
+    emit changed();
 }
 
 void KDesktopPropsPlugin::checkCommandChanged()
@@ -3370,6 +3293,7 @@ void KDesktopPropsPlugin::applyChanges()
        mimeTypes.append(preference);
   }
 
+  kDebug() << k_funcinfo << mimeTypes << endl;
   config.writeEntry( "MimeType", mimeTypes, ';' );
 
   if ( !w->nameEdit->isHidden() ) {
@@ -3425,7 +3349,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   dlg.setButtons( KDialog::Ok | KDialog::Cancel );
   dlg.setDefaultButton( KDialog::Ok );
   Ui_KPropertiesDesktopAdvBase w;
-  w.setupUi(&dlg);
+  w.setupUi(dlg.mainWidget());
 
   // If the command is changed we reset certain settings that are strongly
   // coupled to the command.
@@ -3534,7 +3458,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   }
 }
 
-bool KDesktopPropsPlugin::supports( KFileItemList _items )
+bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
@@ -3546,616 +3470,5 @@ bool KDesktopPropsPlugin::supports( KFileItemList _items )
   KDesktopFile config( item->url().path(), true /* readonly */ );
   return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
-
-
-
-
-
-/**
- * The following code is obsolete and only kept for binary compatibility
- * To be removed in KDE 4
- */
-
-class KExecPropsPlugin::KExecPropsPluginPrivate
-{
-public:
-  KExecPropsPluginPrivate()
-  {
-  }
-  ~KExecPropsPluginPrivate()
-  {
-  }
-
-  QFrame *m_frame;
-  QCheckBox *nocloseonexitCheck;
-};
-
-KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props ),d(new KExecPropsPluginPrivate)
-{
-  d->m_frame = new QFrame();
-  properties->addPage(d->m_frame, i18n("E&xecute"));
-  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
-  mainlayout->setMargin( 0 );
-  mainlayout->setSpacing( KDialog::spacingHint() );
-
-  // Now the widgets in the top layout
-
-  QLabel* l;
-  l = new QLabel( i18n( "Comman&d:" ), d->m_frame );
-  mainlayout->addWidget(l);
-
-  QHBoxLayout * hlayout;
-  hlayout = new QHBoxLayout();
-  hlayout->setSpacing(KDialog::spacingHint());
-  mainlayout->addLayout(hlayout);
-
-  execEdit = new KLineEdit( d->m_frame );
-  execEdit->setWhatsThis(i18n(
-    "Following the command, you can have several place holders which will be replaced "
-    "with the actual values when the actual program is run:\n"
-    "%f - a single file name\n"
-    "%F - a list of files; use for applications that can open several local files at once\n"
-    "%u - a single URL\n"
-    "%U - a list of URLs\n"
-    "%d - the folder of the file to open\n"
-    "%D - a list of folders\n"
-    "%i - the icon\n"
-    "%m - the mini-icon\n"
-    "%c - the caption"));
-  hlayout->addWidget(execEdit, 1);
-
-  l->setBuddy( execEdit );
-
-  execBrowse = new QPushButton( d->m_frame );
-  execBrowse->setText( i18n("&Browse...") );
-  hlayout->addWidget(execBrowse);
-
-  // The groupbox about swallowing
-  Q3GroupBox* tmpQGroupBox;
-  tmpQGroupBox = new Q3GroupBox( i18n("Panel Embedding"), d->m_frame );
-  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
-
-  mainlayout->addWidget(tmpQGroupBox);
-
-  QGridLayout *grid = new QGridLayout();
-  tmpQGroupBox->layout()->addItem(grid);
-  grid->setSpacing( KDialog::spacingHint() );
-  grid->setColumnStretch(1, 1);
-
-  l = new QLabel( i18n( "&Execute on click:" ), tmpQGroupBox );
-  grid->addWidget(l, 0, 0);
-
-  swallowExecEdit = new KLineEdit( tmpQGroupBox );
-  grid->addWidget(swallowExecEdit, 0, 1);
-
-  l->setBuddy( swallowExecEdit );
-
-  l = new QLabel( i18n( "&Window title:" ), tmpQGroupBox );
-  grid->addWidget(l, 1, 0);
-
-  swallowTitleEdit = new KLineEdit( tmpQGroupBox );
-  grid->addWidget(swallowTitleEdit, 1, 1);
-
-  l->setBuddy( swallowTitleEdit );
-
-  // The groupbox about run in terminal
-
-  tmpQGroupBox = new Q3GroupBox( d->m_frame );
-  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
-
-  mainlayout->addWidget(tmpQGroupBox);
-
-  grid = new QGridLayout();
-  tmpQGroupBox->layout()->addItem(grid);
-
-  grid->setSpacing( KDialog::spacingHint() );
-  grid->setColumnStretch(1, 1);
-
-  terminalCheck = new QCheckBox( tmpQGroupBox );
-  terminalCheck->setText( i18n("&Run in terminal") );
-  grid->addWidget(terminalCheck, 0, 0, 1, 2);
-
-  // check to see if we use konsole if not do not add the nocloseonexit
-  // because we don't know how to do this on other terminal applications
-  KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readPathEntry("TerminalApplication",
-						  QString::fromLatin1("konsole"));
-
-  int posOptions = 1;
-  d->nocloseonexitCheck = 0L;
-  if (preferredTerminal == "konsole")
-  {
-    posOptions = 2;
-    d->nocloseonexitCheck = new QCheckBox( tmpQGroupBox );
-    d->nocloseonexitCheck->setText( i18n("Do not &close when command exits") );
-    grid->addWidget(d->nocloseonexitCheck, 1, 0, 1, 2);
-  }
-
-  terminalLabel = new QLabel( i18n( "&Terminal options:" ), tmpQGroupBox );
-  grid->addWidget(terminalLabel, posOptions, 0);
-
-  terminalEdit = new KLineEdit( tmpQGroupBox );
-  grid->addWidget(terminalEdit, posOptions, 1);
-
-  terminalLabel->setBuddy( terminalEdit );
-
-  // The groupbox about run with substituted uid.
-
-  tmpQGroupBox = new Q3GroupBox( d->m_frame );
-  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
-
-  mainlayout->addWidget(tmpQGroupBox);
-
-  grid = new QGridLayout();
-  tmpQGroupBox->layout()->addItem(grid);
-
-  grid->setSpacing(KDialog::spacingHint());
-  grid->setColumnStretch(1, 1);
-
-  suidCheck = new QCheckBox(tmpQGroupBox);
-  suidCheck->setText(i18n("Ru&n as a different user"));
-  grid->addWidget(suidCheck, 0, 0, 1, 2);
-
-  suidLabel = new QLabel(i18n( "&Username:" ), tmpQGroupBox);
-  grid->addWidget(suidLabel, 1, 0);
-
-  suidEdit = new KLineEdit(tmpQGroupBox);
-  grid->addWidget(suidEdit, 1, 1);
-
-  suidLabel->setBuddy( suidEdit );
-
-  mainlayout->addStretch(1);
-
-  // now populate the page
-  QString path = _props->kurl().path();
-  QFile f( path );
-  if ( !f.open( QIODevice::ReadOnly ) )
-    return;
-  f.close();
-
-  KSimpleConfig config( path );
-  config.setDollarExpansion( false );
-  config.setDesktopGroup();
-  execStr = config.readPathEntry( "Exec" );
-  swallowExecStr = config.readPathEntry( "SwallowExec" );
-  swallowTitleStr = config.readEntry( "SwallowTitle" );
-  termBool = config.readEntry( "Terminal", false );
-  termOptionsStr = config.readEntry( "TerminalOptions" );
-  suidBool = config.readEntry( "X-KDE-SubstituteUID", false );
-  suidUserStr = config.readEntry( "X-KDE-Username" );
-
-  if ( !swallowExecStr.isNull() )
-    swallowExecEdit->setText( swallowExecStr );
-  if ( !swallowTitleStr.isNull() )
-    swallowTitleEdit->setText( swallowTitleStr );
-
-  if ( !execStr.isNull() )
-    execEdit->setText( execStr );
-
-  if ( d->nocloseonexitCheck )
-  {
-    d->nocloseonexitCheck->setChecked( (termOptionsStr.contains( "--noclose" ) > 0) );
-    termOptionsStr.replace( "--noclose", "");
-  }
-  if ( !termOptionsStr.isNull() )
-    terminalEdit->setText( termOptionsStr );
-
-  terminalCheck->setChecked( termBool );
-  enableCheckedEdit();
-
-  suidCheck->setChecked( suidBool );
-  suidEdit->setText( suidUserStr );
-  enableSuidEdit();
-
-  // Provide username completion up to 1000 users.
-  KCompletion *kcom = new KCompletion;
-  kcom->setOrder(KCompletion::Sorted);
-  struct passwd *pw;
-  int i, maxEntries = 1000;
-  setpwent();
-  for (i=0; ((pw = getpwent()) != 0L) && (i < maxEntries); i++)
-    kcom->addItem(QString::fromLatin1(pw->pw_name));
-  endpwent();
-  if (i < maxEntries)
-  {
-    suidEdit->setCompletionObject(kcom, true);
-    suidEdit->setAutoDeleteCompletionObject( true );
-    suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
-  }
-  else
-  {
-    delete kcom;
-  }
-
-  connect( swallowExecEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( swallowTitleEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( execEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( terminalEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  if (d->nocloseonexitCheck)
-    connect( d->nocloseonexitCheck, SIGNAL( toggled( bool ) ),
-           this, SIGNAL( changed() ) );
-  connect( terminalCheck, SIGNAL( toggled( bool ) ),
-           this, SIGNAL( changed() ) );
-  connect( suidCheck, SIGNAL( toggled( bool ) ),
-           this, SIGNAL( changed() ) );
-  connect( suidEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-
-  connect( execBrowse, SIGNAL( clicked() ), this, SLOT( slotBrowseExec() ) );
-  connect( terminalCheck, SIGNAL( clicked() ), this,  SLOT( enableCheckedEdit() ) );
-  connect( suidCheck, SIGNAL( clicked() ), this,  SLOT( enableSuidEdit() ) );
-
-}
-
-KExecPropsPlugin::~KExecPropsPlugin()
-{
-  delete d;
-}
-
-void KExecPropsPlugin::enableCheckedEdit()
-{
-  bool checked = terminalCheck->isChecked();
-  terminalLabel->setEnabled( checked );
-  if (d->nocloseonexitCheck)
-    d->nocloseonexitCheck->setEnabled( checked );
-  terminalEdit->setEnabled( checked );
-}
-
-void KExecPropsPlugin::enableSuidEdit()
-{
-  bool checked = suidCheck->isChecked();
-  suidLabel->setEnabled( checked );
-  suidEdit->setEnabled( checked );
-}
-
-bool KExecPropsPlugin::supports( KFileItemList _items )
-{
-  if ( _items.count() != 1 )
-    return false;
-  KFileItem * item = _items.first();
-  // check if desktop file
-  if ( !KPropsDlgPlugin::isDesktopFile( item ) )
-    return false;
-  // open file and check type
-  KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
-}
-
-void KExecPropsPlugin::applyChanges()
-{
-  kDebug(250) << "KExecPropsPlugin::applyChanges" << endl;
-  QString path = properties->kurl().path();
-
-  QFile f( path );
-
-  if ( !f.open( QIODevice::ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>", path));
-    return;
-  }
-  f.close();
-
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
-  config.writeEntry( "Type", QString::fromLatin1("Application"));
-  config.writePathEntry( "Exec", execEdit->text() );
-  config.writePathEntry( "SwallowExec", swallowExecEdit->text() );
-  config.writeEntry( "SwallowTitle", swallowTitleEdit->text() );
-  config.writeEntry( "Terminal", terminalCheck->isChecked() );
-  QString temp = terminalEdit->text();
-  if (d->nocloseonexitCheck )
-    if ( d->nocloseonexitCheck->isChecked() )
-      temp += QString::fromLatin1("--noclose ");
-  temp = temp.trimmed();
-  config.writeEntry( "TerminalOptions", temp );
-  config.writeEntry( "X-KDE-SubstituteUID", suidCheck->isChecked() );
-  config.writeEntry( "X-KDE-Username", suidEdit->text() );
-}
-
-
-void KExecPropsPlugin::slotBrowseExec()
-{
-    KUrl f = KFileDialog::getOpenUrl( KUrl(),
-                                      QString(), d->m_frame );
-    if ( f.isEmpty() )
-        return;
-
-    if ( !f.isLocalFile()) {
-        KMessageBox::sorry(d->m_frame, i18n("Only executables on local file systems are supported."));
-        return;
-    }
-
-    QString path = f.path();
-    KRun::shellQuote( path );
-    execEdit->setText( path );
-}
-
-class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
-{
-public:
-  KApplicationPropsPluginPrivate()
-  {
-      m_kdesktopMode = (qApp->objectName() == "kdesktop");
-  }
-  ~KApplicationPropsPluginPrivate()
-  {
-  }
-
-  QFrame *m_frame;
-  bool m_kdesktopMode;
-};
-
-KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
-  : KPropsDlgPlugin( _props ),d(new KApplicationPropsPluginPrivate)
-{
-  d->m_frame = new QFrame();
-  properties->addPage(d->m_frame, i18n("&Application"));
-  QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame );
-  toplayout->setMargin( 0 );
-  toplayout->setSpacing( KDialog::spacingHint() );
-
-  QIcon iconSet;
-  QPixmap pixMap;
-
-  addExtensionButton = new QPushButton( QString(), d->m_frame );
-  iconSet = SmallIconSet( "back" );
-  addExtensionButton->setIcon( iconSet );
-  pixMap = iconSet.pixmap( d->m_frame->style()->pixelMetric( QStyle::PM_SmallIconSize ) );
-  addExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
-  connect( addExtensionButton, SIGNAL( clicked() ),
-            SLOT( slotAddExtension() ) );
-
-  delExtensionButton = new QPushButton( QString(), d->m_frame );
-  iconSet = SmallIconSet( "forward" );
-  delExtensionButton->setIcon( iconSet );
-  delExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
-  connect( delExtensionButton, SIGNAL( clicked() ),
-            SLOT( slotDelExtension() ) );
-
-  QLabel *l;
-
-  QGridLayout *grid = new QGridLayout();
-  grid->setColumnStretch(1, 1);
-  toplayout->addLayout(grid);
-
-  if ( d->m_kdesktopMode )
-  {
-      // in kdesktop the name field comes from the first tab
-      nameEdit = 0L;
-  }
-  else
-  {
-      l = new QLabel(i18n("Name:"), d->m_frame);
-      grid->addWidget(l, 0, 0);
-
-      nameEdit = new KLineEdit( d->m_frame);
-      grid->addWidget(nameEdit, 0, 1);
-  }
-
-  l = new QLabel(i18n("Description:"),  d->m_frame);
-  grid->addWidget(l, 1, 0);
-
-  genNameEdit = new KLineEdit( d->m_frame);
-  grid->addWidget(genNameEdit, 1, 1);
-
-  l = new QLabel(i18n("Comment:"),  d->m_frame);
-  grid->addWidget(l, 2, 0);
-
-  commentEdit = new KLineEdit( d->m_frame);
-  grid->addWidget(commentEdit, 2, 1);
-
-  l = new QLabel(i18n("File types:"), d->m_frame);
-  toplayout->addWidget(l, 0, Qt::AlignLeft);
-
-  grid = new QGridLayout();
-  grid->setColumnStretch(0, 1);
-  grid->setColumnStretch(2, 1);
-  grid->setRowStretch( 0, 1 );
-  grid->setRowStretch( 3, 1 );
-  toplayout->addLayout(grid, 2);
-
-  extensionsList = new Q3ListBox( d->m_frame );
-  extensionsList->setSelectionMode( Q3ListBox::Extended );
-  grid->addWidget(extensionsList, 0, 0, 4, 1);
-
-  grid->addWidget(addExtensionButton, 1, 1);
-  grid->addWidget(delExtensionButton, 2, 1);
-
-  availableExtensionsList = new Q3ListBox( d->m_frame );
-  availableExtensionsList->setSelectionMode( Q3ListBox::Extended );
-  grid->addWidget(availableExtensionsList, 0, 2, 4, 1);
-
-  QString path = properties->kurl().path() ;
-  QFile f( path );
-  if ( !f.open( QIODevice::ReadOnly ) )
-    return;
-  f.close();
-
-  KDesktopFile config( path );
-  config.setDesktopGroup();
-  QString commentStr = config.readComment();
-  QString genNameStr = config.readGenericName();
-
-  QStringList selectedTypes = config.readEntry( "ServiceTypes", QStringList() );
-  // For compatibility with KDE 1.x
-  selectedTypes += config.readEntry( "MimeType", QStringList(), ';' );
-
-  QString nameStr = config.readName();
-  if ( nameStr.isEmpty() || d->m_kdesktopMode ) {
-    // We'll use the file name if no name is specified
-    // because we _need_ a Name for a valid file.
-    // But let's do it in apply, not here, so that we pick up the right name.
-    setDirty();
-  }
-
-  commentEdit->setText( commentStr );
-  genNameEdit->setText( genNameStr );
-  if ( nameEdit )
-      nameEdit->setText( nameStr );
-
-  selectedTypes.sort();
-  QStringList::Iterator sit = selectedTypes.begin();
-  for( ; sit != selectedTypes.end(); ++sit ) {
-    if ( !((*sit).isEmpty()) )
-      extensionsList->insertItem( *sit );
-  }
-
-  KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-  KMimeType::List::const_iterator it2 = mimeTypes.begin();
-  for ( ; it2 != mimeTypes.end(); ++it2 )
-    addMimeType( (*it2)->name() );
-
-  updateButton();
-
-  connect( extensionsList, SIGNAL( highlighted( int ) ),
-           this, SLOT( updateButton() ) );
-  connect( availableExtensionsList, SIGNAL( highlighted( int ) ),
-           this, SLOT( updateButton() ) );
-
-  connect( addExtensionButton, SIGNAL( clicked() ),
-           this, SIGNAL( changed() ) );
-  connect( delExtensionButton, SIGNAL( clicked() ),
-           this, SIGNAL( changed() ) );
-  if ( nameEdit )
-      connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
-               this, SIGNAL( changed() ) );
-  connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( genNameEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( availableExtensionsList, SIGNAL( selected( int ) ),
-           this, SIGNAL( changed() ) );
-  connect( extensionsList, SIGNAL( selected( int ) ),
-           this, SIGNAL( changed() ) );
-}
-
-KApplicationPropsPlugin::~KApplicationPropsPlugin()
-{
-  delete d;
-}
-
-// QString KApplicationPropsPlugin::tabName () const
-// {
-//   return i18n ("&Application");
-// }
-
-void KApplicationPropsPlugin::updateButton()
-{
-    addExtensionButton->setEnabled(availableExtensionsList->currentItem()>-1);
-    delExtensionButton->setEnabled(extensionsList->currentItem()>-1);
-}
-
-void KApplicationPropsPlugin::addMimeType( const QString & name )
-{
-  // Add a mimetype to the list of available mime types if not in the extensionsList
-
-  bool insert = true;
-
-  for ( uint i = 0; i < extensionsList->count(); i++ )
-    if ( extensionsList->text( i ) == name )
-      insert = false;
-
-  if ( insert )
-  {
-    availableExtensionsList->insertItem( name );
-    availableExtensionsList->sort();
-  }
-}
-
-bool KApplicationPropsPlugin::supports( KFileItemList _items )
-{
-  // same constraints as KExecPropsPlugin : desktop file with Type = Application
-  return KExecPropsPlugin::supports( _items );
-}
-
-void KApplicationPropsPlugin::applyChanges()
-{
-  QString path = properties->kurl().path();
-
-  QFile f( path );
-
-  if ( !f.open( QIODevice::ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
-				"have sufficient access to write to <b>%1</b>.</qt>", path));
-    return;
-  }
-  f.close();
-
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
-  config.writeEntry( "Type", QString::fromLatin1("Application"));
-  config.writeEntry( "Comment", commentEdit->text() );
-  config.writeEntry( "Comment", commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
-  config.writeEntry( "GenericName", genNameEdit->text() );
-  config.writeEntry( "GenericName", genNameEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
-
-  QStringList selectedTypes;
-  for ( uint i = 0; i < extensionsList->count(); i++ )
-    selectedTypes.append( extensionsList->text( i ) );
-
-  config.writeEntry( "MimeType", selectedTypes, ';' );
-  config.writeEntry( "ServiceTypes", "" );
-  // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
-
-  QString nameStr = nameEdit ? nameEdit->text() : QString();
-  if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
-    nameStr = nameFromFileName(properties->kurl().fileName());
-
-  config.writeEntry( "Name", nameStr );
-  config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
-
-  config.sync();
-}
-
-void KApplicationPropsPlugin::slotAddExtension()
-{
-  Q3ListBoxItem *item = availableExtensionsList->firstItem();
-  Q3ListBoxItem *nextItem;
-
-  while ( item )
-  {
-    nextItem = item->next();
-
-    if ( item->isSelected() )
-    {
-      extensionsList->insertItem( item->text() );
-      availableExtensionsList->removeItem( availableExtensionsList->index( item ) );
-    }
-
-    item = nextItem;
-  }
-
-  extensionsList->sort();
-  updateButton();
-}
-
-void KApplicationPropsPlugin::slotDelExtension()
-{
-  Q3ListBoxItem *item = extensionsList->firstItem();
-  Q3ListBoxItem *nextItem;
-
-  while ( item )
-  {
-    nextItem = item->next();
-
-    if ( item->isSelected() )
-    {
-      availableExtensionsList->insertItem( item->text() );
-      extensionsList->removeItem( extensionsList->index( item ) );
-    }
-
-    item = nextItem;
-  }
-
-  availableExtensionsList->sort();
-  updateButton();
-}
-
-
 
 #include "kpropertiesdialog.moc"

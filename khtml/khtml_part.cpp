@@ -1113,8 +1113,8 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_jsedlg = new KJSErrorDlg;
     d->m_jsedlg->setURL(m_url.prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
-      d->m_jsedlg->_clear->setIcon(SmallIconSet("locationbar_erase"));
-      d->m_jsedlg->_close->setIcon(SmallIconSet("fileclose"));
+      d->m_jsedlg->_clear->setIcon(KIcon("locationbar_erase"));
+      d->m_jsedlg->_close->setIcon(KIcon("fileclose"));
     }
   }
   return d->m_jsedlg;

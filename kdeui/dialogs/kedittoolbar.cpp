@@ -788,30 +788,25 @@ void KEditToolbarWidget::setupLayout()
            this, SLOT( slotChangeIcon() ) );
 
   // The buttons in the middle
-  QIcon iconSet;
 
   m_upAction     = new QToolButton(this);
-  iconSet = SmallIconSet( "up" );
-  m_upAction->setIcon( iconSet );
+  m_upAction->setIcon( KIcon("up") );
   m_upAction->setEnabled(false);
   m_upAction->setAutoRepeat(true);
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(this);
-  iconSet = QApplication::isRightToLeft() ? SmallIconSet( "back" ) : SmallIconSet( "forward" );
-  m_insertAction->setIcon( iconSet );
+  m_insertAction->setIcon( KIcon(QApplication::isRightToLeft() ? "back" : "forward") );
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(this);
-  iconSet = QApplication::isRightToLeft() ? SmallIconSet( "forward" ) : SmallIconSet( "back" );
-  m_removeAction->setIcon( iconSet );
+  m_removeAction->setIcon( KIcon(QApplication::isRightToLeft() ? "forward" : "back") );
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));
 
   m_downAction   = new QToolButton(this);
-  iconSet = SmallIconSet( "down" );
-  m_downAction->setIcon( iconSet );
+  m_downAction->setIcon( KIcon("down") );
   m_downAction->setEnabled(false);
   m_downAction->setAutoRepeat(true);
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));

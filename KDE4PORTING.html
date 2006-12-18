@@ -310,6 +310,15 @@ Desktop Entry Spec</a>
 <ul>
 <li>Renamed and deprecated to K3Icon</li>
 <li>Replacement is KIcon - now in kdeui</li>
+<li>Note: at the moment you have to keep using K3Icon as a namespace for states, groups, and contexts though.</li>
+</ul>
+
+<h4>KIconLoader</h4>
+<ul>
+<li>Deprecated loadIconSet(), DesktopIconSet(), BarIconSet(), SmallIconSet(), UserIconSet(): use KIcon(name) or KIcon(name,instance-&gt;iconLoader()) instead.<br/>
+Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
+on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
+With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.</li>
 </ul>
 
 <h4>KIPC</h4>

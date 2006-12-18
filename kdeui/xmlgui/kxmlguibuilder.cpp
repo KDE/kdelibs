@@ -37,6 +37,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include "kmenumenuhandler_p.h"
+#include <kinstance.h>
 
 using namespace KDEPrivate;
 
@@ -69,7 +70,7 @@ class KXMLGUIBuilderPrivate
 
     KInstance *m_instance;
     KXMLGUIClient *m_client;
-    
+
     KMenuMenuHandler *m_menumenuhandler;
 };
 
@@ -97,7 +98,7 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->attrContext = QLatin1String( "context" );
 
   d->attrIcon = QLatin1String( "icon" );
-  
+
   d->m_menumenuhandler=new KMenuMenuHandler(this);
 }
 
@@ -182,7 +183,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       i18nText = i18nc( context, text );
 
     QString icon = element.attribute( d->attrIcon );
-    QIcon pix;
+    KIcon pix;
 
     if ( !icon.isEmpty() )
     {
@@ -190,7 +191,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       if ( !instance )
         instance = KGlobal::instance();
 
-      pix = SmallIconSet( icon, 16, instance );
+      pix = KIcon( icon, instance->iconLoader() );
     }
 
     if ( parent && qobject_cast<KMenuBar*>( parent ) )
@@ -369,7 +370,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
         i18nText = i18n( text );
 
       QString icon = element.attribute( d->attrIcon );
-      QPixmap pix;
+      KIcon pix;
 
       if ( !icon.isEmpty() )
       {
@@ -377,11 +378,11 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
         if ( !instance )
           instance = KGlobal::instance();
 
-        pix = SmallIcon( icon, instance );
+        pix = KIcon( icon, instance->iconLoader() );
       }
 
       if ( !icon.isEmpty() ) {
-        return m->addTitle( QIcon(pix), i18nText, before );
+        return m->addTitle( pix, i18nText, before );
       } else {
         return m->addTitle( i18nText, before );
       }

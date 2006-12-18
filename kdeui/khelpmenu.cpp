@@ -140,14 +140,14 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      d->mHandBookAction = d->mMenu->addAction(BarIconSet( "contents", K3Icon::SizeSmall),
+      d->mHandBookAction = d->mMenu->addAction( KIcon("contents"),
                      i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStdAccel::shortcut(KStdAccel::Help).primary());
       need_separator = true;
     }
 
     if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-      d->mWhatsThisAction = d->mMenu->addAction( SmallIconSet("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
+      d->mWhatsThisAction = d->mMenu->addAction( KIcon("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       need_separator = true;
     }
 
@@ -170,7 +170,7 @@ KMenu* KHelpMenu::menu()
 
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
-      d->mAboutKDEAction = d->mMenu->addAction( SmallIconSet("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
+      d->mAboutKDEAction = d->mMenu->addAction( KIcon("about_kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
     }
   }
 
@@ -317,9 +317,9 @@ void KHelpMenu::contextHelpActivated()
 #ifdef Q_WS_X11
   while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
-#ifdef __GNUC__  
+#ifdef __GNUC__
 #warning how to enter whats this mode for a QX11EmbedWidget?
-#endif  
+#endif
 //   if ( w && qobject_cast<QX11EmbedWidget*>(w) )
 //	  (( QX11EmbedWidget*) w )->enterWhatsThisMode();
 #endif

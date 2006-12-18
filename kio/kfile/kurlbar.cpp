@@ -741,15 +741,15 @@ void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
     QAction* EditItem = 0L;
     if (item != 0L && item->isPersistent())
     {
-        EditItem = popup->addAction(SmallIconSet("edit"), i18n("&Edit Entry..."));
+        EditItem = popup->addAction(KIcon("edit"), i18n("&Edit Entry..."));
         popup->addSeparator();
     }
 
-    QAction* AddItem = popup->addAction(SmallIconSet("filenew"), i18n("&Add Entry..."));
+    QAction* AddItem = popup->addAction(KIcon("filenew"), i18n("&Add Entry..."));
 
     QAction* RemoveItem = 0L;
     if (item != 0L && item->isPersistent())
-        RemoveItem = popup->addAction( SmallIconSet("editdelete"), i18n("&Remove Entry"));
+        RemoveItem = popup->addAction( KIcon("editdelete"), i18n("&Remove Entry"));
 
     QAction* result = popup->exec( pos );
     if (result == IconSize) {

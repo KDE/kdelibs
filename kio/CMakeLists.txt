@@ -36,7 +36,6 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 
 add_subdirectory( kssl )
 add_subdirectory( bookmarks )
-add_subdirectory( kfile )
 add_subdirectory( kpasswdserver )
 if (UNIX)
    add_subdirectory( misc )
@@ -46,6 +45,7 @@ if (WIN32)
 endif (WIN32)
 add_subdirectory( pics )
 add_subdirectory( tests )
+add_subdirectory( kfile/tests )
 add_subdirectory( kioexec )
 
 # for the kfile usage in bookmarks
@@ -238,7 +238,6 @@ set(kio_LIB_SRCS
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
    kfile/kpropertiesdesktopbase.ui
-   kfile/kpropertiesmimetypebase.ui
    kfile/knotifywidgetbase.ui
    kssl/keygenwizard.ui
    kssl/keygenwizard2.ui
@@ -274,10 +273,20 @@ install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_
 
 
 install( FILES magic  DESTINATION  ${MIME_INSTALL_DIR} )
-install( FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop kcmoduleinit.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kpasswdserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
-install( FILES renamedlgplugin.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES
+ application.desktop
+ kcmodule.desktop
+ kcmoduleinit.desktop
+ kdatatool.desktop
+ kfileplugin.desktop
+ kscan.desktop
+ kurifilterplugin.desktop
+ renamedlgplugin.desktop
+ kfile/kpropsdlgplugin.desktop  
+DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install(  FILES
   kio/connection.h
@@ -357,8 +366,34 @@ install( FILES
   kio/kdedesktopmimetype.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdirmodel.h
+  kfile/kcombiview.h
+  kfile/kcustommenueditor.h
+  kfile/kdiroperator.h
+  kfile/kdirselectdialog.h
+  kfile/kdiskfreesp.h
+  kfile/kencodingfiledialog.h
+  kfile/kfile.h
+  kfile/kfiledetailview.h
+  kfile/kfiledialog.h
+  kfile/kfileiconview.h
+  kfile/kfilepreview.h
+  kfile/kfilesharedlg.h
+  kfile/kfiletreebranch.h
+  kfile/kfiletreeview.h
+  kfile/kfiletreeviewitem.h
+  kfile/kfileview.h
+  kfile/kfilefiltercombo.h
+  kfile/kicondialog.h
+  kfile/kimagefilepreview.h
+  kfile/knotifydialog.h
+  kfile/kopenwithdialog.h
+  kfile/kpreviewwidgetbase.h
+  kfile/kpropertiesdialog.h
+  kfile/kpropsdlg.h
+  kfile/krecentdocument.h
+  kfile/kurlbar.h
+  kfile/kurlcombobox.h
+  kfile/kurlrequester.h
+  kfile/kurlrequesterdlg.h
+  ${CMAKE_CURRENT_BINARY_DIR}/ui_knotifywidgetbase.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
-
-
-
-

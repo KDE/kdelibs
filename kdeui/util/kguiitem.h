@@ -24,11 +24,9 @@
 
 #include <qstring.h>
 
-#include <kglobal.h>
 #include <kicontheme.h>
 #include <kicon.h>
-
-class QIcon;
+class KInstance;
 
 /**
  * @short An abstract class for GUI data such as ToolTip and Icon.
@@ -41,17 +39,17 @@ class KDEUI_EXPORT KGuiItem
 public:
     KGuiItem();
 
-    // This is explicit because it's easy to get subtle bugs otherwise. The 
-    // icon name, tooltip and whatsthis text get changed behind your back if 
+    // This is explicit because it's easy to get subtle bugs otherwise. The
+    // icon name, tooltip and whatsthis text get changed behind your back if
     // you do 'setButtonFoo( "Bar" );' It gives the wrong impression that you
     // just change the text.
-    explicit KGuiItem( const QString &text, 
+    explicit KGuiItem( const QString &text,
                        const QString &iconName  = QString(),
-                       const QString &toolTip   = QString(), 
+                       const QString &toolTip   = QString(),
                        const QString &whatsThis = QString() );
 
-    KGuiItem( const QString &text, const QIcon &iconSet, 
-              const QString &toolTip   = QString(), 
+    KGuiItem( const QString &text, const KIcon &icon,
+              const QString &toolTip   = QString(),
               const QString &whatsThis = QString() );
 
     KGuiItem( const KGuiItem &rhs );
@@ -61,12 +59,11 @@ public:
 
     QString text() const;
     QString plainText() const;
-#ifndef KDE_NO_COMPAT
-    QIcon iconSet( K3Icon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
-    QIcon iconSet() const;
-#else
-    QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
-#endif
+
+    /// @deprecated use icon() instead
+    KDE_DEPRECATED QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0, KInstance* instance = 0) const;
+
+    KIcon icon( KInstance* instance = 0 ) const;
 
     QString iconName() const;
     QString toolTip() const;
@@ -74,11 +71,11 @@ public:
     bool isEnabled() const;
     bool hasIcon() const;
 #ifndef KDE_NO_COMPAT
-    bool hasIconSet() const { return hasIcon(); }
+    KDE_DEPRECATED bool hasIconSet() const { return hasIcon(); }
 #endif
 
     void setText( const QString &text );
-    void setIcon( const QIcon &iconset );
+    void setIcon( const KIcon &iconset );
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
     void setWhatsThis( const QString &whatsThis );

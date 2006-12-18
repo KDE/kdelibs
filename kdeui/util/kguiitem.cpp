@@ -2,7 +2,7 @@
     Copyright (C) 2001 Holger Freyther (freyher@yahoo.com)
                   based on ideas from Martijn and Simon
                   many thanks to Simon
-		  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2 as published by the Free Software Foundation.
@@ -18,16 +18,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qstring.h>
-#include <qicon.h>
-#include <qpixmap.h>
+#include "kguiitem.h"
 
-#include <assert.h>
-#include <kiconloader.h>
+#include <kiconloader.h> // TODO remove
 #include <kinstance.h>
 #include <kdebug.h>
+#include <kicon.h>
 
-#include "kguiitem.h"
+#include <assert.h>
 
 class KGuiItem::KGuiItemPrivate
 {
@@ -46,7 +44,7 @@ public:
     KGuiItemPrivate &operator=( const KGuiItemPrivate &rhs )
     {
         m_text = rhs.m_text;
-        m_iconSet = rhs.m_iconSet;
+        m_icon = rhs.m_icon;
         m_iconName = rhs.m_iconName;
         m_toolTip = rhs.m_toolTip;
         m_whatsThis = rhs.m_whatsThis;
@@ -62,7 +60,7 @@ public:
     QString m_whatsThis;
     QString m_statusText;
     QString m_iconName;
-    QIcon m_iconSet;
+    KIcon m_icon;
     bool m_hasIcon : 1;
     bool m_enabled : 1;
 };
@@ -82,14 +80,14 @@ KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
     setIconName( iconName );
 }
 
-KGuiItem::KGuiItem( const QString &text,    const QIcon &iconSet,
+KGuiItem::KGuiItem( const QString &text,    const KIcon &icon,
                     const QString &toolTip, const QString &whatsThis )
 {
     d = new KGuiItemPrivate;
     d->m_text = text;
     d->m_toolTip = toolTip;
     d->m_whatsThis = whatsThis;
-    setIcon( iconSet );
+    setIcon( icon );
 }
 
 KGuiItem::KGuiItem( const KGuiItem &rhs )
@@ -149,40 +147,32 @@ QString KGuiItem::plainText() const
     return stripped;
 }
 
-QIcon KGuiItem::iconSet( K3Icon::Group group, int size, KInstance* instance ) const
+
+KIcon KGuiItem::icon( KInstance* instance ) const
 {
-    if( d->m_hasIcon )
-    {
-        if( !d->m_iconName.isEmpty())
-        {
-// some caching here would(?) come handy
-            return instance->iconLoader()->loadIconSet( d->m_iconName, group, size );
-// here is a little problem that with delayed icon loading
-// we can't check if the icon really exists ... so what ...
-//            if( set.isNull() )
-//            {
-//                d->m_hasIcon = false;
-//                return QIconSet();
-//            }
-//            return set;
-        }
-        else
-        {
-            return d->m_iconSet;
+    if (d->m_hasIcon) {
+        if (!d->m_iconName.isEmpty()) {
+            return KIcon(d->m_iconName, instance ? instance->iconLoader() : 0);
+        } else {
+            return d->m_icon;
         }
     }
-    else
+    return KIcon();
+}
+
+// deprecated
+QIcon KGuiItem::iconSet( K3Icon::Group group, int size, KInstance* instance ) const
+{
+    if( d->m_hasIcon ) {
+        if( !d->m_iconName.isEmpty()) {
+            KIconLoader* iconLoader = instance ? instance->iconLoader() : KGlobal::iconLoader();
+            return iconLoader->loadIconSet( d->m_iconName, group, size );
+        } else {
+            return d->m_icon;
+        }
+    } else
         return QIcon();
 }
-
-#ifndef KDE_NO_COMPAT
-
-QIcon KGuiItem::iconSet() const
-{
-    return iconSet( K3Icon::Small );
-}
-
-#endif
 
 QString KGuiItem::iconName() const
 {
@@ -209,21 +199,22 @@ bool KGuiItem::hasIcon() const
     return d->m_hasIcon;
 }
 
-void KGuiItem::setText( const QString &text ) {
-    d->m_text=text;
+void KGuiItem::setText( const QString &text )
+{
+    d->m_text = text;
 }
 
-void KGuiItem::setIcon( const QIcon &iconset )
+void KGuiItem::setIcon( const KIcon &icon )
 {
-    d->m_iconSet = iconset;
+    d->m_icon = icon;
     d->m_iconName.clear();
-    d->m_hasIcon = !iconset.isNull();
+    d->m_hasIcon = !icon.isNull();
 }
 
 void KGuiItem::setIconName( const QString &iconName )
 {
     d->m_iconName = iconName;
-    d->m_iconSet = QIcon();
+    d->m_icon = KIcon();
     d->m_hasIcon = !iconName.isEmpty();
 }
 
@@ -243,4 +234,3 @@ void KGuiItem::setEnabled( bool enabled )
 }
 
 // vim: set et sw=4:
-

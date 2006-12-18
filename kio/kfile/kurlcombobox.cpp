@@ -20,7 +20,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kiconloader.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kmimetype.h>
 
@@ -29,11 +29,11 @@
 class KUrlComboBox::KUrlComboBoxPrivate
 {
 public:
-    KUrlComboBoxPrivate() {
-	dirIcon = SmallIconSet(QLatin1String("folder"));
-    }
+    KUrlComboBoxPrivate()
+        : dirIcon(QLatin1String("folder"))
+    {}
 
-    QIcon dirIcon;
+    KIcon dirIcon;
 };
 
 
@@ -69,7 +69,7 @@ void KUrlComboBox::init( Mode mode )
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
-    opendirIcon = SmallIconSet(QLatin1String("folder_open"));
+    opendirIcon = KIcon(QLatin1String("folder_open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }
@@ -351,7 +351,7 @@ QIcon KUrlComboBox::getIcon( const KUrl& url ) const
     if ( myMode == Directories )
         return d->dirIcon;
     else
-        return SmallIconSet(KMimeType::iconNameForUrl( url, 0));
+        return KIcon(KMimeType::iconNameForUrl(url, 0));
 }
 
 

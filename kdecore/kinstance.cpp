@@ -253,7 +253,6 @@ KIconLoader *KInstance::iconLoader() const
     DEBUG_CHECK_ALIVE
     if( _iconLoader == 0 ) {
 	_iconLoader = new KIconLoader( _name, dirs() );
-    _iconLoader->enableDelayedIconSetLoading( true );
     }
 
     return _iconLoader;

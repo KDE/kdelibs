@@ -67,7 +67,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
     openDialogs.insert(name, this);
   } else {
     QString genericName;
-    genericName.sprintf("SettingsDialog-%p", this);
+    genericName.sprintf("SettingsDialog-%p", static_cast<void*>(this));
     openDialogs.insert(genericName, this);
     setObjectName(genericName);
   }
@@ -135,7 +135,7 @@ KPageWidgetItem* KConfigDialog::addPageInternal(QWidget *page,
   item->setIcon( KIcon( pixmapName ) );
 
   KPageDialog::addPage( item );
-  
+
   return item;
 }
 

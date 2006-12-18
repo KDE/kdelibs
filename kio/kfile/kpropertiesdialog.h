@@ -82,7 +82,7 @@ public:
    * @param _items the list of items to check.
    * @return true if there are any property pages, otherwise false.
    */
-  static bool canDisplay( KFileItemList _items );
+  static bool canDisplay( const KFileItemList& _items );
 
   /**
    * Brings up a Properties dialog, as shown above.
@@ -115,7 +115,7 @@ public:
    * @param modal tells the dialog whether it should be modal.
    * @param autoShow tells the dialog whether it should show itself automatically.
    */
-  KPropertiesDialog( KFileItemList _items,
+  KPropertiesDialog( const KFileItemList& _items,
                      QWidget *parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
 
@@ -496,7 +496,7 @@ public:
   /**
    * Tests whether the files specified by _items need a 'General' plugin.
    */
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
   /**
    * Called after all plugins applied their changes
@@ -582,7 +582,7 @@ public:
   /**
    * Tests whether the file specified by _items needs a 'Permissions' plugin.
    */
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private Q_SLOTS:
 
@@ -655,7 +655,7 @@ public:
 
   virtual void applyChanges();
 
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private:
   KUrlRequester *URLEdit;
@@ -689,7 +689,7 @@ public:
   virtual ~KBindingPropsPlugin();
 
   virtual void applyChanges();
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private:
 
@@ -717,7 +717,7 @@ public:
 
   virtual void applyChanges();
 
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private Q_SLOTS:
   void slotActivated( int );
@@ -772,14 +772,13 @@ public:
 
   virtual void applyChanges();
 
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 public Q_SLOTS:
   void slotAddFiletype();
   void slotDelFiletype();
   void slotBrowseExec();
   void slotAdvanced();
-  void slotSelectMimetype();
 
 private:
   void checkCommandChanged();
@@ -800,108 +799,6 @@ private:
 
   class KDesktopPropsPluginPrivate;
   KDesktopPropsPluginPrivate* d;
-};
-
-/**
- * Used to edit the files containing
- * [Desktop Entry]
- * Type=Application
- *
- * Such files are used to represent a program in kicker and konqueror.
- * @internal
- * @deprecated replaced with KDesktopPropsPlugin
- */
- /// Remove in KDE4
-class KIO_EXPORT_DEPRECATED KExecPropsPlugin : public KPropsDlgPlugin
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor
-   */
-  KExecPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KExecPropsPlugin();
-
-  virtual void applyChanges();
-
-  static bool supports( KFileItemList _items );
-
-public Q_SLOTS:
-  void slotBrowseExec();
-
-private Q_SLOTS:
-  void enableCheckedEdit();
-  void enableSuidEdit();
-
-private:
-
-    QLabel *terminalLabel;
-    QLabel *suidLabel;
-    KLineEdit *execEdit;
-    QCheckBox *terminalCheck;
-    QCheckBox *suidCheck;
-    KLineEdit *terminalEdit;
-    KLineEdit *suidEdit;
-    KLineEdit *swallowExecEdit;
-    KLineEdit *swallowTitleEdit;
-    QPushButton *execBrowse;
-
-    QString execStr;
-    QString swallowExecStr;
-    QString swallowTitleStr;
-    QString termOptionsStr;
-    bool termBool;
-    bool suidBool;
-    QString suidUserStr;
-
-    class KExecPropsPluginPrivate;
-    KExecPropsPluginPrivate* const d;
-};
-
-/**
- * Used to edit the files containing
- * [Desktop Entry]
- * Type=Application
- *
- * Such files are used to represent a program in kicker and konqueror.
- * @internal
- * @deprecated replaced with KDesktopPropsPlugin
- */
- /// Remove in KDE4
-class KIO_EXPORT_DEPRECATED KApplicationPropsPlugin : public KPropsDlgPlugin
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor
-   */
-  KApplicationPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KApplicationPropsPlugin();
-
-  virtual void applyChanges();
-
-  static bool supports( KFileItemList _items );
-
-public Q_SLOTS:
-  void slotDelExtension();
-  void slotAddExtension();
-
-private Q_SLOTS:
-  void updateButton();
-
-private:
-  void addMimeType( const QString & name );
-
-  QLineEdit *commentEdit;
-  QLineEdit *genNameEdit;
-  QLineEdit *nameEdit;
-  Q3ListBox  *extensionsList;
-  Q3ListBox  *availableExtensionsList;
-  QPushButton *addExtensionButton;
-  QPushButton *delExtensionButton;
-
-  class KApplicationPropsPluginPrivate;
-  KApplicationPropsPluginPrivate* const d;
 };
 
 #endif

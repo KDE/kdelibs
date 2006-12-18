@@ -254,12 +254,14 @@ KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
   delete d;
 }
 
-bool KFileMetaPropsPlugin::supports( KFileItemList _items )
+bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
 #ifdef _GNUC
 #warning TODO: Add support for more than one item
 #endif
-  if (KExecPropsPlugin::supports(_items) || KUrlPropsPlugin::supports(_items))
+  // TODO check that KDesktopPropsPlugin is correct, i.e. that we never want metainfo for
+  // a .desktop file? Used to be that only Application desktop files were filtered out
+  if (KDesktopPropsPlugin::supports(_items) || KUrlPropsPlugin::supports(_items))
      return false; // Having both is redundant.
 
   bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());

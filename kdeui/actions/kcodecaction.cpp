@@ -20,11 +20,12 @@
 #include <kcharsets.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 #include <qtextcodec.h>
 
 // Acording to http://www.iana.org/assignments/ianacharset-mib
-// the default/unknown mib value is 2. 
+// the default/unknown mib value is 2.
 #define MIB_DEFAULT 2
 
 class KCodecAction::Private
@@ -92,14 +93,14 @@ int KCodecAction::mibForName(const QString &codecName, bool *ok) const
     if (codecName == d->defaultAction->text())
         success = true;
     else
-    {    
+    {
         QTextCodec *codec = charsets->codecForName(codecName, success);
         if (!success)
         {
             // Maybe we got a description name instead
             codec = charsets->codecForName(charsets->encodingForName(codecName), success);
         }
-        
+
         if (codec)
             mib = codec->mibEnum();
     }
