@@ -48,7 +48,7 @@ set(kdeui_LIB_SRCS
  actions/krecentfilesaction.cpp
  actions/kselectaction.cpp
  actions/kseparatoraction.cpp
- actions/kstdaction.cpp
+ actions/kstandardaction.cpp
  actions/ktoggleaction.cpp
  actions/ktoggletoolbaraction.cpp
  actions/ktogglefullscreenaction.cpp
@@ -224,7 +224,7 @@ install( FILES
  actions/krecentfilesaction.h
  actions/kselectaction.h
  actions/kseparatoraction.h
- actions/kstdaction.h
+ actions/kstandardaction.h
  actions/ktoggleaction.h
  actions/ktoggletoolbaraction.h
  actions/ktogglefullscreenaction.h

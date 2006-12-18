@@ -38,7 +38,7 @@
 #include <k3spell.h>
 #include <kurlcompletion.h>
 #include <kwin.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kactioncollection.h>
 
 #include <QAbstractItemView>
@@ -325,7 +325,7 @@ LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view
     m_kwp->setIsRedirected( true );
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
-    m_spellAction = KStdAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
+    m_spellAction = KStandardAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
 }
 
 LineEditWidget::~LineEditWidget()
@@ -1326,9 +1326,9 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     setMouseTracking(true);
 
     KActionCollection *ac = new KActionCollection(this);
-    m_findAction = KStdAction::find( this, SLOT( slotFind() ), ac );
-    m_findNextAction = KStdAction::findNext( this, SLOT( slotFindNext() ), ac );
-    m_replaceAction = KStdAction::replace( this, SLOT( slotReplace() ), ac );
+    m_findAction = KStandardAction::find( this, SLOT( slotFind() ), ac );
+    m_findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), ac );
+    m_replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), ac );
 }
 
 void TextAreaWidget::scrollContentsBy( int dx, int dy )

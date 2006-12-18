@@ -33,7 +33,7 @@
 #include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstdaccel.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>
 #include <kseparatoraction.h>
@@ -468,7 +468,7 @@ void KBookmarkMenu::addEditBookmarks()
   if( m_pOwner && !m_pOwner->editBookmarkEntry() || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
+  KAction * m_paEditBookmarks = KStandardAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
                                                              m_actionCollection, "edit_bookmarks" );
   m_parentMenu->addAction(m_paEditBookmarks);
   m_paEditBookmarks->setToolTip( i18n( "Edit your bookmark collection in a separate window" ) );

@@ -40,13 +40,13 @@
 #include <QDockWidget>
 #include <QTextDocument>
 
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
 
 #include "kacceleratormanager_private.h"
-#include <kstdaction_p.h>
+#include <kstandardaction_p.h>
 
 
 /*********************************************************************
@@ -144,7 +144,7 @@ QMap<QWidget*, int> KAcceleratorManagerPrivate::ignored_widgets;
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
 {
     if (!kaccmp_sns)
-        kaccmp_sns_d.setObject(kaccmp_sns, new QStringList(KStdAction::internal_stdNames()));
+        kaccmp_sns_d.setObject(kaccmp_sns, new QStringList(KStandardAction::internal_stdNames()));
         return kaccmp_sns->contains(str);
 }
 

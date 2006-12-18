@@ -39,7 +39,7 @@
 #include <ktoolbar.h>
 #include <kmimetype.h>
 #include <kactioncollection.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 
 KPreviewProc::KPreviewProc()
 : KProcess()
@@ -153,7 +153,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	// create main view and actions
 	setMainWidget(d->mainwidget_);
 	if (previewOnly)
-		KStdAction::close(this, SLOT(reject()), d->actions_, "close_print");
+		KStandardAction::close(this, SLOT(reject()), d->actions_, "close_print");
 	else
 	{
     KAction *action = 0;

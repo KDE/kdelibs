@@ -46,7 +46,7 @@
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <kmenu.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <ktoggleaction.h>
 #include <kxmlguifactory.h>
 
@@ -465,7 +465,7 @@ void KToolBar::Private::slotContextAboutToShow()
 
   // try to find "configure toolbars" action
   QAction *configureAction = 0;
-  const char* actionName = KStdAction::name( KStdAction::ConfigureToolbars );
+  const char* actionName = KStandardAction::name( KStandardAction::ConfigureToolbars );
   if ( xmlguiClient )
     configureAction = xmlguiClient->actionCollection()->action( actionName );
 
@@ -531,7 +531,7 @@ void KToolBar::Private::slotContextAboutToHide()
 
   // Unplug the configure toolbars action too, since it's afterwards anyway
   QAction *configureAction = 0;
-  const char* actionName = KStdAction::name( KStdAction::ConfigureToolbars );
+  const char* actionName = KStandardAction::name( KStandardAction::ConfigureToolbars );
   if ( xmlguiClient )
     configureAction = xmlguiClient->actionCollection()->action( actionName );
 

@@ -13,7 +13,7 @@
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kicon.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kstandarddirs.h>
 #include <kxmlguifactory.h>
 #include <kactionmenu.h>
@@ -78,8 +78,8 @@ testWindow::testWindow (QWidget *parent)
 
 
 
-    KStdAction::configureToolbars( this, SLOT( configureToolbars() ),  actionCollection() );
-	KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
+    KStandardAction::configureToolbars( this, SLOT( configureToolbars() ),  actionCollection() );
+	KStandardAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
 
 
     /**************************************************/

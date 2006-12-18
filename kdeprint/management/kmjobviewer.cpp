@@ -37,7 +37,7 @@
 #include <klocale.h>
 #include <kmenu.h>
 #include <kaction.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kapplication.h>
@@ -339,9 +339,9 @@ void KMJobViewer::initActions()
 	}
 	else
 	{// stand-alone application
-		KStdAction::quit(kapp,SLOT(quit()),actionCollection());
-		KStdAction::close(this,SLOT(slotClose()),actionCollection());
-		KStdAction::preferences(this, SLOT(slotConfigure()), actionCollection());
+		KStandardAction::quit(kapp,SLOT(quit()),actionCollection());
+		KStandardAction::close(this,SLOT(slotClose()),actionCollection());
+		KStandardAction::preferences(this, SLOT(slotConfigure()), actionCollection());
 
 		// refresh action
 		KAction *action = new KAction(i18n("Refresh"), actionCollection(),"refresh");

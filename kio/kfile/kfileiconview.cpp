@@ -38,7 +38,7 @@
 #include <kglobalsettings.h>
 #include <kio/previewjob.h>
 #include <ktoggleaction.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 
@@ -78,9 +78,9 @@ public:
         previews = new KToggleAction( i18n("Thumbnail Previews"),
                                       parent->actionCollection(),
                                       "show previews" );
-        zoomIn = KStdAction::zoomIn( parent, SLOT( zoomIn() ),
+        zoomIn = KStandardAction::zoomIn( parent, SLOT( zoomIn() ),
                                      parent->actionCollection(), "zoomIn" );
-        zoomOut = KStdAction::zoomOut( parent, SLOT( zoomOut() ),
+        zoomOut = KStandardAction::zoomOut( parent, SLOT( zoomOut() ),
                                      parent->actionCollection(), "zoomOut" );
 
         connect( previews, SIGNAL( toggled( bool )),

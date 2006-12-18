@@ -40,7 +40,7 @@
 #include <klocale.h>
 #include <kmenu.h>
 #include <kstdaccel.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kstdguiitem.h>
 #include <ktoolinvocation.h>
 
@@ -110,12 +110,12 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 
   if (actions)
   {
-    KStdAction::helpContents(this, SLOT(appHelpActivated()), actions);
+    KStandardAction::helpContents(this, SLOT(appHelpActivated()), actions);
     if (showWhatsThis)
-      KStdAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
-    KStdAction::reportBug(this, SLOT(reportBug()), actions);
-    KStdAction::aboutApp(this, SLOT(aboutApplication()), actions);
-    KStdAction::aboutKDE(this, SLOT(aboutKDE()), actions);
+      KStandardAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
+    KStandardAction::reportBug(this, SLOT(reportBug()), actions);
+    KStandardAction::aboutApp(this, SLOT(aboutApplication()), actions);
+    KStandardAction::aboutKDE(this, SLOT(aboutKDE()), actions);
   }
 }
 

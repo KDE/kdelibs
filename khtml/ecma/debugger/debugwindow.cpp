@@ -39,7 +39,7 @@
 #include <kconfigbase.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kxmlguifactory.h>
 
 #include <ktexteditor/highlightinginterface.h>

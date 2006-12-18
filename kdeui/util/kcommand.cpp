@@ -21,7 +21,7 @@
 #include "kcommand.h"
 #include <kaction.h>
 #include <kstdaccel.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
@@ -117,8 +117,8 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
     }
     else
     {
-        KStdAction::undo( this, SLOT( undo() ), actionCollection );
-        KStdAction::redo( this, SLOT( redo() ), actionCollection );
+        KStandardAction::undo( this, SLOT( undo() ), actionCollection );
+        KStandardAction::redo( this, SLOT( redo() ), actionCollection );
     }
     clear();
 }
@@ -296,7 +296,7 @@ KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection
     : KToolBarPopupAction( KIcon( type == Undo ? "undo" : "redo" ),
                            QString(), // text is set in clear() on start
                            actionCollection,
-                           KStdAction::stdName( type == Undo ? KStdAction::Undo : KStdAction::Redo ) ),
+                           KStandardAction::stdName( type == Undo ? KStandardAction::Undo : KStandardAction::Redo ) ),
       m_type( type ),
       m_commandHistory( commandHistory ),
       d(0)

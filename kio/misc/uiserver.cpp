@@ -50,7 +50,7 @@
 #include <kmenu.h>
 #include <kaction.h>
 #include <kdialog.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 
 #include "observer.h" // for static methods only
 #include "kio/defaultprogress.h"

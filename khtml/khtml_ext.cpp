@@ -62,7 +62,7 @@
 #include <kinputdialog.h>
 #include <ktemporaryfile.h>
 #include "khtml_factory.h"
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 
@@ -425,7 +425,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   if (hasSelection)
   {
-      KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
+      KAction* copyAction = KStandardAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
       copyAction->setText(i18n("&Copy Text"));
       copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
       actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );

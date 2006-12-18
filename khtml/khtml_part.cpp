@@ -85,7 +85,7 @@ using namespace DOM;
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kmessagebox.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
 #include <ktemporaryfile.h>
@@ -267,7 +267,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), actionCollection(), "saveBackground" );
   connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
 
-  d->m_paSaveDocument = KStdAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
+  d->m_paSaveDocument = KStandardAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   if ( parentPart() )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
 
@@ -386,16 +386,16 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
   }
 
-  d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  d->m_paFind = KStandardAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
   d->m_paFind->setWhatsThis( i18n( "Find text<p>"
 				   "Shows a dialog that allows you to find text on the displayed page." ) );
 
-  d->m_paFindNext = KStdAction::findNext( this, SLOT( slotFindNext() ), actionCollection(), "findNext" );
+  d->m_paFindNext = KStandardAction::findNext( this, SLOT( slotFindNext() ), actionCollection(), "findNext" );
   d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
 				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  d->m_paFindPrev = KStdAction::findPrev( this, SLOT( slotFindPrev() ), actionCollection(), "findPrevious" );
+  d->m_paFindPrev = KStandardAction::findPrev( this, SLOT( slotFindPrev() ), actionCollection(), "findPrevious" );
   d->m_paFindPrev->setWhatsThis( i18n( "Find previous<p>"
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
@@ -427,7 +427,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 					 "Some pages have several frames. To print only a single frame, click "
 					 "on it and then use this function." ) );
 
-  d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
+  d->m_paSelectAll = KStandardAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
   if ( parentPart() )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 

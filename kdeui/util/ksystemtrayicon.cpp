@@ -28,7 +28,7 @@
 #include "kshortcut.h"
 #include "ksystemtrayicon.h"
 #include "kactioncollection.h"
-#include "kstdaction.h"
+#include "kstandardaction.h"
 
 #ifdef Q_WS_X11
 #include <kwin.h>
@@ -96,7 +96,7 @@ void KSystemTrayIcon::init( QWidget* parent )
     connect( d->menu, SIGNAL( aboutToShow() ), this, SLOT( contextMenuAboutToShow() ) );
     setContextMenu( d->menu );
 
-    KStdAction::quit( this, SLOT( maybeQuit() ), d->actionCollection );
+    KStandardAction::quit( this, SLOT( maybeQuit() ), d->actionCollection );
 
     if ( parent )
     {
@@ -143,7 +143,7 @@ void KSystemTrayIcon::contextMenuAboutToShow( )
             d->menu->addAction( action );
         }
 
-        action = d->actionCollection->action( KStdAction::name( KStdAction::Quit ) );
+        action = d->actionCollection->action( KStandardAction::name( KStandardAction::Quit ) );
 
         if ( action )
         {

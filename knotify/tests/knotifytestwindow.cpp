@@ -9,7 +9,7 @@
 #include <kstatusbar.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kaction.h>
 #include <kstdaccel.h>
 #include <kxmlguifactory.h>
@@ -28,8 +28,8 @@ KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
 	setCentralWidget(w);
   
 	// set up the actions
-	KStdAction::quit( this, SLOT( close() ), actionCollection() );
-	KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
+	KStandardAction::quit( this, SLOT( close() ), actionCollection() );
+	KStandardAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
 
 	createGUI();
 	

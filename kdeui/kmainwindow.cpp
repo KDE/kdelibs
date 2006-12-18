@@ -32,7 +32,7 @@
 #include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
-#include "kstdaction.h"
+#include "kstandardaction.h"
 
 #include <QCloseEvent>
 #include <QDesktopWidget>
@@ -476,7 +476,7 @@ void KMainWindow::setupGUI( StandardWindowOptions options, const QString & xmlfi
 
 void KMainWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
     if( options & Keys ){
-        KStdAction::keyBindings(guiFactory(),
+        KStandardAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());
     }
 
@@ -486,7 +486,7 @@ void KMainWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, co
 
     if( options & ToolBar ){
         setStandardToolBarMenuEnabled( true );
-        KStdAction::configureToolbars(this,
+        KStandardAction::configureToolbars(this,
                       SLOT(configureToolbars() ), actionCollection());
     }
 
@@ -786,7 +786,7 @@ bool KMainWindow::isStandardToolBarMenuEnabled() const
 
 void KMainWindow::createStandardStatusBarAction(){
   if(!d->showStatusBarAction){
-    d->showStatusBarAction = KStdAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
+    d->showStatusBarAction = KStandardAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
     KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
     connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
     d->showStatusBarAction->setChecked(sb->isHidden());

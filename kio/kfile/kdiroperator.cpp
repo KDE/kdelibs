@@ -40,7 +40,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
@@ -1249,17 +1249,17 @@ void KDirOperator::setupActions()
 
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
 
-    upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
+    upAction = KStandardAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Folder") );
 
-    backAction = KStdAction::back( this, SLOT( back() ), myActionCollection, "back" );
+    backAction = KStandardAction::back( this, SLOT( back() ), myActionCollection, "back" );
 
-    forwardAction = KStdAction::forward( this, SLOT(forward()), myActionCollection, "forward" );
+    forwardAction = KStandardAction::forward( this, SLOT(forward()), myActionCollection, "forward" );
 
-    homeAction = KStdAction::home( this, SLOT( home() ), myActionCollection, "home" );
+    homeAction = KStandardAction::home( this, SLOT( home() ), myActionCollection, "home" );
     homeAction->setText(i18n("Home Folder"));
 
-    reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
+    reloadAction = KStandardAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     reloadAction->setText( i18n("Reload") );
     reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 

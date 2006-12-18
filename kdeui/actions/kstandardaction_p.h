@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KSTDACTION_PRIVATE_H
-#define KSTDACTION_PRIVATE_H
+#ifndef KSTANDARDACTION_PRIVATE_H
+#define KSTANDARDACTION_PRIVATE_H
 
 #include <QtGui/QApplication>
 
@@ -25,12 +25,12 @@
 #include <klocale.h>
 #include <kstdaccel.h>
 
-namespace KStdAction
+namespace KStandardAction
 {
 
-struct KStdActionInfo
+struct KStandardActionInfo
 {
-  StdAction id;
+  StandardAction id;
   KStdAccel::StdAccel idAccel;
   const char* psName;
   const char* psLabel;
@@ -38,7 +38,7 @@ struct KStdActionInfo
   const char* psIconName;
 };
 
-static const KStdActionInfo g_rgActionInfo[] =
+static const KStandardActionInfo g_rgActionInfo[] =
 {
   { New,           KStdAccel::New, "file_new", I18N_NOOP("&New"), 0, "filenew" },
   { Open,          KStdAccel::Open, "file_open", I18N_NOOP("&Open..."), 0, "fileopen" },
@@ -115,7 +115,7 @@ static const KStdActionInfo g_rgActionInfo[] =
   { ActionNone, KStdAccel::AccelNone, 0, 0, 0, 0 }
 };
 
-inline const KStdActionInfo* infoPtr( StdAction id )
+inline const KStandardActionInfo* infoPtr( StandardAction id )
 {
   for ( uint i = 0; g_rgActionInfo[i].id != ActionNone; i++ ) {
     if( g_rgActionInfo[i].id == id )

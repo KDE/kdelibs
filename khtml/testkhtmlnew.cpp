@@ -19,7 +19,7 @@
 #include <kcombobox.h>
 #include <kpushbutton.h>
 #include <kicon.h>
-#include <kstdaction.h>
+#include <kstandardaction.h>
 
 #include "css/cssstyleselector.h"
 
@@ -180,7 +180,7 @@ void TestKHTML::setupActions()
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 
-    KStdAction::quit( this, SLOT(kpp->quit()), m_part->actionCollection() );
+    KStandardAction::quit( this, SLOT(kpp->quit()), m_part->actionCollection() );
 
     guiFactory()->addClient(m_part);
 }

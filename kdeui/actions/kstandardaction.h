@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KSTDACTION_H
-#define KSTDACTION_H
+#ifndef KSTANDARDACTION_H
+#define KSTANDARDACTION_H
 
 class QObject;
 class QStringList;
@@ -39,7 +39,7 @@ class KToggleFullScreenAction;
  * conform to the KDE UI Style Guide
  * @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html .
  *
- * All of the documentation for KAction holds for KStdAction
+ * All of the documentation for KAction holds for KStandardAction
  * also.  When in doubt on how things work, check the KAction
  * documention first.
  *
@@ -57,7 +57,7 @@ class KToggleFullScreenAction;
  * You could drop that and replace it with:
  *
  * \code
- * KAction *newAct = KStdAction::openNew(this, SLOT(fileNew()),
+ * KAction *newAct = KStandardAction::openNew(this, SLOT(fileNew()),
  *                                       actionCollection());
  * \endcode
  *
@@ -75,7 +75,7 @@ class KToggleFullScreenAction;
  * Basically, the XML building code matches names in the XML code with
  * the internal names of the actions.  You can find out the internal
  * names of each of the standard actions by using the stdName
- * action like so: KStdAction::stdName(KStdAction::Cut) would return
+ * action like so: KStandardAction::stdName(KStandardAction::Cut) would return
  * 'edit_cut'.  The XML building code will match 'edit_cut' to the
  * attribute in the global XML file and place your action there.
  *
@@ -83,7 +83,7 @@ class KToggleFullScreenAction;
  * do something like:
  *
  * \code
- * (void)KStdAction::cut(this, SLOT(editCut()), actionCollection(), "my_cut");
+ * (void)KStandardAction::cut(this, SLOT(editCut()), actionCollection(), "my_cut");
  * \endcode
  *
  * Now, in your local XML resource file (e.g., yourappui.rc), simply
@@ -96,29 +96,29 @@ class KToggleFullScreenAction;
  * could do it the hard way:
  *
  * \code
- * KAction *cut = actionCollection()->action(KStdAction::stdName(KStdAction::Cut));
+ * KAction *cut = actionCollection()->action(KStandardAction::stdName(KStandardAction::Cut));
  * \endcode
  *
  * Another non-standard usage concerns instantiating the action in the
  * first place.  Usually, you would use the member functions as
- * shown above (e.g., KStdAction::cut(this, SLOT, parent)).  You
+ * shown above (e.g., KStandardAction::cut(this, SLOT, parent)).  You
  * may, however, do this using the enums provided.  This author can't
  * think of a reason why you would want to, but, hey, if you do,
  * here's how:
  *
  * \code
- * (void)KStdAction::action(KStdAction::New, this, SLOT(fileNew()), actionCollection());
- * (void)KStdAction::action(KStdAction::Cut, this, SLOT(editCut()), actionCollection());
+ * (void)KStandardAction::action(KStandardAction::New, this, SLOT(fileNew()), actionCollection());
+ * (void)KStandardAction::action(KStandardAction::Cut, this, SLOT(editCut()), actionCollection());
  * \endcode
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-namespace KStdAction
+namespace KStandardAction
 {
   /**
    * The standard menubar and toolbar actions.
    */
-  enum StdAction {
+  enum StandardAction {
     ActionNone,
 
     // File Menu
@@ -156,40 +156,40 @@ namespace KStdAction
     ConfigureNotifications,
     FullScreen,
     Clear,
-        PasteText
+    PasteText
   };
 
   /**
    * Creates an action corresponding to the
-   * KStdAction::StdAction enum.
+   * KStandardAction::StandardAction enum.
    */
-  KDEUI_EXPORT KAction* create( StdAction id, const char *name,
+  KDEUI_EXPORT KAction* create( StandardAction id, const char *name,
                                 const QObject *recvr, const char *slot,
                                 KActionCollection* parent );
 
-  inline KAction* create( StdAction id,
+  inline KAction* create( StandardAction id,
                           const QObject *recvr, const char *slot,
                           KActionCollection* parent )
   {
-    return KStdAction::create( id, 0, recvr, slot, parent );
+    return KStandardAction::create( id, 0, recvr, slot, parent );
   }
 
   /**
   * @obsolete. Creates an action corresponding to the
-  * KStdAction::StdAction enum.
+  * KStandardAction::StandardAction enum.
   */
-  inline KAction *action(StdAction act_enum,
+  inline KAction *action(StandardAction act_enum,
     const QObject *recvr, const char *slot,
     KActionCollection *parent, const char *name = 0L )
-    { return KStdAction::create( act_enum, name, recvr, slot, parent ); }
+    { return KStandardAction::create( act_enum, name, recvr, slot, parent ); }
 
   /**
    * This will return the internal name of a given standard action.
    */
-  KDEUI_EXPORT const char* name( StdAction id );
+  KDEUI_EXPORT const char* name( StandardAction id );
 
   /// @obsolete. Use name()
-  inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
+  inline const char* stdName(StandardAction act_enum) { return name( act_enum ); }
 
   /**
    * Returns a list of all standard names. Used by KAccelManager
@@ -558,7 +558,7 @@ namespace KStdAction
    * Display the configure key bindings dialog.
    *
    *  Note that you might be able to use the pre-built KXMLGUIFactory's function:
-   *  KStdAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
+   *  KStandardAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
    */
   KDEUI_EXPORT KAction *keyBindings( const QObject *recvr, const char *slot,
                                      KActionCollection* parent, const char *name = 0 );
