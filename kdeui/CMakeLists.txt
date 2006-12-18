@@ -26,20 +26,14 @@ add_subdirectory( tests )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
- ktoolbar.cpp
- kurllabel.cpp
- kmenubar.cpp
- kstatusbar.cpp
  kmainwindow.cpp
  krestrictedline.cpp
  ktextbrowser.cpp
- khelpmenu.cpp
  kmenumenuhandler_p.cpp
  kcmodule.cpp
  kwindowlistmenu.cpp
  kmainwindowiface.cpp
  kstdguiitem.cpp
- ktoolbarhandler.cpp
  ksplashscreen.cpp
  klanguagebutton.cpp
  kwhatsthismanager.cpp
@@ -145,22 +139,28 @@ set(kdeui_LIB_SRCS
  widgets/keditlistbox.cpp
  widgets/kfontrequester.cpp
  widgets/khbox.cpp
+ widgets/khelpmenu.cpp
  widgets/kkeybutton.cpp
  widgets/kled.cpp
  widgets/klineedit.cpp
  widgets/kmenu.cpp
+ widgets/kmenubar.cpp
  widgets/knuminput.cpp
  widgets/kpushbutton.cpp
  widgets/kruler.cpp
  widgets/kselector.cpp
  widgets/kseparator.cpp
  widgets/ksqueezedtextlabel.cpp
+ widgets/kstatusbar.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
  widgets/ktextedit.cpp
  widgets/ktimezonewidget.cpp
+ widgets/ktoolbar.cpp
+ widgets/kurllabel.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
+ xmlgui/ktoolbarhandler.cpp
  xmlgui/kxmlguiclient.cpp
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
@@ -205,14 +205,9 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
- kstatusbar.h
  kmainwindow.h
- ktoolbar.h
- kmenubar.h
  krestrictedline.h
- kurllabel.h
  ktextbrowser.h
- khelpmenu.h
  kcmodule.h
  kwindowlistmenu.h
  kstdguiitem.h
@@ -306,21 +301,26 @@ install( FILES
  widgets/kanimatedbutton.h
  widgets/karrowbutton.h
  widgets/kdatepicker.h
- widgets/kmenu.h
  widgets/kfontrequester.h
- widgets/knuminput.h
- widgets/klineedit.h
  widgets/kcolorbutton.h
- widgets/kbuttonbox.h
- widgets/kdialogbuttonbox.h
- widgets/kled.h
- widgets/keditlistbox.h
- widgets/kkeybutton.h
- widgets/kcharselect.h
- widgets/kcombobox.h
- widgets/kpushbutton.h
  widgets/kcolorcombo.h
  widgets/kcompletionbox.h
+ widgets/kcombobox.h
+ widgets/kbuttonbox.h
+ widgets/kbuttongroup.h
+ widgets/kcharselect.h
+ widgets/kcolorvalueselector.h
+ widgets/kdialogbuttonbox.h
+ widgets/keditlistbox.h
+ widgets/khbox.h
+ widgets/khelpmenu.h
+ widgets/kkeybutton.h
+ widgets/kled.h
+ widgets/klineedit.h
+ widgets/kmenu.h
+ widgets/kmenubar.h
+ widgets/knuminput.h
+ widgets/kpushbutton.h
  widgets/kseparator.h
  widgets/ksqueezedtextlabel.h
  widgets/kdatewidget.h
@@ -330,12 +330,12 @@ install( FILES
  widgets/ktimezonewidget.h
  widgets/ktabbar.h
  widgets/ktabwidget.h
- widgets/khbox.h
- widgets/kvbox.h
- widgets/kbuttongroup.h
  widgets/kruler.h
  widgets/kselector.h
- widgets/kcolorvalueselector.h
+ widgets/kstatusbar.h
+ widgets/ktoolbar.h
+ widgets/kurllabel.h
+ widgets/kvbox.h
  widgets/kxyselector.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
