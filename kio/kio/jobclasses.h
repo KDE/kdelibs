@@ -325,7 +325,6 @@ namespace KIO {
 
     private:
         QTimer *m_speedTimer;
-        QPointer<QWidget> m_window;
 
         class JobPrivate;
         JobPrivate *d;

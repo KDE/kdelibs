@@ -128,7 +128,7 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
-    job->ui()->setWindow( m_window );
+    job->ui()->setWindow( ui()->window());
 }
 
 void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
