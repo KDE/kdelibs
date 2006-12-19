@@ -1,10 +1,12 @@
 #include "kjserrordlg.h"
+#include "kjserrordlg.moc"
 
 KJSErrorDlg::KJSErrorDlg( QWidget *parent )
   : QDialog( parent )
 {
   setupUi( this );
-
+  connect(_clear,SIGNAL(clicked()),this,SLOT(clear()));
+  connect(_close,SIGNAL(clicked()),this,SLOT(hide()));
   init();
 }
 

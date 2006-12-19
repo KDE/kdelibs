@@ -7,13 +7,14 @@
 
 class KJSErrorDlg : public QDialog, public Ui_KJSErrorDlgBase
 {
+  Q_OBJECT
   public:
     KJSErrorDlg( QWidget *parent = 0 );
 
     void addError( const QString &error );
     void setURL( const QString &url );
+  protected slots:
     void clear();
-
   private:
     void init();
 };
