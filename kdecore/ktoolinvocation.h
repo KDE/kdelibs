@@ -156,10 +156,10 @@ public:
    *
    * @param _name the name of the service
    * @param URL if not empty this URL is passed to the service
-   * @param error On failure, @p error contains a description of the error
+   * @param error On failure, error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param serviceName On success, @p serviceName contains the DCOP name
+   * @param serviceName On success, serviceName contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -171,7 +171,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QString &URL,
-                                 QString *error=0, QString *serviceNAme=0, int *pid=0,
+                                 QString *error=0, QString *serviceName=0, int *pid=0,
                                  const QByteArray &startup_id = "", bool noWait = false );
 
   /**

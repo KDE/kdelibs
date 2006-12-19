@@ -117,7 +117,7 @@ public:
      * @brief Display a long message of a certain type.
      * A long message span on multiple lines and can have a caption.
      *
-     * @param messageType Currrent type of message. See MessageType enum.
+     * @param type Currrent type of message. See MessageType enum.
      * @param text Long message to be displayed.
      * @param caption Caption to be used. This is optional.
      */ 

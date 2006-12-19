@@ -532,7 +532,8 @@ public:
    * This template allows to create a component from a list of services,
    * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
    *
-   * @param service The service describing the library to open
+   * @param begin The start iterator to the service describing the library to open
+   * @param end The end iterator to the service describing the library to open
    * @param parent The parent object (see QObject constructor)
    * @param args A list of string arguments, passed to the factory and possibly
    *             to the component (see KLibFactory)

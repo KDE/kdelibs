@@ -62,8 +62,6 @@ public:
    * Creates a new KServiceOffer.
    * @param _service a pointer to the KService
    * @param _pref the user's preference value, must be positive, bigger is better
-   * @param _default true if the service should be used as
-   *                 default
    */
   KServiceOffer( const KService::Ptr& _service, int _pref );
 

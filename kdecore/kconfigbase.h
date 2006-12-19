@@ -1677,7 +1677,7 @@ public:
 
    /**
     * Delete all entries in the entire group
-    * @param bFlags flags passed to KConfigBase::deleteGroup
+    * @param pFlags flags passed to KConfigBase::deleteGroup
     */
    void deleteGroup(WriteConfigFlags pFlags=Normal);
 
