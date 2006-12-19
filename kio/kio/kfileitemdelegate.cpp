@@ -190,7 +190,7 @@ QString KFileItemDelegate::Private::elideText(QTextLayout &layout, const QStyleO
 
     // ### Handle text with line separators
 
-    return QString::null;
+    return QString();
 }
 
 
@@ -217,7 +217,7 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
                                                 const KFileItem *item) const
 {
     if (additionalInformation == KFileItemDelegate::NoInformation || !item || !verticalLayout(option))
-        return QString::null;
+        return QString();
 
     switch (additionalInformation)
     {
@@ -252,7 +252,7 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
             return item->isMimeTypeKnown() ? item->mimeComment() : i18n("Unknown");
 
         default:
-            return QString::null;
+            return QString();
     }
 }
 
@@ -641,7 +641,7 @@ QString KFileItemDelegate::display(const QModelIndex &index) const
             return KGlobal::locale()->formatLong(value.toInt());
 
         default:
-            return QString::null;
+            return QString();
     }
 }
 
