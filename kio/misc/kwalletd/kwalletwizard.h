@@ -5,14 +5,15 @@
 
 class KWalletWizard : public Q3Wizard, public Ui_KWalletWizardBase
 {
+  Q_OBJECT
   public:
     KWalletWizard( QWidget *parent = 0 );
-
-    void passwordPageUpdate();
     void init();
+    void destroy();
+  protected slots:    
+    void passwordPageUpdate();
     void setAdvanced();
     void setBasic();
-    void destroy();
 };
 
 #endif

@@ -1,9 +1,20 @@
 #include "kwalletwizard.h"
-
+#include "kwalletwizard.moc"
 KWalletWizard::KWalletWizard( QWidget *parent )
   : Q3Wizard( parent )
 {
   setupUi( this );
+  connect(_useWallet, SIGNAL(toggled(bool)),textLabel1_2,SLOT(setEnabled(bool)));
+  connect(_useWallet, SIGNAL(toggled(bool)),textLabel2_2,SLOT(setEnabled(bool)));
+  connect(_useWallet, SIGNAL(toggled(bool)),_pass1,SLOT(setEnabled(bool)));
+  connect(_useWallet, SIGNAL(toggled(bool)),_pass2,SLOT(setEnabled(bool)));
+  connect(_useWallet, SIGNAL(clicked()), _pass1,SLOT(setFocus()));
+  connect(_useWallet, SIGNAL(clicked()), this, SLOT(passwordPageUpdate()));
+  connect(_pass1, SIGNAL(textChanged(const QString&)),this,SLOT(passwordPageUpdate()));
+  connect(_pass2, SIGNAL(textChanged(const QString&)),this,SLOT(passwordPageUpdate()));
+  connect(_advanced,SIGNAL(clicked()),this,SLOT(setAdvanced()));
+  connect(_basic,SIGNAL(clicked()),this, SLOT(setBasic()));
+
 }
 
 void KWalletWizard::passwordPageUpdate()
