@@ -135,7 +135,7 @@ signals:
     /**
      * The file has reached this position. Emitted after seek.
      * @param job the job that emitted this signal
-     * @param offeset the new position
+     * @param offset the new position
      */
     void position( KIO::Job *job, KIO::filesize_t offset);
 

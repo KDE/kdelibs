@@ -196,10 +196,11 @@ public:
     /**
      * Constructs a new KDataToolAction.
      *
-     * @param text The text that will be displayed.
-     * @param info the corresponding KDataToolInfo
-     * @param command the command of the action
-     * @param parent This action's parent.
+     * @param text The text that will be displayed
+     * @param info The corresponding KDataToolInfo
+     * @param command The command of the action
+     * @param parent This action's parent
+     * @param name The name of the action
      */
     KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, KActionCollection* parent, const QString& name );
 

@@ -140,6 +140,7 @@ namespace KIO {
 	/**
 	 * Creates a new slave.
 	 *
+	 * @param protocol the protocol
 	 * @param error is the error code on failure and undefined else.
 	 * @param error_text is the error text on failure and undefined else.
 	 *

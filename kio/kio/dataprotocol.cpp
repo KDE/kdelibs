@@ -76,8 +76,9 @@ struct DataHeader {
   QString charset;		// shortcut to charset (it always exists)
 };
 
-/** returns the position of the first occurrence of any of the given characters
-  * @p c1 to @p c3 or buf.length() if none is contained.
+/** returns the position of the first occurrence of any of the given
+  * characters @p c1 to @p c3 or buf.length() if none is contained.
+  *
   * @param buf buffer where to look for c
   * @param begin zero-indexed starting position
   * @param c1 character to find

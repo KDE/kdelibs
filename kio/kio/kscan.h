@@ -95,11 +95,10 @@ protected:
      * Constructs the scan dialog. If you implement an own dialog, you can
      * customize it with the usual KPageDialog flags.
      *
-     * @param dialogFace the KPageDialog::FaceType
-     * @param buttonMask a ORed mask of all buttons (see
+     * @param dialogFace The KPageDialog::FaceType
+     * @param buttonMask An ORed mask of all buttons (see
      * KDialog::ButtonCode)
-     * @param parent the QWidget's parent, or 0
-     * @param modal if true the dialog is model
+     * @param parent The QWidget's parent, or 0
      * @see KPageDialog
      */
     KScanDialog( int dialogFace = Tabbed, int buttonMask = Close|Help,
@@ -183,7 +182,6 @@ public:
      * Your library should reimplement this method to return your KScanDialog
      * derived dialog.
      * @param parent the QWidget's parent, or 0
-     * @param modal if true the dialog is model
      */
     virtual KScanDialog * createDialog( QWidget *parent=0 ) = 0;
 

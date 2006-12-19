@@ -86,12 +86,7 @@ namespace KIO {
         /**
          * Abort this job.
          * This kills all subjobs and deletes the job.
-	 *
-         * @param quietly if false, Job will emit signal result
-         * and ask kio_uiserver to close the progress window.
-         * @p quietly is set to true for subjobs. Whether applications
-         * should call with true or false depends on whether they rely
-         * on result being emitted or not.
+         *
          */
         virtual bool doKill();
 

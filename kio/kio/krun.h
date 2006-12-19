@@ -273,8 +273,8 @@ public:
 
   /**
    * Processes a Exec= line as found in .desktop files.
-   * @param service the service to extract information from.
-   * @param urls The urls the service should open.
+   * @param _service the service to extract information from.
+   * @param _urls The urls the service should open.
    * @param tempFiles if true and urls are local files, they will be deleted
    *        when the application exits.
    * @param suggestedFileName see setSuggestedFileName
