@@ -46,7 +46,7 @@
 /* Return the offset to UTC in the current time zone at the specified UTC time.
  * The thread-safe function localtime_r() is used in preference if available.
  */
-static int gmtoff(time_t t)
+int gmtoff(time_t t)
 {
 #ifdef _POSIX_THREAD_SAFE_FUNCTIONS
     tm tmtime;

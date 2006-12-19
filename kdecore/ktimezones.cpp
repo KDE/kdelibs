@@ -32,53 +32,7 @@
 #include <kdebug.h>
 #include <ktimezones.h>
 
-
-
-/* Return the offset to UTC in the current time zone at the specified UTC time.
- * The thread-safe function localtime_r() is used in preference if available.
- */
-int gmtoff(time_t t)
-{
-#ifdef _POSIX_THREAD_SAFE_FUNCTIONS
-    tm tmtime;
-    if (!localtime_r(&t, &tmtime))
-        return 0;
-#ifdef HAVE_TM_GMTOFF
-    return tmtime.tm_gmtoff;
-#else
-    int lwday = tmtime.tm_wday;
-    int lt = 3600*tmtime.tm_hour + 60*tmtime.tm_min + tmtime.tm_sec;
-    if (!gmtime_r(&t, &tmtime))
-        return 0;
-    int uwday = tmtime.tm_wday;
-    int ut = 3600*tmtime.tm_hour + 60*tmtime.tm_min + tmtime.tm_sec;
-#endif
-#else
-    tm *tmtime = localtime(&t);
-    if (!tmtime)
-        return 0;
-#ifdef HAVE_TM_GMTOFF
-    return tmtime->tm_gmtoff;
-#else
-    int lwday = tmtime->tm_wday;
-    int lt = 3600*tmtime->tm_hour + 60*tmtime->tm_min + tmtime->tm_sec;
-    tmtime = gmtime(&t);
-    int uwday = tmtime->tm_wday;
-    int ut = 3600*tmtime->tm_hour + 60*tmtime->tm_min + tmtime->tm_sec;
-#endif
-#endif
-#ifndef HAVE_TM_GMTOFF
-    if (lwday != uwday)
-    {
-      // Adjust for different day
-      if (lwday == uwday + 1  ||  lwday == 0 && uwday == 6)
-        lt += 24*3600;
-      else
-        lt -= 24*3600;
-    }
-    return lt - ut;
-#endif
-}
+int gmtoff(time_t t);   // defined in ksystemtimezone.cpp
 
 
 /******************************************************************************/
