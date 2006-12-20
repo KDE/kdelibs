@@ -98,15 +98,8 @@ void MediaObject::setUrl( const KUrl& url )
 		if( iface )
 		{
 			iface->setUrl( url );
-			//the stateChanged signal will be filtered in _k_stateChanged.
-			if( state() == Phonon::ErrorState )
-			{
-				d->deleteIface();
-				//at this point MediaObject uses a ByteStream
-				//instead and sends the data it receives from the KIO Job via writeBuffer.
-				//This essentially makes all media frameworks read data via KIO...
-				d->setupKioStreaming();
-			}
+            // if the state changes to ErrorState it will be handled in
+            // _k_stateChanged and a ByteStream will be used.
 			return;
 		}
 
@@ -114,7 +107,7 @@ void MediaObject::setUrl( const KUrl& url )
 		// first try to do with a proper MediaObject
 		d->deleteIface();
 		d->createIface();
-		// createIface will set up a ByteStream if needed
+		// createIface will set up a ByteStream (in setupIface) if needed
 	}
 }
 
@@ -354,7 +347,11 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
 {
 	if( newstate == Phonon::ErrorState && oldstate == Phonon::LoadingState )
 	{
-		// setup ByteStream -> see setUrl
+        deleteIface();
+        // at this point MediaObject uses a ByteStream instead and sends the data it receives from
+        // the KIO Job via writeBuffer. This essentially makes all media frameworks read data via
+        // KIO
+        setupKioStreaming();
 		return;
 	}
 	K_Q( MediaObject );
@@ -379,18 +376,12 @@ void MediaObject::setupIface()
 	connect( d->backendObject, SIGNAL( length( qint64 ) ), SIGNAL( length( qint64 ) ) );
 
 	// set up attributes
-	if( !d->url.isEmpty() )
-		INTERFACE_CALL1( setUrl, d->url );
-	if( state() == Phonon::ErrorState )
-	{
-		d->deleteIface();
-		//at this point MediaObject uses a ByteStream
-		//instead and sends the data it receives from the KIO Job via writeBuffer.
-		//This essentially makes all media frameworks read data via KIO...
-		d->setupKioStreaming();
-		return;
-	}
-	BACKEND_CALL1( "setAboutToFinishTime", qint32, d->aboutToFinishTime );
+    BACKEND_CALL1("setAboutToFinishTime", qint32, d->aboutToFinishTime);
+    if(!d->url.isEmpty()) {
+        INTERFACE_CALL1(setUrl, d->url);
+        // if the state changes to ErrorState it will be handled in
+        // _k_stateChanged and a ByteStream will be used.
+    }
 }
 
 } //namespace Phonon
