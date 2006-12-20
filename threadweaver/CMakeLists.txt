@@ -13,8 +13,11 @@ set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
  set(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_PREFIX}/include"             CACHE PATH "The subdirectory to the header prefix" FORCE)
 
 #find_package(Qt4 REQUIRED)
-include (FindQt4)
-include (FindKDE4)
+include(FindQt4)
+include(FindKDE4)
+
+#temp:
+include_directories( ${CMAKE_INSTALL_PREFIX}/include )
 
 ENABLE_TESTING()
 
