@@ -68,6 +68,11 @@ class ByteStreamTest : public QObject
 		void kioTotalSize(KJob*,qulonglong size);
 		void kioData(KIO::Job*,const QByteArray&);
 		void kioResult(KJob*);
+        void kioSeekDone(KIO::Job*, KIO::filesize_t);
+        void needData();
+        void enoughData();
+        void seekStream(qint64 offset);
+        void kioJobOpen(KIO::Job*);
 
 	private:
 		void initByteStream();
@@ -77,11 +82,14 @@ class ByteStreamTest : public QObject
 		void pausePlayback( Phonon::State currentState );
 
 		KUrl m_url;
-		KIO::TransferJob* m_job;
+		KIO::Job* m_job;
 		Phonon::ByteStream* m_media;
 		QSignalSpy* m_stateChangedSignalSpy;
 		Phonon::AudioPath* m_audioPath;
 		Phonon::AudioOutput* m_audioOutput;
+        bool m_endOfDataSent;
+        bool m_reading;
+        bool m_seeking;
 };
 
 // vim: sw=4 ts=4

@@ -24,6 +24,8 @@
 #include <QtDebug>
 #include <phonon/videopath.h>
 #include <kio/job.h>
+#include <kio/filejob.h>
+#include <kprotocolmanager.h>
 
 using namespace Phonon;
 
@@ -108,6 +110,10 @@ void ByteStreamTest::initTestCase()
 	qRegisterMetaType<qint32>( "qint32" );
 	qRegisterMetaType<qint64>( "qint64" );
 
+    m_endOfDataSent = false;
+    m_reading = false;
+    m_seeking = false;
+
 	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
 	if( !m_url.isValid() )
 		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
@@ -120,10 +126,63 @@ void ByteStreamTest::initByteStream()
 	delete m_media;
 	delete m_stateChangedSignalSpy;
 	m_media = new ByteStream( this );
-	m_media->setStreamSeekable( false );
 	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	QVERIFY( m_stateChangedSignalSpy->isValid() );
 	m_stateChangedSignalSpy->clear();
+}
+
+void ByteStreamTest::kioSeekDone(KIO::Job*, KIO::filesize_t)
+{
+    m_seeking = false;
+    m_endOfDataSent = false;
+    m_reading = true;
+    KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>(m_job);
+    QVERIFY(filejob);
+    filejob->read(32768);
+}
+
+void ByteStreamTest::needData()
+{
+    if (m_seeking) {
+        return;
+    }
+    if (m_job && m_job->isSuspended()) {
+        m_job->resume();
+    }
+    KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>(m_job);
+    QVERIFY(filejob);
+    filejob->read(32768);
+}
+
+void ByteStreamTest::enoughData()
+{
+    if (!m_seeking && m_job && !m_job->isSuspended()) {
+        m_job->suspend();
+    }
+    m_reading = false;
+}
+
+void ByteStreamTest::seekStream(qint64 offset)
+{
+    KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>(m_job);
+    QVERIFY(filejob);
+    m_seeking = true;
+    m_reading = false;
+
+    if (m_job->isSuspended()) {
+        m_job->resume();
+    }
+    filejob->seek(offset);
+}
+
+void ByteStreamTest::kioJobOpen(KIO::Job*)
+{
+    m_endOfDataSent = false;
+    KIO::FileJob *filejob = static_cast<KIO::FileJob*>(m_job);
+    QVERIFY(filejob);
+    m_media->setStreamSize(filejob->size());
+    m_reading = true;
+    filejob->read(32768);
 }
 
 void ByteStreamTest::kioTotalSize(KJob*,qulonglong size)
@@ -133,12 +192,32 @@ void ByteStreamTest::kioTotalSize(KJob*,qulonglong size)
 
 void ByteStreamTest::kioData(KIO::Job*,const QByteArray& data)
 {
-	m_media->writeData( data );
+    if (m_seeking) {
+        m_reading = false;
+        return;
+    }
+    if (data.isEmpty()) {
+        m_reading = false;
+        if (!m_endOfDataSent) {
+            m_endOfDataSent = true;
+            m_media->endOfData();
+        }
+        return;
+    }
+    m_media->writeData(data);
+    if (m_reading) {
+        KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>(m_job);
+        QVERIFY(filejob);
+        filejob->read(32768);
+    }
 }
 
 void ByteStreamTest::kioResult(KJob*)
 {
-	m_media->endOfData();
+    m_job = 0; // the job kills itself
+    m_endOfDataSent = true;
+    m_media->endOfData();
+    m_reading = false;
 }
 
 void ByteStreamTest::setMedia()
@@ -158,14 +237,31 @@ void ByteStreamTest::setMedia()
 		m_job->kill();
 	}
 
-	m_job = KIO::get( m_url, false, false );
+    if (KProtocolManager::supportsOpening(m_url)) {
+        m_job = KIO::open(m_url, 1 /*ReadOnly*/);
+        QVERIFY(m_job);
+        m_media->setStreamSeekable(true);
+        QObject::connect(m_job, SIGNAL(open(KIO::Job*)),
+                this, SLOT(kioJobOpen(KIO::Job*)));
+        QObject::connect(m_job, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+                this, SLOT(kioSeekDone(KIO::Job*, KIO::filesize_t)));
+    } else {
+        m_job = KIO::get(m_url, false, false);
+        m_media->setStreamSeekable(false);
+        connect(m_job, SIGNAL(totalSize(KJob*, qulonglong)),
+                this, SLOT(kioTotalSize(KJob*,qulonglong)));
+    }
+    m_endOfDataSent = false;
+
 	m_job->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 	connect( m_job, SIGNAL(data(KIO::Job*,const QByteArray&)),
 			this, SLOT(kioData(KIO::Job*,const QByteArray&)) );
 	connect( m_job, SIGNAL(result(KJob*)),
 			this, SLOT(kioResult(KJob*)) );
-	connect( m_job, SIGNAL(totalSize(KJob*, qulonglong)),
-			this, SLOT(kioTotalSize(KJob*,qulonglong)) );
+
+    connect( m_media, SIGNAL(needData()), SLOT(needData()));
+    connect( m_media, SIGNAL(enoughData()), SLOT(enoughData()));
+    connect( m_media, SIGNAL(seekStream(qint64)), SLOT(seekStream(qint64)));
 
 	int emits = m_stateChangedSignalSpy->count();
 	Phonon::State s = m_media->state();
@@ -406,10 +502,10 @@ void ByteStreamTest::testAboutToFinish()
 
 void ByteStreamTest::testTickSignal()
 {
-	QSignalSpy tickSpy( m_media, SIGNAL( tick( qint64 ) ) );
-	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
 	for( qint32 tickInterval = 20; tickInterval <= 1000; tickInterval *= 2 )
 	{
+        QSignalSpy tickSpy(m_media, SIGNAL(tick(qint64)));
+        QCOMPARE(m_media->tickInterval(), qint32(0));
 		qDebug() << "Test 20 ticks with an interval of" <<  tickInterval << "ms";
 		m_media->setTickInterval( tickInterval );
 		QVERIFY( m_media->tickInterval() <= tickInterval );
@@ -421,6 +517,8 @@ void ByteStreamTest::testTickSignal()
 		qint64 s1, s2 = start2.elapsed();
 		while( tickSpy.count() < 20 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		{
+            // FIXME if the ByteStream goes into BufferingState this will break. The timers have to
+            // stop while it's buffering.
 			if( tickSpy.count() > lastCount )
 			{
 				s1 = start1.elapsed();
@@ -460,7 +558,6 @@ void ByteStreamTest::testTickSignal()
 		initByteStream();
 		initOutput();
 		setMedia();
-		tickSpy.clear();
 	}
 }
 
