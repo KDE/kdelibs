@@ -1,0 +1,208 @@
+------------------------------------------------------------------------
+r33 | mirko | 2005-08-17 10:41:27 +0200 (Wed, 17 Aug 2005) | 2 lines
+
+- added 2 missing files
+
+------------------------------------------------------------------------
+r32 | mirko | 2005-08-17 10:38:01 +0200 (Wed, 17 Aug 2005) | 4 lines
+
+- documentation update 
+- signals are only defined in the interface
+
+
+------------------------------------------------------------------------
+r31 | mirko | 2005-08-16 18:21:10 +0200 (Tue, 16 Aug 2005) | 2 lines
+
+- added Id property for $Id$ expansion
+
+------------------------------------------------------------------------
+r30 | mirko | 2005-08-16 18:16:04 +0200 (Tue, 16 Aug 2005) | 5 lines
+
+- added or updated missing license headers
+- made sure static instance uses Weaver class, not WeaverImpl
+- correct button text after file selection in SMIV test
+
+
+------------------------------------------------------------------------
+r29 | mirko | 2005-08-14 21:04:30 +0200 (Sun, 14 Aug 2005) | 5 lines
+
+- introduced a common interface class for Weaver and WeaverImpl
+  (this allows the use of decorators and ensures the similarity of both
+  classes)
+
+
+------------------------------------------------------------------------
+r28 | mirko | 2005-08-14 18:35:09 +0200 (Sun, 14 Aug 2005) | 3 lines
+
+- use a factory method to allow creation of derived WeaverImpl objects
+
+
+------------------------------------------------------------------------
+r27 | mirko | 2005-08-14 18:20:14 +0200 (Sun, 14 Aug 2005) | 2 lines
+
+- only emit state changes if new state != previous state
+
+------------------------------------------------------------------------
+r26 | mirko | 2005-08-14 14:51:11 +0200 (Sun, 14 Aug 2005) | 4 lines
+
+- moved WeaverObserverTest into the Jobs test directory
+- adapted Jobs test to dynamically create and delete the observer
+--Mirko.
+
+------------------------------------------------------------------------
+r25 | mirko | 2005-08-14 14:41:38 +0200 (Sun, 14 Aug 2005) | 4 lines
+
+- changed name of WeaverExtension to WeaverObserver
+  (because that is what they are)
+
+
+------------------------------------------------------------------------
+r24 | mirko | 2005-08-14 13:34:24 +0200 (Sun, 14 Aug 2005) | 6 lines
+
+- (re-)introduced WeaverExtensions
+- added a log extension class for testing
+- added a log extension object to the Jobs test
+--Mirko.
+
+
+------------------------------------------------------------------------
+r23 | mirko | 2005-08-08 23:36:45 +0200 (Mon, 08 Aug 2005) | 4 lines
+
+- adjusted debug log message level
+- re-enabled QImage::scaled (leads to segfaults)
+
+
+------------------------------------------------------------------------
+r22 | mirko | 2005-08-08 23:31:28 +0200 (Mon, 08 Aug 2005) | 3 lines
+
+- added premade thumbnail image
+
+
+------------------------------------------------------------------------
+r21 | mirko | 2005-08-08 23:06:07 +0200 (Mon, 08 Aug 2005) | 3 lines
+
+- implemented deferred thread creation
+
+
+------------------------------------------------------------------------
+r20 | mirko | 2005-08-08 23:02:51 +0200 (Mon, 08 Aug 2005) | 2 lines
+
+- added Id property on files
+
+------------------------------------------------------------------------
+r19 | mirko | 2005-08-08 23:00:12 +0200 (Mon, 08 Aug 2005) | 2 lines
+
+- ... and added $ID:... to the file, too
+
+------------------------------------------------------------------------
+r18 | mirko | 2005-08-08 22:59:17 +0200 (Mon, 08 Aug 2005) | 2 lines
+
+- added Id property
+
+------------------------------------------------------------------------
+r17 | mirko | 2005-08-08 16:40:45 +0200 (Mon, 08 Aug 2005) | 6 lines
+
+- implemented Weaver facade class
+- renamed old Weaver class to WeaverImpl (already in file WeaverImpl.h)
+- reinstated the Weaver::instance method
+--Mirko.
+
+
+------------------------------------------------------------------------
+r16 | mirko | 2005-08-08 15:22:59 +0200 (Mon, 08 Aug 2005) | 4 lines
+
+- implemented suspend, resume, cancel and quit in the SMIV test
+- tried workaround for QImage::scaled segfault
+
+
+------------------------------------------------------------------------
+r15 | mirko | 2005-08-04 00:30:58 +0200 (Thu, 04 Aug 2005) | 3 lines
+
+- code cleanup
+
+
+------------------------------------------------------------------------
+r14 | mirko | 2005-08-03 00:29:40 +0200 (Wed, 03 Aug 2005) | 2 lines
+
+- debugging session
+
+------------------------------------------------------------------------
+r13 | mirko | 2005-08-02 15:13:04 +0200 (Tue, 02 Aug 2005) | 4 lines
+
+- finished implementation of the SMIV example
+- one segfault remaining, will bug hun tonight
+
+
+------------------------------------------------------------------------
+r12 | mirko | 2005-07-29 00:44:52 +0200 (Fri, 29 Jul 2005) | 2 lines
+
+- more work on the image viewer example
+
+------------------------------------------------------------------------
+r11 | mirko | 2005-07-28 15:02:12 +0200 (Thu, 28 Jul 2005) | 4 lines
+
+- started model/view based SMIV test 
+  (SMIV: Simple Multi-Threaded Image Viewer)
+
+
+------------------------------------------------------------------------
+r10 | mirko | 2005-07-26 15:53:51 +0200 (Tue, 26 Jul 2005) | 3 lines
+
+- better state handling
+
+
+------------------------------------------------------------------------
+r9 | mirko | 2005-07-26 15:31:46 +0200 (Tue, 26 Jul 2005) | 4 lines
+
+- added the Jobs test
+- this test involves a graphical multithreaded application
+--Mirko.
+
+------------------------------------------------------------------------
+r8 | mirko | 2005-07-26 15:30:24 +0200 (Tue, 26 Jul 2005) | 3 lines
+
+- added more tests
+
+
+------------------------------------------------------------------------
+r7 | mirko | 2005-07-22 20:45:18 +0200 (Fri, 22 Jul 2005) | 3 lines
+
+- added qmake files
+--Mirko.
+
+------------------------------------------------------------------------
+r6 | mirko | 2005-07-22 20:40:08 +0200 (Fri, 22 Jul 2005) | 2 lines
+
+- naming
+
+------------------------------------------------------------------------
+r5 | mirko | 2005-07-22 20:39:27 +0200 (Fri, 22 Jul 2005) | 3 lines
+
+- moved construction test into it's own subdirectory
+
+
+------------------------------------------------------------------------
+r4 | mirko | 2005-07-22 20:32:54 +0200 (Fri, 22 Jul 2005) | 5 lines
+
+- added State classes
+- modified WeaverImpl to use them
+- added first test (Construction.cpp)
+--Mirko.
+
+------------------------------------------------------------------------
+r3 | mirko | 2005-07-20 12:01:12 +0200 (Wed, 20 Jul 2005) | 4 lines
+
+- more cleanup
+- still does not work
+--Mirko.
+
+------------------------------------------------------------------------
+r2 | mirko | 2005-07-19 23:18:28 +0200 (Tue, 19 Jul 2005) | 6 lines
+
+- added ThreadWeaver core library
+- compiles, but does not work yet
+- signal handling has changed completely
+--Mirko.
+
+
+------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+This directory contains code that is supposed to be tested an commented on
+before it may eventually be added to the ThreadWeaver API. Also, it will not
+be installed by default. 
+
+It also contains classes that may be generically useful, but will become part
+of the ThreadWeaver library (like specialized Job classes). 
+
+Comments are welcome.

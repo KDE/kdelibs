@@ -1,0 +1,43 @@
+Posted on kdedevelopers.org:
+
+For those who are not familiar with it: ThreadWeaver is like a
+multi-threaded make tool for application developers. It provides means to chop
+operations into jobs and declare the way they depend on each other. When
+started, the jobs will be executed by a pool of threads, which will
+automagically try to find the most efficient order of execution. With the
+lately released version 0.5, it now has job collections, job sequences, and
+qtestlib based unit tests.
+
+When ThreadWeaver was introduced at last year's KDE conference, a number of
+concepts have been suggested for addition to it. One of the concepts where
+collections of jobs, another one sequences. Both are now finished and have
+been moved from the experimental to the main code base. 
+
+As an interesting implementation detail, JobCollections are Jobs
+themselves. They can be created and queued, just like any other Job. This
+allowed for the removal of all other queueing methods, making the
+WeaverInterface class even more simple. 
+
+JobSequences in turn are implemented as JobCollections, but will execute all
+jobs they contain in the order they where added. This raises an interesting
+question - what if I add a number of sequences to a sequence? Intuitively, it
+would be expected that the sub-sequences will be executed in the order they in
+turn where added. This is exactly what happens. More general, ThreadWeaver's
+job collection classes allow recursive queueing of subjobs. A number of unit
+tests have been added to showcase this. 
+
+The next features to come will be pooled resources (aka Job categories). Think
+of local IO intensive Jobs - maybe you want a maximum of 2 of those running at
+the same time. There will be special job classes for this purpose.
+
+Currently I am thinking about the best way to add the idea of progress to the
+Job class. Of course we can use a special job class, but inheritance does not
+seem to be the best way to go. What if what the user wants is a sequence that
+has a progress property? On the other hand, I hesitate to simply add a
+progress property to the Job base class. Let us see if the future brings a
+nice idea of composition ...
+
+ThreadWeaver is in KDE SVN (kdenonbeta/threadweaver). 
+Release 0.5 has been tagged in tags/others/threadweaver/0.5.
+
+

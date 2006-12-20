@@ -1,0 +1,10 @@
+2005-09-11  Mirko Boehm  <mirko@kde.org>
+
+	* added a GUI WeaverObserver usage example (WeaverThreadGrid) to
+	show how non-GUI and GUI components can be composed
+
+	* fixed the WeaverImpl destructor to make it even more bullet proof
+
+	* removed dangling remainders of APR requests
+	
+
