@@ -125,10 +125,12 @@ static const QString sourceTemplate = gplTemplate +
 static const QString ontologySrcTemplate = 
 "Nepomuk::KMetaData::Ontology::Ontology()\n"
 "{\n"
+"   d = new Private;\n"
 "CONSTRUCTOR"
 "}\n"
 "\n"
 "\n"
 "Nepomuk::KMetaData::Ontology::~Ontology()\n"
 "{\n"
+"   delete d;\n"
 "}\n";
