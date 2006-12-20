@@ -30,7 +30,8 @@
 #include "kshell.h"
 #include "kmacroexpander.h"
 #include "klocale.h"
-#include <qmessagebox.h>
+#include "kstandarddirs.h"
+#include "kmessage.h"
 #include <qapplication.h>
 #include <qhash.h>
 #include <QtDBus/QtDBus>
@@ -66,7 +67,6 @@
 #endif
 
 #include <qglobal.h>
-#include "kstandarddirs.h"
 #include <QFile>
 #include <errno.h>
 
@@ -98,14 +98,10 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         QString error;
         if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
         {
-#if 0
-            if (Tty != qApp->type())
-                QMessageBox::critical(qApp->mainWidget(), i18n("Could not Launch Help Center"),
-                                      i18n("Could not launch the KDE Help Center:\n\n%1", error), i18n("&OK"));
-            else
-                kWarning() << "Could not launch help:\n" << error << endl;
+            KMessage::message(KMessage::Error,
+                              i18n("Could not launch the KDE Help Center:\n\n%1", error),
+                              i18n("Could not Launch Help Center"));
             return;
-#endif
         }
 
         delete iface;
@@ -369,16 +365,9 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     // with sending more ASN data
     if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
     {}
-#ifdef __GNUC__
-#warning fixme once there is kcoreapp and kapp
-#endif
-#if 0
-    if (Tty != qApp->type())
-        QMessageBox::critical(qApp->mainWidget(), i18n("Could not Launch Mail Client"),
-                              i18n("Could not launch the mail client:\n\n%1", error), i18n("&OK"));
-    else
-        kWarning() << "Could not launch mail client:\n" << error << endl;
-#endif
+    KMessage::message(KMessage::Error,
+                      i18n("Could not launch the mail client:\n\n%1", error),
+                      i18n("Could not Launch Mail Client"));
 }
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
@@ -390,17 +379,9 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
     if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
     {
-#ifdef __GNUC__
-#warning fixme once there is kcoreapp and kapp
-#endif
-#if 0
-        if (Tty != qApp->type())
-            QMessageBox::critical(qApp->mainWidget(), i18n("Could not Launch Browser"),
-                                  i18n("Could not launch the browser:\n\n%1", error), i18n("&OK"));
-        else
-            kWarning() << "Could not launch browser:\n" << error << endl;
-        return;
-#endif
+        KMessage::message(KMessage::Error,
+                          i18n("Could not launch the browser:\n\n%1", error),
+                          i18n("Could not Launch Browser"));
     }
 }
 
