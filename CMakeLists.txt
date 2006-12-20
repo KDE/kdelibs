@@ -136,7 +136,7 @@ add_subdirectory( kate  )
 add_subdirectory( knotify )
 add_subdirectory( kimgio )
 add_subdirectory( dnssd )
-add_subdirectory( threadweaver )
+# add_subdirectory( threadweaver )
 add_subdirectory( kross )
 add_subdirectory( includes )
 
