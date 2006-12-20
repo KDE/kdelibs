@@ -77,6 +77,7 @@ public:
         }
 
         clearButton = 0;
+        clickButtonState = -1;
         clickInClear = false;
     }
 
@@ -109,6 +110,7 @@ public:
     bool drawClickMsg:1;
 
     bool clickInClear:1;
+    int  clickButtonState;
     QLabel* clearButton;
 
     KCompletionBox *completionBox;
@@ -176,15 +178,12 @@ void KLineEdit::setClearButtonShown(bool show)
         d->clearButton->setCursor( Qt::ArrowCursor );
         d->clearButton->setToolTip( i18n( "Clear text" ) );
 
-        if ( qApp->isLeftToRight() ) {
-            d->clearButton->setPixmap( SmallIcon( "clear_left.png" ) );
-        } else {
-            d->clearButton->setPixmap( SmallIcon("locationbar_erase.png" ) );
-        }
-
         updateClearButton();
+        updateClearButtonIcon(text());
         d->clearButton->show();
+        connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
     } else {
+        disconnect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
@@ -195,6 +194,33 @@ void KLineEdit::setClearButtonShown(bool show)
 bool KLineEdit::isClearButtonShown() const
 {
     return d->clearButton != 0;
+}
+
+void KLineEdit::updateClearButtonIcon(const QString& text)
+{
+    if (!d->clearButton || isReadOnly()) {
+        return;
+    }
+
+    if (text.length() > 0) {
+        if (d->clickButtonState == K3Icon::DefaultState) {
+            return;
+        }
+
+        d->clickButtonState = K3Icon::DefaultState;
+    } else {
+        if (d->clickButtonState == K3Icon::DisabledState) {
+            return;
+        }
+
+        d->clickButtonState = K3Icon::DisabledState;
+    }
+
+    if ( qApp->isLeftToRight() ) {
+        d->clearButton->setPixmap( SmallIcon( "clear_left.png", 0, d->clickButtonState ) );
+    } else {
+        d->clearButton->setPixmap( SmallIcon("locationbar_erase.png", 0, d->clickButtonState ) );
+    }
 }
 
 void KLineEdit::updateClearButton()

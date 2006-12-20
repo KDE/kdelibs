@@ -549,12 +549,16 @@ protected:
 
     virtual void focusOutEvent( QFocusEvent *ev );
 
-
 private Q_SLOTS:
     void completionMenuActivated( QAction *act );
     void tripleClickTimeout();  // resets possibleTripleClick
     void slotRestoreSelectionColors();
     void setTextWorkaround( const QString& text );
+
+    /**
+     * updates the icon of the clear button on text change
+     **/
+    void updateClearButtonIcon(const QString&);
 
 private:
 
