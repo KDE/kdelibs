@@ -21,6 +21,7 @@ class QVariant;
 
 /*
  * Adaptor class for interface org.kde.KIM
+ * @internal
  */
 class KIMAdaptor: public QDBusAbstractAdaptor
 {
