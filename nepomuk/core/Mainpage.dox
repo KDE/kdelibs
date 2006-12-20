@@ -129,8 +129,8 @@
  * - Nepomuk::KMetaData::Resource::allProperties
  *
  * Each property's value is represented by a Nepomuk::KMetaData::Variant object which can contain
- * another Resource or a literal (string, int, ...). Other than with the Resource subclasses no
- * automatic type conversion is performed.
+ * another Resource or a literal (string, int, ...) or even a list of the former two. Other than
+ * with the Resource subclasses no automatic type conversion is performed.
  *
  * In case of a property that can have multiple values (cardinality greater than 1) Nepomuk::KMetaData::Resource::setProperty
  * has to be called with a list to set more than one (the Resource subclasses simplify this by
