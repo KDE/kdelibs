@@ -102,7 +102,7 @@ bool Audio::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, 
     return getStaticValueSlot<Audio, DOMObject>(exec, &AudioTable, this, propertyName, slot);
 }
 
-ValueImp *Audio::getValueProperty(ExecState */*exec*/, int token) const
+ValueImp *Audio::getValueProperty(ExecState * /*exec*/, int token) const
 {
     switch (token) {
       case Onerror:
@@ -151,7 +151,7 @@ void Audio::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*
     }
 }
 
-void Audio::notifyFinished(khtml::CachedObject */*co*/)
+void Audio::notifyFinished(khtml::CachedObject * /*co*/)
 {
     if (!m_cs) return;
 

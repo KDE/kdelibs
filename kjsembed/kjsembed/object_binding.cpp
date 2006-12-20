@@ -44,7 +44,7 @@ const char *ObjectBinding::typeName() const
     return m_name;
 }
 
-KJS::UString ObjectBinding::toString(KJS::ExecState */*exec*/) const
+KJS::UString ObjectBinding::toString(KJS::ExecState * /*exec*/) const
 {
     return KJS::UString( typeName() );
 }

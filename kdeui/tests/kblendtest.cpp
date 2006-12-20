@@ -23,7 +23,7 @@ KBlendWidget::KBlendWidget(QWidget *parent)
     setPalette(palette);
 }
 
-void KBlendWidget::paintEvent(QPaintEvent */*ev*/)
+void KBlendWidget::paintEvent(QPaintEvent * /*ev*/)
 {
     QTime time;
     int it, ft;

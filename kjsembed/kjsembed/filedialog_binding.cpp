@@ -30,7 +30,7 @@
 
 using namespace KJSEmbed;
 
-KJS::JSValue *callGetExistingDirectory( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue *callGetExistingDirectory( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QWidget *parent = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
     QString caption = KJSEmbed::extractVariant<QString>(exec, args, 1, QString());
@@ -40,7 +40,7 @@ KJS::JSValue *callGetExistingDirectory( KJS::ExecState *exec, KJS::JSObject */*s
     return KJS::String( QFileDialog::getExistingDirectory(parent, caption, dir, options) );
 }
 
-KJS::JSValue *callGetOpenFileName( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue *callGetOpenFileName( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QWidget *parent = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
     QString caption = KJSEmbed::extractVariant<QString>(exec, args, 1, "");
@@ -52,7 +52,7 @@ KJS::JSValue *callGetOpenFileName( KJS::ExecState *exec, KJS::JSObject */*self*/
     return KJS::String( QFileDialog::getOpenFileName(parent, caption, dir, filter, 0, options) );
 }
 
-KJS::JSValue *callGetOpenFileNames( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue *callGetOpenFileNames( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QWidget *parent = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
     QString caption = KJSEmbed::extractVariant<QString>(exec, args, 1, QString());
@@ -66,7 +66,7 @@ KJS::JSValue *callGetOpenFileNames( KJS::ExecState *exec, KJS::JSObject */*self*
     return convertToValue(exec, fileNames);
 }
 
-KJS::JSValue *callGetSaveFileName( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue *callGetSaveFileName( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QWidget *parent = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
     QString caption = KJSEmbed::extractVariant<QString>(exec, args, 1, QString());

@@ -2504,7 +2504,7 @@ UString FrameArray::toString(ExecState *) const
   return "[object FrameArray]";
 }
 
-ValueImp* FrameArray::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+ValueImp* FrameArray::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
     //IE supports a subset of the get functionality as call...
     //... basically, when the return is a window, it supports that, otherwise it 

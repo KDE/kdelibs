@@ -29,26 +29,26 @@
 
 using namespace KJSEmbed;
 
-KJS::JSValue *callPrint( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue *callPrint( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     (*KJSEmbed::conout()) << args[0]->toString(exec).qstring();
     return KJS::Null();
 }
 
-KJS::JSValue * callPrintLn( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue * callPrintLn( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     (*KJSEmbed::conout()) << args[0]->toString(exec).qstring() << endl;
     return KJS::Null();
 }
 
-KJS::JSValue * callDebug( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue * callDebug( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     //(*KJSEmbed::conerr())  << "Debug: " << args[0]->toString(exec).qstring() << endl;
     qDebug()  << "Debug: " << args[0]->toString(exec).qstring();
     return KJS::Null();
 }
 
-KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     Q_UNUSED(exec);
     Q_UNUSED(args);
@@ -56,7 +56,7 @@ KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject */*self*/, cons
     return KJS::String( line );
 }
 
-KJS::JSValue * callSystem( KJS::ExecState *exec, KJS::JSObject */*self*/, const KJS::List &args )
+KJS::JSValue * callSystem( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QProcess systemProcess;
     QStringList processArgs = args[0]->toString(exec).qstring().split( ' ' );
