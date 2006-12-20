@@ -150,8 +150,9 @@ void ByteStreamTest::needData()
         m_job->resume();
     }
     KIO::FileJob *filejob = qobject_cast<KIO::FileJob*>(m_job);
-    QVERIFY(filejob);
-    filejob->read(32768);
+    if (filejob) {
+        filejob->read(32768);
+    }
 }
 
 void ByteStreamTest::enoughData()
