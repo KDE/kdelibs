@@ -38,7 +38,7 @@ static const qint32 castQVariantToInt32( const QVariant& variant )
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
 
-void ByteStreamTest::startPlayback(Phonon::State currentState)
+void ByteStreamTest2::startPlayback(Phonon::State currentState)
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), currentState);
@@ -65,7 +65,7 @@ void ByteStreamTest::startPlayback(Phonon::State currentState)
 	QCOMPARE( m_media->state(), Phonon::PlayingState );
 }
 
-void ByteStreamTest::stopPlayback( Phonon::State currentState )
+void ByteStreamTest2::stopPlayback( Phonon::State currentState )
 {
 	m_media->stop();
     if (m_stateChangedSignalSpy->count() == 0) {
@@ -83,7 +83,7 @@ void ByteStreamTest::stopPlayback( Phonon::State currentState )
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void ByteStreamTest::pausePlayback( Phonon::State currentState )
+void ByteStreamTest2::pausePlayback( Phonon::State currentState )
 {
 	m_media->pause();
     if (m_stateChangedSignalSpy->count() == 0) {
@@ -103,12 +103,13 @@ void ByteStreamTest::pausePlayback( Phonon::State currentState )
 
 static const qint64 STREAM_SIZE = 1024 * 1024 * 4; // 4MB
 
-void ByteStreamTest::initTestCase()
+void ByteStreamTest2::initTestCase()
 {
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
 	qRegisterMetaType<qint32>( "qint32" );
 	qRegisterMetaType<qint64>( "qint64" );
 
+    // init timer that pushes the PCM data
 	m_timer = new QTimer( this );
 	m_timer->setInterval( 0 );
 	connect( m_timer, SIGNAL( timeout() ), SLOT( sendBlock() ) );
@@ -124,7 +125,7 @@ void ByteStreamTest::initTestCase()
 	m_stateChangedSignalSpy->clear();
 }
 
-void ByteStreamTest::sendBlock()
+void ByteStreamTest2::sendBlock()
 {
 	if( m_position == 0 )
 	{
@@ -150,18 +151,20 @@ void ByteStreamTest::sendBlock()
 	}
 }
 
-void ByteStreamTest::seekStream( qint64 newPos )
+void ByteStreamTest2::seekStream( qint64 newPos )
 {
 	Q_ASSERT( newPos <= STREAM_SIZE );
 	m_position = newPos;
 }
 
-void ByteStreamTest::setMedia()
+void ByteStreamTest2::setMedia()
 {
 	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( qint64 ) ) );
 	QCOMPARE( m_media->state(), Phonon::LoadingState );
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 
+    // send the WAV header and then push the PCM data into the stream until the stream says it got
+    // enough
 	m_media->setStreamSize( STREAM_SIZE );
 	QByteArray block = wavHeader();
 	m_position += block.size();
@@ -195,7 +198,7 @@ void ByteStreamTest::setMedia()
 		QCOMPARE( Phonon::LoadingState, oldstate );
 		QCOMPARE( s, newstate );
 		if( Phonon::ErrorState == s )
-			QFAIL( "Loading the data put the ByteStream into the ErrorState. Check that PHONON_TESTURL is set to a valid URL." );
+            QFAIL("Loading the data put the ByteStream into the ErrorState. Apparently the backend does not support WAV data.");
 		QCOMPARE( Phonon::StoppedState, s );
 		QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 
@@ -210,13 +213,13 @@ void ByteStreamTest::setMedia()
 	}
 }
 
-void ByteStreamTest::checkForDefaults()
+void ByteStreamTest2::checkForDefaults()
 {
 	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
 	QCOMPARE( m_media->aboutToFinishTime(), qint32( 0 ) );
 }
 
-void ByteStreamTest::stopToStop()
+void ByteStreamTest2::stopToStop()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
@@ -225,7 +228,7 @@ void ByteStreamTest::stopToStop()
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void ByteStreamTest::stopToPause()
+void ByteStreamTest2::stopToPause()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
@@ -234,13 +237,13 @@ void ByteStreamTest::stopToPause()
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void ByteStreamTest::stopToPlay()
+void ByteStreamTest2::stopToPlay()
 {
 	startPlayback();
 	stopPlayback( Phonon::PlayingState );
 }
 
-void ByteStreamTest::playToPlay()
+void ByteStreamTest2::playToPlay()
 {
 	startPlayback();
 
@@ -251,20 +254,20 @@ void ByteStreamTest::playToPlay()
 	stopPlayback( Phonon::PlayingState );
 }
 
-void ByteStreamTest::playToPause()
+void ByteStreamTest2::playToPause()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
 	stopPlayback( Phonon::PausedState );
 }
 
-void ByteStreamTest::playToStop()
+void ByteStreamTest2::playToStop()
 {
 	startPlayback();
 	stopPlayback( Phonon::PlayingState );
 }
 
-void ByteStreamTest::pauseToPause()
+void ByteStreamTest2::pauseToPause()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
@@ -276,7 +279,7 @@ void ByteStreamTest::pauseToPause()
 	stopPlayback( Phonon::PausedState );
 }
 
-void ByteStreamTest::pauseToPlay()
+void ByteStreamTest2::pauseToPlay()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
@@ -284,60 +287,58 @@ void ByteStreamTest::pauseToPlay()
 	stopPlayback( Phonon::PlayingState );
 }
 
-void ByteStreamTest::pauseToStop()
+void ByteStreamTest2::pauseToStop()
 {
 	startPlayback();
 	pausePlayback( Phonon::PlayingState );
 	stopPlayback( Phonon::PausedState );
 }
 
-void ByteStreamTest::testSeek()
+void ByteStreamTest2::testSeek()
 {
 	startPlayback();
 	qint64 c = m_media->currentTime();
 	qint64 r = m_media->remainingTime();
-	if( m_media->isSeekable() )
-		if( r > 0 )
-		{
-			qint64 s = c + r/2;
-			QTime start = QTime::currentTime();
-			m_media->seek( s );
-			c = m_media->currentTime();
-			r = m_media->remainingTime();
-			QTime end = QTime::currentTime();
-			QVERIFY( s <= c );
-			QVERIFY( c <= s + start.msecsTo( end ) );
+    // the wav really should be seekable
+    QVERIFY(m_media->isSeekable());
+    if (r > 0) {
+        qint64 s = c + r/2;
+        QTime start = QTime::currentTime();
+        m_media->seek(s);
+        c = m_media->currentTime();
+        r = m_media->remainingTime();
+        QTime end = QTime::currentTime();
+        QVERIFY(s <= c);
+        QVERIFY(c <= s + start.msecsTo(end));
 
-			s /= 2;
-			start = QTime::currentTime();
-			m_media->seek( s );
-			c = m_media->currentTime();
-			r = m_media->remainingTime();
-			end = QTime::currentTime();
-			QVERIFY( s <= c );
-			QVERIFY( c <= s + start.msecsTo( end ) );
+        s /= 2;
+        start = QTime::currentTime();
+        m_media->seek(s);
+        c = m_media->currentTime();
+        r = m_media->remainingTime();
+        end = QTime::currentTime();
+        QVERIFY(s <= c);
+        QVERIFY(c <= s + start.msecsTo(end));
 
-			pausePlayback( Phonon::PlayingState );
-			s *= 2;
-			m_media->seek( s );
-			c = m_media->currentTime();
-			QVERIFY( s == c );
+        pausePlayback(Phonon::PlayingState);
+        s *= 2;
+        m_media->seek(s);
+        c = m_media->currentTime();
+        QVERIFY(s == c);
 
-			s /= 2;
-			m_media->seek( s );
-			c = m_media->currentTime();
-			QVERIFY( s == c );
-			stopPlayback( Phonon::PausedState );
-			return;
-		}
-		else
-			QWARN( "didn't test seeking as the ByteStream reported a remaining size <= 0" );
-	else
-		QWARN( "didn't test seeking as the ByteStream is not seekable" );
-	stopPlayback( Phonon::PlayingState );
+        s /= 2;
+        m_media->seek(s);
+        c = m_media->currentTime();
+        QVERIFY(s == c);
+        stopPlayback(Phonon::PausedState);
+        return;
+    } else {
+        QWARN("didn't test seeking as the ByteStream reported a remaining size <= 0");
+    }
+    stopPlayback(Phonon::PlayingState);
 }
 
-void ByteStreamTest::testAboutToFinish()
+void ByteStreamTest2::testAboutToFinish()
 {
 	m_media->setAboutToFinishTime( 500 );
 	QCOMPARE( m_media->aboutToFinishTime(), qint32( 500 ) );
@@ -375,7 +376,7 @@ void ByteStreamTest::testAboutToFinish()
 	QCOMPARE( m_media->state(), Phonon::StoppedState );
 }
 
-void ByteStreamTest::testTickSignal()
+void ByteStreamTest2::testTickSignal()
 {
 	QSignalSpy tickSpy( m_media, SIGNAL( tick( qint64 ) ) );
 	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
@@ -432,7 +433,7 @@ void ByteStreamTest::testTickSignal()
 	}
 }
 
-void ByteStreamTest::addPaths()
+void ByteStreamTest2::addPaths()
 {
 	AudioPath *a1 = new AudioPath( this );
 	AudioPath *a2 = new AudioPath( this );
@@ -513,7 +514,7 @@ void ByteStreamTest::addPaths()
 	v1 = 0;
 }
 
-void ByteStreamTest::initOutput()
+void ByteStreamTest2::initOutput()
 {
 	// AudioPath and AudioOutput are needed else the backend might finish in no time
 	if( !m_audioPath && !m_audioOutput )
@@ -525,13 +526,13 @@ void ByteStreamTest::initOutput()
 	QVERIFY( m_media->addAudioPath( m_audioPath ) );
 }
 
-void ByteStreamTest::cleanupTestCase()
+void ByteStreamTest2::cleanupTestCase()
 {
 	delete m_stateChangedSignalSpy;
 	delete m_media;
 }
 
-QByteArray ByteStreamTest::wavHeader() const
+QByteArray ByteStreamTest2::wavHeader() const
 {
 	QByteArray data;
 	QDataStream stream( &data, QIODevice::WriteOnly );
@@ -550,14 +551,10 @@ QByteArray ByteStreamTest::wavHeader() const
 		<< 0x61746164 //"data"                   //Subchunk2ID
 		<< static_cast<quint32>( STREAM_SIZE-36 )//Subchunk2Size
 		;
-	QFile f( "wavHeader" );
-	f.open( QIODevice::WriteOnly );
-	f.write( data );
-	f.close();
 	return data;
 }
 
-QByteArray ByteStreamTest::pcmBlock() const
+QByteArray ByteStreamTest2::pcmBlock() const
 {
 	QByteArray data;
 	QDataStream stream( &data, QIODevice::WriteOnly );
@@ -579,6 +576,6 @@ QByteArray ByteStreamTest::pcmBlock() const
 	return data;
 }
 
-QTEST_KDEMAIN( ByteStreamTest, NoGUI )
+QTEST_KDEMAIN( ByteStreamTest2, NoGUI )
 #include "bytestreamtest2.moc"
 // vim: sw=4 ts=4

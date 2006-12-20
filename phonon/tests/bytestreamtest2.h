@@ -28,11 +28,11 @@
 #include <QtTest/QSignalSpy>
 #include <QTimer>
 
-class ByteStreamTest : public QObject
+class ByteStreamTest2 : public QObject
 {
 	Q_OBJECT
 	public:
-		ByteStreamTest()
+		ByteStreamTest2()
 			: m_media( 0 ),
 			m_stateChangedSignalSpy( 0 ),
 			m_audioPath( 0 ),
