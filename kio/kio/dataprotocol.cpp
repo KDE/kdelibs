@@ -82,8 +82,8 @@ struct DataHeader {
   * @param buf buffer where to look for c
   * @param begin zero-indexed starting position
   * @param c1 character to find
-  * @param c2 alternative character to find or '\0' to ignore
-  * @param c3 alternative character to find or '\0' to ignore
+  * @param c2 alternative character to find or "\0" to ignore
+  * @param c3 alternative character to find or "\0" to ignore
   */
 static int find(const QString &buf, int begin, QChar c1,
 		QChar c2 = QLatin1Char('\0'), QChar c3 = QLatin1Char('\0')) {
