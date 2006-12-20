@@ -707,11 +707,51 @@ int Nepomuk::KMetaData::Variant::simpleType() const
 
 bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
 {
-  return QVariant::operator==( other );
+  if( other.type() != this->type() )
+    return false;
+
+  else if( isInt() )
+    return other.toInt() == toInt();
+  else if( isBool() )
+    return other.toBool() == toBool();
+  else if( isDouble() )
+    return other.toDouble() == toDouble();
+  else if( isDate() )
+    return other.toDate() == toDate();
+  else if( isTime() )
+    return other.toTime() == toTime();
+  else if( isDateTime() )
+    return other.toDateTime() == toDateTime();
+  else if( isUrl() )
+    return other.toUrl() == toUrl();
+  else if( isResource() )
+    return other.toResource() == toResource();
+  else if( isString() )
+    return other.value<QString>() == value<QString>();
+  else if( isIntList() )
+    return other.toIntList() == toIntList();
+  else if( isBoolList() )
+    return other.toBoolList() == toBoolList();
+  else if( isDoubleList() )
+    return other.toDoubleList() == toDoubleList();
+  else if( isStringList() )
+    return other.value<QStringList>() == value<QStringList>();
+  else if( isDateList() )
+    return other.toDateList() == toDateList();
+  else if( isTimeList() )
+    return other.toTimeList() == toTimeList();
+  else if( isDateTimeList() )
+    return other.toDateTimeList() == toDateTimeList();
+  else if( isUrlList() )
+    return other.toUrlList() == toUrlList();
+  else if( isResourceList() )
+    return other.toResourceList() == toResourceList();
+  else
+    return QVariant::operator==( other );
 }
 
 
 bool Nepomuk::KMetaData::Variant::operator!=( const Variant& other ) const
 {
-  return QVariant::operator!=( other );
+  return !operator==( other );
 }

@@ -144,10 +144,7 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_data.begin();
 	 rdIt != ResourceData::s_data.end(); ++rdIt ) {
 
-      if( rdIt.value()->type.isEmpty() )
-	rdIt.value()->init();
-
-      if( rdIt.value()->type == type )
+      if( rdIt.value()->type() == type )
 	l.append( Resource( rdIt.key() ) );
     }
 
@@ -169,6 +166,51 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
   }
 
   return l;
+}
+
+
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v ) const
+{
+  QList<Resource> l;
+
+  if( v.isList() ) {
+    qDebug() << "(ResourceManager::allResourcesWithProperty) list values not supported." << endl;
+  }
+  else {
+    // check local data
+    for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_data.begin();
+	 rdIt != ResourceData::s_data.end(); ++rdIt ) {
+
+      if( rdIt.value()->hasProperty( uri ) &&
+	  rdIt.value()->getProperty( uri ) == v )
+	l.append( Resource( rdIt.key() ) );
+    }
+
+
+    // check remote data
+    TripleService ts( serviceRegistry()->discoverTripleService() );
+    Node n;
+    if( v.isResource() ) {
+      n.value = v.toResource().uri();
+      n.type = Backbone::Services::RDF::NodeResource;
+    }
+    else {
+      n.type = Backbone::Services::RDF::NodeLiteral;
+      n.value = KMetaData::valueToRDFLiteral( v );
+    }
+    
+    StatementListIterator it( ts.listStatements( KMetaData::defaultGraph(), 
+						 Statement( Node(), Node(uri), n ) ), &ts );
+    
+    while( it.hasNext() ) {
+      const Statement& s = it.next();
+      Resource res( s.subject.value );
+      if( !l.contains( res ) )
+	l.append( res );
+    }
+  }
+
+  return l;    
 }
 
 #include "resourcemanager.moc"

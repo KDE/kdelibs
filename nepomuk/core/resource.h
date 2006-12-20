@@ -120,6 +120,17 @@ namespace Nepomuk {
 	QHash<QString, Variant> allProperties() const;
 
 	/**
+	 * Check if property identified by \a uri is defined
+	 * for this resource.
+	 *
+	 * Be aware that this method does not check if the property
+	 * is defined for this resource's type!
+	 *
+	 * \return true if property \a uri has a value set.
+	 */
+	bool hasProperty( const QString& uri ) const;
+
+	/**
 	 * Retrieve the value of property \a uri. If the property is not defined for
 	 * this resource an invalid, empty Variant object is returned.
 	 */
@@ -142,6 +153,16 @@ namespace Nepomuk {
 	 * back to the Nepomuk store before a call to sync().
 	 */
 	void removeProperty( const QString& uri );
+
+	/**
+	 * Check if this resource is a property of type \a uri, i.e. if there is some
+	 * other resource that has this resource as a property of type \a uri.
+	 *
+	 * \return true if there exists a resource with property \a uri set to this resource.
+	 *
+	 * \sa ResourceManager::allResourcesWithProperty
+	 */
+	bool isProperty( const QString& uri ) const;
 
 	/**
 	 * \return true if the data in this object has been modified and not yet

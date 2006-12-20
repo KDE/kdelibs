@@ -45,12 +45,20 @@ namespace Nepomuk {
 	  Deleted = 0x4
 	};
 
-	typedef QHash<QString, QPair<Variant, int> > PropertiesMap;
-  
-	/**
-	 * map of all properties including a flag field
-	 */
-	PropertiesMap properties;
+	const QString& uri() const;
+	const QString& type() const;
+
+	QHash<QString, Variant> allProperties() const;
+
+	bool hasProperty( const QString& uri ) const;
+
+	Variant getProperty( const QString& uri ) const;
+
+	void setProperty( const QString& uri, const Variant& value );
+
+	void removeProperty( const QString& uri );
+
+	bool modified() const;
 
 	bool exists() const;
 
@@ -100,12 +108,19 @@ namespace Nepomuk {
 	 */
 	static ResourceData* data( const QString& uri, const QString& type );
 
-	QString uri;
-	QString type;
-
       private:
 	~ResourceData();
 	bool loadProperty( const QString& name, const Variant& val );
+
+	typedef QHash<QString, QPair<Variant, int> > PropertiesMap;
+  
+	/**
+	 * map of all properties including a flag field
+	 */
+	PropertiesMap m_properties;
+
+	QString m_uri;
+	QString m_type;
 
 	int m_ref;
 	bool m_initialized;

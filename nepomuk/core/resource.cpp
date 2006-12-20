@@ -69,14 +69,14 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 
 const QString& Nepomuk::KMetaData::Resource::uri() const
 {
-  return m_data->uri;
+  return m_data->uri();
 }
 
 
 const QString& Nepomuk::KMetaData::Resource::type() const
 {
   m_data->init();
-  return m_data->type;
+  return m_data->type();
 }
 
 
@@ -103,55 +103,47 @@ int Nepomuk::KMetaData::Resource::sync()
 QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
 {
   m_data->init();
+  return m_data->allProperties();
+}
 
-  QHash<QString, Variant> l;
-  for( ResourceData::PropertiesMap::const_iterator it = m_data->properties.constBegin();
-       it != m_data->properties.constEnd(); ++it )
-    l.insert( it.key(), it.value().first );
-  return l;
+
+bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
+{
+  m_data->init();
+  return m_data->hasProperty( uri );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
   m_data->init();
-
-  ResourceData::PropertiesMap::iterator it = m_data->properties.find( uri );
-  if( it != m_data->properties.end() )
-    if( !( it.value().second & ResourceData::Deleted ) )
-      return it.value().first;
-  
-  return Variant();
+  return m_data->getProperty( uri );
 }
 
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
   m_data->init();
-
-  // mark the value as modified
-  m_data->properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
+  m_data->setProperty( uri, value );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
   m_data->init();
+  m_data->removeProperty( uri );
+}
 
-  ResourceData::PropertiesMap::iterator it = m_data->properties.find( uri );
-  if( it != m_data->properties.end() )
-    it.value().second = ResourceData::Modified|ResourceData::Deleted;
+
+bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
+{
+  return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
 }
 
 
 bool Nepomuk::KMetaData::Resource::modified() const
 {
-  for( ResourceData::PropertiesMap::const_iterator it = m_data->properties.constBegin();
-       it != m_data->properties.constEnd(); ++it )
-    if( it.value().second & ResourceData::Modified )
-      return true;
-
-  return false;
+  return m_data->modified();
 }
 
 

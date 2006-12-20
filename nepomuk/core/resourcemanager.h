@@ -29,6 +29,7 @@ namespace Nepomuk {
 
     class Resource;
     class Ontology;
+    class Variant;
 
     /**
      * \brief The ResourceManager is the central \a %KMetaData configuration point.
@@ -96,7 +97,15 @@ namespace Nepomuk {
 	QList<Resource> allResourcesOfType( const QString& type ) const;
 
 	/**
-	 * Non-public API. Used by Resource to signalize errors.
+	 * Retrieve a list of all resources that have property \a uri defined with a value of \a v.
+	 *
+	 * This includes Resources that are not synced yet so it might
+	 * not represent exactly the state as in the RDF store.
+	 */
+	QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v ) const;
+
+	/**
+	 * \internal Non-public API. Used by Resource to signalize errors.
 	 */
 	KMETADATA_NO_EXPORT void notifyError( const QString& uri, int errorCode );
 
