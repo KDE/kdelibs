@@ -87,8 +87,8 @@ KWalletD::KWalletD()
 	(void)new KWalletDAdaptor(this);
 	// register another name
 	QDBusConnection::sessionBus().registerService("org.kde.kwalletd");
-	kdesktop = new QDBusInterface("org.kde.kdesktop", "/KScreensaver", "org.kde.KScreensaverIface");
-
+	kdesktop = new QDBusInterface("org.kde.kdesktop", "/Screensaver", "org.kde.kdesktop.Screensaver");
+	
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 		connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
