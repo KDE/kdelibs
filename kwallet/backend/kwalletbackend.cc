@@ -239,10 +239,10 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 
 bool Backend::exists(const QString& wallet) {
-QString path = KGlobal::dirs()->saveLocation("kwallet") + '/' + wallet + ".kwl";
+	QString path = KGlobal::dirs()->saveLocation("kwallet") + '/' + wallet + ".kwl";
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
-return QFile::exists(path) && QFileInfo(path).size() >= 60;
+	return QFile::exists(path) && QFileInfo(path).size() >= 60;
 }
 
 
@@ -483,7 +483,7 @@ int Backend::sync(const QByteArray& password) {
 	}
 
 	KSaveFile sf(_path);
-	
+
 	if (!sf.open()) {
 		return -1;		// error opening file
 	}
@@ -619,7 +619,7 @@ int Backend::sync(const QByteArray& password) {
 
 	wholeFile.fill(0);
 
-return 0;
+	return 0;
 }
 
 
@@ -654,13 +654,13 @@ QStringList Backend::entryList() const {
 
 
 Entry *Backend::readEntry(const QString& key) {
-Entry *rc = 0L;
+	Entry *rc = 0L;
 
 	if (_open && hasEntry(key)) {
 		rc = _entries[_folder][key];
 	}
 
-return rc;
+	return rc;
 }
 
 
@@ -694,14 +694,14 @@ bool Backend::createFolder(const QString& f) {
 	folderMd5.update(f.toUtf8());
 	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QList<MD5Digest>());
 
-return true;
+	return true;
 }
 
 
 int Backend::renameEntry(const QString& oldName, const QString& newName) {
-EntryMap& emap = _entries[_folder];
-EntryMap::Iterator oi = emap.find(oldName);
-EntryMap::Iterator ni = emap.find(newName);
+	EntryMap& emap = _entries[_folder];
+	EntryMap::Iterator oi = emap.find(oldName);
+	EntryMap::Iterator ni = emap.find(newName);
 
 	if (oi != emap.end() && ni == emap.end()) {
 		Entry *e = oi.value();
@@ -722,7 +722,7 @@ EntryMap::Iterator ni = emap.find(newName);
 		return 0;
 	}
 
-return -1;
+	return -1;
 }
 
 
@@ -775,7 +775,7 @@ bool Backend::removeEntry(const QString& key) {
 		return true;
 	}
 
-return false;
+	return false;
 }
 
 
@@ -803,7 +803,7 @@ bool Backend::removeFolder(const QString& f) {
 		return true;
 	}
 
-return false;
+	return false;
 }
 
 

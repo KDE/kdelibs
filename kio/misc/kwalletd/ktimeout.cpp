@@ -21,67 +21,47 @@
 */
 
 #include "ktimeout.h"
+#include <QTimerEvent>
 
-KTimeout::KTimeout(int size)
-: QObject(){
-	_timers.reserve(size);
+KTimeout::KTimeout()
+: QObject() {
 }
-
 
 KTimeout::~KTimeout() {
-	clear();
 }
-
 
 void KTimeout::clear() {
-	qDeleteAll(_timers);
-	_timers.clear();
+    _timers.clear();
 }
-
 
 void KTimeout::removeTimer(int id) {
-	QTimer *t = _timers.value(id);
-	if (t != 0L) {
-		_timers.remove(id);
-		delete t;
-	}
+    _timers.remove(id);
 }
-
 
 void KTimeout::addTimer(int id, int timeout) {
-	if (_timers.contains(id)) {
-		return;
-	}
-
-	QTimer *t = new QTimer;
-	connect(t, SIGNAL(timeout()), this, SLOT(timeout()));
-	t->start(timeout);
-	_timers.insert(id, t);
+    if (_timers.contains(id)) {
+        return;
+    }
+    _timers.insert(id, startTimer(timeout));
 }
-
 
 void KTimeout::resetTimer(int id, int timeout) {
-	QTimer *t = _timers.value(id);
-	if (t) {
-		t->start(timeout);
-	}
+    int timerId = _timers.value(id, 0);
+    if (timerId != 0) {
+            killTimer(timerId);
+            _timers.insert(id, startTimer(timeout));
+    }
 }
 
-
-void KTimeout::timeout() {
-	const QTimer *t = static_cast<const QTimer*>(sender());
-	if (t) {
-		QMultiHash<int, QTimer*>::const_iterator it = _timers.constBegin();
-		while (it != _timers.constEnd()) {
-			if (it.value() == t) {
-				emit timedOut(it.key());
-				return;
-			}
-			++it;
-		}
-	}
+void KTimeout::timerEvent(QTimerEvent* ev) {
+    QHash<int, int>::const_iterator it = _timers.constBegin();
+    for ( ; it != _timers.constEnd(); ++it) {
+        if (it.value() == ev->timerId()) {
+            emit timedOut(it.key());
+            return;
+        }
+    }
 }
-
 
 #include "ktimeout.moc"
 

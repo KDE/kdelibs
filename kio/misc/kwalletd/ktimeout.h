@@ -22,16 +22,15 @@
 #ifndef _KTIMEOUT_H_
 #define _KTIMEOUT_H_
 
-#include <QMultiHash>
+#include <QHash>
 #include <qobject.h>
-#include <qtimer.h>
 
 // @internal
 class KTimeout : public QObject {
 	Q_OBJECT
 	public:
-		KTimeout(int size = 29);
-		virtual ~KTimeout();
+		KTimeout();
+		~KTimeout();
 
 	Q_SIGNALS:
 		void timedOut(int id);
@@ -42,11 +41,11 @@ class KTimeout : public QObject {
 		void removeTimer(int id);
 		void clear();
 
-	private Q_SLOTS:
-		void timeout();
+        protected:
+		void timerEvent(QTimerEvent*);
 
 	private:
-		QMultiHash<int,QTimer*> _timers;
+		QHash<int /*id*/,int /*timerId*/> _timers;
 };
 
 #endif

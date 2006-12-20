@@ -52,25 +52,25 @@ class KWalletD : public KDEDModule {
 		bool isEnabled() const;
 
 		// Open and unlock the wallet
-		int open(const QString& wallet, qlonglong wId, const QDBusMessage& msg);
+		int open(const QString& wallet, qlonglong wId, const QString& appid, const QDBusMessage& msg);
 
 		// Open and unlock the wallet with this path
-		int openPath(const QString& path, qlonglong wId, const QDBusMessage& msg);
+		int openPath(const QString& path, qlonglong wId, const QString& appid);
 
 		// Asynchronous open - must give the object to return the handle
 		// to.
 		// disabled -thiago
-		//virtual void openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId);
+		//virtual void openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId, const QString& appid);
 
 		// Close and lock the wallet
 		// If force = true, will close it for all users.  Behave.  This
 		// can break applications, and is generally intended for use by
 		// the wallet manager app only.
 		int close(const QString& wallet, bool force);
-		int close(int handle, bool force, const QDBusMessage& msg);
+		int close(int handle, bool force, const QString& appid);
 
 		// Save to disk but leave open
-		Q_NOREPLY void sync(int handle, const QDBusMessage& msg);
+		Q_NOREPLY void sync(int handle, const QString& appid);
 
 		// Physically deletes the wallet from disk.
 		int deleteWallet(const QString& wallet);
@@ -83,53 +83,53 @@ class KWalletD : public KDEDModule {
 		QStringList users(const QString& wallet) const;
 
 		// Change the password of this wallet
-		void changePassword(const QString& wallet, qlonglong wId, const QDBusMessage& msg);
+		void changePassword(const QString& wallet, qlonglong wId, const QString& appid, const QDBusMessage& msg);
 
 		// A list of all wallets
 		QStringList wallets() const;
 
 		// A list of all folders in this wallet
-		QStringList folderList(int handle, const QDBusMessage& msg);
+		QStringList folderList(int handle, const QString& appid);
 
 		// Does this wallet have this folder?
-		bool hasFolder(int handle, const QString& folder, const QDBusMessage& msg);
+		bool hasFolder(int handle, const QString& folder, const QString& appid);
 
 		// Create this folder
-		bool createFolder(int handle, const QString& folder, const QDBusMessage& msg);
+		bool createFolder(int handle, const QString& folder, const QString& appid);
 
 		// Remove this folder
-		bool removeFolder(int handle, const QString& folder, const QDBusMessage& msg);
+		bool removeFolder(int handle, const QString& folder, const QString& appid);
 
 		// List of entries in this folder
-		QStringList entryList(int handle, const QString& folder, const QDBusMessage& msg);
+		QStringList entryList(int handle, const QString& folder, const QString& appid);
 
 		// Read an entry.  If the entry does not exist, it just
 		// returns an empty result.	 It is your responsibility to check
 		// hasEntry() first.
-		QByteArray readEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
-		QByteArray readMap(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
-		QString readPassword(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
-		QVariantMap readEntryList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
-		QVariantMap readMapList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
-		QVariantMap readPasswordList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
+		QByteArray readEntry(int handle, const QString& folder, const QString& key, const QString& appid);
+		QByteArray readMap(int handle, const QString& folder, const QString& key, const QString& appid);
+		QString readPassword(int handle, const QString& folder, const QString& key, const QString& appid);
+		QVariantMap readEntryList(int handle, const QString& folder, const QString& key, const QString& appid);
+		QVariantMap readMapList(int handle, const QString& folder, const QString& key, const QString& appid);
+		QVariantMap readPasswordList(int handle, const QString& folder, const QString& key, const QString& appid);
 
 		// Rename an entry.	 rc=0 on success.
-		int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName, const QDBusMessage& msg);
+		int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName, const QString& appid);
 
 		// Write an entry.	rc=0 on success.
-		int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType, const QDBusMessage& msg);
-		int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, const QDBusMessage& msg);
-		int writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value, const QDBusMessage& msg);
-		int writePassword(int handle, const QString& folder, const QString& key, const QString& value, const QDBusMessage& msg);
+		int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType, const QString& appid);
+		int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, const QString& appid);
+		int writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value, const QString& appid);
+		int writePassword(int handle, const QString& folder, const QString& key, const QString& value, const QString& appid);
 
 		// Does the entry exist?
-		bool hasEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
+		bool hasEntry(int handle, const QString& folder, const QString& key, const QString& appid);
 
 		// What type is the entry?
-		int entryType(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
+		int entryType(int handle, const QString& folder, const QString& key, const QString& appid);
 
 		// Remove an entry.	 rc=0 on success.
-		int removeEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg);
+		int removeEntry(int handle, const QString& folder, const QString& key, const QString& appid);
 
 		// Disconnect an app from a wallet
 		bool disconnectApplication(const QString& wallet, const QString& application);
@@ -166,7 +166,7 @@ class KWalletD : public KDEDModule {
 		void processTransactions();
 
 	private:
-		int internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal, const QDBusMessage& msg);
+		int internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal);
 		bool isAuthorizedApp(const QString& appid, const QString& wallet, WId w);
 		// This also validates the handle.	May return NULL.
 		KWallet::Backend* getWallet(const QString& appid, int handle);
@@ -183,8 +183,8 @@ class KWalletD : public KDEDModule {
 		bool implicitAllow(const QString& wallet, const QString& app);
 		bool implicitDeny(const QString& wallet, const QString& app);
 
-		void doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId, const QDBusMessage& msg);
-		int doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal, const QDBusMessage& msg);
+		void doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId);
+		int doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal);
 
 		void setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal );
 		void checkActiveDialog();

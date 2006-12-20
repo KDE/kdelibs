@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- */ 
+ */
 
 
 #ifndef _KWALLET_H
@@ -31,7 +31,7 @@
 
 #include <kdelibs_export.h>
 
-class QDBusInterface;
+class OrgKdeKWalletInterface;
 
 namespace KWallet {
 
@@ -39,7 +39,7 @@ namespace KWallet {
  * KDE Wallet
  *
  * This class implements a generic system-wide Wallet for KDE.  This is the
- * ONLY public interface. 
+ * ONLY public interface.
  *
  * @author George Staikos <staikos@kde.org>
  * @short KDE Wallet Class
@@ -68,7 +68,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 		 *  Destroy a KWallet object.  Closes the wallet.
 		 */
 		virtual ~Wallet();
-		
+
 		/**
 		 *  List all the wallets available.
 		 *  @return Returns a list of the names of all wallets that are
@@ -422,7 +422,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 		 *  @return Returns true if the key does NOT exist in the
 		 *  wallet, or the folder or wallet does not exist.
 		 */
-		static bool keyDoesNotExist(const QString& wallet, const QString& folder, 
+		static bool keyDoesNotExist(const QString& wallet, const QString& folder,
 					    const QString& key);
 
 	Q_SIGNALS:
@@ -497,7 +497,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 		QString _name;
 		QString _folder;
 		int _handle;
-		QDBusInterface* _wallet;
+		OrgKdeKWalletInterface* _wallet;
 
 	protected:
 		/**

@@ -79,7 +79,7 @@ KWalletD::KWalletD()
 	srand(time(0));
 	_showingFailureNotify = false;
 	_transactions.setAutoDelete(true);
-	_timeouts = new KTimeout(17);
+	_timeouts = new KTimeout();
 	_closeIdle = false;
 	_idleTime = 0;
 	connect(_timeouts, SIGNAL(timedOut(int)), this, SLOT(timedOut(int)));
@@ -143,7 +143,7 @@ void KWalletD::processTransactions() {
 
 		switch (xact->tType) {
 			case KWalletTransaction::Open:
-				res = doTransactionOpen(xact->appid, xact->wallet, xact->wId, xact->modal, xact->msg);
+				res = doTransactionOpen(xact->appid, xact->wallet, xact->wId, xact->modal);
 
 				// multiple requests from the same client
 				// should not produce multiple password
@@ -169,7 +169,7 @@ void KWalletD::processTransactions() {
 				res = -1;
 				break;
 			case KWalletTransaction::ChangePassword:
-				doTransactionChangePassword(xact->appid, xact->wallet, xact->wId, xact->msg);
+				doTransactionChangePassword(xact->appid, xact->wallet, xact->wId);
 				// fall through - no return
 			default:
 				_transactions.removeRef(xact);
@@ -186,26 +186,21 @@ void KWalletD::processTransactions() {
 }
 
 #if 0
-void KWalletD::openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId) {
+void KWalletD::openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId, const QString& appid) {
 	DCOPClient *dc = callingDcopClient();
 	if (!dc) {
 		return;
 	}
 
-	QByteArray appid = dc->senderId();
 	if (!_enabled ||
 		!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
 		DCOPRef(appid, returnObject).send("walletOpenResult", -1);
 		return;
 	}
 
-	QByteArray peerName = friendlyDCOPPeerName();
-
 	KWalletTransaction *xact = new KWalletTransaction;
 
-	xact->appid = peerName;
-	xact->rawappid = appid;
-	xact->client = callingDcopClient();
+	xact->appid = appid;
 	xact->wallet = wallet;
 	xact->wId = wId;
 	xact->modal = false;
@@ -219,18 +214,18 @@ void KWalletD::openAsynchronous(const QString& wallet, const QByteArray& returnO
 }
 #endif
 
-int KWalletD::openPath(const QString& path, qlonglong wId, const QDBusMessage& msg) {
+int KWalletD::openPath(const QString& path, qlonglong wId, const QString& appid) {
 	if (!_enabled) { // guard
 		return -1;
 	}
 
 	// FIXME: setup transaction
-	int rc = internalOpen(msg.service(), path, true, wId, false, msg);
+	int rc = internalOpen(appid, path, true, wId, false);
 	return rc;
 }
 
 
-int KWalletD::open(const QString& wallet, qlonglong wId, const QDBusMessage &msg) {
+int KWalletD::open(const QString& wallet, qlonglong wId, const QString& appid, const QDBusMessage &msg) {
 	if (!_enabled) { // guard
 		return -1;
 	}
@@ -239,7 +234,6 @@ int KWalletD::open(const QString& wallet, qlonglong wId, const QDBusMessage &msg
 		return -1;
 	}
 
-	QString appid = msg.service();
 	KWalletTransaction *xact = new KWalletTransaction;
 	_transactions.append(xact);
 
@@ -257,7 +251,7 @@ int KWalletD::open(const QString& wallet, qlonglong wId, const QDBusMessage &msg
 
 // Sets up a dialog that will be shown by kwallet.
 void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal ) {
-	if( wId != 0 ) 
+	if( wId != 0 )
 		KWin::setMainWindow( dialog, wId ); // correct, set dialog parent
 	else {
 		if( appid.isEmpty())
@@ -291,7 +285,7 @@ void KWalletD::checkActiveDialog() {
 }
 
 
-int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal, const QDBusMessage& msg) {
+int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal) {
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
@@ -334,12 +328,12 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 		cfg.sync();
 	}
 
-	int rc = internalOpen(appid, wallet, false, WId(wId), modal, msg);
+	int rc = internalOpen(appid, wallet, false, WId(wId), modal);
 	return rc;
 }
 
 
-int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal, const QDBusMessage& msg) {
+int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal) {
 	int rc = -1;
 	bool brandNew = false;
 
@@ -455,8 +449,8 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 		delete kpd; // don't refactor this!!  Argh I hate KPassDlg
 
 		if (brandNew) {
-			createFolder(rc, KWallet::Wallet::PasswordFolder(), msg);
-			createFolder(rc, KWallet::Wallet::FormDataFolder(), msg);
+			createFolder(rc, KWallet::Wallet::PasswordFolder(), appid);
+			createFolder(rc, KWallet::Wallet::FormDataFolder(), appid);
 		}
 
 		b->ref();
@@ -554,9 +548,7 @@ int KWalletD::deleteWallet(const QString& wallet) {
 }
 
 
-void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QDBusMessage& msg) {
-	QString appid = msg.service();
-
+void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QString& appid, const QDBusMessage& msg) {
 	KWalletTransaction *xact = new KWalletTransaction;
 
 	//msg.setDelayedReply(true);
@@ -575,7 +567,7 @@ void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QDBusM
 }
 
 
-void KWalletD::doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId, const QDBusMessage& msg) {
+void KWalletD::doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId) {
 	Q3IntDictIterator<KWallet::Backend> it(_wallets);
 	KWallet::Backend *w = 0L;
 	int handle = -1;
@@ -588,7 +580,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	}
 
 	if (!it.current()) {
-		handle = doTransactionOpen(appid, wallet, wId, false, msg);
+		handle = doTransactionOpen(appid, wallet, wId, false);
 		if (-1 == handle) {
 			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
@@ -631,7 +623,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	delete kpd;
 
 	if (reclose) {
-		close(handle, true, msg);
+		close(handle, true, appid);
 	}
 }
 
@@ -680,8 +672,7 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 }
 
 
-int KWalletD::close(int handle, bool force, const QDBusMessage& msg) {
-	QString appid = msg.service();
+int KWalletD::close(int handle, bool force, const QString& appid) {
 	KWallet::Backend *w = _wallets.find(handle);
 	bool contains = false;
 
@@ -770,10 +761,10 @@ QStringList KWalletD::wallets() const {
 }
 
 
-void KWalletD::sync(int handle, const QDBusMessage &msg) {
+void KWalletD::sync(int handle, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		QByteArray p;
 		QString wallet = b->walletName();
 		p = QByteArray(_passwords[wallet].data(), _passwords[wallet].length());
@@ -783,10 +774,10 @@ void KWalletD::sync(int handle, const QDBusMessage &msg) {
 }
 
 
-QStringList KWalletD::folderList(int handle, const QDBusMessage& msg) {
+QStringList KWalletD::folderList(int handle, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		return b->folderList();
 	}
 
@@ -794,10 +785,10 @@ QStringList KWalletD::folderList(int handle, const QDBusMessage& msg) {
 }
 
 
-bool KWalletD::hasFolder(int handle, const QString& f, const QDBusMessage& msg) {
+bool KWalletD::hasFolder(int handle, const QString& f, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		return b->hasFolder(f);
 	}
 
@@ -805,10 +796,10 @@ bool KWalletD::hasFolder(int handle, const QString& f, const QDBusMessage& msg) 
 }
 
 
-bool KWalletD::removeFolder(int handle, const QString& f, const QDBusMessage& msg) {
+bool KWalletD::removeFolder(int handle, const QString& f, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		bool rc = b->removeFolder(f);
 		emit folderListUpdated(b->walletName());
 		return rc;
@@ -818,10 +809,10 @@ bool KWalletD::removeFolder(int handle, const QString& f, const QDBusMessage& ms
 }
 
 
-bool KWalletD::createFolder(int handle, const QString& f, const QDBusMessage& msg) {
+bool KWalletD::createFolder(int handle, const QString& f, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		bool rc = b->createFolder(f);
 		emit folderListUpdated(b->walletName());
 		return rc;
@@ -831,10 +822,10 @@ bool KWalletD::createFolder(int handle, const QString& f, const QDBusMessage& ms
 }
 
 
-QByteArray KWalletD::readMap(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QByteArray KWalletD::readMap(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry *e = b->readEntry(key);
 		if (e && e->type() == KWallet::Wallet::Map) {
@@ -846,10 +837,10 @@ QByteArray KWalletD::readMap(int handle, const QString& folder, const QString& k
 }
 
 
-QVariantMap KWalletD::readMapList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QVariantMap KWalletD::readMapList(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		QVariantMap rc;
 		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
@@ -864,10 +855,10 @@ QVariantMap KWalletD::readMapList(int handle, const QString& folder, const QStri
 }
 
 
-QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry *e = b->readEntry(key);
 		if (e) {
@@ -879,10 +870,10 @@ QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString&
 }
 
 
-QVariantMap KWalletD::readEntryList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QVariantMap KWalletD::readEntryList(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		QVariantMap rc;
 		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
@@ -895,10 +886,10 @@ QVariantMap KWalletD::readEntryList(int handle, const QString& folder, const QSt
 }
 
 
-QStringList KWalletD::entryList(int handle, const QString& folder, const QDBusMessage& msg) {
+QStringList KWalletD::entryList(int handle, const QString& folder, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		return b->entryList();
 	}
@@ -907,10 +898,10 @@ QStringList KWalletD::entryList(int handle, const QString& folder, const QDBusMe
 }
 
 
-QString KWalletD::readPassword(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QString KWalletD::readPassword(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry *e = b->readEntry(key);
 		if (e && e->type() == KWallet::Wallet::Password) {
@@ -922,10 +913,10 @@ QString KWalletD::readPassword(int handle, const QString& folder, const QString&
 }
 
 
-QVariantMap KWalletD::readPasswordList(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+QVariantMap KWalletD::readPasswordList(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		QVariantMap rc;
 		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
@@ -940,10 +931,10 @@ QVariantMap KWalletD::readPasswordList(int handle, const QString& folder, const 
 }
 
 
-int KWalletD::writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value, const QDBusMessage& msg) {
+int KWalletD::writeMap(int handle, const QString& folder, const QString& key, const QByteArray& value, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry e;
 		e.setKey(key);
@@ -958,10 +949,10 @@ int KWalletD::writeMap(int handle, const QString& folder, const QString& key, co
 }
 
 
-int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType, const QDBusMessage& msg) {
+int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, int entryType, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry e;
 		e.setKey(key);
@@ -976,10 +967,10 @@ int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, 
 }
 
 
-int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, const QDBusMessage& msg) {
+int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry e;
 		e.setKey(key);
@@ -994,10 +985,10 @@ int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, 
 }
 
 
-int KWalletD::writePassword(int handle, const QString& folder, const QString& key, const QString& value, const QDBusMessage& msg) {
+int KWalletD::writePassword(int handle, const QString& folder, const QString& key, const QString& value, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		KWallet::Entry e;
 		e.setKey(key);
@@ -1012,10 +1003,10 @@ int KWalletD::writePassword(int handle, const QString& folder, const QString& ke
 }
 
 
-int KWalletD::entryType(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+int KWalletD::entryType(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		if (!b->hasFolder(folder)) {
 			return KWallet::Wallet::Unknown;
 		}
@@ -1029,10 +1020,10 @@ int KWalletD::entryType(int handle, const QString& folder, const QString& key, c
 }
 
 
-bool KWalletD::hasEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+bool KWalletD::hasEntry(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		if (!b->hasFolder(folder)) {
 			return false;
 		}
@@ -1044,10 +1035,10 @@ bool KWalletD::hasEntry(int handle, const QString& folder, const QString& key, c
 }
 
 
-int KWalletD::removeEntry(int handle, const QString& folder, const QString& key, const QDBusMessage& msg) {
+int KWalletD::removeEntry(int handle, const QString& folder, const QString& key, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		if (!b->hasFolder(folder)) {
 			return 0;
 		}
@@ -1132,10 +1123,10 @@ void KWalletD::doCloseSignals(int handle, const QString& wallet) {
 }
 
 
-int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName, const QDBusMessage& msg) {
+int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName, const QString& appid) {
 	KWallet::Backend *b;
 
-	if ((b = getWallet(msg.service(), handle))) {
+	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		int rc = b->renameEntry(oldName, newName);
 		emitFolderUpdated(b->walletName(), folder);
