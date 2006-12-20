@@ -75,6 +75,7 @@ extern "C" {
 #endif
 #if defined Q_WS_X11
 #include <netwm.h>
+#include <fixx11h.h>
 #endif
 
 using namespace KIO;
