@@ -41,6 +41,7 @@
 
 using namespace KIO;
 
+/** @internal */
 class DavJob::DavJobPrivate
 {
 public:

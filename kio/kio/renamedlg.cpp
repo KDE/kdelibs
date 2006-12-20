@@ -50,6 +50,7 @@
 
 using namespace KIO;
 
+/** @internal */
 class RenameDlg::RenameDlgPrivate
 {
  public:

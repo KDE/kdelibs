@@ -36,6 +36,7 @@
 
 using namespace KIO;
 
+/** @internal */
 struct PasswordDialog::PasswordDialogPrivate
 {
     QGridLayout *layout;

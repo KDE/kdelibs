@@ -81,6 +81,7 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
+/** @internal */
 class Job::JobPrivate
 {
 public:
@@ -1416,7 +1417,7 @@ void DirectCopyJob::slotCanResume( KIO::filesize_t offset )
 
 //////////////////////////
 
-
+/** @internal */
 class FileCopyJob::FileCopyJobPrivate
 {
 public:

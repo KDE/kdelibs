@@ -52,6 +52,7 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
+/** @internal */
 class CopyJob::CopyJobPrivate
 {
 public:
