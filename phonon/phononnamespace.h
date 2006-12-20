@@ -137,7 +137,7 @@ inline PHONONCORE_EXPORT kdbgstream& operator<<( kdbgstream & stream, const Phon
 	switch( state )
 	{
 		case Phonon::ErrorState:
-			stream << "Error";
+			stream << "ErrorState";
 			break;
 		case Phonon::LoadingState:
 			stream << "LoadingState";

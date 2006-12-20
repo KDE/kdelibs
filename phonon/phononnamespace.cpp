@@ -43,31 +43,5 @@ namespace Phonon
 		return QString();
 	}
 }
-/*
-kdbgstream& operator<<( kdbgstream & stream, const Phonon::State state )
-{
-	switch( state )
-	{
-		case Phonon::ErrorState:
-			stream << "Error";
-			break;
-		case Phonon::LoadingState:
-			stream << "LoadingState";
-			break;
-		case Phonon::StoppedState:
-			stream << "StoppedState";
-			break;
-		case Phonon::PlayingState:
-			stream << "PlayingState";
-			break;
-		case Phonon::BufferingState:
-			stream << "BufferingState";
-			break;
-		case Phonon::PausedState:
-			stream << "PausedState";
-			break;
-	}
-	return stream;
-}
-*/
+
 // vim: sw=4 ts=4
