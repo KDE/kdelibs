@@ -391,9 +391,9 @@ public:
    *
    * e.g. given 123456.78F, return "123,456.78" (for some European country).
    *
-   * @param numStr The number to convert
-   * @param round Round  fractional digits. (default true)
-   * @param precision Number of fractional digits used. (default 2)
+   * @param numStr The number to format, as a string.
+   * @param round Round fractional digits. (default true)
+   * @param precision Number of fractional digits used for rounding. Unused if round=false. (default 2)
    *
    * @return The number as a localized string
    */

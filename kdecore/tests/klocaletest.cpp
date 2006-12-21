@@ -67,6 +67,10 @@ KLocaleTest::formatNumberStrings()
 	QCOMPARE(locale.formatNumber("99.9e96", true, 2), QString("99.90e96"));
 	QCOMPARE(locale.formatNumber("99e", true, 1), QString("99.0"));
 	QCOMPARE(locale.formatNumber("e2", true, 0), QString("0e2"));
+	QCOMPARE(locale.formatNumber("1.", true, 1), QString("1.0"));
+	QCOMPARE(locale.formatNumber("1.", true, 0), QString("1"));
+	QCOMPARE(locale.formatNumber("1.", false, 1), QString("1.")); // no rounding -> 1. unchanged
+	QCOMPARE(locale.formatNumber("1.", false, 0), QString("1."));
         QCOMPARE(locale.formatNumber("abcd", true, 2), QString("0.00")); // invalid number
 }
 
