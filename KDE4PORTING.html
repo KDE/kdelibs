@@ -172,8 +172,8 @@ For text-based applications, you should consider switching to QCoreApplication +
 There are two cases:
 <ul>
 	<li>Command-line argument parsing needed: use KCmdLineArgs as usual and then
-	<pre>QCoreApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv() );</pre></li>
-	<li>No command-line argument parsing needed: simply create a KAboutData, a KInstance(&amp;aboutData),
+	<pre>QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );</pre></li>
+	<li>No command-line argument parsing needed: simply create a KInstance (with &amp;aboutData or just a name),
 	and then use <pre>QCoreApplication app( argc, argv );</pre>
 	</li>
 </ul>
@@ -1454,6 +1454,12 @@ instead of returning the application/octet-stream mimetype. Test for null!</li>
 <h4>KOpenWithDlg</h4>
 <ul>
 <li>Has been renamed to KOpenWithDialog. Use #include &lt;kopenwithdialog.h&gt;</li>
+</ul>
+
+<h4>KPropertiesDialog</h4>
+<ul>
+<li>Doesn't have autoShow support in its constructors anymore, but still has autodelete behavior.</li>
+<li>Ensure any new is followed by show or exec. Or use KPropertiesDialog::showDialog where possible.</li>
 </ul>
 
 <h4>KProtocolInfo</h4>

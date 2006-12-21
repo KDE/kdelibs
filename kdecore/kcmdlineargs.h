@@ -548,11 +548,21 @@ public:
   static bool isTempFileSet();
 
   /**
-   * Returns the number of arguments returned by qt_argv()
-   *
-   * @see qt_argv
+   * @deprecated use qtArgc() instead of *qt_argc()
    */
   static int *qt_argc();
+
+  /**
+   * Returns the number of arguments returned by qtArgv()
+   *
+   * @see qtArgv
+   */
+  static int &qtArgc();
+
+  /**
+   * @deprecated remove one '*' and use qtArgv()
+   */
+  static char ***qt_argv();
 
   /**
    * Returns command line options for consumption by Qt after parsing them in a way that
@@ -562,7 +572,7 @@ public:
    *
    * @see qt_argc
    */
-  static char ***qt_argv();
+  static char **qtArgv();
 
   /**
    * Returns the KAboutData for consumption by KInstance

@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     KInstance instance(&about); // for KConfig
-    QApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), false );
+    QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
     if (args->isSet("p")) {
         kDebug() << k_funcinfo << "emitChange(PaletteChanged)" << endl;

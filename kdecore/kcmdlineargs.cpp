@@ -713,25 +713,24 @@ KCmdLineArgs::parseAllArgs()
    parsed = true;
 }
 
-/**
- * For KApplication only:
- *
- * Return argc
- */
-int *
-KCmdLineArgs::qt_argc()
+int * KCmdLineArgs::qt_argc()
+{
+    return &qtArgc();
+}
+
+int & KCmdLineArgs::qtArgc()
 {
    if (!argsList)
       addStdCmdLineOptions(CmdLineArgKDE|CmdLineArgQt); // Lazy bastards!
 
    static int qt_argc = -1;
    if( qt_argc != -1 )
-      return &qt_argc;
+      return qt_argc;
 
    if (!(mStdargs & KCmdLineArgs::CmdLineArgQt))
    {
      qt_argc = 2;
-     return &qt_argc;
+     return qt_argc;
    }
 
    KCmdLineArgs *args = parsedArgs("qt");
@@ -747,31 +746,34 @@ KCmdLineArgs::qt_argc()
 
    Q_ASSERT(argc >= (args->count()+1));
    qt_argc = args->count() +1;
-   return &qt_argc;
+   return qt_argc;
 }
 
-/**
- * For KApplication only:
- *
- * Return argv
- */
+static char** s_qt_argv;
+
 char ***
 KCmdLineArgs::qt_argv()
+{
+    qtArgv();
+    return &s_qt_argv;
+}
+
+char **
+KCmdLineArgs::qtArgv()
 {
    if (!argsList)
       addStdCmdLineOptions(CmdLineArgKDE|CmdLineArgQt); // Lazy bastards!
 
-   static char** qt_argv;
-   if( qt_argv != NULL )
-      return &qt_argv;
+   if( s_qt_argv != NULL )
+      return s_qt_argv;
 
    if (!(mStdargs & KCmdLineArgs::CmdLineArgQt))
    {
-     qt_argv = new char*[2];
-     qt_argv[0] = qstrdup(appName());
-     qt_argv[1] = 0;
+     s_qt_argv = new char*[2];
+     s_qt_argv[0] = qstrdup(appName());
+     s_qt_argv[1] = 0;
 
-     return &qt_argv;
+     return s_qt_argv;
    }
 
    KCmdLineArgs *args = parsedArgs("qt");
@@ -785,16 +787,16 @@ KCmdLineArgs::qt_argv()
       exit(255);
    }
 
-   qt_argv = new char*[ args->count() + 2 ];
-   qt_argv[ 0 ] = qstrdup( appName());
+   s_qt_argv = new char*[ args->count() + 2 ];
+   s_qt_argv[ 0 ] = qstrdup( appName());
    int i = 0;
    for(; i < args->count(); i++)
    {
-      qt_argv[i+1] = qstrdup((char *) args->arg(i));
+      s_qt_argv[i+1] = qstrdup((char *) args->arg(i));
    }
-   qt_argv[i+1] = 0;
+   s_qt_argv[i+1] = 0;
 
-   return &qt_argv;
+   return s_qt_argv;
 }
 
 void

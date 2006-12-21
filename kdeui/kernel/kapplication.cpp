@@ -363,7 +363,7 @@ static SmcConn mySmcConnection = 0;
 #endif
 
 KApplication::KApplication( bool GUIenabled ) :
-  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+  QApplication( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
                 GUIenabled ),
   KInstance( KCmdLineArgs::about ), d (new Private)
 {
@@ -377,7 +377,7 @@ KApplication::KApplication( bool GUIenabled ) :
 
 #ifdef Q_WS_X11
 KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap ) :
-  QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+  QApplication( dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
                 visual, colormap ),
   KInstance( KCmdLineArgs::about ), d (new Private)
 {
@@ -390,7 +390,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 
 KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
 		            KInstance * _instance ) :
-  QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+  QApplication( dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
                 visual, colormap ),
   KInstance( _instance ), d (new Private)
 {
@@ -403,7 +403,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 #endif
 
 KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
-  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+  QApplication( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
                 GUIenabled ),
   KInstance( _instance ), d (new Private)
 {

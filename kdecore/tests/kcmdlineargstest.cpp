@@ -31,7 +31,7 @@ main(int argc, char *argv[])
    // MyWidget::addCmdLineOptions();
 
    //KApplication app( false );
-   QApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), false );
+   QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
    // Get application specific arguments
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
@@ -81,7 +81,7 @@ main(int argc, char *argv[])
 {
    KCmdLineArgs::init( argc, argv, "testapp", description, version);
 
-   QApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), false );
+   QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
    return app.exec();
 }
