@@ -409,6 +409,32 @@ color: #418ADE;
 hr { display: none; }
 #content h2 { margin-left: 0px; }
 
+table.memname {
+background-color: #f8f8f8;
+border: .2em solid #d7d7d7;
+width: 80%;
+}
+
+td.memname {
+white-space: nowrap;
+font-weight: bold;
+}
+
+.paramtype {
+white-space: nowrap;
+font-weight: bold;
+}
+
+.paramname {
+white-space: nowrap;
+font-weight: bold;
+}
+
+.paramkey {
+text-align: right;
+}
+
+
 table.mdTable {
 background-color: #f8f8f8;
 border: .2em solid #d7d7d7;
