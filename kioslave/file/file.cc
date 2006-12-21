@@ -187,7 +187,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 
 void FileProtocol::chmod( const KUrl& url, int permissions )
 {
-    QByteArray _path( QFile::encodeName(url.path()) );
+    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
     /* FIXME: Should be atomic */
     if ( ::chmod( _path.data(), permissions ) == -1 ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
@@ -216,7 +216,7 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
 
 void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
-    QByteArray _path( QFile::encodeName(url.path()));
+    QByteArray _path( QFile::encodeName(url.toLocalFile()));
 
     kDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions << endl;
 
@@ -262,7 +262,7 @@ void FileProtocol::get( const KUrl& url )
 	return;
     }
 
-    QByteArray _path( QFile::encodeName(url.path()));
+    QByteArray _path( QFile::encodeName(url.toLocalFile()));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
@@ -374,7 +374,7 @@ void FileProtocol::open( const KUrl& url, int access )
 {
     kDebug(7101) << "FileProtocol::open " << url.url() << endl;
 
-    QByteArray _path( QFile::encodeName(url.path()));
+    QByteArray _path( QFile::encodeName(url.toLocalFile()));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
@@ -1058,7 +1058,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &dest, bool overwr
 
 void FileProtocol::del( const KUrl& url, bool isfile)
 {
-    QByteArray _path( QFile::encodeName(url.path()));
+    QByteArray _path( QFile::encodeName(url.toLocalFile()));
     /*****
      * Delete files
      *****/
@@ -1220,8 +1220,11 @@ void FileProtocol::stat( const KUrl & url )
      * stat("/is/unaccessible/") -> EPERM            H.Z.
      * This is the reason for the -1
      */
+#ifdef Q_WS_WIN
+    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
+#else
     QByteArray _path( QFile::encodeName(url.path(KUrl::RemoveTrailingSlash)));
-
+#endif
     QString sDetails = metaData(QLatin1String("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
     kDebug(7101) << "FileProtocol::stat details=" << details << endl;
@@ -1256,13 +1259,8 @@ void FileProtocol::listDir( const KUrl& url)
 	finished();
 	return;
     }
+    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
 #ifdef Q_WS_WIN
-    kDebug(7101) << "========= path " << url.path() << " =========" << endl;
-    kDebug(7101) << "win32: fix KUrl::path()" << endl;
-    int start = (url.path()[0] == '/') ? 1 : 0;
-    QByteArray _path( QFile::encodeName(url.path().mid(start)));
-
-    kDebug(7101) << "========= " << _path.data() << " =========" << endl;
     QDir dir( _path );
     dir.setFilter(QDir::AllEntries);
     dir.setSorting(QDir::Size | QDir::Reversed);
@@ -1294,8 +1292,6 @@ void FileProtocol::listDir( const KUrl& url)
             listEntry( entry, false);
     }
 #else
-    QByteArray _path( QFile::encodeName(url.path()));
-
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
