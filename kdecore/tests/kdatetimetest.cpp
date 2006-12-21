@@ -3355,6 +3355,10 @@ void KDateTimeTest::strings_format()
     s = dt.toString(QLatin1String("%Y"));
     QCOMPARE(s, QString::fromLatin1("-2005"));
 
+    dt = KDateTime(QDate(-15,9,5), QTime(0,0,06,1), KDateTime::ClockTime);
+    s = dt.toString(QLatin1String("%Y"));
+    QCOMPARE(s, QString::fromLatin1("-0015"));
+
     dt = KDateTime::fromString(QLatin1String("-471209051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(-4712,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
