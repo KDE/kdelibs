@@ -53,7 +53,7 @@ int main( int argc, char **argv )
 
     a = new KAction( KIcon( "viewmag-" ), "decfont", part->actionCollection(), "decFontSizes" );
     a = new KAction( KIcon( "unlock" ), "sec", part->actionCollection(), "security" );
-    a->setDefaultShortcut( KShortcut(Qt::ALT + Qt::Key_1) );
+    a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT( slotSec() ) );
 
     part->setXMLFile( "./kxmlguitest_part.rc" );

@@ -949,7 +949,7 @@ bool KKeyChooserItem::isConfigurable( ) const
 
 KShortcut KKeyChooserItem::defaultShortcut( ) const
 {
-	return m_action->defaultShortcut();
+	return m_action->shortcut( KAction::DefaultShortcut );
 }
 
 void KKeyChooser::resizeColumns( )
@@ -972,7 +972,7 @@ KShortcut KKeyChooserItem::globalShortcut( ) const
 
 KShortcut KKeyChooserItem::defaultGlobalShortcut( ) const
 {
-	return m_action->defaultGlobalShortcut();
+	return m_action->globalShortcut( KAction::DefaultShortcut );
 }
 
 void KKeyChooserItem::checkModified( )

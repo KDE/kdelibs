@@ -453,7 +453,7 @@ void KActionCollection::readSettings( KConfigBase* config )
                   kaction->setShortcut( KShortcut(entry), KAction::ActiveShortcut );
           }
           else // default shortcut
-              kaction->setShortcut( kaction->defaultShortcut() );
+              kaction->setShortcut( kaction->shortcut(KAction::DefaultShortcut) );
 
           kDebug(125) << "\t" << action->objectName() << " = '" << entry << "'" << endl;
       }
@@ -488,7 +488,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
         if (kaction==0)
             continue;
 
-        bool bSameAsDefault = (kaction->shortcut() == kaction->defaultShortcut());
+        bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
         //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
         // now see if this element already exists
@@ -528,7 +528,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
 
       if( kaction!=0 && kaction->isShortcutConfigurable() ) {
           bool bConfigHasAction = !cg.readEntry( kaction->objectName(), QString() ).isEmpty();
-          bool bSameAsDefault = (kaction->shortcut() == kaction->defaultShortcut());
+          bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
           KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
