@@ -837,14 +837,10 @@ static void _insertSeparator(QString &str, const QString &separator,
 			     const QString &decimalSymbol)
 {
   // leave fractional part untouched
-  QString mainPart = str.section(decimalSymbol, 0, 0);
-  QString fracPart = str.section(decimalSymbol, 1, 1,
-				 QString::SectionIncludeLeadingSep);
-  if (fracPart==decimalSymbol) fracPart.clear();
-  for (int pos = mainPart.length() - 3; pos > 0; pos -= 3)
-    mainPart.insert(pos, separator);
-
-  str = mainPart + fracPart;
+  const int decimalSymbolPos = str.indexOf(decimalSymbol);
+  const int start = decimalSymbolPos == -1 ? str.length() : decimalSymbolPos;
+  for (int pos = start - 3; pos > 0; pos -= 3)
+    str.insert(pos, separator);
 }
 
 QString KLocale::formatMoney(double num,
@@ -982,7 +978,9 @@ static void _round(QString &str, int precision)
       }
 
   // fill up with more than enough zeroes (in case fractional part too short)
-  str.append(QString().fill('0', precision));
+  str.reserve(str.length() + precision);
+  for (int i = 0; i < precision; ++i)
+    str.append('0');
 
   // Now decide whether to round up or down
   char last_char = str[decimalSymbolPos + precision + 1].toLatin1();
@@ -1010,37 +1008,41 @@ static void _round(QString &str, int precision)
   str.truncate(decimalSymbolPos + precision + 1);
 
   // if precision == 0 delete also '.'
-  if (precision == 0) str = str.section('.', 0, 0);
+  if (precision == 0) str = str.left(decimalSymbolPos);
+
+  str.squeeze();
 }
 
 QString KLocale::formatNumber(const QString &numStr, bool round,
 			      int precision) const
 {
   QString tmpString = numStr;
-  if ((round  && precision < 0)  ||
-      ! QRegExp("^[+-]?\\d+(\\.\\d+)*(e[+-]?\\d+)?$").exactMatch(tmpString))
+  if (round && precision < 0)
     return numStr;
 
-
   // Skip the sign (for now)
-  bool neg = (tmpString[0] == '-');
-  if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
+  const bool neg = (tmpString[0] == '-');
+  if (neg || tmpString[0] == '+') tmpString.remove(0, 1);
 
   //kDebug(173)<<"tmpString:"<<tmpString<<endl;
 
   // Split off exponential part (including 'e'-symbol)
-  QString mantString = tmpString.section('e', 0, 0,
-					 QString::SectionCaseInsensitiveSeps);
-  QString expString = tmpString.section('e', 1, 1,
-					QString::SectionCaseInsensitiveSeps |
-					QString::SectionIncludeLeadingSep);
-  if (expString.length()==1) expString.clear();
+  const int expPos = tmpString.indexOf('e'); // -1 if not found
+  QString mantString = tmpString.left(expPos); // entire string if no 'e' found
+  QString expString;
+  if (expPos > -1) {
+    expString = tmpString.mid(expPos); // includes the 'e', or empty if no 'e'
+    if (expString.length() == 1)
+      expString.clear();
+  }
 
   //kDebug(173)<<"mantString:"<<mantString<<endl;
   //kDebug(173)<<"expString:"<<expString<<endl;
+  if (mantString.isEmpty() || !mantString[0].isDigit()) // invalid number
+    mantString = "0";
 
-
-  if (round) _round(mantString, precision);
+  if (round)
+    _round(mantString, precision);
 
   // Replace dot with locale decimal separator
   mantString.replace(QChar('.'), decimalSymbol());
@@ -1051,7 +1053,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   // How can we know where we should put the sign?
   mantString.prepend(neg?negativeSign():positiveSign());
 
-  return mantString +  expString;
+  return mantString + expString;
 }
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
@@ -1117,7 +1119,7 @@ QString KLocale::formatDuration( unsigned long mSec) const
    {
       return i18n( "%1 seconds", formatNumber( mSec/1000.0, 2));
    }
-   
+
    return i18n( "%1 milliseconds", formatNumber(mSec, 0));
 }
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const

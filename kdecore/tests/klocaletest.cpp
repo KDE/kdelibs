@@ -56,6 +56,7 @@ KLocaleTest::formatNumberStrings()
 	QCOMPARE(locale.formatNumber("70"), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 2), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 0), QString("70"));
+	QCOMPARE(locale.formatNumber("0.2", true, 1), QString("0.2"));
 	QCOMPARE(locale.formatNumber("70.9123", true, 0), QString("71"));
 	QCOMPARE(locale.formatNumber("-70.2", true, 2), QString("-70.20"));
 	QCOMPARE(locale.formatNumber("+70.24", true, 2), QString("70.24"));
@@ -63,6 +64,10 @@ KLocaleTest::formatNumberStrings()
 	QCOMPARE(locale.formatNumber("99.996", true, 2), QString("100.00"));
 	QCOMPARE(locale.formatNumber("12345678901234567.89123456789",false,0),
 		QString("12,345,678,901,234,567.89123456789"));
+	QCOMPARE(locale.formatNumber("99.9e96", true, 2), QString("99.90e96"));
+	QCOMPARE(locale.formatNumber("99e", true, 1), QString("99.0"));
+	QCOMPARE(locale.formatNumber("e2", true, 0), QString("0e2"));
+        QCOMPARE(locale.formatNumber("abcd", true, 2), QString("0.00")); // invalid number
 }
 
 void
