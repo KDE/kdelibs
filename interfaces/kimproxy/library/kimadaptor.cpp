@@ -16,10 +16,10 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
-/*
+/**
  * Implementation of adaptor class KIMAdaptor
+ * @internal
  */
-
 KIMAdaptor::KIMAdaptor(QObject *parent)
    : QDBusAbstractAdaptor(parent)
 {
@@ -32,6 +32,9 @@ KIMAdaptor::~KIMAdaptor()
     // destructor
 }
 
+/**
+ * @internal
+*/
 bool KIMAdaptor::addContact(const QString &contactId, const QString &protocol)
 {
     // handle method call org.kde.KIM.addContact
