@@ -277,18 +277,16 @@ target_link_libraries(knuminputtest ${KDE4_KDEUI_LIBS})
 
 
 ########### next target ###############
-# also does not work with gcc when -fvisibility=hidden
-if(NOT WIN32)
-    set(kpalettetest_SRCS
+set(kpalettetest_SRCS
     kpalettetest.cpp
-    )
+    ../util/kpalette.cpp
+)
 
-    kde4_automoc(${kpalettetest_SRCS})
+kde4_automoc(${kpalettetest_SRCS})
 
-    kde4_add_executable(kpalettetest RUN_UNINSTALLED ${kpalettetest_SRCS})
+kde4_add_executable(kpalettetest RUN_UNINSTALLED ${kpalettetest_SRCS})
 
-    target_link_libraries(kpalettetest ${KDE4_KDEUI_LIBS})
-endif(NOT WIN32)
+target_link_libraries(kpalettetest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
