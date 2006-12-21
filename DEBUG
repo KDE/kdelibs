@@ -57,37 +57,18 @@ libraries yet. The easiest way to do that is to set a breakpoint in the
 first line of main and then start the program:
 
 (gdb) break main
-Breakpoint 1 at 0x804855c
+Breakpoint 1 at 0x8048741: file /d/kde/build/4/kdeutils/kedit/kedit_dummy.cpp, line 3
 (gdb) run
 Starting program: /opt/kde/bin/kedit myfile.txt
-Breakpoint 1 at 0x4002cf18: file kedit.cpp, line 1595.
  
-Breakpoint 1, main (argc=2, argv=0xbffff814) at kedit.cpp:1595
-1595            bool have_top_window = false;
-Current language:  auto; currently c++
+Breakpoint 1, main (argc=1, argv=0xbfa798b4) at /d/kde/build/4/kdeutils/kedit/kedit_dummy.cpp:3
+3       int main(int argc, char* argv[]) { return kdemain(argc,argv); }
 (gdb)  
 
 You can now set breakpoints everywhere. For example lets set a breakpoint 
-in the KApplication constructor. Unfortunately gdb is not very good in 
-handling C++ names, so it is not really possible to specify the constructor
-directly after the break command. Instead we look up a line of source
-code where we want to place the breakpoint. An external editor is of great 
-use at this point. With the list command we can select the source file we
-are interested in and verify that we have found the correct source line:
-
-(gdb) list kapp.cpp:220
-215         parseCommandLine( argc, argv );
-216     }
-217
-218     KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
-219       QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
-220                     GUIenabled ),
-221       KInstance( KCmdLineArgs::about),
-222       d (new KApplicationPrivate)
-223     {
-224         if (!GUIenabled)
-(gdb) break 224
-Breakpoint 2 at 0x4048aa7e: file kapp.cpp, line 224.
+in the KApplication constructor. Remember to use quotes before C++ method names:
+(gdb) break 'KApplication::init()'
+Breakpoint 2 at 0xb7a5f86d: file /d/kde/src/4/kdelibs/kdeui/kernel/kapplication.cpp, line 488.
 (gdb) 
 
 We can now continue the execution of kedit. Execution will stop when it hits
@@ -99,10 +80,8 @@ Continuing.
 Qt: gdb: -nograb added to command-line options.
          Use the -dograb option to enforce grabbing.
  
-Breakpoint 2, KApplication::KApplication (this=0xbffff6a8, allowStyles=true,
-    GUIenabled=true) at kapp.cpp:224
-224         if (!GUIenabled)
-(gdb) 
+Breakpoint 2, KApplication::init (this=0xbfa797b4) at /d/kde/src/4/kdelibs/kdeui/kernel/kapplication.cpp:488
+488       if ((getuid() != geteuid()) ||
 
 
 Attaching gdb to already running applications
