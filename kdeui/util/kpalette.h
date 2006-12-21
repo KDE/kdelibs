@@ -41,11 +41,9 @@ class KPalettePrivate;
  *
  * This class is totally unrelated to QPalette.
  *
- * @internal  This class is only used by KColorDialog.
- *
  * @author Waldo Bastian (bastian@kde.org)
  **/
-class KPalette
+class KDEUI_EXPORT KPalette
 {
 public:
    /**

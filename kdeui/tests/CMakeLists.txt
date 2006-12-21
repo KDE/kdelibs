@@ -279,7 +279,6 @@ target_link_libraries(knuminputtest ${KDE4_KDEUI_LIBS})
 ########### next target ###############
 set(kpalettetest_SRCS
     kpalettetest.cpp
-    ../util/kpalette.cpp
 )
 
 kde4_automoc(${kpalettetest_SRCS})
