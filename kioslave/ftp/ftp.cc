@@ -2216,14 +2216,22 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwri
 
   if(bSrcLocal && !bDestLocal)                    // File -> Ftp
   {
+#ifdef Q_WS_WIN
+    sCopyFile = src.toLocalFile();
+#else
     sCopyFile = src.path();
+#endif
     kDebug(7102) << "Ftp::copy local file '" << sCopyFile << "' -> ftp '" << dest.path() << "'" << endl;
     cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, overwrite);
     if( cs == statusServerError) sCopyFile = dest.url();
   }
   else if(!bSrcLocal && bDestLocal)               // Ftp -> File
   {
+#ifdef Q_WS_WIN
+    sCopyFile = dest.toLocalFile();
+#else
     sCopyFile = dest.path();
+#endif
     kDebug(7102) << "Ftp::copy ftp '" << src.path() << "' -> local file '" << sCopyFile << "'" << endl;
     cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, overwrite);
     if( cs == statusServerError ) sCopyFile = src.url();
