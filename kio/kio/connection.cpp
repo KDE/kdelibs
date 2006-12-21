@@ -68,8 +68,9 @@ void Connection::suspend()
     m_suspended = true;
     if (notifier)
        notifier->setEnabled(false);
-    if (socket && receiver)
-       QObject::disconnect(socket, SIGNAL(readyRead()), receiver, member);
+    if (socket) {
+        socket->enableRead(false);
+    }
 }
 
 void Connection::resume()
@@ -77,8 +78,9 @@ void Connection::resume()
     m_suspended = false;
     if (notifier)
        notifier->setEnabled(true);
-    if (socket && receiver)
-       QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
+    if (socket) {
+        socket->enableRead(true);
+    }
 }
 
 void Connection::close()
