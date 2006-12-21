@@ -84,7 +84,7 @@ int create_link(const char *file, const char *tmp_dir)
      fprintf(stderr, "Error: Can not create link from \"%s\" to \"%s\"\n", file, tmp_dir);
      return 1;
   }
-  printf("Created link from \"%s\" to \"%s\"\n", file, tmp_dir);
+  /*printf("Created link from \"%s\" to \"%s\"\n", file, tmp_dir);*/
   return 0;
 }
 
@@ -167,12 +167,12 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   if ((result == 0) && (S_ISDIR(stat_buf.st_mode)))
   {
      /* $KDEHOME/tmp is a normal directory. Do nothing. */
-     printf("Directory \"%s\" already exists.\n", kde_tmp_dir);
+     /*printf("Directory \"%s\" already exists.\n", kde_tmp_dir);*/
      return 0;
   }
   if ((result == -1) && (errno == ENOENT))
   {
-     printf("Creating link %s.\n", kde_tmp_dir);
+     /*printf("Creating link %s.\n", kde_tmp_dir);*/
      result = create_link(kde_tmp_dir, user_tmp_dir);
      if (result == 0) return 0; /* Success */
      unlink(kde_tmp_dir);
@@ -193,12 +193,12 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      return 1;
   }
   tmp_buf[result] = '\0';  
-  printf("Link points to \"%s\"\n", tmp_buf);
+  /*printf("Link points to \"%s\"\n", tmp_buf);*/
   if (strncmp(tmp_buf, user_tmp_dir, strlen(user_tmp_dir)) != 0)
   {
      fprintf(stderr, "Error: \"%s\" points to \"%s\" instead of \"%s\".\n", kde_tmp_dir, tmp_buf, user_tmp_dir);
      unlink(kde_tmp_dir);
-     printf("Creating link %s.\n", kde_tmp_dir);
+     /*printf("Creating link %s.\n", kde_tmp_dir);*/
      result = create_link(kde_tmp_dir, user_tmp_dir);
      if (result == 0) return 0; /* Success */
      unlink(kde_tmp_dir);
