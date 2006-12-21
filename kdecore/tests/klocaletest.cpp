@@ -178,7 +178,7 @@ KLocaleTest::readTime()
 	locale.readTime("11:22:33", KLocale::WithoutSeconds, &ok);
 	QVERIFY(!ok);
 
-	locale.readTime("11:22", KLocale::WithoutSeconds, &ok);
+	QCOMPARE(locale.readTime("11:22", KLocale::WithoutSeconds, &ok), QTime(11, 22, 0));
 	QVERIFY(ok);
 }
 
