@@ -147,7 +147,7 @@ QStringList Wallet::walletList() {
 
 void Wallet::changePassword(const QString& name, WId w) {
     org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    wallet.changePassword(name, w, appid());
+    wallet.changePassword(name, (qlonglong)w, appid());
 }
 
 
@@ -195,7 +195,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
     bool isPath = ot == Path;
     org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<int> r = isPath ? wallet.openPath(name, w, appid()) : wallet.open(name, w, appid());
+    QDBusReply<int> r = isPath ? wallet.openPath(name, (qlonglong)w, appid()) : wallet.open(name, (qlonglong)w, appid());
     if (r.isValid()) {
         int drc = r;
         if (drc != -1) {
@@ -260,7 +260,7 @@ void Wallet::requestChangePassword(WId w) {
         return;
     }
 
-    _wallet->changePassword(_name, w, appid());
+    _wallet->changePassword(_name, (qlonglong)w, appid());
 }
 
 
