@@ -31,7 +31,7 @@ public:
   virtual void openFolderinTabs(KBookmark bm) = 0;
 };
 
-class KonqBookmarkActionMenu : public KBookmarkActionMenu
+class KIO_EXPORT KonqBookmarkActionMenu : public KBookmarkActionMenu
 {
   Q_OBJECT
 public:
