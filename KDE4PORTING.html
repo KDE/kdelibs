@@ -166,6 +166,20 @@ foreach (QWidget *w, action-&gt;associatedWidgets())
 </pre>
 </ul>
 
+<h4>KApplication</h4>
+<p>Moved to kdeui. This means no change for GUI applications.
+For text-based applications, you should consider switching to QCoreApplication + KInstance.
+There are two cases:
+<ul>
+	<li>Command-line argument parsing needed: use KCmdLineArgs as usual and then
+	<pre>QCoreApplication app( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv() );</pre></li>
+	<li>No command-line argument parsing needed: simply create a KAboutData, a KInstance(&amp;aboutData),
+	and then use <pre>QCoreApplication app( argc, argv );</pre>
+	</li>
+</ul>
+<p>Of course if you don't create a KApplication, then you should turn any "kapp-&gt;" into "qApp-&gt;" in the
+rest of the code.</p>
+
 <h4>KAudioPlayer</h4>
 <p>Removed, use now Phonon::AudioPlayer</p>
 
