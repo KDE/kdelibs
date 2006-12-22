@@ -49,8 +49,10 @@ KShortcut::KShortcut(const QKeySequence &primary, const QKeySequence &alternate)
 
 KShortcut::KShortcut(int keyQtPri, int keyQtAlt)
 {
-    append(keyQtPri);
-    append(keyQtAlt);
+    if (keyQtPri)
+        append(keyQtPri);
+    if (keyQtAlt)
+        append(keyQtAlt);
 }
 
 KShortcut::KShortcut(const QString &s)
