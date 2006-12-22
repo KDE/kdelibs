@@ -152,9 +152,8 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
     TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
     
     // the resource has to exists either as a subject or as an object
-    // FIXME: ts.contains should support empty nodes
-    return( !ts.listStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ).statements.isEmpty() || 
-	    !ts.listStatements( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ).statements.isEmpty() );
+    return( ts.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) || 
+	    ts.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
   }
   else
     return false;
