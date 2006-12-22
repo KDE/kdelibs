@@ -50,6 +50,13 @@ namespace Nepomuk {
      * Converts a literal value from the RDF store into a Variant.
      */
     Variant RDFLiteralToValue( const QString& );
+
+    /**
+     * If \a uri does not have a namespace append the default one.
+     *
+     * \sa Ontology::defaultNamespace
+     */
+    QString ensureNamespace( const QString& uri );
   }
 }
 

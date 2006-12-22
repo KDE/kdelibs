@@ -169,8 +169,10 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 }
 
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v ) const
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& _uri, const Variant& v ) const
 {
+  QString uri = ensureNamespace( _uri );
+
   QList<Resource> l;
 
   if( v.isList() ) {

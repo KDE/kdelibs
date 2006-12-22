@@ -14,6 +14,7 @@
 
 #include "tools.h"
 #include "ontology.h"
+#include "resourcemanager.h"
 
 
 QString Nepomuk::KMetaData::defaultGraph()
@@ -77,4 +78,15 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const QString
 {
   // FIXME: replace this with the real thing
   return Variant( s );
+}
+
+
+QString Nepomuk::KMetaData::ensureNamespace( const QString& uri )
+{
+  QString s(uri);
+  // very dumb check for a namespace
+  // FIXME: improve this
+  if( !uri.contains( "://" ) )
+    s.prepend( Nepomuk::KMetaData::ResourceManager::instance()->ontology()->defaultNamespace() + '#' );
+  return s;
 }

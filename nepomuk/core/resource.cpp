@@ -16,19 +16,9 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 #include "ontology.h"
+#include "tools.h"
 
 #include <klocale.h>
-
-
-static QString ensureNamespace( const QString& uri )
-{
-  QString s(uri);
-  // very dumb check for a namespace
-  // FIXME: improve this
-  if( !uri.contains( "://" ) )
-    s.prepend( Nepomuk::KMetaData::ResourceManager::instance()->ontology()->defaultNamespace() + '#' );
-  return s;
-}
 
 
 Nepomuk::KMetaData::Resource::Resource()
