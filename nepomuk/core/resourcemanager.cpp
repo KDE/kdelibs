@@ -213,4 +213,19 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
   return l;    
 }
 
+
+QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
+{
+  TripleService ts( serviceRegistry()->discoverTripleService() );
+
+  QString s;
+  while( 1 ) {
+    s = ontology()->defaultNamespace() + '#' + KRandom::randomString( 20 );
+    if( !ts.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
+	!ts.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
+	!ts.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) )
+      return s;
+  }
+}
+
 #include "resourcemanager.moc"

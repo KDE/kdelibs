@@ -19,6 +19,8 @@
 
 #include <QtCore>
 
+#include <krandom.h>
+
 
 namespace Nepomuk {
   namespace Backbone {
@@ -87,6 +89,13 @@ namespace Nepomuk {
 	 */
 	Resource createResourceFromUri( const QString& uri );
 
+	/**
+	 * Remove the resource denoted by \a uri completely.
+	 *
+	 * This method is just a wrapper around Resource::remove. The result
+	 * is the same.
+	 */
+	void removeResource( const QString& uri );
 
 	/**
 	 * Retrieve a list of all resources of the specified \a type.
@@ -103,6 +112,12 @@ namespace Nepomuk {
 	 * not represent exactly the state as in the RDF store.
 	 */
 	QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v ) const;
+
+	/**
+	 * Generates a unique URI that is not used in the store yet. This method ca be used to 
+	 * generate URIs for virtual types such as Tag.
+	 */
+	QString generateUniqueUri() const;
 
 	/**
 	 * \internal Non-public API. Used by Resource to signalize errors.

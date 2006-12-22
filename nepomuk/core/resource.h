@@ -143,6 +143,8 @@ namespace Nepomuk {
 	 *
 	 * This method only changes the resource locally. The new data is not written
 	 * back to the Nepomuk store before a call to sync().
+	 *
+	 * Calling setProperty will revert any previous calls to remove.
 	 */
 	void setProperty( const QString& uri, const Variant& value );
 
@@ -153,6 +155,27 @@ namespace Nepomuk {
 	 * back to the Nepomuk store before a call to sync().
 	 */
 	void removeProperty( const QString& uri );
+
+	/**
+	 * Remove this resource completely.
+	 *
+	 * The resource will only be marked as deleted locally and not be removed from
+	 * the local Nepomuk RDF store until a call to sync.
+	 *
+	 * One call to setProperty will revert the deletion of a resource.
+	 *
+	 * \sa revive
+	 */
+	void remove();
+
+	/**
+	 * Revive a previously removed resource. If the resource was not yet synced all
+	 * properties (except those that have actually been removed via removeProperty)
+	 * are restored to their previous values.
+	 *
+	 * \sa remove
+	 */
+	void revive();
 
 	/**
 	 * Check if this resource is a property of type \a uri, i.e. if there is some
@@ -182,6 +205,9 @@ namespace Nepomuk {
 	/**
 	 * \return true if this resource (i.e. the uri of this resource) exists in the local
 	 * NEPOMUK RDF store, either as subject or as object.
+	 *
+	 * This method ignores any previous unsynced remove operations and only checks for 
+	 * the presence of the resource in the local RDF store.
 	 *
 	 * \sa inSync()
 	 */

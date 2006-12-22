@@ -135,6 +135,19 @@ void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 }
 
 
+void Nepomuk::KMetaData::Resource::remove()
+{
+  m_data->init();
+  m_data->remove();
+}
+
+
+void Nepomuk::KMetaData::Resource::revive()
+{
+  m_data->revive();
+}
+
+
 bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
 {
   return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();

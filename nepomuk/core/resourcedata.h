@@ -41,8 +41,9 @@ namespace Nepomuk {
 	}
 
 	enum Flags {
-	  Modified = 0x2,
-	  Deleted = 0x4
+	  Modified = 0x2, /*< The resource or property has locally been modified */
+	  Deleted = 0x4, /*< The resource has actually been deleted in a sync operation */
+	  Removed = 0x8 /*< The resource or property has been scheduled for removal */
 	};
 
 	const QString& uri() const;
@@ -57,6 +58,14 @@ namespace Nepomuk {
 	void setProperty( const QString& uri, const Variant& value );
 
 	void removeProperty( const QString& uri );
+
+	/**
+	 * Remove this resource data. The data is not deleted locally or remotly
+	 * until save() is called.
+	 */
+	void remove();
+
+	void revive();
 
 	bool modified() const;
 
@@ -121,6 +130,8 @@ namespace Nepomuk {
 
 	QString m_uri;
 	QString m_type;
+
+	int m_flags;
 
 	int m_ref;
 	bool m_initialized;

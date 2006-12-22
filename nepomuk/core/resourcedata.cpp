@@ -32,6 +32,7 @@ QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceDa
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QString& type_ )
   : m_uri( uri_ ),
     m_type( type_ ),
+    m_flags(0),
     m_ref(0),
     m_initialized( false )
 {
@@ -92,7 +93,7 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const
 {
   PropertiesMap::const_iterator it = m_properties.constFind( uri );
   if( it != m_properties.end() )
-    if( !( it.value().second & ResourceData::Deleted ) )
+    if( !( it.value().second & ResourceData::Removed ) )
       return it.value().first;
   
   return Variant();
@@ -101,6 +102,9 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const
 
 void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
+  // reset the deleted flag
+  m_flags = 0;
+
   // mark the value as modified
   m_properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
 }
@@ -110,12 +114,29 @@ void Nepomuk::KMetaData::ResourceData::removeProperty( const QString& uri )
 {
   ResourceData::PropertiesMap::iterator it = m_properties.find( uri );
   if( it != m_properties.end() )
-    it.value().second = ResourceData::Modified|ResourceData::Deleted;
+    it.value().second = ResourceData::Modified|ResourceData::Removed;
+}
+
+
+void Nepomuk::KMetaData::ResourceData::remove()
+{
+  m_flags |= Removed;
+}
+
+
+void Nepomuk::KMetaData::ResourceData::revive()
+{
+  m_flags = 0;
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::modified() const
 {
+  // If the resource is Removed it has not been synced yet and thus is modified
+  // If it is only marked as Deleted it has been synced and thus is not modified
+  if( m_flags & Removed )
+    return true;
+
   for( ResourceData::PropertiesMap::const_iterator it = m_properties.constBegin();
        it != m_properties.constEnd(); ++it )
     if( it.value().second & ResourceData::Modified )
@@ -131,8 +152,9 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
     TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
     
     // the resource has to exists either as a subject or as an object
-    return( !ts.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) || 
-	    !ts.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
+    // FIXME: ts.contains should support empty nodes
+    return( !ts.listStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ).statements.isEmpty() || 
+	    !ts.listStatements( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ).statements.isEmpty() );
   }
   else
     return false;
@@ -161,6 +183,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
 {
   if( isValid() ) {
     m_properties.clear();
+    m_flags = 0;
 
     TripleService ts( ResourceManager::instance()->serviceRegistry()->discoverTripleService() );
 
@@ -233,6 +256,14 @@ bool Nepomuk::KMetaData::ResourceData::save()
       return false;
     }
 
+    // if the resource has been deleted locally we are done after removing it
+    // ======================================================================
+    if( m_flags & (Removed|Deleted) ) {
+      m_properties.clear();
+      m_flags = Deleted;
+      return true;
+    }
+
     // save the type
     // =============
     if( ts.addStatement( KMetaData::defaultGraph(), 
@@ -243,11 +274,15 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
     // save the properties
     // ===================
-    for( PropertiesMap::const_iterator it = m_properties.constBegin();
-	 it != m_properties.constEnd(); ++it ) {
+    for( PropertiesMap::iterator it = m_properties.begin();
+	 it != m_properties.end(); ++it ) {
 
-      if( it.value().second & Deleted )
+      // ignore removed properties (FIXME: should we also delete them from m_properties here?)
+      if( it.value().second & Removed )
 	continue;
+
+      // whatever gets saved is not Modified anymore
+      it.value().second &= ~Modified;
 
       QString predicate = it.key();
       const Variant& val = it.value().first;
@@ -376,7 +411,7 @@ bool Nepomuk::KMetaData::ResourceData::merge()
 
 
 /**
- * Compares the properties of two ResourceData objects taking into account the Deleted flag
+ * Compares the properties of two ResourceData objects taking into account the Removed flag
  */
 bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) const
 {
@@ -391,6 +426,9 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
   const_cast<ResourceData*>(this)->init();
   const_cast<ResourceData*>(&other)->init();
 
+  if( exists() && m_flags != other.m_flags )
+    return false;
+
   for( PropertiesMap::const_iterator it = other.m_properties.constBegin();
        it != other.m_properties.constEnd(); ++it ) {
     PropertiesMap::const_iterator it2 = this->m_properties.constFind( it.key() );
@@ -400,7 +438,7 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
       return false;
     // 2. the values differ or it has been removed here
     if( it.value().first != it2.value().first ||
-	it2.value().second & Deleted )
+	it2.value().second & Removed )
       return false;
   }
 
