@@ -872,7 +872,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             else {
                 error( KIO::ERR_SLAVE_DEFINED,
                         i18n("Cannot copy file from %1 to %2. (Errno: %3)",
-                          _src ,  _dest ,  errno ) );
+                          src.toLocalFile(), dest.toLocalFile(), errno ) );
             }
           } else
 #endif
@@ -1313,7 +1313,7 @@ void FileProtocol::listDir( const KUrl& url)
 #ifdef ENOMEDIUM
 	case ENOMEDIUM:
             error( ERR_SLAVE_DEFINED,
-                   i18n( "No media in device for %1" ,  _path ) );
+                   i18n( "No media in device for %1", url.toLocalFile() ) );
             break;
 #else
         case ENOENT: // just to avoid the warning
