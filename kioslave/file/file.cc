@@ -197,7 +197,7 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
         switch (errno) {
             case EPERM:
             case EACCES:
-                error( KIO::ERR_ACCESS_DENIED, url.path() );
+                error( KIO::ERR_ACCESS_DENIED, _path );
                 break;
 #if defined(ENOTSUP)
             case ENOTSUP: // from setACL since chmod can't return ENOTSUP
@@ -205,10 +205,10 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
                 break;
 #endif
             case ENOSPC:
-                error( KIO::ERR_DISK_FULL, url.path() );
+                error( KIO::ERR_DISK_FULL, _path );
                 break;
             default:
-        error( KIO::ERR_CANNOT_CHMOD, url.path() );
+        error( KIO::ERR_CANNOT_CHMOD, _path );
         }
     } else
         finished();
@@ -224,13 +224,13 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
-          error( KIO::ERR_ACCESS_DENIED, url.path() );
+          error( KIO::ERR_ACCESS_DENIED, _path );
           return;
             } else if ( errno == ENOSPC ) {
-          error( KIO::ERR_DISK_FULL, url.path() );
+          error( KIO::ERR_DISK_FULL, _path );
           return;
             } else {
-          error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
+          error( KIO::ERR_COULD_NOT_MKDIR, _path );
           return;
             }
         } else {
@@ -244,10 +244,10 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
     if ( S_ISDIR( buff.st_mode ) ) {
         kDebug(7101) << "ERR_DIR_ALREADY_EXIST" << endl;
-        error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
+        error( KIO::ERR_DIR_ALREADY_EXIST, _path );
         return;
     }
-    error( KIO::ERR_FILE_ALREADY_EXIST, url.path() );
+    error( KIO::ERR_FILE_ALREADY_EXIST, _path );
     return;
 }
 
@@ -266,24 +266,24 @@ void FileProtocol::get( const KUrl& url )
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, url.path() );
+           error( KIO::ERR_ACCESS_DENIED, _path );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+           error( KIO::ERR_DOES_NOT_EXIST, _path );
         return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, url.path() );
+        error( KIO::ERR_IS_DIRECTORY, _path );
         return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
         return;
     }
 
     int fd = KDE_open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
         return;
     }
 
@@ -326,7 +326,7 @@ void FileProtocol::get( const KUrl& url )
        {
           if (errno == EINTR)
               continue;
-          error( KIO::ERR_COULD_NOT_READ, url.path());
+          error( KIO::ERR_COULD_NOT_READ, _path );
           close(fd);
           return;
        }
@@ -378,18 +378,18 @@ void FileProtocol::open( const KUrl& url, int access )
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, url.path() );
+           error( KIO::ERR_ACCESS_DENIED, _path );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+           error( KIO::ERR_DOES_NOT_EXIST, _path );
         return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, url.path() );
+        error( KIO::ERR_IS_DIRECTORY, _path );
         return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
         return;
     }
 
@@ -405,7 +405,7 @@ void FileProtocol::open( const KUrl& url, int access )
 
     int fd = KDE_open( _path.data(), flags);
     if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
         return;
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -448,7 +448,7 @@ void FileProtocol::open( const KUrl& url, int access )
                 if (errno == EINTR) goto read_retry;
                 // empty array designates eof
                 data(QByteArray());
-                error( KIO::ERR_COULD_NOT_READ, url.path());
+                error( KIO::ERR_COULD_NOT_READ, _path );
             }
             break;
         }
@@ -460,13 +460,13 @@ void FileProtocol::open( const KUrl& url, int access )
             {
                 if ( errno == ENOSPC ) // disk full
                 {
-                    error( KIO::ERR_DISK_FULL, url.path());
+                    error( KIO::ERR_DISK_FULL, _path );
                     break;
                 }
                 else
                 {
                     kWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
-                    error( KIO::ERR_COULD_NOT_WRITE, url.path());
+                    error( KIO::ERR_COULD_NOT_WRITE, _path );
                     break;
                 }
             } else {
@@ -482,7 +482,7 @@ void FileProtocol::open( const KUrl& url, int access )
             if (res != -1) {
                 position( offset );
             } else {
-                error(KIO::ERR_COULD_NOT_SEEK, url.path());
+                error(KIO::ERR_COULD_NOT_SEEK, _path );
                 break;
             }
             continue;
@@ -517,7 +517,7 @@ same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
 
 void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resume )
 {
-    QString dest_orig = url.path();
+    QString dest_orig = url.toLocalFile();
     QByteArray _dest_orig( QFile::encodeName(dest_orig));
 
     kDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
@@ -736,8 +736,8 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 {
     kDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode << endl;
 
-    QByteArray _src( QFile::encodeName(src.path()));
-    QByteArray _dest( QFile::encodeName(dest.path()));
+    QByteArray _src( QFile::encodeName(src.toLocalFile()));
+    QByteArray _dest( QFile::encodeName(dest.toLocalFile()));
     KDE_struct_stat buff_src;
 #ifdef HAVE_POSIX_ACL
     acl_t acl;
@@ -745,9 +745,9 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
     if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, src.path() );
+           error( KIO::ERR_ACCESS_DENIED, _src );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, src.path() );
+           error( KIO::ERR_DOES_NOT_EXIST, _src );
 	return;
     }
 
@@ -766,19 +766,19 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     {
         if (S_ISDIR(buff_dest.st_mode))
         {
-           error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
+           error( KIO::ERR_DIR_ALREADY_EXIST, _dest );
            return;
         }
 
 	if ( same_inode( buff_dest, buff_src) )
 	{
-	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
+	    error( KIO::ERR_IDENTICAL_FILES, _dest );
 	    return;
 	}
 
         if (!_overwrite)
         {
-           error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
+           error( KIO::ERR_FILE_ALREADY_EXIST, _dest );
            return;
         }
 
@@ -794,7 +794,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
     int src_fd = KDE_open( _src.data(), O_RDONLY);
     if ( src_fd < 0 ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src.path() );
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, _src );
 	return;
     }
 
@@ -813,9 +813,9 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     if ( dest_fd < 0 ) {
 	kDebug(7101) << "###### COULD NOT WRITE " << dest.url() << endl;
         if ( errno == EACCES ) {
-            error( KIO::ERR_WRITE_ACCESS_DENIED, dest.path() );
+            error( KIO::ERR_WRITE_ACCESS_DENIED, _dest );
         } else {
-            error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest.path() );
+            error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, _dest );
         }
         close(src_fd);
         return;
@@ -866,17 +866,17 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             kDebug(7101) << "sendfile() error:" << strerror(errno) << endl;
             if ( errno == ENOSPC ) // disk full
             {
-                error( KIO::ERR_DISK_FULL, dest.path());
+                error( KIO::ERR_DISK_FULL, _dest );
                 remove( _dest.data() );
             }
             else {
                 error( KIO::ERR_SLAVE_DEFINED,
                         i18n("Cannot copy file from %1 to %2. (Errno: %3)",
-                          src.path() ,  dest.path() ,  errno ) );
+                          _src ,  _dest ,  errno ) );
             }
           } else
 #endif
-          error( KIO::ERR_COULD_NOT_READ, src.path());
+          error( KIO::ERR_COULD_NOT_READ, _src );
           close(src_fd);
           close(dest_fd);
 #ifdef HAVE_POSIX_ACL
@@ -896,13 +896,13 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
            if ( errno == ENOSPC ) // disk full
            {
-              error( KIO::ERR_DISK_FULL, dest.path());
+              error( KIO::ERR_DISK_FULL, _dest );
               remove( _dest.data() );
            }
            else
            {
               kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
-              error( KIO::ERR_COULD_NOT_WRITE, dest.path());
+              error( KIO::ERR_COULD_NOT_WRITE, _dest );
            }
 #ifdef HAVE_POSIX_ACL
            if (acl) acl_free(acl);
@@ -921,7 +921,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     if (close( dest_fd))
     {
         kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
-        error( KIO::ERR_COULD_NOT_WRITE, dest.path());
+        error( KIO::ERR_COULD_NOT_WRITE, _dest );
 #ifdef HAVE_POSIX_ACL
         if (acl) acl_free(acl);
 #endif
@@ -939,7 +939,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
        {
         // Eat the error if the filesystem apparently doesn't support chmod.
         if ( KIO::testFileSystemFlag( _dest, KIO::SupportsChmod ) )
-            warning( i18n( "Could not change permissions for\n%1" ,  dest.path() ) );
+            warning( i18n( "Could not change permissions for\n%1" ,  dest.toLocalFile() ) );
        }
     }
 #ifdef HAVE_POSIX_ACL
@@ -952,7 +952,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     ut.modtime = buff_src.st_mtime;
     if ( ::utime( _dest.data(), &ut ) != 0 )
     {
-        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
+        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( _dest.data() ) << endl;
     }
 
     processedSize( buff_src.st_size );
@@ -962,14 +962,14 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 void FileProtocol::rename( const KUrl &src, const KUrl &dest,
                            bool _overwrite )
 {
-    QByteArray _src( QFile::encodeName(src.path()));
-    QByteArray _dest( QFile::encodeName(dest.path()));
+    QByteArray _src( QFile::encodeName(_src) );
+    QByteArray _dest( QFile::encodeName(_dest) );
     KDE_struct_stat buff_src;
     if ( KDE_lstat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, src.path() );
+           error( KIO::ERR_ACCESS_DENIED, _src );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, src.path() );
+           error( KIO::ERR_DOES_NOT_EXIST, _src );
         return;
     }
 
@@ -979,19 +979,19 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
     {
         if (S_ISDIR(buff_dest.st_mode))
         {
-           error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
+           error( KIO::ERR_DIR_ALREADY_EXIST, _dest );
            return;
         }
 
 	if ( same_inode( buff_dest, buff_src) )
 	{
-	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
+	    error( KIO::ERR_IDENTICAL_FILES, _dest );
 	    return;
 	}
 
         if (!_overwrite)
         {
-           error( KIO::ERR_FILE_ALREADY_EXIST, dest.path() );
+           error( KIO::ERR_FILE_ALREADY_EXIST, _dest );
            return;
         }
     }
@@ -999,16 +999,16 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
     if ( ::rename( _src.data(), _dest.data()))
     {
         if (( errno == EACCES ) || (errno == EPERM)) {
-            error( KIO::ERR_ACCESS_DENIED, dest.path() );
+            error( KIO::ERR_ACCESS_DENIED, _dest );
         }
         else if (errno == EXDEV) {
            error( KIO::ERR_UNSUPPORTED_ACTION, QLatin1String("rename"));
         }
         else if (errno == EROFS) { // The file is on a read-only filesystem
-           error( KIO::ERR_CANNOT_DELETE, src.path() );
+           error( KIO::ERR_CANNOT_DELETE, _src );
         }
         else {
-           error( KIO::ERR_CANNOT_RENAME, src.path() );
+           error( KIO::ERR_CANNOT_RENAME, _src );
         }
         return;
     }
@@ -1070,11 +1070,11 @@ void FileProtocol::del( const KUrl& url, bool isfile)
 
 	if ( unlink( _path.data() ) == -1 ) {
             if ((errno == EACCES) || (errno == EPERM))
-               error( KIO::ERR_ACCESS_DENIED, url.path());
+               error( KIO::ERR_ACCESS_DENIED, _path );
             else if (errno == EISDIR)
-               error( KIO::ERR_IS_DIRECTORY, url.path());
+               error( KIO::ERR_IS_DIRECTORY, _path );
             else
-               error( KIO::ERR_CANNOT_DELETE, url.path() );
+               error( KIO::ERR_CANNOT_DELETE, _path );
 	    return;
 	}
     } else {
@@ -1087,10 +1087,10 @@ void FileProtocol::del( const KUrl& url, bool isfile)
 
       if ( ::rmdir( _path.data() ) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
-	  error( KIO::ERR_ACCESS_DENIED, url.path());
+	  error( KIO::ERR_ACCESS_DENIED, _path );
 	else {
 	  kDebug( 7101 ) << "could not rmdir " << perror << endl;
-	  error( KIO::ERR_COULD_NOT_RMDIR, url.path() );
+	  error( KIO::ERR_COULD_NOT_RMDIR, _path );
 	  return;
 	}
       }
@@ -1232,7 +1232,7 @@ void FileProtocol::stat( const KUrl & url )
     UDSEntry entry;
     if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
     {
-        error( KIO::ERR_DOES_NOT_EXIST, url.path(KUrl::RemoveTrailingSlash) );
+        error( KIO::ERR_DOES_NOT_EXIST, _path );
         return;
     }
 #if 0
@@ -1267,7 +1267,7 @@ void FileProtocol::listDir( const KUrl& url)
 
     if ( !dir.exists() ) {
         kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========" << endl;
-        error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+        error( KIO::ERR_DOES_NOT_EXIST, _path );
         return; 
     }
 
@@ -1276,7 +1276,7 @@ void FileProtocol::listDir( const KUrl& url)
 
     if ( !dir.isReadable() ) {
         kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========" << endl;
-        error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
+        error( KIO::ERR_CANNOT_ENTER_DIRECTORY, _path );
         return; 
     }
     QFileInfoList list = dir.entryInfoList();
@@ -1294,12 +1294,12 @@ void FileProtocol::listDir( const KUrl& url)
 #else
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+	error( KIO::ERR_DOES_NOT_EXIST, _path );
 	return;
     }
 
     if ( !S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_FILE, url.path() );
+	error( KIO::ERR_IS_FILE, _path );
 	return;
     }
 
@@ -1313,13 +1313,13 @@ void FileProtocol::listDir( const KUrl& url)
 #ifdef ENOMEDIUM
 	case ENOMEDIUM:
             error( ERR_SLAVE_DEFINED,
-                   i18n( "No media in device for %1" ,  url.path() ) );
+                   i18n( "No media in device for %1" ,  _path ) );
             break;
 #else
         case ENOENT: // just to avoid the warning
 #endif
         default:
-            error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.path() );
+            error( KIO::ERR_CANNOT_ENTER_DIRECTORY, _path );
             break;
         }
 	return;
