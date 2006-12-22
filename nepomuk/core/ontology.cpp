@@ -28,6 +28,7 @@ class Nepomuk::KMetaData::Ontology::Private
 public:
   QStringList types;
   QHash<QString, QStringList> properties;
+  QHash<QString, QString> inheritanceGraph;
 };
 
 
@@ -51,6 +52,12 @@ QString Nepomuk::KMetaData::Ontology::defaultType() const
 QStringList Nepomuk::KMetaData::Ontology::types() const
 {
   return d->types;
+}
+
+
+QString Nepomuk::KMetaData::Ontology::parentType( const QString& uri )
+{
+  return d->inheritanceGraph[uri];
 }
 
 

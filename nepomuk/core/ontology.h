@@ -68,6 +68,14 @@ namespace Nepomuk {
 	QStringList types() const;
 
 	/**
+	 * Each type except for the defaultType has a parent type whose
+	 * properties it inherits.
+	 *
+	 * \return The parent type of \a uri.
+	 */
+	QString parentType( const QString& uri );
+
+	/**
 	 * All properties of \a type defined in the ontology.
 	 * \param type If not empty only the properties defined for the specified type
 	 *             will be returned.

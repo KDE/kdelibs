@@ -165,6 +165,8 @@ QStringList OntologyParser::listSources()
 bool OntologyParser::writeOntology( const QString& dir )
 {
   QString s;
+
+  // types and their properties
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it ) {
     s.append( "   d->types.append( \"" + it.value().uri + "\" );\n" );
@@ -173,6 +175,14 @@ bool OntologyParser::writeOntology( const QString& dir )
       s.append( "   d->properties[\"" + it.value().uri + "\"].append( \"" + it2.key() + "\" );\n" );
     }
   }
+
+  // Resource inheritance
+  for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+       it != d->resources.constEnd(); ++it ) {
+    s.append( "   d->inheritanceGraph[ \"" + it.value().uri + "\" ] = \"" + it.value().parent->uri +"\";\n" );
+  }
+
+  // FIXME: type inheritance
 
   QString ctor = ontologySrcTemplate;
   ctor.replace( "CONSTRUCTOR", s );
