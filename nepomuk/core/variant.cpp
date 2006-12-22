@@ -51,6 +51,12 @@ Nepomuk::KMetaData::Variant::Variant( double d )
 }
 
 
+Nepomuk::KMetaData::Variant::Variant( const char* string )
+  : QVariant( string )
+{
+}
+
+
 Nepomuk::KMetaData::Variant::Variant( const QString& string )
   : QVariant( string )
 {
@@ -358,28 +364,28 @@ void Nepomuk::KMetaData::Variant::append( const Resource& r )
 
 void Nepomuk::KMetaData::Variant::append( const Variant& v )
 {
-  if( v.simpleType() == qMetaTypeId<int>() ) {
+  if( v.simpleType() == QVariant::Int ) {
     operator=( toIntList() += v.toIntList() );
   }
-  else if( v.simpleType() == qMetaTypeId<bool>() ) {
+  else if( v.simpleType() == QVariant::Bool ) {
     operator=( toBoolList() += v.toBoolList() );
   }
-  else if( v.simpleType() == qMetaTypeId<double>() ) {
+  else if( v.simpleType() == QVariant::Double ) {
     operator=( toDoubleList() += v.toDoubleList() );
   }
-  else if( v.simpleType() == qMetaTypeId<QString>() ) {
+  else if( v.simpleType() == QVariant::String ) {
     operator=( toStringList() += v.toStringList() );
   }
-  else if( v.simpleType() == qMetaTypeId<QDate>() ) {
+  else if( v.simpleType() == QVariant::Date ) {
     operator=( toDateList() += v.toDateList() );
   }
-  else if( v.simpleType() == qMetaTypeId<QTime>() ) {
+  else if( v.simpleType() == QVariant::Time ) {
     operator=( toTimeList() += v.toTimeList() );
   }
-  else if( v.simpleType() == qMetaTypeId<QDateTime>() ) {
+  else if( v.simpleType() == QVariant::DateTime ) {
     operator=( toDateTimeList() += v.toDateTimeList() );
   }
-  else if( v.simpleType() == qMetaTypeId<QUrl>() ) {
+  else if( v.simpleType() == QVariant::Url ) {
     operator=( toUrlList() += v.toUrlList() );
   }
   else if( v.simpleType() == qMetaTypeId<Resource>() ) {
@@ -392,49 +398,49 @@ void Nepomuk::KMetaData::Variant::append( const Variant& v )
 
 bool Nepomuk::KMetaData::Variant::isInt() const
 {
-  return( type() == qMetaTypeId<int>() );
+  return( type() == QVariant::Int );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isBool() const
 {
-  return( type() == qMetaTypeId<bool>() );
+  return( type() == QVariant::Bool );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isDouble() const
 {
-  return( type() == qMetaTypeId<double>() );
+  return( type() == QVariant::Double );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isString() const
 {
-  return( type() == qMetaTypeId<QString>() );
+  return( type() == QVariant::String );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isDate() const
 {
-  return( type() == qMetaTypeId<QDate>() );
+  return( type() == QVariant::Date );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isTime() const
 {
-  return( type() == qMetaTypeId<QTime>() );
+  return( type() == QVariant::Time );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isDateTime() const
 {
-  return( type() == qMetaTypeId<QDateTime>() );
+  return( type() == QVariant::DateTime );
 }
 
 
 bool Nepomuk::KMetaData::Variant::isUrl() const
 {
-  return( type() == qMetaTypeId<QUrl>() );
+  return( type() == QVariant::Url );
 }
 
 
@@ -464,7 +470,7 @@ bool Nepomuk::KMetaData::Variant::isDoubleList() const
 
 bool Nepomuk::KMetaData::Variant::isStringList() const
 {
-  return( type() == qMetaTypeId<QStringList>() );
+  return( type() == QVariant::StringList );
 }
 
 
@@ -519,8 +525,9 @@ double Nepomuk::KMetaData::Variant::toDouble() const
 
 QString Nepomuk::KMetaData::Variant::toString() const
 {
+  qDebug() << "(Variant::toString() converting... " << QMetaType::typeName(type()) << endl;
   if( isList() )
-    return toStringList().join( ", " );
+    return toStringList().join( "," );
 
   else if( isInt() )
     return QString::number( toInt() );
@@ -605,7 +612,7 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
-  qDebug() << "(Variant::toStringList() converting... " << simpleType() << endl;
+  qDebug() << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
   if( !isList() )
     return QStringList( toString() );
 
@@ -683,21 +690,21 @@ int Nepomuk::KMetaData::Variant::type() const
 int Nepomuk::KMetaData::Variant::simpleType() const
 {
   if( isIntList() )
-    return qMetaTypeId<int>();
+    return QVariant::Int;
   else if( isBoolList() )
-    return qMetaTypeId<bool>();
+    return QVariant::Bool;
   else if( isDoubleList() )
-    return qMetaTypeId<double>();
+    return QVariant::Double;
   else if( isStringList() )
-    return qMetaTypeId<QString>();
+    return QVariant::String;
   else if( isDateList() )
-    return qMetaTypeId<QDate>();
+    return QVariant::Date;
   else if( isTimeList() )
-    return qMetaTypeId<QTime>();
+    return QVariant::Time;
   else if( isDateTimeList() )
-    return qMetaTypeId<QDateTime>();
+    return QVariant::DateTime;
   else if( isUrlList() )
-    return qMetaTypeId<QUrl>();
+    return QVariant::Url;
   else if( isResourceList() )
     return qMetaTypeId<Resource>();
   else

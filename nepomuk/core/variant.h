@@ -27,10 +27,19 @@ namespace Nepomuk {
 
     /**
      * The KMetaData Variant extends over QVariant by introducing
-     * direct support for Resource embedding.
+     * direct support for Resource embedding, automatic list conversion 
+     * and a restricted set of supported types.
      *
-     * In addition it does automatic List conversion. Example:
-     * int can be converted to QList<int> via toIntList()
+     * Important differences are:
+     * \li No new types can be added other than the ones that have defined
+     *     constructors and get-methods
+     * \li Variant supports automatic list generation. For example a Variant
+     *     containing an int also can produce an int-list via the toIntList
+     *     method.
+     * \li toString and toStringList always return a valid list and do automatic
+     *     conversion from the actual type used in the Variant. Thus, if one only
+     *     needs to display the value in a Variant toString and toStringList 
+     *     do the job.
      */
     class KMETADATA_EXPORT Variant : private QVariant
       {
@@ -41,6 +50,7 @@ namespace Nepomuk {
 	Variant( int i );
 	Variant( bool b );
 	Variant( double d );
+	Variant( const char* string );
 	Variant( const QString& string );
 	Variant( const QDate& date );
 	Variant( const QTime& time );

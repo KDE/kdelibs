@@ -1,6 +1,6 @@
 project(libkmetadata)
 
-find_package(KNep REQUIRED)
+#find_package(KNep REQUIRED)
 
 
 execute_process(
@@ -50,7 +50,8 @@ kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
 add_dependencies(kmetadata rcgen)
 
 target_link_libraries(kmetadata
-  ${KNEP_LIBRARIES}
+#  ${KNEP_LIBRARIES}
+  knepclient
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBRARY}
