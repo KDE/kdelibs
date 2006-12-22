@@ -93,7 +93,7 @@ protected:
   virtual void canRedo( bool ) = 0;
 
   /**
-   * This signal is emited whenever the regular expression changes.
+   * This signal is emitted whenever the regular expression changes.
    * The argument is true when the regular expression is different from
    * the loaded regular expression and false when it is equal to the
    * loaded regular expression.
