@@ -14,123 +14,87 @@
    $Id: FileLoaderJob.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <errno.h>
+#include <QtDebug>
 
 #include "FileLoaderJob.h"
 
 namespace ThreadWeaver {
 
-    FileLoaderJob::FileLoaderJob (QString filename, QObject* parent)
-        : Job (parent),
-          m_filename (filename),
-          m_data (0),
-          m_error (0)
-    {
-    }
+FileLoaderJob::FileLoaderJob (QString filename, QObject* parent)
+    : Job (parent)
+    , m_filename (filename)
+    , m_data (0)
+    , m_error (0)
+{
+}
 
-    FileLoaderJob::~FileLoaderJob()
-    {
-        if (m_data != 0)
-        {
-            free (m_data);
-        }
-    }
+FileLoaderJob::~FileLoaderJob()
+{
+    freeMemory();
+}
 
-    const int FileLoaderJob::error() const
-    {
-        return m_error;
-    }
+const int FileLoaderJob::error() const
+{
+    return m_error;
+}
 
-    bool FileLoaderJob::success () const
-    {
-        return ( error() == 0 );
-    }
+bool FileLoaderJob::success () const
+{
+    return ( error() == 0 );
+}
 
-    const char* FileLoaderJob::data () const
-    {   // we make sure data cannot be accesses until the file is completely
-        // loaded, this way we do not need to mutex it:
-        if ( isFinished() )
-        {
-            return m_data;
+const char* FileLoaderJob::data () const
+{   // we make sure data cannot be accesses until the file is completely
+    // loaded, this way we do not need to mutex it:
+    if ( isFinished() )
+    {
+	return m_data;
+    } else {
+	return 0;
+    }
+}
+
+void FileLoaderJob::run()
+{
+    if( m_filename.isEmpty() ) {
+        qDebug() << "FileLoaderJob::run: empty filename.";
+        return;
+    }
+    m_file.setFileName( m_filename );
+    if( m_file.open( QFile::ReadOnly ) ) {
+        const int size = m_file.size();
+        Q_ASSERT( m_data == 0 );
+        if( m_data!=0 ) delete m_data;
+        m_data = new char[size+1];
+
+        if( m_file.read( m_data, size + 1) ) {
+            m_error = 0;
+            qDebug() << "FileLoaderJob::run: loaded.";
         } else {
-            return 0;
+            m_error = 1;
+            qDebug() << "FileLoaderJob::run: failure loading.";
         }
+    } else {
+        m_error = 2;
+        qDebug() << "FileLoaderJob::run: file does not exist or is not readable.";
     }
+}
 
-    void FileLoaderJob::run()
-    {
-        int handle;
+const int FileLoaderJob::size () const
+{
+    return m_file.size();
+}
 
-        // stat the file:
-        if ( stat ( m_filename.toLocal8Bit(), &m_statinfo) == -1)
-        {
-            m_error = errno;
-        } else {
-            if (m_statinfo.st_size > 0)
-            {   // stat successful:
-                // create memory buffer:
-                m_data = (char*) malloc (m_statinfo.st_size);
-                if (m_data != 0)
-                {   // malloc successful:
-                    // open the file:
-                    handle = open (m_filename.toLocal8Bit(), O_RDONLY);
-                    if (handle == -1)
-                    {
-                        m_error = errno;
-                    } else {
-                        int bytesread = 0;
-                        int chunksize = 1;
-                        // read until EOF:
-                        while (bytesread < m_statinfo.st_size && chunksize != 0)
-                        {
-                            chunksize = read (handle,
-                                              m_data + bytesread,
-                                              m_statinfo.st_size - bytesread);
-                            if (chunksize == -1)
-                            {
-                                m_error = errno;
-                                break;
-                            } else {
-                                if (chunksize > 0)
-                                {
-                                    bytesread += chunksize;
-                                }
-                            }
-                        }
-                        // close the file:
-                        ::close (handle);
-                    }
-                }
-            }
-        }
+const QString FileLoaderJob::filename() const
+{
+    return m_filename;
+}
 
-        if (m_error != 0)
-        {
-            free (m_data);
-            m_data = 0;
-        }
-    }
-
-    const int FileLoaderJob::size () const
-    {
-        if (isFinished())
-        {
-            return m_statinfo.st_size;
-        } else {
-            return 0;
-        }
-    }
-
-    const QString FileLoaderJob::filename() const
-    {
-        return m_filename;
-    }
-
-    void FileLoaderJob::freeMemory()
-    {
-        free ( m_data );
-        m_data = 0;
-    }
+void FileLoaderJob::freeMemory()
+{
+    delete m_data;
+    m_data = 0;
+}
 
 }
 

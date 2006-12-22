@@ -1,5 +1,6 @@
-
 include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/Weaver/ ${CMAKE_SOURCE_DIR}/WeaverGui/ ${KDE4_INCLUDES})
+include_directories( ../../Weaver/ )
+include_directories( ../../WeaverGui/ )
 
 set(Jobs_SRCS
     Jobs.cpp

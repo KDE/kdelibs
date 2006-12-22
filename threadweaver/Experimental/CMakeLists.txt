@@ -9,6 +9,8 @@ set(ThreadWeaverExperimental_LIB_SRCS
 
 QT4_AUTOMOC(${ThreadWeaverExperimental_LIB_SRCS})
 
+include_directories( ../Weaver/ )
+
 add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental threadweaver)
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION 0.6.0 SOVERSION 0)
