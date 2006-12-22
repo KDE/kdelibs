@@ -814,6 +814,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 {
   // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
   // So prettyUrl is just url, with the password removed.
+  // TODO: we could consider a "toLocalFile or URL" behavior, now that the KUrl constructor can take local paths.
   // We could replace some chars, like "%20" -> ' ', though?
   if ( password().isEmpty() )
     return url( trailing );
@@ -845,7 +846,7 @@ QString KUrl::prettyUrl( int _trailing, AdjustementFlags _flags) const
 QString KUrl::pathOrUrl() const
 {
   if ( isLocalFile() && fragment().isNull() && encodedQuery().isNull() ) {
-    return path();
+    return toLocalFile();
   } else {
     return prettyUrl();
   }
