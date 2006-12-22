@@ -1108,9 +1108,8 @@ bool TCPSlaveBase::isConnectionValid()
       return false;
 
     qint64 retval = -1;
-#ifdef Q_OS_UNIX
     retval = d->socket.bytesAvailable();
-#endif
+
     // retval == -1 ==> Error
     // retval ==  0 ==> Connection Idle
     // retval ==  1 ==> either Active or Closed
