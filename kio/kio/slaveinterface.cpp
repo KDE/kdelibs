@@ -134,8 +134,11 @@ bool SlaveInterface::dispatch()
     int cmd;
     QByteArray data;
 
-    if (m_pConnection->read( &cmd, data ) == -1)
+    int ret = m_pConnection->read( &cmd, data );
+    if (ret == -1)
       return false;
+    else if (ret == 0) // win32: return from WSAEWOULDBLOCK
+      return true;
 
     return dispatch( cmd, data );
 }
