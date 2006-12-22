@@ -129,8 +129,10 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
-    job->ui()->setWindow( ui()->window());
-    job->ui()->updateUserTimestamp( ui()->userTimestamp());
+    if (ui()) {
+        job->ui()->setWindow( ui()->window() );
+        job->ui()->updateUserTimestamp( ui()->userTimestamp() );
+    }
 }
 
 void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
