@@ -126,25 +126,42 @@ namespace Nepomuk {
 	 * Be aware that this method does not check if the property
 	 * is defined for this resource's type!
 	 *
+	 * \param uri The URI identifying the property. If this URI does
+	 *            not include a namespace the default namespace is
+	 *            prepended.
+	 *
 	 * \return true if property \a uri has a value set.
+	 *
+	 * \sa Ontology::defaultNamespace
 	 */
 	bool hasProperty( const QString& uri ) const;
 
 	/**
 	 * Retrieve the value of property \a uri. If the property is not defined for
 	 * this resource an invalid, empty Variant object is returned.
+	 *
+	 * \param uri The URI identifying the property. If this URI does
+	 *            not include a namespace the default namespace is
+	 *            prepended.
+	 *
+	 * \sa Ontology::defaultNamespace
 	 */
 	Variant getProperty( const QString& uri ) const;
 
 	/**
 	 * Set a property of the resource.
-	 * \param uri The URI which describes the property (i.e. the RDF predicate name)
+	 *
+	 * \param uri The URI identifying the property. If this URI does
+	 *            not include a namespace the default namespace is
+	 *            prepended.
 	 * \param value The value of the property (i.e. the object of the RDF triple)
 	 *
 	 * This method only changes the resource locally. The new data is not written
 	 * back to the Nepomuk store before a call to sync().
 	 *
 	 * Calling setProperty will revert any previous calls to remove.
+	 *
+	 * \sa Ontology::defaultNamespace
 	 */
 	void setProperty( const QString& uri, const Variant& value );
 
@@ -153,6 +170,12 @@ namespace Nepomuk {
 	 *
 	 * This method only changes the resource locally. The new data is not written
 	 * back to the Nepomuk store before a call to sync().
+	 *
+	 * \param uri The URI identifying the property. If this URI does
+	 *            not include a namespace the default namespace is
+	 *            prepended.
+	 *
+	 * \sa Ontology::defaultNamespace
 	 */
 	void removeProperty( const QString& uri );
 

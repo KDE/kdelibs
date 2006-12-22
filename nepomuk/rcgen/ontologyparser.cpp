@@ -68,9 +68,9 @@ bool OntologyParser::parse( const QString& filename )
   if( !model )
     return false;
 
-  Soprano::StatementIterator* it = model->listStatements();
-  while( it->hasNext() ) {
-    const Soprano::Statement& s = it->next();
+  Soprano::StatementIterator it = model->listStatements();
+  while( it.hasNext() ) {
+    const Soprano::Statement& s = it.next();
 
     if( s.predicate().uri().toString().endsWith( "#subClassOf" ) ) {
       ResourceClass& rc = d->getResource( s.subject().uri().toString() );
@@ -97,7 +97,6 @@ bool OntologyParser::parse( const QString& filename )
     }
   }
 
-  delete it;
   delete model;
 
   // now assign the comments to resources and properties

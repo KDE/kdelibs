@@ -15,8 +15,20 @@
 #include "resource.h"
 #include "resourcedata.h"
 #include "resourcemanager.h"
+#include "ontology.h"
 
 #include <klocale.h>
+
+
+static QString ensureNamespace( const QString& uri )
+{
+  QString s(uri);
+  // very dumb check for a namespace
+  // FIXME: improve this
+  if( !uri.contains( "://" ) )
+    s.prepend( Nepomuk::KMetaData::ResourceManager::instance()->ontology()->defaultNamespace() + '#' );
+  return s;
+}
 
 
 Nepomuk::KMetaData::Resource::Resource()
@@ -110,28 +122,28 @@ QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allPro
 bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
 {
   m_data->init();
-  return m_data->hasProperty( uri );
+  return m_data->hasProperty( ensureNamespace( uri ) );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
   m_data->init();
-  return m_data->getProperty( uri );
+  return m_data->getProperty( ensureNamespace( uri ) );
 }
 
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
   m_data->init();
-  m_data->setProperty( uri, value );
+  m_data->setProperty( ensureNamespace( uri ), value );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
   m_data->init();
-  m_data->removeProperty( uri );
+  m_data->removeProperty( ensureNamespace( uri ) );
 }
 
 
@@ -150,7 +162,7 @@ void Nepomuk::KMetaData::Resource::revive()
 
 bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
 {
-  return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
+  return !ResourceManager::instance()->allResourcesWithProperty( ensureNamespace( uri ), *this ).isEmpty();
 }
 
 

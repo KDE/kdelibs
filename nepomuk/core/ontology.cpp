@@ -36,8 +36,8 @@ public:
 
 QString Nepomuk::KMetaData::Ontology::defaultNamespace() const
 {
-  // FIXME: replace with the real thing
-  return NRL_NAMESPACE;
+  // FIXME: replace with the real thing later on
+  return NKDE_NAMESPACE;
 }
 
 
