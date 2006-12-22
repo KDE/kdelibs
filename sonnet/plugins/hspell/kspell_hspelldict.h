@@ -31,7 +31,7 @@ extern "C" {
 class HSpellDict : public KSpell2::Speller
 {
 public:
-    HSpellDict( const QString& lang );
+    explicit HSpellDict( const QString& lang );
     ~HSpellDict();
     virtual bool isCorrect( const QString& word ) const;
 

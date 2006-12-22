@@ -28,7 +28,7 @@
 class ASpellDict : public KSpell2::Speller
 {
 public:
-    ASpellDict(const QString &lang);
+    explicit ASpellDict(const QString &lang);
     ~ASpellDict();
     virtual bool isCorrect(const QString &word) const;
 
