@@ -137,7 +137,7 @@ bool SlaveInterface::dispatch()
     int ret = m_pConnection->read( &cmd, data );
     if (ret == -1)
       return false;
-    else if (ret == 0) // win32: return from WSAEWOULDBLOCK
+    else if (ret == -2) // win32: WSAEWOULDBLOCK condition
       return true;
 
     return dispatch( cmd, data );

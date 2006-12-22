@@ -256,7 +256,7 @@ int Connection::read( int* _cmd, QByteArray &data )
 #ifdef Q_WS_WIN
 	if ( n == -1 && WSAGetLastError() == WSAEWOULDBLOCK ) {
         kDebug(7017) << "Header read would block detected" << endl;
-        return 0;
+        return -2;
     }
 #endif
     if ( n == -1) {

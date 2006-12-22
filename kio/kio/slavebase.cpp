@@ -276,7 +276,7 @@ void SlaveBase::dispatchLoop()
           QByteArray data;
           int ret = appconn->read(&cmd, data);
 #ifdef Q_WS_WIN
-          if ( ret == 0 )
+          if ( ret == -2 ) //win32: WSAEWOULDBLOCK condition
           	continue;
 #endif
           if ( ret != -1 )
@@ -590,11 +590,14 @@ void SlaveBase::mimeType( const QString &_type)
     while(true)
     {
        cmd = 0;
-       if ( m_pConnection->read( &cmd, data ) == -1 ) {
+       int ret = m_pConnection->read( &cmd, data );       
+       if ( ret == -1 ) {
            kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            exit();
            return;
        }
+       if ( ret == -2 ) // win32: WSAEWOULDBLOCK condition
+          continue;
        // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
@@ -806,11 +809,14 @@ bool SlaveBase::dispatch()
 
     int cmd;
     QByteArray data;
-    if ( m_pConnection->read( &cmd, data ) == -1 )
+    int ret = m_pConnection->read( &cmd, data );
+    if ( ret == -1 )
     {
         kDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
     }
+    if ( ret == -2 ) // win32: WSAEWOULDBLOCK condition
+      return true;   
 
     dispatch( cmd, data );
     return true;
@@ -926,6 +932,9 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
             kDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
             return -1;
         }
+        if ( result == -2 ) // win32: WSAEWOULDBLOCK condition
+          continue;
+        
         if ( cmd == expected1 || cmd == expected2 )
         {
             if ( pCmd ) *pCmd = cmd;
