@@ -54,7 +54,7 @@ struct ListProgressColumnConfig
 * List view in the UIServer.
 * @internal
 */
-class KIO_EXPORT ListProgress : public K3ListView {
+class ListProgress : public K3ListView {
 
   Q_OBJECT
 
@@ -102,7 +102,7 @@ protected:
 * One item in the ListProgress
 * @internal
 */
-class KIO_EXPORT ProgressItem : public QObject, public Q3ListViewItem {
+class ProgressItem : public QObject, public Q3ListViewItem {
 
   Q_OBJECT
 
@@ -217,7 +217,7 @@ class KSystemTrayIcon;
  *
  * @internal
  */
-class KIO_EXPORT UIServer : public KMainWindow {
+class UIServer : public KMainWindow {
 
   Q_OBJECT
 

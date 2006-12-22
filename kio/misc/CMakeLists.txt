@@ -3,10 +3,14 @@
 include_directories( BEFORE ${CMAKE_SOURCE_DIR}/kio )
 
 add_subdirectory( ksendbugmail )
+if (NOT WIN32)
 add_subdirectory( kpac )
 add_subdirectory( kssld )
+endif (NOT WIN32)
 add_subdirectory( kfile )
+if (NOT WIN32)
 add_subdirectory( kwalletd )
+endif (NOT WIN32)
 add_subdirectory( kntlm )
 
 ########### next target ###############

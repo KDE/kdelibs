@@ -5,6 +5,19 @@
 #include <qtimer.h>
 #include <kbufferedsocket.h>
 
+#ifdef Q_WS_WIN
+// win32 defines some global constants, wich collidats with some of the below mentined 
+// SMTP constants. SMTP constants should get a uniq prefix 
+#define _IN IN
+#undef IN
+#define _OUT OUT
+#undef OUT
+#define _ERROR ERROR
+#undef ERROR
+#define _NOERROR NOERROR
+#undef NOERROR
+#endif
+
 /*int SMTPServerStatus[] = {
     220,  // greeting from server
     221,  // server acknolages goodbye
