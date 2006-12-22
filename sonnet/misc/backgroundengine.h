@@ -35,7 +35,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        explicit BackgroundEngine( QObject *parent );
+        BackgroundEngine( QObject *parent );
         ~BackgroundEngine();
 
         void setLoader( const Loader::Ptr& loader );

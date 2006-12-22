@@ -50,7 +50,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        explicit BackgroundChecker( const Loader::Ptr& loader, QObject *parent =0 );
+        BackgroundChecker( const Loader::Ptr& loader, QObject *parent =0 );
         ~BackgroundChecker();
 
         /**
