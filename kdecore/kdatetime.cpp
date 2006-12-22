@@ -1547,7 +1547,7 @@ QString KDateTime::toString(const QString &format) const
                 if (num < 0)
                 {
                     num = -num;
-                    result += "-";
+                    result += '-';
                 }
                 result += s.sprintf((numLength == 2 ? "%02d" : "%04d"), num);
             }
