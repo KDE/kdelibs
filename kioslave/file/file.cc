@@ -962,8 +962,8 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 void FileProtocol::rename( const KUrl &src, const KUrl &dest,
                            bool _overwrite )
 {
-    QByteArray _src( QFile::encodeName(_src) );
-    QByteArray _dest( QFile::encodeName(_dest) );
+    QByteArray _src( QFile::encodeName(src.toLocalFile()));
+    QByteArray _dest( QFile::encodeName(dest.toLocalFile()));
     KDE_struct_stat buff_src;
     if ( KDE_lstat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
