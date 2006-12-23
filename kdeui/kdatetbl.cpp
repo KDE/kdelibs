@@ -942,6 +942,8 @@ void
 KPopupFrame::close(int r)
 {
   result=r;
+  d->exec = false;
+  qApp->exit_loop();
 }
 
 void
