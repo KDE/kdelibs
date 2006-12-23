@@ -587,11 +587,11 @@ void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
 void KBookmarkManager::slotEditBookmarks()
 {
     QStringList args;
-    if (!m_editorCaption.isNull())
+    if ( !m_editorCaption.isEmpty() )
        args << QLatin1String("--customcaption") << m_editorCaption;
-    if (!m_browserEditor)
+    if ( !m_browserEditor )
        args << QLatin1String("--nobrowser");
-    if( !m_dbusObjectName.isNull() && m_dbusObjectName != "")
+    if( !m_dbusObjectName.isEmpty() )
       args << QLatin1String("--dbusObjectName") << m_dbusObjectName;
     args << m_bookmarksFile;
     QProcess::startDetached("keditbookmarks", args);

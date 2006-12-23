@@ -107,7 +107,7 @@ public:
      * This is what query() uses to get the list of offers, before applying the
      * constraints and preferences. In general you want to simply use query().
      *
-     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
+     * @param serviceType A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
      * @return A list of weightedOffers
      */
     KServiceOfferList weightedOffers( const QString& serviceType ) const;

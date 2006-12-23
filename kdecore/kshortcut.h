@@ -94,7 +94,7 @@ public:
      * in @p description. The format of description is the same as
      * used in QKeySequence::fromString(const QString&).
      * Up to two key sequences separated by a semicolon ";" may be given.
-     * @param descripton the description of key sequence(s)
+     * @param description the description of key sequence(s)
      * @see QKeySequence::fromString(const QString&, SequenceFormat)
      */
     explicit KShortcut(const QString &description);

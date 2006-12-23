@@ -6,8 +6,8 @@
 #include <kbufferedsocket.h>
 
 #ifdef Q_WS_WIN
-// win32 defines some global constants, wich collidats with some of the below mentined 
-// SMTP constants. SMTP constants should get a uniq prefix 
+// win32 defines some global constants, which collides with some of the below mentined 
+// SMTP constants. SMTP constants should get a unique prefix 
 #define _IN IN
 #undef IN
 #define _OUT OUT

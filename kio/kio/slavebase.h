@@ -396,7 +396,7 @@ public:
      *
      * @see canResume()
      */
-    virtual void put( const KUrl& url, int permissions, bool overwrite, bool /*resume*/ );
+    virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume );
 
     /**
      * Finds all details for one file or directory.

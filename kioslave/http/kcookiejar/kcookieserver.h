@@ -86,7 +86,9 @@ protected:
 
 private:
   virtual int newInstance(QList<QByteArray>) { return 0; }
-  bool cookieMatches(KHttpCookie*, QString, QString, QString, QString);
+  bool cookieMatches(KHttpCookiePtr c,
+                     QString domain, QString fqdn,
+                     QString path, QString name ); 
   void putCookie(QStringList&, KHttpCookie*, const QList<int>&);
   void saveCookieJar();
 };
