@@ -30,8 +30,9 @@ int main()
     sout.open(stdout, QIODevice::WriteOnly);
     QDataStream out(&sout);
 
-    bool ok;
-    QMultiMap<QString,QString> data;
+    bool ok,ok2;
+    QHash<quint32,quint8> data;
+    QHash<qint8,QString> catalog;
 
     while ( ok )
     {
@@ -44,9 +45,25 @@ int main()
         QRegExp rx(";");
         int split = rx.indexIn(line);
 
-        data.insert( line.right( line.size() - split - 1 ).simplified() ,
-                     line.left( split ).simplified() );
+        QString catagoryString = line.right( line.size() - split - 1 ).simplified();
+
+        qint8 catagory = catalog.key(catagoryString);
+        if(!catagory)
+        {
+            catalog[ catagory = catalog.size()+1 ] = catagoryString;
+        }
+
+        QString codes = line.left( split ).simplified();
+        QStringList codeList = codes.split ( ".." );
+
+        quint32 start = codeList.at(0).toInt(&ok2, 16);
+        quint32 end = (codeList.size() == 2) ? codeList.at(1).toInt(&ok2, 16) : start;
+        for (quint32 code = start; code<=end; ++code)
+        {
+            data.insert( code, catagory );
+            qDebug() << "[" << catagory << "] " << code;
+        }
     }
 
-    out << data;
+    out << catalog << data;
 }
