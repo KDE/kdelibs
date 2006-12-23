@@ -53,6 +53,12 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
+/*
+** Wait for @p ms miliseconds 
+** @param fd file descriptor
+** @param ms time to wait in miliseconds
+** @return 
+*/
 int PtyProcess::waitMS(int fd,int ms)
 {
 	struct timeval tv;
