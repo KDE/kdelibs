@@ -542,6 +542,10 @@ KSocketAddress KSocketDevice::localAddress() const
     // error!
     return d->local = KSocketAddress();
 
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+  len = localAddress.address().sa_len;
+#endif
+
   if (len <= localAddress.length())
     {
       // it has fit already
@@ -573,6 +577,10 @@ KSocketAddress KSocketDevice::peerAddress() const
   if (kde_getpeername(m_sockfd, peerAddress.address(), &len) == -1)
     // error!
     return d->peer = KSocketAddress();
+
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+  len = peerAddress.address().sa_len;
+#endif
 
   if (len <= peerAddress.length())
     {
