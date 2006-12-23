@@ -168,6 +168,15 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
   QString lang = conf->readEntry("language");
   QString licence = conf->readEntry("licence");
 
+  mNameEdit->clear();
+  mAuthorEdit->clear();
+  mVersionEdit->clear();
+  mReleaseSpin->setValue(1);
+  mPreviewUrl->clear();
+  mSummaryEdit->clear();
+  mLanguageCombo->setCurrentItem(0);
+  mLicenceCombo->setCurrentItem(0);
+
   if(!name.isNull())
   {
     int prefill = KMessageBox::questionYesNo(this, i18n("Old upload information found, fill out fields?"),QString::null,i18n("Fill Out"),i18n("Do Not Fill Out"));
