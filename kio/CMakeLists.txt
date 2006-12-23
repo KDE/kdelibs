@@ -392,3 +392,7 @@ install( FILES
   kfile/kurlrequesterdlg.h
   ${CMAKE_CURRENT_BINARY_DIR}/ui_knotifywidgetbase.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
+
+install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
+install(FILES misc/org.kde.KIO.UIServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
+

@@ -7,8 +7,7 @@ kwallet.cc
 )
 
 kde4_automoc(${kwalletclient_LIB_SRCS})
-
-set(kwallet_adaptor ${CMAKE_CURRENT_SOURCE_DIR}/../../kio/misc/kwalletd/kwalletdadaptor.h)
+set(kwallet_adaptor ${CMAKE_SOURCE_DIR}/kio/misc/kwalletd/kwalletdadaptor.h)
 set(kwallet_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml)
 ADD_CUSTOM_COMMAND(OUTPUT ${kwallet_xml}
        COMMAND ${QT_DBUSCPP2XML_EXECUTABLE} ${kwallet_adaptor} > ${kwallet_xml}

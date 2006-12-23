@@ -161,6 +161,7 @@ install(TARGETS klauncher DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 
+install( FILES org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_DIR} )
 
 
 

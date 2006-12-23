@@ -54,7 +54,7 @@ install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 install( FILES domain_info  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
 install( FILES kcookiejar.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES kcookiescfg.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
-
+install( FILES org.kde.KCookieServer.xml DESTINATION ${DBUS_INTERFACES_DIR} )
 
 
 

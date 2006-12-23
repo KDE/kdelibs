@@ -102,4 +102,5 @@ install( FILES
 	mediaobjectinterface.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
 install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES org.kde.Phonon.AudioOutput.xml DESTINATION ${DBUS_INTERFACES_DIR} )
 

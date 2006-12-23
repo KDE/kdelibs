@@ -25,3 +25,4 @@ install(TARGETS kmediaplayer  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES kmediaplayerengine.desktop kmediaplayer.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer )
+install( FILES org.kde.KMediaPlayer.xml DESTINATION ${DBUS_INTERFACES_DIR} )
