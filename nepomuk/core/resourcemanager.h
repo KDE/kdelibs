@@ -110,6 +110,12 @@ namespace Nepomuk {
 	 *
 	 * This includes Resources that are not synced yet so it might
 	 * not represent exactly the state as in the RDF store.
+	 *
+	 * \param uri The URI identifying the property. If this URI does
+	 *            not include a namespace the default namespace is
+	 *            prepended.
+	 *
+	 * \sa Ontology::defaultNamespace
 	 */
 	QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v ) const;
 
