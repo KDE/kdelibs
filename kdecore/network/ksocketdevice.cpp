@@ -48,6 +48,10 @@
 # endif
 #endif
 
+#ifdef Q_WS_WIN
+#include <windows.h>
+#endif
+
 // Include syssocket before our local includes
 #include "syssocket.h"
 
@@ -129,6 +133,25 @@ bool KSocketDevice::setSocketOptions(int opts)
   if (m_sockfd == -1)
     return true;		// flags are stored
 
+#ifdef Q_WS_WIN
+  if (opts & Blocking)
+    {
+      u_long iMode = 0;
+#ifndef NDEBUG
+      qDebug("socket set blocking");
+#endif
+      // disable non blocking
+      if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
+        {
+#ifndef NDEBUG
+          qDebug("socket set blocking failed %d",GetLastError());
+#endif
+          setError(UnknownError);
+          return false;		// error
+        }
+		  return true;
+	 }
+#endif
     {
       int fdflags = fcntl(m_sockfd, F_GETFL, 0);
       if (fdflags == -1)
@@ -269,10 +292,15 @@ bool KSocketDevice::bind(const KResolverEntry& address)
 	setError(AddressInUse);
       else if (errno == EINVAL)
 	setError(AlreadyBound);
-      else
-	// assume the address is the cause
-	setError(NotSupported);
-      return false;
+      else 
+       {
+#if defined (Q_WS_WIN) && !defined(NDEBUG)
+         qDebug(" bind failed: %s ",address.address().toString().toLatin1().constData());
+#endif
+         // assume the address is the cause
+         setError(NotSupported);
+         return false;
+       } 
     }
 
   return true;
@@ -426,7 +454,12 @@ static int do_read_common(int sockfd, char *data, qint64 maxlen, KSocketAddress*
 
   if (retval == -1)
     {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
+#ifdef Q_WS_WIN
+     if (WSAGetLastError() == WSAEWOULDBLOCK )
+	return KSocketDevice::WouldBlock;
+	   else 
+#endif
+      if (errno == EAGAIN || errno == EWOULDBLOCK )
 	return KSocketDevice::WouldBlock;
       else
 	return KSocketDevice::UnknownError;
@@ -494,7 +527,11 @@ qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddre
   if (to != 0L)
     retval = ::sendto(m_sockfd, data, len, 0, to->address(), to->length());
   else
+#ifdef Q_WS_WIN
+    retval = ::send(m_sockfd, data, len, 0);
+#else
     retval = ::write(m_sockfd, data, len);
+#endif
   if (retval == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
