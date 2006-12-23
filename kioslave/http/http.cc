@@ -1922,6 +1922,14 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   do
   {
     ret = TCPSlaveBase::read( ( char* )b, nbytes);
+#ifdef Q_WS_WIN
+    if (ret == 0 && TCPSlaveBase::socket().error() == KNetwork::KSocketBase::WouldBlock) {
+        qDebug("read Would Block condition");
+        Sleep(1);
+        ret = -1;
+        errno = EAGAIN;
+	  }
+#endif
     if (ret == 0)
       m_bEOF = true;
 
