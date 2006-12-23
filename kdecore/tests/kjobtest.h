@@ -22,6 +22,7 @@
 
 #include <qobject.h>
 #include "kjob.h"
+#include "kjobuidelegate.h"
 
 class TestJob : public KJob
 {
@@ -46,6 +47,13 @@ private slots:
     void doEmit();
 };
 
+class TestJobUiDelegate : public KJobUiDelegate
+{
+    Q_OBJECT
+protected:
+    virtual void connectJob( KJob *job );
+};
+
 class KJobTest : public QObject
 {
     Q_OBJECT
@@ -60,6 +68,7 @@ private Q_SLOTS:
     void testExec();
     void testKill_data();
     void testKill();
+    void testDelegateUsage();
 
     void slotResult( KJob *job );
 

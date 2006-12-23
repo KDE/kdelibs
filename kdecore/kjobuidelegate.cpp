@@ -53,7 +53,6 @@ bool KJobUiDelegate::setJob( KJob *job )
 
     d->job = job;
     setParent( job );
-    connectJob( job );
 
     return true;
 }
@@ -89,7 +88,7 @@ bool KJobUiDelegate::isAutoWarningHandlingEnabled() const
 
 void KJobUiDelegate::connectJob( KJob *job )
 {
-    connect( d->job, SIGNAL( finished( KJob*, int ) ),
+    connect( job, SIGNAL( finished( KJob*, int ) ),
              this, SLOT( slotFinished( KJob*, int ) ) );
 
     connect( job, SIGNAL( warning( KJob*, const QString& ) ),

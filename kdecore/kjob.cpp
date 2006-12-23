@@ -62,6 +62,11 @@ void KJob::setUiDelegate( KJobUiDelegate *delegate )
     {
         delete d->uiDelegate;
         d->uiDelegate = delegate;
+
+        if ( d->uiDelegate )
+        {
+            d->uiDelegate->connectJob( this );
+        }
     }
 }
 

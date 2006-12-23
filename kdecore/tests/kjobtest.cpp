@@ -266,6 +266,21 @@ void KJobTest::testKill()
     QCOMPARE( destroyed_spy.size(), 1 );
 }
 
+void KJobTest::testDelegateUsage()
+{
+    TestJob *job1 = new TestJob;
+    TestJob *job2 = new TestJob;
+    TestJobUiDelegate *delegate = new TestJobUiDelegate;
+
+    QVERIFY( job1->uiDelegate()==0 );
+    job1->setUiDelegate( delegate );
+    QVERIFY( job1->uiDelegate()==delegate );
+
+    QVERIFY( job2->uiDelegate()==0 );
+    job2->setUiDelegate( delegate );
+    QVERIFY( job2->uiDelegate()==0 );
+}
+
 void KJobTest::slotResult( KJob *job )
 {
     if ( job->error() )
@@ -330,6 +345,11 @@ void TestJob::setPercent( unsigned long percentage )
 void TestJob::doEmit()
 {
     emitResult();
+}
+
+void TestJobUiDelegate::connectJob( KJob *job )
+{
+    QVERIFY( job->uiDelegate()!=0 );
 }
 
 #include "kjobtest.moc"
