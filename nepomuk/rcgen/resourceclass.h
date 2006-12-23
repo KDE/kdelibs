@@ -40,15 +40,19 @@ class Property
 
   bool list;
 
+  ResourceClass* domain;
+
   QString name() const;
   QString typeString( bool simple = false, bool withNamespace = false ) const;
   QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
   QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
   QString adderDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+  QString reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
 
   QString setterDefinition( const ResourceClass* rc ) const;
   QString getterDefinition( const ResourceClass* rc ) const;
   QString adderDefinition( const ResourceClass* rc ) const;
+  QString reversePropertyGetterDefinition( const ResourceClass* rc ) const;
 
   bool hasSimpleType() const;
 };
@@ -63,11 +67,12 @@ class ResourceClass
 
   ResourceClass* parent;
 
-  QString name() const;
+  QString name( bool withNamespace = false ) const;
   QString uri;
   QString comment;
 
-  QMap<QString, Property*> properties;
+  QList<const Property*> properties;
+  QList<const Property*> reverseProperties;
 
   QString headerName() const;
   QString sourceName() const;

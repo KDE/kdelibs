@@ -31,6 +31,7 @@ include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${KNEP_INCLUDE_DIR}
+  ${nepomuk_backbone_SOURCE_DIR}
 )
 
 set(kmetadata_LIB_SRCS

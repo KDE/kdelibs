@@ -83,7 +83,8 @@ bool OntologyParser::parse( const QString& filename )
     else if( s.predicate().uri().toString().endsWith( "#domain" ) ) {
       ResourceClass& rc = d->getResource( s.object().uri().toString() );
       Property& p = d->getProperty( s.subject().uri().toString() );
-      rc.properties[s.subject().uri().toString()] = &p;
+      p.domain = &rc;
+      rc.properties.append( &p );
     }
     else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
       d->properties[s.subject().uri().toString()].type = s.object().uri().toString();
@@ -98,6 +99,16 @@ bool OntologyParser::parse( const QString& filename )
   }
 
   delete model;
+
+  // determine the reverse properties
+  for( QMap<QString, Property>::const_iterator propIt = d->properties.constBegin();
+       propIt != d->properties.constEnd(); ++propIt ) {
+    const Property& p = propIt.value();
+    if( d->resources.contains( p.type ) ) {
+      qDebug() << "Setting reverse property " << p.uri << " on type " << p.type << endl;
+      d->resources[p.type].reverseProperties.append( &p );
+    }
+  }
 
   // now assign the comments to resources and properties
   QMapIterator<QString, QString> commentsIt( d->comments );
@@ -170,9 +181,9 @@ bool OntologyParser::writeOntology( const QString& dir )
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it ) {
     s.append( "   d->types.append( \"" + it.value().uri + "\" );\n" );
-    for( QMap<QString, Property*>::const_iterator it2 = it.value().properties.constBegin();
+    for( QList<const Property*>::const_iterator it2 = it.value().properties.constBegin();
 	 it2 != it.value().properties.constEnd(); ++it2 ) {
-      s.append( "   d->properties[\"" + it.value().uri + "\"].append( \"" + it2.key() + "\" );\n" );
+      s.append( "   d->properties[\"" + it.value().uri + "\"].append( \"" + (*it2)->uri + "\" );\n" );
     }
   }
 

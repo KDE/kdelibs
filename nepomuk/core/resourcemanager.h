@@ -114,6 +114,7 @@ namespace Nepomuk {
 	 * \param uri The URI identifying the property. If this URI does
 	 *            not include a namespace the default namespace is
 	 *            prepended.
+	 * \param v The value all returned resources should have set as properts \a uri.
 	 *
 	 * \sa Ontology::defaultNamespace
 	 */

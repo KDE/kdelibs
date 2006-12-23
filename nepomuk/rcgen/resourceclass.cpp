@@ -38,7 +38,7 @@ static QString writeComment( const QString& comment, int indent )
       + QString().fill( ' ', indent+1 )
       + "* ";
 
-    QStringList words = comment.split( QRegExp("\\s") );
+    QStringList words = comment.split( QRegExp("\\s"), QString::SkipEmptyParts );
     int cnt = 0;
     for( int i = 0; i < words.count(); ++i ) {
       if( cnt >= maxLine ) {
@@ -154,6 +154,15 @@ QString Property::adderDeclaration( const ResourceClass* rc, bool withNamespace 
 }
 
 
+QString Property::reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace ) const
+{
+  return QString( "%1 %2%3Of() const" )
+    .arg( ( list ? QString("QList<") : QString() ) + domain->name( withNamespace ) + ( list ? QString(">") : QString() ) )
+    .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
+    .arg( name().toLower() );
+}
+
+
 QString Property::setterDefinition( const ResourceClass* rc ) const
 {
   QString s = setterDeclaration( rc, true ) + "\n";
@@ -211,12 +220,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
   else if( list ) {
     s += QString("{\n"
 		 "%1"
-		 "   QList<Resource> valueList = getProperty( \"%2\" ).toResourceList();\n"
-		 "   QList<%3> l;\n"
-		 "   for( QList<Resource>::const_iterator it = valueList.constBegin();\n"
-		 "        it != valueList.constEnd(); ++it )\n"
-		 "      l.append( %3( (*it).uri() ) );\n"
-		 "   return l;\n"
+		 "   return convertResourceList<%3>( getProperty( \"%2\" ).toResourceList() );\n"
 		 "}\n" )
       .arg( s_typeComment )
       .arg( uri )
@@ -263,6 +267,32 @@ QString Property::adderDefinition( const ResourceClass* rc ) const
 }
 
 
+QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) const
+{
+  QString s = reversePropertyGetterDeclaration( rc, true ) + "\n";
+
+  if( list )
+    s += QString( "{\n"
+		  "   return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this ) );\n"
+		  "}\n" )
+      .arg( uri )
+      .arg( domain->name() );
+  else
+    s += QString( "{\n"
+		  "   QList<Resource> resources = ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this );\n"
+		  "   if( resources.isEmpty() )\n"
+		  "      return %2();\n"
+		  "   else\n"
+		  "      return %2( resources.getFirst().uri() );\n"
+		  "}\n" )
+      .arg( uri )
+      .arg( domain->name() );
+
+  return s;
+}
+
+
+
 ResourceClass::ResourceClass()
   : parent( s_defaultResource )
 {
@@ -281,9 +311,12 @@ ResourceClass::~ResourceClass()
 }
 
 
-QString ResourceClass::name() const
+QString ResourceClass::name( bool withNamespace ) const
 {
-  return uri.section( QRegExp( "[#:]" ), -1 );
+  QString s = uri.section( QRegExp( "[#:]" ), -1 );
+  if( withNamespace )
+    s.prepend( "Nepomuk::KMetaData::" );
+  return s;
 }
 
 
@@ -312,12 +345,7 @@ QString ResourceClass::allResourcesDefinition() const
 {
   return QString( "%1\n"
 		  "{\n"
-		  "   QList<Resource> resources = ResourceManager::instance()->allResourcesOfType( \"%2\" );\n"
-		  "   QList<%3> l;\n"
-		  "   for( QList<Resource>::const_iterator it = resources.constBegin();\n"
-		  "        it != resources.constEnd(); ++it )\n"
-		  "      l.append( %3( (*it).uri() ) );\n"
-		  "   return l;\n"
+		  "   return Nepomuk::KMetaData::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( \"%2\" ) );\n"
 		  "}\n" )
     .arg( allResourcesDeclaration( true ) )
     .arg( uri )
@@ -338,10 +366,9 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
   QTextStream ms( &methods );
   QSet<QString> includes;
 
-  QMapIterator<QString, Property*> it( properties );
+  QListIterator<const Property*> it( properties );
   while( it.hasNext() ) {
-    it.next();
-    Property* p = it.value();
+    const Property* p = it.next();
 
     if( p->type.isEmpty() ) {
       qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
@@ -365,6 +392,25 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
     if( !p->hasSimpleType() )
       includes.insert( p->typeString( true ) );
   }
+
+
+  it = reverseProperties;
+  while( it.hasNext() ) {
+    const Property* p = it.next();
+
+    if( p->type.isEmpty() ) {
+      qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+      continue;
+    }
+
+    ms << writeComment( QString("Get all resources that have this resource set as property '%1'. ")
+			.arg(p->name()) + p->comment + QString(" \\sa ResourceManager::allResourcesWithProperty"), 3 ) << endl;
+    ms << "   " << p->reversePropertyGetterDeclaration( this ) << ";" << endl;    
+    ms << endl;
+
+    includes.insert( p->domain->name() );
+  }
+
 
   ms << writeComment( QString("Retrieve a list of all available %1 resources. "
 			      "This list consists of all resource of type %1 that are stored "
@@ -399,10 +445,9 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
   QString methods;
   QTextStream ms( &methods );
 
-  QMapIterator<QString, Property*> it( properties );
+  QListIterator<const Property*> it( properties );
   while( it.hasNext() ) {
-    it.next();
-    const Property* p = it.value();
+    const Property* p = it.next();
 
     if( p->type.isEmpty() ) {
       qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
@@ -413,6 +458,18 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
        << p->setterDefinition( this ) << endl;
     if( p->list )
       ms << p->adderDefinition( this ) << endl;
+  }
+
+  it = reverseProperties;
+  while( it.hasNext() ) {
+    const Property* p = it.next();
+
+    if( p->type.isEmpty() ) {
+      qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+      continue;
+    }
+
+    ms << p->reversePropertyGetterDefinition( this ) << endl;
   }
 
   ms << allResourcesDefinition() << endl;

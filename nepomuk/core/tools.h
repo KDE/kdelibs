@@ -57,6 +57,15 @@ namespace Nepomuk {
      * \sa Ontology::defaultNamespace
      */
     QString ensureNamespace( const QString& uri );
+
+    template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
+      QList<T> rl;
+      for( QList<Resource>::const_iterator it = l.constBegin();
+	   it != l.constEnd(); ++it )
+	rl.append( T( (*it).uri() ) );
+      return rl;
+    }
+
   }
 }
 
