@@ -7,7 +7,6 @@
 /* TODO: write those two tests */
 
 #define HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID 1 /* Define to 1 if `sin6_scope_id' is member of `struct sockaddr_in6'. */
-#undef  HAVE_STRUCT_SOCKADDR_SA_LEN  /* Define to 1 if `sa_len' is member of `struct sockaddr'. */
 
 /* functions */
 #cmakedefine   HAVE_FREEADDRINFO 1
@@ -36,6 +35,8 @@
 
 #cmakedefine HAVE_GETSERVBYNAME_R_PROTO 1
 #cmakedefine HAVE_RES_INIT_PROTO 1
+
+#cmakedefine  HAVE_STRUCT_SOCKADDR_SA_LEN 1
 
 #if !defined(HAVE_RES_INIT_PROTO)
 #ifdef __cplusplus

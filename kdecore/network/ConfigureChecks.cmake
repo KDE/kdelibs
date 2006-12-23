@@ -1,4 +1,10 @@
 ####### checks for kdecore/network (and netsupp.cpp) ###############
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+include(CheckPrototypeExists)
+include(CheckSymbolExists)
+include(CheckTypeSize)
+include(CheckStructMember)
 
 check_include_files(idna.h        HAVE_IDNA_H)
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
@@ -23,6 +29,8 @@ check_symbol_exists(getaddrinfo     "sys/socket.h;netdb.h"     HAVE_GETADDRINFO)
 
 check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT)
 # redundant? check_function_exists(res_init        HAVE_RES_INIT)
+
+check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
 # check for existing datatypes
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
