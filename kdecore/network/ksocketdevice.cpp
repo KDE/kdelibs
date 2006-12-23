@@ -543,7 +543,7 @@ KSocketAddress KSocketDevice::localAddress() const
     return d->local = KSocketAddress();
 
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  len = localAddress.address().sa_len;
+  len = localAddress.address()->sa_len;
 #endif
 
   if (len <= localAddress.length())
@@ -579,7 +579,7 @@ KSocketAddress KSocketDevice::peerAddress() const
     return d->peer = KSocketAddress();
 
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  len = peerAddress.address().sa_len;
+  len = peerAddress.address()->sa_len;
 #endif
 
   if (len <= peerAddress.length())
