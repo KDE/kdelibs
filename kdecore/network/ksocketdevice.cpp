@@ -137,15 +137,11 @@ bool KSocketDevice::setSocketOptions(int opts)
   if (opts & Blocking)
     {
       u_long iMode = 0;
-#ifndef NDEBUG
       qDebug("socket set blocking");
-#endif
       // disable non blocking
       if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
         {
-#ifndef NDEBUG
           qDebug("socket set blocking failed %d",GetLastError());
-#endif
           setError(UnknownError);
           return false;		// error
         }
@@ -294,7 +290,7 @@ bool KSocketDevice::bind(const KResolverEntry& address)
 	setError(AlreadyBound);
       else 
        {
-#if defined (Q_WS_WIN) && !defined(NDEBUG)
+#ifdef Q_WS_WIN
          qDebug(" bind failed: %s ",address.address().toString().toLatin1().constData());
 #endif
          // assume the address is the cause
