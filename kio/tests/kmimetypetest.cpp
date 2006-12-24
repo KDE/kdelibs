@@ -112,12 +112,8 @@ void KMimeTypeTest::testFindByUrl()
     mf = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
     QVERIFY( mf );
 
-#ifdef Q_WS_WIN
-    // on win32 we get image/png ?? 
-    QCOMPARE( mf->name(), QString::fromLatin1( "image/png" ) ); 
-#else
     QCOMPARE( mf->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
-#endif
+
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP( "man protocol not installed", SkipSingle );
 
