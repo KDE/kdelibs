@@ -143,8 +143,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_resizePending = false;
     m_discardResizes = false;
     m_needsMask = false;
-    m_wantMouseEvents = false;
-    m_pTarget = 0;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -161,7 +159,9 @@ void RenderWidget::detach()
         if ( m_view ) {
             m_view->setWidgetVisible(this, false);
         }
-
+        KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
+        if (k)
+            k->m_kwp->setRenderWidget(0);
         m_widget->removeEventFilter( this );
         m_widget->setMouseTracking( false );
     }
@@ -772,38 +772,45 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
 
-        if (ev.id() == EventImpl::MOUSEDOWN_EVENT && button == Qt::LeftButton) {
-            m_pTarget = m_widget->childAt(p);
-            m_wantMouseEvents = true;
+        QWidget* target = 0;
+        if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
+            target = m_widget->childAt(p);
+            if (!target || !::qobject_cast<QScrollBar*>(target))
+                target = m_widget;
+            view()->setMouseEventsTarget( target );
+        } else {
+            target = view()->mouseEventsTarget();
+            if (target) {
+                QWidget * parent = target;
+                while (parent && parent != m_widget)
+                    parent = parent->parentWidget();
+                if (!parent) return false;
+            } else {
+                target = m_widget;
+            }
         }
-
-        if (!m_pTarget || !::qobject_cast<QScrollBar*>(m_pTarget))
-            m_pTarget = m_widget;
-        else {
-            p = m_pTarget->mapFrom(m_widget, p);
-        }
+        p = target->mapFrom(m_widget, p);
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
 
         QMouseEvent e(type, p, button, buttons, state);
-        Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(m_pTarget);
+        Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(target);
         if (sc && !::qobject_cast<Q3ListBox*>(m_widget))
             static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(&e);
         else
-            static_cast<EventPropagator *>(m_pTarget)->sendEvent(&e);
+            static_cast<EventPropagator *>(target)->sendEvent(&e);
 
         ret = e.isAccepted();
 
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
-            static_cast<EventPropagator *>(m_pTarget)->sendEvent(&cme);
+            static_cast<EventPropagator *>(target)->sendEvent(&cme);
         } else if (type == QEvent::MouseMove && m_widget->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverMove, p, p );
             QApplication::sendEvent(m_widget, &he);
         }
         if (ev.id() == EventImpl::MOUSEUP_EVENT && button == Qt::LeftButton) {
-            m_pTarget = 0;
-            m_wantMouseEvents = false;
+            view()->setMouseEventsTarget( 0 );
         }
         break;
     }

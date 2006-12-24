@@ -349,6 +349,8 @@ private:
     void closeChildDialogs();
     bool dialogsAllowed();
 
+    void setMouseEventsTarget( QWidget* w );
+    QWidget* mouseEventsTarget() const;
 
     /**
      * Paints the HTML document to a QPainter.

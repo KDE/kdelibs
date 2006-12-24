@@ -112,7 +112,6 @@ public:
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
-    bool wantMouseEvents() const { return m_wantMouseEvents; }
     bool isRedirectedWidget() const;
 
 #ifdef ENABLE_DUMP
@@ -140,8 +139,6 @@ protected:
     QWidget *m_widget;
     KHTMLView* m_view;
     
-    bool m_wantMouseEvents;
-
     //Because we mess with normal detach due to ref/deref,
     //we need to keep track of the arena ourselves
     //so it doesn't get yanked from us, etc.
@@ -150,9 +147,6 @@ protected:
     bool m_resizePending;
     bool m_discardResizes;
     bool m_needsMask;
-
-private:
-    QWidget* m_pTarget; // current target for mouse events within m_widget
 
 public:
     virtual int borderTop() const { return canHaveBorder() ? RenderReplaced::borderTop() : 0; }

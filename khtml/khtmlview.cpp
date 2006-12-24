@@ -245,6 +245,7 @@ public:
         KHTMLFactory::deref();
 
         emitCompletedAfterRepaint = CSNone;
+        m_mouseEventsTarget = 0;
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -373,6 +374,7 @@ public:
     short m_mouseScroll_byY;
     QTimer *m_mouseScrollTimer;
     QWidget *m_mouseScrollIndicator;
+    QPointer<QWidget> m_mouseEventsTarget;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -540,6 +542,16 @@ void KHTMLView::hideEvent(QHideEvent* e)
 void KHTMLView::showEvent(QShowEvent* e)
 {
     QScrollArea::showEvent(e);
+}
+
+void KHTMLView::setMouseEventsTarget( QWidget* w )
+{
+    d->m_mouseEventsTarget = w;
+}
+
+QWidget* KHTMLView::mouseEventsTarget() const
+{
+    return d->m_mouseEventsTarget;
 }
 
 int KHTMLView::contentsWidth() const
@@ -1067,8 +1079,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
 
     // a widget may be the real target of this event (e.g. if a scrollbar's slider is being moved)
-    if (fn && fn != mev.innerNode.handle() && fn->renderer() && fn->renderer()->isWidget() &&
-         static_cast<RenderWidget*>(fn->renderer())->wantMouseEvents())
+    if (d->m_mouseEventsTarget && fn && fn->renderer() && fn->renderer()->isWidget())
        target = fn;
                     
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,target,mev.innerNonSharedNode.handle(),false,
@@ -1222,12 +1233,15 @@ void KHTMLView::mouseReleaseEvent( QMouseEvent * _mouse )
         DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
 
         // a widget may be the real target of this event (e.g. if a scrollbar's slider is being moved)
-        if (fn && fn != mev.innerNode.handle() && fn->renderer() && fn->renderer()->isWidget() &&
-              static_cast<RenderWidget*>(fn->renderer())->wantMouseEvents())
+        if (d->m_mouseEventsTarget && fn && fn->renderer() && fn->renderer()->isWidget())
             target = fn;
 
         swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,target,mev.innerNonSharedNode.handle(),true,
                                           d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
+
+        // clear our sticky event target on any mouseRelease event
+        if (d->m_mouseEventsTarget)
+            d->m_mouseEventsTarget = 0;
 
         if (d->clickCount > 0 &&
             QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
@@ -3184,13 +3198,21 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0, _mouse, dblclick );
         me->ref();
-        if ( RenderLayer::gScrollBar ) {
-            // point is in layer scrollbar
-            // ### temporary. We'll use the dom eventually.
-            KHTMLWidget*w = dynamic_cast<KHTMLWidget*>(RenderLayer::gScrollBar);
+        if ( !d->m_mouseEventsTarget && RenderLayer::gScrollBar && eventId == EventImpl::MOUSEDOWN_EVENT )
+            // button is pressed inside a layer scrollbar, so make it the target for future mousemove events until released
+            d->m_mouseEventsTarget = RenderLayer::gScrollBar;
+        if ( d->m_mouseEventsTarget && qobject_cast<QScrollBar*>(d->m_mouseEventsTarget) && 
+             dynamic_cast<KHTMLWidget*>(static_cast<QWidget*>(d->m_mouseEventsTarget)) ) {
+            // we have a sticky mouse event target and it is a layer's scrollbar. Forward events manually.
+            // ### should use the dom
+            KHTMLWidget*w = dynamic_cast<KHTMLWidget*>(static_cast<QWidget*>(d->m_mouseEventsTarget));
             QPoint p = w->m_kwp->absolutePos();
             QMouseEvent fw(_mouse->type(), _mouse->pos()-p, _mouse->button(), _mouse->buttons(), _mouse->modifiers());
-            static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(RenderLayer::gScrollBar))->sendEvent(&fw);
+            static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(d->m_mouseEventsTarget))->sendEvent(&fw);
+            if (_mouse->type() == QMouseEvent::MouseButtonPress && _mouse->button() == Qt::RightButton) {
+                QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
+                static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(d->m_mouseEventsTarget))->sendEvent(&cme);
+            }                       
             swallowEvent = true;
         } else {
             targetNode->dispatchEvent(me,exceptioncode,true);
@@ -3505,8 +3527,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     // As widgets can only be accurately positioned during painting, every layout might
     // dissociate a widget from its RenderWidget. E.g: if a RenderWidget was visible before layout, but the layout
-    // pushed it out of the viewport, it will not be repainted, and consequently it's assocoated widget won't be repositioned!
-    // Thus we need to check each supposedly 'visible' widget at the end of each layout, and remove it in case it's no more in sight.
+    // pushed it out of the viewport, it will not be repainted, and consequently it's associated widget won't be repositioned.
+    // Thus we need to check each supposedly 'visible' widget at the end of layout, and remove it in case it's no more in sight.
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;

@@ -187,6 +187,21 @@ void RenderCheckBox::slotStateChanged(int state)
     deref();
 }
 
+bool RenderCheckBox::handleEvent(const DOM::EventImpl& ev)
+{
+    switch(ev.id()) {
+      case EventImpl::DOMFOCUSIN_EVENT:
+      case EventImpl::DOMFOCUSOUT_EVENT:
+      case EventImpl::MOUSEMOVE_EVENT:
+      case EventImpl::MOUSEOUT_EVENT:
+      case EventImpl::MOUSEOVER_EVENT:
+          return RenderButton::handleEvent(ev);
+      default:
+          break;
+    }
+    return false;
+}
+
 // -------------------------------------------------------------------------------
 
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
@@ -230,6 +245,21 @@ void RenderRadioButton::slotToggled(bool activated)
       element()->onChange();
       deref();
     }
+}
+
+bool RenderRadioButton::handleEvent(const DOM::EventImpl& ev)
+{
+    switch(ev.id()) {
+      case EventImpl::DOMFOCUSIN_EVENT:
+      case EventImpl::DOMFOCUSOUT_EVENT:
+      case EventImpl::MOUSEMOVE_EVENT:
+      case EventImpl::MOUSEOUT_EVENT:
+      case EventImpl::MOUSEOVER_EVENT:
+          return RenderButton::handleEvent(ev);
+      default:
+          break;
+    }
+    return false;
 }
 
 // -------------------------------------------------------------------------------
