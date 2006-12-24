@@ -453,6 +453,7 @@ QString KDialog::makeStandardCaption( const QString &userCaption,
                                       QWidget* window,
                                       CaptionFlags flags )
 {
+  Q_UNUSED(window);
   QString caption = KInstance::caption();
   QString captionString = userCaption.isEmpty() ? caption : userCaption;
 
