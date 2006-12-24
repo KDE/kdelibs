@@ -4757,6 +4757,9 @@ static void bumpmap_row( uint           *src,
                          bool          compensate,
                          BumpmapParams *params )
 {
+    Q_UNUSED(bpp);
+    Q_UNUSED(has_alpha);
+
     int xofs1, xofs2, xofs3;
     int shade;
     int ndotl;
