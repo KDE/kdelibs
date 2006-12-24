@@ -24,6 +24,7 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kurl.h>
 #include <QMimeData>
 #include <QFile>
 #include <QDir>

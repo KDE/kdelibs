@@ -20,7 +20,7 @@
 #define KDIRMODEL_H
 
 #include <QAbstractItemModel>
-#include <kurl.h>
+#include <kdelibs_export.h>
 
 class KFileItemList;
 class KFileItem;
