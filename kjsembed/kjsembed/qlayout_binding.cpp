@@ -69,7 +69,7 @@ KJSO_QOBJECT_BIND( Layout, QLayout )
 
 KJSO_START_CTOR( Layout, QLayout, 0 )
 //  qDebug("Layout::CTOR(): args.size()=%d", args.size());
-    QLayout *layout = 0;
+
     if( args.size() > 0 )
     {
         QString layoutName = args[0]->toString(exec).qstring();
