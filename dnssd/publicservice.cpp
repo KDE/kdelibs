@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "config.h"
+#include <config-dnssd.h>
 
 #include "publicservice.h"
 #ifdef HAVE_SYS_TYPES_H

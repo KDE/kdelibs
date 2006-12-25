@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
+#include <config-dnssd.h>
 
 #include <qeventloop.h>
 #include <qapplication.h>
@@ -43,7 +43,7 @@ void resolve_callback    (    DNSServiceRef,
 				const char                          *hosttarget,
 				uint16_t                            port,
 				uint16_t                            txtLen,
-				const char                          *txtRecord,
+				const unsigned char                 *txtRecord,
 				void                                *context
 			 );
 
@@ -101,7 +101,7 @@ void RemoteService::resolveAsync()
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.toUtf8(), m_type.toAscii().constData(), 
-		domainToDNS(m_domain),resolve_callback,reinterpret_cast<void*>(this))
+ 		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(this))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit resolved(false);
@@ -163,7 +163,7 @@ void resolve_callback    (    DNSServiceRef,
 			      const char                          *hosttarget,
 			      uint16_t                            port,
 			      uint16_t                            txtLen,
-			      const char                          *txtRecord,
+			      const unsigned char                 *txtRecord,
 			      void                                *context
 			 )
 {

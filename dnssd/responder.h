@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qsocketnotifier.h>
-#include <config.h>
+#include <config-dnssd.h>
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
 #else

@@ -22,7 +22,7 @@
 #include "domainbrowser.h"
 #include "query.h"
 #include "servicebrowser.h"
-#include <config.h>
+#include <config-dnssd.h>
 #include <QHash>
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
