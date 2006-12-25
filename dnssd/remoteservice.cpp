@@ -43,7 +43,7 @@ void resolve_callback    (    DNSServiceRef,
 				const char                          *hosttarget,
 				uint16_t                            port,
 				uint16_t                            txtLen,
-				const char                          *txtRecord,
+				const unsigned char                 *txtRecord,
 				void                                *context
 			 );
 
@@ -102,7 +102,7 @@ void RemoteService::resolveAsync()
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type.ascii(), 
-		domainToDNS(m_domain),resolve_callback,reinterpret_cast<void*>(this))
+		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(this))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit resolved(false);
@@ -164,7 +164,7 @@ void resolve_callback    (    DNSServiceRef,
 			      const char                          *hosttarget,
 			      uint16_t                            port,
 			      uint16_t                            txtLen,
-			      const char                          *txtRecord,
+			      const unsigned char                 *txtRecord,
 			      void                                *context
 			 )
 {
