@@ -1032,10 +1032,11 @@ void KFileDialog::initGUI()
     d->urlBarLayout = new QHBoxLayout();
     d->boxLayout->addItem(d->urlBarLayout ); // needed for the urlBar that may appear
     QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->setMargin(KDialog::marginHint());
     d->urlBarLayout->addItem(vbox);
 
     vbox->addWidget(ops, 4);
-    vbox->addSpacing(3);
+    vbox->addSpacing(KDialog::spacingHint());
 
     QGridLayout* lafBox= new QGridLayout();
 
@@ -1049,10 +1050,9 @@ void KFileDialog::initGUI()
     lafBox->addWidget(d->cancelButton, 1, 2, Qt::AlignVCenter);
 
     lafBox->setColumnStretch(1, 4);
-    lafBox->setMargin(5);
 
-    vbox->addLayout(lafBox, 0);
-    vbox->addSpacing(3);
+    vbox->addLayout(lafBox);
+    vbox->addSpacing(KDialog::spacingHint());
 
     // add the Automatically Select Extension checkbox
     vbox->addWidget (d->autoSelectExtCheckBox);
