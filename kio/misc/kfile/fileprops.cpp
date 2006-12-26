@@ -294,8 +294,8 @@ static KFileItemList fileItemList( const KCmdLineArgs *args )
 static void showPropertiesDialog( const KCmdLineArgs *args )
 {
     const KFileItemList items = fileItemList( args );
-    new KPropertiesDialog( items, 0L, "props dialog", true );
-    qDeleteAll( items ); // KPropertiesDialog makes a deep copy of the items
+    KPropertiesDialog::showDialog( items, 0, true );
+    qDeleteAll( items );
 }
 
 static void printMimeTypes( const KCmdLineArgs *args )

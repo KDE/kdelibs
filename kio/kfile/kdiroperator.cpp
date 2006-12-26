@@ -1644,8 +1644,9 @@ void KDirOperator::slotProperties()
 {
     if ( m_fileView ) {
         const KFileItemList *list = m_fileView->selectedItems();
-        if ( !list->isEmpty() )
-            (void) new KPropertiesDialog( *list, this, "props dlg", true);
+        if ( !list->isEmpty() ) {
+            KPropertiesDialog::showDialog( *list, this );
+        }
     }
 }
 

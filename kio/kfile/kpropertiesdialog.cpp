@@ -170,15 +170,10 @@ public:
 };
 
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
-                                      QWidget* parent, const char* name,
-                                      bool modal, bool autoShow)
+                                      QWidget* parent)
   : KPageDialog ( parent ),d(new KPropertiesDialogPrivate)
 {
-  setFaceType( KPageDialog::Tabbed );
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())) );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
 
   assert( item );
   m_items.append( new KFileItem(*item) ); // deep copy
@@ -186,37 +181,26 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
   m_singleUrl = item->url();
   assert(!m_singleUrl.isEmpty());
 
-  init (modal, autoShow);
+  init();
 }
 
 KPropertiesDialog::KPropertiesDialog (const QString& title,
-                                      QWidget* parent, const char* name, bool modal)
-  : KPageDialog( parent ),d(new KPropertiesDialogPrivate)
+                                      QWidget* parent)
+  : KPageDialog( parent ), d(new KPropertiesDialogPrivate)
 {
-  setFaceType( KPageDialog::Tabbed );
   setCaption( i18n( "Properties for %1", title ) );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
 
-  init (modal, false);
+  init();
 }
 
-KPropertiesDialog::KPropertiesDialog (const KFileItemList& _items,
-                                      QWidget* parent, const char* name,
-                                      bool modal, bool autoShow)
-  : KPageDialog( parent ),d(new KPropertiesDialogPrivate)
+KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
+                                     QWidget* parent)
+  : KPageDialog( parent ), d(new KPropertiesDialogPrivate)
 {
-  setFaceType( KPageDialog::Tabbed );
-
   if ( _items.count() > 1 )
     setCaption( i18np( "Properties for 1 item", "Properties for %n Selected Items", _items.count() ) );
   else
     setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())) );
-
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
 
   assert( !_items.isEmpty() );
   m_singleUrl = _items.first()->url();
@@ -229,120 +213,109 @@ KPropertiesDialog::KPropertiesDialog (const KFileItemList& _items,
   for ( ; kit != kend; ++kit )
       m_items.append( new KFileItem( **kit ) );
 
-  init (modal, autoShow);
+  init();
 }
-
-#ifndef KDE_NO_COMPAT
-KPropertiesDialog::KPropertiesDialog (const KUrl& _url, mode_t /* _mode is now unused */,
-                                      QWidget* parent, const char* name,
-                                      bool modal, bool autoShow)
-  : KPageDialog( parent ),
-    m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
-{
-  setFaceType( KPageDialog::Tabbed );
-  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName()))  );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
-
-  KIO::UDSEntry entry;
-
-  KIO::NetAccess::stat(_url, entry, parent);
-
-  m_items.append( new KFileItem( entry, _url ) );
-  init (modal, autoShow);
-}
-#endif
 
 KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
-                                      QWidget* parent, const char* name,
-                                      bool modal, bool autoShow)
+                                      QWidget* parent)
   : KPageDialog( parent ),
-    m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
+    m_singleUrl( _url ),
+    d(new KPropertiesDialogPrivate)
 {
-  setFaceType( KPageDialog::Tabbed );
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName()))  );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
 
   KIO::UDSEntry entry;
-
   KIO::NetAccess::stat(_url, entry, parent);
 
   m_items.append( new KFileItem( entry, _url ) );
-  init (modal, autoShow);
+  init();
 }
 
 KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _currentDir,
                                       const QString& _defaultName,
-                                      QWidget* parent, const char* name,
-                                      bool modal, bool autoShow)
+                                      QWidget* parent)
   : KPageDialog( parent ),
 
   m_singleUrl( _tempUrl ),
   m_defaultName( _defaultName ),
   m_currentDir( _currentDir ),d(new KPropertiesDialogPrivate)
 {
-  setFaceType( KPageDialog::Tabbed );
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_tempUrl.fileName()))  );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
-  setObjectName( name );
 
   assert(!m_singleUrl.isEmpty());
 
   // Create the KFileItem for the _template_ file, in order to read from it.
   m_items.append( new KFileItem( KFileItem::Unknown, KFileItem::Unknown, m_singleUrl ) );
-  init (modal, autoShow);
+  init ();
 }
 
 bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
-                                   const char* name, bool modal)
+                                   bool modal)
 {
+  // TODO: do we really want to show the win32 property dialog?
+  // This means we lose metainfo, support for .desktop files, etc. (DF)
 #ifdef Q_WS_WIN
   QString localPath = item->localPath();
   if (!localPath.isEmpty())
     return showWin32FilePropertyDialog(localPath);
 #endif
-  new KPropertiesDialog(item, parent, name, modal);
+  KPropertiesDialog* dlg = new KPropertiesDialog(item, parent);
+  if (modal) {
+      dlg->exec();
+  } else {
+      dlg->close();
+  }
+
   return true;
 }
 
 bool KPropertiesDialog::showDialog(const KUrl& _url, QWidget* parent,
-                                   const char* name, bool modal)
+                                   bool modal)
 {
 #ifdef Q_WS_WIN
   if (_url.isLocalFile())
     return showWin32FilePropertyDialog( _url.path() );
 #endif
-  new KPropertiesDialog(_url, parent, name, modal);
+  KPropertiesDialog* dlg = new KPropertiesDialog(_url, parent);
+  if (modal) {
+      dlg->exec();
+  } else {
+      dlg->close();
+  }
+
   return true;
 }
 
 bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
-                                   const char* name, bool modal)
+                                   bool modal)
 {
-  if (_items.count()==1)
-    return KPropertiesDialog::showDialog(_items.first(), parent, name, modal);
-  new KPropertiesDialog(_items, parent, name, modal);
+  if (_items.count()==1) {
+      KFileItem * item = _items.first();
+      if (item->entry().count() == 0 && item->localPath().isEmpty()) // this remote item wasn't listed by a slave
+         // Let's stat to get more info on the file
+          return KPropertiesDialog::showDialog(item->url(), parent, modal);
+      else
+          return KPropertiesDialog::showDialog(_items.first(), parent, modal);
+  }
+  KPropertiesDialog* dlg = new KPropertiesDialog(_items, parent);
+  if (modal) {
+      dlg->exec();
+  } else {
+      dlg->close();
+  }
   return true;
 }
 
-void KPropertiesDialog::init(bool modal, bool autoShow)
+void KPropertiesDialog::init()
 {
+  setFaceType( KPageDialog::Tabbed );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+
   m_pageList.setAutoDelete( true );
   connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
 
   insertPages();
-
-  if (autoShow)
-    {
-      if (!modal)
-        show();
-      else
-        exec();
-    }
 }
 
 void KPropertiesDialog::showFileSharingPage()
@@ -444,7 +417,7 @@ void KPropertiesDialog::slotOk()
   {
     emit applied();
     emit propertiesClosed();
-    deleteLater();
+    deleteLater(); // somewhat like Qt::WA_DeleteOnClose would do.
     accept();
   } // else, keep dialog open for user to fix the problem.
 }

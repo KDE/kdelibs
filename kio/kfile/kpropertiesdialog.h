@@ -64,8 +64,9 @@ namespace KIO { class Job; }
  *
  * \image html kpropertiesdialog.png "Typical KProperties Dialog"
  *
- * This class must be created with (void)new KPropertiesDialog(...)
- * It will take care of deleting itself.
+ * The best way to display the properties dialog is to use showDialog().
+ * Otherwise, you should use (void)new KPropertiesDialog(...)
+ * It will take care of deleting itself when closed.
  *
  * If you are looking for more flexibility, see KFileMetaInfo and
  * KFileMetaInfoWidget.
@@ -94,12 +95,9 @@ public:
    * @param item file item whose properties should be displayed.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
-   * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whether it should show itself automatically.
    */
   KPropertiesDialog( KFileItem * item,
-                     QWidget* parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
+                     QWidget* parent = 0 );
 
   /**
    * \overload
@@ -112,28 +110,9 @@ public:
    * @param _items list of file items whose properties should be displayed.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
-   * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whether it should show itself automatically.
    */
   KPropertiesDialog( const KFileItemList& _items,
-                     QWidget *parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
-
-#ifndef KDE_NO_COMPAT
-  /**
-   * @deprecated  You should use the following constructor instead of this one.
-   * The only change that is required is to delete the _mode argument.
-   *
-   * @param _url the URL whose properties should be displayed
-   * @param _mode unused.
-   * @param parent is the parent of the dialog widget.
-   * @param name is the internal name.
-   * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whether it should show itself automatically.  */
-  KDE_CONSTRUCTOR_DEPRECATED KPropertiesDialog( const KUrl& _url, mode_t _mode,
-                     QWidget* parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
-#endif
+                     QWidget *parent = 0 );
 
   /**
    * Brings up a Properties dialog. Convenience constructor for
@@ -143,18 +122,16 @@ public:
    * @param _url the URL whose properties should be displayed
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
-   * @param modal tells the dialog whether it should be modal.
-   * IMPORTANT: This constructor, together with modal=true, leads to a grave
+   *
+   * IMPORTANT: This constructor, together with exec(), leads to a grave
    * display bug (due to KIO::stat() being run before the dialog has all the
    * necessary information). Do not use this combination for now.
+   * TODO: Check if the above is still true with Qt4.
    * For local files with a known mimetype, simply create a KFileItem and pass
    * it to the other constructor.
-   *
-   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
   KPropertiesDialog( const KUrl& _url,
-                     QWidget* parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
+                     QWidget* parent = 0 );
 
   /**
    * Creates a properties dialog for a new .desktop file (whose name
@@ -167,13 +144,10 @@ public:
    * like mimetype.desktop
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
-   * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
   KPropertiesDialog( const KUrl& _tempUrl, const KUrl& _currentDir,
                      const QString& _defaultName,
-                     QWidget* parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
+                     QWidget* parent = 0 );
 
   /**
    * Creates an empty properties dialog (for applications that want use
@@ -184,8 +158,8 @@ public:
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
    */
-  KPropertiesDialog (const QString& title,
-                     QWidget* parent = 0L, const char* name = 0L, bool modal = false);
+  KPropertiesDialog(const QString& title,
+                    QWidget* parent = 0);
 
   /**
    * Cleans up the properties dialog and frees any associated resources,
@@ -200,10 +174,10 @@ public:
    * On MS Windows, if @p item points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesfull dialog displaying (can be false on win32).
+   * @return true on succesful dialog displaying (can be false on win32).
    */
   static bool showDialog(KFileItem* item, QWidget* parent = 0,
-                         const char* name = 0, bool modal = false);
+                         bool modal = true);
 
   /**
    * Immediately displays a Properties dialog using constructor with
@@ -211,10 +185,10 @@ public:
    * On MS Windows, if @p _url points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesfull dialog displaying (can be false on win32).
+   * @return true on succesful dialog displaying (can be false on win32).
    */
   static bool showDialog(const KUrl& _url, QWidget* parent = 0,
-                         const char* name = 0, bool modal = false);
+                         bool modal = true);
 
   /**
    * Immediately displays a Properties dialog using constructor with
@@ -223,10 +197,10 @@ public:
    * to a local file, native (non modal) property dialog is displayed
    * (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesfull dialog displaying (can be false on win32).
+   * @return true on succesful dialog displaying (can be false on win32).
    */
   static bool showDialog(const KFileItemList& _items, QWidget* parent = 0,
-                         const char* name = 0, bool modal = false);
+                         bool modal = true);
 
   /**
    * Adds a "3rd party" properties plugin to the dialog.  Useful
@@ -369,7 +343,7 @@ private:
   /**
    * Common initialization for all constructors
    */
-  void init (bool modal = false, bool autoShow = true);
+  void init();
 
   /**
    * Inserts all pages in the dialog.

@@ -25,11 +25,13 @@ int main ( int argc, char** argv )
     KUrl u = args->url( 0 );
 
     // This is the test for the KPropertiesDialog constructor that is now
-    // documented to NOT work. Passing only a URL means a KIO::stat will happen,
+    // documented to NOT work. Passing only a URL means a KIO::NetAccess::stat will happen,
     // and asking for the dialog to be modal too creates problems.
     // (A non-modal, URL-only dialog is the one kicker uses for app buttons, no problem there)
-    KPropertiesDialog* dlg = new KPropertiesDialog( u, 0, 0, true /*modal*/, false /*we do exec ourselves*/ );
-    dlg->exec();
+    {
+    KPropertiesDialog dlg( u, 0 );
+    dlg.exec();
+    }
 
     return 0;
 }
