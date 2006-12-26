@@ -47,7 +47,7 @@ set(test_dialog_SRCS test_dialog.cpp)
 
 kde4_automoc(${test_dialog_SRCS})
 
-kde4_add_executable(test_dialog RUN_UNINSTALLED ${test_dialog_SRCS})
+kde4_add_executable(test_dialog NOGUI RUN_UNINSTALLED ${test_dialog_SRCS})
 
 target_link_libraries(test_dialog ${KDE4_KDECORE_LIBS} kspell2 )
 
@@ -58,7 +58,7 @@ set(test_highlighter_SRCS test_highlighter.cpp)
 
 kde4_automoc(${test_highlighter_SRCS})
 
-kde4_add_executable(test_highlighter RUN_UNINSTALLED ${test_highlighter_SRCS})
+kde4_add_executable(test_highlighter NOGUI RUN_UNINSTALLED ${test_highlighter_SRCS})
 
 target_link_libraries(test_highlighter ${KDE4_KDECORE_LIBS} kspell2 )
 
@@ -69,7 +69,7 @@ set(test_configdialog_SRCS test_configdialog.cpp)
 
 kde4_automoc(${test_configdialog_SRCS})
 
-kde4_add_executable(test_configdialog RUN_UNINSTALLED ${test_configdialog_SRCS})
+kde4_add_executable(test_configdialog NOGUI RUN_UNINSTALLED ${test_configdialog_SRCS})
 
 target_link_libraries(test_configdialog ${KDE4_KDECORE_LIBS} kspell2 )
 
