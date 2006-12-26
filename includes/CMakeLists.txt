@@ -431,6 +431,9 @@ install( FILES
   KSplashScreen
   KSqueezedTextLabel
   KStandardDirs
+  KStandardAction
+  KStandardGuiItem
+  KStandardShortcut
   KStartupInfo
   KStartupInfoData
   KStartupInfoId
@@ -438,7 +441,6 @@ install( FILES
   KStaticDeleterBase
   KStatusBar
   KStatusBarLabel
-  KStdGuiItem
   KStringHandler
   KStringListValidator
   KStyle
