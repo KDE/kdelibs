@@ -17,15 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtCore/QLatin1Char>
-#include <QtGui/QApplication>
-#include "kautosavefile.h"
-#include "klockfile.h"
-#include "krandom.h"
-#include "kglobal.h"
-#include "kstandarddirs.h"
-
-
 #ifndef QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_FROM_ASCII
 #endif
@@ -33,6 +24,13 @@
 #define QT_NO_CAST_TO_ASCII
 #endif
 
+#include <QtCore/QLatin1Char>
+#include <QtCore/QCoreApplication>
+#include "kautosavefile.h"
+#include "klockfile.h"
+#include "krandom.h"
+#include "kglobal.h"
+#include "kstandarddirs.h"
 
 class KAutoSaveFilePrivate
 {
@@ -60,7 +58,7 @@ KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent) :
         d(new KAutoSaveFilePrivate)
 {
     setManagedFile(filename);
-    KGlobal::dirs()->addResourceType("stale","data/stalefiles");
+    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
 
 }
 
@@ -68,7 +66,7 @@ KAutoSaveFile::KAutoSaveFile(QObject *parent) :
         QFile(parent),
         d(new KAutoSaveFilePrivate)
 {
-    KGlobal::dirs()->addResourceType("stale","data/stalefiles");
+    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::~KAutoSaveFile()
@@ -98,7 +96,7 @@ bool KAutoSaveFile::open(OpenMode openmode)
         return false;
 
     QString tempFile =  KStandardDirs::locateLocal( "stale",
-                        qApp->applicationName()+'/'+d->tempFileName() );
+                        QCoreApplication::instance()->applicationName()+QChar::fromLatin1('/')+d->tempFileName() );
 
     d->lock = new KLockFile(tempFile);
     d->lock ->setStaleTime(3600); // HARDCODE
@@ -116,7 +114,7 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
 QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
 {
-    KGlobal::dirs()->addResourceType("stale","data/stalefiles");
+    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
 
     QString url;
 
@@ -142,7 +140,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
     // get stale files
     QStringList files;
     if ( !url.isEmpty() )
-        files = KGlobal::dirs()->findAllResources( "stale", url+"*" , true, false );
+        files = KGlobal::dirs()->findAllResources( "stale", url+QChar::fromLatin1('*') , true, false );
 
     QList<KAutoSaveFile *> list;
     QString file;
@@ -161,14 +159,14 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
 
 QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale","data/stalefiles");
+    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
     if ( appName.isEmpty() )
-        appName = qApp->applicationName();
+        appName = QCoreApplication::instance()->applicationName();
 
     // get stale files
-    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+"/*", false, false );
+    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QString::fromLatin1("/*"), false, false );
 
     QList<KAutoSaveFile *> list;
     QString file;
