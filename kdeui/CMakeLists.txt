@@ -27,7 +27,6 @@ add_subdirectory( tests )
 
 set(kdeui_LIB_SRCS
  kmainwindow.cpp
- kwindowlistmenu.cpp
  kmainwindowiface.cpp
  klanguagebutton.cpp
  actions/kactioncollection.cpp
@@ -207,7 +206,6 @@ install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-backgroun
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kmainwindow.h
- kwindowlistmenu.h
  klanguagebutton.h
  actions/kactioncollection.h
  actions/kaction.h
