@@ -331,7 +331,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else if (!previewOnly)
 	{
-		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
+		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"fileprint"), KStandardGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
 	}
 	else
 		return false;

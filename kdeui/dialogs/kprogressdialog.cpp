@@ -232,7 +232,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     else
     {
         setAllowCancel(true);
-        setButtonGuiItem(Cancel, KStdGuiItem::close());
+        setButtonGuiItem(Cancel, KStandardGuiItem::close());
         d->cancelButtonShown = false;
     }
 

@@ -1787,7 +1787,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
     if ( part )
       emit part->browserExtension()->requestFocus(part);
     return Boolean((KMessageBox::warningYesNo(widget, Qt::convertFromPlainText(str), caption,
-                                                KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
+                                                KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
 #ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
@@ -1852,7 +1852,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
         emit part->browserExtension()->requestFocus(part);
         if ( KMessageBox::questionYesNo( window->part()->widget(),
                                          i18n("Close window?"), i18n("Confirmation Required"),
-                                         KStdGuiItem::close(), KStdGuiItem::cancel() )
+                                         KStandardGuiItem::close(), KStandardGuiItem::cancel() )
              == KMessageBox::Yes )
           doClose = true;
       }

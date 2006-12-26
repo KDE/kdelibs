@@ -44,7 +44,7 @@
 #include <kmimetype.h>
 #include <kseparator.h>
 #include <kstringhandler.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kguiitem.h>
 #include <ksqueezedtextlabel.h>
 
@@ -96,7 +96,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
     setWindowTitle( _caption );
 
-    d->bCancel = new KPushButton( KStdGuiItem::cancel(), this );
+    d->bCancel = new KPushButton( KStandardGuiItem::cancel(), this );
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
     if ( ! (_mode & M_NORENAME ) ) {

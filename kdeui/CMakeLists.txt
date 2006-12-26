@@ -29,7 +29,6 @@ set(kdeui_LIB_SRCS
  kmainwindow.cpp
  kwindowlistmenu.cpp
  kmainwindowiface.cpp
- kstdguiitem.cpp
  klanguagebutton.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
@@ -110,6 +109,7 @@ set(kdeui_LIB_SRCS
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapprovider.cpp
+ util/kstandardguiitem.cpp
  util/kstringvalidator.cpp
  util/ksystemtrayicon.cpp
  util/kwhatsthismanager.cpp
@@ -208,7 +208,6 @@ install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kmainwindow.h
  kwindowlistmenu.h
- kstdguiitem.h
  klanguagebutton.h
  actions/kactioncollection.h
  actions/kaction.h
@@ -288,6 +287,7 @@ install( FILES
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
  util/kpixmapprovider.h
+ util/kstandardguiitem.h
  util/kstringvalidator.h
  util/ksystemtrayicon.h
  util/kwordwrap.h

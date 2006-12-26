@@ -50,7 +50,7 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
     setModal( false );
     setCaption( i18n("Find Next") );
     setButtons( User1 | Close );
-    setButtonGuiItem( User1, KStdGuiItem::find() );
+    setButtonGuiItem( User1, KStandardGuiItem::find() );
     setDefaultButton( User1 );
     showButtonSeparator( false );
 
@@ -677,7 +677,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         : i18n("Continue from the beginning?");
 
     int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>"),
-                                          QString(), KStdGuiItem::cont(), KStdGuiItem::stop() );
+                                          QString(), KStandardGuiItem::cont(), KStandardGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
         const_cast<KFind*>(this)->m_options &= ~KFind::FromCursor; // clear FromCursor option

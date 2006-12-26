@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
             : Q3Wizard( parent, name, modal, f )
@@ -35,8 +35,8 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
 
   if ( useIcons )
   {
-    KGuiItem back = KStdGuiItem::back( KStdGuiItem::UseRTL );
-    KGuiItem forward = KStdGuiItem::forward( KStdGuiItem::UseRTL );
+    KGuiItem back = KStandardGuiItem::back( KStandardGuiItem::UseRTL );
+    KGuiItem forward = KStandardGuiItem::forward( KStandardGuiItem::UseRTL );
 
     backButton()->setIcon( back.icon() );
     nextButton()->setIcon( forward.icon() );

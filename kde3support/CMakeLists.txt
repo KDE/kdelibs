@@ -69,6 +69,7 @@ install( FILES
   kdeui/qxembed.h
   kdeui/kactivelabel.h
   kdeui/kstdaction.h
+  kdeui/kstdguiitem.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
   kdeui/k3popupmenu.h

@@ -35,7 +35,7 @@
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kservice.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 #include "kcmodulecontainer.h"
 #include <kicon.h>

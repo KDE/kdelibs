@@ -21,9 +21,12 @@
 #include <kguiitem.h>
 #include <klocale.h>
 
-#include "kstdguiitem.h"
+#include "kstandardguiitem.h"
 
-KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
+namespace KStandardGuiItem
+{
+
+KGuiItem guiItem( StandardItem ui_enum )
 {
   switch (ui_enum ) {
   case Ok       : return ok();
@@ -61,7 +64,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   };
 }
 
-QString KStdGuiItem::stdItem( StdItem ui_enum )
+QString standardItem( StandardItem ui_enum )
 {
   switch (ui_enum ) {
   case Ok       : return QLatin1String("ok");
@@ -97,52 +100,52 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   };
 }
 
-KGuiItem KStdGuiItem::ok()
+KGuiItem ok()
 {
   return KGuiItem( i18n( "&OK" ), "button_ok" );
 }
 
 
-KGuiItem KStdGuiItem::cancel()
+KGuiItem cancel()
 {
   return KGuiItem( i18n( "&Cancel" ), "button_cancel" );
 }
 
-KGuiItem KStdGuiItem::yes()
+KGuiItem yes()
 {
   return KGuiItem( i18n( "&Yes" ), "button_ok", i18n( "Yes" ) );
 }
 
-KGuiItem KStdGuiItem::no()
+KGuiItem no()
 {
   return KGuiItem( i18n( "&No" ), "", i18n( "No" ) );
 }
 
-KGuiItem KStdGuiItem::discard()
+KGuiItem discard()
 {
   return KGuiItem( i18n( "&Discard" ), "", i18n( "Discard changes" ),
                    i18n( "Pressing this button will discard all recent "
                          "changes made in this dialog" ) );
 }
 
-KGuiItem KStdGuiItem::save()
+KGuiItem save()
 {
   return KGuiItem( i18n( "&Save" ), "filesave", i18n( "Save data" ) );
 }
 
-KGuiItem KStdGuiItem::dontSave()
+KGuiItem dontSave()
 {
   return KGuiItem( i18n( "&Do Not Save" ), "",
                    i18n( "Do not save data" ) );
 }
 
-KGuiItem KStdGuiItem::saveAs()
+KGuiItem saveAs()
 {
   return KGuiItem( i18n( "Save &As..." ), "filesaveas",
                    i18n( "Save file with another name" ) );
 }
 
-KGuiItem KStdGuiItem::apply()
+KGuiItem apply()
 {
   return KGuiItem( i18n( "&Apply" ), "apply", i18n( "Apply changes" ),
                    i18n( "When clicking <b>Apply</b>, the settings will be "
@@ -151,7 +154,7 @@ KGuiItem KStdGuiItem::apply()
                          "Use this to try different settings." ) );
 }
 
-KGuiItem KStdGuiItem::adminMode()
+KGuiItem adminMode()
 {
   return KGuiItem( i18n( "Administrator &Mode..." ), "", i18n( "Enter Administrator Mode" ),
                    i18n( "When clicking <b>Administrator Mode</b> you will be prompted "
@@ -159,32 +162,32 @@ KGuiItem KStdGuiItem::adminMode()
                          "which require root privileges." ) );
 }
 
-KGuiItem KStdGuiItem::clear()
+KGuiItem clear()
 {
   return KGuiItem( i18n( "C&lear" ), "locationbar_erase",
                    i18n( "Clear input" ),
                    i18n( "Clear the input in the edit field" ) );
 }
 
-KGuiItem KStdGuiItem::help()
+KGuiItem help()
 {
   return KGuiItem( i18nc( "show help", "&Help" ), "help",
                    i18n( "Show help" ) );
 }
 
-KGuiItem KStdGuiItem::close()
+KGuiItem close()
 {
   return KGuiItem( i18n( "&Close" ), "fileclose",
                    i18n( "Close the current window or document" ) );
 }
 
-KGuiItem KStdGuiItem::defaults()
+KGuiItem defaults()
 {
   return KGuiItem( i18n( "&Defaults" ), "",
                    i18n( "Reset all items to their default values" ) );
 }
 
-KGuiItem KStdGuiItem::back( BidiMode useBidi )
+KGuiItem back( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "forward" : "back";
@@ -192,7 +195,7 @@ KGuiItem KStdGuiItem::back( BidiMode useBidi )
                    i18n( "Go back one step" ) );
 }
 
-KGuiItem KStdGuiItem::forward( BidiMode useBidi )
+KGuiItem forward( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
                  ? "back" : "forward";
@@ -200,91 +203,93 @@ KGuiItem KStdGuiItem::forward( BidiMode useBidi )
                    i18n( "Go forward one step" ) );
 }
 
-QPair<KGuiItem, KGuiItem> KStdGuiItem::backAndForward()
+QPair<KGuiItem, KGuiItem> backAndForward()
 {
   return qMakePair( back( UseRTL ), forward( UseRTL ) );
 }
 
-KGuiItem KStdGuiItem::print()
+KGuiItem print()
 {
   return KGuiItem( i18n( "&Print..." ), "fileprint",
                    i18n( "Opens the print dialog to print "
                          "the current document" ) );
 }
 
-KGuiItem KStdGuiItem::cont()
+KGuiItem cont()
 {
   return KGuiItem( i18n( "C&ontinue" ), QString(),
                    i18n( "Continue operation" ) );
 }
 
-KGuiItem KStdGuiItem::del()
+KGuiItem del()
 {
   return KGuiItem( i18n( "&Delete" ), "editdelete",
                    i18n( "Delete item(s)" ) );
 }
 
-KGuiItem KStdGuiItem::open()
+KGuiItem open()
 {
   return KGuiItem( i18n( "&Open..." ), "fileopen",
                    i18n( "Open file" ) );
 }
 
-KGuiItem KStdGuiItem::quit()
+KGuiItem quit()
 {
   return KGuiItem( i18n( "&Quit" ), "exit",
                    i18n( "Quit application" ) );
 }
 
-KGuiItem KStdGuiItem::reset()
+KGuiItem reset()
 {
   return KGuiItem( i18n( "&Reset" ), "undo",
                   i18n( "Reset configuration" ) );
 }
 
-KGuiItem KStdGuiItem::insert()
+KGuiItem insert()
 {
   return KGuiItem( i18nc( "Verb", "&Insert" ) );
 }
 
-KGuiItem KStdGuiItem::configure()
+KGuiItem configure()
 {
   return KGuiItem( i18n( "Confi&gure..." ), "configure" );
 }
 
-KGuiItem KStdGuiItem::find()
+KGuiItem find()
 {
   return KGuiItem(i18n("&Find"), "find");
 }
 
-KGuiItem KStdGuiItem::stop()
+KGuiItem stop()
 {
   return KGuiItem(i18n("Stop"), "stop");
 }
 
-KGuiItem KStdGuiItem::add()
+KGuiItem add()
 {
   return KGuiItem(i18n("Add"), "add");
 }
 
-KGuiItem KStdGuiItem::remove()
+KGuiItem remove()
 {
   return KGuiItem(i18n("Remove"), "remove");
 }
 
-KGuiItem KStdGuiItem::test()
+KGuiItem test()
 {
   return KGuiItem(i18n("Test"));
 }
 
-KGuiItem KStdGuiItem::properties()
+KGuiItem properties()
 {
   return KGuiItem(i18n("Properties"));
 }
 
-KGuiItem KStdGuiItem::overwrite()
+KGuiItem overwrite()
 {
   return KGuiItem(i18n("&Overwrite"));
 }
 
-#include "kstdguiitem.moc"
+} // KStandardGuiItem namespace
+
+#include "kstandardguiitem.moc"

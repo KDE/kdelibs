@@ -33,7 +33,7 @@
 #include <qprocess.h>
 #include <kpushbutton.h>
 #include <kstandarddirs.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <klineedit.h>
 
 #ifdef Q_WS_X11
@@ -178,7 +178,7 @@ void DefaultProgress::init()
 
   hBox->addStretch(1);
 
-  d->cancelClose = new KPushButton( KStdGuiItem::cancel(), this );
+  d->cancelClose = new KPushButton( KStandardGuiItem::cancel(), this );
   connect( d->cancelClose, SIGNAL( clicked() ), SLOT( slotStop() ) );
   hBox->addWidget( d->cancelClose );
 
@@ -454,7 +454,7 @@ void DefaultProgress::slotClean() {
   if (d->keepOpenChecked) {
     mode = Done;
     slotPercent(0, 100);
-    d->cancelClose->setGuiItem( KStdGuiItem::close() );
+    d->cancelClose->setGuiItem( KStandardGuiItem::close() );
     d->openFile->setEnabled(true);
     slotProcessedSize(0, m_iTotalSize);
     d->keepOpen->setEnabled(false);

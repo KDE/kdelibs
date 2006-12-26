@@ -26,7 +26,7 @@
 #include <knuminput.h>
 #include <kcombobox.h>
 #include <klistbox.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <ktextedit.h>
 
 #include "kinputdialog.h"
@@ -100,7 +100,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 {
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setButtonGuiItem( User1, KStandardGuiItem::clear() );
   setDefaultButton( Ok );
   showButtonSeparator( false );
   setModal(true);

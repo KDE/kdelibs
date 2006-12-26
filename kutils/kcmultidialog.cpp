@@ -125,7 +125,7 @@ KCMultiDialog::KCMultiDialog( QWidget *parent )
   setFaceType( Auto );
   setCaption( i18n("Configure") );
   setButtons( Help | Default |Cancel | Apply | Ok | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::reset() );
+  setButtonGuiItem( User1, KStandardGuiItem::reset() );
   setDefaultButton( Ok );
   setModal( false );
   showButtonSeparator( true );

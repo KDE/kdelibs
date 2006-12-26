@@ -38,7 +38,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kinstance.h>
 #include <kurl.h>
 #include <kurllabel.h>
@@ -97,7 +97,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   {
     // This is a core KDE application -> redirect to the web form
     d->submitBugButton = new QPushButton( parent );
-    setButtonGuiItem( Cancel, KStdGuiItem::close() );
+    setButtonGuiItem( Cancel, KStandardGuiItem::close() );
   }
 
   QLabel * tmpLabel;
@@ -397,7 +397,7 @@ void KBugReport::accept()
                 "<li>cause serious data loss</li>"
                 "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         case 1: // grave
@@ -408,7 +408,7 @@ void KBugReport::accept()
                 "<li>cause data loss</li>"
                 "<li>introduce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStandardGuiItem::cont(),KStandardGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         default:
@@ -434,7 +434,7 @@ void KBugReport::closeEvent( QCloseEvent * e)
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
-             i18n( "Close Message" ), KStdGuiItem::discard(), KStdGuiItem::cont() );
+             i18n( "Close Message" ), KStandardGuiItem::discard(), KStandardGuiItem::cont() );
     if( rc == KMessageBox::No )
     {
         e->ignore();

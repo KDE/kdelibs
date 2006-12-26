@@ -69,7 +69,7 @@ StatusWindow::StatusWindow(int pid)
 	setObjectName("StatusWindow");
 	m_label = new QLabel(this);
 	m_label->setAlignment(Qt::AlignCenter);
-	m_button = new KPushButton(KStdGuiItem::close(), this);
+	m_button = new KPushButton(KStandardGuiItem::close(), this);
 	m_icon = new QLabel(this);
 	m_icon->setPixmap(DesktopIcon("fileprint"));
 	m_icon->setAlignment(Qt::AlignCenter);

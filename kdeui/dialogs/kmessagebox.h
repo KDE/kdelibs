@@ -22,7 +22,7 @@
 #include <QtGui/QMessageBox>
 
 #include <kguiitem.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 class QWidget;
 class QStringList;
@@ -112,8 +112,8 @@ public:
  static int questionYesNo(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo =  KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo =  KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
  /**
@@ -123,8 +123,8 @@ public:
  static int questionYesNoWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo =  KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo =  KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
  /**
@@ -162,8 +162,8 @@ public:
   static int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo  = KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo  = KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -174,8 +174,8 @@ public:
   static int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo  = KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo  = KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -217,8 +217,8 @@ public:
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo = KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo = KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -230,8 +230,8 @@ public:
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
-                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                          const KGuiItem &buttonNo = KStdGuiItem::no(),
+                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                          const KGuiItem &buttonNo = KStandardGuiItem::no(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -268,8 +268,8 @@ public:
  static int warningYesNo(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                         const KGuiItem &buttonNo = KStdGuiItem::no(),
+                         const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                         const KGuiItem &buttonNo = KStandardGuiItem::no(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Option(Notify | Dangerous));
 
@@ -280,8 +280,8 @@ public:
  static int warningYesNoWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                         const KGuiItem &buttonNo = KStdGuiItem::no(),
+                         const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                         const KGuiItem &buttonNo = KStandardGuiItem::no(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Option(Notify | Dangerous));
 
@@ -323,8 +323,8 @@ public:
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
-                            const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                            const KGuiItem &buttonNo = KStdGuiItem::no(),
+                            const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                            const KGuiItem &buttonNo = KStandardGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
                             Options options = Option(Notify | Dangerous));
 
@@ -336,8 +336,8 @@ public:
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
-                            const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                            const KGuiItem &buttonNo = KStdGuiItem::no(),
+                            const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                            const KGuiItem &buttonNo = KStandardGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
                             Options options = Option(Notify | Dangerous));
 
@@ -373,7 +373,7 @@ public:
  static int warningContinueCancel(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -384,7 +384,7 @@ public:
  static int warningContinueCancelWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -425,7 +425,7 @@ public:
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -437,7 +437,7 @@ public:
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
-                         const KGuiItem &buttonContinue = KStdGuiItem::cont(),
+                         const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -480,8 +480,8 @@ public:
   static int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
                                 const QString &caption = QString(),
-                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStandardGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -492,8 +492,8 @@ public:
   static int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
                                 const QString &caption = QString(),
-                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStandardGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -540,8 +540,8 @@ public:
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
-                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStandardGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -553,8 +553,8 @@ public:
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
-                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStandardGuiItem::no(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -938,8 +938,8 @@ public:
 
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString(),
-                    const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                    const KGuiItem &buttonNo = KStdGuiItem::no(),
+                    const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                    const KGuiItem &buttonNo = KStandardGuiItem::no(),
                     const QString &dontShowAskAgainName = QString(),
                     Options options = Notify);
 
@@ -949,8 +949,8 @@ public:
      */
     static int messageBoxWId( WId parent_id, DialogType type, const QString &text,
                     const QString &caption = QString(),
-                    const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                    const KGuiItem &buttonNo = KStdGuiItem::no(),
+                    const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                    const KGuiItem &buttonNo = KStandardGuiItem::no(),
                     const QString &dontShowAskAgainName = QString(),
                     Options options = Notify);
 

@@ -35,7 +35,7 @@
 #include <kseparator.h>
 #include <qlabel.h>
 #include <kpushbutton.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 #include <cups/cups.h>
 #include <ctype.h>
@@ -53,7 +53,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
-	m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
+	m_cancel = new KPushButton(KStandardGuiItem::cancel(), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
 	m_bar = new QProgressBar(this);

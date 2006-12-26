@@ -22,7 +22,7 @@
 
 #include <QtGui/QPushButton>
 
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 class QDrag;
 class QMenu;
@@ -40,7 +40,6 @@ class KIcon;
 class KDEUI_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
-    Q_PROPERTY(KStdGuiItem::StdItem stdItem READ guiItem WRITE setGuiItem)
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
 
 public:
@@ -89,12 +88,12 @@ public:
     /**
     * Sets the standard KGuiItem for this button.
     */
-    void setGuiItem( KStdGuiItem::StdItem item );
+    void setGuiItem( KStandardGuiItem::StandardItem item );
 
     /**
      * Reads the standard KGuiItem for this button.
      */
-    KStdGuiItem::StdItem guiItem() const;
+    KStandardGuiItem::StandardItem guiItem() const;
 
     /**
      * Sets the Icon Set for this button. It also takes into account hte

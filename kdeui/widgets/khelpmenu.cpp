@@ -41,7 +41,7 @@
 #include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstandardaction.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 
 #include "khelpmenu.h"
@@ -235,7 +235,7 @@ void KHelpMenu::aboutApplication()
       d->mAboutApp->setButtons( KDialog::Yes );
       d->mAboutApp->setObjectName( "about" );
       d->mAboutApp->showButtonSeparator( true );
-      d->mAboutApp->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+      d->mAboutApp->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
       d->mAboutApp->setDefaultButton( KDialog::Yes );
       d->mAboutApp->setEscapeButton( KDialog::Yes );
       connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );

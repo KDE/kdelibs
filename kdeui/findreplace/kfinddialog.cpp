@@ -65,7 +65,7 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
 
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonGuiItem( KDialog::Cancel, KStdGuiItem::close() );
+    setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
@@ -82,7 +82,7 @@ KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long opt
 
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonGuiItem( KDialog::Cancel, KStdGuiItem::close() );
+    setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
@@ -97,7 +97,7 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/)
     setButtons( Ok | Cancel );
     setDefaultButton( Ok );
 
-    setButtonGuiItem( KDialog::Cancel,  KStdGuiItem::close() );
+    setButtonGuiItem( KDialog::Cancel,  KStandardGuiItem::close() );
 }
 
 KFindDialog::~KFindDialog()

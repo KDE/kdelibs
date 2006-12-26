@@ -18,7 +18,7 @@
 
 #include "kassistantdialog.h"
 
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <klocale.h>
 #include <kdebug.h>
 

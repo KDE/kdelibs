@@ -487,7 +487,7 @@ void KMLprManager::slotEditPrintcap()
 	    i18n("Editing a printcap entry manually should only be "
 		 "done by confirmed system administrator. This may "
 		 "prevent your printer from working. Do you want to "
-		 "continue?"), QString(), KStdGuiItem::cont(),
+		 "continue?"), QString(), KStandardGuiItem::cont(),
 	    "editPrintcap") == KMessageBox::Cancel)
 		return;
 

@@ -43,7 +43,7 @@ KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, QWidget *parent)
     :   KDialog( parent )
 {
   setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setButtonGuiItem( User1, KStandardGuiItem::clear() );
 
   initDialog(i18n( "Location:" ), urlName);
 }
@@ -52,7 +52,7 @@ KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, const QString& _text
     :   KDialog( parent )
 {
   setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setButtonGuiItem( User1, KStandardGuiItem::clear() );
 
   initDialog(_text, urlName);
 }

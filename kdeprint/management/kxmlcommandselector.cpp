@@ -192,7 +192,7 @@ void KXmlCommandSelector::slotAddCommand()
 				i18n("A command named %1 already exists. Do you want "
 				     "to continue and edit the existing one?", cmdId),
 				QString(),
-				KStdGuiItem::cont()) == KMessageBox::Cancel)
+				KStandardGuiItem::cont()) == KMessageBox::Cancel)
 			{
 				return;
 			}

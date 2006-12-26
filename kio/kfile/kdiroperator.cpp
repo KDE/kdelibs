@@ -467,14 +467,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" ,
                   files.first() ),
                                                       i18n("Delete File"),
-                                                      KStdGuiItem::del(), "AskForDelete" );
+                                                      KStandardGuiItem::del(), "AskForDelete" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18np("Do you really want to delete this item?", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
-                                                    KStdGuiItem::del(), "AskForDelete" );
+                                                    KStandardGuiItem::del(), "AskForDelete" );
         doIt = (ret == KMessageBox::Continue);
     }
 

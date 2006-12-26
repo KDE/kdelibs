@@ -47,7 +47,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <krandom.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <ktextbrowser.h>
 
 #ifdef Q_WS_X11
@@ -386,15 +386,15 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
   hbox2->addWidget( d->tipOnStart, 1 );
 
-  KPushButton *prev = new KPushButton( KStdGuiItem::back( KStdGuiItem::UseRTL ) );
+  KPushButton *prev = new KPushButton( KStandardGuiItem::back( KStandardGuiItem::UseRTL ) );
   prev->setText( i18n( "&Previous" ) );
   hbox2->addWidget( prev );
 
-  KPushButton *next = new KPushButton( KStdGuiItem::forward( KStdGuiItem::UseRTL ));
+  KPushButton *next = new KPushButton( KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
   next->setText( i18nc( "Opposite to Previous", "&Next" ) );
   hbox2->addWidget( next );
 
-  KPushButton *ok = new KPushButton( KStdGuiItem::close());
+  KPushButton *ok = new KPushButton( KStandardGuiItem::close());
   ok->setDefault( true );
   hbox2->addWidget( ok );
 

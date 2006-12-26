@@ -34,7 +34,7 @@
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kpushbutton.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kseparator.h>
 #include <kdebug.h>
 

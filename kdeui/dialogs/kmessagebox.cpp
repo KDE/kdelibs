@@ -632,7 +632,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonContinue );
-    dialog->setButtonText( KDialog::No, KStdGuiItem::cancel().text() );
+    dialog->setButtonText( KDialog::No, KStandardGuiItem::cancel().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::No );
     if( options & PlainCaption )
@@ -765,7 +765,7 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
     dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
@@ -798,7 +798,7 @@ KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
@@ -848,7 +848,7 @@ KMessageBox::sorryWId(WId parent_id, const QString &text,
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
@@ -881,7 +881,7 @@ KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
@@ -930,7 +930,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
     dialog->setObjectName( "information" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
@@ -998,7 +998,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
     dialog->setObjectName( "about" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );
+    dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if (qApp->windowIcon().isNull()){
@@ -1064,8 +1064,8 @@ void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QStr
 void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QString &text, const QString &caption, Options options )
 {
    KMessageBox_queue = true;
-   (void) messageBoxWId(parent_id, type, text, caption, KStdGuiItem::yes(),
-                     KStdGuiItem::no(), QString(), options);
+   (void) messageBoxWId(parent_id, type, text, caption, KStandardGuiItem::yes(),
+                     KStandardGuiItem::no(), QString(), options);
    KMessageBox_queue = false;
 }
 

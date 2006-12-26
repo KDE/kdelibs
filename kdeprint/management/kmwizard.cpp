@@ -33,7 +33,7 @@
 #include <kseparator.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 #include "kmwinfopage.h"
 #include "kmwpassword.h"
@@ -66,7 +66,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	m_next = new KPushButton(i18n("&Next >"), this);
 	m_next->setDefault(true);
 	m_prev = new KPushButton(i18n("< &Back"), this);
-	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
+	QPushButton	*m_cancel = new KPushButton(KStandardGuiItem::cancel(), this);
 	m_title = new QLabel(this);
 	QFont	f(m_title->font());
 	f.setBold(true);
@@ -74,7 +74,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
 	sep->setFixedHeight(5);
 	KSeparator* sep2 = new KSeparator( Qt::Horizontal, this);
-	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
+	QPushButton	*m_help = new KPushButton(KStandardGuiItem::help(), this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));

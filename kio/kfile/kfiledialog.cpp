@@ -62,7 +62,7 @@
 #include <krecentdirs.h>
 #include <kshell.h>
 #include <kstandarddirs.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kstaticdeleter.h>
 #include <ktoolbar.h>
 #include <kurl.h>
@@ -779,9 +779,9 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     d->mainWidget = new QWidget( this );
     d->mainWidget->setObjectName( "KFileDialog::mainWidget" );
     setMainWidget( d->mainWidget );
-    d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
+    d->okButton = new KPushButton( KStandardGuiItem::ok(), d->mainWidget );
     d->okButton->setDefault( true );
-    d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
+    d->cancelButton = new KPushButton(KStandardGuiItem::cancel(), d->mainWidget);
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
     d->customWidget = widget;
@@ -1766,13 +1766,13 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->keepLocation = (mode == Saving);
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     if ( mode == Opening )
-       d->okButton->setGuiItem( KStdGuiItem::open() );
+       d->okButton->setGuiItem( KStandardGuiItem::open() );
     else if ( mode == Saving ) {
-       d->okButton->setGuiItem( KStdGuiItem::save() );
+       d->okButton->setGuiItem( KStandardGuiItem::save() );
        setNonExtSelection();
     }
     else
-       d->okButton->setGuiItem( KStdGuiItem::ok() );
+       d->okButton->setGuiItem( KStandardGuiItem::ok() );
     updateLocationWhatsThis ();
     updateAutoSelectExtension ();
 }

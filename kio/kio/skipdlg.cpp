@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kpushbutton.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 using namespace KIO;
 

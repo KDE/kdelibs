@@ -34,7 +34,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kpushbutton.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 
 #include "k3sconfig.h"
 
@@ -176,7 +176,7 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
 
   if( addHelpButton )
   {
-    QPushButton *pushButton = new KPushButton( KStdGuiItem::help(), this );
+    QPushButton *pushButton = new KPushButton( KStandardGuiItem::help(), this );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
     glay->addWidget(pushButton, 6, 2);
   }

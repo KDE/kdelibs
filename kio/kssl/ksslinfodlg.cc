@@ -40,7 +40,7 @@
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
 
@@ -121,7 +121,7 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
             buttonLayout->addWidget( button );
         }
 
-        button = new KPushButton(KStdGuiItem::close(), this);
+        button = new KPushButton(KStandardGuiItem::close(), this);
         connect(button, SIGNAL(clicked()), SLOT(close()));
         buttonLayout->addWidget( button );
 

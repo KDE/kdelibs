@@ -45,7 +45,7 @@
 #include <kpushbutton.h>
 #include <kseparator.h>
 #include <kstaticdeleter.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
 #include <kwhatsthismanager_p.h>
@@ -234,9 +234,9 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   d->mButtonBox = new QDialogButtonBox( this );
 
   if ( buttonMask & Help )
-    d->appendButton( Help, KStdGuiItem::help() );
+    d->appendButton( Help, KStandardGuiItem::help() );
   if ( buttonMask & Default )
-    d->appendButton( Default, KStdGuiItem::defaults() );
+    d->appendButton( Default, KStandardGuiItem::defaults() );
   if ( buttonMask & User3 )
     d->appendButton( User3, KGuiItem() );
   if ( buttonMask & User2 )
@@ -244,19 +244,19 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( buttonMask & User1 )
     d->appendButton( User1, KGuiItem() );
   if ( buttonMask & Ok )
-    d->appendButton( Ok, KStdGuiItem::ok() );
+    d->appendButton( Ok, KStandardGuiItem::ok() );
   if ( buttonMask & Apply )
-    d->appendButton( Apply, KStdGuiItem::apply() );
+    d->appendButton( Apply, KStandardGuiItem::apply() );
   if ( buttonMask & Try )
     d->appendButton( Try, KGuiItem(i18n( "&Try" )) );
   if ( buttonMask & Cancel )
-    d->appendButton( Cancel, KStdGuiItem::cancel() );
+    d->appendButton( Cancel, KStandardGuiItem::cancel() );
   if ( buttonMask & Close )
-    d->appendButton( Close, KStdGuiItem::close() );
+    d->appendButton( Close, KStandardGuiItem::close() );
   if ( buttonMask & Yes )
-    d->appendButton( Yes, KStdGuiItem::yes() );
+    d->appendButton( Yes, KStandardGuiItem::yes() );
   if ( buttonMask & No )
-    d->appendButton( No, KStdGuiItem::no() );
+    d->appendButton( No, KStandardGuiItem::no() );
   if ( buttonMask & Details ) {
     d->appendButton( Details, KGuiItem(QString()) );
     setDetails( false );

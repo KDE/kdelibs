@@ -39,7 +39,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kshortcut.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kpushbutton.h>
 
 #include "kkeyserver.h"
@@ -117,11 +117,11 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 
 	connect(this, SIGNAL(buttonClicked(KDialog::ButtonCode)), SLOT(slotButtonClicked(KDialog::ButtonCode)));
 
-	KGuiItem ok = KStdGuiItem::ok();
+	KGuiItem ok = KStandardGuiItem::ok();
 	ok.setText( i18n( "Ok" ) );
 	setButtonGuiItem( Ok , ok );
 
-	KGuiItem cancel = KStdGuiItem::cancel();
+	KGuiItem cancel = KStandardGuiItem::cancel();
 	cancel.setText( i18n( "Cancel" ) );
 	setButtonGuiItem( Cancel, cancel );
 

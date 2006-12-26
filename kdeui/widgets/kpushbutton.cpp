@@ -38,7 +38,7 @@ class KPushButton::KPushButtonPrivate
 {
 public:
     KGuiItem item;
-    KStdGuiItem::StdItem itemType;
+    KStandardGuiItem::StandardItem itemType;
     QPointer<QMenu> delayedMenu;
     QTimer * delayedMenuTimer;
 };
@@ -85,7 +85,7 @@ void KPushButton::init( const KGuiItem &item )
 {
     d = new KPushButtonPrivate;
     d->item = item;
-    d->itemType = (KStdGuiItem::StdItem) 0;
+    d->itemType = (KStandardGuiItem::StandardItem) 0;
     d->delayedMenuTimer=0;
 
     connect(this,SIGNAL(pressed()),this, SLOT(slotPressedInternal()));
@@ -129,13 +129,13 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     setWhatsThis( d->item.whatsThis() );
 }
 
-void KPushButton::setGuiItem( KStdGuiItem::StdItem item )
+void KPushButton::setGuiItem( KStandardGuiItem::StandardItem item )
 {
-    setGuiItem( KStdGuiItem::guiItem(item) );
+    setGuiItem( KStandardGuiItem::guiItem(item) );
     d->itemType = item;
 }
 
-KStdGuiItem::StdItem KPushButton::guiItem() const
+KStandardGuiItem::StandardItem KPushButton::guiItem() const
 {
     return d->itemType;
 }

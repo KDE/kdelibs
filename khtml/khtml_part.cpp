@@ -4031,7 +4031,7 @@ void KHTMLPart::slotViewPageInfo()
   dlg->setObjectName("KHTML Page Info Dialog");
   ui.setupUi(dlg);
 
-  ui._close->setGuiItem(KStdGuiItem::close());
+  ui._close->setGuiItem(KStandardGuiItem::close());
 
   connect(ui._close, SIGNAL(clicked()), dlg, SLOT(accept()));
   if (d->m_doc)

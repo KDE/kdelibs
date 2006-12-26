@@ -53,7 +53,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kguiitem.h>
-#include <kstdguiitem.h>
+#include <kstandardguiitem.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
@@ -308,7 +308,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
         d->m_ok->setWhatsThis(whatsThisPrintButton);
 	d->m_ok->setDefault(true);
 	d->m_ok->setEnabled( false );
-	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), main);
+	QPushButton	*m_cancel = new KPushButton(KStandardGuiItem::cancel(), main);
         m_cancel->setWhatsThis(whatsThisCancelButton);
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_preview->setWhatsThis(whatsThisPreviewCheckBox);
@@ -331,7 +331,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_extbtn->setWhatsThis(whatsThisOptions);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), main);
         d->m_persistent->setWhatsThis(whatsThisKeepDialogOpenCheckbox);
-		QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), main);
+		QPushButton	*m_help = new KPushButton(KStandardGuiItem::help(), main);
         m_help->setWhatsThis(whatsThisHelpButton);
 
 	QWidget::setTabOrder( d->m_printers, d->m_filter );
