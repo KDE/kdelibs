@@ -39,7 +39,7 @@ class KAutoSaveFilePrivate
 public:
     KAutoSaveFilePrivate() :
             managedFile(),
-            lock (),
+            lock(),
             managedFileNameChanged(false)
     {}
 
@@ -58,7 +58,7 @@ QString KAutoSaveFilePrivate::tempFileName()
 
     // Note: we drop any query string and user/pass info
     QString protocol( managedFile.protocol() );
-    QString path( managedFile.path(KUrl::RemoveTrailingSlash) );
+    QString path( managedFile.directory() );
     QString name( managedFile.fileName() );
 
     // Remove any part of the path to the right if it is longer than the max file size and
@@ -66,16 +66,13 @@ QString KAutoSaveFilePrivate::tempFileName()
     // Subtract 1 for the _ char, 3 for the padding sepperator, 5 is for the .lock
     path = path.left( maxNameLength - padding - name.size() - protocol.size() - 9 );
 
-    name.replace( QLatin1Char('/'), QLatin1Char('_') );
-    //name.replace( QLatin1Char(':'), QLatin1Char('_') );
-
     QString junk = KRandom::randomString( padding );
     // tempName = fileName + junk.trunicated + protocol + _ + path.trunicated + junk
     // This is done so that the seperation between the filename and path can be determined
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
-    return name;
+    return QString::fromLatin1( QUrl::toPercentEncoding(name) );
 }
 
 KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent) :
@@ -124,10 +121,10 @@ bool KAutoSaveFile::open(OpenMode openmode)
     if (d->managedFileNameChanged)
     {
         tempFile =  KStandardDirs::locateLocal( "stale",
-                            QCoreApplication::instance()->applicationName()
-                            + QChar::fromLatin1('/')
-                            + d->tempFileName()
-                                                      );
+                                                QCoreApplication::instance()->applicationName()
+                                                + QChar::fromLatin1('/')
+                                                + d->tempFileName()
+                                              );
     }
     else
     {
@@ -136,16 +133,24 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
     d->managedFileNameChanged=false;
 
-    d->lock = new KLockFile(tempFile);
-
-    d->lock ->setStaleTime(3600); // HARDCODE
-
-    if ( d->lock->isLocked() )
-        return false;
-
     setFileName(tempFile);
+    if ( !QFile::open(openmode) )
+    {
+        return false;
+    }
+
+    close();
+
     if ( QFile::open(openmode) )
     {
+
+        d->lock = new KLockFile( tempFile + QString::fromLatin1(".lock") )
+                  ;
+        if ( d->lock->isLocked() )
+            return false;
+
+        d->lock ->setStaleTime(3600); // HARDCODE
+
         if ( d->lock->lock(KLockFile::ForceFlag) == KLockFile::LockOK )
             return true;
     }
@@ -209,8 +214,8 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
         int sepPos = file.indexOf(sep);
         int pathPos = file.indexOf( QChar::fromLatin1('_'), sepPos);
         name.setProtocol( file.mid( sepPos+3, pathPos - sep.size() - 3 ) );
-        name.setPath( file.right(pathPos-1) );
-        name.addPath( file.left(sepPos) );
+        name.setPath( QUrl::fromPercentEncoding(file.right(pathPos-1).toLatin1()) );
+        name.addPath( QUrl::fromPercentEncoding(file.left(sepPos).toLatin1()) );
 
         // sets managedFile
         asFile = new KAutoSaveFile(name);

@@ -57,14 +57,12 @@ void KAutoSaveFileTest::cleanupTestCase()
 void KAutoSaveFileTest::test_readWrite()
 {
     KTemporaryFile file;
-    file.setPrefix("kautosavefiletest");
+    file.setPrefix("test");
 
     QVERIFY( file.open() );
 
     KUrl normalFile( file.fileName() );
 
-
-    qDebug() << "pre save file";
 
     //Test basic functionality
     KAutoSaveFile saveFile(normalFile);
@@ -85,11 +83,12 @@ void KAutoSaveFileTest::test_readWrite()
 
     {
         QFile testReader(saveFile.fileName());
-        QString outText;
+        testReader.open(QIODevice::ReadWrite);
+        QTextStream ts ( &testReader );
 
-        QTextStream ts ( &saveFile );
+        QString outText = ts.readAll();
 
-        QCOMPARE( inText, ts.readAll() );
+        QCOMPARE( outText, inText );
     }
 
 
