@@ -13,7 +13,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${testserver_SRCS})
    
-   kde4_add_executable(testserver ${testserver_SRCS})
+   kde4_add_executable(testserver NOGUI ${testserver_SRCS})
    
    target_link_libraries(testserver  ${KDE4_KDECORE_LIBS} khtml)
 
