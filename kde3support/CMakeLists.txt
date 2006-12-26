@@ -66,9 +66,6 @@ install( FILES
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
   kdecore/k3mimesourcefactory.h
-  kdeui/kactivelabel.h
-  kdeui/kstdaction.h
-  kdeui/kstdguiitem.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
   kdeui/k3popupmenu.h
@@ -81,4 +78,8 @@ install( FILES
   kdeui/k3sconfig.h
   kio/k3bookmarkdrag.h
   kparts/dockmainwindow3.h
+  kdeui/kactivelabel.h
+  kdeui/kstdaccel.h
+  kdeui/kstdaction.h
+  kdeui/kstdguiitem.h
 DESTINATION  ${INCLUDE_INSTALL_DIR} )
