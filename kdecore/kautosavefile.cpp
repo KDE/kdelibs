@@ -57,7 +57,7 @@ QString KAutoSaveFilePrivate::tempFileName()
     static const int maxNameLength = FILENAME_MAX;
 
     // Note: we drop any query string and user/pass info
-    QString protocol( managedFile.fileName() );
+    QString protocol( managedFile.protocol() );
     QString path( managedFile.path(KUrl::RemoveTrailingSlash) );
     QString name( managedFile.fileName() );
 
