@@ -18,6 +18,7 @@
 */
 
 #include "kfileshare.h"
+#include "kfileshare_p.h"
 #include <qdir.h>
 #include <qfile.h>
 #include <qprocess.h>
@@ -285,3 +286,5 @@ bool KFileShare::setShared( const QString& path, bool shared )
 }
 
 #include "kfileshare.moc"
+#include "kfileshare_p.moc"
+

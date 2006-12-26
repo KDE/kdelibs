@@ -26,24 +26,6 @@
 class KDirWatch;
 
 /**
- * @internal
- * Do not use, ever.
- */
-class KFileSharePrivate : public QObject
-{
-  Q_OBJECT
-
-public:
-  KFileSharePrivate();
-  ~KFileSharePrivate();
-  KDirWatch* m_watchFile;
-  static KFileSharePrivate *self();
-  static KFileSharePrivate *_self;
-protected Q_SLOTS: // this is why this class needs to be in the .h
- void slotFileChange(const QString &);
-};
-
-/**
  * Common functionality for the file sharing
  * (communication with the backend)
  */

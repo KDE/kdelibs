@@ -230,6 +230,10 @@ set(kio_LIB_SRCS
    ${kssl_STAT_SRCS}
 )
 
+set(kio_LIB_PRIVATE_SRCS
+    kio/kfileshare_p.h
+)
+
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
    kfile/kpropertiesdesktopbase.ui
@@ -239,6 +243,7 @@ kde4_add_ui_files(kio_LIB_SRCS
 )
 
 kde4_automoc(${kio_LIB_SRCS})
+kde4_automoc(${kio_LIB_PRIVATE_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
