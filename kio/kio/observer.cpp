@@ -25,6 +25,7 @@
 #include <kurl.h>
 
 #include "jobclasses.h"
+#include "jobuidelegate.h"
 #include "observer.h"
 
 #include "uiserveriface.h"
@@ -73,7 +74,18 @@ int Observer::newJob( KIO::Job * job, bool showProgress )
 {
     // Tell the UI Server about this new job, and give it the application id
     // at the same time
+
+    if (job->ui()->jobIcon().isEmpty())
+        kWarning() << "No icon set for a job launched from " << job->ui()->internalAppName() << ". No associated icon will be shown on kio_uiserver" << endl;
+
     int progressId = m_uiserver->newJob( QDBusConnection::sessionBus().baseService(), showProgress );
+
+    // This comes with the next kio_uiserver (ereslibre)
+    //
+    // The new kio_uiserver is being developed at branches/work/kio_uiserver
+    //
+    // int progressId = m_uiserver->newJob( QDBusConnection::sessionBus().baseService(), showProgress,
+    //                                      job->ui()->internalAppName(), job->ui()->jobIcon(), job->ui()->appName() );
 
     // Keep the result in a dict
     m_dctJobs.insert( progressId, job );
@@ -423,6 +435,15 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
   if (job && job->progressId())
       m_uiserver->setJobVisible( job->progressId(), true );
   return res;
+}
+
+int Observer::addActionToJob(int jobId, const QString &actionText, void (*callBackFunction)())
+{
+    int actionId = m_uiserver->newAction(jobId, actionText);
+
+    m_hashActions.insert(actionId, callBackFunction);
+
+    return actionId;
 }
 
 #include "observer.moc"

@@ -24,6 +24,10 @@
 #include <qpointer.h>
 #include <kmessagebox.h>
 #include <kjob.h>
+#include <kglobal.h>
+#include <kinstance.h>
+#include <kaboutdata.h>
+#include <kiconloader.h>
 #include "kio/observer.h"
 #include "kio/scheduler.h"
 
@@ -38,6 +42,9 @@ public:
     bool showProgressInfo;
     QPointer<QWidget> errorParentWidget;
     unsigned long userTimestamp;
+    QString jobIcon;
+    QString appName;
+    QString internalAppName;
 };
 
 KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
@@ -48,11 +55,28 @@ KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
 #if defined Q_WS_X11
     d->userTimestamp = QX11Info::appUserTime();
 #endif
+
+    if ( KGlobal::instance() && KGlobal::instance()->aboutData() )
+    {
+        KIconLoader iconLoader(KGlobal::instance()->aboutData()->appName());
+
+        d->jobIcon = iconLoader.iconPath(KGlobal::instance()->aboutData()->appName(), -48, true /* canReturnNull */);
+        d->appName = KGlobal::instance()->aboutData()->programName();
+        d->internalAppName = KGlobal::instance()->aboutData()->appName();
+    }
+    else
+    {
+        kDebug() << "Couldn't retrieve application job launcher information. Some information won't be shown on the kio_uiserver" << endl;
+
+        d->jobIcon = QString();
+        d->appName = QString();
+        d->internalAppName = QString();
+    }
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()
 {
-    if ( d->showProgressInfo )
+    if ( d->showProgressInfo && job() )
     {
         Observer::self()->jobFinished( job()->progressId() );
     }
@@ -121,6 +145,28 @@ void KIO::JobUiDelegate::showErrorMessage()
     {
         KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
     }
+}
+
+void KIO::JobUiDelegate::setJobIcon(const QString &jobIcon)
+{
+    KIconLoader iconLoader(KGlobal::instance()->aboutData()->appName());
+
+    d->jobIcon = iconLoader.iconPath(jobIcon, -48, true /* canReturnNull */);
+}
+
+QString KIO::JobUiDelegate::jobIcon() const
+{
+    return d->jobIcon;
+}
+
+QString KIO::JobUiDelegate::appName() const
+{
+    return d->appName;
+}
+
+QString KIO::JobUiDelegate::internalAppName() const
+{
+    return d->internalAppName;
 }
 
 void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )

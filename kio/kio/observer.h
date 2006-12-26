@@ -151,6 +151,8 @@ public:
                                     bool multi,
                                     const QString & error_text );
 
+  int addActionToJob(int jobId, const QString &actionText, void (*callBackFunction)());
+
 public Q_SLOTS:
   /**
    * Called by the UI Server (using DBus) if the user presses cancel.
@@ -185,6 +187,7 @@ protected:
   OrgKdeKIOUIServerInterface * m_uiserver;
 
   QMap< int, KIO::Job* > m_dctJobs;
+  QHash< int, void (*) () > m_hashActions;
 
 public Q_SLOTS:
 

@@ -81,6 +81,35 @@ public:
 
     virtual void showErrorMessage();
 
+    /**
+      * Set the icon associated with this job to @p jobIcon.
+      * @param jobIcon the icon associated with this job
+      * @see jobIcon()
+      */
+    void setJobIcon(const QString &jobIcon);
+
+    /**
+      * Returns the icon associated to this job. If no icon
+      * has been set explicitly using setJobIcon, the icon
+      * associated with the application that started this
+      * job will be returned
+      * @return the icon associated to this job
+      * @see setJobIcon()
+      */
+    QString jobIcon() const;
+
+    /**
+      * Returns the app friendly name that launched this job
+      * @return the app friendly name that launched this job
+      */
+    QString appName() const;
+
+    /**
+      * Returns the app internal name that launched this job
+      * @return the app internal name that launched this job
+      */
+    QString internalAppName() const;
+
 protected:
      virtual void connectJob( KJob *job );
 
