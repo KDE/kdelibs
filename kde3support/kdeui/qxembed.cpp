@@ -54,8 +54,11 @@
 #include <q3whatsthis.h>
 #include <private/qwidget_p.h>
 #include <QKeyEvent>
-#include <QX11Info>
+#include <kdebug.h>
+
 #include <private/qt_x11_p.h>
+#include <QX11Info>
+#include <kxerrorhandler.h>
 
 // L0001: QXEmbed works only under X windows.
 #ifdef Q_WS_X11
@@ -67,8 +70,6 @@
 # define XK_MISCELLANY
 # define XK_LATIN1
 # include <X11/keysymdef.h>
-# include <kdebug.h>
-# include <kxerrorhandler.h>
 
 // L0002: Is file config.h KDE specific?
 # include <config.h>

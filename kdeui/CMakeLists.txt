@@ -27,17 +27,10 @@ add_subdirectory( tests )
 
 set(kdeui_LIB_SRCS
  kmainwindow.cpp
- krestrictedline.cpp
- ktextbrowser.cpp
- kmenumenuhandler_p.cpp
- kcmodule.cpp
  kwindowlistmenu.cpp
  kmainwindowiface.cpp
  kstdguiitem.cpp
- ksplashscreen.cpp
  klanguagebutton.cpp
- kwhatsthismanager.cpp
- kpixmapregionselectorwidget.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp
@@ -56,7 +49,10 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
  dialogs/kaboutdialog.cpp
+ dialogs/kaboutkde.cpp
  dialogs/kassistantdialog.cpp
+ dialogs/kconfigdialog.cpp
+ dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
  dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
@@ -68,13 +64,11 @@ set(kdeui_LIB_SRCS
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplication.cpp
  dialogs/kpassworddialog.cpp
+ dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
  dialogs/kshortcutdialog.cpp
+ dialogs/ksplashscreen.cpp
  dialogs/ktip.cpp
- dialogs/kconfigdialogmanager.cpp
- dialogs/kaboutkde.cpp
- dialogs/kconfigdialog.cpp
- dialogs/kpixmapregionselectordialog.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -118,6 +112,7 @@ set(kdeui_LIB_SRCS
  util/kpixmapprovider.cpp
  util/kstringvalidator.cpp
  util/ksystemtrayicon.cpp
+ util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
  util/kxmessages.cpp
  util/kundostack.cpp
@@ -128,6 +123,7 @@ set(kdeui_LIB_SRCS
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
+ widgets/kcmodule.cpp
  widgets/kcolorbutton.cpp
  widgets/kcolorcombo.cpp
  widgets/kcolorvalueselector.cpp
@@ -147,7 +143,9 @@ set(kdeui_LIB_SRCS
  widgets/kmenu.cpp
  widgets/kmenubar.cpp
  widgets/knuminput.cpp
+ widgets/kpixmapregionselectorwidget.cpp
  widgets/kpushbutton.cpp
+ widgets/krestrictedline.cpp
  widgets/kruler.cpp
  widgets/kselector.cpp
  widgets/kseparator.cpp
@@ -155,12 +153,14 @@ set(kdeui_LIB_SRCS
  widgets/kstatusbar.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
+ widgets/ktextbrowser.cpp
  widgets/ktextedit.cpp
  widgets/ktimezonewidget.cpp
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
+ xmlgui/kmenumenuhandler_p.cpp
  xmlgui/ktoolbarhandler.cpp
  xmlgui/kxmlguiclient.cpp
  xmlgui/kxmlguifactory.cpp
@@ -207,14 +207,9 @@ install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-backgroun
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kmainwindow.h
- krestrictedline.h
- ktextbrowser.h
- kcmodule.h
  kwindowlistmenu.h
  kstdguiitem.h
- ksplashscreen.h
  klanguagebutton.h
- kpixmapregionselectorwidget.h
  actions/kactioncollection.h
  actions/kaction.h
  actions/kactionmenu.h
@@ -251,6 +246,7 @@ install( FILES
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h
  dialogs/kshortcutdialog.h
+ dialogs/ksplashscreen.h
  dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
@@ -304,6 +300,7 @@ install( FILES
  widgets/karrowbutton.h
  widgets/kdatepicker.h
  widgets/kfontrequester.h
+ widgets/kcmodule.h
  widgets/kcolorbutton.h
  widgets/kcolorcombo.h
  widgets/kcompletionbox.h
@@ -322,11 +319,14 @@ install( FILES
  widgets/kmenu.h
  widgets/kmenubar.h
  widgets/knuminput.h
+ widgets/kpixmapregionselectorwidget.h
  widgets/kpushbutton.h
+ widgets/krestrictedline.h
  widgets/kseparator.h
  widgets/ksqueezedtextlabel.h
  widgets/kdatewidget.h
  widgets/kdatetable.h
+ widgets/ktextbrowser.h
  widgets/ktextedit.h
  widgets/kdatetimewidget.h
  widgets/ktimezonewidget.h

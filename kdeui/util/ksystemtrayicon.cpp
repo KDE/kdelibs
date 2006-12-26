@@ -33,7 +33,6 @@
 #ifdef Q_WS_X11
 #include <kwin.h>
 #include <kwinmodule.h>
-#include <qxembed.h>
 #include <QX11Info>
 #endif
 
