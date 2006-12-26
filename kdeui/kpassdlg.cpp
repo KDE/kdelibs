@@ -118,6 +118,7 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     else
 	m_EchoMode = OneStar;
 
+    setInputMethodEnabled( true );
 }
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
