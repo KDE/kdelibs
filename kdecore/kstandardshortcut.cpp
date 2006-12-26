@@ -19,7 +19,7 @@
 */
 #define KSTDACCEL_CPP 1
 
-#include "kstdaccel.h"
+#include "kstandardshortcut.h"
 
 #include "kconfig.h"
 #include "kdebug.h"
@@ -32,12 +32,12 @@
 #include <qx11info_x11.h>
 #endif
 
-namespace KStdAccel
+namespace KStandardShortcut
 {
 
-struct KStdAccelInfo
+struct KStandardShortcutInfo
 {
-	StdAccel id;
+	StandardShortcut id;
 	const char* name;
 	const char* description;
 	int cutDefault, cutDefault2;
@@ -50,13 +50,13 @@ struct KStdAccelInfo
 #define CTRLSHIFT(x) Qt::CTRL+Qt::SHIFT+Qt::Key_##x
 #define ALT(x) Qt::ALT+Qt::Key_##x
 
-/** Array of predefined KStdAccelInfo objects, which cover all
-    the "standard" accelerators. Each enum value from StdAccel
+/** Array of predefined KStandardShortcutInfo objects, which cover all
+    the "standard" accelerators. Each enum value from StandardShortcut
     should appear in this table.
 */
 // STUFF WILL BREAK IF YOU DON'T READ THIS!!!
-// Read the comments of the big enum in kstdaccel.h before you change anything!
-static KStdAccelInfo g_infoStdAccel[] =
+// Read the comments of the big enum in kstandardshortcut.h before you change anything!
+static KStandardShortcutInfo g_infoStandardShortcut[] =
 {
 //Group File,
 	{AccelNone,            0, 0, 0, 0, KShortcut(), false },
@@ -130,17 +130,17 @@ static KStdAccelInfo g_infoStdAccel[] =
 };
 
 
-/** Search for the KStdAccelInfo object associated with the given @p id.
+/** Search for the KStandardShortcutInfo object associated with the given @p id.
     Return a dummy entry with no name and an empty shortcut if @p id is invalid.
 */
-static KStdAccelInfo *guardedStdAccelInfo( StdAccel id )
+static KStandardShortcutInfo *guardedStandardShortcutInfo( StandardShortcut id )
 {
-	if ( id >= static_cast<int>(sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo)) ||
+	if ( id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
              id < 0  ) {
-		kWarning(125) << "KStdAccel: id not found!" << endl;
-		return &g_infoStdAccel[AccelNone];
+		kWarning(125) << "KStandardShortcut: id not found!" << endl;
+		return &g_infoStandardShortcut[AccelNone];
 	} else
-		return &g_infoStdAccel[id];
+		return &g_infoStandardShortcut[id];
 }
 
 /** Initialize the accelerator @p id by checking if it is overridden
@@ -148,9 +148,9 @@ static KStdAccelInfo *guardedStdAccelInfo( StdAccel id )
     On X11, if QApplication was initialized with GUI disabled,
     the default will always be used.
 */
-static void initialize( StdAccel id )
+static void initialize( StandardShortcut id )
 {
-	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 
 	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
 
@@ -171,9 +171,9 @@ static void initialize( StdAccel id )
 	info->isInitialized = true;
 }
 
-void saveShortcut(StdAccel id, const KShortcut &newShortcut)
+void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
 {
-	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 	if( info->id == AccelNone )
 		return;
 
@@ -191,30 +191,30 @@ void saveShortcut(StdAccel id, const KShortcut &newShortcut)
 	cg.writeEntry( info->name, info->cut.toString() );
 }
 
-QString name( StdAccel id )
+QString name( StandardShortcut id )
 {
-	return guardedStdAccelInfo( id )->name;
+	return guardedStandardShortcutInfo( id )->name;
 }
 
-QString label( StdAccel id )
+QString label( StandardShortcut id )
 {
-	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 	return i18n((info->description) ? info->description : info->name);
 }
 
-// TODO: Add psWhatsThis entry to KStdAccelInfo
-QString whatsThis( StdAccel /*id*/ )
+// TODO: Add psWhatsThis entry to KStandardShortcutInfo
+QString whatsThis( StandardShortcut /*id*/ )
 {
-//	KStdAccelInfo* info = guardedStdAccelInfo( id );
+//	KStandardShortcutInfo* info = guardedStandardShortcutInfo( id );
 //	if( info && info->whatsThis )
 //		return i18n(info->whatsThis);
 //	else
 		return QString();
 }
 
-const KShortcut &shortcut( StdAccel id )
+const KShortcut &shortcut( StandardShortcut id )
 {
-	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 
 	if( !info->isInitialized )
 		initialize( id );
@@ -222,15 +222,15 @@ const KShortcut &shortcut( StdAccel id )
 	return info->cut;
 }
 
-StdAccel findStdAccel( const QKeySequence &seq )
+StandardShortcut findStandardShortcut( const QKeySequence &seq )
 {
 	if( !seq.isEmpty() ) {
-		for( uint i = 0; i < sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo); i++ ) {
-			StdAccel id = g_infoStdAccel[i].id;
+		for( uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++ ) {
+			StandardShortcut id = g_infoStandardShortcut[i].id;
 			if( id != AccelNone ) {
-				if( !g_infoStdAccel[i].isInitialized )
+				if( !g_infoStandardShortcut[i].isInitialized )
 					initialize( id );
-				if( g_infoStdAccel[i].cut.contains( seq ) )
+				if( g_infoStandardShortcut[i].cut.contains( seq ) )
 					return id;
 			}
 		}
@@ -238,19 +238,19 @@ StdAccel findStdAccel( const QKeySequence &seq )
 	return AccelNone;
 }
 
-StdAccel findStdAccel( const char *keyName )
+StandardShortcut findStandardShortcut( const char *keyName )
 {
-	for( uint i = 0; i < sizeof(g_infoStdAccel) / sizeof(KStdAccelInfo); i++ )
-		if (qstrcmp(g_infoStdAccel[i].name, keyName))
-			return g_infoStdAccel[i].id;
+	for( uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++ )
+		if (qstrcmp(g_infoStandardShortcut[i].name, keyName))
+			return g_infoStandardShortcut[i].id;
 
 	return AccelNone;
 }
 
-KShortcut shortcutDefault( StdAccel id )
+KShortcut shortcutDefault( StandardShortcut id )
 {
 	KShortcut cut;
-	KStdAccelInfo *info = guardedStdAccelInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 
 	return KShortcut( info->cutDefault, info->cutDefault2 );
 }

@@ -26,7 +26,7 @@
 #include <qclipboard.h>
 #include <qstyle.h>
 #include <kglobalsettings.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <QMouseEvent>
 #include <QStyleOptionButton>
 #include "kcolordialog.h"
@@ -170,12 +170,12 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
 {
   int key = e->key() | e->modifiers();
 
-  if ( KStdAccel::copy().contains( key ) ) {
+  if ( KStandardShortcut::copy().contains( key ) ) {
     QMimeData *mime=new QMimeData;
     KColorMimeData::populateMimeData(mime,color());
     QApplication::clipboard()->setMimeData( mime, QClipboard::Clipboard );
   }
-  else if ( KStdAccel::paste().contains( key ) ) {
+  else if ( KStandardShortcut::paste().contains( key ) ) {
     QColor color=KColorMimeData::fromMimeData( QApplication::clipboard()->mimeData( QClipboard::Clipboard ));
     setColor( color );
   }

@@ -40,7 +40,7 @@
 #include <knotification.h>
 #include <kcalendarsystem.h>
 #include <kshortcut.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include "kdatepicker.h"
 #include "kdatetable.h"
 #include "kmenu.h"
@@ -168,27 +168,27 @@ void KDateTable::initAccels()
   localCollection->setAssociatedWidget(this);
 
   KAction* next = new KAction(localCollection, 0);
-  next->setShortcut(KStdAccel::next());
+  next->setShortcut(KStandardShortcut::next());
   connect(next, SIGNAL(triggered(bool)), SLOT(nextMonth()));
 
   KAction* prior = new KAction(localCollection, 0);
-  prior->setShortcut(KStdAccel::prior());
+  prior->setShortcut(KStandardShortcut::prior());
   connect(prior, SIGNAL(triggered(bool)), SLOT(previousMonth()));
 
   KAction* beginMonth = new KAction(localCollection, 0);
-  beginMonth->setShortcut(KStdAccel::home());
+  beginMonth->setShortcut(KStandardShortcut::home());
   connect(beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()));
 
   KAction* endMonth = new KAction(localCollection, 0);
-  endMonth->setShortcut(KStdAccel::end());
+  endMonth->setShortcut(KStandardShortcut::end());
   connect(endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()));
 
   KAction* beginWeek = new KAction(localCollection, 0);
-  beginWeek->setShortcut(KStdAccel::beginningOfLine());
+  beginWeek->setShortcut(KStandardShortcut::beginningOfLine());
   connect(beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()));
 
   KAction* endWeek = new KAction(localCollection, 0);
-  endWeek->setShortcut(KStdAccel::endOfLine());
+  endWeek->setShortcut(KStandardShortcut::endOfLine());
   connect(endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()));
 
   localCollection->readSettings();

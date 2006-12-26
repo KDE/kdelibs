@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>
@@ -455,7 +455,7 @@ void KBookmarkMenu::addAddBookmark()
 
   KAction * paAddBookmarks = new KAction( title, m_actionCollection, m_bIsRoot ? "add_bookmark" : 0 );
   paAddBookmarks->setIcon( KIcon( "bookmark_add" ) );
-  paAddBookmarks->setShortcut( m_bIsRoot ? KStdAccel::addBookmark() : KShortcut() );
+  paAddBookmarks->setShortcut( m_bIsRoot ? KStandardShortcut::addBookmark() : KShortcut() );
   paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
   connect( paAddBookmarks, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmark() ) );
 

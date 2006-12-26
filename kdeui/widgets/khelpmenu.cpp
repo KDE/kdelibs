@@ -39,7 +39,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmenu.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
@@ -141,7 +141,7 @@ KMenu* KHelpMenu::menu()
     if (KAuthorized::authorizeKAction("help_contents"))
     {
       d->mHandBookAction = d->mMenu->addAction( KIcon("contents"),
-                     i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStdAccel::shortcut(KStdAccel::Help).primary());
+                     i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStandardShortcut::shortcut(KStandardShortcut::Help).primary());
       need_separator = true;
     }
 

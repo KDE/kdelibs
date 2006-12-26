@@ -646,7 +646,7 @@ public:
     /**
      * Constants that represent the items whose short-cut
      * key-binding is programmable.  The default key-bindings
-     * for these items are defined in KStdAccel.
+     * for these items are defined in KStandardShortcut.
      */
     enum KeyBindingType {
         /**

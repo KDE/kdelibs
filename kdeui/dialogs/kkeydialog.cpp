@@ -46,7 +46,7 @@
 #include <kaboutdata.h>
 #include <kshortcut.h>
 #include <kstaticdeleter.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 
 #include "kactioncollection.h"
 
@@ -652,13 +652,13 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 {
 	// For each key sequence in the shortcut,
 	foreach (const QKeySequence& seq, cut) {
-		KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
-		if( id != KStdAccel::AccelNone
-			&& !keyConflict( cut, KStdAccel::shortcut( id ) ).isEmpty() ) {
+		KStandardShortcut::StandardShortcut id = KStandardShortcut::findStandardShortcut( seq );
+		if( id != KStandardShortcut::AccelNone
+			&& !keyConflict( cut, KStandardShortcut::shortcut( id ) ).isEmpty() ) {
 			if( bWarnUser ) {
-				if( !promptForReassign( seq, KStdAccel::label(id), WidgetAction, parent ))
+				if( !promptForReassign( seq, KStandardShortcut::label(id), WidgetAction, parent ))
 					return true;
-				removeStandardShortcut( KStdAccel::label(id), dynamic_cast< KKeyChooser* > ( parent ), cut);
+				removeStandardShortcut( KStandardShortcut::label(id), dynamic_cast< KKeyChooser* > ( parent ), cut);
 			}
 		}
 	}
@@ -694,9 +694,9 @@ void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* choo
 	}
 
 	if( !was_in_choosers ) { // not edited, needs to be changed in config file
-		KStdAccel::StdAccel id = KStdAccel::findStdAccel( name.toAscii().constData() );
-		if (id != KStdAccel::AccelNone)
-			KStdAccel::saveShortcut(id, cut);
+		KStandardShortcut::StandardShortcut id = KStandardShortcut::findStandardShortcut( name.toAscii().constData() );
+		if (id != KStandardShortcut::AccelNone)
+			KStandardShortcut::saveShortcut(id, cut);
 		else
 			kWarning(125) << k_funcinfo << "Cannot find stdaccel matching name " << name << endl;
 	}

@@ -24,7 +24,7 @@
 #include <QList>
 
 #include <kstandardaction.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kactioncollection.h>
 
@@ -46,7 +46,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
     action->setIcon(KIcon("redo"));
 
     QList<QKeySequence> shortcuts;
-    shortcuts << KStdAccel::redo().primary() << KStdAccel::redo().alternate();
+    shortcuts << KStandardShortcut::redo().primary() << KStandardShortcut::redo().alternate();
     action->setShortcuts(shortcuts);
 
     actionCollection->insert(action);
@@ -67,7 +67,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
     action->setIcon(KIcon("undo"));
 
     QList<QKeySequence> shortcuts;
-    shortcuts << KStdAccel::undo().primary() << KStdAccel::undo().alternate();
+    shortcuts << KStandardShortcut::undo().primary() << KStandardShortcut::undo().alternate();
     action->setShortcuts(shortcuts);
 
     actionCollection->insert(action);

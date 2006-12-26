@@ -20,7 +20,7 @@
 
 #include "kcommand.h"
 #include <kaction.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kdebug.h>
 #include <kicon.h>
@@ -301,7 +301,7 @@ KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection
       m_commandHistory( commandHistory ),
       d(0)
 {
-    setShortcut( KStdAccel::shortcut( type == Undo ? KStdAccel::Undo : KStdAccel::Redo ) );
+    setShortcut( KStandardShortcut::shortcut( type == Undo ? KStandardShortcut::Undo : KStandardShortcut::Redo ) );
     if (m_type == Undo)
         connect( this, SIGNAL(triggered(bool)), m_commandHistory, SLOT(undo()) );
     else

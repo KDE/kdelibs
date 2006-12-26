@@ -37,7 +37,7 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kpixmapprovider.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kurl.h>
 #include <kicon.h>
 
@@ -623,12 +623,12 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
     int event_key = e->key() | e->modifiers();
 
     // going up in the history, rotating when reaching QListBox::count()
-    if ( KStdAccel::rotateUp().contains(event_key) )
+    if ( KStandardShortcut::rotateUp().contains(event_key) )
         rotateUp();
 
     // going down in the history, no rotation possible. Last item will be
     // the text that was in the lineedit before Up was called.
-    else if ( KStdAccel::rotateDown().contains(event_key) )
+    else if ( KStandardShortcut::rotateDown().contains(event_key) )
         rotateDown();
     else
         KComboBox::keyPressEvent( e );

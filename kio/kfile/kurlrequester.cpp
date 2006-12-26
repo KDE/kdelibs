@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 
 #include <qevent.h>
 #include <qstring.h>
@@ -225,7 +225,7 @@ void KUrlRequester::init()
     d->setCompletionObject( myCompletion );
 
     QAction* openAction = new QAction(this);
-    openAction->setShortcut(KStdAccel::Open);
+    openAction->setShortcut(KStandardShortcut::Open);
     connect(openAction, SIGNAL(triggered(bool)), SLOT( slotOpenDialog() ));
 }
 

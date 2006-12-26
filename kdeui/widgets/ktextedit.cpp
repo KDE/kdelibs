@@ -30,7 +30,7 @@
 //#include <kspell.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -181,47 +181,47 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
   int key = event->key() | event->modifiers();
 
-  if ( KStdAccel::copy().contains( key ) ) {
+  if ( KStandardShortcut::copy().contains( key ) ) {
     copy();
     event->accept();
     return;
-  } else if ( KStdAccel::paste().contains( key ) ) {
+  } else if ( KStandardShortcut::paste().contains( key ) ) {
     paste();
     event->accept();
     return;
-  } else if ( KStdAccel::cut().contains( key ) ) {
+  } else if ( KStandardShortcut::cut().contains( key ) ) {
     cut();
     event->accept();
     return;
-  } else if ( KStdAccel::undo().contains( key ) ) {
+  } else if ( KStandardShortcut::undo().contains( key ) ) {
     document()->undo();
     event->accept();
     return;
-  } else if ( KStdAccel::redo().contains( key ) ) {
+  } else if ( KStandardShortcut::redo().contains( key ) ) {
     document()->redo();
     event->accept();
     return;
-  } else if ( KStdAccel::deleteWordBack().contains( key ) ) {
+  } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
     deleteWordBack();
     event->accept();
     return;
-  } else if ( KStdAccel::deleteWordForward().contains( key ) ) {
+  } else if ( KStandardShortcut::deleteWordForward().contains( key ) ) {
     deleteWordForward();
     event->accept();
     return;
-  } else if ( KStdAccel::backwardWord().contains( key ) ) {
+  } else if ( KStandardShortcut::backwardWord().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::PreviousWord );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::forwardWord().contains( key ) ) {
+  } else if ( KStandardShortcut::forwardWord().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::NextWord );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::next().contains( key ) ) {
+  } else if ( KStandardShortcut::next().contains( key ) ) {
     QTextCursor cursor = textCursor();
     int targetY = verticalScrollBar()->value() + viewport()->height();
     bool moved = false;
@@ -231,7 +231,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
     } while ( moved && verticalScrollBar()->value() < targetY );
     event->accept();
     return;
-  } else if ( KStdAccel::prior().contains( key ) ) {
+  } else if ( KStandardShortcut::prior().contains( key ) ) {
     QTextCursor cursor = textCursor();
     int targetY = verticalScrollBar()->value() - viewport()->height();
     bool moved = false;
@@ -241,31 +241,31 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
     } while ( moved && verticalScrollBar()->value() > targetY );
     event->accept();
     return;
-  } else if ( KStdAccel::home().contains( key ) ) {
+  } else if ( KStandardShortcut::home().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::Start );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::end().contains( key ) ) {
+  } else if ( KStandardShortcut::end().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::End );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::beginningOfLine().contains( key ) ) {
+  } else if ( KStandardShortcut::beginningOfLine().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::StartOfLine );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::endOfLine().contains( key ) ) {
+  } else if ( KStandardShortcut::endOfLine().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::EndOfLine );
     setTextCursor( cursor );
     event->accept();
     return;
-  } else if ( KStdAccel::pasteSelection().contains( key ) ) {
+  } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     QString text = QApplication::clipboard()->text( QClipboard::Selection );
     if ( !text.isEmpty() )
       insertPlainText( text );  // TODO: check if this is html? (MiB)

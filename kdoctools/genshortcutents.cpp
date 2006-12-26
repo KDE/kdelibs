@@ -26,7 +26,7 @@
 #include "kinstance.h"
 #include "kcmdlineargs.h"
 #include "klocale.h"
-#include "kstdaccel.h"
+#include "kstandardshortcut.h"
 
 #include <qdatetime.h>
 #include <qfile.h>
@@ -39,56 +39,56 @@ static const KCmdLineOptions cmdLineOptions[] = {
 	KCmdLineLastOption
 };
 
-static KStdAccel::StdAccel accelerators[] = {
-	KStdAccel::Open,
-	KStdAccel::New,
-	KStdAccel::Close,
-	KStdAccel::Save,
-	KStdAccel::Print,
-	KStdAccel::Quit,
-	KStdAccel::Undo,
-	KStdAccel::Redo,
-	KStdAccel::Cut,
-	KStdAccel::Copy,
-	KStdAccel::Paste,
-	KStdAccel::SelectAll,
-	KStdAccel::Deselect,
-	KStdAccel::DeleteWordBack,
-	KStdAccel::DeleteWordForward,
-	KStdAccel::Find,
-	KStdAccel::FindNext,
-	KStdAccel::FindPrev,
-	KStdAccel::Replace,
-	KStdAccel::Home,
-	KStdAccel::End,
-	KStdAccel::Prior,
-	KStdAccel::Next,
-	KStdAccel::GotoLine,
-	KStdAccel::AddBookmark,
-	KStdAccel::ZoomIn,
-	KStdAccel::ZoomOut,
-	KStdAccel::Up,
-	KStdAccel::Back,
-	KStdAccel::Forward,
-	KStdAccel::Reload,
-	KStdAccel::PopupMenuContext,
-	KStdAccel::ShowMenubar,
-	KStdAccel::Help,
-	KStdAccel::WhatsThis,
-	KStdAccel::TextCompletion,
-	KStdAccel::PrevCompletion,
-	KStdAccel::NextCompletion,
-	KStdAccel::SubstringCompletion,
-	KStdAccel::RotateUp,
-	KStdAccel::RotateDown,
-	KStdAccel::TabNext,
-	KStdAccel::TabPrev,
-	KStdAccel::FullScreen,
-	KStdAccel::BackwardWord,
-	KStdAccel::ForwardWord,
-	KStdAccel::BeginningOfLine,
-	KStdAccel::EndOfLine,
-	KStdAccel::PasteSelection
+static KStandardShortcut::StandardShortcut accelerators[] = {
+	KStandardShortcut::Open,
+	KStandardShortcut::New,
+	KStandardShortcut::Close,
+	KStandardShortcut::Save,
+	KStandardShortcut::Print,
+	KStandardShortcut::Quit,
+	KStandardShortcut::Undo,
+	KStandardShortcut::Redo,
+	KStandardShortcut::Cut,
+	KStandardShortcut::Copy,
+	KStandardShortcut::Paste,
+	KStandardShortcut::SelectAll,
+	KStandardShortcut::Deselect,
+	KStandardShortcut::DeleteWordBack,
+	KStandardShortcut::DeleteWordForward,
+	KStandardShortcut::Find,
+	KStandardShortcut::FindNext,
+	KStandardShortcut::FindPrev,
+	KStandardShortcut::Replace,
+	KStandardShortcut::Home,
+	KStandardShortcut::End,
+	KStandardShortcut::Prior,
+	KStandardShortcut::Next,
+	KStandardShortcut::GotoLine,
+	KStandardShortcut::AddBookmark,
+	KStandardShortcut::ZoomIn,
+	KStandardShortcut::ZoomOut,
+	KStandardShortcut::Up,
+	KStandardShortcut::Back,
+	KStandardShortcut::Forward,
+	KStandardShortcut::Reload,
+	KStandardShortcut::PopupMenuContext,
+	KStandardShortcut::ShowMenubar,
+	KStandardShortcut::Help,
+	KStandardShortcut::WhatsThis,
+	KStandardShortcut::TextCompletion,
+	KStandardShortcut::PrevCompletion,
+	KStandardShortcut::NextCompletion,
+	KStandardShortcut::SubstringCompletion,
+	KStandardShortcut::RotateUp,
+	KStandardShortcut::RotateDown,
+	KStandardShortcut::TabNext,
+	KStandardShortcut::TabPrev,
+	KStandardShortcut::FullScreen,
+	KStandardShortcut::BackwardWord,
+	KStandardShortcut::ForwardWord,
+	KStandardShortcut::BeginningOfLine,
+	KStandardShortcut::EndOfLine,
+	KStandardShortcut::PasteSelection
 };
 static const unsigned int numAccelerators = sizeof( accelerators ) / sizeof( accelerators[ 0 ] );
 
@@ -113,169 +113,169 @@ QString keyAsMarkup( const QString &key )
 	return QString("<keycap>" + key + "</keycap>");
 }
 
-QString entityForAccel( KStdAccel::StdAccel accel )
+QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 {
 	QString markup = "<!ENTITY KeyCombo_";
 
 	/* We use a switch so that the compiler gives us warning messages in
-	 * case KStdAccel::StdAccel gets extended (which means we have to
+	 * case KStandardShortcut::StandardShortcut gets extended (which means we have to
 	 * extend this code, too).
 	 */
 	switch ( accel ) {
-		case KStdAccel::AccelNone:
+		case KStandardShortcut::AccelNone:
 			break;
-		case KStdAccel::Open:
+		case KStandardShortcut::Open:
 			markup += "Open";
 			break;
-		case KStdAccel::New:
+		case KStandardShortcut::New:
 			markup += "New";
 			break;
-		case KStdAccel::Close:
+		case KStandardShortcut::Close:
 			markup += "Close";
 			break;
-		case KStdAccel::Save:
+		case KStandardShortcut::Save:
 			markup += "Save";
 			break;
-		case KStdAccel::Print:
+		case KStandardShortcut::Print:
 			markup += "Print";
 			break;
-		case KStdAccel::Quit:
+		case KStandardShortcut::Quit:
 			markup += "Quit";
 			break;
-		case KStdAccel::Undo:
+		case KStandardShortcut::Undo:
 			markup += "Undo";
 			break;
-		case KStdAccel::Redo:
+		case KStandardShortcut::Redo:
 			markup += "Redo";
 			break;
-		case KStdAccel::Cut:
+		case KStandardShortcut::Cut:
 			markup += "Cut";
 			break;
-		case KStdAccel::Copy:
+		case KStandardShortcut::Copy:
 			markup += "Copy";
 			break;
-		case KStdAccel::Paste:
+		case KStandardShortcut::Paste:
 			markup += "Paste";
 			break;
-		case KStdAccel::SelectAll:
+		case KStandardShortcut::SelectAll:
 			markup += "SelectAll";
 			break;
-		case KStdAccel::Deselect:
+		case KStandardShortcut::Deselect:
 			markup += "Deselect";
 			break;
-		case KStdAccel::DeleteWordBack:
+		case KStandardShortcut::DeleteWordBack:
 			markup += "DeleteWordBack";
 			break;
-		case KStdAccel::DeleteWordForward:
+		case KStandardShortcut::DeleteWordForward:
 			markup += "DeleteWordForward";
 			break;
-		case KStdAccel::Find:
+		case KStandardShortcut::Find:
 			markup += "Find";
 			break;
-		case KStdAccel::FindNext:
+		case KStandardShortcut::FindNext:
 			markup += "FindNext";
 			break;
-		case KStdAccel::FindPrev:
+		case KStandardShortcut::FindPrev:
 			markup += "FindPrev";
 			break;
-		case KStdAccel::Replace:
+		case KStandardShortcut::Replace:
 			markup += "Replace";
 			break;
-		case KStdAccel::Home:
+		case KStandardShortcut::Home:
 			markup += "Home";
 			break;
-		case KStdAccel::End:
+		case KStandardShortcut::End:
 			markup += "End";
 			break;
-		case KStdAccel::Prior:
+		case KStandardShortcut::Prior:
 			markup += "Prior";
 			break;
-		case KStdAccel::Next:
+		case KStandardShortcut::Next:
 			markup += "Next";
 			break;
-		case KStdAccel::GotoLine:
+		case KStandardShortcut::GotoLine:
 			markup += "GotoLine";
 			break;
-		case KStdAccel::AddBookmark:
+		case KStandardShortcut::AddBookmark:
 			markup += "AddBookmark";
 			break;
-		case KStdAccel::ZoomIn:
+		case KStandardShortcut::ZoomIn:
 			markup += "ZoomIn";
 			break;
-		case KStdAccel::ZoomOut:
+		case KStandardShortcut::ZoomOut:
 			markup += "ZoomOut";
 			break;
-		case KStdAccel::Up:
+		case KStandardShortcut::Up:
 			markup += "Up";
 			break;
-		case KStdAccel::Back:
+		case KStandardShortcut::Back:
 			markup += "Back";
 			break;
-		case KStdAccel::Forward:
+		case KStandardShortcut::Forward:
 			markup += "Forward";
 			break;
-		case KStdAccel::Reload:
+		case KStandardShortcut::Reload:
 			markup += "Reload";
 			break;
-		case KStdAccel::PopupMenuContext:
+		case KStandardShortcut::PopupMenuContext:
 			markup += "PopupMenuContext";
 			break;
-		case KStdAccel::ShowMenubar:
+		case KStandardShortcut::ShowMenubar:
 			markup += "ShowMenubar";
 			break;
-		case KStdAccel::Help:
+		case KStandardShortcut::Help:
 			markup += "Help";
 			break;
-		case KStdAccel::WhatsThis:
+		case KStandardShortcut::WhatsThis:
 			markup += "WhatsThis";
 			break;
-		case KStdAccel::TextCompletion:
+		case KStandardShortcut::TextCompletion:
 			markup += "TextCompletion";
 			break;
-		case KStdAccel::PrevCompletion:
+		case KStandardShortcut::PrevCompletion:
 			markup += "PrevCompletion";
 			break;
-		case KStdAccel::NextCompletion:
+		case KStandardShortcut::NextCompletion:
 			markup += "NextCompletion";
 			break;
-		case KStdAccel::SubstringCompletion:
+		case KStandardShortcut::SubstringCompletion:
 			markup += "SubstringCompletion";
 			break;
-		case KStdAccel::RotateUp:
+		case KStandardShortcut::RotateUp:
 			markup += "RotateUp";
 			break;
-		case KStdAccel::RotateDown:
+		case KStandardShortcut::RotateDown:
 			markup += "RotateDown";
 			break;
-		case KStdAccel::TabNext:
+		case KStandardShortcut::TabNext:
 			markup += "TabNext";
 			break;
-		case KStdAccel::TabPrev:
+		case KStandardShortcut::TabPrev:
 			markup += "TabPrev";
 			break;
-		case KStdAccel::FullScreen:
+		case KStandardShortcut::FullScreen:
 			markup += "FullScreen";
 			break;
-		case KStdAccel::BackwardWord:
+		case KStandardShortcut::BackwardWord:
 			markup += "BackwardWord";
 			break;
-		case KStdAccel::ForwardWord:
+		case KStandardShortcut::ForwardWord:
 			markup += "ForwardWord";
 			break;
-		case KStdAccel::BeginningOfLine:
+		case KStandardShortcut::BeginningOfLine:
 			markup += "BeginningOfLine";
 			break;
-		case KStdAccel::EndOfLine:
+		case KStandardShortcut::EndOfLine:
 			markup += "EndOfLine";
 			break;
-		case KStdAccel::PasteSelection:
+		case KStandardShortcut::PasteSelection:
 			markup += "PastSelection";
 			break;
 	}
 
 	markup += "\t\"";
 
-	QString internalStr = KStdAccel::shortcut( accel ).toString();
+	QString internalStr = KStandardShortcut::shortcut( accel ).toString();
 	QString firstSequence = internalStr.left( internalStr.indexOf( ';' ) );
 	const QStringList keys = firstSequence.split( '+',QString::SkipEmptyParts );
 	if ( keys.empty() ) {

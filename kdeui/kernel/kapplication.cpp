@@ -58,7 +58,7 @@
 #include "klibloader.h"
 #include "klocale.h"
 #include "kstandarddirs.h"
-#include "kstdaccel.h"
+#include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
 
 #if defined Q_WS_X11
@@ -240,7 +240,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
     if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
     {
-       static const KShortcut& _selectAll = KStdAccel::selectAll();
+       static const KShortcut& _selectAll = KStandardShortcut::selectAll();
        QLineEdit *edit = ::qobject_cast<QLineEdit *>(receiver);
        if (edit)
        {

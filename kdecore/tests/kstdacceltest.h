@@ -21,11 +21,11 @@
 
 #include <QObject>
 
-class KStdAccelTest : public QObject
+class KStandardShortcutTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    // KStdAccel tests
+    // KStandardShortcut tests
     void testShortcutDefault();
     void testName();
     void testLabel();

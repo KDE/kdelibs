@@ -120,7 +120,7 @@ set(kdecore_LIB_SRCS
    kcharsets.cpp
    kckey.cpp
    kshortcut.cpp
-   kstdaccel.cpp
+   kstandardshortcut.cpp
    kurl.cpp
    kjob.cpp
    kcompositejob.cpp
@@ -294,7 +294,7 @@ install( FILES
    ksvgrenderer.h
    kdebug.h
    kshortcut.h
-   kstdaccel.h
+   kstandardshortcut.h
    kcatalog.h
    kstringhandler.h
    kstandarddirs.h

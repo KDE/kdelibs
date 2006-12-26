@@ -11,7 +11,7 @@
 #include <klocale.h>
 #include <kstandardaction.h>
 #include <kaction.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>
 

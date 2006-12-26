@@ -132,7 +132,7 @@ class KIcon;
  * Here is an example of enabling a "New [document]" action
  * \code
  * KAction *newAct = new KAction("filenew", i18n("&New"), actionCollection(), "new");
- * newAct->setShortcut(KStdAccel::shortcut(KStdAccel::New));
+ * newAct->setShortcut(KStandardShortcut::shortcut(KStandardShortcut::New));
  * connect(newAct, SIGNAL(triggered(bool)), SLOT(fileNew()));
  * \endcode
  *

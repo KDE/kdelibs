@@ -76,7 +76,7 @@
 #include <kprinter.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kstringhandler.h>
 
 #include <qbitmap.h>

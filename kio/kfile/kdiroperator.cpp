@@ -49,7 +49,7 @@
 #include <kio/renamedlg.h>
 #include <kpropertiesdialog.h>
 #include <kmimetypefactory.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kde_file.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
@@ -1261,7 +1261,7 @@ void KDirOperator::setupActions()
 
     reloadAction = KStandardAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     reloadAction->setText( i18n("Reload") );
-    reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
+    reloadAction->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::Reload ));
 
     actionSeparator = new KSeparatorAction( myActionCollection, "separator" );
 

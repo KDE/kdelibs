@@ -31,7 +31,7 @@
 #include <qtooltip.h>
 #include <kcursor.h>
 #include <klocale.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kmenu.h>
 #include <kdebug.h>
 #include <kcompletionbox.h>
@@ -549,17 +549,17 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     int key = e->key() | e->modifiers();
 
-    if ( KStdAccel::copy().contains( key ) )
+    if ( KStandardShortcut::copy().contains( key ) )
     {
         copy();
         return;
     }
-    else if ( KStdAccel::paste().contains( key ) )
+    else if ( KStandardShortcut::paste().contains( key ) )
     {
         paste();
         return;
     }
-    else if ( KStdAccel::pasteSelection().contains( key ) )
+    else if ( KStandardShortcut::pasteSelection().contains( key ) )
     {
         QString text = QApplication::clipboard()->text( QClipboard::Selection);
         insert( text );
@@ -567,22 +567,22 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    else if ( KStdAccel::cut().contains( key ) )
+    else if ( KStandardShortcut::cut().contains( key ) )
     {
         cut();
         return;
     }
-    else if ( KStdAccel::undo().contains( key ) )
+    else if ( KStandardShortcut::undo().contains( key ) )
     {
         undo();
         return;
     }
-    else if ( KStdAccel::redo().contains( key ) )
+    else if ( KStandardShortcut::redo().contains( key ) )
     {
         redo();
         return;
     }
-    else if ( KStdAccel::deleteWordBack().contains( key ) )
+    else if ( KStandardShortcut::deleteWordBack().contains( key ) )
     {
         cursorWordBackward(true);
         if ( hasSelectedText() )
@@ -591,7 +591,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
-    else if ( KStdAccel::deleteWordForward().contains( key ) )
+    else if ( KStandardShortcut::deleteWordForward().contains( key ) )
     {
         // Workaround for QT bug where
         cursorWordForward(true);
@@ -601,25 +601,25 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
-    else if ( KStdAccel::backwardWord().contains( key ) )
+    else if ( KStandardShortcut::backwardWord().contains( key ) )
     {
       cursorWordBackward(false);
       e->accept();
       return;
     }
-    else if ( KStdAccel::forwardWord().contains( key ) )
+    else if ( KStandardShortcut::forwardWord().contains( key ) )
     {
       cursorWordForward(false);
       e->accept();
       return;
     }
-    else if ( KStdAccel::beginningOfLine().contains( key ) )
+    else if ( KStandardShortcut::beginningOfLine().contains( key ) )
     {
       home(false);
       e->accept();
       return;
     }
-    else if ( KStdAccel::endOfLine().contains( key ) )
+    else if ( KStandardShortcut::endOfLine().contains( key ) )
     {
       end(false);
       e->accept();
@@ -832,7 +832,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // Handles completion.
             KShortcut cut;
             if ( keys[TextCompletion].isEmpty() )
-                cut = KStdAccel::shortcut(KStdAccel::TextCompletion);
+                cut = KStandardShortcut::shortcut(KStandardShortcut::TextCompletion);
             else
                 cut = keys[TextCompletion];
 
@@ -861,7 +861,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // Handles previous match
             KShortcut cut;
             if ( keys[PrevCompletionMatch].isEmpty() )
-                cut = KStdAccel::shortcut(KStdAccel::PrevCompletion);
+                cut = KStandardShortcut::shortcut(KStandardShortcut::PrevCompletion);
             else
                 cut = keys[PrevCompletionMatch];
 
@@ -876,7 +876,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             // Handles next match
             if ( keys[NextCompletionMatch].isEmpty() )
-                cut = KStdAccel::shortcut(KStdAccel::NextCompletion);
+                cut = KStandardShortcut::shortcut(KStandardShortcut::NextCompletion);
             else
                 cut = keys[NextCompletionMatch];
 
@@ -895,7 +895,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         {
             KShortcut cut;
             if ( keys[SubstringCompletion].isEmpty() )
-                cut = KStdAccel::shortcut(KStdAccel::SubstringCompletion);
+                cut = KStandardShortcut::shortcut(KStandardShortcut::SubstringCompletion);
             else
                 cut = keys[SubstringCompletion];
 
@@ -1020,7 +1020,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
         popupAutoCompletionAction = ag->addAction( i18n("Dropdown List && Automatic"));
         subMenu->addActions( ag->actions() );
 
-        //subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
+        //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
 
         shellCompletionAction->setCheckable(true);
         noCompletionAction->setCheckable(true);
@@ -1251,7 +1251,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     KeyBindingMap keys = getKeyBindings();
 
     if (keys[TextCompletion].isEmpty())
-        scKey = KStdAccel::shortcut(KStdAccel::TextCompletion);
+        scKey = KStandardShortcut::shortcut(KStandardShortcut::TextCompletion);
     else
         scKey = keys[TextCompletion];
 
@@ -1259,7 +1259,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
         return true;
 
     if (keys[NextCompletionMatch].isEmpty())
-        scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
+        scKey = KStandardShortcut::shortcut(KStandardShortcut::NextCompletion);
     else
         scKey = keys[NextCompletionMatch];
 
@@ -1267,7 +1267,7 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
         return true;
 
     if (keys[PrevCompletionMatch].isEmpty())
-        scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
+        scKey = KStandardShortcut::shortcut(KStandardShortcut::PrevCompletion);
     else
         scKey = keys[PrevCompletionMatch];
 
@@ -1275,27 +1275,27 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
         return true;
 
     // Override all the text manupilation accelerators...
-    if ( KStdAccel::copy().contains( key ) )
+    if ( KStandardShortcut::copy().contains( key ) )
         return true;
-    else if ( KStdAccel::paste().contains( key ) )
+    else if ( KStandardShortcut::paste().contains( key ) )
         return true;
-    else if ( KStdAccel::cut().contains( key ) )
+    else if ( KStandardShortcut::cut().contains( key ) )
         return true;
-    else if ( KStdAccel::undo().contains( key ) )
+    else if ( KStandardShortcut::undo().contains( key ) )
         return true;
-    else if ( KStdAccel::redo().contains( key ) )
+    else if ( KStandardShortcut::redo().contains( key ) )
         return true;
-    else if (KStdAccel::deleteWordBack().contains( key ))
+    else if (KStandardShortcut::deleteWordBack().contains( key ))
         return true;
-    else if (KStdAccel::deleteWordForward().contains( key ))
+    else if (KStandardShortcut::deleteWordForward().contains( key ))
         return true;
-    else if (KStdAccel::forwardWord().contains( key ))
+    else if (KStandardShortcut::forwardWord().contains( key ))
         return true;
-    else if (KStdAccel::backwardWord().contains( key ))
+    else if (KStandardShortcut::backwardWord().contains( key ))
         return true;
-    else if (KStdAccel::beginningOfLine().contains( key ))
+    else if (KStandardShortcut::beginningOfLine().contains( key ))
         return true;
-    else if (KStdAccel::endOfLine().contains( key ))
+    else if (KStandardShortcut::endOfLine().contains( key ))
         return true;
 
     if (d->completionBox && d->completionBox->isVisible ())

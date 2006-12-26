@@ -30,7 +30,7 @@
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 #include <kmainwindow.h>
 #include <kicon.h>
 
@@ -142,7 +142,7 @@ KAction* create( StandardAction id, const char *name, const QObject *recvr, cons
       break;
     }
 
-    KShortcut cut = KStdAccel::shortcut( pInfo->idAccel );
+    KShortcut cut = KStandardShortcut::shortcut( pInfo->idAccel );
     if ( !cut.isEmpty() )
         pAction->setShortcut( cut );
   }
@@ -400,7 +400,7 @@ KAction *buildAutomaticAction( KActionCollection* parent, StandardAction id, con
   if ( !p )
     return 0;
 
-  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel, KStdAccel::shortcut( p->idAccel ).primary(),
+  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel, KStandardShortcut::shortcut( p->idAccel ).primary(),
                                                  slot, parent, p->psName );
   action->setWhatsThis( p->psWhatsThis );
 
@@ -440,7 +440,7 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
   if ( recvr && slot )
     QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
 
-  ret->setShortcut( KStdAccel::shortcut( KStdAccel::ShowMenubar ) );
+  ret->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::ShowMenubar ) );
 
   ret->setWhatsThis( i18n( "Show Menubar<p>"
                            "Shows the menubar again after it has been hidden" ) );

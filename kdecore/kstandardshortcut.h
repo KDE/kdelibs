@@ -27,19 +27,19 @@
 class QKeyEvent;
 
 /**
- * \namespace KStdAccel
+ * \namespace KStandardShortcut
  * Convenient methods for access to the common accelerator keys in
  * the key configuration. These are the standard keybindings that should
  * be used in all KDE applications. They will be configurable,
  * so do not hardcode the default behavior.
  */
-namespace KStdAccel
+namespace KStandardShortcut
 { // STUFF WILL BREAK IF YOU DON'T READ THIS!!!
   /*
    *Always add new std-accels to the end of this enum, never in the middle!
-   *Don't forget to add the corresponding entries in g_infoStdAccel[] in kstdaccel.cpp, too.
+   *Don't forget to add the corresponding entries in g_infoStandardShortcut[] in kstdaccel.cpp, too.
    *Values of elements here and positions of the corresponding entries in
-   *the big array g_infoStdAccel[] ABSOLUTELY MUST BE THE SAME.
+   *the big array g_infoStandardShortcut[] ABSOLUTELY MUST BE THE SAME.
    * !!!    !!!!   !!!!!    !!!!
    *    !!!!    !!!     !!!!    !!!!
    */
@@ -47,7 +47,7 @@ namespace KStdAccel
   /**
    * Defines the identifier of all standard accelerators.
    */
-  enum StdAccel {
+  enum StandardShortcut {
     //C++ requires that the value of an enum symbol be one more than the previous one.
 	//This means that everything will be well-ordered from here on.
     AccelNone=0,
@@ -85,48 +85,48 @@ namespace KStdAccel
    * default keybinding will always be returned.
    * @param id the id of the accelerator
    */
-  KDECORE_EXPORT const KShortcut& shortcut(StdAccel id);
+  KDECORE_EXPORT const KShortcut& shortcut(StandardShortcut id);
 
   /**
    * Returns a unique name for the given accel.
    * @param id the id of the accelerator
    * @return the unique name of the accelerator
    */
-  KDECORE_EXPORT QString name(StdAccel id);
+  KDECORE_EXPORT QString name(StandardShortcut id);
 
   /**
    * Returns a localized label for user-visible display.
    * @param id the id of the accelerator
    * @return a localized label for the accelerator
    */
-  KDECORE_EXPORT QString label(StdAccel id);
+  KDECORE_EXPORT QString label(StandardShortcut id);
 
   /**
    * Returns an extended WhatsThis description for the given accelerator.
    * @param id the id of the accelerator
    * @return a localized description of the accelerator
    */
-  KDECORE_EXPORT QString whatsThis(StdAccel id);
+  KDECORE_EXPORT QString whatsThis(StandardShortcut id);
 
   /**
-   * Return the StdAccel id of the standard accel action which
+   * Return the StandardShortcut id of the standard accel action which
    * uses this key sequence, or AccelNone if none of them do.
    * This is used by class KKeyChooser.
    * @param keySeq the key sequence to search
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KDECORE_EXPORT StdAccel findStdAccel( const QKeySequence &keySeq );
+  KDECORE_EXPORT StandardShortcut findStandardShortcut( const QKeySequence &keySeq );
 
   /**
-   * Return the StdAccel id of the standard accel action which
+   * Return the StandardShortcut id of the standard accel action which
    * has \a keyName as its name, or AccelNone if none of them do.
    * This is used by class KKeyChooser.
    * @param keyName the key sequence to search
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KDECORE_EXPORT StdAccel findStdAccel( const char* keyName );
+  KDECORE_EXPORT StandardShortcut findStandardShortcut( const char* keyName );
 
   /**
    * Returns the hardcoded default shortcut for @p id.
@@ -134,12 +134,12 @@ namespace KStdAccel
    * @param id the id of the accelerator
    * @return the default shortcut of the accelerator
    */
-  KDECORE_EXPORT KShortcut shortcutDefault(StdAccel id);
+  KDECORE_EXPORT KShortcut shortcutDefault(StandardShortcut id);
 
   /**
    * Saves the new shortcut \a cut for standard accel \a id.
    */
-  KDECORE_EXPORT void saveShortcut(StdAccel id, const KShortcut& newShortcut);
+  KDECORE_EXPORT void saveShortcut(StandardShortcut id, const KShortcut& newShortcut);
 
   /**
    * Open file. Default: Ctrl-o

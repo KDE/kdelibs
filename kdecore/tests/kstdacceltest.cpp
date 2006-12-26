@@ -20,57 +20,57 @@
 #include "kstdacceltest.h"
 #include "kstdacceltest.moc"
 
-QTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
+QTEST_KDEMAIN( KStandardShortcutTest, GUI ) // GUI needed by KAccel
 
 #include <kdebug.h>
-#include <kstdaccel.h>
+#include <kstandardshortcut.h>
 
-void KStdAccelTest::testShortcutDefault()
+void KStandardShortcutTest::testShortcutDefault()
 {
-    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
-    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
-    QCOMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QLatin1String( "End" ) );
+    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
+    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
+    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::EndOfLine ).toString(), QLatin1String( "End" ) );
 }
 
-void KStdAccelTest::testName()
+void KStandardShortcutTest::testName()
 {
-    QCOMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
-    QCOMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QLatin1String( "EndOfLine" ) );
+    QCOMPARE( KStandardShortcut::name( KStandardShortcut::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
+    QCOMPARE( KStandardShortcut::name( KStandardShortcut::EndOfLine ), QLatin1String( "EndOfLine" ) );
 }
 
-void KStdAccelTest::testLabel()
+void KStandardShortcutTest::testLabel()
 {
     // Tests run in English, right?
-    QCOMPARE( KStdAccel::label( KStdAccel::FindNext ), QLatin1String( "Find Next" ) );
+    QCOMPARE( KStandardShortcut::label( KStandardShortcut::FindNext ), QLatin1String( "Find Next" ) );
 }
 
-void KStdAccelTest::testShortcut()
+void KStandardShortcutTest::testShortcut()
 {
-    QCOMPARE( KStdAccel::shortcut( KStdAccel::ZoomIn ).toString(), KStdAccel::zoomIn().toString() );
+    QCOMPARE( KStandardShortcut::shortcut( KStandardShortcut::ZoomIn ).toString(), KStandardShortcut::zoomIn().toString() );
 }
 
-void KStdAccelTest::testFindStdAccel()
+void KStandardShortcutTest::testFindStdAccel()
 {
-    QCOMPARE( KStdAccel::findStdAccel( QString( "Ctrl+F" ) ), KStdAccel::Find );
-    QCOMPARE( KStdAccel::findStdAccel( QString( "Ctrl+Shift+Alt+G" ) ), KStdAccel::AccelNone );
+    QCOMPARE( KStandardShortcut::findStandardShortcut( QString( "Ctrl+F" ) ), KStandardShortcut::Find );
+    QCOMPARE( KStandardShortcut::findStandardShortcut( QString( "Ctrl+Shift+Alt+G" ) ), KStandardShortcut::AccelNone );
 }
 
-void KStdAccelTest::testRemoveShortcut()
+void KStandardShortcutTest::testRemoveShortcut()
 {
-    KShortcut cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
+    KShortcut cutShortCut = KStandardShortcut::shortcut( KStandardShortcut::Cut );
     cutShortCut.removeAll( Qt::SHIFT + Qt::Key_Delete );
     cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
     QVERIFY( cutShortCut.isEmpty() );
 
-    cutShortCut = KStdAccel::shortcut( KStdAccel::Cut );
+    cutShortCut = KStandardShortcut::shortcut( KStandardShortcut::Cut );
 	//remove primary shortcut. We expect the alternate to become primary.
     cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
 	QVERIFY( cutShortCut.primary() == QKeySequence(Qt::SHIFT + Qt::Key_Delete) );
 	QVERIFY( cutShortCut.alternate().isEmpty() );
 }
 
-void KStdAccelTest::testKShortcut()
+void KStandardShortcutTest::testKShortcut()
 {
     KShortcut null;
     QVERIFY( null.isEmpty() );
