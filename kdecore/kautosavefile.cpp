@@ -166,7 +166,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
         appName = QCoreApplication::instance()->applicationName();
 
     // get stale files
-    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QString::fromLatin1("/*"), false, false );
+    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QLatin1String("/*"), false, false );
 
     QList<KAutoSaveFile *> list;
     QString file;
