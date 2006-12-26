@@ -24,6 +24,7 @@
  * Tries to reach a ratio of 4MB = 4min
  * => 4 000 000 Byte = 240 000 msec
  * => 50 Byte = 3 msec
+ * make that 51 Byte = 3 msec => 17 Byte = 1 msec
  */
 
 namespace Phonon
@@ -48,19 +49,20 @@ ByteStream::~ByteStream()
 
 qint64 ByteStream::currentTime() const
 {
-	return m_streamPosition * 3 / 50;
+	return m_streamPosition / 17;
 }
 
 qint64 ByteStream::totalTime() const
 {
 	if( m_streamSize >= 0 )
-		return m_streamSize * 3 / 50;
-	return 1000*60*3; // 3 minutes
+		return m_streamSize / 17;
+    return -1;
+	//return 1000*60*3; // 3 minutes
 }
 
 qint32 ByteStream::aboutToFinishTime() const
 {
-	return m_aboutToFinishBytes * 3 / 50;
+	return m_aboutToFinishBytes / 17;
 }
 
 qint64 ByteStream::streamSize() const
@@ -82,7 +84,7 @@ void ByteStream::writeData( const QByteArray& data )
 {
 	Q_ASSERT( ! m_eof );
 	m_bufferSize += data.size();
-	if( m_bufferSize > 50 / 3 * 1000 )
+	if( m_bufferSize > 17 * 1000 )
 		if( state() == Phonon::BufferingState )
 			setState( Phonon::PlayingState );
 		else if( state() == Phonon::LoadingState )
@@ -106,7 +108,7 @@ void ByteStream::endOfData()
 
 void ByteStream::setAboutToFinishTime( qint32 t )
 {
-	m_aboutToFinishBytes = t * 50 / 3;
+	m_aboutToFinishBytes = t * 17;
 }
 
 void ByteStream::play()
@@ -122,11 +124,10 @@ void ByteStream::play()
 
 void ByteStream::pause()
 {
-	if( state() == Phonon::LoadingState )
-		return;
-
-	AbstractMediaProducer::pause();
-	m_streamConsumeTimer->stop();
+    if (state() == Phonon::PlayingState || state() == Phonon::BufferingState) {
+        AbstractMediaProducer::pause();
+        m_streamConsumeTimer->stop();
+    }
 }
 
 void ByteStream::stop()
@@ -150,12 +151,12 @@ void ByteStream::seek( qint64 time )
 
 	const qint64 dataStart = m_streamPosition;
 	const qint64 dataEnd = dataStart + m_bufferSize;
-	qint64 newDataPosition = time * 50 / 3;
+	qint64 newDataPosition = time * 17;
 	m_streamPosition = newDataPosition;
 	if( newDataPosition < dataStart || newDataPosition > dataEnd )
 	{
 		m_bufferSize = 0;
-		setState( Phonon::BufferingState );
+		//setState( Phonon::BufferingState );
 		emit seekStream( newDataPosition );
 	}
 	else
@@ -178,7 +179,7 @@ void ByteStream::consumeStream()
 		case Phonon::PlayingState:
 			break;
 	}
-	qint64 bytes = m_streamConsumeTimer->interval() * 50 / 3;
+	qint64 bytes = m_streamConsumeTimer->interval() * 17;
 	if( m_bufferSize < bytes )
 	{
 		m_streamPosition += m_bufferSize;
@@ -210,9 +211,9 @@ void ByteStream::consumeStream()
 			m_aboutToFinishEmitted = true;
 			emit aboutToFinish( totalTime() - currentTime() );
 		}
-		if( m_bufferSize < 50 / 3 * 5000 ) // try to keep a buffer of more than 5s
+		if( m_bufferSize < 17 * 5000 ) // try to keep a buffer of more than 5s
 			emit needData();
-		else if( m_bufferSize > 50 / 3 * 10000 ) // and don't let it grow too big (max 10s)
+		else if( m_bufferSize > 17 * 10000 ) // and don't let it grow too big (max 10s)
 			emit enoughData();
 	}
 }

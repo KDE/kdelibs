@@ -58,7 +58,8 @@ qint32 MediaObject::aboutToFinishTime() const
 void MediaObject::setUrl( const KUrl& url )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
-	stop();
+    AbstractMediaProducer::stop();
+    m_aboutToFinishNotEmitted = true;
 	m_url = url;
 	emit length( totalTime() );
 	QMultiMap<QString, QString> metaData;
@@ -84,17 +85,18 @@ void MediaObject::play()
 void MediaObject::pause()
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
-	if( state() == PlayingState || state() == BufferingState )
-	{
-		AbstractMediaProducer::pause();
-	}
+    if (state() == Phonon::PlayingState || state() == Phonon::BufferingState) {
+        AbstractMediaProducer::pause();
+    }
 }
 
 void MediaObject::stop()
 {
-	//kDebug( 604 ) << k_funcinfo << endl;
-	AbstractMediaProducer::stop();
-	m_aboutToFinishNotEmitted = true;
+    //kDebug(604) << k_funcinfo << endl;
+    if (state() == Phonon::PlayingState || state() == Phonon::BufferingState || state() == Phonon::PausedState) {
+        AbstractMediaProducer::stop();
+        m_aboutToFinishNotEmitted = true;
+    }
 }
 
 void MediaObject::seek( qint64 time )

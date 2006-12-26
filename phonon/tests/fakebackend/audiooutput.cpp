@@ -118,9 +118,7 @@ void AudioOutput::openDevice()
 		return;
 
 #ifdef HAVE_SYS_SOUNDCARD_H
-	if( !m_dsp.open( QIODevice::WriteOnly ) )
-		kWarning() << "couldn't open /dev/dsp for writing" << endl;
-	else
+	if( m_dsp.open( QIODevice::WriteOnly ) )
 	{
 		int fd = m_dsp.handle();
 		int format = AFMT_S16_LE;

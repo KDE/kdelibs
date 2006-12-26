@@ -216,9 +216,9 @@ void AbstractMediaProducer::play()
 
 void AbstractMediaProducer::pause()
 {
-	//kDebug( 604 ) << k_funcinfo << endl;
-	m_tickTimer->stop();
-	setState( Phonon::PausedState );
+    //kDebug(604) << k_funcinfo << endl;
+    m_tickTimer->stop();
+    setState(Phonon::PausedState);
 }
 
 void AbstractMediaProducer::stop()
