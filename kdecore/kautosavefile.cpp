@@ -24,6 +24,8 @@
 #define QT_NO_CAST_TO_ASCII
 #endif
 
+#include <stdio.h> // for FILENAME_MAX
+
 #include <QtCore/QLatin1Char>
 #include <QtCore/QCoreApplication>
 #include "kautosavefile.h"
@@ -37,19 +39,42 @@ class KAutoSaveFilePrivate
 public:
     KAutoSaveFilePrivate() :
             managedFile(),
-            lock ()
+            lock (),
+            managedFileNameChanged(false)
     {}
 
     QString tempFileName();
     KUrl managedFile;
-    KLockFile::Ptr lock ;
+    KLockFile::Ptr lock;
+    static const int padding;
+    bool managedFileNameChanged;
 };
+
+const int KAutoSaveFilePrivate::padding = 8;
 
 QString KAutoSaveFilePrivate::tempFileName()
 {
+    static const int maxNameLength = FILENAME_MAX;
+
+    // Note: we drop any query string and user/pass info
+    QString protocol( managedFile.fileName() );
+    QString path( managedFile.path(KUrl::RemoveTrailingSlash) );
     QString name( managedFile.fileName() );
+
+    // Remove any part of the path to the right if it is longer than the max file size and
+    // ensure that the max filesize takes into account the other parts of the tempFileName
+    // Subtract 1 for the _ char, 3 for the padding sepperator, 5 is for the .lock
+    path = path.left( maxNameLength - padding - name.size() - protocol.size() - 9 );
+
     name.replace( QLatin1Char('/'), QLatin1Char('_') );
-    name+= KRandom::randomString( 8 );
+    //name.replace( QLatin1Char(':'), QLatin1Char('_') );
+
+    QString junk = KRandom::randomString( padding );
+    // tempName = fileName + junk.trunicated + protocol + _ + path.trunicated + junk
+    // This is done so that the seperation between the filename and path can be determined
+    name += junk.right(3) + protocol + QLatin1Char('_');
+    name += path + junk;
+
     return name;
 }
 
@@ -59,7 +84,6 @@ KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent) :
 {
     setManagedFile(filename);
     KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
-
 }
 
 KAutoSaveFile::KAutoSaveFile(QObject *parent) :
@@ -82,6 +106,7 @@ KUrl KAutoSaveFile::managedFile() const
 void KAutoSaveFile::setManagedFile(const KUrl &filename)
 {
     d->managedFile = filename;
+    d->managedFileNameChanged=true;
 }
 
 void KAutoSaveFile::releaseLock()
@@ -95,20 +120,36 @@ bool KAutoSaveFile::open(OpenMode openmode)
     if ( d->managedFile == KUrl() )
         return false;
 
-    QString tempFile =  KStandardDirs::locateLocal( "stale",
-                        QCoreApplication::instance()->applicationName()+QChar::fromLatin1('/')+d->tempFileName() );
+    QString tempFile;
+    if (d->managedFileNameChanged)
+    {
+        tempFile =  KStandardDirs::locateLocal( "stale",
+                            QCoreApplication::instance()->applicationName()
+                            + QChar::fromLatin1('/')
+                            + d->tempFileName()
+                                                      );
+    }
+    else
+    {
+        tempFile = fileName();
+    }
+
+    d->managedFileNameChanged=false;
 
     d->lock = new KLockFile(tempFile);
+
     d->lock ->setStaleTime(3600); // HARDCODE
 
-    if ( d->lock ->isLocked() )
+    if ( d->lock->isLocked() )
         return false;
 
     setFileName(tempFile);
     if ( QFile::open(openmode) )
     {
-        d->lock ->lock ();
+        if ( d->lock->lock(KLockFile::ForceFlag) == KLockFile::LockOK )
+            return true;
     }
+
     return false;
 }
 
@@ -117,23 +158,6 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
     KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
 
     QString url;
-
-    /*
-
-    // Do we want to keep track of all the details of a file to
-    // ensure that we get the correct one? If so, we need manifest
-    // file, that links urls to temp file names.
-
-    // this get the url, without password, for security reasons
-    if (filename.hasPass() && filename.hasUser())
-    {  
-        KUrl tempUrl(filename);
-        tempUrl.setPass("");
-        url = tempUrl.url();
-    }    
-    else
-        url = filename.url();
-    */
 
     url = filename.fileName();
 
@@ -149,8 +173,11 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
     // contruct a KAutoSaveFile for each stale file
     foreach(file, files)
     {
+        // sets managedFile
         asFile = new KAutoSaveFile(filename);
         asFile->setFileName(file);
+        // flags the name, so it isn't regenerated
+        asFile->d->managedFileNameChanged=false;
         list.append(asFile);
     }
 
@@ -169,16 +196,27 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QLatin1String("/*"), false, false );
 
     QList<KAutoSaveFile *> list;
-    QString file;
+    QString file, sep;
+    KUrl name;
     KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
     foreach(file, files)
     {
-        QString name(file);
-        file.chop(8);
+        sep = file.right(3);
+        file.chop(KAutoSaveFilePrivate::padding);
+
+        int sepPos = file.indexOf(sep);
+        int pathPos = file.indexOf( QChar::fromLatin1('_'), sepPos);
+        name.setProtocol( file.mid( sepPos+3, pathPos - sep.size() - 3 ) );
+        name.setPath( file.right(pathPos-1) );
+        name.addPath( file.left(sepPos) );
+
+        // sets managedFile
         asFile = new KAutoSaveFile(name);
         asFile->setFileName(file);
+        // flags the name, so it isn't regenerated
+        asFile->d->managedFileNameChanged=false;
         list.append(asFile);
     }
 
