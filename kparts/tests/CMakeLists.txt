@@ -18,7 +18,7 @@ notepad.cpp
 
 kde4_automoc(${kpartstest_SRCS})
 
-kde4_add_executable(kpartstest ${kpartstest_SRCS})
+kde4_add_executable(kpartstest NOGUI ${kpartstest_SRCS})
 
 target_link_libraries(kpartstest  ${KDE4_KDECORE_LIBS} kparts )
 
@@ -33,7 +33,7 @@ notepad.cpp
 
 kde4_automoc(${normalktmtest_SRCS})
 
-kde4_add_executable(normalktmtest ${normalktmtest_SRCS})
+kde4_add_executable(normalktmtest NOGUI ${normalktmtest_SRCS})
 
 target_link_libraries(normalktmtest  ${KDE4_KDECORE_LIBS} kparts )
 
@@ -46,7 +46,7 @@ ghostview.cpp
 
 kde4_automoc(${ghostviewtest_SRCS})
 
-kde4_add_executable(ghostviewtest ${ghostviewtest_SRCS})
+kde4_add_executable(ghostviewtest NOGUI ${ghostviewtest_SRCS})
 
 target_link_libraries(ghostviewtest  ${KDE4_KDECORE_LIBS} kparts )
 
