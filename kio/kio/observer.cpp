@@ -439,11 +439,14 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
 
 int Observer::addActionToJob(int jobId, const QString &actionText, void (*callBackFunction)())
 {
-    int actionId = m_uiserver->newAction(jobId, actionText);
+    // This comes with the next kio_uiserver (ereslibre)
+    //
+    // int actionId = m_uiserver->newAction(jobId, actionText);
 
-    m_hashActions.insert(actionId, callBackFunction);
+    // m_hashActions.insert(actionId, callBackFunction);
 
-    return actionId;
+    // return actionId;
+    return 0;
 }
 
 #include "observer.moc"
