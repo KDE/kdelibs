@@ -109,6 +109,7 @@ void MethodTest::checkByteStreamInterfaces()
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::ByteStreamInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
+	QVERIFY( qobject_cast<Phonon::MediaObjectInterface*>( backendObject ) == 0 );
 }
 
 void MethodTest::checkMediaObjectInterfaces()

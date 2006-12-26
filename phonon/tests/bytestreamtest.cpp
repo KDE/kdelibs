@@ -462,30 +462,33 @@ void ByteStreamTest::testSeek()
 
 void ByteStreamTest::testAboutToFinish()
 {
-	m_media->setAboutToFinishTime( 500 );
-	QCOMPARE( m_media->aboutToFinishTime(), qint32( 500 ) );
+    const qint32 aboutToFinishTime = 1000;
+
+    m_media->setAboutToFinishTime(aboutToFinishTime);
+    QCOMPARE(m_media->aboutToFinishTime(), qint32(aboutToFinishTime));
 	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( qint32 ) ) );
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
-	if( m_media->isSeekable() )
-		m_media->seek( m_media->totalTime() - 2000 );
+    if(m_media->isSeekable()) {
+        m_media->seek( m_media->totalTime() - 2000 - aboutToFinishTime ); // give it 2 seconds to
+        // play until the signal needs to be emitted
+    }
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
 	qint64 r = m_media->remainingTime();
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
-	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
-	QVERIFY( aboutToFinishTime <= 650 ); // allow it to be up to 150ms too early
-	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
-	{
-		QVERIFY( r <= aboutToFinishTime );
+
+    // allow it to be up to 150ms too early
+    const qint32 received = castQVariantToInt32(aboutToFinishSpy.first().at(0));
+    QVERIFY(received <= aboutToFinishTime + 150);
+    if (state == Phonon::PlayingState || state == Phonon::BufferingState) {
+        QVERIFY(r <= received);
 		while( finishSpy.count() == 0 )
 			QCoreApplication::processEvents();
-	}
-	else
-	{
-		QVERIFY( aboutToFinishTime > 0 );
+    } else {
+        QVERIFY(received > 0);
 	}
 	QCOMPARE( finishSpy.count(), 1 );
 

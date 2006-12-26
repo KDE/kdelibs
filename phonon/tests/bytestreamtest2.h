@@ -28,8 +28,12 @@
 #include <QtTest/QSignalSpy>
 #include <QTimer>
 
+class DataProducer;
+
 class ByteStreamTest2 : public QObject
 {
+    friend class DataProducer;
+
 	Q_OBJECT
 	public:
 		ByteStreamTest2()
@@ -37,7 +41,6 @@ class ByteStreamTest2 : public QObject
 			m_stateChangedSignalSpy( 0 ),
 			m_audioPath( 0 ),
 			m_audioOutput( 0 ),
-			m_timer( 0 ),
 			m_position( 0 )
 		{}
 
@@ -66,13 +69,7 @@ class ByteStreamTest2 : public QObject
 
 		void cleanupTestCase();
 
-		void seekStream( qint64 );
-		void sendBlock();
-
 	private:
-		QByteArray wavHeader() const;
-		QByteArray pcmBlock() const;
-
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
@@ -81,8 +78,30 @@ class ByteStreamTest2 : public QObject
 		QSignalSpy* m_stateChangedSignalSpy;
 		Phonon::AudioPath* m_audioPath;
 		Phonon::AudioOutput* m_audioOutput;
-		QTimer* m_timer;
 		qint64 m_position;
+        DataProducer *m_dp;
+};
+
+class DataProducer : public QObject
+{
+    Q_OBJECT
+    public:
+        DataProducer(ByteStreamTest2 *parent);
+        QByteArray wavHeader() const;
+
+    public slots:
+        void seekStream(qint64);
+        void start();
+        void stop();
+
+    private slots:
+        void sendBlock();
+
+    private:
+        QByteArray pcmBlock() const;
+
+        QTimer *m_timer;
+        ByteStreamTest2 *m_test;
 };
 
 // vim: sw=4 ts=4

@@ -85,6 +85,7 @@ void ByteStreamTest2::stopPlayback( Phonon::State currentState )
 
 void ByteStreamTest2::pausePlayback( Phonon::State currentState )
 {
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
 	m_media->pause();
     if (m_stateChangedSignalSpy->count() == 0) {
         QCOMPARE(m_media->state(), currentState);
@@ -105,56 +106,21 @@ static const qint64 STREAM_SIZE = 1024 * 1024 * 4; // 4MB
 
 void ByteStreamTest2::initTestCase()
 {
+    m_dp = new DataProducer(this);
+
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
 	qRegisterMetaType<qint32>( "qint32" );
 	qRegisterMetaType<qint64>( "qint64" );
 
-    // init timer that pushes the PCM data
-	m_timer = new QTimer( this );
-	m_timer->setInterval( 0 );
-	connect( m_timer, SIGNAL( timeout() ), SLOT( sendBlock() ) );
-
 	m_media = new ByteStream( this );
 	m_media->setStreamSeekable( true );
-	connect( m_media, SIGNAL( seekStream( qint64 ) ), SLOT( seekStream( qint64 ) ) );
-	connect( m_media, SIGNAL( needData() ), m_timer, SLOT( start() ) );
-	connect( m_media, SIGNAL( enoughData() ), m_timer, SLOT( stop() ) );
+	connect(m_media, SIGNAL(seekStream(qint64)), m_dp, SLOT(seekStream(qint64)));
+	connect(m_media, SIGNAL(needData()), m_dp, SLOT(start()));
+	connect(m_media, SIGNAL(enoughData()), m_dp, SLOT(stop()));
 
 	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	QVERIFY( m_stateChangedSignalSpy->isValid() );
 	m_stateChangedSignalSpy->clear();
-}
-
-void ByteStreamTest2::sendBlock()
-{
-	if( m_position == 0 )
-	{
-		QByteArray block = wavHeader();
-		m_position += block.size();
-		m_media->writeData( block );
-	}
-
-	QByteArray block = pcmBlock();
-	m_position += block.size();
-	if( m_position > STREAM_SIZE )
-	{
-		m_position -= block.size();
-		block = block.left( STREAM_SIZE - m_position );
-		m_position += block.size();
-		Q_ASSERT( m_position == STREAM_SIZE );
-	}
-	m_media->writeData( block );
-	if( m_position == STREAM_SIZE )
-	{
-		m_media->endOfData();
-		m_timer->stop();
-	}
-}
-
-void ByteStreamTest2::seekStream( qint64 newPos )
-{
-	Q_ASSERT( newPos <= STREAM_SIZE );
-	m_position = newPos;
 }
 
 void ByteStreamTest2::setMedia()
@@ -166,10 +132,10 @@ void ByteStreamTest2::setMedia()
     // send the WAV header and then push the PCM data into the stream until the stream says it got
     // enough
 	m_media->setStreamSize( STREAM_SIZE );
-	QByteArray block = wavHeader();
+	QByteArray block = m_dp->wavHeader();
 	m_position += block.size();
 	m_media->writeData( block );
-	m_timer->start();
+    m_dp->start();
 
 	int emits = m_stateChangedSignalSpy->count();
 	Phonon::State s = m_media->state();
@@ -340,30 +306,33 @@ void ByteStreamTest2::testSeek()
 
 void ByteStreamTest2::testAboutToFinish()
 {
-	m_media->setAboutToFinishTime( 500 );
-	QCOMPARE( m_media->aboutToFinishTime(), qint32( 500 ) );
+    const qint32 aboutToFinishTime = 1000;
+
+    m_media->setAboutToFinishTime(aboutToFinishTime);
+    QCOMPARE(m_media->aboutToFinishTime(), qint32(aboutToFinishTime));
 	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( qint32 ) ) );
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
-	if( m_media->isSeekable() )
-		m_media->seek( m_media->totalTime() - 2000 );
+    if(m_media->isSeekable()) {
+        m_media->seek( m_media->totalTime() - 2000 - aboutToFinishTime ); // give it 2 seconds to
+        // play until the signal needs to be emitted
+    }
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
 	qint64 r = m_media->remainingTime();
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
-	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
-	QVERIFY( aboutToFinishTime <= 650 ); // allow it to be up to 150ms too early
-	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
-	{
-		QVERIFY( r <= aboutToFinishTime );
+
+    // allow it to be up to 150ms too early
+    const qint32 received = castQVariantToInt32(aboutToFinishSpy.first().at(0));
+    QVERIFY(received <= aboutToFinishTime + 150);
+    if (state == Phonon::PlayingState || state == Phonon::BufferingState) {
+        QVERIFY(r <= received);
 		while( finishSpy.count() == 0 )
 			QCoreApplication::processEvents();
-	}
-	else
-	{
-		QVERIFY( aboutToFinishTime > 0 );
+    } else {
+        QVERIFY(received > 0);
 	}
 	QCOMPARE( finishSpy.count(), 1 );
 
@@ -532,7 +501,7 @@ void ByteStreamTest2::cleanupTestCase()
 	delete m_media;
 }
 
-QByteArray ByteStreamTest2::wavHeader() const
+QByteArray DataProducer::wavHeader() const
 {
 	QByteArray data;
 	QDataStream stream( &data, QIODevice::WriteOnly );
@@ -554,7 +523,7 @@ QByteArray ByteStreamTest2::wavHeader() const
 	return data;
 }
 
-QByteArray ByteStreamTest2::pcmBlock() const
+QByteArray DataProducer::pcmBlock() const
 {
 	QByteArray data;
 	QDataStream stream( &data, QIODevice::WriteOnly );
@@ -574,6 +543,55 @@ QByteArray ByteStreamTest2::pcmBlock() const
 	}
 
 	return data;
+}
+
+DataProducer::DataProducer(ByteStreamTest2 *parent)
+    : QObject(parent),
+    m_timer(new QTimer(this)),
+    m_test(parent)
+{
+    // timer that pushes the PCM data
+    m_timer->setInterval(0);
+    connect(m_timer, SIGNAL(timeout()), SLOT(sendBlock()));
+}
+
+void DataProducer::seekStream(qint64 newPos)
+{
+    Q_ASSERT(newPos <= STREAM_SIZE);
+    m_test->m_position = newPos;
+}
+
+void DataProducer::sendBlock()
+{
+    if (m_test->m_position == 0) {
+        QByteArray block = wavHeader();
+        m_test->m_position += block.size();
+        m_test->m_media->writeData(block);
+    }
+
+    QByteArray block = pcmBlock();
+    m_test->m_position += block.size();
+    if (m_test->m_position > STREAM_SIZE) {
+        m_test->m_position -= block.size();
+        block = block.left(STREAM_SIZE - m_test->m_position);
+        m_test->m_position += block.size();
+        Q_ASSERT(m_test->m_position == STREAM_SIZE);
+    }
+    m_test->m_media->writeData(block);
+    if (m_test->m_position == STREAM_SIZE) {
+        m_test->m_media->endOfData();
+        m_timer->stop();
+    }
+}
+
+void DataProducer::start()
+{
+    m_timer->start();
+}
+
+void DataProducer::stop()
+{
+    m_timer->stop();
 }
 
 QTEST_KDEMAIN( ByteStreamTest2, NoGUI )
