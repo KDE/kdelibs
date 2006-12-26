@@ -42,7 +42,7 @@ set(kruntest_SRCS kruntest.cpp)
 
 kde4_automoc(${kruntest_SRCS})
 
-kde4_add_executable(kruntest RUN_UNINSTALLED ${kruntest_SRCS})
+kde4_add_executable(kruntest NOGUI RUN_UNINSTALLED ${kruntest_SRCS})
 
 target_link_libraries(kruntest ${KDE4_KIO_LIBS})
 
@@ -107,7 +107,7 @@ set(kdirwatchtest_SRCS kdirwatchtest.cpp)
 
 kde4_automoc(${kdirwatchtest_SRCS})
 
-kde4_add_executable(kdirwatchtest RUN_UNINSTALLED ${kdirwatchtest_SRCS})
+kde4_add_executable(kdirwatchtest NOGUI RUN_UNINSTALLED ${kdirwatchtest_SRCS})
 
 target_link_libraries(kdirwatchtest ${KDE4_KIO_LIBS})
 
@@ -118,7 +118,7 @@ set(speed_SRCS speed.cpp)
 
 kde4_automoc(${speed_SRCS})
 
-kde4_add_executable(speed RUN_UNINSTALLED ${speed_SRCS})
+kde4_add_executable(speed NOGUI RUN_UNINSTALLED ${speed_SRCS})
 
 target_link_libraries(speed ${KDE4_KIO_LIBS})
 
@@ -130,7 +130,7 @@ set(kdefaultprogresstest_SRCS kdefaultprogresstest.cpp)
 
 kde4_automoc(${kdefaultprogresstest_SRCS})
 
-kde4_add_executable(kdefaultprogresstest RUN_UNINSTALLED ${kdefaultprogresstest_SRCS})
+kde4_add_executable(kdefaultprogresstest NOGUI RUN_UNINSTALLED ${kdefaultprogresstest_SRCS})
 
 target_link_libraries(kdefaultprogresstest ${KDE4_KIO_LIBS})
 
@@ -152,7 +152,7 @@ set(kiopassdlgtest_SRCS kiopassdlgtest.cpp)
 
 kde4_automoc(${kiopassdlgtest_SRCS})
 
-kde4_add_executable(kiopassdlgtest RUN_UNINSTALLED ${kiopassdlgtest_SRCS})
+kde4_add_executable(kiopassdlgtest NOGUI RUN_UNINSTALLED ${kiopassdlgtest_SRCS})
 
 target_link_libraries(kiopassdlgtest ${KDE4_KIO_LIBS})
 
@@ -163,7 +163,7 @@ set(kscantest_SRCS kscantest.cpp)
 
 kde4_automoc(${kscantest_SRCS})
 
-kde4_add_executable(kscantest RUN_UNINSTALLED ${kscantest_SRCS})
+kde4_add_executable(kscantest NOGUI RUN_UNINSTALLED ${kscantest_SRCS})
 
 target_link_libraries(kscantest ${KDE4_KIO_LIBS})
 
@@ -174,7 +174,7 @@ set(safesitetest_SRCS safesitetest.cpp)
 
 kde4_automoc(${safesitetest_SRCS})
 
-kde4_add_executable(safesitetest RUN_UNINSTALLED ${safesitetest_SRCS})
+kde4_add_executable(safesitetest NOGUI RUN_UNINSTALLED ${safesitetest_SRCS})
 
 target_link_libraries(safesitetest ${KDE4_KIO_LIBS})
 
@@ -185,7 +185,7 @@ set(kdirlistertest_SRCS kdirlistertest.cpp)
 
 kde4_automoc(${kdirlistertest_SRCS})
 
-kde4_add_executable(kdirlistertest RUN_UNINSTALLED ${kdirlistertest_SRCS})
+kde4_add_executable(kdirlistertest NOGUI RUN_UNINSTALLED ${kdirlistertest_SRCS})
 
 target_link_libraries(kdirlistertest ${KDE4_KIO_LIBS})
 
@@ -196,7 +196,7 @@ set(previewtest_SRCS previewtest.cpp)
 
 kde4_automoc(${previewtest_SRCS})
 
-kde4_add_executable(previewtest RUN_UNINSTALLED ${previewtest_SRCS})
+kde4_add_executable(previewtest NOGUI RUN_UNINSTALLED ${previewtest_SRCS})
 
 target_link_libraries(previewtest ${KDE4_KIO_LIBS})
 
@@ -207,7 +207,7 @@ set(kionetrctest_SRCS kionetrctest.cpp)
 
 kde4_automoc(${kionetrctest_SRCS})
 
-kde4_add_executable(kionetrctest RUN_UNINSTALLED ${kionetrctest_SRCS})
+kde4_add_executable(kionetrctest NOGUI RUN_UNINSTALLED ${kionetrctest_SRCS})
 
 target_link_libraries(kionetrctest ${KDE4_KIO_LIBS})
 
@@ -218,7 +218,7 @@ set(metatest_SRCS metatest.cpp)
 
 kde4_automoc(${metatest_SRCS})
 
-kde4_add_executable(metatest RUN_UNINSTALLED ${metatest_SRCS})
+kde4_add_executable(metatest NOGUI RUN_UNINSTALLED ${metatest_SRCS})
 
 target_link_libraries(metatest ${KDE4_KIO_LIBS})
 
@@ -240,7 +240,7 @@ set(kpropsdlgtest_SRCS kpropsdlgtest.cpp)
 
 kde4_automoc(${kpropsdlgtest_SRCS})
 
-kde4_add_executable(kpropsdlgtest RUN_UNINSTALLED ${kpropsdlgtest_SRCS})
+kde4_add_executable(kpropsdlgtest NOGUI RUN_UNINSTALLED ${kpropsdlgtest_SRCS})
 
 target_link_libraries(kpropsdlgtest ${KDE4_KIO_LIBS})
 
@@ -251,7 +251,7 @@ set(kmfitest_SRCS kmfitest.cpp)
 
 kde4_automoc(${kmfitest_SRCS})
 
-kde4_add_executable(kmfitest RUN_UNINSTALLED ${kmfitest_SRCS})
+kde4_add_executable(kmfitest NOGUI RUN_UNINSTALLED ${kmfitest_SRCS})
 
 target_link_libraries(kmfitest ${KDE4_KIO_LIBS})
 
@@ -262,7 +262,7 @@ set(dataprotocoltest_SRCS dataprotocoltest.cpp)
 
 kde4_automoc(${dataprotocoltest_SRCS})
 
-kde4_add_executable(dataprotocoltest RUN_UNINSTALLED ${dataprotocoltest_SRCS})
+kde4_add_executable(dataprotocoltest NOGUI RUN_UNINSTALLED ${dataprotocoltest_SRCS})
 
 target_link_libraries(dataprotocoltest ${KDE4_KIO_LIBS})
 
@@ -272,7 +272,7 @@ target_link_libraries(dataprotocoltest ${KDE4_KIO_LIBS})
 set(kprotocolinfotest_SRCS kprotocolinfotest.cpp)
 
 kde4_automoc(${kprotocolinfotest_SRCS})
-kde4_add_executable(kprotocolinfotest RUN_UNINSTALLED ${kprotocolinfotest_SRCS})
+kde4_add_executable(kprotocolinfotest NOGUI RUN_UNINSTALLED ${kprotocolinfotest_SRCS})
 
 target_link_libraries(kprotocolinfotest ${KDE4_KIO_LIBS})
 
@@ -283,7 +283,7 @@ set(ksycocaupdatetest_SRCS ksycocaupdatetest.cpp)
 
 kde4_automoc(${ksycocaupdatetest_SRCS})
 
-kde4_add_executable(ksycocaupdatetest RUN_UNINSTALLED ${ksycocaupdatetest_SRCS})
+kde4_add_executable(ksycocaupdatetest NOGUI RUN_UNINSTALLED ${ksycocaupdatetest_SRCS})
 
 target_link_libraries(ksycocaupdatetest ${KDE4_KIO_LIBS})
 
@@ -294,7 +294,7 @@ set(netaccesstest_SRCS netaccesstest.cpp)
 
 kde4_automoc(${netaccesstest_SRCS})
 
-kde4_add_executable(netaccesstest RUN_UNINSTALLED ${netaccesstest_SRCS})
+kde4_add_executable(netaccesstest NOGUI RUN_UNINSTALLED ${netaccesstest_SRCS})
 
 target_link_libraries(netaccesstest ${KDE4_KIO_LIBS})
 
@@ -305,7 +305,7 @@ set(jobtest_SRCS jobtest.cpp)
 
 kde4_automoc(${jobtest_SRCS})
 
-kde4_add_executable(jobtest RUN_UNINSTALLED ${jobtest_SRCS})
+kde4_add_executable(jobtest NOGUI RUN_UNINSTALLED ${jobtest_SRCS})
 
 target_link_libraries(jobtest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
 
@@ -319,7 +319,7 @@ set(kurlcompletiontest_SRCS kurlcompletiontest.cpp)
 
 kde4_automoc(${kurlcompletiontest_SRCS})
 
-kde4_add_executable(kurlcompletiontest RUN_UNINSTALLED ${kurlcompletiontest_SRCS})
+kde4_add_executable(kurlcompletiontest NOGUI RUN_UNINSTALLED ${kurlcompletiontest_SRCS})
 
 target_link_libraries(kurlcompletiontest ${KDE4_KIO_LIBS})
 
@@ -354,7 +354,7 @@ set(kbookmarktest_SRCS kbookmarktest.cpp)
 
 kde4_automoc(${kbookmarktest_SRCS})
 
-kde4_add_executable(kbookmarktest RUN_UNINSTALLED ${kbookmarktest_SRCS})
+kde4_add_executable(kbookmarktest NOGUI RUN_UNINSTALLED ${kbookmarktest_SRCS})
 
 target_link_libraries(kbookmarktest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
 
@@ -366,7 +366,7 @@ set(kacltest_SRCS kacltest.cpp)
 
 kde4_automoc(${kacltest_SRCS})
 
-kde4_add_executable(kacltest RUN_UNINSTALLED ${kacltest_SRCS})
+kde4_add_executable(kacltest NOGUI RUN_UNINSTALLED ${kacltest_SRCS})
 
 target_link_libraries(kacltest ${KDE4_KIO_LIBS})
 
@@ -377,7 +377,7 @@ set(kdirwatchtest_gui_SRCS kdirwatchtest_gui.cpp)
 
 kde4_automoc(${kdirwatchtest_gui_SRCS})
 
-kde4_add_executable(kdirwatchtest_gui RUN_UNINSTALLED ${kdirwatchtest_gui_SRCS})
+kde4_add_executable(kdirwatchtest_gui NOGUI RUN_UNINSTALLED ${kdirwatchtest_gui_SRCS})
 
 target_link_libraries(kdirwatchtest_gui ${KDE4_KIO_LIBS})
 
@@ -387,7 +387,7 @@ set(kdirmodeltest_SRCS kdirmodeltest.cpp)
 
 kde4_automoc(${kdirmodeltest_SRCS})
 
-kde4_add_executable(kdirmodeltest RUN_UNINSTALLED ${kdirmodeltest_SRCS})
+kde4_add_executable(kdirmodeltest NOGUI RUN_UNINSTALLED ${kdirmodeltest_SRCS})
 
 target_link_libraries(kdirmodeltest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
 
@@ -399,7 +399,7 @@ set(kdirmodeltest_gui_SRCS kdirmodeltest_gui.cpp)
 
 kde4_automoc(${kdirmodeltest_gui_SRCS})
 
-kde4_add_executable(kdirmodeltest_gui RUN_UNINSTALLED ${kdirmodeltest_gui_SRCS})
+kde4_add_executable(kdirmodeltest_gui NOGUI RUN_UNINSTALLED ${kdirmodeltest_gui_SRCS})
 
 target_link_libraries(kdirmodeltest_gui ${KDE4_KIO_LIBS})
 
@@ -409,7 +409,7 @@ set(kmimetypechoosertest_gui_SRCS kmimetypechoosertest_gui.cpp)
 
 kde4_automoc(${kmimetypechoosertest_gui_SRCS})
 
-kde4_add_executable(kmimetypechoosertest_gui RUN_UNINSTALLED ${kmimetypechoosertest_gui_SRCS})
+kde4_add_executable(kmimetypechoosertest_gui NOGUI RUN_UNINSTALLED ${kmimetypechoosertest_gui_SRCS})
 
 target_link_libraries(kmimetypechoosertest_gui ${KDE4_KIO_LIBS})
 
