@@ -73,7 +73,7 @@
  *
  * Even after writing this data, the target file "/lib/foo/bar.dat" still has
  * not been altered in any way. Now that we are done writing our data, we can
- * write out all thge changes that we have made by calling finalize().
+ * write out all the changes that we have made by calling finalize().
  *
  * @code
  * if ( !saveFile.finalize() ) {

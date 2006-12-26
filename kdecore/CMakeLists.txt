@@ -99,6 +99,7 @@ endif (UNIX)
 set(kdecore_LIB_SRCS
    kascii.cpp
    kauthorized.cpp
+   kautosavefile.cpp
    kautostart.cpp
    kdebug.cpp
    kconfigbase.cpp
@@ -272,6 +273,7 @@ install( FILES
    kdesktopfile.h
    kurl.h
    kaboutdata.h
+   kautosavefile.h
    kjob.h
    kcompositejob.h
    kjobuidelegate.h

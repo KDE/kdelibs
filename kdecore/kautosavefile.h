@@ -1,5 +1,5 @@
 /*  This file is part of the KDE libraries
-    Copyright (c) 2006 <Someone take copyright>
+    Copyright (c) 2006 Jacob R Rideout <kde@jacobrideout.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -213,7 +213,7 @@ public:
      * the lock. Subsequent releaseLock() or deleting of the object will
      * then erase the stale autosave file.
      */
-    static QList<KAutoSaveFile *> staleFiles(const QString &filename);
+    static QList<KAutoSaveFile *> staleFiles(const KUrl &filename);
 
     /**
      * Returns all stale autosave files left behind by crashed or
