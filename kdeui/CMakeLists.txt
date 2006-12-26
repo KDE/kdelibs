@@ -120,6 +120,7 @@ set(kdeui_LIB_SRCS
  util/ksystemtrayicon.cpp
  util/kwordwrap.cpp
  util/kxmessages.cpp
+ util/kundostack.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
  widgets/karrowbutton.cpp
@@ -297,6 +298,7 @@ install( FILES
  util/kxmessages.h
  util/kwinmodule.h
  util/kwin.h
+ util/kundostack.h
  widgets/kactionselector.h
  widgets/kanimatedbutton.h
  widgets/karrowbutton.h
