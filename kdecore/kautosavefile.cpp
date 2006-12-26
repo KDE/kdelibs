@@ -17,13 +17,22 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtCore>
-#include <QApplication>
+#include <QtCore/QLatin1Char>
+#include <QtGui/QApplication>
 #include "kautosavefile.h"
 #include "klockfile.h"
 #include "krandom.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
+
+
+#ifndef QT_NO_CAST_FROM_ASCII
+#define QT_NO_CAST_FROM_ASCII
+#endif
+#ifndef QT_NO_CAST_TO_ASCII
+#define QT_NO_CAST_TO_ASCII
+#endif
+
 
 class KAutoSaveFilePrivate
 {
@@ -41,7 +50,7 @@ public:
 QString KAutoSaveFilePrivate::tempFileName()
 {
     QString name( managedFile.fileName() );
-    name.replace( "/", "_" );
+    name.replace( QLatin1Char('/'), QLatin1Char('_') );
     name+= KRandom::randomString( 8 );
     return name;
 }
