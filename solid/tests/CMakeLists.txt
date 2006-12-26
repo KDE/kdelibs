@@ -11,7 +11,7 @@ set(solidhwtest_SRCS
 
 kde4_automoc(${solidhwtest_SRCS})
 
-kde4_add_executable(solidhwtest RUN_UNINSTALLED ${solidhwtest_SRCS})
+kde4_add_executable(solidhwtest NOGUI RUN_UNINSTALLED ${solidhwtest_SRCS})
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakehw )
@@ -27,7 +27,7 @@ set(solidnettest_SRCS
 
 kde4_automoc(${solidnettest_SRCS})
 
-kde4_add_executable(solidnettest RUN_UNINSTALLED ${solidnettest_SRCS})
+kde4_add_executable(solidnettest NOGUI RUN_UNINSTALLED ${solidnettest_SRCS})
 add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet/fakenetworking.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet )
