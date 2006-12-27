@@ -21,6 +21,7 @@ add_subdirectory( ui )
 add_subdirectory( tests )
 add_subdirectory( kcm )
 add_subdirectory( examples )
+add_subdirectory( alsadevicelist )
 
 ########### next target ###############
 

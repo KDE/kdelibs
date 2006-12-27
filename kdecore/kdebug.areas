@@ -50,6 +50,7 @@
 500        kdeprint
 600        phonon (core)
 602        phonon (ui)
+603        phonon (ALSA deviceenumerator)
 604        phonon (fake backend)
 610        phonon (xine backend)
 700        kutils (KSettings::Dialog)
