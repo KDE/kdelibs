@@ -44,10 +44,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
     }
 
     action->setIcon(KIcon("redo"));
-
-    QList<QKeySequence> shortcuts;
-    shortcuts << KStandardShortcut::redo().primary() << KStandardShortcut::redo().alternate();
-    action->setShortcuts(shortcuts);
+    action->setShortcuts(KStandardShortcut::redo());
 
     actionCollection->insert(action);
 
@@ -65,10 +62,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
     }
 
     action->setIcon(KIcon("undo"));
-
-    QList<QKeySequence> shortcuts;
-    shortcuts << KStandardShortcut::undo().primary() << KStandardShortcut::undo().alternate();
-    action->setShortcuts(shortcuts);
+    action->setShortcuts(KStandardShortcut::undo());
 
     actionCollection->insert(action);
 
