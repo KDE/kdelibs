@@ -167,6 +167,12 @@ class PHONONCORE_EXPORT Factory : public QObject
          */
         const char* uiSymbol();
 
+        /**
+         * Unique identifier for the Backend. Can be used in configuration files
+         * for example.
+         */
+        QString identifier() const;
+
 		/**
 		 * Get the name of the Backend. It's the name from the .desktop file.
 		 */

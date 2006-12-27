@@ -276,6 +276,14 @@ const char* Factory::uiSymbol()
 	return 0;
 }
 
+QString Factory::identifier() const
+{
+    if (d->service) {
+        return d->service->library();
+    }
+    return QString();
+}
+
 QString Factory::backendName() const
 {
 	if( d->service )

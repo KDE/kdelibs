@@ -41,7 +41,7 @@ QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) c
 	//The devices need to be stored independently for every backend
 	//FIXME: backendName() is a translated string
 	const KConfigGroup configGroup( const_cast<KSharedConfig*>( m_config.data() ),
-			QLatin1String( "AudioOutputDevice" ) + Factory::self()->backendName() );
+			QLatin1String( "AudioOutputDevice_" ) + Factory::self()->identifier() );
 
 	//First we lookup the available devices directly from the backend
 	QSet<int> deviceIndexes;
