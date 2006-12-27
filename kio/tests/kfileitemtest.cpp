@@ -51,7 +51,8 @@ void KFileItemTest::testPermissionsString()
     // Symlink
     QString symlink = tempDir.name() + "asymlink";
     QVERIFY( file.link( symlink ) );
-    KFileItem symlinkItem(KUrl(symlink), QString(), KFileItem::Unknown);
+    KUrl symlinkUrl(symlink);
+    KFileItem symlinkItem(symlinkUrl, QString(), KFileItem::Unknown);
     QCOMPARE((uint)symlinkItem.permissions(), (uint)0604);
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
