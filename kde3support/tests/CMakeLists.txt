@@ -12,7 +12,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_automoc(${kactivelabeltest_SRCS})
 
-   kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
+   kde4_add_executable(kactivelabeltest NOGUI RUN_UNINSTALLED ${kactivelabeltest_SRCS})
 
    target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS} kde3support)
 
@@ -22,7 +22,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${kdockwidgetdemo_SRCS})
    
-   kde4_add_executable(kdockwidgetdemo ${kdockwidgetdemo_SRCS})
+   kde4_add_executable(kdockwidgetdemo NOGUI ${kdockwidgetdemo_SRCS})
    
    target_link_libraries(kdockwidgetdemo  ${KDE4_KDECORE_LIBS} kde3support)
    
@@ -33,7 +33,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${kdockwidgettest_SRCS})
    
-   kde4_add_executable(kdockwidgettest ${kdockwidgettest_SRCS})
+   kde4_add_executable(kdockwidgettest NOGUI ${kdockwidgettest_SRCS})
    
    target_link_libraries(kdockwidgettest  ${KDE4_KDECORE_LIBS} kde3support)
    
@@ -44,7 +44,7 @@ if(KDE4_BUILD_TESTS)
    
    kde4_automoc(${kdocktest_SRCS})
    
-   kde4_add_executable(kdocktest ${kdocktest_SRCS})
+   kde4_add_executable(kdocktest NOGUI ${kdocktest_SRCS})
    
    target_link_libraries(kdocktest  ${KDE4_KDECORE_LIBS} kde3support)
 
