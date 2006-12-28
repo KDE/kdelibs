@@ -667,15 +667,24 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
 /**
  * Returns true when the given attribute matches any "colon influence immune"
  * attribute
+ * @param indenter indenter
+ * @param attr1 attribute of previous char
+ * @param attr2 attribute of char preceding previous char
+ * @param prev1 previous character (0 if none)
+ * @param prev2 character preceding previous character (0 if none)
  */
 static inline bool isColonImmune(const KateNormalIndent &indenter,
-                                 uchar attr)
+                                 uchar attr1, uchar attr2,
+                                 QChar prev1, QChar prev2)
 {
-  return attr == indenter.preprocessorAttrib
-      || attr == indenter.commentAttrib
-      || attr == indenter.doxyCommentAttrib
-      || attr == indenter.stringAttrib
-      || attr == indenter.charAttrib;
+  return attr1 == indenter.preprocessorAttrib
+      // FIXME: no way to discriminate against multiline comment and single
+      // line comment. Therefore, using prev? is futile.
+      || attr1 == indenter.commentAttrib /*&& prev2 != '*' && prev1 != '/'*/
+      || attr1 == indenter.doxyCommentAttrib
+      || attr1 == indenter.stringAttrib && (attr2 != indenter.stringAttrib
+         || (prev1 != '"' || prev2 == '\\' && attr2 == indenter.charAttrib))
+      || prev1 == '\'' && attr1 != indenter.charAttrib;
 }
 
 /**
@@ -700,7 +709,9 @@ static inline bool colonPermitsReindent(const KateNormalIndent &indenter,
 
   // otherwise, check whether this colon is not within an influence
   // immune attribute range
-  return !isColonImmune(indenter, line->attribute(curCol - 1));
+  return !isColonImmune(indenter, line->attribute(curCol - 1),
+                        line->attribute(curCol - 2),
+                        txt[curCol - 1], txt[curCol - 2]);
 }
 
 void KateCSmartIndent::processChar(QChar c)
