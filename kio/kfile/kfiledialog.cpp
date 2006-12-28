@@ -33,7 +33,9 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QFileDialog>
-
+#ifdef Q_WS_WIN
+#include <QFSFileEngine>
+#endif
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -801,13 +803,24 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
                                                  "The drop-down list also lists commonly used locations. "
                                                  "This includes standard locations, such as your home folder, as well as "
                                                  "locations that have been visited recently.") + i18n (autocompletionWhatsThisText));
-
     KUrl u;
+    QString text;
+#ifdef Q_WS_WIN
+    foreach( QFileInfo drive,QFSFileEngine::drives() ) 
+    {
+        u.setPath( drive.filePath() );
+        text = i18n("Drive: %1",  u.toLocalFile() );
+        d->pathCombo->addDefaultUrl( u,
+                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                                 text );
+    }
+#else
     u.setPath( QDir::rootPath() );
-    QString text = i18n("Root Folder: %1",  u.path() );
+    text = i18n("Root Folder: %1",  u.toLocalFile() );
     d->pathCombo->addDefaultUrl( u,
                                  KIO::pixmapForUrl( u, 0, K3Icon::Small ),
                                  text );
+#endif
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1",  u.path( KUrl::AddTrailingSlash ) );
@@ -1191,6 +1204,7 @@ void KFileDialog::setSelection(const QString& url)
      */
     KFileItem i(KFileItem::Unknown, KFileItem::Unknown, u, true );
     //    KFileItem i(u.path());
+    kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() ) << endl;
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
