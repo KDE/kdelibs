@@ -50,7 +50,6 @@
 #endif
 
 #include <qcolormap.h>
-#include <qwidget.h>
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \

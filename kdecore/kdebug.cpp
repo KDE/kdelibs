@@ -37,11 +37,11 @@
 #include "kstandarddirs.h"
 #include "kdatetime.h"
 
-#include <qmessagebox.h>
+#include <QtGui/QWidget>
+#include <kmessage.h>
 #include <klocale.h>
 #include <qfile.h>
 #include <qhash.h>
-#include <qpixmap.h>
 
 #include <qstring.h>
 #include <qapplication.h>
@@ -307,11 +307,10 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 1: // Message Box
   {
-      // Since we are in kdecore here, we cannot use KMsgBox and use
-      // QMessageBox instead
+      // Since we are in kdecore here, we cannot use KMsgBox 
       if ( !kDebug_data->aAreaName.isEmpty() )
           aCaption += QString::fromAscii("(%1)").arg( QString::fromUtf8( kDebug_data->aAreaName.data() ) );
-      QMessageBox::warning( 0L, aCaption, QString::fromUtf8( data ), i18n("&OK") );
+      KMessage::message( KMessage::Information , QString::fromUtf8( data ) , aCaption );
       break;
   }
   case 2: // Shell
