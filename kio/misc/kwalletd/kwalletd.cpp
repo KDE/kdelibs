@@ -1209,9 +1209,9 @@ void KWalletD::reconfigure() {
 
 	if ( kdesktop->isValid() ) {
 		if (cfg.readEntry("Close on Screensaver", false)) {
-			connect(kdesktop, SIGNAL(KDE_start_screensaver()), SLOT(closeAllWallets()));
+			connect(kdesktop, SIGNAL(screenSaverStarted()), SLOT(closeAllWallets()));
 		} else {
-			kdesktop->disconnect(SIGNAL(KDE_start_screensaver()), this, SLOT(closeAllWallets()));
+			kdesktop->disconnect(SIGNAL(screenSaverStarted()), this, SLOT(closeAllWallets()));
 		}
 	}
 
