@@ -39,9 +39,8 @@ GlobalConfig::~GlobalConfig()
 QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) const
 {
 	//The devices need to be stored independently for every backend
-	//FIXME: backendName() is a translated string
-	const KConfigGroup configGroup( const_cast<KSharedConfig*>( m_config.data() ),
-			QLatin1String( "AudioOutputDevice_" ) + Factory::self()->identifier() );
+    const KConfigGroup backendConfig(const_cast<KSharedConfig*>(m_config.data()),
+            QLatin1String("AudioOutputDevice_") + Factory::self()->identifier());
 
 	//First we lookup the available devices directly from the backend
 	QSet<int> deviceIndexes;
@@ -51,8 +50,15 @@ QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) c
 	qSort( defaultList );
 
 	//Now the list from the phononrc file
-	QList<int> deviceList = configGroup.readEntry<QList<int> >( QLatin1String( "Category" ) +
-			QString::number( static_cast<int>( category ) ), defaultList );
+    QList<int> deviceList = backendConfig.readEntry<QList<int> >(QLatin1String("Category") +
+            QString::number(static_cast<int>(category)), QList<int>());
+    if (deviceList.isEmpty()) {
+        //try to read from global group for defaults
+        const KConfigGroup globalConfig(const_cast<KSharedConfig*>(m_config.data()),
+                QLatin1String("AudioOutputDevice"));
+        deviceList = globalConfig.readEntry<QList<int> >(QLatin1String("Category") +
+                QString::number(static_cast<int>(category)), defaultList);
+    }
 
 	QMutableListIterator<int> i( deviceList );
 	while( i.hasNext() )
