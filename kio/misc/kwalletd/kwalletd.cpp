@@ -87,8 +87,9 @@ KWalletD::KWalletD()
 	(void)new KWalletDAdaptor(this);
 	// register another name
 	QDBusConnection::sessionBus().registerService("org.kde.kwalletd");
+#ifdef Q_WS_X11
 	kdesktop = new QDBusInterface("org.kde.kdesktop", "/Screensaver", "org.kde.kdesktop.Screensaver");
-	
+#endif
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 		connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
@@ -104,10 +105,10 @@ KWalletD::KWalletD()
 KWalletD::~KWalletD() {
 	delete _timeouts;
 	_timeouts = 0;
-
+#ifdef Q_WS_X11
 	delete kdesktop;
 	kdesktop = 0;
-
+#endif
 	closeAllWallets();
 	_transactions.clear();
 }
@@ -1206,7 +1207,7 @@ void KWalletD::reconfigure() {
 	int timeSave = _idleTime;
 	// in minutes!
 	_idleTime = cfg.readEntry("Idle Timeout", 10) * 60 * 1000;
-
+#ifdef Q_WS_X11
 	if ( kdesktop->isValid() ) {
 		if (cfg.readEntry("Close on Screensaver", false)) {
 			connect(kdesktop, SIGNAL(screenSaverStarted()), SLOT(closeAllWallets()));
@@ -1214,7 +1215,7 @@ void KWalletD::reconfigure() {
 			kdesktop->disconnect(SIGNAL(screenSaverStarted()), this, SLOT(closeAllWallets()));
 		}
 	}
-
+#endif
 	// Handle idle changes
 	if (_closeIdle) {
 		if (_idleTime != timeSave) { // Timer length changed
