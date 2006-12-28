@@ -437,7 +437,7 @@ void KFileDialog::slotOk()
         bool done = true;
         if ( d->url.isLocalFile() ) {
             if ( locationEdit->currentText().trimmed().isEmpty() ) {
-                QFileInfo info( d->url.path() );
+                QFileInfo info( d->url.toLocalFile() );
                 if ( info.isDir() ) {
                     d->filenames.clear();
                     d->urlList.clear();
@@ -465,7 +465,7 @@ void KFileDialog::slotOk()
                     if ( ops->dirOnlyMode() )
                     {
                         KUrl fullURL(d->url, locationEdit->currentText());
-                        if ( QFile::exists( fullURL.path() ) )
+                        if ( QFile::exists( fullURL.toLocalFile() ) )
                         {
                             d->url = fullURL;
                             d->filenames.clear();
@@ -837,14 +837,14 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     // If local, check it exists. If not, go up until it exists.
     if ( d->url.isLocalFile() )
     {
-        if ( !QFile::exists( d->url.path() ) )
+        if ( !QFile::exists( d->url.toLocalFile() ) )
         {
             d->url = d->url.upUrl();
-            QDir dir( d->url.path() );
+            QDir dir( d->url.toLocalFile() );
             while ( !dir.exists() )
             {
                 d->url = d->url.upUrl();
-                dir.setPath( d->url.path() );
+                dir.setPath( d->url.toLocalFile() );
             }
         }
     }
