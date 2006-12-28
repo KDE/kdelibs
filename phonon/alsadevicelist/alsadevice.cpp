@@ -34,7 +34,7 @@ AlsaDevice::AlsaDevice()
 AlsaDevice::AlsaDevice(int card, int device)
     : d(new AlsaDevicePrivate)
 {
-    QString dmixName(QLatin1String("dmix:") + QString::number(card));
+    QString dmixName(QLatin1String("plug:dmix:") + QString::number(card));
     QString plughwName(QLatin1String("plughw:") + QString::number(card));
     QString hwName(QLatin1String("hw:") + QString::number(card));
     if (device != -1) {
@@ -119,10 +119,10 @@ void AlsaDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
                     // it's a headset
                     icon = QLatin1String("headset");
                 } else {
-                    icon = QLatin1String("usb-soundcard");
+                    icon = QLatin1String("usb-device");
                 }
             } else {
-                icon = QLatin1String("internal-soundcard");
+                icon = QLatin1String("pci-card");
             }
         }
         snd_ctl_close(ctl);
