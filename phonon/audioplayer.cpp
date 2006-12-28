@@ -52,8 +52,8 @@ AudioPlayer::AudioPlayer( Phonon::Category category, QObject* parent )
 	d->player = new MediaObject( this );
 	d->player->addAudioPath( d->path );
 
-	connect( d->player, SIGNAL( _k_stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( _k_stateChanged( Phonon::State, Phonon::State ) ) );
+    connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+            SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
 	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
 }
 
