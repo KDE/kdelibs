@@ -816,7 +816,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
         else if (tc == ')')
           parenCount++;
         else if (tc == '(')
-          parenCount--;
+          parenCount--, potentialAnchorSeen = true;
         else if (tc == '}')
           openCount--;
         else if (tc == '{')
@@ -967,11 +967,11 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   {
     indent = anchorIndent + ((allowSemi && needContinue) ? continueIndent : 0);
   }
-  else if (lastChar == ',')
+  else if (lastChar == ',' || lastChar == '(')
   {
     textLine = doc->plainKateTextLine(lastLine);
     KateDocCursor start(lastLine, textLine->firstChar(), doc);
-    KateDocCursor finish(lastLine, textLine->lastChar(), doc);
+    KateDocCursor finish(lastLine, textLine->lastChar() + 1, doc);
     uint pos = 0;
 
     if (isBalanced(start, finish, QChar('('), QChar(')'), pos))
