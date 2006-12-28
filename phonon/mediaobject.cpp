@@ -350,16 +350,18 @@ bool MediaObjectPrivate::aboutToDeleteIface()
 
 void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State oldstate )
 {
-	if( newstate == Phonon::ErrorState && oldstate == Phonon::LoadingState )
-	{
+    K_Q(MediaObject);
+
+    // backend MediaObject reached ErrorState, try a ByteStream
+    if (newstate == Phonon::ErrorState && !kiojob) {
+        kDebug(600) << "backend MediaObject reached ErrorState, trying ByteStream now" << endl;
         deleteIface();
-        // at this point MediaObject uses a ByteStream instead and sends the data it receives from
-        // the KIO Job via writeBuffer. This essentially makes all media frameworks read data via
-        // KIO
+        if (oldstate != Phonon::LoadingState) {
+            emit q->stateChanged(Phonon::LoadingState, oldstate);
+        }
         setupKioStreaming();
 		return;
 	}
-	K_Q( MediaObject );
 	emit q->stateChanged( newstate, oldstate );
 }
 
