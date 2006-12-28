@@ -35,10 +35,13 @@ AlsaDevice::AlsaDevice(int card, int device)
     : d(new AlsaDevicePrivate)
 {
     QString dmixName(QLatin1String("dmix:") + QString::number(card));
+    QString plughwName(QLatin1String("plughw:") + QString::number(card));
     QString hwName(QLatin1String("hw:") + QString::number(card));
     if (device != -1) {
         dmixName += ',';
         dmixName += QString::number(device);
+        plughwName += ',';
+        plughwName += QString::number(device);
         hwName += ',';
         hwName += QString::number(device);
     }
@@ -52,9 +55,10 @@ AlsaDevice::AlsaDevice(int card, int device)
         }
     }*/
     d->deviceIds << dmixName;
+    d->deviceIds << plughwName;
     d->deviceIds << hwName;
     d->deviceInfoFromControlDevice(hwName);
-    d->deviceInfoFromPcmDevice(dmixName);
+    //d->deviceInfoFromPcmDevice(dmixName);
     d->deviceInfoFromPcmDevice(hwName);
 
     d->merge();
