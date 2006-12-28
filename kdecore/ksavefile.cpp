@@ -24,14 +24,14 @@
 #include <config.h>
 
 #include <QtCore/QDir>
-#include <QtCore/QTemporaryFile>
 #include <QProcess>
 
-#include <kde_file.h>
+#include "kconfig.h"
+#include "kde_file.h"
+#include "klocale.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
-#include "klocale.h"
-#include "kconfig.h"
+#include "ktemporaryfile.h"
 
 class KSaveFile::Private
 {
@@ -94,7 +94,7 @@ bool KSaveFile::open()
     }
 
     //Create our temporary file
-    QTemporaryFile tempFile;
+    KTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + "XXXXXX.new");
     if (!tempFile.open()) {
