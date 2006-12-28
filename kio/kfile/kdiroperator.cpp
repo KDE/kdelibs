@@ -391,7 +391,11 @@ void KDirOperator::mkdir()
     bool ok;
     QString where = url().pathOrUrl();
     QString name = i18n( "New Folder" );
+#ifdef Q_WS_WIN
+    if ( url().isLocalFile() && QFileInfo( url().toLocalFile() + name ).exists() )
+#else
     if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
+#endif
          name = KIO::RenameDlg::suggestName( url(), name );
 
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
@@ -596,7 +600,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 
     if (u.isLocalFile()) {
         // the empty path is kind of a hack
-        KFileItem i("", u.path());
+        KFileItem i("", u.toLocalFile());
         if (i.isDir())
             setUrl(text, true);
         else {
@@ -630,7 +634,11 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     else
         newurl = _newurl;
 
+#ifdef Q_WS_WIN
+    QString pathstr = newurl.toLocalFile();
+#else
     QString pathstr = newurl.path(KUrl::AddTrailingSlash);
+#endif
     newurl.setPath(pathstr);
 
     // already set
@@ -1664,7 +1672,11 @@ bool KDirOperator::isReadable( const KUrl& url )
         return true; // what else can we say?
 
     KDE_struct_stat buf;
+#ifdef Q_WS_WIN
+    QString ts = url.toLocalFile();
+#else
     QString ts = url.path(KUrl::AddTrailingSlash);
+#endif
     bool readable = ( KDE_stat( QFile::encodeName( ts ), &buf) == 0 );
     if (readable) { // further checks
         DIR *test;
