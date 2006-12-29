@@ -758,6 +758,10 @@ static int cnt=0;
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
+    QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, viewport()->mapFromGlobal( QCursor::pos() ), Qt::NoButton, Qt::NoButton );
+    viewportMouseMoveEvent( tempEvent );
+    delete tempEvent;
+
     d->painting = false;
 }
 
@@ -3220,10 +3224,6 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     {
         d->scrollBarMoved = true;
         QScrollView::viewportWheelEvent( e );
-
-        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
-        emit viewportMouseMoveEvent ( tempEvent );
-        delete tempEvent;
     }
 
 }
