@@ -28,7 +28,6 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
-#include <knotifyclient.h>
 #include <kglobalsettings.h>
 
 #include "kcompletionbox.h"
