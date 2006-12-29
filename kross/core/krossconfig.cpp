@@ -25,7 +25,7 @@
 
 void Kross::krossdebug(const QString &s)
 {
-    kDebug() << "Kross: " << s << endl;
+    kDebug(410) << "Kross: " << s << endl;
 }
 
 void Kross::krosswarning(const QString &s)

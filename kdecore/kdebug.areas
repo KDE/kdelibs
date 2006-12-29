@@ -47,6 +47,7 @@
 300        knotify
 399        kimgio
 400        artskde
+410        kross (kdelibs)
 500        kdeprint
 600        phonon (core)
 602        phonon (ui)
