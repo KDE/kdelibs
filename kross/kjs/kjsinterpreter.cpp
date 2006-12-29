@@ -23,9 +23,24 @@
 //#include <kglobal.h>
 //#include <kstandarddirs.h>
 
+// define the KROSSKJS_EXPORT macro
+#ifdef Q_WS_WIN
+# ifndef KROSSKJS_EXPORT
+#  ifdef MAKE_KROSSKJS_LIB
+#   define KROSSKJS_EXPORT KDE_EXPORT
+#  elif KDE_MAKE_LIB
+#   define KROSSKJS_EXPORT KDE_IMPORT
+#  else
+#   define KROSSKJS_EXPORT
+#  endif
+# endif
+#else
+# define KROSSKJS_EXPORT KDE_EXPORT
+#endif
+
 extern "C"
 {
-    void* krossinterpreter(Kross::InterpreterInfo* info)
+    KROSSKJS_EXPORT void* krossinterpreter(Kross::InterpreterInfo* info)
     {
         return new Kross::KjsInterpreter(info);
     }
