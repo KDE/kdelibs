@@ -793,6 +793,8 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   bool found = false;
   bool isSpecial = false;
   bool potentialAnchorSeen = false;
+  bool isArg = false;            // ...arg,<newline>
+  bool parenthesizedArg = false; // ...(arg,<newline>
 
   //kdDebug(13030) << "calcIndent begin line:" << begin.line() << " col:" << begin.col() << endl;
 
@@ -811,12 +813,13 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
       if (textLine->attribute(pos) == symbolAttrib)
       {
         QChar tc = textLine->getChar (pos);
-        if ((tc == ';' || tc == ':' || tc == ',') && otherAnchor == -1 && parenCount <= 0)
+        if ((tc == ';' || tc == ':' || tc == ',') && otherAnchor == -1 && parenCount <= 0) {
           otherAnchor = pos, potentialAnchorSeen = true;
-        else if (tc == ')')
+          isArg = tc == ',';
+        } else if (tc == ')')
           parenCount++;
         else if (tc == '(')
-          parenCount--, potentialAnchorSeen = true;
+          parenCount--, parenthesizedArg = isArg, potentialAnchorSeen = true;
         else if (tc == '}')
           openCount--;
         else if (tc == '{')
@@ -930,7 +933,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   while (cur.validPosition() && cur < begin)
   {
     if (!skipBlanks(cur, begin, true))
-      return 0;
+      return isArg && !parenthesizedArg ? begin.col() : 0;
 
     QChar tc = cur.currentChar();
     //kdDebug(13030) << "  cur.line:" << cur.line() << " cur.col:" << cur.col() << " currentChar '" << tc << "' " << textLine->attribute(cur.col()) << endl;
