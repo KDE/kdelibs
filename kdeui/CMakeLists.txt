@@ -21,7 +21,7 @@ include_directories(
 
 add_subdirectory( about )
 add_subdirectory( tests )
-
+add_subdirectory( dialogs )
 
 ########### next target ###############
 
