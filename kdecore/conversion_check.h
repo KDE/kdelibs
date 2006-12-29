@@ -19,6 +19,9 @@
 */
 
 
+#ifndef CONVERSION_CHECK_H
+#define CONVERSION_CHECK_H
+
 namespace ConversionCheck {
 
 // used to distinguish between supported/unsupported types
@@ -100,3 +103,6 @@ QVConversions(QStringList, unsupported, supported);
 QVConversions(QVariantList, unsupported, supported);
 
 }
+
+#endif
+
