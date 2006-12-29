@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include "../../kde3support/kdeui/k3wizard.h"
+#include "k3wizard.h"
 
 
 class KOpenSSLProxy;
