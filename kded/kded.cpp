@@ -57,7 +57,7 @@
 #endif
 
 #ifdef Q_WS_MAC
-#include <Carbon/carbon.h>
+#include <Carbon/Carbon.h>
 #endif
 
 #define MODULES_PATH "/modules/"
