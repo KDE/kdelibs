@@ -366,6 +366,7 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     void showColor( const KColor &color, const QString &name );
 
   protected:
+    virtual void mouseMoveEvent( QMouseEvent * );
     virtual void mouseReleaseEvent( QMouseEvent * );
     virtual void keyPressEvent( QKeyEvent * );
     virtual bool eventFilter( QObject *obj, QEvent *ev );

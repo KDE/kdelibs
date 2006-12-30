@@ -1372,6 +1372,17 @@ KColorDialog::slotColorPicker()
 }
 
 void
+KColorDialog::mouseMoveEvent( QMouseEvent *e )
+{
+    if (d->bColorPicking) {
+        _setColor( grabColor( e->globalPos() ) );
+        return;
+    }
+
+    KDialog::mouseReleaseEvent( e );
+}
+
+void
 KColorDialog::mouseReleaseEvent( QMouseEvent *e )
 {
   if (d->bColorPicking)
