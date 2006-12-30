@@ -1379,7 +1379,7 @@ KColorDialog::mouseMoveEvent( QMouseEvent *e )
         return;
     }
 
-    KDialog::mouseReleaseEvent( e );
+    KDialog::mouseMoveEvent( e );
 }
 
 void
