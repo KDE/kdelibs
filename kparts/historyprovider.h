@@ -89,6 +89,11 @@ signals:
      */
     void updated( const QStringList& items );
 
+    /**
+     * Emitted after the item has been inserted
+     */
+    void inserted( const QString& item );
+
 private:
     static HistoryProvider *s_self;
 

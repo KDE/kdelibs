@@ -78,11 +78,11 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
     m_doAutoFill = false;
 
 /* dynamic history stuff to be fixed later (pfeiffer)
-    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
-             SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
              SLOT( slotHistoryChanged() ));
 */
+    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& ) ),
+             SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
 }
@@ -222,7 +222,7 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExcep
 
 void HTMLDocumentImpl::slotHistoryChanged()
 {
-    if ( true || !m_render ) // disabled for now
+    if ( !m_render )
         return;
 
     recalcStyle( Force );

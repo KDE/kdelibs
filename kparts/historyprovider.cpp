@@ -70,6 +70,7 @@ void HistoryProvider::insert( const QString& item )
 {
     // no need to allocate memory, we only want to have fast lookup, no mapping
     d->dict.replace( item, (void*) 1 );
+    emit inserted( item );
 }
 
 void HistoryProvider::remove( const QString& item )
