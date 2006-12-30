@@ -33,6 +33,8 @@ int main(int args, char **argv)
 
     Solid::Processor *processor = device.as<Solid::Processor>();
     kDebug() << "This processors maximum speed is: " << processor->maxSpeed() << endl;
+    
+    delete processor;
     return 0;
 }
 
