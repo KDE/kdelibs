@@ -68,6 +68,7 @@ bool HistoryProvider::contains( const QString& item ) const
 void HistoryProvider::insert( const QString& item )
 {
     d->dict.insert( item );
+    emit inserted( item );
 }
 
 void HistoryProvider::remove( const QString& item )
