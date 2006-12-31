@@ -50,6 +50,7 @@
 #include "css/csshelper.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
+#include "misc/loader.h"
 #include "khtml_settings.h"
 #include "khtml_printsettings.h"
 
@@ -571,11 +572,15 @@ void KHTMLView::clear()
 void KHTMLView::hideEvent(QHideEvent* e)
 {
     QScrollView::hideEvent(e);
+    if ( m_part && m_part->xmlDocImpl() )
+        m_part->xmlDocImpl()->docLoader()->pauseAnimations();
 }
 
 void KHTMLView::showEvent(QShowEvent* e)
 {
     QScrollView::showEvent(e);
+    if ( m_part && m_part->xmlDocImpl() )
+        m_part->xmlDocImpl()->docLoader()->resumeAnimations();
 }
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
