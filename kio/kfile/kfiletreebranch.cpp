@@ -86,7 +86,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KUrl& url,
              this, SLOT( slotDirlisterClear()));
 
     connect( this, SIGNAL( clear(const KUrl&)),
-             this, SLOT( slotDirlisterClearURL(const KUrl&)));
+             this, SLOT( slotDirlisterClearUrl(const KUrl&)));
 
     connect( this, SIGNAL( redirection( const KUrl& , const KUrl& ) ),
              this, SLOT( slotRedirect( const KUrl&, const KUrl& )));
