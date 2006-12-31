@@ -108,16 +108,18 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
     QByteArray pixmapData;
-    QDataStream arg(&pixmapData, QIODevice::WriteOnly);
-    arg << pix;
+    
+    {
+        QDataStream arg(&pixmapData, QIODevice::WriteOnly);
+        arg << pix;
+    }
 
     QVariantList contextList;
     typedef QPair<QString,QString> Context;
     foreach (const Context& ctx, contexts)
     {
-        kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
-	QVariantList vl;
-	vl << ctx.first << ctx.second;
+        QVariantList vl;
+        vl << ctx.first << ctx.second;
         contextList << vl;
     }
     
@@ -161,7 +163,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 	typedef QPair<QString,QString> Context;
 	foreach (const Context& ctx, n->contexts())
 	{
-		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
+//		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
 		QVariantList vl;
 		vl << ctx.first << ctx.second;
 		contextList << vl;
