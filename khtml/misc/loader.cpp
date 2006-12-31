@@ -799,6 +799,16 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
 //     delete m; m = 0;
 // }
 
+void CachedImage::pauseAnimations()
+{
+//    if ( m ) m->setPaused( true );
+}
+
+void CachedImage::resumeAnimations()
+{
+//    if ( m ) m->setPaused( false );
+}
+
 void CachedImage::clear()
 {
     delete i;   i = new khtmlImLoad::Image(this);
@@ -1145,6 +1155,28 @@ void DocLoader::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimation
             CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( it.current() ) );
 
             img->setShowAnimations( m_showAnimations );
+        }
+}
+
+void DocLoader::pauseAnimations()
+{
+    for ( Q3PtrDictIterator<CachedObject> it( m_docObjects ); it.current(); ++it )
+        if ( it.current()->type() == CachedObject::Image )
+        {
+            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( it.current() ) );
+
+            img->pauseAnimations();
+        }
+}
+
+void DocLoader::resumeAnimations()
+{
+    for ( Q3PtrDictIterator<CachedObject> it( m_docObjects ); it.current(); ++it )
+        if ( it.current()->type() == CachedObject::Image )
+        {
+            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( it.current() ) );
+
+            img->resumeAnimations();
         }
 }
 

@@ -295,6 +295,8 @@ namespace khtml
 #endif
 
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
+        void pauseAnimations();
+        void resumeAnimations();
 
         virtual bool schedule() const { return true; }
 
@@ -397,6 +399,8 @@ namespace khtml
         void setAutoloadImages( bool );
         void setCachePolicy( KIO::CacheControl cachePolicy ) { m_cachePolicy = cachePolicy; }
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
+        void pauseAnimations();
+        void resumeAnimations();
         void insertCachedObject( CachedObject* o ) const;
         void removeCachedObject( CachedObject* o) const { m_docObjects.remove( o ); }
 
