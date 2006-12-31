@@ -1371,7 +1371,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 void KFilePropsPlugin::applyIconChanges()
 {
   KIconButton *iconButton = qobject_cast<KIconButton*>(iconArea);
-  if ( !iconButton )
+  if ( !iconButton || !d->bIconChanged )
     return;
   // handle icon changes - only local files (or pseudo-local) for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
