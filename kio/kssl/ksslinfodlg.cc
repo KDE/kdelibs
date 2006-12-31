@@ -450,7 +450,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         if (mailCatcher) {
             KUrlLabel *mail = new KUrlLabel(tmp, tmp, _frame);
-            connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
+            connect(mail, SIGNAL(leftClickedUrl(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
         } else {
             label = new QLabel(tmp, _frame);
         }

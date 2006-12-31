@@ -36,7 +36,7 @@ BackendSelection::BackendSelection( QWidget* parent )
 
 	connect( m_select, SIGNAL( itemSelectionChanged() ),
 			SLOT( selectionChanged() ) );
-	//connect( m_website, SIGNAL( leftClickedURL( const QString & ) ),
+	//connect( m_website, SIGNAL( leftClickedUrl( const QString & ) ),
 			//kapp, SLOT( invokeBrowser( const QString & ) ) );
 	connect( m_up, SIGNAL( clicked() ), SLOT( up() ) );
 	connect( m_down, SIGNAL( clicked() ), SLOT( down() ) );
