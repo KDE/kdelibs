@@ -52,10 +52,11 @@
 //#include <kstandarddirs.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <kdemacros.h>
 
 extern "C"
 {
-    QObject* krossmodule()
+    KDE_EXPORT QObject* krossmodule()
     {
         return new Kross::FormModule();
     }

@@ -49,10 +49,11 @@
 #include <knewstuff/engine.h>
 #include <knewstuff/downloaddialog.h>
 #include <knewstuff/knewstuffsecure.h>
+#include <kdemacros.h>
 
 extern "C"
 {
-    QObject* krossmodule()
+    KDE_EXPORT QObject* krossmodule()
     {
         return new Kross::ScriptManagerModule();
     }
