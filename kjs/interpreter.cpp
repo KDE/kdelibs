@@ -61,6 +61,9 @@
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 namespace KJS {
 
