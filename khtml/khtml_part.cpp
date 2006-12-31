@@ -1106,8 +1106,8 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
     d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
     d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug", instance()));
-    connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedURL()), SLOT(launchJSErrorDialog()));
-    connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedURL()), SLOT(jsErrorDialogContextMenu()));
+    connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedUrl()), SLOT(launchJSErrorDialog()));
+    connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedUrl()), SLOT(jsErrorDialogContextMenu()));
   }
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
@@ -7243,8 +7243,8 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
     d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
-    connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
-    connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
+    connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedUrl()), SLOT(launchWalletManager()));
+    connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedUrl()), SLOT(walletMenu()));
   }
   d->m_statusBarWalletLabel->setToolTip(i18n("The wallet '%1' is open and being used for form data and passwords.", KWallet::Wallet::NetworkWallet()));
 #endif // KHTML_NO_WALLET
@@ -7385,7 +7385,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
 		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 
-        connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(suppressedPopupMenu()));
+        connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedUrl()), SLOT(suppressedPopupMenu()));
         if (d->m_settings->jsPopupBlockerPassivePopup()) {
             QPixmap px;
             px = MainBarIcon( "window_suppressed" );
