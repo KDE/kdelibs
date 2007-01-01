@@ -77,6 +77,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 {
 	setModal(true);
 	setObjectName("cookiealert");
+	setButtons(None);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( SmallIcon("cookie") );
@@ -94,20 +95,16 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     }
 # endif
 #endif
-    // Main widget's layout manager...
-    QVBoxLayout* vlayout = new QVBoxLayout( this );
-    vlayout->setMargin( KDialog::marginHint() );
-    vlayout->setSpacing( KDialog::spacingHint() );
-    vlayout->setSizeConstraint( QLayout::SetFixedSize );
-
+    KVBox* vBox1 = new KVBox( this );
+    vBox1->setSpacing( KDialog::spacingHint() );
+    setMainWidget(vBox1);
     // Cookie image and message to user
-    KHBox* hBox = new KHBox( this );
-    hBox->setSpacing( KDialog::spacingHint() );
+    KHBox* hBox = new KHBox( vBox1 );
     QLabel* icon = new QLabel( hBox );
     icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning) );
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
-
+   
     int count = cookieList.count();
 
     KVBox* vBox = new KVBox( hBox );
@@ -134,26 +131,24 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     lbl->setAlignment( Qt::AlignCenter );
     lbl = new QLabel( i18n("Do you want to accept or reject?"), vBox );
     lbl->setAlignment( Qt::AlignCenter );
-    vlayout->addWidget( hBox, 0, Qt::AlignLeft );
 
     // Cookie Details dialog...
-    m_detailView = new KCookieDetail( cookieList, count, this );
-    vlayout->addWidget( m_detailView );
+    m_detailView = new KCookieDetail( cookieList, count, vBox1 );
     m_showDetails = showDetails;
     m_showDetails ? m_detailView->show():m_detailView->hide();
 
     // Cookie policy choice...
-    QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"));
+    QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"),vBox1);
     QVBoxLayout *vbox = new QVBoxLayout;
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
-    m_onlyCookies = new QRadioButton( txt );
+    m_onlyCookies = new QRadioButton( txt, m_btnGrp );
     vbox->addWidget(m_onlyCookies);
 #ifndef QT_NO_WHATSTHIS
     m_onlyCookies->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
 #endif
-    m_allCookiesDomain = new QRadioButton( i18n("All cookies from this do&main") );
+    m_allCookiesDomain = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
     vbox->addWidget(m_allCookiesDomain);
 #ifndef QT_NO_WHATSTHIS
     m_allCookiesDomain->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
@@ -162,7 +157,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                               "permanent until you manually change it from the Control Center "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
-    m_allCookies = new QRadioButton( i18n("All &cookies"));
+    m_allCookies = new QRadioButton( i18n("All &cookies"), m_btnGrp);
     vbox->addWidget(m_allCookies);
 #ifndef QT_NO_WHATSTHIS
     m_allCookies->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
@@ -171,7 +166,6 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
     m_btnGrp->setLayout(vbox);
-    vlayout->addWidget( m_btnGrp );
     if (defaultButton == 0 )
 	m_onlyCookies->setChecked(true);
     else if(defaultButton==1)
@@ -180,9 +174,8 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	m_allCookies->setChecked(true);
     else
 	m_onlyCookies->setChecked(true);
-
     // Accept/Reject buttons
-    QWidget* bbox = new QWidget( this );
+    QWidget* bbox = new QWidget( vBox1 );
     QBoxLayout* bbLay = new QHBoxLayout( bbox );
     bbLay->setSpacing( KDialog::spacingHint() );
     QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
@@ -205,8 +198,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 #endif
 
 
-    vlayout->addWidget( bbox );
-    setFixedSize( sizeHint() );
+    //setFixedSize( sizeHint() );
 }
 
 KCookieWin::~KCookieWin()
