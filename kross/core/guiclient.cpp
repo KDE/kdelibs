@@ -198,11 +198,25 @@ void GUIClient::setDOMDocument(const QDomDocument &document, bool merge)
 }
 #endif
 
+void addMenu(QMenu* menu, ActionCollection* collection)
+{
+    foreach(QAction* a, collection->actions()) {
+        menu->addAction(a);
+    }
+    foreach(QString collectionname, collection->collections()) {
+        ActionCollection* c = collection->collection(collectionname);
+        QMenu* m = menu->addMenu( c->text() );
+        Q_ASSERT(c && m);
+        addMenu(m, c);
+    }
+}
+
 void GUIClient::slotMenuAboutToShow()
 {
     d->scriptsmenu->menu()->clear();
-    foreach(QAction* a, Manager::self().actionCollection()->actions())
-        d->scriptsmenu->menu()->addAction(a);
+    ActionCollection* collection = Manager::self().actionCollection();
+    Q_ASSERT(collection);
+    addMenu(d->scriptsmenu->menu(), collection);
 }
 
 void GUIClient::started(Kross::Action* action)

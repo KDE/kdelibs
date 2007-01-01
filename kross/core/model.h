@@ -29,6 +29,7 @@
 namespace Kross {
 
     // Forward declarations.
+    class Action;
     class ActionCollection;
 
     /**
@@ -49,6 +50,9 @@ namespace Kross {
             virtual Qt::ItemFlags flags(const QModelIndex &index) const;
             virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
             virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+
+            static Action* action(const QModelIndex& index);
+            static ActionCollection* collection(const QModelIndex& index);
 
         private:
             /// \internal d-pointer class.

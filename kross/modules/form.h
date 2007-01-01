@@ -225,7 +225,7 @@ namespace Kross {
             Q_OBJECT
 
         public:
-            FormModule();
+            explicit FormModule();
             virtual ~FormModule();
 
         public slots:

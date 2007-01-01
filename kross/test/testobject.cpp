@@ -19,6 +19,12 @@
 
 #include "testobject.h"
 
+#include <QColor>
+#include <QFont>
+#include <QBrush>
+#include <QDate>
+#include <QTime>
+#include <QDateTime>
 
 TestObject::TestObject(QObject* parent, const QString& name)
     : QObject(parent)
@@ -138,6 +144,13 @@ QVariantMap TestObject::func_qvariantmap_qvariantmap(QVariantMap vm)
     //kDebug() << "TestObject::func_qvariantmap_qvariantmap vm.count=" << vm.count() << endl;
     return vm;
 }
+
+QColor TestObject::func_qcolor_qcolor(const QColor& c) { return c; }
+QFont TestObject::func_qfont_qfont(const QFont& f) { return f; }
+QBrush TestObject::func_qbrush_qbrush(const QBrush& b) { return b; }
+QTime TestObject::func_qtime_qtime(const QTime& t) { return t; }
+QDate TestObject::func_qdate_qdate(const QDate& d) { return d; }
+QDateTime TestObject::func_qdatetime_qdatetime(const QDateTime& dt) { return dt; }
 
 QVariant TestObject::func_qvariant_qvariant(const QVariant& v)
 {

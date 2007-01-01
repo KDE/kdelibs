@@ -79,6 +79,29 @@ class TestKross(unittest.TestCase):
 		doTestVariantMap( {"key 1":"  Some String  ","key 2":"oThEr StRiNg"} )
 		doTestVariantMap( {" key1 ":[12.5,True]," key2 ":[83.002,"test"]} )
 
+	def testColor(self):
+		import Kross
+		color = Kross.color()
+
+		color.setNamedColor("#ff0000");
+		self.assert_( color.name() == "#ff0000" )
+		self.assert_( color.red() == 255 and color.green() == 0 and color.blue() == 0 and color.alpha() == 255 )
+
+		color.setCmyk(1,2,3,4,5)
+		self.assert_( color.name() == "#fafaf9" )
+		self.assert_( color.cyan() == 1 and color.magenta() == 2 and color.yellow() == 3 and color.black() == 4 and color.alpha() == 5 )
+
+		self.assert_( self.object1.func_qcolor_qcolor("#0066ff").name() == "#0066ff" )
+		self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
+		self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )
+
+		#self.object1.func_qfont_qfont
+		#self.object1.func_qbrush_qbrush
+		#self.object1.func_qtime_qtime
+		#self.object1.func_qdate_qdate
+		#self.object1.func_qdatetime_qdatetime
+		pass
+
 	def testVariant(self):
 		#self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
 		#self.assert_( self.object1.func_qvariant_qvariant(True) == True )
@@ -150,7 +173,7 @@ class TestKross(unittest.TestCase):
 
 		def callback(s):
 			self.assert_(s == " The Argument String ")
-			return "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!"
+			return "CALLBACK!"
 		self.assert_( self.object1.connect("signalString(const QString&)", callback) )
 		self.object1.signalString(" The Argument String ")
 
@@ -171,5 +194,21 @@ print "__name__ = %s" % __name__
 #print "__main__ = %s %s" % (__main__,dir(__main__))
 #print "TestObject3.name = %s" % TestObject3.name()
 
-suite = unittest.makeSuite(TestKross)
-unittest.TextTestRunner(verbosity=2).run(suite)
+#suite = unittest.makeSuite(TestKross)
+#unittest.TextTestRunner(verbosity=2).run(suite)
+
+
+
+
+
+
+
+
+
+
+
+import Kross
+import TestObject1
+print "===========> %s" % TestObject1.func_qcolor_qcolor("#0066ff").name()
+#self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
+#self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )

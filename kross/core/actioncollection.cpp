@@ -137,7 +137,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                 c = new ActionCollection(name, this);
             if( ! text.isNull() )
                 c->setText(text);
-            if( ! c->readXml(elem) )
+            if( ! c->readXml(elem, directory) )
                 ok = false;
         }
         else if( elem.tagName() == "script") {

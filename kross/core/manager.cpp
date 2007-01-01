@@ -21,6 +21,7 @@
 #include "interpreter.h"
 #include "action.h"
 #include "actioncollection.h"
+#include "variant.h"
 
 #include <QObject>
 #include <QMetaObject>
@@ -168,10 +169,8 @@ Manager::Manager()
 
 Manager::~Manager()
 {
-    for(QHash<QString, InterpreterInfo* >::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it)
-        delete it.value();
-    for(QHash<QString, QPointer<QObject> >::Iterator it = d->modules.begin(); it != d->modules.end(); ++it)
-        delete static_cast<QObject *>(it.value());
+    qDeleteAll(d->interpreterinfos.values());
+    qDeleteAll(d->modules.values());
     delete d->collection;
     delete d;
 }
@@ -281,5 +280,10 @@ QObject* Manager::module(const QString& modulename)
     d->modules.insert(modulename, module);
     return module;
 }
+
+QObject* Manager::color() { return new Color(this); }
+QObject* Manager::font() { return new Font(this); }
+QObject* Manager::brush() { return new Brush(this); }
+QObject* Manager::datetime() { return new DateTime(this); }
 
 #include "manager.moc"

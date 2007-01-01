@@ -22,11 +22,12 @@
 #include "action.h"
 #include "manager.h"
 
+#include <klocale.h>
 #include <klibloader.h>
 
 extern "C"
 {
-    typedef void* (*def_interpreter_func)(Kross::InterpreterInfo*);
+    typedef void* (*def_interpreter_func)(int version, Kross::InterpreterInfo*);
 }
 
 using namespace Kross;
@@ -58,7 +59,8 @@ namespace Kross {
 }
 
 InterpreterInfo::InterpreterInfo(const QString& interpretername, const QString& library, const QString& wildcard, QStringList mimetypes, Option::Map options)
-    : d( new Private() )
+    : ErrorInterface()
+    , d( new Private() )
 {
     d->interpretername = interpretername;
     d->library = library;
@@ -116,6 +118,9 @@ Interpreter* InterpreterInfo::interpreter()
     if(d->interpreter) // buffered
         return d->interpreter;
 
+    if(hadError()) // the interpreter can't be loaded
+        return 0;
+
 #ifdef KROSS_INTERPRETER_DEBUG
     krossdebug( QString("Loading the interpreter library for %1").arg(d->interpretername) );
 #endif
@@ -124,40 +129,31 @@ Interpreter* InterpreterInfo::interpreter()
 
     KLibrary* library = libloader->globalLibrary( d->library.toLatin1().data() );
     if(! library) {
-        /*
-        setException(
-            new Exception( QString("Could not load library \"%1\" for the \"%2\" interpreter.").arg(d->library).arg(d->interpretername) )
-        );
-        */
-        krosswarning( QString("Could not load library \"%1\" for the \"%2\" interpreter.").arg(d->library).arg(d->interpretername) );
+        setError(i18n("Could not load interpreter library \"%1\".",d->library));
         return 0;
     }
 
     // Get the extern "C" krosspython_instance function.
     def_interpreter_func interpreter_func;
     interpreter_func = (def_interpreter_func) library->symbol("krossinterpreter");
-    if(! interpreter_func) {
-        //setException( new Exception("Failed to load symbol in krosspython library.") );
-        krosswarning("Failed to load the 'krossinterpreter' symbol from the library.");
+    // and execute the extern krosspython_instance function.
+    d->interpreter = interpreter_func
+        ? (Interpreter*) (interpreter_func)(KROSS_VERSION, this)
+        : 0;
+    if(! d->interpreter) {
+        setError(i18n("Incompatible interpreter library."));
     }
     else {
-        // and execute the extern krosspython_instance function.
-        d->interpreter = (Interpreter*) (interpreter_func)(this);
-        if(! d->interpreter) {
-            krosswarning("Failed to load the Interpreter instance from library.");
-        }
-        else {
-            // Job done. The library is loaded and our Interpreter* points
-            // to the external Kross::Python::Interpreter* instance.
+        // Job done. The library is loaded and our Interpreter* points
+        // to the external Kross::Python::Interpreter* instance.
 #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("Successfully loaded Interpreter instance from library.");
+        krossdebug("Successfully loaded Interpreter instance from library.");
 #endif
-        }
     }
 
     // finally unload the library.
     library->unload();
-
+    // and return the interpreter instance or NULL if loading failed.
     return d->interpreter;
 }
 

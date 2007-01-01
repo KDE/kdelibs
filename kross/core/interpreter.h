@@ -40,7 +40,7 @@ namespace Kross {
      * a \a Interpreter before the interpreter-backend itself is
      * loaded.
      */
-    class KROSSCORE_EXPORT InterpreterInfo
+    class KROSSCORE_EXPORT InterpreterInfo : public ErrorInterface
     {
         public:
 

@@ -52,7 +52,6 @@
 //#include <kstandarddirs.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kdemacros.h>
 
 extern "C"
 {

@@ -37,11 +37,27 @@ using namespace Kross;
 
 namespace Kross {
 
+    /// \internal item representation.
+    class ActionCollectionModelItem
+    {
+        public:
+            enum Type { ActionType, CollectionType };
+            const Type type;
+            union {
+                Action* action;
+                ActionCollection* collection;
+            };
+            const QModelIndex parent;
+
+            ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex()) : type(ActionType), action(a), parent(p) {}
+            ActionCollectionModelItem(ActionCollection* c, const QModelIndex& p = QModelIndex()) : type(CollectionType), collection(c), parent(p) {}
+    };
+
     /// \internal d-pointer class.
     class ActionCollectionModel::Private
     {
         public:
-            ActionCollection* collection;
+            ActionCollectionModelItem* item;
     };
 
 }
@@ -50,12 +66,25 @@ ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* 
     : QAbstractItemModel(parent)
     , d( new Private() )
 {
-    d->collection = collection ? collection : Kross::Manager::self().actionCollection();
+    d->item = new ActionCollectionModelItem( collection ? collection : Kross::Manager::self().actionCollection() );
 }
 
 ActionCollectionModel::~ActionCollectionModel()
 {
+    delete d->item;
     delete d;
+}
+
+Action* ActionCollectionModel::action(const QModelIndex& index)
+{
+    ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : 0;
+    return (item && item->type == ActionCollectionModelItem::ActionType) ? item->action : 0;
+}
+
+ActionCollection* ActionCollectionModel::collection(const QModelIndex& index)
+{
+    ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : 0;
+    return (item && item->type == ActionCollectionModelItem::ActionType) ? item->collection : 0;
 }
 
 int ActionCollectionModel::columnCount(const QModelIndex&) const
@@ -63,21 +92,38 @@ int ActionCollectionModel::columnCount(const QModelIndex&) const
     return 1;
 }
 
-int ActionCollectionModel::rowCount(const QModelIndex&) const
+int ActionCollectionModel::rowCount(const QModelIndex& index) const
 {
-    return d->collection->actions(QString::null).count();
+    ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : d->item;
+    if( item->type == ActionCollectionModelItem::CollectionType )
+        return item->collection->actions(QString::null).count() + item->collection->collections().count();
+    return 0;
 }
 
 QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex& parent) const
 {
-    Action* action = dynamic_cast< Action* >( d->collection->actions().value(row) );
-    if( ! action || parent.isValid() )
-        return QModelIndex();
-    return createIndex(row, column, action);
+    ActionCollectionModelItem* item = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
+    const int count = item->collection->actions(QString::null).count();
+    if( row < count ) {
+        Action* action = dynamic_cast< Action* >( item->collection->actions().value(row) );
+        if( action )
+            return createIndex(row, column, new ActionCollectionModelItem(action, parent));
+    }
+    else {
+        QString name = item->collection->collections().value(row - count);
+        ActionCollection* collection = item->collection->collection(name);
+        if( collection )
+            return createIndex(row, column, new ActionCollectionModelItem(collection, parent));
+    }
+    return QModelIndex();
 }
 
-QModelIndex ActionCollectionModel::parent(const QModelIndex&) const
+QModelIndex ActionCollectionModel::parent(const QModelIndex& index) const
 {
+    if( index.isValid() ) {
+        ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
+        return item->parent;
+    }
     return QModelIndex();
 }
 
@@ -91,26 +137,39 @@ Qt::ItemFlags ActionCollectionModel::flags(const QModelIndex &index) const
 
 QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
 {
-    if( ! index.isValid() )
-        return QVariant();
-    Action* action = static_cast< Action* >( index.internalPointer() );
-    switch( role ) {
-        case Qt::DecorationRole:
-            return action->icon();
-        case Qt::DisplayRole:
-            return action->text().replace("&","");
-        case Qt::ToolTipRole: // fall through
-        case Qt::WhatsThisRole:
-            return action->description();
-        //case Qt::CheckStateRole:
-        //    return action->isVisible();
-        default:
-            return QVariant();
+    if( index.isValid() ) {
+        ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
+        switch( item->type ) {
+            case ActionCollectionModelItem::ActionType: {
+                switch( role ) {
+                    case Qt::DecorationRole:
+                        return item->action->icon();
+                    case Qt::DisplayRole:
+                        return item->action->text().replace("&","");
+                    case Qt::ToolTipRole: // fall through
+                    case Qt::WhatsThisRole:
+                        return item->action->description();
+                    //case Qt::CheckStateRole:
+                    //    return item->action->isVisible();
+                    default: break;
+                }
+            } break;
+            case ActionCollectionModelItem::CollectionType: {
+                switch( role ) {
+                    case Qt::DisplayRole:
+                        return item->collection->text();
+                    default: break;
+                }
+            } break;
+            default: break;
+        }
     }
+    return QVariant();
 }
 
 bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+#if 0
     if( ! index.isValid() /*|| ! d->editable*/ )
         return false;
     Action* action = static_cast< Action* >( index.internalPointer() );
@@ -126,6 +185,9 @@ bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &va
     }
     emit dataChanged(index, index);
     return true;
+#else
+    return false;
+#endif
 }
 
 /******************************************************************************
@@ -152,6 +214,12 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
     QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
     if( ! index.isValid() )
         return false;
-    Action* action = static_cast< Action* >( index.internalPointer() );
-    return action->isEnabled();
+    ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
+    switch( item->type ) {
+            case ActionCollectionModelItem::ActionType:
+                return item->action->isEnabled();
+            case ActionCollectionModelItem::CollectionType:
+            default: break;
+    }
+    return true;
 }

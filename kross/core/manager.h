@@ -169,6 +169,15 @@ namespace Kross {
              */
             QObject* module(const QString& modulename);
 
+            /** Return a new \a Color object. */
+            QObject* color();
+            /** Return a new \a Font object. */
+            QObject* font();
+            /** Return a new \a Brush object. */
+            QObject* brush();
+            /** Return a new \a DateTime object. */
+            QObject* datetime();
+
         signals:
 
             /**

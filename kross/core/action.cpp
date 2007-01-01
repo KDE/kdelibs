@@ -144,7 +144,9 @@ Action::Action(KActionCollection* collection, const QDomElement& element, const 
 
 Action::~Action()
 {
-    krossdebug( QString("Action::~Action() Dtor name='%1'").arg(objectName()) );
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::~Action() Dtor name='%1'").arg(objectName()) );
+    #endif
     finalize();
     delete d;
 }
@@ -267,15 +269,15 @@ bool Action::initialize()
     if( ! d->scriptfile.isNull() ) {
         QFile f( d->scriptfile );
         if( ! f.exists() ) {
-            setError(i18n("There exists no such scriptfile '%1'", d->scriptfile));
+            setError(i18n("There exists no such scriptfile \"%1\"", d->scriptfile));
             return false;
         }
         if( d->interpretername.isNull() ) {
-            setError(i18n("Failed to determinate interpreter for scriptfile '%1'", d->scriptfile));
+            setError(i18n("Failed to determinate interpreter for scriptfile \"%1\"", d->scriptfile));
             return false;
         }
         if( ! f.open(QIODevice::ReadOnly) ) {
-            setError(i18n("Failed to open scriptfile '%1'", d->scriptfile));
+            setError(i18n("Failed to open scriptfile \"%1\"", d->scriptfile));
             return false;
         }
         d->code = QString( f.readAll() );
@@ -284,13 +286,17 @@ bool Action::initialize()
 
     Interpreter* interpreter = Manager::self().interpreter(d->interpretername);
     if( ! interpreter ) {
-        setError(i18n("Unknown interpreter '%1'", d->interpretername));
+        InterpreterInfo* info = Manager::self().interpreterInfo(d->interpretername);
+        if( info )
+            setError(i18n("Failed to load interpreter \"%1\": %2", d->interpretername, info->errorMessage()));
+        else
+            setError(i18n("No such interpreter \"%1\"", d->interpretername));
         return false;
     }
 
     d->script = interpreter->createScript(this);
     if( ! d->script ) {
-        setError(i18n("Failed to create script for interpreter '%1'", d->interpretername));
+        setError(i18n("Failed to create script for interpreter \"%1\"", d->interpretername));
         return false;
     }
 
@@ -326,7 +332,9 @@ void Action::slotTriggered()
     }
 
     if( hadError() ) {
-        krossdebug( QString("Action::slotTriggered() name=%1 errorMessage=%2").arg(objectName()).arg(errorMessage()) );
+        #ifdef KROSS_ACTION_DEBUG
+            krossdebug( QString("Action::slotTriggered() name=%1 errorMessage=%2").arg(objectName()).arg(errorMessage()) );
+        #endif
         emit finished(this);
         return;
     }

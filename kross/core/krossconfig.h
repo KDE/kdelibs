@@ -25,7 +25,7 @@
 
 namespace Kross {
 
-    /// define the KROSS_EXPORT and KROSSCORE_EXPORT macros
+    // define the KROSS_EXPORT and KROSSCORE_EXPORT macros
     #ifdef Q_WS_WIN
         #ifndef KROSSCORE_EXPORT
         # ifdef MAKE_KROSSCORE_LIB
@@ -51,7 +51,7 @@ namespace Kross {
         #define KROSSCORE_EXPORT KDE_EXPORT
     #endif
 
-    /// Debugging enabled.
+    // Debugging enabled. Comment the line out to disable all kind of debugging.
     #define KROSS_DEBUG_ENABLED
 
     #ifdef KROSS_DEBUG_ENABLED
@@ -72,16 +72,32 @@ namespace Kross {
         #define krosswarning(x)
     #endif
 
+    // Some more debug switches.
     #define KROSS_OBJECT_METACALL_DEBUG
     //#define KROSS_METATYPE_DEBUG
     //#define KROSS_INTERPRETER_DEBUG
+    #define KROSS_ACTION_DEBUG
     #define KROSS_ACTIONCOLLECTION_DEBUG
+
+    // The version number of Kross.
+    #define KROSS_VERSION 1
+
+    // The export macro for interpreter plugins.
+    #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \
+        extern "C" { \
+            KDE_EXPORT void* krossinterpreter(int version, Kross::InterpreterInfo* info) { \
+                if(version != KROSS_VERSION) { \
+                    Kross::krosswarning(QString("Interpreter skipped cause provided version %1 does not match expected version %2.").arg(version).arg(KROSS_VERSION)); \
+                    return 0; \
+                } \
+                return new InterpreterImpl(info); \
+            } \
+        }
 
     // The name of the interpreter's library. Those library got loaded
     // dynamically during runtime. Comment out to disable compiling of
     // the interpreter-plugin or to hardcode the location of the lib
     // like I did at the following line.
-
     //#define KROSS_PYTHON_LIBRARY "/home/kde4/koffice/_build/lib/krosspython.la"
     #define KROSS_PYTHON_LIBRARY "krosspython"
     #define KROSS_RUBY_LIBRARY "krossruby"

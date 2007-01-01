@@ -26,6 +26,13 @@
 #include <QtCore/QVariant>
 #include <QtCore/QMetaType>
 
+class QColor;
+class QFont;
+class QBrush;
+class QDate;
+class QTime;
+class QDateTime;
+
 #include <kdebug.h>
 
 /// \internal
@@ -100,6 +107,12 @@ class TestObject : public QObject
         QStringList func_qstringlist_qstringlist(QStringList);
         QVariantList func_qvariantlist_qvariantlist(QVariantList);
         QVariantMap func_qvariantmap_qvariantmap(QVariantMap);
+        QColor func_qcolor_qcolor(const QColor&);
+        QFont func_qfont_qfont(const QFont&);
+        QBrush func_qbrush_qbrush(const QBrush&);
+        QTime func_qtime_qtime(const QTime&);
+        QDate func_qdate_qdate(const QDate&);
+        QDateTime func_qdatetime_qdatetime(const QDateTime&);
         QVariant func_qvariant_qvariant(const QVariant&);
 
         // for misc tests

@@ -75,7 +75,7 @@ namespace Kross {
     {
             Q_OBJECT
         public:
-            ScriptManagerModule();
+            explicit ScriptManagerModule();
             virtual ~ScriptManagerModule();
 
         public slots:

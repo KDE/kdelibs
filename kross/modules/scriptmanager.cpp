@@ -49,7 +49,6 @@
 #include <knewstuff/engine.h>
 #include <knewstuff/downloaddialog.h>
 #include <knewstuff/knewstuffsecure.h>
-#include <kdemacros.h>
 
 extern "C"
 {
@@ -105,7 +104,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     d->view = new QTreeView(this);
     mainlayout->addWidget(d->view);
     d->view->setAlternatingRowColors(true);
-    d->view->setRootIsDecorated(false);
+    d->view->setRootIsDecorated(true);
     d->view->setSortingEnabled(true);
     d->view->setItemsExpandable(false);
     d->view->header()->hide();
@@ -181,7 +180,7 @@ void ScriptManagerCollection::slotSelectionChanged()
 {
     bool stopenabled = false;
     foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        Action* action = index.isValid() ? static_cast< Action* >(index.internalPointer()) : 0;
+        Action* action = ActionCollectionModel::action(index);
         if( ! stopenabled )
             stopenabled = (action && ! action->isFinalized());
     }
@@ -199,7 +198,8 @@ void ScriptManagerCollection::slotRun()
     foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
         if( ! index.isValid() ) continue;
         d->stopbtn->setEnabled(true);
-        Action* action = static_cast< Action* >(index.internalPointer());
+        Action* action = ActionCollectionModel::action(index);
+        if( ! action ) continue;
         connect(action, SIGNAL(finished(Kross::Action*)), SLOT(slotSelectionChanged()));
         action->trigger();
     }
@@ -210,7 +210,8 @@ void ScriptManagerCollection::slotStop()
 {
     foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
         if( ! index.isValid() ) continue;
-        Action* action = static_cast< Action* >(index.internalPointer());
+        Action* action = ActionCollectionModel::action(index);
+        if( ! action ) continue;
         //connect(action, SIGNAL(started(Kross::Action*)), SLOT(slotSelectionChanged()));
         //connect(action, SIGNAL(finished(Kross::Action*)), SLOT(slotSelectionChanged()));
         action->finalize();

@@ -9,6 +9,7 @@ include_directories(
 
 set(krosscore_LIB_SRCS
    krossconfig.cpp
+   variant.cpp 
    interpreter.cpp 
    script.cpp
    action.cpp
@@ -34,6 +35,7 @@ install( FILES
 	errorinterface.h 
 	childreninterface.h 
 	metatype.h 
+	variant.h 
 	interpreter.h 
 	script.h 
 	action.h 

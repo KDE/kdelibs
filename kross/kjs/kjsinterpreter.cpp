@@ -23,28 +23,9 @@
 //#include <kglobal.h>
 //#include <kstandarddirs.h>
 
-// define the KROSSKJS_EXPORT macro
-#ifdef Q_WS_WIN
-# ifndef KROSSKJS_EXPORT
-#  ifdef MAKE_KROSSKJS_LIB
-#   define KROSSKJS_EXPORT KDE_EXPORT
-#  elif KDE_MAKE_LIB
-#   define KROSSKJS_EXPORT KDE_IMPORT
-#  else
-#   define KROSSKJS_EXPORT
-#  endif
-# endif
-#else
-# define KROSSKJS_EXPORT KDE_EXPORT
-#endif
-
-extern "C"
-{
-    KROSSKJS_EXPORT void* krossinterpreter(Kross::InterpreterInfo* info)
-    {
-        return new Kross::KjsInterpreter(info);
-    }
-}
+// The in krossconfig.h defined KROSS_EXPORT_INTERPRETER macro defines an
+// exported C function used as factory for Kross::KjsInterpreter instances.
+KROSS_EXPORT_INTERPRETER( Kross::KjsInterpreter )
 
 using namespace Kross;
 
