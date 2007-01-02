@@ -1,6 +1,7 @@
 /**
   * This file is part of the KDE project
   * Copyright (C) 2006 Rafael Fernández López <ereslibre@gmail.com>
+  * Copyright (C) 2001 George Staikos <staikos@kde.org>
   * Copyright (C) 2000 Matej Koss <koss@miesto.sk>
   *                    David Faure <faure@kde.org>
   *
