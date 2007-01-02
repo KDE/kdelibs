@@ -1115,7 +1115,7 @@ KIconLoader *KApplication::iconLoader() const
 
     if ( d->iconLoader == 0 ) {
         d->iconLoader = new KIconLoader( instanceName(), dirs() );
-        connect(KGlobalSettings::self(), SIGNAL(iconsChanged(int)),
+        connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
                 this, SLOT(newIconLoader()));
     }
 
