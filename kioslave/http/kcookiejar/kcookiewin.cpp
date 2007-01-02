@@ -77,7 +77,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 {
 	setModal(true);
 	setObjectName("cookiealert");
-	setButtons(None);
+	setButtons(User1|User2|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( SmallIcon("cookie") );
@@ -134,8 +134,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 
     // Cookie Details dialog...
     m_detailView = new KCookieDetail( cookieList, count, vBox1 );
-    m_showDetails = showDetails;
-    m_showDetails ? m_detailView->show():m_detailView->hide();
+    setDetailsWidget(m_detailView);
+    m_showDetails=showDetails;
+    setDetails(showDetails);
 
     // Cookie policy choice...
     QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"),vBox1);
@@ -174,29 +175,16 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	m_allCookies->setChecked(true);
     else
 	m_onlyCookies->setChecked(true);
-    // Accept/Reject buttons
-    QWidget* bbox = new QWidget( vBox1 );
-    QBoxLayout* bbLay = new QHBoxLayout( bbox );
-    bbLay->setSpacing( KDialog::spacingHint() );
-    QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
-    btn->setDefault( true );
-    btn->setFocus();
-    connect( btn, SIGNAL(clicked()), SLOT(accept()) );
-    bbLay->addWidget( btn );
-    btn = new QPushButton( i18n("&Reject"), bbox );
-    connect( btn, SIGNAL(clicked()), SLOT(reject()) );
-    bbLay->addWidget( btn );
-    bbLay->addStretch( 1 );
-    QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
-
-    m_button = new QPushButton( bbox );
-    m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
-    connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
-    bbLay->addWidget( m_button );
-#ifndef QT_NO_WHATSTHIS
-    m_button->setWhatsThis(i18n("See or modify the cookie information") );
+    setButtonText(KDialog::User1, i18n("&Accept"));
+    setButtonText(KDialog::User2, i18n("&Reject"));
+    connect(this,SIGNAL(user2Clicked()),SLOT(reject()));
+    connect(this,SIGNAL(user1Clicked()),SLOT(accept()));
+    connect(this,SIGNAL(detailsClicked()),SLOT(slotCookieDetails()));
+    //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
+#ifndef QT_NO_WHATSTHIS    
+    setButtonToolTip(Details, i18n("See or modify the cookie information") );
 #endif
-
+    setDefaultButton(User1);
 
     //setFixedSize( sizeHint() );
 }
@@ -207,22 +195,7 @@ KCookieWin::~KCookieWin()
 
 void KCookieWin::slotCookieDetails()
 {
-    if ( m_detailView->isVisible() )
-    {
-        m_detailView->setMaximumSize( 0, 0 );
-        m_detailView->adjustSize();
-        m_detailView->hide();
-        m_button->setText( i18n( "&Details >>" ) );
-        m_showDetails = false;
-    }
-    else
-    {
-        m_detailView->setMaximumSize( 1000, 1000 );
-        m_detailView->adjustSize();
-        m_detailView->show();
-        m_button->setText( i18n( "&Details <<" ) );
-        m_showDetails = true;
-    }
+  m_showDetails=!m_showDetails;
 }
 
 KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )

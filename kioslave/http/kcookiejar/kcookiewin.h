@@ -73,8 +73,8 @@ private :
     QRadioButton* m_onlyCookies, *m_allCookies, *m_allCookiesDomain;
     KCookieDetail* m_detailView;
     bool m_showDetails;
-
 private Q_SLOTS:
     void slotCookieDetails();
+
 };
 #endif
