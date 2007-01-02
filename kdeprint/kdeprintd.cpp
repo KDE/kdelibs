@@ -25,7 +25,7 @@
 #include <knotification.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <kio/passdlg.h>
+#include <kio/passworddialog.h>
 #include <kio/authinfo.h>
 #include <qlabel.h>
 #include <kpushbutton.h>
@@ -165,7 +165,7 @@ void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 	m_processpool.removeAll( proc );
 }
 
-QString KDEPrintd::openPassDlg(const QString& user)
+QString KDEPrintd::openPasswordDialog(const QString& user)
 {
 	QString	user_(user), pass_, result;
 	if (KIO::PasswordDialog::getNameAndPassword(user_, pass_, NULL) == KDialog::Accepted)

@@ -36,10 +36,10 @@
 #include <kurl.h>
 #include <kurlrequester.h>
 
-#include "kurlrequesterdlg.h"
+#include "kurlrequesterdialog.h"
 
 
-KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, QWidget *parent)
+KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, QWidget *parent)
     :   KDialog( parent )
 {
   setButtons( Ok | Cancel | User1 );
@@ -48,7 +48,7 @@ KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, QWidget *parent)
   initDialog(i18n( "Location:" ), urlName);
 }
 
-KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent)
+KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, const QString& _text, QWidget *parent)
     :   KDialog( parent )
 {
   setButtons( Ok | Cancel | User1 );
@@ -57,11 +57,11 @@ KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, const QString& _text
   initDialog(_text, urlName);
 }
 
-KUrlRequesterDlg::~KUrlRequesterDlg()
+KUrlRequesterDialog::~KUrlRequesterDialog()
 {
 }
 
-void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
+void KUrlRequesterDialog::initDialog(const QString &text,const QString &urlName)
 {
   setDefaultButton(Ok);
   showButtonSeparator(true);
@@ -92,19 +92,19 @@ void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
     resize(minimumSize());
 }
 
-void KUrlRequesterDlg::slotTextChanged(const QString & text)
+void KUrlRequesterDialog::slotTextChanged(const QString & text)
 {
     bool state = !text.trimmed().isEmpty();
     enableButtonOk( state );
     enableButton( KDialog::User1, state );
 }
 
-void KUrlRequesterDlg::slotClear()
+void KUrlRequesterDialog::slotClear()
 {
     urlRequester_->clear();
 }
 
-KUrl KUrlRequesterDlg::selectedUrl() const
+KUrl KUrlRequesterDialog::selectedUrl() const
 {
     if ( result() == QDialog::Accepted )
         return urlRequester_->url();
@@ -113,10 +113,10 @@ KUrl KUrlRequesterDlg::selectedUrl() const
 }
 
 
-KUrl KUrlRequesterDlg::getUrl(const QString& dir, QWidget *parent,
+KUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
                               const QString& caption)
 {
-    KUrlRequesterDlg dlg(dir, parent);
+    KUrlRequesterDialog dlg(dir, parent);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
@@ -129,16 +129,16 @@ KUrl KUrlRequesterDlg::getUrl(const QString& dir, QWidget *parent,
     return url;
 }
 
-KFileDialog * KUrlRequesterDlg::fileDialog()
+KFileDialog * KUrlRequesterDialog::fileDialog()
 {
     return urlRequester_->fileDialog();
 }
 
-KUrlRequester * KUrlRequesterDlg::urlRequester()
+KUrlRequester * KUrlRequesterDialog::urlRequester()
 {
     return urlRequester_;
 }
 
-#include "kurlrequesterdlg.moc"
+#include "kurlrequesterdialog.moc"
 
 // vim:ts=4:sw=4:tw=78

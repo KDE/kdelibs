@@ -134,7 +134,7 @@ bool UIServerAdaptor::showSSLCertDialog(const QString &host, const QStringList &
 {
     // handle method call org.kde.KIO.UIServer.showSSLCertDialog
     // HAND EDIT: expand the return values
-    KSSLCertDlgRet ret = parent()->showSSLCertDialog(host, certList, mainwindow);
+    KSSLCertDialogRet ret = parent()->showSSLCertDialog(host, certList, mainwindow);
     save = ret.save;
     choice = ret.choice;
     send = ret.send;

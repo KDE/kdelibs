@@ -10,8 +10,8 @@ install( FILES kssl.h
   ksslcertificatefactory.h
   ksslcertificatecache.h
   ksslpeerinfo.h
-  ksslinfodlg.h
-  ksslcertdlg.h
+  ksslinfodialog.h
+  ksslcertdialog.h
   ksslutils.h
   kopenssl.h
   ksslall.h

@@ -41,7 +41,7 @@
  * <b>Example:</b>\n
  *
  * \code
- * UrlDlg::UrlDlg( QWidget *parent )
+ * UrlDialog::UrlDialog( QWidget *parent )
  *   : KPageDialog( parent )
  * {
  *   setFaceType( List );

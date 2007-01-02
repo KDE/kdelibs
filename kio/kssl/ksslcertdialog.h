@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KSSLCERTDLG_H
-#define _KSSLCERTDLG_H
+#ifndef _KSSLCERTDIALOG_H
+#define _KSSLCERTDIALOG_H
 
 #include <qstringlist.h>
 #include <kdialog.h>
@@ -40,7 +40,7 @@ class QPushButton;
  * @see KSSL
  * @short KDE X.509 Certificate Dialog
  */
-class KIO_EXPORT KSSLCertDlg : public KDialog {
+class KIO_EXPORT KSSLCertDialog : public KDialog {
 	Q_OBJECT
 public:
 	/**
@@ -50,12 +50,12 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param modal create a modal dialog if set to true
 	 */
-	KSSLCertDlg(QWidget *parent=0L, const char *name=0L, bool modal=false);
+	KSSLCertDialog(QWidget *parent=0L, const char *name=0L, bool modal=false);
 
 	/**
 	 *  Destroy this object and close the dialog
 	 */
-	virtual ~KSSLCertDlg();
+	virtual ~KSSLCertDialog();
 
 	/**
 	 *  Setup the dialog. Call this before you display the dialog.
@@ -109,8 +109,8 @@ private Q_SLOTS:
 	void slotDont();
 
 private:
-	class KSSLCertDlgPrivate;
-	KSSLCertDlgPrivate* const d;
+	class KSSLCertDialogPrivate;
+	KSSLCertDialogPrivate* const d;
 	QCheckBox *_save;
 	QRadioButton *_send, *_dont;
 	Q3ListView *_certs;
@@ -124,7 +124,7 @@ private:
  * Don't use it directly.
  * \internal
  */
-class KIO_EXPORT KSSLCertDlgRet {
+class KIO_EXPORT KSSLCertDialogRet {
 public:
    QString choice;
    bool ok;
@@ -132,8 +132,8 @@ public:
    bool save;
 };
 
-KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
-KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
+KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDialogRet& r);
+KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertDialogRet& r);
 
 #endif
 

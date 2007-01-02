@@ -40,7 +40,7 @@
 #include <kurlpixmapprovider.h>
 #include <kinputdialog.h>
 #include <kio/netaccess.h>
-#include <kio/renamedlg.h>
+#include <kio/renamedialog.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
@@ -423,7 +423,7 @@ void KDirSelectDialog::slotMkdir()
     QString where = url().pathOrUrl();
     QString name = i18n( "New Folder" );
     if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
-        name = KIO::RenameDlg::suggestName( url(), name );
+        name = KIO::RenameDialog::suggestName( url(), name );
 
     QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ,  where ),

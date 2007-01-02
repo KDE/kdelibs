@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kio/skipdlg.h"
+#include "kio/skipdialog.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -34,7 +34,7 @@
 
 using namespace KIO;
 
-SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
+SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
   : KDialog ( parent ), modal( _modal )
 {
   setCaption( i18n( "Information" ) );
@@ -59,11 +59,11 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
   resize( sizeHint() );
 }
 
-SkipDlg::~SkipDlg()
+SkipDialog::~SkipDialog()
 {
 }
 
-void SkipDlg::b0Pressed()
+void SkipDialog::b0Pressed()
 {
   if ( modal )
     done( 0 );
@@ -71,7 +71,7 @@ void SkipDlg::b0Pressed()
     emit result( this, 0 );
 }
 
-void SkipDlg::b1Pressed()
+void SkipDialog::b1Pressed()
 {
   if ( modal )
     done( 1 );
@@ -79,7 +79,7 @@ void SkipDlg::b1Pressed()
     emit result( this, 1 );
 }
 
-void SkipDlg::b2Pressed()
+void SkipDialog::b2Pressed()
 {
   if ( modal )
     done( 2 );
@@ -87,10 +87,10 @@ void SkipDlg::b2Pressed()
     emit result( this, 2 );
 }
 
-SkipDlg_Result KIO::open_SkipDlg( bool _multi, const QString& _error_text )
+SkipDialog_Result KIO::open_SkipDialog( bool _multi, const QString& _error_text )
 {
-  SkipDlg dlg( 0L, _multi, _error_text, true );
-  return (SkipDlg_Result) dlg.exec();
+  SkipDialog dlg( 0L, _multi, _error_text, true );
+  return (SkipDialog_Result) dlg.exec();
 }
 
-#include "skipdlg.moc"
+#include "skipdialog.moc"

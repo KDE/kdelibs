@@ -1625,18 +1625,18 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         //kDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
         if (offset)
         {
-            RenameDlg_Result res = R_RESUME;
+            RenameDialog_Result res = R_RESUME;
 
             if (!KProtocolManager::autoResume() && !m_overwrite)
             {
                 QString newPath;
                 KIO::Job* job = ( !progressId() && parentJob() ) ? parentJob() : this;
                 // Ask confirmation about resuming previous transfer
-                res = Observer::self()->open_RenameDlg(
+                res = Observer::self()->open_RenameDialog(
                       job, i18n("File Already Exists"),
                       m_src.url(),
                       m_dest.url(),
-                      (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
+                      (RenameDialog_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
                       d->m_sourceSize, offset );
             }
 

@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kfilesharedlg.h"
+#include "kfilesharedialog.h"
 #include <kvbox.h>
 #include <qlabel.h>
 #include <qdir.h>
@@ -50,7 +50,7 @@ public:
 };
 
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
-    : KPropsDlgPlugin( _props ),d(new Private)
+    : KPropertiesDialogPlugin( _props ),d(new Private)
 {
     d->m_vBox = new KVBox();
     _props->addPage( d->m_vBox, i18n("&Share") );
@@ -283,7 +283,7 @@ QWidget* KFileSharePropsPlugin::page() const
     return d->m_vBox;
 }
 
-#include "kfilesharedlg.moc"
+#include "kfilesharedialog.moc"
 
 //TODO: do we need to monitor /etc/security/fileshare.conf ?
 // if the user is added to the 'fileshare' group, we wouldn't be notified

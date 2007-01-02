@@ -33,7 +33,7 @@ public:
 };
 
 KPreviewPropsPlugin::KPreviewPropsPlugin(KPropertiesDialog* props)
-  : KPropsDlgPlugin(props),d(new KPreviewPropsPluginPrivate)
+  : KPropertiesDialogPlugin(props),d(new KPreviewPropsPluginPrivate)
 {
 
     if (properties->items().count()>1)

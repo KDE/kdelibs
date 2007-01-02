@@ -25,8 +25,8 @@
  * display a properties dialog.
  */
 
-#ifndef __propsdlg_h
-#define __propsdlg_h
+#ifndef __propsdialog_h
+#define __propsdialog_h
 
 #include <qstring.h>
 #include <q3ptrlist.h>
@@ -44,11 +44,12 @@ class KLineEdit;
 class KUrlRequester;
 class QPushButton;
 class KIconButton;
-class KPropsDlgPlugin;
+class KPropertiesDialogPlugin;
 class QComboBox;
 class Q3ListBox;
 
-#define KPropsPage KPropsDlgPlugin
+#warning "Are you sure?"
+#define KPropsPage KPropertiesDialogPlugin
 
 class KJob;
 namespace KIO { class Job; }
@@ -206,16 +207,16 @@ public:
    * Adds a "3rd party" properties plugin to the dialog.  Useful
    * for extending the properties mechanism.
    *
-   * To create a new plugin type, inherit from the base class KPropsDlgPlugin
+   * To create a new plugin type, inherit from the base class KPropertiesDialogPlugin
    * and implement all the methods. If you define a service .desktop file
    * for your plugin, you do not need to call insertPlugin().
    *
-   * @param plugin is a pointer to the KPropsDlgPlugin. The Properties
-   *        dialog will do destruction for you. The KPropsDlgPlugin \b must
+   * @param plugin is a pointer to the KPropertiesDialogPlugin. The Properties
+   *        dialog will do destruction for you. The KPropertiesDialogPlugin \b must
    *        have been created with the KPropertiesDialog as its parent.
-   * @see KPropsDlgPlugin
+   * @see KPropertiesDialogPlugin
    */
-  void insertPlugin (KPropsDlgPlugin *plugin);
+  void insertPlugin (KPropertiesDialogPlugin *plugin);
 
   /**
    * The URL of the file that has its properties being displayed.
@@ -269,7 +270,7 @@ public:
    * Renames the item to the specified name. This can only be called if
    * the dialog applies to a single file or URL.
    * @param _name new filename, encoded.
-   * \see FilePropsDlgPlugin::applyChanges
+   * \see FilePropsDialogPlugin::applyChanges
    */
   void rename( const QString& _name );
 
@@ -369,7 +370,7 @@ private:
   /**
    * List of all plugins inserted ( first one first )
    */
-  Q3PtrList<KPropsDlgPlugin> m_pageList;
+  Q3PtrList<KPropertiesDialogPlugin> m_pageList;
 
 private Q_SLOTS:
   void slotStatResult( KJob * ); // No longer used
@@ -387,14 +388,14 @@ private:
  * A plugin in itself is just a library containing code, not a dialog's page.
  * It's up to the plugin to insert pages into the parent dialog.
  *
- * To make a plugin available, define a service that implements the KPropsDlg/Plugin
+ * To make a plugin available, define a service that implements the KPropsDialog/Plugin
  * servicetype, as well as the mimetypes for which the plugin should be created.
- * For instance, ServiceTypes=KPropsDlg/Plugin,text/html,application/x-mymimetype.
+ * For instance, ServiceTypes=KPropsDialog/Plugin,text/html,application/x-mymimetype.
  *
  * You can also include X-KDE-Protocol=file if you want that plugin
  * to be loaded only for local files, for instance.
  */
-class KIO_EXPORT KPropsDlgPlugin : public QObject
+class KIO_EXPORT KPropertiesDialogPlugin : public QObject
 {
   Q_OBJECT
 public:
@@ -403,8 +404,8 @@ public:
    * To insert tabs into the properties dialog, use the add methods provided by
    * KPageDialog (the properties dialog is a KPageDialog).
    */
-  KPropsDlgPlugin( KPropertiesDialog *_props );
-  virtual ~KPropsDlgPlugin();
+  KPropertiesDialogPlugin( KPropertiesDialog *_props );
+  virtual ~KPropertiesDialogPlugin();
 
   /**
    * Applies all changes to the file.
@@ -441,8 +442,8 @@ protected:
 
   int fontHeight;
 private:
-  class KPropsDlgPluginPrivate;
-  KPropsDlgPluginPrivate* const d;
+  class KPropertiesDialogPluginPrivate;
+  KPropertiesDialogPluginPrivate* const d;
 };
 
 /**
@@ -450,7 +451,7 @@ private:
  *  This plugin displays the name of the file, its size and access times.
  * @internal
  */
-class KIO_EXPORT KFilePropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KFilePropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
@@ -528,7 +529,7 @@ private:
  * the owner of a file.
  * @internal
  */
-class KIO_EXPORT KFilePermissionsPropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KFilePermissionsPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
@@ -617,7 +618,7 @@ private:
  * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
-class KIO_EXPORT KUrlPropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KUrlPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
@@ -652,7 +653,7 @@ private:
  * Type=MimeType
  * @internal
  */
-class KIO_EXPORT KBindingPropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KBindingPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
@@ -682,7 +683,7 @@ private:
  * Properties plugin for device .desktop files
  * @internal
  */
-class KIO_EXPORT KDevicePropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KDevicePropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:
@@ -734,7 +735,7 @@ class Ui_KPropertiesDesktopBase;
  * Such files are used to represent a program in kicker and konqueror.
  * @internal
  */
-class KIO_EXPORT KDesktopPropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KDesktopPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:

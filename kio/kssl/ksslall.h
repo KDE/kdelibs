@@ -21,7 +21,7 @@
 #ifndef __INC_KSSL_ALL_H
 #define __INC_KSSL_ALL_H
 #include <ksslcertificatefactory.h>
-#include <ksslinfodlg.h>
+#include <ksslinfodialog.h>
 #include <ksslx509map.h>
 #include <kssl.h>
 #include <ksslcertificatehome.h>

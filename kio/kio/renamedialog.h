@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_rename_dlg__
-#define __kio_rename_dlg__
+#ifndef __kio_rename_dialog__
+#define __kio_rename_dialog__
 
 #include <kurl.h>
 #include <qdialog.h>
@@ -32,19 +32,19 @@
 namespace KIO {
 
 // KDE4: get rid of M_OVERWRITE_ITSELF, trigger it internally if src==dest
-enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
+enum RenameDialog_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
 
 /**
- * The result of open_RenameDlg().
+ * The result of open_RenameDialog().
  */
-enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
+enum RenameDialog_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
 
 
 /**
  * A dialog for the options to rename two files.
  * @short A dialog for renaming files.
  */
-class KIO_EXPORT RenameDlg : public QDialog
+class KIO_EXPORT RenameDialog : public QDialog
 {
   Q_OBJECT
 public:
@@ -61,18 +61,18 @@ public:
    * @param ctimeDest creation time of destination file
    * @param mtimeSrc modification time of source file
    * @param mtimeDest modification time of destination file
-   * @see RenameDlg_Mode
+   * @see RenameDialog_Mode
    */
-  RenameDlg( QWidget *parent, const QString & caption,
+  RenameDialog( QWidget *parent, const QString & caption,
              const KUrl & src, const KUrl & dest,
-             RenameDlg_Mode mode,
+             RenameDialog_Mode mode,
              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
              KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
              time_t ctimeSrc = (time_t) -1,
              time_t ctimeDest = (time_t) -1,
              time_t mtimeSrc = (time_t) -1,
              time_t mtimeDest = (time_t) -1 );
-  ~RenameDlg();
+  ~RenameDialog();
 
   /**
    * @return the new destination
@@ -102,22 +102,22 @@ public Q_SLOTS:
 protected Q_SLOTS:
   void enableRenameButton(const QString &);
 private:
- class RenameDlgPrivate;
- RenameDlgPrivate* const d;
+ class RenameDialogPrivate;
+ RenameDialogPrivate* const d;
  void pluginHandling( );
 };
 
   /**
-   * \relates KIO::RenameDlg
+   * \relates KIO::RenameDialog
    * Construct a modal, parent-less "rename" dialog, and return
    * a result code, as well as the new dest. Much easier to use than the
-   * class RenameDlg directly.
+   * class RenameDialog directly.
 
    * @param caption the caption for the dialog box
    * @param src the URL of the file/dir we're trying to copy, as it's part of the text message
    * @param dest the URL of the destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
-   *             see RenameDlg_Mode
+   *             see RenameDialog_Mode
    * @param newDestPath the new destination path, valid if R_RENAME was returned.
    * @param sizeSrc size of source file
    * @param sizeDest size of destination file
@@ -127,9 +127,9 @@ private:
    * @param mtimeDest modification time of destination file
    * @return the result
    */
-KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
+KIO_EXPORT RenameDialog_Result open_RenameDialog( const QString & caption,
                                  const KUrl& src, const KUrl & dest,
-                                 RenameDlg_Mode mode, QString& newDestPath,
+                                 RenameDialog_Mode mode, QString& newDestPath,
                                  KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
                                  KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
                                  time_t ctimeSrc = (time_t) -1,

@@ -18,7 +18,7 @@
 #ifndef KDE_USE_FINAL
 #undef QT3_SUPPORT
 #endif
-#include "passdlg.h"
+#include "passworddialog.h"
 
 #include <QCheckBox>
 #include <QLabel>
@@ -375,4 +375,4 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
  }
 
 
-#include "passdlg.moc"
+#include "passworddialog.moc"

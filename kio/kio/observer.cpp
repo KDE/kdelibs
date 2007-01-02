@@ -30,11 +30,11 @@
 
 #include "uiserveriface.h"
 
-#include "passdlg.h"
+#include "passworddialog.h"
 #include "slavebase.h"
 #include <kmessagebox.h>
-#include <ksslinfodlg.h>
-#include <ksslcertdlg.h>
+#include <ksslinfodialog.h>
+#include <ksslcertdialog.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 #include <klocale.h>
@@ -241,7 +241,7 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
   m_uiserver->unmounting( job->progressId(), point );
 }
 
-bool Observer::openPassDlg( const QString& prompt, QString& user,
+bool Observer::openPasswordDialog( const QString& prompt, QString& user,
 			    QString& pass, bool readOnly )
 {
    AuthInfo info;
@@ -249,7 +249,7 @@ bool Observer::openPassDlg( const QString& prompt, QString& user,
    info.username = user;
    info.password = pass;
    info.readOnly = readOnly;
-   bool result = openPassDlg ( info );
+   bool result = openPasswordDialog ( info );
    if ( result )
    {
      user = info.username;
@@ -258,9 +258,9 @@ bool Observer::openPassDlg( const QString& prompt, QString& user,
    return result;
 }
 
-bool Observer::openPassDlg( KIO::AuthInfo& info )
+bool Observer::openPasswordDialog( KIO::AuthInfo& info )
 {
-    kDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg: User= " << info.username
+    kDebug(KDEBUG_OBSERVER) << "Observer::openPasswordDialog: User= " << info.username
                              << ", Message= " << info.prompt << endl;
     int result = KIO::PasswordDialog::getNameAndPassword( info.username, info.password,
                                                           &info.keepPassword, info.prompt,
@@ -325,7 +325,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             QDBusReply<QVariantMap> reply =
                 observer.call(QDBus::BlockWithGui, "metadata", progressId );
             const QVariantMap &meta = reply;
-            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
             KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate
@@ -394,10 +394,10 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 #endif
 }
 
-RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
+RenameDialog_Result Observer::open_RenameDialog( KIO::Job* job,
                                            const QString & caption,
                                            const QString& src, const QString & dest,
-                                           RenameDlg_Mode mode, QString& newDest,
+                                           RenameDialog_Mode mode, QString& newDest,
                                            KIO::filesize_t sizeSrc,
                                            KIO::filesize_t sizeDest,
                                            time_t ctimeSrc,
@@ -406,7 +406,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
                                            time_t mtimeDest
                                            )
 {
-  kDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg job=" << job << endl;
+  kDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDialog job=" << job << endl;
   if (job)
     kDebug(KDEBUG_OBSERVER) << "                        progressId=" << job->progressId() << endl;
   // Hide existing dialog box if any
@@ -414,7 +414,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
     m_uiserver->setJobVisible( job->progressId(), false );
   // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
   // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
-  RenameDlg_Result res = KIO::open_RenameDlg( caption, src, dest, mode,
+  RenameDialog_Result res = KIO::open_RenameDialog( caption, src, dest, mode,
                                                newDest, sizeSrc, sizeDest,
                                                ctimeSrc, ctimeDest, mtimeSrc,
                                                mtimeDest );
@@ -423,15 +423,15 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
   return res;
 }
 
-SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
+SkipDialog_Result Observer::open_SkipDialog( KIO::Job* job,
                                        bool _multi,
                                        const QString& _error_text )
 {
   // Hide existing dialog box if any
   if (job && job->progressId())
       m_uiserver->setJobVisible( job->progressId(), false );
-  // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
-  SkipDlg_Result res = KIO::open_SkipDlg( _multi, _error_text );
+  // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
+  SkipDialog_Result res = KIO::open_SkipDialog( _multi, _error_text );
   if (job && job->progressId())
       m_uiserver->setJobVisible( job->progressId(), true );
   return res;

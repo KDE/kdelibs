@@ -105,7 +105,7 @@ set(kiocore_STAT_SRCS
   kio/kmimemagic.cpp
   kio/tcpslavebase.cpp
   kio/slavebase.cpp
-  kio/passdlg.cpp
+  kio/passworddialog.cpp
   kio/forwardingslavebase.cpp
   kio/progressbase.cpp
   kio/defaultprogress.cpp
@@ -113,9 +113,9 @@ set(kiocore_STAT_SRCS
   kio/kdirnotify.cpp
   kio/observer.cpp
   kio/kemailsettings.cpp
-  kio/renamedlg.cpp
-  kio/renamedlgplugin.cpp
-  kio/skipdlg.cpp
+  kio/renamedialog.cpp
+  kio/renamedialogplugin.cpp
+  kio/skipdialog.cpp
   kio/kremoteencoding.cpp
   kio/kmimetypechooser.cpp
   kio/kbuildsycocaprogressdialog.cpp
@@ -164,14 +164,14 @@ set(kfile_STAT_SRCS
   kfile/kurlrequester.cpp
   kfile/kfilepreview.cpp
   kfile/kurlcombobox.cpp
-  kfile/kurlrequesterdlg.cpp
+  kfile/kurlrequesterdialog.cpp
   kfile/kopenwithdialog.cpp
   kfile/kpropertiesdialog.cpp
   kfile/kicondialog.cpp
   kfile/krecentdirs.cpp
   kfile/kdiskfreesp.cpp
   kfile/kimagefilepreview.cpp
-  kfile/kfilesharedlg.cpp
+  kfile/kfilesharedialog.cpp
   kfile/kurlbar.cpp
   kfile/kmetaprops.cpp
   kfile/kpreviewprops.cpp
@@ -202,8 +202,8 @@ set(kssl_STAT_SRCS
   kssl/ksslcertificatefactory.cc
   kssl/ksslcertificatecache.cc
   kssl/ksslpeerinfo.cc
-  kssl/ksslinfodlg.cc
-  kssl/ksslcertdlg.cc
+  kssl/ksslinfodialog.cc
+  kssl/ksslcertdialog.cc
   kssl/ksslutils.cc
   kssl/kopenssl.cc
   kssl/ksslpkcs12.cc
@@ -284,8 +284,8 @@ install( FILES
  kfileplugin.desktop
  kscan.desktop
  kurifilterplugin.desktop
- renamedlgplugin.desktop
- kfile/kpropsdlgplugin.desktop  
+ renamedialogplugin.desktop
+ kfile/kpropertiesdialogplugin.desktop  
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
@@ -296,7 +296,7 @@ install(  FILES
   kio/slaveconfig.h
   kio/sessiondata.h
   kio/global.h
-  kio/passdlg.h
+  kio/passworddialog.h
   kio/netaccess.h
   kio/job.h
   kio/scheduler.h
@@ -322,9 +322,9 @@ install(  FILES
   kio/metainfojob.h
   kio/davjob.h
   kio/directorysizejob.h
-  kio/renamedlg.h
-  kio/renamedlgplugin.h
-  kio/skipdlg.h
+  kio/renamedialog.h
+  kio/renamedialogplugin.h
+  kio/skipdialog.h
   kio/safesite.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
@@ -378,7 +378,7 @@ install( FILES
   kfile/kfiledialog.h
   kfile/kfileiconview.h
   kfile/kfilepreview.h
-  kfile/kfilesharedlg.h
+  kfile/kfilesharedialog.h
   kfile/kfiletreebranch.h
   kfile/kfiletreeview.h
   kfile/kfiletreeviewitem.h
@@ -390,12 +390,12 @@ install( FILES
   kfile/kopenwithdialog.h
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
-  kfile/kpropsdlg.h
+  kfile/kpropsdialog.h
   kfile/krecentdocument.h
   kfile/kurlbar.h
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
-  kfile/kurlrequesterdlg.h
+  kfile/kurlrequesterdialog.h
   ${CMAKE_CURRENT_BINARY_DIR}/ui_knotifywidgetbase.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 

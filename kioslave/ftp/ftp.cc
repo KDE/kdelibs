@@ -510,7 +510,7 @@ bool Ftp::ftpLogin()
       info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
       bool disablePassDlg = config()->readEntry( "DisablePassDlg", false );
-      if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
+      if ( disablePassDlg || !openPasswordDialog( info, errorMsg ) )
       {
         error( ERR_USER_CANCELED, m_host );
         return false;

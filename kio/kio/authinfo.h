@@ -209,7 +209,7 @@ public:
    /**
     * Flag to indicate the persistence of the given password.
     *
-    * This is a two-way flag, when set before calling openPassDlg
+    * This is a two-way flag, when set before calling openPasswordDialog
     * it makes the "keep Password" check box visible to the user.
     * In return the flag will indicate the state of the check box.
     * By default if the flag is checked the password will be cached

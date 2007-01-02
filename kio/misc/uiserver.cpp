@@ -56,12 +56,12 @@
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
 #include "uiserver.h"
-#include "passdlg.h"
-#include "kio/renamedlg.h"
-#include "kio/skipdlg.h"
+#include "passworddialog.h"
+#include "kio/renamedialog.h"
+#include "kio/skipdialog.h"
 #include "slavebase.h" // for QuestionYesNo etc.
-#include <ksslinfodlg.h>
-#include <ksslcertdlg.h>
+#include <ksslinfodialog.h>
+#include <ksslcertdialog.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 
@@ -1170,7 +1170,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
 
 void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, int mainwindow)
 {
-   KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
+   KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
    KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
    if (x) {
       // Set the chain back onto the certificate
@@ -1214,17 +1214,17 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
    // Don't delete kid!!
 }
 
-KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList)
+KSSLCertDialogRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList)
 {
     return showSSLCertDialog( host, certList, 0 );
 }
 
-KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow)
+KSSLCertDialogRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow)
 {
-   KSSLCertDlgRet rc;
+   KSSLCertDialogRet rc;
    rc.ok = false;
    if (!certList.isEmpty()) {
-      KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
+      KSSLCertDialog *kcd = new KSSLCertDialog(0L, 0L, true);
       kcd->setupDialog(certList);
       kcd->setHost(host);
       kDebug(7024) << "Showing SSL certificate dialog" << endl;
@@ -1244,7 +1244,7 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
 }
 
 
-QByteArray UIServer::open_RenameDlg( int id,
+QByteArray UIServer::open_RenameDialog( int id,
                                      const QString & caption,
                                      const QString& src, const QString & dest,
                                      int mode,
@@ -1255,11 +1255,11 @@ QByteArray UIServer::open_RenameDlg( int id,
                                      unsigned long mtimeSrc,
                                      unsigned long mtimeDest
                                      )
-{ return open_RenameDlg64(id, caption, src, dest, mode, sizeSrc, sizeDest,
+{ return open_RenameDialog64(id, caption, src, dest, mode, sizeSrc, sizeDest,
                           ctimeSrc, ctimeDest, mtimeSrc, mtimeDest); }
 
 
-QByteArray UIServer::open_RenameDlg64( int id,
+QByteArray UIServer::open_RenameDialog64( int id,
                                      const QString & caption,
                                      const QString& src, const QString & dest,
                                      int mode,
@@ -1276,13 +1276,13 @@ QByteArray UIServer::open_RenameDlg64( int id,
   if ( item )
     setItemVisible( item, false );
   QString newDest;
-  kDebug(7024) << "Calling KIO::open_RenameDlg" << endl;
-  KIO::RenameDlg_Result result = KIO::open_RenameDlg( caption, src, dest,
-                                                      (KIO::RenameDlg_Mode) mode, newDest,
+  kDebug(7024) << "Calling KIO::open_RenameDialog" << endl;
+  KIO::RenameDialog_Result result = KIO::open_RenameDialog( caption, src, dest,
+                                                      (KIO::RenameDialog_Mode) mode, newDest,
                                                       sizeSrc, sizeDest,
                                                       (time_t)ctimeSrc, (time_t)ctimeDest,
                                                       (time_t)mtimeSrc, (time_t)mtimeDest );
-  kDebug(7024) << "KIO::open_RenameDlg done" << endl;
+  kDebug(7024) << "KIO::open_RenameDialog done" << endl;
   QByteArray data;
   QDataStream stream( &data, QIODevice::WriteOnly );
   stream << quint8(result) << newDest;
@@ -1291,7 +1291,7 @@ QByteArray UIServer::open_RenameDlg64( int id,
   return data;
 }
 
-int UIServer::open_SkipDlg( int id,
+int UIServer::open_SkipDialog( int id,
                             int /*bool*/ multi,
                             const QString & error_text )
 {
@@ -1299,11 +1299,11 @@ int UIServer::open_SkipDlg( int id,
   ProgressItem *item = findItem( id );
   if ( item )
     setItemVisible( item, false );
-  kDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
-  KIO::SkipDlg_Result result = KIO::open_SkipDlg( (bool)multi, error_text );
+  kDebug(7024) << "Calling KIO::open_SkipDialog" << endl;
+  KIO::SkipDialog_Result result = KIO::open_SkipDialog( (bool)multi, error_text );
   if ( item && result != KIO::S_CANCEL )
     setItemVisible( item, true );
-  return (KIO::SkipDlg_Result) result;
+  return (KIO::SkipDialog_Result) result;
 }
 
 

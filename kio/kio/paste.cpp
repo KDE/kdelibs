@@ -29,7 +29,7 @@
 #include "kio/global.h"
 #include "kio/netaccess.h"
 #include "kio/observer.h"
-#include "kio/renamedlg.h"
+#include "kio/renamedialog.h"
 #include "kio/kprotocolmanager.h"
 
 #include <kurl.h>
@@ -62,15 +62,15 @@ static KUrl getNewFileName( const KUrl &u, const QString& text )
   if (KIO::NetAccess::exists(myurl, false, 0))
   {
       kDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
-      KIO::RenameDlg_Result res = KIO::R_OVERWRITE;
+      KIO::RenameDialog_Result res = KIO::R_OVERWRITE;
 
       QString newPath;
       // Ask confirmation about resuming previous transfer
-      res = Observer::self()->open_RenameDlg(
+      res = Observer::self()->open_RenameDialog(
                           0L, i18n("File Already Exists"),
                           u.pathOrUrl(),
                           myurl.pathOrUrl(),
-                          (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE), newPath);
+                          (KIO::RenameDialog_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE), newPath);
 
       if ( res == KIO::R_RENAME )
       {

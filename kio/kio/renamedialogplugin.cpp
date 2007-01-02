@@ -24,7 +24,7 @@
  */
 
 
-#include "kio/renamedlgplugin.h"
+#include "kio/renamedialogplugin.h"
 
 using namespace KIO;
 
@@ -35,7 +35,7 @@ using namespace KIO;
  * @param ctime   The changed time as of stat(2)
  * @param mtime   The modified time as of stat(2)
  */
-RenameDlgPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
+RenameDialogPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
                                      const KIO::filesize_t size, time_t ctime,
                                      time_t mtime )
     : m_url( url )
@@ -45,29 +45,29 @@ RenameDlgPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
     , m_mtime( mtime )
 {}
 
-KUrl RenameDlgPlugin::FileItem::url() const {
+KUrl RenameDialogPlugin::FileItem::url() const {
     return m_url;
 }
 
-QString RenameDlgPlugin::FileItem::mimeType() const {
+QString RenameDialogPlugin::FileItem::mimeType() const {
     return m_mimeType;
 }
 
-KIO::filesize_t RenameDlgPlugin::FileItem::fileSize() const {
+KIO::filesize_t RenameDialogPlugin::FileItem::fileSize() const {
     return m_fileSize;
 }
 
-time_t RenameDlgPlugin::FileItem::cTime() const {
+time_t RenameDialogPlugin::FileItem::cTime() const {
     return m_ctime;
 }
 
-time_t RenameDlgPlugin::FileItem::mTime() const {
+time_t RenameDialogPlugin::FileItem::mTime() const {
     return m_mtime;
 }
 
 
-RenameDlgPlugin::RenameDlgPlugin( QDialog* dlg)
+RenameDialogPlugin::RenameDialogPlugin( QDialog* dlg)
     : QWidget( dlg )
 {}
 
-#include "renamedlgplugin.moc"
+#include "renamedialogplugin.moc"

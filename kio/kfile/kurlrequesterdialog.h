@@ -35,23 +35,23 @@ class KFileDialog;
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
  */
-class KIO_EXPORT KUrlRequesterDlg : public KDialog
+class KIO_EXPORT KUrlRequesterDialog : public KDialog
 {
     Q_OBJECT
 
 public:
     /**
-     * Constructs a KUrlRequesterDlg.
+     * Constructs a KUrlRequesterDialog.
      *
      * @param url    The url of the directory to start in. Use QString()
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
      * @param parent The parent object of this widget.
      */
-    KUrlRequesterDlg( const QString& url, QWidget *parent);
+    KUrlRequesterDialog( const QString& url, QWidget *parent);
 
     /**
-     * Constructs a KUrlRequesterDlg.
+     * Constructs a KUrlRequesterDialog.
      *
      * @param url    The url of the directory to start in. Use QString()
      *               to start in the current working directory, or the last
@@ -59,12 +59,12 @@ public:
      * @param text   Text of the label
      * @param parent The parent object of this widget.
      */
-    KUrlRequesterDlg( const QString& url, const QString& text,
+    KUrlRequesterDialog( const QString& url, const QString& text,
                       QWidget *parent);
     /**
      * Destructs the dialog.
      */
-    ~KUrlRequesterDlg();
+    ~KUrlRequesterDialog();
 
     /**
      * Returns the fully qualified filename.
@@ -97,8 +97,8 @@ private:
     void initDialog(const QString &text, const QString &url);
     KUrlRequester *urlRequester_;
 
-    class KUrlRequesterDlgPrivate;
-    KUrlRequesterDlgPrivate *d;
+    class KUrlRequesterDialogPrivate;
+    KUrlRequesterDialogPrivate *d;
 
 };
 

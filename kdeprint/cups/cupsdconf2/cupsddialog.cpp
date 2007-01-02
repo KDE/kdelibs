@@ -46,7 +46,7 @@
 #include <kinstance.h>
 #include <kpagewidgetmodel.h>
 #include <qstringlist.h>
-#include <kio/passdlg.h>
+#include <kio/passworddialog.h>
 #include <kguiitem.h>
 #include <qprocess.h>
 

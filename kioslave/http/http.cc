@@ -5257,7 +5257,7 @@ bool HTTPProtocol::getAuthorization()
       {
         kDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization..." << endl;
         promptInfo( info );
-        result = openPassDlg( info, errorMsg );
+        result = openPasswordDialog( info, errorMsg );
       }
     }
   }

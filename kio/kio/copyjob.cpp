@@ -738,23 +738,23 @@ void CopyJob::slotResultConflictCreatingDirs( KJob * job )
     assert ( !hasSubjobs() ); // We should have only one job at a time ...
 
     // Always multi and skip (since there are files after that)
-    RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
+    RenameDialog_Mode mode = (RenameDialog_Mode)( M_MULTI | M_SKIP );
     // Overwrite only if the existing thing is a dir (no chance with a file)
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
     {
         if( (*it).uSource == (*it).uDest ||
             ((*it).uSource.protocol() == (*it).uDest.protocol() &&
               (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
-          mode = (RenameDlg_Mode)( mode | M_OVERWRITE_ITSELF);
+          mode = (RenameDialog_Mode)( mode | M_OVERWRITE_ITSELF);
         else
-          mode = (RenameDlg_Mode)( mode | M_OVERWRITE );
+          mode = (RenameDialog_Mode)( mode | M_OVERWRITE );
     }
 
     QString existingDest = (*it).uDest.path();
     QString newPath;
     if (m_reportTimer)
         m_reportTimer->stop();
-    RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Folder Already Exists"),
+    RenameDialog_Result r = Observer::self()->open_RenameDialog( this, i18n("Folder Already Exists"),
                                          (*it).uSource.url(),
                                          (*it).uDest.url(),
                                          mode, newPath,
@@ -986,7 +986,7 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
     // The file we were trying to create:
     QList<CopyInfo>::Iterator it = files.begin();
 
-    RenameDlg_Result res;
+    RenameDialog_Result res;
     QString newPath;
 
     if (m_reportTimer)
@@ -1006,11 +1006,11 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
 
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"
-        RenameDlg_Mode mode;
+        RenameDialog_Mode mode;
         bool isDir = true;
 
         if( m_conflictError == ERR_DIR_ALREADY_EXIST )
-            mode = (RenameDlg_Mode) 0;
+            mode = (RenameDialog_Mode) 0;
         else
         {
             if ( (*it).uSource == (*it).uDest  ||
@@ -1023,11 +1023,11 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
         }
 
         if ( m_bSingleFileCopy )
-            mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+            mode = (RenameDialog_Mode) ( mode | M_SINGLE );
         else
-            mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
+            mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
 
-        res = Observer::self()->open_RenameDlg( this, !isDir ?
+        res = Observer::self()->open_RenameDialog( this, !isDir ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                 (*it).uSource.url(),
                                 (*it).uDest.url(),
@@ -1047,10 +1047,10 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
         }
         else
         {
-            SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 1,
+            SkipDialog_Result skipResult = Observer::self()->open_SkipDialog( this, files.count() > 1,
                                                                         job->errorString() );
 
-            // Convert the return code from SkipDlg into a RenameDlg code
+            // Convert the return code from SkipDialog into a RenameDialog code
             res = ( skipResult == S_SKIP ) ? R_SKIP :
                          ( skipResult == S_AUTO_SKIP ) ? R_AUTO_SKIP :
                                         R_CANCEL;
@@ -1484,13 +1484,13 @@ void CopyJob::slotResultRenaming( KJob* job )
             } else {
                 QString newPath;
                 // If src==dest, use "overwrite-itself"
-                RenameDlg_Mode mode = (RenameDlg_Mode)
+                RenameDialog_Mode mode = (RenameDialog_Mode)
                                       ( ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE );
 
                 if ( m_srcList.count() > 1 )
-                    mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
+                    mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
                 else
-                    mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+                    mode = (RenameDialog_Mode) ( mode | M_SINGLE );
 
                 // we lack mtime info for both the src (not stated)
                 // and the dest (stated but this info wasn't stored)
@@ -1516,7 +1516,7 @@ void CopyJob::slotResultRenaming( KJob* job )
                     mtimeDest = stat_buf.st_mtime;
                 }
 
-                RenameDlg_Result r = Observer::self()->open_RenameDlg(
+                RenameDialog_Result r = Observer::self()->open_RenameDialog(
                     this,
                     err != ERR_DIR_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                     m_currentSrcURL.url(),

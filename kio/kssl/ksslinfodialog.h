@@ -19,8 +19,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KSSLINFODLG_H
-#define _KSSLINFODLG_H
+#ifndef _KSSLINFODIALOG_H
+#define _KSSLINFODIALOG_H
 
 #include <kdialog.h>
 
@@ -40,14 +40,14 @@ class KSSLCertChain;
  * This class creates a dialog that can be used to display information about
  * an SSL session.
  *
- * There are NO GUARANTEES that KSSLInfoDlg will remain binary compatible/
+ * There are NO GUARANTEES that KSSLInfoDialog will remain binary compatible/
  * Contact staikos@kde.org for details if needed.
  *
  * @author George Staikos <staikos@kde.org>
  * @see KSSL
  * @short KDE SSL Information Dialog
  */
-class KIO_EXPORT KSSLInfoDlg : public KDialog {
+class KIO_EXPORT KSSLInfoDialog : public KDialog {
 	Q_OBJECT
 public:
 	/**
@@ -58,12 +58,12 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param modal true if the dialog should be modal
 	 */
-	KSSLInfoDlg(bool secureConnection, QWidget *parent=0L, const char *name=0L, bool modal=false);
+	KSSLInfoDialog(bool secureConnection, QWidget *parent=0L, const char *name=0L, bool modal=false);
 
 	/**
 	 *  Destroy this dialog
 	 */
-	virtual ~KSSLInfoDlg();
+	virtual ~KSSLInfoDialog();
 
 	/**
 	 *  Tell the dialog if the connection has portions that may not be
@@ -124,8 +124,8 @@ private:
 	Q3ScrollView *buildCertInfo(const QString &certName);
 	void displayCert(KSSLCertificate *x);
 
-	class KSSLInfoDlgPrivate;
-	KSSLInfoDlgPrivate* const d;
+	class KSSLInfoDialogPrivate;
+	KSSLInfoDialogPrivate* const d;
 
 private Q_SLOTS:
 	void launchConfig();
@@ -143,7 +143,7 @@ private Q_SLOTS:
  * and displays everything contained therein.
  *
  * @author George Staikos <staikos@kde.org>
- * @see KSSLInfoDlg
+ * @see KSSLInfoDialog
  * @short KDE SSL Certificate Box
  */
 class KIO_EXPORT KSSLCertBox : public Q3ScrollView {

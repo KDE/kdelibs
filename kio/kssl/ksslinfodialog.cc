@@ -19,7 +19,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "ksslinfodlg.h"
+#include "ksslinfodialog.h"
 
 #include <kssl.h>
 
@@ -49,9 +49,9 @@
 #include "ksslsigners.h"
 
 
-class KSSLInfoDlg::KSSLInfoDlgPrivate {
+class KSSLInfoDialog::KSSLInfoDialogPrivate {
     private:
-        friend class KSSLInfoDlg;
+        friend class KSSLInfoDialog;
         bool m_secCon;
         QGridLayout *m_layout;
         KComboBox *_chain;
@@ -74,8 +74,8 @@ class KSSLInfoDlg::KSSLInfoDlgPrivate {
 
 
 
-KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name, bool modal)
-	: KDialog(parent, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
+KSSLInfoDialog::KSSLInfoDialog(bool secureConnection, QWidget *parent, const char *name, bool modal)
+	: KDialog(parent, Qt::WDestructiveClose), d(new KSSLInfoDialogPrivate) {
         setObjectName(name);
         setModal(modal);
         QVBoxLayout *topLayout = new QVBoxLayout(this);
@@ -132,16 +132,16 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     }
 
 
-KSSLInfoDlg::~KSSLInfoDlg() {
+KSSLInfoDialog::~KSSLInfoDialog() {
     delete d;
 }
 
-void KSSLInfoDlg::launchConfig() {
+void KSSLInfoDialog::launchConfig() {
     QProcess::startDetached("kcmshell", QStringList() << "crypto");
 }
 
 
-void KSSLInfoDlg::setSecurityInQuestion(bool isIt) {
+void KSSLInfoDialog::setSecurityInQuestion(bool isIt) {
     d->inQuestion = isIt;
     if (KSSL::doesSSLWork())
         if (isIt) {
@@ -163,7 +163,7 @@ void KSSLInfoDlg::setSecurityInQuestion(bool isIt) {
 }
 
 
-void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
+void KSSLInfoDialog::setup( KSSL & ssl, const QString & ip, const QString & url )
 {
     setup(
             &ssl.peerInfo().getPeerCertificate(),
@@ -178,7 +178,7 @@ void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
          );
 }
 
-void KSSLInfoDlg::setup(KSSLCertificate *cert,
+void KSSLInfoDialog::setup(KSSLCertificate *cert,
         const QString& ip, const QString& url,
         const QString& cipher, const QString& cipherdesc,
         const QString& sslversion, int usedbits, int bits,
@@ -265,7 +265,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     displayCert(cert);
 }
 
-void KSSLInfoDlg::setCertState(const QString &errorNrs)
+void KSSLInfoDialog::setCertState(const QString &errorNrs)
 {
     d->_cert_ksvl.clear();
     QStringList errors = errorNrs.split(':', QString::SkipEmptyParts);
@@ -276,7 +276,7 @@ void KSSLInfoDlg::setCertState(const QString &errorNrs)
     }
 }
 
-void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
+void KSSLInfoDialog::displayCert(KSSLCertificate *x) {
     QPalette cspl;
 
     d->_serialNum->setText(x->getSerialNumber());
@@ -349,7 +349,7 @@ void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
 }
 
 
-void KSSLInfoDlg::slotChain(int x) {
+void KSSLInfoDialog::slotChain(int x) {
     if (x == 0) {
         displayCert(d->_cert);
     } else {
@@ -365,7 +365,7 @@ void KSSLInfoDlg::slotChain(int x) {
 }
 
 
-KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher) {
+KSSLCertBox *KSSLInfoDialog::certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher) {
     KSSLCertBox *result = new KSSLCertBox(parent);
     if (!certName.isEmpty()) {
         result->setValues(certName, mailCatcher);
@@ -450,7 +450,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         if (mailCatcher) {
             KUrlLabel *mail = new KUrlLabel(tmp, tmp, _frame);
-            connect(mail, SIGNAL(leftClickedUrl(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
+            connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
         } else {
             label = new QLabel(tmp, _frame);
         }
@@ -466,17 +466,17 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
 }
 
 
-Q3ScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
-    return KSSLInfoDlg::certInfoWidget(this, certName, this);
+Q3ScrollView *KSSLInfoDialog::buildCertInfo(const QString &certName) {
+    return KSSLInfoDialog::certInfoWidget(this, certName, this);
 }
 
-void KSSLInfoDlg::urlClicked(const QString &url) {
+void KSSLInfoDialog::urlClicked(const QString &url) {
     KToolInvocation::invokeBrowser(url);
 }
 
-void KSSLInfoDlg::mailClicked(const QString &url) {
+void KSSLInfoDialog::mailClicked(const QString &url) {
     KToolInvocation::invokeMailer(url, QString());
 }
 
-#include "ksslinfodlg.moc"
+#include "ksslinfodialog.moc"
 // vim: ts=4 sw=4 et

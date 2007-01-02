@@ -40,7 +40,7 @@
 #include <ksocks.h>
 #include <kdebug.h>
 #include <ksslall.h>
-#include <ksslcertdlg.h>
+#include <ksslcertdialog.h>
 #include <kmessagebox.h>
 #ifndef Q_WS_WIN //temporary
 #include <kresolver.h>
@@ -663,7 +663,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         else
            showprompt = true;
         if (showprompt) {
-           if (!openPassDlg(ai, first ? QString() :
+           if (!openPasswordDialog(ai, first ? QString() :
                    i18n("Unable to open the certificate. Try a new password?")))
               break;
         }

@@ -23,10 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef KIO_RENAMEDLGPLUGIN_H
-#define KIO_RENAMEDLGPLUGIN_H
+#ifndef KIO_RENAMEDIALOGPLUGIN_H
+#define KIO_RENAMEDIALOGPLUGIN_H
 
-#include <kio/renamedlg.h>
+#include <kio/renamedialog.h>
 #include <qdialog.h>
 #include <sys/types.h>
 #include <qstring.h>
@@ -36,13 +36,13 @@
 namespace KIO {
 
 /**
- * @short Base class for RenameDlg plugins.
+ * @short Base class for RenameDialog plugins.
  *
- * Creating your own RenameDlg Plugin allows you to
+ * Creating your own RenameDialog Plugin allows you to
  * have a different representation of data depending
  * on the to be copied files.
  */
-class KIO_EXPORT RenameDlgPlugin : public QWidget {
+class KIO_EXPORT RenameDialogPlugin : public QWidget {
     Q_OBJECT
 public:
 
@@ -71,10 +71,10 @@ public:
     /**
      * The Rename Dialog will be embedded into a QDialog.
      */
-    RenameDlgPlugin(QDialog *dialog);
+    RenameDialogPlugin(QDialog *dialog);
 
     /**
-     * This function will be invoked by the KIO::RenameDlg to check if you to handle
+     * This function will be invoked by the KIO::RenameDialog to check if you to handle
      * the src and destination file.
      *
      * @param mode    The actual mode of the Rename Dialog
@@ -84,7 +84,7 @@ public:
      * @return Return TRUE if you want to handle/display a resolution
      * @see handle
      */
-    virtual bool wantToHandle( RenameDlg_Mode mode, const FileItem& srcFile, const FileItem& dstFile) const = 0;
+    virtual bool wantToHandle( RenameDialog_Mode mode, const FileItem& srcFile, const FileItem& dstFile) const = 0;
 
     /**
      * Present the data of @param srcFile and @param dstFile the way you want to.
@@ -94,7 +94,7 @@ public:
      * @param srcFile The FileItem of the source
      * @param dstFile The FileItem of the destination
      */
-    virtual void handle( KIO::RenameDlg_Mode mode, const FileItem& srcFile, const FileItem& dstFile ) = 0;
+    virtual void handle( KIO::RenameDialog_Mode mode, const FileItem& srcFile, const FileItem& dstFile ) = 0;
 };
 
 }

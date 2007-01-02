@@ -80,7 +80,7 @@ public:
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
-  : KPropsDlgPlugin(props),d(new KFileMetaPropsPluginPrivate)
+  : KPropertiesDialogPlugin(props),d(new KFileMetaPropsPluginPrivate)
 {
 
     KFileItem * fileitem = properties->item();

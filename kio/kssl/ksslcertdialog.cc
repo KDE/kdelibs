@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "ksslcertdlg.h"
+#include "ksslcertdialog.h"
 
 #include <kssl.h>
 
@@ -39,16 +39,16 @@
 #include <kdebug.h>
 
 
-class KSSLCertDlg::KSSLCertDlgPrivate {
+class KSSLCertDialog::KSSLCertDialogPrivate {
 private:
-    friend class KSSLCertDlg;
+    friend class KSSLCertDialog;
     QLabel *p_message;
     QPushButton *p_pb_dontsend;
     bool p_send_flag;
 };
 
-KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
- : KDialog(parent), d(new KSSLCertDlgPrivate) {
+KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
+ : KDialog(parent), d(new KSSLCertDialogPrivate) {
    setObjectName(name);
    setModal(modal);
 
@@ -90,16 +90,16 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
 }
 
 
-KSSLCertDlg::~KSSLCertDlg() {
+KSSLCertDialog::~KSSLCertDialog() {
     delete d;
 }
 
 
-void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
+void KSSLCertDialog::setup(QStringList certs, bool saveChecked, bool sendChecked) {
 	setupDialog(certs, saveChecked, sendChecked);
 }
 
-void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool sendChecked) {
+void KSSLCertDialog::setupDialog(const QStringList& certs, bool saveChecked, bool sendChecked) {
   _save->setChecked(saveChecked);
   d->p_send_flag = sendChecked;
 
@@ -119,17 +119,17 @@ void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool s
 }
 
 
-bool KSSLCertDlg::saveChoice() {
+bool KSSLCertDialog::saveChoice() {
   return _save->isChecked();
 }
 
 
-bool KSSLCertDlg::wantsToSend() {
+bool KSSLCertDialog::wantsToSend() {
   return d->p_send_flag;
 }
 
 
-QString KSSLCertDlg::getChoice() {
+QString KSSLCertDialog::getChoice() {
    Q3ListViewItem *selected = _certs->selectedItem();
    if (selected && d->p_send_flag)
 	return selected->text(0);
@@ -138,7 +138,7 @@ QString KSSLCertDlg::getChoice() {
 }
 
 
-void KSSLCertDlg::setHost(const QString& host) {
+void KSSLCertDialog::setHost(const QString& host) {
    _host = host;
    d->p_message->setText(i18n("The server <b>%1</b> requests a certificate.<p>"
 			      "Select a certificate to use from the list below:",
@@ -146,25 +146,25 @@ void KSSLCertDlg::setHost(const QString& host) {
 }
 
 
-void KSSLCertDlg::slotSend() {
+void KSSLCertDialog::slotSend() {
    d->p_send_flag = true;
    accept();
 }
 
 
-void KSSLCertDlg::slotDont() {
+void KSSLCertDialog::slotDont() {
    d->p_send_flag = false;
    reject();
 }
 
 
-QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r) {
+QDataStream& operator<<(QDataStream& s, const KSSLCertDialogRet& r) {
    s << qint8(r.ok?1:0) <<  r.choice << qint8(r.save?1:0) << qint8(r.send?1:0);
    return s;
 }
 
 
-QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r) {
+QDataStream& operator>>(QDataStream& s, KSSLCertDialogRet& r) {
    qint8 tmp;
    s >> tmp; r.ok = (tmp == 1);
    s >> r.choice;
@@ -174,5 +174,5 @@ QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r) {
 }
 
 
-#include "ksslcertdlg.moc"
+#include "ksslcertdialog.moc"
 

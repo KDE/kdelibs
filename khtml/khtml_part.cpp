@@ -102,7 +102,7 @@ using namespace DOM;
 #include <kseparatoraction.h>
 
 #include <ksslcertchain.h>
-#include <ksslinfodlg.h>
+#include <ksslinfodialog.h>
 
 #include <kfileitem.h>
 #include <kurifilter.h>
@@ -4163,7 +4163,7 @@ void KHTMLPart::slotSecurity()
 //                   << d->m_ssl_cert_state
 //                   << endl;
 
-  KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
+  KSSLInfoDialog *kid = new KSSLInfoDialog(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
 
   if (d->m_ssl_in_use) {
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.toLocal8Bit());

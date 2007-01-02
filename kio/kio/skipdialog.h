@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_skip_dlg__
-#define __kio_skip_dlg__
+#ifndef __kio_skip_dialog__
+#define __kio_skip_dialog__
 
 #include <kdelibs_export.h>
 #include <kdialog.h>
@@ -27,19 +27,19 @@ class QWidget;
 
 namespace KIO {
 
-  enum SkipDlg_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
+  enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
 
-  KIO_EXPORT SkipDlg_Result open_SkipDlg( bool _multi, const QString& _error_text = QString() );
+  KIO_EXPORT SkipDialog_Result open_SkipDialog( bool _multi, const QString& _error_text = QString() );
 
 /**
  * @internal
  */
-class KIO_EXPORT SkipDlg : public KDialog
+class KIO_EXPORT SkipDialog : public KDialog
 {
   Q_OBJECT
 public:
-  SkipDlg( QWidget *parent, bool _multi, const QString& _error_text, bool _modal = false );
-  ~SkipDlg();
+  SkipDialog( QWidget *parent, bool _multi, const QString& _error_text, bool _modal = false );
+  ~SkipDialog();
 
 protected:
   bool modal;
@@ -50,7 +50,7 @@ public Q_SLOTS:
   void b2Pressed();
 
 Q_SIGNALS:
-  void result( SkipDlg *_this, int _button );
+  void result( SkipDialog *_this, int _button );
 };
 
 }

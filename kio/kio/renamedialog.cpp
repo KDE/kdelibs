@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
-                  2001 Holger Freyther <freyther@kde.org>
+                  2001,2006 Holger Freyther <freyther@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kio/renamedlg.h"
-#include "kio/renamedlgplugin.h"
+#include "kio/renamedialog.h"
+#include "kio/renamedialogplugin.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -51,10 +51,10 @@
 using namespace KIO;
 
 /** @internal */
-class RenameDlg::RenameDlgPrivate
+class RenameDialog::RenameDialogPrivate
 {
  public:
-  RenameDlgPrivate(){
+  RenameDialogPrivate(){
     bCancel = 0;
     bRename = bSkip = bAutoSkip = bOverwrite = bOverwriteAll = 0;
     bResume = bResumeAll = bSuggestNewName = 0;
@@ -77,16 +77,16 @@ class RenameDlg::RenameDlgPrivate
   bool plugin;
 };
 
-RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
+RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
                      const KUrl &_src, const KUrl &_dest,
-                     RenameDlg_Mode _mode,
+                     RenameDialog_Mode _mode,
                      KIO::filesize_t sizeSrc,
                      KIO::filesize_t sizeDest,
                      time_t ctimeSrc,
                      time_t ctimeDest,
                      time_t mtimeSrc,
                      time_t mtimeDest)
-  : QDialog ( parent ), d(new RenameDlgPrivate)
+  : QDialog ( parent ), d(new RenameDialogPrivate)
 {
     setObjectName( "KIO::RenameDialog" );
 
@@ -155,19 +155,19 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         pluginHandling();
         KService::List plugin_offers;
         if( d->mimeSrc != KMimeType::defaultMimeType()   ){
-            plugin_offers = KMimeTypeTrader::self()->query(d->mimeSrc, "RenameDlg/Plugin");
+            plugin_offers = KMimeTypeTrader::self()->query(d->mimeSrc, "RenameDialog/Plugin");
 
         }else if(d->mimeDest != KMimeType::defaultMimeType() ) {
-            plugin_offers = KMimeTypeTrader::self()->query(d->mimeDest, "RenameDlg/Plugin");
+            plugin_offers = KMimeTypeTrader::self()->query(d->mimeDest, "RenameDialog/Plugin");
         }
         if(!plugin_offers.isEmpty() ){
-            RenameDlgPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
-            RenameDlgPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
+            RenameDialogPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
+            RenameDialogPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
             kDebug(7024) << "Offers" << endl;
             KService::List::ConstIterator it = plugin_offers.begin();
             const KService::List::ConstIterator end = plugin_offers.end();
             for( ; it != end; ++it ){
-                RenameDlgPlugin *plugin = KLibLoader::createInstance<RenameDlgPlugin>( (*it)->library().toLocal8Bit(), this );
+                RenameDialogPlugin *plugin = KLibLoader::createInstance<RenameDialogPlugin>( (*it)->library().toLocal8Bit(), this );
                 if( !plugin )
                     continue;
 
@@ -176,7 +176,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                     d->plugin = true;
                     plugin->handle( _mode, src, dst );
                     pLayout->addWidget(plugin );
-                    kDebug(7024) << "RenameDlgPlugin" << endl;
+                    kDebug(7024) << "RenameDialogPlugin" << endl;
                     break;
                 } else {
                     delete plugin;
@@ -349,13 +349,13 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     resize( sizeHint() );
 }
 
-RenameDlg::~RenameDlg()
+RenameDialog::~RenameDialog()
 {
   delete d;
   // no need to delete Pushbuttons,... qt will do this
 }
 
-void RenameDlg::enableRenameButton(const QString &newDest)
+void RenameDialog::enableRenameButton(const QString &newDest)
 {
   if ( newDest != KIO::decodeFileName( d->dest.fileName() ) && !newDest.isEmpty() )
   {
@@ -372,7 +372,7 @@ void RenameDlg::enableRenameButton(const QString &newDest)
   }
 }
 
-KUrl RenameDlg::newDestUrl()
+KUrl RenameDialog::newDestUrl()
 {
   KUrl newDest( d->dest );
   QString fileName = d->m_pLineEdit->text();
@@ -380,13 +380,13 @@ KUrl RenameDlg::newDestUrl()
   return newDest;
 }
 
-void RenameDlg::cancelPressed()
+void RenameDialog::cancelPressed()
 {
   done( 0 );
 }
 
 // Rename
-void RenameDlg::renamePressed()
+void RenameDialog::renamePressed()
 {
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
@@ -401,7 +401,7 @@ void RenameDlg::renamePressed()
   done( 1 );
 }
 
-QString RenameDlg::suggestName(const KUrl& baseURL, const QString& oldName)
+QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
 {
   QString dotSuffix, suggestedName;
   QString basename = oldName;
@@ -443,7 +443,7 @@ QString RenameDlg::suggestName(const KUrl& baseURL, const QString& oldName)
 }
 
 // Propose button clicked
-void RenameDlg::suggestNewNamePressed()
+void RenameDialog::suggestNewNamePressed()
 {
   /* no name to play with */
   if ( d->m_pLineEdit->text().isEmpty() )
@@ -455,32 +455,32 @@ void RenameDlg::suggestNewNamePressed()
   return;
 }
 
-void RenameDlg::skipPressed()
+void RenameDialog::skipPressed()
 {
   done( 2 );
 }
 
-void RenameDlg::autoSkipPressed()
+void RenameDialog::autoSkipPressed()
 {
   done( 3 );
 }
 
-void RenameDlg::overwritePressed()
+void RenameDialog::overwritePressed()
 {
   done( 4 );
 }
 
-void RenameDlg::overwriteAllPressed()
+void RenameDialog::overwriteAllPressed()
 {
   done( 5 );
 }
 
-void RenameDlg::resumePressed()
+void RenameDialog::resumePressed()
 {
   done( 6 );
 }
 
-void RenameDlg::resumeAllPressed()
+void RenameDialog::resumeAllPressed()
 {
   done( 7 );
 }
@@ -500,7 +500,7 @@ static QString mime( const KUrl& src )
  *  The scanning for a mimetype will be done in 2 ways
  *
  */
-void RenameDlg::pluginHandling()
+void RenameDialog::pluginHandling()
 {
   d->mimeSrc = mime( d->src );
   d->mimeDest = mime(d->dest );
@@ -510,9 +510,9 @@ void RenameDlg::pluginHandling()
 }
 
 
-RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
+RenameDialog_Result KIO::open_RenameDialog( const QString & _caption,
                                       const KUrl & _src, const KUrl & _dest,
-                                      RenameDlg_Mode _mode,
+                                      RenameDialog_Mode _mode,
                                       QString& _new,
                                       KIO::filesize_t sizeSrc,
                                       KIO::filesize_t sizeDest,
@@ -521,12 +521,12 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                                       time_t mtimeSrc,
                                       time_t mtimeDest)
 {
-  RenameDlg dlg( 0, _caption, _src, _dest, _mode,
+  RenameDialog dlg( 0, _caption, _src, _dest, _mode,
                  sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
   int i = dlg.exec();
   _new = dlg.newDestUrl().path();
 
-  return (RenameDlg_Result)i;
+  return (RenameDialog_Result)i;
 }
 
-#include "renamedlg.moc"
+#include "renamedialog.moc"

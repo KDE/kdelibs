@@ -64,6 +64,7 @@ or <a href="http://doc.trolltech.com/4.2/porting4.html">this page online</a>.</p
 <li><a href="#kicker">Panel Applets and Extensions</a></li>
 <li><a href="#kscreensaver">KScreensaver</a></li>
 <li><a href="#i18n">I18N</a></li>
+<li><a href="#kssl">KSSL</a></li>
 </UL>
 
 <h3><a name="gettingstarted">Getting started</a></h3>
@@ -1445,6 +1446,49 @@ a listDir result.</li>
   with the line <pre>entry.insert( KIO::UDS_SIZE, buff.st_size );</pre></li>
 </ul>
 
+
+<h4>KIO::RenameDialog</h4>
+<ul>
+<li>KIO::RenameDlg was renamed to KIO::RenameDialog and the header moved from renamedlg.h to renamedialog.h</li>
+<li>void b0Pressed() renamed to void cancelPressed()</li>
+<li>void b1Pressed() renamed to void renamePressed()</li>
+<li>void b2Pressed() renamed to void skipPressed()</li>
+<li>void b3Pressed() renamed to void autoSkipPressed()</li>
+<li>void b4Pressed() renamed to void overwritePressed()</li>
+<li>void b5Pressed() renamed to void overwriteAllPressed()</li>
+<li>void b6Pressed() renamed to void resumePressed()</li>
+<li>void b7Pressed() renamed to void resumeAllPressed()</li>
+<li>void b8Pressed() renamed to void suggestNewNamePressed()</li>
+</ul>
+
+<h4>KIO::RenameDialogPlugin</h4>
+<ul>
+<li>RenameDlgPlugin was renamed to KIO::RenameDialogPlugin and the header moved from renamedlgplugin.h to renamedialogplugin.h</li>
+<li>The ServiceType was changed from RenameDlg/Plugin to RenameDialog/Plugin. Make sure to update your .desktop fiel</li>
+</ul>
+
+<h4>KIO::PasswordDialog</h4>
+<ul>
+<li>KIO::PassDlg was renamed to KIO::PasswordDialog and the header moved from passdlg.h to passworddialog.h</li>
+</ul>
+
+<h4>KIO::SkipDialog</h4>
+<ul>
+<li>KIO::SkipDlg was renamed to KIO::SkipDialog and the header moved from skipdlg.h to skipdialog.h</li>
+</ul>
+
+<h4>KIO::Observer</h4>
+<ul>
+<li>openPassDlg was renamed to openPasswordDialog</li>
+<li>open_RenameDlg to open_RenameDialog</li>
+<li>open_SkipDlg to open_SkipDialog</li>
+</ul>
+
+<h4>KIO::SlaveBase</h4>
+<ul>
+<li>openPassDlg was renamed to openPasswordDialog</li>
+</ul>
+
 <h4>KMimeType</h4>
 <ul>
 <li>KMimeType::pixmap() has been deprecated (for core/gui separation), use icon() or icon(url)
@@ -1472,6 +1516,14 @@ instead of returning the application/octet-stream mimetype. Test for null!</li>
 <ul>
 <li>Doesn't have autoShow support in its constructors anymore, but still has autodelete behavior.</li>
 <li>Ensure any new is followed by show or exec. Or use KPropertiesDialog::showDialog where possible.</li>
+<li>The header file was renamed from kpropsdlg.h to kpropertiesdialog.h
+<li>The ServiceType was renamed from KPropsDlg/Plugin to KPropertiesDialog/Plugin. Make sure to update your .desktop files </li>
+</ul>
+
+<h4>KPropertiesDialogPlugin</h4>
+<ul> 
+<li>KPropsPage or KPropsDlgPlugin was renamed to KPropertiesDialogPlugin</li>
+<li>The header file was renamed from kpropsdlg.h to kpropertiesdialog.h</li>
 </ul>
 
 <h4>KProtocolInfo</h4>
@@ -1562,19 +1614,6 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
   <li>void setEnableUserField( bool enable, bool=false ) removed use :setUserReadOnly( !enable )</li>
 </ul>
 
-<h4>RenameDlg</h4>
-<ul>
-<li>void b0Pressed() renamed to void cancelPressed()</li>
-<li>void b1Pressed() renamed to void renamePressed()</li>
-<li>void b2Pressed() renamed to void skipPressed()</li>
-<li>void b3Pressed() renamed to void autoSkipPressed()</li>
-<li>void b4Pressed() renamed to void overwritePressed()</li>
-<li>void b5Pressed() renamed to void overwriteAllPressed()</li>
-<li>void b6Pressed() renamed to void resumePressed()</li>
-<li>void b7Pressed() renamed to void resumeAllPressed()</li>
-<li>void b8Pressed() renamed to void suggestNewNamePressed()</li>
-</ul>
-
 <h4>UIServer</h4>
 <ul>
   <li>QByteArray openPassDlg( const KIO::AuthInfo &gt;info ); removed. Use KIO::PasswordDialog::getNameAndPassword</li>
@@ -1624,6 +1663,12 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 <h3><a name="kfile">Changes in kfile</a></h3>
+
+<h4>KUrlRequesterDialog</h4>
+<ul>
+<li>KUrlRequesterDlg was renamed to KUrlRequesterDialog</li>
+<li>The header was renamed from kurlrequesterdlg.h to kurlrequesterdialog.h</li>
+</ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
@@ -1804,6 +1849,21 @@ ki18n("Welcome").toString(myLocale);
 </pre>
 
 <p>There is a script for semi-automatic conversion of KDE 3 code, <code>i18nk34conv.pl</code> in <code>branches/work/kde4-l10n/scripts/conversion/</code>. It will convert most of the calls automatically, and mark the places that need manual review. There is also the script <code>i18ncheckarg.pl</code> in <code>branches/work/kde4-l10n/scripts</code>, which will check whether placeholders and arguments match. Use it to catch and correct deferred substitutions (like in the examples above). Both these scripts you can just run without any arguments in top directory of your sources (but you can also specify paths or filenames as arguments). <i>Do not</i> run conversion script twice on same sources!</p>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+<h3><a name="kssl">Changes in KSSL</a></h3>
+
+<h4>KSSLCertDialog</h4>
+<ul>
+<li>KSSLCertDlg was renamed to KSSLCertDialog. The header was renamed to ksslcertdialog.h</li>
+</ul>
+
+<h4>KSSLInfoDialog</h4>
+<ul>
+<li>KSSLInfoDlg was renamed to KSSLInfoDialog</li>
+<li>ksslinfodlg.h was moved to ksslinfodialog.h</li>
+</ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 

@@ -46,7 +46,7 @@
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
-#include <kio/renamedlg.h>
+#include <kio/renamedialog.h>
 #include <kpropertiesdialog.h>
 #include <kmimetypefactory.h>
 #include <kstandardshortcut.h>
@@ -396,7 +396,7 @@ void KDirOperator::mkdir()
 #else
     if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
 #endif
-         name = KIO::RenameDlg::suggestName( url(), name );
+         name = KIO::RenameDialog::suggestName( url(), name );
 
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ,  where ),

@@ -30,7 +30,7 @@
 #include <kmessagebox.h>
 #include <qmessagebox.h>
 #include <qfile.h>
-#include <kio/passdlg.h>
+#include <kio/passworddialog.h>
 #include <kdebug.h>
 #include <kseparator.h>
 #include <qlabel.h>

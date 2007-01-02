@@ -45,7 +45,7 @@ public Q_SLOTS:
 	// for now I've made it return a string.
 	Q_SCRIPTABLE QString print(const QString& cmd, const QStringList& files, bool remove);
 	
-	Q_SCRIPTABLE QString openPassDlg(const QString& user);
+	Q_SCRIPTABLE QString openPasswordDialog(const QString& user);
 	Q_SCRIPTABLE QString requestPassword( const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg );
 	Q_SCRIPTABLE void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
 	Q_SCRIPTABLE Q_NOREPLY void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());

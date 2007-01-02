@@ -26,10 +26,10 @@ class QRadioButton;
 class QPushButton;
 
 /**
- * This plugin provides a page to KPropsDlg, showing the "file sharing" options
+ * This plugin provides a page to KProperiessDialog, showing the "file sharing" options
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KFileSharePropsPlugin : public KPropsDlgPlugin
+class KIO_EXPORT KFileSharePropsPlugin : public KPropertiesDialogPlugin
 {
     Q_OBJECT
 public:

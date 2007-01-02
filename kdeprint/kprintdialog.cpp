@@ -57,7 +57,7 @@
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
-#include <kio/renamedlg.h>
+#include <kio/renamedialog.h>
 #include <kmessagebox.h>
 
 #include <time.h>
@@ -753,9 +753,9 @@ bool KPrintDialog::checkOutputFile()
 			{
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absoluteFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
-				KIO::RenameDlg dlg( this, i18n( "Print" ), KUrl(), d->m_file->url(),
-									KIO::M_OVERWRITE, (time_t)-1, f.size(), (time_t)-1,
-									f.created().toTime_t(), mtimeDest+1, mtimeDest );
+				KIO::RenameDialog dlg( this, i18n( "Print" ), KUrl(), d->m_file->url(),
+							  		   KIO::M_OVERWRITE, (time_t)-1, f.size(), (time_t)-1,
+									   f.created().toTime_t(), mtimeDest+1, mtimeDest );
 				int result = dlg.exec();
 				switch ( result )
 				{

@@ -628,7 +628,7 @@ public:
      *
      * \code
      * KIO::AuthInfo authInfo;
-     * if ( openPassDlg( authInfo ) )
+     * if ( openPasswordDialog( authInfo ) )
      * {
      *    kDebug() << QLatin1String("User: ")
      *              << authInfo.username << endl;
@@ -645,7 +645,7 @@ public:
      * authInfo.caption= "Acme Password Dialog";
      * authInfo.username= "Wile E. Coyote";
      * QString errorMsg = "You entered an incorrect password.";
-     * if ( openPassDlg( authInfo, errorMsg ) )
+     * if ( openPasswordDialog( authInfo, errorMsg ) )
      * {
      *    kDebug() << QLatin1String("User: ")
      *              << authInfo.username << endl;
@@ -666,7 +666,7 @@ public:
      * @param errorMsg Error message to show
      * @return      @p true if user clicks on "OK", @p false otherwsie.
      */
-    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg = QString() );
+    bool openPasswordDialog( KIO::AuthInfo& info, const QString &errorMsg = QString() );
 
     /**
      * Checks for cached authentication based on parameters
@@ -687,7 +687,7 @@ public:
      * info.verifyPath = true;
      * if ( !checkCachedAuthentication( info ) )
      * {
-     *    if ( !openPassDlg(info) )
+     *    if ( !openPasswordDialog(info) )
      *     ....
      * }
      * \endcode
@@ -698,10 +698,10 @@ public:
     bool checkCachedAuthentication( AuthInfo& info );
 
     /**
-     * Explicitly store authentication information. openPassDlg already
+     * Explicitly store authentication information. openPasswordDialog already
      * stores password information automatically, you only need to call
      * this function if you want to store authentication information that
-     * is different from the information returned by openPassDlg.
+     * is different from the information returned by openPasswordDialog.
      */
     bool cacheAuthentication( const AuthInfo& info );
 

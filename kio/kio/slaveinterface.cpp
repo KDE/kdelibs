@@ -333,7 +333,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_NEED_PASSWD: {
         AuthInfo info;
        	stream >> info;
-	openPassDlg( info );
+	openPasswordDialog( info );
 	break;
     }
     case INF_MESSAGEBOX: {
@@ -414,12 +414,12 @@ void SlaveInterface::sendResumeAnswer( bool resume )
 }
 
 
-void SlaveInterface::openPassDlg( AuthInfo& info )
+void SlaveInterface::openPasswordDialog( AuthInfo& info )
 {
-    kDebug(7007) << "SlaveInterface::openPassDlg: "
+    kDebug(7007) << "SlaveInterface::openPasswordDialog: "
                   << "User= " << info.username
                   << ", Message= " << info.prompt << endl;
-    bool result = Observer::self()->openPassDlg( info );
+    bool result = Observer::self()->openPasswordDialog( info );
     if ( m_pConnection )
     {
         QByteArray data;
@@ -427,7 +427,7 @@ void SlaveInterface::openPassDlg( AuthInfo& info )
         if ( result )
         {
             stream << info;
-            kDebug(7007) << "SlaveInterface:::openPassDlg got: "
+            kDebug(7007) << "SlaveInterface:::openPasswordDialog got: "
                           << "User= " << info.username
                           << ", Password= [hidden]" << endl;
             m_pConnection->sendnow( CMD_USERPASS, data );

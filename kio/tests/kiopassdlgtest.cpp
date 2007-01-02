@@ -4,7 +4,7 @@
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 
-#include "passdlg.h"
+#include "passworddialog.h"
 
 int main ( int argc, char** argv )
 {

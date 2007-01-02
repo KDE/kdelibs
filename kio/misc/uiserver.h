@@ -28,7 +28,7 @@
 #include <kurl.h>
 #include <kmainwindow.h>
 #include <k3listview.h>
-#include <ksslcertdlg.h>
+#include <ksslcertdialog.h>
 #include <ktoolbar.h>
 
 class ListProgress;
@@ -286,13 +286,13 @@ public:
 
   /**
    * @deprecated (it blocks other apps).
-   * Use KIO::open_RenameDlg instead.
+   * Use KIO::open_RenameDialog instead.
    * To be removed in KDE 4.0.
    */
-  QByteArray open_RenameDlg64( int id,
+  QByteArray open_RenameDialog64( int id,
                              const QString & caption,
                              const QString& src, const QString & dest,
-                             int /* KIO::RenameDlg_Mode */ mode,
+                             int /* KIO::RenameDialog_Mode */ mode,
                              KIO::filesize_t sizeSrc,
                              KIO::filesize_t sizeDest,
                              unsigned long /* time_t */ ctimeSrc,
@@ -302,13 +302,13 @@ public:
                              );
   /**
    * @deprecated (it blocks other apps).
-   * Use KIO::open_RenameDlg instead.
+   * Use KIO::open_RenameDialog instead.
    * To be removed in KDE 4.0.
    */
-  QByteArray open_RenameDlg( int id,
+  QByteArray open_RenameDialog( int id,
                              const QString & caption,
                              const QString& src, const QString & dest,
-                             int /* KIO::RenameDlg_Mode */ mode,
+                             int /* KIO::RenameDialog_Mode */ mode,
                              unsigned long sizeSrc,
                              unsigned long sizeDest,
                              unsigned long /* time_t */ ctimeSrc,
@@ -319,10 +319,10 @@ public:
 
   /**
    * @deprecated (it blocks other apps).
-   * Use KIO::open_SkipDlg instead.
+   * Use KIO::open_SkipDialog instead.
    * To be removed in KDE 4.0.
    */
-  int open_SkipDlg( int id,
+  int open_SkipDialog( int id,
                     int /*bool*/ multi,
                     const QString & error_text );
 
@@ -350,12 +350,12 @@ public:
   /*
    * Show an SSL Certificate Selection Dialog
    */
-  KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow);
+  KSSLCertDialogRet showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow);
 
   /*
    * @deprecated
    */
-  KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList);
+  KSSLCertDialogRet showSSLCertDialog(const QString& host, const QStringList& certList);
 
 public Q_SLOTS:
   void slotConfigure();

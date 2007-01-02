@@ -167,7 +167,7 @@ protected:
     *
     * \code
     * KIO::AuthInfo authInfo;
-    * bool result = openPassDlg( authInfo );
+    * bool result = openPasswordDialog( authInfo );
     * if ( result )
     * {
     *    printf( "Username: %s", result.username.latin1() );
@@ -182,7 +182,7 @@ protected:
     * authInfo.comment= "Enter username and password to access acmeone";
     * authInfo.caption= "Acme Password Dialog";
     * authInfo.username= "Wily E. kaiody";
-    * bool result = openPassDlg( authInfo );
+    * bool result = openPasswordDialog( authInfo );
     * if ( result )
     * {
     *    printf( "Username: %s", result.username.latin1() );
@@ -197,7 +197,7 @@ protected:
      * @param       info See AuthInfo.
      * @return      true if user clicks on "OK", false otherwsie.
      */
-    void openPassDlg( KIO::AuthInfo& info );
+    void openPasswordDialog( KIO::AuthInfo& info );
 
 
     void messageBox( int type, const QString &text, const QString &caption,

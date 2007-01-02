@@ -819,7 +819,7 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
+bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 {
     AuthInfo authResult;
     const long windowId = metaData("window-id").toLong();
@@ -830,7 +830,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     if (progressId)
         uiserver.setJobVisible(progressId, false);
 
-    kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
+    kDebug(7019) << "SlaveBase::openPasswordDialog window-id=" << windowId << endl;
 
     QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
@@ -867,8 +867,8 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     info = authResult;
 
-    kDebug(7019) << "SlaveBase::openPassDlg: username=" << info.username << endl;
-    kDebug(7019) << "SlaveBase::openPassDlg: password=[hidden]" << endl;
+    kDebug(7019) << "SlaveBase::openPasswordDialog: username=" << info.username << endl;
+    kDebug(7019) << "SlaveBase::openPasswordDialog: password=[hidden]" << endl;
 
     return true;
 }

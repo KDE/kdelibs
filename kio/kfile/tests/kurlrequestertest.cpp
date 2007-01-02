@@ -2,7 +2,7 @@
 #include <kcmdlineargs.h>
 #include <keditlistbox.h>
 #include <kurlrequester.h>
-#include <kurlrequesterdlg.h>
+#include <kurlrequesterdialog.h>
 
 int main( int argc, char **argv )
 {
@@ -10,7 +10,7 @@ int main( int argc, char **argv )
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
  
-    KUrl url = KUrlRequesterDlg::getUrl( "ftp://ftp.kde.org" );
+    KUrl url = KUrlRequesterDialog::getUrl( "ftp://ftp.kde.org" );
     qDebug( "Selected url: %s", url.url().toLatin1().constData());
 
     KUrlRequester *req = new KUrlRequester();

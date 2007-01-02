@@ -22,7 +22,7 @@
 #include "kmtimer.h"
 #include "messagewindow.h"
 
-#include <kio/passdlg.h>
+#include <kio/passworddialog.h>
 #include <kio/authinfo.h>
 #include <klocale.h>
 #include <kconfig.h>

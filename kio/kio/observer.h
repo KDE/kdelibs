@@ -25,8 +25,8 @@
 #include <kio/global.h>
 #include <kio/authinfo.h>
 #include "kio/job.h"
-#include "kio/skipdlg.h"
-#include "kio/renamedlg.h"
+#include "kio/skipdialog.h"
+#include "kio/renamedialog.h"
 
 class OrgKdeKIOUIServerInterface;
 class KUrl;
@@ -86,7 +86,7 @@ public:
   /**
    * @deprecated use KIO::AutoInfo
    */
-  bool openPassDlg( const QString& prompt, QString& user, QString& pass,
+  bool openPasswordDialog( const QString& prompt, QString& user, QString& pass,
                     bool readOnly );
 
   /**
@@ -94,7 +94,7 @@ public:
    * @param info the authentication information
    * @return true if successful ("ok" clicked), false otherwise
    */
-  bool openPassDlg( KIO::AuthInfo& info );
+  bool openPasswordDialog( KIO::AuthInfo& info );
 
   /**
    * Popup a message box. See KIO::SlaveBase.
@@ -128,12 +128,12 @@ public:
 
   /**
    * @internal
-   * See renamedlg.h
+   * See renamedialog.h
    */
-  KIO::RenameDlg_Result open_RenameDlg( KIO::Job * job,
+  KIO::RenameDialog_Result open_RenameDialog( KIO::Job * job,
                                         const QString & caption,
                                         const QString& src, const QString & dest,
-                                        KIO::RenameDlg_Mode mode,
+                                        KIO::RenameDialog_Mode mode,
                                         QString& newDest,
                                         KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
                                         KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
@@ -145,9 +145,9 @@ public:
 
   /**
    * @internal
-   * See skipdlg.h
+   * See skipdialog.h
    */
-  KIO::SkipDlg_Result open_SkipDlg( KIO::Job * job,
+  KIO::SkipDialog_Result open_SkipDialog( KIO::Job * job,
                                     bool multi,
                                     const QString & error_text );
 

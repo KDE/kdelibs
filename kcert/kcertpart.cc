@@ -189,8 +189,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	grid->addWidget(new QLabel(i18n("Subject:"), _pkcsFrame), 2, 0);
 	grid->addWidget(new QLabel(i18n("Issued by:"), _pkcsFrame), 2, 3);
-	_p12_subject = KSSLInfoDlg::certInfoWidget(_pkcsFrame, QString(""));
-	_p12_issuer = KSSLInfoDlg::certInfoWidget(_pkcsFrame, QString(""));
+	_p12_subject = KSSLInfoDialog::certInfoWidget(_pkcsFrame, QString(""));
+	_p12_issuer = KSSLInfoDialog::certInfoWidget(_pkcsFrame, QString(""));
 	grid->addWidget(_p12_subject, 3, 0, 4, 3);
 	grid->addWidget(_p12_issuer, 3, 3, 4, 3);
 
@@ -280,8 +280,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	grid->addWidget(new QLabel(i18n("Subject:"), _x509Frame), 1, 0);
 	grid->addWidget(new QLabel(i18n("Issued by:"), _x509Frame), 1, 3);
-	_ca_subject = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
-	_ca_issuer = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
+	_ca_subject = KSSLInfoDialog::certInfoWidget(_x509Frame, QString(""));
+	_ca_issuer = KSSLInfoDialog::certInfoWidget(_x509Frame, QString(""));
 	grid->addWidget(_ca_subject, 2, 0, 4, 3);
 	grid->addWidget(_ca_issuer, 2, 3, 4, 3);
 
