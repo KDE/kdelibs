@@ -281,7 +281,7 @@ KConfig *cfg;
    {
    QString libname = findMostRecentLib("/usr/lib" KDELIBSUFF, "crypto");
    if (!libname.isNull())
-         _cryptoLib = ll->globalLibrary(libname.latin1());
+         _cryptoLib = ll->globalLibrary(libname.toLatin1());
    }
 #elif defined(__CYGWIN__)
    libpaths << "/usr/bin/"
@@ -499,7 +499,7 @@ KConfig *cfg;
    {
    QString libname = findMostRecentLib("/usr/lib", "ssl");
    if (!libname.isNull())
-         _sslLib = ll->globalLibrary(libname.latin1());
+         _sslLib = ll->globalLibrary(libname.toLatin1());
    }
 #else
    for (QStringList::Iterator it = libpaths.begin();
