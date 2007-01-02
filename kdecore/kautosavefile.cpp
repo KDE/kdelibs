@@ -61,7 +61,7 @@ QString KAutoSaveFilePrivate::tempFileName()
 
     QString junk = KRandom::randomString( padding );
     // tempName = fileName + junk.trunicated + protocol + _ + path.trunicated + junk
-    // This is done so that the seperation between the filename and path can be determined
+    // This is done so that the separation between the filename and path can be determined
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
