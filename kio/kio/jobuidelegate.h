@@ -98,18 +98,6 @@ public:
       */
     QString jobIcon() const;
 
-    /**
-      * Returns the app friendly name that launched this job
-      * @return the app friendly name that launched this job
-      */
-    QString appName() const;
-
-    /**
-      * Returns the app internal name that launched this job
-      * @return the app internal name that launched this job
-      */
-    QString internalAppName() const;
-
 protected:
      virtual void connectJob( KJob *job );
 

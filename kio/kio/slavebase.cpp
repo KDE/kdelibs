@@ -827,8 +827,9 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     org::kde::KIO::UIServer uiserver("org.kde.kio_uiserver", "/UIServer", QDBusConnection::sessionBus());
-    if (progressId)
-        uiserver.setJobVisible(progressId, false);
+    #warning revisit this (ereslibre)
+    //if (progressId)
+    //    uiserver.setJobVisible(progressId, false);
 
     kDebug(7019) << "SlaveBase::openPasswordDialog window-id=" << windowId << endl;
 
@@ -848,8 +849,8 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
        reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr, qlonglong(userTimestamp));
 
     bool callOK = reply.type() == QDBusMessage::ReplyMessage;
-    if (progressId)
-        uiserver.setJobVisible(progressId, true);
+    //if (progressId)
+    //    uiserver.setJobVisible(progressId, true);
 
     if (!callOK)
     {

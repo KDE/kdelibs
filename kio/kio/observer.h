@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+   Copyright (C= 2006 Rafael Fernández López <ereslibre@gmail.com>
    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                       David Faure <faure@kde.org>
 
@@ -77,6 +78,14 @@ public:
   int newJob( KIO::Job * job, bool showProgress );
 
   /**
+   * If you don't have a KIO::Job, but want to show some kind of
+   * progress into the UI Server, you have to call this method.
+   * @param icon the icon to be shown on the UI Server
+   * @return the progress ID assigned by the UI Server
+   */
+  int newJob( const QString &icon = QString() );
+
+  /**
    * Called by the job destructor, to tell the UI Server that
    * the job ended.
    * @param progressId the progress ID of the job, as returned by newJob()
@@ -151,7 +160,7 @@ public:
                                     bool multi,
                                     const QString & error_text );
 
-  int addActionToJob(int jobId, const QString &actionText, void (*callBackFunction)());
+  int addActionToJob(int jobId, const QString &actionText, QObject *receiver, const char *slotName);
 
 public Q_SLOTS:
   /**
@@ -180,6 +189,12 @@ public Q_SLOTS:
 
 protected:
 
+  struct slotCall
+  {
+    QObject *receiver;
+    QString slotName;
+  };
+
   static Observer * s_pObserver;
   Observer();
   ~Observer() {}
@@ -187,21 +202,32 @@ protected:
   OrgKdeKIOUIServerInterface * m_uiserver;
 
   QMap< int, KIO::Job* > m_dctJobs;
-  QHash< int, void (*) () > m_hashActions;
+  QHash< int, slotCall > m_hashActions;
 
 public Q_SLOTS:
 
+  void actionPerformed( int actionId );
+
   void slotTotalSize( KJob*, qulonglong size );
+  void slotTotalSize( int, qulonglong size );
   void slotTotalFiles( KIO::Job*, unsigned long files );
+  void slotTotalFiles( int, unsigned long files );
   void slotTotalDirs( KIO::Job*, unsigned long dirs );
+  void slotTotalDirs( int, unsigned long dirs );
 
   void slotProcessedSize( KJob*, qulonglong size );
+  void slotProcessedSize( int, qulonglong size );
   void slotProcessedFiles( KIO::Job*, unsigned long files );
+  void slotProcessedFiles( int, unsigned long files );
   void slotProcessedDirs( KIO::Job*, unsigned long dirs );
+  void slotProcessedDirs( int, unsigned long dirs );
 
   void slotSpeed( KIO::Job*, unsigned long speed );
+  void slotSpeed( int, unsigned long speed );
   void slotPercent( KJob*, unsigned long percent );
+  void slotPercent( int, unsigned long percent );
   void slotInfoMessage( KJob*, const QString & msg );
+  void slotInfoMessage( int, const QString & msg );
 
   void slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest );
   void slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest );
