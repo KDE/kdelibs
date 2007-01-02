@@ -156,17 +156,19 @@ static void initialize( StandardShortcut id )
 
 #ifdef Q_WS_X11
 	// Code within this block breaks if we aren't running in GUI mode.
-	if( QX11Info::display() && cg.hasKey( info->name ) ) {
+	if( QX11Info::display() && cg.hasKey( info->name ) )
 #else
-	if( cg.hasKey( info->name ) ) {
+	if( cg.hasKey( info->name ) )
 #endif
+	{
 		QString s = cg.readEntry( info->name );
 		if( s != "none" )
 			info->cut = KShortcut( s );
 		else
 			info->cut.clear();
-	} else
+	} else {
 		info->cut = shortcutDefault( id );
+	}
 
 	info->isInitialized = true;
 }
