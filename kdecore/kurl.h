@@ -332,6 +332,14 @@ public:
    */
   QString path() const { return QUrl::path(); }
 
+  /**
+   * @param trailing use to add or remove a trailing slash to/from the local path. see adjustPath
+
+   * @return The current local path. Can
+   *   be QString() if no path is set.
+   */
+  QString toLocalFile( AdjustPathOption trailing = LeaveTrailingSlash ) const;
+
   /// \reimp so that KUrl u; u.setPath(path); implies "file" protocol.
   void setPath( const QString& path );
 

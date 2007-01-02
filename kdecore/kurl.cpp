@@ -377,16 +377,25 @@ KUrl::KUrl( const QByteArray& str )
 KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
+#ifdef Q_WS_WIN
+    kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile() << endl;
+#endif
 }
 
 KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
+#ifdef Q_WS_WIN
+    kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile() << endl;
+#endif
 }
 
 KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
+#ifdef Q_WS_WIN
+    kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile() << endl;
+#endif
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
   {
@@ -695,6 +704,13 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 QString KUrl::path( AdjustPathOption trailing ) const
 {
   return trailingSlash( trailing, path() );
+}
+
+QString KUrl::toLocalFile( AdjustPathOption trailing ) const
+{
+  if ( trailing == KUrl::LeaveTrailingSlash )
+    return QUrl::toLocalFile();
+  return trailingSlash( trailing, QUrl::toLocalFile() );
 }
 
 bool KUrl::isLocalFile() const
