@@ -416,8 +416,8 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    if( XGetClassHint( QX11Info::display(), win, &hint ) ) {
 	        QString className = hint.res_class;
 
-	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.toLower(), K3Icon::Small, iconWidth,
-								          K3Icon::DefaultState, 0, true );
+                QPixmap pm = kapp->iconLoader()->loadIcon( className.toLower(), K3Icon::Small, iconWidth,
+                                                           K3Icon::DefaultState, 0, true );
 	        if( scale && !pm.isNull() )
 		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
@@ -433,8 +433,8 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	// If the icon is still a null pixmap, load the 'xapp' icon
 	// as a last resort:
 	if ( result.isNull() ) {
-	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(  "xapp", K3Icon::Small, iconWidth,
-								       K3Icon::DefaultState, 0, true );
+            QPixmap pm = kapp->iconLoader()->loadIcon(  "xapp", K3Icon::Small, iconWidth,
+                                                        K3Icon::DefaultState, 0, true );
 	    if( scale && !pm.isNull() )
 		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else
