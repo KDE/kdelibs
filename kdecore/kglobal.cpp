@@ -34,7 +34,6 @@
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcharsets.h>
-#include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kinstance.h>
 #include <qapplication.h>
@@ -81,13 +80,6 @@ KSharedConfig* KGlobal::sharedConfig()
     MYASSERT(_instance);
 
     return _instance->sharedConfig();
-}
-
-KIconLoader *KGlobal::iconLoader()
-{
-    MYASSERT(_instance);
-
-    return _instance->iconLoader();
 }
 
 KInstance *KGlobal::instance()

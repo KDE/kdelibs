@@ -24,7 +24,6 @@ class KInstance;
 class KCharsets;
 class KConfig;
 class KSharedConfig;
-class KIconLoader;
 class KLocale;
 class KStandardDirs;
 class KStaticDeleterBase;
@@ -70,12 +69,6 @@ public:
      * @return the global configuration object.
      */
     static KSharedConfig        *sharedConfig();
-
-    /**
-     *  Returns an iconloader object.
-     * @return the global iconloader object
-     */
-    static KIconLoader	        *iconLoader();
 
     /**
      * Returns the global locale object.

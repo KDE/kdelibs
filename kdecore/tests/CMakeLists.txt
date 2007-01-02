@@ -201,18 +201,6 @@ add_test(kdecore-cplusplustest ${EXECUTABLE_OUTPUT_PATH}/cplusplustest)
 
 ########### next target ###############
 
-set(kiconloadertest_SRCS kiconloadertest.cpp )
-
-kde4_automoc(${kiconloadertest_SRCS})
-
-kde4_add_executable(kiconloadertest NOGUI RUN_UNINSTALLED ${kiconloadertest_SRCS})
-
-target_link_libraries(kiconloadertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-# add_test(kdecore-kiconloadertest ${EXECUTABLE_OUTPUT_PATH}/kiconloadertest)
-
-########### next target ###############
-
 set(kmdcodectest_SRCS kmdcodectest.cpp )
 
 kde4_automoc(${kmdcodectest_SRCS})
@@ -322,20 +310,6 @@ add_test(kdecore-kshelltest ${EXECUTABLE_OUTPUT_PATH}/kshelltest)
 
 ########### next target ###############
 
-if (Q_WS_X11)
-set(kxerrorhandlertest_SRCS kxerrorhandlertest.cpp )
-
-kde4_automoc(${kxerrorhandlertest_SRCS})
-
-kde4_add_executable(kxerrorhandlertest NOGUI RUN_UNINSTALLED ${kxerrorhandlertest_SRCS})
-
-target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-# add_test(kdecore-kxerrorhandlertest ${EXECUTABLE_OUTPUT_PATH}/kxerrorhandlertest)
-endif (Q_WS_X11)
-
-########### next target ###############
-
 set(startserviceby_SRCS startserviceby.cpp )
 
 kde4_automoc(${startserviceby_SRCS})
@@ -405,18 +379,6 @@ kde4_add_executable(kurlmimetest NOGUI RUN_UNINSTALLED ${kurlmimetest_SRCS})
 target_link_libraries(kurlmimetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kurlmimetest ${EXECUTABLE_OUTPUT_PATH}/kurlmimetest)
-
-########### next target ###############
-
-set(kstdacceltest_SRCS kstdacceltest.cpp )
-
-kde4_automoc(${kstdacceltest_SRCS})
-
-kde4_add_executable(kstdacceltest NOGUI RUN_UNINSTALLED ${kstdacceltest_SRCS})
-
-target_link_libraries(kstdacceltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kdecore-kstdacceltest ${EXECUTABLE_OUTPUT_PATH}/kstdacceltest)
 
 ########### next target ###############
 

@@ -850,6 +850,45 @@ target_link_libraries(testqtargs  ${KDE4_KDEUI_LIBS})
 
 # add_test(kdeui-testqtargs ${EXECUTABLE_OUTPUT_PATH}/testqtargs)
 
+########### next target ###############
+
+set(kiconloadertest_SRCS kiconloadertest.cpp )
+
+kde4_automoc(${kiconloadertest_SRCS})
+
+kde4_add_executable(kiconloadertest NOGUI RUN_UNINSTALLED ${kiconloadertest_SRCS})
+
+target_link_libraries(kiconloadertest ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+# add_test(kdeui-kiconloadertest ${EXECUTABLE_OUTPUT_PATH}/kiconloadertest)
+
+########### next target ###############
+
+set(kstandardshortcuttest_SRCS kstandardshortcuttest.cpp )
+
+kde4_automoc(${kstandardshortcuttest_SRCS})
+
+kde4_add_executable(kstandardshortcuttest NOGUI RUN_UNINSTALLED ${kstandardshortcuttest_SRCS})
+
+target_link_libraries(kstandardshortcuttest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdeui-kstandardshortcuttest ${EXECUTABLE_OUTPUT_PATH}/kstandardshortcuttest)
+
+
+########### next target ###############
+
+if (Q_WS_X11)
+set(kxerrorhandlertest_SRCS kxerrorhandlertest.cpp )
+
+kde4_automoc(${kxerrorhandlertest_SRCS})
+
+kde4_add_executable(kxerrorhandlertest NOGUI RUN_UNINSTALLED ${kxerrorhandlertest_SRCS})
+
+target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+# add_test(kdecore-kxerrorhandlertest ${EXECUTABLE_OUTPUT_PATH}/kxerrorhandlertest)
+endif (Q_WS_X11)
+
 ########### End of tests ###############
 
 endif(KDE4_BUILD_TESTS)

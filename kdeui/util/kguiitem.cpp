@@ -21,7 +21,7 @@
 #include "kguiitem.h"
 
 #include <kiconloader.h> // TODO remove
-#include <kinstance.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kicon.h>
 
@@ -148,11 +148,11 @@ QString KGuiItem::plainText() const
 }
 
 
-KIcon KGuiItem::icon( KInstance* instance ) const
+KIcon KGuiItem::icon( ) const
 {
     if (d->m_hasIcon) {
         if (!d->m_iconName.isEmpty()) {
-            return KIcon(d->m_iconName, instance ? instance->iconLoader() : 0);
+            return KIcon(d->m_iconName, kapp ? kapp->iconLoader() : 0);
         } else {
             return d->m_icon;
         }
@@ -161,11 +161,11 @@ KIcon KGuiItem::icon( KInstance* instance ) const
 }
 
 // deprecated
-QIcon KGuiItem::iconSet( K3Icon::Group group, int size, KInstance* instance ) const
+QIcon KGuiItem::iconSet( K3Icon::Group group, int size ) const
 {
-    if( d->m_hasIcon ) {
+    if( d->m_hasIcon && kapp ) {
         if( !d->m_iconName.isEmpty()) {
-            KIconLoader* iconLoader = instance ? instance->iconLoader() : KGlobal::iconLoader();
+            KIconLoader* iconLoader = kapp->iconLoader();
             return iconLoader->loadIconSet( d->m_iconName, group, size );
         } else {
             return d->m_icon;

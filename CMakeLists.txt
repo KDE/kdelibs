@@ -63,11 +63,14 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx
                         ${CMAKE_SOURCE_DIR}/kdeui/actions
                         ${CMAKE_SOURCE_DIR}/kdeui/dialogs
                         ${CMAKE_SOURCE_DIR}/kdeui/findreplace
+                        ${CMAKE_SOURCE_DIR}/kdeui/icons
                         ${CMAKE_SOURCE_DIR}/kdeui/itemviews
                         ${CMAKE_SOURCE_DIR}/kdeui/kernel
                         ${CMAKE_SOURCE_DIR}/kdeui/paged
+                        ${CMAKE_SOURCE_DIR}/kdeui/shortcuts
                         ${CMAKE_SOURCE_DIR}/kdeui/util
                         ${CMAKE_SOURCE_DIR}/kdeui/widgets
+                        ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${KDE4_KDECORE_INCLUDES})
 # kio depends on kdeui

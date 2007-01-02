@@ -1,7 +1,7 @@
 #include <kiconloader.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-//#include <kapplication.h>
+#include <kapplication.h>
 #include <kdebug.h>
 
 #include <qdatetime.h>
@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
   KAboutData about("kiconloadertest", "kiconloadertest", "version");
   KCmdLineArgs::init(argc, argv, &about);
 
-  //KApplication app;
+  KApplication app;
 
-  KIconLoader * mpLoader = KGlobal::iconLoader();
+  KIconLoader * mpLoader = app.iconLoader();
   K3Icon::Context mContext = K3Icon::Application;
   QTime dt;
   dt.start();

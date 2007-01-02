@@ -991,19 +991,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     if (!d->bEnableMenu)
         return;
     QMenu *popup = createStandardContextMenu();
-    QList<QAction *> lstAction = popup->actions ();
-
-    if ( !lstAction.isEmpty() )
-    {
-        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
-        lstAction[UndoAct]->setIcon( KIcon("undo") );
-        lstAction[RedoAct]->setIcon( KIcon("redo") );
-        lstAction[CutAct]->setIcon( KIcon("editcut") );
-        lstAction[CopyAct]->setIcon( KIcon("editcopy") );
-        lstAction[PasteAct]->setIcon( KIcon("editpaste") );
-        lstAction[ClearAct]->setIcon( KIcon("editclear") );
-    }
-
+    KIconTheme::assignIconsToContextMenu( KIconTheme::TextEditor, popup->actions () );
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion

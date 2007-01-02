@@ -35,6 +35,7 @@
 
 #include <Q3PtrDict>
 
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <khbox.h>
@@ -340,7 +341,7 @@ void KPasswordDialog::init()
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
-    const QPixmap pix( KGlobal::iconLoader()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
+    const QPixmap pix( kapp->iconLoader()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     if (!pix.isNull()) {
 	lbl = new QLabel(d->pMain);
 	lbl->setPixmap(pix);

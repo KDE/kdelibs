@@ -25,7 +25,6 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qvariant.h>
-#include <kicontheme.h>
 #include <klibloader.h>
 
 #include "kservicetype.h"
@@ -122,14 +121,6 @@ public:
    *         or QString() if not set
    */
   QString icon() const { return m_strIcon; }
-  /**
-   * Returns the pixmap that represents the icon.
-   * @return a pixmap for this service (finds and loads icon()), null if not set
-   * @see icon()
-   * @deprecated use icon() and KIconLoader.
-   */
-  KDE_DEPRECATED QPixmap pixmap( K3Icon::Group _group, int _force_size = 0, int _state = 0,
-                                 QString * _path = 0L ) const;
   /**
    * Checks whethe the service should be run in a terminal.
    * @return true if the service is to be run in a terminal.

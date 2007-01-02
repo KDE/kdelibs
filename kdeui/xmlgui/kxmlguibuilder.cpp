@@ -21,6 +21,7 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
+#include "kapplication.h"
 #include "kauthorized.h"
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"
@@ -191,7 +192,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       if ( !instance )
         instance = KGlobal::instance();
 
-      pix = KIcon( icon, instance->iconLoader() );
+      pix = KIcon( icon );
     }
 
     if ( parent && qobject_cast<KMenuBar*>( parent ) )
@@ -378,7 +379,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
         if ( !instance )
           instance = KGlobal::instance();
 
-        pix = KIcon( icon, instance->iconLoader() );
+        pix = KIcon( icon );
       }
 
       if ( !icon.isEmpty() ) {

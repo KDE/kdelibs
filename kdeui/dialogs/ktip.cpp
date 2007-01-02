@@ -33,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
+#include <kapplication.h>
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -275,10 +276,10 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->database = database;
 
   QIcon icon;
-  QPixmap pixmap = KGlobal::iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 32 );
+  QPixmap pixmap = kapp->iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 32 );
   icon.addPixmap( pixmap, QIcon::Normal, QIcon::On );
 
-  pixmap = KGlobal::iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 16 );
+  pixmap = kapp->iconLoader()->loadIcon( "idea", K3Icon::NoGroup, 16 );
   icon.addPixmap( pixmap, QIcon::Normal, QIcon::On );
   setWindowIcon( icon );
 

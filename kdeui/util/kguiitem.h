@@ -26,7 +26,6 @@
 
 #include <kicontheme.h>
 #include <kicon.h>
-class KInstance;
 
 /**
  * @short An abstract class for GUI data such as ToolTip and Icon.
@@ -61,9 +60,9 @@ public:
     QString plainText() const;
 
     /// @deprecated use icon() instead
-    KDE_DEPRECATED QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0, KInstance* instance = 0) const;
+    KDE_DEPRECATED QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0) const;
 
-    KIcon icon( KInstance* instance = 0 ) const;
+    KIcon icon( ) const;
 
     QString iconName() const;
     QString toolTip() const;

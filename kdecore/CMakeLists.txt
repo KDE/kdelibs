@@ -64,7 +64,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       ktoolinvocation_x11.cpp 
       ksocks.cpp
-      netwm.cpp
       kpty.cpp
       network/khttpproxysocketdevice.cpp
       network/ksockssocketdevice.cpp
@@ -113,14 +112,9 @@ set(kdecore_LIB_SRCS
    klocale.cpp
    klocalizedstring.cpp
    krfcdate.cpp
-   kiconeffect.cpp
-   kicontheme.cpp
-   kiconloader.cpp
    ksvgrenderer.cpp
    kcharsets.cpp
    kckey.cpp
-   kshortcut.cpp
-   kstandardshortcut.cpp
    kurl.cpp
    kjob.cpp
    kcompositejob.cpp
@@ -146,7 +140,6 @@ set(kdecore_LIB_SRCS
    ksycocafactory.cpp
    kcatalog.cpp
    kstaticdeleter.cpp
-   kclipboard.cpp
    kdeversion.cpp
    kdebugdbusiface.cpp
    kcalendarsystem.cpp
@@ -162,7 +155,6 @@ set(kdecore_LIB_SRCS
    kcalendarsystemjalali.cpp
    kprotocolinfo.cpp
    kprotocolinfofactory.cpp
-   kxerrorhandler.cpp
    kuser.cpp
    kconfigskeleton.cpp
    klockfile.cpp
@@ -286,12 +278,8 @@ install( FILES
    kprocctrl.h
    klocale.h
    klocalizedstring.h
-   kicontheme.h
-   kiconloader.h
    ksvgrenderer.h
    kdebug.h
-   kshortcut.h
-   kstandardshortcut.h
    kcatalog.h
    kstringhandler.h
    kstandarddirs.h
@@ -305,9 +293,6 @@ install( FILES
    ktemporaryfile.h
    ksavefile.h
    krandomsequence.h
-   kiconeffect.h
-   netwm.h
-   netwm_def.h
    kstaticdeleter.h
    kprocio.h
    krandom.h
@@ -320,7 +305,6 @@ install( FILES
    kgenericfactory.tcc
    ktypelist.h
    ksortablelist.h
-   kclipboard.h
    kcalendarsystem.h
    kcalendarsystemfactory.h
    kmacroexpander.h
@@ -331,7 +315,6 @@ install( FILES
    ktempdir.h
    kshell.h
    fixx11h.h
-   kxerrorhandler.h
    kde_file.h
    ktimezones.h
    ksystemtimezone.h

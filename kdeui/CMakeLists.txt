@@ -9,13 +9,16 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
+ ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+ ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
+ ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
- ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/util
+ ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
 )
 
@@ -69,6 +72,11 @@ set(kdeui_LIB_SRCS
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
+ icons/kiconeffect.cpp
+ icons/kiconengine.cpp
+ icons/kicon.cpp
+ icons/kiconloader.cpp
+ icons/kicontheme.cpp
  itemviews/k3iconview.cpp
  itemviews/k3iconviewsearchline.cpp
  itemviews/k3listview.cpp
@@ -76,6 +84,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistbox.cpp
  itemviews/ktreewidgetsearchline.cpp
  kernel/kapplication.cpp
+ kernel/kclipboard.cpp
  kernel/kuniqueapplication.cpp
  kernel/kstartupinfo.cpp
  paged/kpagedialog.cpp
@@ -84,6 +93,8 @@ set(kdeui_LIB_SRCS
  paged/kpageview_p.cpp
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
+ shortcuts/kshortcut.cpp
+ shortcuts/kstandardshortcut.cpp
  util/kacceleratormanager.cpp
  util/kcheckaccelerators.cpp
  util/kcolormimedata.cpp
@@ -94,8 +105,6 @@ set(kdeui_LIB_SRCS
  util/kcursor.cpp
  util/kglobalaccel.cpp
  util/kguiitem.cpp
- util/kicon.cpp
- util/kiconengine.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
  util/knotification.cpp
@@ -111,6 +120,7 @@ set(kdeui_LIB_SRCS
  util/ksystemtrayicon.cpp
  util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
+ util/kxerrorhandler.cpp
  util/kxmessages.cpp
  util/kundostack.cpp
  widgets/kactionselector.cpp
@@ -178,7 +188,10 @@ if (Q_WS_WIN)
 endif (Q_WS_WIN)
 
 if (UNIX)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwin.cpp util/kwinmodule.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwin.cpp
+                                         windowmanagement/kwinmodule.cpp
+                                         windowmanagement/netwm.cpp
+       )
 endif (UNIX)
 
 
@@ -248,6 +261,11 @@ install( FILES
  findreplace/kreplace.h
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
+ icons/kiconeffect.h
+ icons/kiconengine.h
+ icons/kicon.h
+ icons/kiconloader.h
+ icons/kicontheme.h
  itemviews/k3iconview.h
  itemviews/k3iconviewsearchline.h
  itemviews/k3listview.h
@@ -256,6 +274,7 @@ install( FILES
  itemviews/klistbox.h
  itemviews/ktreewidgetsearchline.h
  kernel/kapplication.h
+ kernel/kclipboard.h
  kernel/kuniqueapplication.h
  kernel/kstartupinfo.h
  paged/kpagedialog.h
@@ -263,6 +282,8 @@ install( FILES
  paged/kpageview.h
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
+ shortcuts/kshortcut.h
+ shortcuts/kstandardshortcut.h
  util/kacceleratormanager.h
  util/kaccelgen.h
  util/kcolormimedata.h
@@ -272,8 +293,6 @@ install( FILES
  util/kcursor.h
  util/kglobalaccel.h
  util/kguiitem.h
- util/kiconengine.h
- util/kicon.h
  util/kkeyserver.h
  util/kkeyserver_x11.h
  util/kmanagerselection.h
@@ -288,9 +307,8 @@ install( FILES
  util/kstringvalidator.h
  util/ksystemtrayicon.h
  util/kwordwrap.h
+ util/kxerrorhandler.h
  util/kxmessages.h
- util/kwinmodule.h
- util/kwin.h
  util/kundostack.h
  widgets/kactionselector.h
  widgets/kanimatedbutton.h
@@ -336,6 +354,11 @@ install( FILES
  widgets/kurllabel.h
  widgets/kvbox.h
  widgets/kxyselector.h
+ windowmanagement/kwin.cpp
+ windowmanagement/kwinmodule.cpp
+ windowmanagement/netwm_def.h
+ windowmanagement/netwm.h
+ windowmanagement/netwm_p.h
  xmlgui/kmainwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h

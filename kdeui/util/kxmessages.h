@@ -37,7 +37,7 @@ class KXMessagesPrivate;
 /**
  * Sending string messages to other applications using the X Client Messages.
  *
- * Used internally by KStartupInfo. You usually don't want to use this, use DCOP
+ * Used internally by KStartupInfo. You usually don't want to use this, use DBUS
  * instead.
  *
  * @author Lubos Lunak <l.lunak@kde.org>

@@ -34,13 +34,11 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kshortcut.h>
 #include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <klocale.h>
 #include <kprotocolinfo.h>
 #include <kinstance.h>
-#include "kclipboard.h"
 #include "kstaticdeleter.h"
 
 #include <qcolor.h>
@@ -50,6 +48,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <qfont.h>
 #include <qfontdatabase.h>
 #include <qfontinfo.h>
+#include <qkeysequence.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 //#include <q3stylesheet.h> // no equivalent in Qt4
@@ -180,8 +179,29 @@ bool KGlobalSettings::showContextMenusOnPress ()
 int KGlobalSettings::contextMenuKey ()
 {
     KConfigGroup g(KGlobal::config(), "Shortcuts");
-    KShortcut cut (g.readEntry ("PopupMenuContext", "Menu"));
-    return cut.primary()[0];
+    QString s = g.readEntry ("PopupMenuContext", "Menu");
+
+    // this is a bit of a code duplication with KShortcut,
+    // but seeing as that is all in kdeui these days there's little choice.
+    // this is faster for what we're really after here anyways
+    // (less allocations, only processing the first item always, etc)
+    if (s == QLatin1String("none")) {
+        return QKeySequence()[0];
+    }
+
+    QStringList shortCuts = s.split(';');
+
+    if (shortCuts.count() < 1) {
+        return QKeySequence()[0];
+    }
+
+    s = shortCuts.at(0);
+
+    if ( s.startsWith( "default(" ) ) {
+        s = s.mid( 8, s.length() - 9 );
+    }
+
+    return QKeySequence::fromString(s)[0];
 }
 
 QColor KGlobalSettings::toolBarHighlightColor()
@@ -806,13 +826,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
     case IconChanged:
         QPixmapCache::clear();
         KGlobal::config()->reparseConfiguration();
-        KGlobal::instance()->newIconLoader();
         emit iconChanged(arg);
-        break;
-
-        // TODO KClipboardSynchronizer could do this with its own dbus signal
-    case ClipboardConfigChanged:
-        KClipboardSynchronizer::newConfiguration(arg);
         break;
 
     case BlockShortcuts:

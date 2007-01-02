@@ -36,7 +36,6 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
-#include <kiconloader.h>
 #include <kstandarddirs.h>
 
 #include "kservicefactory.h"
@@ -256,20 +255,6 @@ KService::KService( QDataStream& _str, int _offset ) : KSycocaEntry( _str, _offs
 KService::~KService()
 {
   delete d;
-}
-
-QPixmap KService::pixmap( K3Icon::Group _group, int _force_size, int _state, QString * _path ) const
-{
-  KIconLoader *iconLoader=KGlobal::iconLoader();
-  if (!iconLoader->extraDesktopThemesAdded())
-  {
-      QPixmap _pixmap=iconLoader->loadIcon( m_strIcon, _group, _force_size, _state, _path, true );
-      if (!_pixmap.isNull() ) return _pixmap;
-
-      iconLoader->addExtraDesktopThemes();
-  }
-
-  return iconLoader->loadIcon( m_strIcon, _group, _force_size, _state, _path );
 }
 
 void KService::load( QDataStream& s )
