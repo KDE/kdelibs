@@ -284,7 +284,6 @@ public:
    **/
   void setTopWidget( QWidget *topWidget );
 
-public:
   /**
    * Get a file name in order to make a temporary copy of your document.
    *
@@ -371,6 +370,11 @@ public:
    * @return the global icon loader
    */
   KIconLoader* iconLoader() const;
+
+  /**
+   * Sets how the primary and clipboard selections are synchronized in an X11 environment
+   */
+  void setSynchronizeClipboard(bool synchronize);
 
 public Q_SLOTS:
   /**
@@ -531,71 +535,12 @@ private:
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
-protected:
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
 private:
   //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
   KApplication(bool, bool);
 
   class Private;
   Private* const d;
-};
-
-
-/**
-   Provides highlevel access to session management on a per-object
-   base.
-
-   KSessionManaged makes it possible to provide implementations for
- QApplication::commitData() and QApplication::saveState(), without
-   subclassing KApplication. KMainWindow internally makes use of this.
-
-   You don't need to do anything with this class when using
-   KMainWindow. Instead, use KMainWindow::saveProperties(),
- KMainWindow::readProperties(), KMainWindow::queryClose(),
- KMainWindow::queryExit() and friends.
-
-  @short Highlevel access to session management.
-  @author Matthias Ettrich <ettrich@kde.org>
- */
-class KDEUI_EXPORT KSessionManaged
-{
-public:
-  KSessionManaged();
-  virtual ~KSessionManaged();
-
-    /**
-       See QApplication::saveState() for documentation.
-
-       This function is just a convenience version to avoid subclassing KApplication.
-
-       Return true to indicate a successful state save or false to
-       indicate a problem and to halt the shutdown process (will
-       implicitly call sm.cancel() ).
-     */
-  virtual bool saveState( QSessionManager& sm );
-    /**
-       See QApplication::commitData() for documentation.
-
-       This function is just a convenience version to avoid subclassing KApplication.
-
-       Return true to indicate a successful commit of data or false to
-       indicate a problem and to halt the shutdown process (will
-       implicitly call sm.cancel() ).
-     */
-  virtual bool commitData( QSessionManager& sm );
-
-protected:
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
-private:
-  class Private;
-  Private* d;
 };
 
 #endif

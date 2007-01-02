@@ -415,7 +415,7 @@ install( FILES
   KServiceType
   KServiceTypeProfile
   KServiceTypeTrader
-  KSessionManaged
+  KSessionManager
   KSharedConfig
   KSharedPtr
   KShellCompletion

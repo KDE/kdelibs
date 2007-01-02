@@ -86,6 +86,7 @@ set(kdeui_LIB_SRCS
  kernel/kapplication.cpp
  kernel/kclipboard.cpp
  kernel/kuniqueapplication.cpp
+ kernel/ksessionmanager.cpp
  kernel/kstartupinfo.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
@@ -274,8 +275,8 @@ install( FILES
  itemviews/klistbox.h
  itemviews/ktreewidgetsearchline.h
  kernel/kapplication.h
- kernel/kclipboard.h
  kernel/kuniqueapplication.h
+ kernel/ksessionmanager.h
  kernel/kstartupinfo.h
  paged/kpagedialog.h
  paged/kpagemodel.h

@@ -32,6 +32,7 @@
 #include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
+#include "ksessionmanager.h"
 #include "kstandardaction.h"
 
 #include <QCloseEvent>
@@ -89,16 +90,16 @@ public:
 
 QList<KMainWindow*> KMainWindow::sMemberList;
 static bool no_query_exit = false;
-static KMWSessionManaged* ksm = 0;
-static KStaticDeleter<KMWSessionManaged> ksmd;
+static KMWSessionManager* ksm = 0;
+static KStaticDeleter<KMWSessionManager> ksmd;
 
-class KMWSessionManaged : public KSessionManaged
+class KMWSessionManager : public KSessionManager
 {
 public:
-    KMWSessionManaged()
+    KMWSessionManager()
     {
     };
-    ~KMWSessionManaged()
+    ~KMWSessionManager()
     {
     }
     bool saveState( QSessionManager& )
@@ -206,7 +207,7 @@ void KMainWindow::initKMainWindow()
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
 
     if ( !ksm )
-        ksm = ksmd.setObject(ksm, new KMWSessionManaged());
+        ksm = ksmd.setObject(ksm, new KMWSessionManager());
 
     sMemberList.append( this );
 

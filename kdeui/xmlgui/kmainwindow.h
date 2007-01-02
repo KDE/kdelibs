@@ -41,7 +41,7 @@ class KConfigBase;
 class KHelpMenu;
 class KStatusBar;
 class KMenuBar;
-class KMWSessionManaged;
+class KMWSessionManager;
 class KMainWindowPrivate;
 class KToolBar;
 
@@ -100,7 +100,7 @@ class KToolBar;
 
 class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
 {
-    friend class KMWSessionManaged;
+    friend class KMWSessionManager;
     Q_OBJECT
     Q_PROPERTY( bool hasMenuBar READ hasMenuBar )
     Q_PROPERTY( bool autoSaveSettings READ autoSaveSettings )

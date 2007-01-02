@@ -57,6 +57,7 @@
 #include "kiconloader.h"
 #include "klibloader.h"
 #include "klocale.h"
+#include "ksessionmanager.h"
 #include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
@@ -129,7 +130,7 @@ static Atom kde_xdnd_drop;
 // replaced by unpatched one
 KDEUI_EXPORT bool qt_qclipboard_bailout_hack = false;
 
-template class QList<KSessionManaged*>;
+template class QList<KSessionManager*>;
 
 #ifdef Q_WS_X11
 extern "C" {
@@ -269,15 +270,6 @@ void KApplication::checkAppStartedSlot()
 #if defined Q_WS_X11
     KStartupInfo::handleAutoAppStartedSending();
 #endif
-}
-
-// the help class for session management communication
-static QList<KSessionManaged *>* sessionClients()
-{
-    static QList<KSessionManaged*>* session_clients = 0L;
-    if ( !session_clients )
-         session_clients = new QList<KSessionManaged *>;
-    return session_clients;
 }
 
 /*
@@ -443,6 +435,8 @@ void KApplication::init()
     }
   }
 
+  KApp = this;
+
   parseCommandLine();
 
   (void) KClipboardSynchronizer::self();
@@ -451,8 +445,6 @@ void KApplication::init()
   kde_kdebug_enable_dbus_interface = true;
 
   QApplication::setDesktopSettingsAware( false );
-
-  KApp = this;
 
 #ifdef Q_WS_X11 //FIXME(E)
   // create all required atoms in _one_ roundtrip to the X server
@@ -599,28 +591,6 @@ void KApplication::quit()
     QApplication::quit();
 }
 
-KSessionManaged::KSessionManaged()
-{
-    sessionClients()->removeAll( this );
-    sessionClients()->append( this );
-}
-
-KSessionManaged::~KSessionManaged()
-{
-    sessionClients()->removeAll( this );
-}
-
-bool KSessionManaged::saveState(QSessionManager&)
-{
-    return true;
-}
-
-bool KSessionManaged::commitData(QSessionManager&)
-{
-    return true;
-}
-
-
 void KApplication::disableSessionManagement() {
   bSessionManagement = false;
 }
@@ -653,7 +623,7 @@ void KApplication::commitData( QSessionManager& sm )
     d->session_save = true;
     bool canceled = false;
 
-    foreach (KSessionManaged *it, *sessionClients()) {
+    foreach (KSessionManager *it, KSessionManager::sessionClients()) {
         if ( ( canceled = !it->commitData( sm ) ) )
             break;
     }
@@ -754,7 +724,7 @@ void KApplication::saveState( QSessionManager& sm )
     // finally: do session management
     emit saveYourself(); // for compatibility
     bool canceled = false;
-    foreach(KSessionManaged* it, *sessionClients()) {
+    foreach(KSessionManager* it, KSessionManager::sessionClients()) {
       if(canceled) break;
       canceled = !it->saveState( sm );
     }
@@ -1161,11 +1131,11 @@ void KApplication::newIconLoader() const
     }
 }
 
-void KApplication::virtual_hook( int id, void* data )
-{ KInstance::virtual_hook( id, data ); }
-
-void KSessionManaged::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
+void KApplication::setSynchronizeClipboard(bool synchronize)
+{
+    KClipboardSynchronizer::self()->setSynchronizing(synchronize);
+    KClipboardSynchronizer::self()->setReverseSynchronizing(synchronize);
+}
 
 #include "kapplication.moc"
 
