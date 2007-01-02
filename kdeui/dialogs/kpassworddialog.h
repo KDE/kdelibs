@@ -311,12 +311,12 @@ public:
     bool keep() const;
 
     /**
-     * @deprecated Use the new version that return the password. (warning: the ordrer of parametter has changed)
+     * @deprecated Use the new version that return the password. (warning: the order of parameters has changed)
      */
      KDE_DEPRECATED  static int getPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt, bool *keep = 0L);
 
     /**
-     * @deprecated Use the new version that return the password. (warning: the ordrer of parametter has changed)
+     * @deprecated Use the new version that return the password. (warning: the order of parameters has changed)
      */
      KDE_DEPRECATED  static KDE_DEPRECATED int getPassword(QWidget *parent, QByteArray &password, const QString &prompt, bool *keep = 0L);
 
@@ -335,7 +335,7 @@ public:
 
 
     /**
-     * @deprecated  use the new function that return the password (warning: the ordrer of parametter has changed)
+     * @deprecated  use the new function that return the password (warning: the order of parameters has changed)
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
@@ -352,13 +352,12 @@ public:
     /**
      * @overload
      *
-     * @deprecated Use the new version that return the password (warning: the ordrer of parametter has changed)
+     * @deprecated Use the new version that return the password (warning: the order of parameters has changed)
      */
     static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &prompt);
 
 
     /**
-     * @deprecated  use the new function that return the password
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
