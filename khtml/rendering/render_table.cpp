@@ -84,6 +84,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     ETableLayout oldTableLayout = style() ? style()->tableLayout() : TAUTO;
     if ( _style->display() == INLINE ) _style->setDisplay( INLINE_TABLE );
     if ( _style->display() != INLINE_TABLE ) _style->setDisplay(TABLE);
+    if ( !_style->flowAroundFloats() ) _style->setFlowAroundFloats(true);
     RenderBlock::setStyle(_style);
 
     // init RenderObject attributes
