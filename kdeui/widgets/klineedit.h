@@ -207,12 +207,12 @@ public:
     *
     * @param showMenu If @p true, show the context menu.
     */
-    virtual void setContextMenuEnabled( bool showMenu ) {  m_bEnableMenu = showMenu; }
+    virtual void setContextMenuEnabled( bool showMenu );
 
     /**
      * Returns @p true when the context menu is enabled.
      */
-    bool isContextMenuEnabled() const { return m_bEnableMenu; }
+    bool isContextMenuEnabled() const;
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
@@ -584,12 +584,6 @@ private:
      * updates the geometry of the clear button on resize events
      **/
     void updateClearButton();
-
-    bool m_bEnableMenu;
-
-    bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
-
-    QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 
 private:
     class KLineEditPrivate;

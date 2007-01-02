@@ -109,11 +109,16 @@ public:
     bool enableClickMsg:1;
     bool drawClickMsg:1;
 
+    bool bEnableMenu :1; 
+    bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
+
     bool clickInClear:1;
     int  clickButtonState;
     QLabel* clearButton;
 
     KCompletionBox *completionBox;
+
+    QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
@@ -140,7 +145,7 @@ KLineEdit::~KLineEdit ()
 
 void KLineEdit::init()
 {
-    possibleTripleClick = false;
+    d->possibleTripleClick = false;
     d->bgRole = backgroundRole();
 
     // Enable the context menu by default.
@@ -926,7 +931,7 @@ void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
 {
     if ( e->button() == Qt::LeftButton  )
     {
-        possibleTripleClick=true;
+        d->possibleTripleClick=true;
         QTimer::singleShot( QApplication::doubleClickInterval(),this,
                             SLOT(tripleClickTimeout()) );
     }
@@ -941,11 +946,11 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         d->clickInClear = d->clearButton->underMouse();
 
         if ( d->clickInClear ) {
-            possibleTripleClick = false;
+            d->possibleTripleClick = false;
         }
     }
 
-    if ( e->button() == Qt::LeftButton && possibleTripleClick ) {
+    if ( e->button() == Qt::LeftButton && d->possibleTripleClick ) {
         selectAll();
         e->accept();
         return;
@@ -978,12 +983,12 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 
 void KLineEdit::tripleClickTimeout()
 {
-    possibleTripleClick=false;
+    d->possibleTripleClick=false;
 }
 
 void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
 {
-    if (!m_bEnableMenu)
+    if (!d->bEnableMenu)
         return;
     QMenu *popup = createStandardContextMenu();
     QList<QAction *> lstAction = popup->actions ();
@@ -1012,34 +1017,34 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
         popup->addSeparator();
 
         QActionGroup* ag = new QActionGroup( this );
-        noCompletionAction = ag->addAction( i18n("None"));
-        shellCompletionAction = ag->addAction( i18n("Manual") );
-        autoCompletionAction = ag->addAction( i18n("Automatic") );
-        popupCompletionAction = ag->addAction( i18n("Dropdown List") );
-        shortAutoCompletionAction = ag->addAction( i18n("Short Automatic") );
-        popupAutoCompletionAction = ag->addAction( i18n("Dropdown List && Automatic"));
+        d->noCompletionAction = ag->addAction( i18n("None"));
+        d->shellCompletionAction = ag->addAction( i18n("Manual") );
+        d->autoCompletionAction = ag->addAction( i18n("Automatic") );
+        d->popupCompletionAction = ag->addAction( i18n("Dropdown List") );
+        d->shortAutoCompletionAction = ag->addAction( i18n("Short Automatic") );
+        d->popupAutoCompletionAction = ag->addAction( i18n("Dropdown List && Automatic"));
         subMenu->addActions( ag->actions() );
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
 
-        shellCompletionAction->setCheckable(true);
-        noCompletionAction->setCheckable(true);
-        popupCompletionAction->setCheckable(true);
-        autoCompletionAction->setCheckable(true);
-        shortAutoCompletionAction->setCheckable(true);
-        popupAutoCompletionAction->setCheckable(true);
+        d->shellCompletionAction->setCheckable(true);
+        d->noCompletionAction->setCheckable(true);
+        d->popupCompletionAction->setCheckable(true);
+        d->autoCompletionAction->setCheckable(true);
+        d->shortAutoCompletionAction->setCheckable(true);
+        d->popupAutoCompletionAction->setCheckable(true);
 
         KGlobalSettings::Completion mode = completionMode();
-        noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
-        shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
-        popupCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopup );
-        autoCompletionAction->setChecked(  mode == KGlobalSettings::CompletionAuto );
-        shortAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionMan );
-        popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
+        d->noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
+        d->shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
+        d->popupCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopup );
+        d->autoCompletionAction->setChecked(  mode == KGlobalSettings::CompletionAuto );
+        d->shortAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionMan );
+        d->popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
         if ( mode != KGlobalSettings::completionMode() )
         {
             subMenu->addSeparator();
-            defaultAction = subMenu->addAction( i18n("Default") );
+            d->defaultAction = subMenu->addAction( i18n("Default") );
         }
     }
 
@@ -1056,31 +1061,31 @@ void KLineEdit::completionMenuActivated( QAction  *act)
 {
     KGlobalSettings::Completion oldMode = completionMode();
 
-    if( act == noCompletionAction )
+    if( act == d->noCompletionAction )
     {
         setCompletionMode( KGlobalSettings::CompletionNone );
     }
-    else if( act ==  shellCompletionAction)
+    else if( act ==  d->shellCompletionAction)
     {
         setCompletionMode( KGlobalSettings::CompletionShell );
     }
-    else if( act == autoCompletionAction)
+    else if( act == d->autoCompletionAction)
     {
         setCompletionMode( KGlobalSettings::CompletionAuto );
     }
-    else if( act == popupCompletionAction)
+    else if( act == d->popupCompletionAction)
     {
         setCompletionMode( KGlobalSettings::CompletionPopup );
     }
-    else if( act == shortAutoCompletionAction)
+    else if( act == d->shortAutoCompletionAction)
     {
         setCompletionMode( KGlobalSettings::CompletionMan );
     }
-    else if( act == popupAutoCompletionAction)
+    else if( act == d->popupAutoCompletionAction)
     {
         setCompletionMode( KGlobalSettings::CompletionPopupAuto );
     }
-    else if( act == defaultAction )
+    else if( act == d->defaultAction )
     {
         setCompletionMode( KGlobalSettings::completionMode() );
     }
@@ -1506,4 +1511,14 @@ void KLineEdit::setClickMessage( const QString &msg )
     d->clickMessage = msg;
     d->drawClickMsg = text().isEmpty();
     update();
+}
+
+void KLineEdit::setContextMenuEnabled( bool showMenu )
+{
+    d->bEnableMenu = showMenu;
+}
+
+bool KLineEdit::isContextMenuEnabled() const
+{
+    return  d->bEnableMenu;
 }
