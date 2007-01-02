@@ -225,17 +225,6 @@ target_link_libraries(kmdcodectest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(knotifytest_SRCS knotifytest.cpp )
-
-kde4_automoc(${knotifytest_SRCS})
-
-kde4_add_executable(knotifytest NOGUI RUN_UNINSTALLED ${knotifytest_SRCS})
-
-target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-# add_test(kdecore-knotifytest ${EXECUTABLE_OUTPUT_PATH}/knotifytest)
-
-########### next target ###############
 
 set(kdatetimetest_SRCS kdatetimetest.cpp )
 
