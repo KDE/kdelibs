@@ -366,7 +366,7 @@ public:
      * information. The text is word broken to fit nicely in the dialog.
      * @param caption A caption for the dialog.
      * @param parent The widget the dialog belongs too
-     * @return The password, or a null string if the dialog was canceled
+     * @return The entered password, or a null string if the dialog was canceled
      */
     static QString getNewPassword(const QString &prompt, const QString &caption=QString(), QWidget *parent=0l);
 
