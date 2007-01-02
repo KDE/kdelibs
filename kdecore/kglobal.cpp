@@ -36,19 +36,8 @@
 #include <kcharsets.h>
 #include <kstandarddirs.h>
 #include <kinstance.h>
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include "kstaticdeleter.h"
-
-#include <qfont.h>
-
-#ifdef Q_WS_X11
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#endif
-
-#include <qcolormap.h>
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \
@@ -218,7 +207,7 @@ void KGlobal::deref()
     --s_refCount;
     //kDebug() << "KGlobal::deref() : refCount = " << s_refCount << endl;
     if ( s_refCount <= 0 )
-        qApp->quit();
+        QCoreApplication::instance()->quit();
 }
 
 // The Variables
@@ -268,65 +257,4 @@ static void kglobal_init()
     KGlobal::_staticDeleters = new KStaticDeleterList;
 }
 
-#ifdef Q_WS_X11
-//static GC*	app_gc_ro	= 0;		// read-only GC
-static GC*	app_gc_tmp	= 0;		// temporary GC
-//static GC*	app_gc_ro_m	= 0;		// read-only GC (monochrome)
-static GC*	app_gc_tmp_m	= 0;		// temporary GC (monochrome)
 
-static GC create_gc( int scrn, bool monochrome )
-{
-    GC gc;
-    if ( monochrome ) {
-	Pixmap pm = XCreatePixmap( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 8, 8, 1 );
-	gc = XCreateGC( QX11Info::display(), pm, 0, 0 );
-	XFreePixmap( QX11Info::display(), pm );
-    } else {
-	if ( QX11Info::appDefaultVisual( scrn ) ) {
-	    gc = XCreateGC( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 0, 0 );
-	} else {
-	    Window w;
-	    XSetWindowAttributes a;
-            QColormap colormap = QColormap::instance( scrn );
-	    a.background_pixel = colormap.pixel( Qt::black );
-	    a.border_pixel = a.background_pixel;
-	    a.colormap = QX11Info::appColormap( scrn );
-	    w = XCreateWindow( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 0, 0, 100, 100,
-			       0, QX11Info::appDepth( scrn ), InputOutput,
-			       (Visual*)QX11Info::appVisual( scrn ),
-			       CWBackPixel|CWBorderPixel|CWColormap, &a );
-	    gc = XCreateGC( QX11Info::display(), w, 0, 0 );
-	    XDestroyWindow( QX11Info::display(), w );
-	}
-    }
-    XSetGraphicsExposures( QX11Info::display(), gc, False );
-    return gc;
-}
-
-// #### remove me, shouldn't be necessary anymore, rumors have it
-// xlib caches GCs client side
-KDE_EXPORT GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
-GC kde_xget_temp_gc( int scrn, bool monochrome )		// get temporary GC
-{
-    // #####
-    int screenCount = ScreenCount(QX11Info::display());
-    if ( scrn < 0 || scrn >= screenCount ) {
-	qFatal("invalid screen (tmp) %d %d", scrn, screenCount );
-    }
-    GC gc;
-    if ( monochrome ) {
-	if ( !app_gc_tmp_m )			// create GC for bitmap
-	    memset( (app_gc_tmp_m = new GC[screenCount]), 0, screenCount * sizeof( GC ) );
-	if ( !app_gc_tmp_m[scrn] )
-	    app_gc_tmp_m[scrn] = create_gc( scrn, true );
-	gc = app_gc_tmp_m[scrn];
-    } else {					// create standard GC
-	if ( !app_gc_tmp )
-	    memset( (app_gc_tmp = new GC[screenCount]), 0, screenCount * sizeof( GC ) );
-	if ( !app_gc_tmp[scrn] )
-	    app_gc_tmp[scrn] = create_gc( scrn, false );
-	gc = app_gc_tmp[scrn];
-    }
-    return gc;
-}
-#endif
