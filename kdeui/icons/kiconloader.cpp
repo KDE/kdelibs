@@ -24,12 +24,12 @@
 #include <QPainter>
 #include <QMovie>
 
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
-#include <kinstance.h>
 #include <ksvgrenderer.h>
 
 #include <kicontheme.h>
@@ -144,8 +144,6 @@ struct KIconLoaderDebug
 
 static QList< KIconLoaderDebug > *kiconloaders;
 #endif
-
-/*** KIconLoader: the icon loader ***/
 
 KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
@@ -1137,103 +1135,74 @@ QIcon KIconLoader::loadIconSet( const QString& name, K3Icon::Group g, int s,
 
 // Easy access functions
 
-QPixmap DesktopIcon(const QString& name, int force_size, int state,
-	KInstance *instance)
+QPixmap DesktopIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIcon(name, K3Icon::Desktop, force_size, state);
 }
 
-QPixmap DesktopIcon(const QString& name, KInstance *instance)
-{
-    return DesktopIcon(name, 0, K3Icon::DefaultState, instance);
-}
-
 // deprecated
-QIcon DesktopIconSet(const QString& name, int force_size, KInstance *instance)
+QIcon DesktopIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIconSet( name, K3Icon::Desktop, force_size );
 }
 
-QPixmap BarIcon(const QString& name, int force_size, int state,
-	KInstance *instance)
+QPixmap BarIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIcon(name, K3Icon::Toolbar, force_size, state);
 }
 
-QPixmap BarIcon(const QString& name, KInstance *instance)
-{
-    return BarIcon(name, 0, K3Icon::DefaultState, instance);
-}
-
 // deprecated
-QIcon BarIconSet(const QString& name, int force_size, KInstance *instance)
+QIcon BarIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIconSet( name, K3Icon::Toolbar, force_size );
 }
 
-QPixmap SmallIcon(const QString& name, int force_size, int state,
-	KInstance *instance)
+QPixmap SmallIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIcon(name, K3Icon::Small, force_size, state);
 }
 
-QPixmap SmallIcon(const QString& name, KInstance *instance)
-{
-    return SmallIcon(name, 0, K3Icon::DefaultState, instance);
-}
-
 // deprecated
-QIcon SmallIconSet(const QString& name, int force_size, KInstance *instance)
+QIcon SmallIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIconSet( name, K3Icon::Small, force_size );
 }
 
-QPixmap MainBarIcon(const QString& name, int force_size, int state,
-	KInstance *instance)
+QPixmap MainBarIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIcon(name, K3Icon::MainToolbar, force_size, state);
 }
 
-QPixmap MainBarIcon(const QString& name, KInstance *instance)
-{
-    return MainBarIcon(name, 0, K3Icon::DefaultState, instance);
-}
-
 // deprecated
-QIcon MainBarIconSet(const QString& name, int force_size, KInstance *instance)
+QIcon MainBarIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIconSet( name, K3Icon::MainToolbar, force_size );
 }
 
-QPixmap UserIcon(const QString& name, int state, KInstance *instance)
+QPixmap UserIcon(const QString& name, int state)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIcon(name, K3Icon::User, 0, state);
 }
 
-QPixmap UserIcon(const QString& name, KInstance *instance)
-{
-    return UserIcon(name, K3Icon::DefaultState, instance);
-}
-
 // deprecated
-QIcon UserIconSet(const QString& name, KInstance *instance)
+QIcon UserIconSet(const QString& name)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->loadIconSet( name, K3Icon::User );
 }
 
-int IconSize(K3Icon::Group group, KInstance *instance)
+int IconSize(K3Icon::Group group)
 {
-    KIconLoader *loader = instance->iconLoader();
+    KIconLoader *loader = kapp->iconLoader();
     return loader->currentSize(group);
 }
 
@@ -1243,11 +1212,11 @@ QPixmap KIconLoader::unknown()
     if ( QPixmapCache::find("unknown", pix) )
             return pix;
 
-    QString path = KGlobal::iconLoader()->iconPath("unknown", K3Icon::Small, true);
+    QString path = kapp->iconLoader()->iconPath("unknown", K3Icon::Small, true);
     if (path.isEmpty())
     {
-	kDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
-	pix = QPixmap(32,32);
+        kDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
+        pix = QPixmap(32,32);
     } else
     {
         pix.load(path);
@@ -1256,3 +1225,4 @@ QPixmap KIconLoader::unknown()
 
     return pix;
 }
+

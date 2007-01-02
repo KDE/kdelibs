@@ -25,7 +25,6 @@ class QString;
 class QWidget;
 class KAboutData;
 class KConfig;
-class KIconLoader;
 class KSharedConfig;
 class KStandardDirs;
 
@@ -90,17 +89,6 @@ class KDECORE_EXPORT KInstance
      * @return the KConfig object for the instance.
      */
     KSharedConfig*      sharedConfig() const;
-
-    /**
-     *  Returns an iconloader object.
-     * @return the iconloader object.
-     */
-    KIconLoader*        iconLoader() const;
-
-    /**
-     * Re-allocate the global iconloader.
-     */
-    void newIconLoader() const;
 
     /**
      *  Returns the about data of this instance

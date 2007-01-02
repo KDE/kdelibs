@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <QtGui/QAction>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmap.h>
@@ -25,6 +26,7 @@
 #include <qdir.h>
 
 #include <kdebug.h>
+#include <kicon.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -503,6 +505,35 @@ void KIconTheme::reconfigure()
 QString KIconTheme::defaultThemeName()
 {
     return QLatin1String("crystalsvg");
+}
+
+void KIconTheme::assignIconsToContextMenu( ContextMenus type,
+                                           QList<QAction*> actions )
+{
+    switch (type) {
+        case TextEditor:
+            enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+
+            if ( actions.count() < NCountActs ) {
+                return;
+            }
+
+            actions[UndoAct]->setIcon( KIcon("undo") );
+            actions[RedoAct]->setIcon( KIcon("redo") );
+            actions[CutAct]->setIcon( KIcon("editcut") );
+            actions[CopyAct]->setIcon( KIcon("editcopy") );
+            actions[PasteAct]->setIcon( KIcon("editpaste") );
+            actions[ClearAct]->setIcon( KIcon("editclear") );
+            break;
+
+        case ReadOnlyText:
+            if ( actions.count() < 1 ) {
+                return;
+            }
+
+            actions[0]->setIcon( KIcon("editcopy") );
+            break;
+    }
 }
 
 /*** KIconThemeDir ***/

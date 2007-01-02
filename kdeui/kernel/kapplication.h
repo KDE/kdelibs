@@ -49,8 +49,10 @@ typedef void Display;
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>
 #endif
+
 struct _IceConn;
 class QPixmap;
+class KIconLoader;
 class KSessionManaged;
 class KStyle;
 class KUrl;
@@ -364,7 +366,18 @@ public:
    */
   void setStartupId( const QByteArray& startup_id );
 
+  /**
+   * Provides access to the global icon loader
+   * @return the global icon loader
+   */
+  KIconLoader* iconLoader() const;
+
 public Q_SLOTS:
+  /**
+   * Re-initialize the global icon loader
+   */
+  void newIconLoader() const;
+
   /**
    * Updates the last user action timestamp to the given time, or to the current time,
    * if 0 is given. Do not use unless you're really sure what you're doing.
@@ -452,9 +465,9 @@ private:
 
 public:
   /**
-   * @internal
-   */
-  bool notify(QObject *receiver, QEvent *event);
+      @internal
+    */
+  bool notify( QObject* receiver, QEvent* event );
 
   /**
       @internal

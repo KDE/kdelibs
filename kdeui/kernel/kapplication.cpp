@@ -158,19 +158,21 @@ class KApplication::Private
 public:
   Private()
     : checkAccelerators( 0 ),
-	startup_id( "0" ),
-	app_started_timer( NULL ),
-	session_save( false )
+      startup_id( "0" ),
+      app_started_timer( 0 ),
+      session_save( false ),
 #ifdef Q_WS_X11
-	,oldIceIOErrorHandler( 0 )
-	,oldXErrorHandler( NULL )
-	,oldXIOErrorHandler( NULL )
+      oldIceIOErrorHandler( 0 ),
+      oldXErrorHandler( 0 ),
+      oldXIOErrorHandler( 0 ),
 #endif
+      iconLoader(0)
   {
   }
 
   ~Private()
   {
+    delete iconLoader;
   }
 
   KCheckAccelerators* checkAccelerators;
@@ -183,8 +185,10 @@ public:
   int (*oldXIOErrorHandler)(Display*);
 #endif
 
-    QString sessionKey;
-    QString pSessionConfigFile;
+  QString sessionKey;
+  QString pSessionConfigFile;
+
+  KIconLoader* iconLoader;
 };
 
 
@@ -237,69 +241,6 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
 bool KApplication::notify(QObject *receiver, QEvent *event)
 {
     QEvent::Type t = event->type();
-
-    if ((t == QEvent::ShortcutOverride) || (t == QEvent::KeyPress))
-    {
-       static const KShortcut& _selectAll = KStandardShortcut::selectAll();
-       QLineEdit *edit = ::qobject_cast<QLineEdit *>(receiver);
-       if (edit)
-       {
-          // We have a keypress for a lineedit...
-          QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          int key = kevent->key() | kevent->modifiers();
-          if (_selectAll.contains(key))
-          {
-             if (t == QEvent::KeyPress)
-             {
-                edit->selectAll();
-                return true;
-             }
-             else
-             {
-                kevent->accept();
-             }
-          }
-          // Ctrl-U deletes from start of line.
-          if (key == Qt::CTRL + Qt::Key_U)
-          {
-             if (t == QEvent::KeyPress)
-             {
-                if (!edit->isReadOnly())
-                {
-                   QString t(edit->text());
-                   t = t.mid(edit->cursorPosition());
-                   // TODO: how to port correctly?
-                   // edit->validateAndSet(t, 0, 0, 0);
-                   edit->setText( t );
-                }
-                return true;
-             }
-             else
-             {
-                kevent->accept();
-             }
-
-          }
-       }
-       QTextEdit *medit = ::qobject_cast<QTextEdit *>(receiver);
-       if (medit)
-       {
-          // We have a keypress for a multilineedit...
-          QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
-          if (_selectAll.contains(kevent->key() | kevent->modifiers()))
-          {
-             if (t == QEvent::KeyPress)
-             {
-                medit->selectAll();
-                return true;
-             }
-             else
-             {
-                kevent->accept();
-             }
-          }
-       }
-    }
     if( t == QEvent::Show && receiver->isWidgetType())
     {
         QWidget* w = static_cast< QWidget* >( receiver );
@@ -606,7 +547,7 @@ void KApplication::init()
 #ifdef Q_WS_MAC
   if (type() == GuiClient) {
       QSystemTrayIcon *trayIcon;
-      QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
+      QPixmap pixmap = iconLoader()->loadIcon( KCmdLineArgs::appName(),
               K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, 0L, false );
       if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
       {
@@ -1193,6 +1134,31 @@ void KApplication::slotNeedNewStartupId(QByteArray& startupId)
 #else
     Q_UNUSED(startupId);
 #endif
+}
+
+/*** KIconLoader: the icon loader ***/
+KIconLoader *KApplication::iconLoader() const
+{
+    if ( !kapp ) {
+        kDebug() << "You must have a KApplication object instantiated prior to accessing the icon loader!" << endl;
+    }
+
+    if ( d->iconLoader == 0 ) {
+        d->iconLoader = new KIconLoader( instanceName(), dirs() );
+        connect(KGlobalSettings::self(), SIGNAL(iconsChanged(int)),
+                this, SLOT(newIconLoader()));
+    }
+
+    return d->iconLoader;
+}
+
+void KApplication::newIconLoader() const
+{
+    KIconTheme::reconfigure();
+
+    if (d->iconLoader) {
+        d->iconLoader->reconfigure( instanceName(), dirs() );
+    }
 }
 
 void KApplication::virtual_hook( int id, void* data )

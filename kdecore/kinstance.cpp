@@ -28,7 +28,6 @@
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kglobal.h"
-#include "kiconloader.h"
 #include "kinstance.h"
 #include "klocale.h"
 #include "kstandarddirs.h"
@@ -70,7 +69,6 @@ public:
     {
         dirs = 0;
 	config = 0;
-	iconLoader = 0;
 	aboutData = 0;
     }
 
@@ -79,8 +77,6 @@ public:
         if (ownAboutdata)
 	    delete aboutData;
 	aboutData = 0;
-	delete iconLoader;
-	iconLoader = 0;
 	// do not delete config, stored in d->sharedConfig
 	config = 0;
 	delete dirs;
@@ -88,15 +84,9 @@ public:
     }
 
     KStandardDirs*      dirs;
-#define _dirs d->dirs
     KConfig*            config;
-#define _config d->config
-    KIconLoader*        iconLoader;
-#define _iconLoader d->iconLoader
     QByteArray          name;
-#define _name d->name
     const KAboutData*   aboutData;
-#define _aboutData d->aboutData
     QString             configName;
     bool                ownAboutdata;
     KSharedConfig::Ptr  sharedConfig;
@@ -107,8 +97,8 @@ KInstance::KInstance( const QByteArray& name) : d(new Private)
     DEBUG_ADD
     Q_ASSERT(!name.isEmpty());
 
-    _name = name;
-    _aboutData = new KAboutData(name, "", 0);
+    d->name = name;
+    d->aboutData = new KAboutData(name, "", 0);
     d->ownAboutdata = true;
 
     if (!KGlobal::_instance)
@@ -119,11 +109,11 @@ KInstance::KInstance( const KAboutData * aboutData ) : d(new Private)
 {
     DEBUG_ADD
 
-    _name = aboutData->appName();
-    _aboutData = aboutData;
+    d->name = aboutData->appName();
+    d->aboutData = aboutData;
     d->ownAboutdata = false;
 
-    Q_ASSERT(!_name.isEmpty());
+    Q_ASSERT(!d->name.isEmpty());
 
     if (!KGlobal::_instance)
       KGlobal::setMainInstance(this);
@@ -132,7 +122,7 @@ KInstance::KInstance( const KAboutData * aboutData ) : d(new Private)
 KInstance::KInstance( KInstance* src ) : d(src->d)
 {
     DEBUG_ADD
-    Q_ASSERT(!_name.isEmpty());
+    Q_ASSERT(!d->name.isEmpty());
 
     if (!KGlobal::_instance || KGlobal::_instance == src )
       KGlobal::setMainInstance(this);
@@ -159,20 +149,20 @@ KInstance::~KInstance()
 KStandardDirs *KInstance::dirs() const
 {
     DEBUG_CHECK_ALIVE
-    if( _dirs == 0 ) {
-	_dirs = new KStandardDirs;
+    if( d->dirs == 0 ) {
+	d->dirs = new KStandardDirs;
         // install appdata resource type
-        _dirs->addResourceType("appdata", KStandardDirs::kde_default("data")
-                               + _name + '/');
+        d->dirs->addResourceType("appdata", KStandardDirs::kde_default("data")
+                               + d->name + '/');
 
-        if (_config) {
-            if (_dirs->addCustomized(_config))
-                _config->reparseConfiguration();
+        if (d->config) {
+            if (d->dirs->addCustomized(d->config))
+                d->config->reparseConfiguration();
         } else
             config(); // trigger adding of possible customized dirs
     }
 
-    return _dirs;
+    return d->dirs;
 }
 
 bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
@@ -181,13 +171,13 @@ bool kde_kiosk_admin = false;
 KConfig* KInstance::privateConfig() const
 {
     DEBUG_CHECK_ALIVE
-    return _config;
+    return d->config;
 }
 
 KConfig	*KInstance::config() const
 {
     DEBUG_CHECK_ALIVE
-    if( _config == 0 ) {
+    if( d->config == 0 ) {
         if ( !d->configName.isEmpty() )
         {
             d->sharedConfig = KSharedConfig::openConfig( d->configName );
@@ -195,7 +185,7 @@ KConfig	*KInstance::config() const
             // Check whether custom config files are allowed.
             d->sharedConfig->setGroup( "KDE Action Restrictions" );
             QString kioskException = d->sharedConfig->readEntry("kiosk_exception");
-            if (d->sharedConfig->readEntry( "custom_config", true))
+            if (d->sharedConfig->readEntry( "customd->config", true))
             {
                d->sharedConfig->setGroup(QString());
             }
@@ -208,8 +198,8 @@ KConfig	*KInstance::config() const
 
         if ( !d->sharedConfig )
         {
-	    if ( !_name.isEmpty() )
-	        d->sharedConfig = KSharedConfig::openConfig( _name + "rc");
+	    if ( !d->name.isEmpty() )
+	        d->sharedConfig = KSharedConfig::openConfig( d->name + "rc");
 	    else
 	        d->sharedConfig = KSharedConfig::openConfig( QString() );
 	}
@@ -222,19 +212,19 @@ KConfig	*KInstance::config() const
             return config(); // Reread...
         }
 
-	_config = d->sharedConfig.data();
-        if (_dirs)
-            if (_dirs->addCustomized(_config))
-                _config->reparseConfiguration();
+	d->config = d->sharedConfig.data();
+        if (d->dirs)
+            if (d->dirs->addCustomized(d->config))
+                d->config->reparseConfiguration();
     }
 
-    return _config;
+    return d->config;
 }
 
 KSharedConfig* KInstance::sharedConfig() const
 {
     DEBUG_CHECK_ALIVE
-    if (_config == 0)
+    if (d->config == 0)
        (void) config(); // Initialize config
 
     return d->sharedConfig.data();
@@ -246,33 +236,16 @@ void KInstance::setConfigName(const QString &configName)
     d->configName = configName;
 }
 
-KIconLoader *KInstance::iconLoader() const
-{
-    DEBUG_CHECK_ALIVE
-    if( _iconLoader == 0 ) {
-	_iconLoader = new KIconLoader( _name, dirs() );
-    }
-
-    return _iconLoader;
-}
-
-void KInstance::newIconLoader() const
-{
-    DEBUG_CHECK_ALIVE
-    KIconTheme::reconfigure();
-    _iconLoader->reconfigure( _name, dirs() );
-}
-
 const KAboutData * KInstance::aboutData() const
 {
     DEBUG_CHECK_ALIVE
-    return _aboutData;
+    return d->aboutData;
 }
 
 QByteArray KInstance::instanceName() const
 {
     DEBUG_CHECK_ALIVE
-    return _name;
+    return d->name;
 }
 
 QString KInstance::caption()
