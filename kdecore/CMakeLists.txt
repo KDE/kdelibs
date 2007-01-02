@@ -136,7 +136,6 @@ set(kdecore_LIB_SRCS
    kstringhandler.cpp
    kcmdlineargs.cpp
    kaboutdata.cpp
-   knotifyclient.cpp
    kprocio.cpp
    krandom.cpp
    ktoolinvocation.cpp
@@ -306,7 +305,6 @@ install( FILES
    ktemporaryfile.h
    ksavefile.h
    krandomsequence.h
-   knotifyclient.h
    kiconeffect.h
    netwm.h
    netwm_def.h

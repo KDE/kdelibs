@@ -182,7 +182,6 @@ set(kfile_STAT_SRCS
   kfile/kfilebookmarkhandler.cpp
   kfile/kfilemetainfowidget.cpp
   kfile/kcustommenueditor.cpp
-  kfile/knotifydialog.cpp
   kfile/kfilespeedbar.cpp
   kfile/kpreviewwidgetbase.cpp
   kfile/kfilemetapreview.cpp
@@ -238,7 +237,6 @@ set(kio_LIB_PRIVATE_SRCS
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
    kfile/kpropertiesdesktopbase.ui
-   kfile/knotifywidgetbase.ui
    kssl/keygenwizard.ui
    kssl/keygenwizard2.ui
 )
@@ -386,7 +384,6 @@ install( FILES
   kfile/kfilefiltercombo.h
   kfile/kicondialog.h
   kfile/kimagefilepreview.h
-  kfile/knotifydialog.h
   kfile/kopenwithdialog.h
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
@@ -396,7 +393,6 @@ install( FILES
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
-  ${CMAKE_CURRENT_BINARY_DIR}/ui_knotifywidgetbase.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
