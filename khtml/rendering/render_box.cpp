@@ -707,7 +707,7 @@ short RenderBox::containingBlockWidth() const
     }
 
     RenderBlock* cb = containingBlock();
-    if (isRenderBlock() && cb->isTable()) {
+    if (isRenderBlock() && cb->isTable() && static_cast<RenderTable*>(cb)->caption() == this) {
         //captions are not affected by table border or padding
         return cb->width();
     }
