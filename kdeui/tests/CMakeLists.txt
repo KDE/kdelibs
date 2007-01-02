@@ -897,7 +897,7 @@ kde4_automoc(${kglobalsettingsclient_SRCS})
 
 kde4_add_executable(kglobalsettingsclient NOGUI RUN_UNINSTALLED ${kglobalsettingsclient_SRCS})
 
-target_link_libraries(kglobalsettingsclient ${KDE4_KDECORE_LIBS})
+target_link_libraries(kglobalsettingsclient ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
 
 ########### kglobalsettingstest ###############
 
