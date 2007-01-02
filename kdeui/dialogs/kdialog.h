@@ -598,9 +598,14 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setHelp( const QString &anchor, const QString &appname = QString() );
 
     /**
+     * Returns the status of the Details button.
+     */
+    bool isDetailsWidgetVisible() const;
+
+    /**
      * Sets the status of the Details button.
      */
-    void setDetails( bool showDetails );
+    void setDetailsWidgetVisible( bool visible );
 
     /**
      * Sets the widget that gets shown when "Details" is enabled.

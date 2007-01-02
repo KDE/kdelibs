@@ -58,7 +58,7 @@
 struct KDialog::Private
 {
   Private( KDialog *parent )
-    : mParent( parent ), mDetails( false ), mSettingDetails( false ), mDetailsWidget( 0 ),
+    : mParent( parent ), mDetailsVisible( false ), mSettingDetails( false ), mDetailsWidget( 0 ),
       mTopLayout( 0 ), mMainWidget( 0 ), mUrlHelp( 0 ), mActionSeparator( 0 ),
       mButtonOrientation( Qt::Horizontal ),
       mButtonBox( 0 )
@@ -72,12 +72,12 @@ struct KDialog::Private
 
 
   KDialog* mParent;
-  bool mDetails;
+  bool mDetailsVisible;
   bool mSettingDetails;
   QWidget *mDetailsWidget;
   QSize mIncSize;
   QSize mMinSize;
-  QString mDetailsButton;
+  QString mDetailsButtonText;
 
   QBoxLayout *mTopLayout;
   QWidget *mMainWidget;
@@ -259,7 +259,7 @@ void KDialog::setButtons( ButtonCodes buttonMask )
     d->appendButton( No, KStandardGuiItem::no() );
   if ( buttonMask & Details ) {
     d->appendButton( Details, KGuiItem(QString()) );
-    setDetails( false );
+    setDetailsWidgetVisible( false );
   }
 
   d->setupLayout();
@@ -357,7 +357,7 @@ QSize KDialog::minimumSizeHint() const
   s1.rwidth()  = qMax( s1.rwidth(), s2.rwidth() );
   s1.rheight() += s2.rheight();
 
-  if ( d->mDetailsWidget && d->mDetails ) {
+  if ( d->mDetailsWidget && d->mDetailsVisible ) {
     s2 = d->mDetailsWidget->sizeHint() + zeroByS;
     s2 = s2.expandedTo( d->mDetailsWidget->minimumSize() );
     s2 = s2.expandedTo( d->mDetailsWidget->minimumSizeHint() );
@@ -721,8 +721,8 @@ void KDialog::setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmo
 void KDialog::setButtonText( ButtonCode id, const QString &text )
 {
   if ( !d->mSettingDetails && (id == Details) ) {
-    d->mDetailsButton = text;
-    setDetails( d->mDetails );
+    d->mDetailsButtonText = text;
+    setDetailsWidgetVisible( d->mDetailsVisible );
     return;
   }
 
@@ -815,19 +815,24 @@ void KDialog::setDetailsWidget( QWidget *detailsWidget )
   d->setupLayout();
 
   if ( !d->mSettingDetails )
-    setDetails( d->mDetails );
+    setDetailsWidgetVisible( d->mDetailsVisible );
 }
 
-void KDialog::setDetails( bool showDetails )
+bool KDialog::isDetailsWidgetVisible() const
 {
-  if ( d->mDetailsButton.isEmpty() )
-    d->mDetailsButton = i18n( "&Details" );
+    return d->mDetailsVisible;
+}
+
+void KDialog::setDetailsWidgetVisible( bool visible )
+{
+  if ( d->mDetailsButtonText.isEmpty() )
+    d->mDetailsButtonText = i18n( "&Details" );
 
   d->mSettingDetails = true;
-  d->mDetails = showDetails;
-  if ( d->mDetails ) {
+  d->mDetailsVisible = visible;
+  if ( d->mDetailsVisible ) {
     emit aboutToShowDetails();
-    setButtonText( Details, d->mDetailsButton + " <<" );
+    setButtonText( Details, d->mDetailsButtonText + " <<" );
     if ( d->mDetailsWidget ) {
       if ( layout() )
         layout()->setEnabled( false );
@@ -842,7 +847,7 @@ void KDialog::setDetails( bool showDetails )
       }
     }
   } else {
-    setButtonText( Details, d->mDetailsButton + " >>" );
+    setButtonText( Details, d->mDetailsButtonText + " >>" );
     if ( d->mDetailsWidget )
       d->mDetailsWidget->hide();
 
@@ -913,7 +918,7 @@ void KDialog::slotButtonClicked( int button )
       emit defaultClicked();
       break;
     case Details:
-      setDetails( !d->mDetails );
+      setDetailsWidgetVisible( !d->mDetailsVisible );
       break;
   }
 }

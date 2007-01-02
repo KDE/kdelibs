@@ -219,7 +219,7 @@ void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
 void KShortcutDialog::updateDetails()
 {
 	bool showAdvanced = s_showMore || (!d->shortcut.alternate().isEmpty());
-	setDetails(showAdvanced);
+	setDetailsWidgetVisible(showAdvanced);
 	setRecording(false);
 	d->iSeq = 0;
 	d->iKey = 0;

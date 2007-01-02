@@ -135,8 +135,6 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // Cookie Details dialog...
     m_detailView = new KCookieDetail( cookieList, count, vBox1 );
     setDetailsWidget(m_detailView);
-    m_showDetails=showDetails;
-    setDetails(showDetails);
 
     // Cookie policy choice...
     QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"),vBox1);
@@ -186,23 +184,18 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 #endif
     setDefaultButton(User1);
 
-    //setFixedSize( sizeHint() );
+    setDetailsWidgetVisible(showDetails);
 }
 
 KCookieWin::~KCookieWin()
 {
 }
 
-void KCookieWin::slotCookieDetails()
-{
-  m_showDetails=!m_showDetails;
-}
-
 KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
 {
     int result = exec();
     
-    cookiejar->setShowCookieDetails ( m_showDetails );
+    cookiejar->setShowCookieDetails ( isDetailsWidgetVisible() );
     
     KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
     
