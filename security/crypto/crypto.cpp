@@ -1460,16 +1460,15 @@ void KCryptoConfig::slotYourImport() {
 
 #ifdef KSSL_HAVE_SSL
 KSSLPKCS12 *cert = NULL;
-QByteArray pass;
 
 TryImportPassAgain:
-   int rc = KPasswordDialog::getPassword(this, pass, i18n("Certificate Password"), i18n("Certificate password"));
-   if (rc != KPasswordDialog::Accepted) return;
+   QString pass= KPasswordDialog::getPassword(i18n("Certificate Password"), i18n("Certificate password"),0l,this);
+   if (pass.isNull()) return;
 
-   cert = KSSLPKCS12::loadCertFile(certFile, QString(pass));
+   cert = KSSLPKCS12::loadCertFile(certFile, pass);
 
    if (!cert) {
-      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"),KGuiItem(i18n("Try")),KGuiItem(i18n("Do Not Try")));
+      int rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"),KGuiItem(i18n("Try")),KGuiItem(i18n("Do Not Try")));
       if (rc == KMessageBox::Yes) goto TryImportPassAgain;
       return;
    }
@@ -1487,7 +1486,7 @@ TryImportPassAgain:
                                                             i;
              i = static_cast<YourCertItem *>(i->nextSibling())) {
       if (i->configName() == name) {
-         rc = KMessageBox::warningContinueCancel(this, i18n("A certificate with that name already exists. Are you sure that you wish to replace it?"), i18n("SSL"), KGuiItem(i18n("Replace")));
+         int rc = KMessageBox::warningContinueCancel(this, i18n("A certificate with that name already exists. Are you sure that you wish to replace it?"), i18n("SSL"), KGuiItem(i18n("Replace")));
          if (rc == KMessageBox::Cancel) {
             delete cert;
             return;
@@ -1522,10 +1521,10 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
-      QByteArray oldpass;
+      QString oldpass;
       do {
-         int i = KPasswordDialog::getPassword(this, oldpass, pcaption, pprompt);
-         if (i != KPasswordDialog::Accepted) return;
+         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
+         if (oldpass.isNull()) return;
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
@@ -1554,10 +1553,10 @@ QString iss;
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
-      QByteArray oldpass;
+      QString oldpass;
       do {
-         int i = KPasswordDialog::getPassword(this, oldpass, pcaption, pprompt);
-         if (i != KPasswordDialog::Accepted) return;
+         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
+         if (oldpass.isNull()) return;
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
@@ -1603,10 +1602,10 @@ QString iss;
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
-      QByteArray oldpass;
+      QString oldpass;
       do {
-         int i = KPasswordDialog::getPassword(this, oldpass, pcaption, pprompt);
-         if (i != KPasswordDialog::Accepted) return;
+         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
+         if (oldpass.isNull()) return;
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
@@ -1693,8 +1692,8 @@ QString iss;
 
 
 void KCryptoConfig::slotYourPass() {
-YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
-QByteArray oldpass = "";
+   YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+   QString oldpass ;
    if (!x) return;
 
    KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
@@ -1703,9 +1702,10 @@ QByteArray oldpass = "";
    if (!pkcs) {
       QString pprompt = i18n("Enter the OLD password for the certificate:");
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
+      QString oldpass;
       do {
-         int i = KPasswordDialog::getPassword(this, oldpass, pcaption, pprompt);
-         if (i != KPasswordDialog::Accepted) break;
+         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
+         if (oldpass.isNull()) break;
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
@@ -1720,8 +1720,8 @@ QByteArray oldpass = "";
 
       int i = kpd->exec();
       if (i == KPasswordDialog::Accepted) {
-         QByteArray pass = kpd->password();
-         pkcs->changePassword(QString(oldpass), QString(pass));
+         QString pass = kpd->password();
+         pkcs->changePassword(oldpass, pass);
          x->setPKCS(pkcs->toString());
          x->setPassCache(pass);
          configChanged();
