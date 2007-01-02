@@ -159,6 +159,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     //i18n("About"), i18n("Configure")
 
     btnlayout->addStretch(1);
+    d->view->expandAll();
 }
 
 ScriptManagerCollection::~ScriptManagerCollection()
