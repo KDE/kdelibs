@@ -162,6 +162,7 @@ public:
     CollapsedBorderValue* currentBorderStyle() { return m_currentBorder; }
 
     RenderTableSection *firstBodySection() const { return firstBody; }
+    RenderFlow*         caption() const { return tCaption; }
 
 protected:
 
