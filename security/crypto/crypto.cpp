@@ -451,8 +451,8 @@ QString whatstr;
   grid->addWidget(yourSSLPass, 5, 5);
 
   grid->addWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 0, 1, 6);
-  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
-  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString());
+  ySubject = KSSLInfoDialog::certInfoWidget(tabYourSSLCert, QString());
+  yIssuer = KSSLInfoDialog::certInfoWidget(tabYourSSLCert, QString());
   grid->addWidget(ySubject, 7, 0, 5, 3);
   grid->addWidget(yIssuer, 7, 3, 5, 3);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -610,8 +610,8 @@ QString whatstr;
       otherSSLRemove->setEnabled(false);
 
   grid->addWidget(new KSeparator(Qt::Horizontal, tabOtherSSLCert), 8, 0, 1, 6);
-  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
-  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString());
+  oSubject = KSSLInfoDialog::certInfoWidget(tabOtherSSLCert, QString());
+  oIssuer = KSSLInfoDialog::certInfoWidget(tabOtherSSLCert, QString());
   grid->addWidget(oSubject, 9, 0, 5, 3 );
   grid->addWidget(oIssuer, 9, 3, 5, 3);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -715,8 +715,8 @@ QString whatstr;
   connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
   grid->addWidget(caSSLRestore, 2, 7);
 
-  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
-  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString());
+  caSubject = KSSLInfoDialog::certInfoWidget(tabSSLCA, QString());
+  caIssuer = KSSLInfoDialog::certInfoWidget(tabSSLCA, QString());
   grid->addWidget(caSubject, 4, 0, 3, 4 );
   grid->addWidget(caIssuer, 4, 4, 3, 4);
 
