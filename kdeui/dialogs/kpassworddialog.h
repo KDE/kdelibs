@@ -329,7 +329,7 @@ public:
      * @param keep If you pass a null pointer, the checkbox is not shown. 
      * If you pass a valid pointer, the checkbox is shown and the result is stored in *keep.
      * @param parent The widget the dialog belongs too
-     * @return the password,  or a null string if the dialog was canceled
+     * @return The entered password, or a null string if the dialog was canceled
      */
      static QString  getPassword(const QString &prompt, const QString &caption = QString(), bool *keep = 0L , QWidget *parent=0l);
 
@@ -366,7 +366,7 @@ public:
      * information. The text is word broken to fit nicely in the dialog.
      * @param caption A caption for the dialog.
      * @param parent The widget the dialog belongs too
-     * @return Result code: Accepted or Rejected.
+     * @return The password, or a null string if the dialog was canceled
      */
     static QString getNewPassword(const QString &prompt, const QString &caption=QString(), QWidget *parent=0l);
 
