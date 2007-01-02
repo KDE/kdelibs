@@ -38,7 +38,6 @@ class KDECORE_EXPORT KClipboardSynchronizer : public QObject
 
 public:
     friend class KlipperWidget;
-    friend class KGlobalSettings;
 
     /**
      * Returns the KClipboardSynchronizer singleton object.
@@ -97,6 +96,7 @@ protected:
 private Q_SLOTS:
     void slotSelectionChanged();
     void slotClipboardChanged();
+    void slotNotifyChange(int, int);
 
 private:
     explicit KClipboardSynchronizer( QObject *parent = 0 );
@@ -112,9 +112,6 @@ private:
 private:
     // needed by klipper
     enum Configuration { Synchronize = 1 };
-    // called by KApplication upon kipc message, invoked by klipper
-    static void newConfiguration( int config );
-
 };
 
 #endif // KCLIPBOARD_H

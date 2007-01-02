@@ -19,10 +19,12 @@
 #include "kclipboard.h"
 #include "kconfig.h"
 #include "kglobal.h"
+#include "kglobalsettings.h"
 #include "kstaticdeleter.h"
 
-#include <qapplication.h>
-#include <qmime.h>
+#include <QtCore/QMimeData>
+#include <QtDBus/QtDBus>
+#include <QtGui/QApplication>
 
 /*
  * This class provides an automatic synchronization of the X11 Clipboard and Selection
@@ -85,6 +87,9 @@ void KClipboardSynchronizer::setupSignals()
     if( s_reverse_sync )
         connect( clip, SIGNAL( dataChanged() ),
                  SLOT( slotClipboardChanged() ));
+
+    QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                           "notifyChange", this, SLOT(slotNotifyChange(int,int)) );
 }
 
 void KClipboardSynchronizer::slotSelectionChanged()
@@ -109,6 +114,14 @@ void KClipboardSynchronizer::slotClipboardChanged()
 
     setClipboard( clip->mimeData( QClipboard::Clipboard ),
                   QClipboard::Selection );
+}
+
+void KClipboardSynchronizer::slotNotifyChange(int changeType, int arg)
+{
+    if (changeType == KGlobalSettings::ClipboardConfigChanged) {
+        s_sync = (arg & Synchronize);
+        self()->setupSignals();
+    }
 }
 
 void KClipboardSynchronizer::setClipboard( const QMimeData *data, QClipboard::Mode mode )
@@ -141,13 +154,6 @@ void KClipboardSynchronizer::setSynchronizing( bool sync )
 void KClipboardSynchronizer::setReverseSynchronizing( bool enable )
 {
     s_reverse_sync = enable;
-    self()->setupSignals();
-}
-
-// private, called by KApplication
-void KClipboardSynchronizer::newConfiguration( int config )
-{
-    s_sync = (config & Synchronize);
     self()->setupSignals();
 }
 
