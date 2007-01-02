@@ -907,7 +907,7 @@ kde4_automoc(${kglobalsettingstest_SRCS})
 
 kde4_add_executable(kglobalsettingstest NOGUI RUN_UNINSTALLED ${kglobalsettingstest_SRCS})
 
-target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KDE4_KDEUI_LIBS})
 
 add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
 
