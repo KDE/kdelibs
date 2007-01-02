@@ -20,7 +20,7 @@
 
 #include <stdlib.h>
 
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <qbytearray.h>
 #include <qstring.h>
 
@@ -262,7 +262,7 @@ QString KInstance::caption()
         return KGlobal::instance()->aboutData()->programName();
       else
         // Last resort : application name
-        return qApp->applicationName();
+        return QCoreApplication::instance()->applicationName();
 }
 
 void KInstance::virtual_hook( int, void* )

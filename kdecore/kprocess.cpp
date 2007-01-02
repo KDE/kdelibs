@@ -72,7 +72,6 @@
 #include <qmap.h>
 #include <qfile.h>
 #include <qsocketnotifier.h>
-#include <qapplication.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

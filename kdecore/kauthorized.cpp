@@ -26,7 +26,7 @@
 #include <QList>
 
 #include <QString>
-#include <QApplication>
+#include <QCoreApplication>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kprotocolinfo.h>
@@ -193,8 +193,8 @@ public:
   KAuthorizedPrivate()
     :   actionRestrictions( false ), blockEverything(false),mutex(QMutex::Recursive)
   {
-    Q_ASSERT_X(qApp,"KAuthorizedPrivate()","There has to be an existing qapp pointer");
-    Q_ASSERT_X(!qApp->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QApplication::setApplicationName)");
+    Q_ASSERT_X(QCoreApplication::instance(),"KAuthorizedPrivate()","There has to be an existing QCoreApplication::instance() pointer");
+    Q_ASSERT_X(!QCoreApplication::instance()->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QCoreApplication::instance()lication::setApplicationName)");
 
     KConfig* config = KGlobal::config();
 

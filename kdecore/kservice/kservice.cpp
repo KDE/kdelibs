@@ -40,7 +40,6 @@
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
-#include <QPixmap>
 
 class KService::Private
 {
