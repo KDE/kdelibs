@@ -542,6 +542,8 @@ QFont KGlobalSettings::largeFont(const QString &text)
 
 void KGlobalSettings::initPaths()
 {
+    //this code is duplicated in kde_config.cpp.in
+
     if ( s_desktopPath != 0 )
         return;
 

@@ -165,28 +165,6 @@ kde4_add_executable(dbuscalltest NOGUI RUN_UNINSTALLED ${dbuscalltest_SRCS})
 
 target_link_libraries(dbuscalltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-########### kglobalsettingsclient, helper program for kglobalsettingstest ###############
-
-set(kglobalsettingsclient_SRCS kglobalsettingsclient.cpp )
-
-kde4_automoc(${kglobalsettingsclient_SRCS})
-
-kde4_add_executable(kglobalsettingsclient NOGUI RUN_UNINSTALLED ${kglobalsettingsclient_SRCS})
-
-target_link_libraries(kglobalsettingsclient ${KDE4_KDECORE_LIBS})
-
-########### kglobalsettingstest ###############
-
-set(kglobalsettingstest_SRCS kglobalsettingstest.cpp )
-
-kde4_automoc(${kglobalsettingstest_SRCS})
-
-kde4_add_executable(kglobalsettingstest NOGUI RUN_UNINSTALLED ${kglobalsettingstest_SRCS})
-
-target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
-
 ########### next target ###############
 
 set(cplusplustest_SRCS cplusplustest.cpp )

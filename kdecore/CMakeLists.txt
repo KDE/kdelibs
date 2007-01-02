@@ -120,7 +120,6 @@ set(kdecore_LIB_SRCS
    kcompositejob.cpp
    kjobuidelegate.cpp
    kglobal.cpp
-   kglobalsettings.cpp
    kallocator.cpp
    kinstance.cpp
    klibloader.cpp
@@ -284,7 +283,6 @@ install( FILES
    kstringhandler.h
    kstandarddirs.h
    kglobal.h
-   kglobalsettings.h
    ksharedptr.h
    kallocator.h
    krfcdate.h

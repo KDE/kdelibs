@@ -40,6 +40,7 @@ keditlistbox.cpp
 kedittoolbar.cpp
 kfontcombo.cpp
 kfontdialog.cpp
+kglobalsettings.cpp       David Faure <faure@kde.org>
 kguiitem.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 khelpmenu.cpp
 k3iconview.cpp

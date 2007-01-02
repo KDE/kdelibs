@@ -88,6 +88,7 @@ set(kdeui_LIB_SRCS
  kernel/kuniqueapplication.cpp
  kernel/ksessionmanager.cpp
  kernel/kstartupinfo.cpp
+ kernel/kglobalsettings.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
  paged/kpageview.cpp
@@ -278,6 +279,7 @@ install( FILES
  kernel/kuniqueapplication.h
  kernel/ksessionmanager.h
  kernel/kstartupinfo.h
+ kernel/kglobalsettings.h
  paged/kpagedialog.h
  paged/kpagemodel.h
  paged/kpageview.h

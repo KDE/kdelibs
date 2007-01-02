@@ -739,7 +739,7 @@ QString defaultValue( const QString &type )
 {
     if ( type == "String" )           return "\"\""; // Use empty string, not null string!
     else if ( type == "StringList" )  return "QStringList()";
-    else if ( type == "Font" )        return "KGlobalSettings::generalFont()";
+    else if ( type == "Font" )        return "QFont()";
     else if ( type == "Rect" )        return "QRect()";
     else if ( type == "Size" )        return "QSize()";
     else if ( type == "Color" )       return "QColor(128, 128, 128)";

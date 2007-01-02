@@ -5,7 +5,8 @@
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
+#include <kconfig.h>
+#include <qdir.h>
 #include <stdio.h>
 #include <kaboutdata.h>
 #include <kdeversion.h>
@@ -220,12 +221,42 @@ int main(int argc, char **argv)
     type = args->getOption("userpath");
     if (!type.isEmpty())
     {
+        //code duplicated with KGlibalSettings::initPath()
         if ( type == "desktop" )
-            printResult(KGlobalSettings::desktopPath());
+        {
+            KConfigGroup g( KGlobal::config(), "Paths" );
+            QString path=QDir::homePath() + "/Desktop/";
+            path=g.readPathEntry( "Desktop", path);
+            path=QDir::cleanPath( path );
+            if ( !path.endsWith("/") )
+              path.append(QLatin1Char('/'));
+            printResult(path);
+        }
         else if ( type == "autostart" )
-            printResult(KGlobalSettings::autostartPath());
+        {
+            KConfigGroup g( KGlobal::config(), "Paths" );
+            QString path=QDir::homePath() + "/Autostart/";
+            path=g.readPathEntry( "Autostart", path);
+            path=QDir::cleanPath( path );
+            if ( !path.endsWith("/") )
+              path.append(QLatin1Char('/'));
+            printResult(path);
+
+        }
         else if ( type == "document" )
-            printResult(KGlobalSettings::documentPath());
+        {
+            KConfigGroup g( KGlobal::config(), "Paths" );
+#ifdef Q_WS_WIN
+            QString path=getWin32ShellFoldersPath("Personal");
+#else
+            QString path=QDir::homePath();
+#endif
+            path=g.readPathEntry( "Desktop", path);
+            path=QDir::cleanPath( path );
+            if ( !path.endsWith("/") )
+              path.append(QLatin1Char('/'));
+            printResult(path);
+        }
         else
             fprintf(stderr, "%s", i18n("%1 - unknown type of userpath\n", type).toLocal8Bit().data() );
         return 0;

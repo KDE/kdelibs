@@ -7,11 +7,11 @@
 
   <group name="Group">
     <entry name="Font" type="Font">
-      <default code="true">KGlobalSettings::generalFont()</default>
+      <default code="true">QFont()</default>
     </entry>
 
     <entry name="TitleFont" type="Font">
-      <default code="true">KGlobalSettings::windowTitleFont()</default>
+      <default code="true">QFont()</default>
     </entry>
   </group>
 </kcfg>

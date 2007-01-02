@@ -889,6 +889,29 @@ target_link_libraries(kxerrorhandlertest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS
 # add_test(kdecore-kxerrorhandlertest ${EXECUTABLE_OUTPUT_PATH}/kxerrorhandlertest)
 endif (Q_WS_X11)
 
+########### kglobalsettingsclient, helper program for kglobalsettingstest ###############
+
+set(kglobalsettingsclient_SRCS kglobalsettingsclient.cpp )
+
+kde4_automoc(${kglobalsettingsclient_SRCS})
+
+kde4_add_executable(kglobalsettingsclient NOGUI RUN_UNINSTALLED ${kglobalsettingsclient_SRCS})
+
+target_link_libraries(kglobalsettingsclient ${KDE4_KDECORE_LIBS})
+
+########### kglobalsettingstest ###############
+
+set(kglobalsettingstest_SRCS kglobalsettingstest.cpp )
+
+kde4_automoc(${kglobalsettingstest_SRCS})
+
+kde4_add_executable(kglobalsettingstest NOGUI RUN_UNINSTALLED ${kglobalsettingstest_SRCS})
+
+target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
+
+
 ########### End of tests ###############
 
 endif(KDE4_BUILD_TESTS)

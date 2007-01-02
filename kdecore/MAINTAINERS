@@ -26,7 +26,6 @@ kdesktopfile.cpp
 kglobal.cpp		Stephan Kulow <coolo@kde.org>
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalaccel_x11.cpp	Ellis Whitehead <ellis@kde.org>
-kglobalsettings.cpp	David Faure <faure@kde.org>
 kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp

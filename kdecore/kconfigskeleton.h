@@ -32,7 +32,6 @@
 #include <qvariant.h>
 #include <kdelibs_export.h>
 #include <kconfig.h>
-#include <kglobalsettings.h>
 
   /**
    * @short Class for storing a preferences setting
@@ -741,7 +740,7 @@ public:
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
     ItemFont(const QString & _group, const QString & _key, QFont & reference,
-             const QFont & defaultValue = KGlobalSettings::generalFont());
+             const QFont & defaultValue = QFont());
 
     /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
@@ -1153,8 +1152,7 @@ public:
    * @return The created item
    */
   ItemFont *addItemFont(const QString & name, QFont & reference,
-                        const QFont & defaultValue =
-                        KGlobalSettings::generalFont(),
+                        const QFont & defaultValue = QFont(),
                         const QString & key = QString());
 
   /**
