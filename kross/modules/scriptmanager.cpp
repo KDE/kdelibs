@@ -106,7 +106,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     d->view->setAlternatingRowColors(true);
     d->view->setRootIsDecorated(true);
     d->view->setSortingEnabled(true);
-    d->view->setItemsExpandable(false);
+    d->view->setItemsExpandable(true);
     d->view->header()->hide();
 
     ActionCollectionModel* model = new ActionCollectionModel(d->view, Kross::Manager::self().actionCollection());
