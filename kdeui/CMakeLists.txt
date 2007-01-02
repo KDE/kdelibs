@@ -357,8 +357,8 @@ install( FILES
  widgets/kurllabel.h
  widgets/kvbox.h
  widgets/kxyselector.h
- windowmanagement/kwin.cpp
- windowmanagement/kwinmodule.cpp
+ windowmanagement/kwin.h
+ windowmanagement/kwinmodule.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h
  windowmanagement/netwm_p.h
