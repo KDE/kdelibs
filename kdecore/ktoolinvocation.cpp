@@ -25,7 +25,7 @@
 
 #include <QMutex>
 #include <QMutexLocker>
-#include <QApplication>
+#include <QCoreApplication>
 #include <klocale.h>
 
 #include <errno.h>
@@ -87,7 +87,7 @@ static void printError(const QString& text, QString* error)
 
 bool KToolInvocation::isMainThreadActive(QString* error)
 {
-    if (qApp && qApp->thread() != QThread::currentThread())
+    if (QCoreApplication::instance() && QCoreApplication::instance()->thread() != QThread::currentThread())
     {
         printError(i18n("Function must be called from the main thread."), error);
         return false;
@@ -108,25 +108,15 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                                 launcher->interface(),
                                                 function);
     msg << _name << URLs;
-    QStringList envs;
-#ifdef Q_WS_X11
-    if (QX11Info::display()) {
-        QByteArray dpystring(XDisplayString(QX11Info::display()));
-        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
-    } else if( getenv( "DISPLAY" )) {
-        QByteArray dpystring( getenv( "DISPLAY" ));
-        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
-    }
-#endif
-    msg << envs;
-#if defined Q_WS_X11
+ #ifdef Q_WS_X11
     // make sure there is id, so that user timestamp exists
+    QStringList envs;
     QByteArray s = startup_id;
-    if (s.isEmpty()) {
-        emit needNewStartupId(s); // allows KApplication to set the startup id
-    }
+    emit kapplication_hook(envs , s);
+    msg << envs;
     msg << QString(s);
 #else
+    msg << QStringList();
     msg << QString();
 #endif
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )

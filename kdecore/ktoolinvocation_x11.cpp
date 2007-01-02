@@ -32,14 +32,10 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kmessage.h"
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <qhash.h>
 #include <QtDBus/QtDBus>
 #include <QDebug>
-
-#if defined Q_WS_X11
-#include <QtGui/qx11info_x11.h>
-#endif
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -59,12 +55,6 @@
 #include <paths.h>
 #endif
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <fixx11h.h>
-#endif
 
 #include <qglobal.h>
 #include <QFile>
@@ -80,7 +70,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     QString url;
     QString appname;
     if (_appname.isEmpty()) {
-        appname = qApp->applicationName();
+        appname = QCoreApplication::instance()->applicationName();
     } else
         appname = _appname;
 
@@ -388,7 +378,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 static int my_system (const char *command) {
    int pid, status;
 
-   QApplication::flush();
+   QCoreApplication::flush();
    pid = fork();
    if (pid == -1)
       return -1;
@@ -415,10 +405,11 @@ void KToolInvocation::startKdeinit()
      srv = KStandardDirs::findExe(QLatin1String("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
   if (srv.isEmpty())
      return;
-  const bool gui = qApp && qApp->type() != QApplication::Tty;
-  if ( gui )
-    qApp->setOverrideCursor( Qt::WaitCursor );
+//   this is disabled because we are in kdecore
+//  const bool gui = qApp && qApp->type() != QApplication::Tty;
+//  if ( gui )
+//    qApp->setOverrideCursor( Qt::WaitCursor );
   my_system(QFile::encodeName(srv)+" --suicide");
-  if ( gui )
-    qApp->restoreOverrideCursor();
+//  if ( gui )
+//    qApp->restoreOverrideCursor();
 }

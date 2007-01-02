@@ -532,8 +532,8 @@ void KApplication::init()
 
     d->checkAccelerators = new KCheckAccelerators( this );
 
-    connect(KToolInvocation::self(), SIGNAL(needNewStartupId(QByteArray&)),
-            this, SLOT(slotNeedNewStartupId(QByteArray&)));
+    connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
+            this, SLOT(slot_KToolInvication_hook(QStringList&,QByteArray&)));
   }
 
 #ifdef Q_WS_MAC
@@ -1097,12 +1097,22 @@ void KApplication::read_app_startup_id()
 }
 
 // Hook called by KToolInvocation
-void KApplication::slotNeedNewStartupId(QByteArray& startupId)
+void KApplication::slot_KToolInvication_hook(QStringList& envs,QByteArray& startup_id)
 {
 #ifdef Q_WS_X11
-    startupId = KStartupInfo::createNewStartupId();
+    if (QX11Info::display()) {
+        QByteArray dpystring(XDisplayString(QX11Info::display()));
+        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
+    } else if( getenv( "DISPLAY" )) {
+        QByteArray dpystring( getenv( "DISPLAY" ));
+        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
+    }
+
+    if(startup_id.isEmpty())
+    	startup_id = KStartupInfo::createNewStartupId();
 #else
-    Q_UNUSED(startupId);
+    Q_UNUSED(envs);
+    Q_UNUSED(startup_id);
 #endif
 }
 

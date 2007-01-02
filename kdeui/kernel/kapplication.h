@@ -455,7 +455,7 @@ protected:
 private Q_SLOTS:
   void x11FilterDestroyed();
   void checkAppStartedSlot();
-  void slotNeedNewStartupId(QByteArray&);
+  void slot_KToolInvication_hook(QStringList&,QByteArray&);
 
 private:
   QString sessionConfigName() const;

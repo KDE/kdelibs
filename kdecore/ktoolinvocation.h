@@ -335,7 +335,7 @@ Q_SIGNALS:
    * Hook for KApplication in kdeui
    * @internal
    */
-  void needNewStartupId(QByteArray& startup_id);
+  void kapplication_hook(QStringList& env , QByteArray& startup_id);
 
 private:
   /**
