@@ -411,13 +411,13 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 			kpd->setAllowEmptyPasswords(true);
 		}
 
-		const char *p = 0L;
+		QString p;
 		while (!b->isOpen()) {
 			assert(kpd); // kpd can't be null if isOpen() is false
 			setupDialog( kpd, w, appid, modal );
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
-				int rc = b->open(QByteArray(p, strlen(p)));
+				int rc = b->open(p.toUtf8());
 				if (!b->isOpen()) {
 					kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
 					kpd->clearPassword();
@@ -427,7 +427,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 			}
 		}
 
-		if (!emptyPass && (!p || !b->isOpen())) {
+		if (!emptyPass && (p.isNull() || !b->isOpen())) {
 			delete b;
 			delete kpd;
 			return -1;
@@ -443,7 +443,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 		if (emptyPass) {
 			_passwords[wallet] = "";
 		} else {
-			_passwords[wallet] = p;
+			_passwords[wallet] = p.toUtf8();
 		}
 		_handles[appid].append(rc);
 
@@ -603,16 +603,15 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	kpd->setAllowEmptyPasswords(true);
 	setupDialog( kpd, wId, appid, false );
 	if (kpd->exec() == KDialog::Accepted) {
-		const char *p = kpd->password();
-		if (p) {
-			_passwords[wallet] = p;
-			QByteArray pa(p, strlen(p));
-			int rc = w->close(pa);
+		QString p = kpd->password();
+		if (!p.isNull()) {
+			_passwords[wallet] = p.toUtf8();
+			int rc = w->close(p.toUtf8());
 			if (rc < 0) {
 				KMessageBox::sorryWId(wId, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
 				reclose = true;
 			} else {
-				rc = w->open(pa);
+				rc = w->open(p.toUtf8());
 				if (rc < 0) {
 					KMessageBox::sorryWId(wId, i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
 					reclose = true;

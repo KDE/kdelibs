@@ -36,7 +36,7 @@ class QWidget;
  * The widget uses the user's global "echo mode" setting.
  */
 
-class KDEUI_EXPORT KPasswordEdit
+class KDEUI_EXPORT_DEPRECATED KPasswordEdit
     : public QLineEdit
 {
     Q_OBJECT
@@ -297,7 +297,7 @@ public:
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
      */
-    const char *password() const { return m_pEdit->password(); }
+    QString password() const;
 
     /**
      * Clears the password input field. You might want to use this after the
@@ -308,32 +308,34 @@ public:
     /**
      * Returns true if the user wants to keep the password.
      */
-    bool keep() const { return m_Keep; }
+    bool keep() const;
+
+    /**
+     * @deprecated Use the new version that return the password. (warning: the ordrer of parametter has changed)
+     */
+     KDE_DEPRECATED  static int getPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt, bool *keep = 0L);
+
+    /**
+     * @deprecated Use the new version that return the password. (warning: the ordrer of parametter has changed)
+     */
+     KDE_DEPRECATED  static KDE_DEPRECATED int getPassword(QWidget *parent, QByteArray &password, const QString &prompt, bool *keep = 0L);
 
     /**
      * Pops up the dialog, asks the user for a password, and returns it.
      *
-     * @param parent The widget the dialog belongs too
-     * @param password The password is returned in this reference parameter.
-     * @param caption A caption for the dialog.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
-     * @param keep Enable/disable a checkbox controlling password keeping.
-     * If you pass a null pointer, or a pointer to the value false, the checkbox
-     * is not shown. If you pass a pointer to a true value, the checkbox
-     * is shown and the result is stored in *keep.
-     * @return Result code: Accepted or Rejected.
+     * @param caption A caption for the dialog.
+     * @param keep If you pass a null pointer, the checkbox is not shown. 
+     * If you pass a valid pointer, the checkbox is shown and the result is stored in *keep.
+     * @param parent The widget the dialog belongs too
+     * @return the password,  or a null string if the dialog was canceled
      */
-    static int getPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt, bool *keep = 0L);
+     static QString  getPassword(const QString &prompt, const QString &caption = QString(), bool *keep = 0L , QWidget *parent=0l);
+
 
     /**
-     * @overload
-     *
-     * @deprecated Use the new version with the caption argument
-     */
-    static KDE_DEPRECATED int getPassword(QWidget *parent, QByteArray &password, const QString &prompt, int *keep = 0L);
-
-    /**
+     * @deprecated  use the new function that return the password (warning: the ordrer of parametter has changed)
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
@@ -345,14 +347,29 @@ public:
      * information. The text is word broken to fit nicely in the dialog.
      * @return Result code: Accepted or Rejected.
      */
-    static int getNewPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt);
+    static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt);
 
     /**
      * @overload
      *
-     * @deprecated Use the new version with the caption argument
+     * @deprecated Use the new version that return the password (warning: the ordrer of parametter has changed)
      */
     static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &prompt);
+
+
+    /**
+     * @deprecated  use the new function that return the password
+     * Pops up the dialog, asks the user for a password and returns it. The
+     * user has to enter the password twice to make sure it was entered
+     * correctly.
+     *
+     * @param prompt A prompt for the password. This can be a few lines of
+     * information. The text is word broken to fit nicely in the dialog.
+     * @param caption A caption for the dialog.
+     * @param parent The widget the dialog belongs too
+     * @return Result code: Accepted or Rejected.
+     */
+    static QString getNewPassword(const QString &prompt, const QString &caption=QString(), QWidget *parent=0l);
 
     /**
      * Static helper function that disables core dumps.
@@ -371,7 +388,7 @@ protected:
      * checking in derived classes. It should return @p true if the
      * password is valid, @p false otherwise.
      */
-    virtual bool checkPassword(const char *) { return true; }
+    virtual bool checkPassword(const QString &) { return true; }
 
 
 private Q_SLOTS:
@@ -381,11 +398,6 @@ private:
     void init();
     void erase();
 
-    int m_Keep, m_Type, m_Row;
-    QLabel *m_pHelpLbl;
-    QGridLayout *m_pGrid;
-    QWidget *m_pMain;
-    KPasswordEdit *m_pEdit, *m_pEdit2;
 
 private:
     class KPasswordDialogPrivate;

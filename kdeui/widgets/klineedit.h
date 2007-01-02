@@ -448,6 +448,13 @@ public Q_SLOTS:
      */
     virtual void setText ( const QString& );
 
+    /**
+     * @brief set the line edit in password mode.
+     * this change the EchoMode according to KDE preferences.
+     * @param b true to set in password mode
+     */
+    void setPasswordMode( bool b = true );
+
 
 protected Q_SLOTS:
 

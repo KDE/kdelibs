@@ -1522,3 +1522,21 @@ bool KLineEdit::isContextMenuEnabled() const
 {
     return  d->bEnableMenu;
 }
+
+void KLineEdit::setPasswordMode(bool b)
+{
+    if(b)
+    {
+        KConfigGroup cg(KGlobal::config(), "Passwords");
+        const QString val = cg.readEntry("EchoMode", "OneStar");
+        if (val == "NoEcho")
+            setEchoMode(NoEcho);
+        else
+            setEchoMode(Password);
+       //KDE3 has also a "ThreeStars" mode, but QLineEdit doesn't support it.
+    }
+    else
+    {
+        setEchoMode( Normal );
+    }
+}

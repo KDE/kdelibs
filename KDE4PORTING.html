@@ -1000,14 +1000,16 @@ if needed (see the KURLDrag section)</li>
 <li>clicked single now emits a const QPoint reference</li>
 </ul>
 
-<h4>KPasswdEdit</h4>
+<h4>KPasswordEdit</h4>
 <ul>
-<li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated</li>
+<li>deprecated. Use now KLineEdit, with KLineEdit::setPaswwordMode(true)</li>
 </ul>
 
 <h4>KPasswordDialog</h4>
 <ul>
 <li>kpassdlg.h was renamed kpassworddialog.h.</li>
+<li>password() now return QString</li>
+<li>old getPassword() and getNewPassword() has been changed in order to return the password dirrectly.</li>
 </ul>
 
 <h4>KPixmapIO</h4>
@@ -1613,6 +1615,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <ul>
   <li>void setEnableUserField( bool enable, bool=false ) removed use :setUserReadOnly( !enable )</li>
 </ul>
+
 
 <h4>UIServer</h4>
 <ul>
