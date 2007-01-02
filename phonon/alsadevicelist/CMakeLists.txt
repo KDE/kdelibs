@@ -1,4 +1,6 @@
 macro_optional_find_package(Alsa)
+alsa_configure_file(${CMAKE_BINARY_DIR}/config-alsa.h)
+
 if (HAVE_LIBASOUND2)
     add_subdirectory( tests )
 
