@@ -319,7 +319,6 @@ install( FILES
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
-  KNotifyDialog
   KNumInput
   KOCRDialog
   KOCRDialogFactory
@@ -852,19 +851,6 @@ install( FILES
   KNetwork/KStreamSocket
   KNetwork/KUnixSocketAddress
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
-
-
-install( FILES 
-  KNotify/Application
-  KNotify/ApplicationList
-  KNotify/KNotifyWidget
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotify )
-
-
-install( FILES 
-  KNotifyClient/Instance
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNotifyClient )
-
 
 install( FILES 
   KParts/BrowserExtension
