@@ -82,10 +82,10 @@ QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int 
                                     int _state, QString * _path ) const
 {
   QString _icon = icon( _url );
-  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group,
+  QPixmap pix = kapp->iconLoader()->loadIcon( _icon, _group,
         _force_size, _state, _path, false );
   if ( pix.isNull() )
-      pix = KGlobal::iconLoader()->loadIcon( "unknown", _group,
+      pix = kapp->iconLoader()->loadIcon( "unknown", _group,
         _force_size, _state, _path, false );
   return pix;
 }

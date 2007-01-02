@@ -37,6 +37,7 @@
 #include <qmap.h>
 #include <QTextDocument>
 
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <ksambashare.h>
@@ -733,7 +734,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    QPixmap p = KGlobal::iconLoader()->loadMimeTypeIcon( mime->iconName( url ), K3Icon::Desktop, _size, _state );
+    QPixmap p = kapp->iconLoader()->loadMimeTypeIcon( mime->iconName( url ), K3Icon::Desktop, _size, _state );
     //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
     if (p.isNull())
         kWarning() << "Pixmap not found for mimetype " << d->m_pMimeType->name() << endl;

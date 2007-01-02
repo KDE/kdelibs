@@ -105,7 +105,7 @@ KMFactory::KMFactory()
 	if ( !ok )
 		settings.setValue( "/qt/embedFonts", true );
 
-	KGlobal::iconLoader()->addAppDir("kdeprint");
+	kapp->iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalog("kdeprint");
 
 	// create D-Bus signal connection

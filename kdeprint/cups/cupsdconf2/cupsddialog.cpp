@@ -49,6 +49,7 @@
 #include <kio/passworddialog.h>
 #include <kguiitem.h>
 #include <qprocess.h>
+#include <kapplication.h>
 
 #include <signal.h>
 #include <cups/cups.h>
@@ -126,7 +127,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
   setModal( true );
   showButtonSeparator( true );
 
-	KGlobal::iconLoader()->addAppDir("kdeprint");
+	kapp->iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalog("cupsdconf");
 
 	filename_ = "";
@@ -142,11 +143,10 @@ CupsdDialog::~CupsdDialog()
 
 void CupsdDialog::addConfPage(CupsdPage *page)
 {
-	QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
-	                                                           page->pixmap(),
-                                                                   K3Icon::NoGroup,
-                                                                   K3Icon::SizeMedium
-	                                                          );
+	QPixmap icon = kapp->iconLoader()->loadIcon( page->pixmap(),
+                                                     K3Icon::NoGroup,
+                                                     K3Icon::SizeMedium
+	                                           );
 
 	KVBox	*box = new KVBox( this );
 	page->setParent(box);

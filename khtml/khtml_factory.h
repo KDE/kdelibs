@@ -26,6 +26,7 @@
 #include <kurl.h>
 
 class KInstance;
+class KIconLoader;
 class KAboutData;
 class HistoryProvider;
 class KHTMLSettings;
@@ -53,6 +54,7 @@ public:
   static QLinkedList<KHTMLPart*> *partList() { return s_parts; }
 
   static KInstance *instance();
+  static KIconLoader *iconLoader();
 
   static KHTMLSettings *defaultHTMLSettings();
 
@@ -68,6 +70,7 @@ private:
   static unsigned long s_refcnt;
   static KHTMLFactory *s_self;
   static KInstance *s_instance;
+  static KIconLoader *s_iconLoader;
   static KAboutData *s_about;
   static KHTMLSettings *s_settings;
   static QLinkedList<KHTMLPart*> *s_parts;

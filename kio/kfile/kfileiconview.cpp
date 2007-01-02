@@ -510,7 +510,7 @@ void KFileIconView::slotLargeRows()
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
 
-    setGridX( KGlobal::iconLoader()->currentSize( K3Icon::Desktop ) + 50 );
+    setGridX( kapp->iconLoader()->currentSize( K3Icon::Desktop ) + 50 );
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );

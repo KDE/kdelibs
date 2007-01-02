@@ -27,6 +27,7 @@
 
 #include <kmessageboxwrapper.h>
 
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kiconloader.h>
@@ -465,13 +466,13 @@ KMimeType::~KMimeType()
 QPixmap KMimeType::pixmap( K3Icon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadMimeTypeIcon( iconName(), _group, _force_size, _state, _path );
+  return kapp->iconLoader()->loadMimeTypeIcon( iconName(), _group, _force_size, _state, _path );
 }
 
 QPixmap KMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadMimeTypeIcon( iconName( _url ), _group, _force_size, _state, _path );
+  return kapp->iconLoader()->loadMimeTypeIcon( iconName( _url ), _group, _force_size, _state, _path );
 }
 
 QString KMimeType::iconForUrl( const KUrl & _url, mode_t _mode )

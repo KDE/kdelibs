@@ -634,11 +634,11 @@ bool KHTMLPart::openUrl( const KUrl &url )
     if (userAgent != KProtocolManager::userAgentForHost(QString())) {
       if (!d->m_statusBarUALabel) {
         d->m_statusBarUALabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-        d->m_statusBarUALabel->setFixedHeight(instance()->iconLoader()->currentSize(K3Icon::Small));
+        d->m_statusBarUALabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(K3Icon::Small));
         d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
-        d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
+        d->m_statusBarUALabel->setPixmap(SmallIcon("agent"));
       }
       d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.", userAgent));
     } else if (d->m_statusBarUALabel) {
@@ -1100,12 +1100,12 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
 
   if (!d->m_statusBarJSErrorLabel) {
     d->m_statusBarJSErrorLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarJSErrorLabel->setFixedHeight(instance()->iconLoader()->currentSize(K3Icon::Small));
+    d->m_statusBarJSErrorLabel->setFixedHeight(kapp->iconLoader()->currentSize(K3Icon::Small));
     d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
     d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
-    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug", instance()));
+    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug"));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedUrl()), SLOT(launchJSErrorDialog()));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedUrl()), SLOT(jsErrorDialogContextMenu()));
   }
@@ -7238,11 +7238,11 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
 
   if (!d->m_statusBarWalletLabel) {
     d->m_statusBarWalletLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(K3Icon::Small));
+    d->m_statusBarWalletLabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(K3Icon::Small));
     d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
-    d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
+    d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open"));
     connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedUrl()), SLOT(launchWalletManager()));
     connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedUrl()), SLOT(walletMenu()));
   }
@@ -7377,11 +7377,11 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
     if ( enable && !d->m_statusBarPopupLabel ) {
         d->m_statusBarPopupLabel = new KUrlLabel( d->m_statusBarExtension->statusBar() );
-        d->m_statusBarPopupLabel->setFixedHeight( instance()->iconLoader()->currentSize( K3Icon::Small) );
+        d->m_statusBarPopupLabel->setFixedHeight( KHTMLFactory::iconLoader()->currentSize( K3Icon::Small) );
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
-        d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
+        d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed") );
 
 		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 

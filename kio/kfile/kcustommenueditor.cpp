@@ -23,11 +23,11 @@
 #include <qpushbutton.h>
 #include <qdir.h>
 
+#include <kapplication.h>
 #include <kdialogbuttonbox.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kiconloader.h>
-#include <kinstance.h>
 #include <k3listview.h>
 #include <kservice.h>
 #include <kstandarddirs.h>
@@ -61,7 +61,7 @@ public:
       // to accelators, replace them with two ampersands.
       serviceName.replace("&", "&&");
 
-      QPixmap normal = KGlobal::instance()->iconLoader()->loadIcon(s->icon(), K3Icon::Small,
+      QPixmap normal = kapp->iconLoader()->loadIcon(s->icon(), K3Icon::Small,
                               0, K3Icon::DefaultState, 0L, true);
 
       // make sure they are not larger than 16x16

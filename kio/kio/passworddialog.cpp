@@ -26,7 +26,7 @@
 #include <QTextDocument>
 #include <QTextLayout>
 
-
+#include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -89,7 +89,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
 
     // Row 0: pixmap  prompt
     QLabel* lbl;
-    QPixmap pix( KGlobal::iconLoader()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
+    QPixmap pix( kapp->iconLoader()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     if ( !pix.isNull() )
     {
         lbl = new QLabel( main );

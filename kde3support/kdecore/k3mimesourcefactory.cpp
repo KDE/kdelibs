@@ -19,7 +19,7 @@
 */
 
 #include <kdebug.h>
-#include <kglobal.h>
+#include <kapplication.h>
 #include <kiconloader.h>
 
 #include "k3mimesourcefactory.h"
@@ -45,7 +45,7 @@ void K3MimeSourceFactory::install()
     // we prefer KDE's factory and so we put that old default factory in the
     // list and use KDE as the default. This may speed up things as well.
     Q3MimeSourceFactory* oldDefaultFactory = Q3MimeSourceFactory::takeDefaultFactory();
-    K3MimeSourceFactory* mimeSourceFactory = new K3MimeSourceFactory(KGlobal::iconLoader());
+    K3MimeSourceFactory* mimeSourceFactory = new K3MimeSourceFactory(kapp->iconLoader());
     Q3MimeSourceFactory::setDefaultFactory( mimeSourceFactory );
     if ( oldDefaultFactory ) {
         Q3MimeSourceFactory::addFactory( oldDefaultFactory );
@@ -54,7 +54,7 @@ void K3MimeSourceFactory::install()
 
 K3MimeSourceFactory::K3MimeSourceFactory (KIconLoader* loader)
   : Q3MimeSourceFactory (),
-	d (new K3MimeSourceFactoryPrivate (loader))
+	d (new K3MimeSourceFactoryPrivate (loader ? loader : kapp->iconLoader()))
 {
 }
 

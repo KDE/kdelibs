@@ -32,6 +32,7 @@
 #include <QLinkedList>
 
 #include <kinstance.h>
+#include <kiconloader.h>
 #include <kaboutdata.h>
 #include <klocale.h>
 
@@ -42,6 +43,7 @@
 KHTMLFactory *KHTMLFactory::s_self = 0;
 unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;
+KIconLoader *KHTMLFactory::s_iconLoader = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
 QLinkedList<KHTMLPart*> *KHTMLFactory::s_parts = 0;
@@ -59,6 +61,7 @@ KHTMLFactory::~KHTMLFactory()
     {
         assert( !s_refcnt );
 
+        delete s_iconLoader;
         delete s_instance;
         delete s_about;
         delete s_settings;
@@ -69,6 +72,7 @@ KHTMLFactory::~KHTMLFactory()
             delete s_parts;
         }
 
+        s_iconLoader = 0;
         s_instance = 0;
         s_about = 0;
         s_settings = 0;
@@ -174,6 +178,16 @@ KInstance *KHTMLFactory::instance()
   }
 
   return s_instance;
+}
+
+KIconLoader *KHTMLFactory::iconLoader()
+{
+  if ( !s_iconLoader )
+  {
+    s_iconLoader = new KIconLoader(instance()->instanceName(), instance()->dirs());
+  }
+
+  return s_iconLoader;
 }
 
 KHTMLSettings *KHTMLFactory::defaultHTMLSettings()

@@ -21,6 +21,7 @@
 #include "downloaddialog.h"
 #include "downloaddialog.moc"
 
+#include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kio/job.h>
@@ -206,11 +207,11 @@ void DownloadDialog::addProvider(Provider *p)
     }
     else
     {
-      pix = KGlobal::iconLoader()->loadIcon(p->icon().path(), K3Icon::Panel);
+      pix = kapp->iconLoader()->loadIcon(p->icon().path(), K3Icon::Panel);
       ret = true;
     }
   }
-  if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", K3Icon::Panel);
+  if(!ret) pix = kapp->iconLoader()->loadIcon("knewstuff", K3Icon::Panel);
 
   frame = new QFrame( this );
   m_item = addPage(frame, p->name());
@@ -364,8 +365,8 @@ void DownloadDialog::addEntry(Entry *entry, const QStringList& variants)
 
   installed = installStatus(entry);
 
-  if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
-  else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", K3Icon::Small);
+  if(installed > 0) pix = kapp->iconLoader()->loadIcon("ok", K3Icon::Small);
+  else if(installed < 0) pix = kapp->iconLoader()->loadIcon("history", K3Icon::Small);
   else pix = QPixmap();
 
   QString lang = KGlobal::locale()->language();
@@ -508,7 +509,7 @@ void DownloadDialog::install(Entry *e)
   KConfigGroup cg(KGlobal::config(), "KNewStuffStatus");
   cg.writeEntry(m_entryname, e->releaseDate());
 
-  QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", K3Icon::Small);
+  QPixmap pix = kapp->iconLoader()->loadIcon("ok", K3Icon::Small);
 
   QString lang = KGlobal::locale()->language();
 

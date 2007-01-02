@@ -307,6 +307,7 @@ Desktop Entry Spec</a>
 <h4>KGlobal</h4>
 <ul>
 <li>&quot;int kasciistricmp( const char *str1, const char *str2 )&quot; has been moved into kascii.h</li>
+<li>&quot;KIconLoader* iconLoader()&quot; has been moved into KApplication</li>
 </ul>
 
 <h4>KGlobalAccel</h4>
@@ -330,10 +331,18 @@ Desktop Entry Spec</a>
 
 <h4>KIconLoader</h4>
 <ul>
+<li>Moved to libkdeui</li>
 <li>Deprecated loadIconSet(), DesktopIconSet(), BarIconSet(), SmallIconSet(), UserIconSet(): use KIcon(name) or KIcon(name,instance-&gt;iconLoader()) instead.<br/>
 Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
 on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
-With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.</li>
+With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.
+These deprecated methods were also altered to not take a KInstance*, which was an optional parameter in KDE3.</li>
+</ul>
+
+<h4>KInstance</h4>
+<ul>
+<li>iconLoader() was moved to KApplication</li>
+<li>newIconLoader() was moved to KApplication</li>
 </ul>
 
 <h4>KIPC</h4>
@@ -1582,7 +1591,9 @@ to pass a KUrl to most methods instead.</li>
 
 <h4>KService</h4>
 <ul>
+<li>KService was moved to libkdecore</li>
 <li>KService::rebuildKSycoca -&gt; KBuildSycocaProgressDialog::rebuildKSycoca</li>
+<li>KService::pixmap was removed due to icon support being moved to libkdeui. Instead use KService::icon() and KIconLoader directly. Usually you can simply use the KIconLoader returned by KApplication::iconLoader() for this.</li>
 </ul>
 
 <h4>KServiceType</h4>

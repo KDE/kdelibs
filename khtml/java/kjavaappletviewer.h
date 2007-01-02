@@ -127,8 +127,10 @@ public:
          QObject *parent,
          const char *className, const QStringList &args);
     static KInstance * instance () { return s_instance; }
+    static KIconLoader * iconLoader () { return s_iconLoader; }
 private:
     static KInstance * s_instance;
+    static KIconLoader * s_iconLoader;
 };
 
 class AppletParameterDialog : public KDialog {
