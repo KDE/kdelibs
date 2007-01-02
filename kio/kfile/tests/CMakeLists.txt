@@ -87,19 +87,6 @@ target_link_libraries(kicondialogtest  ${KDE4_KIO_LIBS} )
 
 ########### next target ###############
 
-# set(knotifytest_SRCS
-# knotifytest.cpp
-# )
-
-# kde4_automoc(${knotifytest_SRCS})
-
-# kde4_add_executable(knotifytest NOGUI RUN_UNINSTALLED ${knotifytest_SRCS})
-
-# target_link_libraries(knotifytest  ${KDE4_KIO_LIBS} )
-
-
-########### next target ###############
-
 set(kcustommenueditortest_SRCS
 kcustommenueditortest.cpp
 )
