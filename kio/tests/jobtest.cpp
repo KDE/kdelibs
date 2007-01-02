@@ -545,13 +545,17 @@ void JobTest::listRecursive()
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
     m_names.sort();
-		QByteArray ref_names = QByteArray( ".,..,"
+    QByteArray ref_names = QByteArray( ".,..,"
             "dirFromHome,dirFromHome/testfile,"
 #ifndef Q_WS_WIN
             "dirFromHome/testlink,"
 #endif
             "dirFromHome_copied,"
-            "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/testfile,"
+            "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,"
+#ifndef Q_WS_WIN
+            "dirFromHome_copied/dirFromHome/testlink,"
+#endif
+            "dirFromHome_copied/testfile,"
 #ifndef Q_WS_WIN
             "dirFromHome_copied/testlink,dirFromHome_link,"
 #endif
