@@ -1729,7 +1729,8 @@ bool CSSParser::parseFont( bool important )
 //     kDebug(6080) << "parsing font property current=" << valueList->currentValue << endl;
     bool valid = true;
     Value *value = valueList->current();
-    FontValueImpl *font = new FontValueImpl;
+    CSSValueListImpl* family = 0;
+    CSSPrimitiveValueImpl *style = 0, *variant = 0, *weight = 0, *size = 0, *lineHeight = 0;
     // optional font-style, font-variant and font-weight
     while ( value ) {
 //         kDebug( 6080 ) << "got value " << value->id << " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
@@ -1748,44 +1749,44 @@ bool CSSParser::parseFont( bool important )
               inherit = true;
                 } */
             else if ( id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE ) {
-                if ( font->style )
+                if ( style )
                     goto invalid;
-                font->style = new CSSPrimitiveValueImpl( id );
+                style = new CSSPrimitiveValueImpl( id );
             } else if ( id == CSS_VAL_SMALL_CAPS ) {
-                if ( font->variant )
+                if ( variant )
                     goto invalid;
-                font->variant = new CSSPrimitiveValueImpl( id );
+                variant = new CSSPrimitiveValueImpl( id );
             } else if ( id >= CSS_VAL_BOLD && id <= CSS_VAL_LIGHTER ) {
-                if ( font->weight )
+                if ( weight )
                     goto invalid;
-                font->weight = new CSSPrimitiveValueImpl( id );
+                weight = new CSSPrimitiveValueImpl( id );
             } else {
                 valid = false;
             }
-        } else if ( !font->weight && validUnit( value, FInteger|FNonNeg, true ) ) {
-            int weight = (int)value->fValue;
+        } else if ( !weight && validUnit( value, FInteger|FNonNeg, true ) ) {
+            int w = (int)value->fValue;
             int val = 0;
-            if ( weight == 100 )
+            if ( w == 100 )
                 val = CSS_VAL_100;
-            else if ( weight == 200 )
+            else if ( w == 200 )
                 val = CSS_VAL_200;
-            else if ( weight == 300 )
+            else if ( w == 300 )
                 val = CSS_VAL_300;
-            else if ( weight == 400 )
+            else if ( w == 400 )
                 val = CSS_VAL_400;
-            else if ( weight == 500 )
+            else if ( w == 500 )
                 val = CSS_VAL_500;
-            else if ( weight == 600 )
+            else if ( w == 600 )
                 val = CSS_VAL_600;
-            else if ( weight == 700 )
+            else if ( w == 700 )
                 val = CSS_VAL_700;
-            else if ( weight == 800 )
+            else if ( w == 800 )
                 val = CSS_VAL_800;
-            else if ( weight == 900 )
+            else if ( w == 900 )
                 val = CSS_VAL_900;
 
             if ( val )
-                font->weight = new CSSPrimitiveValueImpl( val );
+                weight = new CSSPrimitiveValueImpl( val );
             else
                 valid = false;
         } else {
@@ -1799,24 +1800,24 @@ bool CSSParser::parseFont( bool important )
         goto invalid;
 
     // set undefined values to default
-    if ( !font->style )
-        font->style = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
-    if ( !font->variant )
-        font->variant = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
-    if ( !font->weight )
-        font->weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !style )
+        style = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !variant )
+        variant = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !weight )
+        weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
 //     kDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue << endl;
 
     // now a font size _must_ come
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
     if ( value->id >= CSS_VAL_XX_SMALL && value->id <= CSS_VAL_LARGER )
-        font->size = new CSSPrimitiveValueImpl( value->id );
+        size = new CSSPrimitiveValueImpl( value->id );
     else if ( validUnit( value, FLength|FPercent, strict ) ) {
-        font->size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+        size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
     }
     value = valueList->next();
-    if ( !font->size || !value )
+    if ( !size || !value )
         goto invalid;
 
     // kDebug( 6080 ) << "  got size" << endl;
@@ -1829,7 +1830,7 @@ bool CSSParser::parseFont( bool important )
         if ( value->id == CSS_VAL_NORMAL ) {
             // default value, nothing to do
         } else if ( validUnit( value, FNumber|FLength|FPercent, strict ) ) {
-            font->lineHeight = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+            lineHeight = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
         } else {
             goto invalid;
         }
@@ -1837,23 +1838,34 @@ bool CSSParser::parseFont( bool important )
         if ( !value )
             goto invalid;
     }
-    if ( !font->lineHeight )
-        font->lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    if ( !lineHeight )
+        lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
 //     kDebug( 6080 ) << "  got line height current=" << valueList->currentValue << endl;
     // font family must come now
-    font->family = parseFontFamily();
+    family = parseFontFamily();
 
-    if ( valueList->current() || !font->family )
+    if ( valueList->current() || !family )
         goto invalid;
     //kDebug( 6080 ) << "  got family, parsing ok!" << endl;
 
-    addProperty( CSS_PROP_FONT, font, important );
+    addProperty( CSS_PROP_FONT_FAMILY,  family,     important );
+    addProperty( CSS_PROP_FONT_STYLE,   style,      important );
+    addProperty( CSS_PROP_FONT_VARIANT, variant,    important );
+    addProperty( CSS_PROP_FONT_WEIGHT,  weight,     important );
+    addProperty( CSS_PROP_FONT_SIZE,    size,       important );
+    addProperty( CSS_PROP_LINE_HEIGHT,  lineHeight, important );
     return true;
 
  invalid:
     //kDebug(6080) << "   -> invalid" << endl;
-    delete font;
+    delete family;
+    delete style;
+    delete variant;
+    delete weight;
+    delete size;
+    delete lineHeight;
+
     return false;
 }
 
