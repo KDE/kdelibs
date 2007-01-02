@@ -31,14 +31,25 @@ class UIServerAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.kde.KIO.UIServer")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"org.kde.KIO.UIServer\" >\n"
+"    <signal name=\"actionPerformed\" >\n"
+"      <arg name=\"id\" type=\"i\" direction=\"out\" />\n"
+"    </signal>\n"
 "    <method name=\"newJob\" >\n"
 "      <arg direction=\"in\" type=\"s\" name=\"appServiceName\" />\n"
 "      <arg direction=\"in\" type=\"b\" name=\"showProgress\" />\n"
+"      <arg name=\"internalAppName\" type=\"s\" direction=\"in\" />\n"
+"      <arg name=\"jobIcon\" type=\"s\" direction=\"in\" />\n"
+"      <arg name=\"appName\" type=\"s\" direction=\"in\" />\n"
 "      <arg direction=\"out\" type=\"i\" name=\"jobId\" />\n"
 "    </method>\n"
 "    <method name=\"jobFinished\" >\n"
 "      <arg direction=\"in\" type=\"i\" name=\"id\" />\n"
 "      <annotation value=\"true\" name=\"org.freedesktop.DBus.Method.NoReply\" />\n"
+"    </method>\n"
+"    <method name=\"newAction\" >\n"
+"      <arg direction=\"in\" type=\"i\" name=\"jobId\" />\n"
+"      <arg direction=\"in\" type=\"s\" name=\"actionText\" />\n"
+"      <arg direction=\"out\" type=\"i\" name=\"actionId\" />\n"
 "    </method>\n"
 "    <method name=\"totalSize\" >\n"
 "      <arg direction=\"in\" type=\"i\" name=\"id\" />\n"
@@ -142,12 +153,9 @@ class UIServerAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"buttonNo\" />\n"
 "      <arg direction=\"out\" type=\"i\" name=\"buttonCode\" />\n"
 "    </method>\n"
-"    <method name=\"setListMode\" >\n"
-"      <arg direction=\"in\" type=\"b\" name=\"enable\" />\n"
-"    </method>\n"
 "    <method name=\"setJobVisible\" >\n"
 "      <arg direction=\"in\" type=\"i\" name=\"id\" />\n"
-"      <arg direction=\"in\" type=\"b\" name=\"enable\" />\n"
+"      <arg direction=\"in\" type=\"b\" name=\"visible\" />\n"
 "    </method>\n"
 "    <method name=\"showSSLInfoDialog\" >\n"
 "      <arg direction=\"in\" type=\"s\" name=\"url\" />\n"
@@ -184,13 +192,13 @@ public Q_SLOTS: // METHODS
     int messageBox(int id, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo);
     Q_NOREPLY void mounting(int id, const QString &dev, const QString &point);
     Q_NOREPLY void moving(int id, const QString &from, const QString &to);
-    int newJob(const QString &appServiceName, bool showProgress);
+    int newJob(const QString &appServiceName, bool showProgress, const QString &internalAppName, const QString &jobIcon, const QString &appName);
+    int newAction(int jobId, const QString &actionText);
     Q_NOREPLY void percent(int id, uint ipercent);
     Q_NOREPLY void processedDirs(int id, uint dirs);
     Q_NOREPLY void processedFiles(int id, uint files);
     Q_NOREPLY void processedSize(int id, qulonglong size);
-    void setJobVisible(int id, bool enable);
-    void setListMode(bool enable);
+    void setJobVisible(int id, bool visible);
     bool showSSLCertDialog(const QString &host, const QStringList &certList, qlonglong mainwindow, bool &send, bool &save, QString &choice);
     void showSSLInfoDialog(const QString &url, const QMap<QString,QString> &data, qlonglong mainwindow);
     Q_NOREPLY void speed(int id, uint bytesPerSecond);
@@ -201,6 +209,7 @@ public Q_SLOTS: // METHODS
     Q_NOREPLY void transferring(int id, const QString &url);
     Q_NOREPLY void unmounting(int id, const QString &point);
 Q_SIGNALS: // SIGNALS
+    void actionPerformed(int id);
 };
 
 #endif

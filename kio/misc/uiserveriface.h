@@ -103,11 +103,18 @@ public Q_SLOTS: // METHODS
         callWithArgumentList(QDBus::NoBlock, QLatin1String("moving"), argumentList);
     }
 
-    inline QDBusReply<int> newJob(const QString &appServiceName, bool showProgress)
+    inline QDBusReply<int> newJob(const QString &appServiceName, bool showProgress, const QString &internalAppName, const QString &jobIcon, const QString &appName)
     {
         QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(appServiceName) << qVariantFromValue(showProgress);
+        argumentList << qVariantFromValue(appServiceName) << qVariantFromValue(showProgress) << qVariantFromValue(internalAppName) << qVariantFromValue(jobIcon) << qVariantFromValue(appName);
         return callWithArgumentList(QDBus::Block, QLatin1String("newJob"), argumentList);
+    }
+
+    inline QDBusReply<int> newAction(int jobId, const QString &actionText)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(jobId) << qVariantFromValue(actionText);
+        return callWithArgumentList(QDBus::Block, QLatin1String("newAction"), argumentList);
     }
 
     inline Q_NOREPLY void percent(int id, uint ipercent)
@@ -136,20 +143,6 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(id) << qVariantFromValue(size);
         callWithArgumentList(QDBus::NoBlock, QLatin1String("processedSize"), argumentList);
-    }
-
-    inline QDBusReply<void> setJobVisible(int id, bool enable)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(id) << qVariantFromValue(enable);
-        return callWithArgumentList(QDBus::Block, QLatin1String("setJobVisible"), argumentList);
-    }
-
-    inline QDBusReply<void> setListMode(bool enable)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(enable);
-        return callWithArgumentList(QDBus::Block, QLatin1String("setListMode"), argumentList);
     }
 
     inline QDBusReply<bool> showSSLCertDialog(const QString &host, const QStringList &certList, qlonglong mainwindow, bool &send, bool &save, QString &choice)
@@ -224,6 +217,7 @@ public Q_SLOTS: // METHODS
     }
 
 Q_SIGNALS: // SIGNALS
+    void actionPerformed(int id);
 };
 
 namespace org {

@@ -18,6 +18,8 @@ add_subdirectory( kntlm )
 set(kio_uiserver_KDEINIT_SRCS
 uiserver.cpp
 uiserveradaptor.cpp
+progresslistmodel.cpp
+progresslistdelegate.cpp
 )
 
 kde4_automoc(${kio_uiserver_KDEINIT_SRCS})

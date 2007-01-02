@@ -2,14 +2,25 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.kde.KIO.UIServer">
+    <signal name="actionPerformed">
+      <arg name="id" type="i" direction="out">
+    </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
       <arg name="showProgress" type="b" direction="in"/>
+      <arg name="internalAppName" type="s" direction="in"/>
+      <arg name="jobIcon" type="s" direction="in"/>
+      <arg name="appName" type="s" direction="in"/>
       <arg name="jobId" type="i" direction="out"/>
     </method>
     <method name="jobFinished">
       <arg name="id" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="newAction">
+      <arg name="jobId" type="i" direction="in"/>
+      <arg name="actionText" type="s" direction="in"/>
+      <arg name="actionId" type="i" direction="out"/>
     </method>
     <method name="totalSize">
       <arg name="id" type="i" direction="in"/>
@@ -113,12 +124,9 @@
       <arg name="buttonNo" type="s" direction="in"/>
       <arg name="buttonCode" type="i" direction="out"/>
     </method>
-    <method name="setListMode">
-      <arg name="enable" type="b" direction="in"/>
-    </method>
-    <method name="setJobVisible">
+    <method name="setJobVisible" >
       <arg name="id" type="i" direction="in"/>
-      <arg name="enable" type="b" direction="in"/>
+      <arg name="visible" type="b" direction="in"/>
     </method>
     <method name="showSSLInfoDialog">
       <arg name="url" type="s" direction="in"/>

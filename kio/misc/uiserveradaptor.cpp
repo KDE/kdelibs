@@ -88,10 +88,15 @@ void UIServerAdaptor::moving(int id, const QString &from, const QString &to)
     parent()->moving(id, from, to);
 }
 
-int UIServerAdaptor::newJob(const QString &appServiceName, bool showProgress)
+int UIServerAdaptor::newJob(const QString &appServiceName, bool showProgress, const QString &internalAppName, const QString &jobIcon, const QString &appName)
 {
     // handle method call org.kde.KIO.UIServer.newJob
-    return parent()->newJob(appServiceName, showProgress);
+    return parent()->newJob(appServiceName, showProgress, internalAppName, jobIcon, appName);
+}
+
+int UIServerAdaptor::newAction(int jobId, const QString &actionText)
+{
+    return parent()->newAction(jobId, actionText);
 }
 
 void UIServerAdaptor::percent(int id, uint ipercent)
@@ -122,12 +127,6 @@ void UIServerAdaptor::setJobVisible(int id, bool enable)
 {
     // handle method call org.kde.KIO.UIServer.setJobVisible
     parent()->setJobVisible(id, enable);
-}
-
-void UIServerAdaptor::setListMode(bool enable)
-{
-    // handle method call org.kde.KIO.UIServer.setListMode
-    parent()->setListMode(enable);
 }
 
 bool UIServerAdaptor::showSSLCertDialog(const QString &host, const QStringList &certList, qlonglong mainwindow, bool &send, bool &save, QString &choice)
