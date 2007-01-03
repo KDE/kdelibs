@@ -125,30 +125,14 @@ private:
  * <b>Usage example</b>\n
  *
  * \code
- * QCString password;
- * int result = KPasswordDialog::getPassword(parent, password, i18n("Prompt message"));
- * if (result == KPasswordDialog::Accepted)
+ * QString password = KPasswordDialog::getPassword( i18n("Prompt message") , i18n("Caption"), 0l , parent);
+ * if (password.isNull())
+ *     return;  // the dialog was canceled.
+ * else
  *     use(password);
  * \endcode
  *
  * \image html kpassworddialog.png "KDE Password Dialog"
- *
- * <b>Security notes:</b>\n
- *
- * Keeping passwords in memory can be a potential security hole. You should
- * handle this situation with care.
- *
- * @li You may want to use disableCoreDump() to disable core dumps.
- * Core dumps are dangerous because they are an image of the process memory,
- * and thus include any passwords that were in memory.
- *
- * @li You should delete passwords as soon as they are not needed anymore.
- * The functions getPassword() and getNewPassword() return the
- * password as a QCString. I believe this is safer than a QString. A QString
- * stores its characters internally as 16-bit wide values, so conversions are
- * needed, both for creating the QString and by using it. The temporary
- * memory used for these conversion is probably not erased. This could lead
- * to stray  passwords in memory, even if you think you erased all of them.
  *
  * @author Geert Jansen <jansen@kde.org>
  */
@@ -323,6 +307,9 @@ public:
     /**
      * Pops up the dialog, asks the user for a password, and returns it.
      *
+     * If the user cancel the dialog, a null string is returned (as opposed to 
+     * an empty string which may be returned if the user entered an empty password)
+     *
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
      * @param caption A caption for the dialog.
@@ -361,6 +348,9 @@ public:
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
+     *
+     * If the user cancel the dialog, a null string is returned (as opposed to 
+     * an empty string which may be returned if the user entered an empty password)
      *
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
