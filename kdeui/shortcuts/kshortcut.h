@@ -53,7 +53,7 @@ class KShortcutPrivate;
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 */
-class KDECORE_EXPORT KShortcut : public QList<QKeySequence>
+class KDEUI_EXPORT KShortcut : public QList<QKeySequence>
 {
 public:
     /**

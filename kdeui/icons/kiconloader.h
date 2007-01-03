@@ -66,7 +66,7 @@ class KIconEffect;
  * "User".
  *
  */
-class KDECORE_EXPORT KIconLoader
+class KDEUI_EXPORT KIconLoader
 {
 public:
     /**
@@ -359,7 +359,7 @@ public:
  * \relates KIconLoader
  * Load a desktop icon.
  */
-KDECORE_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
+KDEUI_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
 		    int state=K3Icon::DefaultState);
 
 /**
@@ -367,26 +367,26 @@ KDECORE_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0);
+KDEUI_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0);
 
 /**
  * \relates KIconLoader
  * Load a toolbar icon.
  */
-KDECORE_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=K3Icon::DefaultState);
+KDEUI_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=K3Icon::DefaultState);
 
 /**
  * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
+KDEUI_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
 
 /**
  * \relates KIconLoader
  * Load a small icon.
  */
-KDECORE_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
+KDEUI_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
 		  int state=K3Icon::DefaultState);
 
 /**
@@ -394,13 +394,13 @@ KDECORE_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
  * Load a small icon, and apply the necessary effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
+KDEUI_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
 
 /**
  * \relates KIconLoader
  * Load a main toolbar icon.
  */
-KDECORE_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
+KDEUI_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
 		    int state=K3Icon::DefaultState);
 
 /**
@@ -408,25 +408,25 @@ KDECORE_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
  * Load a main toolbar icon, and apply the effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0);
+KDEUI_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0);
 
 /**
  * \relates KIconLoader
  * Load a user icon. User icons are searched in $appdir/pics.
  */
-KDECORE_EXPORT QPixmap UserIcon(const QString& name, int state=K3Icon::DefaultState);
+KDEUI_EXPORT QPixmap UserIcon(const QString& name, int state=K3Icon::DefaultState);
 
 /**
  * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
  * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
  */
-KDECORE_EXPORT_DEPRECATED QIcon UserIconSet(const QString& name);
+KDEUI_EXPORT_DEPRECATED QIcon UserIconSet(const QString& name);
 
 /**
  * \relates KIconLoader
  * Returns the current icon size for a specific group.
  */
-KDECORE_EXPORT int IconSize(K3Icon::Group group);
+KDEUI_EXPORT int IconSize(K3Icon::Group group);
 
 #endif // KICONLOADER_H

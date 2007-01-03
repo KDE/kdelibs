@@ -232,7 +232,7 @@ struct NETStrut {
   @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
-class KDECORE_EXPORT NET {
+class KDEUI_EXPORT NET {
 public:
     /**
        Application role.  This is used internally to determine how several action

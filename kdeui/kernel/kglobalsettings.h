@@ -50,7 +50,7 @@ class QWidget;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDECORE_EXPORT KGlobalSettings : public QObject
+class KDEUI_EXPORT KGlobalSettings : public QObject
 {
     Q_OBJECT
 

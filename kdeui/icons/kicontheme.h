@@ -32,7 +32,7 @@ class KIconPrivate;
  * @see KIconTheme
  * @see KIconLoader
  */
-class KDECORE_EXPORT K3Icon
+class KDEUI_EXPORT K3Icon
 {
 public:
     K3Icon() { size = 0; }
@@ -183,7 +183,7 @@ inline K3Icon::Group operator++(K3Icon::Group& group,int) { K3Icon::Group ret = 
  * iconloader but can be used by others too.
  * @see KIconLoader
  */
-class KDECORE_EXPORT KIconTheme
+class KDEUI_EXPORT KIconTheme
 {
 public:
     /**

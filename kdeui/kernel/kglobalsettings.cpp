@@ -844,7 +844,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
 
 // Set by KApplication - which is now in kdeui so this needs to be exported
 // In the long run, KGlobalSettings probably belongs to kdeui as well...
-KDECORE_EXPORT QString kde_overrideStyle;
+KDEUI_EXPORT QString kde_overrideStyle;
 
 void KGlobalSettings::applyGUIStyle()
 {

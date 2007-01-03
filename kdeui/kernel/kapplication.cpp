@@ -783,7 +783,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("style"))
     {
-        extern KDECORE_EXPORT QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        extern KDEUI_EXPORT QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
         QStringList styles = QStyleFactory::keys();
         QString reqStyle(QLatin1String(args->getOption("style").toLower()));
 

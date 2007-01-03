@@ -32,7 +32,7 @@ class QMimeData;
  * @short Allowing to automatically synchronize the X11 Clipboard and Selection buffers.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDECORE_EXPORT KClipboardSynchronizer : public QObject
+class KDEUI_EXPORT KClipboardSynchronizer : public QObject
 {
     Q_OBJECT
 
