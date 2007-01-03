@@ -33,7 +33,6 @@
 #include "kshell.h"
 #include "kmacroexpander.h"
 #include "klocale.h"
-#include <qapplication.h>
 #include <qhash.h>
 #include <QProcess>
 

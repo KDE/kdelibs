@@ -44,7 +44,6 @@
 #include <qhash.h>
 
 #include <qstring.h>
-#include <qapplication.h>
 
 #include <kurl.h>
 
@@ -255,9 +254,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   // If the application doesn't have a QApplication object it can't use
   // a messagebox.
-  if (!qApp && (nOutput == 1))
-    nOutput = 2;
-  else if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
+  if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
       return;
 
   const int BUFSIZE = 4096;
