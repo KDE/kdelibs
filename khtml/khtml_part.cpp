@@ -3119,7 +3119,7 @@ bool KHTMLPart::findTextNext( bool reverse )
     khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
     if ( obj == end )
       obj = 0L;
-    else
+    else if ( obj )
     {
       do {
         obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
