@@ -3005,7 +3005,7 @@ void K3DockManager::drawDragRectangle()
       continue;
 
     bool isOverMainWdg = false;
-    bool unclipped;
+    //bool unclipped;
     K3DockMainWindow* pMain = 0L;
     K3DockWidget* pTLDockWdg = 0L;
     QWidget* topWdg;

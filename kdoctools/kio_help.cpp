@@ -63,8 +63,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     }
 
     // try to locate the file
-    QStringList::Iterator it;
-    for (it = search.begin(); it != search.end(); ++it)
+    for (QStringList::Iterator it = search.begin(); it != search.end(); ++it)
     {
         kDebug( 7119 ) << "Looking for help in: " << *it << endl;
 
