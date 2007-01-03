@@ -491,18 +491,17 @@ bool KCertPart::openFile() {
 //		 x-pkcs12 loading
 /////////////////////////////////////////////////////////////////////////////
 		if (whatType == "application/x-pkcs12") {
-			QByteArray pass;
 			_p12 = KSSLPKCS12::loadCertFile(m_file);
 
 			while (!_p12) {
 				// try prompting for a password.
-				int rc = KPasswordDialog::getPassword(_frame,pass, i18n("Certificate Password"));
-				if (rc != KPasswordDialog::Accepted) break;
+				QString pass = KPasswordDialog::getPassword(i18n("Certificate Password"),i18n("Certificate Password"),0L,_frame);
+				if (pass.isEmpty()) break;
 
 				_p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));
 
 				if (!_p12) {
-					rc = KMessageBox::warningContinueCancel(_frame, i18n("The certificate file could not be loaded. Try a different password?"), i18n("Certificate Import"),KGuiItem(i18n("Try Different")));
+					int rc = KMessageBox::warningContinueCancel(_frame, i18n("The certificate file could not be loaded. Try a different password?"), i18n("Certificate Import"),KGuiItem(i18n("Try Different")));
 					if (rc == KMessageBox::Continue) continue;
 					break;
 				}
