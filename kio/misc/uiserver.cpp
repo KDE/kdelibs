@@ -86,7 +86,9 @@ UIServer::UIServer()
     progressListDelegate->setMinimumItemHeight(100);
     progressListDelegate->setMinimumContentWidth(200);
     //progressListDelegate->setEditorHeight(20);
+#ifdef __GNUC__
     #warning no editor yet, change height when implemented (ereslibre)
+#endif
     progressListDelegate->setEditorHeight(0);
     listProgress->setItemDelegate(progressListDelegate);
 
@@ -124,7 +126,9 @@ int UIServer::newJob(const QString &appServiceName, bool showProgress, const QSt
     progressListModel->setData(progressListModel->indexForJob(s_jobId), s_jobId,
                                ProgressListDelegate::jobId);
 
+#ifdef __GNUC__
     #warning Opening persistent editor leads to painting problems (ereslibre)
+#endif
     //listProgress->openPersistentEditor(progressListModel->indexForJob(s_jobId));
 
     return s_jobId;
@@ -166,7 +170,9 @@ void UIServer::totalDirs(int id, unsigned long dirs)
 {
     if (id < 1) return;
 
+#ifdef __GNUC__
     #warning implement me (ereslibre)
+#endif
 }
 
 void UIServer::processedSize(int id, KIO::filesize_t bytes)
@@ -189,7 +195,9 @@ void UIServer::processedDirs(int id, unsigned long dirs)
 {
     if (id < 1) return;
 
+#ifdef __GNUC__
     #warning implement me (ereslibre)
+#endif
 }
 
 void UIServer::percent(int id, unsigned long ipercent)
@@ -204,7 +212,9 @@ void UIServer::speed(int id, unsigned long bytes_per_second)
 {
     if (id < 1) return;
 
+#ifdef __GNUC__
     #warning implement me (ereslibre)
+#endif
 }
 
 void UIServer::infoMessage(int id, QString msg)
@@ -363,8 +373,9 @@ void UIServer::unmounting(int id, QString point)
 
 void UIServer::canResume(int id, KIO::filesize_t offset)
 {
+#ifdef __GNUC__
     #warning implement me (ereslibre)
-
+#endif
     return;
 }
 
@@ -460,8 +471,9 @@ KSSLCertDialogRet UIServer::showSSLCertDialog(const QString& host, const QString
 
 void UIServer::slotRemoveSystemTrayIcon()
 {
+#ifdef __GNUC__
     #warning implement me (ereslibre)
-
+#endif
     return;
 }
 

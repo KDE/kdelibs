@@ -48,7 +48,9 @@ class KPropertiesDialogPlugin;
 class QComboBox;
 class Q3ListBox;
 
+#ifdef __GNUC__
 #warning "Are you sure?"
+#endif
 #define KPropsPage KPropertiesDialogPlugin
 
 class KJob;

@@ -484,9 +484,9 @@ RenameDialog_Result Observer::open_RenameDialog( KIO::Job* job,
   kDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDialog job=" << job << endl;
   if (job)
     kDebug(KDEBUG_OBSERVER) << "                        progressId=" << job->progressId() << endl;
-
+#ifdef __GNUC__
   #warning revisit this (ereslibre)
-
+#endif
   // Hide existing dialog box if any
   //if (job && job->progressId())
   //  m_uiserver->setJobVisible( job->progressId(), false );
@@ -505,8 +505,9 @@ SkipDialog_Result Observer::open_SkipDialog( KIO::Job* job,
                                        bool _multi,
                                        const QString& _error_text )
 {
+#ifdef __GNUC__
   #warning revisit this (ereslibre)
-
+#endif
   // Hide existing dialog box if any
   //if (job && job->progressId())
   //    m_uiserver->setJobVisible( job->progressId(), false );

@@ -39,7 +39,7 @@
 class ProgressListModel;
 class UIServerAdaptor;
 
-class KIO_EXPORT UIServer
+class UIServer
     : public KMainWindow
 {
   Q_OBJECT
