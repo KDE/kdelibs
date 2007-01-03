@@ -337,6 +337,7 @@ public:
 	 * @param barWidth the width of the bar, if this object is drawn as bars
 	 */
 	void addPoint( const QPointF &p, const QString &label="", double barWidth=0.0 ) { 
+		Q_UNUSED( barWidth )
 		addPoint( new KPlotPoint( p.x(), p.y(), label ) ); 
 	}
 
@@ -357,7 +358,8 @@ public:
 	 * @param label the optional text label
 	 * @param barWidth the width of the bar, if this object is drawn as bars
 	 */
-	void addPoint( double x, double y, const QString &label="", double barWidth=0.0 ) { 
+	void addPoint( double x, double y, const QString &label="", double barWidth=0.0 ) {
+		Q_UNUSED( barWidth )
 		addPoint( new KPlotPoint( x, y, label ) ); 
 	}
 
