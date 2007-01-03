@@ -391,7 +391,7 @@ private:
   KProtocolInfoPrivate* const d;
 };
 
-KIO_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
-KIO_EXPORT QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
+KDECORE_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
+KDECORE_EXPORT QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
 
 #endif

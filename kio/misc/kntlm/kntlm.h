@@ -38,7 +38,7 @@
  * This class doesn't maintain any state information, so all methods are static.
  */
 
-class KIO_EXPORT KNTLM {
+class KNTLM_EXPORT KNTLM {
 public:
 
   enum Flags {

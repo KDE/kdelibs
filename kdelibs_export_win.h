@@ -103,6 +103,14 @@
 # endif
 #endif
 
+#ifndef KNTLM_EXPORT
+# ifdef MAKE_KNTLM_LIB
+#  define KNTLM_EXPORT KDE_EXPORT
+# else
+#  define KNTLM_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KPARTS_EXPORT
 # ifdef MAKE_KPARTS_LIB
 #  define KPARTS_EXPORT KDE_EXPORT

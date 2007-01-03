@@ -273,7 +273,7 @@ void KConfigTest::testEnums()
 
   QCOMPARE( sc.readEntry( "flags-bit0-bit1" ), QString("bit1|bit0") );
   QVERIFY( sc.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
-           KConfigTest::bit0|KConfigTest::bit1 );
+           (KConfigTest::bit0|KConfigTest::bit1) );
 }
 
 void KConfigTest::testInvalid()

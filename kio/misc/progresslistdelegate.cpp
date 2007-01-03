@@ -190,8 +190,9 @@ ProgressListDelegate::~ProgressListDelegate()
 QWidget *ProgressListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                                             const QModelIndex &index) const
 {
+#ifdef __GNUC__
     #warning implement (ereslibre)
-
+#endif
     return 0;
 }
 
@@ -331,15 +332,17 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
 void ProgressListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
+#ifdef __GNUC__
     #warning implement me (ereslibre)
-
+#endif
     return;
 }
 
 void ProgressListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
+#ifdef __GNUC__
     #warning implement me (ereslibre)
-
+#endif
     return;
 }
 
