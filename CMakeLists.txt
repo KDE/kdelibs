@@ -55,6 +55,12 @@ set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore
                           ${CMAKE_BINARY_DIR}/kdecore
                           ${CMAKE_SOURCE_DIR}/kdecore/network
                           ${CMAKE_SOURCE_DIR}/kdecore/kservice
+                          ${CMAKE_SOURCE_DIR}/kdecore/io
+                          ${CMAKE_SOURCE_DIR}/kdecore/kernel
+                          ${CMAKE_SOURCE_DIR}/kdecore/date
+                          ${CMAKE_SOURCE_DIR}/kdecore/config
+                          ${CMAKE_SOURCE_DIR}/kdecore/strings
+                          ${CMAKE_SOURCE_DIR}/kdecore/sycoca
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore

@@ -55,14 +55,14 @@ endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      ktoolinvocation_win.cpp 
+      kernel/ktoolinvocation_win.cpp 
       )
 endif (WIN32)
 
 
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      ktoolinvocation_x11.cpp 
+      kernel/ktoolinvocation_x11.cpp 
       ksocks.cpp
       kpty.cpp
       network/khttpproxysocketdevice.cpp
@@ -96,71 +96,71 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   kascii.cpp
-   kauthorized.cpp
-   kautosavefile.cpp
-   kautostart.cpp
+   strings/kascii.cpp
+   kernel/kauthorized.cpp
+   io/kautosavefile.cpp
+   kernel/kautostart.cpp
    kdebug.cpp
-   kconfigbase.cpp
-   kconfig.cpp
-   ksimpleconfig.cpp
-   kconfigbackend.cpp
-   kdesktopfile.cpp
-   kstandarddirs.cpp
-   kprocess.cpp
-   kprocctrl.cpp
-   klocale.cpp
-   klocalizedstring.cpp
-   krfcdate.cpp
+   config/kconfigbase.cpp
+   config/kconfig.cpp
+   config/ksimpleconfig.cpp
+   config/kconfigbackend.cpp
+   config/kdesktopfile.cpp
+   kernel/kstandarddirs.cpp
+   io/kprocess.cpp
+   io/kprocctrl.cpp
+   strings/klocale.cpp
+   strings/klocalizedstring.cpp
+   date/krfcdate.cpp
    ksvgrenderer.cpp
-   kcharsets.cpp
+   strings/kcharsets.cpp
    kckey.cpp
-   kurl.cpp
+   io/kurl.cpp
    kjob.cpp
    kcompositejob.cpp
    kjobuidelegate.cpp
-   kglobal.cpp
+   kernel/kglobal.cpp
    kallocator.cpp
-   kinstance.cpp
+   kernel/kinstance.cpp
    klibloader.cpp
-   ktemporaryfile.cpp
-   ksavefile.cpp
+   io/ktemporaryfile.cpp
+   io/ksavefile.cpp
    krandomsequence.cpp
-   kstringhandler.cpp
-   kcmdlineargs.cpp
-   kaboutdata.cpp
-   kprocio.cpp
+   strings/kstringhandler.cpp
+   kernel/kcmdlineargs.cpp
+   kernel/kaboutdata.cpp
+   io/kprocio.cpp
    krandom.cpp
-   ktoolinvocation.cpp
+   kernel/ktoolinvocation.cpp
    klauncher_iface.cpp
    kcodecs.cpp
-   ksycoca.cpp
-   ksycocadict.cpp
-   ksycocafactory.cpp
-   kcatalog.cpp
+   sycoca/ksycoca.cpp
+   sycoca/ksycocadict.cpp
+   sycoca/ksycocafactory.cpp
+   strings/kcatalog.cpp
    kstaticdeleter.cpp
    kdeversion.cpp
    kdebugdbusiface.cpp
-   kcalendarsystem.cpp
-   kcalendarsystemgregorian.cpp
-   kcalendarsystemhijri.cpp
-   kcalendarsystemhebrew.cpp
-   kcalendarsystemfactory.cpp
+   date/kcalendarsystem.cpp
+   date/kcalendarsystemgregorian.cpp
+   date/kcalendarsystemhijri.cpp
+   date/kcalendarsystemhebrew.cpp
+   date/kcalendarsystemfactory.cpp
    kmacroexpander.cpp
-   kidna.cpp
-   ktempdir.cpp
+   strings/kidna.cpp
+   io/ktempdir.cpp
    kshell.cpp
-   kmountpoint.cpp
-   kcalendarsystemjalali.cpp
-   kprotocolinfo.cpp
-   kprotocolinfofactory.cpp
+   io/kmountpoint.cpp
+   date/kcalendarsystemjalali.cpp
+   sycoca/kprotocolinfo.cpp
+   sycoca/kprotocolinfofactory.cpp
    kuser.cpp
-   kconfigskeleton.cpp
-   klockfile.cpp
-   ktimezones.cpp
-   ksystemtimezone.cpp
-   ktzfiletimezone.cpp
-   kdatetime.cpp
+   config/kconfigskeleton.cpp
+   io/klockfile.cpp
+   date/ktimezones.cpp
+   date/ksystemtimezone.cpp
+   date/ktzfiletimezone.cpp
+   date/kdatetime.cpp
    kfilterbase.cpp
    kfilterdev.cpp
    kdedmodule.cpp
@@ -252,79 +252,79 @@ install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
 install( FILES
-   kascii.h
-   kconfig.h
-   kconfigskeleton.h
-   kconfigdata.h
-   ksimpleconfig.h
-   kconfigbase.h
-   kdesktopfile.h
-   kurl.h
-   kaboutdata.h
-   kautosavefile.h
+   strings/kascii.h
+   config/kconfig.h
+   config/kconfigskeleton.h
+   config/kconfigdata.h
+   config/ksimpleconfig.h
+   config/kconfigbase.h
+   config/kdesktopfile.h
+   io/kurl.h
+   kernel/kaboutdata.h
+   io/kautosavefile.h
    kjob.h
    kcompositejob.h
    kjobuidelegate.h
-   kcmdlineargs.h
-   kconfigbackend.h
-   kauthorized.h
+   kernel/kcmdlineargs.h
+   config/kconfigbackend.h
+   kernel/kauthorized.h
    klauncher_iface.h
-   ktoolinvocation.h
-   kcharsets.h
+   kernel/ktoolinvocation.h
+   strings/kcharsets.h
    kdeversion.h
    kpty.h
-   kprocess.h
-   kprocctrl.h
-   klocale.h
-   klocalizedstring.h
+   io/kprocess.h
+   io/kprocctrl.h
+   strings/klocale.h
+   strings/klocalizedstring.h
    ksvgrenderer.h
    kdebug.h
-   kcatalog.h
-   kstringhandler.h
-   kstandarddirs.h
-   kglobal.h
+   strings/kcatalog.h
+   strings/kstringhandler.h
+   kernel/kstandarddirs.h
+   kernel/kglobal.h
    ksharedptr.h
    kallocator.h
-   krfcdate.h
-   kinstance.h
+   date/krfcdate.h
+   kernel/kinstance.h
    klibloader.h
-   ktemporaryfile.h
-   ksavefile.h
+   io/ktemporaryfile.h
+   io/ksavefile.h
    krandomsequence.h
    kstaticdeleter.h
-   kprocio.h
+   io/kprocio.h
    krandom.h
    kcodecs.h
    ksocks.h
-   ksycoca.h
-   ksycocaentry.h
-   ksycocatype.h
+   sycoca/ksycoca.h
+   sycoca/ksycocaentry.h
+   sycoca/ksycocatype.h
    kgenericfactory.h
    kgenericfactory.tcc
    ktypelist.h
    ksortablelist.h
-   kcalendarsystem.h
-   kcalendarsystemfactory.h
+   date/kcalendarsystem.h
+   date/kcalendarsystemfactory.h
    kmacroexpander.h
-   kmountpoint.h
+   io/kmountpoint.h
    kuser.h
-   klockfile.h
-   kidna.h
-   ktempdir.h
+   io/klockfile.h
+   strings/kidna.h
+   io/ktempdir.h
    kshell.h
    fixx11h.h
    kde_file.h
-   ktimezones.h
-   ksystemtimezone.h
-   ktzfiletimezone.h
+   date/ktimezones.h
+   date/ksystemtimezone.h
+   date/ktzfiletimezone.h
    kfilterbase.h
    kfilterdev.h
-   kdatetime.h
+   date/kdatetime.h
    qtest_kde.h
    conversion_check.h
    kdedmodule.h
-   kautostart.h
-   kprotocolinfo.h
+   kernel/kautostart.h
+   sycoca/kprotocolinfo.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    kmessage.h DESTINATION ${INCLUDE_INSTALL_DIR}
 )

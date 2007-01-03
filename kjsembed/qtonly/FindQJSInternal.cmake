@@ -94,9 +94,9 @@ if (WIN32)
 
    # if we are compiling kdelibs, add KDEWIN32_LIBRARIES explicitely,
    # otherwise they come from KDELibsDependencies.cmake, Alex
-   if(EXISTS ${CMAKE_SOURCE_DIR}/kdecore/kglobal.h)
+   if(EXISTS ${CMAKE_SOURCE_DIR}/kdecore/kernel/kglobal.h)
       set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN32_LIBRARIES} )
-   endif(EXISTS ${CMAKE_SOURCE_DIR}/kdecore/kglobal.h)
+   endif(EXISTS ${CMAKE_SOURCE_DIR}/kdecore/kernel/kglobal.h)
 
    # windows, mingw
    if(MINGW)
