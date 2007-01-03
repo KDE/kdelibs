@@ -496,7 +496,7 @@ bool KCertPart::openFile() {
 			while (!_p12) {
 				// try prompting for a password.
 				QString pass = KPasswordDialog::getPassword(i18n("Certificate Password"),i18n("Certificate Password"),0L,_frame);
-				if (pass.isEmpty()) break;
+				if (pass.isNull()) break;
 
 				_p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));
 
