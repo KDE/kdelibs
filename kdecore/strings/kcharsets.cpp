@@ -28,8 +28,6 @@
 #include "klocale.h"
 
 #include <qdir.h>
-#include <qfontdatabase.h>
-#include <qfontinfo.h>
 #include <qregexp.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -202,15 +200,9 @@ class KCharsetsPrivate
 public:
     KCharsetsPrivate(KCharsets* _kc)
     {
-        db = 0;
         kc = _kc;
         codecForNameDict.reserve( 43 );
     }
-    ~KCharsetsPrivate()
-    {
-        delete db;
-    }
-    QFontDatabase *db;
     // Hash for the encoding names (sensitive case)
     QHash<QByteArray,QTextCodec*> codecForNameDict;
     KCharsets* kc;
