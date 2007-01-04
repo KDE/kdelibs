@@ -906,7 +906,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      msg << QStringList();
      QDBusConnection::sessionBus().send(msg);
 
-     QDBusInterface("org.kde.ksplash", "/")
+     QDBusInterface("org.kde.ksplash", "/KSplash")
          .call(QDBus::NoBlock, "upAndRunning", QString("kded"));
 #ifdef Q_WS_X11
      XEvent e;
