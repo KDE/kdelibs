@@ -81,7 +81,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
     QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
                                                QLatin1String("/KHelpCenter"),
-                                               QLatin1String("org.kde.KHelpCenter"),
+                                               QLatin1String("org.kde.khelpcenter.khelpcenter"),
                                                QDBusConnection::sessionBus());
     if ( !iface->isValid() )
     {
@@ -97,7 +97,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         delete iface;
         iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
                                    QLatin1String("/KHelpCenter"),
-                                   QLatin1String("org.kde.KHelpCenter"),
+                                   QLatin1String("org.kde.khelpcenter.khelpcenter"),
                                    QDBusConnection::sessionBus());
     }
 

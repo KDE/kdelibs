@@ -95,7 +95,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
             continue;
 
         QDBusReply<QString> reply =
-            QDBusInterface(clientId, "/Konqueror", "org.kde.Konqueror").call("crashLogfile");
+            QDBusInterface(clientId, "/KonqMain", "org.kde.Konqueror").call("crashLogfile");
 
         if ( !reply.isValid() )
             continue;

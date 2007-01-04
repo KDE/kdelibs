@@ -7288,7 +7288,7 @@ void KHTMLPart::slotWalletClosed()
 void KHTMLPart::launchWalletManager()
 {
 #ifndef KHTML_NO_WALLET
-  QDBusInterface r("org.kde.kwalletmanager", "/kwalletmanager-mainwindow/1",
+  QDBusInterface r("org.kde.kwalletmanager", "/kwalletmanager/MainWindow_1",
                       "org.kde.KMainWindow");
   if (!r.isValid()) {
     KToolInvocation::startServiceByDesktopName("kwalletmanager_show");

@@ -98,7 +98,7 @@ void KPasteTextAction::menuAboutToShow()
 {
     m_popup->clear();
     QStringList list;
-    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.klipper.klipper");
     if (klipper.isValid()) {
       QDBusReply<QStringList> reply = klipper.call("getClipboardHistoryMenu");
       if (reply.isValid())
@@ -123,7 +123,7 @@ void KPasteTextAction::menuAboutToShow()
 
 void KPasteTextAction::slotTriggered(QAction* action)
 {
-    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.klipper.klipper");
     if (klipper.isValid()) {
       QDBusReply<QString> reply = klipper.call("getClipboardHistoryItem",
                                                 m_popup->actions().indexOf(action));
