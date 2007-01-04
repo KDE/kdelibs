@@ -36,7 +36,7 @@ namespace Nepomuk {
      * \return A human-readble string.
      */
     // FIXME: add the uri of the resource as parameter
-    QString errorString( int code );
+    KMETADATA_EXPORT QString errorString( int code );
 
     /**
      * \brief Resource is the central object type in libKMetaData. It represents a piece of
