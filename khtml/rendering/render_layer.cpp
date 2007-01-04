@@ -746,10 +746,16 @@ void RenderLayer::checkScrollbarsAfterLayout()
     bool scrollbarsChanged = (m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
                           || (m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar);
     if (scrollbarsChanged) {
-        if (m_object->style()->overflowX() == OAUTO)
+        if (m_object->style()->overflowX() == OAUTO) {
             showScrollbar(Qt::Horizontal, needHorizontalBar);
-        if (m_object->style()->overflowY() == OAUTO)
+            if (m_hBar) 
+                m_hBar->setEnabled(true);
+        }
+        if (m_object->style()->overflowY() == OAUTO) {
             showScrollbar(Qt::Vertical, needVerticalBar);
+            if (m_vBar)
+                m_vBar->setEnabled(true);
+        }
 
         m_object->setNeedsLayout(true);
 	if (m_object->isRenderBlock())
