@@ -65,41 +65,46 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   mAuthorEdit = new QLineEdit( topPage );
   topLayout->addWidget( mAuthorEdit, 1, 1 );
 
+  QLabel *emailLabel = new QLabel( i18n("Email") + ":", topPage );
+  topLayout->addWidget( emailLabel, 2, 0 );
+  mEmailEdit = new QLineEdit( topPage );
+  topLayout->addWidget( mEmailEdit, 2, 1 );
+
   QLabel *versionLabel = new QLabel( i18n("Version:"), topPage );
-  topLayout->addWidget( versionLabel, 2, 0 );  
+  topLayout->addWidget( versionLabel, 3, 0 );  
   mVersionEdit = new QLineEdit( topPage );
-  topLayout->addWidget( mVersionEdit, 2, 1 );
+  topLayout->addWidget( mVersionEdit, 3, 1 );
 
   QLabel *releaseLabel = new QLabel( i18n("Release:"), topPage );
-  topLayout->addWidget( releaseLabel, 3, 0 );  
+  topLayout->addWidget( releaseLabel, 4, 0 );  
   mReleaseSpin = new QSpinBox( topPage );
   mReleaseSpin->setMinValue( 1 );
-  topLayout->addWidget( mReleaseSpin, 3, 1 );
+  topLayout->addWidget( mReleaseSpin, 4, 1 );
 
   QLabel *licenceLabel = new QLabel( i18n("License:"), topPage );
-  topLayout->addWidget( licenceLabel, 4, 0 );
+  topLayout->addWidget( licenceLabel, 5, 0 );
   mLicenceCombo = new QComboBox( topPage );
   mLicenceCombo->setEditable( true );
   mLicenceCombo->insertItem( i18n("GPL") );
   mLicenceCombo->insertItem( i18n("LGPL") );
   mLicenceCombo->insertItem( i18n("BSD") );
-  topLayout->addWidget( mLicenceCombo, 4, 1 );
+  topLayout->addWidget( mLicenceCombo, 5, 1 );
 
   QLabel *languageLabel = new QLabel( i18n("Language:"), topPage );
-  topLayout->addWidget( languageLabel, 5, 0 );
+  topLayout->addWidget( languageLabel, 6, 0 );
   mLanguageCombo = new QComboBox( topPage );
-  topLayout->addWidget( mLanguageCombo, 5, 1 );
+  topLayout->addWidget( mLanguageCombo, 6, 1 );
   mLanguageCombo->insertStringList( KGlobal::locale()->languageList() );
 
   QLabel *previewLabel = new QLabel( i18n("Preview URL:"), topPage );
-  topLayout->addWidget( previewLabel, 6, 0 );
+  topLayout->addWidget( previewLabel, 7, 0 );
   mPreviewUrl = new KURLRequester( topPage );
-  topLayout->addWidget( mPreviewUrl, 6, 1 );
+  topLayout->addWidget( mPreviewUrl, 7, 1 );
 
   QLabel *summaryLabel = new QLabel( i18n("Summary:"), topPage );
-  topLayout->addMultiCellWidget( summaryLabel, 7, 7, 0, 1 );
+  topLayout->addMultiCellWidget( summaryLabel, 8, 8, 0, 1 );
   mSummaryEdit = new KTextEdit( topPage );
-  topLayout->addMultiCellWidget( mSummaryEdit, 8, 8, 0, 1 );
+  topLayout->addMultiCellWidget( mSummaryEdit, 9, 9, 0, 1 );
 
   KUser user;
   mAuthorEdit->setText(user.fullName());
@@ -123,6 +128,7 @@ void UploadDialog::slotOk()
 
   entry->setName( mNameEdit->text() );
   entry->setAuthor( mAuthorEdit->text() );
+  entry->setAuthorEmail( mEmailEdit->text() );
   entry->setVersion( mVersionEdit->text() );
   entry->setRelease( mReleaseSpin->value() );
   entry->setLicence( mLicenceCombo->currentText() );
@@ -134,6 +140,7 @@ void UploadDialog::slotOk()
     conf->setGroup( QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()) );
     conf->writeEntry("name", mNameEdit->text());
     conf->writeEntry("author", mAuthorEdit->text());
+    conf->writeEntry("email", mEmailEdit->text());
     conf->writeEntry("version", mVersionEdit->text());
     conf->writeEntry("release", mReleaseSpin->value());
     conf->writeEntry("licence", mLicenceCombo->currentText());
@@ -161,6 +168,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
   conf->setGroup( QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()) );
   QString name = conf->readEntry("name");
   QString author = conf->readEntry("author");
+  QString email = conf->readEntry("email");
   QString version = conf->readEntry("version");
   QString release = conf->readEntry("release");
   QString preview = conf->readEntry("preview");
@@ -170,6 +178,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
 
   mNameEdit->clear();
   mAuthorEdit->clear();
+  mEmailEdit->clear();
   mVersionEdit->clear();
   mReleaseSpin->setValue(1);
   mPreviewUrl->clear();
@@ -184,6 +193,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
     {
       mNameEdit->setText(name);
       mAuthorEdit->setText(author);
+      mEmailEdit->setText(email);
       mVersionEdit->setText(version);
       mReleaseSpin->setValue(release.toInt());
       mPreviewUrl->setURL(preview);

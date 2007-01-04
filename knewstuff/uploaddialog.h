@@ -86,6 +86,7 @@ class UploadDialog : public KDialogBase
 
     QLineEdit *mNameEdit;
     QLineEdit *mAuthorEdit;
+    QLineEdit *mEmailEdit;
     QLineEdit *mVersionEdit;
     QSpinBox *mReleaseSpin;
     KURLRequester *mPreviewUrl;

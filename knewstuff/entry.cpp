@@ -347,6 +347,7 @@ QDomElement Entry::createDomElement( QDomDocument &doc,
 
   addElement( doc, entry, "name", name() );
   addElement( doc, entry, "author", author() );
+  addElement( doc, entry, "email", authorEmail() );
   addElement( doc, entry, "licence", license() );
   addElement( doc, entry, "version", version() );
   addElement( doc, entry, "release", QString::number( release() ) );
