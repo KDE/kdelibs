@@ -660,6 +660,7 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     if (clearforward) {
         // autodelete should remove this one
         backStack.push(new KUrl(currUrl));
+        qDeleteAll( forwardStack );
         forwardStack.clear();
     }
 
@@ -1610,8 +1611,10 @@ QProgressBar * KDirOperator::progressBar() const
 
 void KDirOperator::clearHistory()
 {
+    qDeleteAll( backStack );
     backStack.clear();
     backAction->setEnabled( false );
+    qDeleteAll( forwardStack );
     forwardStack.clear();
     forwardAction->setEnabled( false );
 }
