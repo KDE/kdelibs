@@ -735,10 +735,12 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
-    QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, widget()->mapFromGlobal( QCursor::pos() ),
+    if (d->scrollingSelf || d->contentsMoving || r.contains(widget()->mapFromGlobal(QCursor::pos()))) {
+        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, widget()->mapFromGlobal( QCursor::pos() ),
                                               Qt::NoButton, Qt::NoButton, Qt::NoModifier );
-    mouseMoveEvent( tempEvent );
-    delete tempEvent;
+        mouseMoveEvent( tempEvent );
+        delete tempEvent;
+    }
 
     d->painting = false;
 }
