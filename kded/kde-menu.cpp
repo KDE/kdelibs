@@ -92,6 +92,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
             {
                result(name);
             }
+#ifdef Q_WS_X11	    
             if (bHighlight)
             {
                QDBusInterface kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
@@ -99,6 +100,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
                if (!result.isValid())
                   error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
+#endif	    
             exit(0);
          }
       }
