@@ -735,7 +735,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
-    QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, viewport()->mapFromGlobal( QCursor::pos() ),
+    QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, widget()->mapFromGlobal( QCursor::pos() ),
                                               Qt::NoButton, Qt::NoButton, Qt::NoModifier );
     mouseMoveEvent( tempEvent );
     delete tempEvent;
@@ -1711,7 +1711,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 void KHTMLView::doAutoScroll()
 {
     QPoint pos = QCursor::pos();
-    pos = widget()->mapFromGlobal( pos );
+    pos = viewport()->mapFromGlobal( pos );
 
     int xm, ym;
     viewportToContents(pos.x(), pos.y(), xm, ym);
