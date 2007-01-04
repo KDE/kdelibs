@@ -763,9 +763,11 @@ static int cnt=0;
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
-    QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, viewport()->mapFromGlobal( QCursor::pos() ), Qt::NoButton, Qt::NoButton );
-    viewportMouseMoveEvent( tempEvent );
-    delete tempEvent;
+    if (d->scrollingSelf || d->contentsMoving || cr.contains(viewport()->mapFromGlobal(QCursor::pos()))) {
+        QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, viewport()->mapFromGlobal( QCursor::pos() ), Qt::NoButton, Qt::NoButton );
+        viewportMouseMoveEvent( tempEvent );
+        delete tempEvent;
+    }
 
     d->painting = false;
 }
