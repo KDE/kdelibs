@@ -977,7 +977,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
     KateDocCursor finish(lastLine, textLine->lastChar() + 1, doc);
     uint pos = 0;
 
-    if (isBalanced(start, finish, QChar('('), QChar(')'), pos))
+    if (isBalanced(start, finish, QChar('('), QChar(')'), pos) && false)
       indent = anchorIndent;
     else
     {
