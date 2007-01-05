@@ -508,7 +508,7 @@ void KPropertiesDialog::insertPages()
       ).arg(item->url().protocol());
 
   kDebug( 250 ) << "trader query: " << query << endl;
-  KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropsDialog/Plugin", query );
+  KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
   KService::List::ConstIterator it = offers.begin();
   KService::List::ConstIterator end = offers.end();
   for (; it != end; ++it )

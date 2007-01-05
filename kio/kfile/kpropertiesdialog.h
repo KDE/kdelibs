@@ -390,9 +390,9 @@ private:
  * A plugin in itself is just a library containing code, not a dialog's page.
  * It's up to the plugin to insert pages into the parent dialog.
  *
- * To make a plugin available, define a service that implements the KPropsDialog/Plugin
+ * To make a plugin available, define a service that implements the KPropertiesDialog/Plugin
  * servicetype, as well as the mimetypes for which the plugin should be created.
- * For instance, ServiceTypes=KPropsDialog/Plugin,text/html,application/x-mymimetype.
+ * For instance, ServiceTypes=KPropertiesDialog/Plugin,text/html,application/x-mymimetype.
  *
  * You can also include X-KDE-Protocol=file if you want that plugin
  * to be loaded only for local files, for instance.
