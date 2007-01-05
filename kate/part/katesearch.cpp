@@ -635,6 +635,13 @@ bool KateSearch::doSearch( const QString& text )
             {
               break;
             }
+            else if ( backward && foundCol == 0 ) // we are done on this line and want to avoid endless loops like in #137312
+            {
+              if ( line == 0 ) // we are completely done...
+                break;
+              else
+                line--;
+            }
             else
             {
               line = foundLine;
