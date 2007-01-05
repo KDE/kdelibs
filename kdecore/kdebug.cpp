@@ -252,8 +252,6 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   short nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2) : 2;
 
-  // If the application doesn't have a QApplication object it can't use
-  // a messagebox.
   if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
       return;
 
