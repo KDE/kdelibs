@@ -65,7 +65,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   mAuthorEdit = new QLineEdit( topPage );
   topLayout->addWidget( mAuthorEdit, 1, 1 );
 
-  QLabel *emailLabel = new QLabel( i18n("Email") + ":", topPage );
+  QLabel *emailLabel = new QLabel( i18n("Email:"), topPage );
   topLayout->addWidget( emailLabel, 2, 0 );
   mEmailEdit = new QLineEdit( topPage );
   topLayout->addWidget( mEmailEdit, 2, 1 );
