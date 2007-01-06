@@ -87,11 +87,17 @@ bool KNewStuffGeneric::createUploadFile( const QString & /*fileName*/ )
 
 QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
 {
-  QString path, file, target;
+  QString path, file, target, ext;
 
   mConfig->setGroup("KNewStuff");
 
-  if( entry ) target = entry->fullName();
+  if ( entry )
+  {
+    ext = entry->payload().fileName().section('.', 1);
+    if ( ! ext.isEmpty() ) ext = '.' + ext;
+
+    target = entry->fullName() + ext;
+  }
   else target = "/";
   QString res = mConfig->readEntry( "StandardResource" );
   if ( res.isEmpty() )
@@ -100,7 +106,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
     if ( !target.isEmpty())
     {
       res = "data";
-      if ( entry ) target.append('/' + entry->fullName());
+      if ( entry ) target.append('/' + entry->fullName() + ext);
       else target.append("/");
     }
   }
@@ -117,7 +123,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
   if ( !path.isEmpty() )
   {
     file = QDir::home().path() + '/' + path + '/';
-    if ( entry ) file += entry->fullName();
+    if ( entry ) file += entry->fullName() + ext;
   }
   else file = KStandardDirs::locateLocal( res.toUtf8() , target );
 
