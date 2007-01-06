@@ -786,13 +786,13 @@ void RenderFileButton::calcMinMaxWidth()
     int size = element()->size();
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
+    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
     KLineEdit* edit = static_cast<KURLRequester*>( m_widget )->lineEdit();
     QSize s = edit->style().sizeFromContents(QStyle::CT_LineEdit,
                                              edit,
           QSize(w + 2 + 2*edit->frameWidth(), kMax(h, 14) + 2 + 2*edit->frameWidth()))
         .expandedTo(QApplication::globalStrut());
-    QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
+    QSize bs = static_cast<KURLRequester*>( m_widget )->minimumSizeHint() - edit->minimumSizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( kMax(s.height(), bs.height()) );
