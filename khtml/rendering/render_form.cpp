@@ -843,7 +843,7 @@ void RenderFileButton::calcMinMaxWidth()
     int size = element()->size();
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
+    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
     KLineEdit* edit = static_cast<KUrlRequester*>( m_widget )->lineEdit();
 
     QStyleOption opt;
@@ -852,7 +852,7 @@ void RenderFileButton::calcMinMaxWidth()
                                              &opt,
           QSize(w + 2 + 2, qMax(h, 14) + 2 + 2), edit)
         .expandedTo(QApplication::globalStrut());
-    QSize bs = static_cast<KUrlRequester*>( m_widget )->sizeHint();
+    QSize bs = static_cast<KUrlRequester*>( m_widget )->minimumSizeHint() - edit->minimumSizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( qMax(s.height(), bs.height()) );
