@@ -1825,7 +1825,7 @@ void RenderTableSection::addSpaceAt(int pos, int dy)
                 RenderTableCell *cell = cellAt(r, c);
                 if (!cell || cell == (RenderTableCell *)-1 )
                     continue;
-                if ( r < totalRows - 1 && cell == cellAt(r+1, c) )
+                if ( r > 0 && cell == cellAt(r-1, c) )
                     continue;
 
                 if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )

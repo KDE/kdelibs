@@ -1589,13 +1589,14 @@ redo_linebreak:
             kDebug( 6040 ) << "Widows: " << widows << endl;
             // Check if we have enough orphans after respecting widows count
             int newOrphans = orphans - (style()->widows() - widows);
-            if (newOrphans < style()->orphans() && parent()->canClear(this,PageBreakHarder))
-            {
-                // Relayout to remove incorrect page-break
-                setNeedsPageClear(true);
-                setContainsPageBreak(false);
-                layoutInlineChildren(relayoutChildren, -1);
-                return;
+            if (newOrphans < style()->orphans()) {
+                if (parent()->canClear(this,PageBreakHarder)) {
+                    // Relayout to remove incorrect page-break
+                    setNeedsPageClear(true);
+                    setContainsPageBreak(false);
+                    layoutInlineChildren(relayoutChildren, -1);
+                    return;
+                }
             } else {
                 // Set hint and try again
                 layoutInlineChildren(relayoutChildren, newOrphans+1);
@@ -1894,9 +1895,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         // Add the width up to but not including the hyphen.
                         tmpW += t->width(lastSpace, pos - lastSpace, f);
 
-                        // For whitespace normal only, include the hyphen.  We need to ensure it will fit
+                        // For wrapping text only, include the hyphen.  We need to ensure it will fit
                         // on the line if it shows when we break.
-                        if (o->style()->whiteSpace() == NORMAL)
+                        if (o->style()->autoWrap())
                             tmpW += t->width(pos, 1, f);
 
                         BidiIterator startMid(0, o, pos+1);
@@ -1911,23 +1912,26 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef APPLE_CHANGES    // KDE applies wordspacing differently
                 bool applyWordSpacing = false;
 #endif
-                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
-                    if (ignoringSpaces) {
-                        if (!currentCharacterIsSpace) {
-                            // Stop ignoring spaces and begin at this
-                            // new point.
-                            ignoringSpaces = false;
-                            lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
-                            BidiIterator startMid ( 0, o, pos );
-                            addMidpoint(startMid);
-                        }
-                        else {
-                            // Just keep ignoring these spaces.
-                            pos++;
-                            len--;
-                            continue;
-                        }
+                if (ignoringSpaces) {
+                    // We need to stop ignoring spaces, if we encounter a non-space or
+                    // a run that doesn't collapse spaces.
+                    if (!currentCharacterIsSpace || preserveWS) {
+                        // Stop ignoring spaces and begin at this
+                        // new point.
+                        ignoringSpaces = false;
+                        lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
+                        BidiIterator startMid ( 0, o, pos );
+                        addMidpoint(startMid);
                     }
+                    else {
+                        // Just keep ignoring these spaces.
+                        pos++;
+                        len--;
+                        continue;
+                    }
+                }
+
+                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
 
                     tmpW += t->width(lastSpace, pos - lastSpace, f);
                     if (!appliedStartWidth) {
@@ -1992,28 +1996,20 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     if (applyWordSpacing)
                         w += wordSpacing;
 #endif
-                    if (!ignoringSpaces && !preserveWS) {
-                        // If we encounter a newline, or if we encounter a
-                        // second space, we need to go ahead and break up this
-                        // run and enter a mode where we start collapsing spaces.
-                        if (currentCharacterIsSpace && previousCharacterIsSpace) {
-                            ignoringSpaces = true;
-
-                            // We just entered a mode where we are ignoring
-                            // spaces. Create a midpoint to terminate the run
-                            // before the second space.
-                            addMidpoint(ignoreStart);
-                            lastSpace = pos;
-                        }
-                    }
                 }
-                else if (ignoringSpaces) {
-                    // Stop ignoring spaces and begin at this
-                    // new point.
-                    ignoringSpaces = false;
-                    lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
-                    BidiIterator startMid ( 0, o, pos );
-                    addMidpoint(startMid);
+
+                if (!ignoringSpaces && !preserveWS) {
+                    // If we encounter a second space, we need to go ahead and break up this run
+                    // and enter a mode where we start collapsing spaces.
+                    if (currentCharacterIsSpace && previousCharacterIsSpace) {
+                        ignoringSpaces = true;
+
+                        // We just entered a mode where we are ignoring
+                        // spaces. Create a midpoint to terminate the run
+                        // before the second space.
+                        addMidpoint(ignoreStart);
+                        lastSpace = pos;
+                    }
                 }
 
                 if (currentCharacterIsSpace && !previousCharacterIsSpace) {
@@ -2043,7 +2039,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         RenderObject* next = Bidinext(start.par, o, bidi);
         bool autoWrap = o->style()->autoWrap();
         bool checkForBreak = autoWrap;
-        if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF())
+        if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF() && !autoWrap)
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
             if (autoWrap || next->style()->autoWrap()) {
