@@ -402,8 +402,6 @@ void KToolInvocation::startKdeinit()
   // Try to launch kdeinit.
   QString srv = KStandardDirs::findExe(QLatin1String("kdeinit"));
   if (srv.isEmpty())
-     srv = KStandardDirs::findExe(QLatin1String("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
-  if (srv.isEmpty())
      return;
 //   this is disabled because we are in kdecore
 //  const bool gui = qApp && qApp->type() != QApplication::Tty;

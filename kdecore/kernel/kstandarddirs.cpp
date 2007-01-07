@@ -107,6 +107,48 @@ KStandardDirsSingleton* KStandardDirsSingleton::self() {
     return s_self;
 }
 
+/**
+ * @internal
+ * Returns the default toplevel directory where KDE is installed.
+ */
+static QString kfsstnd_defaultprefix()
+{
+   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+   if (!s->defaultprefix.isEmpty())
+      return s->defaultprefix;
+#ifdef Q_WS_WIN
+   s->defaultprefix = QFile::decodeName(KDEDIR);
+   //TODO: find other location (the Registry?)
+#else //UNIX
+   s->defaultprefix = KDEDIR;
+#endif
+
+   if (s->defaultprefix.isEmpty())
+      kWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
+   return s->defaultprefix;
+}
+
+/**
+ * @internal
+ * Returns the default bin directory in which KDE executables are stored.
+ */
+static QString kfsstnd_defaultbindir()
+{
+   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+   if (!s->defaultbindir.isEmpty())
+      return s->defaultbindir;
+#ifdef Q_WS_WIN
+   s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
+#else //UNIX
+   s->defaultbindir = __KDE_BINDIR;
+   if (s->defaultbindir.isEmpty())
+      s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
+#endif
+   if (s->defaultbindir.isEmpty())
+      kWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
+  return s->defaultbindir;
+}
+
 static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
@@ -930,7 +972,8 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     return exePaths;
 }
 
-QString getBundle( const QString& path, bool ignore=false )
+#ifdef Q_WS_MAC
+static QString getBundle( const QString& path, bool ignore )
 {
     kDebug(180) << "getBundle(" << path << ", " << ignore << ") called" << endl;
     QFileInfo info;
@@ -944,11 +987,31 @@ QString getBundle( const QString& path, bool ignore=false )
     }
     return QString();
 }
+#endif
+
+static QString checkExecutable( const QString& path, bool ignoreExecBit )
+{
+#ifdef Q_WS_MAC
+    QString bundle = getBundle( real_appname, ignore );
+    if ( !bundle.isEmpty() ) {
+        //kDebug(180) << "findExe(): returning " << bundle << endl;
+        return bundle;
+    }
+#endif
+    QFileInfo info( path );
+    if( info.exists() && ( ignoreExecBit || info.isExecutable() )
+        && ( info.isFile() || info.isSymLink() ) ) {
+        //kDebug(180) << "checkExecutable(): returning " << path << endl;
+        return path;
+    }
+    //kDebug(180) << "checkExecutable(): failed, returning empty string" << endl;
+    return QString();
+}
 
 QString KStandardDirs::findExe( const QString& appname,
-				const QString& pstr, bool ignore)
+				const QString& pstr, bool ignoreExecBit )
 {
-    //kDebug(180) << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
+    //kDebug(180) << "findExe(" << appname << ", pstr, " << ignoreExecBit << ") called" << endl;
 
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
@@ -961,76 +1024,31 @@ QString KStandardDirs::findExe( const QString& appname,
     if (!QDir::isRelativePath(real_appname))
     {
         //kDebug(180) << "findExe(): absolute path given" << endl;
-#ifdef Q_WS_MAC
-        QString bundle = getBundle( real_appname, ignore );
-        if ( !bundle.isEmpty() ) {
-            //kDebug(180) << "findExe(): returning " << bundle << endl;
-            return bundle;
-        }
-#endif
-        info.setFile( real_appname );
-        if( info.exists() && ( ignore || info.isExecutable() )
-            && info.isFile() ) {
-            //kDebug(180) << "findExe(): returning " << real_appname << endl;
-            return real_appname;
-        }
-        //kDebug(180) << "findExe(): failed, returning empty string" << endl;
-        return QString();
+        return checkExecutable(real_appname, ignoreExecBit);
     }
 
     //kDebug(180) << "findExe(): relative path given" << endl;
     QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
-
-#ifdef Q_WS_MAC
-    QString bundle = getBundle( p, ignore );
-    if ( !bundle.isEmpty() ) {
-        //kDebug(180) << "findExe(): returning " << bundle << endl;
-        return bundle;
+    QString result = checkExecutable(p, ignoreExecBit);
+    if (!result.isEmpty()) {
+        //kDebug(180) << "findExe(): returning " << result << endl;
+        return result;
     }
-#endif
-
-#ifndef Q_WS_MAC // we're cooking $PATH, so we don't want to check this until checking the PATHs
-    info.setFile( p );
-    if( info.exists() && ( ignore || info.isExecutable() )
-         && ( info.isFile() || info.isSymLink() )  ) {
-        //kDebug(180) << "findExe(): returning " << p << endl;
-        return p;
-    }
-#endif
 
     //kDebug(180) << "findExe(): checking system paths" << endl;
-    QStringList exePaths = systemPaths( pstr );
+    const QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
 	p = (*it) + '/';
 	p += real_appname;
 
-#ifdef Q_WS_MAC
-        QString bundle = getBundle( p, ignore );
-        if ( !bundle.isEmpty() ) {
-            //kDebug(180) << "findExe(): returning " << bundle << endl;
-            return bundle;
-        }
-#endif
-
 	// Check for executable in this tokenized path
-	info.setFile( p );
-
-	if( info.exists() && ( ignore || info.isExecutable() )
-           && ( info.isFile() || info.isSymLink() )  ) {
-            //kDebug(180) << "findExe(): returning " << p << endl;
-	    return p;
-	}
+        result = checkExecutable(p, ignoreExecBit);
+        if (!result.isEmpty()) {
+            //kDebug(180) << "findExe(): returning " << result << endl;
+            return result;
+        }
     }
-
-#ifdef Q_WS_MAC // see $PATH cooking above, now it's time  :)
-    info.setFile( p );
-    if( info.exists() && ( ignore || info.isExecutable() )
-        && ( info.isFile() || info.isSymLink() )  ) {
-        //kDebug(180) << "findExe(): returning " << p << endl;
-        return p;
-    }
-#endif
 
     // If we reach here, the executable wasn't found.
     // So return empty string.
@@ -1040,7 +1058,7 @@ QString KStandardDirs::findExe( const QString& appname,
 }
 
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
-			const QString& pstr, bool ignore )
+                               const QString& pstr, bool ignoreExecBit )
 {
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
@@ -1059,7 +1077,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 
 	info.setFile( p );
 
-	if( info.exists() && (ignore || info.isExecutable())
+	if( info.exists() && (ignoreExecBit || info.isExecutable())
 	    && info.isFile() ) {
 	    list.append( p );
 	}
@@ -1305,40 +1323,6 @@ static QString executablePrefix()
    return path.left(pos);
 }
 #endif
-
-QString KStandardDirs::kfsstnd_defaultprefix()
-{
-   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
-   if (!s->defaultprefix.isEmpty())
-      return s->defaultprefix;
-#ifdef Q_WS_WIN
-   s->defaultprefix = QFile::decodeName(KDEDIR);
-   //TODO: find other location (the Registry?)
-#else //UNIX
-   s->defaultprefix = KDEDIR;
-#endif
-
-   if (s->defaultprefix.isEmpty())
-      kWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
-   return s->defaultprefix;
-}
-
-QString KStandardDirs::kfsstnd_defaultbindir()
-{
-   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
-   if (!s->defaultbindir.isEmpty())
-      return s->defaultbindir;
-#ifdef Q_WS_WIN
-   s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
-#else //UNIX
-   s->defaultbindir = __KDE_BINDIR;
-   if (s->defaultbindir.isEmpty())
-      s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
-#endif
-   if (s->defaultbindir.isEmpty())
-      kWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
-  return s->defaultbindir;
-}
 
 void KStandardDirs::addResourcesFrom_krcdirs()
 {

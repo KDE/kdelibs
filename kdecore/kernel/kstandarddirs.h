@@ -595,18 +595,6 @@ public:
 	QString localkdedir() const;
 
 	/**
-	 * @internal
-	 * Returns the default toplevel directory where KDE is installed.
-	 */
-	static QString kfsstnd_defaultprefix();
-
-	/**
-	 * @internal
-	 * Returns the default bin directory in which KDE executables are stored.
-	 */
-	static QString kfsstnd_defaultbindir();
-
-	/**
 	 * @return @c $XDG_DATA_HOME
 	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
 	 */
