@@ -177,7 +177,6 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setButtonText(KDialog::User2, i18n("&Reject"));
     connect(this,SIGNAL(user2Clicked()),SLOT(reject()));
     connect(this,SIGNAL(user1Clicked()),SLOT(accept()));
-    connect(this,SIGNAL(detailsClicked()),SLOT(slotCookieDetails()));
     //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
 #ifndef QT_NO_WHATSTHIS    
     setButtonToolTip(Details, i18n("See or modify the cookie information") );
