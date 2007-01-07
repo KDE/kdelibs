@@ -23,6 +23,9 @@
 #include <kdebug.h>
 #include <alsa/asoundlib.h>
 #include <QDir>
+#include <solid/devicemanager.h>
+#include <solid/device.h>
+#include <solid/audiohw.h>
 
 namespace Phonon
 {
@@ -56,6 +59,7 @@ AlsaDeviceEnumerator::AlsaDeviceEnumerator(QObject *parent)
 
 void AlsaDeviceEnumeratorPrivate::findDevices()
 {
+    // first check the 'default' device and the devices defined in ~/.asoundrc and /etc/asound.conf
     AlsaDevice defaultCtlDevice(QLatin1String("default"), AlsaDevice::ControlAndPcm);
     if (defaultCtlDevice.isValid()) {
         devicelist << defaultCtlDevice;
@@ -63,14 +67,40 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
     findAsoundrcDevices(QDir::homePath() + "/.asoundrc");
     findAsoundrcDevices("/etc/asound.conf");
 
+    // then ask Solid for the available audio hardware
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+
+    Solid::DeviceList devices = manager.findDevicesFromQuery(QString(), Solid::Capability::AudioHw,
+            Solid::Predicate(Solid::Capability::AudioHw, QLatin1String("driver"), Solid::AudioHw::Alsa));
+    foreach (Solid::Device device, devices) {
+        Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
+        Q_ASSERT(audiohw);
+        Q_ASSERT(audiohw->driver() == Solid::AudioHw::Alsa);
+        QString handle = audiohw->driverHandler();
+        kDebug(603) << k_funcinfo << handle << ", " << audiohw->name() << ", " << audiohw->driver() << ", " << audiohw->type() << endl;
+        if (audiohw->type() & Solid::AudioHw::AudioOutput) {
+            handle = handle.right(handle.size() - handle.indexOf(':') - 1);
+            int comma = handle.indexOf(',');
+            int devicenum = -1;
+            if (comma > -1) {
+                //devicenum = handle.right(handle.size() - 1 - comma).toInt();
+                handle = handle.left(comma);
+            }
+            AlsaDevice dev(handle.toInt(), devicenum);
+            if (dev.isValid()) {
+                devicelist << dev;
+            }
+        }
+    }
+
     // look at the list of currently available devices
-    int card = -1;
+    /*int card = -1;
     while (snd_card_next(&card) >= 0 && card >= 0) {
         AlsaDevice dev(card);
         if (dev.isValid()) {
             devicelist << dev;
         }
-    }
+    }*/
 
     // TODO register with Solid to emit the devicePlugged/deviceUnplugged signals
 }
