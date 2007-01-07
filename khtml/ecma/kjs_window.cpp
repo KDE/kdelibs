@@ -1777,7 +1777,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    KMessageBox::error(widget, Qt::convertFromPlainText(str), caption);
+    KMessageBox::error(widget, Qt::convertFromPlainText(str, Qt::WhiteSpaceNormal), caption);
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
