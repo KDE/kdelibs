@@ -1864,27 +1864,19 @@ short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) con
                 return vpos - style()->verticalAlignLength().width( lineHeight( firstLine ) );
 
             const QFont &f = ref->font( firstLine );
-            int fontheight = ref->lineHeight( firstLine );
             int fontsize = f.pixelSize();
-            int halfleading = ( fontheight - fontsize ) / 2;
 
             if ( va == SUB )
                 vpos += fontsize/5 + 1;
             else if ( va == SUPER )
                 vpos -= fontsize/3 + 1;
             else if ( va == TEXT_TOP ) {
-//                 qDebug( "got TEXT_TOP vertical pos hint" );
-//                 qDebug( "parent:" );
-//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, ref->baselinePosition( firstLine ) );
-//                 qDebug( "this:" );
-//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", lineHeight( firstLine ), style()->font().pixelSize(), baselinePosition( firstLine ) );
-                vpos += ( baselinePosition( firstLine ) - ref->baselinePosition( firstLine ) +
-                        halfleading );
+                vpos += baselinePosition( firstLine ) - (QFontMetrics(f).ascent() + QFontMetrics(f).leading()/2);
             } else if ( va == MIDDLE ) {
                 QRect b = QFontMetrics(f).boundingRect('x');
                 vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
             } else if ( va == TEXT_BOTTOM ) {
-                vpos += QFontMetrics(f).descent();
+                vpos += QFontMetrics(f).descent() + QFontMetrics(f).leading()/2;
                 if ( !isReplaced() )
                     vpos -= fontMetrics(firstLine).descent();
             } else if ( va == BASELINE_MIDDLE )
