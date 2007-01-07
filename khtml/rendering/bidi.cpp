@@ -1901,23 +1901,26 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef APPLE_CHANGES    // KDE applies wordspacing differently
                 bool applyWordSpacing = false;
 #endif
-                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
-                    if (ignoringSpaces) {
-                        if (!currentCharacterIsSpace) {
-                            // Stop ignoring spaces and begin at this
-                            // new point.
-                            ignoringSpaces = false;
-                            lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
-                            BidiIterator startMid ( 0, o, pos );
-                            addMidpoint(startMid);
-                        }
-                        else {
-                            // Just keep ignoring these spaces.
-                            pos++;
-                            len--;
-                            continue;
-                        }
+                if (ignoringSpaces) {
+                    // We need to stop ignoring spaces, if we encounter a non-space or
+                    // a run that doesn't collapse spaces
+                    if (!currentCharacterIsSpace || preserveWS) {
+                        // Stop ignoring spaces and begin at this
+                        // new point.
+                        ignoringSpaces = false;
+                        lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
+                        BidiIterator startMid ( 0, o, pos );
+                        addMidpoint(startMid);
                     }
+                    else {
+                        // Just keep ignoring these spaces.
+                        pos++;
+                        len--;
+                        continue;
+                    }
+                }
+
+                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
 
                     tmpW += t->width(lastSpace, pos - lastSpace, f);
                     if (!appliedStartWidth) {
@@ -1982,35 +1985,19 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     if (applyWordSpacing)
                         w += wordSpacing;
 #endif
-                    if (!ignoringSpaces && !preserveWS) {
-                        // If we encounter a newline, or if we encounter a
-                        // second space, we need to go ahead and break up this
-                        // run and enter a mode where we start collapsing spaces.
-                        if (currentCharacterIsSpace && previousCharacterIsSpace) {
-                            ignoringSpaces = true;
-
-                            // We just entered a mode where we are ignoring
-                            // spaces. Create a midpoint to terminate the run
-                            // before the second space.
-                            addMidpoint(ignoreStart);
-                            lastSpace = pos;
-                        }
-                    }
                 }
-                else if (ignoringSpaces) {
-                    if (!currentCharacterIsSpace || preserveWS) {
-                        // Stop ignoring spaces and begin at this
-                        // new point.
-                        ignoringSpaces = false;
-                        lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
-                        BidiIterator startMid ( 0, o, pos );
-                        addMidpoint(startMid);
-                    }
-                    else {
-                        // Just keep ignoring these spaces.
-                        pos++;
-                        len--;
-                        continue;
+
+                if (!ignoringSpaces && !preserveWS) {
+                    // If we encounter a second space, we need to go ahead and break up this run
+                    // and enter a mode where we start collapsing spaces.
+                    if (currentCharacterIsSpace && previousCharacterIsSpace) {
+                        ignoringSpaces = true;
+
+                        // We just entered a mode where we are ignoring
+                        // spaces. Create a midpoint to terminate the run
+                        // before the second space.
+                        addMidpoint(ignoreStart);
+                        lastSpace = pos;
                     }
                 }
 
