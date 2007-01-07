@@ -992,7 +992,7 @@ static QString getBundle( const QString& path, bool ignore )
 static QString checkExecutable( const QString& path, bool ignoreExecBit )
 {
 #ifdef Q_WS_MAC
-    QString bundle = getBundle( real_appname, ignore );
+    QString bundle = getBundle( path, ignoreExecBit );
     if ( !bundle.isEmpty() ) {
         //kDebug(180) << "findExe(): returning " << bundle << endl;
         return bundle;
