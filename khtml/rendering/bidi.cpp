@@ -1884,9 +1884,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         // Add the width up to but not including the hyphen.
                         tmpW += t->width(lastSpace, pos - lastSpace, f);
 
-                        // For whitespace normal only, include the hyphen.  We need to ensure it will fit
+                        // For wrapping text only, include the hyphen.  We need to ensure it will fit
                         // on the line if it shows when we break.
-                        if (o->style()->whiteSpace() == NORMAL)
+                        if (o->style()->autoWrap())
                             tmpW += t->width(pos, 1, f);
 
                         BidiIterator startMid(0, o, pos+1);
@@ -1998,12 +1998,20 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     }
                 }
                 else if (ignoringSpaces) {
-                    // Stop ignoring spaces and begin at this
-                    // new point.
-                    ignoringSpaces = false;
-                    lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
-                    BidiIterator startMid ( 0, o, pos );
-                    addMidpoint(startMid);
+                    if (!currentCharacterIsSpace || preserveWS) {
+                        // Stop ignoring spaces and begin at this
+                        // new point.
+                        ignoringSpaces = false;
+                        lastSpace = pos; // e.g., "Foo    goo", don't add in any of the ignored spaces.
+                        BidiIterator startMid ( 0, o, pos );
+                        addMidpoint(startMid);
+                    }
+                    else {
+                        // Just keep ignoring these spaces.
+                        pos++;
+                        len--;
+                        continue;
+                    }
                 }
 
                 if (currentCharacterIsSpace && !previousCharacterIsSpace) {
@@ -2033,7 +2041,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         RenderObject* next = Bidinext(start.par, o, bidi);
         bool autoWrap = o->style()->autoWrap();
         bool checkForBreak = autoWrap;
-        if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF())
+        if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF() && !autoWrap)
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
             if (autoWrap || next->style()->autoWrap()) {
