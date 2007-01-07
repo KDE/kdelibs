@@ -1579,13 +1579,14 @@ redo_linebreak:
             kdDebug( 6040 ) << "Widows: " << widows << endl;
             // Check if we have enough orphans after respecting widows count
             int newOrphans = orphans - (style()->widows() - widows);
-            if (newOrphans < style()->orphans() && parent()->canClear(this,PageBreakHarder))
-            {
-                // Relayout to remove incorrect page-break
-                setNeedsPageClear(true);
-                setContainsPageBreak(false);
-                layoutInlineChildren(relayoutChildren, -1);
-                return;
+            if (newOrphans < style()->orphans()) {
+                if (parent()->canClear(this,PageBreakHarder)) {
+                    // Relayout to remove incorrect page-break
+                    setNeedsPageClear(true);
+                    setContainsPageBreak(false);
+                    layoutInlineChildren(relayoutChildren, -1);
+                    return;
+                }
             } else {
                 // Set hint and try again
                 layoutInlineChildren(relayoutChildren, newOrphans+1);
@@ -1903,7 +1904,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #endif
                 if (ignoringSpaces) {
                     // We need to stop ignoring spaces, if we encounter a non-space or
-                    // a run that doesn't collapse spaces
+                    // a run that doesn't collapse spaces.
                     if (!currentCharacterIsSpace || preserveWS) {
                         // Stop ignoring spaces and begin at this
                         // new point.
