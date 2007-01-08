@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class AudioHwPrivate;
+
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
@@ -70,19 +72,19 @@ namespace Solid
             /**
              * An unknown audio interface
              */
-            UnknownAudioHwType,
+            UnknownAudioHwType = 0,
             /**
              * A control/mixer interface
              */
-            AudioControl,
+            AudioControl = 1,
             /**
              * An audio source
              */
-            AudioInput,
+            AudioInput = 2,
             /**
              * An audio sink
              */
-            AudioOutput
+            AudioOutput = 4
         };
 
         /**
@@ -184,6 +186,9 @@ namespace Solid
          * @see Solid::AudioHw::SoundcardType
          */
         SoundcardType soundcardType();
+
+    private:
+        AudioHwPrivate *d;
     };
 }
 
