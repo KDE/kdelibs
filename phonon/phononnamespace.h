@@ -117,7 +117,12 @@ namespace Phonon
 		/**
 		 * Sounds produced for accessibility (e.g. Text-To-Speech)
 		 */
-		AccessibilityCategory = 5
+		AccessibilityCategory = 5,
+        /**
+         * \internal
+         * Holds the largest value of categories.
+         */
+        LastCategory = AccessibilityCategory
 	};
 
 	/**
