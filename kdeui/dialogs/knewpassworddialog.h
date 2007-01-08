@@ -35,7 +35,7 @@ class QWidget;
  * @short A password input dialog.
  *
  * This dialog asks the user to enter a password.
- * 
+ *
  * \image html kpassworddialog.png "KDE Password Dialog"
  *
  * \section usage Usage Exemple
@@ -48,7 +48,7 @@ class QWidget;
  *  connect( dlg, SIGNAL( rejected() )  , this, SLOT( slotCancel() ) );
  *  dlg->show();
  * \endcode
- * 
+ *
  * \subsection synchronous Synchronous
  *
  * \code
@@ -91,12 +91,12 @@ public:
     QString prompt() const;
 
     /**
-     * Sets the pixmap that appears next to the prompt in the dialog.  The default pixmap represent a simple key. 
-     * 
+     * Sets the pixmap that appears next to the prompt in the dialog.  The default pixmap represent a simple key.
+     *
      * the recommanded size is K3Icon::SizeHuge
      */
     void setPixmap(const QPixmap&);
-    
+
     /**
      * Returns the pixmap that appears next to the prompt in the dialog
      */
@@ -104,21 +104,21 @@ public:
 
     /**
      * Allow empty passwords? - Default: true
-     * 
+     *
      * same as setMinimumPasswordLength( allowed ? 0 : 1 )
      */
     void setAllowEmptyPasswords(bool allowed);
 
     /**
      * Allow empty passwords?
-     * 
+     *
      * @return true if minimumPasswordLength() == 0
      */
     bool allowEmptyPasswords() const;
 
     /**
      * Minimum acceptable password length.
-     * 
+     *
      * Default: 0
      *
      * @param minLength: The new minimum password length
@@ -131,7 +131,7 @@ public:
     int minimumPasswordLength() const;
 
     /**
-     * Maximum acceptable password length.  
+     * Maximum acceptable password length.
      *
      * @param maxLength: The new maximum password length.
      */
@@ -144,7 +144,7 @@ public:
 
     /**
      * Password length that is expected to be reasonably safe.
-     * 
+     *
      * Used to compute the strength level
      *
      * Default: 8 - the standard UNIX password length
@@ -182,7 +182,7 @@ public:
     /**
      * @internal
      */
-	virtual void accept();
+    virtual void accept();
 
 protected:
 
@@ -194,23 +194,18 @@ protected:
     virtual bool checkPassword(const QString &) ;
 
 Q_SIGNALS:
-    
+
     /**
      * The dialog has been accepted, and the new password is @p password
      */
     void newPassword(const QString &password);
-        
-
-private Q_SLOTS:
-  void slotTextChanged();
-
-private:
-    void init();
 
 
 private:
     class KNewPasswordDialogPrivate;
     KNewPasswordDialogPrivate* const d;
+
+    Q_PRIVATE_SLOT( d, void slotTextChanged() )
 };
 
 #endif // KNEWPASSWORDDIALOG_H
