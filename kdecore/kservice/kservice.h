@@ -31,7 +31,6 @@
 
 class QDataStream;
 class KDesktopFile;
-class QWidget;
 
 /**
  * Represent a service, like an application or plugin

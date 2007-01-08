@@ -29,14 +29,6 @@
 #include <klocale.h>
 
 #include <errno.h>
-#if defined Q_WS_X11
-#include <stdlib.h> // getenv()
-#include <QtGui/qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <fixx11h.h>
-#endif
 
 #include <QThread>
 

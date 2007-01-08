@@ -22,7 +22,6 @@
 
 class QByteArray;
 class QString;
-class QWidget;
 class KAboutData;
 class KConfig;
 class KSharedConfig;
