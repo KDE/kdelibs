@@ -96,7 +96,7 @@ public:
 			   @p autoResolve is true
 	@deprecated use previous constructor instead
 	 */
-	ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
+	explicit ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
 	
 	/**
 	Overloaded constructor used to create browser for one domain

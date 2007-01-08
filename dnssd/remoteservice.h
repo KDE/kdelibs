@@ -51,7 +51,7 @@ public:
 	@param label Data returned by PTR query - it is decoded into name, type and 
 	domain
 	 */
-	RemoteService(const QString& label);
+	explicit RemoteService(const QString& label);
 	
 	/**
 	Creates unresolved remote service with given name, type and domain.
@@ -62,7 +62,7 @@ public:
 	Creates resolved remote service from invitation URL constructed by PublicService::toInvitation.
 	If URL was invalid, service is set to unresolved and other fields should not be used.
 	 */
-	RemoteService(const KUrl& url);
+	explicit RemoteService(const KUrl& url);
 	
 	virtual ~RemoteService();
 	

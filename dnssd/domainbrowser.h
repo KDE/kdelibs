@@ -54,7 +54,7 @@ public:
 	@param parent Parent object.
 	This process is recursive.
 	 */
-	DomainBrowser(const QStringList& domains, bool recursive=false, QObject *parent=0);
+	explicit DomainBrowser(const QStringList& domains, bool recursive=false, QObject *parent=0);
 
 	~DomainBrowser();
 
