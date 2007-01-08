@@ -288,6 +288,11 @@ void KLibrary::slotObjectDestroyed()
 //    kDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
 //                 << endl;
 
+      if (!QCoreApplication::instance()) {
+          // Timers do not work anymore. Deleting ourselves right now.
+          delete this;
+          return;
+      }
     if ( !d->timer )
     {
       d->timer = new QTimer( this );
