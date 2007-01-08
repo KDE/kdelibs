@@ -32,7 +32,7 @@ class QStyleOptionProgressBarV2;
 namespace KIO
 {
     class DefaultProgress;
-};
+}
 
 struct actionInfo
 {
