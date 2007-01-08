@@ -275,12 +275,12 @@ void Observer::slotCopying( KJob* job, const KUrl& from, const KUrl& to )
 {
     m_uiserver->copying( job->progressId(), from.url(), to.url() );
 
-    KIO::Job *kioJob = static_cast<KIO::Job*>(job);
+    /*KIO::Job *kioJob = static_cast<KIO::Job*>(job);
     if (kioJob)
     {
         addAction(kioJob->progressId(), i18n("Pause"), this, SLOT(jobPaused(int)));
         addAction(kioJob->progressId(), i18n("Cancel"), kioJob, "kill");
-    }
+    }*/
 }
 
 void Observer::slotMoving( KJob* job, const KUrl& from, const KUrl& to )
