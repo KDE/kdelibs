@@ -91,7 +91,7 @@ KPageListView::KPageListView( QWidget *parent )
 {
   setViewMode( QListView::ListMode );
   setMovement( QListView::Static );
-  setVerticalScrollMode( QAbstractItemView::ScrollPerPixel );
+  setVerticalScrollMode( QListView::ScrollPerPixel );
 
   QFont boldFont( font() );
   boldFont.setBold( true );
