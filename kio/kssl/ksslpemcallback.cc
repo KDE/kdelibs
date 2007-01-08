@@ -27,27 +27,19 @@
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 #ifdef KSSL_HAVE_SSL
-	QByteArray pass;
 	Q_UNUSED(userdata);
 	Q_UNUSED(rwflag);
 
 	if (!buf) return -1;
-	int rc = KPasswordDialog::getPassword((QWidget*)0, pass, i18n("Certificate password"));
-	if (rc != KPasswordDialog::Accepted) return -1;
+	
+	KPasswordDialog dlg;
+	dlg.setPrompt(i18n("Certificate password"));
+	if( !dlg.exec() ) 
+		return -1;
+	
+	qstrncpy(buf, dlg.password().toLocal8Bit(), size-1);
 
-	const uint passlen = pass.length();
-	if (passlen > (unsigned int)size-1)
-		pass.truncate((unsigned int)size-1);
-
-	qstrncpy(buf, pass.data(), size-1);
-
-	for (unsigned int i = 0; i < passlen; i++)
-		pass[i] = 0;
-	// To be sure that it doesn't optimise the previous loop away
-	for (unsigned int i = 0; i < passlen; i++)
-		pass[i] = pass[i];
-	buf[size-1] = 0;
-	return (int)passlen;
+	return (int)qstrlen(buf);
 #else
 	Q_UNUSED(buf);
 	Q_UNUSED(size);

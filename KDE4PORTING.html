@@ -1013,15 +1013,27 @@ if needed (see the KURLDrag section)</li>
 <h4>KPasswordEdit</h4>
 <ul>
 <li>deprecated. Use now KLineEdit, with KLineEdit::setPaswwordMode(true)</li>
+<li>K3PasswordEdit is in kde3support for helping porting</li>
 </ul>
 
 <h4>KPasswordDialog</h4>
 <ul>
-<li>kpassdlg.h was renamed kpassworddialog.h.</li>
-<li>password() now return QString</li>
-<li>old getPassword() and getNewPassword() has been changed in order to return the password dirrectly.</li>
-<li>checkPassword take now a QString as argument</li>
+<li>K3PasswordDialog is in kde3support for helping porting</li>
+<li>asking for a new password ->  KNewPasswordDialog</li>
+<li>password() return QString</li>
+<li>getPassword() gone, use the following code instead</li>
+<!-- <li>kpassdlg.h was renamed kpassworddialog.h.</li>
+<li>checkPassword take now a QString as argument</li> -->
 </ul>
+<pre>
+KPasswordDialog dgl(parent);
+dlg.setPrompt( prompt );
+dlg.setWindowTitle( caption );
+if( dlg.exec() != QDialog::Accepted )
+    return;
+use( dlg.password() );
+</pre>
+
 
 <h4>KPixmapIO</h4>
 <ul>
@@ -1631,7 +1643,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h4>PasswordDialog</h4>
 <ul>
-  <li>void setEnableUserField( bool enable, bool=false ) removed use :setUserReadOnly( !enable )</li>
+  <li>void setEnableUserField( bool enable, bool=false ) removed use :setUsernameReadOnly( !enable )</li>
 </ul>
 
 

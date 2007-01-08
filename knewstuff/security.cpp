@@ -173,13 +173,12 @@ void Security::slotDataArrived(KProcIO *procIO)
        case Sign:
          if (data.contains("passphrase.enter"))
          {
-           QByteArray password;
            KeyStruct key = m_keys[m_secretKey];
-           int result = KPasswordDialog::getPassword((QWidget*)0,password, i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>", m_secretKey, key.name, key.mail));
-           if (result == KPasswordDialog::Accepted)
+           KPasswordDialog dlg;
+           dlg.setPrompt( i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>", m_secretKey, key.name, key.mail) );
+           if (dlg.exec())
            {
-             procIO->writeStdin(password, true);
-             password.fill(' ');
+             procIO->writeStdin(dlg.password().toLocal8Bit(), true);
            }
            else
            {

@@ -25,12 +25,11 @@
 #include <qprogressbar.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlineedit.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qmessagebox.h>
 #include <qfile.h>
-#include <kio/passworddialog.h>
 #include <kdebug.h>
 #include <kseparator.h>
 #include <qlabel.h>
@@ -67,10 +66,10 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_title->setFont(f);
 	KSeparator	*m_sep = new KSeparator(Qt::Horizontal, this);
 	m_textinfo = new QLabel( this );
-	m_logined = new QLineEdit( this );
-	m_passwded = new QLineEdit( this );
-	m_passwded->setEchoMode( QLineEdit::Password );
-	m_servered = new QLineEdit( this );
+	m_logined = new KLineEdit( this );
+	m_passwded = new KLineEdit( this );
+	m_passwded->setPasswordMode( true );
+	m_servered = new KLineEdit( this );
 	QLabel *m_loginlab = new QLabel( i18n( "&Username:" ), this );
 	QLabel *m_serverlab = new QLabel( i18n( "&Samba server:" ), this );
 	QLabel *m_passwdlab = new QLabel( i18n( "&Password:" ), this );

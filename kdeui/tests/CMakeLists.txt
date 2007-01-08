@@ -911,6 +911,32 @@ target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBR
 
 add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
 
+########### next target ###############
+
+set(knewpassworddialogtest_SRCS
+knewpassworddialogtest.cpp
+)
+
+kde4_automoc(${knewpassworddialogtest_SRCS})
+
+kde4_add_executable(knewpassworddialogtest NOGUI RUN_UNINSTALLED ${knewpassworddialogtest_SRCS})
+
+target_link_libraries(knewpassworddialogtest ${KDE4_KDEUI_LIBS})
+
+
+########### next target ###############
+
+set(kpassworddialogtest_SRCS
+kpassworddialogtest.cpp
+)
+
+kde4_automoc(${kpassworddialogtest_SRCS})
+
+kde4_add_executable(kpassworddialogtest NOGUI RUN_UNINSTALLED ${kpassworddialogtest_SRCS})
+
+target_link_libraries(kpassworddialogtest ${KDE4_KDEUI_LIBS})
+
+
 
 ########### End of tests ###############
 

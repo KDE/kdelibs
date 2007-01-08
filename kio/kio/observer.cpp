@@ -35,7 +35,7 @@
 
 #include "uiserveriface.h"
 
-#include "passworddialog.h"
+#include <kpassworddialog.h>
 #include "slavebase.h"
 #include <kmessagebox.h>
 #include <ksslinfodialog.h>
@@ -337,16 +337,24 @@ bool Observer::openPasswordDialog( KIO::AuthInfo& info )
 {
     kDebug(KDEBUG_OBSERVER) << "Observer::openPasswordDialog: User= " << info.username
                              << ", Message= " << info.prompt << endl;
-    int result = KIO::PasswordDialog::getNameAndPassword( info.username, info.password,
-                                                          &info.keepPassword, info.prompt,
-                                                          info.readOnly, info.caption,
-                                                          info.comment, info.commentLabel );
-    if ( result == QDialog::Accepted )
-    {
-        info.setModified( true );
-        return true;
-    }
-    return false;
+
+    KPasswordDialog::KPasswordDialogFlags flags=KPasswordDialog::ShowUsernameLine;
+    if(info.keepPassword)
+        flags |= KPasswordDialog::ShowKeepPassword;
+    KPasswordDialog dlg(0L, flags);
+    dlg.setPrompt(info.prompt);
+    dlg.setUsername(info.username);
+    dlg.setPassword(info.password);
+
+    if(!dlg.exec())
+        return false;
+
+    info.username=dlg.username();
+    info.password=dlg.password();
+    info.keepPassword = dlg.keepPassword();
+
+    info.setModified( true );
+    return true;
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text,

@@ -100,12 +100,6 @@ IncludeFile=k3listviewsearchline.h
 Group=Input (KDE)
 ConstructorArgs=(0, parent)
 
-[KPasswordEdit]
-IncludeFile=kpassworddialog.h
-ToolTip=Safe Password LineEdit (KDE)
-WhatsThis=A KLineEdit that is safe for prompting the user for passwords
-Group=Input (KDE)
-
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings

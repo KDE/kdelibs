@@ -53,7 +53,6 @@
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
 #include "uiserver.h"
-#include "passworddialog.h"
 #include "kio/renamedialog.h"
 #include "kio/skipdialog.h"
 #include "slavebase.h" // for QuestionYesNo etc.

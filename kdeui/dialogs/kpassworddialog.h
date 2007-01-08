@@ -1,8 +1,7 @@
-// vi: ts=8 sts=4 sw=4
 /* This file is part of the KDE libraries
-   Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
-   Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
-   Copyright (C) 2004,2005 Andrew Coles <andrew_coles@yahoo.co.uk>
+   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2007 Olivier Goffart <ogoffart at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -13,385 +12,210 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.  If
+   not, write to the Free Software Foundation, Inc., 51 Franklin Street,
+   Fifth Floor, Boston, MA 02110-1301, USA.
 */
+
 #ifndef KPASSWORDDIALOG_H
 #define KPASSWORDDIALOG_H
 
-#include <QtGui/QLineEdit>
-
 #include <kdialog.h>
-
-class QLabel;
-class QGridLayout;
-class QWidget;
+#include <QtCore/QFlags>
 
 /**
- * @short A safe password input widget.
- * @author Geert Jansen <geertj@kde.org>
+ * A dialog for requesting a password and optionaly a login from the end user.
  *
- * The widget uses the user's global "echo mode" setting.
- */
-
-class KDEUI_EXPORT_DEPRECATED KPasswordEdit
-    : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    enum EchoModes { OneStar, ThreeStars, NoEcho };
-
-    /**
-     * Constructs a password input widget using the user's global "echo mode" setting.
-     */
-    explicit KPasswordEdit(QWidget *parent=0);
-    // KDE4: either of the two must go! add default values for parameters
-
-    /**
-     * Constructs a password input widget using echoMode as "echo mode".
-     * Note that echoMode is a QLineEdit::EchoMode.
-     */
-    explicit KPasswordEdit(EchoMode echoMode, QWidget *parent = 0);
-
-    /**
-     * Constructs a password input widget using echoMode as "echo mode".
-     * Note that echoMode is a KPasswordEdit::EchoModes.
-     */
-    explicit KPasswordEdit(EchoModes echoMode, QWidget *parent = 0);
-
-    /**
-     * Destructs the widget.
-     */
-    ~KPasswordEdit();
-
-    /**
-     * Returns the password. The memory is freed in the destructor
-     * so you should make a copy.
-     */
-    const char *password() const { return m_Password; }
-
-    /**
-     * Erases the current password.
-     */
-    void erase();
-
-    static const int PassLen;
-
-    /**
-     * Set the current maximum password length.  If a password longer than the limit
-     * specified is currently entered, it is truncated accordingly.
-     *
-     * The length is capped to lie between 0 and 199 inclusive.
-     *
-     * @param newLength: The new maximum password length
-     */
-    void setMaxPasswordLength(int newLength);
-
-    /**
-     * Returns the current maximum password length.
-     */
-    int maxPasswordLength() const;
-
-public Q_SLOTS:
-    /**
-     * Reimplementation
-     */
-    virtual void insert( const QString &);
-
-protected:
-    virtual void keyPressEvent(QKeyEvent *);
-    virtual void focusInEvent(QFocusEvent *e);
-    virtual bool event(QEvent *e);
-
-private:
-    void init();
-    void showPass();
-
-    char *m_Password;
-    int m_EchoMode, m_Length;
-};
-
-
-/**
- * @short A password input dialog.
- *
- * This dialog asks the user to enter a password. The functions you're
- * probably interested in are the static methods, getPassword() and
- * getNewPassword().
- *
- * <b>Usage example</b>\n
- *
+ * \section usage Usage Exemple
+ * 
+ * Requesting a simple password, assynchronous
+ * 
  * \code
- * QString password = KPasswordDialog::getPassword( i18n("Prompt message") , i18n("Caption"), 0l , parent);
- * if (password.isNull())
- *     return;  // the dialog was canceled.
- * else
- *     use(password);
+ *  KPasswordDialog *dlg = new KPasswordDialog( parent );
+ *  dlg->setPrompt( i18n( "Enter a password" );
+ *  connect( dlg, SIGNAL( gotPassword( const QString& , bool ) )  , this, SLOT( setPassword( const QString &) ) );
+ *  connect( dlg, SIGNAL( rejected() )  , this, SLOT( slotCancel() ) );
+ *  dlg->show();
+ * \endcode
+ * 
+ * Requesting a login and a password, synchronous
+ * 
+ * \code
+ *  KPasswordDialog dlg( parent , KPasswordDialog::showUsername );
+ *  dlg.setPrompt( i18n( "Enter a login and a password" );
+ *  if( !dlg.exec() )
+ *      return; //the user canceled
+ *  use( dlg.username() , dlg.password() );
  * \endcode
  *
- * \image html kpassworddialog.png "KDE Password Dialog"
- *
- * @author Geert Jansen <jansen@kde.org>
+ * @short dialog for requesting login and password from the end user
  */
-
-class KDEUI_EXPORT KPasswordDialog
-    : public KDialog
+class KDEUI_EXPORT KPasswordDialog : public KDialog
 {
     Q_OBJECT
 
 public:
-    /**
-     * This enum distinguishes the two operation modes of this dialog:
-     */
-    enum Types {
+    
+    enum KPasswordDialogFlag
+    {
         /**
-         * The user is asked to enter a password.
+         * If this falg is set, the "keep this password" checkbox will been shown,
+         * otherwhise, it will not be shown and keepPassword will have no effect
          */
-        Password,
-
+        ShowKeepPassword = 0x01,
         /**
-         * The user is asked to enter a password and to confirm it
-         * a second time. This is usually used when the user
-         * changes his password.
+         * If this flag is set, there will be an additional line to let the user enter his login.
+         * otherwise, only the password line will be shown.
          */
-        NewPassword
+        ShowUsernameLine = 0x02,
+        /**
+         * If this flag is set, the login lineedit will be in read only mode.
+         */
+        UsernameReadOnly = 0x04
     };
-
+    Q_DECLARE_FLAGS(KPasswordDialogFlags,KPasswordDialogFlag)
+    
     /**
-     * Constructs a password dialog.
-     *
-     * @param type: if NewPassword is given here, the dialog contains two
-     *        input fields, so that the user must confirm his password
-     *        and possible typos are detected immediately.
-     * @param enableKeep: if true, a check box is shown in the dialog
-     *        which allows the user to keep his password input for later.
-     * @param extraBttn: allows to show additional buttons, KDialog.
-     * @param parent Passed to lower level constructor.
+     * create a password dialog 
+     * 
+     * @param parent the parent widget (default:NULL).
+     * @param flags a set of KPasswordDialogFlag flags
      */
-    KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, QWidget *parent=0);
-
-
+    KPasswordDialog( QWidget *parent=0L, const KPasswordDialogFlags& flags = 0 );
+    
     /**
-     * Construct a password dialog. Essentially the same as above but allows the
-     * icon in the password dialog to be set via @p iconName.
-     * @param type if NewPassword is given here, the dialog contains two
-     * input fields, so that the user must confirm his password
-     * and possible typos are detected immediately
-     * @param enableKeep: if true, a check box is shown in the dialog
-     *        which allows the user to keep his password input for later.
-     * @param extraBttn: allows to show additional buttons.
-     * @param iconName the name of the icon to be shown in the dialog. If empty,
-     * a default icon is used
-     * @param parent Passed to lower level constructor.
+     * Destructor
      */
-    KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& iconName,
-                    QWidget *parent = 0);
+    ~KPasswordDialog();
 
     /**
-     * Destructs the password dialog.
+     * Sets the prompt to show to the user.
+     * @param prompt        instructional text to be shown.
      */
-    virtual ~KPasswordDialog();
-
+    void setPrompt( const QString& prompt );
+    
     /**
-     * Sets the password prompt.
-     */
-    void setPrompt(const QString &prompt);
-
-    /**
-     * Returns the password prompt.
+     * Returns the prompt
      */
     QString prompt() const;
-
+    
     /**
-     * Adds a line of information to the dialog.
+     * set an image that appears next to the prompt.
      */
-    void addLine(const QString &key, const QString &value);
-
+    void setPixmap(const QPixmap&);
     /**
-     * Allow empty passwords? - Default: false
+     * 
      */
-    void setAllowEmptyPasswords(bool allowed);
+    QPixmap pixmap() const;
 
     /**
-     * Allow empty passwords?
-     */
-    bool allowEmptyPasswords() const;
-
-    /**
-     * Minimum acceptable password length.
-     * Default: If empty passwords are forbidden, 1;
-     *          Otherwise, 0.
+     * Adds a comment line to the dialog.
      *
-     * @param minLength: The new minimum password length
-     */
-    void setMinimumPasswordLength(int minLength);
-
-    /**
-     * Minimum acceptable password length.
-     */
-    int minimumPasswordLength() const;
-
-    /**
-     * Maximum acceptable password length.  Limited to 199.
-     * Default: No limit, i.e. -1
+     * This function allows you to add one additional comment
+     * line to this widget.  Calling this function after a
+     * comment has already been added will not have any effect.
      *
-     * @param maxLength: The new maximum password length.
+     * @param label       label for comment (ex:"Command:")
+     * @param comment     the actual comment text.
      */
-    void setMaximumPasswordLength(int maxLength);
+    void addCommentLine( const QString& label, const QString comment );
 
     /**
-     * Maximum acceptable password length.
-     */
-    int maximumPasswordLength() const;
-
-    /**
-     * Password length that is expected to be reasonably safe.
-     *
-     * Default: 8 - the standard UNIX password length
-     *
-     * @param reasonableLength: The new reasonable password length.
-     */
-    void setReasonablePasswordLength(int reasonableLength);
-
-    /**
-     * Password length that is expected to be reasonably safe.
-     */
-    int reasonablePasswordLength() const;
-
-    /**
-     * Set the password strength level below which a warning is given
-     * Value is in the range 0 to 99. Empty passwords score 0;
-     * non-empty passwords score up to 100, depending on their length and whether they
-     * contain numbers, mixed case letters and punctuation.
-     *
-     * Default: 1 - warn if the password has no discernable strength whatsoever
-     * @param warningLevel: The level below which a warning should be given.
-     */
-    void setPasswordStrengthWarningLevel(int warningLevel);
-
-    /**
-     * Password strength level below which a warning is given
-     */
-    int passwordStrengthWarningLevel() const;
-
-    /**
-     * Returns the password entered. The memory is freed in the destructor,
-     * so you should make a copy.
+     * Returns the password entered by the user.
+     * @return the password
      */
     QString password() const;
-
+    
     /**
-     * Clears the password input field. You might want to use this after the
-     * user failed to enter the correct password.
+     * set the default username.
      */
-    void clearPassword();
+    void setUsername(const QString&);
 
     /**
-     * Returns true if the user wants to keep the password.
+     * Returns the username entered by the user.
+     * @return the user name
      */
-    bool keep() const;
+    QString username() const;
 
     /**
-     * @deprecated Use the new version that return the password. (warning: the order of parameters has changed)
+     * Determines whether supplied authorization should
+     * persist even after the application has been closed.
+     * 
+     * this is set with the check password checkbox is the ShowKeepCheckBox flag
+     * is set in the constructor, if it is not set, this function return false
+     * 
+     * @return true to keep the password
      */
-     KDE_DEPRECATED  static int getPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt, bool *keep = 0L);
+    bool keepPassword() const;
 
     /**
-     * @deprecated Use the new version that return the password. (warning: the order of parameters has changed)
+     * Check or uncheck the "keep password" checkbox.
+     * This can be used to check it before showing the dialog, to tell
+     * the user that the password is stored already (e.g. in the wallet).
+     * enableKeep must have been set to true in the constructor.
+     * 
+     * has only effect if ShowKeepCheckBox is set in the constructor
      */
-     KDE_DEPRECATED  static KDE_DEPRECATED int getPassword(QWidget *parent, QByteArray &password, const QString &prompt, bool *keep = 0L);
+    void setKeepPassword( bool b );
 
     /**
-     * Pops up the dialog, asks the user for a password, and returns it.
+     * Sets the username field read-only and sets the
+     * focus to the password field.
+     * 
+     * this can also be set by passing UsernameReadOnly as flag in the constructor
      *
-     * If the user cancel the dialog, a null string is returned (as opposed to 
-     * an empty string which may be returned if the user entered an empty password)
-     *
-     * @param prompt A prompt for the password. This can be a few lines of
-     * information. The text is word broken to fit nicely in the dialog.
-     * @param caption A caption for the dialog.
-     * @param keep If you pass a null pointer, the checkbox is not shown. 
-     * If you pass a valid pointer, the checkbox is shown and the result is stored in *keep.
-     * @param parent The widget the dialog belongs too
-     * @return The entered password, or a null string if the dialog was canceled
+     * @param readOnly true to set the user field to read-only
      */
-     static QString  getPassword(const QString &prompt, const QString &caption = QString(), bool *keep = 0L , QWidget *parent=0l);
-
+    void setUsernameReadOnly( bool readOnly );
 
     /**
-     * @deprecated  use the new function that return the password (warning: the order of parameters has changed)
-     * Pops up the dialog, asks the user for a password and returns it. The
-     * user has to enter the password twice to make sure it was entered
-     * correctly.
-     *
-     * @param parent The widget the dialog belongs too
-     * @param password The password is returned in this reference parameter.
-     * @param caption A caption for the dialog.
-     * @param prompt A prompt for the password. This can be a few lines of
-     * information. The text is word broken to fit nicely in the dialog.
-     * @return Result code: Accepted or Rejected.
+     * Presets the password.
+     * @param password the password to set
      */
-    static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &caption, const QString &prompt);
+    void setPassword( const QString& password );
 
     /**
-     * @overload
+     * Presets a number of login+password pairs that the user can choose from.
+     * The passwords can be empty if you simply want to offer usernames to choose from.
      *
-     * @deprecated Use the new version that return the password (warning: the order of parameters has changed)
+     * This require the flag ShowUnernameLine to be set in the constructoe, and not the flag UsernameReadOnly
+     * @param knownLogins map of known logins: the keys are usernames, the values are passwords.
      */
-    static KDE_DEPRECATED int getNewPassword(QWidget *parent, QByteArray &password, const QString &prompt);
-
-
+    void setKnownLogins( const QMap<QString, QString>& knownLogins );
+    
     /**
-     * Pops up the dialog, asks the user for a password and returns it. The
-     * user has to enter the password twice to make sure it was entered
-     * correctly.
-     *
-     * If the user cancel the dialog, a null string is returned (as opposed to 
-     * an empty string which may be returned if the user entered an empty password)
-     *
-     * @param prompt A prompt for the password. This can be a few lines of
-     * information. The text is word broken to fit nicely in the dialog.
-     * @param caption A caption for the dialog.
-     * @param parent The widget the dialog belongs too
-     * @return The entered password, or a null string if the dialog was canceled
+     * @internal
      */
-    static QString getNewPassword(const QString &prompt, const QString &caption=QString(), QWidget *parent=0l);
-
+    void accept();
+    
+Q_SIGNALS:
     /**
-     * Static helper function that disables core dumps.
+     * emitted when the dialog has been accepted
+     * @param password  the entered password
+     * @param keep true if the "remember password" checkbox was checked, false otherwhise.  false if ShowKeepPassword was not set in the constructor
      */
-    static void disableCoreDumps();
-	
-	virtual void accept();
-
-protected Q_SLOTS:
-    void slotKeep(bool);
-
-protected:
-
+    void gotPassword( const QString& password , bool keep );
+    
     /**
-     * Virtual function that can be overridden to provide password
-     * checking in derived classes. It should return @p true if the
-     * password is valid, @p false otherwise.
+     * emitted when the dialog has been accepted, and ShowUsernameLine was set on the constructor
+     * @param username the entered username
+     * @param password  the entered password
+     * @param keep true if the "remember password" checkbox was checked, false otherwhise.  false if ShowKeepPassword was not set in the constructor
      */
-    virtual bool checkPassword(const QString &) { return true; }
-
+    void gotUsernameAndPassword( const QString& username, const QString& password , bool keep );
 
 private Q_SLOTS:
-  void enableOkBtn();
+    void slotActivated( const QString& userName );
 
 private:
-    void init();
-    void erase();
-
+    void init( const KPasswordDialogFlags& flags );
 
 private:
-    class KPasswordDialogPrivate;
+    struct KPasswordDialogPrivate;
     KPasswordDialogPrivate* const d;
 };
 
-#endif // KPASSWORDDIALOG_H
-
+Q_DECLARE_OPERATORS_FOR_FLAGS(KPasswordDialog::KPasswordDialogFlags)
+        
+#endif

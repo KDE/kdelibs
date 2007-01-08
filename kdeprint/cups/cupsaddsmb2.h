@@ -29,7 +29,7 @@ class QProgressBar;
 class SidePixmap;
 class QPushButton;
 class QLabel;
-class QLineEdit;
+class KLineEdit;
 
 class CupsAddSmb : public KDialog
 {
@@ -69,7 +69,7 @@ private:
 	QPushButton	*m_doit, *m_cancel;
 	QLabel	*m_text;
 	QLabel *m_textinfo;
-	QLineEdit *m_logined, *m_passwded, *m_servered;
+	KLineEdit *m_logined, *m_passwded, *m_servered;
 	QString	m_datadir;
 };
 

@@ -25,7 +25,7 @@
 #include <knotification.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <kio/passworddialog.h>
+#include <kpassworddialog.h>
 #include <kio/authinfo.h>
 #include <qlabel.h>
 #include <kpushbutton.h>
@@ -168,9 +168,12 @@ void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 QString KDEPrintd::openPasswordDialog(const QString& user)
 {
 	QString	user_(user), pass_, result;
-	if (KIO::PasswordDialog::getNameAndPassword(user_, pass_, NULL) == KDialog::Accepted)
-		result.append(user_).append(":").append(pass_);
-	return result;
+	KPasswordDialog dlg(0L, KPasswordDialog::ShowUsernameLine );
+	dlg.setUsername(user);
+	if( !dlg.exec() )
+		return QString();
+	
+	return dlg.username() + ':' + dlg.password();
 }
 
 bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)

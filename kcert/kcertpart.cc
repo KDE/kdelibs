@@ -495,10 +495,13 @@ bool KCertPart::openFile() {
 
 			while (!_p12) {
 				// try prompting for a password.
-				QString pass = KPasswordDialog::getPassword(i18n("Certificate Password"),i18n("Certificate Password"),0L,_frame);
-				if (pass.isNull()) break;
-
-				_p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));
+				KPasswordDialog dlg(_frame);
+				dlg.setCaption(i18n("Certificate Password"));
+				dlg.setPrompt(i18n("Certificate Password"));
+				if( !dlg.exec() )
+					break;
+				
+				_p12 = KSSLPKCS12::loadCertFile(m_file, dlg.password());
 
 				if (!_p12) {
 					int rc = KMessageBox::warningContinueCancel(_frame, i18n("The certificate file could not be loaded. Try a different password?"), i18n("Certificate Import"),KGuiItem(i18n("Try Different")));

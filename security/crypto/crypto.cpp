@@ -62,6 +62,7 @@
 #include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
+#include <knewpassworddialog.h>
 #include <kprocess.h>
 #include <kpushbutton.h>
 #include <kresolver.h>
@@ -1462,10 +1463,13 @@ void KCryptoConfig::slotYourImport() {
 KSSLPKCS12 *cert = NULL;
 
 TryImportPassAgain:
-   QString pass= KPasswordDialog::getPassword(i18n("Certificate Password"), i18n("Certificate password"),0l,this);
-   if (pass.isNull()) return;
+   KPasswordDialog dlg(this);
+   dlg.setPrompt(i18n("Certificate Password"));
+   dlg.setCaption(i18n("Certificate password"));
+   if(!dlg.exec())
+	return;
 
-   cert = KSSLPKCS12::loadCertFile(certFile, pass);
+   cert = KSSLPKCS12::loadCertFile(certFile, dlg.password());
 
    if (!cert) {
       int rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"),KGuiItem(i18n("Try")),KGuiItem(i18n("Do Not Try")));
@@ -1523,9 +1527,12 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
       QString oldpass;
       do {
-         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
-         if (oldpass.isNull()) return;
-         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         KPasswordDialog dlg(this);
+         dlg.setPrompt(pprompt);
+         dlg.setCaption(pcaption);
+         if(!dlg.exec())
+            return;
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), dlg.password());
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
@@ -1555,9 +1562,13 @@ QString iss;
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
       QString oldpass;
       do {
-         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
-         if (oldpass.isNull()) return;
-         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         KPasswordDialog dlg(this);
+         dlg.setPrompt(pprompt);
+         dlg.setCaption(pcaption);
+         if(!dlg.exec())
+            return;
+
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), dlg.password());
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
@@ -1604,9 +1615,13 @@ QString iss;
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
       QString oldpass;
       do {
-         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
-         if (oldpass.isNull()) return;
-         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         KPasswordDialog dlg(this);
+         dlg.setPrompt(pprompt);
+         dlg.setCaption(pcaption);
+         if(!dlg.exec())
+            return;
+	      
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), dlg.password());
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
@@ -1704,9 +1719,12 @@ void KCryptoConfig::slotYourPass() {
       QString pcaption = i18n("Password For '%1'").arg(x->getName());
       QString oldpass;
       do {
-         oldpass = KPasswordDialog::getPassword(pprompt, pcaption, 0l, this);
-         if (oldpass.isNull()) break;
-         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         KPasswordDialog dlg(this);
+         dlg.setPrompt(pprompt);
+         dlg.setCaption(pcaption);
+         if(!dlg.exec())
+            break;
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), dlg.password());
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
    }
@@ -1714,7 +1732,7 @@ void KCryptoConfig::slotYourPass() {
    if (pkcs) {
       x->setPassCache(oldpass);
       slotYourUnlock();
-      KPasswordDialog *kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0, this);
+      KNewPasswordDialog *kpd = new KNewPasswordDialog(this);
       kpd->setPrompt(i18n("Enter the new certificate password"));
       kpd->setAllowEmptyPasswords(true);
 

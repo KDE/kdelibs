@@ -62,6 +62,7 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplication.cpp
+ dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
@@ -253,6 +254,7 @@ install( FILES
  dialogs/kkeydialog.h
  dialogs/kmessagebox.h
  dialogs/kmessageboxmessagehandler.h
+ dialogs/knewpassworddialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h

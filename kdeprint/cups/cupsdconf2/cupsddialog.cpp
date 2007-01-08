@@ -17,6 +17,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "config.h"
+
+
 #include "cupsddialog.h"
 
 #include "cupsdpage.h"
@@ -46,7 +49,7 @@
 #include <kinstance.h>
 #include <kpagewidgetmodel.h>
 #include <qstringlist.h>
-#include <kio/passworddialog.h>
+#include <kpassworddialog.h>
 #include <kguiitem.h>
 #include <qprocess.h>
 #include <kapplication.h>
@@ -97,20 +100,13 @@ int getServerPid()
 
 const char* getPassword(const char*)
 {
-	QString	user(cupsUser());
-	QString	pass;
-
-	if (KIO::PasswordDialog::getNameAndPassword(user, pass, NULL) == QDialog::Accepted)
-	{
-		cupsSetUser(user.toLatin1());
-		pass_string = pass;
-		if (pass_string.isEmpty())
-			return "";
-		else
-			return pass_string.toLatin1();
-	}
-	else
+    static char buffer[1024];
+	KPasswordDialog dlg(0L, KPasswordDialog::ShowUsernameLine | KPasswordDialog::UsernameReadOnly );
+	dlg.setUsername( cupsUser() );
+	if( !dlg.exec() )
 		return NULL;
+	strlcpy(buffer, dlg.password().toLocal8Bit() , 1024);
+    return buffer;
 }
 
 //---------------------------------------------------

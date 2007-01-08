@@ -20,20 +20,21 @@
 #ifndef kio_pass_word_dialog_h
 #define kio_pass_word_dialog_h
 
-#include <kdialog.h>
+#include <kpassworddialog.h>
 
 class QGridLayout;
 
 namespace KIO {
 
 /**
+ * @deprecated  use KPasswordDialog
  * A dialog for requesting a login and a password from the end user.
  *
  * KIO-Slave authors are encouraged to use SlaveBase::openPassDlg
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
-class KIO_EXPORT PasswordDialog : public KDialog
+class KIO_EXPORT_DEPRECATED PasswordDialog : public KPasswordDialog
 {
     Q_OBJECT
 
@@ -56,72 +57,6 @@ public:
      */
     ~PasswordDialog();
 
-    /**
-     * Sets the prompt to show to the user.
-     * @param prompt        instructional text to be shown.
-     */
-    void setPrompt( const QString& prompt );
-
-    /**
-     * Adds a comment line to the dialog.
-     *
-     * This function allows you to add one additional comment
-     * line to this widget.  Calling this function after a
-     * comment has already been added will not have any effect.
-     *
-     * @param label       label for comment (ex:"Command:")
-     * @param comment     the actual comment text.
-     */
-    void addCommentLine( const QString& label, const QString comment );
-
-    /**
-     * Returns the password entered by the user.
-     * @return the password
-     */
-    QString password() const;
-
-    /**
-     * Returns the username entered by the user.
-     * @return the user name
-     */
-    QString username() const;
-
-    /**
-     * Determines whether supplied authorization should
-     * persist even after the application has been closed.
-     * @return true to keep the password
-     */
-    bool keepPassword() const;
-
-    /**
-     * Check or uncheck the "keep password" checkbox.
-     * This can be used to check it before showing the dialog, to tell
-     * the user that the password is stored already (e.g. in the wallet).
-     * enableKeep must have been set to true in the constructor.
-     */
-    void setKeepPassword( bool b );
-
-    /**
-     * Sets the username field read-only and sets the
-     * focus to the password field.
-     *
-     * @param readOnly true to set the user field to read-only
-     */
-    void setUserReadOnly( bool readOnly );
-
-    /**
-     * Presets the password.
-     * @param password the password to set
-     */
-    void setPassword( const QString& password );
-
-    /**
-     * Presets a number of login+password pairs that the user can choose from.
-     * The passwords can be empty if you simply want to offer usernames to choose from.
-     * This is incompatible with setUserReadOnly(true).
-     * @param knownLogins map of known logins: the keys are usernames, the values are passwords.
-     */
-    void setKnownLogins( const QMap<QString, QString>& knownLogins );
 
     /**
      * A convienence static method for obtaining authorization
@@ -146,16 +81,6 @@ public:
                                    const QString& comment = QString(),
                                    const QString& label = QString() );
 
-private Q_SLOTS:
-    void slotKeep( bool );
-    void slotActivated( const QString& userName );
-
-private:
-    void init( const QString&, const QString&, bool );
-
-private:
-    struct PasswordDialogPrivate;
-    PasswordDialogPrivate* const d;
 };
 
 }
