@@ -60,8 +60,10 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   setProduct( aboutData->programName(), aboutData->version(),
         QString(), QString() );
 
-  if (!aboutData->programLogo().isNull())
-    setProgramLogo( QPixmap::fromImage(aboutData->programLogo()) );
+  if ( aboutData->programLogo().canConvert<QPixmap>() )
+    setProgramLogo( aboutData->programLogo().value<QPixmap>() );
+  else if ( aboutData->programLogo().canConvert<QImage>() )
+    setProgramLogo( QPixmap::fromImage(aboutData->programLogo().value<QImage>() ) );
 
   QString appPageText = aboutData->shortDescription() + '\n';
 

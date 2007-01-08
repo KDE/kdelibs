@@ -26,7 +26,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qimage.h>
+#include <QVariant>
 #include <QList>
 
 class KAboutPerson::Private
@@ -145,7 +145,6 @@ public:
         : mTranslatorName( i18nc("NAME OF TRANSLATORS", "Your names") )
         , mTranslatorEmail( i18nc("EMAIL OF TRANSLATORS", "Your emails") )
         , productName(0)
-        , programLogo(0)
         , customAuthorTextEnabled(false)
         , mTranslatedProgramName( 0 )
         {}
@@ -153,7 +152,6 @@ public:
         {
              if (_licenseKey == License_File)
                  delete [] _licenseText;
-             delete programLogo;
              delete[] mTranslatedProgramName;
         }
     const char *_appName;
@@ -171,7 +169,7 @@ public:
     QString mTranslatorName;
     QString mTranslatorEmail;
     const char *productName;
-    QImage* programLogo;
+    QVariant programLogo;
     QString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
     const char *mTranslatedProgramName;
@@ -399,19 +397,16 @@ KAboutData::translateInternalProgramName() const
       d->mTranslatedProgramName = qstrdup( programName().toUtf8() );
 }
 
-QImage
+QVariant 
 KAboutData::programLogo() const
 {
-    return d->programLogo ? (*d->programLogo) : QImage();
+    return d->programLogo;
 }
 
 void
-KAboutData::setProgramLogo(const QImage& image)
+KAboutData::setProgramLogo(const QVariant& image)
 {
-    if (!d->programLogo)
-       d->programLogo = new QImage( image );
-    else
-       *d->programLogo = image;
+    d->programLogo = image ;
 }
 
 QString

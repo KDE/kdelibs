@@ -25,9 +25,9 @@
 #include <qstring.h>
 #include <kdelibs_export.h>
 
-class QImage;
 template <class T> class QList;
 class KLocalizedString;
+class QVariant;
 
 /**
  * This structure is used to store information about a person or developer.
@@ -415,11 +415,13 @@ class KDECORE_EXPORT KAboutData
      * Defines the program logo.
      * Use this if you need to have application logo
      * in AboutData other than application icon.
+	 * 
+	 * Because KAboutData is in kdecore, it cannot use QImage dirrectly,  so this is a QVariant which should contains a QImage
      *
      * @param image logo image.
      * @see programLogo()
     */
-    void setProgramLogo(const QImage& image);
+    void setProgramLogo(const QVariant& image);
 
     /**
      * Defines the program version string.
@@ -542,10 +544,13 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Returns the program logo image.
+	 * 
+	 * Because KAboutData is in kdecore, it cannot use QImage dirrectly,  so this is a QVariant which should contains a QImage
+	 * 
      * @return the program logo data or null image if there is
      * no custom application logo defined.
      */
-    QImage programLogo() const;
+    QVariant programLogo() const;
 
     /**
      * Returns the program's version.
