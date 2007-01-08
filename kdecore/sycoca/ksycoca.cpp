@@ -30,6 +30,7 @@
 #include <qcoreapplication.h>
 #include <qfile.h>
 #include <qbuffer.h>
+#include <QProcess>
 #include <QtDBus/QtDBus>
 
 #include <stdlib.h>
@@ -451,9 +452,11 @@ void KSycoca::flagError()
       if (_self->d->readError)
          return;
       _self->d->readError = true;
-      if (_self->d->autoRebuild)
-         if(system(KStandardDirs::findExe("kbuildsycoca").toLocal8Bit().constData()) < 0) // Rebuild the damned thing.
-	   qWarning("ERROR: Running KSycoca failed.");
+      if (_self->d->autoRebuild) {
+          // Rebuild the damned thing.
+          if (QProcess::execute(KStandardDirs::findExe("kbuildsycoca")) != 0)
+              qWarning("ERROR: Running KSycoca failed.");
+      }
    }
 }
 
