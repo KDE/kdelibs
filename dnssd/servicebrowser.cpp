@@ -84,7 +84,7 @@ ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int fla
 	init(QStringList(type),new DomainBrowser(QStringList(domain),false,this),flags | AutoDelete);
 }
 
-const ServiceBrowser::State ServiceBrowser::isAvailable()
+ServiceBrowser::State ServiceBrowser::isAvailable()
 {
 #ifdef HAVE_DNSSD
 //	DNSServiceRef ref;

@@ -167,7 +167,7 @@ public:
 	\endcode
 
 	 */
-	static const State isAvailable();
+	static State isAvailable();
 
 Q_SIGNALS:
 	/**
