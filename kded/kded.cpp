@@ -71,6 +71,8 @@ extern QDBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 
 static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
+   const QString exe = KStandardDirs::findExe("kbuildsycoca");
+   Q_ASSERT(!exe.isEmpty());
    QStringList args;
    args.append("--incremental");
    if(checkStamps)
@@ -82,13 +84,13 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    if (callBackObj)
    {
       QVariantList argList;
-      argList << QString("kbuildsycoca") << args << QStringList() << QString();
+      argList << exe << args << QStringList() << QString();
       KToolInvocation::klauncher()->callWithCallback("kdeinit_exec_wait", argList, callBackObj,
                                                          callBackSlot);
    }
    else
    {
-      KToolInvocation::kdeinitExecWait( "kbuildsycoca", args );
+      KToolInvocation::kdeinitExecWait( exe, args );
    }
 }
 

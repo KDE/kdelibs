@@ -95,6 +95,7 @@ class KStandardDirsSingleton
 public:
     QString defaultprefix;
     QString defaultbindir;
+    QString defaultlibexecdir;
     static KStandardDirsSingleton* self();
 private:
     static KStandardDirsSingleton* s_self;
@@ -147,6 +148,21 @@ static QString kfsstnd_defaultbindir()
    if (s->defaultbindir.isEmpty())
       kWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
   return s->defaultbindir;
+}
+
+/**
+ * @internal
+ * Returns the default libexec directory in which KDE tool executables are stored.
+ */
+static QString kfsstnd_defaultlibexecdir()
+{
+    KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+    if (!s->defaultlibexecdir.isEmpty())
+        return s->defaultlibexecdir;
+    s->defaultlibexecdir = kfsstnd_defaultprefix() + QLatin1String("/lib/kde4/libexec");
+    //if (s->defaultlibexecdir.isEmpty())
+    //   kWarning() << "KStandardDirs::kfsstnd_defaultlibexecdir(): default libexec KDE dir not found!" << endl;
+    return s->defaultlibexecdir;
 }
 
 static const char* const types[] = {"html", "icon", "apps", "sound",
@@ -815,7 +831,7 @@ void KStandardDirs::createSpecialResource(const char *type)
 #else //UNIX
    if (relink)
    {
-      QString srv = findExe(QLatin1String("lnusertemp"), kfsstnd_defaultbindir());
+      QString srv = findExe(QLatin1String("lnusertemp"), kfsstnd_defaultlibexecdir());
       if (srv.isEmpty())
          srv = findExe(QLatin1String("lnusertemp"));
       if (!srv.isEmpty())
@@ -1028,8 +1044,18 @@ QString KStandardDirs::findExe( const QString& appname,
     }
 
     //kDebug(180) << "findExe(): relative path given" << endl;
-    QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
+
+    // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
+
+    QString p = kfsstnd_defaultbindir() + '/' + real_appname;
     QString result = checkExecutable(p, ignoreExecBit);
+    if (!result.isEmpty()) {
+        //kDebug(180) << "findExe(): returning " << result << endl;
+        return result;
+    }
+
+    p = kfsstnd_defaultlibexecdir() + '/' + real_appname;
+    result = checkExecutable(p, ignoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result << endl;
         return result;

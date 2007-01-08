@@ -452,7 +452,7 @@ void KSycoca::flagError()
          return;
       _self->d->readError = true;
       if (_self->d->autoRebuild)
-         if(system("kbuildsycoca") < 0) // Rebuild the damned thing.
+         if(system(KStandardDirs::findExe("kbuildsycoca").toLocal8Bit().constData()) < 0) // Rebuild the damned thing.
 	   qWarning("ERROR: Running KSycoca failed.");
    }
 }

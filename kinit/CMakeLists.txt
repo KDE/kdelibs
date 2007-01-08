@@ -81,7 +81,7 @@ kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 
 target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS lnusertemp DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 endif (WIN32)
 
 
@@ -93,7 +93,7 @@ kde4_automoc(${kioslave_SRCS})
 
 kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
-target_link_libraries(kioslave  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kioslave  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
 

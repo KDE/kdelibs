@@ -100,11 +100,11 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                                 launcher->interface(),
                                                 function);
     msg << _name << URLs;
- #ifdef Q_WS_X11
+#ifdef Q_WS_X11
     // make sure there is id, so that user timestamp exists
     QStringList envs;
     QByteArray s = startup_id;
-    emit kapplication_hook(envs , s);
+    emit kapplication_hook(envs, s);
     msg << envs;
     msg << QString(s);
 #else

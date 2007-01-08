@@ -92,7 +92,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
             {
                result(name);
             }
-#ifdef Q_WS_X11	    
+#ifdef Q_WS_X11
             if (bHighlight)
             {
                QDBusInterface kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
@@ -100,7 +100,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
                if (!result.isValid())
                   error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
-#endif	    
+#endif
             exit(0);
          }
       }
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
       QStringList args;
       args.append("--incremental");
       args.append("--checkstamps");
-      QString command = "kbuildsycoca";
+      QString command = KStandardDirs::findExe("kbuildsycoca");
       QDBusMessage reply = KToolInvocation::klauncher()->call("kdeinit_exec_wait", command, args, QStringList(), QString());
       if (reply.type() != QDBusMessage::ReplyMessage)
       {

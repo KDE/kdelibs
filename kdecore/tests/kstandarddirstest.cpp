@@ -153,3 +153,13 @@ void KStandarddirsTest::testFindResourceDir()
     QVERIFY( !configDir.isEmpty() );
     QVERIFY( configDir.endsWith( "/config/" ) );
 }
+
+void KStandarddirsTest::testFindExe()
+{
+    if ( !isKdelibsInstalled() )
+        QSKIP( "kdelibs not installed", SkipAll );
+
+    const QString bin = KGlobal::dirs()->findExe( "lnusertemp" );
+    QVERIFY( !bin.isEmpty() );
+    QVERIFY( bin.endsWith( "lib/kde4/libexec/lnusertemp" EXT ) );
+}
