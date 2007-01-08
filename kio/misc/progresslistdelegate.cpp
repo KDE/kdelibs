@@ -21,11 +21,11 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QStyleOptionProgressBarV2>
-#include <QStyleOptionButton>
 #include <QHash>
 #include <QVariant>
 #include <QFontMetrics>
 #include <QListView>
+#include <QBoxLayout>
 
 #include <kdebug.h>
 #include <kwin.h>
@@ -35,47 +35,7 @@
 
 #include "progresslistdelegate.h"
 #include "progresslistmodel.h"
-
-class ProgressListDelegate::Private
-{
-public:
-    Private(QListView *listView);
-
-    int getJobId(const QModelIndex &index) const;
-    QString getApplicationInternalName(const QModelIndex &index) const;
-    QString getApplicationName(const QModelIndex &index) const;
-    QString getIcon(const QModelIndex &index) const;
-    qlonglong getFileTotals(const QModelIndex &index) const;
-    qlonglong getFilesProcessed(const QModelIndex &index) const;
-    QString getSizeTotals(const QModelIndex &index) const;
-    QString getSizeProcessed(const QModelIndex &index) const;
-    qlonglong getTimeTotals(const QModelIndex &index) const;
-    qlonglong getTimeProcessed(const QModelIndex &index) const;
-    QString getFromLabel(const QModelIndex &index) const;
-    QString getFrom(const QModelIndex &index) const;
-    QString getToLabel(const QModelIndex &index) const;
-    QString getTo(const QModelIndex &index) const;
-    int getPercent(const QModelIndex &index) const;
-    QString getMessage(const QModelIndex &index) const;
-    const QList<actionInfo> &getActionList(const QModelIndex &index) const;
-    QStyleOptionProgressBarV2 *getProgressBar(const QModelIndex &index) const;
-    int getCurrentLeftMargin(int fontHeight) const;
-
-    int separatorPixels;
-    int leftMargin;
-    int rightMargin;
-    int progressBarHeight;
-    int minimumItemHeight;
-    int minimumContentWidth;
-    int editorHeight;
-    int iconWidth;
-    QListView *listView;
-};
-
-ProgressListDelegate::Private::Private(QListView *listView)
-{
-    this->listView = listView;
-}
+#include "progresslistdelegate_p.h"
 
 int ProgressListDelegate::Private::getJobId(const QModelIndex &index) const
 {
@@ -176,9 +136,40 @@ int ProgressListDelegate::Private::getCurrentLeftMargin(int fontHeight) const
     return leftMargin + separatorPixels + fontHeight;
 }
 
+void ProgressListDelegate::Private::actionAdded(const QModelIndex &index)
+{
+    listView->closePersistentEditor(index);
+    listView->openPersistentEditor(index);
+}
+
+void ProgressListDelegate::Private::actionEdited(const QModelIndex &index)
+{
+    listView->closePersistentEditor(index);
+    listView->openPersistentEditor(index);
+}
+
+void ProgressListDelegate::Private::actionRemoved(const QModelIndex &index)
+{
+    listView->closePersistentEditor(index);
+}
+
+ProgressListDelegate::Private::QActionPushButton::QActionPushButton(int actionId, const QString &actionText, QWidget *parent)
+    : QPushButton(actionText, parent)
+{
+    this->actionId = actionId;
+
+    connect(this, SIGNAL(clicked(bool)), this,
+            SLOT(buttonPressed()));
+}
+
+void ProgressListDelegate::Private::QActionPushButton::buttonPressed()
+{
+    emit actionButtonPressed(actionId);
+}
+
 ProgressListDelegate::ProgressListDelegate(QObject *parent, QListView *listView)
     : QItemDelegate(parent)
-    , d(new Private(listView))
+    , d(new Private(parent, listView))
 {
 }
 
@@ -190,27 +181,47 @@ ProgressListDelegate::~ProgressListDelegate()
 QWidget *ProgressListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                                             const QModelIndex &index) const
 {
-#ifdef __GNUC__
-    #warning implement (ereslibre)
-#endif
-    return 0;
+    const ProgressListModel *progressListModel = static_cast<const ProgressListModel*>(index.model());
+
+    int jobIdModel = index.model()->data(index, jobId).toInt();
+
+    QList<actionInfo> actionsModel = progressListModel->actions(jobIdModel);
+
+    if (actionsModel.isEmpty())
+        return 0;
+
+    QWidget *returnWidget = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->setMargin(0);
+    layout->setSpacing(0);
+    returnWidget->setLayout(layout);
+
+    QPushButton *newButton;
+    int i = 0;
+    foreach (actionInfo actionIt, actionsModel)
+    {
+        newButton = new Private::QActionPushButton(actionIt.actionId, actionIt.actionText);
+
+        connect(newButton, SIGNAL(actionButtonPressed(int)), this,
+                SIGNAL(actionPerformed(int)));
+
+        layout->addWidget(newButton);
+
+        if (i < actionsModel.count() - 1)
+            layout->addSpacing(d->separatorPixels);
+
+        i++;
+    }
+
+    return returnWidget;
 }
-
-bool ProgressListDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
-                                       const QStyleOptionViewItem &option, const QModelIndex &index)
-{
-    d->listView->repaint();
-
-    return this->event(event);
-}
-
 
 void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QFontMetrics fontMetrics = painter->fontMetrics();
     int textHeight = fontMetrics.height();
 
-    int coordY = d->separatorPixels;
+    int coordY = d->separatorPixels + option.rect.top();
 
     int jobIdModel = d->getJobId(index);
     QString applicationInternalNameModel = d->getApplicationInternalName(index);
@@ -265,7 +276,7 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->translate(d->leftMargin, d->separatorPixels + (fontMetrics.width(applicationNameModel) / 2) + (iconHeight / 2) + canvas.top());
     painter->rotate(270);
 
-    QRect appNameRect(0, 0, fontMetrics.width(applicationNameModel), fontMetrics.height());
+    QRect appNameRect(0, 0, fontMetrics.width(applicationNameModel), textHeight);
 
     painter->drawText(appNameRect, Qt::AlignLeft, applicationNameModel);
 
@@ -275,45 +286,55 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
     if (!d->getMessage(index).isEmpty())
     {
-        QString textToShow = fontMetrics.elidedText(d->getMessage(index), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin);
+        QString textToShow = fontMetrics.elidedText(d->getMessage(index), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
-        painter->drawText(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
+        textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
+
+        painter->drawText(d->getCurrentLeftMargin(textHeight), coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
 
         coordY += d->separatorPixels + textHeight;
     }
 
     if (!d->getFrom(index).isEmpty())
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1: %2", d->getFromLabel(index), d->getFrom(index)), Qt::ElideMiddle, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin);
+        QString textToShow = fontMetrics.elidedText(i18n("%1: %2", d->getFromLabel(index), d->getFrom(index)), Qt::ElideMiddle, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
-        painter->drawText(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
+        textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
+
+        painter->drawText(d->getCurrentLeftMargin(textHeight), coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
 
         coordY += d->separatorPixels + textHeight;
     }
 
     if (!d->getTo(index).isEmpty())
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1: %2", d->getToLabel(index), d->getTo(index)), Qt::ElideMiddle, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin);
+        QString textToShow = fontMetrics.elidedText(i18n("%1: %2", d->getToLabel(index), d->getTo(index)), Qt::ElideMiddle, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
-        painter->drawText(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
+        textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
+
+        painter->drawText(d->getCurrentLeftMargin(textHeight), coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
 
         coordY += d->separatorPixels + textHeight;
     }
 
     if (d->getFileTotals(index) > 1)
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 files processed", QString::number(d->getFilesProcessed(index)), QString::number(d->getFileTotals(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin);
+        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 files processed", QString::number(d->getFilesProcessed(index)), QString::number(d->getFileTotals(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
-        painter->drawText(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
+        textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
+
+        painter->drawText(d->getCurrentLeftMargin(textHeight), coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
 
         coordY += d->separatorPixels + textHeight;
     }
 
     if (!d->getSizeTotals(index).isEmpty())
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 processed", d->getSizeProcessed(index), d->getSizeTotals(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin);
+        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 processed", d->getSizeProcessed(index), d->getSizeTotals(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
-        painter->drawText(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
+        textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
+
+        painter->drawText(d->getCurrentLeftMargin(textHeight), coordY, fontMetrics.width(textToShow), textHeight, Qt::AlignLeft, textToShow);
 
         coordY += d->separatorPixels + textHeight;
     }
@@ -322,28 +343,12 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     {
         QStyleOptionProgressBarV2 *progressBarModel = d->getProgressBar(index);
 
-        progressBarModel->rect = QRect(d->getCurrentLeftMargin(fontMetrics.height()), canvas.top() + coordY, canvas.width() - d->getCurrentLeftMargin(fontMetrics.height()) - d->rightMargin - iconWidth - d->separatorPixels, d->progressBarHeight);
+        progressBarModel->rect = QRect(d->getCurrentLeftMargin(textHeight), coordY, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin - iconWidth - d->separatorPixels, d->progressBarHeight);
 
         QApplication::style()->drawControl(QStyle::CE_ProgressBar, progressBarModel, painter);
     }
 
     painter->restore();
-}
-
-void ProgressListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-{
-#ifdef __GNUC__
-    #warning implement me (ereslibre)
-#endif
-    return;
-}
-
-void ProgressListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
-{
-#ifdef __GNUC__
-    #warning implement me (ereslibre)
-#endif
-    return;
 }
 
 QSize ProgressListDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -356,24 +361,39 @@ QSize ProgressListDelegate::sizeHint(const QStyleOptionViewItem &option, const Q
     int textSize = fontMetrics.height() + d->separatorPixels;
 
     if (!d->getMessage(index).isEmpty())
+    {
+        textSize = fontMetrics.size(Qt::TextSingleLine, d->getMessage(index)).height() + d->separatorPixels;
         itemHeight += textSize;
+    }
 
     if (!d->getFrom(index).isEmpty())
+    {
+        textSize = fontMetrics.size(Qt::TextSingleLine, d->getFrom(index)).height() + d->separatorPixels;
         itemHeight += textSize;
+    }
 
     if (!d->getTo(index).isEmpty())
+    {
+        textSize = fontMetrics.size(Qt::TextSingleLine, d->getTo(index)).height() + d->separatorPixels;
         itemHeight += textSize;
+    }
 
     if (d->getFileTotals(index) > 1)
+    {
+        textSize = fontMetrics.size(Qt::TextSingleLine, QString::number(d->getFileTotals(index))).height() + d->separatorPixels;
         itemHeight += textSize;
+    }
 
     if (!d->getSizeTotals(index).isEmpty())
+    {
+        textSize = fontMetrics.size(Qt::TextSingleLine, d->getSizeTotals(index)).height() + d->separatorPixels;
         itemHeight += textSize;
+    }
 
     if (d->getPercent(index) > -1)
         itemHeight += d->progressBarHeight + d->separatorPixels;
 
-    if (d->editorHeight)
+    if (d->editorHeight > 0)
         itemHeight += d->editorHeight + d->separatorPixels;
 
     if (itemHeight + d->separatorPixels >= d->minimumItemHeight)
@@ -428,3 +448,4 @@ void ProgressListDelegate::setEditorHeight(int editorHeight)
 }
 
 #include "progresslistdelegate.moc"
+#include "progresslistdelegate_p.moc"

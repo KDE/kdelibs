@@ -27,37 +27,41 @@
 #include <kio/jobclasses.h>
 #include <kiconloader.h>
 
-class QStyleOptionButton;
 class QStyleOptionProgressBarV2;
+
+namespace KIO
+{
+    class DefaultProgress;
+};
 
 struct actionInfo
 {
-    int actionId;
-    QString actionText;
-    QStyleOptionButton *optionButton;
+    int actionId;                           ///< The number that identificates the action
+    QString actionText;                     ///< The text that is shown on the button on the editor
 };
 
 struct jobInfo
 {
-    int jobId;
-    QString applicationInternalName;
-    QString applicationName;
-    QString icon;
-    qlonglong fileTotals;
-    qlonglong filesProcessed;
-    QString sizeTotals;
-    QString sizeProcessed;
-    qlonglong timeElapsed;
-    qlonglong timeTotals;
-    QString from;
-    QString to;
-    QString fromLabel;
-    QString toLabel;
-    int percent;
-    QString message;
-    QList<actionInfo> actionInfoList;
-    QStyleOptionProgressBarV2 *progressBar;
-    KIconLoader *iconLoader;
+    int jobId;                              ///< The number that is associated with the job
+    QString applicationInternalName;        ///< The application name (konqueror, kopete...)
+    QString applicationName;                ///< The friendly application name (Konqueror, Kopete...)
+    QString icon;                           ///< The icon name
+    qlonglong fileTotals;                   ///< The number of total files to be processed
+    qlonglong filesProcessed;               ///< The number of processed files
+    QString sizeTotals;                     ///< The total size of the operation
+    QString sizeProcessed;                  ///< The processed size at the moment
+    qlonglong timeElapsed;                  ///< The elapsed time
+    qlonglong timeTotals;                   ///< The total time of the operation
+    QString from;                           ///< From where are we performing the operation
+    QString to;                             ///< To where are we performing the operation
+    QString fromLabel;                      ///< The label to be shown on the delegate
+    QString toLabel;                        ///< The label to be shown on the delegate
+    int percent;                            ///< The current percent of the progress
+    QString message;                        ///< The information message to be shown
+    QList<actionInfo> actionInfoList;       ///< The list of actions added to the job
+    QStyleOptionProgressBarV2 *progressBar; ///< The progress bar to be shown
+    KIconLoader *iconLoader;                ///< The icon loader for loading the icon on the delegate
+    KIO::DefaultProgress *defaultProgress;  ///< The default progress operation window
 };
 
 class ProgressListModel
@@ -66,65 +70,190 @@ class ProgressListModel
     Q_OBJECT
 
 public:
-    class PersistentData;
-
-    /**
-      * @brief Constructor for the model of a progress list.
-      */
     ProgressListModel(QObject *parent = 0);
 
-    /**
-      * @brief Destructor for the model of a progress list.
-      */
     ~ProgressListModel();
 
     QModelIndex parent(const QModelIndex&) const;
 
     /**
-      * @brief Returns data from the data structure.
+      * Returns the data on @p index that @p role contains. The result is
+      * a QVariant, so you may need to cast it to the type you want
+      *
+      * @param index    the index in which you are accessing
+      * @param role     the role you want to retrieve
+      * @return         the data in a QVariant class
       */
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
+    /**
+      * Returns what operations the model/delegate support on the given @p index
+      *
+      * @param index    the index in which you want to know the allowed operations
+      * @return         the allowed operations on the model/delegate
+      */
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     /**
-      * @brief Get the children model index for the given row.
+      * Returns the index for the given @p row. Since it is a list, @p column should
+      * be 0, but it will be ignored. @p parent will be ignored as well.
+      *
+      * @param row      the row you want to get the index
+      * @param column   will be ignored
+      * @param parent   will be ignored
+      * @return         the index for the given @p row as a QModelIndex
       */
     QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
 
+    /**
+      * Returns the index for the given @p jobId
+      *
+      * @param jobId    the jobId of which you want to get the index
+      * @return         the index for the give @p jobId as a QModelIndex
+      */
     QModelIndex indexForJob(uint jobId) const;
 
+    /**
+      * Returns the number of columns
+      *
+      * @param parent   will be ignored
+      * @return         the number of columns. In this case is always 1
+      */
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
     /**
-      * @brief Get the number of progresses added to the list.
+      * Returns the number of rows
+      *
+      * @param parent   will be ignored
+      * @return         the number of rows in the model
       */
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
     /**
-      * @brief Insert a row into the data structure.
+      * Inserts a row into the model with the given @p jobId
+      *
+      * @param row      the row where the data will be inserted
+      * @param jobId    the identification number of the job to be added at the row @p row
+      * @param parent   will be ignored
+      * @return         whether the operation was sucessful or not
       */
     bool insertRow(int row, uint jobId, const QModelIndex &parent = QModelIndex());
 
     /**
-      * @brief Remove a row from the data structure.
+      * Removes the row @p row from the model
+      *
+      * @param row      the row to be removed
+      * @param parent   will be ignored
       */
     void removeRow(int row, const QModelIndex &parent = QModelIndex());
 
     /**
-      * @brief Sets the data on role for a given index.
+      * Sets the data contained on @p value to the given @p index and @p role
+      *
+      * @param index    the index where the data contained on @p value will be stored
+      * @param value    the data that is going to be stored
+      * @param role     in what role we want to store the data at the given @p index
+      * @return         whether the data was sucessfully stored or not
       */
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
-    void newJob(uint jobId, const QString &internalAppName, const QString &jobIcon, const QString &appName);
+    /**
+      * Creates a new job on the model with the given @p jobId
+      *
+      * @param jobId            the identification number of the job that is going to be added to the model
+      * @param internalAppName  the application name (konqueror, kopete...)
+      * @param jobIcon          the icon name that will be shown for this job
+      * @param appName          the friendly application name (Konqueror, Kopete...)
+      * @param showProgress     whether the progress of this job is going to be shown or not
+      */
+    void newJob(uint jobId, const QString &internalAppName, const QString &jobIcon, const QString &appName, bool showProgress);
 
+    /**
+      * Removes from the model the data related to the job
+      *
+      * @param jobId the identification number of the job that is going to be removed
+      */
     void finishJob(uint jobId);
 
+    /**
+      * Adds a new action to the job on the model
+      *
+      * @param jobId        the identification number of the job that will contain the new action
+      * @param actionId     the identification number of the new action
+      * @param actionText   the text that will be shown for this action
+      */
     void newAction(uint jobId, uint actionId, const QString &actionText);
 
+    /**
+      * Edits an existing action
+      *
+      * @param jobId        the identification number of the job that contains the action to be modified
+      * @param actionId     the identification number of the action to be modified
+      * @param actionText   the new text to be shown related to this action
+      */
+    void editAction(int jobId, int actionId, const QString &actionText);
+
+    /**
+      * Removes an existing action
+      *
+      * @param jobId    the identification number of the job that contains the action to be removed
+      * @param actionId the identification number of the action to be removed
+      */
+    void removeAction(int jobId, int actionId);
+
+    /**
+      * Returns all existing actions related to a given job identification number
+      *
+      * @param jobId    the job which we want to retrieve all actions
+      * @return         the list of actions related to the identification job number @p jobId
+      */
     const QList<actionInfo> &actions(uint jobId) const;
 
+    /**
+      * Returns the progress bar for the given @p index
+      *
+      * @param index    the index we want to retrieve the progress bar
+      * @return         the progress bar for the given @p index. Might return 0 if no progress was set
+      */
     QStyleOptionProgressBarV2 *progressBar(const QModelIndex &index) const;
+
+    /**
+      * Returns the default progress window for the given @p row
+      *
+      * @param row  the row of which we want to retrieve the default progress window
+      * @return     the default progress window for given @p row
+      */
+    KIO::DefaultProgress *defaultProgress(int row) const;
+
+    /**
+      * Sets the default progress window for the given @p row to @p defaultProgress
+      *
+      * @param row              the row in which we want to set the default window progress
+      * @param defaultProgress  the default window progress
+      */
+    void setDefaultProgress(int row, KIO::DefaultProgress *defaultProgress);
+
+Q_SIGNALS:
+    /**
+      * Called when an action has been added to the model at @p index
+      *
+      * @param index the index where the action was added
+      */
+    void actionAdded(const QModelIndex &index);
+
+    /**
+      * Called when an action has been edited on the model at @p index
+      *
+      * @param index the index where the action was edited
+      */
+    void actionEdited(const QModelIndex &index);
+
+    /**
+      * Called when an action has been removed from the model at @p index
+      *
+      * @param index the index where the action was removed
+      */
+    void actionRemoved(const QModelIndex &index);
 
 private:
     /**
@@ -142,7 +271,7 @@ private:
       */
     void setIconLoader(int row, KIconLoader *iconLoader);
 
-    QList<jobInfo> jobInfoList;
+    QList<jobInfo> jobInfoList; /// @internal
 };
 
 #endif // PROGRESSLISTMODEL_H

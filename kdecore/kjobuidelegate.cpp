@@ -21,6 +21,10 @@
 
 #include "kjobuidelegate.h"
 #include "kjob.h"
+#include <kglobal.h>
+#include <kdebug.h>
+#include <kinstance.h>
+#include <kaboutdata.h>
 
 #include <kdebug.h>
 
@@ -32,11 +36,24 @@ public:
     KJob *job;
     bool autoErrorHandling;
     bool autoWarningHandling;
+    QString jobIcon;
 };
 
 KJobUiDelegate::KJobUiDelegate()
     : QObject(), d( new Private() )
 {
+    KInstance *instance = KGlobal::instance();
+
+    if ( instance && instance->aboutData() )
+    {
+        d->jobIcon = instance->aboutData()->appName();
+    }
+    else
+    {
+        kDebug() << "Couldn't retrieve application job launcher information. Some information won't be shown on the kio_uiserver" << endl;
+
+        d->jobIcon = QString();
+    }
 }
 
 KJobUiDelegate::~KJobUiDelegate()
@@ -84,6 +101,16 @@ void KJobUiDelegate::setAutoWarningHandlingEnabled( bool enable )
 bool KJobUiDelegate::isAutoWarningHandlingEnabled() const
 {
     return d->autoWarningHandling;
+}
+
+void KJobUiDelegate::setJobIcon(const QString &jobIcon)
+{
+    d->jobIcon = jobIcon;
+}
+
+QString KJobUiDelegate::jobIcon() const
+{
+    return d->jobIcon;
 }
 
 void KJobUiDelegate::connectJob( KJob *job )

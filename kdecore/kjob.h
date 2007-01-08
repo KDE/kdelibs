@@ -105,6 +105,7 @@ public:
 
     enum KillVerbosity { Quietly, EmitResult };
 
+public Q_SLOTS:
     /**
      * Aborts this job.
      * This kills and deletes the job.

@@ -78,27 +78,23 @@ UIServer::UIServer()
     setCentralWidget(listProgress);
 
     ProgressListDelegate *progressListDelegate = new ProgressListDelegate(this, listProgress);
-    progressListDelegate->setSeparatorPixels(5);
-    progressListDelegate->setLeftMargin(5);
-    progressListDelegate->setRightMargin(5);
+    progressListDelegate->setSeparatorPixels(10);
+    progressListDelegate->setLeftMargin(10);
+    progressListDelegate->setRightMargin(10);
     progressListDelegate->setProgressBarHeight(20);
     progressListDelegate->setMinimumItemHeight(100);
-    progressListDelegate->setMinimumContentWidth(200);
-    //progressListDelegate->setEditorHeight(20);
-#ifdef __GNUC__
-    #warning no editor yet, change height when implemented (ereslibre)
-#endif
-    progressListDelegate->setEditorHeight(0);
+    progressListDelegate->setMinimumContentWidth(300);
+    progressListDelegate->setEditorHeight(20);
     listProgress->setItemDelegate(progressListDelegate);
 
-    connect(progressListModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
-            listProgress, SLOT(rowsInserted(const QModelIndex&, int, int)));
+    connect(progressListModel, SIGNAL(rowsInserted(const QModelIndex&,int,int)),
+            listProgress, SLOT(rowsInserted(const QModelIndex&,int,int)));
 
-    connect(progressListModel, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            listProgress, SLOT(rowsRemoved(const QModelIndex&, int, int)));
+    connect(progressListModel, SIGNAL(rowsRemoved(const QModelIndex&,int,int)),
+            listProgress, SLOT(rowsRemoved(const QModelIndex&,int,int)));
 
-    connect(progressListModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
-            listProgress, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
+    connect(progressListModel, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
+            listProgress, SLOT(dataChanged(const QModelIndex&,const QModelIndex&)));
 
     connect(progressListDelegate, SIGNAL(actionPerformed(int)), serverAdaptor,
             SIGNAL(actionPerformed(int)));
@@ -119,16 +115,14 @@ UIServer* UIServer::createInstance()
 
 int UIServer::newJob(const QString &appServiceName, bool showProgress, const QString &internalAppName, const QString &jobIcon, const QString &appName)
 {
+    // Uncomment if you want to see kio_uiserver in action (ereslibre)
+    // if (isHidden()) show();
+
     s_jobId++;
 
-    progressListModel->newJob(s_jobId, internalAppName, jobIcon, appName);
+    progressListModel->newJob(s_jobId, internalAppName, jobIcon, appName, showProgress);
     progressListModel->setData(progressListModel->indexForJob(s_jobId), s_jobId,
                                ProgressListDelegate::jobId);
-
-#ifdef __GNUC__
-    #warning Opening persistent editor leads to painting problems (ereslibre)
-#endif
-    //listProgress->openPersistentEditor(progressListModel->indexForJob(s_jobId));
 
     return s_jobId;
 }
@@ -144,9 +138,30 @@ int UIServer::newAction(int jobId, const QString &actionText)
 {
     s_actionId++;
 
+    m_hashActions.insert(s_actionId, jobId);
+
     progressListModel->newAction(jobId, s_actionId, actionText);
 
     return s_actionId;
+}
+
+void UIServer::editAction(int actionId, const QString &actionText)
+{
+    if (!m_hashActions.contains(actionId))
+        return;
+
+    progressListModel->editAction(m_hashActions[actionId], actionId,
+                                  actionText);
+}
+
+void UIServer::removeAction(int actionId)
+{
+    if (!m_hashActions.contains(actionId))
+        return;
+
+    progressListModel->removeAction(m_hashActions[actionId], actionId);
+
+    m_hashActions.remove(actionId);
 }
 
 void UIServer::totalSize(int id, KIO::filesize_t size)
@@ -370,14 +385,6 @@ void UIServer::unmounting(int id, QString point)
                                ProgressListDelegate::fromLabel);
 }
 
-void UIServer::canResume(int id, KIO::filesize_t offset)
-{
-#ifdef __GNUC__
-    #warning implement me (ereslibre)
-#endif
-    return;
-}
-
 int UIServer::messageBox(int id, int type, const QString &text, const QString &caption,
                const QString &buttonYes, const QString &buttonNo)
 {
@@ -436,11 +443,6 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &data, 
    // Don't delete kid!!
 }
 
-KSSLCertDialogRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList)
-{
-    return showSSLCertDialog(host, certList, 0);
-}
-
 KSSLCertDialogRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow)
 {
     KSSLCertDialogRet rc;
@@ -491,7 +493,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     KLocale::setMainCatalog("kdelibs");
     //  GS 5/2001 - I changed the name to "KDE" to make it look better
     //              in the titles of dialogs which are displayed.
-    KAboutData aboutdata("kio_uiserver", I18N_NOOP("KDE Task Manager"),
+    KAboutData aboutdata("kio_uiserver", I18N_NOOP("Progress Manager"),
                          "0.8", I18N_NOOP("KDE Progress Information UI Server"),
                          KAboutData::License_GPL, "(C) 2000-2005, David Faure & Matt Koss");
     aboutdata.addAuthor("David Faure",I18N_NOOP("Maintainer"),"faure@kde.org");

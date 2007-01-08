@@ -90,6 +90,7 @@ namespace KIO {
          */
         virtual bool doKill();
 
+public Q_SLOTS:
         /**
          * Suspend this job
          * @see resume
@@ -102,6 +103,7 @@ namespace KIO {
          */
         virtual void resume();
 
+public:
         /**
          * @return true if this job was suspended by suspend()
          */

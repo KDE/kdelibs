@@ -40,13 +40,6 @@ public:
     ~OrgKdeKIOUIServerInterface();
 
 public Q_SLOTS: // METHODS
-    inline Q_NOREPLY void canResume(int id, qulonglong offset)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(id) << qVariantFromValue(offset);
-        callWithArgumentList(QDBus::NoBlock, QLatin1String("canResume"), argumentList);
-    }
-
     inline Q_NOREPLY void copying(int id, const QString &from, const QString &to)
     {
         QList<QVariant> argumentList;
@@ -89,6 +82,13 @@ public Q_SLOTS: // METHODS
         return callWithArgumentList(QDBus::Block, QLatin1String("messageBox"), argumentList);
     }
 
+    inline Q_NOREPLY void setJobVisible(int jobId, bool visible)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(jobId) << qVariantFromValue(visible);
+        callWithArgumentList(QDBus::NoBlock, QLatin1String("setJobVisible"), argumentList);
+    }
+
     inline Q_NOREPLY void mounting(int id, const QString &dev, const QString &point)
     {
         QList<QVariant> argumentList;
@@ -115,6 +115,20 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(jobId) << qVariantFromValue(actionText);
         return callWithArgumentList(QDBus::Block, QLatin1String("newAction"), argumentList);
+    }
+
+    inline Q_NOREPLY void editAction(int actionId, const QString &actionText)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(actionId) << qVariantFromValue(actionText);
+        callWithArgumentList(QDBus::NoBlock, QLatin1String("editAction"), argumentList);
+    }
+
+    inline Q_NOREPLY void removeAction(int actionId)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(actionId);
+        callWithArgumentList(QDBus::NoBlock, QLatin1String("removeAction"), argumentList);
     }
 
     inline Q_NOREPLY void percent(int id, uint ipercent)
@@ -217,7 +231,7 @@ public Q_SLOTS: // METHODS
     }
 
 Q_SIGNALS: // SIGNALS
-    void actionPerformed(int id);
+    void actionPerformed(int actionId);
 };
 
 namespace org {

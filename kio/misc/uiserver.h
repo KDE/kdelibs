@@ -65,6 +65,8 @@ public:
     void jobFinished(int jobId);
 
     int newAction(int jobId, const QString &actionText);
+    void editAction(int actionId, const QString &actionText);
+    void removeAction(int actionId);
 
     void totalSize(int jobId, KIO::filesize_t size);
     void totalFiles(int jobId, unsigned long files);
@@ -88,8 +90,6 @@ public:
     void mounting(int jobId, QString dev, QString point);
     void unmounting(int jobId, QString point);
 
-    void canResume(int jobId, KIO::filesize_t offset);
-
     /**
       * Popup a message box.
       * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
@@ -109,7 +109,7 @@ public:
     int messageBox(int jobId, int type, const QString &text, const QString &caption,
                    const QString &buttonYes, const QString &buttonNo);
 
-    void setJobVisible(int id, bool visible);
+    void setJobVisible(int jobId, bool visible);
 
     /**
       * Show a SSL Information Dialog
@@ -117,19 +117,9 @@ public:
     void showSSLInfoDialog(const QString &url, const KIO::MetaData &data, int mainwindow);
 
     /**
-      * @deprecated
-      */
-    void showSSLInfoDialog(const QString &url, const KIO::MetaData &data);
-
-    /**
       * Show an SSL Certificate Selection Dialog
       */
     KSSLCertDialogRet showSSLCertDialog(const QString &host, const QStringList &certList, int mainwindow);
-
-    /**
-      * @deprecated
-      */
-    KSSLCertDialogRet showSSLCertDialog(const QString &host, const QStringList &certList);
 
 public Q_SLOTS:
     void slotRemoveSystemTrayIcon();
@@ -141,6 +131,7 @@ protected:
 
 private:
     UIServerAdaptor *serverAdaptor;
+    QHash<int, int> m_hashActions;
 
     static int s_jobId;
     static int s_actionId;

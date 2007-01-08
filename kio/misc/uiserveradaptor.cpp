@@ -34,12 +34,6 @@ UIServerAdaptor::~UIServerAdaptor()
     // destructor
 }
 
-void UIServerAdaptor::canResume(int id, qulonglong offset)
-{
-    // handle method call org.kde.KIO.UIServer.canResume
-    parent()->canResume(id, offset);
-}
-
 void UIServerAdaptor::copying(int id, const QString &from, const QString &to)
 {
     // handle method call org.kde.KIO.UIServer.copying
@@ -97,6 +91,16 @@ int UIServerAdaptor::newJob(const QString &appServiceName, bool showProgress, co
 int UIServerAdaptor::newAction(int jobId, const QString &actionText)
 {
     return parent()->newAction(jobId, actionText);
+}
+
+void UIServerAdaptor::editAction(int actionId, const QString &actionText)
+{
+    parent()->editAction(actionId, actionText);
+}
+
+void UIServerAdaptor::removeAction(int actionId)
+{
+    parent()->removeAction(actionId);
 }
 
 void UIServerAdaptor::percent(int id, uint ipercent)

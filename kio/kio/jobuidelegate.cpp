@@ -41,7 +41,6 @@ public:
     bool showProgressInfo;
     QPointer<QWidget> errorParentWidget;
     unsigned long userTimestamp;
-    QString jobIcon;
 };
 
 KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
@@ -52,19 +51,6 @@ KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
 #if defined Q_WS_X11
     d->userTimestamp = QX11Info::appUserTime();
 #endif
-
-    KInstance *instance = KGlobal::instance();
-
-    if ( instance && instance->aboutData() )
-    {
-        d->jobIcon = instance->aboutData()->appName();
-    }
-    else
-    {
-        kDebug() << "Couldn't retrieve application job launcher information. Some information won't be shown on the kio_uiserver" << endl;
-
-        d->jobIcon = QString();
-    }
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()
@@ -138,16 +124,6 @@ void KIO::JobUiDelegate::showErrorMessage()
     {
         KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
     }
-}
-
-void KIO::JobUiDelegate::setJobIcon(const QString &jobIcon)
-{
-    d->jobIcon = jobIcon;
-}
-
-QString KIO::JobUiDelegate::jobIcon() const
-{
-    return d->jobIcon;
 }
 
 void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )

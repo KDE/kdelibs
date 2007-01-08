@@ -124,6 +124,23 @@ public:
      */
     bool isAutoWarningHandlingEnabled() const;
 
+    /**
+      * Set the icon associated with this job to @p jobIcon.
+      * @param jobIcon the icon associated with this job
+      * @see jobIcon()
+      */
+    void setJobIcon(const QString &jobIcon);
+
+    /**
+      * Returns the icon associated to this job. If no icon
+      * has been set explicitly using setJobIcon, the icon
+      * associated with the application that started this
+      * job will be returned
+      * @return the icon associated to this job
+      * @see setJobIcon()
+      */
+    QString jobIcon() const;
+
 protected:
     virtual void connectJob( KJob *job );
 

@@ -3,7 +3,7 @@
 <node>
   <interface name="org.kde.KIO.UIServer">
     <signal name="actionPerformed">
-      <arg name="id" type="i" direction="out">
+      <arg name="actionId" type="i" direction="out">
     </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
@@ -21,6 +21,15 @@
       <arg name="jobId" type="i" direction="in"/>
       <arg name="actionText" type="s" direction="in"/>
       <arg name="actionId" type="i" direction="out"/>
+    </method>
+    <method name="editAction">
+      <arg name="actionId" type="i" direction="in"/>
+      <arg name="actionText" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="removeAction">
+      <arg name="actionId" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="totalSize">
       <arg name="id" type="i" direction="in"/>
@@ -110,11 +119,6 @@
       <arg name="point" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
-    <method name="canResume">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="offset" type="t" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
     <method name="messageBox">
       <arg name="id" type="i" direction="in"/>
       <arg name="type" type="i" direction="in"/>
@@ -125,8 +129,9 @@
       <arg name="buttonCode" type="i" direction="out"/>
     </method>
     <method name="setJobVisible" >
-      <arg name="id" type="i" direction="in"/>
+      <arg name="jobId" type="i" direction="in"/>
       <arg name="visible" type="b" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="showSSLInfoDialog">
       <arg name="url" type="s" direction="in"/>

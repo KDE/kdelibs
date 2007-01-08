@@ -20,10 +20,10 @@
 #include "progresslistmodel.h"
 #include "progresslistdelegate.h"
 
-#include <QStyleOptionButton>
 #include <QStyleOptionProgressBarV2>
 
 #include <kiconloader.h>
+#include <kio/defaultprogress.h>
 
 ProgressListModel::ProgressListModel(QObject *parent)
     : QAbstractItemModel(parent)
@@ -34,13 +34,9 @@ ProgressListModel::~ProgressListModel()
 {
     foreach (jobInfo it, jobInfoList)
     {
-        foreach (actionInfo actionIt, it.actionInfoList)
-        {
-            delete actionIt.optionButton;
-        }
-
         delete it.progressBar;
         delete it.iconLoader;
+        delete it.defaultProgress;
     }
 }
 
@@ -178,6 +174,7 @@ bool ProgressListModel::insertRow(int row, uint jobId, const QModelIndex &parent
     newJob.message = QString();
     newJob.progressBar = 0;
     newJob.iconLoader = 0;
+    newJob.defaultProgress = 0;
 
     jobInfoList.append(newJob);
 
@@ -272,7 +269,7 @@ bool ProgressListModel::setData(const QModelIndex &index, const QVariant &value,
     return true;
 }
 
-void ProgressListModel::newJob(uint jobId, const QString &internalAppName, const QString &jobIcon, const QString &appName)
+void ProgressListModel::newJob(uint jobId, const QString &internalAppName, const QString &jobIcon, const QString &appName, bool showProgress)
 {
     int newRow = rowCount();
 
@@ -281,6 +278,10 @@ void ProgressListModel::newJob(uint jobId, const QString &internalAppName, const
     setData(newRow, appName, ProgressListDelegate::applicationName);
     setData(newRow, jobIcon, ProgressListDelegate::icon);
     setIconLoader(newRow, new KIconLoader(internalAppName));
+
+    // Add a configuration window for showing this progresses or not (and more options) (ereslibre)
+    // KIO::DefaultProgress *progressWindow = new KIO::DefaultProgress(true);
+    // setDefaultProgress(newRow, progressWindow);
 }
 
 void ProgressListModel::finishJob(uint jobId)
@@ -293,15 +294,67 @@ void ProgressListModel::finishJob(uint jobId)
 
 void ProgressListModel::newAction(uint jobId, uint actionId, const QString &actionText)
 {
-    int row = indexForJob(jobId).row();
+    QModelIndex index = indexForJob(jobId);
+
+    int row = index.row();
 
     actionInfo newActionInfo;
     newActionInfo.actionId = actionId;
     newActionInfo.actionText = actionText;
-    newActionInfo.optionButton = new QStyleOptionButton();
-    newActionInfo.optionButton->text = actionText;
 
     jobInfoList[row].actionInfoList.append(newActionInfo);
+
+    emit actionAdded(index);
+}
+
+void ProgressListModel::editAction(int jobId, int actionId, const QString &actionText)
+{
+    QModelIndex index = indexForJob(jobId);
+
+    int i = 0;
+    bool keepSearching = true;
+    actionInfo actionIt;
+    while ((i < jobInfoList[index.row()].actionInfoList.count()) &&
+           keepSearching)
+    {
+        actionIt = jobInfoList[index.row()].actionInfoList[i];
+
+        if (actionId == actionIt.actionId)
+        {
+            jobInfoList[index.row()].actionInfoList[i].actionText = actionText;
+
+            keepSearching = false;
+        }
+
+        i++;
+    }
+
+    emit actionEdited(index);
+}
+
+void ProgressListModel::removeAction(int jobId, int actionId)
+{
+    QModelIndex index = indexForJob(jobId);
+
+    int i = 0;
+    bool keepSearching = true;
+    actionInfo actionIt;
+    while ((i < jobInfoList[index.row()].actionInfoList.count()) &&
+           keepSearching)
+    {
+        actionIt = jobInfoList[index.row()].actionInfoList[i];
+
+        if (actionId == actionIt.actionId)
+        {
+            jobInfoList[index.row()].actionInfoList.removeAt(i);
+
+            keepSearching = false;
+        }
+
+        i++;
+    }
+
+    emit actionRemoved(index);
 }
 
 const QList<actionInfo> &ProgressListModel::actions(uint jobId) const
@@ -312,6 +365,16 @@ const QList<actionInfo> &ProgressListModel::actions(uint jobId) const
 QStyleOptionProgressBarV2 *ProgressListModel::progressBar(const QModelIndex &index) const
 {
     return jobInfoList[index.row()].progressBar;
+}
+
+KIO::DefaultProgress *ProgressListModel::defaultProgress(int row) const
+{
+    return jobInfoList[row].defaultProgress;
+}
+
+void ProgressListModel::setDefaultProgress(int row, KIO::DefaultProgress *defaultProgress)
+{
+    jobInfoList[row].defaultProgress = defaultProgress;
 }
 
 bool ProgressListModel::setData(int row, const QVariant &value, int role)
