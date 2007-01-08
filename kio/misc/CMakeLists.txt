@@ -22,7 +22,10 @@ progresslistmodel.cpp
 progresslistdelegate.cpp
 )
 
-kde4_automoc(${kio_uiserver_KDEINIT_SRCS})
+set(kio_uiserver_KDEINIT_PRIVATE
+progresslistdelegate_p.h)
+
+kde4_automoc(${kio_uiserver_KDEINIT_SRCS} ${kio_uiserver_KDEINIT_PRIVATE})
 
 kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
