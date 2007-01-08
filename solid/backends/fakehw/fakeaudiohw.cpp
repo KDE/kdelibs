@@ -62,7 +62,7 @@ QString FakeAudioHw::name()
     return fakeDevice()->property( "name" ).toString();
 }
 
-Solid::AudioHw::AudioHwTypes FakeAudioHw::type()
+Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType()
 {
     Solid::AudioHw::AudioHwTypes result;
 
@@ -85,6 +85,29 @@ Solid::AudioHw::AudioHwTypes FakeAudioHw::type()
     }
 
     return result;
+}
+
+Solid::AudioHw::SoundcardType FakeAudioHw::soundcardType()
+{
+    QString type_str = fakeDevice()->property( "soundcardType" ).toString();
+
+    if ( type_str == "internal" )
+    {
+        return Solid::AudioHw::InternalSoundcard;
+    }
+    else if ( type_str == "usb" )
+    {
+        return Solid::AudioHw::UsbSoundcard;
+    }
+    else if ( type_str == "firewire" )
+    {
+        return Solid::AudioHw::FirewireSoundcard;
+    }
+    else if ( type_str == "headset" )
+    {
+        return Solid::AudioHw::Headset;
+    }
+    return Solid::AudioHw::InternalSoundcard;
 }
 
 #include "fakeaudiohw.moc"

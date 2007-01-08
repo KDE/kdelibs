@@ -21,6 +21,7 @@
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/audiohw.h>
+#include <QStringList>
 
 
 Solid::AudioHw::AudioHw( QObject *backendObject )
@@ -38,9 +39,24 @@ Solid::AudioHw::AudioDriver Solid::AudioHw::driver()
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioDriver, driver() );
 }
 
-QString Solid::AudioHw::driverHandler()
+QStringList Solid::AudioHw::driverHandles()
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), QString(), driverHandler() );
+    Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw*>( backendObject() );
+    if ( iface )
+    {
+        QString handle = iface->driverHandler();
+        if ( iface->driver() == Alsa )
+        {
+            // TODO add logic from phonon/alsadevicelist/alsadevice.cpp
+            //QStringList handles;
+            return QStringList( handle );
+        }
+        else
+        {
+            return QStringList( handle );
+        }
+    }
+    return QStringList();
 }
 
 QString Solid::AudioHw::name()
@@ -48,9 +64,14 @@ QString Solid::AudioHw::name()
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), QString(), name() );
 }
 
-Solid::AudioHw::AudioHwTypes Solid::AudioHw::type()
+Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType()
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioHwType, type() );
+    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioHwType, deviceType() );
+}
+
+Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType()
+{
+    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), InternalSoundcard, soundcardType() );
 }
 
 #include "audiohw.moc"

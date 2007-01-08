@@ -567,6 +567,7 @@
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,0</property>
                 <property key="type">input</property>
+                <property key="soundcardType">internal</property>
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_playback_0">
                 <property key="name">Acme ALSA Playback</property>
@@ -575,6 +576,7 @@
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,1</property>
                 <property key="type">output</property>
+                <property key="soundcardType">internal</property>
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_control_1">
                 <property key="name">Acme ALSA Control</property>
@@ -583,6 +585,7 @@
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0</property>
                 <property key="type">control</property>
+                <property key="soundcardType">internal</property>
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0">
                 <property key="name">Acme OSS PCM Device</property>
@@ -591,6 +594,7 @@
                 <property key="driver">oss</property>
                 <property key="driverHandler">/dev/dsp</property>
                 <property key="type">input,output</property>
+                <property key="soundcardType">internal</property>
             </device>
 
 

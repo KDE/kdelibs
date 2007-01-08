@@ -75,11 +75,19 @@ namespace Ifaces
          * @return the type of this audio interface
          * @see Solid::AudioHw::AudioHwTypes
          */
-        virtual Solid::AudioHw::AudioHwTypes type() = 0;
+        virtual Solid::AudioHw::AudioHwTypes deviceType() = 0;
+
+        /**
+         * Retrieves the type of soundcard (internal/headset/...).
+         *
+         * @return the type of soundcard
+         * @see Solid::AudioHw::SoundcardType
+         */
+        virtual Solid::AudioHw::SoundcardType soundcardType() = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::AudioHw, "org.kde.Solid.Ifaces.AudioHw/0.1" )
+Q_DECLARE_INTERFACE( Solid::Ifaces::AudioHw, "org.kde.Solid.Ifaces.AudioHw/0.1.1" )
 
 #endif

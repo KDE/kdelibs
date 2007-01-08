@@ -32,39 +32,87 @@ namespace Solid
     class SOLID_EXPORT AudioHw : public Capability
     {
         Q_OBJECT
-        Q_ENUMS( AudioDriver AudioHwType )
+        Q_ENUMS( AudioDriver AudioHwType SoundcardType )
         Q_FLAGS( AudioHwTypes )
         Q_PROPERTY( AudioDriver driver READ driver )
-        Q_PROPERTY( QString driverHandler READ driverHandler )
+        Q_PROPERTY( QStringList driverHandles READ driverHandles )
         Q_PROPERTY( QString name READ name )
-        Q_PROPERTY( AudioHwTypes type READ type )
+        Q_PROPERTY( AudioHwTypes deviceType READ deviceType )
+        Q_PROPERTY( SoundcardType soundcardType READ soundcardType )
 
     public:
         /**
          * This enum type defines the type of driver required to
          * interact with the device.
-         *
-         * - Alsa: An Advanced Linux Sound Architecture (ALSA) driver device
-         * - OpenSoundSystem: An Open Sound System (OSS) driver device
-         * - UnknownAudioDriver: An unknown driver device
          */
-        enum AudioDriver{ Alsa, OpenSoundSystem, UnknownAudioDriver };
+        enum AudioDriver
+        {
+            /**
+             * An Advanced Linux Sound Architecture (ALSA) driver device
+             */
+            Alsa,
+            /**
+             * An Open Sound System (OSS) driver device
+             */
+            OpenSoundSystem,
+            /**
+             * An unknown driver device
+             */
+            UnknownAudioDriver
+        };
 
         /**
          * This enum type defines the type of audio interface this
          * device expose.
-         *
-         * - AudioControl: A control/mixer interface
-         * - AudioInput: An audio source
-         * - AudioOutput: An audio sink
-         * - UnknownAudioHwType: An unknown audio interface
          */
-        enum AudioHwType{ UnknownAudioHwType, AudioControl, AudioInput, AudioOutput };
+        enum AudioHwType
+        {
+            /**
+             * An unknown audio interface
+             */
+            UnknownAudioHwType,
+            /**
+             * A control/mixer interface
+             */
+            AudioControl,
+            /**
+             * An audio source
+             */
+            AudioInput,
+            /**
+             * An audio sink
+             */
+            AudioOutput
+        };
 
         /**
          * This type stores an OR combination of AudioHwType values.
          */
         Q_DECLARE_FLAGS( AudioHwTypes, AudioHwType )
+
+        /**
+         * This enum defines the type of soundcard of this device.
+         */
+        enum SoundcardType {
+            /**
+             * An internal soundcard (onboard or PCI card).
+             */
+            InternalSoundcard,
+            /**
+             * An external USB soundcard (that is not a headphone).
+             */
+            UsbSoundcard,
+            /**
+             * An external Firewire soundcard.
+             */
+            FirewireSoundcard,
+            /**
+             * A headset attached to a USB port or connected via Bluetooth (the headset includes its
+             * own audio hardware; it is impossible to detect a headset connected to the internal
+             * soundcard).
+             */
+            Headset,
+        };
 
 
 
@@ -110,7 +158,7 @@ namespace Solid
          *
          * @return the driver specific string to handle this device
          */
-        QString driverHandler();
+        QStringList driverHandles();
 
 
 
@@ -122,12 +170,20 @@ namespace Solid
         QString name();
 
         /**
-         * Retrieves the type of this audio interface.
+         * Retrieves the type of this audio interface (in/out/control).
          *
          * @return the type of this audio interface
          * @see Solid::AudioHw::AudioHwTypes
          */
-        AudioHwTypes type();
+        AudioHwTypes deviceType();
+
+        /**
+         * Retrieves the type of soundcard (internal/headset/...).
+         *
+         * @return the type of soundcard
+         * @see Solid::AudioHw::SoundcardType
+         */
+        SoundcardType soundcardType();
     };
 }
 

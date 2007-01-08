@@ -76,9 +76,10 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
         Q_ASSERT(audiohw->driver() == Solid::AudioHw::Alsa);
-        QString handle = audiohw->driverHandler();
-        kDebug(603) << k_funcinfo << handle << ", " << audiohw->name() << ", " << audiohw->driver() << ", " << audiohw->type() << endl;
-        if (audiohw->type() & Solid::AudioHw::AudioOutput) {
+        QStringList handles = audiohw->driverHandles();
+        kDebug(603) << k_funcinfo << handles << ", " << audiohw->name() << ", " << audiohw->driver() << ", " << audiohw->deviceType() << endl;
+        if (audiohw->deviceType() & Solid::AudioHw::AudioOutput) {
+            QString handle = handles.last();
             handle = handle.right(handle.size() - handle.indexOf(':') - 1);
             int comma = handle.indexOf(',');
             int devicenum = -1;
