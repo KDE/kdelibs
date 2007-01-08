@@ -153,9 +153,6 @@ public:
 };
 #endif
 
-#define BASE_CHOWN "kgrantpty"
-
-
 
 //////////////////
 // private data //
@@ -531,7 +528,7 @@ int KPty::slaveFd() const
 // private
 bool KPty::chownpty(bool grant)
 {
-  return !QProcess::execute( KStandardDirs::locate("exe", BASE_CHOWN),
+  return !QProcess::execute( KStandardDirs::findExe("kgrantpty"),
     QStringList() << (grant?"--grant":"--revoke") << QString::number(d->masterFd) );
 }
 
