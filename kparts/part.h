@@ -27,6 +27,7 @@
 #include <qcoreevent.h>
 #include <kxmlguiclient.h>
 
+class KIconLoader;
 class KInstance;
 class QWidget;
 class KAction;
@@ -259,6 +260,15 @@ public:
      *  Returns whether the part is selectable or not.
      */
     bool isSelectable() const;
+
+    /**
+     * Use this icon loader to load any icons that are specific to this part,
+     * i.e. icons installed into this part's own directories as opposed to standard
+     * kde icons. Use KIcon("myicon", iconLoader()).
+     *
+     * Make sure to call setInstance before calling iconLoader.
+     */
+    KIconLoader* iconLoader();
 
 Q_SIGNALS:
     /**

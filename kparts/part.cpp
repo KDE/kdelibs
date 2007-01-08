@@ -48,6 +48,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 
 using namespace KParts;
 
@@ -73,13 +74,15 @@ class PartPrivate
 {
 public:
   PartPrivate()
+    : m_iconLoader(0),
+      m_bSelectable(true)
   {
-    m_bSelectable = true;
   }
   ~PartPrivate()
   {
   }
 
+  KIconLoader* m_iconLoader;
   bool m_bSelectable;
 };
 }
@@ -139,7 +142,7 @@ void KParts::PartBase::setPluginInterfaceVersion( int version )
 }
 
 Part::Part( QObject *parent )
- : QObject( parent ),d(new PartPrivate)
+ : QObject( parent ), d(new PartPrivate)
 {
   m_widget = 0L;
   m_manager = 0L;
@@ -166,6 +169,7 @@ Part::~Part()
     delete (QWidget*) m_widget;
   }
 
+  delete d->m_iconLoader;
   delete d;
 }
 
@@ -182,6 +186,15 @@ void Part::embed( QWidget * parentWidget )
 QWidget *Part::widget()
 {
   return m_widget;
+}
+
+KIconLoader* Part::iconLoader()
+{
+  if (!d->m_iconLoader) {
+    Q_ASSERT(instance());
+    d->m_iconLoader = new KIconLoader( instance() );
+  }
+  return d->m_iconLoader;
 }
 
 void Part::setManager( PartManager *manager )
