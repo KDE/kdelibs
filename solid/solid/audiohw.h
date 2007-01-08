@@ -114,6 +114,13 @@ namespace Solid
              * soundcard).
              */
             Headset,
+            /**
+             * A modem device.
+             *
+             * Softmodems today are implemented as (cheap) soundcards. ALSA can provide an interface
+             * to the modem.
+             */
+            Modem
         };
 
 
