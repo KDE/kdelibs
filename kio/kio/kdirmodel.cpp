@@ -27,9 +27,9 @@
 #include <kurl.h>
 #include <QMimeData>
 #include <QFile>
+#include <QFileInfo>
 #include <QDir>
 #include <sys/types.h>
-#include <unistd.h> // ::access
 
 class KDirModelNode;
 class KDirModelDirNode;
@@ -591,7 +591,7 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
                     if (item->mimeTypePtr()->is("application/x-desktop"))
                         f |= Qt::ItemIsDropEnabled;
                     // Executable, shell script ... ?
-                    else if ( ::access( QFile::encodeName(item->localPath()), X_OK ) == 0 )
+                    else if ( QFileInfo( item->localPath() ).isExecutable() )
                         f |= Qt::ItemIsDropEnabled;
                 }
             }
