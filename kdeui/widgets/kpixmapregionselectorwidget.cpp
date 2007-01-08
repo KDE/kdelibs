@@ -155,13 +155,15 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
     popup->setObjectName( "PixmapRegionSelectorPopup");
     popup->addTitle(i18n("Image Operations"));
 
-    KAction *action = new KAction(i18n("&Rotate Clockwise"), actions, "rotateclockwise");
+    QAction *action = actions->addAction("rotateclockwise");
+    action->setText(i18n("&Rotate Clockwise"));
     action->setIcon( KIcon( "rotate_cw" ) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateClockwise()) );
 
     popup->addAction(action);
 
-    action = new KAction(i18n("Rotate &Counterclockwise"), actions, "rotatecounterclockwise");
+    action = actions->addAction("rotatecounterclockwise");
+    action->setText(i18n("Rotate &Counterclockwise"));
     action->setIcon( KIcon( "rotate_ccw" ) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateCounterclockwise()) );
 

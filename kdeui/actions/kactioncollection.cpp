@@ -25,7 +25,7 @@
 */
 
 #include "kactioncollection.h"
-
+#include <kauthorized.h>
 #include "ktoolbar.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
@@ -52,6 +52,7 @@ class KActionCollectionPrivate
 public:
   KActionCollectionPrivate()
   {
+    q = 0;
     m_instance = 0;
     m_parentGUIClient = 0L;
 
@@ -65,11 +66,13 @@ public:
     enabled = Unchanged;
   }
 
+  void slotDestroyed(QObject *obj);
+
   KInstance *m_instance;
   QList<KActionCollection*> m_docList;
 
-  QMultiMap<QString, QAction*> actionDict;
-  QList<QAction*> actionList;
+  QMap<QString, QAction*> actionByName;
+  QHash<QAction *, QString> nameByAction;
 
   const KXMLGUIClient *m_parentGUIClient;
 
@@ -87,6 +90,8 @@ public:
     Disabled,
     Unchanged
   } enabled;
+
+  KActionCollection *q;
 };
 
 KActionCollection::KActionCollection( QObject *parent,
@@ -94,6 +99,7 @@ KActionCollection::KActionCollection( QObject *parent,
   : QObject( parent )
   , d(new KActionCollectionPrivate)
 {
+  d->q = this;
   s_allCollections.append(this);
 
   setInstance( instance );
@@ -103,6 +109,7 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
   : QObject( 0 )
   , d(new KActionCollectionPrivate)
 {
+  d->q = this;
   s_allCollections.append(this);
 
   d->m_parentGUIClient=parent;
@@ -142,8 +149,10 @@ void KActionCollection::addDocCollection( KActionCollection* pDoc )
 
 void KActionCollection::clear()
 {
-  foreach(QAction* pAction, d->actionDict.values())
-    delete pAction;
+  QList<QAction *> actions = d->nameByAction.keys();
+  d->actionByName.clear();
+  d->nameByAction.clear();
+  qDeleteAll(actions);
 }
 
 QAction* KActionCollection::action( const QString& name ) const
@@ -151,7 +160,7 @@ QAction* KActionCollection::action( const QString& name ) const
   QAction* action = 0L;
 
   if ( !name.isEmpty() )
-    action = d->actionDict.value (name);
+    action = d->actionByName.value (name);
 
   if( !action ) {
     for( int i = 0; i < d->m_docList.count() && !action; i++ )
@@ -161,72 +170,15 @@ QAction* KActionCollection::action( const QString& name ) const
   return action;
 }
 
-QList<QAction*> KActionCollection::actions( const QString& name ) const
-{
-  QList<QAction*> ret;
-
-  if ( !name.isEmpty() )
-    ret += d->actionDict.values(name);
-  else
-    ret = actions();
-
-  for( int i = 0; i < d->m_docList.count(); i++ )
-    ret += d->m_docList[i]->action( name );
-
-  return ret;
-}
-
-QAction* KActionCollection::actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const
-{
-  if (!name.isEmpty())
-    foreach (QAction* action, d->actionList)
-      if (mo.cast(action))
-        return action;
-
-  foreach (QAction* action, d->actionDict.values(name))
-    if (mo.cast(action))
-      return action;
-
-  QAction* action = 0L;
-
-  for( int i = 0; i < d->m_docList.count() && !action; i++ )
-    action = d->m_docList[i]->action( name );
-
-  return action;
-}
-
-QList<QAction*> KActionCollection::actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const
-{
-  QList<QAction*> ret;
-
-  if (!name.isEmpty()) {
-    foreach (QAction* action, d->actionList)
-      if (mo.cast(action))
-        ret.append(action);
-
-  } else {
-    foreach (QAction* action, d->actionDict.values(name))
-      if (mo.cast(action))
-        ret.append(action);
-  }
-
-  for( int i = 0; i < d->m_docList.count(); i++ )
-    ret += d->m_docList[i]->actions( name );
-
-  return ret;
-}
-
 QAction* KActionCollection::action( int index ) const
 {
-  if (index < 0 || index >= d->actionList.count())
-    return 0L;
-
-  return d->actionList.value(index);
+  // ### investigate if any apps use this at all
+  return actions().value(index);
 }
 
 int KActionCollection::count() const
 {
-  return d->actionList.count();
+  return d->nameByAction.count();
 }
 
 void KActionCollection::setInstance( KInstance *instance )
@@ -247,15 +199,15 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 	return d->m_parentGUIClient;
 }
 
-const QList< QAction* >& KActionCollection::actions( ) const
+QList<QAction*> KActionCollection::actions() const
 {
-  return d->actionList;
+  return d->nameByAction.keys();
 }
 
 const QList< QAction* > KActionCollection::actionsWithoutGroup( ) const
 {
   QList<QAction*> ret;
-  foreach (QAction* action, actions())
+  foreach (QAction* action, d->actionByName)
     if (!action->actionGroup())
       ret.append(action);
   return ret;
@@ -264,7 +216,7 @@ const QList< QAction* > KActionCollection::actionsWithoutGroup( ) const
 const QList< QActionGroup * > KActionCollection::actionGroups( ) const
 {
   QSet<QActionGroup*> set;
-  foreach (QAction* action, actions())
+  foreach (QAction* action, d->actionByName)
     if (action->actionGroup())
       set.insert(action->actionGroup());
   return set.toList();
@@ -280,78 +232,86 @@ const QList< QAction* > KActionCollection::actionsInGroup( QActionGroup * group 
   return ret;
 }
 
-void KActionCollection::insert( QAction* action )
+QAction *KActionCollection::addAction(const QString &name, QAction *action)
 {
-  if (!action)
-    return;
+    if (!action)
+        return action;
 
-  QString name = action->objectName();
-  if( name.isEmpty() )
-     name = name.sprintf("unnamed-%p", (void*)action);
+    QString index_name = name;
 
-  // look if we already have THIS action under THIS name ;)
-  QMap<QString, QAction*>::const_iterator it = d->actionDict.find (name);
-  while (it != d->actionDict.end() && it.key() == name)
-  {
-    if ( it.value() == action )
-      return;
+    if (index_name.isEmpty())
+        index_name = action->objectName();
 
-    ++it;
-  }
+    if( index_name.isEmpty() )
+        index_name = index_name.sprintf("unnamed-%p", (void*)action);
 
-  // really insert action
-  d->actionDict.insert(name, action);
-  d->actionList.append(action);
+    // look if we already have THIS action under THIS name ;)
+    QMap<QString, QAction*>::const_iterator it = d->actionByName.find (index_name);
+    while (it != d->actionByName.end() && it.key() == index_name)
+    {
+        if ( it.value() == action )
+            return action;
 
-  if (d->connectHighlighted)
-    connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
+        ++it;
+    }
 
-  if (d->connectTriggered)
-    connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
+    if (!KAuthorized::authorizeKAction(index_name)) {
+      // Disable this action
+      action->setEnabled(false);
+      action->setVisible(false);
+      action->blockSignals(true);
+    }
 
-  if (d->associatedWidgets.count()) {
-    if (defaultShortcutContext() != -1)
-      action->setShortcutContext(defaultShortcutContext());
-    else
-      action->setShortcutContext(Qt::WidgetShortcut);
-    foreach (QWidget* w, d->associatedWidgets)
-      w->addAction(action);
+    if (QAction *oldAction = d->actionByName.value(index_name)) {
+      takeAction(oldAction);
+    }
+    takeAction(action);
+    // really insert action
+    d->actionByName.insert(index_name, action);
+    d->nameByAction.insert(action, index_name);
 
-  } else if (defaultShortcutContext() != -1) {
-    action->setShortcutContext(defaultShortcutContext());
-  }
+    connect(action, SIGNAL(destroyed(QObject*)), SLOT(slotDestroyed(QObject*)));
 
-  if (d->enabled != KActionCollectionPrivate::Unchanged)
-    action->setEnabled(isEnabled());
+    if (d->connectHighlighted)
+        connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
 
-  emit inserted( action );
+    if (d->connectTriggered)
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
+
+    if (d->associatedWidgets.count()) {
+        if (defaultShortcutContext() != -1)
+            action->setShortcutContext(defaultShortcutContext());
+        else
+            action->setShortcutContext(Qt::WidgetShortcut);
+        foreach (QWidget* w, d->associatedWidgets)
+            w->addAction(action);
+
+    } else if (defaultShortcutContext() != -1) {
+        action->setShortcutContext(defaultShortcutContext());
+    }
+
+    if (d->enabled != KActionCollectionPrivate::Unchanged)
+        action->setEnabled(isEnabled());
+
+    emit inserted( action );
+    return action;
 }
 
-void KActionCollection::remove( QAction* action )
+void KActionCollection::removeAction( QAction* action )
 {
-  delete take( action );
+    delete takeAction( action );
 }
 
-QAction* KActionCollection::take( QAction* action )
+QAction* KActionCollection::takeAction(QAction *action)
 {
-  if (!action)
+  QHash<QAction *, QString>::Iterator it = d->nameByAction.find(action);
+  if (it == d->nameByAction.end())
     return 0;
+  const QString name = *it;
+  d->nameByAction.erase(it);
+  d->actionByName.remove(name);
 
-  char unnamed_name[100];
-  QByteArray name = action->objectName().toLatin1();
-  if( action->objectName().isEmpty() )
-  {
-     sprintf(unnamed_name, "unnamed-%p", (void *) action);
-     name = QByteArray(unnamed_name);
-  }
-
-  QAction*a = d->actionDict.take( name );
-  if ( !a || a != action )
-      return 0;
-
-  int index = d->actionList.indexOf(action);
-  Q_ASSERT(index != -1);
-  d->actionList.removeAt(index);
+  disconnect(action, SIGNAL(destroyed(QObject*)), this, SLOT(slotDestroyed(QObject*)));
 
   if (d->connectHighlighted)
     disconnect(action, SIGNAL(highlighted()), this, SLOT(slotActionHighlighted()));
@@ -363,11 +323,32 @@ QAction* KActionCollection::take( QAction* action )
     foreach (QWidget* w, d->associatedWidgets)
       w->removeAction(action);
 
-  if ( a->parent() == this )
-      a->setParent(0L);
+  if ( action->parent() == this )
+      action->setParent(0L);
 
   emit removed( action );
-  return a;
+  return action;
+}
+
+QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
+{
+  QAction *action = KStandardAction::create(actionType, receiver, member, this);
+  return addAction(action->objectName(), action);
+}
+
+QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
+                                      const QObject *receiver, const char *member)
+{
+  QAction *action = KStandardAction::create(actionType, receiver, member, this);
+  return addAction(name, action);
+}
+
+QAction *KActionCollection::addAction(const QString &name, const QObject *receiver, const char *member)
+{
+  QAction *a = new KAction(this);
+  if (receiver && member)
+    connect(a, SIGNAL(triggered()), receiver, member);
+  return addAction(name, a);
 }
 
 void KActionCollection::setAssociatedWidget(QWidget* widget)
@@ -438,14 +419,16 @@ void KActionCollection::readSettings( KConfigBase* config )
 
   KConfigGroup cg( config, configGroup() );
 
-  foreach (QAction* action, actions()) {
-      KAction *kaction = qobject_cast<KAction*>(action);
+  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
+       it != end; ++it) {
+      KAction *kaction = qobject_cast<KAction*>(it.value());
+      QString actionName = it.key();
 
       if (kaction==0)
           continue;
 
       if( kaction->isShortcutConfigurable() ) {
-          QString entry = cg.readEntry( kaction->objectName(), QString() );
+          QString entry = cg.readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
               if( entry == "none" )
                   kaction->setShortcut( KShortcut(), KAction::ActiveShortcut );
@@ -455,7 +438,7 @@ void KActionCollection::readSettings( KConfigBase* config )
           else // default shortcut
               kaction->setShortcut( kaction->shortcut(KAction::DefaultShortcut) );
 
-          kDebug(125) << "\t" << action->objectName() << " = '" << entry << "'" << endl;
+          kDebug(125) << "\t" << actionName << " = '" << entry << "'" << endl;
       }
   }
 
@@ -482,29 +465,31 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
 
     // now, iterate through our actions
-    foreach (QAction* action, actions()) {
-        KAction *kaction = qobject_cast<KAction*>(action);
+    for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
+        it != end; ++it) {
+      KAction *kaction = qobject_cast<KAction*>(it.value());
+      QString actionName = it.key();
 
-        if (kaction==0)
-            continue;
+      if (kaction==0)
+        continue;
 
-        bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
-        //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+      bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
+      //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
-        // now see if this element already exists
-        // and create it if necessary (unless bSameAsDefault)
-        QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, kaction->objectName(), !bSameAsDefault );
-        if ( act_elem.isNull() )
-            continue;
+      // now see if this element already exists
+      // and create it if necessary (unless bSameAsDefault)
+      QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, actionName, !bSameAsDefault );
+      if ( act_elem.isNull() )
+        continue;
 
-        if( bSameAsDefault ) {
-            act_elem.removeAttribute( attrShortcut );
-            //kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
-            if( act_elem.attributes().count() == 1 )
-                elem.removeChild( act_elem );
-        } else {
-            act_elem.setAttribute( attrShortcut, kaction->shortcut().toString() );
-        }
+      if( bSameAsDefault ) {
+        act_elem.removeAttribute( attrShortcut );
+        //kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+        if( act_elem.attributes().count() == 1 )
+          elem.removeChild( act_elem );
+      } else {
+        act_elem.setAttribute( attrShortcut, kaction->shortcut().toString() );
+      }
     }
 
     // Write back to XML file
@@ -523,11 +508,13 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
   else
     writeActions = actions();
 
-  foreach (QAction* action, writeActions) {
-      KAction *kaction = qobject_cast<KAction*>(action);
+  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
+       it != end; ++it) {
+      KAction *kaction = qobject_cast<KAction*>(it.value());
+      QString actionName = it.key();
 
       if( kaction!=0 && kaction->isShortcutConfigurable() ) {
-          bool bConfigHasAction = !cg.readEntry( kaction->objectName(), QString() ).isEmpty();
+          bool bConfigHasAction = !cg.readEntry( actionName, QString() ).isEmpty();
           bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
@@ -538,14 +525,14 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
               QString s = kaction->shortcut().toString();
               if( s.isEmpty() )
                   s = "none";
-              kDebug(125) << "\twriting " << kaction->objectName() << " = " << s << endl;
-              cg.writeEntry( kaction->objectName(), s, flags );
+              kDebug(125) << "\twriting " << actionName << " = " << s << endl;
+              cg.writeEntry( actionName, s, flags );
           }
           // Otherwise, this key is the same as default
           //  but exists in config file.  Remove it.
           else if( bConfigHasAction ) {
-              kDebug(125) << "\tremoving " << action->objectName() << " because == default" << endl;
-              cg.deleteEntry( action->objectName(), flags );
+              kDebug(125) << "\tremoving " << actionName << " because == default" << endl;
+              cg.deleteEntry( actionName, flags );
           }
       }
   }
@@ -565,6 +552,12 @@ void KActionCollection::slotActionHighlighted( )
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
     emit actionHighlighted(action);
+}
+
+void KActionCollectionPrivate::slotDestroyed( QObject *obj )
+{
+    QAction *action = static_cast<QAction*>(obj);
+    q->takeAction(action);
 }
 
 void KActionCollection::connectNotify ( const char * signal )

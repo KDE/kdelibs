@@ -20,6 +20,7 @@
 #include <kpushbutton.h>
 #include <kicon.h>
 #include <kstandardaction.h>
+#include <kactioncollection.h>
 
 #include "css/cssstyleselector.h"
 
@@ -161,22 +162,29 @@ void TestKHTML::setupActions()
     toolBar.insertBefore(element, toolBar.firstChild());
 
 
-    KAction *quitAction = new KAction( i18n( "Quit" ), m_part->actionCollection(), "quit" );
+    KAction *quitAction = new KAction( i18n( "Quit" ), this );
+    m_part->actionCollection()->addAction( "quit", quitAction );
     connect( quitAction, SIGNAL( triggered( bool ) ), kapp, SLOT( quit() ) );
 
-    KAction *action = new KAction(KIcon("reload"),  "Reload", m_part->actionCollection(), "reload" );
+    KAction *action = new KAction(KIcon("reload"), "Reload", this );
+    m_part->actionCollection()->addAction( "reload", action );
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *kprint = new KAction(KIcon("print"),  "Print", m_part->actionCollection(), "print" );
+    KAction *kprint = new KAction(KIcon("print"), "Print", this );
+    m_part->actionCollection()->addAction( "print", kprint );
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
 
-    KToggleAction *ta = new KToggleAction("Navigable", "editclear", KShortcut(), actionCollection(), "navigable" );
+    KToggleAction *ta = new KToggleAction( KIcon("editclear"), "Navigable", this );
+    actionCollection()->addAction( "navigable", ta );
+    ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT( toggleNavigable(bool) ));
 
-    ta = new KToggleAction( "Editable", "edit", KShortcut(), actionCollection(), "editable" );
+    ta = new KToggleAction( KIcon("edit"), "Editable", this );
+    actionCollection()->addAction( "editable", ta );
+    ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 

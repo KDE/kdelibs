@@ -57,115 +57,24 @@ class KToggleAction::Private
 };
 
 
-KToggleAction::KToggleAction( KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
-  : KAction( parent, name ),
+KToggleAction::KToggleAction( QObject *parent )
+  : KAction( parent ),
     d( new Private( this ) )
 {
   d->init();
-  setActionGroup( exclusiveGroup );
 }
 
-KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, const QString& name,
-                              QActionGroup * exclusiveGroup )
-  : KAction( text, parent, name ),
+KToggleAction::KToggleAction( const QString & text, QObject *parent )
+  : KAction( text, parent ),
     d( new Private( this ) )
 {
   d->init();
-  setActionGroup( exclusiveGroup );
 }
 
-KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent,
-                              const QString& name, QActionGroup * exclusiveGroup )
-  : KAction( icon, text, parent, name ),
+KToggleAction::KToggleAction( const KIcon & icon, const QString & text, QObject *parent )
+  : KAction( icon, text, parent ),
     d( new Private( this ) )
 {
-  d->init();
-  setActionGroup( exclusiveGroup );
-}
-
-KToggleAction::KToggleAction( const QString & icon, const QString & text, KActionCollection * parent,
-                              const QString& name, QActionGroup * exclusiveGroup )
-  : KAction( KIcon( icon ), text, parent, name ),
-    d( new Private( this ) )
-{
-  d->init();
-  setActionGroup( exclusiveGroup );
-}
-
-KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
-                              KActionCollection* parent,
-                              const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-
-  d->init();
-}
-
-KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
-                              const QObject* receiver, const char* slot,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
-  d->init();
-}
-
-KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
-                              const KShortcut& cut,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-  QAction::setIcon( pix );
-
-  d->init();
-}
-
-KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              const KShortcut& cut,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-  setIcon( KIcon( pix ) );
-
-  d->init();
-}
-
-KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
-                              const KShortcut& cut,
-                              const QObject* receiver,
-                              const char* slot, KActionCollection* parent,
-                              const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-  QAction::setIcon( pix );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
-  d->init();
-}
-
-KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              const KShortcut& cut,
-                              const QObject* receiver,
-                              const char* slot, KActionCollection* parent,
-                              const QString& name )
-  : KAction( text, parent, name ),
-    d( new Private( this ) )
-{
-  setShortcut( cut );
-  setIcon( KIcon( pix ) );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
   d->init();
 }
 
@@ -194,7 +103,7 @@ void KToggleAction::slotToggled( bool )
 
     if ( d->checkedGuiItem->hasIcon() ) {
       KIcon icon = d->checkedGuiItem->icon();
-      d->checkedGuiItem->setIcon( this->icon() );
+      d->checkedGuiItem->setIcon( KIcon(this->icon()) );
       QAction::setIcon( icon );
     }
   }

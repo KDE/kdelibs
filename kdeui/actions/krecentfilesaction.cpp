@@ -55,15 +55,15 @@ public:
 };
 
 
-KRecentFilesAction::KRecentFilesAction( KActionCollection * parent, const QString& name )
-  : KSelectAction(parent, name)
+KRecentFilesAction::KRecentFilesAction(QObject *parent)
+  : KSelectAction(parent)
   , d(new KRecentFilesActionPrivate)
 {
   init();
 }
 
-KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction(text, parent, name)
+KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
+  : KSelectAction(parent)
   , d(new KRecentFilesActionPrivate)
 {
   init();
@@ -72,158 +72,15 @@ KRecentFilesAction::KRecentFilesAction( const QString & text, KActionCollection 
   setText(text);
 }
 
-KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction(icon, text, parent, name)
+KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, QObject *parent)
+  : KSelectAction(parent)
   , d(new KRecentFilesActionPrivate)
 {
   init();
 
+  setIcon(icon);
   // Want to keep the ampersands
   setText(text);
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction(KIcon(icon), text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const KShortcut& cut,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction( text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const KShortcut& cut,
-                                        const QObject* receiver,
-                                        const char* slot,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction( text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-
-  if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KUrl&)),
-             receiver, slot );
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIcon& pix,
-                                        const KShortcut& cut,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction(KIcon(pix), text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QString& pix,
-                                        const KShortcut& cut,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction(KIcon(pix), text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QIcon& pix,
-                                        const KShortcut& cut,
-                                        const QObject* receiver,
-                                        const char* slot,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction(KIcon(pix), text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-
-  if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KUrl&)),
-             receiver, slot );
-}
-
-KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QString& pix,
-                                        const KShortcut& cut,
-                                        const QObject* receiver,
-                                        const char* slot,
-                                        KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction( KIcon(pix), text, parent, name)
-  , d(new KRecentFilesActionPrivate)
-{
-  setShortcut( cut );
-
-  d->m_maxItems = maxItems;
-
-  init();
-
-  // Want to keep the ampersands
-  setText(text);
-
-  if ( receiver )
-    connect( this,     SIGNAL(urlSelected(const KUrl&)),
-             receiver, slot );
-}
-
-KRecentFilesAction::KRecentFilesAction( KActionCollection* parent, const QString& name,
-                                        int maxItems )
-  : KSelectAction( parent, name )
-  , d(new KRecentFilesActionPrivate)
-{
-  d->m_maxItems = maxItems;
-
-  init();
 }
 
 void KRecentFilesAction::init()

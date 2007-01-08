@@ -14,13 +14,20 @@ int main( int argc, char **argv )
 
     KActionCollection coll( static_cast<QObject *>( 0 ) );
 
-    KAction* action1 = new KAction("test1", &coll, "test1");
-    KAction* action2 = new KAction("test2", &coll, "test2");
-    KAction* action3 = new KAction("test3", &coll, "test3");
-    new KAction("test4", &coll, "test4");
-    new KAction("test5", &coll, "test5");
-    new KAction("test6", &coll, "test6");
-    KAction* action7 = new KAction("test7", &coll, "test7");
+    QAction* action1 = coll.addAction("test1");
+    action1->setText("test1");
+    QAction* action2 = coll.addAction("test2");
+    action2->setText("test2");
+    QAction* action3 = coll.addAction("test3");
+    action3->setText("test3");
+    QAction* action4 = coll.addAction("test4");
+    action3->setText("test4");
+    QAction* action5 = coll.addAction("test5");
+    action3->setText("test5");
+    QAction* action6 = coll.addAction("test6");
+    action3->setText("test6");
+    QAction* action7 = coll.addAction("test7");
+    action3->setText("test7");
 
     QMainWindow* mw = new QMainWindow();
     KToolBar* tb = new KToolBar(mw);

@@ -38,41 +38,22 @@
 
 #include "kmenu.h"
 
-KPasteTextAction::KPasteTextAction( KActionCollection * parent, const QString& name )
-  : KAction( parent, name )
+KPasteTextAction::KPasteTextAction(QObject *parent)
+  : KAction(parent)
 {
   init();
 }
 
-KPasteTextAction::KPasteTextAction( const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( text, parent, name )
+KPasteTextAction::KPasteTextAction(const QString &text, QObject *parent)
+  : KAction(parent)
 {
   init();
+  setText(text);
 }
 
-KPasteTextAction::KPasteTextAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( icon, text, parent, name )
+KPasteTextAction::KPasteTextAction(const KIcon &icon, const QString &text, QObject *parent)
+  : KAction(icon, text, parent)
 {
-  init();
-}
-
-KPasteTextAction::KPasteTextAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( KIcon( icon ), text, parent, name )
-{
-  init();
-}
-
-KPasteTextAction::KPasteTextAction( const QString& text,
-                            const QString& icon,
-                            const KShortcut& cut,
-                            const QObject* receiver,
-                            const char* slot, KActionCollection* parent,
-                            const QString& name)
-  : KAction( KIcon( icon ), text, parent, name )
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
   init();
 }
 

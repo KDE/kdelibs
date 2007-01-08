@@ -73,6 +73,11 @@ KShortcut::KShortcut(const QString &s)
         append(QKeySequence::fromString(sCuts.at(i)));
 }
 
+KShortcut::KShortcut(const QList<QKeySequence> &seqs)
+    : QList<QKeySequence>(seqs)
+{
+}
+
 void KShortcut::setPrimary(const QKeySequence &newPrimary)
 {
     while (count() < 1)

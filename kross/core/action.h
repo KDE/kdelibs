@@ -31,6 +31,7 @@
 #include "errorinterface.h"
 #include "childreninterface.h"
 
+class KActionCollection;
 class QDir;
 class QDomElement;
 

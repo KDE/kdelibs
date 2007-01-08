@@ -166,31 +166,36 @@ DebugWindow::DebugWindow(QWidget *parent)
 void DebugWindow::createActions()
 {
     // Flow control actions
-    m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), actionCollection(), "continue");
+    m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), this );
+    actionCollection()->addAction( "continue", m_continueAct );
     m_continueAct->setStatusTip(i18n("Continue script execution"));
     m_continueAct->setToolTip(i18n("Continue script execution"));
     m_continueAct->setEnabled(false);
     connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
 
-    m_stopAct = new KAction(KIcon(":/images/stop.png"), i18n("Stop"), actionCollection(), "stop");
+    m_stopAct = new KAction(KIcon(":/images/stop.png"), i18n("Stop"), this );
+    actionCollection()->addAction( "stop", m_stopAct );
     m_stopAct->setStatusTip(i18n("Stop script execution"));
     m_stopAct->setToolTip(i18n("Stop script execution"));
     m_stopAct->setEnabled(false);
     connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopExecution()));
 
-    m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), actionCollection(), "stepInto");
+    m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), this );
+    actionCollection()->addAction( "stepInto", m_stepIntoAct );
     m_stepIntoAct->setStatusTip(i18n("Step Into"));
     m_stepIntoAct->setToolTip(i18n("Step Into"));
     m_stepIntoAct->setEnabled(false);
     connect(m_stepIntoAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
 
-    m_stepOutAct = new KAction(KIcon(":/images/step-out.png"), i18n("Step Out"), actionCollection(), "stepOut");
+    m_stepOutAct = new KAction(KIcon(":/images/step-out.png"), i18n("Step Out"), this );
+    actionCollection()->addAction( "stepOut", m_stepOutAct );
     m_stepOutAct->setStatusTip(i18n("Step Out"));
     m_stepOutAct->setToolTip(i18n("Step Out"));
     m_stepOutAct->setEnabled(false);
     connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
 
-    m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), actionCollection(), "stepOver");
+    m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), this );
+    actionCollection()->addAction( "stepOver", m_stepOverAct );
     m_stepOverAct->setStatusTip(i18n("Step Over"));
     m_stepOverAct->setToolTip(i18n("Step Over"));
     m_stepOverAct->setEnabled(false);

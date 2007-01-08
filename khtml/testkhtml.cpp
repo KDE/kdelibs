@@ -29,6 +29,7 @@
 #include <kmainwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
+#include <kactioncollection.h>
 #include <kicon.h>
 #include "domtreeview.h"
 #include "kxmlguifactory.h"
@@ -98,16 +99,22 @@ int main(int argc, char *argv[])
     e.setAttribute( "name", "print" );
     toolBar.insertBefore( e, toolBar.firstChild() );
 
-    KAction *action = new KAction(KIcon("reload"),  "Reload", doc->actionCollection(), "reload" );
+    KAction *action = new KAction(KIcon("reload"),  "Reload", doc );
+    doc->actionCollection()->addAction( "reload", action );
     QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT( reload() ));
     action->setShortcut(Qt::Key_F5);
-    KAction *kprint = new KAction(KIcon("print"),  "Print", doc->actionCollection(), "print" );
+    KAction *kprint = new KAction(KIcon("print"),  "Print", doc );
+    doc->actionCollection()->addAction( "print", kprint );
     QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT( print() ));
     kprint->setEnabled(true);
-    KToggleAction *ta = new KToggleAction( "Navigable", "editclear", KShortcut(), doc->actionCollection(), "navigable" );
+    KToggleAction *ta = new KToggleAction( KIcon("editclear"), "Navigable", doc );
+    doc->actionCollection()->addAction( "navigable", ta );
+    ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isCaretMode());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleNavigable(bool) ));
-    ta = new KToggleAction( "Editable", "edit", KShortcut(), doc->actionCollection(), "editable" );
+    ta = new KToggleAction( KIcon("edit"), "Editable", doc );
+    doc->actionCollection()->addAction( "editable", ta );
+    ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isEditable());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleEditable(bool) ));
     toplevel->guiFactory()->addClient( doc );

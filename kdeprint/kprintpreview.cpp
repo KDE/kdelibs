@@ -153,21 +153,24 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	// create main view and actions
 	setMainWidget(d->mainwidget_);
 	if (previewOnly)
-		KStandardAction::close(this, SLOT(reject()), d->actions_, "close_print");
+		d->actions_->addAction(KStandardAction::Close, "close_print", this, SLOT(reject()));
 	else
 	{
     KAction *action = 0;
-    action = new KAction(i18n("Print"), d->actions_, "continue_print");
+    action = new KAction(i18n("Print"), this);
+	d->actions_->addAction( "continue_print", action );
     action->setIcon( KIcon( "fileprint" ) );
     action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
-    action = new KAction(i18n("Print"), d->actions_, "continue_print");
+    action = new KAction(i18n("Print"), this);
+	d->actions_->addAction( "continue_print", action );
     action->setIcon( KIcon( "fileprint" ) );
     action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
-    action = new KAction(i18n("Cancel"), d->actions_, "stop_print");
+    action = new KAction(i18n("Cancel"), this);
+	d->actions_->addAction( "stop_print", action );
     action->setIcon( KIcon( "stop" ) );
     action->setShortcut( QKeySequence(Qt::Key_Escape) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(reject()) );

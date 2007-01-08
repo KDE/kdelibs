@@ -153,7 +153,7 @@ class KHTMLZoomFactorAction : public KSelectAction
 {
     Q_OBJECT
 public:
-    KHTMLZoomFactorAction(KHTMLPart *part, bool direction, const QString& iconName, const QString& text, KActionCollection *parent, const char *name);
+    KHTMLZoomFactorAction(KHTMLPart *part, bool direction, const QString& iconName, const QString& text, QObject *parent);
     virtual ~KHTMLZoomFactorAction();
 
 protected Q_SLOTS:

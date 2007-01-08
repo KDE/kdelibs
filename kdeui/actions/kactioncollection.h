@@ -23,11 +23,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef kactioncollection_h
-#define kactioncollection_h
+#ifndef KACTIONCOLLECTION_H
+#define KACTIONCOLLECTION_H
 
 #include <qobject.h>
-
+#include <kstandardaction.h>
 #include <kdelibs_export.h>
 
 class QAction;
@@ -39,9 +39,9 @@ class QActionGroup;
 class QString;
 
 /**
- * \short A container for a set of KAction objects.
+ * \short A container for a set of QAction objects.
  *
- * KActionCollection acts as the owning QObject for a set of KAction objects.  It
+ * KActionCollection acts as the owning QObject for a set of QAction objects.  It
  * allows them to be grouped for organized presentation of configuration to the user,
  * saving + loading of configuration, and optionally for automatic plugging into
  * specified widget(s).
@@ -51,7 +51,6 @@ class QString;
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {
-  friend class KAction;
   friend class KXMLGUIClient;
 
   Q_OBJECT
@@ -241,21 +240,21 @@ public:
   /**
    * Returns the number of actions in the collection.
    *
-   * \deprecated use actions().count() instead
+   * This is equivalent to actions().count().
    */
-  KDE_DEPRECATED int count() const;
+  int count() const;
 
   /**
    * Returns whether the action collection is empty or not.
    */
-  inline bool isEmpty() const { return actions().isEmpty(); }
+  inline bool isEmpty() const { return count() == 0; }
 
   /**
    * Return the QAction* at position "index" in the action collection.
    *
-   * \deprecated use actions().value(int index) instead
+   * This is equivalent to actions().value(index);
    */
-  KDE_DEPRECATED QAction* action( int index ) const;
+  QAction *action(int index) const;
 
   /**
    * Find the first action with a given \a name in the action collection.
@@ -267,38 +266,9 @@ public:
   QAction* action( const QString& name ) const;
 
   /**
-   * Find all actions with a given \a name in the action collection.
-   *
-   * @param name Name of the KAction, or null to match all actions
-   * @return A list of all KActions in the collection which match the parameters
-   */
-  QList<QAction*> actions( const QString& name ) const;
-
-  /**
-   * Find the first action of a given subclass of KAction in the action collection.
-   *
-   * @param name Name of the KAction, or null to match all actions.
-   * @return A pointer to the first KAction in the collection which matches the parameters or
-   * null if nothing matches.
-   */
-  template <class T>
-  QAction* actionOfType( const QString& name ) const
-  { return actionOfTypeInternal(name, ((T)0)->staticMetaObject); }
-
-  /**
-   * Find all actions of a given subclass of KAction in the action collection.
-   *
-   * @param name Name of the KAction, or null to match all actions.
-   * @return A list of all KActions in the collection which match the parameters
-   */
-  template <class T>
-  QAction* actionsOfType( const QString& name ) const
-  { return actionsOfTypeInternal(name, ((T)0)->staticMetaObject); }
-
-  /**
    * Returns the list of KActions which belong to this action collection.
    */
-  const QList<QAction*>& actions() const;
+  QList<QAction*> actions() const;
 
   /**
    * Returns the list of KActions without an QAction::actionGroup() which belong to this action collection.
@@ -370,7 +340,7 @@ public:
    * again before destroying the collection.
    * @param action The KAction to add.
    */
-  void insert( QAction* action);
+  QAction *addAction(const QString &name, QAction *action);
 
   /**
    * Removes an action from the collection and deletes it.
@@ -378,7 +348,7 @@ public:
    * don't have to call this.
    * @param action The KAction to remove.
    */
-  void remove( QAction* action );
+  void removeAction(QAction *action);
 
   /**
    * Removes an action from the collection.
@@ -387,11 +357,25 @@ public:
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
    */
-  QAction* take( QAction* action );
+  QAction* takeAction(QAction *action);
+
+  QAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
+  QAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
+                     const QObject *receiver = 0, const char *member = 0);
+  QAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
+
+  template<class ActionType>
+  ActionType *add(const QString &name, const QObject *receiver = 0, const char *member = 0)
+  {
+      ActionType *a = new ActionType(this);
+      if (receiver && member)
+          connect(a, SIGNAL(triggered()), receiver, member);
+      addAction(name, a);
+      return a;
+  }
 
 private:
-  QAction* actionOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
-  QList<QAction*> actionsOfTypeInternal( const QString& name, const QMetaObject& mo ) const;
+  Q_PRIVATE_SLOT(d, void slotDestroyed(QObject *))
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 

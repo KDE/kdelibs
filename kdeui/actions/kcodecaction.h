@@ -35,13 +35,11 @@ class KDEUI_EXPORT KCodecAction
 	Q_PROPERTY(int codecMib READ currentCodecMib)
 
 public:
-	KCodecAction(KActionCollection *parent, const QString &name);
+	explicit KCodecAction(QObject *parent);
 
-	KCodecAction(const QString &text,
-		KActionCollection *parent, const QString &name);
+	KCodecAction(const QString &text, QObject *parent);
 
-	KCodecAction(const KIcon &icon, const QString &text,
-		KActionCollection *parent, const QString &name);
+	KCodecAction(const KIcon &icon, const QString &text, QObject *parent);
 
 	virtual ~KCodecAction();
 

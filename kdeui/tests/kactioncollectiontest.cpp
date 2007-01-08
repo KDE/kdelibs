@@ -1,0 +1,195 @@
+
+#include "kactioncollectiontest.h"
+#include <qpointer.h>
+
+#include <kapplication.h>
+#include <kaction.h>
+#include <kglobal.h>
+#include <kconfig.h>
+
+#include <assert.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+
+void tst_KActionCollection::init()
+{
+    collection = new KActionCollection(static_cast<QObject *>(0));
+}
+
+void tst_KActionCollection::cleanup()
+{
+    delete collection;
+    collection = 0;
+}
+
+void tst_KActionCollection::clear()
+{
+    QPointer<QAction> action1 = collection->addAction("test1");
+    QPointer<QAction> action2 = collection->addAction("test2");
+    QPointer<QAction> action3 = collection->addAction("test3");
+    QPointer<QAction> action4 = collection->addAction("test4");
+    QPointer<QAction> action5 = collection->addAction("test5");
+    QPointer<QAction> action6 = collection->addAction("test6");
+    QPointer<QAction> action7 = collection->addAction("test7");
+
+    collection->clear();
+    QVERIFY(collection->isEmpty());
+
+    QVERIFY( action1.isNull() );
+    QVERIFY( action2.isNull() );
+    QVERIFY( action3.isNull() );
+    QVERIFY( action4.isNull() );
+    QVERIFY( action5.isNull() );
+    QVERIFY( action6.isNull() );
+    QVERIFY( action7.isNull() );
+}
+
+void tst_KActionCollection::deleted()
+{
+    QAction *a = collection->addAction("test");
+    delete a;
+    QVERIFY(collection->isEmpty());
+}
+
+void tst_KActionCollection::take()
+{
+    QAction *a = collection->addAction("test");
+    collection->takeAction(a);
+    QVERIFY(collection->isEmpty());
+    delete a;
+}
+
+void tst_KActionCollection::writeSettings()
+{
+    KConfig *cfg = clearConfig();
+
+    KShortcut defaultShortcut;
+    defaultShortcut.setPrimary(Qt::Key_A);
+    defaultShortcut.setAlternate(Qt::Key_B);
+
+    KShortcut temporaryShortcut;
+    temporaryShortcut.setPrimary(Qt::Key_C);
+    temporaryShortcut.setAlternate(Qt::Key_D);
+
+    KAction *actionWithDifferentShortcut = new KAction(this);
+    actionWithDifferentShortcut->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    actionWithDifferentShortcut->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
+    collection->addAction("actionWithDifferentShortcut", actionWithDifferentShortcut);
+
+    KAction *immutableAction = new KAction(this);
+    immutableAction->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    immutableAction->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
+    immutableAction->setShortcutConfigurable(false);
+    collection->addAction("immutableAction", immutableAction);
+
+    KAction *actionWithSameShortcut = new KAction(this);
+    actionWithSameShortcut->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    actionWithSameShortcut->setShortcut(defaultShortcut, KAction::ActiveShortcut);
+    collection->addAction("actionWithSameShortcut", actionWithSameShortcut);
+
+    cfg->writeEntry("actionToDelete", QString("Foobar"));
+    KAction *actionToDelete = new KAction(this);
+    actionToDelete->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    actionToDelete->setShortcut(defaultShortcut, KAction::ActiveShortcut);
+    collection->addAction("actionToDelete", actionToDelete);
+
+    collection->writeSettings(cfg);
+
+    QCOMPARE(cfg->readEntry("actionWithDifferentShortcut", QString()), KShortcut(actionWithDifferentShortcut->shortcuts()).toString());
+    QCOMPARE(cfg->readEntry("immutableAction", QString()), QString());
+    QCOMPARE(cfg->readEntry("actionWithSameShortcut", QString()), QString());
+    QCOMPARE(cfg->readEntry("actionToDelete", QString()), QString());
+
+    qDeleteAll(collection->actions());
+}
+
+void tst_KActionCollection::readSettings()
+{
+    KConfig *cfg = clearConfig();
+
+    KShortcut defaultShortcut;
+    defaultShortcut.setPrimary(Qt::Key_A);
+    defaultShortcut.setAlternate(Qt::Key_B);
+
+    KShortcut temporaryShortcut;
+    temporaryShortcut.setPrimary(Qt::Key_C);
+    temporaryShortcut.setAlternate(Qt::Key_D);
+
+    cfg->writeEntry("normalAction", defaultShortcut.toString());
+    cfg->writeEntry("immutable", defaultShortcut.toString());
+    cfg->writeEntry("empty", QString());
+
+    KAction *normal = new KAction(this);
+    collection->addAction("normalAction", normal);
+
+    KAction *immutable = new KAction(this);
+    immutable->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
+    immutable->setShortcut(temporaryShortcut, KAction::DefaultShortcut);
+    immutable->setShortcutConfigurable(false);
+    collection->addAction("immutable", immutable);
+
+    KAction *empty = new KAction(this);
+    collection->addAction("empty", empty);
+    empty->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
+    empty->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    QCOMPARE(KShortcut(empty->shortcuts()).toString(), temporaryShortcut.toString());
+
+    collection->readSettings(cfg);
+
+    QCOMPARE(KShortcut(normal->shortcuts()).toString(), defaultShortcut.toString());
+    QCOMPARE(KShortcut(empty->shortcuts()).toString(), defaultShortcut.toString());
+
+    QCOMPARE(KShortcut(immutable->shortcuts()).toString(), temporaryShortcut.toString());
+
+    qDeleteAll(collection->actions());
+}
+
+void tst_KActionCollection::insertReplaces1()
+{
+    KAction *a = new KAction(0);
+    KAction *b = new KAction(0);
+
+    collection->addAction("a", a);
+    QVERIFY(collection->actions().contains(a));
+    QVERIFY(collection->action("a") == a);
+
+    collection->addAction("a", b);
+    QVERIFY(!collection->actions().contains(a));
+    QVERIFY(collection->actions().contains(b));
+    QVERIFY(collection->action("a") == b);
+
+    delete a;
+    delete b;
+}
+
+void tst_KActionCollection::insertReplaces2()
+{
+    KAction *a = new KAction(0);
+
+    collection->addAction("a", a);
+    QVERIFY(collection->actions().contains(a));
+    QVERIFY(collection->action("a") == a);
+
+    collection->addAction("b", a);
+    QVERIFY(collection->actions().contains(a));
+    QVERIFY(!collection->action("a"));
+    QVERIFY(collection->action("b") == a);
+
+    delete a;
+}
+
+KConfig *tst_KActionCollection::clearConfig()
+{
+    KConfig *cfg = KGlobal::config();
+    foreach (QString key, cfg->entryMap(collection->configGroup()).keys())
+        cfg->deleteEntry(key);
+    cfg->setGroup(collection->configGroup());
+    return cfg;
+}
+
+QTEST_KDEMAIN(tst_KActionCollection, 0)
+
+#include "kactioncollectiontest.moc"
+
+/* vim: et sw=4 ts=4
+ */

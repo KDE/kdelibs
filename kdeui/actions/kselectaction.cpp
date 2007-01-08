@@ -46,6 +46,7 @@ class KSelectAction::KSelectActionPrivate
 public:
   KSelectActionPrivate()
   {
+    q = 0;
     m_edit = false;
     m_menuAccelsEnabled = true;
     m_comboWidth = -1;
@@ -61,6 +62,8 @@ public:
   {
     delete m_actionGroup;
   }
+
+  void init(KSelectAction *q_ptr);
 
   bool m_edit, m_menuAccelsEnabled;
   int m_comboWidth;
@@ -90,104 +93,29 @@ public:
       }
       return text;
   }
+  KSelectAction *q;
 };
 
-KSelectAction::KSelectAction( KActionCollection * parent, const QString& name )
-  : KAction(parent, name)
+KSelectAction::KSelectAction(QObject *parent)
+  : KAction(parent)
   , d(new KSelectActionPrivate())
 {
-  init();
+  d->init(this);
 }
 
-KSelectAction::KSelectAction( const QString & text, KActionCollection * parent, const QString& name )
-  : KAction(text, parent, name)
+KSelectAction::KSelectAction(const QString &text, QObject *parent)
+  : KAction(parent)
   , d(new KSelectActionPrivate())
 {
-  init();
+  d->init(this);
+  setText(text);
 }
 
-KSelectAction::KSelectAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction(icon, text, parent, name)
+KSelectAction::KSelectAction(const KIcon & icon, const QString &text, QObject *parent)
+  : KAction(icon, text, parent)
   , d(new KSelectActionPrivate())
 {
-  init();
-}
-
-KSelectAction::KSelectAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction(KIcon(icon), text, parent, name)
-  , d(new KSelectActionPrivate())
-{
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  setShortcut(cut);
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
-                              const QObject* receiver, const char* slot,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  connect(this, SIGNAL(triggered(bool)), receiver, slot);
-  setShortcut(cut);
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
-                              const KShortcut& cut,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  setShortcut(cut);
-  QAction::setIcon(pix);
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              const KShortcut& cut,
-                              KActionCollection* parent, const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  setShortcut(cut);
-  setIcon(KIcon(pix));
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
-                              const KShortcut& cut,
-                              const QObject* receiver,
-                              const char* slot, KActionCollection* parent,
-                              const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  setShortcut(cut);
-  QAction::setIcon(pix);
-  connect(this, SIGNAL(triggered(bool)), receiver, slot);
-  init();
-}
-
-KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              const KShortcut& cut,
-                              const QObject* receiver,
-                              const char* slot, KActionCollection* parent,
-                              const QString& name )
-  : KAction( text, parent, name )
-  , d(new KSelectActionPrivate())
-{
-  setShortcut(cut);
-  setIcon(KIcon(pix));
-  connect(this, SIGNAL(triggered(bool)), receiver, slot);
-  init();
+  d->init(this);
 }
 
 KSelectAction::~KSelectAction()
@@ -196,10 +124,11 @@ KSelectAction::~KSelectAction()
   delete menu();
 }
 
-void KSelectAction::init()
+void KSelectAction::KSelectActionPrivate::init(KSelectAction *q_ptr)
 {
-  connect(selectableActionGroup(), SIGNAL(triggered(QAction*)), SLOT(actionTriggered(QAction*)));
-  setMenu(new KMenu());
+  q = q_ptr;
+  QObject::connect(q->selectableActionGroup(), SIGNAL(triggered(QAction*)), q, SLOT(actionTriggered(QAction*)));
+  q->setMenu(new KMenu());
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
@@ -338,9 +267,10 @@ void KSelectAction::addAction(QAction* action)
   menu()->addAction(action);
 }
 
-KAction* KSelectAction::addAction(const QString& text)
+KAction* KSelectAction::addAction(const QString &text)
 {
-  KAction* newAction = new KAction(text, parentCollection(), 0);
+  KAction* newAction = new KAction(parent());
+  newAction->setText(text);
   newAction->setCheckable( true );
   newAction->setShortcutConfigurable(false);
 

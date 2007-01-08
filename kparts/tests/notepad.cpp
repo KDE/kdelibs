@@ -12,6 +12,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <klocale.h>
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
@@ -27,7 +28,8 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
   m_edit->setPlainText( "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
-  KAction* searchReplace = new KAction( "Search and replace", actionCollection(), "searchreplace" );
+  KAction* searchReplace = new KAction( "Search and replace", this );
+  actionCollection()->addAction( "searchreplace", searchReplace );
   connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
 
   // KXMLGUIClient looks in the "data" resource for the .rc files

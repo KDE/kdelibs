@@ -13,7 +13,7 @@ int main( int argc, char **argv )
 
     KActionCollection* coll = new KActionCollection( &app );
 
-    KAction* action = new KAction(coll, "test");
+    KAction* action = static_cast<KAction *>(coll->addAction("test"));
     action->setGlobalShortcutAllowed(true);
     action->setGlobalShortcut(KShortcut(Qt::META + Qt::Key_F5));
 

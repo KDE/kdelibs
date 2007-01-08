@@ -25,6 +25,7 @@
 #include <kconfig.h>
 #include <kicon.h>
 #include <kiconloader.h>
+#include <kactioncollection.h>
 
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_opera.h"
@@ -121,9 +122,8 @@ void KonqBookmarkMenu::fillDynamicBookmarks()
       }
 
       KActionMenu * actionMenu;
-      actionMenu = new KActionMenu(
-                                    KIcon(info.type), info.name,
-                                    m_actionCollection, "kbookmarkmenu" );
+      actionMenu = new KActionMenu( KIcon(info.type), info.name, this );
+      m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
 
       m_parentMenu->addAction(actionMenu);
       m_actions.append( actionMenu );
@@ -146,12 +146,13 @@ void KonqBookmarkMenu::refill()
     addActions();
 }
 
-KAction* KonqBookmarkMenu::actionForBookmark(KBookmark bm)
+QAction* KonqBookmarkMenu::actionForBookmark(KBookmark bm)
 {
   if ( bm.isGroup() )
   {
     kDebug(7043) << "Creating Konq bookmark submenu named " << bm.text() << endl;
-    KonqBookmarkActionMenu * actionMenu = new KonqBookmarkActionMenu( bm, m_actionCollection, "kbookmarkmenu" );
+    KonqBookmarkActionMenu * actionMenu = new KonqBookmarkActionMenu( bm, this );
+    m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
     m_actions.append( actionMenu );
 
     KBookmarkMenu *subMenu = new KonqBookmarkMenu( m_pManager, owner(), actionMenu, bm.address() );
@@ -165,7 +166,8 @@ KAction* KonqBookmarkMenu::actionForBookmark(KBookmark bm)
   else
   {
     kDebug(7043) << "Creating Konq bookmark action named " << bm.text() << endl;
-    KonqBookmarkAction * action = new KonqBookmarkAction( bm, m_actionCollection, owner() );
+    KonqBookmarkAction * action = new KonqBookmarkAction( bm, owner(), this );
+    m_actionCollection->addAction(action->objectName(), action);
     m_actions.append( action );
     return action;
   }
@@ -257,8 +259,8 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
   config.sync();
 }
 
-KonqBookmarkAction::KonqBookmarkAction(KBookmark bm, KActionCollection * collec, KonqBookmarkOwner * owner)
-  : KBookmarkAction(bm, collec, owner)
+KonqBookmarkAction::KonqBookmarkAction(KBookmark bm, KonqBookmarkOwner * owner, QObject *parent)
+  : KBookmarkAction(bm, owner, parent)
 {
 }
 
@@ -271,13 +273,13 @@ void KonqBookmarkAction::contextMenu(QPoint pos, KBookmarkManager* m_pManager, K
   KonqBookmarkContextMenu::self().contextMenu( pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, KActionCollection* parent, const char* name)
-  : KBookmarkActionMenu(bm, parent, name)
+KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, QObject* parent)
+  : KBookmarkActionMenu(bm, parent)
 {
 }
 
-KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, const QString & text, KActionCollection* parent, const char* name)
-: KBookmarkActionMenu(bm, text, parent, name)
+KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent)
+: KBookmarkActionMenu(bm, text, parent)
 {
 }
 

@@ -25,6 +25,7 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kactioncollection.h>
 
 #include "engine.h"
 
@@ -37,7 +38,8 @@ KAction* KNS::standardAction(const QString& what,
                              const char *slot, KActionCollection* parent,
                              const char *name)
 {
-  KAction *action = new KAction( i18n("Download New %1", what), parent, name );
+  KAction *action = new KAction( i18n("Download New %1", what), parent );
+  parent->addAction(name, action);
   action->setIcon( KIcon( "knewstuff" ) );
   QObject::connect( action, SIGNAL( triggered( bool ) ), recvr, slot );
 

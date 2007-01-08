@@ -24,6 +24,7 @@
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h>
 #include <kvbox.h>
+#include <kactioncollection.h>
 
 #include <assert.h>
 
@@ -42,14 +43,17 @@ class MainWindow : public KMainWindow
 
 
       // first constructor
-      KToolBarLabelAction* label1 = new KToolBarLabelAction( "&Label 1", actionCollection(), "label1" );
+      KToolBarLabelAction* label1 = new KToolBarLabelAction( "&Label 1", this );
+      actionCollection()->addAction("label1", label1);
 
       // second constructor
       KLineEdit* lineEdit = new KLineEdit( this );
-      KAction* lineEditAction = new KAction( "Line Edit", actionCollection(), "lineEdit");
+      KAction* lineEditAction = new KAction( "Line Edit", this );
+      actionCollection()->addAction( "lineEdit", lineEditAction );
       lineEditAction->setDefaultWidget(lineEdit);
 
-      new KToolBarLabelAction( lineEditAction, "L&abel 2", actionCollection(), "label2" );
+      new KToolBarLabelAction( lineEditAction, "L&abel 2", this );
+      actionCollection()->addAction( "label2", lineEditAction );
 
       // set buddy for label1
       label1->setBuddy( lineEditAction );
@@ -57,7 +61,8 @@ class MainWindow : public KMainWindow
 
       // third constructor
       KToolBarLabelAction* label3 = new KToolBarLabelAction( "&Really long, long, long and boring text goes here",
-                                                             actionCollection(), "label3" );
+                                                             this );
+      actionCollection()->addAction( "label3", label3 );
 
       // set buddy for label3
       label3->setBuddy( lineEditAction );

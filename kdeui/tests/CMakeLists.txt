@@ -509,15 +509,27 @@ target_link_libraries(kmainwindowrestoretest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kactiontest_SRCS
-kactiontest.cpp
+set(kactioncollectiontest_SRCS
+kactioncollectiontest.cpp
 )
 
-kde4_automoc(${kactiontest_SRCS})
+kde4_automoc(${kactioncollectiontest_SRCS})
 
-kde4_add_executable(kactiontest NOGUI RUN_UNINSTALLED ${kactiontest_SRCS})
+kde4_add_executable(kactioncollectiontest NOGUI RUN_UNINSTALLED ${kactioncollectiontest_SRCS})
 
-target_link_libraries(kactiontest ${KDE4_KDEUI_LIBS})
+target_link_libraries(kactioncollectiontest ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+########### next target ###############
+
+set(kstandardactiontest_SRCS
+kstandardactiontest.cpp
+)
+
+kde4_automoc(${kstandardactiontest_SRCS})
+
+kde4_add_executable(kstandardactiontest NOGUI RUN_UNINSTALLED ${kstandardactiontest_SRCS})
+
+target_link_libraries(kstandardactiontest ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
 
 ########### next target ###############
@@ -937,6 +949,16 @@ kde4_add_executable(kpassworddialogtest NOGUI RUN_UNINSTALLED ${kpassworddialogt
 target_link_libraries(kpassworddialogtest ${KDE4_KDEUI_LIBS})
 
 
+
+set(kshortcuttest_SRCS kshortcuttest.cpp )
+
+kde4_automoc(${kshortcuttest_SRCS})
+
+kde4_add_executable(kshortcuttest NOGUI RUN_UNINSTALLED ${kshortcuttest_SRCS})
+
+target_link_libraries(kshortcuttest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kshortcuttest ${EXECUTABLE_OUTPUT_PATH}/kshortcuttest)
 
 ########### End of tests ###############
 

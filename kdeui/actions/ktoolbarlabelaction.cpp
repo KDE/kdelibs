@@ -30,18 +30,15 @@ class KToolBarLabelAction::Private
     QString oldText;
 };
 
-KToolBarLabelAction::KToolBarLabelAction( const QString &text,
-                                          KActionCollection *parent,
-                                          const QString& name )
-  : KAction( text, parent, name ),
+KToolBarLabelAction::KToolBarLabelAction(const QString &text, QObject *parent)
+  : KAction(text, parent),
     d( new Private )
 {
   d->oldText = KToolBarLabelAction::text();
 }
 
-KToolBarLabelAction::KToolBarLabelAction( QAction* buddy, const QString &text,
-                                          KActionCollection *parent, const QString& name )
-  : KAction( text, parent, name ),
+KToolBarLabelAction::KToolBarLabelAction(QAction* buddy, const QString &text, QObject *parent)
+  : KAction(text, parent),
     d( new Private )
 {
 

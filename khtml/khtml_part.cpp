@@ -86,6 +86,7 @@ using namespace DOM;
 #include <kcharsets.h>
 #include <kmessagebox.h>
 #include <kstandardaction.h>
+#include <kactioncollection.h>
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
 #include <ktemporaryfile.h>
@@ -99,7 +100,6 @@ using namespace DOM;
 #include "kfind.h"
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
-#include <kseparatoraction.h>
 
 #include <ksslcertchain.h>
 #include <ksslinfodialog.h>
@@ -253,37 +253,47 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
   d->m_bCleared = false;
-  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), actionCollection(), "viewDocumentSource" );
+  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
+  actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
   d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
   connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
 
-  d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), actionCollection(), "viewFrameSource" );
+  d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
+  actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
   connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
 
-  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), actionCollection(), "viewPageInfo" );
+  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
+  actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
   d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
   connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
 
-  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), actionCollection(), "saveBackground" );
+  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
+  actionCollection()->addAction( "saveBackground", d->m_paSaveBackground );
   connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
 
-  d->m_paSaveDocument = KStandardAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
+  d->m_paSaveDocument = actionCollection()->addAction( KStandardAction::SaveAs, "saveDocument",
+                                                       this, SLOT( slotSaveDocument() ) );
   if ( parentPart() )
-      d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
+      d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
 
-  d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), actionCollection(), "saveFrame" );
+  d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), this );
+  actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
   connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
 
-  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), actionCollection(), "debugRenderTree" );
+  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), this );
+  actionCollection()->addAction( "debugRenderTree", d->m_paDebugRenderTree );
   connect( d->m_paDebugRenderTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugRenderTree() ) );
 
-  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), actionCollection(), "debugDOMTree" );
+  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), this );
+  actionCollection()->addAction( "debugDOMTree", d->m_paDebugDOMTree );
   connect( d->m_paDebugDOMTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugDOMTree() ) );
 
-  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), actionCollection(), "stopAnimations" );
+  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), this );
+  actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
   connect( d->m_paStopAnimations, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
 
-  d->m_paSetEncoding = new KActionMenu( KIcon("charset"), i18n( "Set &Encoding" ), actionCollection(), "setEncoding" );
+  d->m_paSetEncoding = new KActionMenu( KIcon("charset"), i18n( "Set &Encoding" ), this );
+  actionCollection()->addAction( "setEncoding", d->m_paSetEncoding );
   d->m_paSetEncoding->setDelayed( false );
 
   d->m_automaticDetection = new KMenu( 0L );
@@ -308,10 +318,13 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paSetEncoding->menu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
 
-  d->m_paSetEncoding->addAction( new KSeparatorAction( actionCollection() ) );
+  QAction *sep_act = new QAction( this );
+  sep_act->setSeparator( true );
+  d->m_paSetEncoding->addAction( sep_act );
 
 
-  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), actionCollection(), "manualDetection" );
+  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), this );
+  actionCollection()->addAction( "manualDetection", d->m_manualDetection );
   connect( d->m_manualDetection, SIGNAL( triggered( bool ) ), this, SLOT( slotSetEncoding() ) );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   d->m_manualDetection->setItems( encodings );
@@ -367,18 +380,21 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   }
 
 
-  d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), actionCollection(), "useStylesheet" );
+  d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
+  actionCollection()->addAction( "useStylesheet", d->m_paUseStylesheet );
   connect( d->m_paUseStylesheet, SIGNAL( triggered( bool ) ), this, SLOT( slotUseStylesheet() ) );
 
   if ( prof == BrowserViewGUI ) {
-      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "viewmag+", i18n( "Enlarge Font" ), actionCollection(), "incFontSizes");
+      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "viewmag+", i18n( "Enlarge Font" ), this );
+      actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncZoomFast() ));
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<p>"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
 
-      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "viewmag-", i18n( "Shrink Font" ), actionCollection(), "decFontSizes" );
+      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "viewmag-", i18n( "Shrink Font" ), this );
+      actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecZoomFast() ));
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<p>"
@@ -386,26 +402,29 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
   }
 
-  d->m_paFind = KStandardAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
   d->m_paFind->setWhatsThis( i18n( "Find text<p>"
 				   "Shows a dialog that allows you to find text on the displayed page." ) );
 
-  d->m_paFindNext = KStandardAction::findNext( this, SLOT( slotFindNext() ), actionCollection(), "findNext" );
+  d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
   d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
 				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  d->m_paFindPrev = KStandardAction::findPrev( this, SLOT( slotFindPrev() ), actionCollection(), "findPrevious" );
+  d->m_paFindPrev = actionCollection()->addAction( KStandardAction::FindPrev, "findPrevious",
+                                                   this, SLOT( slotFindPrev() ) );
   d->m_paFindPrev->setWhatsThis( i18n( "Find previous<p>"
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), actionCollection(), "findAheadText");
-  d->m_paFindAheadText->setShortcut( KShortcut( '/' ) );
+  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
+  actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
+  d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
   connect( d->m_paFindAheadText, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadText()) );
 
-  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), actionCollection(), "findAheadLink");
-  d->m_paFindAheadLinks->setShortcut( KShortcut( '\'' ) );
+  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), this );
+  actionCollection()->addAction( "findAheadLink", d->m_paFindAheadLinks );
+  d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
   connect( d->m_paFindAheadLinks, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadLink() ) );
 
   d->m_paFindAheadText->setEnabled( false );
@@ -413,25 +432,28 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   if ( parentPart() )
   {
-      d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
-      d->m_paFindNext->setShortcut( KShortcut() ); // avoid clashes
-      d->m_paFindPrev->setShortcut( KShortcut() ); // avoid clashes
-      d->m_paFindAheadText->setShortcut( KShortcut());
-      d->m_paFindAheadLinks->setShortcut( KShortcut());
+      d->m_paFind->setShortcuts( KShortcut() ); // avoid clashes
+      d->m_paFindNext->setShortcuts( KShortcut() ); // avoid clashes
+      d->m_paFindPrev->setShortcuts( KShortcut() ); // avoid clashes
+      d->m_paFindAheadText->setShortcuts( KShortcut());
+      d->m_paFindAheadLinks->setShortcuts( KShortcut());
   }
 
-  d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), actionCollection(), "printFrame" );
+  d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
+  actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
   d->m_paPrintFrame->setIcon( KIcon( "frameprint" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
   d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<p>"
 					 "Some pages have several frames. To print only a single frame, click "
 					 "on it and then use this function." ) );
 
-  d->m_paSelectAll = KStandardAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
+  d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
+                                                    this, SLOT( slotSelectAll() ) );
   if ( parentPart() )
-      d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
+      d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
-  d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), actionCollection(), "caretMode");
+  d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
+  actionCollection()->addAction( "caretMode", d->m_paToggleCaretMode );
   d->m_paToggleCaretMode->setShortcut( QKeySequence(Qt::Key_F7) );
   connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
@@ -1380,7 +1402,8 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages ) {
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), actionCollection(), "loadImages" );
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
+    actionCollection()->addAction( "loadImages", d->m_paLoadImages );
     d->m_paLoadImages->setIcon( KIcon( "images_display" ) );
     connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
   }
@@ -7346,7 +7369,8 @@ void KHTMLPart::setDebugScript( bool enable )
   unplugActionList( "debugScriptList" );
   if ( enable ) {
     if (!d->m_paDebugScript) {
-      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), actionCollection(), "debugScript" );
+      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), this );
+      actionCollection()->addAction( "debugScript", d->m_paDebugScript );
       connect( d->m_paDebugScript, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugScript() ) );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );

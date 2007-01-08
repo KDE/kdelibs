@@ -41,22 +41,22 @@ public:
     QAction *configureAction;
 };
 
-KCodecAction::KCodecAction( KActionCollection *parent, const QString &name )
-    : KSelectAction( parent, name )
+KCodecAction::KCodecAction(QObject *parent)
+    : KSelectAction(parent)
     , d(new Private)
 {
     init();
 }
 
-KCodecAction::KCodecAction( const QString &text, KActionCollection *parent, const QString &name )
-    : KSelectAction( text, parent, name )
+KCodecAction::KCodecAction(const QString &text, QObject *parent)
+    : KSelectAction(text, parent)
     , d(new Private)
 {
     init();
 }
 
-KCodecAction::KCodecAction( const KIcon &icon, const QString &text, KActionCollection *parent, const QString &name )
-    : KSelectAction( icon, text, parent, name )
+KCodecAction::KCodecAction(const KIcon &icon, const QString &text, QObject *parent)
+    : KSelectAction(icon, text, parent)
     , d(new Private)
 {
     init();

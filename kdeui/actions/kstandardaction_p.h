@@ -141,8 +141,8 @@ class AutomaticAction : public KAction
   Q_OBJECT
 
   public:
-    AutomaticAction( const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
-                     KActionCollection *parent, const char *name );
+    AutomaticAction(const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
+                    QObject *parent);
   public Q_SLOTS:
     inline void cut() { invokeEditSlot( "cut" ); };
     inline void copy() { invokeEditSlot( "copy" ); };

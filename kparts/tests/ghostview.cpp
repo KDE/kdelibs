@@ -2,6 +2,7 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
@@ -24,10 +25,12 @@ Shell::Shell()
     KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "ghostviewtest_shell.rc" );
 
-    KAction * paOpen = new KAction( KIcon("fileopen"), "&Open file", actionCollection(), "file_open" );
+    KAction * paOpen = new KAction( KIcon("fileopen"), "&Open file", this );
+    actionCollection()->addAction( "file_open", paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    KAction * paQuit = new KAction( KIcon("exit"), "&Quit", actionCollection(), "file_quit" );
+    KAction * paQuit = new KAction( KIcon("exit"), "&Quit", this );
+    actionCollection()->addAction( "file_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 
     // Try to find a postscript component first

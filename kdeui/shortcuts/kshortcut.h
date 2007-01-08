@@ -99,6 +99,14 @@ public:
      */
     explicit KShortcut(const QString &description);
 
+    /**
+     * Creates a new shortcut with the given Qt key sequences.
+     * The first sequence in the list is considered to be the primary
+     * sequence, the second one the alternate.
+     * @param seqs List of key sequeces.
+     */
+    explicit KShortcut(const QList<QKeySequence> &seqs);
+
     /** @name Query methods */
     /** @{ */
 

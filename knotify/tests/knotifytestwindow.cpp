@@ -11,6 +11,7 @@
 #include <klocale.h>
 #include <kstandardaction.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kstandardshortcut.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>
@@ -20,25 +21,25 @@
 KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
   : KMainWindow(parent) , m_nbNewMessage(0)
 {
-	QWidget *w=new QWidget(this); 
+	QWidget *w=new QWidget(this);
 	view.setupUi(w);
 //	statusBar()->message(i18n("Test program for KNotify"));
 	setCaption( i18n("Test program for KNotify") );
 
 	setCentralWidget(w);
-  
+
 	// set up the actions
-	KStandardAction::quit( this, SLOT( close() ), actionCollection() );
-	KStandardAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
+        actionCollection()->addAction(KStandardAction::Quit, this, SLOT( close() ));
+        actionCollection()->addAction(KStandardAction::KeyBindings, guiFactory(), SLOT( configureShortcuts() ));
 
 	createGUI();
-	
+
 	connect ( view.b_online , SIGNAL(clicked()) , this , SLOT(slotSendOnlineEvent()));
 	connect ( view.b_message , SIGNAL(clicked()) , this , SLOT(slotSendMessageEvent()));
 	connect ( view.b_read , SIGNAL(clicked()) , this , SLOT(slotMessageRead()));
 	connect ( view.b_confG ,  SIGNAL(clicked()) , this , SLOT(slotConfigureG()));
 	connect ( view.b_confC ,  SIGNAL(clicked()) , this , SLOT(slotConfigureC()));
-	
+
 }
 
 void KNotifyTestWindow::slotSendOnlineEvent()
@@ -60,14 +61,14 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 		n->setText(i18n( "new message : %1" ,  view.c_text->toPlainText() ));
 		n->setActions( QStringList( i18n("Read") ) );
 		connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
-		
+
 		m_readNotif=n;
 	}
 	else
 	{
 		m_readNotif->setText(i18n("%1 new messages", m_nbNewMessage));
 	}
-	
+
 	KNotification::ContextList cl;
 	cl << qMakePair( QString("group") , view.c_group->currentText() );
 	m_readNotif->setContexts( cl );

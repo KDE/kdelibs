@@ -467,10 +467,11 @@ QString KMLprManager::printOptions(KPrinter *prt)
 
 void KMLprManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("&Edit printcap Entry..."), coll, "plugin_editprintcap");
-  act->setIcon( KIcon( "kdeprint_report" ) );
+	KAction	*act = new KAction(i18n("&Edit printcap Entry..."), this);
+	coll->addAction( "plugin_editprintcap", act );
+	act->setIcon( KIcon( "kdeprint_report" ) );
 	act->setActionGroup(pluginGroup());
-  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(slotEditPrintcap() ) );
+	connect( act, SIGNAL( triggered( bool ) ), this, SLOT(slotEditPrintcap() ) );
 }
 
 void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt)

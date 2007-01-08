@@ -23,6 +23,7 @@
 #include <kdeprint/kmmanager.h>
 #include <kiconloader.h>
 #include <kmenu.h>
+#include <kactioncollection.h>
 #include <klocale.h>
 
 class KPrintAction::KPrintActionPrivate
@@ -39,15 +40,14 @@ public:
 	QWidget *parentWidget;
 };
 
-KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *parentWidget, KActionCollection  *parent, const char *name)
-: KActionMenu(text, parent, name),d(new KPrintActionPrivate())
+KPrintAction::KPrintAction(const QString& text, PrinterType type, QWidget *parentWidget)
+: KActionMenu(text, parentWidget),d(new KPrintActionPrivate())
 {
 	initialize(type, parentWidget);
 }
 
-KPrintAction::KPrintAction(const KIcon& icon, const QString& text, PrinterType type, QWidget *parentWidget, KActionCollection *parent, const char 
-*name)
-: KActionMenu(icon, text, parent, name),d(new KPrintActionPrivate())
+KPrintAction::KPrintAction(const KIcon& icon, const QString& text, PrinterType type, QWidget *parentWidget)
+: KActionMenu(icon, text, parentWidget),d(new KPrintActionPrivate())
 {
 	initialize(type, parentWidget);
 }
@@ -109,17 +109,26 @@ void KPrintAction::slotActivated(QAction *action)
 
 KPrintAction* KPrintAction::exportAll(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
-	return new KPrintAction(i18n("&Export..."), All, parentWidget, parent, (name ? name : "export_all"));
+	KPrintAction *a = new KPrintAction(i18n("&Export..."), All, parentWidget);
+	if ( parent!=0 )
+		parent->addAction(name ? name : "export_all", a);
+	return a;
 }
 
 KPrintAction* KPrintAction::exportRegular(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
-	return new KPrintAction(i18n("&Export..."), Regular, parentWidget, parent, (name ? name : "export_regular"));
+	KPrintAction *a = new KPrintAction(i18n("&Export..."), Regular, parentWidget);
+	if ( parent!=0 )
+		parent->addAction(name ? name : "export_regular", a);
+	return a;
 }
 
 KPrintAction* KPrintAction::exportSpecial(QWidget *parentWidget, KActionCollection *parent, const char *name)
 {
-	return new KPrintAction(i18n("&Export..."), Specials, parentWidget, parent, (name ? name : "export_special"));
+	KPrintAction *a = new KPrintAction(i18n("&Export..."), Specials, parentWidget);
+	if ( parent!=0 )
+		parent->addAction(name ? name : "export_special", a);
+	return a;
 }
 
 #include "kprintaction.moc"

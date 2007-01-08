@@ -49,12 +49,11 @@ class KDEUI_EXPORT KRecentFilesAction : public KSelectAction
 
 public:
     /**
-     * Constructs an action in the specified KActionCollection.
+     * Constructs an action with the specified parent.
      *
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KRecentFilesAction(KActionCollection* parent, const QString& name);
+    KRecentFilesAction(QObject *parent);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -66,10 +65,9 @@ public:
      * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KRecentFilesAction(const QString& text, KActionCollection* parent, const QString& name);
+    KRecentFilesAction(const QString &text, QObject *parent);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -80,112 +78,9 @@ public:
      *
      * @param icon The icon to display.
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KRecentFilesAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    /**
-     * \overload KRecentFilesAction(const QIcon&, const QString&, KActionCollection*)
-     *
-     * This constructor differs from the above in that the icon is specified as
-     * a icon name which can be loaded by KIconLoader.
-     *
-     * @param icon The name of the icon to load via KIconLoader.
-     * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KUrl & ).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const KShortcut& cut,
-                      const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param pix The icons that go with this action.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param pix The dynamically loaded icon that goes with this action.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param pix The icons that go with this action.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KUrl & ).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                      const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param text The text that will be displayed.
-   *  @param pix The dynamically loaded icon that goes with this action.
-   *  @param cut The corresponding keyboard accelerator (shortcut).
-   *  @param receiver The SLOT's parent.
-   *  @param slot The SLOT to invoke when a URL is selected.
-   *  Its signature is of the form slotURLSelected( const KUrl & ).
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( const QString& text, const QString& pix, const KShortcut& cut,
-                      const QObject* receiver, const char* slot,
-                      KActionCollection* parent, const QString& name = QString(),
-                      int maxItems = 10 );
-
-  /**
-   *  @param parent This action's parent.
-   *  @param name An internal name for this action.
-   *  @param maxItems The maximum number of files to display
-   */
-  KDE_CONSTRUCTOR_DEPRECATED KRecentFilesAction( KActionCollection* parent = 0, const QString& name = QString(),
-                      int maxItems = 10 );
+    KRecentFilesAction(const KIcon &icon, const QString &text, QObject *parent);
 
   /**
    *  Destructor.

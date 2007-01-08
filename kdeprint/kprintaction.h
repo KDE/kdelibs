@@ -23,6 +23,7 @@
 #include <kactionmenu.h>
 
 class KPrinter;
+class KActionCollection;
 
 class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 {
@@ -30,8 +31,8 @@ class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 public:
 	enum PrinterType { All, Regular, Specials };
 
-	explicit KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
-	KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+	explicit KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
+	KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
 	virtual ~KPrintAction();
 
 	static KPrintAction* exportAll(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);

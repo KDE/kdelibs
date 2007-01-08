@@ -35,8 +35,8 @@
 #include <kicon.h>
 #include <klocale.h>
 
-KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, const QString& name )
-  : KSelectAction( parent, name )
+KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
+  : KSelectAction(parent)
 {
     QStringList list;
     KFontChooser::getFontList( list, fontListCriteria );
@@ -44,8 +44,8 @@ KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, con
     setEditable( true );
 }
 
-KFontAction::KFontAction( KActionCollection * parent, const QString& name )
-  : KSelectAction( parent, name )
+KFontAction::KFontAction(QObject *parent)
+  : KSelectAction(parent)
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -53,8 +53,8 @@ KFontAction::KFontAction( KActionCollection * parent, const QString& name )
     setEditable( true );
 }
 
-KFontAction::KFontAction( const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( text, parent, name )
+KFontAction::KFontAction(const QString & text, QObject *parent)
+  : KSelectAction(text, parent)
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -62,129 +62,11 @@ KFontAction::KFontAction( const QString & text, KActionCollection * parent, cons
     setEditable( true );
 }
 
-KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( icon, text, parent, name )
+KFontAction::KFontAction(const KIcon &icon, const QString &text, QObject *parent)
+  : KSelectAction(icon, text, parent)
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( KIcon( icon ), text, parent, name )
-{
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text,
-                          const KShortcut& cut, KActionCollection* parent,
-                          const QString& name )
-  : KSelectAction( text, parent, name )
-{
-    setShortcut( cut );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text, const KShortcut& cut,
-                          const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( text, parent, name )
-{
-    setShortcut( cut );
-    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text, const QIcon& pix,
-                          const KShortcut& cut,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( KIcon( pix ), text, parent, name )
-{
-    setShortcut( cut );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text, const QString& pix,
-                          const KShortcut& cut,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( KIcon( pix ), text, parent, name )
-{
-    setShortcut( cut );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text, const QIcon& pix,
-                          const KShortcut& cut,
-                          const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( KIcon( pix ), text, parent, name )
-{
-    setShortcut( cut );
-    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( const QString& text, const QString& pix,
-                          const KShortcut& cut,
-                          const QObject* receiver, const char* slot,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( KIcon( pix ), text, parent, name )
-{
-    setShortcut( cut );
-    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( uint fontListCriteria, const QString& text,
-                          const KShortcut& cut, KActionCollection* parent,
-                          const QString& name )
-    : KSelectAction( text, parent, name )
-{
-    setShortcut( cut );
-
-    QStringList list;
-    KFontChooser::getFontList( list, fontListCriteria );
-    KSelectAction::setItems( list );
-    setEditable( true );
-}
-
-KFontAction::KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
-                          const KShortcut& cut,
-                          KActionCollection* parent, const QString& name )
-    : KSelectAction( KIcon( pix ), text, parent, name )
-{
-    setShortcut( cut );
-
-    QStringList list;
-    KFontChooser::getFontList( list, fontListCriteria );
     KSelectAction::setItems( list );
     setEditable( true );
 }

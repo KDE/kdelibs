@@ -139,34 +139,6 @@ instead.</li>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 </ul>
 
-<h4>KAction</h4>
-<ul>
-<li>Renamed "Custom" shortcuts to "Active" shortcuts.</li>
-<li>Added setShortcut(QKeySequence &amp;) to explicitly override QAction::setShortcut.</li>
-<li>Functions in KActionCollection or KXMLGUIFactory for example don't take or return KAction pointers
-anymore but instead operate on QAction pointers. If you get compilation errors with code like the
-following then just replace KAction with QAction:
-<pre>
-KAction *a = actionCollection()-&gt;action("foo");
-...
-</pre>
-Also if you get errors about KAction being an unknown type it is often enough to forward declare
-KAction in your header file.
-<li>plug() -&gt; QWidget::addAction()
-<li>unplug() -&gt; QWidget::removeAction()
-<li>isPlugged() -&gt; !action->associatedWidgets().isEmpty()
-<li>containerCount() -&gt; action->associatedWidgets().count()
-<li>container(int i) -&gt; action->associatedWidgets().value(i)
-<li>hasIcon() -&gt; !action->icon().isNull()
-<li>setIconName(string) -&gt; setIcon(KIcon(string))
-<li>unplugAll() -&gt; Rarely needed, but if you are sure that you need it replace it with the following
-code:
-<pre>
-foreach (QWidget *w, action-&gt;associatedWidgets())
-    w->removeAction(action);
-</pre>
-</ul>
-
 <h4>KApplication</h4>
 <p>Moved to kdeui. This means no change for GUI applications.
 For text-based applications, you should consider switching to QCoreApplication + KInstance.
@@ -650,13 +622,6 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <ul>
 <li>KAction is now a subclass of QWidgetAction.</li>
 <li>Don't use setIconSet() anymore, use setIcon(KIcon(iconName)) instead</li>
-<li>New constructors more closely model QAction (old constructors deprecated)</li>
-<li>Constructors now take a QString instead of const char* for action names</li>
-<li>You should never rename the objectName() of a KAction - as KActionCollection holds a map, and it is not told of name changes (thus the setObjectName() functions are made private)</li>
-<li>"icon" property is now a QIcon, use iconName() / setIconName() for KDE named icons</li>
-<li>KShortcuts supported by shortcut/setShortcut (hides QAction's shortcut/setShortcut). Automatically sets alternateShortcuts() in QAction.</li>
-<li>plug(), unplug() deprecated - use QWidget::addAction() and QWidget::removeAction() instead (To provide custom widgets for toolbars, use the facilities from QWidgetAction, the parent class)</li>
-<li>containerCount(), container() deprecated - use associatedWidgets() instead</li>
 <li>activated(), activated(int) signals deprecated - use triggered() signal instead</li>
 <li>activate() is now trigger(), as in QAction</li>
 <li>there is a replacement for activation providing keyboard + mouse states, see triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) [currently buggy]</li>
@@ -668,23 +633,50 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -&gt; statusTip(), but the best solution is to set both.</li>
 <li>New feature: globalShortcut() and globalShortcutAllowed().  Automatically communicates with KGlobalAccel to register a global shortcut (i.e. one that does not need the application to have focus to be activated).</li>
 <li>setShortcut() now defaults to setting the default shortcut as well (as it was by far the most common use case).  To just set the custom shortcut, use setShortcut(myShortcut, KAction::CustomShortcut)</li>
-<li>Porting example:
+<li>Renamed "Custom" shortcuts to "Active" shortcuts.</li>
+<li>Added setShortcut(QKeySequence &amp;) to explicitly override QAction::setShortcut.</li>
+<li>Functions in KActionCollection or KXMLGUIFactory for example don't take or return KAction pointers
+anymore but instead operate on QAction pointers. If you get compilation errors with code like the
+following then just replace KAction with QAction:
 <pre>
-  The following code
-
-    KAction *action = new KAction( i18n( "Copy" ), "copy_icon", Qt::Key_F6, this, SLOT( copy() ),
-                                   actionCollection(), "copy_name" );
-
-  should be rewritten as
-
-    KAction *action = new KAction( i18n( "Copy" ), actionCollection(), "copy_name" );
-    action-&gt;setShortcut( Qt::Key_F6 );
-    action-&gt;setIcon( KIcon( "copy_icon" ) );
-    connect( action, SIGNAL( triggered() ), this, SLOT( copy() ) );
-
-  If the first argument is a KGuiItem, use KGuiItem::text() and KGuiItem::iconName().
+QAction *a = actionCollection()-&gt;action("foo");
+...
 </pre>
-</li>
+Also if you get errors about KAction being an unknown type it is often enough to forward declare
+KAction in your header file.
+<li>plug() -&gt; QWidget::addAction()
+<li>unplug() -&gt; QWidget::removeAction()
+<li>isPlugged() -&gt; !action-&gt;associatedWidgets().isEmpty()
+<li>containerCount() -&gt; action-&gt;associatedWidgets().count()
+<li>container(int i) -&gt; action-&gt;associatedWidgets().value(i)
+<li>hasIcon() -&gt; !action-&gt;icon().isNull()
+<li>setIconName(string) -&gt; setIcon(KIcon(string))
+<li>unplugAll() -&gt; Rarely needed, but if you are sure that you need it replace it with the following
+code:
+<pre>
+foreach (QWidget *w, action-&gt;associatedWidgets())
+    w-&gt;removeAction(action);
+</pre>
+<li>The KAction constructors changed completely. The constructors taking various action properties,
+a pointer to an acion collection and the name of the action have been removed. The new pattern is to
+create the actions like regular QObjects with a parent (owner). Then you set various properties using
+setText, setIcon, etc. . As a last step the action can be added to the action collection with a name.
+<pre>
+KAction *a = new KAction(this);
+a-&gt;setText(i18n("I am ported"));
+a-&gt;setIcon(KIcon("shiny"));
+a-&gt;setShortcut(Qt::ControlModifier + Qt::Key_A);
+actionCollection - &gt; addAction("name_of_the_action", a);
+</pre>
+KActionCollection additional provides convenience overloads for creating named KAction objects or
+standard actions (KStandardAction). For example:
+<pre>
+QAction *a = actionCollection -&gt; addAction("action_name");
+a-&gt;setText(i18n("I have been ported, too"));
+connect(a, SIGNAL(triggered()), this, SLOT(portedToKde4()));
+
+actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
+</pre>
 </ul>
 
 <h4>KActionCollection</h4>
@@ -698,8 +690,10 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>actionHighlighted(), actionStatusText(), clearStatusText() removed - use QAction::setStatusTip() as a replacement.  QStatusBars belonging to QMainWindow automatically get the statusTip() applied to them when they are moused over in a QMenu, via a QStatusTipEvent.</li>
 <li>groups() removed (now using QActionGroups) - see actionGroups() (and actionsWithoutGroup()) for replacement</li>
 <li>actions( const QString&amp; group ) removed - use actionGroups() instead, and then QActionGroup::actions()</li>
-<li>action(int), count() deprecated - use actions() directly</li>
 <li>action(const char* name, const char* className) removed: action(const QString&amp; name), actions(const QString&amp; name), actionOfType&lt;Class&gt;(const QString&amp; name), actionsOfType&lt;Class&gt;(const QString&amp; name) are the replacements</li>
+<li>insert(KAction *) -&gt; addAction(const QString &amp;name, QAction *action)
+<li>remove(KAction *) -&gt; removeAction(QAction *action)
+<li>take(KAction *) -&gt; takeAction(QAction *action)
 </ul>
 
 <h4>KActionSelector</h4>

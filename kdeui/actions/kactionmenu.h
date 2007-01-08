@@ -51,9 +51,9 @@ class KDEUI_EXPORT KActionMenu : public KAction
   Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
 
 public:
-    KActionMenu(KActionCollection* parent, const QString& name);
-    KActionMenu(const QString& text, KActionCollection* parent, const QString& name);
-    KActionMenu(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
+    explicit KActionMenu(QObject *parent);
+    KActionMenu(const QString& text, QObject *parent);
+    KActionMenu(const KIcon& icon, const QString& text, QObject *parent);
     virtual ~KActionMenu();
 
     KDE_DEPRECATED void remove( KAction* );

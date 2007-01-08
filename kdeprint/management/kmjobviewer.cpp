@@ -37,6 +37,7 @@
 #include <klocale.h>
 #include <kmenu.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kstandardaction.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -259,44 +260,56 @@ void KMJobViewer::init()
 void KMJobViewer::initActions()
 {
 	// job actions
-	KAction	*hact = new KAction(i18n("&Hold"), actionCollection(),"job_hold");
-  hact->setIcon( KIcon( "stop" ) );
-  connect( hact, SIGNAL( triggered( bool ) ), this,SLOT(slotHold()) );
+	KAction	*hact = new KAction(i18n("&Hold"), this);
+	actionCollection()->addAction( "job_hold", hact );
+	hact->setIcon( KIcon( "stop" ) );
+	connect( hact, SIGNAL( triggered( bool ) ), this,SLOT(slotHold()) );
 
-	KAction	*ract = new KAction(i18n("&Resume"), actionCollection(),"job_resume");
-  ract->setIcon( KIcon( "run" ) );
-  connect( ract, SIGNAL( triggered( bool ) ), this,SLOT(slotResume()) );
+	KAction	*ract = new KAction(i18n("&Resume"), this);
+	actionCollection()->addAction( "job_resume", ract );
+	ract->setIcon( KIcon( "run" ) );
+	connect( ract, SIGNAL( triggered( bool ) ), this,SLOT(slotResume()) );
 
-	KAction	*dact = new KAction(i18n("Remo&ve"), actionCollection(),"job_remove");
-  dact->setIcon( KIcon( "edittrash" ) );
-  dact->setShortcut( QKeySequence(Qt::Key_Delete) );
-  connect( dact, SIGNAL( triggered( bool ) ), this,SLOT(slotRemove()) );
+	KAction	*dact = new KAction(i18n("Remo&ve"), this);
+	actionCollection()->addAction( "job_remove", dact );
+	dact->setIcon( KIcon( "edittrash" ) );
+	dact->setShortcut( QKeySequence(Qt::Key_Delete) );
+	connect( dact, SIGNAL( triggered( bool ) ), this,SLOT(slotRemove()) );
 
-	KAction *sact = new KAction(i18n("Res&tart"), actionCollection(),"job_restart");
-  sact->setIcon( KIcon( "redo" ) );
-  connect( sact, SIGNAL( triggered( bool ) ), this,SLOT(slotRestart()) );
+	KAction *sact = new KAction(i18n("Res&tart"), this);
+	actionCollection()->addAction( "job_restart", sact );
+	sact->setIcon( KIcon( "redo" ) );
+	connect( sact, SIGNAL( triggered( bool ) ), this, SLOT(slotRestart()) );
 
-	KActionMenu *mact = new KActionMenu(KIcon("fileprint"),i18n("&Move to Printer"),actionCollection(),"job_move");
+	KActionMenu *mact = new KActionMenu(KIcon("fileprint"), i18n("&Move to Printer"), this);
+	actionCollection()->addAction( "job_move", mact );
 	mact->setDelayed(false);
 	connect(mact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotMove(QAction*)));
 	connect(mact->menu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 	connect(mact->menu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 	connect(mact->menu(),SIGNAL(aboutToShow()),SLOT(slotShowMoveMenu()));
-	KToggleAction	*tact = new KToggleAction(i18n("&Toggle Completed Jobs"), actionCollection(),"view_completed");
-  tact->setIcon( KIcon( "history" ) );
+
+	KToggleAction *tact = new KToggleAction(i18n("&Toggle Completed Jobs"), this);
+	actionCollection()->addAction( "view_completed", tact );
+	tact->setIcon( KIcon( "history" ) );
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
-	KToggleAction	*uact = new KToggleAction(i18n("Show Only User Jobs"), actionCollection(), "view_user_jobs");
-  uact->setIcon( KIcon( "personal" ) );
+
+	KToggleAction *uact = new KToggleAction(i18n("Show Only User Jobs"), this);
+	actionCollection()->addAction( "view_user_jobs", uact );
+	uact->setIcon( KIcon( "personal" ) );
 	uact->setCheckedState(KGuiItem(i18n("Hide Only User Jobs"),"personal"));
 	connect(uact, SIGNAL(toggled(bool)), SLOT(slotUserOnly(bool)));
+
 	m_userfield = new QLineEdit(0);
 	m_userfield->setText(getenv("USER"));
 	connect(m_userfield, SIGNAL(returnPressed()), SLOT(slotUserChanged()));
 	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
 	m_userfield->setEnabled(false);
 	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-	KAction *ufact = new KAction(i18n("User Name"), actionCollection(), "view_username");
+
+	KAction *ufact = new KAction(i18n("User Name"), this);
+	actionCollection()->addAction( "view_username", ufact );
 	ufact->setDefaultWidget(m_userfield);
 
 	if (!m_pop)
@@ -314,7 +327,8 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint_printer"), i18n("&Select Printer"), actionCollection(), "filter_modify");
+	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint_printer"), i18n("&Select Printer"), this);
+	actionCollection()->addAction( "filter_modify", fact );
 	fact->setDelayed(false);
 	connect(fact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotPrinterSelected(QAction*)));
 	connect(fact->menu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
@@ -339,14 +353,15 @@ void KMJobViewer::initActions()
 	}
 	else
 	{// stand-alone application
-		KStandardAction::quit(kapp,SLOT(quit()),actionCollection());
-		KStandardAction::close(this,SLOT(slotClose()),actionCollection());
-		KStandardAction::preferences(this, SLOT(slotConfigure()), actionCollection());
+		actionCollection()->addAction( KStandardAction::Quit, kapp, SLOT(quit()) );
+		actionCollection()->addAction( KStandardAction::Close, this, SLOT(slotClose()) );
+		actionCollection()->addAction( KStandardAction::Preferences, this, SLOT(slotConfigure()) );
 
 		// refresh action
-		KAction *action = new KAction(i18n("Refresh"), actionCollection(),"refresh");
-    action->setIcon( KIcon( "reload" ) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(slotRefresh() ) );
+		KAction *action = new KAction(i18n("Refresh"), this );
+		actionCollection()->addAction( "refresh", action );
+		action->setIcon( KIcon( "reload" ) );
+		connect( action, SIGNAL( triggered( bool ) ), this, SLOT(slotRefresh() ) );
 
 		// create status bar
 		KStatusBar	*statusbar = statusBar();

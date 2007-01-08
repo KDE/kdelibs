@@ -32,7 +32,6 @@
 #include <kguiitem.h>
 #include <kshortcut.h>
 
-class KActionCollection;
 class KInstance;
 class KIcon;
 
@@ -191,57 +190,41 @@ class KDEUI_EXPORT KAction : public QWidgetAction
 {
   Q_OBJECT
 
-  Q_PROPERTY( KShortcut activeShortcut READ activeShortcut WRITE setActiveShortcut )
-  Q_PROPERTY( KShortcut defaultShortcut READ defaultShortcut WRITE setDefaultShortcut )
+  Q_PROPERTY( KShortcut shortcut READ shortcut WRITE setShortcut )
   Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
   Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
-  Q_PROPERTY( KShortcut activeGlobalShortcut READ activeGlobalShortcut WRITE setActiveGlobalShortcut )
-  Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
-  Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
   Q_FLAGS( ShortcutType )
 
 public:
     /**
      * A simple enumeration to define the type of shortcut, default (revert to this if
      * the user presses "default") or active, i.e. comes in effect immediately.
-     * Used primarily so setShortcut() and setGlobalShortcut() can be made to also set the
-     * default shortcut by default.
      */
     enum ShortcutType {
       /// The shortcut will immediately become active but may be reset to "default".
       ActiveShortcut = 0x1,
-      /// The shortcut is a default shortcut - becomes active when somebody decides to
+      /// The shortcut is a default shortcut - it becomes active when somebody decides to
       /// reset shortcuts to default.
       DefaultShortcut = 0x2
     };
     Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
 
     /**
-     * Constructs an action in the specified KActionCollection.
-     *
-     * @param parent The action collection to contain this action.
-     * @param name The internal name for this action.
+     * Constructs an action.
      */
-    KAction(KActionCollection* parent, const QString& name);
+    explicit KAction(QObject *parent);
 
     /**
-     * Constructs an action with text; a shortcut may be specified by
-     * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
+     * Constructs an action with the specified parent and visible text.
      *
-     * This is the most common KAction constructor used when you do not have a
-     * corresponding icon (note that it won't appear in the current version
-     * of the "Edit ToolBar" dialog, because an action needs an icon to be
-     * plugged in a toolbar...).
-     *
-     * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name The internal name for this action.
+     * @param text The visible text for this action.
+     * @param parent The parent for this action.
      */
-    KAction(const QString& text, KActionCollection* parent, const QString& name);
+    KAction(const QString& text, QObject *parent);
 
     /**
-     * Constructs an action with text; a shortcut may be specified by
+     * Constructs an action with text and icon; a shortcut may be specified by
      * the ampersand character (e.g. \"&amp;Option\" creates a shortcut with key \e O )
      *
      * This is the other common KAction constructor used.  Use it when you
@@ -249,20 +232,14 @@ public:
      *
      * @param icon The icon to display.
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name The internal name for this action.
+     * @param parent The parent for this action.
      */
-    KAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
+    KAction(const KIcon& icon, const QString& text, QObject *parent);
 
     /**
      * Standard destructor
      */
     virtual ~KAction();
-
-    /**
-     * Returns the action collection that owns this object.
-     */
-    KActionCollection* parentCollection() const;
 
     /**
      * Get the shortcut for this action.
@@ -276,16 +253,6 @@ public:
      * \sa shortcuts()
      */
     KShortcut shortcut(ShortcutTypes types = ActiveShortcut) const;
-
-    /**
-     * Convenience function to retrieve the default shortcut for this action.
-     */
-    inline KShortcut defaultShortcut() const { return shortcut(DefaultShortcut); }
-
-    /**
-     * Convenience function to retrieve the active shortcut for this action.
-     */
-    inline KShortcut activeShortcut() const { return shortcut(ActiveShortcut); }
 
     /**
      * Set the shortcut for this action.
@@ -312,16 +279,6 @@ public:
      *  default shortcut, or both (default argument value).
      */
     void setShortcut(const QKeySequence& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
-
-    /**
-     * Convenience function to set the active shortcut for this action.
-     */
-    inline void setActiveShortcut(const KShortcut& shortcut) { setShortcut(shortcut, DefaultShortcut); }
-
-    /**
-     * Convenience function to set the default shortcut for this action.
-     */
-    inline void setDefaultShortcut(const KShortcut& shortcut) { setShortcut(shortcut, DefaultShortcut); }
 
     /**
      * Returns true if this action's shortcut is configurable.
@@ -371,38 +328,6 @@ public:
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
 
     /**
-     * Convenience function to retrieve the active global shortcut for this action, if one exists.
-     *
-     * \sa globalShortcut()
-     */
-    inline const KShortcut& activeGlobalShortcut() const { return globalShortcut(ActiveShortcut); }
-
-    /**
-     * Convenience function to set the active global shortcut for this action.
-     *
-     * \param shortcut active global shortcut(s).
-     *
-     * \sa activeGlobalShortcut()
-     */
-    inline void setActiveGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, ActiveShortcut); }
-
-    /**
-     * Convenience function to retrieve the default global shortcut for this action, if one exists.
-     *
-     * \sa globalShortcut()
-     */
-    inline const KShortcut& defaultGlobalShortcut() const { return globalShortcut(DefaultShortcut); }
-
-    /**
-     * Convenience function to set the default global shortcut for this action.
-     *
-     * \param shortcut default global shortcut(s).
-     *
-     * \sa defaultGlobalShortcut()
-     */
-    inline void setDefaultGlobalShortcut(const KShortcut& shortcut) { setGlobalShortcut(shortcut, DefaultShortcut); }
-
-    /**
      * Returns true if this action is permitted to have a global shortcut.
      * Defaults to false.
      */
@@ -415,26 +340,6 @@ public:
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
      */
     void setGlobalShortcutAllowed(bool allowed);
-
-    /**
-     * Return the icon for this action.
-     *
-     * This function hides QAction::icon() to be able to return a KIcon.
-     */
-    KIcon icon() const;
-
-    /**
-     * Set the icon for this action.
-     *
-     * This function hides QAction::setIcon(const QIcon&) to encourage programmers to pass
-     * KIcons (which adhere to KDE style guidelines).  The QAction call can of course still
-     * be accessed manually for the rare instances where KIcon does not make sense.
-     *
-     * \param icon the KIcon to assign to this action
-     */
-    void setIcon(const KIcon& icon);
-
-public:
 
 signals:
 #ifdef KDE3_SUPPORT
@@ -452,23 +357,10 @@ signals:
      */
     void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
-protected Q_SLOTS:
-    /**
-     * This function is connected to the QAction's triggered(bool) signal, and allows
-     * KAction to emit the triggered signal with mouse and keyboard modifiers attached.
-     */
-    virtual void slotTriggered();
-
 private:
-    // Core initialization, including Kiosk authorization checking
-    void initPrivate(const QString& name);
-
-    // You're not supposed to change the action name throughout its life - these methods are here to discourage you
-    void setName ( const char * name );
-    void setObjectName(const QString& name);
-
-private:
+    Q_PRIVATE_SLOT(d, void slotTriggered())
     class KActionPrivate* const d;
+    friend class KActionPrivate;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KAction::ShortcutTypes)

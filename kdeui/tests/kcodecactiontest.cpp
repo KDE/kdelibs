@@ -9,6 +9,7 @@
 #include "kcodecactiontest.h"
 
 #include <kcodecaction.h>
+#include <kactioncollection.h>
 
 int main( int argc, char **argv )
 {
@@ -23,9 +24,11 @@ int main( int argc, char **argv )
 
 CodecActionTest::CodecActionTest(QWidget *parent)
     : KMainWindow(parent)
-    , m_comboCodec(new KCodecAction("Combo Codec Action", actionCollection(), "combo"))
-    , m_buttonCodec(new KCodecAction("Button Codec Action", actionCollection(), "button"))
+    , m_comboCodec(new KCodecAction("Combo Codec Action", this))
+    , m_buttonCodec(new KCodecAction("Button Codec Action", this))
 {
+    actionCollection()->addAction("combo", m_comboCodec);
+    actionCollection()->addAction("button", m_buttonCodec);
     m_comboCodec->setToolBarMode(KCodecAction::ComboBoxMode);
     connect(m_comboCodec, SIGNAL(triggered(QAction*)), SLOT(triggered(QAction*)));
     connect(m_comboCodec, SIGNAL(triggered(int)), SLOT(triggered(int)));

@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <kinstance.h>
-#include <kseparatoraction.h>
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
@@ -220,8 +219,8 @@ bool KDataToolInfo::isValid() const
  *
  *************************************************/
 KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command,
-                                  KActionCollection* parent, const QString& name )
-    : KAction( text, parent, name ),
+                                  QObject *parent )
+    : KAction( text, parent ),
       m_command( command ),
       m_info( info )
 {
@@ -239,7 +238,9 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
     if ( tools.isEmpty() )
         return actionList;
 
-    actionList.append( new KSeparatorAction() );
+    QAction *sep_action = new QAction(parent);
+    sep_action->setSeparator(true);
+    actionList.append( sep_action );
     QList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
@@ -256,7 +257,8 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         {
             //kDebug() << "creating action " << *uit << " " << *cit << endl;
             const QString name = (*entry).service()->entryPath(); // something unique
-            KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit, parent, name );
+            KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit, parent );
+            parent->addAction( name, action );
             connect( action, SIGNAL( toolActivated( const KDataToolInfo &, const QString & ) ),
                      receiver, slot );
             actionList.append( action );

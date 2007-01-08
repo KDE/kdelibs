@@ -45,6 +45,7 @@ class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
 class KAction;
+class QAction;
 class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
@@ -124,7 +125,7 @@ protected:
                  KMenu * parentMenu, const QString & parentAddress);
   virtual void clear();
   virtual void refill();
-  virtual KAction* actionForBookmark(KBookmark bm);
+  virtual QAction* actionForBookmark(KBookmark bm);
   void addActions();
   void fillBookmarks();
   void addAddBookmark();
@@ -150,7 +151,7 @@ protected:
   /**
    * List of our actions.
    */
-  QList<KAction *> m_actions;
+  QList<QAction *> m_actions;
   /**
    * Parent bookmark for this menu.
    */
@@ -204,8 +205,8 @@ private:
 class KIO_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
 {
 public:
-  KBookmarkActionMenu(KBookmark bm, KActionCollection* parent, const char* name);
-  KBookmarkActionMenu(KBookmark bm, const QString & text, KActionCollection* parent, const char* name);
+  KBookmarkActionMenu(KBookmark bm, QObject *parent);
+  KBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent);
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkActionMenu();
 };
@@ -214,7 +215,7 @@ class KIO_EXPORT KBookmarkAction : public KAction, public KBookmarkActionInterfa
 {
   Q_OBJECT
 public:
-  KBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner);
+  KBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent);
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkAction();
 

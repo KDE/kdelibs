@@ -35,8 +35,8 @@ class KIO_EXPORT KonqBookmarkActionMenu : public KBookmarkActionMenu
 {
   Q_OBJECT
 public:
-  KonqBookmarkActionMenu(KBookmark bm, KActionCollection* parent, const char* name);
-  KonqBookmarkActionMenu(KBookmark bm, const QString & text, KActionCollection* parent, const char* name);
+  KonqBookmarkActionMenu(KBookmark bm, QObject *parent);
+  KonqBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent);
   virtual ~KonqBookmarkActionMenu();
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 };
@@ -45,7 +45,7 @@ class KonqBookmarkAction : public KBookmarkAction
 {
   Q_OBJECT
 public:
-  KonqBookmarkAction(KBookmark bm, KActionCollection * collec, KonqBookmarkOwner * owner);
+  KonqBookmarkAction(KBookmark bm, KonqBookmarkOwner * owner, QObject *parent);
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KonqBookmarkAction();
 };
@@ -112,7 +112,7 @@ protected:
   {
   }
   virtual void refill();
-  virtual KAction* actionForBookmark(KBookmark bm);
+  virtual QAction* actionForBookmark(KBookmark bm);
   void fillDynamicBookmarks();
 private:
   KonqBookmarkOwner * owner()

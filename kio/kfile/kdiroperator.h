@@ -38,7 +38,6 @@ class QProgressBar;
 class KAction;
 class KDirLister;
 class KToggleAction;
-class KSeparatorAction;
 class KActionMenu;
 namespace KIO {
   class CopyJob;
@@ -857,25 +856,25 @@ private:
     // ### clean up all those -- we have them all in the actionMenu!
     KActionMenu *actionMenu;
 
-    KAction 	*backAction;
-    KAction 	*forwardAction;
-    KAction 	*homeAction;
-    KAction 	*upAction;
-    KAction 	*reloadAction;
-    KSeparatorAction *actionSeparator;
+    QAction 	*backAction;
+    QAction 	*forwardAction;
+    QAction 	*homeAction;
+    QAction 	*upAction;
+    QAction 	*reloadAction;
+    QAction *actionSeparator;
     KAction 	*mkdirAction;
 
     KActionMenu *sortActionMenu;
-    KAction *byNameAction;
-    KAction *byDateAction;
-    KAction *bySizeAction;
+    QAction *byNameAction;
+    QAction *byDateAction;
+    QAction *bySizeAction;
     KToggleAction *reverseAction;
     KToggleAction *dirsFirstAction;
     KToggleAction *caseInsensitiveAction;
 
     KActionMenu *viewActionMenu;
-    KAction *shortAction;
-    KAction *detailedAction;
+    QAction *shortAction;
+    QAction *detailedAction;
     KToggleAction *showHiddenAction;
     KToggleAction *separateDirsAction;
 

@@ -46,7 +46,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
     action->setIcon(KIcon("redo"));
     action->setShortcuts(KStandardShortcut::redo());
 
-    actionCollection->insert(action);
+    actionCollection->addAction(action->objectName(), action);
 
     return action;
 }
@@ -64,7 +64,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
     action->setIcon(KIcon("undo"));
     action->setShortcuts(KStandardShortcut::undo());
 
-    actionCollection->insert(action);
+    actionCollection->addAction(action->objectName(), action);
 
     return action;
 }

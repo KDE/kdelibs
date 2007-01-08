@@ -26,7 +26,7 @@ class KIconSelectAction : public KSelectAction
 {
 	Q_OBJECT
 public:
-	explicit KIconSelectAction(const QString& text, KActionCollection* parent = 0, const char* name = 0);
+	explicit KIconSelectAction(const QString& text, QObject *parent);
 	virtual ~KIconSelectAction();
 
 public Q_SLOTS:

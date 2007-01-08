@@ -56,9 +56,8 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction
      *
      * @param text The label's and the action's text.
      * @param parent This action's parent.
-     * @param name An internal name for this action.
      */
-    KToolBarLabelAction( const QString &text, KActionCollection *parent, const QString& name );
+    KToolBarLabelAction(const QString &text, QObject *parent);
 
     /**
      * Creates a toolbar label setting a buddy for the label.
@@ -67,10 +66,8 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction
      * typed.
      * @param text The label's and the action's text.
      * @param parent This action's parent.
-     * @param name An internal name for this action.
      */
-    KToolBarLabelAction( QAction *buddy, const QString &text,
-                         KActionCollection *parent, const QString& name );
+    KToolBarLabelAction(QAction *buddy, const QString &text, QObject *parent);
 
     /**
      * Destroys the toolbar label.

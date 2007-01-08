@@ -64,10 +64,12 @@ public:
 
         noArrangement = false;
         ignoreMaximumSize = false;
-        smallColumns = new KAction( i18n("Small Icons"), parent->actionCollection(), "small columns" );
+        smallColumns = new KAction( i18n("Small Icons"), parent );
+        parent->actionCollection()->addAction( "small columns", smallColumns );
         connect( smallColumns, SIGNAL( triggered( bool ) ), parent, SLOT( slotSmallColumns() ) );
 
-        largeRows = new KAction( i18n("Large Icons"), parent->actionCollection(), "large rows" );
+        largeRows = new KAction( i18n("Large Icons"), parent );
+        parent->actionCollection()->addAction( "large rows", largeRows );
         connect( largeRows, SIGNAL( triggered( bool ) ), parent, SLOT( slotLargeRows() ) );
 
 
@@ -75,13 +77,10 @@ public:
         smallColumns->setActionGroup(sizeGroup);
         largeRows->setActionGroup(sizeGroup);
 
-        previews = new KToggleAction( i18n("Thumbnail Previews"),
-                                      parent->actionCollection(),
-                                      "show previews" );
-        zoomIn = KStandardAction::zoomIn( parent, SLOT( zoomIn() ),
-                                     parent->actionCollection(), "zoomIn" );
-        zoomOut = KStandardAction::zoomOut( parent, SLOT( zoomOut() ),
-                                     parent->actionCollection(), "zoomOut" );
+        previews = new KToggleAction( i18n("Thumbnail Previews"), parent );
+        parent->actionCollection()->addAction( "show previews", previews );
+        zoomIn = parent->actionCollection()->addAction( KStandardAction::ZoomIn, "zoomIn", parent, SLOT( zoomIn() ) );
+        zoomOut = parent->actionCollection()->addAction( KStandardAction::ZoomOut, "zoomOut", parent, SLOT( zoomOut() ) );
 
         connect( previews, SIGNAL( toggled( bool )),
                  parent, SLOT( slotPreviewsToggled( bool )));
@@ -97,8 +96,8 @@ public:
             job->kill();
     }
 
-    KAction *smallColumns, *largeRows;
-    KAction *zoomIn, *zoomOut;
+    QAction *smallColumns, *largeRows;
+    QAction *zoomIn, *zoomOut;
     KToggleAction *previews;
     KIO::PreviewJob *job;
     KFileIconViewItem *dropItem;

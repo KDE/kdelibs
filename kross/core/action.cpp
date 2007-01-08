@@ -31,6 +31,7 @@
 #include <kicon.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
+#include <kactioncollection.h>
 
 using namespace Kross;
 
@@ -91,16 +92,17 @@ namespace Kross {
 }
 
 Action::Action(KActionCollection* collection, const QString& name)
-    : KAction( collection, name )
+    : KAction( collection )
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
 {
+    collection->addAction(name, this);
     setEnabled( false );
 }
 
 Action::Action(const QString& file)
-    : KAction( 0 /* no parent KActionCollection */, file )
+    : KAction( file, 0 /* no parent KActionCollection */ )
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
@@ -112,7 +114,7 @@ Action::Action(const QString& file)
 }
 
 Action::Action(KActionCollection* collection, const QDomElement& element, const QDir& packagepath)
-    : KAction( collection, element.attribute("name") )
+    : KAction( element.attribute("name"), collection )
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
@@ -140,6 +142,8 @@ Action::Action(KActionCollection* collection, const QDomElement& element, const 
     if( icon.isEmpty() && ! d->scriptfile.isNull() )
         icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
     setIcon( KIcon(icon) );
+
+    collection->addAction(objectName(), this);
 }
 
 Action::~Action()

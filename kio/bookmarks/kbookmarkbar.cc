@@ -186,14 +186,14 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                 m_toolBar->addSeparator();
             else
             {
-                KAction *action = new KonqBookmarkAction( bm, 0, m_pOwner );
+                KAction *action = new KonqBookmarkAction( bm, m_pOwner, 0 );
                 m_toolBar->addAction(action);
                 d->m_actions.append( action );
             }
         }
         else
         {
-            KonqBookmarkActionMenu *action = new KonqBookmarkActionMenu(bm, 0, "bookmarkbar-actionmenu");
+            KonqBookmarkActionMenu *action = new KonqBookmarkActionMenu(bm, 0);
             action->setDelayed( false );
             m_toolBar->addAction(action);
             d->m_actions.append( action );

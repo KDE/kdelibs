@@ -35,34 +35,10 @@ class KDEUI_EXPORT KFontAction : public KSelectAction
     Q_PROPERTY( QString font READ font WRITE setFont )
 
 public:
-    KFontAction(uint fontListCriteria, KActionCollection* parent, const QString& name);
-    KFontAction(KActionCollection* parent, const QString& name);
-    KFontAction(const QString& text, KActionCollection* parent, const QString& name);
-    KFontAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                 const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( const QString& text, const QString& pix, const KShortcut& cut,
-                 const QObject* receiver, const char* slot, KActionCollection* parent,
-                 const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text,
-                 const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                 const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
-                 const KShortcut& cut = KShortcut(),
-                 KActionCollection* parent = 0, const QString& name = QString() );
-
+    KFontAction(uint fontListCriteria, QObject *parent);
+    explicit KFontAction(QObject *parent);
+    KFontAction(const QString& text, QObject *parent);
+    KFontAction(const KIcon &icon, const QString &text, QObject *parent);
     virtual ~KFontAction();
 
     QString font() const {

@@ -49,22 +49,23 @@ public:
   bool m_stickyMenu;
 };
 
-KActionMenu::KActionMenu( KActionCollection * parent, const QString& name )
-  : KAction( parent, name )
+KActionMenu::KActionMenu(QObject *parent)
+  : KAction(parent)
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );
 }
 
-KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( text, parent, name )
+KActionMenu::KActionMenu(const QString &text, QObject *parent)
+  : KAction(parent)
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );
+  setText(text);
 }
 
-KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( icon, text, parent, name )
+KActionMenu::KActionMenu(const KIcon & icon, const QString & text, QObject *parent)
+  : KAction(icon, text, parent)
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );

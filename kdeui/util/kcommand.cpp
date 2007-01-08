@@ -20,6 +20,7 @@
 
 #include "kcommand.h"
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kdebug.h>
@@ -117,8 +118,8 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
     }
     else
     {
-        KStandardAction::undo( this, SLOT( undo() ), actionCollection );
-        KStandardAction::redo( this, SLOT( redo() ), actionCollection );
+        actionCollection->addAction(KStandardAction::Undo, this, SLOT(undo()));
+        actionCollection->addAction(KStandardAction::Redo, this, SLOT(redo()));
     }
     clear();
 }
@@ -295,8 +296,7 @@ int KCommandHistory::redoLimit() const
 KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory )
     : KToolBarPopupAction( KIcon( type == Undo ? "undo" : "redo" ),
                            QString(), // text is set in clear() on start
-                           actionCollection,
-                           KStandardAction::stdName( type == Undo ? KStandardAction::Undo : KStandardAction::Redo ) ),
+                           actionCollection),
       m_type( type ),
       m_commandHistory( commandHistory ),
       d(0)
@@ -311,6 +311,8 @@ KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection
 
     connect( m_commandHistory, SIGNAL(commandHistoryChanged()), this, SLOT(slotCommandHistoryChanged()) );
     slotCommandHistoryChanged();
+    actionCollection->addAction(KStandardAction::stdName(type == Undo ? KStandardAction::Undo : KStandardAction::Redo),
+                                this);
 }
 
 void KUndoRedoAction::slotAboutToShow()

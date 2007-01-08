@@ -6,6 +6,7 @@
 #include <kxmlguiclient.h>
 #include <kxmlguibuilder.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <kstandardaction.h>
@@ -43,7 +44,8 @@ int main( int argc, char **argv )
     shell->setInstance( new KInstance( "konqueror" ) );
     shell->instance()->dirs()->addResourceDir( "data", QDir::currentPath() );
 
-    a = new KAction( KIcon( "view_left_right" ), "Split", shell->actionCollection(), "splitviewh" );
+    a = new KAction( KIcon( "view_left_right" ), "Split", shell );
+    shell->actionCollection()->addAction( "splitviewh", a );
 
     shell->setXMLFile( "./kxmlguitest_shell.rc" );
 
@@ -51,8 +53,10 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    a = new KAction( KIcon( "viewmag-" ), "decfont", part->actionCollection(), "decFontSizes" );
-    a = new KAction( KIcon( "unlock" ), "sec", part->actionCollection(), "security" );
+    a = new KAction( KIcon( "viewmag-" ), "decfont", part );
+    part->actionCollection()->addAction( "decFontSizes", a );
+    a = new KAction( KIcon( "unlock" ), "sec", part );
+    part->actionCollection()->addAction( "security", a );
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT( slotSec() ) );
 

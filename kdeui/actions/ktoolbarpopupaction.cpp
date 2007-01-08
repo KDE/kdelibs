@@ -47,53 +47,10 @@ class KToolBarPopupAction::Private
     bool stickyMenu:1;
 };
 
-KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
-                                          const QString& text,
-                                          KActionCollection* parent, const QString& name )
-  : KAction( icon, text, parent, name ),
+KToolBarPopupAction::KToolBarPopupAction(const KIcon& icon, const QString& text, QObject *parent)
+  : KAction(icon, text, parent),
     d( new Private )
 {
-  setMenu( new KMenu );
-}
-
-KToolBarPopupAction::KToolBarPopupAction( const QString& text,
-                                          const QString& icon,
-                                          const KShortcut& cut,
-                                          KActionCollection* parent, const QString& name )
-  : KAction( KIcon( icon ), text, parent, name ),
-    d( new Private )
-{
-  setShortcut( cut );
-
-  setMenu( new KMenu );
-}
-
-KToolBarPopupAction::KToolBarPopupAction( const QString& text,
-                                          const QString& icon,
-                                          const KShortcut& cut,
-                                          const QObject* receiver,
-                                          const char* slot, KActionCollection* parent,
-                                          const QString& name )
-  : KAction( KIcon( icon ), text, parent, name ),
-    d( new Private )
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
-  setMenu( new KMenu );
-}
-
-KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
-                                          const KShortcut& cut,
-                                          const QObject* receiver,
-                                          const char* slot, KActionCollection* parent,
-                                          const QString& name )
-  : KAction( KIcon( item.iconName() ), item.text(), parent, name ),
-    d( new Private )
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered() ), receiver, slot );
-
   setMenu( new KMenu );
 }
 

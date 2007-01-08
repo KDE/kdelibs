@@ -25,12 +25,11 @@
 */
 
 #include "kaction.h"
+#include "kactioncollection.h"
 
-#include <kauthorized.h>
 #include "kapplication.h"
 #include <kdebug.h>
 
-#include "kactioncollection.h"
 #include "kglobalaccel.h"
 #include "kguiitem.h"
 #include "kicon.h"
@@ -42,65 +41,57 @@ class KActionPrivate
 {
 public:
   KActionPrivate()
-    :globalShortcutAllowed(false)
+    : globalShortcutAllowed(false), q(0)
   {
   }
+
+  void slotTriggered();
+
+  void init(KAction *q_ptr);
 
   KShortcut globalShortcut, defaultGlobalShortcut;
 
   bool globalShortcutAllowed;
+  KAction *q;
 };
+
+void KActionPrivate::init(KAction *q_ptr)
+{
+  q = q_ptr;
+
+  QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
+
+  q->setProperty("isShortcutConfigurable", true);
+}
 
 //---------------------------------------------------------------------
 // KAction
 //---------------------------------------------------------------------
 
-KAction::KAction( KActionCollection * parent, const QString& name )
+KAction::KAction(QObject *parent)
   : QWidgetAction(parent), d(new KActionPrivate)
 {
-  initPrivate(name);
+  d->init(this);
 }
 
-KAction::KAction( const QString & text, KActionCollection * parent, const QString& name )
+KAction::KAction(const QString &text, QObject *parent)
   : QWidgetAction(parent), d(new KActionPrivate)
 {
+  d->init(this);
   setText(text);
-  initPrivate(name);
 }
 
-KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
+KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
   : QWidgetAction(parent), d(new KActionPrivate)
 {
+  d->init(this);
   setIcon(icon);
   setText(text);
-  initPrivate(name);
 }
 
 KAction::~KAction()
 {
-    if (KActionCollection* ac = parentCollection())
-        ac->take( this );
-
     delete d;
-}
-
-void KAction::initPrivate(const QString& name)
-{
-    QAction::setObjectName(name);
-
-    if (!KAuthorized::authorizeKAction(name)) {
-      // Disable this action
-      setEnabled(false);
-      setVisible(false);
-      blockSignals(true);
-    }
-
-    if (KActionCollection* ac = parentCollection())
-        ac->insert( this );
-
-    connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered()));
-
-    setProperty("isShortcutConfigurable", true);
 }
 
 bool KAction::isShortcutConfigurable() const
@@ -111,11 +102,6 @@ bool KAction::isShortcutConfigurable() const
 void KAction::setShortcutConfigurable( bool b )
 {
     setProperty("isShortcutConfigurable", b);
-}
-
-KActionCollection *KAction::parentCollection() const
-{
-    return qobject_cast<KActionCollection*>(const_cast<QObject*>(parent()));
 }
 
 KShortcut KAction::shortcut(ShortcutTypes type) const
@@ -159,29 +145,12 @@ void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
   }
 }
 
-void KAction::slotTriggered()
+void KActionPrivate::slotTriggered()
 {
 #ifdef KDE3_SUPPORT
-  emit activated();
+  emit q->activated();
 #endif
-  emit triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
-}
-
-void KAction::setName ( const char * )
-{
-  // Not allowed
-  Q_ASSERT(false);
-}
-
-void KAction::setObjectName(const QString&)
-{
-  // Not allowed
-  Q_ASSERT(false);
-}
-
-void KAction::setIcon( const KIcon & icon )
-{
-  QAction::setIcon(icon);
+  emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
 const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
@@ -221,11 +190,6 @@ void KAction::setGlobalShortcutAllowed( bool allowed )
     d->globalShortcutAllowed = allowed;
     KGlobalAccel::self()->checkAction(this);
   }
-}
-
-KIcon KAction::icon( ) const
-{
-  return KIcon(QAction::icon());
 }
 
 /* vim: et sw=2 ts=2

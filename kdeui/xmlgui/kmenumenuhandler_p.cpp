@@ -23,6 +23,7 @@
 #include "kmenu.h"
 #include "kaction.h"
 #include "kactioncollection.h"
+#include "kactioncollection.h"
 #include "kshortcutdialog.h"
 #include <klocale.h>
 
@@ -35,19 +36,19 @@
 
 namespace KDEPrivate {
 
-KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder ) 
-  : QObject() , m_builder(builder) 
+KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
+  : QObject() , m_builder(builder)
 {
-  m_toolbarAction=new KSelectAction(i18n("Add to toolbar") , 0 , QString());
+  m_toolbarAction = new KSelectAction(i18n("Add to toolbar"), this);
   connect(m_toolbarAction , SIGNAL(triggered(int)) , this , SLOT(slotAddToToolBar(int)));
 }
-  
-  
+
+
 
 void KMenuMenuHandler::insertKMenu( KMenu *popup )
 {
   popup->contextMenu()->addAction( i18n("Configure Shortcut") , this , SLOT( slotSetShortcut() ));
-  
+
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(window)
   {
@@ -83,10 +84,10 @@ void KMenuMenuHandler::slotSetShortcut()
 
   KShortcutDialog dialog(action->shortcut() , m_builder->widget() );
   dialog.exec();
-  action->setShortcut(dialog.shortcut(), KAction::ActiveShortcut); 
+  action->setShortcut(dialog.shortcut(), KAction::ActiveShortcut);
 
-  if(action->parentCollection())
-    action->parentCollection()->writeSettings();
+  if(KActionCollection *collection = qobject_cast<KActionCollection *>(action->parent()))
+    collection->writeSettings();
 }
 
 
@@ -95,7 +96,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(!window)
     return;
-  
+
   KMenu * menu=KMenu::contextMenuFocus();
   if(!menu)
     return;
@@ -105,14 +106,14 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
 
 
   KToolBar *toolbar=window->toolBars()[tb];
-  
-  
-  toolbar->addAction(action);  
-  
+
+
+  toolbar->addAction(action);
+
 }
 
-        
-        
+
+
 } //END namespace KDEPrivate
 
 #include "kmenumenuhandler_p.moc"

@@ -147,8 +147,8 @@ protected:
 class KImportedBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
 {
 public:
-  KImportedBookmarkActionMenu(const KIcon &icon, const QString &text, KActionCollection *parent, const QString &name)
-    : KActionMenu(icon, text, parent, name),
+  KImportedBookmarkActionMenu(const KIcon &icon, const QString &text, QObject *parent)
+    : KActionMenu(icon, text, parent),
       KBookmarkActionInterface(KBookmark())
   {
   }
@@ -162,7 +162,7 @@ class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
 {
   Q_OBJECT
 public:
-  KImportedBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner );
+  KImportedBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent );
   ~KImportedBookmarkAction();
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 

@@ -45,13 +45,11 @@ class KDEUI_EXPORT KToggleAction : public KAction
 
   public:
     /**
-     * Constructs an action in the specified KActionCollection.
+     * Constructs an action with the specified parent.
      *
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
-     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
+     * @param parent The action's parent object.
      */
-    KToggleAction( KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L );
+    explicit KToggleAction( QObject *parent );
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -63,12 +61,9 @@ class KDEUI_EXPORT KToggleAction : public KAction
      * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
-     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
+     * @param parent The action's parent object.
      */
-    KToggleAction( const QString& text, KActionCollection* parent,
-                   const QString& name, QActionGroup* exclusiveGroup = 0L );
+    KToggleAction( const QString& text, QObject *parent );
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -79,95 +74,9 @@ class KDEUI_EXPORT KToggleAction : public KAction
      *
      * @param icon The icon to display.
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
-     * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
+     * @param parent The action's parent object.
      */
-    KToggleAction( const KIcon& icon, const QString& text, KActionCollection* parent,
-                   const QString& name, QActionGroup* exclusiveGroup = 0L );
-
-    /**
-     * \overload KSelectAction(const QIcon&, const QString&, KActionCollection*)
-     *
-     * This constructor differs from the above in that the icon is specified as
-     * a icon name which can be loaded by KIconLoader.
-     *
-     * @param icon The name of the icon to load via KIconLoader.
-     * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& icon, const QString& text, KActionCollection* parent,
-                                              const QString& name, QActionGroup* exclusiveGroup = 0L );
-
-    /**
-     * Constructs a toggle action with text and potential keyboard
-     * accelerator but nothing else. Use this only if you really
-     * know what you are doing.
-     *
-     * @param text The text that will be displayed.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut = KShortcut(),
-                   KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     *  @param text The text that will be displayed.
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param receiver The SLOT's parent.
-     *  @param slot The SLOT to invoke to execute this action.
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
-
-    /**
-     *  @param text The text that will be displayed.
-     *  @param pix The icons that go with this action.
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-             KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     *  @param text The text that will be displayed.
-     *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                   KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     *  @param text The text that will be displayed.
-     *  @param pix The icons that go with this action.
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param receiver The SLOT's parent.
-     *  @param slot The SLOT to invoke to execute this action.
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
-
-    /**
-     *  @param text The text that will be displayed.
-     *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param receiver The SLOT's parent.
-     *  @param slot The SLOT to invoke to execute this action.
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& text, const QString& pix, const KShortcut& cut,
-                   const QObject* receiver, const char* slot,
-                   KActionCollection* parent, const QString& name = QString() );
+    KToggleAction( const KIcon& icon, const QString& text, QObject *parent );
 
     /**
      * Destructor

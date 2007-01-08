@@ -50,17 +50,15 @@ class KToggleToolBarAction::Private
 };
 
 
-KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName, const QString& text,
-                                            KActionCollection* parent, const QString& name )
-  : KToggleAction( text, parent, name ),
+KToggleToolBarAction::KToggleToolBarAction(const char* toolBarName, const QString& text, QObject *parent)
+  : KToggleAction(text, parent),
     d( new Private )
 {
   d->toolBarName = toolBarName;
 }
 
-KToggleToolBarAction::KToggleToolBarAction( KToolBar *toolBar, const QString &text,
-                                            KActionCollection *parent, const char *name )
-  : KToggleAction( text, parent, name ),
+KToggleToolBarAction::KToggleToolBarAction(KToolBar *toolBar, const QString &text, QObject *parent)
+  : KToggleAction(text, parent),
     d( new Private )
 {
   d->toolBar = toolBar;

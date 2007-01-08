@@ -61,60 +61,8 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction
      * @param icon The icon to display.
      * @param text The text that will be displayed.
      * @param parent This action's parent.
-     * @param name An internal name for this action.
      */
-    KToolBarPopupAction( const KIcon& icon, const QString& text, KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     * Create a KToolBarPopupAction, with a text, an icon, an optional accelerator,
-     * parent and name.
-     *
-     * @param text The text that will be displayed.
-     * @param icon The icon to display.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut = KShortcut(),
-                         KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     * Create a KToolBarPopupAction, with a text, an icon, an accelerator,
-     * a slot connected to the action, parent and name.
-     *
-     * If you do not want or have a keyboard accelerator, set the
-     * @p cut param to 0.
-     *
-     * @param text The text that will be displayed.
-     * @param icon The icon to display.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param receiver The SLOT's owner.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const QString& text, const QString& icon, const KShortcut& cut,
-                         const QObject* receiver, const char* slot,
-                         KActionCollection* parent = 0, const QString& name = QString() );
-
-    /**
-     * Create a KToolBarPopupAction, with a KGuiItem, an accelerator,
-     * a slot connected to the action, parent and name. The text and the
-     * icon are taken from the KGuiItem.
-     *
-     * If you do not want or have a keyboard accelerator, set the
-     * @p cut param to 0.
-     *
-     * @param item The text and icon that will be displayed.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param receiver The SLOT's owner.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KToolBarPopupAction( const KGuiItem& item, const KShortcut& cut,
-                         const QObject* receiver, const char* slot,
-                         KActionCollection* parent, const QString& name );
+    KToolBarPopupAction(const KIcon& icon, const QString& text, QObject *parent);
 
     /**
      * Destroys the toolbar popup action.

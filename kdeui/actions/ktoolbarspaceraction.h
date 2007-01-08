@@ -40,10 +40,9 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction
     /**
      * Creates a new toolbar spacer action.
      *
-     * @param parent The parent @see KActionCollection of the action.
-     * @param name The name of the action.
+     * @param parent The action's parent object.
      */
-    explicit KToolBarSpacerAction( KActionCollection* parent, const QString& name = QString() );
+    explicit KToolBarSpacerAction(QObject *parent);
 
     /**
      * Returns the width of the spacer item.

@@ -13,6 +13,7 @@
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kmenubar.h>
@@ -31,25 +32,30 @@ Shell::Shell()
 
     QMenu * pFile = new QMenu( "File", menuBar() );
     KActionCollection * coll = actionCollection();
-    KAction * paLocal = new KAction( "&View local file", coll, "open_local_file" );
+    KAction * paLocal = new KAction( "&View local file", this );
+    coll->addAction( "open_local_file", paLocal );
     connect(paLocal, SIGNAL(triggered()), this, SLOT(slotFileOpen()));
     // No XML: we need to add our actions to the menus ourselves
     pFile->addAction(paLocal);
 
-    KAction * paRemote = new KAction( "&View remote file", coll, "open_remote_file" );
+    KAction * paRemote = new KAction( "&View remote file", this );
+    coll->addAction( "open_remote_file", paRemote );
     connect(paRemote, SIGNAL(triggered()), this, SLOT(slotFileOpenRemote()));
     pFile->addAction(paRemote);
 
-    m_paEditFile = new KAction( "&Edit file", coll, "edit_file" );
+    m_paEditFile = new KAction( "&Edit file", this );
+    coll->addAction( "edit_file", m_paEditFile );
     connect(m_paEditFile, SIGNAL(triggered()), this, SLOT(slotFileEdit()));
     pFile->addAction(m_paEditFile);
 
-    m_paCloseEditor = new KAction( "&Close file editor", coll, "close_editor" );
+    m_paCloseEditor = new KAction( "&Close file editor", this );
+    coll->addAction( "close_editor", m_paCloseEditor );
     connect(m_paCloseEditor, SIGNAL(triggered()), this, SLOT(slotFileCloseEditor()));
     m_paCloseEditor->setEnabled(false);
     pFile->addAction(m_paCloseEditor);
 
-    KAction * paQuit = new KAction( "&Quit", coll, "shell_quit" );
+    KAction * paQuit = new KAction( "&Quit", this );
+    coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
     paQuit->setIcon(KIcon("exit"));
     pFile->addAction(paQuit);

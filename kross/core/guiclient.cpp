@@ -66,17 +66,20 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     d->guiclient = guiclient;
     //d->actions = Manager::self().actionCollection();
 
-    d->scriptsmenu = new KActionMenu(i18n("Scripts"), actionCollection(), "scripts");
+    d->scriptsmenu = new KActionMenu(i18n("Scripts"), this);
+    actionCollection()->addAction("scripts", d->scriptsmenu);
     connect(d->scriptsmenu->menu(), SIGNAL(aboutToShow()), this, SLOT(slotMenuAboutToShow()));
     //connect(d->actions, SIGNAL(inserted(KAction*)), scriptsmenu, SLOT(addAction(QAction*)));
     //connect(d->actions, SIGNAL(removed(KAction*)), scriptsmenu, SLOT(removeAction(QAction*)));
 
     // action to execute a scriptfile.
-    KAction* execfileaction = new KAction(i18n("Execute Script File..."), actionCollection(), "executescriptfile");
+    KAction* execfileaction = new KAction(i18n("Execute Script File..."), this);
+    actionCollection()->addAction("executescriptfile", execfileaction);
     connect(execfileaction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)), SLOT(executeFile()));
 
     // acion to show the ScriptManagerGUI dialog.
-    KAction* manageraction =  new KAction(i18n("Script Manager..."), actionCollection(), "configurescripts");
+    KAction* manageraction =  new KAction(i18n("Script Manager..."), this);
+    actionCollection()->addAction("configurescripts", manageraction);
     connect(manageraction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)), SLOT(showManager()));
 
     // The GUIClient provides feedback if e.g. an execution failed.

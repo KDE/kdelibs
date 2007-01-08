@@ -30,6 +30,7 @@ class KDataTool;
 class QPixmap;
 class QStringList;
 class KInstance;
+class KActionCollection;
 
 // If you're only looking at implementing a data-tool, skip directly to the last
 // class definition, KDataTool.
@@ -202,7 +203,7 @@ public:
      * @param parent This action's parent
      * @param name The name of the action
      */
-    KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, KActionCollection* parent, const QString& name );
+    KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, QObject *parent );
 
     /**
      * Creates a list of actions from a list of information about data-tools.

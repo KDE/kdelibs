@@ -167,28 +167,28 @@ void KDateTable::initAccels()
   KActionCollection* localCollection = new KActionCollection(this);
   localCollection->setAssociatedWidget(this);
 
-  KAction* next = new KAction(localCollection, 0);
-  next->setShortcut(KStandardShortcut::next());
+  QAction* next = localCollection->addAction(QLatin1String("next"));
+  next->setShortcuts(KStandardShortcut::next());
   connect(next, SIGNAL(triggered(bool)), SLOT(nextMonth()));
 
-  KAction* prior = new KAction(localCollection, 0);
-  prior->setShortcut(KStandardShortcut::prior());
+  QAction* prior = localCollection->addAction(QLatin1String("prior"));
+  prior->setShortcuts(KStandardShortcut::prior());
   connect(prior, SIGNAL(triggered(bool)), SLOT(previousMonth()));
 
-  KAction* beginMonth = new KAction(localCollection, 0);
-  beginMonth->setShortcut(KStandardShortcut::home());
+  QAction* beginMonth = localCollection->addAction(QLatin1String("beginMonth"));
+  beginMonth->setShortcuts(KStandardShortcut::home());
   connect(beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()));
 
-  KAction* endMonth = new KAction(localCollection, 0);
-  endMonth->setShortcut(KStandardShortcut::end());
+  QAction* endMonth = localCollection->addAction(QLatin1String("endMonth"));
+  endMonth->setShortcuts(KStandardShortcut::end());
   connect(endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()));
 
-  KAction* beginWeek = new KAction(localCollection, 0);
-  beginWeek->setShortcut(KStandardShortcut::beginningOfLine());
+  QAction* beginWeek = localCollection->addAction(QLatin1String("beginWeek"));
+  beginWeek->setShortcuts(KStandardShortcut::beginningOfLine());
   connect(beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()));
 
-  KAction* endWeek = new KAction(localCollection, 0);
-  endWeek->setShortcut(KStandardShortcut::endOfLine());
+  QAction* endWeek = localCollection->addAction("endWeek");
+  endWeek->setShortcuts(KStandardShortcut::endOfLine());
   connect(endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()));
 
   localCollection->readSettings();

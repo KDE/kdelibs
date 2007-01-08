@@ -22,8 +22,8 @@
 #include <kicon.h>
 
 // automatically connect to "pluginActionActived(int)" in the receiver.
-PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int accel, KActionCollection *parent, const char *name)
-: KAction(txt, parent, name)
+PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent)
+: KAction(txt, parent)
 {
   setIcon( KIcon( icon ) );
   setShortcut( QKeySequence(accel) );

@@ -35,25 +35,9 @@ class KDEUI_EXPORT KFontSizeAction : public KSelectAction
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 
 public:
-    KFontSizeAction(KActionCollection* parent, const QString& name);
-    KFontSizeAction(const QString& text, KActionCollection* parent, const QString& name);
-    KFontSizeAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0,
-                     const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const KShortcut& cut, const QObject* receiver,
-                     const char* slot, KActionCollection* parent, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
-                     KActionCollection* parent = 0, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-                     KActionCollection* parent = 0, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-                     const QObject* receiver, const char* slot,
-                     KActionCollection* parent, const QString& name = QString() );
-    KDE_CONSTRUCTOR_DEPRECATED KFontSizeAction( const QString& text, const QString& pix, const KShortcut& cut,
-                     const QObject* receiver, const char* slot,
-                     KActionCollection* parent, const QString& name = QString() );
+    explicit KFontSizeAction(QObject *parent);
+    KFontSizeAction(const QString &text, QObject *parent);
+    KFontSizeAction(const KIcon &icon, const QString &text, QObject *parent);
 
     virtual ~KFontSizeAction();
 

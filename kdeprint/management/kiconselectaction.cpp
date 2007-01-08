@@ -21,8 +21,8 @@
 
 #include <kicon.h>
 
-KIconSelectAction::KIconSelectAction(const QString& text, KActionCollection* parent, const char* name)
-  : KSelectAction(text, parent, name)
+KIconSelectAction::KIconSelectAction(const QString& text, QObject *parent)
+  : KSelectAction(text, parent)
   , d(0L)
 {
 }
@@ -40,7 +40,7 @@ void KIconSelectAction::setItems(const QStringList& lst, const QStringList& icon
 
   for (int i = 0; i < lst.count(); ++i) {
     if ( !lst.at(i).isEmpty() ) {
-      KAction* action = new KAction(lst.at(i), parentCollection(), 0);
+      KAction* action = new KAction(lst.at(i), this);
       action->setIcon( KIcon( iconlst.at(i) ) );
       action->setShortcutConfigurable(false);
       addAction(action);

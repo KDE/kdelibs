@@ -808,15 +808,17 @@ QStringList KMCupsManager::detectLocalPrinters()
 
 void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("&Export Driver..."), coll, "plugin_export_driver");
-  act->setIcon( KIcon( "kdeprint_uploadsmb" ) );
+	KAction	*act = new KAction(i18n("&Export Driver..."), this);
+	coll->addAction( "plugin_export_driver", act );
+	act->setIcon( KIcon( "kdeprint_uploadsmb" ) );
 	act->setActionGroup(pluginGroup());
-  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(exportDriver()) );
+	connect( act, SIGNAL( triggered( bool ) ), this, SLOT(exportDriver()) );
 
-	act = new KAction(i18n("&Printer IPP Report"), coll, "plugin_printer_ipp_report");
-  act->setIcon( KIcon( "kdeprint_report" ) );
+	act = new KAction(i18n("&Printer IPP Report"), this);
+	coll->addAction( "plugin_printer_ipp_report", act );
+	act->setIcon( KIcon( "kdeprint_report" ) );
 	act->setActionGroup(pluginGroup());
-  connect( act, SIGNAL( triggered( bool ) ), this, SLOT(printerIppReport()) );
+	connect( act, SIGNAL( triggered( bool ) ), this, SLOT(printerIppReport()) );
 }
 
 void KMCupsManager::validatePluginActions(KActionCollection *coll, KMPrinter *pr)

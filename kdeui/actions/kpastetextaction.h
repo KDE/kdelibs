@@ -44,12 +44,11 @@ class KDEUI_EXPORT KPasteTextAction: public KAction
     Q_OBJECT
 public:
     /**
-     * Constructs an action in the specified KActionCollection.
+     * Constructs an action with the specified parent.
      *
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KPasteTextAction(KActionCollection* parent, const QString& name);
+    explicit KPasteTextAction(QObject *parent);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -61,10 +60,9 @@ public:
      * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KPasteTextAction(const QString& text, KActionCollection* parent, const QString& name);
+    KPasteTextAction(const QString &text, QObject *parent);
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -75,41 +73,9 @@ public:
      *
      * @param icon The icon to display.
      * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     * @param name An internal name for this action.
+     * @param parent The parent of this action.
      */
-    KPasteTextAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    /**
-     * \overload KPasteTextAction(const QIcon&, const QString&, KActionCollection*)
-     *
-     * This constructor differs from the above in that the icon is specified as
-     * a icon name which can be loaded by KIconLoader.
-     *
-     * @param icon The name of the icon to load via KIconLoader.
-     * @param text The text that will be displayed.
-     * @param parent The action collection to contain this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KPasteTextAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
-
-    /**
-     * Create a KPasteTextAction, with a text, an icon, an accelerator,
-     * a slot connected to the action, parent and name.
-     *
-     * If you do not want or have a keyboard accelerator, set the
-     * @p cut param to 0.
-     *
-     * @param text The text that will be displayed.
-     * @param icon The icon to display.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param receiver The SLOT's owner.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KPasteTextAction( const QString& text, const QString& icon, const KShortcut& cut,
-                  const QObject* receiver, const char* slot,
-                  KActionCollection* parent = 0, const QString& name = QString() );
+    KPasteTextAction(const KIcon &icon, const QString &text, QObject *parent);
 
     virtual ~KPasteTextAction();
 

@@ -30,6 +30,7 @@
 #include <kaboutdata.h>
 #include <kaboutkde.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kbugreport.h>
@@ -110,12 +111,12 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
 
   if (actions)
   {
-    KStandardAction::helpContents(this, SLOT(appHelpActivated()), actions);
+    actions->addAction(KStandardAction::HelpContents, this, SLOT(appHelpActivated()));
     if (showWhatsThis)
-      KStandardAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
-    KStandardAction::reportBug(this, SLOT(reportBug()), actions);
-    KStandardAction::aboutApp(this, SLOT(aboutApplication()), actions);
-    KStandardAction::aboutKDE(this, SLOT(aboutKDE()), actions);
+      actions->addAction(KStandardAction::WhatsThis, this, SLOT(contextHelpActivated()));
+    actions->addAction(KStandardAction::ReportBug, this, SLOT(reportBug()));
+    actions->addAction(KStandardAction::AboutApp, this, SLOT(aboutApplication()));
+    actions->addAction(KStandardAction::AboutKDE, this, SLOT(aboutKDE()));
   }
 }
 

@@ -99,7 +99,8 @@ void KSystemTrayIcon::init( QWidget* parent )
 
     if ( parent )
     {
-        KAction *action = new KAction( i18n( "Minimize" ), d->actionCollection, "minimizeRestore");
+        QAction *action = d->actionCollection->addAction("minimizeRestore");
+        action->setText(i18n("Minimize"));
         connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
 
 #ifdef Q_WS_X11

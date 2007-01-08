@@ -38,105 +38,24 @@
 #include "kmenu.h"
 
 // BEGIN KFontSizeAction
-KFontSizeAction::KFontSizeAction( KActionCollection * parent, const QString& name )
-  : KSelectAction( parent, name )
+KFontSizeAction::KFontSizeAction(QObject *parent)
+  : KSelectAction(parent)
   , d(0L)
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( text, parent, name )
+KFontSizeAction::KFontSizeAction(const QString &text, QObject *parent)
+  : KSelectAction(text, parent)
   , d(0L)
 {
   init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( KIcon( icon ), text, parent, name )
+KFontSizeAction::KFontSizeAction(const KIcon &icon, const QString &text, QObject *parent)
+  : KSelectAction(icon, text, parent)
   , d(0L)
 {
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( icon, text, parent, name )
-  , d(0L)
-{
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text,
-                                  const KShortcut& cut,
-                                  KActionCollection* parent, const QString& name )
-  : KSelectAction( text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text,
-                                  const KShortcut& cut,
-                                  const QObject* receiver, const char* slot,
-                                  KActionCollection* parent, const QString& name )
-  : KSelectAction( text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
-                                  const KShortcut& cut,
-                                  KActionCollection* parent, const QString& name )
-  : KSelectAction( KIcon( pix ), text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  const KShortcut& cut,
-                                  KActionCollection* parent, const QString& name )
-  : KSelectAction( KIcon( pix ), text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
-                                  const KShortcut& cut,
-                                  const QObject* receiver,
-                                  const char* slot, KActionCollection* parent,
-                                  const QString& name )
-  : KSelectAction( KIcon( pix ), text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-  init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  const KShortcut& cut,
-                                  const QObject* receiver,
-                                  const char* slot, KActionCollection* parent,
-                                  const QString& name )
-  : KSelectAction( KIcon( pix ), text, parent, name )
-  , d(0L)
-{
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
   init();
 }
 

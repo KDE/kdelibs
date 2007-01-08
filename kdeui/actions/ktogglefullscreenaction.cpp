@@ -35,28 +35,26 @@
 
 class KToggleFullScreenAction::Private
 {
-  public:
+public:
     Private()
-      : window( 0 )
+        : window( 0 )
     {
     }
 
     QWidget* window;
 };
 
-KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const QString& name )
-  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent, name ),
+KToggleFullScreenAction::KToggleFullScreenAction( QObject *parent )
+  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
 }
 
-KToggleFullScreenAction::KToggleFullScreenAction( QWidget* window, KActionCollection* parent,
-                                                  const QString& name )
-  : KToggleAction( i18n( "F&ull Screen Mode" ), parent, name ),
+KToggleFullScreenAction::KToggleFullScreenAction( QWidget *window, QObject *parent )
+  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
-  setIcon( KIcon( "window_fullscreen" ) );
-  setWindow( window );
+    setWindow( window );
 }
 
 KToggleFullScreenAction::~KToggleFullScreenAction()

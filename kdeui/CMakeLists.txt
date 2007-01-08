@@ -39,7 +39,6 @@ set(kdeui_LIB_SRCS
  actions/kpastetextaction.cpp
  actions/krecentfilesaction.cpp
  actions/kselectaction.cpp
- actions/kseparatoraction.cpp
  actions/kstandardaction.cpp
  actions/ktoggleaction.cpp
  actions/ktoggletoolbaraction.cpp
@@ -231,7 +230,6 @@ install( FILES
  actions/kpastetextaction.h
  actions/krecentfilesaction.h
  actions/kselectaction.h
- actions/kseparatoraction.h
  actions/kstandardaction.h
  actions/ktoggleaction.h
  actions/ktoggletoolbaraction.h

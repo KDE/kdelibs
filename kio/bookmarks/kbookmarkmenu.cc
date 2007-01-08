@@ -36,8 +36,8 @@
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>
-#include <kseparatoraction.h>
 #include <kstringhandler.h>
+#include <kactioncollection.h>
 
 #include <qclipboard.h>
 #include <qfile.h>
@@ -410,7 +410,7 @@ void KBookmarkMenu::clear()
   qDeleteAll( m_lstSubMenus );
   m_lstSubMenus.clear();
 
-  for ( QList<KAction *>::iterator it = m_actions.begin(), end = m_actions.end() ;
+  for ( QList<QAction *>::iterator it = m_actions.begin(), end = m_actions.end() ;
         it != end ; ++it )
   {
         m_parentMenu->removeAction(*it);
@@ -437,7 +437,8 @@ void KBookmarkMenu::addAddBookmarksList()
 
   QString title = i18n( "Bookmark Tabs as Folder..." );
 
-  KAction * paAddBookmarksList = new KAction( title, m_actionCollection, m_bIsRoot ? "add_bookmarks_list" : 0 );
+  KAction * paAddBookmarksList = new KAction( title, this );
+  m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, paAddBookmarksList );
   paAddBookmarksList->setIcon( KIcon( "bookmarks_list_add" ) );
   paAddBookmarksList->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
   connect( paAddBookmarksList, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
@@ -453,7 +454,8 @@ void KBookmarkMenu::addAddBookmark()
 
   QString title = i18n( "Add Bookmark" );
 
-  KAction * paAddBookmarks = new KAction( title, m_actionCollection, m_bIsRoot ? "add_bookmark" : 0 );
+  KAction * paAddBookmarks = new KAction( title, this );
+  m_actionCollection->addAction( m_bIsRoot ? "add_bookmark" : 0, paAddBookmarks );
   paAddBookmarks->setIcon( KIcon( "bookmark_add" ) );
   paAddBookmarks->setShortcut( m_bIsRoot ? KStandardShortcut::addBookmark() : KShortcut() );
   paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
@@ -468,8 +470,8 @@ void KBookmarkMenu::addEditBookmarks()
   if( m_pOwner && !m_pOwner->editBookmarkEntry() || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  KAction * m_paEditBookmarks = KStandardAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
-                                                             m_actionCollection, "edit_bookmarks" );
+  QAction * m_paEditBookmarks = m_actionCollection->addAction( KStandardAction::EditBookmarks, "edit_bookmarks",
+                                                               m_pManager, SLOT( slotEditBookmarks() ) );
   m_parentMenu->addAction(m_paEditBookmarks);
   m_paEditBookmarks->setToolTip( i18n( "Edit your bookmark collection in a separate window" ) );
   m_actions.append( m_paEditBookmarks );
@@ -483,7 +485,8 @@ void KBookmarkMenu::addNewFolder()
   QString title = i18n( "&New Bookmark Folder..." );
   title.remove( QChar( '&' ) ); //FIXME Hmm, why?
 
-  KAction * paNewFolder = new KAction( title, m_actionCollection,"dummyname" );
+  KAction * paNewFolder = new KAction( title, this );
+  m_actionCollection->addAction( "dummyname", paNewFolder );
   paNewFolder->setIcon( KIcon( "folder_new" ) );
   paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
   connect( paNewFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
@@ -508,12 +511,13 @@ void KBookmarkMenu::fillBookmarks()
   }
 }
 
-KAction* KBookmarkMenu::actionForBookmark(KBookmark bm)
+QAction* KBookmarkMenu::actionForBookmark(KBookmark bm)
 {
   if ( bm.isGroup() )
   {
     //kDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
-    KActionMenu * actionMenu = new KBookmarkActionMenu( bm, m_actionCollection, "kbookmarkmenu" );
+    KActionMenu * actionMenu = new KBookmarkActionMenu( bm, this );
+    m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
     m_actions.append( actionMenu );
     KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(), bm.address() );
     m_lstSubMenus.append( subMenu );
@@ -521,14 +525,16 @@ KAction* KBookmarkMenu::actionForBookmark(KBookmark bm)
   }
   else if ( bm.isSeparator() )
   {
-    KSeparatorAction * sa = new KSeparatorAction(m_actionCollection);
+    QAction *sa = new QAction(this);
+    sa->setSeparator(true);
     m_actions.append(sa);
     return sa;
   }
   else
   {
     //kDebug(7043) << "Creating bookmark menu item for " << bm.text() << endl;
-    KAction * action = new KBookmarkAction( bm, m_actionCollection, m_pOwner );
+    KAction * action = new KBookmarkAction( bm, m_pOwner, this );
+    m_actionCollection->addAction(action->objectName(), action);
     m_actions.append( action );
     return action;
   }
@@ -868,7 +874,8 @@ void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
 void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
   KBookmark bm = KBookmark::standaloneBookmark(text, url, QString("html"));
-  KAction * action = new KImportedBookmarkAction(bm, m_actionCollection, mstack.top()->m_pOwner);
+  KAction * action = new KImportedBookmarkAction(bm, mstack.top()->m_pOwner, this);
+  m_actionCollection->addAction(action->objectName(), action);
   mstack.top()->m_parentMenu->addAction(action);
   mstack.top()->m_actions.append( action );
 }
@@ -876,7 +883,8 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString &
 void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QString & )
 {
   QString _text = KStringHandler::csqueeze(text).replace( '&', "&&" );
-  KActionMenu * actionMenu = new KImportedBookmarkActionMenu( KIcon("folder"), _text, m_actionCollection, 0L );
+  KActionMenu * actionMenu = new KImportedBookmarkActionMenu( KIcon("folder"), _text, this );
+  m_actionCollection->addAction( actionMenu->objectName(), actionMenu );
   mstack.top()->m_parentMenu->addAction(actionMenu);
   mstack.top()->m_actions.append( actionMenu );
   KImportedBookmarkMenu *subMenu = new KImportedBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->menu());
@@ -900,8 +908,8 @@ void KBookmarkMenuNSImporter::endFolder()
 /********************************************************************/
 
 
-KBookmarkAction::KBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner)
-  : KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent, 0),
+KBookmarkAction::KBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent )
+  : KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
     KBookmarkActionInterface(bk),
     m_pOwner(owner)
 {
@@ -928,14 +936,14 @@ void KBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km
     m_pOwner->openBookmark( bookmark(), mb, km );
 }
 
-KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, KActionCollection* parent, const char* name)
-  : KActionMenu(KIcon(bm.icon()), KStringHandler::csqueeze(bm.text()).replace('&', "&&"), parent, name),
+KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, QObject *parent)
+  : KActionMenu(KIcon(bm.icon()), KStringHandler::csqueeze(bm.text()).replace('&', "&&"), parent),
     KBookmarkActionInterface(bm)
 {
 }
 
-KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, const QString & text, KActionCollection* parent, const char* name)
-  : KActionMenu(text, parent, name),
+KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent)
+  : KActionMenu(text, parent),
     KBookmarkActionInterface(bm)
 {
 }
@@ -949,8 +957,8 @@ void KBookmarkActionMenu::contextMenu(QPoint pos, KBookmarkManager* m_pManager, 
   KBookmarkActionContextMenu::self().contextMenu(pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-KImportedBookmarkAction::KImportedBookmarkAction(KBookmark bk, KActionCollection* parent, KBookmarkOwner* owner )
-: KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent, 0),
+KImportedBookmarkAction::KImportedBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent )
+: KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
   KBookmarkActionInterface(bk),
   m_pOwner(owner)
 {

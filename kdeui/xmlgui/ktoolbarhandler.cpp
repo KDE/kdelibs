@@ -21,6 +21,7 @@
 #include <qdom.h>
 
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kauthorized.h>
 #include <kguiitem.h>
@@ -95,7 +96,8 @@ namespace
           return m_toolBarActions;
         }
 
-        KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
+        KActionMenu *menuAction = new KActionMenu(i18n( "Toolbars" ), m_actionCollection);
+        m_actionCollection->addAction("toolbars_submenu_action", menuAction);
 
         foreach ( QAction* action, m_toolBarActions )
           menuAction->menu()->addAction( action );
@@ -116,8 +118,8 @@ namespace
         KToggleToolBarAction *action = new KToggleToolBarAction(
               toolBar,
               toolBar->windowTitle(),
-              m_actionCollection,
-              toolBar->objectName().toLatin1() );
+              m_actionCollection);
+        m_actionCollection->addAction(toolBar->objectName(), action);
 
         // ## tooltips, whatsthis?
         m_toolBarActions.append( action );

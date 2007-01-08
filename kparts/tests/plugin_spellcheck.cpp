@@ -2,6 +2,7 @@
 #include <QTextEdit>
 #include "plugin_spellcheck.h"
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kgenericfactory.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -11,8 +12,8 @@ PluginSpellCheck::PluginSpellCheck( QObject* parent,
                                     const QStringList& )
     : Plugin( parent )
 {
-    KAction* act = new KAction( "&Select current line (plugin)",
-                                actionCollection(), "spellcheck" );
+    KAction* act = new KAction( "&Select current line (plugin)", this );
+    actionCollection()->addAction( "spellcheck", act );
     connect(act, SIGNAL(triggered()), this, SLOT(slotSpellCheck()));
 }
 

@@ -51,19 +51,16 @@ class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
      * Create a KToggleFullScreenAction. Call setWindow() to associate this
      * action with a window.
      *
-     *  @param parent This action's parent action collection.
-     *  @param name An internal name for this action.
+     *  @param parent This action's parent object.
      */
-    KToggleFullScreenAction( KActionCollection* parent, const QString& name );
+    explicit KToggleFullScreenAction( QObject *parent );
 
     /**
      * Create a KToggleFullScreenAction
      *  @param window the window that will switch to/from full screen mode
-     *  @param parent This action's parent.
-     *  @param name An internal name for this action.
+     *  @param parent This action's parent object.
      */
-    KToggleFullScreenAction( QWidget* window, KActionCollection* parent,
-                             const QString& name );
+    KToggleFullScreenAction( QWidget *window, QObject *parent );
 
     /**
      * Destroys the toggle fullscreen action.

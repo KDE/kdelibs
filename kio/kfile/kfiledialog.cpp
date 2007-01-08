@@ -895,19 +895,22 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Quick Access Navigation Panel"), coll,"toggleSpeedbar");
+        new KToggleAction(i18n("Show Quick Access Navigation Panel"), this);
+    coll->addAction("toggleSpeedbar", showSidebarAction);
     showSidebarAction->setShortcut( QKeySequence(Qt::Key_F9) );
     showSidebarAction->setCheckedState(KGuiItem(i18n("Hide Quick Access Navigation Panel")));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
     KToggleAction *showBookmarksAction =
-            new KToggleAction(i18n("Show Bookmarks"), coll, "toggleBookmarks");
+        new KToggleAction(i18n("Show Bookmarks"), this);
+    coll->addAction("toggleBookmarks", showBookmarksAction);
     showBookmarksAction->setCheckedState(KGuiItem(i18n("Hide Bookmarks")));
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
-    KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Configure"), coll, "extra menu" );
+    KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Configure"), this);
+    coll->addAction("extra menu", menu);
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"
@@ -2209,7 +2212,8 @@ void KFileDialog::toggleBookmarks(bool show)
         connect( d->bookmarkHandler, SIGNAL( openUrl( const QString& )),
                     SLOT( enterUrl( const QString& )));
 
-        d->bookmarkButton = new KActionMenu(KIcon("bookmark"),i18n("Bookmarks"),actionCollection(), "bookmark");
+        d->bookmarkButton = new KActionMenu(KIcon("bookmark"),i18n("Bookmarks"), this);
+        actionCollection()->addAction("bookmark", d->bookmarkButton);
         d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
         d->bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "

@@ -96,14 +96,14 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
 {
     ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : d->item;
     if( item->type == ActionCollectionModelItem::CollectionType )
-        return item->collection->actions(QString::null).count() + item->collection->collections().count();
+        return item->collection->actions().count() + item->collection->collections().count();
     return 0;
 }
 
 QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex& parent) const
 {
     ActionCollectionModelItem* item = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
-    const int count = item->collection->actions(QString::null).count();
+    const int count = item->collection->actions().count();
     if( row < count ) {
         Action* action = dynamic_cast< Action* >( item->collection->actions().value(row) );
         if( action )

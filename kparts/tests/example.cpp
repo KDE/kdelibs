@@ -12,6 +12,7 @@
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <klocale.h>
 #include <kicon.h>
 
@@ -39,17 +40,22 @@ Shell::Shell()
 
     KActionCollection *coll = actionCollection();
 
-    KAction* paOpen = new KAction( "&View local file", coll, "open_local_file" );
+    KAction* paOpen = new KAction( "&View local file", this );
+    coll->addAction( "open_local_file", paOpen );
     connect(paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()));
-    KAction* paOpenRemote = new KAction( "&View remote file", coll, "open_remote_file" );
+    KAction* paOpenRemote = new KAction( "&View remote file", this );
+    coll->addAction( "open_remote_file", paOpenRemote );
     connect(paOpenRemote, SIGNAL(triggered()), this, SLOT(slotFileOpenRemote()));
 
-    m_paEditFile = new KAction( "&Edit file", coll, "edit_file" );
+    m_paEditFile = new KAction( "&Edit file", this );
+    coll->addAction( "edit_file", m_paEditFile );
     connect(m_paEditFile, SIGNAL(triggered()), this, SLOT(slotFileEdit()));
-    m_paCloseEditor = new KAction( "&Close file editor", coll, "close_editor" );
+    m_paCloseEditor = new KAction( "&Close file editor", this );
+    coll->addAction( "close_editor", m_paCloseEditor );
     connect(m_paCloseEditor, SIGNAL(triggered()), this, SLOT(slotFileCloseEditor()));
     m_paCloseEditor->setEnabled(false);
-    KAction * paQuit = new KAction( "&Quit", coll, "shell_quit" );
+    KAction * paQuit = new KAction( "&Quit", this );
+    coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
     paQuit->setIcon(KIcon("exit"));
 
