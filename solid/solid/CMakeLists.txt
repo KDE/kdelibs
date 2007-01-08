@@ -1,4 +1,5 @@
-
+macro_optional_find_package(Alsa)
+alsa_configure_file(${CMAKE_BINARY_DIR}/config-alsa.h)
 
 add_subdirectory( ifaces )
 
