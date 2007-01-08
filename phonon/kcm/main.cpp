@@ -48,11 +48,12 @@ PhononKcm::PhononKcm( QWidget* parent, const QStringList& args )
 	layout()->addWidget( tabs );
 
 	m_outputDeviceWidget = new OutputDeviceChoice;
-	tabs->addTab( m_outputDeviceWidget, i18n( "Output Device" ) );
+    tabs->addTab(m_outputDeviceWidget, i18n("Device Preference"));
 	m_backendSelection = new BackendSelection;
 	tabs->addTab( m_backendSelection, i18n( "Backend" ) );
 	load();
 	connect( m_backendSelection, SIGNAL( changed() ), SLOT( changed() ) );
+    connect(m_outputDeviceWidget, SIGNAL(changed()), SLOT(changed()));
 }
 
 void PhononKcm::load()
@@ -74,3 +75,4 @@ void PhononKcm::defaults()
 }
 
 #include "main.moc"
+// vim: ts=4

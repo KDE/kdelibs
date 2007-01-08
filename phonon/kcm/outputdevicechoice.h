@@ -34,6 +34,9 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         void save();
         void defaults();
 
+    signals:
+        void changed();
+
     private slots:
         void on_preferButton_clicked();
         void on_deferButton_clicked();

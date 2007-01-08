@@ -23,6 +23,7 @@
 #include <phonon/phononnamespace.h>
 #include <klocale.h>
 #include <QHeaderView>
+#include <ksimpleconfig.h>
 
 class CategoryItem : public QStandardItem {
     public:
@@ -98,17 +99,62 @@ void OutputDeviceChoice::updateDeviceList()
 
 void OutputDeviceChoice::load()
 {
+    KSimpleConfig phononrc("phononrc", true);
+    KConfigGroup outputDeviceGroup(&phononrc, QLatin1String("AudioOutputDevice"));
+    KConfigGroup captureDeviceGroup(&phononrc, QLatin1String("AudioCaptureDevice"));
+
     QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+    QHash<int, Phonon::AudioOutputDevice> hash;
+    foreach (Phonon::AudioOutputDevice dev, list) {
+        hash.insert(dev.index(), dev);
+    }
     for (int i = 0; i < Phonon::LastCategory; ++i) {
-        m_outputModel[i]->setModelData(list);
+        QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
+        QList<int> order = outputDeviceGroup.readEntry<QList<int> >(QLatin1String("Category") + QString::number(i), QList<int>());
+        QList<Phonon::AudioOutputDevice> orderedList;
+        foreach (int idx, order) {
+            //if (hashCopy.contains(idx)) {
+                orderedList << hashCopy.take(idx);
+            //} else {
+                //orderedList << Phonon::AudioOutputDevice();
+            //}
+        }
+        foreach (Phonon::AudioOutputDevice dev, hashCopy) {
+            orderedList << dev;
+        }
+        m_outputModel[i]->setModelData(orderedList);
     }
 
     QList<Phonon::AudioCaptureDevice> list2 = Phonon::BackendCapabilities::availableAudioCaptureDevices();
-    m_captureModel.setModelData(list2);
+    QList<int> order = captureDeviceGroup.readEntry<QList<int> >(QLatin1String("DeviceOrder"), QList<int>());
+    QList<Phonon::AudioCaptureDevice> orderedList;
+    foreach (int idx, order) {
+        for (int i = 0; i < list2.size(); ++i) {
+            if (list2.at(i).index() == idx) {
+                orderedList << list2.takeAt(i);
+                break; // out of the inner for loop to get the next idx
+            }
+        }
+    }
+    m_captureModel.setModelData(orderedList);
 }
 
 void OutputDeviceChoice::save()
 {
+    kDebug() << k_funcinfo << endl;
+    KSimpleConfig config("phononrc");
+    {
+        KConfigGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
+        for (int i = 0; i < Phonon::LastCategory; ++i) {
+            if (m_outputModel.value(i)) {
+                globalGroup.writeEntry(QLatin1String("Category") + QString::number(i), m_outputModel.value(i)->tupleIndexOrder());
+            }
+        }
+    }
+    {
+        KConfigGroup globalGroup(&config, QLatin1String("AudioCaptureDevice"));
+        globalGroup.writeEntry(QLatin1String("DeviceOrder"), m_captureModel.tupleIndexOrder());
+    }
 }
 
 void OutputDeviceChoice::defaults()
@@ -129,6 +175,7 @@ void OutputDeviceChoice::on_preferButton_clicked()
     if (deviceModel) {
         deviceModel->moveUp(deviceList->currentIndex());
         updateButtonsEnabled();
+        emit changed();
     }
 }
 
@@ -139,6 +186,7 @@ void OutputDeviceChoice::on_deferButton_clicked()
     if (deviceModel) {
         deviceModel->moveDown(deviceList->currentIndex());
         updateButtonsEnabled();
+        emit changed();
     }
 }
 
