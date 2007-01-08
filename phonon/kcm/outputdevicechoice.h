@@ -22,30 +22,28 @@
 
 #include "ui_outputdevicechoice.h"
 #include <phonon/objectdescriptionmodel.h>
+#include <QStandardItemModel>
+#include <QMap>
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
-	Q_OBJECT
-	public:
-		OutputDeviceChoice( QWidget* parent = 0 );
-		void load();
-		void save();
-		void defaults();
+    Q_OBJECT
+    public:
+        OutputDeviceChoice(QWidget *parent = 0);
+        void load();
+        void save();
+        void defaults();
 
-	private slots:
-		void on_notificationPreferButton_clicked();
-		void on_notificationNoPreferButton_clicked();
-		void on_musicPreferButton_clicked();
-		void on_musicNoPreferButton_clicked();
-		void on_videoPreferButton_clicked();
-		void on_videoNoPreferButton_clicked();
-		void on_communicationPreferButton_clicked();
-		void on_communicationNoPreferButton_clicked();
-		void updateButtonsEnabled();
+    private slots:
+        void on_preferButton_clicked();
+        void on_deferButton_clicked();
+        void updateButtonsEnabled();
+        void updateDeviceList();
 
-	private:
-		Phonon::AudioOutputDeviceModel m_notificationModel, m_musicModel,
-			m_videoModel, m_communicationModel;
+    private:
+        QMap<int, Phonon::AudioOutputDeviceModel*> m_outputModel;
+        Phonon::AudioCaptureDeviceModel m_captureModel;
+        QStandardItemModel m_categoryModel;
 };
 
 #endif // OUTPUTDEVICECHOICE_H_STUPID_UIC
