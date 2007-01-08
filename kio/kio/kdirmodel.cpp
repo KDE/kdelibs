@@ -288,8 +288,10 @@ void KDirModel::slotNewItems( const KFileItemList& items )
 
     const QModelIndex index = d->indexForNode(dirNode, result.first); // O(1)
     const int newRowCount = dirNode->m_childNodes.count();
+#ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug() << k_funcinfo << items.count() << " in " << dir
              << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
+#endif
     const int newItemsCount = items.count();
     beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
     endInsertRows();
@@ -332,7 +334,9 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
             bottomRight = index;
         }
     }
+#ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug() << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight) << endl;
+#endif
     bottomRight = bottomRight.sibling(bottomRight.row(), ColumnCount-1);
     emit dataChanged(topLeft, bottomRight);
 }
