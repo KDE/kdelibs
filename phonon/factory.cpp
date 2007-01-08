@@ -29,11 +29,17 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
+#include <QCoreApplication>
 
 #include <QtDBus/QtDBus>
 #include "backendinterface.h"
 
 static KStaticDeleter<Phonon::Factory> sd;
+
+static void deleteBackend()
+{
+    sd.destructObject();
+}
 
 #define PHONON_LOAD_BACKEND_GLOBAL 1
 
@@ -141,10 +147,12 @@ Factory::Factory()
 {
 	QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
 			"phononBackendChanged", this, SLOT(phononBackendChanged()));
+    qAddPostRoutine(deleteBackend);
 }
 
 Factory::~Factory()
 {
+    qRemovePostRoutine(deleteBackend);
 	//kDebug( 600 ) << k_funcinfo << endl;
 	emit aboutToBeDestroyed();
 
