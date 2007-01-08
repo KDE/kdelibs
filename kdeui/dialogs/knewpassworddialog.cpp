@@ -85,7 +85,7 @@ void KNewPasswordDialog::init()
     d->iconLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
     layout->addWidget(d->iconLabel, 0, 0, Qt::AlignCenter);
 
-    const QPixmap pix( kapp->iconLoader()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
+    const QPixmap pix( KIconLoader::global()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     d->promptLabel = new QLabel(pMain);
     d->promptLabel->setAlignment(Qt::AlignVCenter);
     d->promptLabel->setWordWrap(true);

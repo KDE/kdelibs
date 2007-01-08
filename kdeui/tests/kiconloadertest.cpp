@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
   KApplication app;
 
-  KIconLoader * mpLoader = app.iconLoader();
+  KIconLoader * mpLoader = KIconLoader::global();
   K3Icon::Context mContext = K3Icon::Application;
   QTime dt;
   dt.start();

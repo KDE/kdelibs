@@ -20,11 +20,11 @@
 
 #include <kglobal.h>
 
-#include "kapplication.h"
+#include "kiconloader.h"
 #include "kiconengine.h"
 
 KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader, int overlays)
-  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : kapp->iconLoader(), overlays))
+  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays))
 {
 }
 

@@ -237,7 +237,7 @@ KIconDialog::KIconDialog(QWidget *parent)
     setButtons( Ok | Cancel );
     setDefaultButton( Ok );
 
-    mpLoader = kapp->iconLoader();
+    mpLoader = KIconLoader::global();
     init();
 }
 
@@ -639,7 +639,7 @@ class KIconButton::KIconButtonPrivate
 KIconButton::KIconButton(QWidget *parent)
     : QPushButton(parent),d(new KIconButtonPrivate)
 {
-    init( kapp->iconLoader() );
+    init( KIconLoader::global() );
 }
 
 KIconButton::KIconButton(KIconLoader *loader, QWidget *parent)

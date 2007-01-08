@@ -40,7 +40,6 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstaticdeleter.h>
-#include <kapplication.h>
 #include <kio/authinfo.h>
 
 #include <unistd.h>
@@ -105,7 +104,7 @@ KMFactory::KMFactory()
 	if ( !ok )
 		settings.setValue( "/qt/embedFonts", true );
 
-	kapp->iconLoader()->addAppDir("kdeprint");
+	KIconLoader::global()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalog("kdeprint");
 
 	// create D-Bus signal connection

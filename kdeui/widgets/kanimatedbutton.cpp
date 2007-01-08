@@ -28,7 +28,6 @@
 #include <QToolBar>
 #include <QPainter>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 
@@ -115,7 +114,7 @@ void KAnimatedButton::updateCurrentIcon( )
 
 void KAnimatedButton::updateIcons()
 {
-  QString path = kapp->iconLoader()->iconPath(d->icon_name, -iconDimensions());
+  QString path = KIconLoader::global()->iconPath(d->icon_name, -iconDimensions());
   QImage img(path);
 
   if (img.isNull())

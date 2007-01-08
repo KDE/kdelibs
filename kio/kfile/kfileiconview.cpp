@@ -19,6 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <qapplication.h>
 #include <qdesktopwidget.h>
 #include <qevent.h>
 #include <qfontmetrics.h>
@@ -31,7 +32,6 @@
 #include <qtooltip.h>
 
 #include <kaction.h>
-#include <kapplication.h>
 #include <klocale.h>
 #include <kfileitem.h>
 #include <kiconeffect.h>
@@ -510,7 +510,7 @@ void KFileIconView::slotLargeRows()
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
 
-    setGridX( kapp->iconLoader()->currentSize( K3Icon::Desktop ) + 50 );
+    setGridX( KIconLoader::global()->currentSize( K3Icon::Desktop ) + 50 );
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );

@@ -161,19 +161,17 @@ public:
     : checkAccelerators( 0 ),
       startup_id( "0" ),
       app_started_timer( 0 ),
-      session_save( false ),
+      session_save( false )
 #ifdef Q_WS_X11
-      oldIceIOErrorHandler( 0 ),
-      oldXErrorHandler( 0 ),
-      oldXIOErrorHandler( 0 ),
+      ,oldIceIOErrorHandler( 0 )
+      ,oldXErrorHandler( 0 )
+      ,oldXIOErrorHandler( 0 )
 #endif
-      iconLoader(0)
   {
   }
 
   ~Private()
   {
-    delete iconLoader;
   }
 
   KCheckAccelerators* checkAccelerators;
@@ -188,8 +186,6 @@ public:
 
   QString sessionKey;
   QString pSessionConfigFile;
-
-  KIconLoader* iconLoader;
 };
 
 
@@ -539,7 +535,7 @@ void KApplication::init()
 #ifdef Q_WS_MAC
   if (type() == GuiClient) {
       QSystemTrayIcon *trayIcon;
-      QPixmap pixmap = iconLoader()->loadIcon( KCmdLineArgs::appName(),
+      QPixmap pixmap = KIconLoader::global()->loadIcon( KCmdLineArgs::appName(),
               K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, 0L, false );
       if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
       {
@@ -1114,31 +1110,6 @@ void KApplication::slot_KToolInvication_hook(QStringList& envs,QByteArray& start
     Q_UNUSED(envs);
     Q_UNUSED(startup_id);
 #endif
-}
-
-/*** KIconLoader: the icon loader ***/
-KIconLoader *KApplication::iconLoader() const
-{
-    if ( !kapp ) {
-        kDebug() << "You must have a KApplication object instantiated prior to accessing the icon loader!" << endl;
-    }
-
-    if ( d->iconLoader == 0 ) {
-        d->iconLoader = new KIconLoader( instanceName(), dirs() );
-        connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
-                this, SLOT(newIconLoader()));
-    }
-
-    return d->iconLoader;
-}
-
-void KApplication::newIconLoader() const
-{
-    KIconTheme::reconfigure();
-
-    if (d->iconLoader) {
-        d->iconLoader->reconfigure( instanceName(), dirs() );
-    }
 }
 
 void KApplication::setSynchronizeClipboard(bool synchronize)

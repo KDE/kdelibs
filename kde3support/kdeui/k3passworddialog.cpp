@@ -22,16 +22,16 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#include <kapplication.h>
-#include <QCheckBox>
-#include <QLabel>
-#include <QLayout>
-#include <QKeyEvent>
-#include <QProgressBar>
-#include <QRegExp>
-#include <QSize>
-#include <QString>
-#include <QWidget>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QRegExp>
+#include <QtCore/QSize>
+#include <QtCore/QString>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QProgressBar>
+#include <QtGui/QWidget>
 
 #include <Q3PtrDict>
 
@@ -329,7 +329,7 @@ void K3PasswordDialog::init()
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
-    const QPixmap pix( kapp->iconLoader()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
+    const QPixmap pix( KIconLoader::global()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     if (!pix.isNull()) {
 	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);

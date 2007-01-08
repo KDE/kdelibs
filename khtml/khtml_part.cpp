@@ -1100,7 +1100,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
 
   if (!d->m_statusBarJSErrorLabel) {
     d->m_statusBarJSErrorLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarJSErrorLabel->setFixedHeight(kapp->iconLoader()->currentSize(K3Icon::Small));
+    d->m_statusBarJSErrorLabel->setFixedHeight(KIconLoader::global()->currentSize(K3Icon::Small));
     d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);

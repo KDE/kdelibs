@@ -67,7 +67,7 @@ void testFrame::showPath( const KUrl &url )
 {
    QString fname = "TestBranch"; // url.fileName ();
    /* try a user icon */
-   KIconLoader *loader = kapp->iconLoader();
+   KIconLoader *loader = KIconLoader::global();
    QPixmap pix = loader->loadIcon( "contents2", K3Icon::Small );
    QPixmap pixOpen = loader->loadIcon( "contents", K3Icon::Small );
 

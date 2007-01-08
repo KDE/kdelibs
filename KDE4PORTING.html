@@ -307,7 +307,7 @@ Desktop Entry Spec</a>
 <h4>KGlobal</h4>
 <ul>
 <li>&quot;int kasciistricmp( const char *str1, const char *str2 )&quot; has been moved into kascii.h</li>
-<li>&quot;KIconLoader* iconLoader()&quot; has been moved into KApplication</li>
+<li>&quot;KIconLoader* iconLoader()&quot; has been moved to KIconLoader::global()</li>
 </ul>
 
 <h4>KGlobalAccel</h4>
@@ -331,7 +331,7 @@ Desktop Entry Spec</a>
 
 <h4>KIconLoader</h4>
 <ul>
-<li>Moved to libkdeui</li>
+<li>Moved to libkdeui and is now a QObject</li>
 <li>Deprecated loadIconSet(), DesktopIconSet(), BarIconSet(), SmallIconSet(), UserIconSet(): use KIcon(name) or KIcon(name,instance-&gt;iconLoader()) instead.<br/>
 Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
 on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.

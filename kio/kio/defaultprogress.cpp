@@ -22,7 +22,6 @@
 #include <qdatetime.h>
 #include <qcheckbox.h>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kstringhandler.h>
@@ -91,8 +90,8 @@ void DefaultProgress::init()
 #ifdef Q_WS_X11 //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
   // Set a useful icon for this window!
   KWin::setIcons( winId(),
-          kapp->iconLoader()->loadIcon( "filesave", K3Icon::NoGroup, 32 ),
-          kapp->iconLoader()->loadIcon( "filesave", K3Icon::NoGroup, 16 ) );
+          KIconLoader::global()->loadIcon( "filesave", K3Icon::NoGroup, 32 ),
+          KIconLoader::global()->loadIcon( "filesave", K3Icon::NoGroup, 16 ) );
 #endif
 
   QVBoxLayout *topLayout = new QVBoxLayout( this);

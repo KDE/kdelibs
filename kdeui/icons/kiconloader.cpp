@@ -25,10 +25,12 @@
 #include <QMovie>
 
 #include <kapplication.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <kconfig.h>
+#include <kglobalsettings.h>
+#include <kinstance.h>
 #include <ksimpleconfig.h>
 #include <ksvgrenderer.h>
 
@@ -145,7 +147,8 @@ struct KIconLoaderDebug
 static QList< KIconLoaderDebug > *kiconloaders;
 #endif
 
-KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
+KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject* parent)
+    : QObject(parent)
 {
 #ifdef KICONLOADER_CHECKS
     if( kiconloaders == NULL )
@@ -163,7 +166,17 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
         }
     kiconloaders->append( KIconLoaderDebug( this, _appname ));
 #endif
+    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
+            this, SLOT(newIconLoader()));
     init( _appname, _dirs );
+}
+
+KIconLoader::KIconLoader(KInstance* instance, QObject* parent)
+    : QObject(parent)
+{
+    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
+            this, SLOT(newIconLoader()));
+    init( instance->instanceName(), instance->dirs() );
 }
 
 void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
@@ -174,6 +187,7 @@ void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 
 void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
+    setObjectName(_appname);
     d = new KIconLoaderPrivate;
     d->extraDesktopIconsLoaded=false;
 
@@ -1137,72 +1151,72 @@ QIcon KIconLoader::loadIconSet( const QString& name, K3Icon::Group g, int s,
 
 QPixmap DesktopIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIcon(name, K3Icon::Desktop, force_size, state);
 }
 
 // deprecated
 QIcon DesktopIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIconSet( name, K3Icon::Desktop, force_size );
 }
 
 QPixmap BarIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIcon(name, K3Icon::Toolbar, force_size, state);
 }
 
 // deprecated
 QIcon BarIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIconSet( name, K3Icon::Toolbar, force_size );
 }
 
 QPixmap SmallIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIcon(name, K3Icon::Small, force_size, state);
 }
 
 // deprecated
 QIcon SmallIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIconSet( name, K3Icon::Small, force_size );
 }
 
 QPixmap MainBarIcon(const QString& name, int force_size, int state)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIcon(name, K3Icon::MainToolbar, force_size, state);
 }
 
 // deprecated
 QIcon MainBarIconSet(const QString& name, int force_size)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIconSet( name, K3Icon::MainToolbar, force_size );
 }
 
 QPixmap UserIcon(const QString& name, int state)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIcon(name, K3Icon::User, 0, state);
 }
 
 // deprecated
 QIcon UserIconSet(const QString& name)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->loadIconSet( name, K3Icon::User );
 }
 
 int IconSize(K3Icon::Group group)
 {
-    KIconLoader *loader = kapp->iconLoader();
+    KIconLoader *loader = KIconLoader::global();
     return loader->currentSize(group);
 }
 
@@ -1212,7 +1226,7 @@ QPixmap KIconLoader::unknown()
     if ( QPixmapCache::find("unknown", pix) )
             return pix;
 
-    QString path = kapp->iconLoader()->iconPath("unknown", K3Icon::Small, true);
+    QString path = global()->iconPath("unknown", K3Icon::Small, true);
     if (path.isEmpty())
     {
         kDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
@@ -1225,4 +1239,23 @@ QPixmap KIconLoader::unknown()
 
     return pix;
 }
+
+/*** the global icon loader ***/
+Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::instance(), 0))
+
+KIconLoader *KIconLoader::global()
+{
+    return globalIconLoader( );
+}
+
+void KIconLoader::newIconLoader()
+{
+    if ( global() == this) {
+        KIconTheme::reconfigure();
+    }
+
+    reconfigure( objectName(), d->mpDirs );
+}
+
+#include "kiconloader.moc"
 

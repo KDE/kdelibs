@@ -13,6 +13,7 @@
 #define KICONLOADER_H
 
 #include <qstring.h>
+#include <QtCore/QObject>
 
 #include <kglobal.h>
 #include <kicontheme.h>
@@ -66,8 +67,10 @@ class KIconEffect;
  * "User".
  *
  */
-class KDEUI_EXPORT KIconLoader
+class KDEUI_EXPORT KIconLoader : public QObject
 {
+    Q_OBJECT
+
 public:
     /**
      * Constructs an iconloader.
@@ -77,18 +80,34 @@ public:
      * @param dirs the KStandardDirs object to use. If null the global one is used
      *
      * Usually, you use the default iconloader, which can be accessed via
-     * KGlobal::iconLoader(), so you hardly ever have to create an
+     * KIconLoader::global(), so you hardly ever have to create an
      * iconloader object yourself. That one is the current KInstance's
      * (typically KApplication's) iconloader.
-     * @see KGlobal::iconLoader()
-     * @see KInstance::iconLoader()
      */
-    explicit KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0);
+    explicit KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0, QObject* parent = 0);
+
+    /**
+     * Constructs an iconloader.
+     * @param instance the KInstance to use to create this icon loader.
+     *
+     * Usually, you use the default iconloader, which can be accessed via
+     * KIconLoader::global(), so you hardly ever have to create an
+     * iconloader object yourself. That one is the current KInstance's
+     * (typically KApplication's) iconloader.
+     */
+    KIconLoader(KInstance* instance, QObject* parent = 0);
 
     /**
      * Cleanup
      */
     ~KIconLoader();
+
+    /**
+     * Returns the global icon loader initialized with the global KInstance.
+     * Therefore you must have a KInstance instantiated before calling this.
+     * @return global icon loader
+     */
+    static KIconLoader* global();
 
     /**
      * Adds @p appname to the list of application specific directories.
@@ -306,6 +325,12 @@ public:
      * to the list of icon themes where icons are searched.
      */
     bool extraDesktopThemesAdded() const;
+
+ public Q_SLOTS:
+   /**
+    * Re-initialize the global icon loader
+    */
+    void newIconLoader();
 
  private:
     /**

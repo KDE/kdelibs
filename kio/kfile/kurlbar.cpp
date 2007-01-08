@@ -19,7 +19,6 @@
 #include "kurlbar.h"
 
 #include <kaboutdata.h>
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -132,7 +131,7 @@ void KUrlBarItem::setIcon( const QString& icon, K3Icon::Group group )
     if ( icon.isEmpty() )
         m_pixmap = KIO::pixmapForUrl( m_url, 0, group, iconSize() );
     else
-        m_pixmap = kapp->iconLoader()->loadIcon( icon, group, iconSize(),
+        m_pixmap = KIconLoader::global()->loadIcon( icon, group, iconSize(),
                                                     K3Icon::DefaultState );
 }
 

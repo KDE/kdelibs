@@ -21,7 +21,6 @@
 #include "config.h"
 #include "kaboutdata.h"
 #include "kaction.h"
-#include "kapplication.h"
 #include "kinstance.h"
 #include "klocale.h"
 #include "kmenu.h"
@@ -288,7 +287,7 @@ QIcon KSystemTrayIcon::loadIcon( const QString &icon, KInstance *instance )
 {
     KConfigGroup cg(instance->config(), "System Tray");
     int iconWidth = cg.readEntry("systrayIconWidth", 22);
-    return kapp->iconLoader()->loadIcon( icon, K3Icon::Panel, iconWidth );
+    return KIconLoader::global()->loadIcon( icon, K3Icon::Panel, iconWidth );
 }
 
 void KSystemTrayIcon::toggleActive()

@@ -24,7 +24,6 @@
 #include <QTextDocument>
 #include <QTextLayout>
 
-#include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -83,7 +82,7 @@ void KPasswordDialog::init( const KPasswordDialogFlags& flags )
     d->layout->addItem(new QSpacerItem(5,0),0,1); //addColSpacing(1, 5);
 
     // Row 0: pixmap  prompt
-    QPixmap pix( kapp->iconLoader()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
+    QPixmap pix( KIconLoader::global()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
     d->pixmapLabel = new QLabel( main );
     d->pixmapLabel->setPixmap( pix );
     d->pixmapLabel->setAlignment( Qt::AlignLeft|Qt::AlignVCenter );

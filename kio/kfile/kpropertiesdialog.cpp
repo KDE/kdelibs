@@ -78,7 +78,6 @@ extern "C" {
 }
 #endif
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kdialog.h>
 #include <kdirwatch.h>
@@ -860,7 +859,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style()->pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( kapp->iconLoader()->loadIcon( iconStr, K3Icon::Desktop, 48) );
+    iconLabel->setPixmap( KIconLoader::global()->loadIcon( iconStr, K3Icon::Desktop, 48) );
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, Qt::AlignLeft);

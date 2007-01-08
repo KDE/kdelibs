@@ -30,7 +30,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
-#include <kapplication.h>
 #include "kservice.h"
 
 QString KDEDesktopMimeType::icon( const KUrl& _url ) const
@@ -82,10 +81,10 @@ QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int 
                                     int _state, QString * _path ) const
 {
   QString _icon = icon( _url );
-  QPixmap pix = kapp->iconLoader()->loadIcon( _icon, _group,
+  QPixmap pix = KIconLoader::global()->loadIcon( _icon, _group,
         _force_size, _state, _path, false );
   if ( pix.isNull() )
-      pix = kapp->iconLoader()->loadIcon( "unknown", _group,
+      pix = KIconLoader::global()->loadIcon( "unknown", _group,
         _force_size, _state, _path, false );
   return pix;
 }

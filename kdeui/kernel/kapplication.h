@@ -52,7 +52,6 @@ typedef void Display;
 
 struct _IceConn;
 class QPixmap;
-class KIconLoader;
 class KSessionManaged;
 class KStyle;
 class KUrl;
@@ -366,22 +365,11 @@ public:
   void setStartupId( const QByteArray& startup_id );
 
   /**
-   * Provides access to the global icon loader
-   * @return the global icon loader
-   */
-  KIconLoader* iconLoader() const;
-
-  /**
    * Sets how the primary and clipboard selections are synchronized in an X11 environment
    */
   void setSynchronizeClipboard(bool synchronize);
 
 public Q_SLOTS:
-  /**
-   * Re-initialize the global icon loader
-   */
-  void newIconLoader() const;
-
   /**
    * Updates the last user action timestamp to the given time, or to the current time,
    * if 0 is given. Do not use unless you're really sure what you're doing.

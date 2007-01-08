@@ -26,7 +26,6 @@
 
 #include "kmpropgeneral.h"
 
-#include <kapplication.h>
 #include <kiconloader.h>
 
 KMPropertyPage::KMPropertyPage(QWidget *parent)
@@ -56,7 +55,7 @@ void KMPropertyPage::addPropPage(KMPropWidget *w)
 		ctn->setWidget(w);
 		connect(ctn,SIGNAL(enable(bool)),SLOT(slotEnable(bool)));
 
-		QPixmap icon = kapp->iconLoader()->loadIcon(
+		QPixmap icon = KIconLoader::global()->loadIcon(
 		                                                           w->pixmap(),
 		                                                           K3Icon::NoGroup,
 		                                                           K3Icon::SizeMedium
