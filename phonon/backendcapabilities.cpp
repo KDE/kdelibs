@@ -26,6 +26,7 @@
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
 #include "phonondefs_p.h"
+#include "backendinterface.h"
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -117,12 +118,10 @@ bool BackendCapabilities::isMimeTypeKnown( const QString& mimeType )
 #define availableDevicesImpl( T ) \
 QList<T> BackendCapabilities::available ## T ## s() \
 { \
-	QObject* backendObject = Factory::self()->backend(); \
+    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend()); \
 	QList<T> ret; \
-	if( backendObject ) \
-	{ \
-		QSet<int> deviceIndexes; \
-		pBACKEND_GET1( QSet<int>, deviceIndexes, "objectDescriptionIndexes", ObjectDescriptionType, Phonon::T ## Type ); \
+    if (backendIface) { \
+        QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
 		foreach( int i, deviceIndexes ) \
 			ret.append( T::fromIndex( i ) ); \
 	} \
@@ -132,12 +131,10 @@ QList<T> BackendCapabilities::available ## T ## s() \
 #define availableDevicesImpl2( T ) \
 QList<T ## Description> BackendCapabilities::available ## T ## s() \
 { \
-	QObject* backendObject = Factory::self()->backend(); \
+    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend()); \
 	QList<T ## Description> ret; \
-	if( backendObject ) \
-	{ \
-		QSet<int> deviceIndexes; \
-		pBACKEND_GET1( QSet<int>, deviceIndexes, "objectDescriptionIndexes", ObjectDescriptionType, Phonon::T ## Type ); \
+	if (backendIface) { \
+        QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
 		foreach( int i, deviceIndexes ) \
 			ret.append( T ## Description::fromIndex( i ) ); \
 	} \

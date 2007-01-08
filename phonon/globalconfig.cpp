@@ -23,6 +23,7 @@
 #include "factory.h"
 #include "objectdescription.h"
 #include "phonondefs_p.h"
+#include "backendinterface.h"
 
 namespace Phonon
 {
@@ -42,10 +43,10 @@ QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) c
     const KConfigGroup backendConfig(const_cast<KSharedConfig*>(m_config.data()),
             QLatin1String("AudioOutputDevice_") + Factory::self()->identifier());
 
-	//First we lookup the available devices directly from the backend
-	QSet<int> deviceIndexes;
-	QObject *backendObject = Factory::self()->backend();
-	pBACKEND_GET1( QSet<int>, deviceIndexes, "objectDescriptionIndexes", ObjectDescriptionType, Phonon::AudioOutputDeviceType );
+    //First we lookup the available devices directly from the backend
+    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend());
+    QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
+
 	QList<int> defaultList = deviceIndexes.toList();
 	qSort( defaultList );
 

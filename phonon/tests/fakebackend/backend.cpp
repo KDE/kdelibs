@@ -169,130 +169,86 @@ QSet<int> Backend::objectDescriptionIndexes( ObjectDescriptionType type ) const
 	return set;
 }
 
-QString Backend::objectDescriptionName( ObjectDescriptionType type, int index ) const
+QHash<QByteArray, QVariant> Backend::objectDescriptionProperties(ObjectDescriptionType type, int index) const
 {
-	switch( type )
-	{
-		case Phonon::AudioOutputDeviceType:
-			switch( index )
-			{
-				case 10000:
-					return "internal Soundcard";
-				case 10001:
-					return "USB Headset";
-			}
-			break;
-		case Phonon::AudioCaptureDeviceType:
-			switch( index )
-			{
-				case 20000:
-					return "Soundcard";
-				case 20001:
-					return "DV";
-			}
-			break;
-		case Phonon::VideoOutputDeviceType:
-			switch( index )
-			{
-				case 40000:
-					return "XVideo";
-				case 40001:
-					return "XShm";
-				case 40002:
-					return "X11";
-				case 40003:
-					return "SDL";
-			}
-			break;
-		case Phonon::VideoCaptureDeviceType:
-			switch( index )
-			{
-				case 30000:
-					return "USB Webcam";
-				case 30001:
-					return "DV";
-				default:
-					return QString();
-			}
-			break;
-		case Phonon::VisualizationType:
-			break;
-		case Phonon::AudioCodecType:
-			break;
-		case Phonon::VideoCodecType:
-			break;
-		case Phonon::ContainerFormatType:
-			break;
-		case Phonon::AudioEffectType:
-			switch( index )
-			{
-				case 0x7F000001:
-					return "Delay";
-			}
-			break;
-		case Phonon::VideoEffectType:
-			switch( index )
-			{
-				case 0x7E000001:
-					return "VideoEffect1";
-			}
-			break;
-	}
-	return QString();
-}
-
-QString Backend::objectDescriptionDescription( ObjectDescriptionType type, int index ) const
-{
-	switch( type )
-	{
-		case Phonon::AudioOutputDeviceType:
-			break;
-		case Phonon::AudioCaptureDeviceType:
-			switch( index )
-			{
-				case 20000:
-					return "first description";
-				case 20001:
-					return "second description";
-			}
-			break;
-		case Phonon::VideoOutputDeviceType:
-			break;
-		case Phonon::VideoCaptureDeviceType:
-			switch( index )
-			{
-				case 30000:
-					return "first description";
-				case 30001:
-					return "second description";
-				default:
-					return QString();
-			}
-			break;
-		case Phonon::VisualizationType:
-			break;
-		case Phonon::AudioCodecType:
-			break;
-		case Phonon::VideoCodecType:
-			break;
-		case Phonon::ContainerFormatType:
-			break;
-		case Phonon::AudioEffectType:
-			switch( index )
-			{
-				case 0x7F000001:
-					return "Simple delay effect with time, feedback and level controls.";
-			}
-			break;
-		case Phonon::VideoEffectType:
-			switch( index )
-			{
-				case 0x7E000001:
-					return "Description 1";
-			}
-			break;
-	}
-	return QString();
+    QHash<QByteArray, QVariant> ret;
+    switch (type) {
+        case Phonon::AudioOutputDeviceType:
+            switch (index) {
+                case 10000:
+                    ret.insert("name", QLatin1String("internal Soundcard"));
+                    break;
+                case 10001:
+                    ret.insert("name", QLatin1String("USB Headset"));
+                    break;
+            }
+            break;
+        case Phonon::AudioCaptureDeviceType:
+            switch (index) {
+                case 20000:
+                    ret.insert("name", QLatin1String("Soundcard"));
+                    ret.insert("description", QLatin1String("first description"));
+                    break;
+                case 20001:
+                    ret.insert("name", QLatin1String("DV"));
+                    ret.insert("description", QLatin1String("second description"));
+                    break;
+            }
+            break;
+        case Phonon::VideoOutputDeviceType:
+            switch (index) {
+                case 40000:
+                    ret.insert("name", QLatin1String("XVideo"));
+                    break;
+                case 40001:
+                    ret.insert("name", QLatin1String("XShm"));
+                    break;
+                case 40002:
+                    ret.insert("name", QLatin1String("X11"));
+                    break;
+                case 40003:
+                    ret.insert("name", QLatin1String("SDL"));
+                    break;
+            }
+            break;
+        case Phonon::VideoCaptureDeviceType:
+            switch (index) {
+                case 30000:
+                    ret.insert("name", QLatin1String("USB Webcam"));
+                    ret.insert("description", QLatin1String("first description"));
+                    break;
+                case 30001:
+                    ret.insert("name", QLatin1String("DV"));
+                    ret.insert("description", QLatin1String("second description"));
+                    break;
+            }
+            break;
+        case Phonon::VisualizationType:
+            break;
+        case Phonon::AudioCodecType:
+            break;
+        case Phonon::VideoCodecType:
+            break;
+        case Phonon::ContainerFormatType:
+            break;
+        case Phonon::AudioEffectType:
+            switch (index) {
+                case 0x7F000001:
+                    ret.insert("name", QLatin1String("Delay"));
+                    ret.insert("description", QLatin1String("Simple delay effect with time, feedback and level controls."));
+                    break;
+            }
+            break;
+        case Phonon::VideoEffectType:
+            switch (index) {
+                case 0x7E000001:
+                    ret.insert("name", QLatin1String("VideoEffect1"));
+                    ret.insert("description", QLatin1String("Description 1"));
+                    break;
+            }
+            break;
+    }
+    return ret;
 }
 
 char const* Backend::uiLibrary() const

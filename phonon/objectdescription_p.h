@@ -29,12 +29,13 @@ namespace Phonon
 	class ObjectDescriptionPrivate : public QSharedData
 	{
 		public:
-			ObjectDescriptionPrivate( int _index, const QString& _name, const QString& _desc )
-				: index( _index )
-				, name( _name )
-				, description( _desc )
-			{
-			}
+            ObjectDescriptionPrivate(int _index, const QHash<QByteArray, QVariant>& _properties)
+                : index(_index),
+                name(_properties["name"].toString()),
+                description(_properties["description"].toString()),
+                properties(_properties)
+            {
+            }
 
 			bool operator==( const ObjectDescriptionPrivate& rhs ) const
 			{
@@ -46,6 +47,7 @@ namespace Phonon
 
 			int index;
 			QString name, description;
+            QHash<QByteArray, QVariant> properties;
 	};
 } // namespace Phonon
 

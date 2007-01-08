@@ -22,6 +22,7 @@
 
 #include <kdelibs_export.h>
 #include <Qt/qglobal.h>
+#include "objectdescription.h"
 
 class QVariant;
 
@@ -84,9 +85,12 @@ class PHONONCORE_EXPORT BackendInterface
          * \param arg1 An additional argument (documented in \ref Class1).
          */
         virtual QObject* createObject1(Class1 c, QObject *parent, QVariant arg1) = 0;
+
+        virtual QSet<int> objectDescriptionIndexes(ObjectDescriptionType type) const = 0;
+        virtual QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const = 0;
 };
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE( Phonon::BackendInterface, "org.kde.Phonon.BackendInterface/0.1" )
+Q_DECLARE_INTERFACE(Phonon::BackendInterface, "org.kde.Phonon.BackendInterface/0.2")
 
 #endif // PHONON_BACKENDINTERFACE_H

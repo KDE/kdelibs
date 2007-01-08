@@ -23,19 +23,21 @@
 #include <QObject>
 #include <QSet>
 #include "factory.h"
+#include <QStringList>
+#include "backendinterface.h"
 
 namespace Phonon
 {
 
 template<ObjectDescriptionType T>
 ObjectDescription<T>::ObjectDescription()
-	: d( new ObjectDescriptionPrivate( -1, QString(), QString() ) )
+    : d(new ObjectDescriptionPrivate(-1, QHash<QByteArray, QVariant>()))
 {
 }
 
 template<ObjectDescriptionType T>
-ObjectDescription<T>::ObjectDescription( int index, const QString& name, const QString& description )
-	: d( new ObjectDescriptionPrivate( index, name, description ) )
+ObjectDescription<T>::ObjectDescription(int index, const QHash<QByteArray, QVariant>& properties)
+    : d(new ObjectDescriptionPrivate(index, properties))
 {
 }
 
@@ -82,6 +84,18 @@ const QString& ObjectDescription<T>::description() const
 }
 
 template<ObjectDescriptionType T>
+QVariant ObjectDescription<T>::property(const char *name) const
+{
+    return d->properties.value(name);
+}
+
+template<ObjectDescriptionType T>
+QList<QByteArray> ObjectDescription<T>::propertyNames() const
+{
+    return d->properties.keys();
+}
+
+template<ObjectDescriptionType T>
 bool ObjectDescription<T>::isValid() const
 {
 	return d->index != -1;
@@ -90,21 +104,14 @@ bool ObjectDescription<T>::isValid() const
 template<ObjectDescriptionType T>
 ObjectDescription<T> ObjectDescription<T>::fromIndex( int index )
 {
-	QObject* b = Factory::self()->backend();
-	QSet<int> indexes;
-	QMetaObject::invokeMethod( b, "objectDescriptionIndexes", Qt::DirectConnection, Q_RETURN_ARG( QSet<int>, indexes ),
-			Q_ARG( ObjectDescriptionType, T ) );
-	if( !indexes.contains( index ) )
-		return ObjectDescription<T>(); //isValid() == false
-	QString name, description;
-	//int videoIndex;
-	QMetaObject::invokeMethod( b, "objectDescriptionName", Qt::DirectConnection, Q_RETURN_ARG( QString, name ),
-			Q_ARG( ObjectDescriptionType, T ), Q_ARG( int, index ) );
-	QMetaObject::invokeMethod( b, "objectDescriptionDescription", Qt::DirectConnection, Q_RETURN_ARG( QString, description ),
-			Q_ARG( ObjectDescriptionType, T ), Q_ARG( int, index ) );
-	//QMetaObject::invokeMethod( b, "objectDescriptionVideoIndex", Qt::DirectConnection, Q_RETURN_ARG( qint32, videoIndex ),
-			//Q_ARG( ObjectDescriptionType, T ), Q_ARG( int, index ) );
-	return ObjectDescription<T>( index, name, description );
+    QObject* b = Factory::self()->backend();
+    BackendInterface *iface = qobject_cast<BackendInterface*>(b);
+    QSet<int> indexes = iface->objectDescriptionIndexes(T);
+    if (!indexes.contains(index)) {
+        return ObjectDescription<T>(); //isValid() == false
+    }
+    QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(T, index);
+    return ObjectDescription<T>(index, properties);
 }
 
 template class ObjectDescription<AudioOutputDeviceType>;

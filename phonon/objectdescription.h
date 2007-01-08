@@ -23,6 +23,9 @@
 #include <QtGlobal>
 #include <kdelibs_export.h>
 #include <QSharedDataPointer>
+#include <QVariant>
+#include <QByteArray>
+#include <QList>
 class QString;
 
 namespace Phonon
@@ -87,6 +90,22 @@ class PHONONCORE_EXPORT ObjectDescription
 		 */
 		const QString& description() const;
 
+        /**
+         * Returns a named property.
+         *
+         * If the property is not set an invalid value is returned.
+         *
+         * \see propertyNames()
+         */
+        QVariant property(const char *name) const;
+
+        /**
+         * Returns all names that return valid data when property() is called.
+         *
+         * \see property()
+         */
+        QList<QByteArray> propertyNames() const;
+
 		/**
 		 * A unique identifier for this capture source. Used internally
 		 * to distinguish between the capture sources.
@@ -114,7 +133,7 @@ class PHONONCORE_EXPORT ObjectDescription
 		 * \internal
 		 * Sets the data.
 		 */
-		ObjectDescription( int index, const QString& name, const QString& description );
+        ObjectDescription(int index, const QHash<QByteArray, QVariant>& properties);
 
 	private:
 		/**

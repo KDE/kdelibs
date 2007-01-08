@@ -21,6 +21,8 @@
 #include "objectdescriptionmodel_p.h"
 #include <QList>
 #include "objectdescription.h"
+#include <kicon.h>
+#include <kdebug.h>
 
 #ifdef Q_D
 #undef Q_D
@@ -79,6 +81,18 @@ QVariant ObjectDescriptionModel<type>::data( const QModelIndex& index, int role 
 		case Qt::ToolTipRole:
 			return d->data.at( index.row() ).description();
 			break;
+        case Qt::DecorationRole:
+            {
+                QVariant icon = d->data.at(index.row()).property("icon");
+                if (icon.isValid()) {
+                    if (icon.type() == QVariant::String) {
+                        return KIcon(icon.toString());
+                    } else if (icon.type() == QVariant::Icon) {
+                        return icon;
+                    }
+                }
+            }
+            return QVariant();
 		default:
 			return QVariant();
 	}
