@@ -77,6 +77,45 @@ int GlobalConfig::audioOutputDeviceFor( Phonon::Category category ) const
 	return audioOutputDeviceListFor( category ).first();
 }
 
+QList<int> GlobalConfig::audioCaptureDeviceList() const
+{
+    //First we lookup the available devices directly from the backend
+    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend());
+    QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
+
+    QList<int> defaultList = deviceIndexes.toList();
+    qSort(defaultList);
+
+    //Now the list from the phononrc file
+    //The devices need to be stored independently for every backend
+    const KConfigGroup backendConfig(const_cast<KSharedConfig*>(m_config.data()),
+            QLatin1String("AudioCaptureDevice_") + Factory::self()->identifier());
+    QList<int> deviceList = backendConfig.readEntry<QList<int> >(QLatin1String("DeviceOrder"), QList<int>());
+    if (deviceList.isEmpty()) {
+        //try to read from global group for defaults
+        const KConfigGroup globalConfig(const_cast<KSharedConfig*>(m_config.data()),
+                QLatin1String("AudioCaptureDevice"));
+        deviceList = globalConfig.readEntry<QList<int> >(QLatin1String("DeviceOrder"), defaultList);
+    }
+
+    QMutableListIterator<int> i(deviceList);
+    while (i.hasNext()) {
+        if (0 == defaultList.removeAll(i.next())) {
+            //if there are devices in phononrc that the backend doesn't report, remove them from the list
+            i.remove();
+        }
+    }
+    //if the backend reports more devices that are not in phononrc append them to the list
+    deviceList += defaultList;
+
+    return deviceList;
+}
+
+int GlobalConfig::audioCaptureDevice() const
+{
+    return audioCaptureDeviceList().first();
+}
+
 } // namespace Phonon
 
 #include "globalconfig.moc"

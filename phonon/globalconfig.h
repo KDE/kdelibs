@@ -36,6 +36,9 @@ namespace Phonon
 			QList<int> audioOutputDeviceListFor( Phonon::Category category ) const;
 			int audioOutputDeviceFor( Phonon::Category category ) const;
 
+                        QList<int> audioCaptureDeviceList() const;
+                        int audioCaptureDevice() const;
+
 		signals:
 			void audioOutputDeviceConfigChanged();
 
