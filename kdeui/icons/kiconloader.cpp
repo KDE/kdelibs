@@ -134,7 +134,7 @@ struct KIconLoaderPrivate
 // Keep a list of recently created and destroyed KIconLoader instances in order
 // to detect bugs like #68528.
 struct KIconLoaderDebug
-    {
+{
     KIconLoaderDebug( KIconLoader* l, const QString& a )
         : loader( l ), appname( a ), valid( true )
         {}
@@ -142,15 +142,12 @@ struct KIconLoaderDebug
     QString appname;
     bool valid;
     QString delete_bt;
-    };
+};
 
 static QList< KIconLoaderDebug > *kiconloaders;
-#endif
 
-KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject* parent)
-    : QObject(parent)
+static void registerIconLoader( KIconLoader* iconloader, const QString& _appname )
 {
-#ifdef KICONLOADER_CHECKS
     if( kiconloaders == NULL )
         kiconloaders = new QList< KIconLoaderDebug>();
     // check for the (very unlikely case) that new KIconLoader gets allocated
@@ -159,15 +156,24 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject*
          it != kiconloaders->end();
          )
         {
-        if( (*it).loader == this )
+        if( (*it).loader == iconloader )
             it = kiconloaders->erase( it );
         else
             ++it;
         }
-    kiconloaders->append( KIconLoaderDebug( this, _appname ));
+    kiconloaders->append( KIconLoaderDebug( iconloader, _appname ));
+}
+
 #endif
+
+KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject* parent)
+    : QObject(parent)
+{
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
+#ifdef KICONLOADER_CHECKS
+    registerIconLoader(this, _appname);
+#endif
     init( _appname, _dirs );
 }
 
@@ -176,6 +182,9 @@ KIconLoader::KIconLoader(KInstance* instance, QObject* parent)
 {
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
+#ifdef KICONLOADER_CHECKS
+    registerIconLoader(this, instance->instanceName());
+#endif
     init( instance->instanceName(), instance->dirs() );
 }
 
