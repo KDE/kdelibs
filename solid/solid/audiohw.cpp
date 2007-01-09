@@ -30,15 +30,9 @@ namespace Solid
     {
         public:
             AudioHwPrivate()
-                : cardnum( -1 ),
-                devicenum( -1 ),
-                soundcardType( -1 )
             {
             }
 
-            int cardnum;
-            int devicenum;
-            int soundcardType;
             QStringList driverHandles;
     };
 } // namespace Solid
@@ -86,7 +80,7 @@ QStringList Solid::AudioHw::driverHandles()
             handle = handle.right(handle.size() - colon - 1);
 
             // get cardnum and devicenum
-            const int comma = handle.indexOf( ',' );
+            /*const int comma = handle.indexOf( ',' );
             if (comma > -1)
             {
                 d->devicenum = handle.right(handle.size() - 1 - comma).toInt();
@@ -95,7 +89,7 @@ QStringList Solid::AudioHw::driverHandles()
             else
             {
                 d->cardnum = handle.toInt();
-            }
+            }*/
 
             if ( iface->deviceType() & Solid::AudioHw::AudioOutput )
             {
