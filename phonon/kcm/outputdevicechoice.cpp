@@ -212,6 +212,8 @@ void OutputDeviceChoice::on_removeButton_clicked()
                         data.removeAll(deviceToRemove);
                         model->setModelData(data);
                     }
+                    updateButtonsEnabled();
+                    emit changed();
                 }
             }
         }
@@ -227,6 +229,8 @@ void OutputDeviceChoice::on_removeButton_clicked()
                         QList<Phonon::AudioCaptureDevice> data = m_captureModel.modelData();
                         data.removeAll(deviceToRemove);
                         m_captureModel.setModelData(data);
+                        updateButtonsEnabled();
+                        emit changed();
                     }
                 }
             }
@@ -242,7 +246,7 @@ void OutputDeviceChoice::updateButtonsEnabled()
         QModelIndex idx = deviceList->currentIndex();
         preferButton->setEnabled(idx.isValid() && idx.row() > 0);
         deferButton->setEnabled(idx.isValid() && idx.row() < deviceList->model()->rowCount() - 1);
-        removeButton->setEnabled(idx.isValid());
+        removeButton->setEnabled(idx.isValid() && !(idx.flags() & Qt::ItemIsEnabled));
     } else {
         preferButton->setEnabled(false);
         deferButton->setEnabled(false);
