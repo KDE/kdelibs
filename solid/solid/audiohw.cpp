@@ -22,10 +22,6 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/audiohw.h>
 #include <QStringList>
-#include <config-alsa.h>
-#ifdef HAVE_LIBASOUND2
-#include <alsa/asoundlib.h>
-#endif
 #include <kdebug.h>
 
 namespace Solid
@@ -33,7 +29,6 @@ namespace Solid
     class AudioHwPrivate
     {
         public:
-#ifdef HAVE_LIBASOUND2
             AudioHwPrivate()
                 : cardnum( -1 ),
                 devicenum( -1 ),
@@ -45,7 +40,6 @@ namespace Solid
             int devicenum;
             int soundcardType;
             QStringList driverHandles;
-#endif
     };
 } // namespace Solid
 
@@ -81,7 +75,6 @@ QStringList Solid::AudioHw::driverHandles()
     if ( iface )
     {
         QString handle = iface->driverHandler();
-#ifdef HAVE_LIBASOUND2
         if ( iface->driver() == Alsa )
         {
             // we expect the handle to be of the form hw:X or hw:X,Y
@@ -121,7 +114,6 @@ QStringList Solid::AudioHw::driverHandles()
             return d->driverHandles;
         }
         else
-#endif
         {
             return QStringList( handle );
         }
@@ -141,83 +133,7 @@ Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType()
 
 Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType()
 {
-#ifdef HAVE_LIBASOUND2
-    if ( d->soundcardType != -1 )
-    {
-        // cached
-        return static_cast<SoundcardType>( d->soundcardType );
-    }
-
-    Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw*>( backendObject() );
-    if ( !iface )
-    {
-        return InternalSoundcard;
-    }
-
-    if ( iface->driver() != Alsa )
-    {
-        return iface->soundcardType();
-    }
-
-    if ( d->cardnum == -1 )
-    {
-        driverHandles();
-        if ( d->cardnum == -1 )
-        {
-            kWarning() << k_funcinfo << "no card number found" << endl;
-            return AudioHw::InternalSoundcard;
-        }
-    }
-
-    QByteArray ctlDevice( "hw:" );
-    ctlDevice += QByteArray::number( d->cardnum );
-
-    snd_ctl_card_info_t *cardInfo;
-    snd_ctl_card_info_malloc(&cardInfo);
-
-    snd_ctl_t *ctl;
-    if ( 0 == snd_ctl_open( &ctl, ctlDevice.constData(), 0 /*open mode: blocking, sync*/ ) )
-    {
-        if ( 0 == snd_ctl_card_info( ctl, cardInfo ) )
-        {
-            QString cardName = QString( snd_ctl_card_info_get_name( cardInfo ) ).trimmed();
-            if ( cardName.contains( "headset", Qt::CaseInsensitive ) ||
-                    cardName.contains( "headphone", Qt::CaseInsensitive ) ||
-                    iface->name().contains( "headset", Qt::CaseInsensitive ) ||
-                    iface->name().contains( "headphone", Qt::CaseInsensitive ) )
-            {
-                d->soundcardType = AudioHw::Headset;
-            }
-            else if ( cardName.contains( "modem", Qt::CaseInsensitive ) ||
-                    iface->name().contains( "modem", Qt::CaseInsensitive ) )
-            {
-                d->soundcardType = AudioHw::Modem;
-            }
-            else
-            {
-                //Get card driver name from a CTL card info.
-                QString driver = snd_ctl_card_info_get_driver( cardInfo );
-                if ( driver.contains( "usb", Qt::CaseInsensitive ) )
-                {
-                    d->soundcardType = AudioHw::UsbSoundcard;
-                }
-                else
-                {
-                    d->soundcardType = AudioHw::InternalSoundcard;
-                }
-            }
-            snd_ctl_card_info_free(cardInfo);
-            snd_ctl_close( ctl );
-            return static_cast<SoundcardType>( d->soundcardType );
-        }
-        snd_ctl_close( ctl );
-    }
-    snd_ctl_card_info_free( cardInfo );
-    kWarning() << k_funcinfo << "could not open ctl devices" << endl;
-    return AudioHw::InternalSoundcard;
-#else
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), InternalSoundcard, soundcardType() );
-#endif
 }
 
 #include "audiohw.moc"

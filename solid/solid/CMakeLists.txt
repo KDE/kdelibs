@@ -1,6 +1,3 @@
-macro_optional_find_package(Alsa)
-alsa_configure_file(${CMAKE_BINARY_DIR}/config-alsa.h)
-
 add_subdirectory( ifaces )
 
 ########### next target ###############
@@ -41,7 +38,7 @@ kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${KDE4_KDECORE_LIBS} solidifaces ${ASOUND_LIBRARY} )
+target_link_libraries(solid ${KDE4_KDECORE_LIBS} solidifaces )
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
