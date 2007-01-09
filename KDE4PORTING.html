@@ -1013,14 +1013,14 @@ if needed (see the KURLDrag section)</li>
 <h4>KPasswordDialog</h4>
 <ul>
 <li>K3PasswordDialog is in kde3support for helping porting</li>
-<li>asking for a new password ->  KNewPasswordDialog</li>
+<li>asking for a new password -&gt;  KNewPasswordDialog</li>
 <li>password() return QString</li>
 <li>getPassword() gone, use the following code instead</li>
 <!-- <li>kpassdlg.h was renamed kpassworddialog.h.</li>
 <li>checkPassword take now a QString as argument</li> -->
 </ul>
 <pre>
-KPasswordDialog dgl(parent);
+KPasswordDialog dlg(parent);
 dlg.setPrompt( prompt );
 dlg.setWindowTitle( caption );
 if( dlg.exec() != QDialog::Accepted )
