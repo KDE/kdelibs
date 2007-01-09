@@ -23,7 +23,9 @@
 #include <solid/ifaces/audiohw.h>
 #include <QStringList>
 #include <config-alsa.h>
+#ifdef HAVE_LIBASOUND2
 #include <alsa/asoundlib.h>
+#endif
 #include <kdebug.h>
 
 namespace Solid
