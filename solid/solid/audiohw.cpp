@@ -29,10 +29,6 @@ namespace Solid
     class AudioHwPrivate
     {
         public:
-            AudioHwPrivate()
-            {
-            }
-
             QStringList driverHandles;
     };
 } // namespace Solid
@@ -57,13 +53,11 @@ Solid::AudioHw::AudioDriver Solid::AudioHw::driver()
 
 QStringList Solid::AudioHw::driverHandles()
 {
-#ifdef HAVE_LIBASOUND2
     if ( !d->driverHandles.isEmpty() )
     {
         // cached
         return d->driverHandles;
     }
-#endif
 
     Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw*>( backendObject() );
     if ( iface )
