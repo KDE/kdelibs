@@ -174,6 +174,10 @@ namespace Solid
         /**
          * Retrieves the name of this audio interface.
          *
+         * The product name of the parent device is normally better suited for the user to identify
+         * the soundcard. If the soundcard has multiple devices, though you need to add this name to
+         * differentiate between the devices.
+         *
          * @return the name of the audio interface if available, QString() otherwise
          */
         QString name();
