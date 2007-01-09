@@ -77,12 +77,12 @@ static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QS
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
                               KBookmarkOwner * _owner, KMenu * _parentMenu,
-                              KActionCollection *)
+                              KActionCollection * actionCollection)
   : QObject(),
     m_bIsRoot(true),
     m_pManager(mgr), m_pOwner(_owner),
     m_parentMenu( _parentMenu ),
-    m_actionCollection( 0 ),
+    m_actionCollection( actionCollection ),
     m_parentAddress( QString("") ) //TODO KBookmarkAdress::root
 {
   m_parentMenu->setKeyboardShortcutsEnabled( true );
