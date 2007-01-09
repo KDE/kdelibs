@@ -28,7 +28,7 @@ class KAssistantDialogPrivate;
  * This class provides a framework for assistant dialogs.
  *
  * The use of this class is the same as KWizard in KDE3.
- * You should use "assistant" term instead of "wizard" both in the source 
+ * You should use the word "assistant" instead of "wizard" both in the source 
  * and translatable strings.
  *
  * An assistant dialog consists of a sequence of pages.
@@ -57,16 +57,18 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
     public:
         /**
          * Construct a new assistant dialog with @p parent as parent.
-         * @param parent is the parent of the widget.
+         * @param parent is the parent of the widget. 
+         * @flags the window flags to give to the assistant dialog. The
+         * default of zero is usually what you want.
          */
         KAssistantDialog(QWidget *parent=0, Qt::WFlags flags=0);
         virtual ~KAssistantDialog();
 
         /**
          * Specify if the content of the page is valid, and if the next button may be enabled on this page.
-         * By default all pages are valid
+         * By default all pages are valid.
          *
-         * this will disable or enable the next button on the specified page
+         * This will disable or enable the next button on the specified page
          *
          * @param page the page on which the next button will be enabled/disable
          * @param enable if true the next button will be enabled, if false it will be disabled
@@ -76,22 +78,30 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
         /**
          * return if a page is valid
          * @see setValid
+         * @param page the page to check the validity of
          */
         bool isValid(KPageWidgetItem *page);
 
         /**
-         * Specify weither a page is appropriate.
+         * Specify whether a page is appropriate.
          *
-         * A page is not appropriate if it should not be showed, because the contents of others page make it unappropriate.
+         * A page is considered inappropriate if it should not be shown due to 
+         * the contents of other pages making it inappropriate.
          *
-         * A page which is not apropriate will not be shown.
+         * A page which is inappropriate will not be shown.
          *
-         * The last page should always be appropriate
+         * The last page in an assistant dialog should always be appropriate
+         * @param page the page to set as appropriate
+         * @param appropriate flag indicating the appropriateness of the page.
+         * If @p appropriate is true, then @p page is appropriate and will be
+         * shown in the assistant dialog. If false, @p page will not be shown.
          */
         void setAppropriate(KPageWidgetItem *page, bool appropriate);
 
         /**
-         * returns what has been set in setAppropriate
+         * Check if a page is appropriate for use in the assistant dialog.
+         * @param page is the page to check the appropriateness of.
+         * @return true if @p page is appropriate, false if it is not
          */
         bool isAppropriate(KPageWidgetItem *page);
 
@@ -100,15 +110,15 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
         /**
          * Called when the user clicks the Back button.
          *
-         * this function will show the preceding relevant page in the sequence.
-         * Do nothing if this is the current page is the first page
+         * This function will show the preceding relevant page in the sequence.
+         * Do nothing if the current page is the first page is the sequence.
          */
         virtual void back();
 
         /**
          * Called when the user clicks the Next/Finish button.
          *
-         * this function will show the next relevant page in the sequence.
+         * This function will show the next relevant page in the sequence.
          * If the current page is the last page, it will call accept()
          */
         virtual void next();
@@ -118,7 +128,13 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
 
     protected:
         /**
-         * Constructor that call the  KPageDialog (KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
+         * Construct an assistant dialog from a single widget.
+         * @param widget the widget to construct the dialog with
+         * @param parent the parent of the assistant dialog
+         * @flags the window flags to use when creating the widget. The default
+         * of zero is usually fine.
+         *
+         * Calls the KPageDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
          */
         KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
 
