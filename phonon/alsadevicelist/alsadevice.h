@@ -102,9 +102,9 @@ namespace Phonon
 
             int index() const;
 
-            bool available() const;
+            bool isAvailable() const;
 
-            void ceaseToExist();
+            bool ceaseToExist();
 
             bool isValid() const;
 

@@ -167,15 +167,15 @@ int AlsaDevice::index() const
     return d->index;
 }
 
-bool AlsaDevice::available() const
+bool AlsaDevice::isAvailable() const
 {
     return d->available;
 }
 
-void AlsaDevice::ceaseToExist()
+bool AlsaDevice::ceaseToExist()
 {
     if (d->available) {
-        return; // you cannot remove devices that are plugged in
+        return false; // you cannot remove devices that are plugged in
     }
     d->valid = false;
     KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", false, false);
@@ -188,6 +188,7 @@ void AlsaDevice::ceaseToExist()
     groupName += d->cardName;
     config->deleteGroup(groupName);
     config->sync();
+    return true;
 }
 
 bool AlsaDevice::isValid() const

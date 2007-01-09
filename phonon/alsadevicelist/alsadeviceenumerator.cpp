@@ -86,8 +86,13 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         if (audiohw->deviceType() & Solid::AudioHw::AudioOutput || audiohw->deviceType() & Solid::AudioHw::AudioInput) {
             AlsaDevice dev(audiohw, config);
             if (dev.isValid()) {
-                devicelist << dev;
-                alreadyFoundCards << (dev.isCaptureDevice() ? QLatin1String("AudioCaptureDevice_") : QLatin1String("AudioOutputDevice_")) + dev.cardName();
+                if (dev.isCaptureDevice()) {
+                    capturedevicelist << dev;
+                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
+                } else {
+                    playbackdevicelist << dev;
+                    alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.cardName();
+                }
             }
         }
     }
@@ -102,7 +107,11 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         KConfigGroup configGroup(config.data(), groupName);
         AlsaDevice dev(configGroup);
         if (dev.isValid()) {
-            devicelist << dev;
+            if (dev.isCaptureDevice()) {
+                capturedevicelist << dev;
+            } else {
+                playbackdevicelist << dev;
+            }
             alreadyFoundCards << groupName;
         }
     }
@@ -171,9 +180,14 @@ AlsaDeviceEnumerator::~AlsaDeviceEnumerator()
     d = 0;
 }
 
-QList<AlsaDevice> AlsaDeviceEnumerator::availableDevices()
+QList<AlsaDevice> AlsaDeviceEnumerator::availablePlaybackDevices()
 {
-    return self()->d->devicelist;
+    return self()->d->playbackdevicelist;
+}
+
+QList<AlsaDevice> AlsaDeviceEnumerator::availableCaptureDevices()
+{
+    return self()->d->capturedevicelist;
 }
 
 } // namespace Phonon

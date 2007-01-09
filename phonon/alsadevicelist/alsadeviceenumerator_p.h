@@ -30,7 +30,8 @@ namespace Phonon
 class AlsaDeviceEnumeratorPrivate
 {
     public:
-        QList<AlsaDevice> devicelist;
+        QList<AlsaDevice> playbackdevicelist;
+        QList<AlsaDevice> capturedevicelist;
         void findDevices();
 
         KSharedConfig::Ptr config;

@@ -31,9 +31,9 @@ void SimpleTest::sanityChecks()
 
 void SimpleTest::listDevices()
 {
-    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availableDevices();
+    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availablePlaybackDevices();
     foreach (AlsaDevice dev, deviceList) {
-        qDebug() << dev.cardName() << dev.deviceIds() << dev.iconName();
+        qDebug() << dev.cardName() << dev.deviceIds() << dev.iconName() << dev.isAvailable();
         foreach (QString id, dev.deviceIds()) {
             QVERIFY(dev.deviceIds().count(id) == 1);
         }
@@ -42,7 +42,7 @@ void SimpleTest::listDevices()
 
 void SimpleTest::checkCopy()
 {
-    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availableDevices();
+    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availablePlaybackDevices();
     AlsaDevice dev = deviceList.first();
     QCOMPARE(dev, deviceList.first());
     AlsaDevice dev1;

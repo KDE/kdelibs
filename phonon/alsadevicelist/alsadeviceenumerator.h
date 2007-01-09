@@ -54,11 +54,18 @@ namespace Phonon
             static AlsaDeviceEnumerator* self();
 
             /**
-             * Returns a list of the available ALSA devices.
+             * Returns a list of the available ALSA playback devices.
              *
              * \see AlsaDevice
              */
-            static QList<AlsaDevice> availableDevices();
+            static QList<AlsaDevice> availablePlaybackDevices();
+
+            /**
+             * Returns a list of the available ALSA capture devices.
+             *
+             * \see AlsaDevice
+             */
+            static QList<AlsaDevice> availableCaptureDevices();
 
         Q_SIGNALS:
             /**
