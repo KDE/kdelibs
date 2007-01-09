@@ -24,8 +24,8 @@
 #include <klocale.h>
 #include <QHeaderView>
 #include <ksimpleconfig.h>
-#include <phonon/alsadeviceenumerator.h>
-#include <phonon/alsadevice.h>
+#include <phonon/alsadevicelist/alsadeviceenumerator.h>
+#include <phonon/alsadevicelist/alsadevice.h>
 #include <QList>
 
 class CategoryItem : public QStandardItem {
