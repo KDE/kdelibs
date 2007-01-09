@@ -64,7 +64,6 @@ namespace Phonon
 	template<ObjectDescriptionType type>
 	class PHONONCORE_EXPORT ObjectDescriptionModel : public QAbstractListModel
 	{
-		//Q_OBJECT
 		inline ObjectDescriptionModelPrivate<type>* d_func() { return reinterpret_cast<ObjectDescriptionModelPrivate<type> *>(d_ptr); } \
 		inline const ObjectDescriptionModelPrivate<type>* d_func() const { return reinterpret_cast<const ObjectDescriptionModelPrivate<type> *>(d_ptr); } \
 		friend class ObjectDescriptionModelPrivate<type>;
@@ -83,6 +82,19 @@ namespace Phonon
 			 * All previous model data is cleared.
 			 */
 			void setModelData( const QList<ObjectDescription<type> >& data );
+
+            /**
+             * Returns the model data.
+             *
+             * As the order of the list might have changed this can be different
+             * to what was set using setModelData().
+             */
+            QList<ObjectDescription<type> > modelData() const;
+
+            /**
+             * Returns one ObjectDescription of the model data for the given \p index.
+             */
+            ObjectDescription<type> modelData(const QModelIndex &index) const;
 
 			/**
 			 * Returns the number of rows in the model. This value corresponds
@@ -110,6 +122,12 @@ namespace Phonon
 			 * \see Qt::ItemDataRole
 			 */
 			QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const;
+
+            /**
+             * Reimplemented to show unavailable devices as disabled (but still
+             * selectable).
+             */
+            Qt::ItemFlags flags(const QModelIndex &index) const;
 
 			/**
 			 * Moves the item at the given \p index up. In the resulting list

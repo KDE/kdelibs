@@ -56,6 +56,23 @@ void ObjectDescriptionModel<type>::setModelData( const QList<ObjectDescription<t
 }
 
 template<ObjectDescriptionType type>
+QList<ObjectDescription<type> > ObjectDescriptionModel<type>::modelData() const
+{
+    Q_D(const ObjectDescriptionModel);
+    return d->data;
+}
+
+template<ObjectDescriptionType type>
+ObjectDescription<type> ObjectDescriptionModel<type>::modelData(const QModelIndex &index) const
+{
+    Q_D(const ObjectDescriptionModel);
+    if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
+        return ObjectDescription<type>();
+    }
+    return d->data.at(index.row());
+}
+
+template<ObjectDescriptionType type>
 int ObjectDescriptionModel<type>::rowCount( const QModelIndex& parent ) const
 {
 	if( parent.isValid() )
@@ -93,9 +110,26 @@ QVariant ObjectDescriptionModel<type>::data( const QModelIndex& index, int role 
                 }
             }
             return QVariant();
+        case Qt::SizeHintRole:
+            return QSize(45, 45);
 		default:
 			return QVariant();
 	}
+}
+
+template<ObjectDescriptionType type>
+Qt::ItemFlags ObjectDescriptionModel<type>::flags(const QModelIndex &index) const
+{
+    Q_D(const ObjectDescriptionModel);
+    if(!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
+        return 0;
+    }
+
+    QVariant available = d->data.at(index.row()).property("available");
+    if (available.isValid() && available.type() == QVariant::Bool && !available.toBool()) {
+        return Qt::ItemIsSelectable;
+    }
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
 template<ObjectDescriptionType type>
