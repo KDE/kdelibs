@@ -331,39 +331,70 @@ protected:
 
 public:
   /**
-   * Add an action to the collection.
-   * Generally you don't have to call this. The action inserts itself automatically
-   * into its parent collection. This can be useful however for a short-lived
-   * collection (e.g. for a popupmenu, where the signals from the collection are needed too).
-   * (don't forget that in the simple case, a list of actions should be a simple KActionPtrList).
-   * If you manually insert actions into a 2nd collection, don't forget to take them out
-   * again before destroying the collection.
-   * @param action The KAction to add.
+   * Add an action under the given name to the collection.
+   *
+   * Inserting an action that was previously inserted under a different name will replace the
+   * old entry, i.e. the action will not be available under the old name anymore but only under
+   * the new one.
+   *
+   * Inserting an action under a name that is already used for another action will replace
+   * the other action in the collection.
+   *
+   * @param name The name by which the action be retrieved again from the collection.
+   * @param action The action to add.
    */
   QAction *addAction(const QString &name, QAction *action);
 
   /**
    * Removes an action from the collection and deletes it.
-   * Since the KAction destructor removes the action from the collection, you generally
-   * don't have to call this.
-   * @param action The KAction to remove.
+   * @param action The action to remove.
    */
   void removeAction(QAction *action);
 
   /**
    * Removes an action from the collection.
-   * Since the KAction destructor removes the action from the collection, you generally
-   * don't have to call this.
-   * @return NULL if not found else returns action.
-   * @param action the KAction to remove.
+   * @param action the action to remove.
    */
   QAction* takeAction(QAction *action);
 
+  /**
+   * Add a standard action to the collection and connects the action's triggered() signal to the
+   * specified receiver/member.
+   *
+   * The action can be retrieved later from the collection by its standard name as per
+   * KStandardAction::stdName.
+   */
   QAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
+  /**
+   * Add a standard action to the collection and connects the action's triggered() signal to the
+   * specified receiver/member.
+   *
+   * The action can be retrieved later from the collection by the specified name.
+   */
   QAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
                      const QObject *receiver = 0, const char *member = 0);
+
+  /**
+   * Add an action under the given name to the collection and connects the action's triggered()
+   * signal to the specified receiver/member.
+   *
+   * Inserting an action that was previously inserted under a different name will replace the
+   * old entry, i.e. the action will not be available under the old name anymore but only under
+   * the new one.
+   *
+   * Inserting an action under a name that is already used for another action will replace
+   * the other action in the collection.
+   *
+   * @param name The name by which the action be retrieved again from the collection.
+   * @param action The action to add.
+   */
   QAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
+  /**
+   * Add an action under the given name to the collection and connects the action's triggered()
+   * signal to the specified receiver/member. The type of the action is specified by the template
+   * parameter ActionType.
+   */
   template<class ActionType>
   ActionType *add(const QString &name, const QObject *receiver = 0, const char *member = 0)
   {
