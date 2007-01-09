@@ -22,8 +22,14 @@
 
 #include <QSharedDataPointer>
 #include <kdelibs_export.h>
+#include <kconfig.h>
 class QString;
 class QStringList;
+
+namespace Solid
+{
+    class AudioHw;
+} // namespace Solid
 
 namespace Phonon
 {
@@ -73,21 +79,18 @@ namespace Phonon
             bool operator!=(const AlsaDevice &rhs) const { return !operator==(rhs); }
 
             /**
-             * Returns the name of the soundcard as returned by the ALSA ctl interface. This string
+             * Returns the name of the soundcard. This string
              * should be shown to the user to select from multiple soundcards.
              */
             QString cardName() const;
-            /**
-             * Returns the name of the mixer as returned by the ALSA ctl interface. KMix shows this
-             * string to identify the mixer.
-             */
-            QString mixerName() const;
+
             /**
              * Returns a list of device identifiers that your code can use in a snd_pcm_open call.
              * If the code wants to open the soundcard identified by this object it should try all
-             * the device strings from start to end (they are sorted).
+             * the device strings from start to end (they are sorted for preference).
              */
             QStringList deviceIds() const;
+
             /**
              * Returns an icon name used to identify the type of soundcard. Simply use
              * \code
@@ -97,18 +100,22 @@ namespace Phonon
              */
             QString iconName() const;
 
-        protected:
-            enum AlsaControlOrPcm {
-                Control = 1,
-                Pcm = 2,
-                ControlAndPcm = Control | Pcm
-            };
-            AlsaDevice(int card, int device = -1);
-            AlsaDevice(const QString &deviceName, AlsaControlOrPcm controlOrPcm);
+            int index() const;
+
+            bool available() const;
+
+            void ceaseToExist();
+
             bool isValid() const;
 
+            bool isCaptureDevice() const;
+            bool isPlaybackDevice() const;
+
+        protected:
+            AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config);
+            AlsaDevice(KConfigGroup &deviceGroup);
+
         private:
-            void addDeviceId(const QString &deviceId);
             QSharedDataPointer<AlsaDevicePrivate> d;
     };
 } // namespace Phonon

@@ -30,20 +30,15 @@ namespace Phonon
 class AlsaDevicePrivate : public QSharedData
 {
     public:
-        AlsaDevicePrivate() : card(-1), device(-1), valid(false) {}
-        void deviceInfoFromControlDevice(const QString &deviceName);
-        void deviceInfoFromPcmDevice(const QString &deviceName);
-        void merge();
+        AlsaDevicePrivate() : index(-1), available(false), valid(false), captureDevice(false) {}
 
-        int card;
-        int device;
         QString cardName;
-        QString mixerName;
-        QString pcmName;
         QStringList deviceIds;
-        QString internalId;
         QString icon;
-        bool valid;
+        int index;
+        bool available : 1;
+        bool valid : 1;
+        bool captureDevice : 1;
 };
 } // namespace Phonon
 

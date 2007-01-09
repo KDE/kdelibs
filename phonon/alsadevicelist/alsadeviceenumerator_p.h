@@ -23,6 +23,7 @@
 #include "alsadeviceenumerator.h"
 #include <QList>
 #include "alsadevice.h"
+#include <kconfig.h>
 
 namespace Phonon
 {
@@ -31,7 +32,8 @@ class AlsaDeviceEnumeratorPrivate
     public:
         QList<AlsaDevice> devicelist;
         void findDevices();
-        void findAsoundrcDevices(const QString &fileName);
+
+        KSharedConfig::Ptr config;
 };
 } // namespace Phonon
 

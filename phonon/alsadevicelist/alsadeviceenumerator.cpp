@@ -41,6 +41,7 @@ AlsaDeviceEnumerator *AlsaDeviceEnumerator::self()
     return s_instance;
 }
 
+/*
 AlsaDevice *AlsaDeviceEnumerator::deviceFor(const QString &internalId)
 {
     for (int i = 0; i < d->devicelist.size(); ++i) {
@@ -50,15 +51,18 @@ AlsaDevice *AlsaDeviceEnumerator::deviceFor(const QString &internalId)
     }
     return 0;
 }
+*/
 
 AlsaDeviceEnumerator::AlsaDeviceEnumerator(QObject *parent)
     : QObject(parent),
     d(new AlsaDeviceEnumeratorPrivate)
 {
+    d->config = KSharedConfig::openConfig("phonondevicesrc", false, false);
 }
 
 void AlsaDeviceEnumeratorPrivate::findDevices()
 {
+    /*
     // first check the 'default' device and the devices defined in ~/.asoundrc and /etc/asound.conf
     AlsaDevice defaultCtlDevice(QLatin1String("default"), AlsaDevice::ControlAndPcm);
     if (defaultCtlDevice.isValid()) {
@@ -66,9 +70,12 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
     }
     findAsoundrcDevices(QDir::homePath() + "/.asoundrc");
     findAsoundrcDevices("/etc/asound.conf");
+    */
 
-    // then ask Solid for the available audio hardware
+    // ask Solid for the available audio hardware
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
+
+    QSet<QString> alreadyFoundCards;
 
     Solid::DeviceList devices = manager.findDevicesFromQuery(QString(), Solid::Capability::AudioHw,
             Solid::Predicate(Solid::Capability::AudioHw, QLatin1String("driver"), Solid::AudioHw::Alsa));
@@ -76,36 +83,34 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
         Q_ASSERT(audiohw->driver() == Solid::AudioHw::Alsa);
-        QStringList handles = audiohw->driverHandles();
-        kDebug(603) << k_funcinfo << handles << ", " << audiohw->name() << ", " << audiohw->driver() << ", " << audiohw->deviceType() << endl;
-        if (audiohw->deviceType() & Solid::AudioHw::AudioOutput) {
-            QString handle = handles.last();
-            handle = handle.right(handle.size() - handle.indexOf(':') - 1);
-            int comma = handle.indexOf(',');
-            int devicenum = -1;
-            if (comma > -1) {
-                //devicenum = handle.right(handle.size() - 1 - comma).toInt();
-                handle = handle.left(comma);
-            }
-            AlsaDevice dev(handle.toInt(), devicenum);
+        if (audiohw->deviceType() & Solid::AudioHw::AudioOutput || audiohw->deviceType() & Solid::AudioHw::AudioInput) {
+            AlsaDevice dev(audiohw, config);
             if (dev.isValid()) {
                 devicelist << dev;
+                alreadyFoundCards << (dev.isCaptureDevice() ? QLatin1String("AudioCaptureDevice_") : QLatin1String("AudioOutputDevice_")) + dev.cardName();
             }
         }
     }
 
-    // look at the list of currently available devices
-    /*int card = -1;
-    while (snd_card_next(&card) >= 0 && card >= 0) {
-        AlsaDevice dev(card);
+    // now look in the config file for disconnected devices
+    QStringList groupList = config->groupList();
+    foreach (QString groupName, groupList) {
+        if (alreadyFoundCards.contains(groupName) || !groupName.startsWith(QLatin1String("Audio"))) {
+            continue;
+        }
+
+        KConfigGroup configGroup(config.data(), groupName);
+        AlsaDevice dev(configGroup);
         if (dev.isValid()) {
             devicelist << dev;
+            alreadyFoundCards << groupName;
         }
-    }*/
+    }
 
     // TODO register with Solid to emit the devicePlugged/deviceUnplugged signals
 }
 
+/*
 void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
 {
     QFile asoundrcFile(fileName);
@@ -158,6 +163,7 @@ void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
         }
     }
 }
+*/
 
 AlsaDeviceEnumerator::~AlsaDeviceEnumerator()
 {

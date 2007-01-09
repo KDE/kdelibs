@@ -33,7 +33,7 @@ void SimpleTest::listDevices()
 {
     QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availableDevices();
     foreach (AlsaDevice dev, deviceList) {
-        qDebug() << dev.cardName() << dev.mixerName() << dev.deviceIds() << dev.iconName();
+        qDebug() << dev.cardName() << dev.deviceIds() << dev.iconName();
         foreach (QString id, dev.deviceIds()) {
             QVERIFY(dev.deviceIds().count(id) == 1);
         }

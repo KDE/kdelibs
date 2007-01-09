@@ -23,6 +23,7 @@
 #include <alsa/asoundlib.h>
 #include "alsadeviceenumerator.h"
 #include <kdebug.h>
+#include <solid/audiohw.h>
 
 namespace Phonon
 {
@@ -31,53 +32,74 @@ AlsaDevice::AlsaDevice()
 {
 }
 
-AlsaDevice::AlsaDevice(int card, int device)
+AlsaDevice::AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
     : d(new AlsaDevicePrivate)
 {
-    QString dmixName(QLatin1String("plug:dmix:") + QString::number(card));
-    QString plughwName(QLatin1String("plughw:") + QString::number(card));
-    QString hwName(QLatin1String("hw:") + QString::number(card));
-    if (device != -1) {
-        dmixName += ',';
-        dmixName += QString::number(device);
-        plughwName += ',';
-        plughwName += QString::number(device);
-        hwName += ',';
-        hwName += QString::number(device);
+    kDebug(603) << k_funcinfo << audioHw->driverHandles() << endl;
+    d->cardName = audioHw->name();
+    d->deviceIds = audioHw->driverHandles();
+    switch (audioHw->soundcardType()) {
+        case Solid::AudioHw::InternalSoundcard:
+            d->icon = QLatin1String("pci-card");
+            break;
+        case Solid::AudioHw::UsbSoundcard:
+            d->icon = QLatin1String("usb-device");
+            break;
+        case Solid::AudioHw::FirewireSoundcard:
+            d->icon = QLatin1String("firewire-device");
+            break;
+        case Solid::AudioHw::Headset:
+            d->icon = QLatin1String("headset");
+            break;
+        case Solid::AudioHw::Modem:
+            // should a modem be an invalid device so that it's not shown to the user?
+            d->icon = QLatin1String("modem");
+            break;
     }
-    kDebug(603) << k_funcinfo << dmixName << "/" << hwName << endl;
+    d->available = true;
+    d->valid = true;
 
-    // TODO only add the dmix device if it's actually usable with a standard PCM stream like 48kHz & 16bit
-    /*{
-        snd_pcm_t *pcm;
-        if (0 == snd_pcm_open(&pcm, dmixName.toLatin1().constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) {
-            snd_pcm_close(pcm);
-        }
-    }*/
-    d->deviceIds << dmixName;
-    d->deviceIds << plughwName;
-    d->deviceIds << hwName;
-    d->deviceInfoFromControlDevice(hwName);
-    //d->deviceInfoFromPcmDevice(dmixName);
-    d->deviceInfoFromPcmDevice(hwName);
+    QString groupName;
+    if (audioHw->deviceType() == Solid::AudioHw::AudioInput) {
+        d->captureDevice = true;
+        groupName = QLatin1String("AudioCaptureDevice_");
+    } else {
+        groupName = QLatin1String("AudioOutputDevice_");
+    }
+    groupName += d->cardName;
 
-    d->merge();
+    if (config->hasGroup(groupName)) {
+        KConfigGroup deviceGroup(config.data(), groupName);
+        d->index = deviceGroup.readEntry("index", -1);
+    }
+    if (d->index == -1) {
+        KConfigGroup globalGroup(config.data(), "Globals");
+        int nextIndex = globalGroup.readEntry("nextIndex", 0);
+        d->index = nextIndex++;
+        globalGroup.writeEntry("nextIndex", nextIndex);
+
+        KConfigGroup deviceGroup(config.data(), groupName);
+        deviceGroup.writeEntry("index", d->index);
+        deviceGroup.writeEntry("cardName", d->cardName);
+        deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        config->sync();
+    }
 }
 
-AlsaDevice::AlsaDevice(const QString &deviceName, AlsaControlOrPcm controlOrPcm)
+AlsaDevice::AlsaDevice(KConfigGroup &deviceGroup)
     : d(new AlsaDevicePrivate)
 {
-    kDebug(603) << k_funcinfo << deviceName << (controlOrPcm & Control ? " ctl" : "") << (controlOrPcm & Pcm ? " pcm" : "") << endl;
-    if (controlOrPcm & Control) {
-        d->deviceInfoFromControlDevice(deviceName);
-    }
-    if (controlOrPcm & Pcm) {
-        d->deviceInfoFromPcmDevice(deviceName);
-    }
-
-    d->merge();
+    d->index = deviceGroup.readEntry("index", d->index);
+    d->cardName = deviceGroup.readEntry("cardName", d->cardName);
+    d->icon = deviceGroup.readEntry("icon", d->icon);
+    d->captureDevice = deviceGroup.readEntry("captureDevice", d->captureDevice);
+    d->valid = true;
+    d->available = false;
+    // deviceIds stays empty because it's not available
 }
 
+#if 0
 void AlsaDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
 {
     snd_ctl_card_info_t *cardInfo;
@@ -97,54 +119,26 @@ void AlsaDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
             //Get card name from a CTL card info.
             cardName = QString(snd_ctl_card_info_get_name(cardInfo)).trimmed();
 
-            //Get card long name from a CTL card info.
-            //kDebug(603) << snd_ctl_card_info_get_longname(cardInfo) << endl;
-
-            //Get card mixer name from a CTL card info.
-            mixerName = QString(snd_ctl_card_info_get_mixername(cardInfo)).trimmed();
-
-            //Get card component list from a CTL card info.
-            //kDebug(603) << snd_ctl_card_info_get_components(cardInfo) << endl;
-
             valid = true;
 
-            //Get card driver name from a CTL card info.
-            QString driver = snd_ctl_card_info_get_driver(cardInfo);
-            if (driver.contains("usb", Qt::CaseInsensitive)) {
-                // it's an external USB device
-                if (cardName.contains("headset", Qt::CaseInsensitive)
-                        || cardName.contains("headphone", Qt::CaseInsensitive)
-                        || mixerName.contains("headset", Qt::CaseInsensitive)
-                        || mixerName.contains("headphone", Qt::CaseInsensitive)) {
-                    // it's a headset
-                    icon = QLatin1String("headset");
-                } else {
-                    icon = QLatin1String("usb-device");
-                }
+            if (cardName.contains("headset", Qt::CaseInsensitive) ||
+                    cardName.contains("headphone", Qt::CaseInsensitive)) {
+                // it's a headset
+                icon = QLatin1String("headset");
             } else {
-                icon = QLatin1String("pci-card");
+                //Get card driver name from a CTL card info.
+                QString driver = snd_ctl_card_info_get_driver(cardInfo);
+                if (driver.contains("usb", Qt::CaseInsensitive)) {
+                    // it's an external USB device
+                    icon = QLatin1String("usb-device");
+                } else {
+                    icon = QLatin1String("pci-card");
+                }
             }
         }
         snd_ctl_close(ctl);
     }
     snd_ctl_card_info_free(cardInfo);
-}
-
-void AlsaDevicePrivate::merge()
-{
-    // check whether this device info has to be merged with another one
-    AlsaDevice *altDevice = AlsaDeviceEnumerator::self()->deviceFor(internalId);
-    if (altDevice) {
-        Q_ASSERT(cardName == altDevice->d->cardName);
-        Q_ASSERT(mixerName == altDevice->d->mixerName);
-        Q_ASSERT(internalId == altDevice->d->internalId);
-        Q_ASSERT(icon == altDevice->d->icon);
-        foreach (QString deviceId, deviceIds) {
-            altDevice->addDeviceId(deviceId);
-            //altDevice->d->pcmName = pcmName;
-        }
-        valid = false;
-    }
 }
 
 void AlsaDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
@@ -158,29 +152,57 @@ void AlsaDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
             if (internalId.isNull()) {
                 internalId = snd_pcm_info_get_id(pcmInfo);
             }
-            //kDebug(603) << k_funcinfo << internalId << endl;
             if (!deviceIds.contains(deviceName)) {
                 deviceIds << deviceName;
             }
-            pcmName = QString(snd_pcm_info_get_name(pcmInfo)).trimmed();
-            QString tmp = QString(deviceName).trimmed();
         }
         snd_pcm_close(pcm);
     }
     snd_pcm_info_free(pcmInfo);
 }
+#endif
 
-void AlsaDevice::addDeviceId(const QString &deviceId)
+int AlsaDevice::index() const
 {
-    if (d->deviceIds.contains(deviceId)) {
-        return;
+    return d->index;
+}
+
+bool AlsaDevice::available() const
+{
+    return d->available;
+}
+
+void AlsaDevice::ceaseToExist()
+{
+    if (d->available) {
+        return; // you cannot remove devices that are plugged in
     }
-    d->deviceIds << deviceId;
+    d->valid = false;
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", false, false);
+    QString groupName;
+    if (d->captureDevice) {
+        groupName = QLatin1String("AudioCaptureDevice_");
+    } else {
+        groupName = QLatin1String("AudioOutputDevice_");
+    }
+    groupName += d->cardName;
+    config->deleteGroup(groupName);
+    config->sync();
 }
 
 bool AlsaDevice::isValid() const
 {
     return d->valid;
+}
+
+bool AlsaDevice::isCaptureDevice() const
+{
+    return d->captureDevice;
+}
+
+bool AlsaDevice::isPlaybackDevice() const
+{
+    return !d->captureDevice;
 }
 
 AlsaDevice::AlsaDevice(const AlsaDevice& rhs)
@@ -200,17 +222,12 @@ AlsaDevice &AlsaDevice::operator=(const AlsaDevice &rhs)
 
 bool AlsaDevice::operator==(const AlsaDevice &rhs) const
 {
-    return (d->cardName == rhs.d->cardName && d->mixerName == rhs.d->mixerName && d->icon == rhs.d->icon);
+    return (d->cardName == rhs.d->cardName && d->icon == rhs.d->icon);
 }
 
 QString AlsaDevice::cardName() const
 {
     return d->cardName;
-}
-
-QString AlsaDevice::mixerName() const
-{
-    return d->mixerName;
 }
 
 QStringList AlsaDevice::deviceIds() const
