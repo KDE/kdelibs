@@ -22,8 +22,10 @@
 
 #include "ui_outputdevicechoice.h"
 #include <phonon/objectdescriptionmodel.h>
+#include <phonon/objectdescription.h>
 #include <QStandardItemModel>
 #include <QMap>
+#include <QList>
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
@@ -40,6 +42,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
     private slots:
         void on_preferButton_clicked();
         void on_deferButton_clicked();
+        void on_removeButton_clicked();
         void updateButtonsEnabled();
         void updateDeviceList();
 

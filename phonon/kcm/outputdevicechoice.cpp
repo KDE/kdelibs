@@ -24,6 +24,9 @@
 #include <klocale.h>
 #include <QHeaderView>
 #include <ksimpleconfig.h>
+#include <phonon/alsadeviceenumerator.h>
+#include <phonon/alsadevice.h>
+#include <QList>
 
 class CategoryItem : public QStandardItem {
     public:
@@ -113,8 +116,9 @@ void OutputDeviceChoice::load()
         QList<int> order = outputDeviceGroup.readEntry<QList<int> >(QLatin1String("Category") + QString::number(i), QList<int>());
         QList<Phonon::AudioOutputDevice> orderedList;
         foreach (int idx, order) {
-            //if (hashCopy.contains(idx)) {
+            if (hashCopy.contains(idx)) {
                 orderedList << hashCopy.take(idx);
+            }
             //} else {
                 //orderedList << Phonon::AudioOutputDevice();
             //}
@@ -189,6 +193,46 @@ void OutputDeviceChoice::on_deferButton_clicked()
         emit changed();
     }
 }
+void OutputDeviceChoice::on_removeButton_clicked()
+{
+    QModelIndex idx = deviceList->currentIndex();
+
+    QAbstractItemModel *model = deviceList->model();
+    Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
+    if (playbackModel && idx.isValid()) {
+        Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
+        QList<Phonon::AlsaDevice> deviceList = Phonon::AlsaDeviceEnumerator::availablePlaybackDevices();
+        foreach (Phonon::AlsaDevice dev, deviceList) {
+            if (dev.index() == deviceToRemove.index()) {
+                // remove from persistent store
+                if (dev.ceaseToExist()) {
+                    // remove from all models
+                    foreach (Phonon::AudioOutputDeviceModel *model, m_outputModel) {
+                        QList<Phonon::AudioOutputDevice> data = model->modelData();
+                        data.removeAll(deviceToRemove);
+                        model->setModelData(data);
+                    }
+                }
+            }
+        }
+    } else {
+        Phonon::AudioCaptureDeviceModel *captureModel = qobject_cast<Phonon::AudioCaptureDeviceModel*>(model);
+        if (captureModel && idx.isValid()) {
+            Phonon::AudioCaptureDevice deviceToRemove = captureModel->modelData(idx);
+            QList<Phonon::AlsaDevice> deviceList = Phonon::AlsaDeviceEnumerator::availableCaptureDevices();
+            foreach (Phonon::AlsaDevice dev, deviceList) {
+                if (dev.index() == deviceToRemove.index()) {
+                    // remove from persistent store
+                    if (dev.ceaseToExist()) {
+                        QList<Phonon::AudioCaptureDevice> data = m_captureModel.modelData();
+                        data.removeAll(deviceToRemove);
+                        m_captureModel.setModelData(data);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void OutputDeviceChoice::updateButtonsEnabled()
 {
@@ -198,6 +242,11 @@ void OutputDeviceChoice::updateButtonsEnabled()
         QModelIndex idx = deviceList->currentIndex();
         preferButton->setEnabled(idx.isValid() && idx.row() > 0);
         deferButton->setEnabled(idx.isValid() && idx.row() < deviceList->model()->rowCount() - 1);
+        removeButton->setEnabled(idx.isValid());
+    } else {
+        preferButton->setEnabled(false);
+        deferButton->setEnabled(false);
+        removeButton->setEnabled(false);
     }
 }
 
