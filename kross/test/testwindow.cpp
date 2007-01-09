@@ -40,7 +40,7 @@ TestWindow::TestWindow(const QString& interpretername, const QString& scriptcode
     QMenu *menuFile = menuBar()->addMenu( "&File" );
 
     //Kross::Manager::self().addModule( Kross::Module::Ptr(new TestPluginModule("krosstestpluginmodule")) );
-    m_action = new Kross::Action( actionCollection(), "testcases" );
+    m_action = new Kross::Action( this, "testcases" );
     m_scriptextension = new Kross::GUIClient(this, this);
 
     /*

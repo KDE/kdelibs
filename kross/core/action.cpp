@@ -91,34 +91,47 @@ namespace Kross {
 
 }
 
-Action::Action(KActionCollection* collection, const QString& name)
-    : KAction( collection )
+Action::Action(QObject* parent, const QString& name)
+    : KAction(parent)
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
 {
-    collection->addAction(name, this);
+    setObjectName(name);
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::Action(QObject*,QString) Ctor name='%1'").arg(objectName()) );
+    #endif
     setEnabled( false );
+    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
-Action::Action(const QString& file)
-    : KAction( file, 0 /* no parent KActionCollection */ )
+Action::Action(QObject* parent, const KUrl& url)
+    : KAction(parent)
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
 {
-    KUrl url(file);
+    setObjectName(url.path() /*url.fileName()*/);
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::Action(QObject*,KUrl) Ctor name='%1'").arg(objectName()) );
+    #endif
     setText( url.fileName() );
     setIcon( KIcon(KMimeType::iconNameForUrl(url)) );
-    setFile( file );
+    setFile( url.path() );
+    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
-Action::Action(KActionCollection* collection, const QDomElement& element, const QDir& packagepath)
-    : KAction( element.attribute("name"), collection )
+Action::Action(QObject* parent, const QDomElement& element, const QDir& packagepath)
+    : KAction(parent)
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
 {
+    setObjectName(element.attribute("name"));
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::Action(QObject*,QDomElement,QDir) Ctor name='%1'").arg(objectName()) );
+    #endif
+
     setText( element.attribute("text") );
     setDescription( element.attribute("description") );
     setInterpreter( element.attribute("interpreter") );
@@ -143,7 +156,7 @@ Action::Action(KActionCollection* collection, const QDomElement& element, const 
         icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
     setIcon( KIcon(icon) );
 
-    collection->addAction(objectName(), this);
+    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
 Action::~Action()
@@ -327,7 +340,10 @@ bool Action::isFinalized() const
 
 void Action::slotTriggered()
 {
-    //krossdebug( QString("Action::slotTriggered()") );
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::slotTriggered() name=%1").arg(objectName()) );
+    #endif
+
     emit started(this);
 
     if( ! d->script ) {
@@ -337,7 +353,7 @@ void Action::slotTriggered()
 
     if( hadError() ) {
         #ifdef KROSS_ACTION_DEBUG
-            krossdebug( QString("Action::slotTriggered() name=%1 errorMessage=%2").arg(objectName()).arg(errorMessage()) );
+            krossdebug( QString("Action::slotTriggered() errorMessage=%2").arg(errorMessage()) );
         #endif
         emit finished(this);
         return;

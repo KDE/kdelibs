@@ -75,7 +75,7 @@ namespace Kross {
     // Some more debug switches.
     #define KROSS_OBJECT_METACALL_DEBUG
     //#define KROSS_METATYPE_DEBUG
-    //#define KROSS_INTERPRETER_DEBUG
+    #define KROSS_INTERPRETER_DEBUG
     #define KROSS_ACTION_DEBUG
     #define KROSS_ACTIONCOLLECTION_DEBUG
 

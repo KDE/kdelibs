@@ -70,7 +70,7 @@ int runScriptFile(const QString& scriptfile)
     }
 
     // First we need a Action and fill it.
-    Kross::Action* action = new Kross::Action( scriptfile );
+    Kross::Action* action = new Kross::Action(0 /*no parent*/, KUrl(scriptfile));
     action->setInterpreter( interpreterinfo->interpreterName() );
     action->setCode(scriptcode);
 

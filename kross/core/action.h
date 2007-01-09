@@ -58,37 +58,36 @@ namespace Kross {
            /**
              * Constructor.
              *
-             * \param collection The KActionCollection this Action
-             * is child of.
+             * \param parent The parent QObject this \a Action is child of.
              * \param name The unique name this Action has. It's used
              * e.g. at the \a Manager to identify the Action. The
              * name is accessible via \a QObject::objectName .
              */
-            Action(KActionCollection* collection, const QString& name);
+            Action(QObject* parent, const QString& name);
 
             /**
              * Constructor.
              *
-             * \param file The in the KUrl defined path() should point
-             * to a valid scriptingfile. This \a Action will be filled
-             * with the content of the file (e.g. the file is readed
-             * and \a getCode should return it's content and it's also
-             * tried to determinate the \a getInterpreterName ).
+             * \param parent The parent QObject this \a Action is child of.
+             * \param url The URL should point  to a valid scriptingfile.
+             * This \a Action will be filled with the content of the
+             * file (e.g. the file is readed and \a code should return
+             * it's content and it's also tried to determinate the
+             * \a interpreter ).
              */
-            explicit Action(const QString& file);
+            Action(QObject* parent, const KUrl& url);
 
             /**
              * Constructor.
              *
-             * \param collection The KActionCollection this Action
-             * is child of.
+             * \param parent The parent QObject this \a Action is child of.
              * \param element The QDomElement that contains the details
              * about e.g. the displayed text, the file to execute or the
              * used interpreter.
              * \param packagepath The directory where the script-package
              * is located. This will be used to expand relative paths.
              */
-            Action(KActionCollection* collection, const QDomElement& element, const QDir& packagepath);
+            Action(QObject* parent, const QDomElement& element, const QDir& packagepath);
 
             /**
              * Destructor.

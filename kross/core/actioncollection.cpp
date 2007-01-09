@@ -185,7 +185,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                 #endif
 
                 a = new Action(this, name);
-                //FIXME move that functionality direct to the Action ctor?
+                addAction(name, a);
                 connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
             }

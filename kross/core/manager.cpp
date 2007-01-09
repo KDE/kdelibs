@@ -230,8 +230,7 @@ QObject* Manager::action(const QString& name)
 {
     Action* action = findChild< Action* >(name);
     if(! action) {
-        action = new Action(name);
-        action->setParent(this);
+        action = new Action(this, name);
 #if 0
         d->actioncollection->insert(action); //FIXME should we really remember the action?
 #endif

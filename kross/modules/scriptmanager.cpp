@@ -179,13 +179,16 @@ bool ScriptManagerCollection::isModified() const
 
 void ScriptManagerCollection::slotSelectionChanged()
 {
+    bool startenabled = d->view->selectionModel()->hasSelection();
     bool stopenabled = false;
     foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
         Action* action = ActionCollectionModel::action(index);
+        if( startenabled && ! action )
+            startenabled = false;
         if( ! stopenabled )
             stopenabled = (action && ! action->isFinalized());
     }
-    d->runbtn->setEnabled(d->view->selectionModel()->hasSelection());
+    d->runbtn->setEnabled(startenabled);
     d->stopbtn->setEnabled(stopenabled);
 }
 

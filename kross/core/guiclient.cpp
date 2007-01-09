@@ -263,16 +263,10 @@ bool GUIClient::executeFile()
 bool GUIClient::executeFile(const KUrl& file)
 {
     krossdebug( QString("GUIClient::executeFile() file='%1'").arg(file.path()) );
-    Action* action = new Action( file.path() );
+    Action* action = new Action(0 /*no parent*/, file);
     action->trigger();
     bool ok = ! action->hadError();
-
-/*TODO don't "delete action" here?!
-koffice (lib kofficecore): KoView::~KoView [KoView pointer(0x081382f0) to widget view_0, geometry=962x364+0+0]
-kspread: ..................ScriptingFunction::~ScriptingFunction
-*/
-
-    delete action;
+    delete action; //TODO don't "delete action" here?!
     return ok;
 }
 
