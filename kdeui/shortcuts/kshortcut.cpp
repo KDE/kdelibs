@@ -38,13 +38,16 @@ KShortcut::KShortcut()
 
 KShortcut::KShortcut(const QKeySequence &primary)
 {
-    append(primary);
+    if (!primary.isEmpty())
+        append(primary);
 }
 
 KShortcut::KShortcut(const QKeySequence &primary, const QKeySequence &alternate)
 {
-    append(primary);
-    append(alternate);
+    if (!primary.isEmpty())
+        append(primary);
+    if (!alternate.isEmpty())
+        append(alternate);
 }
 
 KShortcut::KShortcut(int keyQtPri, int keyQtAlt)
