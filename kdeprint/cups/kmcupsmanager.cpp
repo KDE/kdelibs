@@ -62,7 +62,7 @@ using namespace KNetwork;
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).toUtf8())
 
 static void extractMaticData(QString& buf, const QString& filename);
-static QString printerURI(KMPrinter *p, bool useExistingURI = false);
+static QString printerURI(KMPrinter *p, bool useExistingURI);
 static QString downloadDriver(KMPrinter *p);
 
 static int trials = 5;
@@ -217,7 +217,7 @@ bool KMCupsManager::setPrinterState(KMPrinter *p, int state)
 	QString		uri;
 
 	req.setOperation(state);
-	uri = printerURI(p);
+	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	if (req.doRequest("/admin/"))
 		return true;
