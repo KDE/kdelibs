@@ -37,6 +37,7 @@
 #include <qdrag.h>
 #include <qmimedata.h>
 #include <QAction>
+#include <QApplication>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -215,6 +216,7 @@ void KUrlRequester::init()
     setSpacing( KDialog::spacingHint() );
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
+    widget->installEventFilter( this );
     setFocusProxy( widget );
     setFocusPolicy(Qt::StrongFocus);
 
@@ -356,6 +358,17 @@ void KUrlRequester::slotUpdateUrl()
 {
     KUrl u( KUrl::fromPath( QDir::currentPath() + '/' ), url().url() );
     myButton->setURL( u );
+}
+
+bool KUrlRequester::eventFilter( QObject *obj, QEvent *ev )
+{
+    if ( ( d->edit == obj ) || ( d->combo == obj ) )
+    {
+        if (( ev->type() == QEvent::FocusIn ) || ( ev->type() == QEvent::FocusOut ))
+            // Forward focusin/focusout events to the urlrequester; needed by file form element in khtml
+            QApplication::sendEvent( this, ev );
+    }
+    return QWidget::eventFilter( obj, ev );
 }
 
 KPushButton * KUrlRequester::button() const

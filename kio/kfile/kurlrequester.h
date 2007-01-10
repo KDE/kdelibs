@@ -248,6 +248,7 @@ private Q_SLOTS:
 
 protected:
     virtual void changeEvent (QEvent *e);
+    bool eventFilter( QObject *obj, QEvent *ev );
 private:
     class KUrlRequesterPrivate;
     KUrlRequesterPrivate* const d;
