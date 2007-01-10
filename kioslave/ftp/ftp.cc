@@ -2054,11 +2054,24 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fi
     if(!mimetypeEmitted)
     {
       mimetypeEmitted = true;
-      array.setRawData(buffer, n);
-      KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(array, url.fileName());
-      array.resetRawData(buffer, n);
-      kdDebug(7102) << "ftpGet: Emitting mimetype " << result->mimeType() << endl;
-      mimeType( result->mimeType() );
+
+      // We need a KMimeType::findByNameAndContent(data,filename)
+      // For now we do: find by extension, and if not found (or extension not reliable)
+      // then find by content.
+      bool accurate = false;
+      KMimeType::Ptr mime = KMimeType::findByURL( url, 0, false, true, &accurate );
+      if ( !mime || mime->name() == KMimeType::defaultMimeType()
+           || !accurate )
+      {
+        array.setRawData(buffer, n);
+        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(array, url.fileName());
+        array.resetRawData(buffer, n);
+        if ( result->mimeType() != KMimeType::defaultMimeType() )
+          mime = KMimeType::mimeType( result->mimeType() );
+      }
+
+      kdDebug(7102) << "ftpGet: Emitting mimetype " << mime->name() << endl;
+      mimeType( mime->name() );
       if( m_size != UnknownSize )	// Emit total size AFTER mimetype
         totalSize( m_size );
     }
@@ -2530,7 +2543,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopy
   bool bResume = false;
   bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
   const bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
-  
+
   if(!bMarkPartial)
   {
     sPart = QFile::encodeName(sCopyFile);
