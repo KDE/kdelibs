@@ -271,7 +271,7 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
     painter->setOpacity(0.25);
 
-    painter->drawPixmap(option.rect.right() - iconWidth - d->rightMargin, canvas.top() + coordY, iconToShow.pixmap(iconWidth, iconHeight));
+    painter->drawPixmap(option.rect.right() - iconWidth - d->rightMargin, coordY, iconToShow.pixmap(iconWidth, iconHeight));
 
     painter->translate(d->leftMargin, d->separatorPixels + (fontMetrics.width(applicationNameModel) / 2) + (iconHeight / 2) + canvas.top());
     painter->rotate(270);
