@@ -115,7 +115,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
         iconName = "previous";
     }
 
-    QIcon icon = KIcon(iconName);
+    QIcon icon = iconName.isEmpty() ? KIcon() : KIcon(iconName);
 
     switch ( id ) {
      case OpenRecent:
