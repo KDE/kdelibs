@@ -332,8 +332,6 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   if ( !index.isValid() )
     return;
 
-  painter->setRenderHint( QPainter::Antialiasing );
-
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
   const QPixmap pixmap = icon.pixmap( 32, 32 );
