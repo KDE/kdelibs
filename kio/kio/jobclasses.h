@@ -771,6 +771,13 @@ public:
          */
         bool reportDataSent();
 
+        /**
+         * Call this in the slot connected to result,
+         * and only after making sure no error happened.
+	 * @return the mimetype of the URL
+         */
+         QString mimetype() const { return m_mimetype; }
+
     Q_SIGNALS:
         /**
          * Data from the slave has arrived.
@@ -1024,13 +1031,6 @@ public:
 	* @param showProgressInfo true to show progress information to the user
 	*/
         MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
-
-        /**
-         * Call this in the slot connected to result,
-         * and only after making sure no error happened.
-	 * @return the mimetype of the URL
-         */
-         QString mimetype() const { return m_mimetype; }
 
         /**
 	 * @internal
