@@ -1,8 +1,0 @@
-/*
-	A dummy source file for documenting the library.
-	Sirtaj Singh Kang <taj@kde.org>
-	Distributed under the LGPL.
-*/
-
-// DOXYGEN_REFERENCES = kdecore kdefx kio kdeui
-// DOXYGEN_SET_INTERNAL_DOCS = YES
