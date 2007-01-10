@@ -46,6 +46,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     : QWidget(parent)
 {
     setupUi(this);
+    removeButton->setIcon(KIcon("remove"));
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
     outputItem->setSelectable(false);

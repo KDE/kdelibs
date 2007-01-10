@@ -110,8 +110,6 @@ QVariant ObjectDescriptionModel<type>::data( const QModelIndex& index, int role 
                 }
             }
             return QVariant();
-        case Qt::SizeHintRole:
-            return QSize(45, 45);
 		default:
 			return QVariant();
 	}
