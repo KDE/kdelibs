@@ -712,7 +712,7 @@
 2112    string          Microsoft\ Word\ document\ data application/msword
 
 # excel
-2080    string  Microsoft\ Excel\ 5.0\ Worksheet	application/msexcel
+2080    string  Microsoft\ Excel\ 5.0\ Worksheet	application/vnd.ms-excel
 
 #------------------------------------------------------------------------------
 # word perfect
