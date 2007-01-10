@@ -30,7 +30,9 @@ PHONON_BUILD_TESTS(
 	videocapturedevicetest
 	bytestreamtest
 	bytestreamtest2
+	audiodevicelisttest
 	)
+target_link_libraries(audiodevicelisttest kalsadevicelist)
 PHONON_EXECUTE_TESTS(
 	methodtest
 	backendcapabilitiestest
@@ -40,5 +42,6 @@ PHONON_EXECUTE_TESTS(
 	audiocapturedevicetest
 	videocapturedevicetest
 	bytestreamtest2
+	audiodevicelisttest
 	)
 ENDIF(KDE4_BUILD_TESTS)

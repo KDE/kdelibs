@@ -20,9 +20,9 @@
 #ifndef PHONON_ALSADEVICE_H
 #define PHONON_ALSADEVICE_H
 
-#include <QSharedDataPointer>
 #include <kdelibs_export.h>
 #include <kconfig.h>
+#include <solid/audiohw.h>
 class QString;
 class QStringList;
 
@@ -100,15 +100,48 @@ namespace Phonon
              */
             QString iconName() const;
 
+            /**
+             * Retrieves the audio driver that should be used to access the device.
+             *
+             * @return the driver needed to access the device
+             * @see Solid::AudioHw::AudioDriver
+             */
+            Solid::AudioHw::AudioDriver driver() const;
+
+            /**
+             * Unique index to identify the device.
+             */
             int index() const;
 
+            /**
+             * Returns whether the device is available.
+             *
+             * An external device can be unavailable when it's unplugged. Every device can be
+             * unavailable when its driver is not loaded.
+             */
             bool isAvailable() const;
 
+            /**
+             * Removes an unavailable device from the persistent store.
+             *
+             * \return \c true if the device was removed
+             * \return \c false if the device could not be removed
+             */
             bool ceaseToExist();
 
+            /**
+             * Devices that ceased to exist are invalid.
+             */
             bool isValid() const;
 
+            /**
+             * Returns whether the device is a capture device.
+             */
             bool isCaptureDevice() const;
+
+            /**
+             * Returns whether the device is a playback device.
+             */
             bool isPlaybackDevice() const;
 
         protected:
@@ -116,7 +149,7 @@ namespace Phonon
             AlsaDevice(KConfigGroup &deviceGroup);
 
         private:
-            QSharedDataPointer<AlsaDevicePrivate> d;
+            AlsaDevicePrivate *d;
     };
 } // namespace Phonon
 #endif // PHONON_ALSADEVICE_H

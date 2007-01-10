@@ -20,7 +20,6 @@
 #include "alsadevice.h"
 #include <QString>
 #include "alsadevice_p.h"
-#include <alsa/asoundlib.h>
 #include "alsadeviceenumerator.h"
 #include <kdebug.h>
 #include <solid/audiohw.h>
@@ -56,15 +55,25 @@ AlsaDevice::AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
             d->icon = QLatin1String("modem");
             break;
     }
+    d->driver = audioHw->driver();
     d->available = true;
     d->valid = true;
 
     QString groupName;
-    if (audioHw->deviceType() == Solid::AudioHw::AudioInput) {
+    Solid::AudioHw::AudioHwTypes deviceType = audioHw->deviceType();
+    if (deviceType == Solid::AudioHw::AudioInput) {
         d->captureDevice = true;
         groupName = QLatin1String("AudioCaptureDevice_");
     } else {
-        groupName = QLatin1String("AudioOutputDevice_");
+        if (deviceType == Solid::AudioHw::AudioOutput) {
+            d->playbackDevice = true;
+            groupName = QLatin1String("AudioOutputDevice_");
+        } else {
+            Q_ASSERT(deviceType == Solid::AudioHw::AudioOutput | Solid::AudioHw::AudioInput);
+            d->captureDevice = true;
+            d->playbackDevice = true;
+            groupName = QLatin1String("AudioIODevice_");
+        }
     }
     groupName += d->cardName;
 
@@ -82,7 +91,9 @@ AlsaDevice::AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("index", d->index);
         deviceGroup.writeEntry("cardName", d->cardName);
         deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
         config->sync();
     }
 }
@@ -93,7 +104,9 @@ AlsaDevice::AlsaDevice(KConfigGroup &deviceGroup)
     d->index = deviceGroup.readEntry("index", d->index);
     d->cardName = deviceGroup.readEntry("cardName", d->cardName);
     d->icon = deviceGroup.readEntry("icon", d->icon);
+    d->driver = static_cast<Solid::AudioHw::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
     d->captureDevice = deviceGroup.readEntry("captureDevice", d->captureDevice);
+    d->playbackDevice = deviceGroup.readEntry("playbackDevice", d->playbackDevice);
     d->valid = true;
     d->available = false;
     // deviceIds stays empty because it's not available
@@ -181,7 +194,11 @@ bool AlsaDevice::ceaseToExist()
     KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", false, false);
     QString groupName;
     if (d->captureDevice) {
-        groupName = QLatin1String("AudioCaptureDevice_");
+        if (d->playbackDevice) {
+            groupName = QLatin1String("AudioIODevice_");
+        } else {
+            groupName = QLatin1String("AudioCaptureDevice_");
+        }
     } else {
         groupName = QLatin1String("AudioOutputDevice_");
     }
@@ -203,27 +220,44 @@ bool AlsaDevice::isCaptureDevice() const
 
 bool AlsaDevice::isPlaybackDevice() const
 {
-    return !d->captureDevice;
+    return d->playbackDevice;
 }
 
 AlsaDevice::AlsaDevice(const AlsaDevice& rhs)
     : d(rhs.d)
 {
+    ++d->refCount;
 }
 
 AlsaDevice::~AlsaDevice()
 {
+    --d->refCount;
+    if (d->refCount == 0) {
+        delete d;
+        d = 0;
+    }
 }
 
 AlsaDevice &AlsaDevice::operator=(const AlsaDevice &rhs)
 {
+    --d->refCount;
+    if (d->refCount == 0) {
+        delete d;
+        d = 0;
+    }
+
     d = rhs.d;
+    ++d->refCount;
     return *this;
 }
 
 bool AlsaDevice::operator==(const AlsaDevice &rhs) const
 {
-    return (d->cardName == rhs.d->cardName && d->icon == rhs.d->icon);
+    return (d->cardName == rhs.d->cardName &&
+            d->icon == rhs.d->icon &&
+            d->deviceIds == rhs.d->deviceIds &&
+            d->captureDevice == rhs.d->captureDevice &&
+            d->playbackDevice == rhs.d->playbackDevice);
 }
 
 QString AlsaDevice::cardName() const
@@ -239,6 +273,11 @@ QStringList AlsaDevice::deviceIds() const
 QString AlsaDevice::iconName() const
 {
     return d->icon;
+}
+
+Solid::AudioHw::AudioDriver AlsaDevice::driver() const
+{
+    return d->driver;
 }
 
 } // namespace Phonon

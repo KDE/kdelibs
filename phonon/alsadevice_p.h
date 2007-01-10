@@ -21,24 +21,35 @@
 #define PHONON_ALSADEVICE_P_H
 
 #include "alsadevice.h"
-#include <QSharedData>
 #include <QStringList>
 #include <QString>
 
 namespace Phonon
 {
-class AlsaDevicePrivate : public QSharedData
+class AlsaDevicePrivate
 {
     public:
-        AlsaDevicePrivate() : index(-1), available(false), valid(false), captureDevice(false) {}
+        AlsaDevicePrivate()
+            : refCount(1),
+            driver(Solid::AudioHw::UnknownAudioDriver),
+            index(-1),
+            available(false),
+            valid(false),
+            captureDevice(false),
+            playbackDevice(false)
+        {
+        }
 
+        int refCount;
         QString cardName;
         QStringList deviceIds;
         QString icon;
+        Solid::AudioHw::AudioDriver driver;
         int index;
         bool available : 1;
         bool valid : 1;
         bool captureDevice : 1;
+        bool playbackDevice : 1;
 };
 } // namespace Phonon
 

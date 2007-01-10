@@ -21,7 +21,6 @@
 #include "alsadeviceenumerator_p.h"
 #include "alsadevice_p.h"
 #include <kdebug.h>
-#include <alsa/asoundlib.h>
 #include <QDir>
 #include <solid/devicemanager.h>
 #include <solid/device.h>
@@ -77,18 +76,21 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
 
     QSet<QString> alreadyFoundCards;
 
-    Solid::DeviceList devices = manager.findDevicesFromQuery(QString(), Solid::Capability::AudioHw,
-            Solid::Predicate(Solid::Capability::AudioHw, QLatin1String("driver"), Solid::AudioHw::Alsa));
+    Solid::DeviceList devices = manager.findDevicesFromQuery(QString(), Solid::Capability::AudioHw);
     foreach (Solid::Device device, devices) {
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
-        Q_ASSERT(audiohw->driver() == Solid::AudioHw::Alsa);
         if (audiohw->deviceType() & Solid::AudioHw::AudioOutput || audiohw->deviceType() & Solid::AudioHw::AudioInput) {
             AlsaDevice dev(audiohw, config);
             if (dev.isValid()) {
                 if (dev.isCaptureDevice()) {
                     capturedevicelist << dev;
-                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
+                    if (dev.isPlaybackDevice()) {
+                        playbackdevicelist << dev;
+                        alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.cardName();
+                    } else {
+                        alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
+                    }
                 } else {
                     playbackdevicelist << dev;
                     alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.cardName();
@@ -109,6 +111,9 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         if (dev.isValid()) {
             if (dev.isCaptureDevice()) {
                 capturedevicelist << dev;
+                if (dev.isPlaybackDevice()) {
+                    playbackdevicelist << dev;
+                }
             } else {
                 playbackdevicelist << dev;
             }

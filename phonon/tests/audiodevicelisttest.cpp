@@ -17,7 +17,7 @@
 
 */
 
-#include "simpletest.h"
+#include "audiodevicelisttest.h"
 #include <qtest_kde.h>
 #include <QtDebug>
 #include "../alsadeviceenumerator.h"
@@ -57,5 +57,5 @@ void SimpleTest::checkCopy()
 }
 
 QTEST_KDEMAIN( SimpleTest, NoGUI )
-#include "simpletest.moc"
+#include "audiodevicelisttest.moc"
 // vim: sw=4 ts=4 et tw=100
