@@ -771,6 +771,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    connect(w, SIGNAL(urlSelected(const QString &)),this,SLOT(slotUrlSelected(const QString &)));
 
     setQWidget(w);
     m_haveFocus = false;
@@ -830,6 +831,11 @@ void RenderFileButton::slotReturnPressed()
 void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
    element()->m_value = KURL( widget()->url() ).prettyURL( 0, KURL::StripFileProtocol );
+}
+
+void RenderFileButton::slotUrlSelected(const QString &)
+{
+	element()->onChange();
 }
 
 void RenderFileButton::select()

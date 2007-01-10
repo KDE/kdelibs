@@ -278,6 +278,7 @@ private slots:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+    bool eventFilter( QObject *obj, QEvent *ev );
 private:
     class KURLRequesterPrivate;
     KURLRequesterPrivate *d;

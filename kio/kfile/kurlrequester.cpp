@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <qtooltip.h>
+#include <qapplication.h>
 
 #include <kaccel.h>
 #include <kcombobox.h>
@@ -216,6 +217,7 @@ void KURLRequester::init()
     setSpacing( KDialog::spacingHint() );
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
+    widget->installEventFilter( this );
     setFocusProxy( widget );
 
     d->connectSignals( this );
@@ -380,6 +382,17 @@ void KURLRequester::slotUpdateURL()
     KURL u;
     u = KURL( KURL( QDir::currentDirPath() + '/' ), url() );
     (static_cast<KURLDragPushButton *>( myButton ))->setURL( u );
+}
+
+bool KURLRequester::eventFilter( QObject *obj, QEvent *ev )
+{
+    if ( ( d->edit == obj ) || ( d->combo == obj ) )
+    {
+        if (( ev->type() == QEvent::FocusIn ) || ( ev->type() == QEvent::FocusOut ))
+            // Forward focusin/focusout events to the urlrequester; needed by file form element in khtml
+            QApplication::sendEvent( this, ev );
+    }
+    return QWidget::eventFilter( obj, ev );
 }
 
 KPushButton * KURLRequester::button() const
