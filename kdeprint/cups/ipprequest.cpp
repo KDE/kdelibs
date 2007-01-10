@@ -329,6 +329,10 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 		dumpRequest(request_, true);
 	}
 
+	/* No printers found */
+	if ( request_ && request_->request.status.status_code == 0x406 )
+		return true;
+
 	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
 		return false;
 
