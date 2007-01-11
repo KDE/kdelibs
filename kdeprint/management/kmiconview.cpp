@@ -46,46 +46,6 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 	Q3IconViewItem::paintItem(p,cg);
 }
 
-void KMIconViewItem::calcRect(const QString&)
-{
-	QRect	ir(rect()), pr, tr;
-
-	// pixmap rect
-	pr.setWidth(pixmap()->width());
-	pr.setHeight(pixmap()->height());
-
-	// text rect
-	QFont	f(iconView()->font());
-	if (m_state & 0x1) f.setBold(true);
-	if (m_state & 0x2) f.setItalic(true);
-	QFontMetrics	fm(f);
-	if (m_mode == Qt::DockBottom)
-		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, Qt::AlignHCenter|Qt::AlignTop|Qt::TextWordWrap|Qt::TextWrapAnywhere, text()+'X');
-	else
-		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, Qt::AlignLeft|Qt::AlignTop, text()+'X');
-
-	// item rect
-	if (m_mode == Qt::DockBottom)
-	{
-		ir.setHeight(pr.height() + tr.height() + 15);
-		ir.setWidth(qMax(pr.width(), tr.width()) + 10);
-		pr = QRect((ir.width()-pr.width())/2, 5, pr.width(), pr.height());
-		tr = QRect((ir.width()-tr.width())/2, 10+pr.height(), tr.width(), tr.height());
-	}
-	else
-	{
-		ir.setHeight(qMax(pr.height(), tr.height()) + 4);
-		ir.setWidth(pr.width() + tr.width() + 6);
-		pr = QRect(2, (ir.height()-pr.height())/2, pr.width(), pr.height());
-		tr = QRect(4+pr.width(), (ir.height()-tr.height())/2, tr.width(), tr.height());
-	}
-
-	// set rects
-	setItemRect(ir);
-	setTextRect(tr);
-	setPixmapRect(pr);
-}
-
 void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 {
 	bool	update(false);

@@ -100,23 +100,23 @@ KMMainView::KMMainView(QWidget *parent, KActionCollection *coll)
 	static_cast<KMenuBar*>( m_menubar )->setTopLevelMenu( false );
 	*/
 	m_menubar = new KToolBar( this, false, false );
-    m_menubar->setObjectName("MenuBar");
+	m_menubar->setObjectName("MenuBar");
 	m_menubar->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
 	m_menubar->setMovable( false );
 
 	// layout
-	QVBoxLayout	*m_layout = new QVBoxLayout(this);
-  m_layout->setMargin(0);
-  m_layout->setSpacing(0);
-	m_layout->addWidget(m_toolbar);
-	m_layout->addWidget( m_menubar );
+	QVBoxLayout *layout = new QVBoxLayout(this);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	layout->addWidget(m_toolbar);
+	layout->addWidget( m_menubar );
 	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom);
-	m_layout->addLayout(m_boxlayout);
-  m_boxlayout->setSpacing(0);
+	layout->addLayout(m_boxlayout);
+	m_boxlayout->setSpacing(KDialog::spacingHint());
 	m_boxlayout->addWidget(m_printerview);
 	m_boxlayout->addWidget(m_printerpages);
-	m_layout->addSpacing(5);
-	m_layout->addWidget(m_plugin, 0);
+	layout->addSpacing(5);
+	layout->addWidget(m_plugin, 0);
 
 	// connections
 	connect(KMTimer::self(),SIGNAL(timeout()),SLOT(slotTimer()));
@@ -156,7 +156,7 @@ void KMMainView::restoreSettings()
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	setViewType((KMPrinterView::ViewType)conf->readEntry("ViewType", int(KMPrinterView::Icons)));
-	setOrientation(conf->readEntry("Orientation", int(Qt::Vertical)));
+	setOrientation(conf->readEntry("Orientation", 1));
 	bool 	view = conf->readEntry("ViewToolBar", false);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
@@ -173,7 +173,7 @@ void KMMainView::saveSettings()
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	conf->writeEntry("ViewType",(int)m_printerview->viewType());
-	conf->writeEntry("Orientation",(int)orientation());
+	conf->writeEntry("Orientation",orientation() == Qt::Horizontal ? 1 : 0);
 	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
 	conf->writeEntry("ViewMenuBar",static_cast<KToggleAction*>( m_actions->action("view_menubar") )->isChecked());
 	conf->writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());

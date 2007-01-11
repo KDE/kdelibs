@@ -23,6 +23,7 @@
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <kdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kseparator.h>
@@ -57,16 +58,17 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	m_modellabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
 	QGridLayout	*lay0 = new QGridLayout(this);
-  lay0->setMargin(0);
-  lay0->setSpacing(5);
+	lay0->setMargin(KDialog::marginHint());
+	lay0->setSpacing(KDialog::spacingHint());
+
 	QHBoxLayout	*lay1 = new QHBoxLayout();
-  lay1->setMargin(0);
-  lay1->setSpacing(10);
-	lay0->setRowStretch(7,0);
-	lay0->setRowStretch(10,1);
-	lay0->setColumnStretch(1,1);
-	lay0->addLayout(lay1, 0, 0, 0, 1);
-	lay0->addWidget(sep, 1, 1, 0, 1);
+	lay1->setMargin(0);
+	lay1->setSpacing(KDialog::spacingHint());
+	lay1->addWidget(m_titlepixmap, 0);
+	lay1->addWidget(m_title, 1);
+	lay0->addLayout(lay1, 0, 0, 1, 1);
+
+	lay0->addWidget(sep, 1, 0, 1, -1);
 	lay0->addWidget(m_typelabel, 2, 0);
 	lay0->addWidget(m_statelabel, 3, 0);
 	lay0->addWidget(m_loclabel, 4, 0);
@@ -81,8 +83,10 @@ KMInfoPage::KMInfoPage(QWidget *parent)
 	lay0->addWidget(m_uri, 6, 1);
 	lay0->addWidget(m_device, 8, 1);
 	lay0->addWidget(m_model, 9, 1);
-	lay1->addWidget(m_title, 1);
-	lay1->addWidget(m_titlepixmap, 0);
+
+	lay0->setRowStretch(7,0);
+	lay0->setRowStretch(10,1);
+	lay0->setColumnStretch(1,1);
 }
 
 KMInfoPage::~KMInfoPage()
