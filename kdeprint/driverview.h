@@ -22,19 +22,14 @@
 #define DRIVERVIEW_H
 
 #include <QMap>
-#include <QTreeWidget>
 #include <QWidget>
 
 #include <kdelibs_export.h>
 
+class QTreeWidget;
+class QTreeWidgetItem;
 class DrOptionView;
 class DrMain;
-
-class KDEPRINT_EXPORT DrListView : public QTreeWidget
-{
-public:
-	DrListView(QWidget *parent = 0);
-};
 
 class KDEPRINT_EXPORT DriverView : public QWidget
 {
@@ -57,7 +52,7 @@ protected Q_SLOTS:
 	void slotItemSelectionChanged();
 
 private:
-	DrListView	*m_view;
+	QTreeWidget	*m_view;
 	DrOptionView	*m_optview;
 	DrMain		*m_driver;
 	int 		m_conflict;

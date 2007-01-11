@@ -22,15 +22,13 @@
 #include "driveritem.h"
 #include "driver.h"
 
+#include <QHeaderView>
 #include <QLayout>
+#include <QSplitter>
+#include <QTreeWidget>
 
+#include <kdialog.h>
 #include <klocale.h>
-
-DrListView::DrListView( QWidget *parent )
-    : QTreeWidget(parent)
-{
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
-}
 
 //****************************************************************************************************
 
@@ -88,19 +86,27 @@ DriverView::DriverView( QWidget *parent )
 
 	m_driver = 0;
 
-	m_view = new DrListView(this);
-	  m_view->setWhatsThis(whatsThisPPDOptionsDriverPage);
-	m_optview = new DrOptionView(this);
-	  m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
+	QSplitter* splitter = new QSplitter(Qt::Vertical, this);
+
+	m_view = new QTreeWidget(splitter);
+	m_view->header()->hide();
+	m_view->setWhatsThis(whatsThisPPDOptionsDriverPage);
+	splitter->addWidget(m_view);
+
+	m_optview = new DrOptionView(splitter);
+	m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
+	splitter->addWidget(m_optview);
+
+	// make sure the top gets enough room
+	splitter->setStretchFactor(0, 10);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);
-	main_->setSpacing(10);
-	main_->addWidget(m_view,1);
-	main_->addWidget(m_optview,0);
+	main_->setSpacing(KDialog::spacingHint());
+	main_->addWidget(splitter);
 
 	connect(m_view,SIGNAL(itemSelectionChanged()), this, SLOT( slotItemSelectionChanged() ) );
-  connect(this,SIGNAL(itemSelected(QTreeWidgetItem*)), m_optview,SLOT(slotItemSelected(QTreeWidgetItem*)));
+	connect(this,SIGNAL(itemSelected(QTreeWidgetItem*)), m_optview,SLOT(slotItemSelected(QTreeWidgetItem*)));
 	connect(m_optview,SIGNAL(changed()),SLOT(slotChanged()));
 }
 

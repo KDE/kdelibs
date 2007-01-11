@@ -21,7 +21,6 @@
 #define DROPTIONVIEW_H
 
 #include <qwidget.h>
-#include <QGroupBox>
 #include <qstringlist.h>
 
 class QLineEdit;
@@ -114,7 +113,7 @@ private:
 	QStringList	m_choices;
 };
 
-class DrOptionView : public QGroupBox
+class DrOptionView : public QWidget
 {
 	Q_OBJECT
 public:
@@ -130,8 +129,10 @@ public Q_SLOTS:
 
 private:
 	OptionBaseView *optionBaseView( int id );
+	void setTitle(const QString& title);
 	
 	int m_optionBaseID[5];
+	QLabel		* m_title;
 	QStackedWidget	*m_stack;
 	DriverItem	*m_item;
 	bool		m_block;

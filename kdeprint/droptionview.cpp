@@ -295,9 +295,20 @@ void OptionBooleanView::slotSelected(int ID)
 //******************************************************************************************************
 
 DrOptionView::DrOptionView(QWidget *parent)
-	: QGroupBox(parent)
+	: QWidget(parent)
 {
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setSpacing(KDialog::spacingHint());
+	layout->setMargin(0);
+
+	m_title = new QLabel(this);
+	layout->addWidget(m_title);
+	setTitle(i18n("No Option Selected"));
+
 	m_stack = new QStackedWidget(this);
+	layout->addWidget(m_stack);
+	layout->setStretchFactor(m_stack, 10);
+	layout->addStretch(1);
 
 	OptionBaseView	*w = new OptionBaseView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
@@ -319,17 +330,7 @@ DrOptionView::DrOptionView(QWidget *parent)
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_optionBaseID[ m_stack->addWidget(w) ] = DrBase::Boolean;
 
-	m_stack->setCurrentWidget(w);
-	setTitle(i18n("No Option Selected"));
-
-	setLayout( new QVBoxLayout );
-	layout()->setSpacing( KDialog::spacingHint() );
-	layout()->setMargin( KDialog::marginHint() );
-	QVBoxLayout	*main_ = new QVBoxLayout();
-	main_->setMargin(0);
-	main_->setSpacing(0);
-	main_->addWidget(m_stack);
-	layout()->addItem(main_);
+	m_stack->setCurrentIndex(0);
 
 	m_item = 0;
 	m_block = false;
@@ -360,11 +361,18 @@ void DrOptionView::slotItemSelected(QTreeWidgetItem *i)
 			enabled = ((m_item->drItem()->get("fixed") != "1") || m_allowfixed);
 		}
 		else
+		{
 			setTitle(i18n("No Option Selected"));
+		}
 		m_stack->setCurrentWidget(w);
 		w->setEnabled(enabled);
 		m_block = false;
 	}
+}
+
+void DrOptionView::setTitle(const QString& title)
+{
+	m_title->setText("<b>" + title + "<b>");
 }
 
 OptionBaseView *DrOptionView::optionBaseView( int id )

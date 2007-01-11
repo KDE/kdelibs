@@ -116,6 +116,7 @@ DrMain::~DrMain()
 DriverItem* DrMain::createTreeView(QTreeWidget *parent)
 {
 	DriverItem	*root = new DriverItem(parent, this);
+	root->setExpanded(true);
 	createTree(root);
 	return root;
 }
@@ -250,8 +251,10 @@ void DrGroup::createTree(DriverItem *parent)
 {
 	DriverItem	*item(0);
 
-	foreach (DrGroup* subgroup, m_subgroups)
+	foreach (DrGroup* subgroup, m_subgroups) {
 		item = subgroup->createItem(parent, item);
+		item->setExpanded(true);
+	}
 
 	foreach (DrBase* option, m_listoptions)
 		item = option->createItem(parent, item);
