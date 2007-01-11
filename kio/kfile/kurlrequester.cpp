@@ -16,63 +16,51 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 #include "kurlrequester.h"
 
 #include <kcombobox.h>
-#include <kdebug.h>
-#include <kdialog.h>
 #include <kdirselectdialog.h>
 #include <kfiledialog.h>
-#include <kglobal.h>
-#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
+#include <khbox.h>
 #include <kstandardshortcut.h>
 
-#include <qevent.h>
-#include <qstring.h>
-#include <qdrag.h>
-#include <qmimedata.h>
+#include <QEvent>
+#include <QDrag>
+#include <QMimeData>
 #include <QAction>
 #include <QApplication>
-
-#include <sys/stat.h>
-#include <unistd.h>
-#include <kvbox.h>
-
 
 class KUrlDragPushButton : public KPushButton
 {
 public:
     KUrlDragPushButton( QWidget *parent)
-	: KPushButton( parent) {
-    	setDragEnabled( true );
+        : KPushButton( parent)
+    {
+        setDragEnabled( true );
     }
     ~KUrlDragPushButton() {}
 
-    void setURL( const KUrl& url ) {
-	m_urls.clear();
-	m_urls.append( url );
+    void setURL( const KUrl& url )
+    {
+        m_urls.clear();
+        m_urls.append( url );
     }
-
-    /* not needed so far
-    void setURLs( const KUrl::List& urls ) {
-	m_urls = urls;
-    }
-    const KUrl::List& urls() const { return m_urls; }
-    */
 
 protected:
-    virtual QDrag *dragObject() {
-	if ( m_urls.isEmpty() )
-	    return 0;
+    virtual QDrag *dragObject()
+    {
+        if (m_urls.isEmpty())
+            return 0;
 
-	QDrag *drag = new QDrag( this );
-        m_urls.populateMimeData( drag->mimeData() );
-	return drag;
+        QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
+        m_urls.populateMimeData(mimeData);
+        drag->setMimeData(mimeData);
+        return drag;
     }
 
 private:
@@ -81,24 +69,20 @@ private:
 };
 
 
-/*
-*************************************************************************
-*/
-
 class KUrlRequester::KUrlRequesterPrivate
 {
 public:
     KUrlRequesterPrivate() {
-	edit = 0L;
-	combo = 0L;
+        edit = 0L;
+        combo = 0L;
         fileDialogMode = KFile::File | KFile::ExistingOnly | KFile::LocalOnly;
     }
 
     void setText( const QString& text ) {
-	if ( combo )
-	{
-	    if (combo->isEditable())
-	    {
+        if ( combo )
+        {
+            if (combo->isEditable())
+            {
                combo->setEditText( text );
             }
             else
@@ -107,32 +91,34 @@ public:
                combo->setCurrentIndex( combo->count()-1 );
             }
         }
-	else
-	{
-	    edit->setText( text );
-	}
+        else
+        {
+            edit->setText( text );
+        }
     }
 
-    void connectSignals( QObject *receiver ) {
-	QObject *sender;
-	if ( combo )
-	    sender = combo;
-	else
-	    sender = edit;
+    void connectSignals( QObject *receiver )
+    {
+        QObject *sender;
+        if ( combo )
+            sender = combo;
+        else
+            sender = edit;
 
-	connect( sender, SIGNAL( textChanged( const QString& )),
-		 receiver, SIGNAL( textChanged( const QString& )));
-	connect( sender, SIGNAL( returnPressed() ),
-		 receiver, SIGNAL( returnPressed() ));
-	connect( sender, SIGNAL( returnPressed( const QString& ) ),
-		 receiver, SIGNAL( returnPressed( const QString& ) ));
+        connect( sender, SIGNAL( textChanged( const QString& )),
+                 receiver, SIGNAL( textChanged( const QString& )));
+        connect( sender, SIGNAL( returnPressed() ),
+                 receiver, SIGNAL( returnPressed() ));
+        connect( sender, SIGNAL( returnPressed( const QString& ) ),
+                 receiver, SIGNAL( returnPressed( const QString& ) ));
     }
 
-    void setCompletionObject( KCompletion *comp ) {
-	if ( combo )
-	    combo->setCompletionObject( comp );
-	else
-	    edit->setCompletionObject( comp );
+    void setCompletionObject( KCompletion *comp )
+    {
+        if ( combo )
+            combo->setCompletionObject( comp );
+        else
+            edit->setCompletionObject( comp );
     }
 
     /**
@@ -163,7 +149,6 @@ public:
 KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
   : KHBox( parent),d(new KUrlRequesterPrivate)
 {
-
     // must have this as parent
     editWidget->setParent( this );
     d->edit = qobject_cast<KLineEdit*>( editWidget );
@@ -200,10 +185,10 @@ void KUrlRequester::init()
 {
     setMargin(0);
 
-    myFileDialog    = 0L;
+    myFileDialog = 0L;
 
     if ( !d->combo && !d->edit )
-	d->edit = new KLineEdit( this);
+        d->edit = new KLineEdit( this);
 
     myButton = new KUrlDragPushButton( this);
     myButton->setIcon( KIcon(QLatin1String("fileopen")) );
@@ -231,7 +216,6 @@ void KUrlRequester::init()
     connect(openAction, SIGNAL(triggered(bool)), SLOT( slotOpenDialog() ));
 }
 
-
 void KUrlRequester::setUrl( const KUrl& url )
 {
     d->setText( url.pathOrUrl() );
@@ -246,7 +230,6 @@ void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
      if (myFileDialog) {
-	//kDebug()<<"CHANGEEVENT"<<endl;
         myFileDialog->setWindowTitle( windowTitle() );
      }
    }
@@ -324,20 +307,18 @@ QString KUrlRequester::filter( ) const
     return d->fileDialogFilter;
 }
 
-
 KFileDialog * KUrlRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
         QWidget *p = parentWidget();
         myFileDialog = new KFileDialog( QString(), d->fileDialogFilter, p);
-	myFileDialog->setModal(true);
+        myFileDialog->setModal(true);
         myFileDialog->setMode( d->fileDialogMode );
         myFileDialog->setWindowTitle( windowTitle() );
     }
 
     return myFileDialog;
 }
-
 
 void KUrlRequester::clear()
 {
@@ -393,7 +374,6 @@ KEditListBox::CustomEditor KUrlRequester::customEditor()
     KEditListBox::CustomEditor editor( this, edit );
     return editor;
 }
-
 
 KUrlComboRequester::KUrlComboRequester( QWidget *parent)
   : KUrlRequester( new KComboBox(false), parent)

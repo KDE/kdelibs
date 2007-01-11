@@ -16,17 +16,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
-
-
 
 #include <keditlistbox.h>
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
-#include <kvbox.h>
+#include <khbox.h>
 
 class KComboBox;
 class KFileDialog;
@@ -35,7 +32,6 @@ class KUrlCompletion;
 class KUrlDragPushButton;
 
 class QString;
-class QTimer;
 class QEvent;
 
 /**
@@ -106,7 +102,6 @@ public:
     * @see KFileDialog::mode()
     */
     KFile::Modes mode() const;
-
 
     /**
      * Sets the filter for the file dialog.
@@ -226,9 +221,9 @@ Q_SIGNALS:
     void urlSelected( const KUrl& );
 
 protected:
-    void		init();
+    void init();
 
-    KUrlCompletion *    myCompletion;
+    KUrlCompletion * myCompletion;
 
 
 private:
@@ -263,6 +258,5 @@ public:
      */
     KUrlComboRequester( QWidget *parent=0);
 };
-
 
 #endif // KURLREQUESTER_H
