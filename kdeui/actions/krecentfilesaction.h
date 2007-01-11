@@ -53,7 +53,7 @@ public:
      *
      * @param parent The parent of this action.
      */
-    KRecentFilesAction(QObject *parent);
+    explicit KRecentFilesAction(QObject *parent);
 
     /**
      * Constructs an action with text; a shortcut may be specified by
