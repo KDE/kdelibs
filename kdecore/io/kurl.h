@@ -22,9 +22,11 @@
 #ifndef kurl_h
 #define kurl_h
 
-#include <qurl.h>
+#include <QtCore/qvariant.h>
+#include <QtCore/qurl.h>
+#include <QtCore/qmap.h>
+
 #include "kdelibs_export.h"
-#include <qmap.h>
 
 class QStringList;
 class QMimeData;
@@ -987,6 +989,8 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::CleanPathOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::QueryItemsOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EqualsOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::DirectoryOptions)
+
+Q_DECLARE_METATYPE(KUrl)
 
 /**
  * \relates KUrl
