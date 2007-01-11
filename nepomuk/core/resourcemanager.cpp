@@ -19,7 +19,7 @@
 #include "tools.h"
 
 #include <knep/knep.h>
-#include <knep/services/tripleservice.h>
+#include <knep/services/rdfrepository.h>
 #include <knep/services/statementlistiterator.h>
 
 #include <kstaticdeleter.h>
@@ -75,8 +75,8 @@ int Nepomuk::KMetaData::ResourceManager::init()
 //     return -1;
 //  }
 
-  if( !serviceRegistry()->discoverTripleService() ) {
-    qDebug() << "(ResourceManager) No NEPOMUK Triple service found." << endl;
+  if( !serviceRegistry()->discoverRDFRepository() ) {
+    qDebug() << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
     return -1;
   }
 
@@ -151,10 +151,10 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     qDebug() << "(ResourceManager::allResourcesOfType) added local resources: " << l.count() << endl;
 
     // check remote data
-    TripleService ts( serviceRegistry()->discoverTripleService() );
-    StatementListIterator it( ts.listStatements( KMetaData::defaultGraph(), 
-						 Statement( Node(), KMetaData::typePredicate(), Node(type) ) ), 
-			      &ts );
+    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
+    StatementListIterator it( rdfr.listStatements( KMetaData::defaultGraph(), 
+						   Statement( Node(), KMetaData::typePredicate(), Node(type) ) ), 
+			      &rdfr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
       Resource res( s.subject.value );
@@ -190,7 +190,7 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
 
     // check remote data
-    TripleService ts( serviceRegistry()->discoverTripleService() );
+    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
     Node n;
     if( v.isResource() ) {
       n.value = v.toResource().uri();
@@ -201,8 +201,8 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
       n.value = KMetaData::valueToRDFLiteral( v );
     }
     
-    StatementListIterator it( ts.listStatements( KMetaData::defaultGraph(), 
-						 Statement( Node(), Node(uri), n ) ), &ts );
+    StatementListIterator it( rdfr.listStatements( KMetaData::defaultGraph(), 
+						   Statement( Node(), Node(uri), n ) ), &rdfr );
     
     while( it.hasNext() ) {
       const Statement& s = it.next();
@@ -218,14 +218,14 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
 QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
 {
-  TripleService ts( serviceRegistry()->discoverTripleService() );
+  RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
 
   QString s;
   while( 1 ) {
     s = ontology()->defaultNamespace() + '#' + KRandom::randomString( 20 );
-    if( !ts.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
-	!ts.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
-	!ts.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) )
+    if( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
+	!rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
+	!rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) )
       return s;
   }
 }
