@@ -406,7 +406,8 @@ public:
   }
 
 private:
-  Q_PRIVATE_SLOT(d, void slotDestroyed(QObject *))
+  Q_PRIVATE_SLOT(d, void slotWidgetDestroyed(QObject *))
+  Q_PRIVATE_SLOT(d, void slotActionDestroyed(QObject *))
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 

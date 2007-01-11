@@ -46,9 +46,31 @@ void tst_KActionCollection::clear()
 
 void tst_KActionCollection::deleted()
 {
+    // Delete action -> automatically removed from collection
     QAction *a = collection->addAction("test");
     delete a;
     QVERIFY(collection->isEmpty());
+
+    // Delete action's parent -> automatically removed from collection
+    QWidget* myWidget = new QWidget(0);
+    QPointer<KAction> action = new KAction( /*i18n()*/ "Foo", myWidget);
+    collection->addAction("foo", action);
+    delete myWidget;
+    QVERIFY(collection->isEmpty());
+    QVERIFY(action.isNull());
+
+    // Delete action's parent, but the action was added to another widget with setAssociatedWidget
+    // and that widget gets deleted first.
+    myWidget = new QWidget(0);
+    QWidget* myAssociatedWidget = new QWidget(myWidget); // child widget
+    collection->setAssociatedWidget(myAssociatedWidget);
+    action = new KAction( /*i18n()*/ "Foo", myWidget); // child action
+    collection->addAction("foo", action);
+    QVERIFY(myAssociatedWidget->actions().contains(action)); // auto-added
+    delete myAssociatedWidget; // would be done by the line below, but let's make sure it happens first
+    delete myWidget;
+    QVERIFY(collection->isEmpty());
+    QVERIFY(action.isNull());
 }
 
 void tst_KActionCollection::take()
@@ -187,7 +209,7 @@ KConfig *tst_KActionCollection::clearConfig()
     return cfg;
 }
 
-QTEST_KDEMAIN(tst_KActionCollection, 0)
+QTEST_KDEMAIN(tst_KActionCollection, GUI)
 
 #include "kactioncollectiontest.moc"
 

@@ -66,7 +66,8 @@ public:
     enabled = Unchanged;
   }
 
-  void slotDestroyed(QObject *obj);
+  void slotWidgetDestroyed(QObject *obj);
+  void slotActionDestroyed(QObject *obj);
 
   KInstance *m_instance;
   QList<KActionCollection*> m_docList;
@@ -270,7 +271,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     d->actionByName.insert(index_name, action);
     d->nameByAction.insert(action, index_name);
 
-    connect(action, SIGNAL(destroyed(QObject*)), SLOT(slotDestroyed(QObject*)));
+    connect(action, SIGNAL(destroyed(QObject*)), SLOT(slotActionDestroyed(QObject*)));
 
     if (d->connectHighlighted)
         connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
@@ -311,7 +312,7 @@ QAction* KActionCollection::takeAction(QAction *action)
   d->nameByAction.erase(it);
   d->actionByName.remove(name);
 
-  disconnect(action, SIGNAL(destroyed(QObject*)), this, SLOT(slotDestroyed(QObject*)));
+  disconnect(action, SIGNAL(destroyed(QObject*)), this, SLOT(slotActionDestroyed(QObject*)));
 
   if (d->connectHighlighted)
     disconnect(action, SIGNAL(highlighted()), this, SLOT(slotActionHighlighted()));
@@ -319,7 +320,7 @@ QAction* KActionCollection::takeAction(QAction *action)
   if (d->connectTriggered)
     disconnect(action, SIGNAL(triggered(bool)), this, SLOT(slotActionTriggered()));
 
-  if (d->associatedWidgets.count())
+  if (!d->associatedWidgets.isEmpty())
     foreach (QWidget* w, d->associatedWidgets)
       w->removeAction(action);
 
@@ -360,6 +361,7 @@ void KActionCollection::setAssociatedWidget(QWidget* widget)
 void KActionCollection::addAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.append(widget);
+  connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotWidgetDestroyed(QObject*)));
 
   foreach (QAction* action, actions()) {
     if (defaultShortcutContext() == -1)
@@ -371,6 +373,7 @@ void KActionCollection::addAssociatedWidget(QWidget* widget)
 void KActionCollection::removeAssociatedWidget(QWidget* widget)
 {
   d->associatedWidgets.removeAll(widget);
+  disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(slotWidgetDestroyed(QObject*)));
 
   foreach (QAction* action, actions())
     widget->removeAction(action);
@@ -554,10 +557,16 @@ void KActionCollection::slotActionHighlighted( )
     emit actionHighlighted(action);
 }
 
-void KActionCollectionPrivate::slotDestroyed( QObject *obj )
+void KActionCollectionPrivate::slotActionDestroyed( QObject *obj )
 {
     QAction *action = static_cast<QAction*>(obj);
     q->takeAction(action);
+}
+
+void KActionCollectionPrivate::slotWidgetDestroyed( QObject *obj )
+{
+    QWidget *widget = static_cast<QWidget*>(obj);
+    associatedWidgets.removeAll(widget);
 }
 
 void KActionCollection::connectNotify ( const char * signal )
