@@ -59,7 +59,6 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     /*qApp->setStyleSheet("QListView { background-image: url(/home/mkretz/KDE/src/kdelibs/phonon/kcm/speaker.svg);"
            "background-position: bottom left;"
           "background-repeat: no-repeat; }");*/
-    kDebug() << qApp->styleSheet() << endl;
     deviceList->setAlternatingRowColors(true);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
@@ -90,7 +89,6 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
 void OutputDeviceChoice::updateDeviceList()
 {
     QStandardItem *currentItem = m_categoryModel.itemFromIndex(categoryTree->currentIndex());
-    kDebug() << k_funcinfo << categoryTree->currentIndex() << endl;
     if (deviceList->selectionModel()) {
         disconnect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
@@ -216,7 +214,6 @@ void OutputDeviceChoice::on_removeButton_clicked()
     QAbstractItemModel *model = deviceList->model();
     Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
     if (playbackModel && idx.isValid()) {
-        kDebug() << "found an output device model" << endl;
         Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
         QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availablePlaybackDevices();
         foreach (Phonon::AudioDevice dev, deviceList) {
@@ -239,19 +236,14 @@ void OutputDeviceChoice::on_removeButton_clicked()
             }
         }
     } else {
-        kDebug() << "not an output device model" << endl;
         Phonon::AudioCaptureDeviceModel *captureModel = qobject_cast<Phonon::AudioCaptureDeviceModel*>(model);
         if (captureModel && idx.isValid()) {
-            kDebug() << "found a capture device model" << endl;
             Phonon::AudioCaptureDevice deviceToRemove = captureModel->modelData(idx);
             QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availableCaptureDevices();
             foreach (Phonon::AudioDevice dev, deviceList) {
-                kDebug() << dev.cardName() << endl;
                 if (dev.index() == deviceToRemove.index()) {
-                    kDebug() << "^^^ that's the one" << endl;
                     // remove from persistent store
                     if (dev.ceaseToExist()) {
-                        kDebug() << "ok, it ceased to exist :)" << endl;
                         m_captureModel.removeRows(idx.row(), 1);
                         updateButtonsEnabled();
                         emit changed();
