@@ -17,26 +17,41 @@
 
 */
 
-#ifndef PHONON_ALSADEVICEENUMERATOR_P_H
-#define PHONON_ALSADEVICEENUMERATOR_P_H
+#ifndef PHONON_AUDIODEVICE_P_H
+#define PHONON_AUDIODEVICE_P_H
 
-#include "alsadeviceenumerator.h"
-#include <QList>
-#include "alsadevice.h"
-#include <kconfig.h>
+#include "audiodevice.h"
+#include <QStringList>
+#include <QString>
 
 namespace Phonon
 {
-class AlsaDeviceEnumeratorPrivate
+class AudioDevicePrivate
 {
     public:
-        QList<AlsaDevice> playbackdevicelist;
-        QList<AlsaDevice> capturedevicelist;
-        void findDevices();
+        AudioDevicePrivate()
+            : refCount(1),
+            driver(Solid::AudioHw::UnknownAudioDriver),
+            index(-1),
+            available(false),
+            valid(false),
+            captureDevice(false),
+            playbackDevice(false)
+        {
+        }
 
-        KSharedConfig::Ptr config;
+        int refCount;
+        QString cardName;
+        QStringList deviceIds;
+        QString icon;
+        Solid::AudioHw::AudioDriver driver;
+        int index;
+        bool available : 1;
+        bool valid : 1;
+        bool captureDevice : 1;
+        bool playbackDevice : 1;
 };
 } // namespace Phonon
 
-#endif // PHONON_ALSADEVICEENUMERATOR_P_H
+#endif // PHONON_AUDIODEVICE_P_H
 // vim: sw=4 sts=4 et tw=100

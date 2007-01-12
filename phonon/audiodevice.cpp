@@ -17,22 +17,22 @@
 
 */
 
-#include "alsadevice.h"
+#include "audiodevice.h"
 #include <QString>
-#include "alsadevice_p.h"
-#include "alsadeviceenumerator.h"
+#include "audiodevice_p.h"
+#include "audiodeviceenumerator.h"
 #include <kdebug.h>
 #include <solid/audiohw.h>
 
 namespace Phonon
 {
-AlsaDevice::AlsaDevice()
-    : d(new AlsaDevicePrivate)
+AudioDevice::AudioDevice()
+    : d(new AudioDevicePrivate)
 {
 }
 
-AlsaDevice::AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
-    : d(new AlsaDevicePrivate)
+AudioDevice::AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
+    : d(new AudioDevicePrivate)
 {
     kDebug(603) << k_funcinfo << audioHw->driverHandles() << endl;
     d->cardName = audioHw->name();
@@ -98,8 +98,8 @@ AlsaDevice::AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
     }
 }
 
-AlsaDevice::AlsaDevice(KConfigGroup &deviceGroup)
-    : d(new AlsaDevicePrivate)
+AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
+    : d(new AudioDevicePrivate)
 {
     d->index = deviceGroup.readEntry("index", d->index);
     d->cardName = deviceGroup.readEntry("cardName", d->cardName);
@@ -113,7 +113,7 @@ AlsaDevice::AlsaDevice(KConfigGroup &deviceGroup)
 }
 
 #if 0
-void AlsaDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
+void AudioDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
 {
     snd_ctl_card_info_t *cardInfo;
     snd_ctl_card_info_malloc(&cardInfo);
@@ -154,7 +154,7 @@ void AlsaDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
     snd_ctl_card_info_free(cardInfo);
 }
 
-void AlsaDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
+void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 {
     snd_pcm_info_t *pcmInfo;
     snd_pcm_info_malloc(&pcmInfo);
@@ -175,17 +175,17 @@ void AlsaDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 }
 #endif
 
-int AlsaDevice::index() const
+int AudioDevice::index() const
 {
     return d->index;
 }
 
-bool AlsaDevice::isAvailable() const
+bool AudioDevice::isAvailable() const
 {
     return d->available;
 }
 
-bool AlsaDevice::ceaseToExist()
+bool AudioDevice::ceaseToExist()
 {
     if (d->available) {
         return false; // you cannot remove devices that are plugged in
@@ -208,28 +208,28 @@ bool AlsaDevice::ceaseToExist()
     return true;
 }
 
-bool AlsaDevice::isValid() const
+bool AudioDevice::isValid() const
 {
     return d->valid;
 }
 
-bool AlsaDevice::isCaptureDevice() const
+bool AudioDevice::isCaptureDevice() const
 {
     return d->captureDevice;
 }
 
-bool AlsaDevice::isPlaybackDevice() const
+bool AudioDevice::isPlaybackDevice() const
 {
     return d->playbackDevice;
 }
 
-AlsaDevice::AlsaDevice(const AlsaDevice& rhs)
+AudioDevice::AudioDevice(const AudioDevice& rhs)
     : d(rhs.d)
 {
     ++d->refCount;
 }
 
-AlsaDevice::~AlsaDevice()
+AudioDevice::~AudioDevice()
 {
     --d->refCount;
     if (d->refCount == 0) {
@@ -238,7 +238,7 @@ AlsaDevice::~AlsaDevice()
     }
 }
 
-AlsaDevice &AlsaDevice::operator=(const AlsaDevice &rhs)
+AudioDevice &AudioDevice::operator=(const AudioDevice &rhs)
 {
     --d->refCount;
     if (d->refCount == 0) {
@@ -251,7 +251,7 @@ AlsaDevice &AlsaDevice::operator=(const AlsaDevice &rhs)
     return *this;
 }
 
-bool AlsaDevice::operator==(const AlsaDevice &rhs) const
+bool AudioDevice::operator==(const AudioDevice &rhs) const
 {
     return (d->cardName == rhs.d->cardName &&
             d->icon == rhs.d->icon &&
@@ -260,22 +260,22 @@ bool AlsaDevice::operator==(const AlsaDevice &rhs) const
             d->playbackDevice == rhs.d->playbackDevice);
 }
 
-QString AlsaDevice::cardName() const
+QString AudioDevice::cardName() const
 {
     return d->cardName;
 }
 
-QStringList AlsaDevice::deviceIds() const
+QStringList AudioDevice::deviceIds() const
 {
     return d->deviceIds;
 }
 
-QString AlsaDevice::iconName() const
+QString AudioDevice::iconName() const
 {
     return d->icon;
 }
 
-Solid::AudioHw::AudioDriver AlsaDevice::driver() const
+Solid::AudioHw::AudioDriver AudioDevice::driver() const
 {
     return d->driver;
 }

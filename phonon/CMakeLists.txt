@@ -105,20 +105,20 @@ install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} 
 install( FILES org.kde.Phonon.AudioOutput.xml DESTINATION ${DBUS_INTERFACES_DIR} )
 
 
-########################## libkalsadevicelist ####################################
+########################## libkaudiodevicelist ####################################
 
-set(kalsadevicelist_LIB_SRCS
-	alsadevice.cpp
-	alsadeviceenumerator.cpp
+set(kaudiodevicelist_LIB_SRCS
+	audiodevice.cpp
+	audiodeviceenumerator.cpp
 	)
-kde4_automoc(${kalsadevicelist_LIB_SRCS})
-kde4_add_library(kalsadevicelist SHARED ${kalsadevicelist_LIB_SRCS})
-target_link_libraries(kalsadevicelist ${KDE4_KDECORE_LIBS} solid)
+kde4_automoc(${kaudiodevicelist_LIB_SRCS})
+kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
+target_link_libraries(kaudiodevicelist ${KDE4_KDECORE_LIBS} solid)
 
-set_target_properties(kalsadevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-install(TARGETS kalsadevicelist DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS kaudiodevicelist DESTINATION ${LIB_INSTALL_DIR})
 install(FILES
-	alsadevice.h
-	alsadeviceenumerator.h
+	audiodevice.h
+	audiodeviceenumerator.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)

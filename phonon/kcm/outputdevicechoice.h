@@ -26,6 +26,7 @@
 #include <QStandardItemModel>
 #include <QMap>
 #include <QList>
+#include <QStandardItem>
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
@@ -50,6 +51,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         QMap<int, Phonon::AudioOutputDeviceModel*> m_outputModel;
         Phonon::AudioCaptureDeviceModel m_captureModel;
         QStandardItemModel m_categoryModel;
+        QStandardItem *m_captureItem;
 };
 
 #endif // OUTPUTDEVICECHOICE_H_STUPID_UIC

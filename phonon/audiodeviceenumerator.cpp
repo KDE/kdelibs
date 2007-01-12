@@ -17,9 +17,9 @@
 
 */
 
-#include "alsadeviceenumerator.h"
-#include "alsadeviceenumerator_p.h"
-#include "alsadevice_p.h"
+#include "audiodeviceenumerator.h"
+#include "audiodeviceenumerator_p.h"
+#include "audiodevice_p.h"
 #include <kdebug.h>
 #include <QDir>
 #include <solid/devicemanager.h>
@@ -29,19 +29,19 @@
 namespace Phonon
 {
 
-AlsaDeviceEnumerator *AlsaDeviceEnumerator::s_instance = 0;
+AudioDeviceEnumerator *AudioDeviceEnumerator::s_instance = 0;
 
-AlsaDeviceEnumerator *AlsaDeviceEnumerator::self()
+AudioDeviceEnumerator *AudioDeviceEnumerator::self()
 {
     if (!s_instance) {
-        s_instance = new AlsaDeviceEnumerator;
+        s_instance = new AudioDeviceEnumerator;
         s_instance->d->findDevices();
     }
     return s_instance;
 }
 
 /*
-AlsaDevice *AlsaDeviceEnumerator::deviceFor(const QString &internalId)
+AudioDevice *AudioDeviceEnumerator::deviceFor(const QString &internalId)
 {
     for (int i = 0; i < d->devicelist.size(); ++i) {
         if (d->devicelist[i].d->internalId == internalId) {
@@ -52,18 +52,18 @@ AlsaDevice *AlsaDeviceEnumerator::deviceFor(const QString &internalId)
 }
 */
 
-AlsaDeviceEnumerator::AlsaDeviceEnumerator(QObject *parent)
+AudioDeviceEnumerator::AudioDeviceEnumerator(QObject *parent)
     : QObject(parent),
-    d(new AlsaDeviceEnumeratorPrivate)
+    d(new AudioDeviceEnumeratorPrivate)
 {
     d->config = KSharedConfig::openConfig("phonondevicesrc", false, false);
 }
 
-void AlsaDeviceEnumeratorPrivate::findDevices()
+void AudioDeviceEnumeratorPrivate::findDevices()
 {
     /*
     // first check the 'default' device and the devices defined in ~/.asoundrc and /etc/asound.conf
-    AlsaDevice defaultCtlDevice(QLatin1String("default"), AlsaDevice::ControlAndPcm);
+    AudioDevice defaultCtlDevice(QLatin1String("default"), AudioDevice::ControlAndPcm);
     if (defaultCtlDevice.isValid()) {
         devicelist << defaultCtlDevice;
     }
@@ -81,7 +81,7 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
         if (audiohw->deviceType() & Solid::AudioHw::AudioOutput || audiohw->deviceType() & Solid::AudioHw::AudioInput) {
-            AlsaDevice dev(audiohw, config);
+            AudioDevice dev(audiohw, config);
             if (dev.isValid()) {
                 if (dev.isCaptureDevice()) {
                     capturedevicelist << dev;
@@ -107,7 +107,7 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
         }
 
         KConfigGroup configGroup(config.data(), groupName);
-        AlsaDevice dev(configGroup);
+        AudioDevice dev(configGroup);
         if (dev.isValid()) {
             if (dev.isCaptureDevice()) {
                 capturedevicelist << dev;
@@ -125,7 +125,7 @@ void AlsaDeviceEnumeratorPrivate::findDevices()
 }
 
 /*
-void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
+void AudioDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
 {
     QFile asoundrcFile(fileName);
     asoundrcFile.open(QIODevice::ReadOnly);
@@ -158,7 +158,7 @@ void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
                         if (deviceName.startsWith('!')) {
                             deviceName = deviceName.right(deviceName.size() - 1);
                         }
-                        AlsaDevice dev(deviceName, AlsaDevice::Control);
+                        AudioDevice dev(deviceName, AudioDevice::Control);
                         if (dev.isValid()) {
                             devicelist << dev;
                         }
@@ -167,7 +167,7 @@ void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
                         if (deviceName.startsWith('!')) {
                             deviceName = deviceName.right(deviceName.size() - 1);
                         }
-                        AlsaDevice dev(deviceName, AlsaDevice::Pcm);
+                        AudioDevice dev(deviceName, AudioDevice::Pcm);
                         if (dev.isValid()) {
                             devicelist << dev;
                         }
@@ -179,23 +179,23 @@ void AlsaDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
 }
 */
 
-AlsaDeviceEnumerator::~AlsaDeviceEnumerator()
+AudioDeviceEnumerator::~AudioDeviceEnumerator()
 {
     delete d;
     d = 0;
 }
 
-QList<AlsaDevice> AlsaDeviceEnumerator::availablePlaybackDevices()
+QList<AudioDevice> AudioDeviceEnumerator::availablePlaybackDevices()
 {
     return self()->d->playbackdevicelist;
 }
 
-QList<AlsaDevice> AlsaDeviceEnumerator::availableCaptureDevices()
+QList<AudioDevice> AudioDeviceEnumerator::availableCaptureDevices()
 {
     return self()->d->capturedevicelist;
 }
 
 } // namespace Phonon
-#include "alsadeviceenumerator.moc"
+#include "audiodeviceenumerator.moc"
 
 // vim: sw=4 sts=4 et tw=100

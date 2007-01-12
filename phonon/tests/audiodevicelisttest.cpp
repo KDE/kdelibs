@@ -20,19 +20,19 @@
 #include "audiodevicelisttest.h"
 #include <qtest_kde.h>
 #include <QtDebug>
-#include "../alsadeviceenumerator.h"
+#include "../audiodeviceenumerator.h"
 
 using namespace Phonon;
 
 void SimpleTest::sanityChecks()
 {
-    QVERIFY(AlsaDeviceEnumerator::self() != 0);
+    QVERIFY(AudioDeviceEnumerator::self() != 0);
 }
 
 void SimpleTest::listDevices()
 {
-    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availablePlaybackDevices();
-    foreach (AlsaDevice dev, deviceList) {
+    QList<AudioDevice> deviceList = AudioDeviceEnumerator::availablePlaybackDevices();
+    foreach (AudioDevice dev, deviceList) {
         qDebug() << dev.cardName() << dev.deviceIds() << dev.iconName() << dev.isAvailable();
         foreach (QString id, dev.deviceIds()) {
             QVERIFY(dev.deviceIds().count(id) == 1);
@@ -42,11 +42,11 @@ void SimpleTest::listDevices()
 
 void SimpleTest::checkCopy()
 {
-    QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availablePlaybackDevices();
-    AlsaDevice dev = deviceList.first();
+    QList<AudioDevice> deviceList = AudioDeviceEnumerator::availablePlaybackDevices();
+    AudioDevice dev = deviceList.first();
     QCOMPARE(dev, deviceList.first());
-    AlsaDevice dev1;
-    AlsaDevice dev2;
+    AudioDevice dev1;
+    AudioDevice dev2;
     QCOMPARE(dev1, dev2);
     QVERIFY(dev1 != dev);
     QVERIFY(dev2 != dev);

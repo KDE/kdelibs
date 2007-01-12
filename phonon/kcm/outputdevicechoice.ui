@@ -50,8 +50,9 @@
      </item>
      <item row="0" column="0" colspan="4" >
       <widget class="QListView" name="deviceList" >
-       <property name="alternatingRowColors" >
-        <bool>true</bool>
+       <property name="whatsThis" >
+        <string>The order determines the preference of the output devices. If for some reason the first device cannot be used Phonon will try to use the second, and
+so on.</string>
        </property>
        <property name="iconSize" >
         <size>
@@ -68,6 +69,9 @@
       <widget class="QToolButton" name="deferButton" >
        <property name="enabled" >
         <bool>false</bool>
+       </property>
+       <property name="toolTip" >
+        <string>no preference for the selected device</string>
        </property>
        <property name="text" >
         <string>defer</string>
@@ -97,6 +101,9 @@
       <widget class="QToolButton" name="preferButton" >
        <property name="enabled" >
         <bool>false</bool>
+       </property>
+       <property name="toolTip" >
+        <string>prefer the selected device</string>
        </property>
        <property name="text" >
         <string>prefer</string>

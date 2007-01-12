@@ -32,7 +32,7 @@ PHONON_BUILD_TESTS(
 	bytestreamtest2
 	audiodevicelisttest
 	)
-target_link_libraries(audiodevicelisttest kalsadevicelist)
+target_link_libraries(audiodevicelisttest kaudiodevicelist)
 PHONON_EXECUTE_TESTS(
 	methodtest
 	backendcapabilitiestest

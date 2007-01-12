@@ -17,16 +17,16 @@
 
 */
 
-#ifndef PHONON_ALSADEVICEENUMERATOR_H
-#define PHONON_ALSADEVICEENUMERATOR_H
+#ifndef PHONON_AUDIODEVICEENUMERATOR_H
+#define PHONON_AUDIODEVICEENUMERATOR_H
 
-#include "alsadevice.h"
+#include "audiodevice.h"
 #include <QList>
 #include <QObject>
 
 namespace Phonon
 {
-    class AlsaDeviceEnumeratorPrivate;
+    class AudioDeviceEnumeratorPrivate;
 
     /**
      * \brief Lists available ALSA devices.
@@ -34,57 +34,57 @@ namespace Phonon
      * Simple (singleton) class to list the ALSA devices that are available on the system. A typical
      * use looks like this:
      * \code
-     * QList<AlsaDevice> deviceList = AlsaDeviceEnumerator::availableDevices();
-     * foreach (AlsaDevice device, deviceList) {
+     * QList<AudioDevice> deviceList = AudioDeviceEnumerator::availableDevices();
+     * foreach (AudioDevice device, deviceList) {
      *     // do something with the device information
      * }
      * \endcode
      *
      * \author Matthias Kretz <kretz@kde.org>
      */
-    class KALSADEVICELIST_EXPORT AlsaDeviceEnumerator : public QObject
+    class KAUDIODEVICELIST_EXPORT AudioDeviceEnumerator : public QObject
     {
-        friend class AlsaDevicePrivate;
+        friend class AudioDevicePrivate;
 
         Q_OBJECT
         public:
             /**
-             * Returns a pointer to an instance of AlsaDeviceEnumerator.
+             * Returns a pointer to an instance of AudioDeviceEnumerator.
              */
-            static AlsaDeviceEnumerator* self();
+            static AudioDeviceEnumerator* self();
 
             /**
              * Returns a list of the available ALSA playback devices.
              *
-             * \see AlsaDevice
+             * \see AudioDevice
              */
-            static QList<AlsaDevice> availablePlaybackDevices();
+            static QList<AudioDevice> availablePlaybackDevices();
 
             /**
              * Returns a list of the available ALSA capture devices.
              *
-             * \see AlsaDevice
+             * \see AudioDevice
              */
-            static QList<AlsaDevice> availableCaptureDevices();
+            static QList<AudioDevice> availableCaptureDevices();
 
         Q_SIGNALS:
             /**
              * Emitted when a new device is available.
              */
-            void devicePlugged(const AlsaDevice &device);
+            void devicePlugged(const AudioDevice &device);
             /**
              * Emitted when a device disappeared.
              */
-            void deviceUnplugged(const AlsaDevice &device);
+            void deviceUnplugged(const AudioDevice &device);
 
         protected:
-            AlsaDeviceEnumerator(QObject *parent = 0);
-            ~AlsaDeviceEnumerator();
-            AlsaDevice *deviceFor(const QString &internalId);
+            AudioDeviceEnumerator(QObject *parent = 0);
+            ~AudioDeviceEnumerator();
+            AudioDevice *deviceFor(const QString &internalId);
 
         private:
-            static AlsaDeviceEnumerator *s_instance;
-            AlsaDeviceEnumeratorPrivate *d;
+            static AudioDeviceEnumerator *s_instance;
+            AudioDeviceEnumeratorPrivate *d;
     };
 } // namespace Phonon
-#endif // PHONON_ALSADEVICEENUMERATOR_H
+#endif // PHONON_AUDIODEVICEENUMERATOR_H

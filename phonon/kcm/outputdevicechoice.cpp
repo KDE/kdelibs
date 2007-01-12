@@ -24,8 +24,8 @@
 #include <klocale.h>
 #include <QHeaderView>
 #include <ksimpleconfig.h>
-#include <phonon/alsadeviceenumerator.h>
-#include <phonon/alsadevice.h>
+#include <phonon/audiodeviceenumerator.h>
+#include <phonon/audiodevice.h>
 #include <QList>
 
 class CategoryItem : public QStandardItem {
@@ -47,12 +47,26 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
 {
     setupUi(this);
     removeButton->setIcon(KIcon("remove"));
+    //categoryTree->setDragEnabled(true);
+    //categoryTree->setAcceptDrops(true);
+    //categoryTree->setDropIndicatorShown(true);
+    //categoryTree->setDragDropMode(QAbstractItemView::InternalMove);
+    deviceList->setDragEnabled(true);
+    deviceList->setAcceptDrops(true);
+    deviceList->setDropIndicatorShown(true);
+    //deviceList->setSpacing(4);
+    deviceList->setDragDropMode(QAbstractItemView::InternalMove);
+    /*qApp->setStyleSheet("QListView { background-image: url(/home/mkretz/KDE/src/kdelibs/phonon/kcm/speaker.svg);"
+           "background-position: bottom left;"
+          "background-repeat: no-repeat; }");*/
+    kDebug() << qApp->styleSheet() << endl;
+    deviceList->setAlternatingRowColors(true);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
     outputItem->setSelectable(false);
     parentItem->appendRow(outputItem);
-    QStandardItem *captureItem = new QStandardItem(i18n("Audio Capture"));
-    parentItem->appendRow(captureItem);
+    m_captureItem = new QStandardItem(i18n("Audio Capture"));
+    parentItem->appendRow(m_captureItem);
 
     parentItem = outputItem;
     for (int i = 0; i < Phonon::LastCategory; ++i) {
@@ -60,7 +74,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
         QStandardItem *item = new CategoryItem(static_cast<Phonon::Category>(i));
         parentItem->appendRow(item);
     }
-    parentItem = captureItem;
+    parentItem = m_captureItem;
 
     categoryTree->setModel(&m_categoryModel);
     if (categoryTree->header()) {
@@ -69,32 +83,29 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     categoryTree->expandAll();
 
     connect(categoryTree->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
+            SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
             SLOT(updateDeviceList()));
 }
 
 void OutputDeviceChoice::updateDeviceList()
 {
-    kDebug() << k_funcinfo << endl;
     QStandardItem *currentItem = m_categoryModel.itemFromIndex(categoryTree->currentIndex());
-    if (currentItem->type() == 1001) {
-        if (deviceList->selectionModel()) {
-            disconnect(deviceList->selectionModel(),
-                    SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
-                    this, SLOT(updateButtonsEnabled()));
-        }
-        CategoryItem *catItem = static_cast<CategoryItem*>(currentItem);
-        deviceList->setModel(m_outputModel[catItem->category()]);
-        connect(deviceList->selectionModel(),
+    kDebug() << k_funcinfo << categoryTree->currentIndex() << endl;
+    if (deviceList->selectionModel()) {
+        disconnect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
                 this, SLOT(updateButtonsEnabled()));
-    } else {
-        if (deviceList->selectionModel()) {
-            disconnect(deviceList->selectionModel(),
-                    SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
-                    this, SLOT(updateButtonsEnabled()));
-        }
+    }
+    if (currentItem->type() == 1001) {
+        CategoryItem *catItem = static_cast<CategoryItem*>(currentItem);
+        deviceList->setModel(m_outputModel[catItem->category()]);
+    } else if (currentItem == m_captureItem) {
         deviceList->setModel(&m_captureModel);
+    } else {
+        deviceList->setModel(0);
+    }
+    updateButtonsEnabled();
+    if (deviceList->selectionModel()) {
         connect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
                 this, SLOT(updateButtonsEnabled()));
@@ -140,6 +151,9 @@ void OutputDeviceChoice::load()
                 break; // out of the inner for loop to get the next idx
             }
         }
+    }
+    foreach (Phonon::AudioCaptureDevice dev, list2) {
+        orderedList << dev;
     }
     m_captureModel.setModelData(orderedList);
 }
@@ -194,6 +208,7 @@ void OutputDeviceChoice::on_deferButton_clicked()
         emit changed();
     }
 }
+
 void OutputDeviceChoice::on_removeButton_clicked()
 {
     QModelIndex idx = deviceList->currentIndex();
@@ -201,17 +216,22 @@ void OutputDeviceChoice::on_removeButton_clicked()
     QAbstractItemModel *model = deviceList->model();
     Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
     if (playbackModel && idx.isValid()) {
+        kDebug() << "found an output device model" << endl;
         Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
-        QList<Phonon::AlsaDevice> deviceList = Phonon::AlsaDeviceEnumerator::availablePlaybackDevices();
-        foreach (Phonon::AlsaDevice dev, deviceList) {
+        QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availablePlaybackDevices();
+        foreach (Phonon::AudioDevice dev, deviceList) {
             if (dev.index() == deviceToRemove.index()) {
                 // remove from persistent store
                 if (dev.ceaseToExist()) {
-                    // remove from all models
+                    // remove from all models, idx.row() is only correct for the current model
                     foreach (Phonon::AudioOutputDeviceModel *model, m_outputModel) {
                         QList<Phonon::AudioOutputDevice> data = model->modelData();
-                        data.removeAll(deviceToRemove);
-                        model->setModelData(data);
+                        for (int row = 0; row < data.size(); ++row) {
+                            if (data[row] == deviceToRemove) {
+                                model->removeRows(row, 1);
+                                break;
+                            }
+                        }
                     }
                     updateButtonsEnabled();
                     emit changed();
@@ -219,17 +239,20 @@ void OutputDeviceChoice::on_removeButton_clicked()
             }
         }
     } else {
+        kDebug() << "not an output device model" << endl;
         Phonon::AudioCaptureDeviceModel *captureModel = qobject_cast<Phonon::AudioCaptureDeviceModel*>(model);
         if (captureModel && idx.isValid()) {
+            kDebug() << "found a capture device model" << endl;
             Phonon::AudioCaptureDevice deviceToRemove = captureModel->modelData(idx);
-            QList<Phonon::AlsaDevice> deviceList = Phonon::AlsaDeviceEnumerator::availableCaptureDevices();
-            foreach (Phonon::AlsaDevice dev, deviceList) {
+            QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availableCaptureDevices();
+            foreach (Phonon::AudioDevice dev, deviceList) {
+                kDebug() << dev.cardName() << endl;
                 if (dev.index() == deviceToRemove.index()) {
+                    kDebug() << "^^^ that's the one" << endl;
                     // remove from persistent store
                     if (dev.ceaseToExist()) {
-                        QList<Phonon::AudioCaptureDevice> data = m_captureModel.modelData();
-                        data.removeAll(deviceToRemove);
-                        m_captureModel.setModelData(data);
+                        kDebug() << "ok, it ceased to exist :)" << endl;
+                        m_captureModel.removeRows(idx.row(), 1);
                         updateButtonsEnabled();
                         emit changed();
                     }
@@ -241,9 +264,9 @@ void OutputDeviceChoice::on_removeButton_clicked()
 
 void OutputDeviceChoice::updateButtonsEnabled()
 {
-    kDebug() << k_funcinfo << endl;
+    //kDebug() << k_funcinfo << endl;
     if (deviceList->model()) {
-        kDebug() << "model available" << endl;
+        //kDebug() << "model available" << endl;
         QModelIndex idx = deviceList->currentIndex();
         preferButton->setEnabled(idx.isValid() && idx.row() > 0);
         deferButton->setEnabled(idx.isValid() && idx.row() < deviceList->model()->rowCount() - 1);

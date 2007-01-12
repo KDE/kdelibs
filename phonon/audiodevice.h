@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_ALSADEVICE_H
-#define PHONON_ALSADEVICE_H
+#ifndef PHONON_AUDIODEVICE_H
+#define PHONON_AUDIODEVICE_H
 
 #include <kdelibs_export.h>
 #include <kconfig.h>
@@ -33,50 +33,50 @@ namespace Solid
 
 namespace Phonon
 {
-    class AlsaDevicePrivate;
+    class AudioDevicePrivate;
 
     /**
      * \brief Information about a soundcard of the computer.
      *
      * This class encapsulates some useful information about a soundcard of the computer. Don't
-     * instanciate this class in your code, use AlsaDeviceEnumerator::availableDevices().
+     * instanciate this class in your code, use AudioDeviceEnumerator::availableDevices().
      *
-     * \see AlsaDeviceEnumerator
+     * \see AudioDeviceEnumerator
      * \author Matthias Kretz <kretz@kde.org>
      */
-    class KALSADEVICELIST_EXPORT AlsaDevice
+    class KAUDIODEVICELIST_EXPORT AudioDevice
     {
-        friend class AlsaDevicePrivate;
-        friend class AlsaDeviceEnumerator;
-        friend class AlsaDeviceEnumeratorPrivate;
+        friend class AudioDevicePrivate;
+        friend class AudioDeviceEnumerator;
+        friend class AudioDeviceEnumeratorPrivate;
 
         public:
             /**
              * \internal
              * Creates an invalid and empty instance.
              */
-            AlsaDevice();
+            AudioDevice();
             /**
              * Copy constructor. The data is implicitly shared, so copying is cheap.
              */
-            AlsaDevice(const AlsaDevice &rhs);
+            AudioDevice(const AudioDevice &rhs);
             /**
              * Destroys the object.
              */
-            ~AlsaDevice();
+            ~AudioDevice();
 
             /**
              * Assignment operator. The data is implicitly shared, so copying is cheap.
              */
-            AlsaDevice& operator=(const AlsaDevice &rhs);
+            AudioDevice& operator=(const AudioDevice &rhs);
             /**
              * Equality operator.
              */
-            bool operator==(const AlsaDevice &rhs) const;
+            bool operator==(const AudioDevice &rhs) const;
             /**
              * Inequality operator.
              */
-            bool operator!=(const AlsaDevice &rhs) const { return !operator==(rhs); }
+            bool operator!=(const AudioDevice &rhs) const { return !operator==(rhs); }
 
             /**
              * Returns the name of the soundcard. This string
@@ -94,7 +94,7 @@ namespace Phonon
             /**
              * Returns an icon name used to identify the type of soundcard. Simply use
              * \code
-             * KIcon icon(alsaDevice.iconName());
+             * KIcon icon(audioDevice.iconName());
              * \endcode
              * to get the icon.
              */
@@ -145,11 +145,11 @@ namespace Phonon
             bool isPlaybackDevice() const;
 
         protected:
-            AlsaDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config);
-            AlsaDevice(KConfigGroup &deviceGroup);
+            AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config);
+            AudioDevice(KConfigGroup &deviceGroup);
 
         private:
-            AlsaDevicePrivate *d;
+            AudioDevicePrivate *d;
     };
 } // namespace Phonon
-#endif // PHONON_ALSADEVICE_H
+#endif // PHONON_AUDIODEVICE_H
