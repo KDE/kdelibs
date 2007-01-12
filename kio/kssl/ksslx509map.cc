@@ -85,13 +85,15 @@ QStringList vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
 
 	for (QStringList::Iterator j = vl.begin(); j != vl.end(); ++j) {
 		QStringList apair = tokenizeBy(*j, QRegExp("="), false);
+		if( apair.count() >0 ) {
 		if (m_pairs.contains(apair[0])) {
 			QString oldValue = m_pairs[apair[0]];
 			oldValue += '\n';
-			oldValue += apair[1];
+			oldValue += (apair.count()>1) ? apair[1]:"";
 			m_pairs.insert(apair[0], oldValue);
 		} else {
-			m_pairs.insert(apair[0], apair[1]);
+			m_pairs.insert(apair[0], (apair.count()>1) ? apair[1]: "" );
+		}
 		}
 	}
 }
