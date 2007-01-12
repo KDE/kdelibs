@@ -37,11 +37,16 @@ namespace Phonon
 	 *
 	 * ObjectDescriptionModel is a readonly model that supplies a list
 	 * using ObjectDescription::name() for the text and
-	 * ObjectDescription::description() for the tooltip. It also provides
-	 * the methods moveUp() and moveDown() to order the list. The resulting
-	 * order of the ObjectDescription::index() values can then be retrieved
-	 * using tupleIndexOrder().
-	 *
+     * ObjectDescription::description() for the tooltip. If set the properties
+     * "icon" and "available" are used to set the decoration and disable the
+     * item (disabled only visually, you can still select and drag it).
+     *
+     * It also provides the methods moveUp() and moveDown() to order the list.
+     * Additionally drag and drop is possible so that
+     * QAbstractItemView::InternalMove can be used.
+     * The resulting order of the ObjectDescription::index() values can then be
+     * retrieved using tupleIndexOrder().
+     *
 	 * An example use case would be to give the user a QComboBox to select
 	 * the output device:
 	 * \code
@@ -55,8 +60,7 @@ namespace Phonon
 	 * And to retrieve the selected AudioOutputDevice:
 	 * \code
 	 * int cbIndex = cb->currentIndex();
-	 * int tupleIndex = model->tupleIndexAtPositionIndex( cbIndex );
-	 * AudioOutputDevice selectedDevice = AudioOutputDevice::fromIndex( tupleIndex );
+     * AudioOutputDevice selectedDevice = model->modelData(cbIndex);
 	 * \endcode
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
@@ -68,6 +72,14 @@ namespace Phonon
 		inline const ObjectDescriptionModelPrivate<type>* d_func() const { return reinterpret_cast<const ObjectDescriptionModelPrivate<type> *>(d_ptr); } \
 		friend class ObjectDescriptionModelPrivate<type>;
 		public:
+            /** \internal */
+            static const QMetaObject staticMetaObject;
+            /** \internal */
+            const QMetaObject *metaObject() const;
+            /** \internal */
+            void *qt_metacast(const char *_clname);
+            //int qt_metacall(QMetaObject::Call _c, int _id, void **_a);
+
 			/**
 			 * Constructs a ObjectDescription model with the
 			 * given \p parent.
@@ -165,6 +177,42 @@ namespace Phonon
 			 * \param positionIndex The position in the list.
 			 */
 			int tupleIndexAtPositionIndex( int positionIndex ) const;
+
+            /**
+             * This model supports drag and drop to copy or move
+             * items.
+             */
+            Qt::DropActions supportedDropActions() const;
+
+            /**
+             * Accept drops from other models of the same ObjectDescriptionType.
+             *
+             * If a valid \p parent is given the dropped items will be inserted
+             * above that item.
+             */
+            bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+            /**
+             * Removes count rows starting with the given row.
+             *
+             * If a valid \p parent is given no rows are removed since this is a
+             * list model.
+             *
+             * Returns true if the rows were successfully removed; otherwise returns false.
+             */
+            bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+
+            /**
+             * Returns a list of supported drag and drop MIME types. Currently
+             * it only supports one type used internally.
+             */
+            QStringList mimeTypes() const;
+
+            /**
+             * Returns the MIME data that dropMimeData() can use to create new
+             * items.
+             */
+            QMimeData *mimeData(const QModelIndexList &indexes) const;
 
 		protected:
 			ObjectDescriptionModelPrivate<type>* d_ptr;

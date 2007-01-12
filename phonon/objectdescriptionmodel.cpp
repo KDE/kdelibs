@@ -23,14 +23,112 @@
 #include "objectdescription.h"
 #include <kicon.h>
 #include <kdebug.h>
+#include <QMimeData>
 
 #ifdef Q_D
 #undef Q_D
 #endif
 #define Q_D(Class) Class##Private<type> * const d = d_func()
 
+#if Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.2.2. It"
+#error "cannot be used with the include files from this version of Qt."
+#error "(The moc has changed too much.)"
+#endif
+
+static const uint qt_meta_data_Phonon__ObjectDescriptionModel[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       0,    0, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioOutputDeviceType[]  = { "Phonon::AudioOutputDevice\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCaptureDeviceType[] = { "Phonon::AudioCaptureDevice\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoOutputDeviceType[]  = { "Phonon::VideoOutputDevice\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCaptureDeviceType[] = { "Phonon::VideoCaptureDevice\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioEffectType[]        = { "Phonon::AudioEffectDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoEffectType[]        = { "Phonon::VideoEffectDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCodecType[]         = { "Phonon::AudioCodecDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCodecType[]         = { "Phonon::VideoCodecDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_ContainerFormatType[]    = { "Phonon::ContainerFormatDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType[]      = { "Phonon::VisualizationDescription\0" };
+
 namespace Phonon
 {
+
+template<> const QMetaObject ObjectDescriptionModel<AudioOutputDeviceType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioOutputDeviceType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<AudioCaptureDeviceType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCaptureDeviceType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VideoOutputDeviceType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoOutputDeviceType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VideoCaptureDeviceType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCaptureDeviceType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<AudioEffectType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioEffectType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VideoEffectType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoEffectType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<AudioCodecType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCodecType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VideoCodecType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCodecType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<ContainerFormatType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_ContainerFormatType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VisualizationType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+
+template<ObjectDescriptionType type>
+const QMetaObject *ObjectDescriptionModel<type>::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+template<ObjectDescriptionType type>
+void *ObjectDescriptionModel<type>::qt_metacast(const char *_clname)
+{
+    if (!_clname) {
+        return 0;
+    }
+    if (!strcmp(_clname, ObjectDescriptionModel<type>::staticMetaObject.className())) {
+        return static_cast<void*>(const_cast<ObjectDescriptionModel<type>*>(this));
+    }
+    return QAbstractListModel::qt_metacast(_clname);
+}
+
+/*
+template<ObjectDescriptionType type>
+int ObjectDescriptionModel<type>::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    return QAbstractListModel::qt_metacall(_c, _id, _a);
+}
+*/
 
 template<ObjectDescriptionType type>
 ObjectDescriptionModel<type>::ObjectDescriptionModel( QObject* parent )
@@ -120,14 +218,14 @@ Qt::ItemFlags ObjectDescriptionModel<type>::flags(const QModelIndex &index) cons
 {
     Q_D(const ObjectDescriptionModel);
     if(!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
-        return 0;
+        return Qt::ItemIsDropEnabled;
     }
 
     QVariant available = d->data.at(index.row()).property("available");
     if (available.isValid() && available.type() == QVariant::Bool && !available.toBool()) {
-        return Qt::ItemIsSelectable;
+        return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     }
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 template<ObjectDescriptionType type>
@@ -176,6 +274,114 @@ template<ObjectDescriptionType type>
 int ObjectDescriptionModel<type>::tupleIndexAtPositionIndex( int positionIndex ) const
 {
 	return d_func()->data.at( positionIndex ).index();
+}
+
+template<ObjectDescriptionType type>
+Qt::DropActions ObjectDescriptionModel<type>::supportedDropActions() const
+{
+    kDebug(600) << k_funcinfo << endl;
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+template<ObjectDescriptionType type>
+bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropAction action,
+        int row, int column, const QModelIndex &parent)
+{
+    kDebug(600) << k_funcinfo << data << action << row << column << parent << endl;
+
+    QString format = mimeTypes().first();
+    if (!data->hasFormat(format)) {
+        return false;
+    }
+
+    Q_D(ObjectDescriptionModel);
+    if (parent.isValid()) {
+        row = parent.row();
+    } else {
+        if (row == -1) {
+            row = d->data.size();
+        }
+    }
+    kDebug(600) << row << endl;
+
+    QByteArray encodedData = data->data(format);
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QList<ObjectDescription<type> > toInsert;
+    while (!stream.atEnd()) {
+        int otherIndex;
+        stream >> otherIndex;
+        ObjectDescription<type> obj = ObjectDescription<type>::fromIndex(otherIndex);
+
+        if (obj.isValid()) {
+            toInsert << obj;
+        }
+    }
+    kDebug(600) << row << endl;
+    beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
+    foreach (ObjectDescription<type> obj, toInsert) {
+        d->data.insert(row, obj);
+    }
+    endInsertRows();
+    return true;
+}
+
+template<ObjectDescriptionType type>
+bool ObjectDescriptionModel<type>::removeRows(int row, int count, const QModelIndex &parent)
+{
+    kDebug(600) << k_funcinfo << row << count << parent << endl;
+    Q_D(ObjectDescriptionModel);
+    if (parent.isValid() || row + count > d->data.size()) {
+        return false;
+    }
+    beginRemoveRows(parent, row, row + count - 1);
+    for (;count > 0; --count) {
+        d->data.removeAt(row);
+    }
+    endRemoveRows();
+    return true;
+}
+
+/*
+template<ObjectDescriptionType type>
+bool ObjectDescriptionModel<type>::insertRows(int row, int count, const QModelIndex &parent)
+{
+    kDebug(600) << k_funcinfo << row << count << parent << endl;
+    Q_D(ObjectDescriptionModel);
+    if (parent.isValid() || row < 0 || row > d->data.size()) {
+        return false;
+    }
+    beginInsertRows(parent, row, row + count - 1);
+    for (;count > 0; --count) {
+        d->data.insert(row, ObjectDescription<type>());
+    }
+    endInsertRows();
+    return true;
+}
+*/
+
+template<ObjectDescriptionType type>
+QStringList ObjectDescriptionModel<type>::mimeTypes() const
+{
+    return QStringList(QLatin1String("application/x-phonon-objectdescription") + QString::number(static_cast<int>(type)));
+}
+
+template<ObjectDescriptionType type>
+QMimeData *ObjectDescriptionModel<type>::mimeData(const QModelIndexList &indexes) const
+{
+    Q_D(const ObjectDescriptionModel);
+
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            ObjectDescription<type> item = d->data.at(index.row());
+            stream << item.index();
+        }
+    }
+    kDebug(600) << k_funcinfo << "setting mimeData to " << encodedData << endl;
+    mimeData->setData(mimeTypes().first(), encodedData);
+    return mimeData;
 }
 
 template class ObjectDescriptionModel<AudioOutputDeviceType>;
