@@ -15,6 +15,8 @@
 #include "variant.h"
 #include "resource.h"
 
+#include <kdebug.h>
+
 
 Nepomuk::KMetaData::Variant::Variant()
   : QVariant()
@@ -392,7 +394,7 @@ void Nepomuk::KMetaData::Variant::append( const Variant& v )
     operator=( toResourceList() += v.toResourceList() );
   }
   else
-    qDebug() << "(Variant::append) unknown type: " << v.simpleType() << endl;
+    kDebug(300004) << "(Variant::append) unknown type: " << v.simpleType() << endl;
 }
 
 
@@ -525,7 +527,7 @@ double Nepomuk::KMetaData::Variant::toDouble() const
 
 QString Nepomuk::KMetaData::Variant::toString() const
 {
-  qDebug() << "(Variant::toString() converting... " << QMetaType::typeName(type()) << endl;
+  kDebug(300004) << "(Variant::toString() converting... " << QMetaType::typeName(type()) << endl;
   if( isList() )
     return toStringList().join( "," );
 
@@ -612,7 +614,7 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
-  qDebug() << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
+  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
   if( !isList() )
     return QStringList( toString() );
 

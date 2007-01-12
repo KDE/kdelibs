@@ -22,6 +22,8 @@
 #include <knep/services/resourceidservice.h>
 #include <knep/services/statementlistiterator.h>
 
+#include <kdebug.h>
+
 
 using namespace Nepomuk::Backbone::Services;
 using namespace Nepomuk::Backbone::Services::RDF;
@@ -458,7 +460,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
   ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
   QString uniqueUri = resids.toUniqueUrl( uri );
   if( uniqueUri.isEmpty() ) {
-    qDebug() << "(ResourceData) determining unique URI failed. Falling back to plain URI." << endl;
+    kDebug(300004) << "(ResourceData) determining unique URI failed. Falling back to plain URI." << endl;
     uniqueUri = uri;
   }
 

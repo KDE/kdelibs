@@ -19,6 +19,7 @@
 #include "tools.h"
 
 #include <klocale.h>
+#include <kdebug.h>
 
 
 Nepomuk::KMetaData::Resource::Resource()

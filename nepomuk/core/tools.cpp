@@ -16,6 +16,8 @@
 #include "ontology.h"
 #include "resourcemanager.h"
 
+#include <kdebug.h>
+
 
 QString Nepomuk::KMetaData::defaultGraph()
 {
@@ -68,7 +70,7 @@ QStringList Nepomuk::KMetaData::valuesToRDFLiterals( const Variant& v )
   else if( v.simpleType() == QVariant::String )
     return v.toStringList();
   else {
-    qDebug() << "(Ontology) ERROR: unknown list type: " << v.simpleType() << endl;
+    kDebug(300004) << "(Ontology) ERROR: unknown list type: " << v.simpleType() << endl;
     return QStringList();
   }
 }
