@@ -617,3 +617,10 @@
 200004       rosegarden (sequence manager)
 
 
+# Nepomuk-KDE (aka. Semantic KDE)
+
+300000       knep
+300001       knep (backbone)
+300002       knep (coreservices)
+300003       knep (service-registry)
+300004       knep (kmetadata)
