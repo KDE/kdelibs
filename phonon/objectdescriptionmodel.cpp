@@ -31,9 +31,11 @@
 #define Q_D(Class) Class##Private<type> * const d = d_func()
 
 #if Q_MOC_OUTPUT_REVISION != 59
-#error "This file was generated using the moc from 4.2.2. It"
-#error "cannot be used with the include files from this version of Qt."
-#error "(The moc has changed too much.)"
+#ifdef __GNUC__
+#warning "Parts of this file were written to resemble the output of the moc"
+#warning "from 4.2.2. Please make sure that it still works correctly with your"
+#warning "version of Qt."
+#endif
 #endif
 
 static const uint qt_meta_data_Phonon__ObjectDescriptionModel[] = {
