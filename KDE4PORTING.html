@@ -705,8 +705,9 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 
 <h4>KActionSeparator</h4>
 <ul>
-<li>Renamed to KSeparatorAction</li>
+<li>Used to be renamed to KSeparatorAction</li>
 <li>Note that you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</li>
+<li>KSeparatorAction/KActionSeparator is dead now. Just create a QAction object and call setSeparator(true); on it</li>
 </ul>
 
 <h4>KActiveLabel</h4>
