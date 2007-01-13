@@ -320,7 +320,7 @@ bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropA
     }
     kDebug(600) << row << endl;
     beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
-    foreach (ObjectDescription<type> obj, toInsert) {
+    foreach (const ObjectDescription<type> &obj, toInsert) {
         d->data.insert(row, obj);
     }
     endInsertRows();
@@ -375,7 +375,7 @@ QMimeData *ObjectDescriptionModel<type>::mimeData(const QModelIndexList &indexes
     QMimeData *mimeData = new QMimeData;
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    foreach (QModelIndex index, indexes) {
+    foreach (const QModelIndex &index, indexes) {
         if (index.isValid()) {
             ObjectDescription<type> item = d->data.at(index.row());
             stream << item.index();
