@@ -36,6 +36,7 @@
 #include <qapplication.h>
 #include <qlineedit.h>
 #include <kglobalsettings.h>
+#include <kurlrequester.h>
 #include <qobject.h>
 #include <QVector>
 #include <QMatrix>
@@ -88,6 +89,7 @@ void RenderReplaced::calcMinMaxWidth()
 
     setMinMaxKnown();
 }
+
 
 void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
 {
@@ -321,29 +323,30 @@ void RenderWidget::updateFromElement()
         QColor color = style()->color();
         QColor backgroundColor = style()->backgroundColor();
 
-        if ( color.isValid() || backgroundColor.isValid() ) {
-            QPalette pal(QApplication::palette(m_widget));
+        // check if we have to paint our background and let it show through
+        bool trans = ( isRedirectedWidget() && style()->backgroundLayers() && 
+                       style()->backgroundLayers()->hasImage() && !qobject_cast<KUrlRequester*>(m_widget) );
 
+        QPalette pal(QApplication::palette(m_widget));
+        if (color.isValid() || backgroundColor.isValid() || trans) {
             int contrast_ = KGlobalSettings::contrast();
             int highlightVal = 100 + (2*contrast_+4)*16/10;
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
-            if (backgroundColor.isValid()) {
-                if (!isRedirectedWidget()) {
-                    QPalette palette;
-                    palette.setColor(widget()->backgroundRole(), backgroundColor);
-                    widget()->setPalette(palette);
-                }
-                for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Background, backgroundColor );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, backgroundColor );
-                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, backgroundColor );
+            if (!backgroundColor.isValid()) 
+                backgroundColor = pal.color( widget()->backgroundRole() );
+            pal.setColor(widget()->backgroundRole(), trans ? QColor(0,0,0,0) : backgroundColor);
+
+            for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Window, backgroundColor );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, trans ? QColor(0,0,0,0):backgroundColor );
+                pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, trans ? QColor(0,0,0,0):backgroundColor );
             }
-            }
+
             if ( color.isValid() ) {
                 struct ColorSet {
                     QPalette::ColorGroup cg;
@@ -379,13 +382,11 @@ void RenderWidget::updateFromElement()
                     disfg = Qt::darkGray;
                 pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
             }
-
-            m_widget->setPalette(pal);
         }
-        else
-            m_widget->setPalette(QPalette());
+        m_widget->setPalette(pal);    
+
         // Border:
-        if (shouldPaintBackgroundOrBorder())
+        if (shouldPaintBorder())
         {
             if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
                 frame->setFrameShape(QFrame::NoFrame);
@@ -396,6 +397,36 @@ void RenderWidget::updateFromElement()
     }
 
     RenderReplaced::updateFromElement();
+}
+
+void RenderWidget::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
+{
+    bool fudge = !shouldPaintBorder();
+    paintBackgroundExtended(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height,
+                                fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
+                                fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
+}
+                             
+
+void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
+{
+    QRect r = QRect(0, 0, width(), height());
+
+    int my = qMax(_ty + r.y(), paintInfo.r.y());
+    int end = qMin( paintInfo.r.y() + paintInfo.r.height(), _ty + r.y() + r.height());
+    int mh = end - my;
+
+    if (qobject_cast<QAbstractScrollArea*>(m_widget) || (isRedirectedWidget() && 
+            style()->backgroundLayers() && style()->backgroundLayers()->hasImage()))
+    {
+        paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
+            my, mh, _tx+r.x(), _ty+r.y(), r.width(), r.height());
+    }
+
+    if (shouldPaintBorder() && style()->hasBorder())
+    {
+        paintBorder(paintInfo.p, _tx, _ty, width(), height(), style());
+    }
 }
 
 void RenderWidget::slotWidgetDestructed()
@@ -417,17 +448,6 @@ void RenderWidget::setStyle(RenderStyle *_style)
             m_widget->hide();
         }
     }
-
-    // Don't paint borders if the border-style is native
-    // or borders are not supported on this widget
-    if (!canHaveBorder() ||
-        (style()->borderLeftStyle()   == BNATIVE &&
-         style()->borderRightStyle()  == BNATIVE &&
-         style()->borderTopStyle()    == BNATIVE &&
-         style()->borderBottomStyle() == BNATIVE))
-    {
-        setShouldPaintBackgroundOrBorder(false);
-    }
 }
 
 void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
@@ -435,7 +455,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     _tx += m_x;
     _ty += m_y;
 
-    if (shouldPaintBackgroundOrBorder() &&
+    if (shouldPaintBackgroundOrBorder() && !qobject_cast<KUrlRequester*>(m_widget) &&
           (paintInfo.phase == PaintActionChildBackground || paintInfo.phase == PaintActionChildBackgrounds))
         paintBoxDecorations(paintInfo, _tx, _ty);
 

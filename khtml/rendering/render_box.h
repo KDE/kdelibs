@@ -143,11 +143,12 @@ protected:
     void paintRootBoxDecorations( PaintInfo& paintInfo, int _tx, int _ty);
 
     void paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int h);
-    void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int h);
 
+    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int h);
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer* /*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/ );
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/,
+                                         int /*btop*/, int /*bbottom*/, int /*ptop*/, int /*pbottom*/ );
 
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 

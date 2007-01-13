@@ -94,6 +94,8 @@ public:
     virtual void paint( PaintInfo& i, int tx, int ty );
     virtual bool isWidget() const { return true; };
 
+    virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
+    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height);
 
     virtual bool isFrame() const { return false; }
 
@@ -126,7 +128,15 @@ public Q_SLOTS:
 
 protected:
     virtual bool canHaveBorder() const { return false; }
-
+    bool shouldPaintBorder() const { 
+        // Don't paint borders if the border-style is native
+        // or borders are not supported on this widget    
+        return shouldPaintBackgroundOrBorder() && canHaveBorder() && 
+             (style()->borderLeftStyle() != BNATIVE ||
+              style()->borderRightStyle()  != BNATIVE ||
+              style()->borderTopStyle()    != BNATIVE ||
+              style()->borderBottomStyle() != BNATIVE);
+    }
     virtual bool acceptsSyntheticEvents() const { return true; }
 
     virtual void handleFocusOut() {}

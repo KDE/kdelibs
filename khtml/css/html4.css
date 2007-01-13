@@ -336,6 +336,7 @@ button {
         display: inline-block;
         border: 2px outset buttonface;
         background-color: buttonface;
+        -khtml-background-clip: padding;
         color: buttontext;
         padding: 2px 2px 2px 2px;
         cursor: default;
@@ -366,14 +367,20 @@ input[type="hidden"] {
 
 input[type="radio"], input[type="checkbox"] {
         margin: 0 0.5ex;
+        background-color: window;
+        -khtml-background-clip: padding;
         color: buttontext;
 }
 
 input[type="text"], input[type="password"] {
+        background-color: window;
+        -khtml-background-clip: padding;
 	cursor: text;
 }
 
 input[type="submit"], input[type="reset"], input[type="button"] {
+        background-color: buttonface;
+        -khtml-background-clip: padding;
         color: buttontext;
 }
 
@@ -390,11 +397,27 @@ param  {
 select {
         font-family: sans-serif;
         font-size: small;
+        color: buttontext;
+        background-color: buttonface;
+        -khtml-background-clip: padding;
+}
+
+select[multiple],
+select[size] {
+        background-color: window;
         color: windowtext;
+}
+
+select[size="0"]:not([multiple]),
+select[size="1"]:not([multiple]) {
+        background-color: buttonface;
+        color: buttontext;
 }
 
 textarea {
         color: windowtext;
+        background-color: window;
+        -khtml-background-clip: padding;
         font-family: monospace;
         border: 2px -khtml-native;
 }

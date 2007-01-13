@@ -395,7 +395,8 @@ void RenderBox::paintBackgrounds(QPainter *p, const QColor& c, const BackgroundL
 void RenderBox::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
 {
     paintBackgroundExtended(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height,
-                            borderLeft(), borderRight(), paddingLeft(), paddingRight());
+                            borderLeft(), borderRight(), paddingLeft(), paddingRight(), 
+                            borderTop(), borderBottom(), paddingTop(), paddingBottom());
 }
 
 static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledWidth, int& scaledHeight)
@@ -446,7 +447,7 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
 
 void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const BackgroundLayer* bgLayer, int clipy, int cliph,
                                         int _tx, int _ty, int w, int h,
-                                        int bleft, int bright, int pleft, int pright)
+                                        int bleft, int bright, int pleft, int pright, int btop, int bbottom, int ptop, int pbottom)
 {
     if ( cliph < 0 )
 	return;
@@ -455,9 +456,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         // Clip to the padding or content boxes as necessary.
         bool includePadding = bgLayer->backgroundClip() == BGCONTENT;
         int x = _tx + bleft + (includePadding ? pleft : 0);
-        int y = _ty + borderTop() + (includePadding ? paddingTop() : 0);
+        int y = _ty + btop + (includePadding ? ptop : 0);
         int width = w - bleft - bright - (includePadding ? pleft + pright : 0);
-        int height = h - borderTop() - borderBottom() - (includePadding ? paddingTop() + paddingBottom() : 0);
+        int height = h - btop - bbottom - (includePadding ? ptop + pbottom : 0);
         p->save();
         p->setClipRect(QRect(x, y, width, height));
     }
@@ -485,14 +486,14 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             int hpab = 0, vpab = 0, left = 0, top = 0; // Init to 0 for background-origin of 'border'
             if (bgLayer->backgroundOrigin() != BGBORDER) {
                 hpab += bleft + bright;
-                vpab += borderTop() + borderBottom();
+                vpab += btop + bbottom;
                 left += bleft;
-                top += borderTop();
+                top += btop;
                 if (bgLayer->backgroundOrigin() == BGCONTENT) {
                     hpab += pleft + pright;
-                    vpab += paddingTop() + paddingBottom();
+                    vpab += ptop + pbottom;
                     left += pleft;
-                    top += paddingTop();
+                    top += ptop;
                 }
             }
 

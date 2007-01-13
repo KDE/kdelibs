@@ -389,8 +389,8 @@ public:
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer * /*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/  ) {}
-
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/,
+                                         int /*btop*/, int /*bbottom*/, int /*ptop*/, int /*pbottom*/) {}
 
     /*
      * This function calculates the minimum & maximum width that the object

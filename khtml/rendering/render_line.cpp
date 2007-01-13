@@ -701,7 +701,8 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
     bool hasBackgroundImage = bg && bg->isComplete() && 
                               !bg->isTransparent() && !bg->isErrorImage();
     if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
-        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight(), paddingLeft(), paddingRight());
+        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight(), paddingLeft(), paddingRight(),
+                                          object()->borderTop(), object()->borderBottom(), object()->paddingTop(), object()->paddingBottom());
     else {
         // We have a background image that spans multiple lines.
         // We need to adjust _tx and _ty by the width of all previous lines.
@@ -721,7 +722,8 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
         p->save();
         p->setClipRect(QRect(_tx, _ty, width(), height()));
         object()->paintBackgroundExtended(p, c, bgLayer, my, mh, startX, _ty,
-                                          totalWidth, h, borderLeft(), borderRight(), paddingLeft(), paddingRight());
+                                          totalWidth, h, borderLeft(), borderRight(), paddingLeft(), paddingRight(),
+                                          object()->borderTop(), object()->borderBottom(), object()->paddingTop(), object()->paddingBottom());
         p->restore();
     }
 }

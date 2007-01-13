@@ -2023,7 +2023,7 @@ static const uiColors uimap[] = {
     { CSS_VAL_SCROLLBAR, generalgroup, "background", QPalette::Inactive, QPalette::Background },
 
 	// Window background.
-    { CSS_VAL_WINDOW, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Background },
+    { CSS_VAL_WINDOW, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Base },
 	// Window frame.
     { CSS_VAL_WINDOWFRAME, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Background },
         // WindowText
@@ -2736,13 +2736,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if ( ident ) {
 		if ( ident == CSS_VAL__KHTML_TEXT )
 		    col = element->getDocument()->textColor();
-  		// ### should be eliminated
-		else if ( ident == CSS_VAL_TRANSPARENT
-                	&& id != CSS_PROP_BORDER_TOP_COLOR
-                        && id != CSS_PROP_BORDER_RIGHT_COLOR
-      			&& id != CSS_PROP_BORDER_BOTTOM_COLOR
-      			&& id != CSS_PROP_BORDER_LEFT_COLOR )
-		    col = QColor();
 		else
 		    col = colorForCSSValue( ident );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {

@@ -16,6 +16,10 @@ img[align="right"] {
     margin-left: 3px;
 }
 
+input:not([type="image"]), textarea, button, select {
+  box-sizing: border-box;
+}
+
 /* Tables reset both line-height and white-space in quirks mode.
    Compatible with WinIE. For some reason they don't reset font-family */
 table {
