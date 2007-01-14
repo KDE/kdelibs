@@ -9,7 +9,7 @@
 #include <kmainwindow.h>
 #include "../kliveui.h"
 
-class tst_GuiEditor : public QObject
+class tst_KLiveUi : public QObject
 {
     Q_OBJECT
 public slots:

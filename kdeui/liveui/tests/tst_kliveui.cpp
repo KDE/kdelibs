@@ -21,7 +21,7 @@ void SampleComponent::createComponentGui()
     builder.addAction("Test Action");
 }
 
-void tst_GuiEditor::init()
+void tst_KLiveUi::init()
 {
     mw = new KMainWindow;
     testAction1 = new QAction(mw);
@@ -32,7 +32,7 @@ void tst_GuiEditor::init()
     testAction1->setText("Test3");
 }
 
-void tst_GuiEditor::cleanup()
+void tst_KLiveUi::cleanup()
 {
     delete mw;
     testAction1 = 0;
@@ -40,7 +40,7 @@ void tst_GuiEditor::cleanup()
     testAction3 = 0;
 }
 
-void tst_GuiEditor::actionGroups()
+void tst_KLiveUi::actionGroups()
 {
     KLiveUiBuilder editor(mw);
 
@@ -63,7 +63,7 @@ void tst_GuiEditor::actionGroups()
 }
 
 /*
-void tst_GuiEditor::recursiveActionGroups()
+void tst_KLiveUi::recursiveActionGroups()
 {
     GuiEditor editor(mw);
 
@@ -90,7 +90,7 @@ void tst_GuiEditor::recursiveActionGroups()
 }
 */
 
-void tst_GuiEditor::menuDeletion()
+void tst_KLiveUi::menuDeletion()
 {
     QPointer<KMenu> menu;
 
@@ -111,7 +111,7 @@ void tst_GuiEditor::menuDeletion()
     QVERIFY(menu.isNull());
 }
 
-void tst_GuiEditor::changeExistingMenu()
+void tst_KLiveUi::changeExistingMenu()
 {
     KLiveUiBuilder editor(mw);
     editor.beginMenuBar();
@@ -130,7 +130,7 @@ void tst_GuiEditor::changeExistingMenu()
     editor.end();
 }
 
-void tst_GuiEditor::implicitBeginMenuBar()
+void tst_KLiveUi::implicitBeginMenuBar()
 {
     KLiveUiBuilder builder(mw);
     QMenu *menu = builder.beginMenu(KLiveUi::FileMenu);
@@ -138,7 +138,7 @@ void tst_GuiEditor::implicitBeginMenuBar()
     QVERIFY(mw->menuBar()->actions().first()->menu() == menu);
 }
 
-void tst_GuiEditor::subComponents()
+void tst_KLiveUi::subComponents()
 {
     KLiveUiComponent *parent = new KLiveUiComponent(mw);
     KLiveUiComponent *child = new KLiveUiComponent;
@@ -179,7 +179,7 @@ void tst_GuiEditor::subComponents()
     QCOMPARE(parent->subComponents().count(), 0);
 }
 
-void tst_GuiEditor::deleteActions()
+void tst_KLiveUi::deleteActions()
 {
     SampleComponent plugin(mw);
 
@@ -193,5 +193,5 @@ void tst_GuiEditor::deleteActions()
     QVERIFY(plugin.activeActions().isEmpty());
 }
 
-QTEST_KDEMAIN(tst_GuiEditor, GUI)
+QTEST_KDEMAIN(tst_KLiveUi, GUI)
 #include "tst_kliveui.moc"
