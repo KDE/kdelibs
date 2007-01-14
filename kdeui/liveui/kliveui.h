@@ -21,27 +21,21 @@
 #ifndef KLIVEUI_H
 #define KLIVEUI_H
 
-#include <QString>
 #include <QObject>
-#include <QKeySequence>
-#include <QPointer>
 
 #include <kdelibs_export.h>
-#include <kinstance.h>
-#include <kglobal.h>
 
-#include "kstandardaction.h"
+#include <kstandardaction.h>
 
 class QAction;
-class QString;
 class QWidget;
 class QMenu;
 class QToolBar;
 class QIcon;
-class KAction;
 class KMainWindow;
 class KMenu;
 class KToolBar;
+class KInstance;
 
 class KLiveUiBuilder;
 class KLiveUiBuilderPrivate;

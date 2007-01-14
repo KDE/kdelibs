@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QSet>
 #include <QAction>
+#include <QPointer>
 
 #include <kdelibs_export.h>
 
