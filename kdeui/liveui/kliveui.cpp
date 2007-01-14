@@ -40,6 +40,7 @@
 #include "kaction.h"
 #include "kmainwindow.h"
 #include "kmenu.h"
+#include "kmenubar.h"
 #include "ktoolbar.h"
 #include <kicon.h>
 
@@ -61,6 +62,7 @@ class KLiveUiComponentPrivate
 {
 public:
     KLiveUiComponentPrivate()
+        : actionCollection(static_cast<QObject *>(0))
     {
         storage = 0;
     }
@@ -147,7 +149,7 @@ void KLiveUiComponent::removeComponentGui()
 {
     QWidget *bw = builderWidget();
 
-    foreach (KAction *a, d->actionCollection.actions()) {
+    foreach (QAction *a, d->actionCollection.actions()) {
         foreach (QWidget *widget, a->associatedWidgets()) {
             if (!bw || isAncestor(bw, widget))
                 widget->removeAction(a);
@@ -537,27 +539,27 @@ void KLiveUiBuilder::addAction(QAction *action)
     d->engine->addAction(action);
 }
 
-KAction *KLiveUiBuilder::addAction(const QString &text)
+QAction *KLiveUiBuilder::addAction(const QString &text)
 {
-    KAction *a = new KAction(d->actionCollection);
+    QAction *a = new QAction(d->actionCollection);
     a->setText(text);
     addAction(a);
     return a;
 }
 
-KAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
+QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 {
-    KAction *a = new KAction(d->actionCollection);
+    QAction *a = new QAction(d->actionCollection);
     a->setIcon(KIcon(icon));
     a->setText(text);
     addAction(a);
     return a;
 }
 
-KAction *KLiveUiBuilder::addAction(KStdAction::StdAction standardAction,
+QAction *KLiveUiBuilder::addAction(KStandardAction::StandardAction standardAction,
                               const QObject *receiver, const char *member)
 {
-    KAction* a = KStdAction::create(standardAction, receiver, member, d->actionCollection);
+    QAction* a = KStandardAction::create(standardAction, receiver, member, d->actionCollection);
     addAction(a);
     return a;
 }

@@ -30,7 +30,7 @@
 #include <kinstance.h>
 #include <kglobal.h>
 
-#include "kstdaction.h"
+#include "kstandardaction.h"
 
 class QAction;
 class QString;
@@ -125,9 +125,9 @@ public:
     void addAction(QAction *action);
 
     // convenience
-    KAction *addAction(const QString &text);
-    KAction *addAction(const QIcon &icon, const QString &text);
-    KAction *addAction(KStdAction::StdAction standardAction, const QObject *receiver = 0, const char *member = 0);
+    QAction *addAction(const QString &text);
+    QAction *addAction(const QIcon &icon, const QString &text);
+    QAction *addAction(KStandardAction::StandardAction standardAction, const QObject *receiver = 0, const char *member = 0);
     void addMenu(QMenu *menu);
 
     QAction *addSeparator();

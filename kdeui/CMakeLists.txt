@@ -20,6 +20,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
+ ${CMAKE_CURRENT_SOURCE_DIR}/liveui
 )
 
 add_subdirectory( about )
@@ -177,6 +178,7 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguibuilder.cpp
+ liveui/kliveui.cpp
 )
 
 if (Q_WS_X11)
@@ -366,6 +368,7 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
+ liveui/kliveui.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
