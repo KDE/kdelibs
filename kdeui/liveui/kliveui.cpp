@@ -472,16 +472,22 @@ void KLiveUiBuilder::end()
 
 void KLiveUiBuilder::beginMenuBar()
 {
+    if (!d)
+        return;
     d->engine->beginWidget(d->component, KLiveUi::MenuBar);
 }
 
 KMenu *KLiveUiBuilder::beginMenu(const QString &title, const QString &name)
 {
+    if (!d)
+        return 0;
     return qobject_cast<KMenu *>(d->engine->beginWidget(d->component, KLiveUi::Menu, title, name));
 }
 
 KMenu* KLiveUiBuilder::beginMenu( KLiveUi::StandardMenu menu )
 {
+    if (!d)
+        return 0;
     switch (menu) {
         case KLiveUi::FileMenu:
           return beginMenu(i18n("&File"), "file");
@@ -513,21 +519,29 @@ KMenu* KLiveUiBuilder::beginMenu( KLiveUi::StandardMenu menu )
 
 void KLiveUiBuilder::endMenu()
 {
+    if (!d)
+        return;
     d->engine->endWidget(KLiveUi::Menu);
 }
 
 KToolBar *KLiveUiBuilder::beginToolBar(const QString &title)
 {
+    if (!d)
+        return 0;
     return qobject_cast<KToolBar *>(d->engine->beginWidget(d->component, KLiveUi::ToolBar, title, /*name*/QString()));
 }
 
 void KLiveUiBuilder::endToolBar()
 {
+    if (!d)
+        return;
     d->engine->endWidget(KLiveUi::ToolBar);
 }
 
 void KLiveUiBuilder::addAction(QAction *action)
 {
+    if (!d)
+        return;
     d->engine->addAction(action);
     if (d->component)
         d->component->d->addActiveAction(action);
@@ -535,6 +549,8 @@ void KLiveUiBuilder::addAction(QAction *action)
 
 QAction *KLiveUiBuilder::addAction(const QString &text)
 {
+    if (!d)
+        return 0;
     QAction *a = new QAction(d->component);
     a->setText(text);
     addAction(a);
@@ -543,6 +559,8 @@ QAction *KLiveUiBuilder::addAction(const QString &text)
 
 QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 {
+    if (!d)
+        return 0;
     QAction *a = new QAction(d->component);
     a->setIcon(KIcon(icon));
     a->setText(text);
@@ -553,6 +571,8 @@ QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 QAction *KLiveUiBuilder::addAction(KStandardAction::StandardAction standardAction,
                               const QObject *receiver, const char *member)
 {
+    if (!d)
+        return 0;
     QAction* a = KStandardAction::create(standardAction, receiver, member, d->component);
     addAction(a);
     return a;
@@ -560,6 +580,8 @@ QAction *KLiveUiBuilder::addAction(KStandardAction::StandardAction standardActio
 
 QAction *KLiveUiBuilder::addSeparator()
 {
+    if (!d)
+        return 0;
     QAction *a = new KAction(d->component);
     a->setSeparator(true);
     addAction(a);
@@ -568,6 +590,8 @@ QAction *KLiveUiBuilder::addSeparator()
 
 QAction *KLiveUiBuilder::addWidget(QWidget *widget)
 {
+    if (!d)
+        return 0;
     QWidgetAction *a = new QWidgetAction(d->component);
     a->setDefaultWidget(widget);
     (void)new KLiveUiPrivate::MenuOrWidgetDeleter(widget, d->object);
@@ -577,21 +601,29 @@ QAction *KLiveUiBuilder::addWidget(QWidget *widget)
 
 void KLiveUiBuilder::addMenu(QMenu *menu)
 {
+    if (!d)
+        return;
     addAction(menu->menuAction());
 }
 
 QAction *KLiveUiBuilder::addMergePlaceholder(const QString &name)
 {
+    if (!d)
+        return 0;
     return d->engine->addMergePlaceholder(name, d->component);
 }
 
 void KLiveUiBuilder::beginMerge(const QString &name)
 {
+    if (!d)
+        return;
     d->engine->beginMerge(name);
 }
 
 void KLiveUiBuilder::endMerge()
 {
+    if (!d)
+        return;
     d->engine->endMerge();
 }
 
