@@ -880,14 +880,16 @@ static inline bool isAnonymousWhitespace( RenderObject* o ) {
 
 RenderObject* RenderBlock::handleCompactChild(RenderObject* child, CompactInfo& compactInfo, const MarginInfo& marginInfo, bool& handled)
 {
+    if (!child->isCompact())
+        return 0;
     // FIXME: We only deal with one compact at a time.  It is unclear what should be
     // done if multiple contiguous compacts are encountered.  For now we assume that
     // compact A followed by another compact B should simply be treated as block A.
-    if (child->isCompact() && !compactInfo.compact() && (child->childrenInline() || child->isReplaced())) {
+    if (!compactInfo.compact() && (child->childrenInline() || child->isReplaced())) {
         // Get the next non-positioned/non-floating RenderBlock.
         RenderObject* next = child->nextSibling();
         RenderObject* curr = next;
-        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
+        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr) || curr->isAnonymousBlock()) )
             curr = curr->nextSibling();
         if (curr && curr->isRenderBlock() && !curr->isCompact() && !curr->isRunIn()) {
             curr->calcWidth(); // So that horizontal margins are correct.
@@ -914,6 +916,9 @@ RenderObject* RenderBlock::handleCompactChild(RenderObject* child, CompactInfo& 
             }
         }
     }
+    child->style()->setDisplay(BLOCK);
+    child->layoutIfNeeded();
+    child->style()->setDisplay(COMPACT);
     return 0;
 }
 
@@ -970,13 +975,15 @@ void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compac
 
 RenderObject* RenderBlock::handleRunInChild(RenderObject* child, bool& handled)
 {
+    if (!child->isRunIn())
+        return 0;
     // See if we have a run-in element with inline children.  If the
     // children aren't inline, then just treat the run-in as a normal
     // block.
-    if (child->isRunIn() && (child->childrenInline() || child->isReplaced())) {
+    if (child->childrenInline() || child->isReplaced()) {
         // Get the next non-positioned/non-floating RenderBlock.
         RenderObject* curr = child->nextSibling();
-        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
+        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr) || curr->isAnonymousBlock()) )
             curr = curr->nextSibling();
         if (curr && (curr->isRenderBlock() && curr->childrenInline() && !curr->isCompact() && !curr->isRunIn())) {
             // The block acts like an inline, so just null out its
