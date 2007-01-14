@@ -58,10 +58,20 @@ Issues....:
 - Consider support for not-yet created action container widgets or custom containers (eg. begin/endGeneric)
 */
 
+void KLiveUiComponentPrivate::addActiveAction(QAction *a)
+{
+    if (activeActions.contains(a))
+        return;
+    QObject::connect(a, SIGNAL(destroyed(QObject *)),
+                     q, SLOT(_k_activeActionDestroyed(QObject *)));
+    activeActions.insert(a);
+}
+
 KLiveUiComponent::KLiveUiComponent(QObject* parent)
   : QObject(parent)
   , d(new KLiveUiComponentPrivate)
 {
+    d->q = this;
 }
 
 KLiveUiComponent::~KLiveUiComponent()
@@ -126,6 +136,9 @@ void KLiveUiComponent::removeComponentGui()
     QWidget *bw = builderWidget();
 
     foreach (QAction *action, d->activeActions) {
+        disconnect(action, SIGNAL(destroyed(QObject *)),
+                   this, SLOT(_k_activeActionDestroyed(QObject *)));
+
         foreach (QWidget *widget, action->associatedWidgets()) {
             if (!bw || isAncestor(bw, widget))
                 widget->removeAction(action);
@@ -511,7 +524,7 @@ void KLiveUiBuilder::addAction(QAction *action)
 {
     d->engine->addAction(action);
     if (d->component)
-        d->component->d->activeActions.insert(action);
+        d->component->d->addActiveAction(action);
 }
 
 QAction *KLiveUiBuilder::addAction(const QString &text)

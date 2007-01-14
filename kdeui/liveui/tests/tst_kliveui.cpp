@@ -3,6 +3,26 @@
 #include <kmenu.h>
 #include <kmenubar.h>
 
+class SampleComponent : public KLiveUiComponent
+{
+public:
+    inline SampleComponent(QObject *parent) : KLiveUiComponent(parent) {}
+
+    virtual void createComponentGui();
+};
+
+void SampleComponent::createComponentGui()
+{
+    KLiveUiBuilder builder(this);
+
+    builder.beginMenuBar();
+    builder.beginMenu("Components", "components");
+    builder.beginMenu("SampleComponent", "samplecomponent");
+    builder.addAction("Test Action");
+
+    KLiveUiComponent::createComponentGui(); // #######
+}
+
 void tst_GuiEditor::init()
 {
     mw = new KMainWindow;
@@ -159,6 +179,20 @@ void tst_GuiEditor::subComponents()
     QCOMPARE(parent->subComponents().first(), child);
     delete child;
     QCOMPARE(parent->subComponents().count(), 0);
+}
+
+void tst_GuiEditor::deleteActions()
+{
+    SampleComponent plugin(mw);
+
+    QVERIFY(plugin.activeActions().isEmpty());
+    plugin.createComponentGui();
+    QVERIFY(!plugin.activeActions().isEmpty());
+
+    foreach (QAction *a, plugin.activeActions())
+        delete a;
+
+    QVERIFY(plugin.activeActions().isEmpty());
 }
 
 QTEST_KDEMAIN(tst_GuiEditor, GUI)

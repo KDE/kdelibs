@@ -25,6 +25,7 @@
 #include <QStack>
 #include <QObject>
 #include <QSet>
+#include <QAction>
 
 #include <kdelibs_export.h>
 
@@ -80,10 +81,17 @@ public:
         subComponents.removeAll(static_cast<KLiveUiComponent *>(o));
     }
 
+    void addActiveAction(QAction *a);
+
+    inline void _k_activeActionDestroyed(QObject *o) {
+        activeActions.remove(static_cast<QAction *>(o));
+    }
+
     QPointer<QWidget> builderWidget;
     KLiveUiStorage*   storage;
     QList<KLiveUiComponent *> subComponents;
     QSet<QAction *> activeActions;
+    KLiveUiComponent *q;
 };
 
 namespace KLiveUiPrivate {

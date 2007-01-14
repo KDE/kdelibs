@@ -22,6 +22,7 @@ private slots:
     void changeExistingMenu();
     void implicitBeginMenuBar();
     void subComponents();
+    void deleteActions();
 
 private:
     KMainWindow *mw;
