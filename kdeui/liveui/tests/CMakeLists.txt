@@ -17,6 +17,8 @@ kde4_add_executable(kliveuitest RUN_UNINSTALLED ${tst_kliveui_SRCS})
 
 target_link_libraries(kliveuitest ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
+add_test(kliveuitest ${EXECUTABLE_OUTPUT_PATH}/kliveuitest)
+
 ########### next target ###############
 
 set(tst_xmlguihandler_SRCS tst_xmlguihandler.cpp)
