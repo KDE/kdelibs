@@ -366,7 +366,8 @@ void KMultiTabBarInternal::removeTab(int id)
 	{
 		if (m_tabs.at(pos)->id()==id)
 		{
-			m_tabs.removeAt(pos);
+                        // remove & delete the tab
+			delete m_tabs.takeAt(pos);
 			resizeEvent(0);
 			break;
 		}
