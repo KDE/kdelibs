@@ -38,7 +38,6 @@ namespace KLiveUiPrivate {
 
         QPointer<QWidget> widgetOrMenu;
     };
-}
 
 class XmlGuiHandler : public QXmlContentHandler
 {
@@ -65,6 +64,8 @@ private:
     KActionCollection *actionCollection;
     bool inTextTag;
 };
+
+}
 
 namespace KLiveUi
 {

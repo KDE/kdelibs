@@ -591,6 +591,8 @@ void KLiveUiBuilder::endMerge()
     d->engine->endMerge();
 }
 
+using namespace KLiveUiPrivate;
+
 XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component, KActionCollection *collection)
     : builder(builder), component(component), actionCollection(collection)
 {
