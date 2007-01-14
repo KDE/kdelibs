@@ -80,7 +80,8 @@ public:
     void createGui();
     void removeGui();
 
-    virtual KInstance *instance() const;
+    void setInstance(KInstance *instance);
+    KInstance *instance() const;
 
     void addSubComponent(KLiveUiComponent *component);
     void removeSubComponent(KLiveUiComponent *component);

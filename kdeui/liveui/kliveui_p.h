@@ -70,6 +70,7 @@ public:
     KLiveUiComponentPrivate()
     {
         storage = 0;
+        instance = 0;
     }
 
     ~KLiveUiComponentPrivate()
@@ -91,6 +92,7 @@ public:
     KLiveUiStorage*   storage;
     QList<KLiveUiComponent *> subComponents;
     QSet<QAction *> activeActions;
+    KInstance *instance;
     KLiveUiComponent *q;
 };
 

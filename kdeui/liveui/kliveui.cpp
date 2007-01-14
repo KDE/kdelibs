@@ -168,9 +168,14 @@ void KLiveUiComponent::removeComponentGui()
 {
 }
 
+void KLiveUiComponent::setInstance(KInstance *instance)
+{
+    d->instance = instance;
+}
+
 KInstance *KLiveUiComponent::instance() const
 {
-    return KGlobal::instance();
+    return d->instance ? d->instance : KGlobal::instance();
 }
 
 void KLiveUiComponent::addSubComponent(KLiveUiComponent *component)
