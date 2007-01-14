@@ -60,9 +60,7 @@ struct KLiveUiCommand {
     QString name;
 };
 
-class KLiveUiStorage : public QList<KLiveUiCommand>
-{
-};
+typedef QList<KLiveUiCommand> KLiveUiStorage;
 
 class KLiveUiComponentPrivate
 {

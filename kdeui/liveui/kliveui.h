@@ -46,7 +46,6 @@ class KToolBar;
 class KLiveUiBuilder;
 class KLiveUiBuilderPrivate;
 class KLiveUiComponentPrivate;
-class KLiveUiStorage;
 
 namespace KLiveUi
 {
