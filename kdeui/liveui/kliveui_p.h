@@ -40,10 +40,10 @@ namespace KLiveUiPrivate {
     };
 }
 
-class KDEUI_EXPORT XmlGuiHandler : public QXmlContentHandler
+class XmlGuiHandler : public QXmlContentHandler
 {
 public:
-    XmlGuiHandler(KLiveUiBuilder *builder, QObject *component);
+    XmlGuiHandler(KLiveUiBuilder *builder, QObject *component, KActionCollection *collection);
 
     virtual bool startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes);
     virtual bool endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName);

@@ -39,7 +39,6 @@ class QMenu;
 class QToolBar;
 class QIcon;
 class KAction;
-class KActionCollection;
 class KMainWindow;
 class KMenu;
 class KToolBar;
@@ -74,11 +73,6 @@ class KDEUI_EXPORT KLiveUiComponent : public QObject
 public:
     KLiveUiComponent(QObject* parent = 0);
     virtual ~KLiveUiComponent();
-
-    /**
-     * Retrieves the top action collection for the component.
-     */
-    KActionCollection *actionCollection() const;
 
     void setBuilderWidget(QWidget *w);
     QWidget *builderWidget() const;
@@ -137,7 +131,7 @@ public:
     void beginMerge(const QString &placeholder);
     void endMerge();
 
-    void populateFromXmlGui(const QString &fileName);
+    void populateFromXmlGui(const QString &fileName, KActionCollection *collection);
 
 private:
     KLiveUiBuilderPrivate *d;

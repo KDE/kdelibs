@@ -36,8 +36,8 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 
-#include "kactioncollection.h"
 #include "kaction.h"
+#include "kactioncollection.h"
 #include "kmainwindow.h"
 #include "kmenu.h"
 #include "kmenubar.h"
@@ -62,7 +62,6 @@ class KLiveUiComponentPrivate
 {
 public:
     KLiveUiComponentPrivate()
-        : actionCollection(static_cast<QObject *>(0))
     {
         storage = 0;
     }
@@ -76,7 +75,6 @@ public:
         subComponents.removeAll(static_cast<KLiveUiComponent *>(o));
     }
 
-    KActionCollection actionCollection;
     QPointer<QWidget> builderWidget;
     KLiveUiStorage*   storage;
     QList<KLiveUiComponent *> subComponents;
@@ -149,7 +147,7 @@ void KLiveUiComponent::removeComponentGui()
 {
     QWidget *bw = builderWidget();
 
-    foreach (QAction *a, d->actionCollection.actions()) {
+    foreach (QAction *a, findChildren<QAction *>()) {
         foreach (QWidget *widget, a->associatedWidgets()) {
             if (!bw || isAncestor(bw, widget))
                 widget->removeAction(a);
@@ -206,11 +204,6 @@ void KLiveUiComponent::setSubComponents(const QList<KLiveUiComponent *> &compone
 QList<KLiveUiComponent *> KLiveUiComponent::subComponents() const
 {
     return d->subComponents;
-}
-
-KActionCollection *KLiveUiComponent::actionCollection() const
-{
-    return &d->actionCollection;
 }
 
 KLiveUiStorage* KLiveUiComponent::storage() const
@@ -407,14 +400,12 @@ public:
         object = 0;
         mainWindow = 0;
         component = 0;
-        actionCollection = 0;
         engine = 0;
     }
 
     QObject* object;
     KMainWindow* mainWindow;
     KLiveUiComponent* component;
-    KActionCollection *actionCollection;
 
     KLiveUiEngine *engine;
 };
@@ -450,7 +441,6 @@ void KLiveUiBuilder::begin(KMainWindow *mw)
     d = new KLiveUiBuilderPrivate;
     d->engine = new KLiveUiMainWindowEngine(mw);
     d->object = d->mainWindow = mw;
-    d->actionCollection = mw->actionCollection();
 }
 
 void KLiveUiBuilder::begin(KLiveUiComponent *component)
@@ -533,7 +523,7 @@ void KLiveUiBuilder::endToolBar()
 
 void KLiveUiBuilder::addAction(QAction *action)
 {
-    if (action->parent() != d->actionCollection) {
+    if (action->parent() != d->component && !qobject_cast<KActionCollection *>(action->parent())) {
         qWarning("GuiEditor: addAction called with action not belonging to editing component");
     }
     d->engine->addAction(action);
@@ -541,7 +531,7 @@ void KLiveUiBuilder::addAction(QAction *action)
 
 QAction *KLiveUiBuilder::addAction(const QString &text)
 {
-    QAction *a = new QAction(d->actionCollection);
+    QAction *a = new QAction(d->component);
     a->setText(text);
     addAction(a);
     return a;
@@ -549,7 +539,7 @@ QAction *KLiveUiBuilder::addAction(const QString &text)
 
 QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 {
-    QAction *a = new QAction(d->actionCollection);
+    QAction *a = new QAction(d->component);
     a->setIcon(KIcon(icon));
     a->setText(text);
     addAction(a);
@@ -559,14 +549,14 @@ QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 QAction *KLiveUiBuilder::addAction(KStandardAction::StandardAction standardAction,
                               const QObject *receiver, const char *member)
 {
-    QAction* a = KStandardAction::create(standardAction, receiver, member, d->actionCollection);
+    QAction* a = KStandardAction::create(standardAction, receiver, member, d->component);
     addAction(a);
     return a;
 }
 
 QAction *KLiveUiBuilder::addSeparator()
 {
-    QAction *a = new KAction(d->actionCollection);
+    QAction *a = new KAction(d->component);
     a->setSeparator(true);
     addAction(a);
     return a;
@@ -574,7 +564,7 @@ QAction *KLiveUiBuilder::addSeparator()
 
 QAction *KLiveUiBuilder::addWidget(QWidget *widget)
 {
-    QWidgetAction *a = new QWidgetAction(d->actionCollection);
+    QWidgetAction *a = new QWidgetAction(d->component);
     a->setDefaultWidget(widget);
     (void)new KLiveUiPrivate::MenuOrWidgetDeleter(widget, d->object);
     addAction(a);
@@ -588,7 +578,7 @@ void KLiveUiBuilder::addMenu(QMenu *menu)
 
 QAction *KLiveUiBuilder::addMergePlaceholder(const QString &name)
 {
-    return d->engine->addMergePlaceholder(name, d->actionCollection);
+    return d->engine->addMergePlaceholder(name, d->component);
 }
 
 void KLiveUiBuilder::beginMerge(const QString &name)
@@ -601,17 +591,11 @@ void KLiveUiBuilder::endMerge()
     d->engine->endMerge();
 }
 
-XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component)
-    : builder(builder), component(component)
+XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component, KActionCollection *collection)
+    : builder(builder), component(component), actionCollection(collection)
 {
     currentWidget = 0;
     inTextTag = false;
-    if (KMainWindow *mw = qobject_cast<KMainWindow *>(component))
-        actionCollection = mw->actionCollection();
-    else if (KLiveUiComponent *iface = qobject_cast<KLiveUiComponent *>(component))
-        actionCollection = iface->actionCollection();
-    else
-        actionCollection = 0;
 }
 
 bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes)
@@ -629,7 +613,7 @@ bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString
         inTextTag = true;
     } else if (tag == QLatin1String("action")) {
         QString group = attributes.value("group");
-        QAction *a = actionCollection->findChild<QAction *>(attributes.value("name"));
+        QAction *a = actionCollection->action(attributes.value("name"));
         if ( a ) {
           if (!group.isEmpty())
               builder->beginMerge(group);
@@ -665,7 +649,7 @@ bool XmlGuiHandler::characters(const QString &text)
     return true;
 }
 
-void KLiveUiBuilder::populateFromXmlGui(const QString &fileName)
+void KLiveUiBuilder::populateFromXmlGui(const QString &fileName, KActionCollection *collection)
 {
     QString file = fileName;
 
@@ -684,7 +668,7 @@ void KLiveUiBuilder::populateFromXmlGui(const QString &fileName)
 
     QXmlInputSource source(&f);
     QXmlSimpleReader reader;
-    XmlGuiHandler handler(this, d->object);
+    XmlGuiHandler handler(this, d->object, collection);
     reader.setContentHandler(&handler);
     reader.parse(&source, /*incremental=*/false);
 }

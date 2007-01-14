@@ -21,17 +21,19 @@ int main( int argc, char **argv )
   KMainWindow *window = new KMainWindow;
   window->show();
 
-  QAction *action = new QAction( "open", window->actionCollection() );
-  action->setObjectName( "open" );
+  KActionCollection *coll = window->actionCollection();
 
-  action = new QAction( "undo", window->actionCollection() );
-  action->setObjectName( "undo" );
+  QAction *action = coll->addAction("open");
+  action->setText("open");
 
-  action = new QAction( "view", window->actionCollection() );
-  action->setObjectName( "view" );
+  action = coll->addAction("undo");
+  action->setText("undo");
+
+  action = coll->addAction("view");
+  action->setText("view");
 
   KLiveUiBuilder builder( window );
-  builder.populateFromXmlGui( "tst_xmlguihandlerui.rc" );
+  builder.populateFromXmlGui( "tst_xmlguihandlerui.rc", window->actionCollection() );
 
   return app.exec();
 }
