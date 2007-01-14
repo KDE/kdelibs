@@ -118,7 +118,7 @@ void KLiveUiComponent::createGui()
         return;
     }
 
-    if (d->storage) {
+    if (!d->storage.isEmpty()) {
         KLiveUiMainWindowEngine e(static_cast<KMainWindow*>(builderWidget()));
         e.replay(this, d->storage);
     }
@@ -326,7 +326,6 @@ void KLiveUiMainWindowEngine::endMerge()
 }
 
 KLiveUiRecordingEngine::KLiveUiRecordingEngine()
-  : storage(new KLiveUiStorage)
 {
 }
 
@@ -337,7 +336,7 @@ QWidget *KLiveUiRecordingEngine::beginWidget(QObject * /*component*/, KLiveUi::W
     cmd.widgetType = type;
     cmd.title = title;
     cmd.name = name;
-    *storage << cmd;
+    storage << cmd;
     return 0;
 }
 
@@ -346,7 +345,7 @@ void KLiveUiRecordingEngine::endWidget(KLiveUi::WidgetType type)
     KLiveUiCommand cmd;
     cmd.type = KLiveUi::EndWidgetCommand;
     cmd.widgetType = type;
-    *storage << cmd;
+    storage << cmd;
 }
 
 void KLiveUiRecordingEngine::addAction(QAction *action)
@@ -354,7 +353,7 @@ void KLiveUiRecordingEngine::addAction(QAction *action)
     KLiveUiCommand cmd;
     cmd.type = KLiveUi::AddActionCommand;
     cmd.action = action;
-    *storage << cmd;
+    storage << cmd;
 }
 
 void KLiveUiRecordingEngine::beginMerge(const QString &name)
@@ -362,20 +361,20 @@ void KLiveUiRecordingEngine::beginMerge(const QString &name)
     KLiveUiCommand cmd;
     cmd.type = KLiveUi::BeginMergeCommand;
     cmd.name = name;
-    *storage << cmd;
+    storage << cmd;
 }
 
 void KLiveUiRecordingEngine::endMerge()
 {
     KLiveUiCommand cmd;
     cmd.type = KLiveUi::EndMergeCommand;
-    *storage << cmd;
+    storage << cmd;
 }
 
-void KLiveUiEngine::replay(QObject *component, KLiveUiStorage *storage)
+void KLiveUiEngine::replay(QObject *component, const KLiveUiStorage &storage)
 {
-    for (int i = 0; i < storage->count(); ++i) {
-        const KLiveUiCommand &cmd = storage->at(i);
+    for (int i = 0; i < storage.count(); ++i) {
+        const KLiveUiCommand &cmd = storage.at(i);
         switch (cmd.type) {
             case KLiveUi::BeginWidgetCommand:
                 beginWidget(component, cmd.widgetType, cmd.title, cmd.name);
@@ -464,7 +463,7 @@ void KLiveUiBuilder::end()
 {
     if (d) {
         if (d->component)
-          d->component->d->storage = static_cast<KLiveUiRecordingEngine*>(d->engine)->takeStorage();
+          d->component->d->storage = static_cast<KLiveUiRecordingEngine*>(d->engine)->storage;
         delete d->engine;
         delete d;
         d = 0;
@@ -678,13 +677,6 @@ void KLiveUiBuilder::populateFromXmlGui(const QString &fileName, KActionCollecti
     XmlGuiHandler handler(this, d->object, collection);
     reader.setContentHandler(&handler);
     reader.parse(&source, /*incremental=*/false);
-}
-
-KLiveUiStorage * KLiveUiRecordingEngine::takeStorage( )
-{
-    KLiveUiStorage* s = storage;
-    storage = 0;
-    return s;
 }
 
 KLiveUiPrivate::MenuOrWidgetDeleter::MenuOrWidgetDeleter(QWidget *widgetOrMenu, QObject *component)

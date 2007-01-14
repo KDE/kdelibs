@@ -69,13 +69,11 @@ class KLiveUiComponentPrivate
 public:
     KLiveUiComponentPrivate()
     {
-        storage = 0;
         instance = 0;
     }
 
     ~KLiveUiComponentPrivate()
     {
-        delete storage;
     }
 
     inline void _k_subComponentDestroyed(QObject *o) {
@@ -89,7 +87,7 @@ public:
     }
 
     QPointer<QWidget> builderWidget;
-    KLiveUiStorage*   storage;
+    KLiveUiStorage    storage;
     QList<KLiveUiComponent *> subComponents;
     QSet<QAction *> activeActions;
     KInstance *instance;
@@ -150,7 +148,7 @@ public:
     virtual void beginMerge(const QString &name) = 0;
     virtual void endMerge() = 0;
 
-    void replay(QObject *component, KLiveUiStorage* storage);
+    void replay(QObject *component, const KLiveUiStorage &storage);
 };
 
 class KLiveUiMainWindowEngine : public KLiveUiEngine
@@ -176,7 +174,6 @@ class KLiveUiRecordingEngine : public KLiveUiEngine
 {
 public:
     KLiveUiRecordingEngine();
-    virtual ~KLiveUiRecordingEngine() { delete storage; }
 
     virtual QWidget *beginWidget(QObject *component, KLiveUi::WidgetType type, const QString &title = QString(), const QString &name = QString());
     virtual void endWidget(KLiveUi::WidgetType);
@@ -186,9 +183,7 @@ public:
     virtual void beginMerge(const QString &name);
     virtual void endMerge();
 
-    KLiveUiStorage* takeStorage();
-
-    KLiveUiStorage* storage;
+    KLiveUiStorage storage;
 };
 
 #endif
