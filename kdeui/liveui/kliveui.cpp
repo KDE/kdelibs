@@ -311,6 +311,7 @@ void KLiveUiMainWindowEngine::beginMerge(const QString &name)
             && !action->isVisible()
             && action->objectName() == groupName) {
             beforeAction = action;
+            break;
         }
 }
 
