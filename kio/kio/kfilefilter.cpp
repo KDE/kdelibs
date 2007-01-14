@@ -51,7 +51,7 @@ void KSimpleFileFilter::setNameFilters( const QStringList& nameFilters,
 {
     m_nameFilters.clear();
 
-    foreach ( QString filter, nameFilters )
+    foreach ( const QString &filter, nameFilters )
         m_nameFilters.append(QRegExp(filter, caseSensitive, QRegExp::Wildcard));
 }
 

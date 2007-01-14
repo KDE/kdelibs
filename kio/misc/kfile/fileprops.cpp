@@ -445,7 +445,7 @@ int main( int argc, char **argv )
 
     QStringList groupsToUse;
     QByteArrayList suppliedGroups = args->getOptionList( "groups" );
-    foreach (QByteArray array, suppliedGroups)
+    foreach (const QByteArray &array, suppliedGroups)
         groupsToUse.append( QString::fromLocal8Bit( array ) );
 
     QString mimeType;

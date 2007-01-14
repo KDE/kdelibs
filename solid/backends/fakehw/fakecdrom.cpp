@@ -75,7 +75,7 @@ QList<int> FakeCdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = fakeDevice()->property("writeSpeeds").toString().simplified().split(',');
 
-    foreach(const QString speed_str, speed_strlist)
+    foreach(const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }

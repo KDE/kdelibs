@@ -23,7 +23,7 @@
 QList<KNetwork::KIpAddress> FakeNetwork::stringlistToKIpAddress( const QStringList & addrStringList ) const
 {
     QList<KNetwork::KIpAddress> ipv4Addrs;
-    foreach ( QString addrString, addrStringList )
+    foreach ( const QString &addrString, addrStringList )
     {
         KNetwork::KIpAddress addr( addrString );
         ipv4Addrs.append( addr );

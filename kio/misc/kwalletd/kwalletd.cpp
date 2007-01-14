@@ -756,7 +756,7 @@ QStringList KWalletD::wallets() const {
 
 	dir.setFilter(QDir::Files | QDir::NoSymLinks);
 
-	foreach (QFileInfo fi, dir.entryInfoList()) {
+	foreach (const QFileInfo &fi, dir.entryInfoList()) {
 		QString fn = fi.fileName();
 		if (fn.endsWith(".kwl")) {
 			fn.truncate(fn.length()-4);

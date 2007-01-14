@@ -70,7 +70,7 @@ Solid::DeviceManager::~DeviceManager()
 {
     typedef QPair<Device*, Ifaces::Device*> DeviceIfacePair;
 
-    foreach( DeviceIfacePair pair, d->devicesMap.values() )
+    foreach( const DeviceIfacePair &pair, d->devicesMap.values() )
     {
         delete pair.first;
         delete pair.second;
@@ -90,7 +90,7 @@ Solid::DeviceList Solid::DeviceManager::allDevices() const
 
     QStringList udis = backend->allDevices();
 
-    foreach( QString udi, udis )
+    foreach( const QString &udi, udis )
     {
         QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
 
@@ -165,7 +165,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &par
 
     QStringList udis = backend->devicesFromQuery( parentUdi, capability );
 
-    foreach( QString udi, udis )
+    foreach( const QString &udi, udis )
     {
         QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
 

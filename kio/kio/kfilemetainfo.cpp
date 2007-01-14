@@ -540,7 +540,7 @@ bool KFileMetaInfo::applyChanges( const QString& path )
         else
         {
             QStringList keys = group.keys();
-            foreach (QString key, keys)
+            foreach (const QString &key, keys)
             {
                 if ( group[key].isModified() )
                 {

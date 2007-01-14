@@ -715,7 +715,7 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
       minfreq = (*it).freq;
   }
 
-  foreach(QString path, pathList)
+  foreach(const QString &path, pathList)
     removeEntry(instance, path, 0);
 
   if (minfreq > freq) {

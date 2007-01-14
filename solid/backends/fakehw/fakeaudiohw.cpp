@@ -68,7 +68,7 @@ Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType()
 
     QStringList type_list = fakeDevice()->property( "type" ).toString().split( "," );
 
-    foreach( QString type_str, type_list )
+    foreach( const QString &type_str, type_list )
     {
         if ( type_str == "control" )
         {

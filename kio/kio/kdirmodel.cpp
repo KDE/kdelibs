@@ -494,7 +494,7 @@ QStringList KDirModel::mimeTypes( ) const
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
     KUrl::List urls;
-    foreach ( QModelIndex index, indexes ) {
+    foreach ( const QModelIndex &index, indexes ) {
         urls << d->nodeForIndex( index )->item()->url();
     }
     QMimeData *data = new QMimeData();

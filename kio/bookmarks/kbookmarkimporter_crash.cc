@@ -89,7 +89,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     QSet<QString> activeLogs;
 
     QStringList apps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
-    foreach ( QString clientId, apps )
+    foreach ( const QString &clientId, apps )
     {
         if ( !clientId.startsWith( QLatin1String("org.kde.konqueror") ) )
             continue;

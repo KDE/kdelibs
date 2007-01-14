@@ -147,7 +147,7 @@ Solid::NetworkList Solid::NetworkInterface::networks() const
 
     QStringList uniList = device->networks();
 
-    foreach( QString uni, uniList )
+    foreach( const QString &uni, uniList )
     {
         Network *network = findRegisteredNetwork( uni );
         if ( network!=0 )

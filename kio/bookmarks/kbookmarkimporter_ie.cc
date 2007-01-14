@@ -72,7 +72,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( const QString &dirname, const QS
    if (dirname != m_fileName)
       emit newFolder( foldername, false, "" );
 
-   foreach (QFileInfo fi, list) {
+   foreach (const QFileInfo &fi, list) {
       if (fi.fileName() == "." || fi.fileName() == "..") continue;
 
       if (fi.isDir()) {

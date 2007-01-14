@@ -32,7 +32,7 @@ ProgressListModel::ProgressListModel(QObject *parent)
 
 ProgressListModel::~ProgressListModel()
 {
-    foreach (jobInfo it, jobInfoList)
+    foreach (const jobInfo &it, jobInfoList)
     {
         delete it.progressBar;
         delete it.iconLoader;
@@ -127,7 +127,7 @@ QModelIndex ProgressListModel::index(int row, int column, const QModelIndex &par
 QModelIndex ProgressListModel::indexForJob(uint jobId) const
 {
     int i = 0;
-    foreach (jobInfo it, jobInfoList)
+    foreach (const jobInfo &it, jobInfoList)
     {
         if (it.jobId == jobId)
             return createIndex(i, 0, iconLoader(i));

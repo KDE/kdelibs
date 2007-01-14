@@ -806,7 +806,7 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     KUrl u;
     QString text;
 #ifdef Q_WS_WIN
-    foreach( QFileInfo drive,QFSFileEngine::drives() ) 
+    foreach( const QFileInfo &drive,QFSFileEngine::drives() ) 
     {
         u.setPath( drive.filePath() );
         text = i18n("Drive: %1",  u.toLocalFile() );

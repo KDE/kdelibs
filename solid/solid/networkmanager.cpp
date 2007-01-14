@@ -75,7 +75,7 @@ Solid::NetworkManager::~NetworkManager()
     typedef QPair<NetworkInterface*, Ifaces::NetworkInterface*> NetworkInterfaceIfacePair;
 
     // Delete all the devices, they are now outdated
-    foreach( NetworkInterfaceIfacePair pair, d->networkInterfaceMap.values() )
+    foreach( const NetworkInterfaceIfacePair &pair, d->networkInterfaceMap.values() )
     {
         delete pair.first;
         delete pair.second;
@@ -93,7 +93,7 @@ Solid::NetworkInterfaceList Solid::NetworkManager::buildDeviceList( const QStrin
 
     if ( backend == 0 ) return list;
 
-    foreach( QString uni, uniList )
+    foreach( const QString &uni, uniList )
     {
         QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = d->findRegisteredNetworkInterface( uni );
 

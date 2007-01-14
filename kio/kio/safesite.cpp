@@ -170,7 +170,7 @@ QString Report::report(const QString& service) const {
 QMap<QString, QString> Report::metaData(const QString& service) const {
     if (service.isNull()) {
         MetaData md;
-        foreach (MetaData i, _metaData) {
+        foreach (const MetaData &i, _metaData) {
             md.unite(i);
         }
         return md;

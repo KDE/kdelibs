@@ -64,7 +64,7 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
     // this way they'll get exported on the bus
     // that means they'll be created twice, but that won't be
     // a problem for unit testing.
-    foreach ( QString capability, d->capabilityList )
+    foreach ( const QString &capability, d->capabilityList )
     {
         Solid::Capability::Type type = FakeCapability::fromString( capability );
         createCapability( type );
