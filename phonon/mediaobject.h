@@ -41,7 +41,7 @@ namespace Phonon
 	 * \code
 	 * media = new MediaObject( this );
 	 * connect( media, SIGNAL( finished() ), SLOT( slotFinished() );
-	 * media->setUrl( "/home/username/music/filename.ogg" );
+	 * media->setUrl( KUrl("/home/username/music/filename.ogg") );
 	 * media->play();
 	 * \endcode
 	 *
