@@ -1,6 +1,7 @@
 
 #include "tst_kliveui.h"
 #include <kmenu.h>
+#include <kmenubar.h>
 
 void tst_GuiEditor::init()
 {
