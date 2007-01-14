@@ -145,7 +145,7 @@ class KInstance;
 	notification->setPixmap( contact->pixmap() );
 	notification->setActions( QStringList( i18n( "Open chat" ) ) );
 	
-	foreach( QString group , contact->groups() ) {
+	foreach( const QString &group , contact->groups() ) {
 		notification->addContext( "group" , group ) ;
 	}
 	

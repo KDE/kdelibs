@@ -203,7 +203,7 @@ void tst_KActionCollection::insertReplaces2()
 KConfig *tst_KActionCollection::clearConfig()
 {
     KConfig *cfg = KGlobal::config();
-    foreach (QString key, cfg->entryMap(collection->configGroup()).keys())
+    foreach (const QString &key, cfg->entryMap(collection->configGroup()).keys())
         cfg->deleteEntry(key);
     cfg->setGroup(collection->configGroup());
     return cfg;

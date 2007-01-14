@@ -118,7 +118,7 @@ KPalette::save()
 
    str << "KDE RGB Palette\n";
    str << description << "\n";
-   foreach (ColorNode node, mColorList)
+   foreach (const ColorNode &node, mColorList)
    {
        int r,g,b;
        node.color.getRgb(&r, &g, &b);

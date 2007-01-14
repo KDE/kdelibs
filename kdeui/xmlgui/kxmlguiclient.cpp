@@ -614,7 +614,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
 {
   QList<DocStruct> allDocuments;
 
-  foreach (QString file, files)
+  foreach (const QString &file, files)
   {
     //kDebug() << "KXMLGUIClient::findMostRecentXMLFile " << *it << endl;
     QString data = KXMLGUIFactory::readConfigFile( file );

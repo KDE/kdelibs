@@ -70,7 +70,7 @@ KCodecAction::~KCodecAction()
 void KCodecAction::init()
 {
     d->defaultAction = addAction(i18n("Default"));
-    foreach(QString encodingName, KGlobal::charsets()->descriptiveEncodingNames())
+    foreach(const QString &encodingName, KGlobal::charsets()->descriptiveEncodingNames())
        addAction(encodingName);
 #if 0
     addSeparator();
