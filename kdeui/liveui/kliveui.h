@@ -95,8 +95,6 @@ protected:
     virtual void removeComponentGui();
 
 private:
-    KLiveUiStorage* storage() const;
-    void setStorage(KLiveUiStorage* storage);
     Q_PRIVATE_SLOT(d, void _k_subComponentDestroyed(QObject *))
     Q_PRIVATE_SLOT(d, void _k_activeActionDestroyed(QObject *))
 

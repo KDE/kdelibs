@@ -221,16 +221,6 @@ QSet<QAction *> KLiveUiComponent::activeActions()
     return d->activeActions;
 }
 
-KLiveUiStorage* KLiveUiComponent::storage() const
-{
-    return d->storage;
-}
-
-void KLiveUiComponent::setStorage(KLiveUiStorage* storage)
-{
-    d->storage = storage;
-}
-
 QAction *KLiveUiEngine::addMergePlaceholder(const QString &name, QObject *parent)
 {
     QAction *a = new QAction(parent);
@@ -474,7 +464,7 @@ void KLiveUiBuilder::end()
 {
     if (d) {
         if (d->component)
-          d->component->setStorage(static_cast<KLiveUiRecordingEngine*>(d->engine)->takeStorage());
+          d->component->d->storage = static_cast<KLiveUiRecordingEngine*>(d->engine)->takeStorage();
         delete d->engine;
         delete d;
         d = 0;
