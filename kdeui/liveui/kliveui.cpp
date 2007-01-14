@@ -111,7 +111,7 @@ static bool isAncestor(QObject *toplevel, QObject *child)
     return false;
 }
 
-void KLiveUiComponent::createComponentGui()
+void KLiveUiComponent::createGui()
 {
     if (!qobject_cast<KMainWindow*>(builderWidget())) {
         kWarning() << k_funcinfo << "Attempted to create a gui on a non-mainwindow widget (not supported yet)." << endl;
@@ -123,16 +123,20 @@ void KLiveUiComponent::createComponentGui()
         e.replay(this, d->storage);
     }
 
+    createComponentGui();
+
     QWidget *bw = builderWidget();
     for (int i = 0; i < d->subComponents.count(); ++i) {
         KLiveUiComponent *c = d->subComponents.at(i);
         c->setBuilderWidget(bw);
-        c->createComponentGui();
+        c->createGui();
     }
 }
 
-void KLiveUiComponent::removeComponentGui()
+void KLiveUiComponent::removeGui()
 {
+    removeComponentGui();
+
     QWidget *bw = builderWidget();
 
     foreach (QAction *action, d->activeActions) {
@@ -152,8 +156,16 @@ void KLiveUiComponent::removeComponentGui()
     for (int i = 0; i < d->subComponents.count(); ++i) {
         KLiveUiComponent *c = d->subComponents.at(i);
         c->setBuilderWidget(bw);
-        c->removeComponentGui();
+        c->removeGui();
     }
+}
+
+void KLiveUiComponent::createComponentGui()
+{
+}
+
+void KLiveUiComponent::removeComponentGui()
+{
 }
 
 KInstance *KLiveUiComponent::instance() const

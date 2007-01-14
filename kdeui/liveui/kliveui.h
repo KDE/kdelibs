@@ -77,8 +77,8 @@ public:
     void setBuilderWidget(QWidget *w);
     QWidget *builderWidget() const;
 
-    virtual void createComponentGui();
-    virtual void removeComponentGui();
+    void createGui();
+    void removeGui();
 
     virtual KInstance *instance() const;
 
@@ -88,6 +88,10 @@ public:
     QList<KLiveUiComponent *> subComponents() const;
 
     QSet<QAction *> activeActions();
+
+protected:
+    virtual void createComponentGui();
+    virtual void removeComponentGui();
 
 private:
     KLiveUiStorage* storage() const;

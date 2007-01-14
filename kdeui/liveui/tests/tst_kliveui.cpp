@@ -19,8 +19,6 @@ void SampleComponent::createComponentGui()
     builder.beginMenu("Components", "components");
     builder.beginMenu("SampleComponent", "samplecomponent");
     builder.addAction("Test Action");
-
-    KLiveUiComponent::createComponentGui(); // #######
 }
 
 void tst_GuiEditor::init()
@@ -155,7 +153,7 @@ void tst_GuiEditor::subComponents()
     builder.addAction("Test");
     builder.end();
 
-    parent->createComponentGui();
+    parent->createGui();
     QCOMPARE(mw->menuBar()->actions().count(), 1);
     QAction *menuAction = mw->menuBar()->actions().first();
     QVERIFY(menuAction);
@@ -167,7 +165,7 @@ void tst_GuiEditor::subComponents()
 
     QVERIFY(!child->activeActions().isEmpty());
 
-    parent->removeComponentGui();
+    parent->removeGui();
     QVERIFY(mw->menuBar()->actions().isEmpty());
     QVERIFY(child->activeActions().isEmpty());
 
@@ -186,7 +184,7 @@ void tst_GuiEditor::deleteActions()
     SampleComponent plugin(mw);
 
     QVERIFY(plugin.activeActions().isEmpty());
-    plugin.createComponentGui();
+    plugin.createGui();
     QVERIFY(!plugin.activeActions().isEmpty());
 
     foreach (QAction *a, plugin.activeActions())
