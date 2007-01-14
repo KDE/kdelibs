@@ -90,6 +90,10 @@ KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
+    if( !d->globalShortcut.isEmpty()) {
+        d->globalShortcut = KShortcut();
+        KGlobalAccel::self()->checkAction(this); // unregister
+    }
     delete d;
 }
 
