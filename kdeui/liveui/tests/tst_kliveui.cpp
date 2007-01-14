@@ -145,8 +145,11 @@ void tst_GuiEditor::subComponents()
     QCOMPARE(m->actions().count(), 1);
     QCOMPARE(m->actions().first()->text(), QString("Test"));
 
+    QVERIFY(!child->activeActions().isEmpty());
+
     parent->removeComponentGui();
     QVERIFY(mw->menuBar()->actions().isEmpty());
+    QVERIFY(child->activeActions().isEmpty());
 
     parent->removeSubComponent(child);
     QVERIFY(parent->subComponents().isEmpty());

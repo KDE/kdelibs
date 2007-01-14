@@ -58,28 +58,6 @@ Issues....:
 - Consider support for not-yet created action container widgets or custom containers (eg. begin/endGeneric)
 */
 
-class KLiveUiComponentPrivate
-{
-public:
-    KLiveUiComponentPrivate()
-    {
-        storage = 0;
-    }
-
-    ~KLiveUiComponentPrivate()
-    {
-        delete storage;
-    }
-
-    inline void _k_subComponentDestroyed(QObject *o) {
-        subComponents.removeAll(static_cast<KLiveUiComponent *>(o));
-    }
-
-    QPointer<QWidget> builderWidget;
-    KLiveUiStorage*   storage;
-    QList<KLiveUiComponent *> subComponents;
-};
-
 KLiveUiComponent::KLiveUiComponent(QObject* parent)
   : QObject(parent)
   , d(new KLiveUiComponentPrivate)
@@ -147,15 +125,14 @@ void KLiveUiComponent::removeComponentGui()
 {
     QWidget *bw = builderWidget();
 
-    foreach (QObject *child, children()) {
-        QAction *a = qobject_cast<QAction *>(child);
-        if (!a)
-            continue;
-        foreach (QWidget *widget, a->associatedWidgets()) {
+    foreach (QAction *action, d->activeActions) {
+        foreach (QWidget *widget, action->associatedWidgets()) {
             if (!bw || isAncestor(bw, widget))
-                widget->removeAction(a);
+                widget->removeAction(action);
         }
     }
+    d->activeActions.clear();
+
     foreach (QObject *ch, children())
         delete qobject_cast<KLiveUiPrivate::MenuOrWidgetDeleter *>(ch);
 
@@ -207,6 +184,11 @@ void KLiveUiComponent::setSubComponents(const QList<KLiveUiComponent *> &compone
 QList<KLiveUiComponent *> KLiveUiComponent::subComponents() const
 {
     return d->subComponents;
+}
+
+QSet<QAction *> KLiveUiComponent::activeActions()
+{
+    return d->activeActions;
 }
 
 KLiveUiStorage* KLiveUiComponent::storage() const
@@ -527,10 +509,9 @@ void KLiveUiBuilder::endToolBar()
 
 void KLiveUiBuilder::addAction(QAction *action)
 {
-    if (action->parent() != d->component && !qobject_cast<KActionCollection *>(action->parent())) {
-        qWarning("GuiEditor: addAction called with action not belonging to editing component");
-    }
     d->engine->addAction(action);
+    if (d->component)
+        d->component->d->activeActions.insert(action);
 }
 
 QAction *KLiveUiBuilder::addAction(const QString &text)

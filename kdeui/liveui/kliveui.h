@@ -87,6 +87,8 @@ public:
     void setSubComponents(const QList<KLiveUiComponent *> &components);
     QList<KLiveUiComponent *> subComponents() const;
 
+    QSet<QAction *> activeActions();
+
 private:
     KLiveUiStorage* storage() const;
     void setStorage(KLiveUiStorage* storage);

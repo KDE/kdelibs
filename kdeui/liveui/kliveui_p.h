@@ -24,8 +24,67 @@
 #include <QtXml/QXmlContentHandler>
 #include <QStack>
 #include <QObject>
+#include <QSet>
 
 #include <kdelibs_export.h>
+
+namespace KLiveUi
+{
+    enum WidgetType {
+        MenuBar,
+        Menu,
+        ToolBar
+    };
+
+    enum CommandType {
+        NoCommand,
+        BeginWidgetCommand,
+        EndWidgetCommand,
+        AddActionCommand,
+        BeginMergeCommand,
+        EndMergeCommand
+    };
+}
+
+struct KLiveUiCommand {
+    inline KLiveUiCommand()
+        : type(KLiveUi::NoCommand), widgetType(KLiveUi::Menu),
+          action(0)
+    {}
+
+    KLiveUi::CommandType type;
+    KLiveUi::WidgetType widgetType;
+    QAction *action;
+    QString title;
+    QString name;
+};
+
+class KLiveUiStorage : public QList<KLiveUiCommand>
+{
+};
+
+class KLiveUiComponentPrivate
+{
+public:
+    KLiveUiComponentPrivate()
+    {
+        storage = 0;
+    }
+
+    ~KLiveUiComponentPrivate()
+    {
+        delete storage;
+    }
+
+    inline void _k_subComponentDestroyed(QObject *o) {
+        subComponents.removeAll(static_cast<KLiveUiComponent *>(o));
+    }
+
+    QPointer<QWidget> builderWidget;
+    KLiveUiStorage*   storage;
+    QList<KLiveUiComponent *> subComponents;
+    QSet<QAction *> activeActions;
+};
 
 namespace KLiveUiPrivate {
 // ######################################
@@ -66,41 +125,6 @@ private:
 };
 
 }
-
-namespace KLiveUi
-{
-    enum WidgetType {
-        MenuBar,
-        Menu,
-        ToolBar
-    };
-
-    enum CommandType {
-        NoCommand,
-        BeginWidgetCommand,
-        EndWidgetCommand,
-        AddActionCommand,
-        BeginMergeCommand,
-        EndMergeCommand
-    };
-}
-
-struct KLiveUiCommand {
-    inline KLiveUiCommand()
-        : type(KLiveUi::NoCommand), widgetType(KLiveUi::Menu),
-          action(0)
-    {}
-
-    KLiveUi::CommandType type;
-    KLiveUi::WidgetType widgetType;
-    QAction *action;
-    QString title;
-    QString name;
-};
-
-class KLiveUiStorage : public QList<KLiveUiCommand>
-{
-};
 
 class KLiveUiEngine
 {
