@@ -147,7 +147,10 @@ void KLiveUiComponent::removeComponentGui()
 {
     QWidget *bw = builderWidget();
 
-    foreach (QAction *a, findChildren<QAction *>()) {
+    foreach (QObject *child, children()) {
+        QAction *a = qobject_cast<QAction *>(child);
+        if (!a)
+            continue;
         foreach (QWidget *widget, a->associatedWidgets()) {
             if (!bw || isAncestor(bw, widget))
                 widget->removeAction(a);
