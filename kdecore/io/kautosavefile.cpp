@@ -165,11 +165,10 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
         files = KGlobal::dirs()->findAllResources( "stale", url+QChar::fromLatin1('*') , true, false );
 
     QList<KAutoSaveFile *> list;
-    QString file;
     KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(file, files)
+    foreach(const QString &file, files)
     {
         // sets managedFile
         asFile = new KAutoSaveFile(filename);

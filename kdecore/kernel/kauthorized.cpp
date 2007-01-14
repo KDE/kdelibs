@@ -85,7 +85,7 @@ class URLActionRule
                       checkEqual(destHost, destHostEqual);
                    }
 
-     bool baseMatch(const KUrl &url, const QString &protClass)
+     bool baseMatch(const KUrl &url, const QString &protClass) const
      {
         if (baseProtWildCard)
         {
@@ -122,7 +122,7 @@ class URLActionRule
         return true;
      }
 
-     bool destMatch(const KUrl &url, const QString &protClass, const KUrl &base, const QString &baseClass)
+     bool destMatch(const KUrl &url, const QString &protClass, const KUrl &base, const QString &baseClass) const
      {
         if (destProtEqual)
         {
@@ -375,7 +375,7 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const KUrl &_baseURL
   destURL.setPath(QDir::cleanPath(destURL.path()));
   QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 
-  foreach(URLActionRule rule, d->urlActionRestrictions) {
+  foreach(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
          (action == rule.action) &&
          rule.baseMatch(baseURL, baseClass) &&

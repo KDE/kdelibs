@@ -1515,7 +1515,7 @@ inline QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefau
   QList<QVariant> vList;
 
   if (!aDefault.isEmpty()) {
-    foreach (T aValue, aDefault)
+    foreach (const T &aValue, aDefault)
       vList.append( aValue );
   }
   vList = readEntry( pKey, vList );
@@ -1556,7 +1556,7 @@ void KConfigBase::writeEntry( const char* pKey, const QList<T>& value,
 #endif
 
   QVariantList vList;
-  foreach(T aValue, value)
+  foreach(const T &aValue, value)
     vList.append(aValue);
 
   writeEntry( pKey, QVariant(vList), pFlags );

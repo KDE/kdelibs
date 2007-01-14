@@ -257,7 +257,7 @@ QStringList KConfigBackEnd::extraConfigFiles() const
 void KConfigBackEnd::setExtraConfigFiles( const QStringList &files )
 {
    removeAllExtraConfigFiles();
-   foreach( QString file, files )
+   foreach( const QString &file, files )
       mMergeStack.push(file);
 }
 
@@ -428,7 +428,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
   mConfigState = KConfigBase::ReadOnly;
   parseLocalConfig( mfileName, mLocalFileName );
 
-  foreach(QString fileName, mMergeStack)
+  foreach(const QString &fileName, mMergeStack)
   {
      mConfigState = KConfigBase::ReadOnly;
      parseLocalConfig( fileName, fileName );

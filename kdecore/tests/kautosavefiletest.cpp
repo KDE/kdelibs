@@ -47,7 +47,7 @@ qDebug() << "test_lcok";
 
 void KAutoSaveFileTest::cleanupTestCase()
 {
-    foreach ( QString fileToRemove, filesToRemove )
+    foreach ( const QString &fileToRemove, filesToRemove )
     {
         QFile::remove
             (fileToRemove);

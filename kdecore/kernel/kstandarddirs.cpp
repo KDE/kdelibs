@@ -1359,7 +1359,7 @@ void KStandardDirs::addResourcesFrom_krcdirs()
     QSettings iniFile(localFile, QSettings::IniFormat);
     iniFile.beginGroup("KStandardDirs");
     const QStringList resources = iniFile.allKeys();
-    foreach(QString key, resources)
+    foreach(const QString &key, resources)
     {
         QDir path(iniFile.value(key).toString());
         if (!path.exists())

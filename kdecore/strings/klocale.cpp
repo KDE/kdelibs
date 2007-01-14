@@ -286,7 +286,7 @@ void KLocalePrivate::initLanguageList(KConfigBase * config, bool useEnv)
       langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LANG") );
 
-      foreach (QString lang, langs)
+      foreach (const QString &lang, langs)
 	{
 	  QString ln, aCountry, chrset;
 	  KLocale::splitLocale(lang, ln, aCountry, chrset);
@@ -460,7 +460,7 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
   //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
   //    That was considered to be a bug by the Hebrew translators.
   QStringList list;
-  foreach ( QString language, languages )
+  foreach ( const QString &language, languages )
     if (    !language.isEmpty()
          && !list.contains( language )
          && isApplicationTranslatedInto( language ) )
@@ -565,8 +565,8 @@ void KLocalePrivate::updateCatalogs( )
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
   // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
-  foreach ( QString lang, languageList )
-    foreach ( QString name, catalogNames )
+  foreach ( const QString &lang, languageList )
+    foreach ( const QString &name, catalogNames )
       // create and add catalog for this name and language if it exists
       if ( ! KCatalog::catalogLocaleDir( name, lang ).isEmpty() )
       {

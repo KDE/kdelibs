@@ -359,7 +359,7 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
     d.setSorting( QDir::Name );
 
     uint maxBackupFound = 0;
-    foreach ( QFileInfo fi, d.entryInfoList() ) {
+    foreach ( const QFileInfo &fi, d.entryInfoList() ) {
         if ( fi.fileName().endsWith( backupExtension ) ) {
             // sTemp holds the file name, without the ending backupExtension
             QString sTemp = fi.fileName();

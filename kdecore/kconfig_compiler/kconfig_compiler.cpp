@@ -987,7 +987,7 @@ QString memberMutatorBody( CfgEntry *e )
   out << " = v;" << endl;
 
   if ( !e->signalList().empty() ) {
-    foreach(Signal signal, e->signalList()) {
+    foreach(const Signal &signal, e->signalList()) {
       out << "  " << This << varPath("settingsChanged") << " |= " << signalEnumName(signal.name) << ";" << endl;
     }
     out << "}" << endl;
@@ -1434,7 +1434,7 @@ int main( int argc, char **argv )
   if( hasSignals ) {
     h << endl;
     h << "  Q_SIGNALS:";
-    foreach(Signal signal, signalList) {
+    foreach(const Signal &signal, signalList) {
       h << endl;
       if ( !signal.label.isEmpty() ) {
         h << "    /**" << endl;
@@ -1829,7 +1829,7 @@ int main( int argc, char **argv )
   if ( hasSignals ) {
     cpp << "void " << className << "::" << "usrWriteConfig()" << endl;
     cpp << "{" << endl;
-    foreach(Signal signal, signalList) {
+    foreach(const Signal &signal, signalList) {
       cpp << "  if ( " << varPath("settingsChanged") << " & " << signalEnumName(signal.name) << " ) " << endl;
       cpp << "    emit " << signal.name << "(";
       QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
