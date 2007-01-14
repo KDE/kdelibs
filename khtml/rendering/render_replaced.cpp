@@ -154,6 +154,9 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
 
 void RenderWidget::detach()
 {
+    // warning: keep in sync with RenderObject::detach
+    
+    detachCounters();
     remove();
     deleteInlineBoxes();
 
@@ -167,6 +170,10 @@ void RenderWidget::detach()
         m_widget->removeEventFilter( this );
         m_widget->setMouseTracking( false );
     }
+
+    // make sure our DOM-node don't think we exist
+    if ( node() && node()->renderer() == this)
+        node()->setRenderer(0);
 
     deref();
 }
