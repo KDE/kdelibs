@@ -639,6 +639,25 @@ bool KHTMLPart::openURL( const KURL &url )
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
 
+  if (isFrameSet && urlcmp( url.url(), m_url.url(), true, true ) && args.softReload)
+  {
+    QValueList<khtml::ChildFrame*>::Iterator it = d->m_frames.begin();
+    const QValueList<khtml::ChildFrame*>::Iterator end = d->m_frames.end();
+    for (; it != end; ++it) {
+      KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
+      if (part->inherits("KHTMLPart"))
+      {
+        // We are reloading frames to make them jump into offsets.
+        KParts::URLArgs partargs( part->d->m_extension->urlArgs() );
+        partargs.reload = true;
+        part->d->m_extension->setURLArgs(partargs);
+
+        part->openURL( part->url() );
+      }
+    }/*next it*/
+    return true;
+  }
+
   if ( url.hasRef() && !isFrameSet )
   {
     bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();

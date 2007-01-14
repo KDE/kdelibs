@@ -87,6 +87,7 @@ struct URLArgsPrivate
 URLArgs::URLArgs()
 {
   reload = false;
+  softReload = false;
   xOffset = 0;
   yOffset = 0;
   trustedSource = false;
@@ -116,6 +117,7 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   delete d; d= 0;
 
   reload = args.reload;
+  softReload = args.softReload;
   xOffset = args.xOffset;
   yOffset = args.yOffset;
   serviceType = args.serviceType;
