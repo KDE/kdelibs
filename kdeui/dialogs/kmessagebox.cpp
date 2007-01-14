@@ -766,6 +766,7 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
+    dialog->setButtonToolTip( KDialog::Yes, QString() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::Yes );
     if( options & PlainCaption )
