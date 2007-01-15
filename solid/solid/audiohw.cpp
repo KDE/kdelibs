@@ -74,16 +74,15 @@ QStringList Solid::AudioHw::driverHandles()
             handle = handle.right(handle.size() - colon - 1);
 
             // get cardnum and devicenum
-            /*const int comma = handle.indexOf( ',' );
+            const int comma = handle.indexOf( ',' );
             if (comma > -1)
             {
-                d->devicenum = handle.right(handle.size() - 1 - comma).toInt();
-                d->cardnum = handle.left(comma).toInt();
+                // if its X,0 make it X
+                if ( handle.right(handle.size() - 1 - comma) == QChar( '0' ) )
+                {
+                    handle = handle.left( comma );
+                }
             }
-            else
-            {
-                d->cardnum = handle.toInt();
-            }*/
 
             if ( iface->deviceType() & Solid::AudioHw::AudioOutput )
             {
