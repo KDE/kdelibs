@@ -190,7 +190,7 @@ if test -z "$subdir" ; then
 	test -f "Doxyfile.in" || create_doxyfile_in
 
 	# Copy in logos and the like
-	for i in "favicon.ico" "kde_gear_64.png"
+	for i in "favicon.ico" "block_title_bottom.png" "block_title_mid.png" "block_title_top.png" "top-kde.jpg" "top-left.jpg" "top-right.jpg" "top.jpg"
 	do
 		cp "$DOXDATA/$i" . > /dev/null 2> /dev/null
 	done
