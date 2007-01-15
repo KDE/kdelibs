@@ -517,7 +517,8 @@ class KIO_EXPORT KDirOperator : public QWidget
      * I.e. when you go from /home/gis/src to /home/gis, the item "src" will
      * be made the current item.
      *
-     * Default is on.
+     * Default is off, because this behavior introduces bug #136630.
+     * Don't enable until this bug is fixed.
      */
 	// ### KDE4: make virtual
     void setEnableDirHighlighting( bool enable );

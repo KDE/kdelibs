@@ -74,7 +74,7 @@ public:
     KDirOperatorPrivate() {
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
-        dirHighlighting = true;
+        dirHighlighting = false;
         config = 0L;
         dropOptions = 0;
     }
