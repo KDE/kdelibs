@@ -239,20 +239,22 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
 
 bool Nepomuk::KMetaData::ResourceData::save()
 {
-  if( m_initialized ) {
-    RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+  RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
+  if( m_initialized ) {
     // make sure our graph exists
     // ==========================
-    if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) )
+    if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
       if( rr.addGraph( KMetaData::defaultGraph() ) ) {
 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
 	return false;
       }
+    }
 
     // remove everything about this resource from the store (FIXME: better and faster syncing)
     // =======================================================================================
     if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
+      kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
       return false;
     }
@@ -265,78 +267,86 @@ bool Nepomuk::KMetaData::ResourceData::save()
       return true;
     }
 
-    // save the type
-    // =============
-    if( rr.addStatement( KMetaData::defaultGraph(), 
-			 Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) ) ) {
+    // save all statements into the store
+    // ==================================
+    if( rr.addStatements( KMetaData::defaultGraph(), allStatements() ) ) {
+      kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
       return false;
     }
-
-    // save the properties
-    // ===================
-    for( PropertiesMap::iterator it = m_properties.begin();
-	 it != m_properties.end(); ++it ) {
-
-      // ignore removed properties (FIXME: should we also delete them from m_properties here?)
-      if( it.value().second & Removed )
-	continue;
-
-      // whatever gets saved is not Modified anymore
-      it.value().second &= ~Modified;
-
-      QString predicate = it.key();
-      const Variant& val = it.value().first;
-
-      // one-to-one Resource
-      if( val.isResource() ) {
-	if( rr.addStatement( KMetaData::defaultGraph(), 
-			     Statement( m_uri, predicate, val.toResource().uri() ) ) ) {
-	  ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	  return false;
-	}
+    else {
+      for( PropertiesMap::iterator it = m_properties.begin();
+	   it != m_properties.end(); ++it ) {
+	// whatever gets saved is not Modified anymore
+	it.value().second &= ~Modified;
       }
 
-      // one-to-many Resource
-      else if( val.isResourceList() ) {
-	const QList<Resource>& l = val.toResourceList();
-	for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-	  if( rr.addStatement( KMetaData::defaultGraph(), 
-			       Statement( m_uri, predicate, (*resIt).uri() ) ) ) {
-	    ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	    return false;
-	  }
-	}
-      }
-
-      // one-to-many literals
-      else if( val.isList() ) {
-	QStringList l = KMetaData::valuesToRDFLiterals( val );
-	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
-	  if( rr.addStatement( KMetaData::defaultGraph(), 
-			       Statement( m_uri, predicate, Node( *valIt, NodeLiteral ) ) ) ) {
-	    ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	    return false;
-	  }
-	}
-      }
-
-      // one-to-one literal
-      else {
-	if( rr.addStatement( KMetaData::defaultGraph(), 
-			     Statement( m_uri, 
-					predicate, 
-					Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) ) ) {
-	  ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	  return false;
-	}
-      }
+      return true;
     }
-
-    return true;
   }
   else
     return false;
+}
+
+
+QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements() const
+{
+  QList<Statement> statements;
+
+  if( m_initialized ) {
+
+    // if the resource has been deleted locally we are done
+    // ====================================================
+    if( !(m_flags & (Removed|Deleted)) ) {
+
+      // save the type
+      // =============
+      statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
+
+      // save the properties
+      // ===================
+      for( PropertiesMap::const_iterator it = m_properties.constBegin();
+	   it != m_properties.constEnd(); ++it ) {
+
+	// ignore removed properties (FIXME: should we also delete them from m_properties here?)
+	if( it.value().second & Removed )
+	  continue;
+
+	QString predicate = it.key();
+	const Variant& val = it.value().first;
+
+	// one-to-one Resource
+	if( val.isResource() ) {
+	  statements.append( Statement( m_uri, predicate, val.toResource().uri() ) );
+	}
+
+	// one-to-many Resource
+	else if( val.isResourceList() ) {
+	  const QList<Resource>& l = val.toResourceList();
+	  for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
+	    statements.append( Statement( m_uri, predicate, (*resIt).uri() ) );
+	  }
+	}
+
+	// one-to-many literals
+	else if( val.isList() ) {
+	  QStringList l = KMetaData::valuesToRDFLiterals( val );
+	  for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
+	    statements.append( Statement( m_uri, predicate, Node( *valIt, NodeLiteral ) ) );
+	  }
+	}
+
+	// one-to-one literal
+	else {
+	  statements.append( Statement( m_uri, 
+					predicate, 
+					Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) );
+	}
+      }
+    }
+  }
+
+  return statements;
 }
 
 

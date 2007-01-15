@@ -19,6 +19,8 @@
 
 #include <variant.h>
 
+#include <knep/services/rdf.h>
+
 
 namespace Nepomuk {
   namespace KMetaData {
@@ -95,6 +97,11 @@ namespace Nepomuk {
 	 * Entries in the DB that do not exist in this object will be removed.
 	 *
 	 * Use merge() to preserve non-existing propreties.
+	 *
+	 * This method will save directly and uncached to the store. It is recommended to
+	 * rely on the cached syncing that the ResourceManger provides.
+	 *
+	 * \sa allStatements
 	 */
 	bool save();
 
@@ -102,6 +109,12 @@ namespace Nepomuk {
 	 * Merge in changes from the local store
 	 */
 	bool merge();
+
+	/**
+	 * Generates a list of all RDF statements this Resource data object currently represents.
+	 * It is used by sync() and by the ResourceManger to do cached syncing.
+	 */
+	QList<Backbone::Services::RDF::Statement> allStatements() const;
 
 	/**
 	 * Compares the properties of two ResourceData objects taking into account the Deleted flag
