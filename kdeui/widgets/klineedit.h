@@ -194,6 +194,14 @@ public:
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
    /**
+    * Disables completion modes by makeing them non-checkable.
+    *
+    * The context menu allows to change the completion mode.
+    * This method allows to disable some modes.
+    */
+    void setCompletionModeDisabled( KGlobalSettings::Completion mode, bool disable = true );
+
+   /**
     * Enables/disables the popup (context) menu.
     *
     * Note that when this function is invoked with its argument
@@ -514,6 +522,11 @@ protected:
     * See QLineEdit::contextMenuEvent().
     */
     virtual void contextMenuEvent( QContextMenuEvent * );
+
+    /**
+    * To modify context menu overwrite this function.
+    */
+    virtual QMenu* createStandardContextMenu();
 
     /**
     * Re-implemented to handle URI drops.

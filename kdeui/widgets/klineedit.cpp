@@ -119,6 +119,8 @@ public:
     KCompletionBox *completionBox;
 
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
+
+    QMap<KGlobalSettings::Completion, bool> disableCompletionMap;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
@@ -276,6 +278,11 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
         d->autoSuggest = false;
 
     KCompletionBase::setCompletionMode( mode );
+}
+
+void KLineEdit::setCompletionModeDisabled( KGlobalSettings::Completion mode, bool disable )
+{
+  d->disableCompletionMap[ mode ] = disable;
 }
 
 void KLineEdit::setCompletedText( const QString& t, bool marked )
@@ -986,11 +993,9 @@ void KLineEdit::tripleClickTimeout()
     d->possibleTripleClick=false;
 }
 
-void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
+QMenu* KLineEdit::createStandardContextMenu()
 {
-    if (!d->bEnableMenu)
-        return;
-    QMenu *popup = createStandardContextMenu();
+    QMenu *popup = QLineEdit::createStandardContextMenu();
     KIconTheme::assignIconsToContextMenu( KIconTheme::TextEditor, popup->actions () );
 
     // If a completion object is present and the input
@@ -1015,12 +1020,12 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
 
-        d->shellCompletionAction->setCheckable(true);
-        d->noCompletionAction->setCheckable(true);
-        d->popupCompletionAction->setCheckable(true);
-        d->autoCompletionAction->setCheckable(true);
-        d->shortAutoCompletionAction->setCheckable(true);
-        d->popupAutoCompletionAction->setCheckable(true);
+        d->shellCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionShell ] );
+        d->noCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionNone ] );
+        d->popupCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopup ] );
+        d->autoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionAuto ] );
+        d->shortAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
+        d->popupAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
 
         KGlobalSettings::Completion mode = completionMode();
         d->noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
@@ -1035,6 +1040,15 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
             d->defaultAction = subMenu->addAction( i18n("Default") );
         }
     }
+
+    return popup;
+}
+
+void KLineEdit::contextMenuEvent( QContextMenuEvent *e )
+{
+    if ( !d->bEnableMenu )
+      return;
+    QMenu *popup = createStandardContextMenu();
 
     // ### do we really need this?  Yes, Please do not remove!  This
     // allows applications to extend the popup menu without having to
