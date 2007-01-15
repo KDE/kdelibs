@@ -74,13 +74,6 @@ struct KPARTS_EXPORT URLArgs
    */
   bool reload;
   /**
-   * @p softReload is set when user just hits reload button. It's used
-   * currently for two different frameset reload strategies. In case of
-   * soft reload individual frames are reloaded instead of reloading whole
-   * frameset.
-   */
-  bool softReload;
-  /**
    * @p xOffset is the horizontal scrolling of the part's widget
    * (in case it's a scrollview). This is saved into the history
    * and restored when going back in the history.
