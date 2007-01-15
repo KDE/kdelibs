@@ -2907,7 +2907,7 @@ void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty
             clipRect = pI.p->xForm(clipRect);
             QRegion creg(clipRect);
             QRegion old = pI.p->clipRegion();
-            if (!old.isNull())
+            if (!old.isEmpty())
                 creg = old.intersect(creg);
             pI.p->setClipRegion(creg);
         }

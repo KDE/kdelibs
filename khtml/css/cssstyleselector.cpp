@@ -1164,21 +1164,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             //kDebug( 6080 ) << "checking for contains match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.contains(sel_str, caseSensitive);
+            return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.startsWith(sel_str, caseSensitive);
+            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match" << endl;
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.endsWith(sel_str, caseSensitive);
+            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::Hyphen:
         {
@@ -1486,8 +1486,8 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
             if(langAttr.length() < langSel.length()) return false;
 
-            langAttr = langAttr.lower();
-            langSel = langSel.lower();
+            langAttr = langAttr.toLower();
+            langSel = langSel.toLower();
 //             kDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
             return (langAttr == langSel || langAttr.startsWith(langSel+"-"));
         }

@@ -825,8 +825,8 @@ void RenderPartObject::updateWidget()
               else if(classId.indexOf(QLatin1String("02BF25D5-8C17-4B23-BC80-D3488ABDDC6B")) >= 0)
                   serviceType = "video/quicktime";
               // http://msdn.microsoft.com/library/en-us/dnwmt/html/adding_windows_media_to_web_pages__etse.asp?frame=true
-              else if(classId.find(QString::fromLatin1("6BF52A52-394A-11d3-B153-00C04F79FAA6")) >= 0 ||
-                      classId.find(QString::fromLatin1("22D6f312-B0F6-11D0-94AB-0080C74C7E95")) >= 0)
+              else if(classId.indexOf(QString::fromLatin1("6BF52A52-394A-11d3-B153-00C04F79FAA6")) >= 0 ||
+                      classId.indexOf(QString::fromLatin1("22D6f312-B0F6-11D0-94AB-0080C74C7E95")) >= 0)
                   serviceType = "video/x-msvideo";
 
               else
