@@ -392,6 +392,21 @@ void KArchiveTest::testCreateZip()
     QCOMPARE( arr, zipMimeType );
 }
 
+void KArchiveTest::testCreateZipError()
+{
+    // Giving a directory name to kzip must give an error case in close(), see #136630.
+    // Otherwise we just lose data.
+    KZip zip( QDir::currentPath() );
+
+    bool ok = zip.open( QIODevice::WriteOnly );
+    QVERIFY( ok );
+
+    writeTestFilesToArchive( &zip );
+
+    ok = zip.close();
+    QVERIFY( !ok );
+}
+
 void KArchiveTest::testReadZip()
 {
     // testCreateZip must have been run first.

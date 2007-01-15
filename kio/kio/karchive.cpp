@@ -176,7 +176,7 @@ bool KArchive::close()
         delete m_dev; // we created it ourselves in open()
     }
     if ( d->saveFile ) {
-        d->saveFile->finalize();
+        closeSucceeded = d->saveFile->finalize();
         delete d->saveFile;
         d->saveFile = 0;
     }
