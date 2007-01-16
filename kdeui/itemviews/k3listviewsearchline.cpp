@@ -416,14 +416,7 @@ void K3ListViewSearchLine::itemAdded(Q3ListViewItem *item) const
 
 void K3ListViewSearchLine::listViewDeleted(QObject *o)
 {
-    K3ListView *lv = dynamic_cast<K3ListView *>(o);
-    if (!lv) {
-        kWarning() << k_funcinfo << "an object other than K3ListView passed"
-                << endl;
-        return;
-    }
-
-    d->listViews.removeAll(lv);
+    d->listViews.removeAll(static_cast<K3ListView *>(o));
     setEnabled(d->listViews.isEmpty());
 }
 
