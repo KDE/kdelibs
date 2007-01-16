@@ -517,7 +517,6 @@ install( FILES
   KZoneAllocator
   KonqBookmarkMenu
   KonqBookmarkOwner
-  ListProgress
   NET
   NETRootInfo
   NETRootInfo2
@@ -529,14 +528,12 @@ install( FILES
   OrgKdeKLauncherInterface
   PTY
   Pointer
-  ProgressItem
   PtyProcess
   QMetaTypeId
   SshProcess
   StubProcess
   SuProcess
   ThumbCreator
-  UIServer
   Value
   kdbgstream
   kndbgstream
