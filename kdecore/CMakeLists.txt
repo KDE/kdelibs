@@ -170,10 +170,10 @@ set(kdecore_LIB_SRCS
    network/kstreamsocket.cpp
    network/ksocketbuffer.cpp
    network/netsupp.cpp
-   strings/kcatalog.cpp
-   strings/kcharsets.cpp
-   strings/klocale.cpp
-   strings/klocalizedstring.cpp
+   localization/kcatalog.cpp
+   localization/kcharsets.cpp
+   localization/klocale.cpp
+   localization/klocalizedstring.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
    sycoca/ksycocafactory.cpp
@@ -320,10 +320,10 @@ install( FILES
    services/kserviceoffer.h
    services/ktrader.h
    services/kplugininfo.h
-   strings/kcatalog.h
-   strings/kcharsets.h
-   strings/klocale.h
-   strings/klocalizedstring.h
+   localization/kcatalog.h
+   localization/kcharsets.h
+   localization/klocale.h
+   localization/klocalizedstring.h
    sycoca/kprotocolinfo.h
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h

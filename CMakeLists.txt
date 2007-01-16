@@ -62,7 +62,7 @@ set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore
                           ${CMAKE_SOURCE_DIR}/kdecore/kernel
                           ${CMAKE_SOURCE_DIR}/kdecore/network
                           ${CMAKE_SOURCE_DIR}/kdecore/services
-                          ${CMAKE_SOURCE_DIR}/kdecore/strings
+                          ${CMAKE_SOURCE_DIR}/kdecore/localization
                           ${CMAKE_SOURCE_DIR}/kdecore/sycoca
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
