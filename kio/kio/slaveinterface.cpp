@@ -31,6 +31,7 @@
 #include <time.h>
 #include <qtimer.h>
 #include <QtDBus/QtDBus>
+#include <QPointer>
 
 using namespace KIO;
 

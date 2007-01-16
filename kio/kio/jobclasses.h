@@ -25,10 +25,6 @@
 #include <qobject.h>
 #include <qlinkedlist.h>
 #include <qstringlist.h>
-#include <qpointer.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -704,6 +700,12 @@ public:
                     bool showProgressInfo);
 
         /**
+         * Sets the modification time of the file to be created (by KIO::put)
+         * Note that some kioslaves might ignore this.
+         */
+        void setModificationTime( const QDateTime& mtime );
+
+        /**
 	 * @internal
          * Called by the scheduler when a @p slave gets to
          * work on this job.
@@ -1084,7 +1086,7 @@ public:
          * in which case the mtime of the source is applied to the destination (if the protocol
          * supports the concept).
          */
-        void setModificationTime( time_t mtime );
+        void setModificationTime( const QDateTime& mtime );
 
 	/**
 	 * Returns the source URL.

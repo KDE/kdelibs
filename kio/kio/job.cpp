@@ -1091,6 +1091,11 @@ void TransferJob::slotResult( KJob *job)
    }
 }
 
+void TransferJob::setModificationTime( const QDateTime& mtime )
+{
+    addMetaData( "modified", mtime.toString( Qt::ISODate ) );
+}
+
 TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
@@ -1424,7 +1429,7 @@ class FileCopyJob::FileCopyJobPrivate
 {
 public:
     KIO::filesize_t m_sourceSize;
-    time_t m_modificationTime;
+    QDateTime m_modificationTime;
     SimpleJob *m_delJob;
 };
 
@@ -1453,7 +1458,6 @@ FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
     m_putJob = 0;
     d->m_delJob = 0;
     d->m_sourceSize = (KIO::filesize_t) -1;
-    d->m_modificationTime = static_cast<time_t>( -1 );
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
@@ -1525,7 +1529,7 @@ void FileCopyJob::setSourceSize( KIO::filesize_t size )
        m_totalSize = size;
 }
 
-void FileCopyJob::setModificationTime( time_t mtime )
+void FileCopyJob::setModificationTime( const QDateTime& mtime )
 {
     d->m_modificationTime = mtime;
 }
@@ -1604,9 +1608,8 @@ void FileCopyJob::startDataPump()
     m_getJob = 0L; // for now
     m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false /* no GUI */);
     //kDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << " m_dest=" << m_dest << endl;
-    if ( d->m_modificationTime != static_cast<time_t>( -1 ) ) {
-        QDateTime dt; dt.setTime_t( d->m_modificationTime );
-        m_putJob->addMetaData( "modified", dt.toString( Qt::ISODate ) );
+    if ( d->m_modificationTime.isValid() ) {
+        m_putJob->setModificationTime( d->m_modificationTime );
     }
 
     // The first thing the put job will tell us is whether we can

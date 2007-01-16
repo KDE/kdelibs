@@ -23,7 +23,7 @@
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
-#include <kvbox.h>
+#include <khbox.h>
 
 class KComboBox;
 class KFileDialog;

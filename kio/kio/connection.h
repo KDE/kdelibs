@@ -24,8 +24,6 @@
 
 #include <kdelibs_export.h>
 
-#include <sys/types.h>
-
 #include <stdio.h>
 #include <QQueue>
 #include <qobject.h>

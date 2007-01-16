@@ -25,8 +25,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <sys/types.h> // time_t
 
 #include <kurl.h>
 
@@ -44,7 +43,6 @@ namespace KIO {
         KUrl uDest;
         QString linkDest; // for symlinks only
         int permissions;
-        //mode_t type;
         time_t ctime;
         time_t mtime;
         KIO::filesize_t size; // 0 for dirs

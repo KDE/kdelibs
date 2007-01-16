@@ -18,9 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "connection.h"
 
 #include <qtimer.h>
 #include <kde_file.h>	// KDE_fdopen
@@ -39,8 +37,6 @@
 #include <network/kresolver.h>
 #include <network/kstreamsocket.h>
 #include <network/ksocketdevice.h>
-
-#include "kio/connection.h"
 
 #include <kdebug.h>
 #include <qsocketnotifier.h>

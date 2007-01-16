@@ -33,12 +33,13 @@
 #include <kdebug.h>
 #include <kde_file.h>
 
-#include <qtimer.h>
-#include <qfile.h>
-
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
+
+#include <qtimer.h>
+#include <qfile.h>
+#include <QPointer>
 
 using namespace KIO;
 

@@ -212,7 +212,6 @@ namespace KIO {
      */
     KIO_EXPORT TransferJob *put( const KUrl& url, int permissions,
                       bool overwrite, bool resume,
-                      // KDE4 TODO: add 'long mtime = 0' for #79937
                       bool showProgressInfo = true );
 
     /**

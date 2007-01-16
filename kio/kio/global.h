@@ -601,7 +601,7 @@ public:
  *   for (; it != end; ++it) {
  *     const KIO::UDSEntry& entry = *it;
  *     QString name = entry.stringValue( KIO::UDS_NAME );
- *     bool isDir = S_ISDIR( entry.numberValue( KIO::UDS_FILE_TYPE ) );
+ *     bool isDir = entry.isDir();
  *     KIO::filesize_t size = entry.numberValue( KIO::UDS_SIZE, -1 );
  *     ...
  *   }

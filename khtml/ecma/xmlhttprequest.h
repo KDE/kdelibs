@@ -25,6 +25,7 @@
 #include "ecma/kjs_dom.h"
 #include "misc/decoder.h"
 #include "kio/jobclasses.h"
+#include <QPointer>
 
 namespace KJS {
 

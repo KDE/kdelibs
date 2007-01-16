@@ -21,11 +21,6 @@
 
 #include "copyjob.h"
 
-#include <assert.h>
-
-#include <qtimer.h>
-#include <qfile.h>
-
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kdebug.h>
@@ -44,6 +39,12 @@
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
+#include <assert.h>
+
+#include <qtimer.h>
+#include <qfile.h>
+#include <sys/stat.h> // mode_t
+#include <QPointer>
 
 using namespace KIO;
 
@@ -1251,7 +1252,10 @@ void CopyJob::copyNextFile()
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
             copyJob->setSourceSize( (*it).size );
-            copyJob->setModificationTime( (*it).mtime );
+            if ((*it).mtime != -1) {
+                QDateTime dt; dt.setTime_t( (*it).mtime );
+                copyJob->setModificationTime( dt );
+            }
             newjob = copyJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;
