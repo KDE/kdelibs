@@ -1007,7 +1007,7 @@ if needed (see the KURLDrag section)</li>
 
 <h4>KPasswordEdit</h4>
 <ul>
-<li>deprecated. Use now KLineEdit, with KLineEdit::setPaswwordMode(true)</li>
+<li>deprecated. Use now KLineEdit, with KLineEdit::setPasswordMode(true)</li>
 <li>K3PasswordEdit is in kde3support for helping porting</li>
 </ul>
 
@@ -1512,6 +1512,17 @@ a listDir result.</li>
 <h4>KIO::SlaveBase</h4>
 <ul>
 <li>openPassDlg was renamed to openPasswordDialog</li>
+</ul>
+
+<h4>KMimeMagic</h4>
+<ul>
+<li>KMimeMagic is not public API anymore. Use the KMimeType API instead:</li>
+<ul>
+  <li>KMimeMagic::self()-&gt;findFileType(path) -&gt; KMimeType::findByPath(path) (preferred) or KMimeType::findByFileContent(path) (if only the content should be considered, but this isn't always reliable)</li>
+  <li>KMimeMagic::self()-&gt;findBufferType(data) -&gt; KMimeType::findByContent(data)</li>
+  <li>KMimeMagic::self()-&gt;findBufferFileType(data,name) -&gt; KMimeType::findByNameAndContent(name,data)</li>
+</ul>
+<li>.. and replace result-&gt;mimeType() with mime-&gt;name().</li>
 </ul>
 
 <h4>KMimeType</h4>

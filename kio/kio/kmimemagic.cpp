@@ -56,7 +56,6 @@ KMimeMagic* KMimeMagic::self()
 void KMimeMagic::initStatic()
 {
   s_pSelf = kmimemagicsd.setObject( s_pSelf, new KMimeMagic() );
-  s_pSelf->setFollowLinks( true );
 }
 
 #include <stdio.h>
@@ -580,7 +579,6 @@ public:
 
 /* current config */
 struct config_rec {
-    bool followLinks;
     QString resultBuf;
     int accuracy;
 
@@ -1522,10 +1520,8 @@ fsmagic(struct config_rec* conf, const char *fn, KDE_struct_stat *sb)
             } else
                 strcpy(buf, tmp);
         }
-        if (conf->followLinks)
-            process( conf, QFile::decodeName( buf ) );
-        else
-            conf->resultBuf = MIME_INODE_LINK;
+        // Follow symlinks
+        process( conf, QFile::decodeName( buf ) );
         return 1;
     }
     return 1;
@@ -2145,7 +2141,6 @@ void KMimeMagic::init( const QString& _configfile )
 	/* set up the magic list (empty) */
 	conf->magic = conf->last = NULL;
 	magicResult = NULL;
-	conf->followLinks = false;
 
         conf->utimeConf = 0L; // created on demand
 	/* on the first time through we read the magic file */
@@ -2210,12 +2205,6 @@ KMimeMagic::mergeBufConfig(char * _configbuf)
 		return true;
 	}
 	return false;
-}
-
-void
-KMimeMagic::setFollowLinks( bool _enable )
-{
-	conf->followLinks = _enable;
 }
 
 KMimeMagicResult *

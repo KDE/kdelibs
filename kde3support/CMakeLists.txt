@@ -81,6 +81,7 @@ install( FILES
   kio/k3bookmarkdrag.h
   kio/kio/skipdlg.h
   kio/kio/passdlg.h
+  kio/kio/kmimemagic.h
   kio/kio/renamedlg.h
   kio/kfile/kurlrequesterdlg.h
   kio/kfile/kfilesharedlg.h

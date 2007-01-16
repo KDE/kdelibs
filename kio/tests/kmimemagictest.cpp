@@ -18,7 +18,6 @@
  */
 
 #include <kmimetype.h>
-#include <kmimemagic.h>
 #include <kinstance.h>
 #include <stdio.h>
 
@@ -34,10 +33,11 @@ int main( int argc, char** argv )
 
   QString file = QString::fromLocal8Bit( argv[1] );
 
-  KMimeMagicResult * result = KMimeMagic::self()->findFileType( file );
+  int accuracy;
+  KMimeType::Ptr mime = KMimeType::findByFileContent(file, &accuracy);
 
-  if ( result->isValid() )
-      printf( "Found %s, accuracy %d\n", result->mimeType().toLatin1().constData(), result->accuracy() );
+  if ( mime && !mime->isDefault() )
+      printf( "Found %s, accuracy %d\n", mime->name().toLatin1().constData(), accuracy );
   else
       printf( "Invalid result\n");
 

@@ -12,6 +12,7 @@ private Q_SLOTS:
     void testIcons();
     void testFindByUrl();
     void testFindByPath();
+    void testFindByNameAndContent();
     void testAllMimeTypes();
     void testMimeTypeParent();
     void testMimeTypeTraderForTextPlain();

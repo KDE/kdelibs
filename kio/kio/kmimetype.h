@@ -267,15 +267,18 @@ public:
    * @param _fast_mode If set to true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
    *        it is @em fast.
-   * @return A pointer to the matching mimetype. 0L is never returned.
+   *
+   * @param accurate set to true if a mimetype was found and it represents the best we can find out.
+   *  For instance findByUrl("foo.doc") in fast_mode=true will return false
+   *  since this could be a text file or a msword file, we would have to look
+   *  into it (fast_mode=false) to find out.
+   *
+   * @return A pointer to the matching mimetype. 0 is never returned.
    * @em Very @em Important: Don't store the result in a KMimeType* !
    */
   static Ptr findByUrl( const KUrl& _url, mode_t _mode = 0,
-                        bool _is_local_file = false, bool _fast_mode = false );
-
-  static Ptr findByUrl( const KUrl& _url, mode_t _mode,
-                        bool _is_local_file, bool _fast_mode,
-		  	bool *accurate);
+                        bool _is_local_file = false, bool _fast_mode = false,
+                        bool *accurate = 0 );
   /**
    * Finds a KMimeType with the given @p _url.
    * This function looks at mode_t first.
@@ -315,6 +318,20 @@ public:
    *         type can not be found this way.
    */
   static Ptr findByContent( const QByteArray &data, int *accuracy=0 );
+
+  /**
+   * Tries to find out the MIME type of filename/url and a data chunk.
+   * Whether to trust the extension or the data depends on the results of both approaches,
+   * and is determined automatically.
+   *
+   * This method is useful for instance in the get() method of kioslaves, and anywhere else
+   * were a filename is associated with some data which is available immediately.
+   *
+   * @param name the filename or url representing this data. Only used for the extension, not used as a local filename.
+   * @param data the data to examine when the extension isn't conclusive in itself
+   * @param mode the mode of the file (used, for example, to identify executables)
+   */
+  static Ptr findByNameAndContent( const QString& name, const QByteArray& data, mode_t _mode = 0 );
 
   /**
    * Tries to find out the MIME type of a file by looking for
@@ -405,7 +422,7 @@ public:
    */
   static QString extractKnownExtension( const QString &fileName );
 
-protected:
+private:
   void loadInternal( QDataStream& );
   void init( KDesktopFile * );
 
@@ -429,6 +446,10 @@ protected:
    */
   static bool s_bChecked;
 
+  static KMimeType::Ptr findByUrlHelper( const KUrl& _url, mode_t _mode,
+                                         bool _is_local_file, bool _fast_mode,
+                                         bool &needsMagic );
+
   QStringList m_lstPatterns;
   QString m_strIcon;
   class Private;
@@ -436,7 +457,6 @@ protected:
 
   static Ptr s_pDefaultType;
 
-protected:
   friend class KServiceTypeFactory;
   int patternsAccuracy() const;
 

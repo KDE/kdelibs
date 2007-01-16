@@ -36,14 +36,15 @@
 class KMimeMagic; // see below (read this one first)
 
 /**
- * @deprecated Use KMimeType::findByContent() instead
- * May be removed in KDE 4.0.
+ * @deprecated (the class is still used, but internally only, not exported anymore).
+ *
+ * Use KMimeType::findByPath() or KMimeType::findByContent() or KMimeType::findByNameAndContent() instead
+ *
  * Returned by KMimeMagic @p find...Type methods.
  *
- * It contains the mimetype and the encoding of
- * the file or buffer read.
+ * It contains the mimetype and the encoding of the file or buffer read.
  */
-class KIO_EXPORT_DEPRECATED KMimeMagicResult
+class KDE_DEPRECATED KMimeMagicResult
 {
 public:
   KMimeMagicResult() { m_iAccuracy = 100; }
@@ -75,7 +76,7 @@ protected:
 };
 
 /**
- * @deprecated Use KMimeType::findByContent() instead
+ * @deprecated Use KMimeType::findByContent() or KMimeType::findByNameAndContent() instead
  * May be removed in KDE 4.0.
  * Determine auto-magically the type of file,
  * not only by using its extension, but also by reading its contents.
@@ -98,7 +99,7 @@ protected:
  *
  * The result is contained in the class KMimeMagicResult.
  */
-class KIO_EXPORT_DEPRECATED KMimeMagic
+class KDE_DEPRECATED KMimeMagic
 {
 public:
   /**
@@ -132,13 +133,6 @@ public:
    * @return @p true on success.
    */
   bool mergeBufConfig(char *);
-
-  /**
-   * Enable/Disable follow-links.
-   *
-   * (Default is disabled.)
-   */
-  void setFollowLinks( bool _enable );
 
   /**
    * Try to find a MimeType for the given file.
@@ -181,6 +175,8 @@ public:
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.
+   *
+   * In new code, use KMimeType::findByNameAndContent instead.
    */
   KMimeMagicResult * findBufferFileType( const QByteArray &, const QString & filename );
 

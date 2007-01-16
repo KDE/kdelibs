@@ -155,20 +155,25 @@ KMimeType::List KMimeType::allMimeTypes()
   return KMimeTypeFactory::self()->allMimeTypes();
 }
 
-KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
-                                     bool _is_local_file, bool _fast_mode )
+KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t _mode,
+                                           bool _is_local_file, bool _fast_mode,
+                                           bool& needsMagic )
 {
   checkEssentialMimeTypes();
   QString path = _url.path();
+  needsMagic = false;
 
-  if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
-    _is_local_file = true;
-
-  if ( !_fast_mode && _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
+  if ( !_fast_mode )
   {
-    KDE_struct_stat buff;
-    if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
-      _mode = buff.st_mode;
+      if ( !_is_local_file && _url.isLocalFile() )
+          _is_local_file = true;
+
+      if ( _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
+      {
+          KDE_struct_stat buff;
+          if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
+              _mode = buff.st_mode;
+      }
   }
 
   // Look at mode_t first
@@ -208,11 +213,10 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
         if ( _is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
              KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
         {
-            if ( _is_local_file && !_fast_mode ) {
-                if ( mime->patternsAccuracy()<100 )
-                {
+            if ( mime->patternsAccuracy() < 100 ) {
+                if ( _is_local_file && !_fast_mode ) {
                     KMimeMagicResult* result =
-                            KMimeMagic::self()->findFileType( path );
+                        KMimeMagic::self()->findFileType( path );
 
                     if ( result && result->isValid() ) {
                         mime = mimeType( result->mimeType() );
@@ -222,6 +226,8 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
                         }
                         return mime;
                     }
+                } else {
+                    needsMagic = true;
                 }
             }
             return mime;
@@ -294,8 +300,31 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode,
                                      bool *accurate )
 {
-    KMimeType::Ptr mime = findByUrl(_url, _mode, _is_local_file, _fast_mode);
-    if (accurate) *accurate = !(_fast_mode) || ((mime->patternsAccuracy() == 100) && mime != defaultMimeTypePtr());
+    bool needsMagic;
+    KMimeType::Ptr mime = findByUrlHelper(_url, _mode, _is_local_file, _fast_mode, needsMagic);
+    if (accurate) {
+        if (_is_local_file && !_fast_mode)
+            *accurate = true; // we used KMimeMagic, so the result is as good as can be
+        else
+            // we didn't use mimemagic; the result is accurate only if the patterns were not marked as unreliable
+            *accurate = !needsMagic && mime != defaultMimeTypePtr();
+    }
+    return mime;
+}
+
+KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByteArray& data, mode_t _mode )
+{
+    // First look at mode and name
+    bool needsMagic;
+    KMimeType::Ptr mime = findByUrlHelper(name, _mode, false, true, needsMagic);
+
+    if ( needsMagic || !mime || mime->name() == KMimeType::defaultMimeType() ) {
+        // findByUrl found nothing conclusive, look at the data
+        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(data, name);
+        if ( result->mimeType() != KMimeType::defaultMimeType() )
+          mime = KMimeType::mimeType( result->mimeType() );
+    }
+
     return mime;
 }
 

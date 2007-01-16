@@ -126,6 +126,44 @@ void KMimeTypeTest::testFindByUrl()
     QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
 }
 
+void KMimeTypeTest::testFindByNameAndContent()
+{
+    KMimeType::Ptr mime;
+
+    QByteArray textData = "Hello world";
+    // textfile -> text/plain. No extension -> mimetype is found from the contents.
+    mime = KMimeType::findByNameAndContent("textfile", textData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
+
+    // textfile.foo -> text/plain. Unknown extension -> mimetype is found from the contents.
+    mime = KMimeType::findByNameAndContent("textfile.foo", textData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
+
+    // textfile.doc -> text/plain. We don't trust the .doc extension, because of this case.
+    mime = KMimeType::findByNameAndContent("textfile.doc", textData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
+
+    // mswordfile.doc -> application/msword. Found by contents, because of the above case.
+    // Note that it's application/msword, not application/vnd.ms-word, since it's the former that is registered to IANA.
+    QByteArray mswordData = "\320\317\021\340\241\261";
+    mime = KMimeType::findByNameAndContent("mswordfile.doc", mswordData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/msword") );
+
+    // excelfile.xls -> application/vnd.ms-excel. Found by extension.
+    mime = KMimeType::findByNameAndContent("excelfile.xls", mswordData /*same magic*/);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/vnd.ms-excel") );
+
+    // textfile.xls -> application/vnd.ms-excel. Found by extension. User shouldn't rename a text file to .xls ;)
+    mime = KMimeType::findByNameAndContent("textfile.xls", textData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/vnd.ms-excel") );
+}
+
 void KMimeTypeTest::testAllMimeTypes()
 {
     if ( !KSycoca::isAvailable() )

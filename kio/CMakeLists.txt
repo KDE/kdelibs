@@ -329,7 +329,6 @@ install(  FILES
 install( FILES
   kio/kmimetype.h
   kio/kmimetypetrader.h
-  kio/kmimemagic.h
   kio/kimageio.h
   kio/krun.h
   kio/kdirwatch.h
