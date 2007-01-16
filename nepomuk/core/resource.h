@@ -49,6 +49,8 @@ namespace Nepomuk {
      *
      * Normally they are also synced with the local storage automatically.
      *
+     * All methods in Resource are thread-safe.
+     *
      * See \ref hacking for details on how to use Resource.
      *
      * \see ResourceManager

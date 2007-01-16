@@ -33,6 +33,8 @@ namespace Nepomuk {
     class Ontology;
     class Variant;
 
+    // FIXME: introduce a simple overwrite mode which is way faster and doe not merge with the store
+
     /**
      * \brief The ResourceManager is the central \a %KMetaData configuration point.
      *
@@ -158,14 +160,27 @@ namespace Nepomuk {
 	/**
 	 * Enable or disable autosync. If autosync is enabled (which is the default)
 	 * all Resource objects will be synced with the local storage automatically.
+	 *
+	 * FIXME: Hint that the resources will not be actually deleted from memory before
+	 * they have been synced. Thus, if auto sync is disabled the memory might get crowded
+	 * if sync is never called. Exception: unmodified resources.
 	 */
 	void setAutoSync( bool enabled );
 
         /**
 	 * Sync all Resource objects. There is no need to call this
 	 * unless autosync has been disabled.
+	 *
+	 * This is a blocking call which syncs all modifed data to the store.
 	 */
         void syncAll();
+
+	/**
+	 * This method can be used in combination with auto syncing and forces an immediate
+	 * sync in the background. If an asyncroneous sync is currently in progress this method
+	 * does nothing.
+	 */
+	void triggerSync();
 
       private:
 	ResourceManager();

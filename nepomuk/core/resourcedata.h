@@ -30,7 +30,10 @@ namespace Nepomuk {
 	ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
 
 	/**
-	 * Uses instead of the destructor in Resource
+	 * Used instead of the destructor in Resource. The reason for the existance of
+	 * this method is that the destructor does not remove the uri from the global
+	 * data map. That behaviour is necessary since in certain situations temporary
+	 * ResourceData instances are created.
 	 */
 	void deleteData();
 
@@ -42,10 +45,15 @@ namespace Nepomuk {
 	  return --m_ref;
 	}
 
+	inline int cnt() const {
+	  return m_ref;
+	}
+
 	enum Flags {
 	  Modified = 0x2, /*< The resource or property has locally been modified */
 	  Deleted = 0x4, /*< The resource has actually been deleted in a sync operation */
-	  Removed = 0x8 /*< The resource or property has been scheduled for removal */
+	  Removed = 0x8, /*< The resource or property has been scheduled for removal */
+	  Syncing = 0x10 /*< The resource is currently being synced */
 	};
 
 	const QString& uri() const;
@@ -70,6 +78,8 @@ namespace Nepomuk {
 	void revive();
 
 	bool modified() const;
+
+	bool removed() const;
 
 	bool exists() const;
 
@@ -101,6 +111,9 @@ namespace Nepomuk {
 	 * This method will save directly and uncached to the store. It is recommended to
 	 * rely on the cached syncing that the ResourceManger provides.
 	 *
+	 * Be aware that calling save will not interfere with any syncing operation started
+	 * via startSync.
+	 *
 	 * \sa allStatements
 	 */
 	bool save();
@@ -111,10 +124,44 @@ namespace Nepomuk {
 	bool merge();
 
 	/**
-	 * Generates a list of all RDF statements this Resource data object currently represents.
-	 * It is used by sync() and by the ResourceManger to do cached syncing.
+	 * Start a thread-safe sync operation.
+	 * Use this method to mark the state of the resource data to be the one being
+	 * synced back.
+	 *
+	 * Subsequent calls will block until the first call has been released via endSync
+	 *
+	 * \sa endSync
 	 */
-	QList<Backbone::Services::RDF::Statement> allStatements() const;
+	void startSync();
+
+	/**
+	 * Finish a thread-safe sync operation started with startSync
+	 *
+	 * \param updateFlags If true the resource flags will be updated, i.e. synced properties
+	 *                    will be marked as not-modified. In general this should be set true
+	 *                    if the sync was successful.
+	 */
+	void endSync( bool updateFlags = true );
+
+	/**
+	 * Generates a list of all RDF statements this Resource data object currently represents.
+	 * \param flags A filter to be used. Only those properties that match flags are returned.
+	 */
+	QList<Backbone::Services::RDF::Statement> allStatements( int flags ) const;
+
+	/**
+	 * \return A list of all statements that have to be added to the store in a sync. This does not
+	 * include those statements that already exist in the store.
+	 */
+	QList<Backbone::Services::RDF::Statement> allStatementsToAdd() const;
+
+	/**
+	 * \return a list of all statements that need to be removed from the store in a sync, i.e. those
+	 * properties that have been removed. In case that the whole resource has been removed it is 
+	 * recommended to not use this method but do a plain removal of all statements related to this 
+	 * resource.
+	 */
+	QList<Backbone::Services::RDF::Statement> allStatementsToRemove() const;
 
 	/**
 	 * Compares the properties of two ResourceData objects taking into account the Deleted flag
@@ -148,6 +195,9 @@ namespace Nepomuk {
 
 	int m_ref;
 	bool m_initialized;
+
+	QMutex m_syncingMutex;
+	QMutex m_modificationMutex;
 
 	static QHash<QString, ResourceData*> s_data;
 	static QString s_defaultType;

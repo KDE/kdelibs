@@ -614,7 +614,7 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
-  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
+  //  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
   if( !isList() )
     return QStringList( toString() );
 

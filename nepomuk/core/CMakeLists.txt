@@ -66,6 +66,7 @@ install(FILES
   resourcemanager.h
   ontology.h
   kmetadata.h
+  tools.h
   kmetadata_export.h
   ${libkmetadata_BINARY_DIR}/allresources.h
   ${ALLRESOURCES_HEADERS}

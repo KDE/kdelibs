@@ -46,22 +46,14 @@ Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  if( !m_data->deref() ) {
-    if( ResourceManager::instance()->autoSync() && modified() )
-      sync();
-    m_data->deleteData();
-  }
+  m_data->deref();
 }
 
 
 Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
 {
   if( m_data != res.m_data ) {
-    if( !m_data->deref() ) {
-      if( ResourceManager::instance()->autoSync() && modified() )
-	sync();
-      m_data->deleteData();
-    }
+    m_data->deref();
     m_data = res.m_data;
     m_data->ref();
   }
@@ -91,15 +83,16 @@ QString Nepomuk::KMetaData::Resource::className() const
 
 int Nepomuk::KMetaData::Resource::sync()
 {
-  // FIXME: inform the manager about failures
-
   m_data->init();
 
-  if( m_data->merge() )
-    if( m_data->save() )
-      return 0;
+  m_data->startSync();
 
-  return -1;
+  bool success = ( m_data->merge() &&
+		   m_data->save() );
+
+  m_data->endSync( success );
+
+  return ( success ? 0 : -1 );
 }
 
 
@@ -126,7 +119,7 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QSt
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
-  m_data->init();
+  //  m_data->init();
   m_data->setProperty( ensureNamespace( uri ), value );
 }
 
@@ -140,7 +133,7 @@ void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 
 void Nepomuk::KMetaData::Resource::remove()
 {
-  m_data->init();
+  //  m_data->init();
   m_data->remove();
 }
 

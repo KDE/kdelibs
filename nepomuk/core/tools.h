@@ -16,8 +16,9 @@
 #define _NEPOMUK_KMETADATA_TOOLS_H_
 
 #include <QtCore>
-#include <variant.h>
+#include <kmetadata/variant.h>
 
+#include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
   namespace KMetaData {
@@ -25,40 +26,40 @@ namespace Nepomuk {
      * Used internally by Resource.
      * \return The URI of the RDF graph meta data is stored in.
      */
-    QString defaultGraph();
+    KMETADATA_EXPORT QString defaultGraph();
 
     /**
      * Used internally by Resource.
      * \return The URI of the predicate used to state the type of a resource.
      */
-    QString typePredicate();
+    KMETADATA_NO_EXPORT QString typePredicate();
 
     /**
      * Used internally by Resource.
      * Converts a Variant into a literal value to be used in the RDF store.
      */
-    QString valueToRDFLiteral( const Variant& );
+    KMETADATA_EXPORT QString valueToRDFLiteral( const Variant& );
 
     /**
      * Used internally by Resource.
      * Converts a list Variant into a literal value to be used in the RDF store.
      */
-    QStringList valuesToRDFLiterals( const Variant& );
+    KMETADATA_EXPORT QStringList valuesToRDFLiterals( const Variant& );
 
     /**
      * Used internally by Resource.
      * Converts a literal value from the RDF store into a Variant.
      */
-    Variant RDFLiteralToValue( const QString& );
+    KMETADATA_EXPORT Variant RDFLiteralToValue( const QString& );
 
     /**
-     * If \a uri does not have a namespace append the default one.
+     * If \a uri does not have a namespace, append the default one.
      *
      * \sa Ontology::defaultNamespace
      */
-    QString ensureNamespace( const QString& uri );
+    KMETADATA_NO_EXPORT QString ensureNamespace( const QString& uri );
 
-    template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
+    template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
       QList<T> rl;
       for( QList<Resource>::const_iterator it = l.constBegin();
 	   it != l.constEnd(); ++it )

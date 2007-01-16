@@ -24,6 +24,8 @@
 
 #include <kdebug.h>
 
+#include <QMutex>
+
 
 using namespace Nepomuk::Backbone::Services;
 using namespace Nepomuk::Backbone::Services::RDF;
@@ -70,7 +72,7 @@ void Nepomuk::KMetaData::ResourceData::deleteData()
 bool Nepomuk::KMetaData::ResourceData::init()
 {
   if( !m_initialized )
-    m_initialized = load();
+    m_initialized = merge();//load();
   return m_initialized;
 }
 
@@ -104,31 +106,47 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const
 
 void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
+  m_modificationMutex.lock();
+
   // reset the deleted flag
   m_flags = 0;
 
   // mark the value as modified
   m_properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
+
+  m_modificationMutex.unlock();
 }
 
 
 void Nepomuk::KMetaData::ResourceData::removeProperty( const QString& uri )
 {
+  m_modificationMutex.lock();
+
   ResourceData::PropertiesMap::iterator it = m_properties.find( uri );
   if( it != m_properties.end() )
     it.value().second = ResourceData::Modified|ResourceData::Removed;
+
+  m_modificationMutex.unlock();
 }
 
 
 void Nepomuk::KMetaData::ResourceData::remove()
 {
+  m_modificationMutex.lock();
+
   m_flags |= Removed;
+
+  m_modificationMutex.unlock();
 }
 
 
 void Nepomuk::KMetaData::ResourceData::revive()
 {
+  m_modificationMutex.lock();
+
   m_flags = 0;
+
+  m_modificationMutex.unlock();
 }
 
 
@@ -145,6 +163,12 @@ bool Nepomuk::KMetaData::ResourceData::modified() const
       return true;
 
   return false;
+}
+
+
+bool Nepomuk::KMetaData::ResourceData::removed() const
+{
+  return (m_flags & Removed|Deleted);
 }
 
 
@@ -183,6 +207,8 @@ bool Nepomuk::KMetaData::ResourceData::inSync()
 bool Nepomuk::KMetaData::ResourceData::load()
 {
   if( isValid() ) {
+    m_modificationMutex.lock();
+
     m_properties.clear();
     m_flags = 0;
 
@@ -194,23 +220,29 @@ bool Nepomuk::KMetaData::ResourceData::load()
     while( it.hasNext() ) {
       const Statement& s = it.next();
 
-      // load the type
+      // load the type if we have no type or the default
       if( s.predicate.value == KMetaData::typePredicate() ) {
-	if( m_type.isEmpty() )
+	if( m_type.isEmpty() || m_type == ResourceManager::instance()->ontology()->defaultType() )
 	  m_type = s.object.value;
       }
       else {
 	PropertiesMap::iterator oldProp = m_properties.find( s.predicate.value );
 	if( s.object.type == NodeResource ) {
-	  if( !loadProperty( s.predicate.value, Resource( s.object.value ) ) )
+	  if( !loadProperty( s.predicate.value, Resource( s.object.value ) ) ) {
+	    m_modificationMutex.unlock();
 	    return false;
+	  }
 	}
 	else {
-	  if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object.value ) ) )
+	  if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object.value ) ) ) {
+	    m_modificationMutex.unlock();
 	    return false;
+	  }
 	}
       }
     }
+
+    m_modificationMutex.unlock();
    
     return true;
   }
@@ -237,116 +269,185 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
 }
 
 
+void Nepomuk::KMetaData::ResourceData::startSync()
+{
+  m_syncingMutex.lock();
+  m_modificationMutex.lock();
+
+  //
+  // Set all properties in the syncing state.
+  // The properties that will be changed during the sync will have
+  // their syncing flag removed and will thus stay marked modified
+  //
+  for( PropertiesMap::iterator it = m_properties.begin();
+       it != m_properties.end(); ++it ) {
+    it.value().second &= Syncing;
+  }
+
+  m_modificationMutex.unlock();
+}
+
+
+void Nepomuk::KMetaData::ResourceData::endSync( bool updateFlags )
+{
+  m_modificationMutex.lock();
+
+  //
+  // Remove all syncing flags.
+  // Those properties that are still marked as Syncing were
+  // not modified during the sync and can thus be marked as so.
+  //
+  for( PropertiesMap::iterator it = m_properties.begin();
+       it != m_properties.end(); ++it ) {
+    if( it.value().second & Syncing ) {
+      it.value().second &= ~Syncing;
+      // FIXME: should we actually delete properties marked as Removed here?
+      if( updateFlags )
+	it.value().second &= ~Modified;
+    }
+  }
+
+  m_modificationMutex.unlock();
+
+  m_syncingMutex.unlock();
+}
+
+
 bool Nepomuk::KMetaData::ResourceData::save()
 {
   RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-  if( m_initialized ) {
-    // make sure our graph exists
-    // ==========================
-    if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
-      if( rr.addGraph( KMetaData::defaultGraph() ) ) {
+  m_modificationMutex.lock();
+
+  // make sure our graph exists
+  // ==========================
+  if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
+    if( rr.addGraph( KMetaData::defaultGraph() ) ) {
+      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+      m_modificationMutex.unlock();
+      return false;
+    }
+  }
+
+  // if the resource has been deleted locally we are done after removing it
+  // ======================================================================
+  if( m_flags & (Removed|Deleted) ) {
+
+    // remove everything about this resource from the store
+    // ====================================================
+    if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
+      kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
+      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+      m_modificationMutex.unlock();
+      return false;
+    }
+
+    // FIXME: allow revive even after a sync
+    m_properties.clear();
+    m_flags = Deleted;
+  }
+  else {
+
+    // remove all the deleted properties from the store
+    // ================================================
+    QList<Statement> sl = allStatementsToRemove();
+    if( !sl.isEmpty() ) {
+      if( rr.removeStatements( KMetaData::defaultGraph(), sl ) ) {
+	kDebug(300004) << "(ResourceData) removing statements for resource " << m_uri << " failed." << endl;
 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+	m_modificationMutex.unlock();
 	return false;
       }
     }
 
-    // remove everything about this resource from the store (FIXME: better and faster syncing)
-    // =======================================================================================
-    if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
-      kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
-      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-      return false;
-    }
-
-    // if the resource has been deleted locally we are done after removing it
-    // ======================================================================
-    if( m_flags & (Removed|Deleted) ) {
-      m_properties.clear();
-      m_flags = Deleted;
-      return true;
-    }
-
     // save all statements into the store
     // ==================================
-    if( rr.addStatements( KMetaData::defaultGraph(), allStatements() ) ) {
-      kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
-      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-      return false;
-    }
-    else {
-      for( PropertiesMap::iterator it = m_properties.begin();
-	   it != m_properties.end(); ++it ) {
-	// whatever gets saved is not Modified anymore
-	it.value().second &= ~Modified;
+    sl = allStatementsToAdd();
+    if( !sl.isEmpty() ) {
+      if( rr.addStatements( KMetaData::defaultGraph(), sl ) ) {
+	kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
+	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+	m_modificationMutex.unlock();
+	return false;
       }
+    }
 
-      return true;
+    for( PropertiesMap::iterator it = m_properties.begin();
+	 it != m_properties.end(); ++it ) {
+      // whatever gets saved is not Modified anymore
+      it.value().second &= ~Modified;
     }
   }
-  else
-    return false;
+
+  m_modificationMutex.unlock();
+
+  return true;
 }
 
 
-QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements() const
+QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( int flags ) const
 {
   QList<Statement> statements;
 
-  if( m_initialized ) {
+  // save the properties
+  // ===================
+  for( PropertiesMap::const_iterator it = m_properties.constBegin();
+       it != m_properties.constEnd(); ++it ) {
 
-    // if the resource has been deleted locally we are done
-    // ====================================================
-    if( !(m_flags & (Removed|Deleted)) ) {
+    if( it.value().second & flags ) {
 
-      // save the type
-      // =============
-      statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
+      QString predicate = it.key();
+      const Variant& val = it.value().first;
 
-      // save the properties
-      // ===================
-      for( PropertiesMap::const_iterator it = m_properties.constBegin();
-	   it != m_properties.constEnd(); ++it ) {
+      // one-to-one Resource
+      if( val.isResource() ) {
+	statements.append( Statement( m_uri, predicate, val.toResource().uri() ) );
+      }
 
-	// ignore removed properties (FIXME: should we also delete them from m_properties here?)
-	if( it.value().second & Removed )
-	  continue;
-
-	QString predicate = it.key();
-	const Variant& val = it.value().first;
-
-	// one-to-one Resource
-	if( val.isResource() ) {
-	  statements.append( Statement( m_uri, predicate, val.toResource().uri() ) );
+      // one-to-many Resource
+      else if( val.isResourceList() ) {
+	const QList<Resource>& l = val.toResourceList();
+	for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
+	  statements.append( Statement( m_uri, predicate, (*resIt).uri() ) );
 	}
+      }
 
-	// one-to-many Resource
-	else if( val.isResourceList() ) {
-	  const QList<Resource>& l = val.toResourceList();
-	  for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-	    statements.append( Statement( m_uri, predicate, (*resIt).uri() ) );
-	  }
+      // one-to-many literals
+      else if( val.isList() ) {
+	QStringList l = KMetaData::valuesToRDFLiterals( val );
+	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
+	  statements.append( Statement( m_uri, predicate, Node( *valIt, NodeLiteral ) ) );
 	}
+      }
 
-	// one-to-many literals
-	else if( val.isList() ) {
-	  QStringList l = KMetaData::valuesToRDFLiterals( val );
-	  for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
-	    statements.append( Statement( m_uri, predicate, Node( *valIt, NodeLiteral ) ) );
-	  }
-	}
-
-	// one-to-one literal
-	else {
-	  statements.append( Statement( m_uri, 
-					predicate, 
-					Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) );
-	}
+      // one-to-one literal
+      else {
+	statements.append( Statement( m_uri, 
+				      predicate, 
+				      Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) );
       }
     }
   }
 
   return statements;
+}
+
+
+QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
+{
+  QList<Statement> statements = allStatements( Modified );
+
+  // always save the type
+  // ====================
+  statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
+
+  return statements;
+}
+
+
+QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
+{
+  return allStatements( Removed|Deleted );
 }
 
 
@@ -359,6 +460,8 @@ bool Nepomuk::KMetaData::ResourceData::merge()
   ResourceData* currentData = new ResourceData( m_uri );
     
   if( currentData->load() ) {
+    m_modificationMutex.lock();
+
     // merge in possible remote changes
     for( PropertiesMap::const_iterator it = currentData->m_properties.constBegin();
 	 it != currentData->m_properties.constEnd(); ++it ) {
@@ -413,6 +516,9 @@ bool Nepomuk::KMetaData::ResourceData::merge()
     }
 
     delete currentData;
+
+    m_modificationMutex.unlock();
+
     return true;
   }
     

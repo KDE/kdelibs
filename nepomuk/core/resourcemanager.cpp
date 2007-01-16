@@ -25,35 +25,56 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
+#include <qthread.h>
+
 
 using namespace Nepomuk::Backbone::Services;
 using namespace Nepomuk::Backbone::Services::RDF;
 
 
-class Nepomuk::KMetaData::ResourceManager::Private
+class Nepomuk::KMetaData::ResourceManager::Private : public QThread
 {
 public:
-  Private()
-    : autoSync(true) {
+  Private( ResourceManager* manager )
+    : autoSync(true),
+      m_parent(manager) {
+  }
+
+  void run() {
+    m_parent->syncAll();
   }
 
   bool autoSync;
   Nepomuk::Backbone::Registry* registry;
   Nepomuk::KMetaData::Ontology* ontology;
+
+  QTimer syncTimer;
+
+private:
+  ResourceManager* m_parent;
 };
 
 
 Nepomuk::KMetaData::ResourceManager::ResourceManager()
   : QObject()
 {
-  d = new Private();
+  d = new Private( this );
   d->ontology = new Ontology();
   d->registry = new Backbone::Registry( this );
+
+  connect( &d->syncTimer, SIGNAL(timeout()),
+	   this, SLOT(triggerSync()) );
+
+  setAutoSync( true );
 }
 
 
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
+  // do one last sync
+  d->syncTimer.stop();
+  triggerSync();
+  d->wait();
   delete d->ontology;
   delete d;
 }
@@ -118,16 +139,63 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::ResourceManager::createResource
 void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
 {
   d->autoSync = enabled;
+
+  // sync every 5 seconds (FIXME: make this better)
+  if( enabled )
+    d->syncTimer.start( 5000 );
+  else
+    d->syncTimer.stop();
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::syncAll()
 {
+  //
+  // Gather all information to be synced and add it in one go
+  //
+  // FIXME: use some upper bound, i.e. never add more than N statements at once
+
+  RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+
+  QList<Statement> statementsToAdd;
+  QList<Statement> statementsToRemove;
+  QList<ResourceData*> syncedResources;
   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
        it != ResourceData::s_data.end(); ++it ) {
-    if( it.value()->merge() )
+
+    // if the resource has been removed we have to remove it individually and that
+    // is best done by the resourcedata itself
+    if( it.value()->removed() ) {
       it.value()->save();
+    }
+    else if( it.value()->modified() ) {
+      syncedResources.append( it.value() );
+      it.value()->startSync();
+      statementsToAdd += it.value()->allStatementsToAdd();
+      statementsToRemove += it.value()->allStatementsToRemove();
+    }
   }
+
+  bool success = ( rr.addStatements( KMetaData::defaultGraph(), statementsToAdd ) == 0 &&
+		   rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove ) );
+
+  //
+  // Release all the resource datas.
+  //
+  for( QList<ResourceData*>::iterator it = syncedResources.begin();
+       it != syncedResources.end(); ++it ) {
+    ResourceData* data = *it;
+    data->endSync( success );
+    if( !data->modified() && !data->cnt() )
+      data->deleteData();
+  }
+}
+
+
+void Nepomuk::KMetaData::ResourceManager::triggerSync()
+{
+  if( !d->isRunning() )
+    d->start();
 }
 
 

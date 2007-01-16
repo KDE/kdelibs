@@ -17,3 +17,4 @@
 #include <kmetadata/resourcemanager.h>
 #include <kmetadata/ontology.h>
 #include <kmetadata/allresources.h>
+#include <kmetadata/tools.h>
