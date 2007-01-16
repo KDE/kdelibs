@@ -371,9 +371,7 @@ void SlaveBase::sendMetaData()
 {
    KIO_DATA << mOutgoingMetaData;
 
-   slaveWriteError = false;
-   m_pConnection->send( INF_META_DATA, data );
-   if (slaveWriteError) exit();
+   send( INF_META_DATA, data );
    mOutgoingMetaData.clear(); // Clear
 }
 
@@ -390,9 +388,7 @@ void SlaveBase::data( const QByteArray &data )
 {
    if (!mOutgoingMetaData.isEmpty())
       sendMetaData();
-   slaveWriteError = false;
-   m_pConnection->send( MSG_DATA, data );
-   if (slaveWriteError) exit();
+   send( MSG_DATA, data );
 }
 
 void SlaveBase::dataReq( )
@@ -403,16 +399,14 @@ void SlaveBase::dataReq( )
 */
    if (d->needSendCanResume)
       canResume(0);
-   m_pConnection->send( MSG_DATA_REQ );
+   send( MSG_DATA_REQ );
 }
 
 void SlaveBase::opened()
 {
    if (!mOutgoingMetaData.isEmpty())
       sendMetaData();
-   slaveWriteError = false;
-   m_pConnection->send( MSG_OPENED );
-   if (slaveWriteError) exit();
+   send( MSG_OPENED );
 }
 
 void SlaveBase::error( int _errid, const QString &_text )
@@ -421,7 +415,7 @@ void SlaveBase::error( int _errid, const QString &_text )
     mOutgoingMetaData.clear();
     KIO_DATA << (qint32) _errid << _text;
 
-    m_pConnection->send( MSG_ERROR, data );
+    send( MSG_ERROR, data );
     //reset
     listEntryCurrentSize = 100;
     d->sentListEntries=0;
@@ -430,9 +424,7 @@ void SlaveBase::error( int _errid, const QString &_text )
 
 void SlaveBase::connected()
 {
-    slaveWriteError = false;
-    m_pConnection->send( MSG_CONNECTED );
-    if (slaveWriteError) exit();
+    send( MSG_CONNECTED );
 }
 
 void SlaveBase::finished()
@@ -440,7 +432,7 @@ void SlaveBase::finished()
     mIncomingMetaData.clear(); // Clear meta data
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
-    m_pConnection->send( MSG_FINISHED );
+    send( MSG_FINISHED );
 
     // reset
     listEntryCurrentSize = 100;
@@ -450,7 +442,7 @@ void SlaveBase::finished()
 
 void SlaveBase::needSubUrlData()
 {
-    m_pConnection->send( MSG_NEED_SUBURL_DATA );
+    send( MSG_NEED_SUBURL_DATA );
 }
 
 void SlaveBase::slaveStatus( const QString &host, bool connected )
@@ -460,20 +452,18 @@ void SlaveBase::slaveStatus( const QString &host, bool connected )
     KIO_DATA << pid << mProtocol << host << b;
     if (d->onHold)
        stream << d->onHoldUrl;
-    m_pConnection->send( MSG_SLAVE_STATUS, data );
+    send( MSG_SLAVE_STATUS, data );
 }
 
 void SlaveBase::canResume()
 {
-    m_pConnection->send( MSG_CANRESUME );
+    send( MSG_CANRESUME );
 }
 
 void SlaveBase::totalSize( KIO::filesize_t _bytes )
 {
     KIO_DATA << KIO_FILESIZE_T(_bytes);
-    slaveWriteError = false;
-    m_pConnection->send( INF_TOTAL_SIZE, data );
-    if (slaveWriteError) exit();
+    send( INF_TOTAL_SIZE, data );
 
     //this one is usually called before the first item is listed in listDir()
     struct timeval tp;
@@ -509,9 +499,7 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 
     if( emitSignal ) {
         KIO_DATA << KIO_FILESIZE_T(_bytes);
-        slaveWriteError = false;
-        m_pConnection->send( INF_PROCESSED_SIZE, data );
-        if (slaveWriteError) exit();
+        send( INF_PROCESSED_SIZE, data );
         if ( gettimeofday_res == 0 ) {
             d->last_tv.tv_sec = tv.tv_sec;
             d->last_tv.tv_usec = tv.tv_usec;
@@ -523,13 +511,13 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 void SlaveBase::written( KIO::filesize_t _bytes )
 {
     KIO_DATA << KIO_FILESIZE_T(_bytes);
-    m_pConnection->send( MSG_WRITTEN, data );
+    send( MSG_WRITTEN, data );
 }
 
 void SlaveBase::position( KIO::filesize_t _pos )
 {
     KIO_DATA << KIO_FILESIZE_T(_pos);
-    m_pConnection->send( INF_POSITION, data );
+    send( INF_POSITION, data );
 }
 
 void SlaveBase::processedPercent( float /* percent */ )
@@ -541,20 +529,18 @@ void SlaveBase::processedPercent( float /* percent */ )
 void SlaveBase::speed( unsigned long _bytes_per_second )
 {
     KIO_DATA << (quint32) _bytes_per_second;
-    slaveWriteError = false;
-    m_pConnection->send( INF_SPEED, data );
-    if (slaveWriteError) exit();
+    send( INF_SPEED, data );
 }
 
 void SlaveBase::redirection( const KUrl& _url )
 {
     KIO_DATA << _url;
-    m_pConnection->send( INF_REDIRECTION, data );
+    send( INF_REDIRECTION, data );
 }
 
 void SlaveBase::errorPage()
 {
-    m_pConnection->send( INF_ERROR_PAGE );
+    send( INF_ERROR_PAGE );
 }
 
 static bool isSubCommand(int cmd)
@@ -580,14 +566,14 @@ void SlaveBase::mimeType( const QString &_type)
     {
       // kDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data" << endl;
       KIO_DATA << mOutgoingMetaData;
-      m_pConnection->send( INF_META_DATA, data );
+      send( INF_META_DATA, data );
     }
     KIO_DATA << _type;
-    m_pConnection->send( INF_MIME_TYPE, data );
+    send( INF_MIME_TYPE, data );
     while(true)
     {
        cmd = 0;
-       int ret = m_pConnection->read( &cmd, data );       
+       int ret = m_pConnection->read( &cmd, data );
        if ( ret == -1 ) {
            kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            exit();
@@ -615,25 +601,27 @@ void SlaveBase::exit()
     d->exit_loop = true;
     // Using ::exit() here is too much (crashes in qdbus's qglobalstatic object),
     // so let's cleanly exit dispatchLoop() instead.
-    // ::exit(255);
+    // Update: we do need to call exit(), otherwise a long download (get()) would
+    // keep going until it ends, even though the application exited.
+    ::exit(255);
 }
 
 void SlaveBase::warning( const QString &_msg)
 {
     KIO_DATA << _msg;
-    m_pConnection->send( INF_WARNING, data );
+    send( INF_WARNING, data );
 }
 
 void SlaveBase::infoMessage( const QString &_msg)
 {
     KIO_DATA << _msg;
-    m_pConnection->send( INF_INFOMESSAGE, data );
+    send( INF_INFOMESSAGE, data );
 }
 
 bool SlaveBase::requestNetwork(const QString& host)
 {
     KIO_DATA << host << d->slaveid;
-    m_pConnection->send( MSG_NET_REQUEST, data );
+    send( MSG_NET_REQUEST, data );
 
     if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) != -1 )
     {
@@ -648,15 +636,13 @@ bool SlaveBase::requestNetwork(const QString& host)
 void SlaveBase::dropNetwork(const QString& host)
 {
     KIO_DATA << host << d->slaveid;
-    m_pConnection->send( MSG_NET_DROP, data );
+    send( MSG_NET_DROP, data );
 }
 
 void SlaveBase::statEntry( const UDSEntry& entry )
 {
     KIO_DATA << entry;
-    slaveWriteError = false;
-    m_pConnection->send( MSG_STAT_ENTRY, data );
-    if (slaveWriteError) exit();
+    send( MSG_STAT_ENTRY, data );
 }
 
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
@@ -708,9 +694,7 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
       stream << *it;
-    slaveWriteError = false;
-    m_pConnection->send( MSG_LIST_ENTRIES, data);
-    if (slaveWriteError) exit();
+    send( MSG_LIST_ENTRIES, data);
     d->sentListEntries+=(uint)list.count();
 }
 
@@ -813,7 +797,7 @@ bool SlaveBase::dispatch()
         return false;
     }
     if ( ret == -2 ) // win32: WSAEWOULDBLOCK condition
-      return true;   
+      return true;
 
     dispatch( cmd, data );
     return true;
@@ -884,7 +868,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
 {
     kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
     KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
-    m_pConnection->send( INF_MESSAGEBOX, data );
+    send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
         QDataStream stream( data );
@@ -901,7 +885,7 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
     kDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset) << endl;
     d->needSendCanResume = false;
     KIO_DATA << KIO_FILESIZE_T(offset);
-    m_pConnection->send( MSG_RESUME, data );
+    send( MSG_RESUME, data );
     if ( offset )
     {
         int cmd;
@@ -931,7 +915,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         if ( result == -2 ) // win32: WSAEWOULDBLOCK condition
           continue;
-        
+
         if ( cmd == expected1 || cmd == expected2 )
         {
             if ( pCmd ) *pCmd = cmd;
@@ -1232,6 +1216,14 @@ void SlaveBase::setKillFlag()
    d->wasKilled=true;
 }
 
+void SlaveBase::send(int cmd, const QByteArray& arr )
+{
+   slaveWriteError = false;
+   if (!m_pConnection->send(cmd, arr))
+       // Note that slaveWriteError can also be set by sigpipe_handler
+       slaveWriteError = true;
+   if (slaveWriteError) exit();
+}
+
 void SlaveBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-

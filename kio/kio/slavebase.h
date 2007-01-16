@@ -785,6 +785,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
+    void send(int cmd, const QByteArray& arr = QByteArray());
     SlaveBasePrivate* const d;
 };
 

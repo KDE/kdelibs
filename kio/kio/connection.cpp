@@ -104,15 +104,16 @@ void Connection::close()
     m_tasks.clear();
 }
 
-void Connection::send(int cmd, const QByteArray& data)
+bool Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || !m_tasks.isEmpty()) {
 	Task task;
 	task.cmd = cmd;
 	task.data = data;
 	m_tasks.enqueue(task);
+        return true;
     } else {
-	sendnow( cmd, data );
+	return sendnow( cmd, data );
     }
 }
 
