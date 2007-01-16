@@ -21,6 +21,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+// for off_t to be 64 bits
+#define _FILE_OFFSET_BITS 64
+
 #include <config.h>
 #include <config-acl.h>
 
