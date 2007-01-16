@@ -63,10 +63,10 @@ endif (WIN32)
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp 
-      kpty.cpp
       network/khttpproxysocketdevice.cpp
       network/ksocks.cpp
       network/ksockssocketdevice.cpp
+      util/kpty.cpp
       fakes.c )
 endif (UNIX)
 
@@ -95,9 +95,6 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   klibloader.cpp
-   kmacroexpander.cpp
-   kshell.cpp
    compression/kgzipfilter.cpp
    compression/kfilterbase.cpp
    compression/kfilterdev.cpp
@@ -183,9 +180,12 @@ set(kdecore_LIB_SRCS
    text/kcodecs.cpp
    text/kstringhandler.cpp
    util/kallocator.cpp
+   util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
-   util/kdedmodule.cpp
+   util/klibloader.cpp
+   util/kmacroexpander.cpp
+   util/kshell.cpp
    util/krandom.cpp
    util/krandomsequence.cpp
    util/kstaticdeleter.cpp
@@ -249,12 +249,6 @@ install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
 install( FILES
-   kpty.h
-   klibloader.h
-   kgenericfactory.h
-   kgenericfactory.tcc
-   kshell.h
-   kmacroexpander.h
    compression/kfilterbase.h
    compression/kfilterdev.h
    config/kconfig.h
@@ -336,7 +330,13 @@ install( FILES
    util/kde_file.h
    util/kdedmodule.h
    util/kdeversion.h
+   util/kgenericfactory.h
+   util/kgenericfactory.tcc
    util/klauncher_iface.h
+   util/klibloader.h
+   util/kmacroexpander.h
+   util/kpty.h
+   util/kshell.h
    util/krandom.h
    util/krandomsequence.h
    util/ksharedptr.h
