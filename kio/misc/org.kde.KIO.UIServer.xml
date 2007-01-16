@@ -3,7 +3,7 @@
 <node>
   <interface name="org.kde.KIO.UIServer">
     <signal name="actionPerformed">
-      <arg name="actionId" type="i" direction="out">
+      <arg name="actionId" type="i" direction="out"/>
     </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
