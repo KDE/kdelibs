@@ -53,8 +53,8 @@
 #include <kcodecs.h>
 #include <kinstance.h>
 #include <kresolver.h>
-#include <kmimemagic.h>
 #include <krandom.h>
+#include <kmimetype.h>
 #include <ktoolinvocation.h>
 #include <kstreamsocket.h>
 #include <kstandarddirs.h>
@@ -4174,12 +4174,10 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         kDebug(7113) << "(" << m_pid << ") Mimetype buffer size: " << m_mimeTypeBuffer.size()
                       << endl;
 
-        KMimeMagicResult *result;
-        result = KMimeMagic::self()->findBufferFileType( m_mimeTypeBuffer,
-                                                         m_request.url.fileName() );
-        if( result )
+        KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_request.url.fileName(), m_mimeTypeBuffer);
+        if( mime && !mime->isDefault() )
         {
-          m_strMimeType = result->mimeType();
+          m_strMimeType = mime->name();
           kDebug(7113) << "(" << m_pid << ") Mimetype from content: "
                         << m_strMimeType << endl;
         }

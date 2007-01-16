@@ -63,7 +63,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kinstance.h>
-#include <kmimemagic.h>
 #include <kmimetype.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
@@ -1829,10 +1828,10 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     {
       mimetypeEmitted = true;
       array = array.fromRawData(buffer, n);
-      KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(array, url.fileName());
+      KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
       array.clear();
-      kDebug(7102) << "ftpGet: Emitting mimetype " << result->mimeType() << endl;
-      mimeType( result->mimeType() );
+      kDebug(7102) << "ftpGet: Emitting mimetype " << mime->name() << endl;
+      mimeType( mime->name() );
       if( m_size != UnknownSize )	// Emit total size AFTER mimetype
         totalSize( m_size );
     }
