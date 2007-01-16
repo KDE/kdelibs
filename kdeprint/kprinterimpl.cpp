@@ -37,7 +37,7 @@
 #include <krandom.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kmimemagic.h>
+#include <kmimetype.h>
 #include <kmessagebox.h>
 #include <kprocess.h>
 #include <qprocess.h>
@@ -346,7 +346,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	QString	ps = pageSizeToPageName( printer->option( "kde-printsize" ).isEmpty() ? printer->pageSize() : ( KPrinter::PageSize )printer->option( "kde-printsize" ).toInt() );
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
-		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
+		QString	mime = KMimeType::findByPath(*it)->name();
 		if (!inputMimeTypes.contains(mime))
 		{
 			if (KMessageBox::warningContinueCancel(0,
@@ -447,7 +447,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 	int		status(0), result;
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); )
 	{
-		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
+		QString	mime = KMimeType::findByPath(*it)->name();
 		if ( mime == "application/x-zerosize" )
 		{
 			// special case of empty file
