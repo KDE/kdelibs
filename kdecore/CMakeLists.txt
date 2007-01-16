@@ -74,7 +74,7 @@ endif (UNIX)
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network )
-add_subdirectory( kservice )
+add_subdirectory( services )
 
 ########### next target ###############
 
