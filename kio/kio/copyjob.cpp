@@ -91,11 +91,11 @@ CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool a
     d->m_globalDestinationState = destinationState;
 
     if ( showProgressInfo ) {
-        connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( totalFiles( KJob*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
 
-        connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( totalDirs( KJob*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
     }
     QTimer::singleShot(0, this, SLOT(slotStart()));
     /**

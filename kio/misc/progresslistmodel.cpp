@@ -96,6 +96,9 @@ QVariant ProgressListModel::data(const QModelIndex &index, int role) const
         case ProgressListDelegate::toLabel:
             result = jobInfoList[index.row()].toLabel;
             break;
+        case ProgressListDelegate::speed:
+            result = jobInfoList[index.row()].speed;
+            break;
         case ProgressListDelegate::percent:
             result = jobInfoList[index.row()].percent;
             break;
@@ -170,6 +173,7 @@ bool ProgressListModel::insertRow(int row, uint jobId, const QModelIndex &parent
     newJob.to = QString();
     newJob.fromLabel = QString();
     newJob.toLabel = QString();
+    newJob.speed = QString();
     newJob.percent = -1;
     newJob.message = QString();
     newJob.progressBar = 0;
@@ -244,6 +248,9 @@ bool ProgressListModel::setData(const QModelIndex &index, const QVariant &value,
         case ProgressListDelegate::toLabel:
             jobInfoList[index.row()].toLabel = value.toString();
             break;
+        case ProgressListDelegate::speed:
+            jobInfoList[index.row()].speed = value.toString();
+            break;
         case ProgressListDelegate::percent:
             if (!jobInfoList[index.row()].progressBar)
             {
@@ -305,6 +312,7 @@ void ProgressListModel::newAction(uint jobId, uint actionId, const QString &acti
     jobInfoList[row].actionInfoList.append(newActionInfo);
 
     emit actionAdded(index);
+    emit dataChanged(index, index);
 }
 
 void ProgressListModel::editAction(int jobId, int actionId, const QString &actionText)
@@ -330,6 +338,7 @@ void ProgressListModel::editAction(int jobId, int actionId, const QString &actio
     }
 
     emit actionEdited(index);
+    emit dataChanged(index, index);
 }
 
 void ProgressListModel::removeAction(int jobId, int actionId)
@@ -355,6 +364,7 @@ void ProgressListModel::removeAction(int jobId, int actionId)
     }
 
     emit actionRemoved(index);
+    emit dataChanged(index, index);
 }
 
 const QList<actionInfo> &ProgressListModel::actions(uint jobId) const

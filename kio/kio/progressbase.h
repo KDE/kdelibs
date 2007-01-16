@@ -163,14 +163,14 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param files the number of files
    */
-  virtual void slotTotalFiles( KIO::Job* job, unsigned long files ) {
+  virtual void slotTotalFiles( KJob* job, unsigned long files ) {
     Q_UNUSED(job);Q_UNUSED(files);}
   /**
    * Called to set the total number of directories.
    * @param job the KIO::Job
    * @param dirs the number of directories
    */
-  virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs ) {
+  virtual void slotTotalDirs( KJob* job, unsigned long dirs ) {
     Q_UNUSED(job);Q_UNUSED(dirs);}
 
   /**
@@ -200,7 +200,7 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param speed the speed in bytes/second
    */
-  virtual void slotSpeed( KIO::Job* job, unsigned long speed ) {
+  virtual void slotSpeed( KJob* job, unsigned long speed ) {
     Q_UNUSED(job);Q_UNUSED(speed);}
 
   /**

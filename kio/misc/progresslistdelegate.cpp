@@ -107,6 +107,11 @@ QString ProgressListDelegate::Private::getTo(const QModelIndex &index) const
     return index.model()->data(index, to).toString();
 }
 
+QString ProgressListDelegate::Private::getSpeed(const QModelIndex &index) const
+{
+    return index.model()->data(index, speed).toString();
+}
+
 int ProgressListDelegate::Private::getPercent(const QModelIndex &index) const
 {
     return index.model()->data(index, percent).toInt();
@@ -223,24 +228,8 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
     int coordY = d->separatorPixels + option.rect.top();
 
-    int jobIdModel = d->getJobId(index);
-    QString applicationInternalNameModel = d->getApplicationInternalName(index);
-    QString applicationNameModel = d->getApplicationName(index);
-    QString iconModel = d->getIcon(index);
-    qlonglong fileTotalsModel = d->getFileTotals(index);
-    qlonglong filesProcessedModel = d->getFilesProcessed(index);
-    QString sizeTotalsModel = d->getSizeTotals(index);
-    QString sizeProcessedModel = d->getSizeProcessed(index);
-    qlonglong timeTotalsModel = d->getTimeTotals(index);
-    qlonglong timeProcessedModel = d->getTimeProcessed(index);
-    QString fromModel = d->getFromLabel(index) + d->getFrom(index);
-    QString toModel = d->getToLabel(index) + d->getTo(index);
-    int percentModel = d->getPercent(index);
-    QString messageModel = d->getMessage(index);
-    const QList<actionInfo> actionInfoList = d->getActionList(index);
-
     KIconLoader *iconLoader = static_cast<KIconLoader*>(index.internalPointer());
-    KIcon iconToShow(iconModel, iconLoader);
+    KIcon iconToShow(d->getIcon(index), iconLoader);
 
     QColor unselectedTextColor = option.palette.text().color();
     QColor selectedTextColor = option.palette.highlightedText().color();
@@ -273,12 +262,12 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
     painter->drawPixmap(option.rect.right() - iconWidth - d->rightMargin, coordY, iconToShow.pixmap(iconWidth, iconHeight));
 
-    painter->translate(d->leftMargin, d->separatorPixels + (fontMetrics.width(applicationNameModel) / 2) + (iconHeight / 2) + canvas.top());
+    painter->translate(d->leftMargin, d->separatorPixels + (fontMetrics.width(d->getApplicationName(index)) / 2) + (iconHeight / 2) + canvas.top());
     painter->rotate(270);
 
-    QRect appNameRect(0, 0, fontMetrics.width(applicationNameModel), textHeight);
+    QRect appNameRect(0, 0, fontMetrics.width(d->getApplicationName(index)), textHeight);
 
-    painter->drawText(appNameRect, Qt::AlignLeft, applicationNameModel);
+    painter->drawText(appNameRect, Qt::AlignLeft, d->getApplicationName(index));
 
     painter->resetMatrix();
 
@@ -317,9 +306,18 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         coordY += d->separatorPixels + textHeight;
     }
 
-    if (d->getFileTotals(index) > 1)
+    if (d->getFilesProcessed(index) > 1)
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 files processed", QString::number(d->getFilesProcessed(index)), QString::number(d->getFileTotals(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        QString textToShow;
+        if (d->getFileTotals(index))
+            textToShow = fontMetrics.elidedText(i18n("%1 of %2 files processed", QString::number(d->getFilesProcessed(index)), QString::number(d->getFileTotals(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        else
+        {
+            if (d->getFilesProcessed(index) == 1)
+                textToShow = fontMetrics.elidedText(i18n("%1 file processed", QString::number(d->getFilesProcessed(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+            else
+                textToShow = fontMetrics.elidedText(i18n("%1 files processed", QString::number(d->getFilesProcessed(index))), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        }
 
         textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
 
@@ -328,9 +326,17 @@ void ProgressListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         coordY += d->separatorPixels + textHeight;
     }
 
-    if (!d->getSizeTotals(index).isEmpty())
+    if (!d->getSizeProcessed(index).isEmpty() || !d->getSpeed(index).isEmpty())
     {
-        QString textToShow = fontMetrics.elidedText(i18n("%1 of %2 processed", d->getSizeProcessed(index), d->getSizeTotals(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        QString textToShow;
+        if (!d->getSizeTotals(index).isEmpty() && !d->getSpeed(index).isEmpty())
+            textToShow = fontMetrics.elidedText(i18n("%1 of %2 processed at %3", d->getSizeProcessed(index), d->getSizeTotals(index), d->getSpeed(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        else if (!d->getSizeTotals(index).isEmpty() && d->getSpeed(index).isEmpty())
+            textToShow = fontMetrics.elidedText(i18n("%1 of %2 processed", d->getSizeProcessed(index), d->getSizeTotals(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        else if (d->getSizeTotals(index).isEmpty() && !d->getSpeed(index).isEmpty())
+            textToShow = fontMetrics.elidedText(i18n("%1 processed at %2", d->getSizeProcessed(index), d->getSpeed(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
+        else
+            textToShow = fontMetrics.elidedText(i18n("%1 processed", d->getSizeProcessed(index)), Qt::ElideRight, canvas.width() - d->getCurrentLeftMargin(textHeight) - d->rightMargin);
 
         textHeight = fontMetrics.size(Qt::TextSingleLine, textToShow).height();
 
@@ -378,15 +384,15 @@ QSize ProgressListDelegate::sizeHint(const QStyleOptionViewItem &option, const Q
         itemHeight += textSize;
     }
 
-    if (d->getFileTotals(index) > 1)
+    if (d->getFilesProcessed(index) > 1)
     {
-        textSize = fontMetrics.size(Qt::TextSingleLine, QString::number(d->getFileTotals(index))).height() + d->separatorPixels;
+        textSize = fontMetrics.size(Qt::TextSingleLine, QString::number(d->getFilesProcessed(index))).height() + d->separatorPixels;
         itemHeight += textSize;
     }
 
-    if (!d->getSizeTotals(index).isEmpty())
+    if (!d->getSizeProcessed(index).isEmpty())
     {
-        textSize = fontMetrics.size(Qt::TextSingleLine, d->getSizeTotals(index)).height() + d->separatorPixels;
+        textSize = fontMetrics.size(Qt::TextSingleLine, d->getSizeProcessed(index)).height() + d->separatorPixels;
         itemHeight += textSize;
     }
 

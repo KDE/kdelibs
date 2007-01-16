@@ -63,6 +63,7 @@ public:
     QString getFrom(const QModelIndex &index) const;
     QString getToLabel(const QModelIndex &index) const;
     QString getTo(const QModelIndex &index) const;
+    QString getSpeed(const QModelIndex &index) const;
     int getPercent(const QModelIndex &index) const;
     QString getMessage(const QModelIndex &index) const;
     const QList<actionInfo> &getActionList(const QModelIndex &index) const;

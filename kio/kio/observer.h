@@ -51,6 +51,39 @@ namespace KIO {
  * Usually jobs are automatically registered by the
  * KIO::Scheduler, so you do not have to care about that.
  *
+ * Examples:
+ * \code
+ *    int myJob = Observer::self()->newJob();
+ *    Observer::self()->setInfoMessage(myJob, "Processing input database");
+ *    // If you need to know what action was executed you can use only one parameter
+ *    // and the actionId will be passed to the slot
+ *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopProcessing(int)));
+ *    int theProgress = 0;
+ *    while (...)
+ *    {
+ *       ...
+ *       Observer::self()->setPercent(myJob, theProgress);
+ *       ...
+ *       theProgress = ...
+ *    }
+ * \endcode
+ *
+ * \code
+ *    int myJob = Observer::self()->newJob();
+ *    Observer::self()->setInfoMessage(myJob, "Processing input database");
+ *    // If you need to know what action was executed referred to what job
+ *    // you can use two parameters and the actionId and jobId will be passed to the slot
+ *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopProcessing(int,int)));
+ *    int theProgress = 0;
+ *    while (...)
+ *    {
+ *       ...
+ *       Observer::self()->setPercent(myJob, theProgress);
+ *       ...
+ *       theProgress = ...
+ *    }
+ * \endcode
+ *
  * @short Observer for KJob progress information
  * @author David Faure <faure@kde.org>
  */
@@ -76,9 +109,9 @@ public:
     /**
       * Called by the job constructor, to signal its presence to the
       * UI Server.
-      * @param job the new job
+      * @param job          the new job
       * @param showProgress true to show progress, false otherwise
-      * @return the progress ID assigned by the UI Server to the Job.
+      * @return             the progress ID assigned by the UI Server to the Job.
       */
     int newJob( KJob * job, bool showProgress );
 
@@ -86,7 +119,7 @@ public:
       * If you don't have a KJob, but want to show some kind of
       * progress into the UI Server, you have to call this method.
       * @param icon the icon to be shown on the UI Server
-      * @return the progress ID assigned by the UI Server
+      * @return     the progress ID assigned by the UI Server
       */
     int newJob( const QString &icon = QString() );
 
@@ -106,7 +139,7 @@ public:
     /**
       * Opens a password dialog.
       * @param info the authentication information
-      * @return true if successful ("ok" clicked), false otherwise
+      * @return     true if successful ("ok" clicked), false otherwise
       */
     bool openPasswordDialog( KIO::AuthInfo& info );
 
@@ -114,12 +147,12 @@ public:
       * Popup a message box. See KIO::SlaveBase.
       * This doesn't use DBus anymore, it shows the dialog in the application's process.
       * Otherwise, other apps would block when trying to communicate with UIServer.
-      * @param progressId the progress ID of the job, as returned by newJob()
-      * @param type the type of the message box
-      * @param text the text to show
-      * @param caption the window caption
-      * @param buttonYes the text of the "Yes" button
-      * @param buttonNo the text of the "No button
+      * @param progressId   the progress ID of the job, as returned by newJob()
+      * @param type         the type of the message box
+      * @param text         the text to show
+      * @param caption      the window caption
+      * @param buttonYes    the text of the "Yes" button
+      * @param buttonNo     the text of the "No button
       */
     static int messageBox( int progressId, int type, const QString &text, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo );
@@ -128,14 +161,14 @@ public:
       * Popup a message box. See KIO::SlaveBase.
       * This doesn't use DBus anymore, it shows the dialog in the application's process.
       * Otherwise, other apps would block when trying to communicate with UIServer.
-      * @param progressId the progress ID of the job, as returned by newJob()
-      * @param type the type of the message box
-      * @param text the text to show
-      * @param caption the window caption
-      * @param buttonYes the text of the "Yes" button
-      * @param buttonNo the text of the "No button
+      * @param progressId       the progress ID of the job, as returned by newJob()
+      * @param type             the type of the message box
+      * @param text             the text to show
+      * @param caption          the window caption
+      * @param buttonYes        the text of the "Yes" button
+      * @param buttonNo         the text of the "No button
       * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
-      *        The string is used to lookup and store the setting in kioslaverc.
+      *                         The string is used to lookup and store the setting in kioslaverc.
       */
     static int messageBox( int progressId, int type, const QString &text, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName );
@@ -165,8 +198,38 @@ public:
                                             bool multi,
                                             const QString & error_text );
 
+    /**
+      * Adds an action to a job
+      * @param jobId        the identification number of the job
+      * @param actionText   the text that will be shown on the button
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the slot that will be called when button is clicked
+      *
+      * Example:
+      * \code
+      *    int myJob = Observer::self()->newJob();
+      *    Observer::self()->setInfoMessage(myJob, "Downloading icon theme");
+      *    // No data will be passed to the stopDownloadingIconTheme() slot, just will be called
+      *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopDownloadingIconTheme()));
+      * \endcode
+      */
     int addAction(int jobId, const QString &actionText, QObject *receiver, const char *slotName);
+
+    // TODO: addAction with enum support for standard actions as thiago suggested (ereslibre)
+
+    /**
+      * Edits an existing action
+      * @param actionId     the action that is going to be edited
+      * @param actionText   the new text that is going to be shown on the button
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the new slot that will be called if the action is performed
+      */
     void editAction(int actionId, const QString &actionText, QObject *receiver, const char *slotName);
+
+    /**
+      * Removes an existing action
+      * @param actionId the action that is going to be removed
+      */
     void removeAction(int actionId);
 
 public Q_SLOTS:
@@ -197,9 +260,9 @@ public Q_SLOTS:
 protected:
     struct slotCall
     {
-        KJob *owner;
+        int owner;
         QObject *receiver;
-        QString slotName;
+        QByteArray slotName;
     };
 
     static Observer * s_pObserver;
@@ -215,25 +278,25 @@ public Q_SLOTS:
     void actionPerformed( int actionId );
 
     void slotTotalSize( KJob*, qulonglong size );
-    void slotTotalSize( int, qulonglong size );
+    void setTotalSize( int, qulonglong size );
     void slotTotalFiles( KJob*, unsigned long files );
-    void slotTotalFiles( int, unsigned long files );
+    void setTotalFiles( int, unsigned long files );
     void slotTotalDirs( KJob*, unsigned long dirs );
-    void slotTotalDirs( int, unsigned long dirs );
+    void setTotalDirs( int, unsigned long dirs );
 
     void slotProcessedSize( KJob*, qulonglong size );
-    void slotProcessedSize( int, qulonglong size );
+    void setProcessedSize( int, qulonglong size );
     void slotProcessedFiles( KJob*, unsigned long files );
-    void slotProcessedFiles( int, unsigned long files );
+    void setProcessedFiles( int, unsigned long files );
     void slotProcessedDirs( KJob*, unsigned long dirs );
-    void slotProcessedDirs( int, unsigned long dirs );
+    void setProcessedDirs( int, unsigned long dirs );
 
     void slotSpeed( KJob*, unsigned long speed );
-    void slotSpeed( int, unsigned long speed );
+    void setSpeed( int, unsigned long speed );
     void slotPercent( KJob*, unsigned long percent );
-    void slotPercent( int, unsigned long percent );
+    void setPercent( int, unsigned long percent );
     void slotInfoMessage( KJob*, const QString & msg );
-    void slotInfoMessage( int, const QString & msg );
+    void setInfoMessage( int, const QString & msg );
 
     void slotCopying( KJob*, const KUrl& src, const KUrl& dest );
     void slotMoving( KJob*, const KUrl& src, const KUrl& dest );
@@ -246,12 +309,12 @@ public:
     void mounting( KJob*, const QString & dev, const QString & point );
     void unmounting( KJob*, const QString & point );
 
-private:
-    QString processSlot(const QString &givenSlot) const;
-
 private Q_SLOTS:
     void jobPaused(int actionId);
     void jobResumed(int actionId);
+
+Q_SIGNALS:
+    void actionPerformed(int actionId, int jobId);
 };
 
 // -*- mode: c++; c-basic-offset: 2 -*-

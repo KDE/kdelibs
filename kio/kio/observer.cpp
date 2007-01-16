@@ -178,7 +178,14 @@ void Observer::actionPerformed( int actionId )
 
     slotCall theSlotCall = m_hashActions[actionId];
 
-    QMetaObject::invokeMethod(theSlotCall.receiver, theSlotCall.slotName.toLatin1(), Qt::DirectConnection, Q_ARG(int, actionId));
+    // This way of calling the slot is more flexible than using QMetaObject::invokeMethod because
+    // the slot can have no arguments, 1 argument (actionId) or 2 arguments (actionId and jobId),
+    // but if we used QMetaObject::invokeMethod we are forcing the slot to have 2 arguments, or wont be
+    // called (ereslibre)
+
+    connect(this, SIGNAL(actionPerformed(int,int)), theSlotCall.receiver, theSlotCall.slotName);
+    emit actionPerformed(actionId, theSlotCall.owner);
+    disconnect(this, SIGNAL(actionPerformed(int,int)), theSlotCall.receiver, theSlotCall.slotName);
 }
 
 void Observer::slotTotalSize( KJob* job, qulonglong size )
@@ -186,7 +193,7 @@ void Observer::slotTotalSize( KJob* job, qulonglong size )
     m_uiserver->totalSize( job->progressId(), size );
 }
 
-void Observer::slotTotalSize( int jobId, qulonglong size )
+void Observer::setTotalSize( int jobId, qulonglong size )
 {
     m_uiserver->totalSize( jobId, size );
 }
@@ -196,7 +203,7 @@ void Observer::slotTotalFiles( KJob* job, unsigned long files )
     m_uiserver->totalFiles( job->progressId(), files );
 }
 
-void Observer::slotTotalFiles( int jobId, unsigned long files )
+void Observer::setTotalFiles( int jobId, unsigned long files )
 {
     m_uiserver->totalFiles( jobId, files );
 }
@@ -206,7 +213,7 @@ void Observer::slotTotalDirs( KJob* job, unsigned long dirs )
     m_uiserver->totalDirs( job->progressId(), dirs );
 }
 
-void Observer::slotTotalDirs( int jobId, unsigned long dirs )
+void Observer::setTotalDirs( int jobId, unsigned long dirs )
 {
     m_uiserver->totalDirs( jobId, dirs );
 }
@@ -216,7 +223,7 @@ void Observer::slotProcessedSize( KJob* job, qulonglong size )
     m_uiserver->processedSize( job->progressId(), size );
 }
 
-void Observer::slotProcessedSize( int jobId, qulonglong size )
+void Observer::setProcessedSize( int jobId, qulonglong size )
 {
     m_uiserver->processedSize( jobId, size );
 }
@@ -226,7 +233,7 @@ void Observer::slotProcessedFiles( KJob* job, unsigned long files )
     m_uiserver->processedFiles( job->progressId(), files );
 }
 
-void Observer::slotProcessedFiles( int jobId, unsigned long files )
+void Observer::setProcessedFiles( int jobId, unsigned long files )
 {
     m_uiserver->processedFiles( jobId, files );
 }
@@ -236,19 +243,25 @@ void Observer::slotProcessedDirs( KJob* job, unsigned long dirs )
     m_uiserver->processedDirs( job->progressId(), dirs );
 }
 
-void Observer::slotProcessedDirs( int jobId, unsigned long dirs )
+void Observer::setProcessedDirs( int jobId, unsigned long dirs )
 {
     m_uiserver->processedDirs( jobId, dirs );
 }
 
 void Observer::slotSpeed( KJob* job, unsigned long speed )
 {
-    m_uiserver->speed( job->progressId(), speed );
+    if (speed)
+        m_uiserver->speed( job->progressId(), KIO::convertSize( speed ) + QString( "/s" ) );
+    else
+        m_uiserver->speed( job->progressId(), QString() );
 }
 
-void Observer::slotSpeed( int jobId, unsigned long speed )
+void Observer::setSpeed( int jobId, unsigned long speed )
 {
-    m_uiserver->speed( jobId, speed );
+    if (speed)
+        m_uiserver->speed( jobId, KIO::convertSize( speed ) + QString( "/s" ) );
+    else
+        m_uiserver->speed( jobId, QString() );
 }
 
 void Observer::slotPercent( KJob* job, unsigned long percent )
@@ -256,7 +269,7 @@ void Observer::slotPercent( KJob* job, unsigned long percent )
     m_uiserver->percent( job->progressId(), percent );
 }
 
-void Observer::slotPercent( int jobId, unsigned long percent )
+void Observer::setPercent( int jobId, unsigned long percent )
 {
     m_uiserver->percent( jobId, percent );
 }
@@ -266,21 +279,18 @@ void Observer::slotInfoMessage( KJob* job, const QString & msg )
     m_uiserver->infoMessage( job->progressId(), msg );
 }
 
-void Observer::slotInfoMessage( int jobId, const QString & msg )
+void Observer::setInfoMessage( int jobId, const QString & msg )
 {
     m_uiserver->infoMessage( jobId, msg );
 }
 
+
+/// ===========================================================
+
+
 void Observer::slotCopying( KJob* job, const KUrl& from, const KUrl& to )
 {
     m_uiserver->copying( job->progressId(), from.url(), to.url() );
-
-    /*KIO::Job *kioJob = static_cast<KIO::Job*>(job);
-    if (kioJob)
-    {
-        addAction(kioJob->progressId(), i18n("Pause"), this, SLOT(jobPaused(int)));
-        addAction(kioJob->progressId(), i18n("Cancel"), kioJob, "kill");
-    }*/
 }
 
 void Observer::slotMoving( KJob* job, const KUrl& from, const KUrl& to )
@@ -531,10 +541,10 @@ int Observer::addAction(int jobId, const QString &actionText, QObject *receiver,
     newSlotCall.owner = 0;
 
     if (m_dctJobs.contains(jobId))
-        newSlotCall.owner = m_dctJobs[jobId];
+        newSlotCall.owner = jobId;
 
     newSlotCall.receiver = receiver;
-    newSlotCall.slotName = processSlot(QString(slotName));
+    newSlotCall.slotName = slotName;
 
     m_hashActions.insert(actionId, newSlotCall);
 
@@ -551,7 +561,7 @@ void Observer::editAction(int actionId, const QString &actionText, QObject *rece
     slotCall newSlotCall;
 
     newSlotCall.receiver = receiver;
-    newSlotCall.slotName = processSlot(QString(slotName));
+    newSlotCall.slotName = slotName;
 
     m_hashActions[actionId] = newSlotCall;
 }
@@ -563,40 +573,13 @@ void Observer::removeAction(int actionId)
     m_hashActions.remove(actionId);
 }
 
-QString Observer::processSlot(const QString &givenSlot) const
-{
-    QString retSlot;
-
-    if (givenSlot.length() > 1)
-    {
-        int i = 0;
-        bool continueSearching = true;
-
-        if (givenSlot[0] == '1') // SLOT(givenSlot()) => "1givenSlot()"
-            i = 1;
-
-        while ((i < givenSlot.length()) &&
-               continueSearching)
-        {
-            if (givenSlot[i].isLetterOrNumber())
-                retSlot += givenSlot[i];
-            else if (givenSlot[i] == '(')
-                continueSearching = false;
-
-            i++;
-        }
-    }
-
-    return retSlot;
-}
-
 void Observer::jobPaused(int actionId)
 {
     if (m_hashActions.contains(actionId))
     {
         KIO::Job *kioJob;
-        if (m_hashActions[actionId].owner &&
-            (kioJob = static_cast<KIO::Job*>(m_hashActions[actionId].owner)))
+        if (m_dctJobs.contains(m_hashActions[actionId].owner) &&
+            (kioJob = static_cast<KIO::Job*>(m_dctJobs[m_hashActions[actionId].owner])))
         {
             if (kioJob)
             {
@@ -613,8 +596,8 @@ void Observer::jobResumed(int actionId)
     if (m_hashActions.contains(actionId))
     {
         KIO::Job *kioJob;
-        if (m_hashActions[actionId].owner &&
-            (kioJob = static_cast<KIO::Job*>(m_hashActions[actionId].owner)))
+        if (m_dctJobs.contains(m_hashActions[actionId].owner) &&
+            (kioJob = static_cast<KIO::Job*>(m_dctJobs[m_hashActions[actionId].owner])))
         {
             if (kioJob)
             {

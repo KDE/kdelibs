@@ -313,8 +313,8 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
              this, SLOT( slotTotalSize(KJob *, qulonglong) ) );
     connect( job, SIGNAL( processedSize(KJob *, qulonglong) ),
              this, SLOT( slotProcessedSize(KJob *, qulonglong) ) );
-    connect( job, SIGNAL( speed(KIO::Job *, unsigned long) ),
-             this, SLOT( slotSpeed(KIO::Job *, unsigned long) ) );
+    connect( job, SIGNAL( speed(KJob *, unsigned long) ),
+             this, SLOT( slotSpeed(KJob *, unsigned long) ) );
 }
 
 void ForwardingSlaveBase::connectSimpleJob(KIO::SimpleJob *job)
@@ -387,7 +387,7 @@ void ForwardingSlaveBase::slotProcessedSize(KJob* /*job*/, qulonglong size)
     processedSize(size);
 }
 
-void ForwardingSlaveBase::slotSpeed(KIO::Job* /*job*/, unsigned long bytesPerSecond)
+void ForwardingSlaveBase::slotSpeed(KJob* /*job*/, unsigned long bytesPerSecond)
 {
     speed(bytesPerSecond);
 }

@@ -181,7 +181,7 @@ public Q_SLOTS: // METHODS
         return callWithArgumentList(QDBus::Block, QLatin1String("showSSLInfoDialog"), argumentList);
     }
 
-    inline Q_NOREPLY void speed(int id, uint bytesPerSecond)
+    inline Q_NOREPLY void speed(int id, const QString &bytesPerSecond)
     {
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(id) << qVariantFromValue(bytesPerSecond);

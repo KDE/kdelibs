@@ -107,8 +107,8 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  Observer::self(), SLOT( slotTotalSize( KJob*, qulonglong ) ) );
         connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
                  Observer::self(), SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
-        connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+        connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
+                 Observer::self(), SLOT( slotSpeed( KJob*, unsigned long ) ) );
 
         connect( job, SIGNAL( finished( KJob*, int ) ),
                  this, SLOT( slotFinished( KJob*, int ) ) );

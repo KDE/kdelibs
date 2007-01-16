@@ -790,8 +790,8 @@ bool KHTMLPart::openUrl( const KUrl &url )
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
 
-  connect( d->m_job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-           this, SLOT( slotJobSpeed( KIO::Job*, unsigned long ) ) );
+  connect( d->m_job, SIGNAL( speed( KJob*, unsigned long ) ),
+           this, SLOT( slotJobSpeed( KJob*, unsigned long ) ) );
 
   connect( d->m_job, SIGNAL( percent( KJob*, unsigned long ) ),
            this, SLOT( slotJobPercent( KJob*, unsigned long ) ) );

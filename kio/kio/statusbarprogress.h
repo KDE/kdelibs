@@ -82,7 +82,7 @@ public Q_SLOTS:
   virtual void slotClean();
   virtual void slotTotalSize( KJob* job, qulonglong size );
   virtual void slotPercent( KJob* job, unsigned long percent );
-  virtual void slotSpeed( KIO::Job* job, unsigned long speed );
+  virtual void slotSpeed( KJob* job, unsigned long speed );
 
 protected:
   QProgressBar* m_pProgressBar;

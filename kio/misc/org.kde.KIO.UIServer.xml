@@ -68,7 +68,7 @@
     </method>
     <method name="speed">
       <arg name="id" type="i" direction="in"/>
-      <arg name="bytesPerSecond" type="u" direction="in"/>
+      <arg name="bytesPerSecond" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="infoMessage">

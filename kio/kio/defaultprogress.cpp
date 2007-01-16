@@ -205,7 +205,7 @@ void DefaultProgress::slotTotalSize( KJob*, qulonglong size )
 }
 
 
-void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
+void DefaultProgress::slotTotalFiles( KJob*, unsigned long files )
 {
   if ( m_iTotalFiles == files )
       return;
@@ -214,7 +214,7 @@ void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
 }
 
 
-void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long dirs )
+void DefaultProgress::slotTotalDirs( KJob*, unsigned long dirs )
 {
   if ( m_iTotalDirs == dirs )
       return;
@@ -327,7 +327,7 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 }
 
 
-void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
+void DefaultProgress::slotSpeed( KJob*, unsigned long speed )
 {
   if ( speed == 0 ) {
     speedLabel->setText( i18n( "Stalled") );

@@ -22,6 +22,8 @@
 
 #include <QWidget>
 #include <QBoxLayout>
+#include <QAction>
+#include <QToolBar>
 
 #include <ksqueezedtextlabel.h>
 #include <kconfig.h>
@@ -42,6 +44,7 @@
 #include <kaction.h>
 #include <kdialog.h>
 #include <kstandardaction.h>
+#include <klineedit.h>
 
 #include "uiserver.h"
 #include "uiserveradaptor_p.h"
@@ -64,6 +67,26 @@
 UIServer::UIServer()
     : KMainWindow(0)
 {
+    QString configure = i18n("Configure");
+
+    toolBar = addToolBar(configure);
+    toolBar->setMovable(false);
+    toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QAction *configureAction = toolBar->addAction(configure);
+    configureAction->setIcon(KIcon("configure"));
+    configureAction->setIconText(configure);
+
+    connect(configureAction, SIGNAL(triggered(bool)), this,
+            SLOT(showConfigurationDialog()));
+
+    toolBar->addSeparator();
+
+    searchText = new KLineEdit(toolBar);
+    searchText->setText(i18n("Search"));
+    searchText->setClearButtonShown(true);
+
+    toolBar->addWidget(searchText);
+
     listProgress = new QListView(this);
     listProgress->setObjectName("progresslist");
     listProgress->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -91,7 +114,7 @@ UIServer::UIServer()
             listProgress, SLOT(rowsInserted(const QModelIndex&,int,int)));
 
     connect(progressListModel, SIGNAL(rowsRemoved(const QModelIndex&,int,int)),
-            listProgress, SLOT(rowsRemoved(const QModelIndex&,int,int)));
+            listProgress, SLOT(rowsAboutToBeRemoved(const QModelIndex&,int,int)));
 
     connect(progressListModel, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
             listProgress, SLOT(dataChanged(const QModelIndex&,const QModelIndex&)));
@@ -222,13 +245,12 @@ void UIServer::percent(int id, unsigned long ipercent)
                                ProgressListDelegate::percent);
 }
 
-void UIServer::speed(int id, unsigned long bytes_per_second)
+void UIServer::speed(int id, QString bytes_per_second)
 {
     if (id < 1) return;
 
-#ifdef __GNUC__
-    #warning implement me (ereslibre)
-#endif
+    progressListModel->setData(progressListModel->indexForJob(id), bytes_per_second,
+                               ProgressListDelegate::speed);
 }
 
 void UIServer::infoMessage(int id, QString msg)
@@ -485,6 +507,78 @@ void UIServer::applySettings()
      m_systemTray->show();
 }
 
+void UIServer::showConfigurationDialog()
+{
+    if (!configurationDialog)
+        configurationDialog = new UIConfigurationDialog(0);
+
+    configurationDialog->show();
+}
+
+UIConfigurationDialog::UIConfigurationDialog(QWidget *parent)
+    : QWidget(parent)
+{
+    setupUi(this);
+
+    connect(buttonAccept, SIGNAL(clicked(bool)), this,
+            SLOT(saveAndExit()));
+
+    connect(buttonCancel, SIGNAL(clicked(bool)), this,
+            SLOT(close()));
+}
+
+UIConfigurationDialog::~UIConfigurationDialog()
+{
+}
+
+void UIConfigurationDialog::show()
+{
+    loadSettings();
+
+    QWidget::show();
+}
+
+void UIConfigurationDialog::loadSettings()
+{
+    KConfig config("kio_uiserver", false, false);
+    config.setGroup("configuration");
+
+    int appearance = config.readNumEntry("appearance");
+    int finishedJobs = config.readNumEntry("finishedJobs");
+
+    if (appearance)
+        radioTree->setChecked(true);
+    else
+        radioList->setChecked(true);
+
+    if (finishedJobs)
+        radioRemove->setChecked(true);
+    else
+        radioMove->setChecked(true);
+}
+
+void UIConfigurationDialog::saveSettings()
+{
+    KConfig config("kio_uiserver", false, false);
+    config.setGroup("configuration");
+
+    if (radioList->isChecked())
+        config.writeEntry("appearance", 0);
+    else
+        config.writeEntry("appearance", 1);
+
+    if (radioMove->isChecked())
+        config.writeEntry("finishedJobs", 0);
+    else
+        config.writeEntry("finishedJobs", 1);
+}
+
+void UIConfigurationDialog::saveAndExit()
+{
+    saveSettings();
+    close();
+}
+
 int UIServer::s_jobId = 0;
 int UIServer::s_actionId = 0;
 
@@ -517,9 +611,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     app.setQuitOnLastWindowClosed( false );
     //app.dcopClient()->setDaemonMode( true );
 
-    UIServer *uiserver = UIServer::createInstance();
+    UIServer::createInstance();
 
     return app.exec();
 }
 
 #include "uiserver.moc"
+#include "uiserver_p.moc"

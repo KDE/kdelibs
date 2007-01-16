@@ -180,7 +180,7 @@ private Q_SLOTS:
     void slotInfoMessage(KJob *job, const QString &msg);
     void slotTotalSize(KJob *job, qulonglong size);
     void slotProcessedSize(KJob *job, qulonglong size);
-    void slotSpeed(KIO::Job *job, unsigned long bytesPerSecond);
+    void slotSpeed(KJob *job, unsigned long bytesPerSecond);
 
     // KIO::SimpleJob subclasses
     void slotRedirection(KIO::Job *job, const KUrl &url);

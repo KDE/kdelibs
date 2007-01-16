@@ -150,7 +150,7 @@ void UIServerAdaptor::showSSLInfoDialog(const QString &url, const QMap<QString,Q
     parent()->showSSLInfoDialog(url, data, mainwindow);
 }
 
-void UIServerAdaptor::speed(int id, uint bytesPerSecond)
+void UIServerAdaptor::speed(int id, const QString &bytesPerSecond)
 {
     // handle method call org.kde.KIO.UIServer.speed
     parent()->speed(id, bytesPerSecond);

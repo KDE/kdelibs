@@ -608,7 +608,7 @@ private Q_SLOTS:
   void slotPercent( KJob *, unsigned long );
   void slotTotalSize( KJob *, qulonglong );
   void slotProcessedSize( KJob *, qulonglong );
-  void slotSpeed( KIO::Job *, unsigned long );
+  void slotSpeed( KJob *, unsigned long );
 
 private:
   void jobStarted( KIO::ListJob * );

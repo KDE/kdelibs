@@ -23,10 +23,12 @@ progresslistdelegate.cpp
 )
 
 set(kio_uiserver_KDEINIT_PRIVATE
-progresslistdelegate_p.h)
+progresslistdelegate_p.h
+uiserver_p.h
+)
 
+kde4_add_ui_files(kio_uiserver_KDEINIT_SRCS uiserverConfigDialog.ui)
 kde4_automoc(${kio_uiserver_KDEINIT_SRCS} ${kio_uiserver_KDEINIT_PRIVATE})
-
 kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kio_uiserver  ${KDE4_KIO_LIBS} )

@@ -57,10 +57,10 @@ void ProgressBase::setJob( KIO::CopyJob *job )
   // first connect all slots
   connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
 	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
+	   SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
+  connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
+	   SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
 
   connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
 	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
@@ -69,8 +69,8 @@ void ProgressBase::setJob( KIO::CopyJob *job )
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
+	   SLOT( slotSpeed( KJob*, unsigned long ) ) );
   connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
 	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 
@@ -98,10 +98,10 @@ void ProgressBase::setJob( KIO::DeleteJob *job )
   // first connect all slots
   connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
 	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
+	   SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
+  connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
+	   SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
 
   connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
 	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
@@ -110,8 +110,8 @@ void ProgressBase::setJob( KIO::DeleteJob *job )
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
+	   SLOT( slotSpeed( KJob*, unsigned long ) ) );
   connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
 	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 

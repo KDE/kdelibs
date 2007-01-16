@@ -80,6 +80,7 @@ public:
         to,
         fromLabel,
         toLabel,
+        speed,
         percent,
         message
     };

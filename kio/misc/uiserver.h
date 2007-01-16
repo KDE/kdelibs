@@ -36,8 +36,12 @@
 #include <ksslcertdialog.h>
 #include <ktoolbar.h>
 
+#include "uiserver_p.h"
+
 class ProgressListModel;
 class UIServerAdaptor;
+class QToolBar;
+class KLineEdit;
 
 class UIServer
     : public KMainWindow
@@ -159,7 +163,7 @@ public:
       * @param jobId            the identification number of the job
       * @param bytes_per_second number of bytes per second on the transfer
       */
-    void speed(int jobId, unsigned long bytes_per_second);
+    void speed(int jobId, QString bytes_per_second);
 
     /**
       * Sets the current info message
@@ -280,11 +284,17 @@ public Q_SLOTS:
     void slotRemoveSystemTrayIcon();
     void applySettings();
 
+private Q_SLOTS:
+    void showConfigurationDialog();
+
 protected:
     ProgressListModel *progressListModel;
     QListView *listProgress;
 
 private:
+    UIConfigurationDialog *configurationDialog;
+    QToolBar *toolBar;
+    KLineEdit *searchText;
     UIServerAdaptor *serverAdaptor;
     QHash<int, int> m_hashActions;
 

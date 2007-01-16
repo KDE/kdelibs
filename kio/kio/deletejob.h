@@ -67,13 +67,13 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param files the total number of files
 	 */
-        void totalFiles( KIO::Job *job, unsigned long files );
+        void totalFiles( KJob *job, unsigned long files );
         /**
 	 * Emitted when the toal number of direcotries is known.
 	 * @param job the job that emitted this signal
 	 * @param dirs the total number of directories
 	 */
-        void totalDirs( KIO::Job *job, unsigned long dirs );
+        void totalDirs( KJob *job, unsigned long dirs );
 
         /**
 	 * Sends the number of processed files.

@@ -123,8 +123,8 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     KCompositeJob::addSubjob( job );
 
     // Forward information from that subjob.
-    connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
-             SLOT(slotSpeed(KIO::Job*, unsigned long)) );
+    connect( job, SIGNAL(speed( KJob*, unsigned long )),
+             SLOT(slotSpeed(KJob*, unsigned long)) );
 
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
@@ -206,7 +206,7 @@ bool Job::isSuspended() const
   return d->m_suspended;
 }
 
-void Job::slotSpeed( KIO::Job*, unsigned long speed )
+void Job::slotSpeed( KJob*, unsigned long speed )
 {
   //kDebug(7007) << "Job::slotSpeed " << speed << endl;
   emitSpeed( speed );

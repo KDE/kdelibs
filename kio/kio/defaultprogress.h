@@ -63,14 +63,14 @@ public:
 
 public Q_SLOTS:
   virtual void slotTotalSize( KJob* job, qulonglong size );
-  virtual void slotTotalFiles( KIO::Job* job, unsigned long files );
-  virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs );
+  virtual void slotTotalFiles( KJob* job, unsigned long files );
+  virtual void slotTotalDirs( KJob* job, unsigned long dirs );
 
   virtual void slotProcessedSize( KJob* job, qulonglong bytes );
   virtual void slotProcessedFiles( KIO::Job* job, unsigned long files );
   virtual void slotProcessedDirs( KIO::Job* job, unsigned long dirs );
 
-  virtual void slotSpeed( KIO::Job* job, unsigned long speed );
+  virtual void slotSpeed( KJob* job, unsigned long speed );
   virtual void slotPercent( KJob* job, unsigned long percent );
   /**
    * Called to set an information message.

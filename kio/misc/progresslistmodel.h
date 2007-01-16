@@ -56,6 +56,7 @@ struct jobInfo
     QString to;                             ///< To where are we performing the operation
     QString fromLabel;                      ///< The label to be shown on the delegate
     QString toLabel;                        ///< The label to be shown on the delegate
+    QString speed;                          ///< The current speed of the operation (human readable, example, "3Mb/s")
     int percent;                            ///< The current percent of the progress
     QString message;                        ///< The information message to be shown
     QList<actionInfo> actionInfoList;       ///< The list of actions added to the job

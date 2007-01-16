@@ -2380,7 +2380,7 @@ void KDirLister::slotProcessedSize( KJob *job, qulonglong size )
   emit processedSize( result );
 }
 
-void KDirLister::slotSpeed( KIO::Job *job, unsigned long spd )
+void KDirLister::slotSpeed( KJob *job, unsigned long spd )
 {
   d->jobData[static_cast<KIO::ListJob *>(job)].speed = spd;
 
@@ -2427,8 +2427,8 @@ void KDirLister::connectJob( KIO::ListJob *job )
            this, SLOT(slotTotalSize( KJob *, qulonglong )) );
   connect( job, SIGNAL(processedSize( KJob *, qulonglong )),
            this, SLOT(slotProcessedSize( KJob *, qulonglong )) );
-  connect( job, SIGNAL(speed( KIO::Job *, unsigned long )),
-           this, SLOT(slotSpeed( KIO::Job *, unsigned long )) );
+  connect( job, SIGNAL(speed( KJob *, unsigned long )),
+           this, SLOT(slotSpeed( KJob *, unsigned long )) );
 }
 
 void KDirLister::setMainWindow( QWidget *window )

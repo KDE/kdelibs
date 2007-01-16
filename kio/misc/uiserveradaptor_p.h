@@ -97,7 +97,7 @@ class UIServerAdaptor: public QDBusAbstractAdaptor
 "    </method>\n"
 "    <method name=\"speed\" >\n"
 "      <arg direction=\"in\" type=\"i\" name=\"id\" />\n"
-"      <arg direction=\"in\" type=\"u\" name=\"bytesPerSecond\" />\n"
+"      <arg direction=\"in\" type=\"s\" name=\"bytesPerSecond\" />\n"
 "      <annotation value=\"true\" name=\"org.freedesktop.DBus.Method.NoReply\" />\n"
 "    </method>\n"
 "    <method name=\"infoMessage\" >\n"
@@ -207,7 +207,7 @@ public Q_SLOTS: // METHODS
     Q_NOREPLY void processedSize(int id, qulonglong size);
     bool showSSLCertDialog(const QString &host, const QStringList &certList, qlonglong mainwindow, bool &send, bool &save, QString &choice);
     void showSSLInfoDialog(const QString &url, const QMap<QString,QString> &data, qlonglong mainwindow);
-    Q_NOREPLY void speed(int id, uint bytesPerSecond);
+    Q_NOREPLY void speed(int id, const QString &bytesPerSecond);
     Q_NOREPLY void stating(int id, const QString &url);
     Q_NOREPLY void totalDirs(int id, uint dirs);
     Q_NOREPLY void totalFiles(int id, uint files);

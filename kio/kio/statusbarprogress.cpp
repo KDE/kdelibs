@@ -130,7 +130,7 @@ void StatusbarProgress::slotPercent( KJob*, unsigned long percent ) {
 }
 
 
-void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long speed ) {
+void StatusbarProgress::slotSpeed( KJob*, unsigned long speed ) {
   if ( speed == 0 ) { // spped is measured in bytes-per-second
     m_pLabel->setText( i18n( " Stalled ") );
   } else {

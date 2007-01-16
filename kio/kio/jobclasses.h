@@ -255,7 +255,7 @@ public:
 	 * @param job the job that emitted this signal
 	 * @param speed the speed in bytes/s
          */
-        void speed( KIO::Job *job, unsigned long speed );
+        void speed( KJob *job, unsigned long speed );
 
     protected Q_SLOTS:
         /**
@@ -264,7 +264,7 @@ public:
 	 * @param speed the speed in bytes/s
 	 * @see speed()
          */
-        void slotSpeed( KIO::Job *job, unsigned long speed );
+        void slotSpeed( KJob *job, unsigned long speed );
 
         /**
          * Remove speed information.
