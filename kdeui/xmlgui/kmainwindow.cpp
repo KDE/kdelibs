@@ -641,8 +641,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
                 // don't call queryExit() twice
                 disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
                 d->shuttingDown = true;
-                KGlobal::deref();             // ...and quit application.
-                // ###### what if this doesn't quit?
+                KGlobal::deref();             // ...done with this window, the process will quit (unless it's doing something else)
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
                 e->ignore();
