@@ -17,7 +17,6 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/kssl
-   ${CMAKE_CURRENT_SOURCE_DIR}/misc
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
@@ -124,9 +123,11 @@ set(kiocore_STAT_SRCS
   kio/directorysizejob.cpp
 )
 
-set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)
+
+qt4_add_dbus_interface( kiocore_STAT_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/kio/org.kde.KIO.UIServer.xml kio/uiserveriface )
+
 if(UNIX)
-   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp)
+   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/kio/kautomount.cpp)
 endif(UNIX)
 
 
@@ -394,5 +395,5 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
-install(FILES misc/org.kde.KIO.UIServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
+install(FILES kio/org.kde.KIO.UIServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
 
