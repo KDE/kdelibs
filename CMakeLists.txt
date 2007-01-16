@@ -54,12 +54,13 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 # kdecore depends on Qt
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore
                           ${CMAKE_BINARY_DIR}/kdecore
-                          ${CMAKE_SOURCE_DIR}/kdecore/network
-                          ${CMAKE_SOURCE_DIR}/kdecore/kservice
+                          ${CMAKE_SOURCE_DIR}/kdecore/compression
+                          ${CMAKE_SOURCE_DIR}/kdecore/config
+                          ${CMAKE_SOURCE_DIR}/kdecore/date
                           ${CMAKE_SOURCE_DIR}/kdecore/io
                           ${CMAKE_SOURCE_DIR}/kdecore/kernel
-                          ${CMAKE_SOURCE_DIR}/kdecore/date
-                          ${CMAKE_SOURCE_DIR}/kdecore/config
+                          ${CMAKE_SOURCE_DIR}/kdecore/network
+                          ${CMAKE_SOURCE_DIR}/kdecore/services
                           ${CMAKE_SOURCE_DIR}/kdecore/strings
                           ${CMAKE_SOURCE_DIR}/kdecore/sycoca
                           ${QT_INCLUDES}

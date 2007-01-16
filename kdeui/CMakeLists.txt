@@ -120,7 +120,7 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapprovider.cpp
  util/kstandardguiitem.cpp
- util/kstringvalidator.cpp
+ util/ksvgrenderer.cpp
  util/ksystemtrayicon.cpp
  util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
@@ -162,6 +162,7 @@ set(kdeui_LIB_SRCS
  widgets/kseparator.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/kstatusbar.cpp
+ widgets/kstringvalidator.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
  widgets/ktextbrowser.cpp
@@ -290,6 +291,7 @@ install( FILES
  paged/kpagewidgetmodel.h
  shortcuts/kshortcut.h
  shortcuts/kstandardshortcut.h
+ util/fixx11h.h
  util/kacceleratormanager.h
  util/kaccelgen.h
  util/kcolormimedata.h
@@ -310,7 +312,7 @@ install( FILES
  util/kpassivepopupmessagehandler.h
  util/kpixmapprovider.h
  util/kstandardguiitem.h
- util/kstringvalidator.h
+ util/ksvgrenderer.cpp
  util/ksystemtrayicon.h
  util/kwordwrap.h
  util/kxerrorhandler.h
@@ -330,6 +332,9 @@ install( FILES
  widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kcolorvalueselector.h
+ widgets/kdatetable.h
+ widgets/kdatetimewidget.h
+ widgets/kdatewidget.h
  widgets/kdialogbuttonbox.h
  widgets/keditlistbox.h
  widgets/khbox.h
@@ -345,11 +350,9 @@ install( FILES
  widgets/krestrictedline.h
  widgets/kseparator.h
  widgets/ksqueezedtextlabel.h
- widgets/kdatewidget.h
- widgets/kdatetable.h
+ widgets/kstringvalidator.h
  widgets/ktextbrowser.h
  widgets/ktextedit.h
- widgets/kdatetimewidget.h
  widgets/ktimezonewidget.h
  widgets/ktabbar.h
  widgets/ktabwidget.h
