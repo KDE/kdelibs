@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KDataTool
 Comment=KDE Data Tool
+Comment[el]=Εργαλείο δεδομένων του KDE
 Comment[fr]=Outil de données KDE
 Comment[x-test]=xxKDE Data Toolxx
 

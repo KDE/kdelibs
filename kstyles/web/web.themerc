@@ -1,8 +1,10 @@
 [Misc]
 Name=Web style
+Name[el]=Στυλ Web
 Name[fr]=Style web
 Name[x-test]=xxWeb stylexx
 Comment=Web widget style
+Comment[el]=Στυλ Web
 Comment[fr]=Style web
 Comment[x-test]=xxWeb widget stylexx
 [KDE]

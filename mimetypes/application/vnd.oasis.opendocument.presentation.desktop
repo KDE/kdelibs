@@ -5,6 +5,7 @@ MimeType=application/vnd.oasis.opendocument.presentation
 Patterns=*.odp;*.ODP
 Icon=presentation
 Comment=OASIS OpenDocument Presentation
+Comment[el]=Παρουσίαση του OASIS OpenDocument
 Comment[fr]=Présentation OASIS OpenDocument
 Comment[x-test]=xxOASIS OpenDocument Presentationxx
 [Property::X-KDE-NativeExtension]

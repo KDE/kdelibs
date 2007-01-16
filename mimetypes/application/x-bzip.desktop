@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-bzip
 Comment=Bzip File
+Comment[el]=Αρχείο bzip
 Comment[fr]=Fichier compacté par Bzip
 Comment[x-test]=xxBzip Filexx
 Icon=tgz

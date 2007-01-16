@@ -5,6 +5,7 @@ Type=MimeType
 MimeType=text/vnd.wap.wml
 Patterns=*.wml;*.WML;
 Comment=WML Document
+Comment[el]=Έγγραφο WML
 Comment[fr]=Document WML
 Comment[x-test]=xxWML Documentxx
 

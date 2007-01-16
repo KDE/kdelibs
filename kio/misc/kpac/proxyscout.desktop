@@ -2,8 +2,10 @@
 Encoding=UTF-8
 Type=Service
 Name=Proxy Scout
+Name[el]=Διαμεσολαβητής Scout
 Name[x-test]=xxProxy Scoutxx
 Comment=Automatic proxy configuration
+Comment[el]=Αυτόματη ρύθμιση διαμεσολαβητή
 Comment[fr]=Configuration automatique du proxy
 Comment[x-test]=xxAutomatic proxy configurationxx
 ServiceTypes=KDEDModule

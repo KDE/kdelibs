@@ -6,5 +6,6 @@ MimeType=text/x-hex
 X-KDE-IsAlso=text/plain
 Patterns=*.HEX;*.hex;
 Comment=Intel® Hexadecimal Object File Format
+Comment[el]=Τύπος δεκαεξαδικού Object αρχείου Intel®
 Comment[fr]=Format de fichier objet hexadécimal Intel®
 Comment[x-test]=xxIntel® Hexadecimal Object File Formatxx

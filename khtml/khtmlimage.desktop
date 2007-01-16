@@ -2,10 +2,12 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable Image Viewing Component
+Comment[el]=Ενσωματώσιμο στοιχείο προβολής εικόνων
 Comment[fr]=Composant d'affichage d'images intégrable
 Comment[x-test]=xxEmbeddable Image Viewing Componentxx
 MimeType=image/gif;image/x-xpm;image/x-xbm;image/jpeg;image/x-bmp;image/png;image/x-jng;image/x-ico;image/x-portable-bitmap;image/x-portable-pixmap;image/x-portable-greymap;image/tiff;video/x-mng;image/x-targa;
 Name=Embeddable Image Viewer
+Name[el]=Ενσωματώσιμος προβολέας εικόνων
 Name[fr]=Afficheur d'images intégrable
 Name[x-test]=xxEmbeddable Image Viewerxx
 ServiceTypes=KParts/ReadOnlyPart,Browser/View

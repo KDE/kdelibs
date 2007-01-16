@@ -5,4 +5,5 @@ Type=MimeType
 MimeType=image/x-msod
 Patterns=*.msod;*.MSOD;
 Comment=Microsoft Office Drawing
+Comment[el]=Σχέδιο Microsoft Office
 Comment[x-test]=xxMicrosoft Office Drawingxx

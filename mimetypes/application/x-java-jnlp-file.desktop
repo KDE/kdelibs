@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=Java Web Start application
+Comment[el]=Εφαρμογή αναζήτησης στο διαδίκτυο περί Java
 Comment[fr]=Application Java Web Start
 Comment[x-test]=xxJava Web Start applicationxx
 MimeType=application/x-java-jnlp-file

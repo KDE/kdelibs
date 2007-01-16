@@ -2,10 +2,12 @@
 Encoding=UTF-8
 Type=Service
 Name=HTTP Cache Cleaner
+Name[el]=Καθαριστής λανθάνουσας μνήμης HTTP
 Name[fr]=Nettoyage du cache HTTP
 Name[x-test]=xxHTTP Cache Cleanerxx
 Exec=kio_http_cache_cleaner
 Comment=Cleans up old entries from the HTTP cache
+Comment[el]=Καθαρίζει παλιές καταχωρήσεις από τη λανθάνουσα μνήμη HTTP
 Comment[fr]=Efface les anciennes entrées du cache HTTP
 Comment[x-test]=xxCleans up old entries from the HTTP cachexx
 X-KDE-StartupNotify=false

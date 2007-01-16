@@ -5,5 +5,6 @@ MimeType=application/x-object
 Icon=binary
 Patterns=*.o;
 Comment=Object Code
+Comment[el]=Αντικείμενος κώδικας
 Comment[fr]=Code objet
 Comment[x-test]=xxObject Codexx

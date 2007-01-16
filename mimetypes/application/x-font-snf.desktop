@@ -5,5 +5,6 @@ MimeType=application/x-font-snf
 Icon=font_bitmap
 Patterns=*.snf;*.snf.Z;*.snf.gz;*.SNF;*.SNF.Z;*.SNF.gz
 Comment=SNF Bitmap Font
+Comment[el]=Γραμματοσειρά SNF bitmap
 Comment[fr]=Police de caractères bitmap SNF
 Comment[x-test]=xxSNF Bitmap Fontxx

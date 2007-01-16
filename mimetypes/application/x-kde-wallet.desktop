@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-kde-wallet
 Comment=KDE Wallet File
+Comment[el]=Αρχείο πορτοφολιού του KDE
 Comment[fr]=Fichiers de KDEWallet
 Comment[x-test]=xxKDE Wallet Filexx
 Patterns=*.kwl

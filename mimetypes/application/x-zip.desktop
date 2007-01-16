@@ -5,6 +5,7 @@ MimeType=application/x-zip
 Icon=tgz
 Patterns=*.zip;*.ZIP;
 Comment=Zip Archive
+Comment[el]=Αρχειοθήκη zip
 Comment[fr]=Archive Zip
 Comment[x-test]=xxZip Archivexx
 

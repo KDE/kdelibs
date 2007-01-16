@@ -2,6 +2,7 @@
 Name=Motif
 Name[x-test]=xxMotifxx
 Comment=Built-in unthemed Motif style
+Comment[el]=Ενσωματωμένο στυλ παρόμοιο με το Motif
 Comment[fr]=Style Motif d'origine sans thème
 Comment[x-test]=xxBuilt-in unthemed Motif stylexx
 [KDE]

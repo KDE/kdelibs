@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Bzip2 Compressed DVI File
+Comment[el]=Αρχείο DVI συμπιεσμένο με bzip2
 Comment[fr]=Fichier DVI compacté avec Bzip2
 Comment[x-test]=xxBzip2 Compressed DVI Filexx
 Hidden=false

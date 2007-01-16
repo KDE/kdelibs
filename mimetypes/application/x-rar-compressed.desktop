@@ -5,6 +5,7 @@ MimeType=application/x-rar-compressed
 Icon=tgz
 Patterns=*.rar;*.RAR;
 Comment=Rar Archive
+Comment[el]=Αρχειοθήκη rar
 Comment[fr]=Archive Rar
 Comment[x-test]=xxRar Archivexx
 X-KDE-IsAlso=application/x-rar

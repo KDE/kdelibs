@@ -5,5 +5,6 @@ MimeType=image/x-targa
 Icon=image
 Patterns=*.tga;*.TGA;
 Comment=Truevision Targa Image
+Comment[el]=Εικόνα Truevision Targa
 Comment[fr]=Image Targa Truevision
 Comment[x-test]=xxTruevision Targa Imagexx

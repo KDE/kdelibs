@@ -5,5 +5,6 @@ MimeType=image/x-xbm
 Icon=image
 Patterns=*.xbm;*.XBM;
 Comment=X BitMap Image
+Comment[el]=Εικόνα X BitMap
 Comment[fr]=Image XBitmap
 Comment[x-test]=xxX BitMap Imagexx

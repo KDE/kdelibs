@@ -5,5 +5,6 @@ MimeType=application/x-applixword
 Icon=wordprocessing
 Patterns=*.aw
 Comment=Applix Words Document
+Comment[el]=Έγγραφο Applix Words
 Comment[fr]=Document Applix Words
 Comment[x-test]=xxApplix Words Documentxx

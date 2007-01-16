@@ -5,5 +5,6 @@ MimeType=application/x-zoo
 Icon=tgz
 Patterns=*.zoo;*.ZOO;
 Comment=Zoo Archive
+Comment[el]=Αρχειοθήκη zoo
 Comment[fr]=Archive Zoo
 Comment[x-test]=xxZoo Archivexx

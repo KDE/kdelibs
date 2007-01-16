@@ -5,5 +5,6 @@ MimeType=image/gif
 Icon=image
 Patterns=*.gif;*.GIF;
 Comment=GIF Image
+Comment[el]=Εικόνα GIF
 Comment[fr]=Image GIF
 Comment[x-test]=xxGIF Imagexx

@@ -5,6 +5,7 @@ MimeType=video/vnd.rn-realvideo
 Icon=video
 Patterns=*.rv;*.RV;
 Comment=RealVideo File
+Comment[el]=Αρχείο RealVideo
 Comment[fr]=Fichier RealVideo
 Comment[x-test]=xxRealVideo Filexx
 

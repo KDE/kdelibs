@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=multipart/mixed
 Patterns=
 Comment=Compound Document
+Comment[el]=Σύνθετο έγγραφο
 Comment[fr]=Document composé
 Comment[x-test]=xxCompound Documentxx
 X-KDE-AutoEmbed=true

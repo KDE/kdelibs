@@ -5,5 +5,6 @@ Type=MimeType
 MimeType=application/x-amipro
 Patterns=*.sam;*.SAM;
 Comment=Lotus AmiPro Document
+Comment[el]=Έγγραφο Lotus AmiPro
 Comment[fr]=Document Lotus AmiPro
 Comment[x-test]=xxLotus AmiPro Documentxx

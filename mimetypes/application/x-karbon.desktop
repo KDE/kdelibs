@@ -5,5 +5,6 @@ Icon=karbon_karbon
 Patterns=*.karbon;
 X-KDE-AutoEmbed=false
 Comment=Karbon14 Document
+Comment[el]=Έγγραφο Karbon14
 Comment[fr]=Document Karbon14
 Comment[x-test]=xxKarbon14 Documentxx

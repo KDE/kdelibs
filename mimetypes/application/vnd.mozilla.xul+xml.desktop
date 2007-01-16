@@ -6,5 +6,6 @@ X-KDE-IsAlso=text/xml
 Icon=netscape_doc
 Patterns=*.xul;*.XUL;
 Comment=Mozilla XUL File
+Comment[el]=Αρχείο Mozilla XUL
 Comment[fr]=Fichier XUL Mozilla
 Comment[x-test]=xxMozilla XUL Filexx

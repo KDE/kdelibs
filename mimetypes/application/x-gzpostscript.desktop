@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Gzipped PostScript File
+Comment[el]=Αρχείο PostScript συμπιεσμένο με gzip
 Comment[fr]=Fichier PostScript compacté par Gzip
 Comment[x-test]=xxGzipped PostScript Filexx
 Hidden=false

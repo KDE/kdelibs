@@ -3,6 +3,7 @@
 Encoding=UTF-8
 MimeType=application/x-kudesigner
 Comment=Kugar Report Template
+Comment[el]=Πρότυπο αναφοράς Kugar
 Comment[fr]=Modèle de rapport Kugar
 Comment[x-test]=xxKugar Report Templatexx
 Icon=kugardata

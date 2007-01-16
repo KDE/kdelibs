@@ -5,5 +5,6 @@ Type=MimeType
 MimeType=image/x-wmf
 Patterns=*.wmf;*.WMF;
 Comment=Windows MetaFile
+Comment[el]=Μετα-αρχείο Windows
 Comment[fr]=Métafichier Windows
 Comment[x-test]=xxWindows MetaFilexx

@@ -5,6 +5,7 @@ MimeType=application/vnd.oasis.opendocument.spreadsheet-template
 Patterns=*.ots;*.OTS
 Icon=spreadsheet
 Comment=OASIS OpenDocument SpreadSheet Template
+Comment[el]=Πρότυπο λογιστικού φύλλου του OASIS OpenDocument
 Comment[fr]=Modèle de feuille de calcul OASIS OpenDocument
 Comment[x-test]=xxOASIS OpenDocument SpreadSheet Templatexx
 [Property::X-KDE-NativeExtension]

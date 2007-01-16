@@ -5,5 +5,6 @@ MimeType=application/pkcs7-signature
 Icon=certificate
 Patterns=*.p7s;*.P7S
 Comment=Detached S/MIME Signature
+Comment[el]=Αποσπασμένη υπογραφή S/MIME
 Comment[fr]=Signature S/MIME détachée
 Comment[x-test]=xxDetached S/MIME Signaturexx

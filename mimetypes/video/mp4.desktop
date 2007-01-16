@@ -5,6 +5,7 @@ MimeType=video/mp4
 Icon=video
 Patterns=*.mp4;*.MP4;*.m4v;*.M4V;
 Comment=MPEG-4 Video
+Comment[el]=Βίντεο MPEG-4
 Comment[fr]=Vidéo MPEG-4
 Comment[x-test]=xxMPEG-4 Videoxx
 X-KDE-IsAlso=video/quicktime

@@ -5,5 +5,6 @@ MimeType=application/x-linguist
 Icon=gettext
 Patterns=*.ts;
 Comment=Qt Translation Source File
+Comment[el]=Πηγαίο αρχείο μετάφρασης Qt
 Comment[fr]=Fichier source de traduction QT
 Comment[x-test]=xxQt Translation Source Filexx

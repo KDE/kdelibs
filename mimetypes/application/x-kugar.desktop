@@ -5,6 +5,7 @@ MimeType=application/x-kugar
 Icon=kugar_kud
 Patterns=*.kud
 Comment=Kugar Data File
+Comment[el]=Αρχείο δεδομένων Kugar
 Comment[fr]=Fichier de données Kugar
 Comment[x-test]=xxKugar Data Filexx
 [Property::X-KDE-NativeExtension]

@@ -4,5 +4,6 @@ Type=MimeType
 MimeType=audio/x-mpegurl
 Icon=sound
 Comment=Streaming MPEG Layer 3 Audio
+Comment[el]=Ήχος ροής MPEG Layer 3
 Comment[fr]=Flux MPEG niveau 3 audio
 Comment[x-test]=xxStreaming MPEG Layer 3 Audioxx

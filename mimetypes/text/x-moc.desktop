@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/x-moc
 Comment=Qt Meta Object File
+Comment[el]=Αρχείο Qt Meta Object
 Comment[fr]=Fichier Méta-objet pour Qt
 Comment[x-test]=xxQt Meta Object Filexx
 Type=MimeType

@@ -1,8 +1,10 @@
 [Misc]
 Name=KDE Classic
+Name[el]=KDE κλασικό
 Name[fr]=KDE Classique
 Name[x-test]=xxKDE Classicxx
 Comment=Classic KDE style
+Comment[el]=Κλασικό στυλ του KDE
 Comment[fr]=Style classique de KDE
 Comment[x-test]=xxClassic KDE stylexx
 Highcolor=hcstyle.la

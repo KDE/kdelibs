@@ -5,5 +5,6 @@ MimeType=image/x-bmp
 Icon=image
 Patterns=*.bmp;*.BMP;
 Comment=BMP Image
+Comment[el]=Εικόνα BMP
 Comment[fr]=Image BMP
 Comment[x-test]=xxBMP Imagexx

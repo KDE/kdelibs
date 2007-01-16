@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
+Comment[el]=LPR (Τυπικό BSD σύστημα εκτύπωσης)
 Comment[fr]=LPR (système d'impression BSD standard)
 Comment[x-test]=xxLPR (Standard BSD print system)xx
 DetectUris=service:/printer,config:/printcap

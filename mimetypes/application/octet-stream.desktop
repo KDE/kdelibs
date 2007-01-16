@@ -3,5 +3,6 @@ Type=MimeType
 Encoding=UTF-8
 MimeType=application/octet-stream
 Comment=Unknown
+Comment[el]=Άγνωστο
 Comment[fr]=Inconnu
 Comment[x-test]=xxUnknownxx

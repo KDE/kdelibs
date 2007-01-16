@@ -5,6 +5,7 @@ Name=KNotify
 Name[x-test]=xxKNotifyxx
 Exec=knotify
 Comment=KDE Notification Daemon
+Comment[el]=Δαίμονας ειδοποίησης του KDE
 Comment[fr]=Démon de notifications de KDE
 Comment[x-test]=xxKDE Notification Daemonxx
 Icon=knotify

@@ -6,5 +6,6 @@ Icon=html
 Hidden=false
 X-KDE-IsAlso=text/xml
 Comment=MathML Document
+Comment[el]=Έγγραφο MathML
 Comment[fr]=Document MathML
 Comment[x-test]=xxMathML Documentxx

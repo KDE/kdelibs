@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=ULAW (Sun) Audio
+Comment[el]=Ήχος ULAW (Sun)
 Comment[fr]=Son ULAW (Sun)
 Comment[x-test]=xxULAW (Sun) Audioxx
 MimeType=audio/basic

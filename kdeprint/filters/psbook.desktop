@@ -3,6 +3,7 @@ Name=psbook
 Name[x-test]=xxpsbookxx
 Require=exec:/psbook,exec:/psnup
 Comment=Pamphlet Printing (use with small side duplex printing)
+Comment[el]=Εκτύπωση φυλλαδίου (χρήση μαζί με εκτύπωση διπλής όψης μικρής πλευράς)
 Comment[fr]=Impression au format livret (à utiliser avec l'impression duplex de petits feuillets)
 Comment[x-test]=xxPamphlet Printing (use with small side duplex printing)xx
 MimeTypeIn=application/postscript

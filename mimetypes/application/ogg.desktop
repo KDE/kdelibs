@@ -8,5 +8,6 @@ Patterns=*.ogg;*.OGG;
 X-KDE-IsAlso=application/x-ogg
 X-KDE-PatternsAccuracy=80
 Comment=Ogg Multimedia
+Comment[el]=Πολυμέσα Ogg
 Comment[fr]=Multimédia Ogg
 Comment[x-test]=xxOgg Multimediaxx

@@ -5,6 +5,7 @@ MimeType=application/x-python-bytecode
 Icon=binary
 Patterns=*.pyc;
 Comment=Python Bytecode
+Comment[el]=Δυαδικός κώδικας Python
 Comment[fr]=Bytecode Python
 Comment[x-test]=xxPython Bytecodexx
 X-KDE-IsAlso=application/x-executable

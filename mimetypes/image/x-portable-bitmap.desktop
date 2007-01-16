@@ -5,5 +5,6 @@ MimeType=image/x-portable-bitmap
 Icon=image
 Patterns=*.pbm;*.PBM;*.pbmraw;*.PBMRAW
 Comment=Portable Bitmap Image
+Comment[el]=Εικόνα Portable Bitmap
 Comment[fr]=Image Bitmap portable
 Comment[x-test]=xxPortable Bitmap Imagexx

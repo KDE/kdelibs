@@ -5,5 +5,6 @@ MimeType=application/x-compress
 Icon=tgz
 Patterns=*.Z;
 Comment=UNIX Compressed File
+Comment[el]=Συμπιεσμένο αρχείο του UNIX
 Comment[fr]=Fichier compacté UNIX
 Comment[x-test]=xxUNIX Compressed Filexx

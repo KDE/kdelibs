@@ -6,5 +6,6 @@ MimeType=image/pjpeg
 Icon=image
 X-KDE-IsAlso=image/jpeg
 Comment=JPEG Image
+Comment[el]=Εικόνα JPEG
 Comment[fr]=Image JPEG
 Comment[x-test]=xxJPEG Imagexx

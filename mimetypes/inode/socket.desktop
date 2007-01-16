@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Socket
+Comment[el]=Υποδοχή
 Comment[fr]=Socket (canal de communication)
 Comment[x-test]=xxSocketxx
 Icon=socket

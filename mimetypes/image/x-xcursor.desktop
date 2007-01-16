@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=image/x-xcursor
 Icon=cursor
 Comment=X11 Mouse Cursor
+Comment[el]=Δρομέας ποντικιού X11
 Comment[fr]=Curseur de souris X11
 Comment[x-test]=xxX11 Mouse Cursorxx
 

@@ -5,6 +5,7 @@ MimeType=message/rfc822
 Icon=message
 Patterns=
 Comment=Email Message
+Comment[el]=Μήνυμα email
 Comment[fr]=Message électronique
 Comment[x-test]=xxEmail Messagexx
 

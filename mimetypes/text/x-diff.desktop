@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/x-diff
 Comment=Differences Between Files
+Comment[el]=Διαφορές μεταξύ αρχείων
 Comment[fr]=Différences entre fichiers
 Comment[x-test]=xxDifferences Between Filesxx
 Icon=txt

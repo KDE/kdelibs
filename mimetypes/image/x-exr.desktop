@@ -5,6 +5,7 @@ MimeType=image/x-exr
 Icon=image
 Patterns=*.exr;*.EXR;
 Comment=ILM EXR Image
+Comment[el]=Εικόνα ILM EXR
 Comment[fr]=Image ILM EXR
 Comment[x-test]=xxILM EXR Imagexx
 
