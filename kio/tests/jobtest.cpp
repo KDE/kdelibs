@@ -186,7 +186,7 @@ void JobTest::get()
     kDebug() << k_funcinfo << endl;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
-    KUrl u; u.setPath( filePath );
+    KUrl u( filePath );
     m_result = -1;
     KIO::StoredTransferJob* job = KIO::storedGet( u );
     job->setUiDelegate( 0 );
@@ -202,6 +202,53 @@ void JobTest::slotGetResult( KJob* job )
 {
     m_result = job->error();
     m_data = static_cast<KIO::StoredTransferJob *>(job)->data();
+    emit exitLoop();
+}
+
+void JobTest::put()
+{
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    KUrl u(filePath);
+    KIO::TransferJob* job = KIO::put( u, 0600, true /*overwrite*/, false /*no resume*/ );
+    QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
+    mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
+    job->setModificationTime(mtime);
+    job->setUiDelegate( 0 );
+    connect( job, SIGNAL( result(KJob*) ),
+            this, SLOT( slotResult(KJob*) ) );
+    connect( job, SIGNAL(dataReq(KIO::Job*, QByteArray&)),
+             this, SLOT(slotDataReq(KIO::Job*, QByteArray&)) );
+    m_result = -1;
+    m_dataReqCount = 0;
+    enterLoop();
+    QVERIFY( m_result == 0 ); // no error
+
+    QFileInfo fileInfo(filePath);
+    QVERIFY(fileInfo.exists());
+    QCOMPARE(fileInfo.size(), 30LL); // "This is a test for KIO::put()\n"
+    QCOMPARE((int)fileInfo.permissions(), (int)(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser ));
+    QCOMPARE(fileInfo.lastModified(), mtime);
+}
+
+void JobTest::slotDataReq( KIO::Job*, QByteArray& data )
+{
+    // Really not the way you'd write a slotDataReq usually :)
+    switch(m_dataReqCount++) {
+    case 0:
+        data = "This is a test for ";
+        break;
+    case 1:
+        data = "KIO::put()\n";
+        break;
+    case 2:
+        data = QByteArray();
+        break;
+    }
+}
+
+void JobTest::slotResult( KJob* job )
+{
+    m_result = job->error();
     emit exitLoop();
 }
 
@@ -227,7 +274,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
         QFileInfo srcInfo( src );
         QFileInfo destInfo( dest );
 #ifdef Q_WS_WIN
-        // win32 time may differs in msec part 
+        // win32 time may differs in msec part
         QCOMPARE( srcInfo.lastModified().toString("dd.MM.yyyy hh:mm"),
                   destInfo.lastModified().toString("dd.MM.yyyy hh:mm") );
 #else
@@ -246,7 +293,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
         QFileInfo srcInfo( src );
         QFileInfo destInfo( dest );
 #ifdef Q_WS_WIN
-        // win32 time may differs in msec part 
+        // win32 time may differs in msec part
         QCOMPARE( srcInfo.lastModified().toString("dd.MM.yyyy hh:mm"),
                   destInfo.lastModified().toString("dd.MM.yyyy hh:mm") );
 #else
@@ -286,7 +333,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
         QFileInfo srcInfo( src );
         QFileInfo destInfo( dest );
 #ifdef Q_WS_WIN
-        // win32 time may differs in msec part 
+        // win32 time may differs in msec part
         QCOMPARE( srcInfo.lastModified().toString("dd.MM.yyyy hh:mm"),
                   destInfo.lastModified().toString("dd.MM.yyyy hh:mm") );
 #else
@@ -560,7 +607,7 @@ void JobTest::listRecursive()
             "dirFromHome_copied/testlink,dirFromHome_link,"
 #endif
             "fileFromHome,fileFromHome_copied");
-            
+
     qDebug( "%s", qPrintable( m_names.join( "," ) ) );
     qDebug( "%s", ref_names.data() );
     QCOMPARE( m_names.join( "," ).toLatin1(), ref_names );

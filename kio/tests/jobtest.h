@@ -37,6 +37,7 @@ private Q_SLOTS:
 
     // Local tests (kio_file only)
     void get();
+    void put();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
     void copyDirectoryToExistingDirectory();
@@ -63,9 +64,11 @@ private Q_SLOTS:
 Q_SIGNALS:
     void exitLoop();
 
-private Q_SLOTS:
+protected Q_SLOTS:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KJob* );
+    void slotDataReq( KIO::Job*, QByteArray& );
+    void slotResult( KJob* );
 
 private:
     void enterLoop();
@@ -83,6 +86,7 @@ private:
     int m_result;
     QByteArray m_data;
     QStringList m_names;
+    int m_dataReqCount;
 };
 
 #endif
