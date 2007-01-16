@@ -54,25 +54,25 @@ Observer::Observer()
 {
     QDBusConnection::sessionBus().registerObject("/KIO/Observer", this, QDBusConnection::ExportScriptableSlots);
 
-    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kio_uiserver" ) )
+    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kuiserver" ) )
     {
-        kDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
+        kDebug(KDEBUG_OBSERVER) << "Starting kuiserver" << endl;
         QString error;
-        int ret = KToolInvocation::startServiceByDesktopPath( "kio_uiserver.desktop",
+        int ret = KToolInvocation::startServiceByDesktopPath( "kuiserver.desktop",
                                                              QStringList(), &error );
         if ( ret > 0 )
         {
-            kError() << "Couldn't start kio_uiserver from kio_uiserver.desktop: " << error << endl;
+            kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error << endl;
         } else
             kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kio_uiserver" ) )
-        kDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
+    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kuiserver" ) )
+        kDebug(KDEBUG_OBSERVER) << "The application kuiserver is STILL NOT REGISTERED" << endl;
     else
-        kDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
+        kDebug(KDEBUG_OBSERVER) << "kuiserver registered" << endl;
 
-    m_uiserver = new org::kde::KIO::UIServer("org.kde.kio_uiserver", "/UIServer", QDBusConnection::sessionBus());
+    m_uiserver = new org::kde::KIO::UIServer("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
 
     connect(m_uiserver, SIGNAL(actionPerformed(int)), this,
             SLOT(actionPerformed(int)));
@@ -86,7 +86,7 @@ int Observer::newJob( KJob * job, bool showProgress )
     KInstance *instance = KGlobal::instance();
 
     if (job->uiDelegate()->jobIcon().isEmpty())
-        kWarning() << "No icon set for a job launched from " << instance->aboutData()->appName() << ". No associated icon will be shown on kio_uiserver" << endl;
+        kWarning() << "No icon set for a job launched from " << instance->aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
 
     int progressId = m_uiserver->newJob( QDBusConnection::sessionBus().baseService(), showProgress,
                                          instance->aboutData()->appName(), job->uiDelegate()->jobIcon(), instance->aboutData()->programName() );
@@ -475,7 +475,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     arg << caption;
     arg << buttonYes;
     arg << buttonNo;
-    if ( KApplication::dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
+    if ( KApplication::dcopClient()->call( "kuiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
         && replyType == "int" )
     {
         int result;

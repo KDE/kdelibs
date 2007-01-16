@@ -618,7 +618,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver")) {
-        KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+        KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                    QStringList() );
     }
 
@@ -860,7 +860,7 @@ int TCPSlaveBase::verifyCertificate()
 
                 if (result == KMessageBox::Yes) {
                   if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
-                      KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+                      KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                                  QStringList() );
 
                   QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
@@ -980,7 +980,7 @@ int TCPSlaveBase::verifyCertificate()
                                  i18n("Co&nnect"));
                 if (result == KMessageBox::Yes) {
                   if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
-                      KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+                      KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                                  QStringList() );
 
                   QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
@@ -1062,7 +1062,7 @@ int TCPSlaveBase::verifyCertificate()
       if ( result == KMessageBox::Yes )
       {
           if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
-              KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+              KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                          QStringList() );
 
           QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");

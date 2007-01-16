@@ -809,7 +809,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     const long windowId = metaData("window-id").toLong();
     const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
-    org::kde::KIO::UIServer uiserver("org.kde.kio_uiserver", "/UIServer", QDBusConnection::sessionBus());
+    org::kde::KIO::UIServer uiserver("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
     const long progressId = metaData("progress-id").toLong();
     if (progressId)
         uiserver.setJobVisible(progressId, false);

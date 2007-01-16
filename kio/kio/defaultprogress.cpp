@@ -186,7 +186,7 @@ void DefaultProgress::init()
 
   d->keepOpenChecked = false;
   d->noCaptionYet = true;
-  setWindowTitle(i18n("Progress Dialog")); // show something better than kio_uiserver
+  setWindowTitle(i18n("Progress Dialog")); // show something better than kuiserver
 }
 
 DefaultProgress::~DefaultProgress()

@@ -120,7 +120,7 @@ private:
 
 
 /**
- * This class is used in the internal DCOP communication between TPCSlaveBase and kio_uiserver.
+ * This class is used in the internal DCOP communication between TPCSlaveBase and kuiserver.
  * Don't use it directly.
  * \internal
  */
