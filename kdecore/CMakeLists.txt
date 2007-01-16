@@ -73,8 +73,7 @@ endif (UNIX)
 
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
-add_subdirectory( network )
-add_subdirectory( services )
+add_subdirectory( network/tests )
 
 ########### next target ###############
 
@@ -96,25 +95,9 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   kallocator.cpp
-   kckey.cpp
-   kcodecs.cpp
-   kcompositejob.cpp
-   kdebug.cpp
-   kdebugdbusiface.cpp
-   kdedmodule.cpp
-   kdeversion.cpp
-   kjob.cpp
-   kjobuidelegate.cpp
-   klauncher_iface.cpp
    klibloader.cpp
    kmacroexpander.cpp
-   kmessage.cpp
-   krandom.cpp
-   krandomsequence.cpp
    kshell.cpp
-   kstaticdeleter.cpp
-   kuser.cpp
    compression/kgzipfilter.cpp
    compression/kfilterbase.cpp
    compression/kfilterdev.cpp
@@ -124,10 +107,22 @@ set(kdecore_LIB_SRCS
    config/kconfigbackend.cpp
    config/kdesktopfile.cpp
    config/ksimpleconfig.cpp
+   date/kcalendarsystem.cpp
+   date/kcalendarsystemfactory.cpp
+   date/kcalendarsystemgregorian.cpp
+   date/kcalendarsystemhijri.cpp
+   date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemjalali.cpp
+   date/kdatetime.cpp
    date/krfcdate.cpp
+   date/ktimezones.cpp
+   date/ksystemtimezone.cpp
+   date/ktzfiletimezone.cpp
    io/kautosavefile.cpp
+   io/kdebug.cpp
+   io/kdebugdbusiface.cpp
    io/klockfile.cpp
+   io/kmessage.cpp
    io/kmountpoint.cpp
    io/kprocess.cpp
    io/kprocctrl.cpp
@@ -136,6 +131,9 @@ set(kdecore_LIB_SRCS
    io/ktempdir.cpp
    io/ktemporaryfile.cpp
    io/kurl.cpp
+   jobs/kcompositejob.cpp
+   jobs/kjob.cpp
+   jobs/kjobuidelegate.cpp
    kernel/kauthorized.cpp
    kernel/kautostart.cpp
    kernel/kaboutdata.cpp
@@ -156,42 +154,42 @@ set(kdecore_LIB_SRCS
    services/yacc.c
    services/lex.c
    services/kplugininfo.cpp
+   network/kbufferedsocket.cpp
+   network/kclientsocketbase.cpp
+   network/kdatagramsocket.cpp
+   network/kidna.cpp
    network/kresolver.cpp
    network/kresolvermanager.cpp
    network/kresolverworkerbase.cpp
-   network/ksocketaddress.cpp
    network/kresolverstandardworkers.cpp
    network/kreverseresolver.cpp
+   network/kserversocket.cpp
+   network/ksocketaddress.cpp
    network/ksocketdevice.cpp
    network/ksocketbase.cpp
-   network/kclientsocketbase.cpp
    network/kstreamsocket.cpp
-   network/kserversocket.cpp
-   network/kdatagramsocket.cpp
-   network/kbufferedsocket.cpp
    network/ksocketbuffer.cpp
    network/netsupp.cpp
-   strings/kascii.cpp
+   strings/kcatalog.cpp
    strings/kcharsets.cpp
    strings/klocale.cpp
    strings/klocalizedstring.cpp
-   strings/kstringhandler.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
    sycoca/ksycocafactory.cpp
-   strings/kcatalog.cpp
-   date/kcalendarsystem.cpp
-   date/kcalendarsystemgregorian.cpp
-   date/kcalendarsystemhijri.cpp
-   date/kcalendarsystemhebrew.cpp
-   date/kcalendarsystemfactory.cpp
-   strings/kidna.cpp
    sycoca/kprotocolinfo.cpp
    sycoca/kprotocolinfofactory.cpp
-   date/ktimezones.cpp
-   date/ksystemtimezone.cpp
-   date/ktzfiletimezone.cpp
-   date/kdatetime.cpp
+   text/kascii.cpp
+   text/kcodecs.cpp
+   text/kstringhandler.cpp
+   util/kallocator.cpp
+   util/kdeversion.cpp
+   util/klauncher_iface.cpp
+   util/kdedmodule.cpp
+   util/krandom.cpp
+   util/krandomsequence.cpp
+   util/kstaticdeleter.cpp
+   util/kuser.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -251,32 +249,12 @@ install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
 install( FILES
-   kcompositejob.h
-   kjob.h
-   kjobuidelegate.h
-   klauncher_iface.h
-   kdeversion.h
    kpty.h
-   kdebug.h
-   ksharedptr.h
-   kallocator.h
    klibloader.h
-   krandomsequence.h
-   kstaticdeleter.h
-   krandom.h
-   kcodecs.h
    kgenericfactory.h
    kgenericfactory.tcc
-   ktypelist.h
-   ksortablelist.h
-   kuser.h
    kshell.h
-   kde_file.h
    kmacroexpander.h
-   qtest_kde.h
-   conversion_check.h
-   kdedmodule.h
-   kmessage.h
    compression/kfilterbase.h
    compression/kfilterdev.h
    config/kconfig.h
@@ -294,6 +272,8 @@ install( FILES
    date/ktimezones.h
    date/ktzfiletimezone.h
    io/kautosavefile.h
+   io/kdebug.h
+   io/kmessage.h
    io/kprocess.h
    io/kprocctrl.h
    io/kprocio.h
@@ -303,6 +283,9 @@ install( FILES
    io/ktempdir.h
    io/ktemporaryfile.h
    io/kurl.h
+   jobs/kcompositejob.h
+   jobs/kjob.h
+   jobs/kjobuidelegate.h
    kernel/kaboutdata.h
    kernel/kauthorized.h
    kernel/kautostart.h
@@ -311,18 +294,62 @@ install( FILES
    kernel/kinstance.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
-   strings/kascii.h
+   network/kbufferedsocket.h
+   network/kclientsocketbase.h
+   network/kdatagramsocket.h
+   network/khttpproxysocketdevice.h
+   network/kidna.h
+   network/kiobuffer.h
+   network/kmulticastsocket.h
+   network/kmulticastsocketdevice.h
+   network/kresolver.h
+   network/kreverseresolver.h
+   network/kserversocket.h
+   network/ksocketaddress.h
+   network/ksocketbase.h
+   network/ksocketdevice.h
+   network/ksocks.h
+   network/ksockssocketdevice.h
+   network/kstreamsocket.h
+   services/kservice.h
+   #services/kservicefactory.h: do not install, internal API
+   services/kservicetype.h
+   #services/kservicetypefactory.h: do not install, internal API
+   services/kservicetypeprofile.h
+   services/kservicetypetrader.h
+   services/kserviceoffer.h
+   services/ktrader.h
+   services/kplugininfo.h
    strings/kcatalog.h
    strings/kcharsets.h
-   strings/kidna.h
    strings/klocale.h
    strings/klocalizedstring.h
-   strings/kstringhandler.h
-   network/ksocks.h
    sycoca/kprotocolinfo.h
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
+   text/kascii.h
+   text/kcodecs.h
+   text/kstringhandler.h
+   util/conversion_check.h
+   util/kallocator.h
+   util/kde_file.h
+   util/kdedmodule.h
+   util/kdeversion.h
+   util/klauncher_iface.h
+   util/krandom.h
+   util/krandomsequence.h
+   util/ksharedptr.h
+   util/ksortablelist.h
+   util/kstaticdeleter.h
+   util/ktypelist.h
+   util/kuser.h
+   util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    DESTINATION ${INCLUDE_INSTALL_DIR}
+)
+
+install( FILES
+   services/kplugininfo.desktop
+   DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )

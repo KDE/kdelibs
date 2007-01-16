@@ -101,6 +101,7 @@ set(kdeui_LIB_SRCS
  shortcuts/kstandardshortcut.cpp
  util/kacceleratormanager.cpp
  util/kcheckaccelerators.cpp
+ util/kckey.cpp
  util/kcolormimedata.cpp
  util/kcommand.cpp
  util/kcompletion.cpp
