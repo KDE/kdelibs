@@ -39,6 +39,7 @@ endif(${generatedFileInSourceDir})
 
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
+add_definitions (-D_FILE_OFFSET_BITS=64 -D_LARGE_FILES) # for off_t
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 link_directories(${KDE4_LIB_DIR})
