@@ -247,7 +247,7 @@ install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
-install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
+install( FILES kdebug.areas kdebugrc localization/language.codes DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    compression/kfilterbase.h
    compression/kfilterdev.h
