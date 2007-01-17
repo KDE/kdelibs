@@ -57,7 +57,7 @@ static void writeTestFilesToArchive( KArchive* archive )
     localFile.close();
     ok = archive->addLocalFile( "test3", "mydir/test3" );
     QVERIFY( ok );
-    ok = archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I don't speak German (David)", 29 );
+    ok = archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I do not speak German\nDavid.", 29 );
     QVERIFY( ok );
 
     // Now a medium file : 100 null bytes
@@ -129,6 +129,15 @@ static void testFileData( KArchive* archive )
     QIODevice *dev = f->device();
     QByteArray contents = dev->readAll();
     QCOMPARE( contents, arr );
+    delete dev;
+
+    dev = f->device();
+    contents = dev->read(5); // test reading in two chunks
+    QCOMPARE(contents.size(), 5);
+    contents += dev->read(50);
+    QCOMPARE(contents.size(), 13);
+    QCOMPARE( QString::fromLatin1(contents), QString::fromLatin1(arr) );
+    delete dev;
 
     e = dir->entry( "mediumfile" );
     QVERIFY( e && e->isFile() );
@@ -139,6 +148,16 @@ static void testFileData( KArchive* archive )
     QVERIFY( e && e->isFile() );
     f = (KArchiveFile*)e;
     QCOMPARE( f->data().size(), 20000   );
+
+    e = dir->entry( "my/dir/test3" );
+    QVERIFY( e && e->isFile() );
+    f = (KArchiveFile*)e;
+    dev = f->device();
+    QByteArray firstLine = dev->readLine();
+    QCOMPARE(QString::fromLatin1(firstLine), QString::fromLatin1("I do not speak German\n"));
+    QByteArray secondLine = dev->read(100);
+    QCOMPARE(QString::fromLatin1(secondLine), QString::fromLatin1("David."));
+    delete dev;
 }
 
 static void testCopyTo( KArchive* archive )

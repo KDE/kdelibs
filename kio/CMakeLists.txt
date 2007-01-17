@@ -121,6 +121,7 @@ set(kiocore_STAT_SRCS
   kio/kdirmodel.cpp
   kio/kmimetyperesolver.cpp
   kio/directorysizejob.cpp
+  kio/klimitediodevice.cpp
 )
 
 
