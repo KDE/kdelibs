@@ -141,7 +141,7 @@ the gory details for the LGPL reside in COPYING.LIB, and for the GPL reside
 in COPYING.
 
 Various parts are also covered under a BSD style license, detailed in
-COPYING.BSD. Currently, code covered under such license is copyrighted by
+licenses/BSD. Currently, code covered under such license is copyrighted by
 Theo de Raadt.
 
 When in doubt, check the individual file, they should all have license
@@ -151,7 +151,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If cmake claims Qt cannot be found, look at http://www.trolltech.com/
-to get a copy of Qt, version 4.1 or newer. If you have peeked there
+to get a copy of Qt, version 4.2 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.

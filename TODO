@@ -131,12 +131,6 @@ that we would like to make for the next binary incompatible release.
 	* Perhaps an own font section?
   (Frans)
 
-- kpassworddialog.h needs a facelift - see the comments in kpassworddialog.{h,cpp}
-  (Frans)
-
-- Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
-  (Waldo)
-
 - KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
   worry about legacy will certainly allow an overall cleaner solution.
   - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
@@ -201,10 +195,6 @@ informations
   done by its parent.
   (Aaron)
 
-- Fix KUrlRequester API to use KUrl for urls instead of QString to make clear that
-  we work with URLs and not with paths.
-  (Waldo)
-
 - K3ListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
   "dnd to move items" (e.g. keditbookmarks) and "dnd onto items" (e.g. kmail). Unless Qt4 does it all :)
   (David)
@@ -223,10 +213,6 @@ informations
   make SSL much easier to implement and allow removal of many hacks, mostly
   involving metadata.
   (George Staikos)
-
-- KDE 4: Check if QTemporaryFile is good enough to dump KTempFile
-    * Done (Jaison Lee)
-  (Albert Astals Cid)
 
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
   (Coolo)
@@ -301,9 +287,6 @@ informations
   not sure how yet. Proposals welcome. (David)
   When doing the reorganization, we could also rename the last .cc files to .cpp. (David)
 
-- Installing camelcase forwarding headers (e.g. the file KMainWindow would include kmainwindow.h),
-  for instance using a modified version of $QTDIR/bin/syncqt
-
 - Merge kdecore classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
 
 - Is the malloc.c implementation still needed now that glibc 2.3 is widely
@@ -320,4 +303,5 @@ informations
 
 - Customizable KToolTip/KWhatsThis widgets|Jaroslaw Staniek (kdelibs4 TODO/KToolTip|Details)
 
-- Additional (automatic) shortcuts for KMessageBox (Jaroslaw Staniek) Seehttp://lists.kde.org/?l=kde-usability&m=109688936328920&w=2
+- Additional (automatic) shortcuts for KMessageBox (Jaroslaw Staniek)
+  See http://lists.kde.org/?l=kde-usability&m=109688936328920&w=2

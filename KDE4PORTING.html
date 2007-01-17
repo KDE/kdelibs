@@ -4,33 +4,46 @@
 <title>Guide to Porting Applications to KDE 4.0</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
- <!--
-body
-{
-font-family: sans-serif;
-color: #000000;
+<!--
+body {
+    font-size: 0.8em;
+    font-family: "Bitstream Vera Sans", "Lucida Grande", "Trebuchet MS", sans-serif;
+    color: #535353;
 }
 
-h1, h2, h3, h4, h5
-{
-color: #418ade;
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    color: #f7800a;
 }
 
-a:link
-{
-color: #0000C0;
-text-decoration: none;
+a:link {
+    padding-bottom: 0;
+    text-decoration: none;
+    color: #0057ae;
 }
 
-a:visited
-{
-color: #800080;
-text-decoration: none;
+a:visited {
+    padding-bottom: 0;
+    text-decoration: none;
+    color: #644A9B;
 }
 
-a:hover
-{
-text-decoration: underline;
+a[href]:hover {
+    text-decoration: underline;
+}
+
+pre {
+    display: block;
+    margin: 0.3em;
+    padding: 0.3em;
+    font-size: 1em;
+    font-family: Courier, 'Courier New', 'Andale Mono', Monaco, monospace;
+    color: #000000;
+    background: #f9f9f9;
+    border: #2f6fab dashed;
+    border-width: 1px;
+    overflow: auto;
+    line-height: 1.1em;
 }
 -->
 </style>
@@ -430,7 +443,7 @@ These deprecated methods were also altered to not take a KInstance*, which was a
 <li>Removed operator&lt; and operator&gt;</li>
 <li>Added a qHash(const KShortcut &amp;) function so you can use QHash with KShortcut instead of QMap</li>
 <li>remove() -&gt; removeAll()</li>
-<li>toList() -&gt; Not needed anymore since KShortcut inherits QList<QKeySequence></li>
+<li>toList() -&gt; Not needed anymore since KShortcut inherits QList&lt;QKeySequence&gt;</li>
 <li>toStringInternal() -&gt; You shouldn't be using this! But use toString() instead</li>
 </ul>
 
@@ -1516,12 +1529,13 @@ a listDir result.</li>
 
 <h4>KMimeMagic</h4>
 <ul>
-<li>KMimeMagic is not public API anymore. Use the KMimeType API instead:</li>
+<li>KMimeMagic is not public API anymore. Use the KMimeType API instead:
 <ul>
   <li>KMimeMagic::self()-&gt;findFileType(path) -&gt; KMimeType::findByPath(path) (preferred) or KMimeType::findByFileContent(path) (if only the content should be considered, but this isn't always reliable)</li>
   <li>KMimeMagic::self()-&gt;findBufferType(data) -&gt; KMimeType::findByContent(data)</li>
   <li>KMimeMagic::self()-&gt;findBufferFileType(data,name) -&gt; KMimeType::findByNameAndContent(name,data)</li>
 </ul>
+</li>
 <li>.. and replace result-&gt;mimeType() with mime-&gt;name().</li>
 </ul>
 
