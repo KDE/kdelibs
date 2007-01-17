@@ -313,7 +313,7 @@ install( FILES
  util/kpassivepopupmessagehandler.h
  util/kpixmapprovider.h
  util/kstandardguiitem.h
- util/ksvgrenderer.cpp
+ util/ksvgrenderer.h
  util/ksystemtrayicon.h
  util/kwordwrap.h
  util/kxerrorhandler.h
