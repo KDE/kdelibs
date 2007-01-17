@@ -14,6 +14,7 @@ recurse=1
 recurse_given=NO
 use_modulename=1
 cleanup=YES
+preprocess=0
 
 while test -n "$1" ; do
 case "x$1" in
@@ -34,6 +35,9 @@ case "x$1" in
 "x--modulename" )
 	use_modulename=1
 	;;
+"x--preprocess" )
+	preprocess=1
+	;;
 "x--help" )
 	echo "doxygen.sh usage:"
 	echo "doxygen.sh [--options] <srcdir> [<subdir>]"
@@ -42,6 +46,7 @@ case "x$1" in
 	echo "  --no-modulename  Build in apidocs/, not apidocs-module/"
 	echo "  --doxdatadir=dir Use dir as the source of global Doxygen files"
 	echo "  --installdir=dir Use dir as target to install to"
+	echo "  --preprocess     Generate source code"
 	exit 2
 	;;
 x--doxdatadir=* )
@@ -159,6 +164,36 @@ fi
 TOPNAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++' | sed s+\"++g`
 if test -z "$TOPNAME" ; then
     TOPNAME="API Reference"
+fi
+
+#
+# Preprocess source dir and generate source files (KCofigXT, uic, etc.)
+# @param $1: create or cleanup (parameter for doxygen-preprocess-foo.sh)
+#
+preprocess_sources()
+{
+	for dir in `find $top_srcdir/$subdir -type d | grep -v ".svn"`; do
+		# execute global preprocessing modules
+		local preproc_base="`dirname $0`"
+		for proc in `find "$preproc_base" -name "doxygen-preprocess-*.sh"`; do
+			pushd $dir > /dev/null
+			$proc $1
+			popd > /dev/null
+		done
+		# execute local preprocessing modules
+		for proc in `find $dir -maxdepth 1 -name "doxygen-preprocess-*.sh"`; do
+			pushd $dir > /dev/null
+			echo "* running $proc"
+			$proc $1
+			popd > /dev/null
+		done
+	done
+}
+
+if test "$preprocess" = "1"; then
+	echo "* Generating source code in $top_srcdir/$subdir"
+	preprocess_sources create
+	echo "* Generating source code completed"
 fi
 
 ### We need some values from top-level files, which
@@ -906,6 +941,11 @@ if test "YES" = "$cleanup" ; then
 	rm -f `find . -name Doxyfile`
 #	rm -f qt/qt.tag
 #	rmdir qt > /dev/null 2>&1
+	if test "$preprocess" = "1"; then
+		echo "* Cleaning up previously generated source code in $top_srcdir/$subdir"
+		preprocess_sources cleanup
+		echo "* Cleaning up previously generated source code done"
+	fi
 fi
 
 
