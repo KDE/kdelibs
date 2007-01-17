@@ -557,7 +557,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     name = key;
     name.replace( " ", QString::null );
   } else if ( name.contains( ' ' ) ) {
-      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can't contain speces!"<<std::endl;
+      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can't contain spaces!"<<std::endl;
     name.remove( ' ' );
   }
 
