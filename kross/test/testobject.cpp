@@ -19,6 +19,13 @@
 
 #include "testobject.h"
 
+#include <QSize>
+#include <QSizeF>
+#include <QPoint>
+#include <QPointF>
+#include <QRect>
+#include <QRectF>
+
 #include <QColor>
 #include <QFont>
 #include <QBrush>
@@ -144,6 +151,13 @@ QVariantMap TestObject::func_qvariantmap_qvariantmap(QVariantMap vm)
     //kDebug() << "TestObject::func_qvariantmap_qvariantmap vm.count=" << vm.count() << endl;
     return vm;
 }
+
+QSize TestObject::func_qsize_qsize(const QSize& s) { return s; }
+QSizeF TestObject::func_qsizef_qsizef(const QSizeF& s) { return s; }
+QPoint TestObject::func_qpoint_qpoint(const QPoint& p) { return p; }
+QPointF TestObject::func_qpointf_qpointf(const QPointF& p) { return p; }
+QRect TestObject::func_qrect_qrect(const QRect& r) { return r; }
+QRectF TestObject::func_qrectf_qrectf(const QRectF& r) { return r; }
 
 QColor TestObject::func_qcolor_qcolor(const QColor& c) { return c; }
 QFont TestObject::func_qfont_qfont(const QFont& f) { return f; }

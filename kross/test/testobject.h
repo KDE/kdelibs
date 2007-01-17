@@ -26,6 +26,13 @@
 #include <QtCore/QVariant>
 #include <QtCore/QMetaType>
 
+class QSize;
+class QSizeF;
+class QPoint;
+class QPointF;
+class QRect;
+class QRectF;
+
 class QColor;
 class QFont;
 class QBrush;
@@ -107,6 +114,14 @@ class TestObject : public QObject
         QStringList func_qstringlist_qstringlist(QStringList);
         QVariantList func_qvariantlist_qvariantlist(QVariantList);
         QVariantMap func_qvariantmap_qvariantmap(QVariantMap);
+
+        QSize func_qsize_qsize(const QSize&);
+        QSizeF func_qsizef_qsizef(const QSizeF&);
+        QPoint func_qpoint_qpoint(const QPoint&);
+        QPointF func_qpointf_qpointf(const QPointF&);
+        QRect func_qrect_qrect(const QRect&);
+        QRectF func_qrectf_qrectf(const QRectF&);
+
         QColor func_qcolor_qcolor(const QColor&);
         QFont func_qfont_qfont(const QFont&);
         QBrush func_qbrush_qbrush(const QBrush&);

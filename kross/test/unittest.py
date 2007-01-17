@@ -79,28 +79,93 @@ class TestKross(unittest.TestCase):
 		doTestVariantMap( {"key 1":"  Some String  ","key 2":"oThEr StRiNg"} )
 		doTestVariantMap( {" key1 ":[12.5,True]," key2 ":[83.002,"test"]} )
 
-	def testColor(self):
-		import Kross
-		color = Kross.color()
+	def testSize(self):
+		self.assert_( self.object1.func_qsize_qsize( [12,-94] ) == [12,-94] )
+		self.assert_( self.object1.func_qsize_qsize( [-7264,6224] ) == [-7264,6224] )
 
-		color.setNamedColor("#ff0000");
-		self.assert_( color.name() == "#ff0000" )
-		self.assert_( color.red() == 255 and color.green() == 0 and color.blue() == 0 and color.alpha() == 255 )
+		self.assert_( self.object1.func_qsizef_qsizef( [-956.0,75.0] ) == [-956.0,75.0] )
+		self.assert_( self.object1.func_qsizef_qsizef( [-14.21,-535.0] ) == [-14.21,-535.0] )
+		self.assert_( self.object1.func_qsizef_qsizef( [26,-525] ) == [26,-525] )
 
-		color.setCmyk(1,2,3,4,5)
-		self.assert_( color.name() == "#fafaf9" )
-		self.assert_( color.cyan() == 1 and color.magenta() == 2 and color.yellow() == 3 and color.black() == 4 and color.alpha() == 5 )
+		#TODO following crashes with;
+		#
+		#0  ~QVariant (this=0x816218c) at ../../include/QtCore/../../src/corelib/arch/qatomic_i386.h:82
+		#1  0xb63c756b in ~MetaTypeVariant (this=0x8162188) at /opt/kde4/include/kross/core/metatype.h:91
+		#2  0xb63bf33f in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb62134b4, args=0xb61fd80c) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:574
+		#
+		#This seems to be a bug in Qt cause it does crash only if the second argument has something != .0 :-(
+		#
+		#self.assert_( self.object1.func_qsizef_qsizef( [-956.0,75.21] ) == [-956.0,75.21] )
 
-		self.assert_( self.object1.func_qcolor_qcolor("#0066ff").name() == "#0066ff" )
-		self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
-		self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )
+	def testPoint(self):
+		self.assert_( self.object1.func_qpoint_qpoint( [12,-94] ) == [12,-94] )
+		self.assert_( self.object1.func_qpoint_qpoint( [-7264,6224] ) == [-7264,6224] )
 
-		#self.object1.func_qfont_qfont
-		#self.object1.func_qbrush_qbrush
-		#self.object1.func_qtime_qtime
-		#self.object1.func_qdate_qdate
-		#self.object1.func_qdatetime_qdatetime
-		pass
+		self.assert_( self.object1.func_qpointf_qpointf( [-956.0,751.0] ) == [-956.0,751.0] )
+		self.assert_( self.object1.func_qpointf_qpointf( [-82.3172,17.0] ) == [-82.3172,17.0] )
+
+		#TODO following cases are crashing (see note in the testSize method above);
+		#self.assert_( self.object1.func_qpointf_qpointf( [1.2,2.3] ) == [1.2,2.3] )
+		#self.assert_( self.object1.func_qpointf_qpointf( [-956.03,751.4165] ) == [-956.03,751.4165] )
+
+	def testRect(self):
+		self.assert_( self.object1.func_qrect_qrect( [-1,-2,3,4] ) == [-1,-2,3,4] )
+
+		#TODO following cases are crashing (see note in the testSize method above, but compared
+		#to the other crashes, here it crashes even on non-float functionality, grrrr);
+		#self.assert_( self.object1.func_qrect_qrect( [1,2,-3,-4] ) == [1,2,-3,-4] )
+		#self.assert_( self.object1.func_qrect_qrect( [-10,-20,30,40] ) == [-10,-20,30,40] )
+		#self.assert_( self.object1.func_qrect_qrect( [10,20,30,40] ) == [10,20,30,40] )
+		#self.assert_( self.object1.func_qrect_qrect( [10,20,-30,-40] ) == [10,20,-30,-40] )
+
+		#0  0xb6aa8947 in raise () from /lib/tls/libc.so.6
+		#1  0xb6aaa0c9 in abort () from /lib/tls/libc.so.6
+		#2  0xb6addfda in __fsetlocking () from /lib/tls/libc.so.6
+		#3  0xb6ae589f in mallopt () from /lib/tls/libc.so.6
+		#4  0xb6ae5942 in free () from /lib/tls/libc.so.6
+		#5  0xb6c935e1 in operator delete () from /usr/lib/libstdc++.so.6
+		#6  0xb63a85b7 in ~MetaTypeVariant (this=0x816b8c8) at /opt/kde4/include/kross/core/metatype.h:91
+		#7  0xb63a033f in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb61fb5f4, args=0xb61de7ec) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:574
+		#
+		#self.assert_( self.object1.func_qrectf_qrectf( [-1.0,-2.0,3.0,4.0] ) == [-1.0,-2.0,3.0,4.0] )
+
+		#0  0xb6a4a947 in raise () from /lib/tls/libc.so.6
+		#1  0xb6a4c0c9 in abort () from /lib/tls/libc.so.6
+		#2  0xb6a7ffda in __fsetlocking () from /lib/tls/libc.so.6
+		#3  0xb6a883f3 in free () from /lib/tls/libc.so.6
+		#4  0xb6a89c4f in malloc () from /lib/tls/libc.so.6
+		#5  0xb7e532bd in qMalloc (size=26) at global/qglobal.cpp:1818
+		#6  0xb7e5b88e in QByteArray::realloc (this=0xbf8f2328, alloc=6) at tools/qbytearray.cpp:1358
+		#7  0xb7ef1d02 in normalizeTypeInternal (t=<value optimized out>, e=<value optimized out>, fixScope=false, adjustConst=true) at ../../include/QtCore/../../src/corelib/tools/qbytearray.h:361
+		#8  0xb7ef28f6 in qNormalizeType (d=<value optimized out>, templdepth=<value optimized out>, result=@0xbf8f2498) at kernel/qmetaobject.cpp:741
+		#9  0xb7ef3326 in QMetaObject::normalizedType (type=0x8052026 "QRectF") at kernel/qmetaobject.cpp:774
+		#10 0xb7ef401c in QMetaType::type (typeName=0x8052026 "QRectF") at kernel/qmetatype.cpp:470
+		#11 0xb7f05963 in QVariant::nameToType (name=0x8052026 "QRectF") at kernel/qvariant.cpp:1682
+		#12 0xb63421de in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb619d5f4, args=0xb61807ec) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:560
+		#
+		#self.assert_( self.object1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
+
+	#def testColor(self):
+		#import Kross
+		#color = Kross.color()
+
+		#color.setNamedColor("#ff0000");
+		#self.assert_( color.name() == "#ff0000" )
+		#self.assert_( color.red() == 255 and color.green() == 0 and color.blue() == 0 and color.alpha() == 255 )
+
+		#color.setCmyk(1,2,3,4,5)
+		#self.assert_( color.name() == "#fafaf9" )
+		#self.assert_( color.cyan() == 1 and color.magenta() == 2 and color.yellow() == 3 and color.black() == 4 and color.alpha() == 5 )
+
+		#self.assert_( self.object1.func_qcolor_qcolor("#0066ff").name() == "#0066ff" )
+		#self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
+		#self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )
+
+		##self.object1.func_qfont_qfont
+		##self.object1.func_qbrush_qbrush
+		##self.object1.func_qtime_qtime
+		##self.object1.func_qdate_qdate
+		##self.object1.func_qdatetime_qdatetime
 
 	def testVariant(self):
 		#self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
@@ -194,21 +259,8 @@ print "__name__ = %s" % __name__
 #print "__main__ = %s %s" % (__main__,dir(__main__))
 #print "TestObject3.name = %s" % TestObject3.name()
 
-#suite = unittest.makeSuite(TestKross)
-#unittest.TextTestRunner(verbosity=2).run(suite)
+suite = unittest.makeSuite(TestKross)
+unittest.TextTestRunner(verbosity=2).run(suite)
 
-
-
-
-
-
-
-
-
-
-
-import Kross
-import TestObject1
-print "===========> %s" % TestObject1.func_qcolor_qcolor("#0066ff").name()
-#self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
-#self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )
+#import Kross, TestObject1
+#print "===========> %s" % TestObject1.func_qsize_qsize( [12,-94] )
