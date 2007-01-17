@@ -237,13 +237,14 @@ void ObjectDescriptionModel<type>::moveUp( const QModelIndex& index )
 	if( !index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0 )
 		return;
 
+    emit layoutAboutToBeChanged();
 	QModelIndex above = index.sibling( index.row() - 1, index.column() );
 	d->data.swap( index.row(), above.row() );
 	QModelIndexList from, to;
 	from << index << above;
 	to << above << index;
 	changePersistentIndexList( from, to );
-	emit dataChanged( above, index );
+    emit layoutChanged();
 }
 
 template<ObjectDescriptionType type>
@@ -253,13 +254,14 @@ void ObjectDescriptionModel<type>::moveDown( const QModelIndex& index )
 	if( !index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0 )
 		return;
 
+    emit layoutAboutToBeChanged();
 	QModelIndex below = index.sibling( index.row() + 1, index.column() );
 	d->data.swap( index.row(), below.row() );
 	QModelIndexList from, to;
 	from << index << below;
 	to << below << index;
 	changePersistentIndexList( from, to );
-	emit dataChanged( index, below );
+    emit layoutChanged();
 }
 
 template<ObjectDescriptionType type>
@@ -281,7 +283,7 @@ int ObjectDescriptionModel<type>::tupleIndexAtPositionIndex( int positionIndex )
 template<ObjectDescriptionType type>
 Qt::DropActions ObjectDescriptionModel<type>::supportedDropActions() const
 {
-    kDebug(600) << k_funcinfo << endl;
+    //kDebug(600) << k_funcinfo << endl;
     return Qt::CopyAction | Qt::MoveAction;
 }
 
@@ -289,7 +291,9 @@ template<ObjectDescriptionType type>
 bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropAction action,
         int row, int column, const QModelIndex &parent)
 {
-    kDebug(600) << k_funcinfo << data << action << row << column << parent << endl;
+    Q_UNUSED(action);
+    Q_UNUSED(column);
+    //kDebug(600) << k_funcinfo << data << action << row << column << parent << endl;
 
     QString format = mimeTypes().first();
     if (!data->hasFormat(format)) {
@@ -304,7 +308,6 @@ bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropA
             row = d->data.size();
         }
     }
-    kDebug(600) << row << endl;
 
     QByteArray encodedData = data->data(format);
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -318,7 +321,6 @@ bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropA
             toInsert << obj;
         }
     }
-    kDebug(600) << row << endl;
     beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
     foreach (const ObjectDescription<type> &obj, toInsert) {
         d->data.insert(row, obj);
@@ -330,7 +332,7 @@ bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropA
 template<ObjectDescriptionType type>
 bool ObjectDescriptionModel<type>::removeRows(int row, int count, const QModelIndex &parent)
 {
-    kDebug(600) << k_funcinfo << row << count << parent << endl;
+    //kDebug(600) << k_funcinfo << row << count << parent << endl;
     Q_D(ObjectDescriptionModel);
     if (parent.isValid() || row + count > d->data.size()) {
         return false;
@@ -375,13 +377,15 @@ QMimeData *ObjectDescriptionModel<type>::mimeData(const QModelIndexList &indexes
     QMimeData *mimeData = new QMimeData;
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    foreach (const QModelIndex &index, indexes) {
-        if (index.isValid()) {
-            ObjectDescription<type> item = d->data.at(index.row());
+    QModelIndexList::const_iterator end = indexes.constEnd();
+    QModelIndexList::const_iterator index = indexes.constBegin();
+    for(; index!=end; ++index) {
+        if ((*index).isValid()) {
+            ObjectDescription<type> item = d->data.at((*index).row());
             stream << item.index();
         }
     }
-    kDebug(600) << k_funcinfo << "setting mimeData to " << encodedData << endl;
+    //kDebug(600) << k_funcinfo << "setting mimeData to " << encodedData << endl;
     mimeData->setData(mimeTypes().first(), encodedData);
     return mimeData;
 }
