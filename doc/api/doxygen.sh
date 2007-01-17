@@ -709,7 +709,7 @@ apidox_subdir()
 #
 do_subdir()
 {
-	subdir=`echo "$1" | sed -e 's+/$++'`
+	local subdir=`echo "$1" | sed -e 's+/$++'`
 	srcdir="$top_srcdir/$subdir"
 	subdirname=`basename "$subdir"`
 	mkdir -p "$subdir" 2> /dev/null
