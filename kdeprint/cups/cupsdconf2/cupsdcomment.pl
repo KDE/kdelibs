@@ -54,7 +54,7 @@ sub toolTip
 {
     my($str) = $comment_;
     $str =~ s/\"/\\\"/g;
-    $str =~ s/^\#[\s]*/i18n\(\"Do not translate the keyword between brackets \(e\.g\. ServerName, ServerAdmin, etc\.\)\",\"/;
+    $str =~ s/^\#[\s]*/i18nc\(\"Do not translate the keyword between brackets \(e\.g\. ServerName, ServerAdmin, etc\.\)\",\"/;
     $str =~ s/\n\#[\s]*/\\n\"\n\"/g;
     $str =~ s/\n$/\\n\"\n\)\;\n\n/;
     return $str;
