@@ -19,7 +19,7 @@
  *
  * Please refer to the QSvgRenderer documentation for details.
  */
-class KDECORE_EXPORT KSvgRenderer : public QSvgRenderer
+class KDEUI_EXPORT KSvgRenderer : public QSvgRenderer
 {
     Q_OBJECT
 
