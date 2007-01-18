@@ -606,7 +606,6 @@ void KFindDialog::slotOk()
         }
     }
     m_find->addToHistory(pattern());
-    emit okClicked();
     if ( windowModality() != Qt::NonModal )
         accept();
 }
