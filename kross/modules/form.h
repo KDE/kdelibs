@@ -43,7 +43,7 @@ namespace Kross {
             /**
              * The Mode the FormFileWidget could have.
              */
-            typedef enum Mode { Other = 0, Opening, Saving };
+            enum Mode { Other = 0, Opening, Saving };
 
         public slots:
 
