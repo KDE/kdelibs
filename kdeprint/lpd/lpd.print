@@ -2,7 +2,7 @@
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
 Comment[af]= Lpr  (Standaard Bsd druk stelsel)
-Comment[ar]=LPR (نظام طباعة BSD القياسي)
+Comment[ar]=LPR (نظام طباعة BSD المعياري)
 Comment[az]=LPR (Standard BSD çap sistemi)
 Comment[be]=LPR (стандартная сыстэма друку BSD)
 Comment[bn]=এল-পি-আর (স্ট্যাণ্ডার্ড বি-এস-ডি মুদ্রণ ব্যবস্থা)
