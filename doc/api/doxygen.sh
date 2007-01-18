@@ -176,16 +176,12 @@ preprocess_sources()
 		# execute global preprocessing modules
 		local preproc_base="`dirname $0`"
 		for proc in `find "$preproc_base" -name "doxygen-preprocess-*.sh"`; do
-			pushd $dir > /dev/null
-			$proc $1
-			popd > /dev/null
+			sh -c "cd $dir; $proc $1"
 		done
 		# execute local preprocessing modules
 		for proc in `find $dir -maxdepth 1 -name "doxygen-preprocess-*.sh"`; do
-			pushd $dir > /dev/null
 			echo "* running $proc"
-			$proc $1
-			popd > /dev/null
+			sh -c "cd $dir; $proc $1"
 		done
 	done
 }
