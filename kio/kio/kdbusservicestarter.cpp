@@ -26,10 +26,6 @@
 #include <ktoolinvocation.h>
 #include "QtDBus/QtDBus"
 
-#ifdef __GCC__
-# warning Rename this file after merge
-#endif
-
 static KStaticDeleter<KDBusServiceStarter> dss_sd;
 KDBusServiceStarter* KDBusServiceStarter::s_self;
 
@@ -61,7 +57,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
     QString constraint = _constraint;
     if ( !constraint.isEmpty() )
         constraint += " and ";
-    constraint += "exist [X-DBus-ServiceName]";
+    constraint += "exist [X-DBUS-ServiceName]";
     const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() ) {
         if ( error )
