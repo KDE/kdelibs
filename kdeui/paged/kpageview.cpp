@@ -232,10 +232,8 @@ KPageView::KPageView( QWidget *parent )
   d->headerFrame->setFrameShape( QFrame::StyledPanel );
   d->headerFrame->setFrameShadow( QFrame::Plain );
 
-  const QString color = d->headerFrame->palette().color( QPalette::Base ).name();
-  d->headerFrame->setStyleSheet( QString( "QFrame { background-color: %1; }" ).arg( color ) );
-// use this line once it's fixed in qt
-//  d->headerFrame->setBackgroundRole( QPalette::Base );
+  d->headerFrame->setAutoFillBackground( true );
+  d->headerFrame->setBackgroundRole( QPalette::Base );
 
   QHBoxLayout *headerLayout = new QHBoxLayout();
   // use spacingHint (6 pixel), looks much better than marginHint
