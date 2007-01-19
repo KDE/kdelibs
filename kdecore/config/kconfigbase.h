@@ -1675,6 +1675,8 @@ public:
     */
    KConfigGroup(KConfigBase *master, const char * group);
 
+   ~KConfigGroup();
+
    /**
     * Delete all entries in the entire group
     * @param pFlags flags passed to KConfigBase::deleteGroup

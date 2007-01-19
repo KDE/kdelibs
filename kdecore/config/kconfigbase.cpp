@@ -1290,6 +1290,10 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
   setReadDefaults(mMaster->readDefaults());
 }
 
+KConfigGroup::~KConfigGroup()
+{
+}
+
 void KConfigGroup::deleteGroup(WriteConfigFlags pFlags)
 {
   mMaster->deleteGroup(KConfigBase::group(), pFlags);
