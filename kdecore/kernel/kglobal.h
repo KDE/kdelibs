@@ -19,6 +19,7 @@
 #define _KGLOBAL_H
 
 #include "kdelibs_export.h"
+#include <QAtomicPointer>
 
 class KInstance;
 class KCharsets;
@@ -30,6 +31,64 @@ class KStaticDeleterBase;
 class KStaticDeleterList;
 class KStringDict;
 class QString;
+
+template<typename T>
+class KCleanUpGlobalStatic
+{
+    public:
+        QBasicAtomicPointer<T> *pointer;
+        bool destroyed;
+
+        inline ~KCleanUpGlobalStatic()
+        {
+            destroyed = true;
+            T* x = *pointer;
+            pointer->init(0);
+            delete x;
+        }
+};
+
+/**
+ * This macro makes it easy to use non-POD types as global statics. The object is created on first
+ * use and creation is threadsafe.
+ *
+ * The object is destructed on library onload or application exit. Be careful with calling other
+ * objects in the destructor of the class as you have to be sure that it's not already destroyed.
+ *
+ * \param TYPE The type of the global static object. Do not add a *.
+ * \param NAME The name of the function to get a pointer to the global static object.
+ *
+ * Example:
+ * \code
+ * class A { ... };
+ *
+ * K_GLOBAL_STATIC(A, getA)
+ *
+ * void doSomething()
+ * {
+ *     A *a = getA();
+ *     ...
+ * }
+ * \endcode
+ */
+#define K_GLOBAL_STATIC(TYPE, NAME)                                                         \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                      \
+TYPE *NAME()                                                                                \
+{                                                                                           \
+    if (!_k_static_##NAME) {                                                                \
+        TYPE *x = new TYPE;                                                                 \
+        if (!_k_static_##NAME.testAndSet(0, x)) {                                           \
+            delete x;                                                                       \
+        } else {                                                                            \
+            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME, false }; \
+            if (cleanUpObject.destroyed) {                                                  \
+                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
+                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);               \
+            }                                                                               \
+        }                                                                                   \
+    }                                                                                       \
+    return _k_static_##NAME;                                                                \
+}
 
 /**
  * Access to the KDE global objects.
