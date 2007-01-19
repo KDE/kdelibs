@@ -3,7 +3,11 @@
 
 // this helps gcc to emit the vtbl for KStaticDeleterBase
 // only once, here in this file, not every time it's
-// used, says Seli.
+// used, says Seli and thiago.
+KStaticDeleterBase::~KStaticDeleterBase()
+{
+}
+
 void KStaticDeleterBase::destructObject()
 {
 }

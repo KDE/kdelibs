@@ -38,7 +38,7 @@
  */
 class KDECORE_EXPORT KStaticDeleterBase {
 public:
-    virtual ~KStaticDeleterBase() { }
+    virtual ~KStaticDeleterBase();
     /**
      * Should destruct the resources managed by this KStaticDeleterBase.
      * Usually you also want to call it in your destructor.
