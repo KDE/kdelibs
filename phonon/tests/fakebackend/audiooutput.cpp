@@ -70,6 +70,9 @@ void AudioOutput::setOutputDevice( int newDevice )
 
 void AudioOutput::processBuffer( const QVector<float>& buffer )
 {
+    // be nice to everybody using KDE with the fake backend and don't play this awful noise :)
+    return;
+
 	//static QFile indump( "indump" );
 	//if( !indump.isOpen() )
 		//indump.open( QIODevice::WriteOnly );
