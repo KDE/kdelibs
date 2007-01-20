@@ -47,16 +47,15 @@
 #include "kstyle.moc"
 
 #include <qalgorithms.h>
-#include <qicon.h>
-#include <qpainter.h>
-#include <qstyleoption.h>
-#include <QEvent>
-#include <QScrollBar>
-#include <QVariant>
-//#include <QStyleOptionButton>
-
-#include <QLabel>
-#include <QMouseEvent>
+#include <QtCore/QEvent>
+#include <QtCore/QVariant>
+#include <QtGui/QDialogButtonBox>
+#include <QtGui/QIcon>
+#include <QtGui/QLabel>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QScrollBar>
+#include <QtGui/QStyleOptionButton>
 
 
 //### FIXME: Who to credit these to?
@@ -1934,6 +1933,9 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
                           option, widget) );
             return cm.color(option->palette).rgba();
         }
+
+        case SH_DialogButtonLayout:
+            return QDialogButtonBox::KdeLayout;
 
         default:
             break;
