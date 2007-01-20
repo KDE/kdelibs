@@ -1282,6 +1282,9 @@ int main( int argc, char **argv )
     QStringList values = (*itEntry)->paramValues();
     if ( !values.isEmpty() ) {
       if ( globalEnums ) {
+        // ### FIXME!!
+        // make the following string table an index-based string search!
+        // ###
         h << "    enum { " << values.join( ", " ) << " };" << endl;
         h << "    static const char* const " << enumName( (*itEntry)->param() ) << "ToString[];" << endl;
         cppPreamble += "const char* const " + className + "::" + enumName( (*itEntry)->param() ) +
