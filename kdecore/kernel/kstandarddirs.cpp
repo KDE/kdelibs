@@ -165,14 +165,62 @@ static QString kfsstnd_defaultlibexecdir()
     return s->defaultlibexecdir;
 }
 
-static const char* const types[] = {"html", "icon", "apps", "sound",
-			      "data", "locale", "services", "mime",
-			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates",
-			      "module", "qtplugins",
-			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu",
-			      "xdgdata-icon", "xdgdata-pixmap",
-			      "kcfg", "emoticons", 0 };
+/* Regenerate using generate_string_table.pl and the following data:
+icon
+apps
+sound
+data
+locale
+services
+mime
+servicetypes
+config
+exe
+wallpaper
+lib
+pixmap
+templates
+module
+qtplugins
+xdgdata-apps
+xdgdata-dirs
+xdgconf-menu
+xdgdata-icon
+xdgdata-pixmap
+kcfg
+emoticons
+ */
+static const char types[] =
+    "icon\0"
+    "apps\0"
+    "sound\0"
+    "data\0"
+    "locale\0"
+    "services\0"
+    "mime\0"
+    "servicetypes\0"
+    "config\0"
+    "exe\0"
+    "wallpaper\0"
+    "lib\0"
+    "pixmap\0"
+    "templates\0"
+    "module\0"
+    "qtplugins\0"
+    "xdgdata-apps\0"
+    "xdgdata-dirs\0"
+    "xdgconf-menu\0"
+    "xdgdata-icon\0"
+    "xdgdata-pixmap\0"
+    "kcfg\0"
+    "emoticons\0"
+    "\0";
+
+static const int types_indices[] = {
+       0,    5,   10,   16,   21,   28,   37,   42,
+      55,   62,   66,   76,   80,   87,   97,  104,
+     114,  127,  140,  153,  166,  181,  186,   -1
+};
 
 static int tokenize( QStringList& token, const QString& str,
                      const QString& delim );
@@ -225,8 +273,8 @@ void KStandardDirs::applyDataRestrictions(const QString &relPath) const
 QStringList KStandardDirs::allTypes() const
 {
     QStringList list;
-    for (int i = 0; types[i] != 0; ++i)
-        list.append(QLatin1String(types[i]));
+    for (int i = 0; types_indices[i] != -1; ++i)
+        list.append(QLatin1String(types + types_indices[i]));
     return list;
 }
 
@@ -1517,8 +1565,8 @@ void KStandardDirs::addKDEDefaults()
 
 
     uint index = 0;
-    while (types[index] != 0) {
-	addResourceType(types[index], kde_default(types[index]));
+    while (types_indices[index] != -1) {
+	addResourceType(types + types_indices[index], kde_default(types + types_indices[index]));
 	index++;
     }
     addResourceType( "exe", LIBEXEC_INSTALL_DIR );
