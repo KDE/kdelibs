@@ -64,8 +64,10 @@
 #endif
 #endif
 
-static void sigsegv_handler(int sig);
-static void sigpipe_handler(int sig);
+extern "C" {
+    static void sigsegv_handler(int sig);
+    static void sigpipe_handler(int sig);
+}
 
 using namespace KIO;
 
