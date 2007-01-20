@@ -180,6 +180,9 @@ install_customize_dir( ${expr} customization/)
 set(expr "customization/README")
 install_customize_dir( ${expr} customization/)
 
+set(expr "customization/catalog")
+install_customize_dir( ${expr} customization/)
+
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sv tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
