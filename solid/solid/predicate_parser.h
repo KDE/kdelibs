@@ -1,7 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,10 +20,18 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -32,43 +42,45 @@
      EQ = 258,
      AND = 259,
      OR = 260,
-     VAL_BOOL = 261,
-     VAL_STRING = 262,
-     VAL_ID = 263,
-     VAL_NUM = 264,
-     VAL_FLOAT = 265
+     IS = 261,
+     VAL_BOOL = 262,
+     VAL_STRING = 263,
+     VAL_ID = 264,
+     VAL_NUM = 265,
+     VAL_FLOAT = 266
    };
 #endif
 /* Tokens.  */
 #define EQ 258
 #define AND 259
 #define OR 260
-#define VAL_BOOL 261
-#define VAL_STRING 262
-#define VAL_ID 263
-#define VAL_NUM 264
-#define VAL_FLOAT 265
+#define IS 261
+#define VAL_BOOL 262
+#define VAL_STRING 263
+#define VAL_ID 264
+#define VAL_NUM 265
+#define VAL_FLOAT 266
 
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
 #line 14 "predicate_parser.y"
-typedef union YYSTYPE {
+{
      char valb;
      int vali;
      double vald;
      char *name;
      void *ptr;
-} YYSTYPE;
-/* Line 1447 of yacc.c.  */
-#line 66 "predicate_parser.tab.h"
+}
+/* Line 1529 of yacc.c.  */
+#line 79 "predicate_parser.tab.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-
-
 

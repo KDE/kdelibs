@@ -19,6 +19,7 @@ DIGIT [0-9]
 
 "AND" { return AND; }
 "OR" { return OR; }
+"IS" { return IS; }
 
 "true" { yylval.valb = 1; return VAL_BOOL; }
 "false" { yylval.valb = 0; return VAL_BOOL; }

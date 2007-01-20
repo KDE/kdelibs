@@ -78,6 +78,20 @@ namespace Solid
                    const QString &property, const QVariant &value );
 
         /**
+         * Constructs a predicate matching devices being of a particular capability
+         *
+         * @param capability the capability the device must have
+         */
+        Predicate(const Capability::Type &capability);
+
+        /**
+         * Constructs a predicate matching devices being of a particular capability
+         *
+         * @param capability the capability the device must have
+         */
+        Predicate(const QString &capability);
+
+        /**
          * Destroys a Predicate object.
          */
         ~Predicate();

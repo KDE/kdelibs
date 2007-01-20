@@ -359,6 +359,40 @@ void SolidHwTest::testPredicate()
     QCOMPARE( list.size(), 1 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
+    list = manager.findDevicesFromQuery( parentUdi, capability,
+                                         "[Processor.number==1 OR IS Volume]" );
+
+    foreach (Solid::Device dev, list) {
+        kDebug() << dev.udi() << endl;
+    }
+
+    QCOMPARE( list.size(), 10 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume" ) );
+    QCOMPARE( list.at( 2 ).udi(), QString( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ) );
+    QCOMPARE( list.at( 3 ).udi(), QString( "/org/kde/solid/fakehw/volume_part1_size_993284096" ) );
+    QCOMPARE( list.at( 4 ).udi(), QString( "/org/kde/solid/fakehw/volume_part2_size_1024" ) );
+    QCOMPARE( list.at( 5 ).udi(), QString( "/org/kde/solid/fakehw/volume_part5_size_1048576" ) );
+    QCOMPARE( list.at( 6 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_5011" ) );
+    QCOMPARE( list.at( 7 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_c0ffee" ) );
+    QCOMPARE( list.at( 8 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_f00ba7" ) );
+    QCOMPARE( list.at( 9 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_feedface" ) );
+
+    list = manager.findDevicesFromQuery( parentUdi, capability,
+                                         "[IS Processor OR IS Volume]" );
+    QCOMPARE( list.size(), 11 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
+    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    QCOMPARE( list.at( 2 ).udi(), QString( "/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume" ) );
+    QCOMPARE( list.at( 3 ).udi(), QString( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ) );
+    QCOMPARE( list.at( 4 ).udi(), QString( "/org/kde/solid/fakehw/volume_part1_size_993284096" ) );
+    QCOMPARE( list.at( 5 ).udi(), QString( "/org/kde/solid/fakehw/volume_part2_size_1024" ) );
+    QCOMPARE( list.at( 6 ).udi(), QString( "/org/kde/solid/fakehw/volume_part5_size_1048576" ) );
+    QCOMPARE( list.at( 7 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_5011" ) );
+    QCOMPARE( list.at( 8 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_c0ffee" ) );
+    QCOMPARE( list.at( 9 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_f00ba7" ) );
+    QCOMPARE( list.at( 10 ).udi(), QString( "/org/kde/solid/fakehw/volume_uuid_feedface" ) );
+
     capability = Solid::Capability::Processor;
     list = manager.findDevicesFromQuery( parentUdi, capability );
     QCOMPARE( list.size(), 2 );

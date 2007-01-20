@@ -23,6 +23,7 @@ void PredicateParse_mainParse( const char *_code );
 
 %token AND
 %token OR
+%token IS
 
 %token <valb> VAL_BOOL
 %token <name> VAL_STRING
@@ -45,6 +46,7 @@ predicate: predicate_atom { PredicateParse_setResult( $<ptr>1 ); $$ = $<ptr>1; }
          | '[' predicate_and ']' { PredicateParse_setResult( $<ptr>2 ); $$ = $<ptr>2; }
 
 predicate_atom: VAL_ID '.' VAL_ID EQ value { $$ = PredicateParse_newAtom( $<name>1, $<name>3, $<ptr>5 ); }
+              | IS VAL_ID { $$ = PredicateParse_newIsAtom( $<name>2 ); }
 
 predicate_or: predicate OR predicate { $$ = PredicateParse_newOr( $<ptr>1, $<ptr>3 ); }
 

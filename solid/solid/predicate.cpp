@@ -28,7 +28,7 @@ namespace Solid
     class Predicate::Private
     {
     public:
-        enum OperatorType { AtomType, AndType, OrType };
+        enum OperatorType { AtomType, AndType, OrType, IsType };
 
         Private() : isValid( false ), type( AtomType ),
                     operand1( 0 ), operand2( 0 ) {}
@@ -96,10 +96,44 @@ Solid::Predicate::Predicate( const QString &capability,
     }
 }
 
+Solid::Predicate::Predicate( const Capability::Type &capability )
+    : d( new Private() )
+{
+    d->isValid = true;
+    d->type = Private::IsType;
+    d->capability = capability;
+}
+
+Solid::Predicate::Predicate( const QString &capability )
+    : d( new Private() )
+{
+    QMap<QString, Capability::Type> map;
+    map["Processor"] = Capability::Processor;
+    map["Block"] = Capability::Block;
+    map["Storage"] = Capability::Storage;
+    map["Cdrom"] = Capability::Cdrom;
+    map["Volume"] = Capability::Volume;
+    map["OpticalDisc"] = Capability::OpticalDisc;
+    map["Camera"] = Capability::Camera;
+    map["PortableMediaPlayer"] = Capability::PortableMediaPlayer;
+    map["NetworkHw"] = Capability::NetworkHw;
+    map["AcAdapter"] = Capability::AcAdapter;
+    map["Battery"] = Capability::Battery;
+    map["Button"] = Capability::Button;
+    map["Display"] = Capability::Display;
+    map["AudioHw"] = Capability::AudioHw;
+
+    if ( map.contains( capability ) )
+    {
+        d->isValid = true;
+        d->type = Private::IsType;
+        d->capability = map[capability];
+    }
+}
+
 Solid::Predicate::~Predicate()
 {
-    if ( d->type!=Private::AtomType )
-    {
+    if (d->type!=Private::AtomType && d->type!=Private::IsType) {
         delete d->operand1;
         delete d->operand2;
     }
@@ -112,7 +146,7 @@ Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
     d->isValid = other.d->isValid;
     d->type = other.d->type;
 
-    if ( d->type!=Private::AtomType )
+    if ( d->type!=Private::AtomType && d->type!=Private::IsType )
     {
         d->operand1 = new Predicate( *( other.d->operand1 ) );
         d->operand2 = new Predicate( *( other.d->operand2 ) );
@@ -179,6 +213,8 @@ bool Solid::Predicate::matches( Device *device ) const
         }
         break;
     }
+    case Private::IsType:
+        return device->queryCapability(d->capability);
     }
 
     return false;
@@ -188,7 +224,7 @@ QString Solid::Predicate::toString() const
 {
     if ( !d->isValid ) return "False";
 
-    if ( d->type!=Private::AtomType )
+    if ( d->type!=Private::AtomType && d->type!=Private::IsType )
     {
         QString op = " AND ";
         if ( d->type==Private::OrType ) op = " OR ";
@@ -245,6 +281,10 @@ QString Solid::Predicate::toString() const
             break;
         case Capability::Unknown:
             break;
+        }
+
+        if (d->type==Private::IsType) {
+            return "IS "+capability;
         }
 
         QString value;

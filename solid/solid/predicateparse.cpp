@@ -82,6 +82,18 @@ void *PredicateParse_newAtom( char *capability, char *property, void *value )
 }
 
 
+void *PredicateParse_newIsAtom( char *capability )
+{
+    QString cap( capability );
+
+    Solid::Predicate *result = new Solid::Predicate( cap );
+
+    free( capability );
+
+    return result;
+}
+
+
 void *PredicateParse_newAnd( void *pred1, void *pred2 )
 {
     Solid::Predicate *result = new Solid::Predicate();
