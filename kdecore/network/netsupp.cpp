@@ -885,27 +885,34 @@ void freeaddrinfo(struct addrinfo *p)
 
 char *gai_strerror(int errorcode)
 {
-  static const char * const messages[] =
+  static const char messages[] =
   {
-    I18N_NOOP("no error"),	// 0
-    I18N_NOOP("address family for nodename not supported"), // EAI_ADDRFAMILY
-    I18N_NOOP("temporary failure in name resolution"),	// EAI_AGAIN
-    I18N_NOOP("invalid value for 'ai_flags'"),	// EAI_BADFLAGS
-    I18N_NOOP("non-recoverable failure in name resolution"), // EAI_FAIL
-    I18N_NOOP("'ai_family' not supported"),	// EAI_FAMILY
-    I18N_NOOP("memory allocation failure"),	// EAI_MEMORY
-    I18N_NOOP("no address associated with nodename"),	// EAI_NODATA
-    I18N_NOOP("name or service not known"),	// EAI_NONAME
-    I18N_NOOP("servname not supported for ai_socktype"), // EAI_SERVICE
-    I18N_NOOP("'ai_socktype' not supported"),	// EAI_SOCKTYPE
-    I18N_NOOP("system error")			// EAI_SYSTEM
+    I18N_NOOP("no error")"\0"	// 0
+    I18N_NOOP("address family for nodename not supported")"\0" // EAI_ADDRFAMILY
+    I18N_NOOP("temporary failure in name resolution")"\0"	// EAI_AGAIN
+    I18N_NOOP("invalid value for 'ai_flags'")"\0"	// EAI_BADFLAGS
+    I18N_NOOP("non-recoverable failure in name resolution")"\0" // EAI_FAIL
+    I18N_NOOP("'ai_family' not supported")"\0"	// EAI_FAMILY
+    I18N_NOOP("memory allocation failure")"\0"	// EAI_MEMORY
+    I18N_NOOP("no address associated with nodename")"\0"	// EAI_NODATA
+    I18N_NOOP("name or service not known")"\0"	// EAI_NONAME
+    I18N_NOOP("servname not supported for ai_socktype")"\0" // EAI_SERVICE
+    I18N_NOOP("'ai_socktype' not supported")"\0"	// EAI_SOCKTYPE
+    I18N_NOOP("system error")"\0"			// EAI_SYSTEM
+    "\0"
+  }
+  static const int messages_indices[] =
+  {
+      0,    9,   51,   88,  117,  160,  186,  212,
+      248,  274,  313,  341,    0
   };
 
+  Q_ASSERT(sizeof(messages_indices)/sizeof(messages_indices[0]) >= EAI_SYSTEM)
   if (errorcode > EAI_SYSTEM || errorcode < 0)
     return NULL;
 
   static char buffer[200];
-  strcpy(buffer, i18n(messages[errorcode]).toLocal8Bit());
+  strcpy(buffer, i18n(messages + messages_indices[errorcode]).toLocal8Bit());
   return buffer;
 }
 
