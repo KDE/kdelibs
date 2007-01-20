@@ -226,13 +226,11 @@ public:
 
 protected:
     virtual void fillFontCombo();
-    static void cleanupFontDatabase();
 
     QComboBox *fontCombo;
     QSpinBox *tableSpinBox;
     KCharSelectTable *charTable;
     QStringList fontList;
-    static QFontDatabase * fontDataBase;
 
 protected Q_SLOTS:
     void fontSelected( const QString &_font );

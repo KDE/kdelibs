@@ -51,9 +51,9 @@ public:
     QLineEdit *unicodeLine;
 };
 
-QFontDatabase * KCharSelect::fontDataBase = 0;
+static QFontDatabase * fontDataBase = 0;
 
-void KCharSelect::cleanupFontDatabase()
+static void cleanupFontDatabase()
 {
     delete fontDataBase;
     fontDataBase = 0;
