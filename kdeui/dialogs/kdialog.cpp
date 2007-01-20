@@ -151,15 +151,19 @@ void KDialog::Private::appendButton( ButtonCode key, const KGuiItem &item )
       role = QDialogButtonBox::DestructiveRole;
       break;
     case Ok:
+      role = QDialogButtonBox::AcceptRole;
+      break;
     case Apply:
+      role = QDialogButtonBox::ApplyRole;
+      break;
     case Try:
     case Close:
     case Yes:
       role = QDialogButtonBox::YesRole;
       break;
     case Cancel:
-        role = QDialogButtonBox::RejectRole;
-        break;
+      role = QDialogButtonBox::RejectRole;
+      break;
     case No:
       role = QDialogButtonBox::NoRole;
       break;
