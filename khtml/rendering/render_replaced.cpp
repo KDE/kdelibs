@@ -49,6 +49,8 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h"
+#include "misc/helper.h"
+#include "css/cssvalues.h"
 #include <kdebug.h>
 
 bool khtml::allowWidgetPaintEvents = false;
@@ -339,21 +341,27 @@ void RenderWidget::updateFromElement()
             int contrast_ = KGlobalSettings::contrast();
             int highlightVal = 100 + (2*contrast_+4)*16/10;
             int lowlightVal = 100 + (2*contrast_+4)*10;
+            bool shouldChangeBgPal = true;
 
             if (!backgroundColor.isValid()) 
                 backgroundColor = pal.color( widget()->backgroundRole() );
-            pal.setColor(widget()->backgroundRole(), trans ? QColor(0,0,0,0) : backgroundColor);
-
-            for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Window, backgroundColor );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, trans ? QColor(0,0,0,0):backgroundColor );
-                pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, trans ? QColor(0,0,0,0):backgroundColor );
+            else
+                shouldChangeBgPal = !( (backgroundColor == colorForCSSValue(CSS_VAL_WINDOW)) ||
+                                       (backgroundColor == colorForCSSValue(CSS_VAL_BUTTONFACE)) );
+            if (shouldChangeBgPal || trans) {
+                pal.setColor(widget()->backgroundRole(), trans ? QColor(0,0,0,0) : backgroundColor);
+                for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
+                    if (shouldChangeBgPal) {
+                        pal.setColor( (QPalette::ColorGroup)i, QPalette::Window, backgroundColor );
+                        pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
+                        pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
+                        pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
+                        pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
+                    }
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, trans ? QColor(0,0,0,0):backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, trans ? QColor(0,0,0,0):backgroundColor );
+                }
             }
-
             if ( color.isValid() ) {
                 struct ColorSet {
                     QPalette::ColorGroup cg;
