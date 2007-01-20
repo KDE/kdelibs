@@ -40,22 +40,22 @@
 #endif
 
 
-static const char* shortDay[] = {
+static const char shortDay[][4] = {
     "Mon", "Tue", "Wed",
     "Thu", "Fri", "Sat",
     "Sun"
 };
-static const char* longDay[] = {
+static const char longDay[][10] = {
     "Monday", "Tuesday", "Wednesday",
     "Thursday", "Friday", "Saturday",
     "Sunday"
 };
-static const char* shortMonth[] = {
+static const char shortMonth[][4] = {
     "Jan", "Feb", "Mar", "Apr",
     "May", "Jun", "Jul", "Aug",
     "Sep", "Oct", "Nov", "Dec"
 };
-static const char* longMonth[] = {
+static const char longMonth[][10] = {
     "January", "February", "March",
     "April", "May", "June",
     "July", "August", "September",
@@ -77,7 +77,10 @@ static int matchMonth(const QString &string, int &offset, KCalendarSystem*);
 static bool getUTCOffset(const QString &string, int &offset, bool colon, int &result);
 static int getAmPm(const QString &string, int &offset, KLocale*);
 static bool getNumber(const QString &string, int &offset, int mindigits, int maxdigits, int minval, int maxval, int &result);
-static int findString(const QString &string, const char* *array, int count, int &offset);
+static int findString_internal(const QString &string, const char *ptr, int count, int &offset, int disp);
+template<int disp> static inline
+int findString(const QString &string, const char array[][disp], int count, int &offset)
+{ return findString_internal(string, array[0], offset, count, disp); }
 static QDate checkDate(int year, int month, int day, Status&);
 
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
@@ -2835,13 +2838,13 @@ bool getNumber(const QString& string, int& offset, int mindigits, int maxdigits,
     return true;
 }
 
-int findString(const QString &string, const char* *array, int count, int &offset)
+int findString_internal(const QString &string, const char *array, int count, int &offset, int disp)
 {
     for (int i = 0;  i < count;  ++i)
     {
-        if (string.startsWith(array[i], Qt::CaseInsensitive))
+        if (string.startsWith(array + i * disp, Qt::CaseInsensitive))
         {
-            offset += qstrlen(array[i]);
+            offset += qstrlen(array + i * disp);
             return i;
         }
     }
