@@ -54,7 +54,7 @@ class KCleanUpGlobalStatic
  *
  * The object is destructed on library unload or application exit.
  * Be careful with calling other objects in the destructor of the class
- * as you have to be sure that it's not already destroyed.
+ * as you have to be sure that they are not already destructed.
  *
  * \param TYPE The type of the global static object. Do not add a *.
  * \param NAME The name of the function to get a pointer to the global static object.
