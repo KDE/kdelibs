@@ -37,11 +37,11 @@ class KCleanUpGlobalStatic
 {
     public:
         QBasicAtomicPointer<T> *pointer;
-        bool destroyed;
+        bool *destroyed;
 
         inline ~KCleanUpGlobalStatic()
         {
-            destroyed = true;
+            *destroyed = true;
             T* x = *pointer;
             pointer->init(0);
             delete x;
@@ -52,7 +52,7 @@ class KCleanUpGlobalStatic
  * This macro makes it easy to use non-POD types as global statics.
  * The object is created on first use and creation is threadsafe.
  *
- * The object is destroyed on library unload or application exit.
+ * The object is destructed on library unload or application exit.
  * Be careful with calling other objects in the destructor of the class
  * as you have to be sure that it's not already destroyed.
  *
@@ -63,32 +63,36 @@ class KCleanUpGlobalStatic
  * \code
  * class A { ... };
  *
- * K_GLOBAL_STATIC(A, getA)
+ * K_GLOBAL_STATIC(A, globalA)
  *
  * void doSomething()
  * {
- *     A *a = getA();
+ *     A *a = globalA();
  *     ...
  * }
  * \endcode
  */
-#define K_GLOBAL_STATIC(TYPE, NAME)                                                         \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                      \
-TYPE *NAME()                                                                                \
-{                                                                                           \
-    if (!_k_static_##NAME) {                                                                \
-        TYPE *x = new TYPE;                                                                 \
-        if (!_k_static_##NAME.testAndSet(0, x)) {                                           \
-            delete x;                                                                       \
-        } else {                                                                            \
-            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME, false }; \
-            if (cleanUpObject.destroyed) {                                                  \
-                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
-                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);               \
-            }                                                                               \
-        }                                                                                   \
-    }                                                                                       \
-    return _k_static_##NAME;                                                                \
+#define K_GLOBAL_STATIC(TYPE, NAME)                                                              \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                           \
+TYPE *NAME()                                                                                     \
+{                                                                                                \
+    if (!_k_static_##NAME) {                                                                     \
+        static bool destroyed;                                                                   \
+        /* destroyed is initialzed to false by default.
+         * There also is no race condition here because if destroyed is initialized from multiple
+         * threads it will still be initialized to false                                 */      \
+        if (destroyed) {                                                                         \
+            qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. "          \
+                   "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);                        \
+        }                                                                                        \
+        TYPE *x = new TYPE;                                                                      \
+        if (!_k_static_##NAME.testAndSet(0, x)) {                                                \
+            delete x;                                                                            \
+        } else {                                                                                 \
+            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME, &destroyed }; \
+        }                                                                                        \
+    }                                                                                            \
+    return _k_static_##NAME;                                                                     \
 }
 
 /**
