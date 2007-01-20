@@ -64,6 +64,9 @@
 #endif
 #endif
 
+static void sigsegv_handler(int sig);
+static void sigpipe_handler(int sig);
+
 using namespace KIO;
 
 typedef QList<QByteArray> AuthKeysList;
@@ -698,7 +701,7 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     d->sentListEntries+=(uint)list.count();
 }
 
-void SlaveBase::sigsegv_handler(int sig)
+static void sigsegv_handler(int sig)
 {
 #ifdef Q_OS_UNIX
     signal(sig,SIG_DFL); // Next one kills
@@ -724,7 +727,7 @@ void SlaveBase::sigsegv_handler(int sig)
 #endif
 }
 
-void SlaveBase::sigpipe_handler (int)
+static void sigpipe_handler (int)
 {
     // We ignore a SIGPIPE in slaves.
     // A SIGPIPE can happen in two cases:
