@@ -37,7 +37,7 @@ class KUrl;
  *
  * @see KCmdLineArgs for additional usage information
  */
-struct KDECORE_EXPORT KCmdLineOptions
+struct KCmdLineOptions
 {
    /**
     * The name of the argument as it should be called on the command line and
