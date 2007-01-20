@@ -49,11 +49,12 @@ class KCleanUpGlobalStatic
 };
 
 /**
- * This macro makes it easy to use non-POD types as global statics. The object is created on first
- * use and creation is threadsafe.
+ * This macro makes it easy to use non-POD types as global statics.
+ * The object is created on first use and creation is threadsafe.
  *
- * The object is destructed on library onload or application exit. Be careful with calling other
- * objects in the destructor of the class as you have to be sure that it's not already destroyed.
+ * The object is destroyed on library unload or application exit.
+ * Be careful with calling other objects in the destructor of the class
+ * as you have to be sure that it's not already destroyed.
  *
  * \param TYPE The type of the global static object. Do not add a *.
  * \param NAME The name of the function to get a pointer to the global static object.
