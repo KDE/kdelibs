@@ -29,7 +29,7 @@
 
 #include <kvbox.h>
 
-class QComboBox;
+class QFontComboBox;
 class QFont;
 class QFontDatabase;
 class QMouseEvent;
@@ -225,12 +225,12 @@ public:
     virtual bool isTableSpinBoxEnabled() const;
 
 protected:
-    virtual void fillFontCombo();
+    virtual void fillFontCombo(); // ####### unused, remove me
 
-    QComboBox *fontCombo;
+    QFontComboBox *fontCombo;
     QSpinBox *tableSpinBox;
     KCharSelectTable *charTable;
-    QStringList fontList;
+    QStringList fontList; // ###### unused, remove me
 
 protected Q_SLOTS:
     void fontSelected( const QString &_font );

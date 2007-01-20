@@ -25,10 +25,9 @@
 #include "kcharselect_p.moc"
 
 #include <qcolor.h>
-#include <qcombobox.h>
+#include <qfontcombobox.h>
 #include <qevent.h>
 #include <qfont.h>
-#include <qfontdatabase.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpainter.h>
@@ -50,14 +49,6 @@ class KCharSelect::KCharSelectPrivate
 public:
     QLineEdit *unicodeLine;
 };
-
-static QFontDatabase * fontDataBase = 0;
-
-static void cleanupFontDatabase()
-{
-    delete fontDataBase;
-    fontDataBase = 0;
-}
 
 /******************************************************************/
 /* Class: KCharSelectTable					  */
@@ -267,12 +258,11 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
 
-    fontCombo = new QComboBox(bar );
+    fontCombo = new QFontComboBox(bar);
     fontCombo->setEditable(true);
-    fillFontCombo();
     fontCombo->resize( fontCombo->sizeHint() );
 
-    connect( fontCombo, SIGNAL( activated( const QString & ) ), this, SLOT( fontSelected( const QString & ) ) );
+    connect( fontCombo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( fontSelected( const QString & ) ) );
 
     QLabel* const lTable = new QLabel( i18n( "Table:" ), bar );
     lTable->resize( lTable->sizeHint() );
@@ -356,13 +346,8 @@ QSize KCharSelect::sizeHint() const
 //==================================================================
 void KCharSelect::setFont( const QString &_font )
 {
-    int pos = fontList.indexOf ( _font );
-    if ( pos != 1 ) {
-	fontCombo->setCurrentIndex( pos );
-	charTable->setFont( _font );
-    }
-    else
-	kWarning() << "Can't find Font: " << _font << endl;
+    fontCombo->setCurrentFont(_font);
+    charTable->setFont( _font );
 }
 
 //==================================================================
@@ -424,12 +409,6 @@ bool KCharSelect::isTableSpinBoxEnabled() const
 //==================================================================
 void KCharSelect::fillFontCombo()
 {
-    if ( !fontDataBase ) {
-	fontDataBase = new QFontDatabase();
-	qAddPostRoutine( cleanupFontDatabase );
-    }
-    fontList=fontDataBase->families();
-    fontCombo->addItems( fontList );
 }
 
 //==================================================================
