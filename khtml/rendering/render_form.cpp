@@ -726,11 +726,8 @@ void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
     h -= yOff;
     _ty += yOff - borderTopExtra();
 
-    int my = qMax(_ty,pI.r.y());
-    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
-    int mh = end - my;
-
-    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
+    QRect cr = QRect(_tx, _ty, w, h).intersected( pI.r );
+    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
 
     if ( style()->hasBorder() )
 	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), legend->xPos(), legend->width());

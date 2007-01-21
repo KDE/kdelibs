@@ -414,10 +414,10 @@ void RenderWidget::updateFromElement()
     RenderReplaced::updateFromElement();
 }
 
-void RenderWidget::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
+void RenderWidget::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
     bool fudge = !shouldPaintBorder();
-    paintBackgroundExtended(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height,
+    paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
                                 fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
                                 fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
 }
@@ -426,16 +426,13 @@ void RenderWidget::paintBackground(QPainter *p, const QColor& c, const Backgroun
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     QRect r = QRect(0, 0, width(), height());
-
-    int my = qMax(_ty + r.y(), paintInfo.r.y());
-    int end = qMin( paintInfo.r.y() + paintInfo.r.height(), _ty + r.y() + r.height());
-    int mh = end - my;
+    QRect cr = r.intersected(paintInfo.r);
 
     if (qobject_cast<QAbstractScrollArea*>(m_widget) || (isRedirectedWidget() && 
             style()->backgroundLayers() && style()->backgroundLayers()->hasImage()))
     {
         paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
-            my, mh, _tx+r.x(), _ty+r.y(), r.width(), r.height());
+            cr, _tx+r.x(), _ty+r.y(), r.width(), r.height());
     }
 
     if (shouldPaintBorder() && style()->hasBorder())

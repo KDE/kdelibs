@@ -94,9 +94,6 @@ public:
     virtual void paint( PaintInfo& i, int tx, int ty );
     virtual bool isWidget() const { return true; };
 
-    virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
-    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height);
-
     virtual bool isFrame() const { return false; }
 
     virtual void detach( );
@@ -127,6 +124,9 @@ public Q_SLOTS:
     void slotWidgetDestructed();
 
 protected:
+    virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
+    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
+
     virtual bool canHaveBorder() const { return false; }
     bool shouldPaintBorder() const { 
         // Don't paint borders if the border-style is native

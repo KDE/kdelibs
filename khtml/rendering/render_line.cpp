@@ -686,22 +686,22 @@ void InlineFlowBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
 
 
 void InlineFlowBox::paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                                     int my, int mh, int _tx, int _ty, int w, int h)
+                                     QRect clipr, int _tx, int _ty, int w, int h)
 {
     if (!bgLayer)
         return;
-    paintBackgrounds(p, c, bgLayer->next(), my, mh, _tx, _ty, w, h);
-    paintBackground(p, c, bgLayer, my, mh, _tx, _ty, w, h);
+    paintBackgrounds(p, c, bgLayer->next(), clipr, _tx, _ty, w, h);
+    paintBackground(p, c, bgLayer, clipr, _tx, _ty, w, h);
 }
 
 void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                                    int my, int mh, int _tx, int _ty, int w, int h)
+                                    QRect clipr, int _tx, int _ty, int w, int h)
 {
     CachedImage* bg = bgLayer->backgroundImage();
     bool hasBackgroundImage = bg && bg->isComplete() && 
                               !bg->isTransparent() && !bg->isErrorImage();
     if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
-        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight(), paddingLeft(), paddingRight(),
+        object()->paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, h, borderLeft(), borderRight(), paddingLeft(), paddingRight(),
                                           object()->borderTop(), object()->borderBottom(), object()->paddingTop(), object()->paddingBottom());
     else {
         // We have a background image that spans multiple lines.
@@ -721,7 +721,7 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
             totalWidth += curr->width();
         p->save();
         p->setClipRect(QRect(_tx, _ty, width(), height()));
-        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, startX, _ty,
+        object()->paintBackgroundExtended(p, c, bgLayer, clipr, startX, _ty,
                                           totalWidth, h, borderLeft(), borderRight(), paddingLeft(), paddingRight(),
                                           object()->borderTop(), object()->borderBottom(), object()->paddingTop(), object()->paddingBottom());
         p->restore();
@@ -740,12 +740,11 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     int w = width();
     int h = height();
 
-    int my = qMax(_ty, pI.r.y());
-    int mh;
-    if (_ty<pI.r.y())
-        mh= qMax(0,h-(pI.r.y()-_ty));
-    else
-        mh = qMin(pI.r.height(),h);
+    QRect cr;
+    cr.setX(qMax(_tx, pI.r.x()));
+    cr.setY(qMax(_ty, pI.r.y()));
+    cr.setWidth(_tx<pI.r.x() ? qMax(0,w-(pI.r.x()-_tx)) : qMin(pI.r.width(),w));
+    cr.setHeight(_ty<pI.r.y() ? qMax(0,h-(pI.r.y()-_ty)) : qMin(pI.r.height(),h));
 
     // You can use p::first-line to specify a background. If so, the root line boxes for
     // a line may actually have to paint a background.
@@ -753,7 +752,7 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     if ((!parent() && m_firstLine && styleToUse != object()->style()) ||
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
         QColor c = styleToUse->backgroundColor();
-        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), my, mh, _tx, _ty, w, h);
+        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), cr, _tx, _ty, w, h);
 
         // ::first-line cannot be used to put borders on a line. Always paint borders with our
         // non-first-line style.

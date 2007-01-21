@@ -293,7 +293,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderTableRow : public RenderContainer
+class RenderTableRow : public RenderBox
 {
 public:
     RenderTableRow(DOM::NodeImpl* node);
@@ -397,7 +397,6 @@ public:
     virtual int yPos() const { return m_y + _topExtra; }
 
     virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
-    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false) const;
 
     virtual short baselinePosition( bool = false ) const;
 
@@ -444,7 +443,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderTableCol : public RenderContainer
+class RenderTableCol : public RenderBox
 {
 public:
     RenderTableCol(DOM::NodeImpl* node);

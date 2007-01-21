@@ -515,15 +515,22 @@ void RenderTable::paintBoxDecorations(PaintInfo &pI, int _tx, int _ty)
         if (tCaption->style()->captionSide() != CAPBOTTOM)
             _ty += captionHeight;
     }
-
-    int my = qMax(_ty,pI.r.y());
-    int mh;
+    QRect cr;
+    cr.setX(qMax(_tx, pI.r.x()));
+    cr.setY(qMax(_ty, pI.r.y()));
+    int mw, mh;
     if (_ty<pI.r.y())
         mh= qMax(0,h-(pI.r.y()-_ty));
     else
         mh = qMin(pI.r.height(),h);
+    if (_tx<pI.r.x())
+        mw = qMax(0,w-(pI.r.x()-_tx));
+    else
+        mw = qMin(pI.r.width(),w);
+    cr.setWidth(mw);
+    cr.setHeight(mh);
 
-    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
+    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
 
     if (style()->hasBorder() && !collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());
@@ -1404,18 +1411,12 @@ int RenderTableSection::layoutRows( int toAdd )
 	Row *row = grid[r].row;
 	int totalCols = row->size();
 
-#ifdef APPLE_CHANGES
-        // in WC, rows and cells share the same coordinate space, so that rows can have
-        // dimensions in the layer system. This is of dubious value, and a heavy maintenance burden
-        // (RenderObject's coordinates can't be used deterministically anymore) so we'll consider other options.
-
         // Set the row's x/y position and width/height.
         if (grid[r].rowRenderer) {
             grid[r].rowRenderer->setPos(0, rowPos[r]);
             grid[r].rowRenderer->setWidth(m_width);
             grid[r].rowRenderer->setHeight(rowPos[r+1] - rowPos[r] - vspacing);
         }
-#endif
 
         for ( int c = 0; c < nEffCols; c++ )
         {
@@ -1487,9 +1488,9 @@ int RenderTableSection::layoutRows( int toAdd )
 		    table()->columnPos[(int)totalCols] -
 		    table()->columnPos[table()->colToEffCol(cell->col()+cell->colSpan())] +
 		    leftOffset,
-                    rowPos[rindx] );
+                    0 );
             } else {
-                cell->setPos( table()->columnPos[c] + leftOffset, rowPos[rindx] );
+                cell->setPos( table()->columnPos[c] + leftOffset, 0 );
 	    }
         }
     }
@@ -1548,7 +1549,7 @@ int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includ
     for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
         for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
             if (cell->isTableCell()) {
-                int bp = cell->yPos() + cell->lowestPosition(false);
+                int bp = row->yPos() + cell->lowestPosition(false);
                 bottom = qMax(bottom, bp);
         }
     }
@@ -1599,7 +1600,7 @@ int RenderTableSection::highestPosition(bool includeOverflowInterior, bool inclu
     for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
         for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
             if (cell->isTableCell()) {
-                int hp = cell->yPos() + cell->highestPosition(false);
+                int hp = row->yPos() + cell->highestPosition(false);
                 top = qMin(top, hp);
         }
     }
@@ -1716,6 +1717,9 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 		RenderTableCell *cell = (*row)[c];
 		if ( !cell || cell == (RenderTableCell *)-1 || nextrow && (*nextrow)[c] == cell )
 		    continue;
+                RenderObject* rowr = cell->parent();
+                int rtx = tx+rowr->xPos(); 
+                int rty = ty+rowr->yPos();
 #ifdef TABLE_PRINT
 		kDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
@@ -1729,7 +1733,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
                         if (style->display() == TABLE_COLUMN_GROUP)
                             colGroup = col->parent();
                     }
-                    RenderObject* row = cell->parent();
+
 
                     // ###
                     // Column groups and columns first.
@@ -1737,20 +1741,20 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
                     // the stack, since we have already opened a transparency layer (potentially) for the table row group.
                     // Note that we deliberately ignore whether or not the cell has a layer, since these backgrounds paint "behind" the
                     // cell.
-                    cell->paintBackgroundsBehindCell(pI, tx, ty, colGroup);
-                    cell->paintBackgroundsBehindCell(pI, tx, ty, col);
+                    cell->paintBackgroundsBehindCell(pI, rtx, rty, colGroup);
+                    cell->paintBackgroundsBehindCell(pI, rtx, rty, col);
 
                     // Paint the row group next.
-                    cell->paintBackgroundsBehindCell(pI, tx, ty, this);
+                    cell->paintBackgroundsBehindCell(pI, rtx, rty, this);
 
                     // Paint the row next, but only if it doesn't have a layer.  If a row has a layer, it will be responsible for
                     // painting the row background for the cell.
-                    if (!row->layer())
-                        cell->paintBackgroundsBehindCell(pI, tx, ty, row);
+                    if (!rowr->layer())
+                        cell->paintBackgroundsBehindCell(pI, rtx, rty, rowr);
                 }
 
                 if ((!cell->layer() && !cell->parent()->layer()) || pI.phase == PaintActionCollapsedTableBorders)
-                    cell->paint(pI, tx, ty);
+                    cell->paint(pI, rtx, rty);
 	    }
 	}
     }
@@ -1999,7 +2003,7 @@ bool RenderTableSection::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int t
 // -------------------------------------------------------------------------
 
 RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
-    : RenderContainer(node)
+    : RenderBox(node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -2180,6 +2184,9 @@ void RenderTableRow::paint(PaintInfo& i, int tx, int ty)
     if (!layer())
         return;
 
+    tx += m_x;
+    ty += m_y;
+
     for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
         if (child->isTableCell()) {
             // Paint the row background behind the cell.
@@ -2198,6 +2205,9 @@ bool RenderTableRow::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, H
 {
     // Table rows cannot ever be hit tested.  Effectively they do not exist.
     // Just forward to our children always.
+    tx += m_x;
+    ty += m_y;
+
     for (RenderObject* child = lastChild(); child; child = child->previousSibling()) {
         // FIXME: We have to skip over inline flows, since they can show up inside table rows
         // at the moment (a demoted inline <form> for example). If we ever implement a
@@ -2314,22 +2324,13 @@ void RenderTableCell::close()
 }
 
 bool RenderTableCell::requiresLayer() const {
-    // table-cell display is never positioned (css 2.1-9.7), so the only time a layer is needed
-    // is when overflow != visible (or when there is opacity when we support it)
-    return /* style()->opacity() < 1.0f || */ hasOverflowClip() || isRelPositioned();
+    // table-cell display is never positioned (css 2.1-9.7)
+    return style()->opacity() < 1.0f || hasOverflowClip() || isRelPositioned();
 }
 
 void RenderTableCell::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
     RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, p, f);
-}
-
-bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f) const
-{
-    bool result = RenderBlock::absolutePosition(xPos, yPos, f);
-    xPos -= parent()->xPos(); // Rows are in the same coordinate space, so don't add their offset in.
-    yPos -= parent()->yPos();
-    return result;
 }
 
 int RenderTableCell::pageTopAfter(int y) const
@@ -2875,35 +2876,43 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
     }
 }
 
-void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty, RenderObject* backgroundObject)
+void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty, RenderObject* bgObj)
 {
-    if (!backgroundObject)
+    if (!bgObj)
         return;
 
     RenderTable* tableElt = table();
-    if (backgroundObject != this) {
-        _tx += m_x;
-        _ty += m_y + _topExtra;
+
+    int w = bgObj->width();
+    int h = bgObj->height() + bgObj->borderTopExtra() + bgObj->borderBottomExtra();
+
+    int cellx = _tx;
+    int celly = _ty;
+    int cellw = w;
+    int cellh = h;
+    if (bgObj != this) {
+        cellx += m_x;
+        celly += m_y;
+        cellw = width();
+        cellh = height() + borderTopExtra() + borderBottomExtra();
     }
 
-    int w = width();
-    int h = height() + borderTopExtra() + borderBottomExtra();
-    _ty -= borderTopExtra();
+    QRect cr;
+    cr.setX(qMax(cellx, pI.r.x()));
+    cr.setY(qMax(celly, pI.r.y()));
+    cr.setWidth(cellx<pI.r.x() ? qMax(0,cellw-(pI.r.x()-cellx)) : qMin(pI.r.width(),cellw));
+    cr.setHeight(celly<pI.r.y() ? qMax(0,cellh-(pI.r.y()-celly)) : qMin(pI.r.height(),cellh));
 
-    int my = qMax(_ty,pI.r.y());
-    int end = qMin( pI.r.y() + pI.r.height(),  _ty + h );
-    int mh = end - my;
-
-    QColor c = backgroundObject->style()->backgroundColor();
-    const BackgroundLayer* bgLayer = backgroundObject->style()->backgroundLayers();
+    QColor c = bgObj->style()->backgroundColor();
+    const BackgroundLayer* bgLayer = bgObj->style()->backgroundLayers();
 
     if (bgLayer->hasImage() || c.isValid()) {
         // We have to clip here because the background would paint
         // on top of the borders otherwise.  This only matters for cells and rows.
-        bool hasLayer = backgroundObject->layer() && (backgroundObject == this || backgroundObject == parent());
+        bool hasLayer = bgObj->layer() && (bgObj == this || bgObj == parent());
         if (hasLayer && tableElt->collapseBorders()) {
             pI.p->save();
-            QRect clipRect(_tx + borderLeft(), _ty + borderTop(), w - borderLeft() - borderRight(), h - borderTop() - borderBottom());
+            QRect clipRect(cellx + borderLeft(), celly + borderTop(), cellw - borderLeft() - borderRight(), cellh - borderTop() - borderBottom());
             clipRect = pI.p->xForm(clipRect);
             QRegion creg(clipRect);
             QRegion old = pI.p->clipRegion();
@@ -2911,7 +2920,8 @@ void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty
                 creg = old.intersect(creg);
             pI.p->setClipRegion(creg);
         }
-	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
+        KHTMLAssert(bgObj->isBox());
+        static_cast<RenderBox*>(bgObj)->paintBackground(pI.p, c, bgLayer, cr, _tx, _ty, w, h);
         if (hasLayer && tableElt->collapseBorders())
             pI.p->restore();
     }
@@ -2927,12 +2937,13 @@ void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
         drawBorders = false;
     if (!style()->htmlHacks() && !drawBorders) return;
 
+    _ty -= borderTopExtra();
+
     // Paint our cell background.
     paintBackgroundsBehindCell(pI, _tx, _ty, this);
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
-    _ty -= borderTopExtra();
 
     if (drawBorders && style()->hasBorder() && !tableElt->collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());
@@ -2954,7 +2965,7 @@ void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 // -------------------------------------------------------------------------
 
 RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
-    : RenderContainer(node), m_span(1)
+    : RenderBox(node), m_span(1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is not Inline

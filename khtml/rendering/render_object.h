@@ -388,7 +388,7 @@ public:
     virtual void paintBoxDecorations(PaintInfo&, int /*_tx*/, int /*_ty*/) {}
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer * /*bgLayer*/,
-                                         int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
+                                         QRect /*clipr*/, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/,
                                          int /*btop*/, int /*bbottom*/, int /*ptop*/, int /*pbottom*/) {}
 

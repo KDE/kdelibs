@@ -32,10 +32,11 @@ enum WidthType { Width, MinWidth, MaxWidth };
 enum HeightType { Height, MinHeight, MaxHeight };
 
 class RenderBlock;
+class RenderTableCell;
 
 class RenderBox : public RenderContainer
 {
-
+    friend class RenderTableCell;
 
 // combines ElemImpl & PosElImpl (all rendering objects are positioned)
 // should contain all border and padding handling
@@ -142,14 +143,12 @@ protected:
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     void paintRootBoxDecorations( PaintInfo& paintInfo, int _tx, int _ty);
 
-    void paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int h);
-
-    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int h);
+    void paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
+    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer* /*bgLayer*/,
-                                         int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
+                                         QRect clipr, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/,
                                          int /*btop*/, int /*bbottom*/, int /*ptop*/, int /*pbottom*/ );
-
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
     void calcAbsoluteHorizontal();
