@@ -3470,10 +3470,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_STYLE:
     case CSS_PROP_BORDER_WIDTH:
     case CSS_PROP_BORDER_COLOR:
-        if (isInherit) {
+        if (isInherit)
             style->setInheritedNoninherited(true);
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
+            if (isInherit) {
                 style->setBorderTopColor(parentStyle->borderTopColor());
                 style->setBorderBottomColor(parentStyle->borderBottomColor());
                 style->setBorderLeftColor(parentStyle->borderLeftColor());
