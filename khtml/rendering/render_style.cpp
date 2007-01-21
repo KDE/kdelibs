@@ -1170,12 +1170,12 @@ bool RenderStyle::hasCounterIncrement(const DOM::DOMString& c) const
 
 short RenderStyle::counterReset(const DOM::DOMString& c) const
 {
-    if (counter_reset) {
-        int len = counter_reset->length();
+    if (generated->counter_reset) {
+        int len = generated->counter_reset->length();
         int value = 0;
         // Return the last matching counter-reset
         for(int i=0; i<len; i++) {
-            CounterActImpl* ca = static_cast<CounterActImpl*>(counter_reset->item(i));
+            CounterActImpl* ca = static_cast<CounterActImpl*>(generated->counter_reset->item(i));
             Q_ASSERT(ca != 0);
             if (ca->m_counter == c) value = ca->m_value;
         }
@@ -1187,12 +1187,12 @@ short RenderStyle::counterReset(const DOM::DOMString& c) const
 
 short RenderStyle::counterIncrement(const DOM::DOMString& c) const
 {
-    if (counter_increment) {
-        int len = counter_increment->length();
+    if (generated->counter_increment) {
+        int len = generated->counter_increment->length();
         int value = 0;
         // Return the sum of matching counter-increments
         for(int i=0; i<len; i++) {
-            CounterActImpl* ca = static_cast<CounterActImpl*>(counter_increment->item(i));
+            CounterActImpl* ca = static_cast<CounterActImpl*>(generated->counter_increment->item(i));
             Q_ASSERT(ca != 0);
             if (ca->m_counter == c) value += ca->m_value;
         }
