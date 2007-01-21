@@ -142,5 +142,9 @@ class TestKross < Test::Unit::TestCase
 
 end
 
-require 'test/unit/ui/console/testrunner'
-Test::Unit::UI::Console::TestRunner.run(TestKross)
+#require 'test/unit/ui/console/testrunner'
+#Test::Unit::UI::Console::TestRunner.run(TestKross)
+
+require "TestObject1"
+puts "=======> " + TestObject1.func_bool_bool(false).to_s()
+puts "=======> " + TestObject1.func_bool_bool(true).to_s()

@@ -63,6 +63,7 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qvariantlist_qvariantlist( [[[[]],[]]] ) == [[[[]],[]]] )
 		self.assert_( self.object1.func_qvariantlist_qvariantlist( ["A string",[17539,-8591],[5.32,-842.775]] ) == ["A string",[17539,-8591],[5.32,-842.775]] )
 		self.assert_( self.object1.func_qvariantlist_qvariantlist( [[True,[],False,"Other String"],"test"] ) == [[True,[],False,"Other String"],"test"] )
+		self.assert_( self.object1.func_qvariantlist_qvariantlist( [[17,52],[],{},[84.21,936.821]] ) == [[17,52],[],{},[84.21,936.821]] )
 
 	def testVariantMap(self):
 
@@ -70,80 +71,53 @@ class TestKross(unittest.TestCase):
 			rmap = self.object1.func_qvariantmap_qvariantmap( vmap )
 			self.assert_( len(rmap) == len(vmap) )
 			for k in vmap:
+				#self.assert_( rmap.has_key(k) )
 				self.assert_( rmap[k] == vmap[k] )
 
 		doTestVariantMap( {} )
-		doTestVariantMap( {"1":73682,"2":285} )
-		doTestVariantMap( {"a":-6892.957,"b":692.66} )
+		doTestVariantMap( {"3":-837,"1":73682,"2":285} )
+		doTestVariantMap( {"c":84.24,"a":-6892.957,"d":2.02,"b":692.66} )
 		doTestVariantMap( {"key1":True,"key2":False} )
-		doTestVariantMap( {"key 1":"  Some String  ","key 2":"oThEr StRiNg"} )
-		doTestVariantMap( {" key1 ":[12.5,True]," key2 ":[83.002,"test"]} )
+		doTestVariantMap( {"key 2":"  Some String  ","key 3":"oThEr StRiNg"} )
+		doTestVariantMap( {" key4 ":[12.5,True]," key5 ":[83.002,"test"]} )
+		doTestVariantMap( {'  key7  ':{},'  key6  ':{}} )
 
 	def testSize(self):
+		self.assert_( self.object1.func_qsize_qsize( [0,0] ) == [0,0] )
 		self.assert_( self.object1.func_qsize_qsize( [12,-94] ) == [12,-94] )
 		self.assert_( self.object1.func_qsize_qsize( [-7264,6224] ) == [-7264,6224] )
 
+	def testSizeF(self):
+		self.assert_( self.object1.func_qsizef_qsizef( [0.0,0.0] ) == [0.0,0.0] )
 		self.assert_( self.object1.func_qsizef_qsizef( [-956.0,75.0] ) == [-956.0,75.0] )
 		self.assert_( self.object1.func_qsizef_qsizef( [-14.21,-535.0] ) == [-14.21,-535.0] )
 		self.assert_( self.object1.func_qsizef_qsizef( [26,-525] ) == [26,-525] )
-
-		#TODO following crashes with;
-		#
-		#0  ~QVariant (this=0x816218c) at ../../include/QtCore/../../src/corelib/arch/qatomic_i386.h:82
-		#1  0xb63c756b in ~MetaTypeVariant (this=0x8162188) at /opt/kde4/include/kross/core/metatype.h:91
-		#2  0xb63bf33f in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb62134b4, args=0xb61fd80c) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:574
-		#
-		#This seems to be a bug in Qt cause it does crash only if the second argument has something != .0 :-(
-		#
-		#self.assert_( self.object1.func_qsizef_qsizef( [-956.0,75.21] ) == [-956.0,75.21] )
+		self.assert_( self.object1.func_qsizef_qsizef( [-956.0,75.21] ) == [-956.0,75.21] )
 
 	def testPoint(self):
+		self.assert_( self.object1.func_qpoint_qpoint( [0,0] ) == [0,0] )
 		self.assert_( self.object1.func_qpoint_qpoint( [12,-94] ) == [12,-94] )
 		self.assert_( self.object1.func_qpoint_qpoint( [-7264,6224] ) == [-7264,6224] )
 
+	def testPointF(self):
+		self.assert_( self.object1.func_qpointf_qpointf( [0.0,0.0] ) == [0.0,0.0] )
 		self.assert_( self.object1.func_qpointf_qpointf( [-956.0,751.0] ) == [-956.0,751.0] )
 		self.assert_( self.object1.func_qpointf_qpointf( [-82.3172,17.0] ) == [-82.3172,17.0] )
-
-		#TODO following cases are crashing (see note in the testSize method above);
-		#self.assert_( self.object1.func_qpointf_qpointf( [1.2,2.3] ) == [1.2,2.3] )
-		#self.assert_( self.object1.func_qpointf_qpointf( [-956.03,751.4165] ) == [-956.03,751.4165] )
+		self.assert_( self.object1.func_qpointf_qpointf( [1.2,2.3] ) == [1.2,2.3] )
+		self.assert_( self.object1.func_qpointf_qpointf( [-956.03,751.4165] ) == [-956.03,751.4165] )
 
 	def testRect(self):
+		self.assert_( self.object1.func_qrect_qrect( [0,0,0,0] ) == [0,0,0,0] )
 		self.assert_( self.object1.func_qrect_qrect( [-1,-2,3,4] ) == [-1,-2,3,4] )
+		self.assert_( self.object1.func_qrect_qrect( [1,2,-3,-4] ) == [1,2,-3,-4] )
+		self.assert_( self.object1.func_qrect_qrect( [-10,-20,30,40] ) == [-10,-20,30,40] )
+		self.assert_( self.object1.func_qrect_qrect( [10,20,30,40] ) == [10,20,30,40] )
+		self.assert_( self.object1.func_qrect_qrect( [10,20,-30,-40] ) == [10,20,-30,-40] )
 
-		#TODO following cases are crashing (see note in the testSize method above, but compared
-		#to the other crashes, here it crashes even on non-float functionality, grrrr);
-		#self.assert_( self.object1.func_qrect_qrect( [1,2,-3,-4] ) == [1,2,-3,-4] )
-		#self.assert_( self.object1.func_qrect_qrect( [-10,-20,30,40] ) == [-10,-20,30,40] )
-		#self.assert_( self.object1.func_qrect_qrect( [10,20,30,40] ) == [10,20,30,40] )
-		#self.assert_( self.object1.func_qrect_qrect( [10,20,-30,-40] ) == [10,20,-30,-40] )
-
-		#0  0xb6aa8947 in raise () from /lib/tls/libc.so.6
-		#1  0xb6aaa0c9 in abort () from /lib/tls/libc.so.6
-		#2  0xb6addfda in __fsetlocking () from /lib/tls/libc.so.6
-		#3  0xb6ae589f in mallopt () from /lib/tls/libc.so.6
-		#4  0xb6ae5942 in free () from /lib/tls/libc.so.6
-		#5  0xb6c935e1 in operator delete () from /usr/lib/libstdc++.so.6
-		#6  0xb63a85b7 in ~MetaTypeVariant (this=0x816b8c8) at /opt/kde4/include/kross/core/metatype.h:91
-		#7  0xb63a033f in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb61fb5f4, args=0xb61de7ec) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:574
-		#
-		#self.assert_( self.object1.func_qrectf_qrectf( [-1.0,-2.0,3.0,4.0] ) == [-1.0,-2.0,3.0,4.0] )
-
-		#0  0xb6a4a947 in raise () from /lib/tls/libc.so.6
-		#1  0xb6a4c0c9 in abort () from /lib/tls/libc.so.6
-		#2  0xb6a7ffda in __fsetlocking () from /lib/tls/libc.so.6
-		#3  0xb6a883f3 in free () from /lib/tls/libc.so.6
-		#4  0xb6a89c4f in malloc () from /lib/tls/libc.so.6
-		#5  0xb7e532bd in qMalloc (size=26) at global/qglobal.cpp:1818
-		#6  0xb7e5b88e in QByteArray::realloc (this=0xbf8f2328, alloc=6) at tools/qbytearray.cpp:1358
-		#7  0xb7ef1d02 in normalizeTypeInternal (t=<value optimized out>, e=<value optimized out>, fixScope=false, adjustConst=true) at ../../include/QtCore/../../src/corelib/tools/qbytearray.h:361
-		#8  0xb7ef28f6 in qNormalizeType (d=<value optimized out>, templdepth=<value optimized out>, result=@0xbf8f2498) at kernel/qmetaobject.cpp:741
-		#9  0xb7ef3326 in QMetaObject::normalizedType (type=0x8052026 "QRectF") at kernel/qmetaobject.cpp:774
-		#10 0xb7ef401c in QMetaType::type (typeName=0x8052026 "QRectF") at kernel/qmetatype.cpp:470
-		#11 0xb7f05963 in QVariant::nameToType (name=0x8052026 "QRectF") at kernel/qvariant.cpp:1682
-		#12 0xb63421de in Kross::PythonExtension::proxyhandler (_self_and_name_tuple=0xb619d5f4, args=0xb61807ec) at /home/kde4/koffice/libs/kross/python/pythonextension.cpp:560
-		#
-		#self.assert_( self.object1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
+	def testRectF(self):
+		self.assert_( self.object1.func_qrectf_qrectf( [0.0,0.0,0.0,0.0] ) == [0.0,0.0,0.0,0.0] )
+		self.assert_( self.object1.func_qrectf_qrectf( [-1.0,-2.0,3.0,4.0] ) == [-1.0,-2.0,3.0,4.0] )
+		self.assert_( self.object1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
 
 	#def testColor(self):
 		#import Kross
@@ -167,7 +141,7 @@ class TestKross(unittest.TestCase):
 		##self.object1.func_qdate_qdate
 		##self.object1.func_qdatetime_qdatetime
 
-	def testVariant(self):
+	#def testVariant(self):
 		#self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
 		#self.assert_( self.object1.func_qvariant_qvariant(True) == True )
 		#self.assert_( self.object1.func_qvariant_qvariant(False) == False )
@@ -176,7 +150,6 @@ class TestKross(unittest.TestCase):
 		#self.assert_( self.object1.func_qvariant_qvariant(8632.274) == 8632.274 )
 		#self.assert_( self.object1.func_qvariant_qvariant(-8632.351) == -8632.351 )
 		#self.assert_( self.object1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
-		pass
 
 	def testObject(self):
 		self.assert_( self.object1.name() == "TestObject1" and self.object2.name() == "TestObject2" )
@@ -264,3 +237,4 @@ unittest.TextTestRunner(verbosity=2).run(suite)
 
 #import Kross, TestObject1
 #print "===========> %s" % TestObject1.func_qsize_qsize( [12,-94] )
+#print "===========> %s" % TestObject1.func_qsizef_qsizef( [12.2,-94.2] )
