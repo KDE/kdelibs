@@ -112,7 +112,7 @@ BackgroundLayer::BackgroundLayer()
  m_backgroundSize(RenderStyle::initialBackgroundSize()),
  m_next(0)
 {
-    m_imageSet = m_attachmentSet = m_clipSet = m_originSet = 
+    m_imageSet = m_attachmentSet = m_clipSet = m_originSet =
             m_repeatSet = m_xPosSet = m_yPosSet = m_backgroundSizeSet = false;
 }
 
@@ -171,9 +171,9 @@ BackgroundLayer& BackgroundLayer::operator=(const BackgroundLayer& o) {
 bool BackgroundLayer::operator==(const BackgroundLayer& o) const {
     return m_image == o.m_image && m_xPosition == o.m_xPosition && m_yPosition == o.m_yPosition &&
            m_bgAttachment == o.m_bgAttachment && m_bgClip == o.m_bgClip && m_bgOrigin == o.m_bgOrigin && m_bgRepeat == o.m_bgRepeat &&
-           m_backgroundSize.width == o.m_backgroundSize.width && m_backgroundSize.height == o.m_backgroundSize.height && 
-           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet && m_repeatSet == o.m_repeatSet && 
-           m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet && m_backgroundSizeSet == o.m_backgroundSizeSet && 
+           m_backgroundSize.width == o.m_backgroundSize.width && m_backgroundSize.height == o.m_backgroundSize.height &&
+           m_imageSet == o.m_imageSet && m_attachmentSet == o.m_attachmentSet && m_repeatSet == o.m_repeatSet &&
+           m_xPosSet == o.m_xPosSet && m_yPosSet == o.m_yPosSet && m_backgroundSizeSet == o.m_backgroundSizeSet &&
            ((m_next && o.m_next) ? *m_next == *o.m_next : m_next == o.m_next);
 }
 
@@ -256,7 +256,7 @@ void BackgroundLayer::fillUnsetProperties()
                 pattern = this;
         }
     }
-    
+
     for (curr = this; curr && curr->isBackgroundSizeSet(); curr = curr->next());
     if (curr && curr != this) {
         // We need to fill in the remaining values with the pattern specified.
@@ -300,7 +300,7 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 
 StyleGeneratedData::StyleGeneratedData() : Shared<StyleGeneratedData>(), content(0), counter_reset(0), counter_increment(0) {}
 
-StyleGeneratedData::~StyleGeneratedData() 
+StyleGeneratedData::~StyleGeneratedData()
 {
     if (counter_reset) counter_reset->deref();
     if (counter_increment) counter_increment->deref();
@@ -373,7 +373,7 @@ static bool compareCounterActList(const CSSValueListImpl* ca, const CSSValueList
 
 bool StyleGeneratedData::counterDataEquivalent(const StyleGeneratedData* otherStyle) const
 {
-    return compareCounterActList(counter_reset, otherStyle->counter_reset) && 
+    return compareCounterActList(counter_reset, otherStyle->counter_reset) &&
            compareCounterActList(counter_increment, otherStyle->counter_increment);
 }
 
@@ -609,8 +609,8 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             inherited == o.inherited);
 }
 
-enum EPseudoBit { NO_BIT = 0x0, 
-                  FIRST_LINE_BIT = 0x1, FIRST_LETTER_BIT = 0x2, SELECTION_BIT = 0x4, 
+enum EPseudoBit { NO_BIT = 0x0,
+                  FIRST_LINE_BIT = 0x1, FIRST_LETTER_BIT = 0x2, SELECTION_BIT = 0x4,
                   BEFORE_BIT = 0x8, AFTER_BIT = 0x10, MARKER_BIT = 0x20,
                   REPLACED_BIT = 0x40
                   };
@@ -755,7 +755,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     if ( *box.get() != *other->box.get() ||
          *visual.get() != *other->visual.get() ||
-         (*surround.get() != *other->surround.get() 
+         (*surround.get() != *other->surround.get()
            && (other->position() == STATIC || other->position() != position())) ||
          !(inherited->indent == other->inherited->indent) ||
          !(inherited->line_height == other->inherited->line_height) ||
@@ -1168,29 +1168,36 @@ bool RenderStyle::hasCounterIncrement(const DOM::DOMString& c) const
         return false;
 }
 
-static short readCounter(const DOM::DOMString& c, CSSValueListImpl *l)
-{
-    int len = l->length();
-    for(int i=0; i<len; i++) {
-        CounterActImpl* ca = static_cast<CounterActImpl*>(l->item(i));
-        Q_ASSERT(ca != 0);
-        if (ca->m_counter == c) return ca->m_value;
-    }
-    return 0;
-}
-
 short RenderStyle::counterReset(const DOM::DOMString& c) const
 {
-    if (generated->counter_reset)
-        return readCounter(c, generated->counter_reset);
+    if (counter_reset) {
+        int len = counter_reset->length();
+        int value = 0;
+        // Return the last matching counter-reset
+        for(int i=0; i<len; i++) {
+            CounterActImpl* ca = static_cast<CounterActImpl*>(counter_reset->item(i));
+            Q_ASSERT(ca != 0);
+            if (ca->m_counter == c) value = ca->m_value;
+        }
+        return value;
+    }
     else
         return 0;
 }
 
 short RenderStyle::counterIncrement(const DOM::DOMString& c) const
 {
-    if (generated->counter_increment)
-        return readCounter(c, generated->counter_increment);
+    if (counter_increment) {
+        int len = counter_increment->length();
+        int value = 0;
+        // Return the sum of matching counter-increments
+        for(int i=0; i<len; i++) {
+            CounterActImpl* ca = static_cast<CounterActImpl*>(counter_increment->item(i));
+            Q_ASSERT(ca != 0);
+            if (ca->m_counter == c) value += ca->m_value;
+        }
+        return value;
+    }
     else
         return 0;
 }
