@@ -1167,7 +1167,7 @@ KCmdLineArgs::setOption(const QByteArray &opt, const char *value)
   parsedOptionList = new KCmdLineParsedOptions;
    }
 
-   parsedOptionList->insert( opt, value );
+   parsedOptionList->insertMulti( opt, value );
 }
 
 QByteArray
@@ -1226,7 +1226,7 @@ KCmdLineArgs::getOptionList(const char *_opt) const
        it != result.end();
        ++it)
    {
-      parsedOptionList->insert(_opt, QByteArray(*it));
+      parsedOptionList->insertMulti(_opt, QByteArray(*it));
    }
    return result;
 }
