@@ -299,6 +299,12 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAdd ) const
 {
     int w = 0;
+    
+   // #### Qt 4 has a major speed regression : QFontMetrics::width() is around 15 times slower than Qt 3's.
+   // This is a great speed bottleneck as we are now spending up to 70% of the layout time in that method 
+   // (compared to around 5% before).
+   // It as been reported to TT and acknowledged as issue N138867, but whether they intend to give it some
+   // care in the near future is unclear :-/
 
     const QString qstr = QString::fromRawData(chs+pos, len);
     if ( scFont ) {
