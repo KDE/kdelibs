@@ -95,6 +95,29 @@ TYPE *NAME()                                                                    
     return _k_static_##NAME;                                                                     \
 }
 
+#define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                                              \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                           \
+TYPE *NAME()                                                                                     \
+{                                                                                                \
+    if (!_k_static_##NAME) {                                                                     \
+        static bool destroyed;                                                                   \
+        /* destroyed is initialzed to false by default.
+         * There also is no race condition here because if destroyed is initialized from multiple
+         * threads it will still be initialized to false                                 */      \
+        if (destroyed) {                                                                         \
+            qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. "          \
+                   "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);                        \
+        }                                                                                        \
+        TYPE *x = new TYPE ARGS;                                                                 \
+        if (!_k_static_##NAME.testAndSet(0, x)) {                                                \
+            delete x;                                                                            \
+        } else {                                                                                 \
+            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME, &destroyed }; \
+        }                                                                                        \
+    }                                                                                            \
+    return _k_static_##NAME;                                                                     \
+}
+
 /**
  * Access to the KDE global objects.
  * KGlobal provides you with pointers of many central
