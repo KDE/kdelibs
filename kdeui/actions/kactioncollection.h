@@ -358,16 +358,16 @@ public:
   QAction* takeAction(QAction *action);
 
   /**
-   * Add a standard action to the collection and connects the action's triggered() signal to the
-   * specified receiver/member.
+   * Creates a new standard action, adds it to the collection and connects the action's triggered() signal to the
+   * specified receiver/member. The newly created action is also returned.
    *
    * The action can be retrieved later from the collection by its standard name as per
    * KStandardAction::stdName.
    */
   QAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
   /**
-   * Add a standard action to the collection and connects the action's triggered() signal to the
-   * specified receiver/member.
+   * Creates a new standard action, adds to the collection under the given name and connects the action's triggered() signal to the
+   * specified receiver/member. The newly created action is also returned.
    *
    * The action can be retrieved later from the collection by the specified name.
    */
@@ -375,8 +375,8 @@ public:
                      const QObject *receiver = 0, const char *member = 0);
 
   /**
-   * Add an action under the given name to the collection and connects the action's triggered()
-   * signal to the specified receiver/member.
+   * Creates a new action under the given name to the collection and connects the action's triggered()
+   * signal to the specified receiver/member. The newly created action is returned.
    *
    * Inserting an action that was previously inserted under a different name will replace the
    * old entry, i.e. the action will not be available under the old name anymore but only under
@@ -391,7 +391,7 @@ public:
   QAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
   /**
-   * Add an action under the given name to the collection and connects the action's triggered()
+   * Creates a new action under the given name, adds it to the collection and connects the action's triggered()
    * signal to the specified receiver/member. The type of the action is specified by the template
    * parameter ActionType.
    */
