@@ -829,6 +829,14 @@ bool NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsig
         return true;
 }
 
+bool NodeImpl::affectedByNoInherit() const
+{
+    if (m_render && m_render->style())
+        return m_render->style()->inheritedNoninherited();
+    else
+        return false;
+}
+
 void NodeImpl::close()
 {
     if (m_render) m_render->close();

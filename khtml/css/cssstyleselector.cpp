@@ -72,23 +72,43 @@ using namespace DOM;
 #undef RELATIVE
 #undef ABSOLUTE
 
-#define HANDLE_INHERIT(prop, Prop) \
+// handle value "inherit" on a default inherited property
+#define HANDLE_INHERIT_ON_INHERITED_PROPERTY(prop, Prop) \
 if (isInherit) \
 {\
     style->set##Prop(parentStyle->prop());\
     return;\
 }
 
-#define HANDLE_INHERIT_AND_INITIAL(prop, Prop) \
-HANDLE_INHERIT(prop, Prop) \
-else if (isInitial) \
+// handle value "inherit" on a default non-inherited property
+#define HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(prop, Prop) \
+if (isInherit) \
+{\
+    style->setInheritedNoninherited(true);\
+    style->set##Prop(parentStyle->prop());\
+    return;\
+}
+
+#define HANDLE_INITIAL(prop, Prop) \
+if (isInitial) \
 {\
     style->set##Prop(RenderStyle::initial##Prop());\
     return;\
 }
 
+#define HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(prop, Prop) \
+HANDLE_INITIAL(prop, Prop) \
+else \
+HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(prop, Prop)
+
+#define HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(prop, Prop) \
+HANDLE_INITIAL(prop, Prop) \
+else \
+HANDLE_INHERIT_ON_INHERITED_PROPERTY(prop, Prop)
+
+// all non-inherited properties
 #define HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(prop, Prop, Value) \
-HANDLE_INHERIT(prop, Prop) \
+HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(prop, Prop) \
 else if (isInitial) \
 {\
     style->set##Prop(RenderStyle::initial##Value());\
@@ -1989,7 +2009,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_BACKGROUND_VALUE(backgroundSize, BackgroundSize, value)
         break;
     case CSS_PROP_BORDER_COLLAPSE:
-        HANDLE_INHERIT_AND_INITIAL(borderCollapse, BorderCollapse)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(borderCollapse, BorderCollapse)
         if(!primitiveValue) break;
         switch(primitiveValue->getIdent())
         {
@@ -2031,7 +2051,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     case CSS_PROP_CAPTION_SIDE:
     {
-        HANDLE_INHERIT_AND_INITIAL(captionSide, CaptionSide)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(captionSide, CaptionSide)
+
         if(!primitiveValue) break;
         ECaptionSide c = RenderStyle::initialCaptionSide();
         switch(primitiveValue->getIdent())
@@ -2052,7 +2073,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_CLEAR:
     {
-        HANDLE_INHERIT_AND_INITIAL(clear, Clear)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(clear, Clear)
         if(!primitiveValue) break;
         EClear c = CNONE;
         switch(primitiveValue->getIdent())
@@ -2073,14 +2094,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_DIRECTION:
     {
-        HANDLE_INHERIT_AND_INITIAL(direction, Direction)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(direction, Direction)
         if(!primitiveValue) break;
         style->setDirection( (EDirection) (primitiveValue->getIdent() - CSS_VAL_LTR) );
         return;
     }
     case CSS_PROP_DISPLAY:
     {
-        HANDLE_INHERIT_AND_INITIAL(display, Display)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(display, Display)
         if(!primitiveValue) break;
 	int id = primitiveValue->getIdent();
         style->setDisplay( id == CSS_VAL_NONE ? NONE : EDisplay(id - CSS_VAL_INLINE) );
@@ -2089,7 +2110,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_EMPTY_CELLS:
     {
-        HANDLE_INHERIT(emptyCells, EmptyCells);
+        HANDLE_INHERIT_ON_INHERITED_PROPERTY(emptyCells, EmptyCells);
         if (!primitiveValue) break;
         int id = primitiveValue->getIdent();
         if (id == CSS_VAL_SHOW)
@@ -2100,7 +2121,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_FLOAT:
     {
-        HANDLE_INHERIT_AND_INITIAL(floating, Floating)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(floating, Floating)
         if(!primitiveValue) return;
         EFloat f;
         switch(primitiveValue->getIdent())
@@ -2220,7 +2241,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_LIST_STYLE_POSITION:
     {
-        HANDLE_INHERIT_AND_INITIAL(listStylePosition, ListStylePosition)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(listStylePosition, ListStylePosition)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent())
             style->setListStylePosition( (EListStylePosition) (primitiveValue->getIdent() - CSS_VAL_OUTSIDE) );
@@ -2229,7 +2250,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_LIST_STYLE_TYPE:
     {
-        HANDLE_INHERIT_AND_INITIAL(listStyleType, ListStyleType)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(listStyleType, ListStyleType)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent())
         {
@@ -2250,6 +2271,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if (isInherit) {
             style->setOverflowX(parentStyle->overflowX());
             style->setOverflowY(parentStyle->overflowY());
+            style->setInheritedNoninherited(true);
             return;
         }
 
@@ -2282,7 +2304,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_OVERFLOW_X:
     {
-        HANDLE_INHERIT_AND_INITIAL(overflowX, OverflowX)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(overflowX, OverflowX)
         if (!primitiveValue) return;
         EOverflow o;
         switch(primitiveValue->getIdent())
@@ -2303,7 +2325,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     case CSS_PROP_OVERFLOW_Y:
     {
-        HANDLE_INHERIT_AND_INITIAL(overflowY, OverflowY)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(overflowY, OverflowY)
         if (!primitiveValue) return;
         EOverflow o;
         switch(primitiveValue->getIdent())
@@ -2365,7 +2387,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_PAGE_BREAK_INSIDE: {
-        HANDLE_INHERIT_AND_INITIAL(pageBreakInside, PageBreakInside)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(pageBreakInside, PageBreakInside)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_AUTO)
             style->setPageBreakInside(true);
@@ -2379,7 +2401,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_POSITION:
     {
-        HANDLE_INHERIT_AND_INITIAL(position, Position)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(position, Position)
         if (!primitiveValue) return;
         EPosition p;
         switch(primitiveValue->getIdent())
@@ -2404,7 +2426,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_TABLE_LAYOUT: {
-        HANDLE_INHERIT_AND_INITIAL(tableLayout, TableLayout)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(tableLayout, TableLayout)
 
 	if ( !primitiveValue )
 	    return;
@@ -2423,7 +2445,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_UNICODE_BIDI: {
-        HANDLE_INHERIT_AND_INITIAL(unicodeBidi, UnicodeBidi)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(unicodeBidi, UnicodeBidi)
         if(!primitiveValue) break;
         switch (primitiveValue->getIdent()) {
             case CSS_VAL_NORMAL:
@@ -2441,7 +2463,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	break;
     }
     case CSS_PROP_TEXT_TRANSFORM: {
-        HANDLE_INHERIT_AND_INITIAL(textTransform, TextTransform)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(textTransform, TextTransform)
 
         if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
@@ -2460,7 +2482,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_VISIBILITY:
     {
-        HANDLE_INHERIT_AND_INITIAL(visibility, Visibility)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(visibility, Visibility)
 
         if(!primitiveValue) break;
         switch( primitiveValue->getIdent() ) {
@@ -2478,7 +2500,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP_WHITE_SPACE:
-        HANDLE_INHERIT_AND_INITIAL(whiteSpace, WhiteSpace)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(whiteSpace, WhiteSpace)
 
         if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
@@ -2527,14 +2549,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING: {
-        HANDLE_INHERIT_AND_INITIAL(borderHorizontalSpacing, BorderHorizontalSpacing)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(borderHorizontalSpacing, BorderHorizontalSpacing)
         if (!primitiveValue) break;
         short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
         style->setBorderHorizontalSpacing(spacing);
         break;
     }
     case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING: {
-        HANDLE_INHERIT_AND_INITIAL(borderVerticalSpacing, BorderVerticalSpacing)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(borderVerticalSpacing, BorderVerticalSpacing)
         if (!primitiveValue) break;
         short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
         style->setBorderVerticalSpacing(spacing);
@@ -2542,7 +2564,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_CURSOR:
-        HANDLE_INHERIT_AND_INITIAL(cursor, Cursor)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(cursor, Cursor)
         if(primitiveValue)
 	    style->setCursor( (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO) );
         break;
@@ -2555,7 +2577,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
         // this property is an extension used to get HTML4 <font> right.
-	case CSS_PROP_SCROLLBAR_BASE_COLOR:
+    case CSS_PROP_SCROLLBAR_BASE_COLOR:
     case CSS_PROP_SCROLLBAR_FACE_COLOR:
     case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
     case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:
@@ -2566,6 +2588,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         QColor col;
         if (isInherit) {
+            if (id != CSS_PROP_COLOR)
+                style->setInheritedNoninherited(true);
             HANDLE_INHERIT_COND(CSS_PROP_BACKGROUND_COLOR, backgroundColor, BackgroundColor)
             HANDLE_INHERIT_COND(CSS_PROP_BORDER_TOP_COLOR, borderTopColor, BorderTopColor)
             HANDLE_INHERIT_COND(CSS_PROP_BORDER_BOTTOM_COLOR, borderBottomColor, BorderBottomColor)
@@ -2658,7 +2682,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     case CSS_PROP_LIST_STYLE_IMAGE:
     {
-        HANDLE_INHERIT_AND_INITIAL(listStyleImage, ListStyleImage)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(listStyleImage, ListStyleImage)
         if (!primitiveValue) return;
 	style->setListStyleImage(static_cast<CSSImageValueImpl *>(primitiveValue)->image());
         //kDebug( 6080 ) << "setting image in list to " << image->image() << endl;
@@ -2673,6 +2697,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_OUTLINE_WIDTH:
     {
 	if (isInherit) {
+	    style->setInheritedNoninherited(true);
             HANDLE_INHERIT_COND(CSS_PROP_BORDER_TOP_WIDTH, borderTopWidth, BorderTopWidth)
             HANDLE_INHERIT_COND(CSS_PROP_BORDER_RIGHT_WIDTH, borderRightWidth, BorderRightWidth)
             HANDLE_INHERIT_COND(CSS_PROP_BORDER_BOTTOM_WIDTH, borderBottomWidth, BorderBottomWidth)
@@ -2803,6 +2828,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         // +inherit
     {
         if (isInherit) {
+            if (id != CSS_PROP_TEXT_INDENT)
+                style->setInheritedNoninherited(true);
             HANDLE_INHERIT_COND(CSS_PROP_MAX_WIDTH, maxWidth, MaxWidth)
             HANDLE_INHERIT_COND(CSS_PROP_BOTTOM, bottom, Bottom)
             HANDLE_INHERIT_COND(CSS_PROP_TOP, top, Top)
@@ -2905,6 +2932,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
            primitiveValue->getIdent() == CSS_VAL_AUTO)
             apply = true;
         if (isInherit) {
+	    style->setInheritedNoninherited(true);
             HANDLE_INHERIT_COND(CSS_PROP_MAX_HEIGHT, maxHeight, MaxHeight)
             HANDLE_INHERIT_COND(CSS_PROP_HEIGHT, height, Height)
             HANDLE_INHERIT_COND(CSS_PROP_MIN_HEIGHT, minHeight, MinHeight)
@@ -2945,7 +2973,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
 
     case CSS_PROP_VERTICAL_ALIGN:
-        HANDLE_INHERIT_AND_INITIAL(verticalAlign, VerticalAlign)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(verticalAlign, VerticalAlign)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent()) {
 	  khtml::EVerticalAlign align;
@@ -3070,7 +3098,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_Z_INDEX:
     {
-        HANDLE_INHERIT(zIndex, ZIndex)
+        HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(zIndex, ZIndex)
         else if (isInitial) {
             style->setHasAutoZIndex();
             return;
@@ -3093,7 +3121,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_WIDOWS:
     {
-        HANDLE_INHERIT_AND_INITIAL(widows, Widows)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(widows, Widows)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
         style->setWidows((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
@@ -3102,7 +3130,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_ORPHANS:
     {
-        HANDLE_INHERIT_AND_INITIAL(orphans, Orphans)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(orphans, Orphans)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
         style->setOrphans((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
@@ -3112,7 +3140,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
     {
-        HANDLE_INHERIT_AND_INITIAL(lineHeight, LineHeight)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(lineHeight, LineHeight)
         if(!primitiveValue) return;
         Length lineHeight;
         int type = primitiveValue->primitiveType();
@@ -3140,7 +3168,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 // string
     case CSS_PROP_TEXT_ALIGN:
     {
-        HANDLE_INHERIT_AND_INITIAL(textAlign, TextAlign)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(textAlign, TextAlign)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent())
             style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL__KHTML_AUTO) );
@@ -3350,7 +3378,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP_QUOTES:
-        HANDLE_INHERIT_AND_INITIAL(quotes, Quotes)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(quotes, Quotes)
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
             // set a set of empty quotes
             QuotesValueImpl* quotes = new QuotesValueImpl();
@@ -3365,7 +3393,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
       break;
     case CSS_PROP_TEXT_DECORATION: {
         // list of ident
-        HANDLE_INHERIT_AND_INITIAL(textDecoration, TextDecoration)
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(textDecoration, TextDecoration)
         int t = RenderStyle::initialTextDecoration();
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
 	    // do nothing
@@ -3399,7 +3427,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_FLOW_MODE:
-        HANDLE_INHERIT_AND_INITIAL(flowAroundFloats, FlowAroundFloats)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(flowAroundFloats, FlowAroundFloats)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent()) {
             style->setFlowAroundFloats( primitiveValue->getIdent() == CSS_VAL__KHTML_AROUND_FLOATS );
@@ -3442,9 +3470,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_STYLE:
     case CSS_PROP_BORDER_WIDTH:
     case CSS_PROP_BORDER_COLOR:
+        if (isInherit) {
+            style->setInheritedNoninherited(true);
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
-             if (isInherit) {
                 style->setBorderTopColor(parentStyle->borderTopColor());
                 style->setBorderBottomColor(parentStyle->borderBottomColor());
                 style->setBorderLeftColor(parentStyle->borderLeftColor());
@@ -3490,6 +3519,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_BORDER_TOP:
         if ( isInherit ) {
+            style->setInheritedNoninherited(true);
             style->setBorderTopColor(parentStyle->borderTopColor());
             style->setBorderTopStyle(parentStyle->borderTopStyle());
             style->setBorderTopWidth(parentStyle->borderTopWidth());
@@ -3498,6 +3528,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_BORDER_RIGHT:
         if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->setBorderRightColor(parentStyle->borderRightColor());
             style->setBorderRightStyle(parentStyle->borderRightStyle());
             style->setBorderRightWidth(parentStyle->borderRightWidth());
@@ -3507,6 +3538,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_BORDER_BOTTOM:
         if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->setBorderBottomColor(parentStyle->borderBottomColor());
             style->setBorderBottomStyle(parentStyle->borderBottomStyle());
             style->setBorderBottomWidth(parentStyle->borderBottomWidth());
@@ -3516,6 +3548,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_BORDER_LEFT:
         if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->setBorderLeftColor(parentStyle->borderLeftColor());
             style->setBorderLeftStyle(parentStyle->borderLeftStyle());
             style->setBorderLeftWidth(parentStyle->borderLeftWidth());
@@ -3525,6 +3558,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_MARGIN:
         if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->setMarginTop(parentStyle->marginTop());
             style->setMarginBottom(parentStyle->marginBottom());
             style->setMarginLeft(parentStyle->marginLeft());
@@ -3535,6 +3569,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     case CSS_PROP_PADDING:
         if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->setPaddingTop(parentStyle->paddingTop());
             style->setPaddingBottom(parentStyle->paddingBottom());
             style->setPaddingLeft(parentStyle->paddingLeft());
@@ -3597,7 +3632,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     /* CSS3 properties */
     case CSS_PROP_BOX_SIZING:
-        HANDLE_INHERIT(boxSizing, BoxSizing)
+        HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(boxSizing, BoxSizing)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_CONTENT_BOX)
             style->setBoxSizing(CONTENT_BOX);
@@ -3606,7 +3641,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setBoxSizing(BORDER_BOX);
         break;
     case CSS_PROP_OUTLINE_OFFSET: {
-        HANDLE_INHERIT_AND_INITIAL(outlineOffset, OutlineOffset)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(outlineOffset, OutlineOffset)
 
         int offset = primitiveValue->computeLength(style, paintDeviceMetrics);
         if (offset < 0) return;
@@ -3653,7 +3688,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP_OPACITY:
-        HANDLE_INHERIT_AND_INITIAL(opacity, Opacity)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(opacity, Opacity)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return; // Error case.
 
@@ -3669,7 +3704,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setMarqueeBehavior(parentStyle->marqueeBehavior());
         break;
     case CSS_PROP__KHTML_MARQUEE_REPETITION: {
-        HANDLE_INHERIT_AND_INITIAL(marqueeLoopCount, MarqueeLoopCount)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(marqueeLoopCount, MarqueeLoopCount)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_INFINITE)
             style->setMarqueeLoopCount(-1); // -1 means repeat forever.
@@ -3678,7 +3713,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_MARQUEE_SPEED: {
-        HANDLE_INHERIT_AND_INITIAL(marqueeSpeed, MarqueeSpeed)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(marqueeSpeed, MarqueeSpeed)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent()) {
             switch (primitiveValue->getIdent())
@@ -3703,7 +3738,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_MARQUEE_INCREMENT: {
-        HANDLE_INHERIT_AND_INITIAL(marqueeIncrement, MarqueeIncrement)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(marqueeIncrement, MarqueeIncrement)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent()) {
             switch (primitiveValue->getIdent())
@@ -3728,7 +3763,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_MARQUEE_STYLE: {
-        HANDLE_INHERIT_AND_INITIAL(marqueeBehavior, MarqueeBehavior)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(marqueeBehavior, MarqueeBehavior)
         if (!primitiveValue || !primitiveValue->getIdent()) return;
         switch (primitiveValue->getIdent())
         {
@@ -3751,7 +3786,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     case CSS_PROP__KHTML_MARQUEE_DIRECTION: {
-        HANDLE_INHERIT_AND_INITIAL(marqueeDirection, MarqueeDirection)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(marqueeDirection, MarqueeDirection)
         if (!primitiveValue || !primitiveValue->getIdent()) return;
         switch (primitiveValue->getIdent())
         {
@@ -3783,7 +3818,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_TEXT_OVERFLOW: {
         // This property is supported by WinIE, and so we leave off the "-khtml-" in order to
         // work with WinIE-specific pages that use the property.
-        HANDLE_INHERIT_AND_INITIAL(textOverflow, TextOverflow)
+        HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(textOverflow, TextOverflow)
         if (!primitiveValue || !primitiveValue->getIdent())
             return;
         style->setTextOverflow(primitiveValue->getIdent() == CSS_VAL_ELLIPSIS);

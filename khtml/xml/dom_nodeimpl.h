@@ -266,6 +266,8 @@ public:
     static StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 );
     static bool pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid);
 
+    virtual bool affectedByNoInherit() const;
+
     unsigned long nodeIndex() const;
     // Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
     // DOM's ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes).

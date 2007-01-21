@@ -1,3 +1,14 @@
+2007-01-21  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Handle dynamic updates of default non-inherited properties that are inherited explicitly
+
+        * rendering/render_style.h: Add inheritedNoninherited flag
+        * xml/dom_nodeimpl.{h,cpp}: virtual function affectedByNoInherit
+        * xml/dom_textimpl.h: affectedByNoInherit is always true for text-nodes
+        * xml/dom_elementimpl.cpp: NoInherit changes descends into children like Inherit changes,
+        when affectedByNoInherit is true for the child node.
+        * css/cssstyleselector.cpp: Set inheritedNoninherit whenever inherit is handled in a NonInherited property.
+
 2006-11-14  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement overflow-x and overflow-y
@@ -163,7 +174,7 @@
 
 2006-03-25  Germain Garand  <germain@ebooksfrance.org>
 
-        Scope: fix handling of nested/external scripts in the tokenizer (#91701) 
+        Scope: fix handling of nested/external scripts in the tokenizer (#91701)
 
         * misc/stringit.h (TokenizerQueue): a LIFO stack of TokenizerStrings
         * html/htmltokenizer.{h,cpp} (scriptHandler/write/notifyFinished): use a TokenizerQueue to store

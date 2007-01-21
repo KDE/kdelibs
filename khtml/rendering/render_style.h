@@ -919,7 +919,9 @@ protected:
                 // non CSS2 non-inherited
                 bool _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
 
-                unsigned int unused : 11;
+                bool _inherited_noninherited : 1;
+
+                unsigned int unused : 10;
             } f;
             quint64 _niflags;
         };
@@ -988,6 +990,7 @@ protected:
         noninherited_flags.f._pseudoBits = 0;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
 	noninherited_flags.f._textOverflow = initialTextOverflow();
+        noninherited_flags.f._inherited_noninherited = false;
         noninherited_flags.f.unused = 0;
     }
 
@@ -1387,7 +1390,6 @@ public:
     short counterReset(const DOM::DOMString& c) const;
     short counterIncrement(const DOM::DOMString& c) const;
 
-
     bool inheritedNotEqual( RenderStyle *other ) const;
 
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
@@ -1404,6 +1406,8 @@ public:
                /*originalDisplay() == INLINE_BOX ||*/ originalDisplay() == INLINE_TABLE;
     }
 
+    bool inheritedNoninherited() const { return noninherited_flags.f._inherited_noninherited; }
+    void setInheritedNoninherited(bool b) { noninherited_flags.f._inherited_noninherited = b; }
 
 #ifdef ENABLE_DUMP
     QString createDiff( const RenderStyle &parent ) const;

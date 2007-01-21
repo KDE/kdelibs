@@ -743,7 +743,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     }
     qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().toLatin1().constData());
 #endif
-    if ( hasParentRenderer && (change >= Inherit || changed()) ) {
+    if ( hasParentRenderer && (change >= Inherit || changed() || (change==NoInherit && affectedByNoInherit())) ) {
         RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
@@ -775,8 +775,9 @@ void ElementImpl::recalcStyle( StyleChange change )
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling()) {
-        if ( change >= Inherit || n->isTextNode() ||
-             n->hasChangedChild() || n->changed() ) {
+        if ( change >= Inherit || n->hasChangedChild() || n->changed() ||
+             ( change == NoInherit && n->affectedByNoInherit() )
+           ) {
 	    //qDebug("    (%p) calling recalcStyle on child %p/%s, change=%d", this, n, n->isElementNode() ? ((ElementImpl *)n)->tagName().string().toLatin1().constData() : n->isTextNode() ? "text" : "unknown", change );
             n->recalcStyle( change );
         }
