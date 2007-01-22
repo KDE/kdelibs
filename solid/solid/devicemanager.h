@@ -76,30 +76,39 @@ namespace Solid
 
         /**
          * Retrieves a list of devices of the system given matching the given
-         * constraints (parent, capability and predicate)
+         * constraints (parent and capability)
          *
-         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
-         * if there's no constraint on the parent
          * @param capability Capability of the devices we're searching for, or Capability::Unknown
          * if there's no constraint on the capabilities
-         * @param predicate Predicate that the devices we're searching for must verify
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
         DeviceList findDevicesFromQuery( const Capability::Type &capability,
-                                         const Predicate &predicate = Predicate(),
+                                         const QString &parentUdi = QString() ) const;
+
+        /**
+         * Retrieves a list of devices of the system given matching the given
+         * constraints (parent and predicate)
+         *
+         * @param predicate Predicate that the devices we're searching for must verify
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
+         * @return the list of devices corresponding to the given constraints
+         * @see Solid::Predicate
+         */
+        DeviceList findDevicesFromQuery( const Predicate &predicate,
                                          const QString &parentUdi = QString() ) const;
 
         /**
          * Convenience function see above.
          *
-         * @param capability
          * @param predicate
          * @param parentUdi
          * @return the list of devices
          */
-        DeviceList findDevicesFromQuery( const Capability::Type &capability,
-                                         const QString &predicate,
+        DeviceList findDevicesFromQuery( const QString &predicate,
                                          const QString &parentUdi = QString() ) const;
 
     Q_SIGNALS:

@@ -137,15 +137,14 @@ const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) cons
     }
 }
 
-Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::Type &capability,
-                                                              const QString &predicate,
+Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &predicate,
                                                               const QString &parentUdi ) const
 {
     Predicate p = Predicate::fromString( predicate );
 
     if ( p.isValid() )
     {
-        return findDevicesFromQuery( capability, p, parentUdi );
+        return findDevicesFromQuery( p, parentUdi );
     }
     else
     {
@@ -154,7 +153,6 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::
 }
 
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::Type &capability,
-                                                              const Predicate &predicate,
                                                               const QString &parentUdi ) const
 {
     DeviceList list;
@@ -164,6 +162,32 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::
     if ( backend == 0 ) return list;
 
     QStringList udis = backend->devicesFromQuery( parentUdi, capability );
+
+    foreach( const QString &udi, udis )
+    {
+        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+
+        list.append( *pair.first );
+    }
+
+    return list;
+}
+
+Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &predicate,
+                                                              const QString &parentUdi ) const
+{
+    DeviceList list;
+
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+
+    if ( backend == 0 ) return list;
+
+    QSet<Capability::Type> capabilities = predicate.usedCapabilities();
+    QSet<QString> udis;
+
+    foreach (Capability::Type capability, capabilities) {
+        udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, capability));
+    }
 
     foreach( const QString &udi, udis )
     {
