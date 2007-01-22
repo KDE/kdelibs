@@ -190,7 +190,7 @@ bool Solid::Predicate::isValid() const
     return d->isValid;
 }
 
-bool Solid::Predicate::matches( Device *device ) const
+bool Solid::Predicate::matches( const Device &device ) const
 {
     if ( !d->isValid ) return false;
 
@@ -204,7 +204,7 @@ bool Solid::Predicate::matches( Device *device ) const
             && d->operand2->matches( device );
     case Private::AtomType:
     {
-        Capability *iface = device->asCapability( d->capability );
+        const Capability *iface = device.asCapability( d->capability );
 
         if ( iface!=0 )
         {
@@ -214,7 +214,7 @@ bool Solid::Predicate::matches( Device *device ) const
         break;
     }
     case Private::IsType:
-        return device->queryCapability(d->capability);
+        return device.queryCapability(d->capability);
     }
 
     return false;

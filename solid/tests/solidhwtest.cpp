@@ -301,10 +301,10 @@ void SolidHwTest::testPredicate()
                         | Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
     Solid::Predicate p5 = Solid::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
 
-    QVERIFY( p1.matches( &dev ) );
-    QVERIFY( !p2.matches( &dev ) );
-    QVERIFY( p3.matches( &dev ) );
-    QVERIFY( !p4.matches( &dev ) );
+    QVERIFY( p1.matches( dev ) );
+    QVERIFY( !p2.matches( dev ) );
+    QVERIFY( p3.matches( dev ) );
+    QVERIFY( !p4.matches( dev ) );
 
 
 

@@ -175,7 +175,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &par
             if( !predicate.isValid() )
                matches = true;
             else
-               matches = predicate.matches( pair.first );
+               matches = predicate.matches( *pair.first );
         }
 
         if ( matches )

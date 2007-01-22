@@ -133,11 +133,12 @@ namespace Solid
         bool isValid() const;
 
         /**
+         * Checks if a device matches the predicate.
          *
          * @param device the device to match against the predicate
          * @return true if the given device matches the predicate, false otherwise
          */
-        bool matches( Device *device ) const;
+        bool matches( const Device &device ) const;
 
         /**
          * Converts the predicate to its string form.
