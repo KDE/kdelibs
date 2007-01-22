@@ -76,7 +76,7 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 
     QSet<QString> alreadyFoundCards;
 
-    Solid::DeviceList devices = manager.findDevicesFromQuery(QString(), Solid::Capability::AudioHw);
+    Solid::DeviceList devices = manager.findDevicesFromQuery(Solid::Capability::AudioHw);
     foreach (Solid::Device device, devices) {
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
