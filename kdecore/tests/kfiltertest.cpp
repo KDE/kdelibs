@@ -61,11 +61,11 @@ void KFilterTest::test_block_write()
 {
     kDebug() << " -- test_block_write gzip -- " << endl;
     test_block_write(pathgz);
-    QVERIFY( QFileInfo( pathgz ).size() == 33 ); // size of test.gz
+    QCOMPARE( QFileInfo( pathgz ).size(), 33LL ); // size of test.gz
 
     kDebug() << " -- test_block_write bzip2 -- " << endl;
     test_block_write(pathbz2);
-    QVERIFY( QFileInfo( pathbz2 ).size() == 52 ); // size of test.bz2
+    QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
 }
 
 void KFilterTest::test_block_read( const QString & fileName )
@@ -84,10 +84,22 @@ void KFilterTest::test_block_read( const QString & fileName )
         read += QByteArray( array, n );
         //kDebug() << "read returned " << n << endl;
         //kDebug() << "read='" << read << "'" << endl;
+
+        // pos() has no real meaning on sequential devices
+        // Ah, but kzip uses kfilterdev as a non-sequential device...
+
         QCOMPARE( (int)dev->pos(), (int)read.size() );
         //kDebug() << "dev.at = " << dev->at() << endl;
     }
     QCOMPARE( read, testData );
+
+    // Test seeking back
+    ok = dev->seek(0);
+    // test readAll
+    read = dev->readAll();
+    QCOMPARE( read.size(), testData.size() );
+    QCOMPARE( read, testData );
+
     dev->close();
     delete dev;
 }

@@ -38,7 +38,6 @@ public:
     bool bOpenedUnderlyingDevice;
     bool bIgnoreData;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
-    QByteArray ungetchBuffer;
     QByteArray origFileName;
     KFilterBase::Result result;
 };
@@ -80,11 +79,6 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
     }
 }
 
-QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype)
-{
-    return device( inDevice, mimetype, true );
-}
-
 QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice )
 {
    if (inDevice==0)
@@ -104,7 +98,6 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     if ( mode == QIODevice::ReadOnly )
     {
         d->buffer.resize(0);
-        d->ungetchBuffer.resize(0);
     }
     else
     {
@@ -122,7 +115,6 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     else
         setOpenMode( mode );
 
-    ioIndex = 0;
     return ret;
 }
 
@@ -141,60 +133,43 @@ void KFilterDev::close()
     setOpenMode( QIODevice::NotOpen );
 }
 
-qint64 KFilterDev::size() const
-{
-    // Well, hmm, Houston, we have a problem.
-    // We can't know the size of the uncompressed data
-    // before uncompressing it.......
-
-    // But readAll, which is not virtual, needs the size.........
-
-    kWarning(7005) << "KFilterDev::size - can't be implemented !!!!!!!! Returning -1 " << endl;
-    //abort();
-    return (uint)-1;
-}
-
-qint64 KFilterDev::pos() const
-{
-    return ioIndex;
-}
-
 bool KFilterDev::seek( qint64 pos )
 {
-    //kDebug(7005) << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
-
+    qint64 ioIndex = this->pos(); // current position
     if ( ioIndex == pos )
         return true;
+
+    kDebug(7005) << "KFilterDev::seek(" << pos << ") called" << endl;
 
     Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
 
     if ( pos == 0 )
     {
-        ioIndex = 0;
         // We can forget about the cached data
-        d->ungetchBuffer.resize(0);
         d->bNeedHeader = !d->bSkipHeaders;
         d->result = KFilterBase::OK;
         filter->setInBuffer(0L,0);
         filter->reset();
+        QIODevice::seek(pos);
         return filter->device()->reset();
     }
 
-    if ( ioIndex < pos ) // we can start from here
+    if ( ioIndex > pos ) // we can start from here
         pos = pos - ioIndex;
     else
     {
         // we have to start from 0 ! Ugly and slow, but better than the previous
         // solution (KTarGz was allocating everything into memory)
-        if (!seek(0)) // sets ioIndex to 0
+        if (!seek(0)) // recursive
             return false;
     }
 
     //kDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes" << endl;
     QByteArray dummy( qMin( pos, (qint64)3*BUFFER_SIZE ), 0 );
     d->bIgnoreData = true;
-    bool result = ( (qint64)read( dummy.data(), pos ) == pos );
+    bool result = ( read( dummy.data(), pos ) == pos );
     d->bIgnoreData = false;
+    QIODevice::seek(pos);
     return result;
 }
 
@@ -202,8 +177,7 @@ bool KFilterDev::atEnd() const
 {
     return (d->result == KFilterBase::END)
         && QIODevice::atEnd() // take QIODevice's internal buffer into account
-        && filter->device()->atEnd()
-        && d->ungetchBuffer.isEmpty();
+        && filter->device()->atEnd();
 }
 
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
@@ -212,28 +186,8 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
     //kDebug(7005) << "KFilterDev::read maxlen=" << maxlen << endl;
 
     uint dataReceived = 0;
-    if ( !d->ungetchBuffer.isEmpty() )
-    {
-        uint len = d->ungetchBuffer.length();
-        if ( !d->bIgnoreData )
-        {
-            while ( ( dataReceived < len ) && ( dataReceived < maxlen ) )
-            {
-                *data = d->ungetchBuffer[ len - dataReceived - 1 ];
-                data++;
-                dataReceived++;
-            }
-        }
-        else
-        {
-            dataReceived = qMin( (qint64)len, maxlen );
-        }
-        d->ungetchBuffer.truncate( len - dataReceived );
-        ioIndex += dataReceived;
-    }
 
-    // If we came to the end of the stream
-    // return what we got from the ungetchBuffer.
+    // We came to the end of the stream
     if ( d->result == KFilterBase::END )
         return dataReceived;
 
@@ -309,7 +263,6 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         {
             availOut = maxlen - dataReceived;
         }
-        ioIndex += outReceived;
         if (d->result == KFilterBase::END)
         {
             //kDebug(7005) << "KFilterDev::read got END. dataReceived=" << dataReceived << endl;
@@ -368,10 +321,9 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             // Move on in the input buffer
             data += wrote;
             dataWritten += wrote;
-            ioIndex += wrote;
 
             availIn = len - dataWritten;
-            //kDebug(7005) << " KFilterDev::write availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
+            //kDebug(7005) << " KFilterDev::write availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << pos() << endl;
             if ( availIn > 0 ) // Not sure this will ever happen
                 filter->setInBuffer( data, availIn );
         }
@@ -403,44 +355,6 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
     }
 
     return dataWritten;
-}
-
-int KFilterDev::getChar()
-{
-    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
-    //kDebug(7005) << "KFilterDev::getch" << endl;
-    if ( !d->ungetchBuffer.isEmpty() ) {
-        int len = d->ungetchBuffer.length();
-        int ch = d->ungetchBuffer[ len-1 ];
-        d->ungetchBuffer.truncate( len - 1 );
-        ioIndex++;
-        //kDebug(7005) << "KFilterDev::getch from ungetch: " << QString(QChar(ch)) << endl;
-        return ch;
-    }
-    char buf[1];
-    int ret = read( buf, 1 ) == 1 ? buf[0] : EOF;
-    //kDebug(7005) << "KFilterDev::getch ret=" << QString(QChar(ret)) << endl;
-    return ret;
-}
-
-int KFilterDev::putChar( int c )
-{
-    //kDebug(7005) << "KFilterDev::putch" << endl;
-    char buf[1];
-    buf[0] = c;
-    return write( buf, 1 ) == 1 ? c : -1;
-}
-
-int KFilterDev::ungetChar( int ch )
-{
-    //kDebug(7005) << "KFilterDev::ungetch " << QString(QChar(ch)) << endl;
-    if ( ch == EOF )                            // cannot unget EOF
-        return ch;
-
-    // pipe or similar => we cannot ungetch, so do it manually
-    d->ungetchBuffer +=ch;
-    ioIndex--;
-    return ch;
 }
 
 void KFilterDev::setOrigFileName( const QByteArray & fileName )

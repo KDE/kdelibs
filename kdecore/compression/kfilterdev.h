@@ -67,10 +67,6 @@ public:
      */
     void setSkipHeaders();
 
-    // Not implemented
-    virtual qlonglong size() const;
-
-    virtual qlonglong pos() const;
     /**
      * That one can be quite slow, when going back. Use with care.
      */
@@ -80,14 +76,10 @@ public:
 
     virtual qint64 readData( char *data, qint64 maxlen );
     virtual qint64 writeData( const char *data, qint64 len );
-    //int readLine( char *data, uint maxlen );
-
-    virtual int getChar();
-    virtual int putChar( int );
-    virtual int ungetChar( int );
 
     /// Reimplemented to return true. KFilterDev is a sequential QIODevice.
-    virtual bool isSequential() const { return true; }
+    /// Well, not really, since it supports seeking and KZip uses that.
+    //virtual bool isSequential() const { return true; }
 
 public:
 
@@ -136,34 +128,13 @@ public:
      * In that case 0 will be returned !
      *
      * The returned QIODevice has to be deleted after using.
-     * @param inDevice input device, becomes owned by this device! Automatically deleted!
-     * @param mimetype the mime type for the filter
-     * @return a QIODevice that filters the original stream. Must be deleted after
-     *         using
-     */
-    static QIODevice * device( QIODevice* inDevice, const QString & mimetype);
-    // BIC: merge with device() method below, using default value for autoDeleteInDevice
-
-    /**
-     * Creates an i/o device that is able to read from the QIODevice @p inDevice,
-     * whether the data is compressed or not. Available compression filters
-     * (gzip/bzip2 etc.) will automatically be used.
-     *
-     * The compression filter to be used is determined @p mimetype .
-     * Pass "application/x-gzip" or "application/x-bzip2"
-     * to use the corresponding decompression filter.
-     *
-     * Warning: application/x-bzip2 may not be available.
-     * In that case 0 will be returned !
-     *
-     * The returned QIODevice has to be deleted after using.
      * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
      * @param mimetype the mime type for the filter
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
      * @return a QIODevice that filters the original stream. Must be deleted after
      *         using
      */
-    static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice );
+    static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
 
 private:
     /**
@@ -177,7 +148,6 @@ private:
     KFilterBase *filter;
     class KFilterDevPrivate;
     KFilterDevPrivate* const d;
-    qint64 ioIndex;
 };
 
 
