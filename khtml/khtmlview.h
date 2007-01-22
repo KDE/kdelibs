@@ -414,7 +414,7 @@ private:
     bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 			    DOM::NodeImpl *targetNodeNonShared, bool cancelable,
 			    int detail,QMouseEvent *_mouse, bool setUnder,
-			    int mouseEventType);
+			    int mouseEventType, int orientation=0);
     bool dispatchKeyEvent( QKeyEvent *_ke );
     bool dispatchKeyEventHelper( QKeyEvent *_ke, bool generate_keypress );
 

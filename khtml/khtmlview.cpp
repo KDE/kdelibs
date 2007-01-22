@@ -3107,7 +3107,7 @@ bool KHTMLView::nonPasswordStorableSite(const QString& host) const
 bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 				   DOM::NodeImpl *targetNodeNonShared, bool cancelable,
 				   int detail,QMouseEvent *_mouse, bool setUnder,
-				   int mouseEventType)
+				   int mouseEventType, int orient)
 {
     // if the target node is a text node, dispatch on the parent node - rdar://4196646 (and #76948)
     if (targetNode && targetNode->isTextNode())
@@ -3124,6 +3124,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     d->underMouseNonShared = targetNodeNonShared;
     if (d->underMouseNonShared)
 	d->underMouseNonShared->ref();
+	
+    bool isWheelEvent = (mouseEventType == DOM::NodeImpl::MouseWheel);
 
     int exceptioncode = 0;
     int pageX = _mouse->x();
@@ -3159,6 +3161,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 
         // ### this code sucks. we should save the oldUnder instead of calculating
         // it again. calculating is expensive! (Dirk)
+        // ###
         NodeImpl *oldUnder = 0;
 	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
 	    NodeImpl::MouseEvent mev( _mouse->buttons(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
@@ -3211,7 +3214,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
 						detail,screenX,screenY,clientX,clientY,pageX, pageY,
 						ctrlKey,altKey,shiftKey,metaKey,
-						button,0, _mouse, dblclick );
+						button,0, isWheelEvent ? 0 : _mouse, dblclick, 
+						isWheelEvent ? static_cast<MouseEventImpl::Orientation>(orient) : MouseEventImpl::ONone );
         me->ref();
         if ( !d->m_mouseEventsTarget && RenderLayer::gScrollBar && eventId == EventImpl::MOUSEDOWN_EVENT )
             // button is pressed inside a layer scrollbar, so make it the target for future mousemove events until released
@@ -3291,6 +3295,19 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     }
     else
     {
+        DOM::NodeImpl::MouseEvent mev( e->buttons(), DOM::NodeImpl::MouseWheel );
+        m_part->xmlDocImpl()->prepareMouseEvent( false, e->x(), e->y(), &mev );
+        
+        MouseEventImpl::Orientation o = MouseEventImpl::OVertical;
+        if (e->orientation() == Qt::Horizontal)
+            o = MouseEventImpl::OHorizontal;
+        
+        QMouseEvent _mouse(QEvent::MouseMove, e->pos(), Qt::NoButton, e->buttons(), e->modifiers());
+        bool swallow = dispatchMouseEvent(EventImpl::KHTML_MOUSEWHEEL_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),
+                                               true,-e->delta()/40,&_mouse,true,DOM::NodeImpl::MouseWheel,o);
+        if (swallow)
+            return;
+
         d->scrollBarMoved = true;
         QScrollArea::wheelEvent( e );
     }

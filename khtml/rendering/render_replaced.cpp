@@ -738,6 +738,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
           ret = e.isAccepted();
           break;
     }
+    case EventImpl::KHTML_MOUSEWHEEL_EVENT:
     case EventImpl::MOUSEDOWN_EVENT:
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
@@ -749,6 +750,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         Qt::MouseButton button = Qt::NoButton;
         Qt::MouseButtons buttons = Qt::NoButton;
         Qt::KeyboardModifiers state = 0;
+        Qt::Orientation orient = Qt::Vertical;
 
         if (qme) {
             buttons = qme->buttons();
@@ -779,12 +781,16 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             case EventImpl::MOUSEUP_EVENT:
                 type = QMouseEvent::MouseButtonRelease;
                 break;
+            case EventImpl::KHTML_MOUSEWHEEL_EVENT:
             case EventImpl::MOUSEMOVE_EVENT:
             default:
                 type = QMouseEvent::MouseMove;
                 button = Qt::NoButton;
                 break;
             }
+            
+            if (me.orientation() == MouseEventImpl::OHorizontal)
+                orient = Qt::Horizontal;
 
             if (me.ctrlKey())
                 state |= Qt::ControlModifier;
@@ -825,14 +831,16 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
 
-        QMouseEvent e(type, p, button, buttons, state);
+        QEvent *e = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT) ?
+                    static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
+                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
         Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(target);
         if (sc && !::qobject_cast<Q3ListBox*>(m_widget))
-            static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(&e);
+            static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(e);
         else
-            static_cast<EventPropagator *>(target)->sendEvent(&e);
+            static_cast<EventPropagator *>(target)->sendEvent(e);
 
-        ret = e.isAccepted();
+        ret = e->isAccepted();
 
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
@@ -844,6 +852,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         if (ev.id() == EventImpl::MOUSEUP_EVENT && button == Qt::LeftButton) {
             view()->setMouseEventsTarget( 0 );
         }
+        delete e;
         break;
     }
     case EventImpl::KEYDOWN_EVENT:

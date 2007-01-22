@@ -192,7 +192,8 @@ public:
         MouseRelease,
         MouseClick,
         MouseDblClick,
-        MouseMove
+        MouseMove,
+        MouseWheel
     };
 
     struct MouseEvent

@@ -1011,6 +1011,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::MOUSEMOVE_EVENT:
         case EventImpl::MOUSEOUT_EVENT:
         case EventImpl::MOUSEOVER_EVENT:
+        case EventImpl::KHTML_MOUSEWHEEL_EVENT:
         case EventImpl::KEYDOWN_EVENT:
         case EventImpl::KEYUP_EVENT:
         case EventImpl::KEYPRESS_EVENT:

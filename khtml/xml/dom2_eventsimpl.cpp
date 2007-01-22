@@ -184,6 +184,8 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
         return KHTML_READYSTATECHANGE_EVENT;
     else if ( type == "dblclick" )
         return KHTML_ECMA_DBLCLICK_EVENT;
+    else if ( type == "DOMMouseScroll" )
+        return KHTML_MOUSEWHEEL_EVENT;
 
     // ignore: KHTML_CLICK_EVENT
     return UNKNOWN_EVENT;
@@ -266,7 +268,8 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "khtml_move";
     case KHTML_READYSTATECHANGE_EVENT:
         return "readystatechange";
-
+    case KHTML_MOUSEWHEEL_EVENT:
+        return "DOMMouseScroll"; // adopt the mozilla name for compatibility
     default:
         return DOMString();
         break;
@@ -378,7 +381,8 @@ MouseEventImpl::MouseEventImpl(EventId _id,
 			       unsigned short buttonArg,
 			       NodeImpl *relatedTargetArg,
 			       QMouseEvent *qe,
-                               bool isDoubleClick)
+                               bool isDoubleClick,
+                               Orientation orient)
 		   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
     m_screenX = screenXArg;
@@ -398,6 +402,7 @@ MouseEventImpl::MouseEventImpl(EventId _id,
     computeLayerPos();
     m_qevent = qe;
     m_isDoubleClick = isDoubleClick;
+    m_orientation = orient;
 }
 
 MouseEventImpl::~MouseEventImpl()
@@ -445,7 +450,8 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
                                     bool shiftKeyArg,
                                     bool metaKeyArg,
                                     unsigned short buttonArg,
-                                    const Node &relatedTargetArg)
+                                    const Node &relatedTargetArg,
+                                    Orientation orient)
 {
     UIEventImpl::initUIEvent(typeArg,canBubbleArg,cancelableArg,viewArg,detailArg);
 
@@ -471,6 +477,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_relatedTarget = relatedTargetArg.handle();
     if (m_relatedTarget)
 	m_relatedTarget->ref();
+    m_orientation = orient;
 
 
     // ### make this on-demand. its soo sloooow
