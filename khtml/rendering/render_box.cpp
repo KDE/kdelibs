@@ -155,6 +155,12 @@ void RenderBox::setStyle(RenderStyle *_style)
             setRelPositioned(true);
     }
 
+    // We also handle <body> and <html>, whose overflow applies to the viewport.
+    if (!isRoot() && (!isBody() || !document()->isHTMLDocument()) && (isRenderBlock() || isTableRow() || isTableSection())) {
+         if (_style->hidesOverflow())
+            setHasOverflowClip();
+    }
+
     if (requiresLayer()) {
         if (!m_layer) {
             m_layer = new (renderArena()) RenderLayer(this);
@@ -295,7 +301,7 @@ void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
     _tx += m_x;
     _ty += m_y;
 
-    if (style()->hidesOverflow() && m_layer)
+    if (hasOverflowClip() && m_layer)
         m_layer->subtractScrollOffset(_tx, _ty);
 
     // default implementation. Just pass things through to the children
@@ -726,7 +732,7 @@ bool RenderBox::absolutePosition(int &_xPos, int &_yPos, bool f) const
     if( o && o->absolutePosition(_xPos, _yPos, f))
     {
         if ( o->layer() ) {
-            if (o->style()->hidesOverflow())
+            if (o->hasOverflowClip())
                 o->layer()->subtractScrollOffset( _xPos, _yPos );
             if (isPositioned())
                 o->layer()->checkInlineRelOffset(this, _xPos, _yPos);
@@ -812,7 +818,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
     RenderObject *o = container();
     if( o ) {
          if (o->layer()) {
-             if (o->style()->hidesOverflow())
+             if (o->style()->hidesOverflow() && o->layer() && !o->isInlineFlow())
                  o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
              if (style()->position() == ABSOLUTE)
                  o->layer()->checkInlineRelOffset(this,x,y);
@@ -1052,7 +1058,7 @@ void RenderBox::calcHeight()
             height = calcBoxHeight(h.value());
         }
 
-        if (height<m_height && !overhangingContents() && !style()->hidesOverflow())
+        if (height<m_height && !overhangingContents() && !hasOverflowClip())
             setOverhangingContents();
 
         m_height = height;

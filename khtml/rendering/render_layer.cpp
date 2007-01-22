@@ -282,7 +282,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
 short RenderLayer::width() const
 {
     int w = m_object->width();
-    if (!m_object->style()->hidesOverflow())
+    if (!m_object->hasOverflowClip())
         w = qMax(m_object->overflowWidth(), w);
     return w;
 }
@@ -290,7 +290,7 @@ short RenderLayer::width() const
 int RenderLayer::height() const
 {
     int h = m_object->height() + m_object->borderTopExtra() + m_object->borderBottomExtra();
-    if (!m_object->style()->hidesOverflow())
+    if (!m_object->hasOverflowClip())
         h = qMax(m_object->overflowHeight(), h);
     return h;
 }
