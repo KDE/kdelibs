@@ -167,17 +167,17 @@ public:
     /**
      * Sets the font which is displayed to @p font
      */
-    virtual void setFont( const QString &font );
+    void setFont( const QString &font );
 
     /**
      * Sets the currently selected character to @p chr.
      */
-    virtual void setChar( const QChar &chr );
+    void setChar( const QChar &chr );
 
     /**
      * Sets the currently displayed table to @p tableNum.
      */
-    virtual void setTableNum( int tableNum );
+    void setTableNum( int tableNum );
 
     /**
      * Returns the currently selected character.
@@ -187,26 +187,26 @@ public:
     /**
      * Returns the currently displayed font.
      */
-    virtual QString font() const;
+    QString font() const;
 
     /**
      * Returns the currently displayed table
      */
-    virtual int tableNum() const;
+    int tableNum() const;
 
     /**
      * If @p e is set to true, the combobox which allows the user to
      * select the font which should be displayed is enabled, else
      * disabled.
      */
-    virtual void enableFontCombo( bool e );
+    void enableFontCombo( bool e );
 
     /**
      * If @p e is set to true, the spinbox which allows the user to
      * specify which characters of the font should be displayed, is
      * enabled, else disabled.
      */
-    virtual void enableTableSpinBox( bool e );
+    void enableTableSpinBox( bool e );
 
     /**
      * Returns wether the font combobox on the top is enabled or
@@ -214,7 +214,7 @@ public:
      *
      * @see enableFontCombo()
      */
-    virtual bool isFontComboEnabled() const;
+    bool isFontComboEnabled() const;
 
     /**
      * Returns wether the table spinbox on the top is enabled or
@@ -222,30 +222,8 @@ public:
      *
      * @see enableTableSpinBox()
      */
-    virtual bool isTableSpinBoxEnabled() const;
+    bool isTableSpinBoxEnabled() const;
 
-protected:
-    virtual void fillFontCombo(); // ####### unused, remove me
-
-    QFontComboBox *fontCombo;
-    QSpinBox *tableSpinBox;
-    KCharSelectTable *charTable;
-    QStringList fontList; // ###### unused, remove me
-
-protected Q_SLOTS:
-    void fontSelected( const QString &_font );
-    void tableChanged( int _value );
-    void charHighlighted( const QChar &c ) { emit highlighted( c ); }
-    void charHighlighted() { emit highlighted(); }
-    void charActivated( const QChar &c ) { emit activated( c ); }
-    void charActivated() { emit activated(); }
-    void charFocusItemChanged() { emit focusItemChanged(); }
-    void charFocusItemChanged( const QChar &c ) { emit focusItemChanged( c ); }
-    void charTableUp() { if ( tableNum() < 255 ) setTableNum( tableNum() + 1 ); }
-    void charTableDown() { if ( tableNum() > 0 ) setTableNum( tableNum() - 1 ); }
-    void slotDoubleClicked() { emit doubleClicked(); }
-    void slotUnicodeEntered();
-    void slotUpdateUnicode( const QChar &c );
 Q_SIGNALS:
     void highlighted( const QChar &c );
     void highlighted();
@@ -257,8 +235,13 @@ Q_SIGNALS:
     void doubleClicked();
 
 private:
-    virtual void setFont(const QFont &f) { KVBox::setFont(f); }
-private:
+    Q_PRIVATE_SLOT(d, void _k_charTableUp())
+    Q_PRIVATE_SLOT(d, void _k_charTableDown())
+    Q_PRIVATE_SLOT(d, void _k_fontSelected( const QString &))
+    Q_PRIVATE_SLOT(d, void _k_tableChanged( int _value ))
+    Q_PRIVATE_SLOT(d, void _k_slotUnicodeEntered())
+    Q_PRIVATE_SLOT(d, void _k_slotUpdateUnicode( const QChar &c ))
+
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;
 };

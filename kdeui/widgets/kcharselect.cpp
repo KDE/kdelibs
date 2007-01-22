@@ -19,7 +19,6 @@
 */
 
 #include "kcharselect.h"
-#include "kcharselect.moc"
 
 #include "kcharselect_p.h"
 #include "kcharselect_p.moc"
@@ -48,6 +47,18 @@ class KCharSelect::KCharSelectPrivate
 {
 public:
     QLineEdit *unicodeLine;
+    QFontComboBox *fontCombo;
+    QSpinBox *tableSpinBox;
+    KCharSelectTable *charTable;
+
+    KCharSelect *q;
+
+    inline void _k_charTableUp() { if ( q->tableNum() < 255 ) q->setTableNum( q->tableNum() + 1 ); }
+    inline void _k_charTableDown() { if ( q->tableNum() > 0 ) q->setTableNum( q->tableNum() - 1 ); }
+    void _k_fontSelected( const QString &_font );
+    void _k_tableChanged( int _value );
+    void _k_slotUnicodeEntered();
+    void _k_slotUpdateUnicode( const QChar &c );
 };
 
 /******************************************************************/
@@ -153,12 +164,10 @@ void KCharSelectTable::resizeEvent( QResizeEvent * e )
     setUpdatesEnabled(false);
     QHeaderView* hv=horizontalHeader();
     for (int i=0;i<columns;i++) {
-    	qDebug("Setting new width");
     	hv->resizeSection(i,new_w);
     }
     hv=verticalHeader();
     for (int i=0;i<rows;i++) {
-    	qDebug("Setting new height");
     	hv->resizeSection(i,new_h);
     }
 
@@ -249,6 +258,7 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_chr, int _tableNum )
   : KVBox( parent ), d(new KCharSelectPrivate)
 {
+    d->q = this;
     setSpacing( KDialog::spacingHint() );
     KHBox* const bar = new KHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
@@ -258,23 +268,23 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
 
-    fontCombo = new QFontComboBox(bar);
-    fontCombo->setEditable(true);
-    fontCombo->resize( fontCombo->sizeHint() );
+    d->fontCombo = new QFontComboBox(bar);
+    d->fontCombo->setEditable(true);
+    d->fontCombo->resize( d->fontCombo->sizeHint() );
 
-    connect( fontCombo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( fontSelected( const QString & ) ) );
+    connect( d->fontCombo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( _k_fontSelected( const QString & ) ) );
 
     QLabel* const lTable = new QLabel( i18n( "Table:" ), bar );
     lTable->resize( lTable->sizeHint() );
     lTable->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lTable->setMaximumWidth( lTable->sizeHint().width() );
 
-    tableSpinBox = new QSpinBox( bar );
-    tableSpinBox->setRange(0,255);
-    tableSpinBox->setSingleStep(1);
-    tableSpinBox->resize( tableSpinBox->sizeHint() );
+    d->tableSpinBox = new QSpinBox( bar );
+    d->tableSpinBox->setRange(0,255);
+    d->tableSpinBox->setSingleStep(1);
+    d->tableSpinBox->resize( d->tableSpinBox->sizeHint() );
 
-    connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
+    connect( d->tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( _k_tableChanged( int ) ) );
 
     QLabel* const lUnicode = new QLabel( i18n( "&Unicode code point:" ), bar );
     lUnicode->resize( lUnicode->sizeHint() );
@@ -288,11 +298,11 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     d->unicodeLine->setValidator(validator);
     lUnicode->setBuddy(d->unicodeLine);
     d->unicodeLine->resize( d->unicodeLine->sizeHint() );
-    slotUpdateUnicode(_chr);
+    d->_k_slotUpdateUnicode(_chr);
 
-    connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
+    connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( _k_slotUnicodeEntered() ) );
 
-    charTable = new KCharSelectTable( this, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
+    d->charTable = new KCharSelectTable( this, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
 
     const QSize sz( 200,
                     200 );    
@@ -303,9 +313,9 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     const QSize sz( charTable->contentsWidth()  +  4 ,
                     charTable->contentsHeight() +  4 );
     #endif
-    charTable->resize( sz );
+    d->charTable->resize( sz );
     //charTable->setMaximumSize( sz );
-    charTable->setMinimumSize( sz );
+    d->charTable->setMinimumSize( sz );
 #ifdef __GNUC__
     #warning fixme
 #endif
@@ -315,21 +325,21 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     setFont( _font.isEmpty() ? KVBox::font().family() : _font );
     setTableNum( _tableNum );
 
-    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( slotUpdateUnicode( const QChar & ) ) );
-    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( charHighlighted( const QChar & ) ) );
-    connect( charTable, SIGNAL( focusItemChanged() ), this, SLOT( charHighlighted() ) );
-    connect( charTable, SIGNAL( activated( const QChar & ) ), this, SLOT( charActivated( const QChar & ) ) );
-    connect( charTable, SIGNAL( activated() ), this, SLOT( charActivated() ) );
-    connect( charTable, SIGNAL( focusItemChanged( const QChar & ) ),
-	     this, SLOT( charFocusItemChanged( const QChar & ) ) );
-    connect( charTable, SIGNAL( focusItemChanged() ), this, SLOT( charFocusItemChanged() ) );
-    connect( charTable, SIGNAL( tableUp() ), this, SLOT( charTableUp() ) );
-    connect( charTable, SIGNAL( tableDown() ), this, SLOT( charTableDown() ) );
+    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( _k_slotUpdateUnicode( const QChar & ) ) );
+    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SIGNAL( highlighted( const QChar & ) ) );
+    connect( d->charTable, SIGNAL( focusItemChanged() ), this, SIGNAL( highlighted() ) );
+    connect( d->charTable, SIGNAL( activated( const QChar & ) ), this, SIGNAL( activated( const QChar & ) ) );
+    connect( d->charTable, SIGNAL( activated() ), this, SIGNAL( activated() ) );
+    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ),
+	     this, SIGNAL( focusItemChanged( const QChar & ) ) );
+    connect( d->charTable, SIGNAL( focusItemChanged() ), this, SIGNAL( focusItemChanged() ) );
+    connect( d->charTable, SIGNAL( tableUp() ), this, SLOT( _k_charTableUp() ) );
+    connect( d->charTable, SIGNAL( tableDown() ), this, SLOT( _k_charTableDown() ) );
 
-    connect( charTable, SIGNAL(doubleClicked()),this,SLOT(slotDoubleClicked()));
+    connect( d->charTable, SIGNAL(doubleClicked()),this,SIGNAL(doubleClicked()));
 
     setFocusPolicy( Qt::StrongFocus );
-    setFocusProxy( charTable );
+    setFocusProxy( d->charTable );
 }
 
 KCharSelect::~KCharSelect()
@@ -346,88 +356,83 @@ QSize KCharSelect::sizeHint() const
 //==================================================================
 void KCharSelect::setFont( const QString &_font )
 {
-    fontCombo->setCurrentFont(_font);
-    charTable->setFont( _font );
+    d->fontCombo->setCurrentFont(_font);
+    d->charTable->setFont( _font );
 }
 
 //==================================================================
 void KCharSelect::setChar( const QChar &_chr )
 {
-    charTable->setChar( _chr );
-    slotUpdateUnicode( _chr );
+    d->charTable->setChar( _chr );
+    d->_k_slotUpdateUnicode( _chr );
 }
 
 //==================================================================
 void KCharSelect::setTableNum( int _tableNum )
 {
-    tableSpinBox->setValue( _tableNum );
-    charTable->setTableNum( _tableNum );
+    d->tableSpinBox->setValue( _tableNum );
+    d->charTable->setTableNum( _tableNum );
 }
 
 //==================================================================
 QChar KCharSelect::chr() const
 {
-    return charTable->chr();
+    return d->charTable->chr();
 }
 
 //==================================================================
 QString KCharSelect::font() const
 {
-    return fontCombo->currentText();
+    return d->fontCombo->currentText();
 }
 
 //==================================================================
 int KCharSelect::tableNum() const
 {
-    return tableSpinBox->value();
+    return d->tableSpinBox->value();
 }
 
 //==================================================================
 void KCharSelect::enableFontCombo( bool e )
 {
-    fontCombo->setEnabled( e );
+    d->fontCombo->setEnabled( e );
 }
 
 //==================================================================
 void KCharSelect::enableTableSpinBox( bool e )
 {
-    tableSpinBox->setEnabled( e );
+    d->tableSpinBox->setEnabled( e );
 }
 
 //==================================================================
 bool KCharSelect::isFontComboEnabled() const
 {
-    return fontCombo->isEnabled();
+    return d->fontCombo->isEnabled();
 }
 
 //==================================================================
 bool KCharSelect::isTableSpinBoxEnabled() const
 {
-    return tableSpinBox->isEnabled();
+    return d->tableSpinBox->isEnabled();
 }
 
 //==================================================================
-void KCharSelect::fillFontCombo()
-{
-}
-
-//==================================================================
-void KCharSelect::fontSelected( const QString &_font )
+void KCharSelect::KCharSelectPrivate::_k_fontSelected( const QString &_font )
 {
     charTable->setFont( _font );
-    emit fontChanged( _font );
+    emit q->fontChanged( _font );
 }
 
 //==================================================================
-void KCharSelect::tableChanged( int _value )
+void KCharSelect::KCharSelectPrivate::_k_tableChanged( int _value )
 {
     charTable->setTableNum( _value );
 }
 
 //==================================================================
-void KCharSelect::slotUnicodeEntered( )
+void KCharSelect::KCharSelectPrivate::_k_slotUnicodeEntered( )
 {
-    const QString s = d->unicodeLine->text();
+    const QString s = unicodeLine->text();
     if (s.isEmpty())
         return;
     
@@ -441,15 +446,16 @@ void KCharSelect::slotUnicodeEntered( )
     tableSpinBox->setValue(table);
     const QChar ch(uc);
     charTable->setChar( ch );
-    charActivated( ch );
+    emit q->activated( ch );
 }
 
-void KCharSelect::slotUpdateUnicode( const QChar &c )
+void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode( const QChar &c )
 {
     const int uc = c.unicode();
     QString s;
     s.sprintf("%04X", uc);
-    d->unicodeLine->setText(s);
+    unicodeLine->setText(s);
 }
 
 
+#include "kcharselect.moc"
