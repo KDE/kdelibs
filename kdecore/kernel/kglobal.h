@@ -59,6 +59,9 @@ class KCleanUpGlobalStatic
  * \param TYPE The type of the global static object. Do not add a *.
  * \param NAME The name of the function to get a pointer to the global static object.
  *
+ * If you have code that might be called after the global object has been destroyed you can check
+ * for that using the _isDestroyed() function.
+ *
  * Example:
  * \code
  * class A { ... };
@@ -67,6 +70,15 @@ class KCleanUpGlobalStatic
  *
  * void doSomething()
  * {
+ *     A *a = globalA();
+ *     ...
+ * }
+ *
+ * void doSomethingElse()
+ * {
+ *     if (globalA_isDestroyed()) {
+ *         return;
+ *     }
  *     A *a = globalA();
  *     ...
  * }
