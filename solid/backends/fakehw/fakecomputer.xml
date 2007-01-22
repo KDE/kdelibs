@@ -118,7 +118,7 @@
                 <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume">
                     <property key="name">Floppy Disk</property>
                     <property key="capability">block,volume</property>
-                    <property key="parent">/org/kde/solid/fakehw/platform_floppy_0_volume</property>
+                    <property key="parent">/org/kde/solid/fakehw/platform_floppy_0_storage</property>
 
                     <property key="minor">0</property>
                     <property key="major">2</property>
