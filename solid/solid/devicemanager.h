@@ -86,21 +86,21 @@ namespace Solid
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        DeviceList findDevicesFromQuery( const QString &parentUdi,
-                                         const Capability::Type &capability = Capability::Unknown,
-                                         const Predicate &predicate = Predicate() ) const;
+        DeviceList findDevicesFromQuery( const Capability::Type &capability,
+                                         const Predicate &predicate = Predicate(),
+                                         const QString &parentUdi = QString() ) const;
 
         /**
          * Convenience function see above.
          *
-         * @param parentUdi
          * @param capability
          * @param predicate
+         * @param parentUdi
          * @return the list of devices
          */
-        DeviceList findDevicesFromQuery( const QString &parentUdi,
-                                         const Capability::Type &capability,
-                                         const QString &predicate ) const;
+        DeviceList findDevicesFromQuery( const Capability::Type &capability,
+                                         const QString &predicate,
+                                         const QString &parentUdi = QString() ) const;
 
     Q_SIGNALS:
         /**
