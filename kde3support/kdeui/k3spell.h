@@ -41,7 +41,7 @@ class K3SpellDlg;
  * @author David Sweet <dsweet@kde.org>
  * @see K3SpellConfig, KSyntaxHighlighter
  *
- * @deprecated, use kspell2 instead
+ * @deprecated, use sonnet instead
  */
 class KDE3SUPPORT_EXPORT_DEPRECATED K3Spell : public QObject
 {

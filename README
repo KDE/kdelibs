@@ -59,8 +59,6 @@ Here is an alphabetical list:
 
 * kdeui
     The main collection of misc. user interface classes (widgets).
-    KSpell and related classes are a frontend to ispell for use within a
-    GUI app.
 
 * kdewidgets
     For developers: KDE's custom widgets for Qt Designer.
@@ -128,6 +126,10 @@ Here is an alphabetical list:
 
 * pics
     Database of icons.
+
+* sonnet
+    Tools for natural language processing, including spell and grammar check.
+    Includes gui widgets.
 
 * win
     Support code for KDE on Win32.

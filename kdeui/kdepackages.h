@@ -267,7 +267,7 @@ const char * const packages[] = {
 "kdelibs/kmdi",
 "kdelibs/knewstuff",
 "kdelibs/knotify",
-"kdelibs/kspell",
+"kdelibs/sonnet",
 "kdelibs/kstyle",
 "kdelibs/ksycoca",
 "kdelibs/kwallet",

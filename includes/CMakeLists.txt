@@ -888,18 +888,11 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings )
 
 
 install( FILES 
-  KSpell2/BackgroundChecker
-  KSpell2/ConfigDialog
-  KSpell2/ConfigWidget
-  KSpell2/DefaultDictionary
-  KSpell2/Dialog
-  KSpell2/Filter
-  KSpell2/Highlighter
-  KSpell2/Loader
-  KSpell2/Settings
-  KSpell2/Speller
-  KSpell2/Word
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSpell2 )
+  Sonnet/GuessLanguage
+  Sonnet/UnicodeData
+  Sonnet/TextBreaks
+  Sonnet/Spell
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet )
 
 
 install( FILES 

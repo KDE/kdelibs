@@ -81,7 +81,7 @@ enum K3SpellClients {
  *
  * @author David Sweet <dsweet@kde.org>
  * @see K3Spell
- * @deprecated use kspell2 instead
+ * @deprecated use sonnet instead
  */
 class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellConfig : public QWidget
 {

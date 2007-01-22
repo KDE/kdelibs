@@ -420,13 +420,13 @@
   </entry>
 
  </group>
- <group name="KSpell" >
-  <entry key="KSpell_Client" type="String" />
-  <entry key="KSpell_DictFromList" type="String" />
-  <entry key="KSpell_Dictionary" type="String" />
-  <entry key="KSpell_Encoding" type="String" />
-  <entry key="KSpell_NoRootAffix" type="String" />
-  <entry key="KSpell_RunTogether" type="String" />
+ <group name="Sonnet" >
+  <entry key="Sonnet_Client" type="String" />
+  <entry key="Sonnet_DictFromList" type="String" />
+  <entry key="Sonnet_Dictionary" type="String" />
+  <entry key="Sonnet_Encoding" type="String" />
+  <entry key="Sonnet_NoRootAffix" type="String" />
+  <entry key="Sonnet_RunTogether" type="String" />
  </group>
  <group name="Locale" >
   <entry key="Country" type="String" >

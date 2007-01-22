@@ -27,7 +27,7 @@
 
 #include <kdelibs_export.h>
 
-namespace KSpell2
+namespace Sonnet
 {
     /**
      * Class is returned by from Loader. It acts
@@ -36,7 +36,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short class used for actuall spell checking
      */
-    class KSPELL2_EXPORT Speller
+    class SONNET_EXPORT Speller
     {
     public:
         virtual ~Speller();

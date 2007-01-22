@@ -303,11 +303,11 @@
 # endif
 #endif
 
-#ifndef KSPELL2_EXPORT
-# ifdef MAKE_KSPELL2_LIB
-#  define KSPELL2_EXPORT KDE_EXPORT
+#ifndef SONNET_EXPORT
+# ifdef MAKE_SONNET_LIB
+#  define SONNET_EXPORT KDE_EXPORT
 # else
-#  define KSPELL2_EXPORT KDE_IMPORT
+#  define SONNET_EXPORT KDE_IMPORT
 # endif
 #endif
 

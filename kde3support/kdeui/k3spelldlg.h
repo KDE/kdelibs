@@ -44,7 +44,7 @@ enum KS_RESULT {
 };
 
 /**
- * @deprecated, use kspell2 instead
+ * @deprecated, use sonnet instead
  */
 class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellDlg : public KDialog
 {

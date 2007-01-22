@@ -17,27 +17,27 @@
 * toolbar/menubar/statusbar creation.
 *
 * A spell-checker library is also provided.
-* KSpell offers easy access to International ISpell or ASpell
+* Sonnet offers easy access to International ISpell or ASpell
 *  (at the user's option) as well as a spell-checker GUI
 *  ("Add", "Replace", etc.).
 *
-* You can use KSpell to
+* You can use Sonnet to
 *  automatically spell-check an ASCII file as well as to implement
 *  online spell-checking and to spell-check proprietary format and
 *  marked up (e.g. HTML, TeX) documents.  The relevant methods for
 *  these three procedures are check(), checkWord(), and
 * checkList(), respectively.
 *
-* KSpellConfig holds configuration information about KSpell as well
+* SonnetConfig holds configuration information about Sonnet as well
 *  as acting as an options-setting dialog.
 *
-* KSpell usually works asynchronously. If you do not need that, you should
-* simply use KSpell::modalCheck(). It won't return until the
+* Sonnet usually works asynchronously. If you do not need that, you should
+* simply use Sonnet::modalCheck(). It won't return until the
 * passed string is processed or the spell checking canceled.
 * During modal spell checking your GUI is still repainted, but the user may
-* only interact with the KSpell dialog.
+* only interact with the Sonnet dialog.
 *
-* @see KSpell, KSpellConfig
+* @see Sonnet, SonnetConfig
 */
 
 // DOXYGEN_REFERENCES = kdecore kdefx

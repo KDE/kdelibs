@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
-  <!ENTITY kappname "&kspell;">
+  <!ENTITY kappname "&sonnet;">
   <!ENTITY % English "INCLUDE" > <!-- change language only here -->
   <!ENTITY % addindex "IGNORE">
 ]>
@@ -8,7 +8,7 @@
 <book lang="&language;">
 
 <bookinfo>
-<title>The &kspell; Handbook</title>
+<title>The &sonnet; Handbook</title>
 <authorgroup>
 <author>&David.Sweet; &David.Sweet.mail;</author>
 
@@ -19,7 +19,7 @@
 <date>2003-02-24</date>
 <releaseinfo>1.00.00</releaseinfo>
 <abstract>
-<para>&kspell; is the spelling checker used by &kde; applications such
+<para>&sonnet; is the spelling checker used by &kde; applications such
 as &kate;, &kmail;, and &kword;. It is a &GUI;
 frontend to <application>International ISpell</application> and
 <application>ASpell</application>.</para>
@@ -28,7 +28,7 @@ frontend to <application>International ISpell</application> and
 <keywordset>
 <keyword>spell</keyword>
 <keyword>spelling</keyword>
-<keyword>kspell</keyword>
+<keyword>sonnet</keyword>
 <keyword>ispell</keyword>
 <keyword>aspell</keyword>
 <keyword>check</keyword>
@@ -53,7 +53,7 @@ url="http://aspell.sourceforge.net/">ASpell home page</ulink>.)
 
 <para><anchor id="spelldlg"/>
 The top line in the dialog displays a possibly misspelled word which was found in your
-document. &kspell; attempts to find an appropriate replacement word. One or
+document. &sonnet; attempts to find an appropriate replacement word. One or
 several may be found. The best guess is shown to the right of <guilabel>Replacement:</guilabel>.
 To accept this replacement, click on <guibutton>Replace</guibutton>. You may also select a word
 from the list of <guilabel>Suggestions</guilabel> and then click <guibutton>Replace</guibutton> to replace the
@@ -131,7 +131,7 @@ your dictionary's distribution for more information.</para>
 <title>Spell-checking client</title>
 
 <para>You may choose to use <application>Ispell</application> or <application>Aspell</application> as the spell-checking
-backend for &kspell;. <application>Ispell</application> is more widely available and may
+backend for &sonnet;. <application>Ispell</application> is more widely available and may
 have better international support, but <application>Aspell</application> is gaining
 popularity as it claims to give better suggestions for word replacements.</para>
 </sect1>
@@ -147,8 +147,8 @@ read the International <application>ISpell</application> man page.</para>
 <chapter id="contact-information">
 <title>Contact Information</title>
 
-<para>For more information about &kspell;, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">&kspell; 
-Home Page</ulink>. In particular, you will find information about programming the &kspell; C++ class.</para>
+<para>For more information about &sonnet;, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/Sonnet">&sonnet; 
+Home Page</ulink>. In particular, you will find information about programming the &sonnet; C++ class.</para>
 
 <para>You may email the author/maintainer with questions and/or comments at
 &David.Sweet.mail;.</para>
