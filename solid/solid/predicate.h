@@ -21,6 +21,7 @@
 #define SOLID_PREDICATE_H
 
 #include <QVariant>
+#include <QSet>
 
 #include <kdelibs_export.h>
 
@@ -139,6 +140,13 @@ namespace Solid
          * @return true if the given device matches the predicate, false otherwise
          */
         bool matches( const Device &device ) const;
+
+        /**
+         * Retrieves the capabilities used in this predicate.
+         *
+         * @return all the capabilities used in this predicate
+         */
+        QSet<Capability::Type> usedCapabilities() const;
 
         /**
          * Converts the predicate to its string form.

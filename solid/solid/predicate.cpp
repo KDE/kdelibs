@@ -220,6 +220,31 @@ bool Solid::Predicate::matches( const Device &device ) const
     return false;
 }
 
+QSet<Solid::Capability::Type> Solid::Predicate::usedCapabilities() const
+{
+    QSet<Capability::Type> res;
+
+    if (d->isValid) {
+
+        switch( d->type )
+        {
+        case Private::OrType:
+        case Private::AndType:
+            res+= d->operand1->usedCapabilities();
+            res+= d->operand2->usedCapabilities();
+            break;
+        case Private::AtomType:
+        case Private::IsType:
+            res << d->capability;
+            break;
+        }
+
+    }
+
+    return res;
+}
+
+
 QString Solid::Predicate::toString() const
 {
     if ( !d->isValid ) return "False";
