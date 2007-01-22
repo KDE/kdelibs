@@ -229,8 +229,9 @@ public:
                                                 QString());
 
 private:
+    Q_DISABLE_COPY(KAutoSaveFile)
     friend class KAutoSaveFilePrivate;
-    KAutoSaveFilePrivate *d;
+    KAutoSaveFilePrivate* const d;
 };
 
 #endif // KAUTOSAVEFILE_H
