@@ -167,7 +167,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
 
     QLabel *label2 = new QLabel( qt_text, contents );
     label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
-    label2->setTextInteractionFlags(Qt::TextInteractionFlags(label2->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
+    label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     label2->setWordWrap(true);
 
     int pref_width = 0;
