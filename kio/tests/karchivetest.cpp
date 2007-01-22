@@ -125,13 +125,13 @@ static void testFileData( KArchive* archive )
     QCOMPARE( arr.size(), 13 );
     QCOMPARE( arr, QByteArray( "Noch so einer" ) );
 
-    // Now test using device()
-    QIODevice *dev = f->device();
+    // Now test using createDevice()
+    QIODevice *dev = f->createDevice();
     QByteArray contents = dev->readAll();
     QCOMPARE( contents, arr );
     delete dev;
 
-    dev = f->device();
+    dev = f->createDevice();
     contents = dev->read(5); // test reading in two chunks
     QCOMPARE(contents.size(), 5);
     contents += dev->read(50);
@@ -152,7 +152,7 @@ static void testFileData( KArchive* archive )
     e = dir->entry( "my/dir/test3" );
     QVERIFY( e && e->isFile() );
     f = (KArchiveFile*)e;
-    dev = f->device();
+    dev = f->createDevice();
     QByteArray firstLine = dev->readLine();
     QCOMPARE(QString::fromLatin1(firstLine), QString::fromLatin1("I do not speak German\n"));
     QByteArray secondLine = dev->read(100);

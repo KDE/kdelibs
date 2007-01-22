@@ -214,7 +214,7 @@ public:
      * who will have to delete it.
      * The returned device auto-opens (in readonly mode), no need to open it.
      */
-    virtual QIODevice* device() const;
+    virtual QIODevice* createDevice() const;
 
 private:
     unsigned long m_crc;

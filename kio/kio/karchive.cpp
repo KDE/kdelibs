@@ -528,7 +528,7 @@ QByteArray KArchiveFile::data() const
   return arr;
 }
 
-QIODevice * KArchiveFile::device() const
+QIODevice * KArchiveFile::createDevice() const
 {
   return new KLimitedIODevice( archive()->device(), m_pos, m_size );
 }

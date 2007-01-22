@@ -1279,7 +1279,7 @@ KZip::ExtraField KZip::extraField() const
 
 QByteArray KZipFileEntry::data() const
 {
-    QIODevice* dev = device();
+    QIODevice* dev = createDevice();
     QByteArray arr;
     if ( dev ) {
         arr = dev->readAll();
@@ -1288,7 +1288,7 @@ QByteArray KZipFileEntry::data() const
     return arr;
 }
 
-QIODevice* KZipFileEntry::device() const
+QIODevice* KZipFileEntry::createDevice() const
 {
     //kDebug(7040) << "KZipFileEntry::device creating iodevice limited to pos=" << position() << ", csize=" << compressedSize() << endl;
     // Limit the reading to the appropriate part of the underlying device (e.g. file)

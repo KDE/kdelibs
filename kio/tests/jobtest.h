@@ -72,10 +72,6 @@ protected Q_SLOTS:
 
 private:
     void enterLoop();
-    QString homeTmpDir() const;
-    QString otherTmpDir() const;
-    QString realSystemPath() const;
-    KUrl systemTmpDir() const;
     enum { AlreadyExists = 1 };
     void copyLocalFile( const QString& src, const QString& dest );
     void copyLocalDirectory( const QString& src, const QString& dest, int flags = 0 );

@@ -517,7 +517,7 @@ public:
      * The returned device auto-opens (in readonly mode), no need to open it.
      * @return the QIODevice of the file
      */
-    virtual QIODevice *device() const;
+    virtual QIODevice *createDevice() const;
 
     /**
      * Checks whether this entry is a file.

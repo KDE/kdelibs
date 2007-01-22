@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include <kurl.h>
-#include <kapplication.h>
 #include <kde_file.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
@@ -54,12 +53,12 @@ QTEST_KDEMAIN( JobTest, GUI )
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
-QString JobTest::homeTmpDir() const
+static QString homeTmpDir()
 {
     return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest/";
 }
 
-QString JobTest::otherTmpDir() const
+static QString otherTmpDir()
 {
 #ifdef Q_WS_WIN
     return QDir::tempPath() + "/jobtest/";
@@ -69,7 +68,7 @@ QString JobTest::otherTmpDir() const
 #endif
 }
 
-KUrl JobTest::systemTmpDir() const
+static KUrl systemTmpDir()
 {
 #ifdef Q_WS_WIN
     return KUrl( "system:" + QDir::homePath() + "/.kde-unit-test/jobtest-system/" );
@@ -78,7 +77,7 @@ KUrl JobTest::systemTmpDir() const
 #endif
 }
 
-QString JobTest::realSystemPath() const
+static QString realSystemPath()
 {
     return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest-system/";
 }
@@ -256,10 +255,8 @@ void JobTest::slotResult( KJob* job )
 
 void JobTest::copyLocalFile( const QString& src, const QString& dest )
 {
-    KUrl u;
-    u.setPath( src );
-    KUrl d;
-    d.setPath( dest );
+    const KUrl u( src );
+    const KUrl d( dest );
 
     // copy the file with file_copy
     bool ok = KIO::NetAccess::file_copy( u, d );
