@@ -17,18 +17,35 @@
 */
 
 #include "ksqueezedtextlabel.h"
-#include "kstringhandler.h"
+
+class KSqueezedTextLabelPrivate
+{
+  public:
+    QString fullText;
+    Qt::TextElideMode elideMode;
+};
 
 KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent )
- : QLabel ( parent ) {
+ : QLabel ( parent ),
+  d( new KSqueezedTextLabelPrivate )
+{
   setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
-  fullText = text;
+  d->fullText = text;
+  d->elideMode = Qt::ElideMiddle;
   squeezeTextToLabel();
 }
 
 KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent )
- : QLabel ( parent ) {
+ : QLabel ( parent ),
+  d( new KSqueezedTextLabelPrivate )
+{
   setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
+  d->elideMode = Qt::ElideMiddle;
+}
+
+KSqueezedTextLabel::~KSqueezedTextLabel()
+{
+  delete d;
 }
 
 void KSqueezedTextLabel::resizeEvent( QResizeEvent * ) {
@@ -48,20 +65,20 @@ QSize KSqueezedTextLabel::sizeHint() const
 }
 
 void KSqueezedTextLabel::setText( const QString &text ) {
-  fullText = text;
+  d->fullText = text;
   squeezeTextToLabel();
 }
 
 void KSqueezedTextLabel::squeezeTextToLabel() {
   QFontMetrics fm(fontMetrics());
   int labelWidth = size().width();
-  int textWidth = fm.width(fullText);
+  int textWidth = fm.width(d->fullText);
   if (textWidth > labelWidth) {
-    QString squeezedText = fm.elidedText(fullText, Qt::ElideMiddle, labelWidth);
+    QString squeezedText = fm.elidedText(d->fullText, d->elideMode, labelWidth);
     QLabel::setText(squeezedText);
-    setToolTip( fullText );
+    setToolTip(d->fullText);
   } else {
-    QLabel::setText(fullText);
+    QLabel::setText(d->fullText);
     setToolTip( QString() );
   }
 }
@@ -69,9 +86,19 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
 void KSqueezedTextLabel::setAlignment( Qt::Alignment alignment )
 {
   // save fullText and restore it
-  QString tmpFull(fullText);
+  QString tmpFull(d->fullText);
   QLabel::setAlignment(alignment);
-  fullText = tmpFull;
+  d->fullText = tmpFull;
+}
+
+Qt::TextElideMode KSqueezedTextLabel::textElideMode() const
+{
+  return d->elideMode;
+}
+
+void KSqueezedTextLabel::setTextElideMode(Qt::TextElideMode mode)
+{
+  d->elideMode = mode;
 }
 
 #include "ksqueezedtextlabel.moc"

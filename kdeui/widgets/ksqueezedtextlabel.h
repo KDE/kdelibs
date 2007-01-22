@@ -23,6 +23,8 @@
 
 #include <kdelibs_export.h>
 
+class KSqueezedTextLabelPrivate;
+
 /**
  * @short A replacement for QLabel that squeezes its text
  *
@@ -45,6 +47,7 @@
  */
 class KDEUI_EXPORT KSqueezedTextLabel : public QLabel {
   Q_OBJECT
+  Q_PROPERTY( Qt::TextElideMode textElideMode READ textElideMode WRITE setTextElideMode )
 
 public:
   /**
@@ -53,6 +56,8 @@ public:
   explicit KSqueezedTextLabel( QWidget *parent = 0 );
   explicit KSqueezedTextLabel( const QString &text, QWidget *parent = 0 );
 
+  virtual ~KSqueezedTextLabel();
+
   virtual QSize minimumSizeHint() const;
   virtual QSize sizeHint() const;
   /**
@@ -60,8 +65,19 @@ public:
    */
   virtual void setAlignment( Qt::Alignment );
 
+  /**
+   *  Returns the text elide mode.
+   */
+  Qt::TextElideMode textElideMode() const;
+
+  /**
+   * Sets the text elide mode.
+   * @param mode The text elide mode.
+   */
+  void setTextElideMode( Qt::TextElideMode mode );
+
 public Q_SLOTS:
-  void setText( const QString & );
+  void setText( const QString &text );
 
 protected:
   /**
@@ -72,10 +88,8 @@ protected:
    * does the dirty work
    */
   void squeezeTextToLabel();
-  QString fullText;
 
 private:
-  class KSqueezedTextLabelPrivate;
   KSqueezedTextLabelPrivate *d;
 };
 
