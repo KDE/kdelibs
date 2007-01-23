@@ -1503,9 +1503,9 @@ QRect RenderObject::viewRect() const
 bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f) const
 {
     RenderObject* p = parent();
-    if(p) {
-        parent()->absolutePosition(xPos, yPos, f);
-        if ( p->style()->hidesOverflow() && p->layer() && !isInlineFlow() )
+    if (p) {
+        p->absolutePosition(xPos, yPos, f);
+        if ( p->hasOverflowClip() )
             p->layer()->subtractScrollOffset( xPos, yPos );
         return true;
     }
