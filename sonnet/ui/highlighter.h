@@ -31,7 +31,7 @@ class QTextEdit;
 
 namespace KSpell2
 {
-    class KSPELL2_EXPORT Highlighter : public QSyntaxHighlighter
+    class SONNET_EXPORT Highlighter : public QSyntaxHighlighter
     {
 	Q_OBJECT
     public:

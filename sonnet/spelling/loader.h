@@ -44,8 +44,8 @@ namespace KSpell2
      * KSpell2 class, you can think of it as the kernel or manager
      * of the KSpell2 architecture.
      */
-    class KSPELL2_EXPORT Loader : public QObject,
-                                  public KShared
+    class SONNET_EXPORT Loader : public QObject,
+                                 public KShared
     {
         Q_OBJECT
     public:
