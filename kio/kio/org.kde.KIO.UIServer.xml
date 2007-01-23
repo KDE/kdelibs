@@ -27,6 +27,14 @@
       <arg name="actionText" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
+    <method name="enableAction">
+      <arg name="actionId" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="disableAction">
+      <arg name="actionId" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
     <method name="removeAction">
       <arg name="actionId" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
@@ -76,48 +84,53 @@
       <arg name="msg" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
+    <method name="progressInfoMessage">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="msg" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
     <method name="copying">
       <arg name="id" type="i" direction="in"/>
       <arg name="from" type="s" direction="in"/>
       <arg name="to" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="moving">
       <arg name="id" type="i" direction="in"/>
       <arg name="from" type="s" direction="in"/>
       <arg name="to" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="deleting">
       <arg name="id" type="i" direction="in"/>
       <arg name="url" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="transferring">
       <arg name="id" type="i" direction="in"/>
       <arg name="url" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="creatingDir">
       <arg name="id" type="i" direction="in"/>
       <arg name="url" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="stating">
       <arg name="id" type="i" direction="in"/>
       <arg name="url" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="mounting">
       <arg name="id" type="i" direction="in"/>
       <arg name="dev" type="s" direction="in"/>
       <arg name="point" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="unmounting">
       <arg name="id" type="i" direction="in"/>
       <arg name="point" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+      <arg name="res" type="b" direction="out"/>
     </method>
     <method name="messageBox">
       <arg name="id" type="i" direction="in"/>

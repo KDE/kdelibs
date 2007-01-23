@@ -46,7 +46,7 @@
 
 using namespace KIO;
 
-Observer * Observer::s_pObserver = 0L;
+Observer *Observer::s_pObserver = 0L;
 
 const int KDEBUG_OBSERVER = 7007; // Should be 7028
 
@@ -54,20 +54,20 @@ Observer::Observer()
 {
     QDBusConnection::sessionBus().registerObject("/KIO/Observer", this, QDBusConnection::ExportScriptableSlots);
 
-    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kuiserver" ) )
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
     {
         kDebug(KDEBUG_OBSERVER) << "Starting kuiserver" << endl;
         QString error;
-        int ret = KToolInvocation::startServiceByDesktopPath( "kuiserver.desktop",
-                                                             QStringList(), &error );
-        if ( ret > 0 )
+        int ret = KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
+                                                             QStringList(), &error);
+        if (ret > 0)
         {
             kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error << endl;
         } else
             kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.kuiserver" ) )
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
         kDebug(KDEBUG_OBSERVER) << "The application kuiserver is STILL NOT REGISTERED" << endl;
     else
         kDebug(KDEBUG_OBSERVER) << "kuiserver registered" << endl;
@@ -78,7 +78,7 @@ Observer::Observer()
             SLOT(actionPerformed(int)));
 }
 
-int Observer::newJob( KJob * job, bool showProgress )
+int Observer::newJob(KJob *job, bool showProgress)
 {
     // Tell the UI Server about this new job, and give it the application id
     // at the same time
@@ -88,16 +88,15 @@ int Observer::newJob( KJob * job, bool showProgress )
     if (job->uiDelegate()->jobIcon().isEmpty())
         kWarning() << "No icon set for a job launched from " << instance->aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
 
-    int progressId = m_uiserver->newJob( QDBusConnection::sessionBus().baseService(), showProgress,
-                                         instance->aboutData()->appName(), job->uiDelegate()->jobIcon(), instance->aboutData()->programName() );
+    int progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), showProgress,
+                                         instance->aboutData()->appName(), job->uiDelegate()->jobIcon(), instance->aboutData()->programName());
 
-    // Keep the result in a dict
-    m_dctJobs.insert( progressId, job );
+    m_dctJobs.insert(progressId, job); // Keep the result in a dict
 
     return progressId;
 }
 
-int Observer::newJob( const QString &icon )
+int Observer::newJob(const QString &icon)
 {
     KInstance *instance = KGlobal::instance();
     QString jobIcon = icon;
@@ -105,60 +104,50 @@ int Observer::newJob( const QString &icon )
     if (icon.isEmpty())
         jobIcon = instance->aboutData()->appName();
 
-    int progressId = m_uiserver->newJob( QDBusConnection::sessionBus().baseService(), true,
-                                         instance->aboutData()->appName(), jobIcon, instance->aboutData()->programName() );
+    int progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), true,
+                                         instance->aboutData()->appName(), jobIcon, instance->aboutData()->programName());
 
     return progressId;
 }
 
-void Observer::jobFinished( int progressId )
+void Observer::jobFinished(int progressId)
 {
-    m_uiserver->jobFinished( progressId );
+    m_uiserver->jobFinished(progressId);
 
-    if (m_dctJobs.contains( progressId ))
-        m_dctJobs.remove( progressId );
+    m_dctJobs.remove(progressId);
 }
 
-void Observer::killJob( int progressId )
+void Observer::killJob(int progressId)
 {
-    if (!m_dctJobs.contains(progressId))
-        return;
-
-    KJob *job = m_dctJobs.value( progressId );
+    KJob *job = m_dctJobs.value(progressId);
 
     if (job)
-        job->kill( KJob::EmitResult /* not quietly */ );
+        job->kill(KJob::EmitResult /* not quietly */);
 }
 
-void Observer::suspend( int progressId )
+void Observer::suspend(int progressId)
 {
-    if (!m_dctJobs.contains(progressId))
-        return;
-
-    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value( progressId ));
+    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
 
     if (job)
         job->suspend();
 }
 
-void Observer::resume( int progressId )
+void Observer::resume(int progressId)
 {
-    if (!m_dctJobs.contains(progressId))
-        return;
-
-    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value( progressId ));
+    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
 
     if (job)
         job->resume();
 }
 
-QVariantMap Observer::metadata( int progressId )
+QVariantMap Observer::metadata(int progressId)
 {
     QVariantMap map;
 
-    if (m_dctJobs.contains( progressId ))
+    if (m_dctJobs.contains(progressId))
     {
-        KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value( progressId ));
+        KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
 
         if (job)
         {
@@ -171,7 +160,7 @@ QVariantMap Observer::metadata( int progressId )
     return map;
 }
 
-void Observer::actionPerformed( int actionId )
+void Observer::actionPerformed(int actionId)
 {
     if (!m_hashActions.contains(actionId))
         return;
@@ -183,161 +172,188 @@ void Observer::actionPerformed( int actionId )
     // but if we used QMetaObject::invokeMethod we are forcing the slot to have 2 arguments, or wont be
     // called (ereslibre)
 
-    connect(this, SIGNAL(actionPerformed(int,int)), theSlotCall.receiver, theSlotCall.slotName);
-    emit actionPerformed(actionId, theSlotCall.owner);
-    disconnect(this, SIGNAL(actionPerformed(int,int)), theSlotCall.receiver, theSlotCall.slotName);
-}
-
-void Observer::slotTotalSize( KJob* job, qulonglong size )
-{
-    m_uiserver->totalSize( job->progressId(), size );
-}
-
-void Observer::setTotalSize( int jobId, qulonglong size )
-{
-    m_uiserver->totalSize( jobId, size );
-}
-
-void Observer::slotTotalFiles( KJob* job, unsigned long files )
-{
-    m_uiserver->totalFiles( job->progressId(), files );
-}
-
-void Observer::setTotalFiles( int jobId, unsigned long files )
-{
-    m_uiserver->totalFiles( jobId, files );
-}
-
-void Observer::slotTotalDirs( KJob* job, unsigned long dirs )
-{
-    m_uiserver->totalDirs( job->progressId(), dirs );
-}
-
-void Observer::setTotalDirs( int jobId, unsigned long dirs )
-{
-    m_uiserver->totalDirs( jobId, dirs );
-}
-
-void Observer::slotProcessedSize( KJob* job, qulonglong size )
-{
-    m_uiserver->processedSize( job->progressId(), size );
-}
-
-void Observer::setProcessedSize( int jobId, qulonglong size )
-{
-    m_uiserver->processedSize( jobId, size );
-}
-
-void Observer::slotProcessedFiles( KJob* job, unsigned long files )
-{
-    m_uiserver->processedFiles( job->progressId(), files );
-}
-
-void Observer::setProcessedFiles( int jobId, unsigned long files )
-{
-    m_uiserver->processedFiles( jobId, files );
-}
-
-void Observer::slotProcessedDirs( KJob* job, unsigned long dirs )
-{
-    m_uiserver->processedDirs( job->progressId(), dirs );
-}
-
-void Observer::setProcessedDirs( int jobId, unsigned long dirs )
-{
-    m_uiserver->processedDirs( jobId, dirs );
-}
-
-void Observer::slotSpeed( KJob* job, unsigned long speed )
-{
-    if (speed)
-        m_uiserver->speed( job->progressId(), KIO::convertSize( speed ) + QString( "/s" ) );
-    else
-        m_uiserver->speed( job->progressId(), QString() );
-}
-
-void Observer::setSpeed( int jobId, unsigned long speed )
-{
-    if (speed)
-        m_uiserver->speed( jobId, KIO::convertSize( speed ) + QString( "/s" ) );
-    else
-        m_uiserver->speed( jobId, QString() );
-}
-
-void Observer::slotPercent( KJob* job, unsigned long percent )
-{
-    m_uiserver->percent( job->progressId(), percent );
-}
-
-void Observer::setPercent( int jobId, unsigned long percent )
-{
-    m_uiserver->percent( jobId, percent );
-}
-
-void Observer::slotInfoMessage( KJob* job, const QString & msg )
-{
-    m_uiserver->infoMessage( job->progressId(), msg );
-}
-
-void Observer::setInfoMessage( int jobId, const QString & msg )
-{
-    m_uiserver->infoMessage( jobId, msg );
+    foreach (slotInfo slot, theSlotCall.theSlotInfo)
+    {
+        connect(this, SIGNAL(actionPerformed(int,int)), slot.receiver, slot.slotName);
+        emit actionPerformed(actionId, theSlotCall.owner);
+        disconnect(this, SIGNAL(actionPerformed(int,int)), slot.receiver, slot.slotName);
+    }
 }
 
 
 /// ===========================================================
 
 
-void Observer::slotCopying( KJob* job, const KUrl& from, const KUrl& to )
+void Observer::setTotalSize(int jobId, qulonglong size)
 {
-    m_uiserver->copying( job->progressId(), from.url(), to.url() );
+    m_uiserver->totalSize(jobId, size);
 }
 
-void Observer::slotMoving( KJob* job, const KUrl& from, const KUrl& to )
+void Observer::setTotalFiles(int jobId, unsigned long files)
 {
-    m_uiserver->moving( job->progressId(), from.url(), to.url() );
+    m_uiserver->totalFiles(jobId, files);
 }
 
-void Observer::slotDeleting( KJob* job, const KUrl& url )
+void Observer::setTotalDirs(int jobId, unsigned long dirs)
 {
-    m_uiserver->deleting( job->progressId(), url.url() );
+    m_uiserver->totalDirs(jobId, dirs);
 }
 
-void Observer::slotTransferring( KJob* job, const KUrl& url )
+void Observer::setProcessedSize(int jobId, qulonglong size)
 {
-    m_uiserver->transferring( job->progressId(), url.url() );
+    m_uiserver->processedSize(jobId, size);
 }
 
-void Observer::slotCreatingDir( KJob* job, const KUrl& dir )
+void Observer::setProcessedFiles(int jobId, unsigned long files)
 {
-    m_uiserver->creatingDir( job->progressId(), dir.url() );
+    m_uiserver->processedFiles(jobId, files);
 }
 
-void Observer::stating( KJob* job, const KUrl& url )
+void Observer::setProcessedDirs(int jobId, unsigned long dirs)
 {
-    m_uiserver->stating( job->progressId(), url.url() );
+    m_uiserver->processedDirs(jobId, dirs);
 }
 
-void Observer::mounting( KJob* job, const QString & dev, const QString & point )
+void Observer::setSpeed(int jobId, unsigned long speed)
 {
-    m_uiserver->mounting( job->progressId(), dev, point );
+    if (speed)
+        m_uiserver->speed(jobId, KIO::convertSize(speed) + QString("/s"));
+    else
+        m_uiserver->speed(jobId, QString());
 }
 
-void Observer::unmounting( KJob* job, const QString & point )
+void Observer::setPercent(int jobId, unsigned long percent)
 {
-    m_uiserver->unmounting( job->progressId(), point );
+    m_uiserver->percent(jobId, percent);
 }
 
-bool Observer::openPasswordDialog( const QString& prompt, QString& user,
-                                   QString& pass, bool readOnly )
+void Observer::setInfoMessage(int jobId, const QString &msg)
+{
+    m_uiserver->infoMessage(jobId, msg);
+}
+
+void Observer::setProgressMessage(int jobId, const QString &msg)
+{
+    m_uiserver->progressInfoMessage(jobId, msg);
+}
+
+
+/// ===========================================================
+
+
+void Observer::slotTotalSize(KJob *job, qulonglong size)
+{
+    m_uiserver->totalSize(job->progressId(), size);
+}
+
+void Observer::slotTotalFiles(KJob *job, unsigned long files)
+{
+    m_uiserver->totalFiles(job->progressId(), files);
+}
+
+void Observer::slotTotalDirs(KJob *job, unsigned long dirs)
+{
+    m_uiserver->totalDirs(job->progressId(), dirs);
+}
+
+void Observer::slotProcessedSize(KJob *job, qulonglong size)
+{
+    m_uiserver->processedSize(job->progressId(), size);
+}
+
+void Observer::slotProcessedFiles(KJob *job, unsigned long files)
+{
+    m_uiserver->processedFiles(job->progressId(), files);
+}
+
+void Observer::slotProcessedDirs(KJob *job, unsigned long dirs)
+{
+    m_uiserver->processedDirs(job->progressId(), dirs);
+}
+
+void Observer::slotSpeed(KJob *job, unsigned long speed)
+{
+    if (speed)
+        m_uiserver->speed(job->progressId(), KIO::convertSize(speed) + QString("/s"));
+    else
+        m_uiserver->speed(job->progressId(), QString());
+}
+
+void Observer::slotPercent(KJob *job, unsigned long percent)
+{
+    m_uiserver->percent(job->progressId(), percent);
+}
+
+void Observer::slotInfoMessage(KJob *job, const QString &msg)
+{
+    m_uiserver->infoMessage(job->progressId(), msg);
+}
+
+void Observer::slotProgressMessage(KJob *job, const QString &msg)
+{
+    m_uiserver->progressInfoMessage(job->progressId(), msg);
+}
+
+
+/// ===========================================================
+
+
+void Observer::slotCopying(KJob *job, const KUrl &from, const KUrl &to)
+{
+    if (m_uiserver->copying(job->progressId(), from.url(), to.url()))
+    {
+        addAction(job->progressId(), i18n("Pause"), this, SLOT(jobPaused(int)));
+    }
+}
+
+void Observer::slotMoving(KJob *job, const KUrl &from, const KUrl &to)
+{
+    m_uiserver->moving(job->progressId(), from.url(), to.url());
+}
+
+void Observer::slotDeleting(KJob *job, const KUrl &url)
+{
+    m_uiserver->deleting(job->progressId(), url.url());
+}
+
+void Observer::slotTransferring(KJob *job, const KUrl &url)
+{
+    m_uiserver->transferring(job->progressId(), url.url());
+}
+
+void Observer::slotCreatingDir(KJob *job, const KUrl &dir)
+{
+    m_uiserver->creatingDir(job->progressId(), dir.url());
+}
+
+void Observer::stating(KJob *job, const KUrl &url)
+{
+    m_uiserver->stating(job->progressId(), url.url());
+}
+
+void Observer::mounting(KJob *job, const QString &dev, const QString &point)
+{
+    m_uiserver->mounting(job->progressId(), dev, point);
+}
+
+void Observer::unmounting(KJob *job, const QString &point)
+{
+    m_uiserver->unmounting(job->progressId(), point);
+}
+
+/// ===========================================================
+
+
+bool Observer::openPasswordDialog(const QString &prompt, QString &user,
+                                   QString &pass, bool readOnly)
 {
     AuthInfo info;
     info.prompt = prompt;
     info.username = user;
     info.password = pass;
     info.readOnly = readOnly;
-    bool result = openPasswordDialog ( info );
-    if ( result )
+    bool result = openPasswordDialog (info);
+    if (result)
     {
         user = info.username;
         pass = info.password;
@@ -345,7 +361,7 @@ bool Observer::openPasswordDialog( const QString& prompt, QString& user,
     return result;
 }
 
-bool Observer::openPasswordDialog( KIO::AuthInfo& info )
+bool Observer::openPasswordDialog(KIO::AuthInfo &info)
 {
     kDebug(KDEBUG_OBSERVER) << "Observer::openPasswordDialog: User= " << info.username
                              << ", Message= " << info.prompt << endl;
@@ -365,20 +381,20 @@ bool Observer::openPasswordDialog( KIO::AuthInfo& info )
     info.password=dlg.password();
     info.keepPassword = dlg.keepPassword();
 
-    info.setModified( true );
+    info.setModified(true);
     return true;
 }
 
-int Observer::messageBox( int progressId, int type, const QString &text,
+int Observer::messageBox(int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,
-                          const QString &buttonNo )
+                          const QString &buttonNo)
 {
-    return messageBox( progressId, type, text, caption, buttonYes, buttonNo, QString() );
+    return messageBox(progressId, type, text, caption, buttonYes, buttonNo, QString());
 }
 
-int Observer::messageBox( int progressId, int type, const QString &text,
+int Observer::messageBox(int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,
-                          const QString &buttonNo, const QString &dontAskAgainName )
+                          const QString &buttonNo, const QString &dontAskAgainName)
 {
     kDebug() << "Observer::messageBox " << type << " " << text << " - " << caption << endl;
     int result = -1;
@@ -387,24 +403,24 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 
     switch (type) {
         case KIO::SlaveBase::QuestionYesNo:
-            result = KMessageBox::questionYesNo( 0L, // parent ?
-                                               text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
+            result = KMessageBox::questionYesNo(0L, // parent ?
+                                               text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
             break;
         case KIO::SlaveBase::WarningYesNo:
-            result = KMessageBox::warningYesNo( 0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
+            result = KMessageBox::warningYesNo(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
             break;
         case KIO::SlaveBase::WarningContinueCancel:
-            result = KMessageBox::warningContinueCancel( 0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), dontAskAgainName );
+            result = KMessageBox::warningContinueCancel(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), dontAskAgainName);
             break;
         case KIO::SlaveBase::WarningYesNoCancel:
-            result = KMessageBox::warningYesNoCancel( 0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
+            result = KMessageBox::warningYesNoCancel(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
             break;
         case KIO::SlaveBase::Information:
-            KMessageBox::information( 0L, // parent ?
-                                      text, caption, dontAskAgainName );
+            KMessageBox::information(0L, // parent ?
+                                      text, caption, dontAskAgainName);
             result = 1; // whatever
             break;
         case KIO::SlaveBase::SSLMessageBox:
@@ -415,10 +431,10 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             QString observerAppId = caption; // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
-            QDBusInterface observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
+            QDBusInterface observer(observerAppId, "/KIO/Observer", "org.kde.KIO.Observer");
 
             QDBusReply<QVariantMap> reply =
-                observer.call(QDBus::BlockWithGui, "metadata", progressId );
+                observer.call(QDBus::BlockWithGui, "metadata", progressId);
             const QVariantMap &meta = reply;
             KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
             KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());
@@ -436,7 +452,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                if (ncl.count() > 0)
                   x->chain().setChain(ncl);
 
-               kid->setup( x,
+               kid->setup(x,
                            meta["ssl_peer_ip"].toString(),
                            text, // the URL
                            meta["ssl_cipher"].toString(),
@@ -450,8 +466,8 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                delete x;
                kDebug(7024) << "SSL Info dialog closed" << endl;
             } else {
-               KMessageBox::information( 0L, // parent ?
-                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL") );
+               KMessageBox::information(0L, // parent ?
+                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL"));
             }
             // This doesn't have to get deleted.  It deletes on it's own.
             result = 1; // whatever
@@ -468,18 +484,18 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 #if 0
     QByteArray data, replyData;
     DCOPCString replyType;
-    QDataStream arg( data, QIODevice::WriteOnly );
+    QDataStream arg(data, QIODevice::WriteOnly);
     arg << progressId;
     arg << type;
     arg << text;
     arg << caption;
     arg << buttonYes;
     arg << buttonNo;
-    if ( KApplication::dcopClient()->call( "kuiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
-        && replyType == "int" )
+    if (KApplication::dcopClient()->call("kuiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true)
+        && replyType == "int")
     {
         int result;
-        QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
+        QDataStream _reply_stream(replyData, QIODevice::ReadOnly);
         _reply_stream >> result;
         kDebug(KDEBUG_OBSERVER) << "Observer::messageBox got result " << result << endl;
         return result;
@@ -489,7 +505,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 #endif
 }
 
-RenameDialog_Result Observer::open_RenameDialog( KJob* job,
+RenameDialog_Result Observer::open_RenameDialog(KJob* job,
                                            const QString & caption,
                                            const QString& src, const QString & dest,
                                            RenameDialog_Mode mode, QString& newDest,
@@ -499,52 +515,59 @@ RenameDialog_Result Observer::open_RenameDialog( KJob* job,
                                            time_t ctimeDest,
                                            time_t mtimeSrc,
                                            time_t mtimeDest
-                                           )
+                                          )
 {
     kDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDialog job=" << job << endl;
     if (job)
         kDebug(KDEBUG_OBSERVER) << "                        progressId=" << job->progressId() << endl;
     // Hide existing dialog box if any
     if (job && job->progressId())
-        m_uiserver->setJobVisible( job->progressId(), false );
+        m_uiserver->setJobVisible(job->progressId(), false);
     // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
     // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
-    RenameDialog_Result res = KIO::open_RenameDialog( caption, src, dest, mode,
+    RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
                                                       newDest, sizeSrc, sizeDest,
                                                       ctimeSrc, ctimeDest, mtimeSrc,
-                                                      mtimeDest );
+                                                      mtimeDest);
     if (job && job->progressId())
-        m_uiserver->setJobVisible( job->progressId(), true );
+        m_uiserver->setJobVisible(job->progressId(), true);
     return res;
 }
 
-SkipDialog_Result Observer::open_SkipDialog( KJob* job,
+SkipDialog_Result Observer::open_SkipDialog(KJob* job,
                                              bool _multi,
-                                             const QString& _error_text )
+                                             const QString& _error_text)
 {
     // Hide existing dialog box if any
     if (job && job->progressId())
-        m_uiserver->setJobVisible( job->progressId(), false );
+        m_uiserver->setJobVisible(job->progressId(), false);
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
-    SkipDialog_Result res = KIO::open_SkipDialog( _multi, _error_text );
+    SkipDialog_Result res = KIO::open_SkipDialog(_multi, _error_text);
     if (job && job->progressId())
-        m_uiserver->setJobVisible( job->progressId(), true );
+        m_uiserver->setJobVisible(job->progressId(), true);
     return res;
 }
+
+
+/// ===========================================================
+
 
 int Observer::addAction(int jobId, const QString &actionText, QObject *receiver, const char *slotName)
 {
     int actionId = m_uiserver->newAction(jobId, actionText);
 
     slotCall newSlotCall;
+    slotInfo newSlotInfo;
 
     newSlotCall.owner = 0;
 
     if (m_dctJobs.contains(jobId))
         newSlotCall.owner = jobId;
 
-    newSlotCall.receiver = receiver;
-    newSlotCall.slotName = slotName;
+    newSlotInfo.receiver = receiver;
+    newSlotInfo.slotName = slotName;
+
+    newSlotCall.theSlotInfo.append(newSlotInfo);
 
     m_hashActions.insert(actionId, newSlotCall);
 
@@ -558,10 +581,17 @@ void Observer::editAction(int actionId, const QString &actionText, QObject *rece
 
     m_uiserver->editAction(actionId, actionText);
 
-    slotCall newSlotCall;
+    m_hashActions[actionId].theSlotInfo.clear();
 
-    newSlotCall.receiver = receiver;
-    newSlotCall.slotName = slotName;
+    slotCall newSlotCall;
+    slotInfo newSlotInfo;
+
+    newSlotCall.owner = m_hashActions[actionId].owner;
+
+    newSlotInfo.receiver = receiver;
+    newSlotInfo.slotName = slotName;
+
+    newSlotCall.theSlotInfo.append(newSlotInfo);
 
     m_hashActions[actionId] = newSlotCall;
 }
@@ -570,8 +600,14 @@ void Observer::removeAction(int actionId)
 {
     m_uiserver->removeAction(actionId);
 
+    m_hashActions[actionId].theSlotInfo.clear();
+
     m_hashActions.remove(actionId);
 }
+
+
+/// ===========================================================
+
 
 void Observer::jobPaused(int actionId)
 {
@@ -587,6 +623,7 @@ void Observer::jobPaused(int actionId)
             }
         }
     }
+    else return;
 
     editAction(actionId, i18n("Resume"), this, SLOT(jobResumed(int)));
 }
@@ -605,6 +642,7 @@ void Observer::jobResumed(int actionId)
             }
         }
     }
+    else return;
 
     editAction(actionId, i18n("Pause"), this, SLOT(jobPaused(int)));
 }
