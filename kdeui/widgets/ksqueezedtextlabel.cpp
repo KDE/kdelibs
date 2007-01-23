@@ -99,6 +99,7 @@ Qt::TextElideMode KSqueezedTextLabel::textElideMode() const
 void KSqueezedTextLabel::setTextElideMode(Qt::TextElideMode mode)
 {
   d->elideMode = mode;
+  squeezeTextToLabel();
 }
 
 #include "ksqueezedtextlabel.moc"
