@@ -80,7 +80,7 @@ static bool getNumber(const QString &string, int &offset, int mindigits, int max
 static int findString_internal(const QString &string, const char *ptr, int count, int &offset, int disp);
 template<int disp> static inline
 int findString(const QString &string, const char array[][disp], int count, int &offset)
-{ return findString_internal(string, array[0], offset, count, disp); }
+{ return findString_internal(string, array[0], count, offset, disp); }
 static QDate checkDate(int year, int month, int day, Status&);
 
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
