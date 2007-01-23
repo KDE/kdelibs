@@ -17,7 +17,7 @@ kde4_add_ui_files(sonnetui_LIB_SRCS kspell2ui.ui configui.ui)
 
 kde4_add_library(sonnetui SHARED ${sonnetui_LIB_SRCS})
 
-target_link_libraries(sonnetui  ${KDE4_KDECORE_LIBS} kdeui)
+target_link_libraries(sonnetui  ${KDE4_KDEUI_LIBS})
 
 set_target_properties(sonnetui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS sonnetui  DESTINATION ${LIB_INSTALL_DIR} )

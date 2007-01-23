@@ -21,7 +21,7 @@
 #include "loader.h"
 #include "speller.h"
 
-#include <kapplication.h>
+#include <QCoreApplication>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <qdatetime.h>
@@ -30,8 +30,7 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init(argc, argv, "KSpell2Test", 0, 0, 0, 0);
-    KApplication app;
+    QCoreApplication app(argc,argv);
 
     Loader::Ptr loader = Loader::openLoader();
 

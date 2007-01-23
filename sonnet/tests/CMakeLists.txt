@@ -49,7 +49,7 @@ kde4_automoc(${test_dialog_SRCS})
 
 kde4_add_executable(test_dialog NOGUI RUN_UNINSTALLED ${test_dialog_SRCS})
 
-target_link_libraries(test_dialog ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} )
+target_link_libraries(test_dialog ${KDE4_SONNETUI_LIBS} )
 
 
 ########### next target ###############
@@ -60,7 +60,7 @@ kde4_automoc(${test_highlighter_SRCS})
 
 kde4_add_executable(test_highlighter NOGUI RUN_UNINSTALLED ${test_highlighter_SRCS})
 
-target_link_libraries(test_highlighter ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} )
+target_link_libraries(test_highlighter ${KDE4_SONNETUI_LIBS} )
 
 
 ########### next target ###############
