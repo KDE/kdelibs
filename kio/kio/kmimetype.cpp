@@ -218,7 +218,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t _mode,
                     KMimeMagicResult* result =
                         KMimeMagic::self()->findFileType( path );
 
-                    if ( result && result->isValid() ) {
+                    if ( result && result->isValid() && result->accuracy() > 0 ) {
                         mime = mimeType( result->mimeType() );
                         if (!mime) {
                             kWarning() << "KMimeMagic returned unknown mimetype " << result->mimeType() << endl;
