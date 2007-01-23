@@ -109,6 +109,30 @@ static TYPE *NAME()                                                             
     return _k_static_##NAME;                                                                     \
 }
 
+/**
+ * @overload
+ * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed 
+ * to the object's constructor
+ * 
+ * \param TYPE The type of the global static object. Do not add a *.
+ * \param NAME The name of the function to get a pointer to the global static object.
+ * \param ARGS the list of arguments, between brackets
+ * 
+ * Example:
+ * \code
+ * class A {
+ *      public:   A(const char *s , int i);
+ *   ...  };
+ *
+ * K_GLOBAL_STATIC_WITH_ARG(A, globalA, ("foo", 0) )
+ *
+ * void doSomething()
+ * {
+ *     A *a = globalA();
+ *     ...
+ * }
+ * \endcode
+ */
 #define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                                              \
 static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                           \
 static bool _k_static_##NAME##_destroyed;                                                        \
