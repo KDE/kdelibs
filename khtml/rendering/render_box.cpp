@@ -116,19 +116,22 @@ void RenderBox::restructureParentFlow() {
 
 static inline bool overflowAppliesTo(RenderObject* o) 
 {
-    return  // css 2.1 - 11.1.1
-        // 1) overflow only applies to non-replaced block-level elements, table cells, and inline-block elements
-        (o->isRenderBlock() || o->isTableRow() || o->isTableSection()) &&
-        // 2) overflow on root applies to the viewport
-        !o->isRoot() &&
-        // 3)  overflow on body may apply to the viewport...
-        (!o->isBody()
-        //     ...but only for HTML documents...
-               || !o->document()->isHTMLDocument()
-        //     ...and only when the root has a visible overflow   
-               || !o->document()->documentElement()->renderer()
-               || !o->document()->documentElement()->renderer()->style()
-               ||  o->document()->documentElement()->renderer()->style()->hidesOverflow());
+     // css 2.1-11.1.1
+     // 1) overflow only applies to non-replaced block-level elements, table cells, and inline-block elements
+     if (o->isRenderBlock() || o->isTableRow() || o->isTableSection())
+         // 2) overflow on root applies to the viewport (cf. KHTMLView::layout)
+         if (!o->isRoot())
+             // 3) overflow on body may apply to the viewport...
+             if (!o->isBody()
+                   // ...but only for HTML documents...
+                   || !o->document()->isHTMLDocument()
+                   // ...and only when the root has a visible overflow   
+                   || !o->document()->documentElement()->renderer()
+                   || !o->document()->documentElement()->renderer()->style()
+                   ||  o->document()->documentElement()->renderer()->style()->hidesOverflow())
+                 return true;
+
+     return false; 
 } 
 
 void RenderBox::setStyle(RenderStyle *_style)

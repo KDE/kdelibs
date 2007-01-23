@@ -535,7 +535,7 @@ void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
 
 void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repaint)
 {
-    if (renderer()->style()->overflowX() != OMARQUEE) {
+    if (renderer()->style()->overflowX() != OMARQUEE || !renderer()->hasOverflowClip()) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
 
@@ -731,16 +731,18 @@ void RenderLayer::checkScrollbarsAfterLayout()
 
     bool haveHorizontalBar = m_hBar && m_hBar->isEnabled();
     bool haveVerticalBar = m_vBar && m_vBar->isEnabled();
+    
+    bool hasOvf = m_object->hasOverflowClip();
 
     // overflow:scroll should just enable/disable.
-    if (m_object->style()->overflowX() == OSCROLL)
+    if (hasOvf && m_object->style()->overflowX() == OSCROLL)
         m_hBar->setEnabled(needHorizontalBar);
-    if (m_object->style()->overflowY() == OSCROLL)
+    if (hasOvf && m_object->style()->overflowY() == OSCROLL)
         m_vBar->setEnabled(needVerticalBar);
 
     // overflow:auto may need to lay out again if scrollbars got added/removed.
-    bool scrollbarsChanged = (m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
-                          || (m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar);
+    bool scrollbarsChanged = (hasOvf && m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
+                          || (hasOvf && m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar);
     if (scrollbarsChanged) {
         if (m_object->style()->overflowX() == OAUTO) {
             showScrollbar(Qt::Horizontal, needHorizontalBar);
@@ -1494,7 +1496,8 @@ void RenderLayer::styleChanged()
             sc->dirtyZOrderLists();
     }
 
-    if (m_object->style()->overflowX() == OMARQUEE && m_object->style()->marqueeBehavior() != MNONE) {
+    if (m_object->hasOverflowClip() && 
+         m_object->style()->overflowX() == OMARQUEE && m_object->style()->marqueeBehavior() != MNONE) {
         if (!m_marquee)
             m_marquee = new Marquee(this);
         m_marquee->updateMarqueeStyle();
