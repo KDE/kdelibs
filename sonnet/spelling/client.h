@@ -38,7 +38,7 @@ namespace KSpell2
 {
     class Speller;
 
-    class SONNET_EXPORT Client : public QObject
+    class SONNETCORE_EXPORT Client : public QObject
     {
         Q_OBJECT
     public:

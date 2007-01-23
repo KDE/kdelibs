@@ -28,7 +28,7 @@
 namespace KSpell2
 {
     class Loader;
-    class SONNET_EXPORT ConfigWidget : public QWidget
+    class SONNETUI_EXPORT ConfigWidget : public QWidget
     {
         Q_OBJECT
     public:

@@ -29,8 +29,8 @@
 namespace KSpell2
 {
     class Loader;
-    class SONNET_EXPORT DefaultDictionary : public QObject,
-                                             public Speller
+    class SONNETCORE_EXPORT DefaultDictionary : public QObject,
+                                                public Speller
     {
         Q_OBJECT
     public:

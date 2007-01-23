@@ -31,7 +31,7 @@ namespace KSpell2
 {
     class Loader;
 
-    class SONNET_EXPORT Settings
+    class SONNETCORE_EXPORT Settings
     {
     public:
         ~Settings();

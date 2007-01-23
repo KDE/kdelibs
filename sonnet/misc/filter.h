@@ -37,7 +37,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short struct represents word
      */
-    struct SONNET_EXPORT Word
+    struct SONNETCORE_EXPORT Word
     {
         Word() : start( 0 ), end( true )
             {}
@@ -62,7 +62,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short used to split text into words
      */
-    class SONNET_EXPORT Filter
+    class SONNETCORE_EXPORT Filter
     {
     public:
         static Filter *defaultFilter();

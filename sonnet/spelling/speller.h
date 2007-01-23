@@ -36,7 +36,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short class used for actuall spell checking
      */
-    class SONNET_EXPORT Speller
+    class SONNETCORE_EXPORT Speller
     {
     public:
         virtual ~Speller();

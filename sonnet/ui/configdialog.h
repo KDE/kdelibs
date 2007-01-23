@@ -27,7 +27,7 @@
 namespace KSpell2
 {
     class Loader;
-    class SONNET_EXPORT ConfigDialog : public KDialog
+    class SONNETUI_EXPORT ConfigDialog : public KDialog
     {
         Q_OBJECT
     public:

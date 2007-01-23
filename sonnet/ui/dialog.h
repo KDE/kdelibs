@@ -30,7 +30,7 @@ namespace KSpell2
 {
     class Filter;
     class BackgroundChecker;
-    class SONNET_EXPORT Dialog : public KDialog
+    class SONNETUI_EXPORT Dialog : public KDialog
     {
         Q_OBJECT
     public:

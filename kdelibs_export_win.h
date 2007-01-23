@@ -303,11 +303,19 @@
 # endif
 #endif
 
-#ifndef SONNET_EXPORT
-# ifdef MAKE_SONNET_LIB
-#  define SONNET_EXPORT KDE_EXPORT
+#ifndef SONNETCORE_EXPORT
+# ifdef MAKE_SONNETCORE_LIB
+#  define SONNETCORE_EXPORT KDE_EXPORT
 # else
-#  define SONNET_EXPORT KDE_IMPORT
+#  define SONNETCORE_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef SONNETUI_EXPORT
+# ifdef MAKE_SONNETUI_LIB
+#  define SONNETUI_EXPORT KDE_EXPORT
+# else
+#  define SONNETUI_EXPORT KDE_IMPORT
 # endif
 #endif
 
