@@ -14,7 +14,7 @@ kde4_automoc(${test_suggest_SRCS})
 
 kde4_add_executable(test_suggest NOGUI RUN_UNINSTALLED ${test_suggest_SRCS})
 
-target_link_libraries(test_suggest ${KDE4_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_suggest ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} )
 
 
 ########### next target ###############
@@ -25,7 +25,7 @@ kde4_automoc(${test_filter_SRCS})
 
 kde4_add_executable(test_filter NOGUI RUN_UNINSTALLED ${test_filter_SRCS})
 
-target_link_libraries(test_filter ${KDE4_KDECORE_LIBS} kspell2  ${QT_QTTEST_LIBRARY})
+target_link_libraries(test_filter ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS}  ${QT_QTTEST_LIBRARY})
 
 add_test(kspell2_test_filter ${EXECUTABLE_OUTPUT_PATH}/test_filter)
 
@@ -38,7 +38,7 @@ kde4_automoc(${backgroundtest_SRCS})
 
 kde4_add_executable(backgroundtest RUN_UNINSTALLED ${backgroundtest_SRCS})
 
-target_link_libraries(backgroundtest ${KDE4_KDECORE_LIBS} kspell2 )
+target_link_libraries(backgroundtest ${KDE4_KDEUI_LIBS} ${KDE4_SONNETCORE_LIBS} ${KDE4_SONNETUI_LIBS} )
 
 
 ########### next target ###############
@@ -49,7 +49,7 @@ kde4_automoc(${test_dialog_SRCS})
 
 kde4_add_executable(test_dialog NOGUI RUN_UNINSTALLED ${test_dialog_SRCS})
 
-target_link_libraries(test_dialog ${KDE4_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_dialog ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} )
 
 
 ########### next target ###############
@@ -60,7 +60,7 @@ kde4_automoc(${test_highlighter_SRCS})
 
 kde4_add_executable(test_highlighter NOGUI RUN_UNINSTALLED ${test_highlighter_SRCS})
 
-target_link_libraries(test_highlighter ${KDE4_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_highlighter ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} )
 
 
 ########### next target ###############
@@ -71,7 +71,7 @@ kde4_automoc(${test_configdialog_SRCS})
 
 kde4_add_executable(test_configdialog NOGUI RUN_UNINSTALLED ${test_configdialog_SRCS})
 
-target_link_libraries(test_configdialog ${KDE4_KDECORE_LIBS} kspell2 )
+target_link_libraries(test_configdialog ${KDE4_KDECORE_LIBS} ${KDE4_SONNETUI_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 

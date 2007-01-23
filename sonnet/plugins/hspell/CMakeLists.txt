@@ -10,7 +10,7 @@ kde4_automoc(${kspell_hspell_PART_SRCS})
 
 kde4_add_plugin(kspell_hspell ${kspell_hspell_PART_SRCS})
 
-target_link_libraries(kspell_hspell  ${KDE4_KDECORE_LIBS} kspell2 ${HSPELL_LIBRARIES} )
+target_link_libraries(kspell_hspell  ${KDE4_KDECORE_LIBS} ${KDE4_SONNETCORE_LIBS} ${HSPELL_LIBRARIES} )
 
 install(TARGETS kspell_hspell  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
