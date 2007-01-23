@@ -221,7 +221,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
                     KMimeMagicResult* result =
                             KMimeMagic::self()->findFileType( path );
 
-                    if ( result && result->isValid() )
+                    if ( result && result->isValid() && result->accuracy() > 0 )
                         return mimeType( result->mimeType() );
                 }
             }
