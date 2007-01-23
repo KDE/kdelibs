@@ -27,7 +27,7 @@
 
 #include <kdelibs_export.h>
 
-namespace Sonnet
+namespace KSpell2
 {
     /**
      * Class is returned by from Loader. It acts

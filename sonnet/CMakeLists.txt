@@ -20,6 +20,16 @@ set(sonnetbase_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/sonnet/misc/defaultdictionary.cpp
 )
 
+kde4_automoc(${sonnetbase_STAT_SRCS})
+
+kde4_add_library(sonnetcore SHARED ${sonnetbase_STAT_SRCS})
+
+target_link_libraries(sonnetcore ${KDE4_KDECORE_LIBS} )
+
+set_target_properties(sonnetcore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+install(TARGETS sonnetcore DESTINATION ${LIB_INSTALL_DIR} )
+
+
 # for the subdirs
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
