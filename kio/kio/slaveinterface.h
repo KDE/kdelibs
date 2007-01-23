@@ -50,7 +50,7 @@ class SlaveInterfacePrivate;
    INF_ERROR_PAGE = 22,
    INF_WARNING = 23,
    INF_GETTING_FILE, // Deprecated
-   INF_NEED_PASSWD = 25,
+   INF_UNUSED = 25, // now unused
    INF_INFOMESSAGE,
    INF_META_DATA,
    INF_NETWORK_STATUS,
@@ -157,48 +157,6 @@ protected:
 
     virtual bool dispatch();
     virtual bool dispatch( int _cmd, const QByteArray &data );
-
-   /**
-    * Prompt the user for authrization info (login & password).
-    *
-    * Use this function to request authorization info from the
-    * the end user. For example to open an empty password dialog
-    * using default values:
-    *
-    * \code
-    * KIO::AuthInfo authInfo;
-    * bool result = openPasswordDialog( authInfo );
-    * if ( result )
-    * {
-    *    printf( "Username: %s", result.username.latin1() );
-    *    printf( "Username: %s", result.username.latin1() );
-    * }
-    * \endcode
-    *
-    * You can also pre-set some values like the username before hand
-    * if it is known as well as the comment and caption to be displayed:
-    *
-    * \code
-    * authInfo.comment= "Enter username and password to access acmeone";
-    * authInfo.caption= "Acme Password Dialog";
-    * authInfo.username= "Wily E. kaiody";
-    * bool result = openPasswordDialog( authInfo );
-    * if ( result )
-    * {
-    *    printf( "Username: %s", result.username.latin1() );
-    *    printf( "Username: %s", result.username.latin1() );
-    * }
-    * \endcode
-    *
-    * NOTE: A call to this function can also fail and result
-    * in a return value of @p false, if the UIServer could not
-    * be started for whatever reason.
-     *
-     * @param       info See AuthInfo.
-     * @return      true if user clicks on "OK", false otherwsie.
-     */
-    void openPasswordDialog( KIO::AuthInfo& info );
-
 
     void messageBox( int type, const QString &text, const QString &caption,
                      const QString &buttonYes, const QString &buttonNo );

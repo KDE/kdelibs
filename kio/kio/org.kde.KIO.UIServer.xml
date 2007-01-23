@@ -132,15 +132,6 @@
       <arg name="point" type="s" direction="in"/>
       <arg name="res" type="b" direction="out"/>
     </method>
-    <method name="messageBox">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="type" type="i" direction="in"/>
-      <arg name="text" type="s" direction="in"/>
-      <arg name="caption" type="s" direction="in"/>
-      <arg name="buttonYes" type="s" direction="in"/>
-      <arg name="buttonNo" type="s" direction="in"/>
-      <arg name="buttonCode" type="i" direction="out"/>
-    </method>
     <method name="setJobVisible" >
       <arg name="jobId" type="i" direction="in"/>
       <arg name="visible" type="b" direction="in"/>

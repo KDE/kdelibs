@@ -35,11 +35,9 @@
 
 #include "uiserveriface.h"
 
-#include <kpassworddialog.h>
 #include "slavebase.h"
 #include <kmessagebox.h>
 #include <ksslinfodialog.h>
-#include <ksslcertdialog.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 #include <klocale.h>
@@ -342,48 +340,6 @@ void Observer::unmounting(KJob *job, const QString &point)
 }
 
 /// ===========================================================
-
-
-bool Observer::openPasswordDialog(const QString &prompt, QString &user,
-                                   QString &pass, bool readOnly)
-{
-    AuthInfo info;
-    info.prompt = prompt;
-    info.username = user;
-    info.password = pass;
-    info.readOnly = readOnly;
-    bool result = openPasswordDialog (info);
-    if (result)
-    {
-        user = info.username;
-        pass = info.password;
-    }
-    return result;
-}
-
-bool Observer::openPasswordDialog(KIO::AuthInfo &info)
-{
-    kDebug(KDEBUG_OBSERVER) << "Observer::openPasswordDialog: User= " << info.username
-                             << ", Message= " << info.prompt << endl;
-
-    KPasswordDialog::KPasswordDialogFlags flags=KPasswordDialog::ShowUsernameLine;
-    if(info.keepPassword)
-        flags |= KPasswordDialog::ShowKeepPassword;
-    KPasswordDialog dlg(0L, flags);
-    dlg.setPrompt(info.prompt);
-    dlg.setUsername(info.username);
-    dlg.setPassword(info.password);
-
-    if(!dlg.exec())
-        return false;
-
-    info.username=dlg.username();
-    info.password=dlg.password();
-    info.keepPassword = dlg.keepPassword();
-
-    info.setModified(true);
-    return true;
-}
 
 int Observer::messageBox(int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,

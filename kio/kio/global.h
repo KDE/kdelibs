@@ -157,7 +157,7 @@ namespace KIO
     CMD_DEL = 'K', // 75
     CMD_CHMOD = 'L', // 76
     CMD_SPECIAL = 'M', // 77
-    CMD_USERPASS = 'N', // 78
+    // 'N', // 78  - currently unused
     CMD_REPARSECONFIGURATION = 'O', // 79
     CMD_META_DATA = 'P', // 80
     CMD_SYMLINK = 'Q', // 81

@@ -331,12 +331,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 	emit warning( str1 );
 	break;
-    case INF_NEED_PASSWD: {
-        AuthInfo info;
-       	stream >> info;
-	openPasswordDialog( info );
-	break;
-    }
     case INF_MESSAGEBOX: {
 	kDebug(7007) << "needs a msg box" << endl;
 	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
@@ -412,30 +406,6 @@ void SlaveInterface::sendResumeAnswer( bool resume )
 {
     kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
     m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
-}
-
-
-void SlaveInterface::openPasswordDialog( AuthInfo& info )
-{
-    kDebug(7007) << "SlaveInterface::openPasswordDialog: "
-                  << "User= " << info.username
-                  << ", Message= " << info.prompt << endl;
-    bool result = Observer::self()->openPasswordDialog( info );
-    if ( m_pConnection )
-    {
-        QByteArray data;
-        QDataStream stream( &data, QIODevice::WriteOnly );
-        if ( result )
-        {
-            stream << info;
-            kDebug(7007) << "SlaveInterface:::openPasswordDialog got: "
-                          << "User= " << info.username
-                          << ", Password= [hidden]" << endl;
-            m_pConnection->sendnow( CMD_USERPASS, data );
-        }
-        else
-            m_pConnection->sendnow( CMD_NONE, data );
-    }
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,

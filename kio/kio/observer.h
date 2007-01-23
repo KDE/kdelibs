@@ -135,20 +135,6 @@ public:
     void jobFinished(int progressId);
 
     /**
-      * @deprecated use KIO::AutoInfo
-      */
-    bool openPasswordDialog(const QString& prompt, QString& user, QString& pass,
-                             bool readOnly);
-
-    /**
-      * Opens a password dialog
-      *
-      * @param info the authentication information
-      * @return     true if successful ("ok" clicked), false otherwise
-      */
-    bool openPasswordDialog(KIO::AuthInfo& info);
-
-    /**
       * Popup a message box. See KIO::SlaveBase
       * This doesn't use DBus anymore, it shows the dialog in the application's process
       * Otherwise, other apps would block when trying to communicate with UIServer
