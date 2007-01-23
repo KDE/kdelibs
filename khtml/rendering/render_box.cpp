@@ -114,6 +114,23 @@ void RenderBox::restructureParentFlow() {
     }
 }
 
+static inline bool overflowAppliesTo(RenderObject* o) 
+{
+    return  // css 2.1 - 11.1.1
+        // 1) overflow only applies to non-replaced block-level elements, table cells, and inline-block elements
+        (o->isRenderBlock() || o->isTableRow() || o->isTableSection()) &&
+        // 2) overflow on root applies to the viewport
+        !o->isRoot() &&
+        // 3)  overflow on body may apply to the viewport...
+        (!o->isBody()
+        //     ...but only for HTML documents...
+               || !o->document()->isHTMLDocument()
+        //     ...and only when the root has a visible overflow   
+               || !o->document()->documentElement()->renderer()
+               || !o->document()->documentElement()->renderer()->style()
+               ||  o->document()->documentElement()->renderer()->style()->hidesOverflow());
+} 
+
 void RenderBox::setStyle(RenderStyle *_style)
 {
     bool affectsParent = style() && isFloatingOrPositioned() &&
@@ -155,12 +172,9 @@ void RenderBox::setStyle(RenderStyle *_style)
             setRelPositioned(true);
     }
 
-    // We also handle <body> and <html>, whose overflow applies to the viewport.
-    if (!isRoot() && (!isBody() || !document()->isHTMLDocument()) && (isRenderBlock() || isTableRow() || isTableSection())) {
-         if (_style->hidesOverflow())
-            setHasOverflowClip();
-    }
-
+    if (overflowAppliesTo(this) && _style->hidesOverflow())
+        setHasOverflowClip();
+        
     if (requiresLayer()) {
         if (!m_layer) {
             m_layer = new (renderArena()) RenderLayer(this);

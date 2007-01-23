@@ -783,16 +783,21 @@ void KHTMLView::layout()
         } else {
             ref = root;
         }
-
         if (ref) {
-            if( ref->style()->overflowX() == OHIDDEN )
-                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            else
-                if (QScrollArea::horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
-            if ( ref->style()->overflowY() == OHIDDEN )
+            if( ref->style()->overflowX() == OHIDDEN ) {
+                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+            } else if (ref->style()->overflowX() == OSCROLL ) {
+                if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+            } else {
+                QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
+            }
+            if ( ref->style()->overflowY() == OHIDDEN ) {
                 if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            else
-                if (QScrollArea::verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
+            } else if (ref->style()->overflowY() == OSCROLL ) {
+                if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+            } else {
+                QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
+            }
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
