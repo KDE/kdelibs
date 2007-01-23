@@ -1346,6 +1346,9 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.above = None;
         c.override_redirect = 0;
         XSendEvent( qt_xdisplay(), c.event, true, StructureNotifyMask, (XEvent*)&c );
+        // Yes, this doesn't make sense at all. See the commit message.
+        XSetWindowBorderWidth( qt_xdisplay(), window, 1 );
+        XSetWindowBorderWidth( qt_xdisplay(), window, 0 );
     }
 }
 
