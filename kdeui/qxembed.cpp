@@ -1331,6 +1331,7 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
     //        See http://lists.kde.org/?l=kfm-devel&m=107090222032378
     QPoint globalPos = mapToGlobal(QPoint(0,0));
     if (window) {
+#if 0
         XConfigureEvent c;
         memset(&c, 0, sizeof(c));
         c.type = ConfigureNotify;
@@ -1346,6 +1347,7 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.above = None;
         c.override_redirect = 0;
         XSendEvent( qt_xdisplay(), c.event, true, StructureNotifyMask, (XEvent*)&c );
+#endif
         // Yes, this doesn't make sense at all. See the commit message.
         XSetWindowBorderWidth( qt_xdisplay(), window, 1 );
         XSetWindowBorderWidth( qt_xdisplay(), window, 0 );
