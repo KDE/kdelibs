@@ -64,13 +64,74 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qstring_qstring(" Another \n\r Test!   $%&\" ") == " Another \n\r Test!   $%&\" " )
 	end
 
+	def testSize
+		assert_raises(TypeError) { TestObject1.func_qsize_qsize(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qsize_qsize([0]) }
+		#assert_raises(TypeError) { TestObject1.func_qsize_qsize([0,0,0]) }
+		#assert( TestObject1.func_qsize_qsize( [0,0] ) == [0,0] )
+		assert( TestObject1.func_qsize_qsize( [12,-94] ) == [12,-94] )
+		assert( TestObject1.func_qsize_qsize( [-7264,6224] ) == [-7264,6224] )
+	end
+
+	def testSizeF
+		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qsizef_qsizef([0.0]) }
+		#assert_raises(TypeError) { TestObject1.func_qsizef_qsizef([0.0,0.0,0.0]) }
+		#assert( TestObject1.func_qsizef_qsizef( [0.0,0.0] ) == [0.0,0.0] )
+		assert( TestObject1.func_qsizef_qsizef( [-956.0,75.0] ) == [-956.0,75.0] )
+		assert( TestObject1.func_qsizef_qsizef( [-14.21,-535.0] ) == [-14.21,-535.0] )
+		assert( TestObject1.func_qsizef_qsizef( [26,-525] ) == [26,-525] )
+		assert( TestObject1.func_qsizef_qsizef( [-956.0,75.21] ) == [-956.0,75.21] )
+	end
+
+	def testPoint
+		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qpoint_qpoint([0]) }
+		#assert_raises(TypeError) { TestObject1.func_qpoint_qpoint([0,0,0]) }
+		#assert( TestObject1.func_qpoint_qpoint( [0,0] ) == [0,0] )
+		assert( TestObject1.func_qpoint_qpoint( [12,-94] ) == [12,-94] )
+		assert( TestObject1.func_qpoint_qpoint( [-7264,6224] ) == [-7264,6224] )
+	end
+
+	def testPointF
+		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qpointf_qpointf([0.0]) }
+		#assert_raises(TypeError) { TestObject1.func_qpointf_qpointf([0.0,0.0,0.0]) }
+		#assert( TestObject1.func_qpointf_qpointf( [0.0,0.0] ) == [0.0,0.0] )
+		assert( TestObject1.func_qpointf_qpointf( [-956.0,751.0] ) == [-956.0,751.0] )
+		assert( TestObject1.func_qpointf_qpointf( [-82.3172,17.0] ) == [-82.3172,17.0] )
+		assert( TestObject1.func_qpointf_qpointf( [1.2,2.3] ) == [1.2,2.3] )
+		assert( TestObject1.func_qpointf_qpointf( [-956.03,751.4165] ) == [-956.03,751.4165] )
+	end
+
+	def testRect
+		assert_raises(TypeError) { TestObject1.func_qrect_qrect(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qrect_qrect([0,0,0]) }
+		#assert_raises(TypeError) { TestObject1.func_qrect_qrect([0,0,0,0,0]) }
+		#assert( TestObject1.func_qrect_qrect( [0,0,0,0] ) == [0,0,0,0] )
+		assert( TestObject1.func_qrect_qrect( [-1,-2,3,4] ) == [-1,-2,3,4] )
+		assert( TestObject1.func_qrect_qrect( [1,2,-3,-4] ) == [1,2,-3,-4] )
+		assert( TestObject1.func_qrect_qrect( [-10,-20,30,40] ) == [-10,-20,30,40] )
+		assert( TestObject1.func_qrect_qrect( [10,20,30,40] ) == [10,20,30,40] )
+		assert( TestObject1.func_qrect_qrect( [10,20,-30,-40] ) == [10,20,-30,-40] )
+	end
+
+	def testRectF
+		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qrectf_qrectf([0.0,0.0,0.0]) }
+		#assert_raises(TypeError) { TestObject1.func_qrectf_qrectf([0.0,0.0,0.0,0.0,0.0]) }
+		#assert( TestObject1.func_qrectf_qrectf( [0.0,0.0,0.0,0.0] ) == [0.0,0.0,0.0,0.0] )
+		assert( TestObject1.func_qrectf_qrectf( [-1.0,-2.0,3.0,4.0] ) == [-1.0,-2.0,3.0,4.0] )
+		assert( TestObject1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
+	end
+
 	def testStringList
 		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(nil) }
 		assert( TestObject1.func_qstringlist_qstringlist( [] ) == [] )
 		assert( TestObject1.func_qstringlist_qstringlist( ["string1"] ) == ["string1"] )
 		assert( TestObject1.func_qstringlist_qstringlist( [" string1","string2 "] ) == [" string1","string2 "] )
 	end
- 
+
 	def testVariantList
 		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(nil) }
 		assert( TestObject1.func_qvariantlist_qvariantlist( [] ) == [] )
@@ -88,7 +149,7 @@ class TestKross < Test::Unit::TestCase
 		#assert( {" key1 ":[12.5,True]," key2 ":[83.002,"test"]} )
 	end
 
-	def testVariant
+	#def testVariant
 		#assert( TestObject1.func_qvariant_qvariant(0.0) == 0.0 )
 		#assert( TestObject1.func_qvariant_qvariant(true) == true )
 		#assert( TestObject1.func_qvariant_qvariant(false) == false )
@@ -97,7 +158,7 @@ class TestKross < Test::Unit::TestCase
 		#assert( TestObject1.func_qvariant_qvariant(8632.274) == 8632.274 )
 		#assert( TestObject1.func_qvariant_qvariant(-8632.351) == -8632.351 )
 		#assert( TestObject1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
-	end
+	#end
 
 	def testObject
 		assert( TestObject1.name() == "TestObject1" )
@@ -148,3 +209,4 @@ Test::Unit::UI::Console::TestRunner.run(TestKross)
 #require "TestObject1"
 #puts "=======> " + TestObject1.func_bool_bool(false).to_s()
 #puts "=======> " + TestObject1.func_bool_bool(true).to_s()
+#puts "=======> " + TestObject1.func_qpoint_qpoint( [0,0] ).inspect()

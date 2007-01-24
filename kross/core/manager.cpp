@@ -160,7 +160,8 @@ Manager::Manager()
     // fill the list of supported interpreternames.
     QHash<QString, InterpreterInfo*>::Iterator it( d->interpreterinfos.begin() );
     for(; it != d->interpreterinfos.end(); ++it)
-        d->interpreters << it.key();
+        if( it.value() )
+            d->interpreters << it.key();
     //d->interpreters.sort();
 
     // publish ourself.
@@ -182,12 +183,12 @@ QHash< QString, InterpreterInfo* > Manager::interpreterInfos() const
 
 bool Manager::hasInterpreterInfo(const QString& interpretername) const
 {
-    return d->interpreterinfos.contains(interpretername);
+    return d->interpreterinfos.contains(interpretername) && d->interpreterinfos[interpretername];
 }
 
 InterpreterInfo* Manager::interpreterInfo(const QString& interpretername) const
 {
-    return d->interpreterinfos[interpretername];
+    return hasInterpreterInfo(interpretername) ? d->interpreterinfos[interpretername] : 0;
 }
 
 const QString Manager::interpreternameForFile(const QString& file)
@@ -195,16 +196,18 @@ const QString Manager::interpreternameForFile(const QString& file)
     QRegExp rx;
     rx.setPatternSyntax(QRegExp::Wildcard);
     for(QHash<QString, InterpreterInfo*>::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it) {
-        rx.setPattern((*it)->wildcard());
+        if( ! it.value() )
+            continue;
+        rx.setPattern( it.value()->wildcard() );
         if( file.contains(rx) )
-            return (*it)->interpreterName();
+            return it.value()->interpreterName();
     }
     return QString();
 }
 
 Interpreter* Manager::interpreter(const QString& interpretername) const
 {
-    if(! d->interpreterinfos.contains(interpretername)) {
+    if( ! hasInterpreterInfo(interpretername) ) {
         krosswarning( QString("No such interpreter '%1'").arg(interpretername) );
         return 0;
     }

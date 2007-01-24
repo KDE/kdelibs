@@ -65,7 +65,7 @@ static KCmdLineOptions options[] =
 QString getInterpreterName(const QString& scriptfile)
 {
     Kross::InterpreterInfo* interpreterinfo = Kross::Manager::self().interpreterInfo( Kross::Manager::self().interpreternameForFile(scriptfile) );
-    return interpreterinfo ? interpreterinfo->interpreterName() : "python";
+    return interpreterinfo ? interpreterinfo->interpreterName() : QString();
 }
 
 int readFile(const QString& scriptfile, QString& content)
@@ -114,6 +114,10 @@ int runScriptFile(const QString& scriptfile)
 
     // Determinate the matching interpreter
     QString interpretername = getInterpreterName(scriptfile);
+    if( interpretername.isNull() ) {
+        std::cerr << "No interpreter for scriptfile: " << scriptfile.toLatin1().data() << std::endl;
+        return ERROR_NOINTERPRETER;
+    }
 
     // Create the testobject instances.
     TestObject* testobj3 = new TestObject(0, "TestObject3");
