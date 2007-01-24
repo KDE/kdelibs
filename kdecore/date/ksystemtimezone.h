@@ -107,8 +107,6 @@ public:
      * data the system holds.
      *
      * @param name name of time zone
-     * @param fullData @p true to read full data from system time zone database,
-     *                 @p false to use system libraries
      * @return time zone (usually a KTzfileTimeZone instance), or 0 if not found.
      *         It is the caller's responsibility to delete the returned object.
      * @see zone()
