@@ -674,7 +674,7 @@ void CopyJob::slotResultCreatingDirs( KJob * job )
                 // Did the user choose to overwrite already?
                 const QString destFile = (*it).uDest.path();
                 if ( shouldOverwrite( destFile ) ) { // overwrite => just skip
-                    emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
+                    emit copyingDone( this, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if ( !isInteractive() ) {
@@ -707,7 +707,7 @@ void CopyJob::slotResultCreatingDirs( KJob * job )
     else // no error : remove from list, to move on to next dir
     {
         //this is required for the undo feature
-        emit copyingDone( this, (*it).uSource, (*it).uDest, true, false );
+        emit copyingDone( this, (*it).uSource, (*it).uDest, (*it).mtime, true, false );
         d->m_directoriesCopied.append( *it );
         dirs.erase( it );
     }
@@ -826,14 +826,14 @@ void CopyJob::slotResultConflictCreatingDirs( KJob * job )
             break;
         case R_OVERWRITE:
             m_overwriteList.append( existingDest );
-            emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
+            emit copyingDone( this, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
             m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
-            emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
+            emit copyingDone( this, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
             m_processedDirs++;
@@ -964,7 +964,7 @@ void CopyJob::slotResultCopyingFiles( KJob * job )
         }
         else
             //required for the undo feature
-            emit copyingDone( this, (*it).uSource, (*it).uDest, false, false );
+            emit copyingDone( this, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
         // remove from list, to move on to next file
         files.erase( it );
     }
@@ -1408,6 +1408,7 @@ void CopyJob::slotResultSettingDirAttributes( KJob * job )
 }
 #endif
 
+// We were trying to do a direct renaming, before even stat'ing
 void CopyJob::slotResultRenaming( KJob* job )
 {
     int err = job->error();
@@ -1592,7 +1593,7 @@ void CopyJob::slotResultRenaming( KJob* job )
     else
     {
         //kDebug(7007) << "Renaming succeeded, move on" << endl;
-        emit copyingDone( this, *m_currentStatSrc, dest, true, true );
+        emit copyingDone( this, *m_currentStatSrc, dest, -1 /*mtime unknown, and not needed*/, true, true );
         statNextSrc();
     }
 }

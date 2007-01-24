@@ -199,12 +199,14 @@ namespace KIO {
 	 * @param job the job that emitted this signal
          * @param from the source URL
          * @param to the destination URL
+         * @param mtime the modification time of the source file, hopefully set on the destination file
+         * too (when the kioslave supports it).
          * @param directory indicates whether a file or directory was successfully copied/moved.
 	 *                  true for a directory, false for file
          * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving). true if is has been renamed
          */
-        void copyingDone( KIO::Job *job, const KUrl &from, const KUrl &to, bool directory, bool renamed );
+        void copyingDone( KIO::Job *job, const KUrl &from, const KUrl &to, time_t mtime, bool directory, bool renamed );
         /**
          * The job is copying or moving a symbolic link, that points to target.
          * The new link is created in @p to. The existing one is/was in @p from.
