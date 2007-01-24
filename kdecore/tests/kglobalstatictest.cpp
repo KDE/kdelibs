@@ -30,6 +30,8 @@ int main(int, char**)
     Q_ASSERT(!globalA.isDestroyed());
     A *a = globalA;
     Q_ASSERT(a);
+    A &x = *globalA;
+    Q_ASSERT(a == &x);
     Q_ASSERT(a == globalA);
     Q_ASSERT(globalA->i == 1);
     Q_ASSERT(!globalA.isDestroyed());
