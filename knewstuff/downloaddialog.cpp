@@ -269,7 +269,7 @@ void DownloadDialog::addProvider(Provider *p)
 
   box->addLayout(vbox);
 
-  connect(rt, SIGNAL(linkClicked(const QString&)), SLOT(slotEmail(const QString&)));
+  connect(rt, SIGNAL(anchorClicked(const QUrl &)), SLOT(slotEmail(const QUrl &)));
 
   connect(in, SIGNAL(clicked()), SLOT(slotInstall()));
   connect(de, SIGNAL(clicked()), SLOT(slotDetails()));
@@ -689,7 +689,7 @@ void DownloadDialog::slotSelected()
   }
 }
 
-void DownloadDialog::slotEmail(const QString& link)
+void DownloadDialog::slotEmail(const QUrl &link)
 {
   kDebug() << "EMAIL: " << link << endl;
   KToolInvocation::invokeMailer(link);

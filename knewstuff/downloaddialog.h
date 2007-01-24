@@ -179,7 +179,7 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KPageDialog
     void slotSelected();
     void slotPage(KPageWidgetItem *current);
     void slotFinish();
-    void slotEmail(const QString& link);
+    void slotEmail(const QUrl& link);
 
   private:
     void init(Engine *e);
