@@ -925,21 +925,21 @@ QPalette KGlobalSettings::createApplicationPalette( KConfigBase *config, int con
         disfg = Qt::darkGray;
 
     QPalette palette;
-    palette.setColor( QPalette::Active, QPalette::Foreground, foreground );
-    palette.setColor( QPalette::Active, QPalette::Window, background );
-    palette.setColor( QPalette::Active, QPalette::Light, background.light( highlightVal ) );
-    palette.setColor( QPalette::Active, QPalette::Dark, background.dark( lowlightVal ) );
-    palette.setColor( QPalette::Active, QPalette::Midlight, background.dark( 120 ) );
-    palette.setColor( QPalette::Active, QPalette::Text, baseText );
-    palette.setColor( QPalette::Active, QPalette::Base, base );
+    palette.setColor( QPalette::Foreground, foreground );
+    palette.setColor( QPalette::Window, background );
+    palette.setColor( QPalette::Light, background.light( highlightVal ) );
+    palette.setColor( QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setColor( QPalette::Midlight, background.dark( 120 ) );
+    palette.setColor( QPalette::Text, baseText );
+    palette.setColor( QPalette::Base, base );
 
-    palette.setColor( QPalette::Active, QPalette::Highlight, highlight );
-    palette.setColor( QPalette::Active, QPalette::HighlightedText, highlightedText );
-    palette.setColor( QPalette::Active, QPalette::Button, button );
-    palette.setColor( QPalette::Active, QPalette::ButtonText, buttonText );
-    palette.setColor( QPalette::Active, QPalette::Midlight, background.light( 110 ) );
-    palette.setColor( QPalette::Active, QPalette::Link, link );
-    palette.setColor( QPalette::Active, QPalette::LinkVisited, visitedLink );
+    palette.setColor( QPalette::Highlight, highlight );
+    palette.setColor( QPalette::HighlightedText, highlightedText );
+    palette.setColor( QPalette::Button, button );
+    palette.setColor( QPalette::ButtonText, buttonText );
+    palette.setColor( QPalette::Midlight, background.light( 110 ) );
+    palette.setColor( QPalette::Link, link );
+    palette.setColor( QPalette::LinkVisited, visitedLink );
 
     palette.setColor( QPalette::Disabled, QPalette::Foreground, disfg );
     palette.setColor( QPalette::Disabled, QPalette::Window, background );
