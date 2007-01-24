@@ -368,12 +368,13 @@ input[type="hidden"] {
 input[type="radio"], input[type="checkbox"] {
         margin: 0 0.5ex;
         background-color: window;
+        color: windowtext;
         -khtml-background-clip: padding;
-        color: buttontext;
 }
 
 input[type="text"], input[type="password"] {
         background-color: window;
+        color: windowtext;
         -khtml-background-clip: padding;
 	cursor: text;
 }
@@ -382,6 +383,11 @@ input[type="submit"], input[type="reset"], input[type="button"] {
         background-color: buttonface;
         -khtml-background-clip: padding;
         color: buttontext;
+}
+
+input[type="file"] {
+        background-color: window;
+        color: windowtext;
 }
 
 isindex { color: windowtext; font-size: small; }
