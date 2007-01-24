@@ -317,6 +317,8 @@ public:
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
     DOM::NodeImpl* node() const { return m_node; }
+    
+    virtual bool handleEvent(const DOM::EventImpl&) { return false; };
 
    /**
      * returns the object containing this one. can be different from parent for

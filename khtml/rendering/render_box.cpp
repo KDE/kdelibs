@@ -6,6 +6,7 @@
  *           (C) 2002-2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Samuel Weinig (sam.weinig@gmail.com)
+ *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +32,7 @@
 #include <qpainter.h>
 
 #include "misc/loader.h"
+#include "rendering/render_form.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_canvas.h"
 #include "rendering/render_table.h"
@@ -41,8 +43,10 @@
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom2_eventsimpl.h"
 #include "html/html_elementimpl.h"
 
+#include <QWheelEvent>
 #include <khtmlview.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -2202,6 +2206,55 @@ int RenderBox::crossesPageBreak(int t, int b) const
         return cb->crossesPageBreak(yPos()+t, yPos()+b);
     else
         return false;
+}
+
+bool RenderBox::handleEvent(const DOM::EventImpl& e) 
+{
+    if ( e.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT && scrollsOverflow()) {
+
+        const MouseEventImpl& me = static_cast<const MouseEventImpl&>(e);
+        Qt::MouseButtons buttons = Qt::NoButton;
+        Qt::KeyboardModifiers state = 0;
+        Qt::Orientation orient = Qt::Vertical;
+
+        switch (me.button()) {
+        case 0:
+            buttons = Qt::LeftButton;
+            break;
+        case 1:
+            buttons = Qt::MidButton;
+            break;
+        case 2:
+            buttons = Qt::RightButton;
+            break;
+        default:
+            break;
+        }
+
+        if (me.orientation() == MouseEventImpl::OHorizontal)
+            orient = Qt::Horizontal;
+
+        int absx = 0;
+        int absy = 0;
+        absolutePosition(absx, absy);
+        absx += borderLeft()+paddingLeft();
+        absy += borderTop()+paddingTop();
+        QPoint p(me.clientX() - absx + canvas()->view()->contentsX(),
+                 me.clientY() - absy + canvas()->view()->contentsY());
+
+        QWheelEvent we(p, -me.detail()*40, buttons, state, orient);
+        KHTMLAssert(layer());
+        if (orient == Qt::Vertical) {
+            if (QWidget* w = dynamic_cast<QWidget*>( layer()->verticalScrollbar() ))
+                QApplication::sendEvent( w, &we);
+        } else {
+            if (QWidget* w = dynamic_cast<QWidget*>( layer()->horizontalScrollbar() ))
+                QApplication::sendEvent( w, &we);
+        }
+        if (we.isAccepted())
+            return true;
+    }
+    return RenderContainer::handleEvent(e);
 }
 
 void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height)

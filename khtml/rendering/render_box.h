@@ -120,6 +120,8 @@ public:
 
     virtual int pageTopAfter(int y) const;
     virtual int crossesPageBreak(int t, int b) const;
+    
+    virtual bool handleEvent(const DOM::EventImpl& ev);
 
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
