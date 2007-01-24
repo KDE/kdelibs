@@ -32,20 +32,14 @@ class KStaticDeleterList;
 class KStringDict;
 class QString;
 
-template<typename T>
+typedef void (*KdeCleanUpFunction)();
+
 class KCleanUpGlobalStatic
 {
     public:
-        QBasicAtomicPointer<T> *pointer;
-        bool *destroyed;
+        KdeCleanUpFunction func;
 
-        inline ~KCleanUpGlobalStatic()
-        {
-            *destroyed = true;
-            T* x = *pointer;
-            pointer->init(0);
-            delete x;
-        }
+        inline ~KCleanUpGlobalStatic() { func(); }
 };
 
 /**
@@ -60,54 +54,78 @@ class KCleanUpGlobalStatic
  * \param NAME The name of the function to get a pointer to the global static object.
  *
  * If you have code that might be called after the global object has been destroyed you can check
- * for that using the _isDestroyed() function.
+ * for that using the isDestroyed() function.
+ *
+ * If needed you can also install a qPostRoutine to clean up the object using the destroy() method.
  *
  * Example:
  * \code
  * class A { ... };
  *
- * K_GLOBAL_STATIC(A, globalA)
+ * K_GLOBAL_STATIC(A, globalA);
  *
  * void doSomething()
  * {
- *     A *a = globalA();
+ *     A *a = globalA;
  *     ...
  * }
  *
  * void doSomethingElse()
  * {
- *     if (globalA_isDestroyed()) {
+ *     if (globalA.isDestroyed()) {
  *         return;
  *     }
- *     A *a = globalA();
+ *     A *a = globalA;
  *     ...
+ * }
+ *
+ * void installPostRoutine()
+ * {
+ *     qAddPostRoutine(globalA.destroy);
  * }
  * \endcode
  */
-#define K_GLOBAL_STATIC(TYPE, NAME)                                                              \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                           \
-static bool _k_static_##NAME##_destroyed;                                                        \
-static inline bool NAME##_isDestroyed()                                                          \
-{                                                                                                \
-    return _k_static_##NAME##_destroyed;                                                         \
-}                                                                                                \
-static TYPE *NAME()                                                                              \
-{                                                                                                \
-    if (!_k_static_##NAME) {                                                                     \
-        if (_k_static_##NAME##_destroyed) {                                                      \
-            qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. "          \
-                   "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);                        \
-        }                                                                                        \
-        TYPE *x = new TYPE;                                                                      \
-        if (!_k_static_##NAME.testAndSet(0, x)) {                                                \
-            delete x;                                                                            \
-        } else {                                                                                 \
-            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME,               \
-                &_k_static_##NAME##_destroyed };                                                 \
-        }                                                                                        \
-    }                                                                                            \
-    return _k_static_##NAME;                                                                     \
-}
+#define K_GLOBAL_STATIC(TYPE, NAME)                                            \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
+static bool _k_static_##NAME##_destroyed = false;                              \
+static struct                                                                  \
+{                                                                              \
+    inline bool isDestroyed()                                                  \
+    {                                                                          \
+        return _k_static_##NAME##_destroyed;                                   \
+    }                                                                          \
+    inline operator TYPE*()                                                    \
+    {                                                                          \
+        return operator->();                                                   \
+    }                                                                          \
+    inline TYPE *operator->()                                                  \
+    {                                                                          \
+        if (!_k_static_##NAME) {                                               \
+            if (isDestroyed()) {                                               \
+                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
+                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
+            }                                                                  \
+            TYPE *x = new TYPE;                                                \
+            if (!_k_static_##NAME.testAndSet(0, x)) {                          \
+                delete x;                                                      \
+            } else {                                                           \
+                static KCleanUpGlobalStatic cleanUpObject = { destroy };       \
+            }                                                                  \
+        }                                                                      \
+        return _k_static_##NAME;                                               \
+    }                                                                          \
+    inline TYPE &operator*()                                                   \
+    {                                                                          \
+        return *operator->();                                                  \
+    }                                                                          \
+    static void destroy()                                                      \
+    {                                                                          \
+        _k_static_##NAME##_destroyed = true;                                   \
+        TYPE *x = _k_static_##NAME;                                            \
+        _k_static_##NAME.init(0);                                              \
+        delete x;                                                              \
+    }                                                                          \
+} NAME
 
 /**
  * @overload
@@ -133,30 +151,47 @@ static TYPE *NAME()                                                             
  * }
  * \endcode
  */
-#define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                                              \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);                           \
-static bool _k_static_##NAME##_destroyed;                                                        \
-static inline bool NAME##_isDestroyed()                                                          \
-{                                                                                                \
-    return _k_static_##NAME##_destroyed;                                                         \
-}                                                                                                \
-static TYPE *NAME()                                                                              \
-{                                                                                                \
-    if (!_k_static_##NAME) {                                                                     \
-        if (_k_static_##NAME##_destroyed) {                                                      \
-            qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. "          \
-                   "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);                        \
-        }                                                                                        \
-        TYPE *x = new TYPE ARGS;                                                                 \
-        if (!_k_static_##NAME.testAndSet(0, x)) {                                                \
-            delete x;                                                                            \
-        } else {                                                                                 \
-            static KCleanUpGlobalStatic<TYPE> cleanUpObject = { &_k_static_##NAME,               \
-                &_k_static_##NAME##_destroyed };                                                 \
-        }                                                                                        \
-    }                                                                                            \
-    return _k_static_##NAME;                                                                     \
-}
+#define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
+static bool _k_static_##NAME##_destroyed;                                      \
+static struct                                                                  \
+{                                                                              \
+    bool isDestroyed()                                                         \
+    {                                                                          \
+        return _k_static_##NAME##_destroyed;                                   \
+    }                                                                          \
+    inline operator TYPE*()                                                    \
+    {                                                                          \
+        return operator->();                                                   \
+    }                                                                          \
+    inline TYPE *operator->()                                                  \
+    {                                                                          \
+        if (!_k_static_##NAME) {                                               \
+            if (isDestroyed()) {                                               \
+                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
+                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
+            }                                                                  \
+            TYPE *x = new TYPE ARGS;                                           \
+            if (!_k_static_##NAME.testAndSet(0, x)) {                          \
+                delete x;                                                      \
+            } else {                                                           \
+                static KCleanUpGlobalStatic cleanUpObject = { destroy };       \
+            }                                                                  \
+        }                                                                      \
+        return _k_static_##NAME;                                               \
+    }                                                                          \
+    inline TYPE &operator*()                                                   \
+    {                                                                          \
+        return *operator->();                                                  \
+    }                                                                          \
+    static void destroy()                                                      \
+    {                                                                          \
+        _k_static_##NAME##_destroyed = true;                                   \
+        TYPE *x = _k_static_##NAME;                                            \
+        _k_static_##NAME.init(0);                                              \
+        delete x;                                                              \
+    }                                                                          \
+} NAME
 
 /**
  * Access to the KDE global objects.

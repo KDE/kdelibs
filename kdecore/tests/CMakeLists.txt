@@ -529,5 +529,17 @@ target_link_libraries(kservicetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kservicetest ${EXECUTABLE_OUTPUT_PATH}/kservicetest)
 
+########### kglobalstatictest ###############
+
+set(kglobalstatictest_SRCS kglobalstatictest.cpp )
+
+kde4_automoc(${kglobalstatictest_SRCS})
+
+kde4_add_executable(kglobalstatictest NOGUI RUN_UNINSTALLED ${kglobalstatictest_SRCS})
+
+target_link_libraries(kglobalstatictest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kglobalstatictest ${EXECUTABLE_OUTPUT_PATH}/kglobalstatictest)
+
 #######################################
 
