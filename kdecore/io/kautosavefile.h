@@ -120,7 +120,7 @@ class KAutoSaveFilePrivate;
  *    m_autosave->remove();     // closes the file
  * @endcode
  *
- * @author Someone become the author
+ * @author Jacob R Rideout <kde@jacobrideout.net>
  */
 class KDECORE_EXPORT KAutoSaveFile : public QFile
 {
