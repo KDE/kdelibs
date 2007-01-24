@@ -437,28 +437,6 @@ int Observer::messageBox(int progressId, int type, const QString &text,
     KMessageBox::setDontShowAskAgainConfig(0);
     delete config;
     return result;
-#if 0
-    QByteArray data, replyData;
-    DCOPCString replyType;
-    QDataStream arg(data, QIODevice::WriteOnly);
-    arg << progressId;
-    arg << type;
-    arg << text;
-    arg << caption;
-    arg << buttonYes;
-    arg << buttonNo;
-    if (KApplication::dcopClient()->call("kuiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true)
-        && replyType == "int")
-    {
-        int result;
-        QDataStream _reply_stream(replyData, QIODevice::ReadOnly);
-        _reply_stream >> result;
-        kDebug(KDEBUG_OBSERVER) << "Observer::messageBox got result " << result << endl;
-        return result;
-    }
-    kDebug(KDEBUG_OBSERVER) << "Observer::messageBox call failed" << endl;
-    return 0;
-#endif
 }
 
 RenameDialog_Result Observer::open_RenameDialog(KJob* job,
