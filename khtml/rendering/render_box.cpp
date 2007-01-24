@@ -898,7 +898,7 @@ void RenderBox::calcWidth()
             m_marginRight = mr.minWidth(cw);
             if (treatAsReplaced)
             {
-                m_width = calcBoxWidth(w.width(cw));
+                m_width = w.width(cw) + borderLeft() + borderRight() + paddingLeft() + paddingRight();
                 m_width = qMax(m_width, m_minWidth);
             }
 
@@ -908,7 +908,7 @@ void RenderBox::calcWidth()
         {
             LengthType widthType, minWidthType, maxWidthType;
             if (treatAsReplaced) {
-                m_width = calcBoxWidth(w.width(cw));
+                m_width = w.width(cw) + borderLeft() + borderRight() + paddingLeft() + paddingRight();
                 widthType = w.type();
             } else {
                 m_width = calcWidthUsing(Width, cw, widthType);
@@ -1072,7 +1072,7 @@ void RenderBox::calcHeight()
         else {
             // The only times we don't check min/max height are when a fixed length has
             // been given as an override.  Just use that.
-            height = calcBoxHeight(h.value());
+            height = h.value() + borderTop() + borderBottom() + paddingTop() + paddingBottom();
         }
 
         if (height<m_height && !overhangingContents() && !hasOverflowClip())
@@ -1205,12 +1205,12 @@ int RenderBox::calcReplacedWidthUsing(WidthType widthType) const
 
     switch (w.type()) {
     case Fixed:
-        return w.value();
+        return calcContentWidth(w.value());
     case Percent:
     {
         const int cw = containingBlockWidth();
         if (cw > 0) {
-            int result = w.minWidth(cw);
+            int result = calcContentWidth(w.minWidth(cw));
             return result;
         }
     }
@@ -1246,12 +1246,12 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
         h = style()->maxHeight();
     switch( h.type() ) {
     case Fixed:
-        return h.value();
+        return calcContentHeight(h.value());
     case Percent:
       {
         int th = calcPercentageHeight(h, true);
         if (th != -1)
-            return th;
+            return calcContentHeight(th);
         // fall through
       }
     default:
