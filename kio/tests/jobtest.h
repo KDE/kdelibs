@@ -69,6 +69,7 @@ protected Q_SLOTS:
     void slotGetResult( KJob* );
     void slotDataReq( KIO::Job*, QByteArray& );
     void slotResult( KJob* );
+    void slotMimetype(KIO::Job*, const QString&);
 
 private:
     void enterLoop();
@@ -83,6 +84,7 @@ private:
     QByteArray m_data;
     QStringList m_names;
     int m_dataReqCount;
+    QString m_mimetype;
 };
 
 #endif

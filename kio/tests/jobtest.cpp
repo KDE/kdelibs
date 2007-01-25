@@ -1022,7 +1022,11 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     kDebug() << "copying " << u << " to " << d << endl;
 
     // copy the file with file_copy
-    bool ok = KIO::NetAccess::file_copy( u, d );
+    m_mimetype.clear();
+    KIO::FileCopyJob* job = KIO::file_copy( u, d );
+    connect( job, SIGNAL(mimetype(KIO::Job*,const QString&)),
+             this, SLOT(slotMimetype(KIO::Job*,const QString&)) );
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
 
     QString dest = realSystemPath() + "fileFromHome_copied";
@@ -1035,6 +1039,9 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
         // It can't work with file_copy when it uses the datapump,
         // unless we use setModificationTime in the app code.
     }
+
+    // Check mimetype
+    QCOMPARE(m_mimetype, QString("text/plain"));
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
@@ -1065,6 +1072,12 @@ void JobTest::getInvalidUrl()
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( !ok ); // it should fail :)
+}
+
+void JobTest::slotMimetype(KIO::Job* job, const QString& type)
+{
+    QVERIFY( job != 0 );
+    m_mimetype = type;
 }
 
 #include "jobtest.moc"

@@ -1686,8 +1686,10 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             connectSubjob( m_getJob ); // Progress info depends on get
             m_getJob->internalResume(); // Order a beer
 
-            connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
-                     SLOT( slotData(KIO::Job *, const QByteArray&)));
+            connect( m_getJob, SIGNAL(data(KIO::Job*,const QByteArray&)),
+                     SLOT( slotData(KIO::Job*,const QByteArray&)) );
+            connect( m_getJob, SIGNAL(mimetype(KIO::Job*,const QString&) ),
+                     SLOT(slotMimetype(KIO::Job*,const QString&)) );
         }
         else // copyjob
         {
@@ -1746,6 +1748,11 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
    }
    data = m_buffer;
    m_buffer = QByteArray();
+}
+
+void FileCopyJob::slotMimetype( KIO::Job*, const QString& type )
+{
+    emit mimetype( this, type );
 }
 
 void FileCopyJob::slotResult( KJob *job)

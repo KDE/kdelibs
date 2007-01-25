@@ -314,10 +314,9 @@ void FileProtocol::get( const KUrl& url )
         }
     }
 
-    totalSize( buff.st_size );
-
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
+    bool mimetypeEmitted = false;
 
     while( 1 )
     {
@@ -333,7 +332,20 @@ void FileProtocol::get( const KUrl& url )
        if (n == 0)
           break; // Finished
 
-       array = array.fromRawData(buffer, n);
+       array = QByteArray::fromRawData(buffer, n);
+
+       // get the mime type and set the total size ...
+       if(!mimetypeEmitted)
+       {
+           mimetypeEmitted = true;
+           KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
+           kDebug(7102) << "Emitting mimetype " << mime->name() << endl;
+           mimeType( mime->name() );
+           // Emit total size AFTER mimetype
+           totalSize( buff.st_size );
+       }
+
+
        data( array );
        array.clear();
 
@@ -1268,7 +1280,7 @@ void FileProtocol::listDir( const KUrl& url)
     if ( !dir.exists() ) {
         kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========" << endl;
         error( KIO::ERR_DOES_NOT_EXIST, _path );
-        return; 
+        return;
     }
 
    	// don't knwo how to check
@@ -1277,7 +1289,7 @@ void FileProtocol::listDir( const KUrl& url)
     if ( !dir.isReadable() ) {
         kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========" << endl;
         error( KIO::ERR_CANNOT_ENTER_DIRECTORY, _path );
-        return; 
+        return;
     }
     QFileInfoList list = dir.entryInfoList();
     totalSize( list.size() );

@@ -1827,7 +1827,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     if(!mimetypeEmitted)
     {
       mimetypeEmitted = true;
-      array = array.fromRawData(buffer, n);
+      array = QByteArray::fromRawData(buffer, n);
       KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
       array.clear();
       kDebug(7102) << "ftpGet: Emitting mimetype " << mime->name() << endl;
@@ -1839,9 +1839,9 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     // write output file or pass to data pump ...
     if(iCopyFile == -1)
     {
-       array = array.fromRawData(buffer, n);
-       data( array );
-       array.clear();
+        array = QByteArray::fromRawData(buffer, n);
+        data( array );
+        array.clear();
     }
     else if( (iError = WriteToFile(iCopyFile, buffer, n)) != 0)
        return statusClientError;              // client side error
