@@ -162,4 +162,7 @@ void KStandarddirsTest::testFindExe()
     const QString bin = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !bin.isEmpty() );
     QVERIFY( bin.endsWith( "lib/kde4/libexec/lnusertemp" EXT ) );
+
+    // Check the "exe" resource too
+    QCOMPARE(bin, KGlobal::dirs()->locate("exe", "lnusertemp"));
 }
