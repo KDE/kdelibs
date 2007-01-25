@@ -29,6 +29,7 @@ static KCmdLineOptions options[] =
     { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
     { "types",     I18N_NOOP("Available KDE resource types"), 0 },
     { "path type", I18N_NOOP("Search path for resource type"), 0 },
+    { "locate filename", I18N_NOOP("Find filename inside the resource type given to --path"), 0},
     { "userpath type", I18N_NOOP("User path: desktop|autostart|document"), 0 },
     { "install type", I18N_NOOP("Prefix to install resource files to"), 0},
     { 0,0,0 }
@@ -218,6 +219,15 @@ int main(int argc, char **argv)
     QString type = args->getOption("path");
     if (!type.isEmpty())
     {
+        QString fileName = args->getOption("locate");
+        if (!fileName.isEmpty())
+        {
+            QString result = KStandardDirs::locate(type.toLatin1(), fileName);
+            if (!result.isEmpty())
+                printf("%s\n", result.toLocal8Bit().constData());
+            return result.isEmpty() ? 1 : 0;
+        }
+
         printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(KPATH_SEPARATOR)));
         return 0;
     }

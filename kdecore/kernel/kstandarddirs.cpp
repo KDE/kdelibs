@@ -373,6 +373,7 @@ bool KStandardDirs::addResourceType( const char *type,
 {
     return addResourceType(type, relativename, true);
 }
+
 bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename,
 				     bool priority )
@@ -1569,7 +1570,7 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types + types_indices[index], kde_default(types + types_indices[index]));
 	index++;
     }
-    addResourceType( "exe", LIBEXEC_INSTALL_DIR );
+    addResourceDir( "exe", LIBEXEC_INSTALL_DIR, false );
 
     addResourceDir("home", QDir::homePath(), false);
 }
