@@ -209,6 +209,8 @@ public:
     virtual void structureChanged();
     virtual void backwardsStructureChanged();
     virtual void attributeChanged(NodeImpl::Id attrId);
+    
+    virtual void defaultEventHandler(EventImpl *evt);
 
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
     virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);

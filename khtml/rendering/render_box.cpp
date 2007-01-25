@@ -2210,7 +2210,11 @@ int RenderBox::crossesPageBreak(int t, int b) const
 
 bool RenderBox::handleEvent(const DOM::EventImpl& e) 
 {
-    if ( e.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT && scrollsOverflow()) {
+    KHTMLAssert( scrollsOverflow() );
+    bool accepted = false;
+
+    switch ( e.id() ) {
+      case EventImpl::KHTML_MOUSEWHEEL_EVENT: {
 
         const MouseEventImpl& me = static_cast<const MouseEventImpl&>(e);
         Qt::MouseButtons buttons = Qt::NoButton;
@@ -2239,21 +2243,63 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
         absolutePosition(absx, absy);
         absx += borderLeft()+paddingLeft();
         absy += borderTop()+paddingTop();
+
         QPoint p(me.clientX() - absx + canvas()->view()->contentsX(),
                  me.clientY() - absy + canvas()->view()->contentsY());
 
         QWheelEvent we(p, -me.detail()*40, buttons, state, orient);
         KHTMLAssert(layer());
         if (orient == Qt::Vertical) {
-            if (QWidget* w = dynamic_cast<QWidget*>( layer()->verticalScrollbar() ))
+            if (QWidget* w = layer()->verticalScrollbar())
                 QApplication::sendEvent( w, &we);
         } else {
-            if (QWidget* w = dynamic_cast<QWidget*>( layer()->horizontalScrollbar() ))
+            if (QWidget* w = layer()->horizontalScrollbar())
                 QApplication::sendEvent( w, &we);
         }
         if (we.isAccepted())
-            return true;
+            accepted = true;
+        break;
+      }
+      case EventImpl::KEYDOWN_EVENT:
+      case EventImpl::KEYUP_EVENT: 
+        break;
+      case EventImpl::KEYPRESS_EVENT:
+      {
+        if (!e.isKeyRelatedEvent()) break;
+        const KeyEventBaseImpl& domKeyEv = static_cast<const KeyEventBaseImpl &>(e);
+
+        QKeyEvent* const ke = domKeyEv.qKeyEvent();
+        QScrollBar* vbar = layer()->verticalScrollbar();
+        QScrollBar* hbar = layer()->horizontalScrollbar();
+        switch (ke->key()) {
+          case Qt::Key_PageUp:
+            if(vbar) vbar->triggerAction(QScrollBar::SliderPageStepSub);
+            break;
+          case Qt::Key_PageDown:
+            if(vbar) vbar->triggerAction(QScrollBar::SliderPageStepAdd);
+            break;
+          case Qt::Key_Up:
+            if(vbar) vbar->triggerAction(QScrollBar::SliderSingleStepSub);
+            break;
+          case Qt::Key_Down:
+            if(vbar) vbar->triggerAction(QScrollBar::SliderSingleStepAdd);
+            break;
+          case Qt::Key_Left:
+            if (hbar) hbar->triggerAction(QScrollBar::SliderSingleStepSub);
+            break;
+          case Qt::Key_Right:
+            if (hbar) hbar->triggerAction(QScrollBar::SliderSingleStepAdd);
+            break;
+          default:
+            break;
+        }
+        break;
+      }
+      default: 
+        break;
     }
+    if (accepted)
+        return true;
     return RenderContainer::handleEvent(e);
 }
 

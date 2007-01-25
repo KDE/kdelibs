@@ -625,10 +625,6 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 
 void NodeImpl::defaultEventHandler(EventImpl *e)
 {
-    if (e->isMouseEvent() && e->id() == EventImpl::KHTML_MOUSEWHEEL_EVENT && e->target() == this)
-        if (m_render && m_render->scrollsOverflow())
-            if (m_render->handleEvent(*e))
-                e->setDefaultHandled();
 }
 
 unsigned long NodeImpl::childNodeCount()

@@ -626,6 +626,25 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
         m_prefix->ref();
 }
 
+void ElementImpl::defaultEventHandler(EventImpl *e)
+{
+    if (m_render && m_render->scrollsOverflow()) {
+        switch( e->id() ) {
+          case EventImpl::KEYDOWN_EVENT:
+          case EventImpl::KEYUP_EVENT:
+          case EventImpl::KEYPRESS_EVENT:
+            if (!focused() || e->target() != this)
+              break;
+          // fall through
+          case EventImpl::KHTML_MOUSEWHEEL_EVENT:
+            if (m_render->handleEvent(*e))
+                e->setDefaultHandled();
+          default:
+            break;
+        }
+    }
+}
+
 void ElementImpl::createAttributeMap() const
 {
     namedAttrMap = new NamedAttrMapImpl(const_cast<ElementImpl*>(this));
@@ -789,6 +808,9 @@ void ElementImpl::recalcStyle( StyleChange change )
 
 bool ElementImpl::isFocusable() const
 {
+    if (m_render && m_render->scrollsOverflow())
+        return true;
+
     // Only make editable elements selectable if its parent element
     // is not editable. FIXME: this is not 100% right as non-editable elements
     // within editable elements are focusable too.
