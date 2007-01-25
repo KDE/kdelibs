@@ -227,7 +227,7 @@ namespace KIO {
 	 * @see setWindow()
          */
         QWidget *window() const;
-        
+
         /**
          * Updates the last user action timestamp to the given time.
          * See KApplication::updateUserTimestamp() .
@@ -1300,10 +1300,23 @@ namespace KIO {
 	 */
         KURL destURL() const { return m_dest; }
 
+    signals:
+        /**
+         * Mimetype determined during a file copy.
+         * This is never emitted during a move, and might not be emitted during
+         * a copy, depending on the slave.
+         * @param job the job that emitted this signal
+         * @param type the mime type
+         *
+         * @since 3.5.7
+         */
+        void mimetype( KIO::Job *job, const QString &type );
+
     public slots:
         void slotStart();
         void slotData( KIO::Job *, const QByteArray &data);
         void slotDataReq( KIO::Job *, QByteArray &data);
+        void slotMimetype( KIO::Job *, const QString& type );
 
     protected slots:
         /**

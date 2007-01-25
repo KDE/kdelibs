@@ -56,6 +56,7 @@ public:
 private slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KIO::Job* );
+    void slotMimetype(KIO::Job*,const QString&);
 
 private:
     QString homeTmpDir() const;
@@ -72,6 +73,7 @@ private:
     int m_result;
     QByteArray m_data;
     QStringList m_names;
+    QString m_mimetype;
 };
 
 #endif

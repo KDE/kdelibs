@@ -473,8 +473,8 @@ void JobTest::moveFileNoPermissions()
 void JobTest::moveDirectoryNoPermissions()
 {
     kdDebug() << k_funcinfo << endl;
-    const QString src = "/etc/rc.d";
-    const QString dest = homeTmpDir() + "rc.d";
+    const QString src = "/etc/init.d";
+    const QString dest = homeTmpDir() + "init.d";
     assert( QFile::exists( src ) );
     assert( QFileInfo( src ).isDir() );
     KURL u;
@@ -564,7 +564,10 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     kdDebug() << "copying " << u << " to " << d << endl;
 
     // copy the file with file_copy
-    bool ok = KIO::NetAccess::file_copy( u, d );
+    KIO::FileCopyJob* job = KIO::file_copy( u, d );
+    connect( job, SIGNAL(mimetype(KIO::Job*,const QString&)),
+             this, SLOT(slotMimetype(KIO::Job*,const QString&)) );
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     assert( ok );
 
     QString dest = realSystemPath() + "fileFromHome_copied";
@@ -577,6 +580,12 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
         // It can't work with file_copy when it uses the datapump,
         // unless we use setModificationTime in the app code.
     }
+
+    // Check mimetype
+    kdDebug() << m_mimetype << endl;
+    // There's no mimemagic determination in kio_file in kde3. Fixing this for kde4...
+    assert( m_mimetype == "application/octet-stream" );
+    //assert( m_mimetype == "text/plain" );
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
@@ -593,6 +602,12 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
 
     // restore normal behavior
     kio_resolve_local_urls = true;
+}
+
+void JobTest::slotMimetype(KIO::Job* job, const QString& type)
+{
+    assert( job );
+    m_mimetype = type;
 }
 
 #include "jobtest.moc"
