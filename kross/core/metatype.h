@@ -108,8 +108,7 @@ namespace Kross {
     class MetaTypeVoidStar : public MetaType
     {
         public:
-//TODO replace "bool owner = false" with "bool owner" to have it more explicit once everybody did update to the new code...
-            MetaTypeVoidStar(int typeId, void* ptr, bool owner = false) : m_typeId(typeId), m_ptr(ptr), m_owner(owner) {
+            MetaTypeVoidStar(int typeId, void* ptr, bool owner) : m_typeId(typeId), m_ptr(ptr), m_owner(owner) {
                 #ifdef KROSS_METATYPE_DEBUG
                     krossdebug( QString("MetaTypeVoidStar Ctor typeid=%1 typename=%2 owner=%3").arg(m_typeId).arg(typeid(m_ptr).name()).arg(m_owner) );
                 #endif
@@ -122,7 +121,7 @@ namespace Kross {
                     QMetaType::destroy(m_typeId, m_ptr);
             }
             virtual int typeId() { return m_typeId; }
-            virtual void* toVoidStar() { return m_ptr; }
+            virtual void* toVoidStar() { return (void*) &m_ptr; /*return m_ptr;*/ }
 
         private:
             int m_typeId;
