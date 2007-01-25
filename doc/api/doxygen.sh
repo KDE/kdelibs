@@ -15,6 +15,7 @@ recurse_given=NO
 use_modulename=1
 cleanup=YES
 preprocess=0
+manpages=0
 
 while test -n "$1" ; do
 case "x$1" in
@@ -38,6 +39,9 @@ case "x$1" in
 "x--preprocess" )
 	preprocess=1
 	;;
+"x--manpages" )
+        manpages=1
+        ;;
 "x--help" )
 	echo "doxygen.sh usage:"
 	echo "doxygen.sh [--options] <srcdir> [<subdir>]"
@@ -46,7 +50,8 @@ case "x$1" in
 	echo "  --no-modulename  Build in apidocs/, not apidocs-module/"
 	echo "  --doxdatadir=dir Use dir as the source of global Doxygen files"
 	echo "  --installdir=dir Use dir as target to install to"
-	echo "  --preprocess     Generate source code"
+	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
+        echo "  --manpages       Generate man pages in addition to html"
 	exit 2
 	;;
 x--doxdatadir=* )
@@ -167,7 +172,7 @@ if test -z "$TOPNAME" ; then
 fi
 
 #
-# Preprocess source dir and generate source files (KCofigXT, uic, etc.)
+# Preprocess source dir and generate source files (KConfigXT, uic, etc.)
 # @param $1: create or cleanup (parameter for doxygen-preprocess-foo.sh)
 #
 preprocess_sources()
@@ -290,6 +295,18 @@ do
 done ) | grep -v / | tsort 2> /dev/null > subdirs.top
 }
 
+
+apidox_manpages()
+{
+        mp=`extract_line DOXYGEN_GENERATE_MAN`
+        if test -z "$mp" ; then
+               mp="YES"
+        fi
+	echo "GENERATE_MAN           = $mp" >> "$subdir/Doxyfile"
+        echo "MAN_OUTPUT             = man" >> "$subdir/Doxyfile"
+        echo "MAN_EXTENSION          = .3"  >> "$subdir/Doxyfile"
+        echo "MAN_LINKS              = NO"  >> "$subdir/Doxyfile"
+}
 
 ### Add HTML header, footer, CSS tags to Doxyfile.
 ### Assumes $subdir is set. Argument is a string
@@ -481,6 +498,9 @@ apidox_toplevel()
 		echo "HTML_OUTPUT            = ." 
 	} >> Doxyfile
 	apidox_htmlfiles "main"
+        if test "$manpages" = "1"; then
+                apidox_manpages
+        fi
 
 	# KDevelop has a top-level Makefile.am with settings.
 	for i in "$top_srcdir/Mainpage.dox"
@@ -581,6 +601,9 @@ apidox_subdir()
 	} >> "$subdir/Doxyfile"
 
 	apidox_htmlfiles ""
+        if test "$manpages" = "1"; then
+                apidox_manpages
+        fi
 
 	# Mainpage.doxs may contain overrides to our settings,
 	# so copy them in.
