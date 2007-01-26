@@ -310,7 +310,7 @@
 <!ENTITY ksnapshot	"<application>KSnapshot</application>">
 <!ENTITY ksokoban	"<application>KSokoban</application>">
 <!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
-<!ENTITY kspell	"<application>KSpell</application>">
+<!ENTITY sonnet "<application>Sonnet</application>">
 <!ENTITY ksplash "<application>KSplash</application>">
 <!ENTITY kspread	"<application>KSpread</application>">
 <!ENTITY kstars	"<application>KStars</application>">
