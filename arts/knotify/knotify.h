@@ -26,6 +26,7 @@
 
 class KNotifyPrivate;
 class KProcess;
+class KConfig;
 
 class KNotify : public QObject, public DCOPObject
 {
@@ -74,7 +75,7 @@ private:
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 	bool notifyByPassivePopup(const QString &text, const QString &appName,
-                                  WId winId );
+                                  KConfig* eventsFile, WId winId );
 	bool notifyByExecute(const QString &command, 
                              const QString& event, 
                              const QString& fromApp, 

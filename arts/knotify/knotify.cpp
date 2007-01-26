@@ -344,13 +344,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
     }
 
     QString commandline;
+    KConfig *eventsFile = NULL;
+    KConfig *configFile = NULL;
 
     // check for valid events
     if ( !event.isEmpty() ) {
 
         // get config file
-        KConfig *eventsFile;
-        KConfig *configFile;
         if ( d->events.contains( fromApp ) ) {
             eventsFile = d->events[fromApp];
         } else {
@@ -426,7 +426,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByTaskbar( checkWinId( fromApp, winId ));
 
     if ( present & KNotifyClient::PassivePopup )
-        notifyByPassivePopup( text, fromApp, checkWinId( fromApp, winId ));
+        notifyByPassivePopup( text, fromApp, eventsFile, checkWinId( fromApp, winId ));
     else if ( present & KNotifyClient::Messagebox )
         notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
@@ -588,11 +588,12 @@ bool KNotify::notifyByMessagebox(const QString &text, int level, WId winId)
 
 bool KNotify::notifyByPassivePopup( const QString &text,
                                     const QString &appName,
+                                    KConfig* eventsFile,
                                     WId senderWinId )
 {
     KIconLoader iconLoader( appName );
-    if ( d->events.find( appName ) != d->events.end() ) {
-        KConfigGroup config( d->events[ appName ], "!Global!" );
+    if ( eventsFile != NULL ) {
+        KConfigGroup config( eventsFile, "!Global!" );
         QString iconName = config.readEntry( "IconName", appName );
         QPixmap icon = iconLoader.loadIcon( iconName, KIcon::Small );
         QString title = config.readEntry( "Comment", appName );
