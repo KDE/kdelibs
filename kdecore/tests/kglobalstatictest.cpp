@@ -27,8 +27,8 @@ class A
         int i;
 };
 
-K_GLOBAL_STATIC(A, globalA);
-K_GLOBAL_STATIC(A, globalA2);
+K_GLOBAL_STATIC(A, globalA)
+K_GLOBAL_STATIC(A, globalA2)
 
 class B
 {
@@ -40,7 +40,7 @@ class B
         }
 };
 
-K_GLOBAL_STATIC(B, globalB);
+K_GLOBAL_STATIC(B, globalB)
 
 int main(int, char**)
 {

@@ -62,7 +62,7 @@ class KCleanUpGlobalStatic
  * \code
  * class A { ... };
  *
- * K_GLOBAL_STATIC(A, globalA);
+ * K_GLOBAL_STATIC(A, globalA)
  *
  * void doSomething()
  * {
@@ -138,15 +138,18 @@ static struct                                                                  \
  * 
  * Example:
  * \code
- * class A {
- *      public:   A(const char *s , int i);
- *   ...  };
+ * class A
+ * {
+ * public:
+ *     A(const char *s, int i);
+ *     ...
+ * };
  *
- * K_GLOBAL_STATIC_WITH_ARG(A, globalA, ("foo", 0) )
+ * K_GLOBAL_STATIC_WITH_ARG(A, globalA, ("foo", 0))
  *
  * void doSomething()
  * {
- *     A *a = globalA();
+ *     A *a = globalA;
  *     ...
  * }
  * \endcode
