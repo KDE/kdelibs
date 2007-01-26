@@ -86,46 +86,7 @@ class KCleanUpGlobalStatic
  * \endcode
  */
 #define K_GLOBAL_STATIC(TYPE, NAME)                                            \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
-static bool _k_static_##NAME##_destroyed = false;                              \
-static struct                                                                  \
-{                                                                              \
-    inline bool isDestroyed()                                                  \
-    {                                                                          \
-        return _k_static_##NAME##_destroyed;                                   \
-    }                                                                          \
-    inline operator TYPE*()                                                    \
-    {                                                                          \
-        return operator->();                                                   \
-    }                                                                          \
-    inline TYPE *operator->()                                                  \
-    {                                                                          \
-        if (!_k_static_##NAME) {                                               \
-            if (isDestroyed()) {                                               \
-                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
-                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
-            }                                                                  \
-            TYPE *x = new TYPE;                                                \
-            if (!_k_static_##NAME.testAndSet(0, x)) {                          \
-                delete x;                                                      \
-            } else {                                                           \
-                static KCleanUpGlobalStatic cleanUpObject = { destroy };       \
-            }                                                                  \
-        }                                                                      \
-        return _k_static_##NAME;                                               \
-    }                                                                          \
-    inline TYPE &operator*()                                                   \
-    {                                                                          \
-        return *operator->();                                                  \
-    }                                                                          \
-    static void destroy()                                                      \
-    {                                                                          \
-        _k_static_##NAME##_destroyed = true;                                   \
-        TYPE *x = _k_static_##NAME;                                            \
-        _k_static_##NAME.init(0);                                              \
-        delete x;                                                              \
-    }                                                                          \
-} NAME;
+K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 
 /**
  * @overload
