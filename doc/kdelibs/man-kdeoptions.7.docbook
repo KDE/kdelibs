@@ -51,10 +51,6 @@ titlebar.</para></listitem>
 <listitem><para>Use <parameter>icon</parameter> as the icon in the titlebar</para></listitem>
 </varlistentry>
 <varlistentry>
-<term><option>--dcopserver</option> <parameter>server</parameter></term>
-<listitem><para>Use the <acronym>DCOP</acronym> Server specified by <parameter>server</parameter>.</para></listitem>
-</varlistentry>
-<varlistentry>
 <term><option>--nocrashhandler</option></term>
 <listitem><para>Disable the crash handler, to get core dumps.</para></listitem>
 </varlistentry>
