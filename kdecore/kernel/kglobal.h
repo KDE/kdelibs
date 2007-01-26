@@ -125,7 +125,7 @@ static struct                                                                  \
         _k_static_##NAME.init(0);                                              \
         delete x;                                                              \
     }                                                                          \
-} NAME
+} NAME;
 
 /**
  * @overload
@@ -191,7 +191,7 @@ static struct                                                                  \
         _k_static_##NAME.init(0);                                              \
         delete x;                                                              \
     }                                                                          \
-} NAME
+} NAME;
 
 /**
  * Access to the KDE global objects.
