@@ -1503,6 +1503,12 @@ Comment[zh_CN]=KDE 正在退出
 Action=Sound
 sound=KDE_Logout_3.ogg
 
+[Event/cancellogout]
+Name=Logout canceled
+Comment=KDE logout was canceled
+Action=Popup
+sound=
+
 [Event/printerror]
 Name=Print error
 Name[af]=Druk fout
