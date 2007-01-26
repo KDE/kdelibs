@@ -305,7 +305,7 @@ apidox_manpages()
 	echo "GENERATE_MAN           = $mp" >> "$subdir/Doxyfile"
         echo "MAN_OUTPUT             = man" >> "$subdir/Doxyfile"
         echo "MAN_EXTENSION          = .3"  >> "$subdir/Doxyfile"
-        echo "MAN_LINKS              = NO"  >> "$subdir/Doxyfile"
+        echo "MAN_LINKS              = YES" >> "$subdir/Doxyfile"
 }
 
 ### Add HTML header, footer, CSS tags to Doxyfile.
