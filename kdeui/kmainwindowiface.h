@@ -146,6 +146,7 @@ k_dcop:
 	void lower();
 	void restore();
 	void show();
+	void close();
 
 //	QCStringList getQTProperties();
 

@@ -174,6 +174,10 @@ void KMainWindowInterface::restore()
 {
 	m_MainWindow->showNormal();
 }
+void KMainWindowInterface::close()
+{
+	m_MainWindow->close();
+}
 void KMainWindowInterface::show()
 {
 	m_MainWindow->show();
