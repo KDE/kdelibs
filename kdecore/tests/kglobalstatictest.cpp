@@ -36,7 +36,7 @@ class B
         ~B()
         {
             Q_ASSERT(globalA.isDestroyed());
-            qDebug() << "B::~B()";
+            qDebug() << "All global statics were successfully destroyed.";
         }
 };
 
