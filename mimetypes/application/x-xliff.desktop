@@ -6,6 +6,7 @@ Icon=gettext
 Patterns=*.xlf;*.XLF;
 Comment=XLIFF Translation File
 Comment[af]=XLIFF Vertaal Lêer
+Comment[be]=Файл перакладаў XLIFF
 Comment[bg]=Съобщения за превод (XLIFF)
 Comment[br]=Restr troidigezh XLIFF
 Comment[bs]=XLIFF datoteka za prijevod

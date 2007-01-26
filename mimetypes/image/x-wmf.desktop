@@ -6,6 +6,7 @@ MimeType=image/x-wmf
 Patterns=*.wmf;*.WMF;
 Comment=Windows MetaFile
 Comment[af]=Vensters Metaleêr
+Comment[be]=Метафайл Windows
 Comment[bg]=Мета файл на Windows
 Comment[bn]=উইন্ডোস মেটাফাইল
 Comment[br]=Meta-restr Windows 

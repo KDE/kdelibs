@@ -7,6 +7,7 @@ X-KDE-IsAlso=text/plain
 Patterns=*.HEX;*.hex;
 Comment=Intel® Hexadecimal Object File Format
 Comment[af]=Intel® Heksadesimale Voorwerp Lêer Formaat
+Comment[be]=Аб'ектавы шаснаццатковы файл Intel
 Comment[bg]=Шестнадесетичен обектен файлов формат на Intel®
 Comment[bn]=ইনটেল® হেক্সাডেসিমাল অবজেক্ট ফাইল ফর্ম্যাট
 Comment[ca]=Format de fitxer objecte hexadecimal Intel®

@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=DCOP/InstantMessenger
 Comment=Instant Messenger with a DCOP interface
 Comment[af]=Oombliklike Boodskapper met DCOP intervlak
+Comment[be]=Імгненны абвестнік з інтэрфэйсам DCOP
 Comment[bg]=Програма за съобщения в реално време с интерфейс DCOP
 Comment[bn]=ডিকপ (DCOP) ইন্টারফেস সহ ইনস্ট্যান্ট মেসেঞ্জার
 Comment[bs]=Instant poruke sa DCOP interfejsom

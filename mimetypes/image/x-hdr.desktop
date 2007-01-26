@@ -6,6 +6,7 @@ Icon=image
 Patterns=*.hdr;*.HDR;*.pic;*.PIC
 Comment=High Dynamic Range Image
 Comment[af]=Hoog Dinamiese Reeks Beeld
+Comment[be]=Відарыс HDR
 Comment[bg]=Изображение с висока динамичност (High Dynamic Range Image)
 Comment[bs]=High Dynamic Range slika
 Comment[ca]=Imatge de rang altament dinàmic

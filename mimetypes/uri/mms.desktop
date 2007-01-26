@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=uri/mms
 Icon=video
 Comment=mms: URIs
+Comment[be]=mms: URI
 Comment[br]=URIoù mms:
 Comment[bs]=mms: URI
 Comment[cs]=mms: URI

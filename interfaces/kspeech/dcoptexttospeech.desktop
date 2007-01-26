@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=DCOP/Text-to-Speech
 Comment=Text-to-Speech Service with a DCOP interface
 Comment[af]=Tekste-tot-spraak diens met DCOP intervlak
+Comment[be]=Сервіс агалошвання тэксту з інтэрфэйсам DCOP
 Comment[bg]=Синтез на глас с интерфейс DCOP
 Comment[bn]=ডিকপ (DCOP) ইন্টারফেস সহ টেক্সট-টু-স্পীচ সার্ভিস
 Comment[bs]=Servis za izgovaranje teksta sa DCOP interfejsom

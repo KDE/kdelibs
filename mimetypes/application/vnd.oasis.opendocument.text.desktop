@@ -6,6 +6,7 @@ Patterns=*.odt;*.ODT
 Icon=wordprocessing
 Comment=OASIS OpenDocument Text
 Comment[af]=OASIS Oop Dokument Teks
+Comment[be]=Тэкставы файл OASIS OpenDocument
 Comment[bg]=Текстов документ на OASIS OpenDocument
 Comment[bn]=OASIS ওপেন-ডকুমেন্ট টেক্সট নথী
 Comment[br]=Skrid OpenDocument OASIS

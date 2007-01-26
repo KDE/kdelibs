@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=KResources/Manager
 Comment=KResource Manager
 Comment[af]=KHulpbron bestuurder
+Comment[be]=Кіраўнік рэсурсаў KResource
 Comment[bg]=Мениджър на KResource
 Comment[bn]=কে-রিসোর্স ম্যানেজার
 Comment[br]=Merour KResource

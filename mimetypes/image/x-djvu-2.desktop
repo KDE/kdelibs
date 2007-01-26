@@ -6,6 +6,7 @@ Icon=djvu
 Patterns=*.djvu;*.DJVU;*.djv;*.DJV;
 Comment=DjVu Document
 Comment[af]=DjVu Dokument
+Comment[be]=Дакумент DjVu
 Comment[bg]=Документ DjVu
 Comment[br]=Teul DjVu
 Comment[bs]=DjVu dokument

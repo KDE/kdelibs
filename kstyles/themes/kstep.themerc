@@ -1,7 +1,6 @@
 [Misc]
 Name=KDE Step
 Name[af]=Kde Step
-Name[be]=KDE Крок
 Name[bn]=কে.ডি.ই. স্টেপ
 Name[de]=KDE-Step
 Name[eo]=KDE-Step
@@ -27,7 +26,7 @@ Name[zu]=Isigaba se-KDE
 Comment=Unthemed Next-like style
 Comment[af]=Ongetemade Next-tipe styl
 Comment[ar]=مظهر مشابه لNeXT Step
-Comment[be]=Стыль падобны на Next (бяз тэм)
+Comment[be]=Стыль Next
 Comment[bg]=Стил без тема, подобен на Next
 Comment[br]=Giz doare NeXT anwisket
 Comment[bs]=Stil bez teme, u stilu Nexta
