@@ -1,6 +1,5 @@
 [Global]
-# go = The K-icon from kicker
-IconName=go
+IconName=kmenu
 Comment=KDE System Notifications
 Comment[af]=KDE Stelsel Inkennistelling
 Comment[ar]=تنبيهات كيدي
