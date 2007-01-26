@@ -42,6 +42,12 @@ class KCleanUpGlobalStatic
         inline ~KCleanUpGlobalStatic() { func(); }
 };
 
+#ifdef Q_CC_MSVC
+# define K_GLOBAL_STATIC_STRUCT_NAME(NAME) _k_##NAME##__LINE__
+#else
+# define K_GLOBAL_STATIC_STRUCT_NAME(NAME)
+#endif
+
 /**
  * This macro makes it easy to use non-POD types as global statics.
  * The object is created on first use and creation is threadsafe.
@@ -118,7 +124,7 @@ K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 #define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
 static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
 static bool _k_static_##NAME##_destroyed;                                      \
-static struct                                                                  \
+static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 {                                                                              \
     bool isDestroyed()                                                         \
     {                                                                          \
