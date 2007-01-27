@@ -124,6 +124,15 @@ public:
     inline QKeySequence alternate() const
     { return value(1); }
 
+   /**
+     * Returns a description of the shortcut as a semicolon-separated
+     * list of key sequences, as returned by QKeySequence::toString().
+     * @return the string represenation of this shortcut
+     * @see QKeySequence::toString()
+     * @see KShortcut(const QString &description)
+     */
+    QString toString() const;
+
     /** @} */
     /** @name Mutator methods */
     /** @{ */
@@ -139,15 +148,6 @@ public:
      * @param keySeq set alternate key sequence to this
      */
     void setAlternate(const QKeySequence &keySeq);
-
-    /**
-     * Returns a description of the shortcut as a semicolon-separated
-     * list of key sequences, as returned by QKeySequence::toString().
-     * @return the string represenation of this shortcut
-     * @see QKeySequence::toString()
-     * @see KShortcut(const QString &description)
-     */
-    QString toString() const;
 };
 
 uint qHash(int);
