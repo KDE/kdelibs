@@ -89,7 +89,16 @@ static KCmdLineOptions options[] =
 };
 
 
-
+static bool isExecutable(const QString &exe)
+{
+    if( exe.isEmpty() )
+        return false;
+#ifdef Q_OS_WIN
+    return ( exe.endsWith( ".exe" ) || exe.endsWith( ".bat" ) );
+#else
+    return ::access( QFile::encodeName( exe ), X_OK );
+#endif
+}
 
 int main(int argc, char **argv) {
 
@@ -140,12 +149,8 @@ int main(int argc, char **argv) {
     }
 
     if ( args->isSet( "check" ) ) {
-        char pwd_buffer[250];
+        QString pwd_buffer = QDir::currentPath();
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
-        if (!getcwd( pwd_buffer, sizeof(pwd_buffer) )) {
-	   kError() << "getcwd() failed" << endl;
-	   return 2;
-        }
 
         QString catalogs;
         catalogs += KStandardDirs::locate( "dtd", "customization/catalog" );
@@ -157,28 +162,32 @@ int main(int argc, char **argv) {
 #if defined( XMLLINT )
         exe = XMLLINT;
 #endif
-        if ( ::access( QFile::encodeName( exe ), X_OK ) ) {
+        if ( !isExecutable( exe ) ) {
             exe = KStandardDirs::findExe( "xmllint" );
             if (exe.isEmpty())
                 exe = KStandardDirs::locate( "exe", "xmllint" );
         }
-        if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
-            chdir( QFile::encodeName( file.absolutePath() ) );
+        if ( isExecutable( exe ) ) {
+            QDir::setCurrent( file.absolutePath() );
             QString cmd = exe;
             cmd += " --catalogs --valid --noout ";
+#ifdef Q_OS_WIN
+            cmd += file.fileName();
+#else
             cmd += KProcess::quote(file.fileName());
+#endif
             cmd += " 2>&1";
-            FILE *xmllint = popen( QFile::encodeName( cmd ), "r");
+            FILE *xmllint = popen( QFile::encodeName( cmd ), "r" );
             char buf[ 512 ];
             bool noout = true;
             unsigned int n;
-            while ( ( n = fread(buf, 1, sizeof( buf ), xmllint ) ) ) {
+            while ( ( n = fread(buf, 1, sizeof( buf ) - 1, xmllint ) ) ) {
                 noout = false;
                 buf[ n ] = '\0';
                 fputs( buf, stderr );
             }
             pclose( xmllint );
-            chdir( pwd_buffer );
+            QDir::setCurrent( pwd_buffer );
             if ( !noout )
                 return 1;
         } else {
