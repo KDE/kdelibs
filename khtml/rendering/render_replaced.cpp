@@ -332,6 +332,9 @@ void RenderWidget::updateFromElement()
         QColor color = style()->color();
         QColor backgroundColor = style()->backgroundColor();
 
+        if (!backgroundColor.isValid() && !style()->htmlHacks())
+            backgroundColor = QColor(0,0,0,0);
+
         // check if we have to paint our background and let it show through
         bool trans = ( isRedirectedWidget() && style()->backgroundLayers() && 
                        style()->backgroundLayers()->hasImage() && !qobject_cast<KUrlRequester*>(m_widget) );
