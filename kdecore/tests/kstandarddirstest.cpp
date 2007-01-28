@@ -166,3 +166,13 @@ void KStandarddirsTest::testFindExe()
     // Check the "exe" resource too
     QCOMPARE(bin, KGlobal::dirs()->locate("exe", "lnusertemp"));
 }
+
+void KStandarddirsTest::testLocate()
+{
+    const QString textPlain = "/usr/share/mime/text/plain.xml";
+    if (!QFile::exists(textPlain))
+        QSKIP("xdg-share-mime not installed", SkipAll);
+
+    const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/plain.xml");
+    QCOMPARE(res, textPlain);
+}

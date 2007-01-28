@@ -72,22 +72,29 @@ class KStandardDirsPrivate;
  * @li @c cgi - CGIs to run from kdehelp.
  * @li @c config - Configuration files.
  * @li @c data - Where applications store data.
+ * @li @c emoticons - Emoticons themes
  * @li @c exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
  * @li @c html - HTML documentation.
  * @li @c icon - Icons, see KIconLoader.
+ * @li @c kcfg - KConfigXT config files.
  * @li @c lib - Libraries.
  * @li @c locale - Translation files for KLocale.
- * @li @c mime - Mime types.
+ * @li @c mime - Mime types defined by KDE-specific .desktop files.
  * @li @c module - Module (dynamically loaded library).
  * @li @c qtplugins - Qt plugins (dynamically loaded objects for Qt)
  * @li @c services - Services.
  * @li @c servicetypes - Service types.
  * @li @c sound - Application sounds.
- * @li @c templates - Templates
+ * @li @c templates - Templates for the "Create new file" functionality.
  * @li @c wallpaper - Wallpapers.
  * @li @c tmp - Temporary files (specific for both current host and current user)
  * @li @c socket - UNIX Sockets (specific for both current host and current user)
- * @li @c emoticons - Emoticons themes  (Since KDE 3.4)
+ * @li @c xdgconf-menu - Freedesktop.org standard location for menu layout (.menu) files.
+ * @li @c xdgdata-apps - Freedesktop.org standard location for application desktop files.
+ * @li @c xdgdata-dirs - Freedesktop.org standard location for menu descriptions (.directory files).
+ * @li @c xdgdata-mime - Freedesktop.org standard location for MIME type definitions.
+ * @li @c xdgdata-icon - Freedesktop.org standard location for icons.
+ * @li @c xdgdata-pixmap - Gnome-compatibility location for pixmaps.
  *
  * A type that is added by the class KApplication if you use it, is
  * @c appdata. This one makes the use of the type data a bit easier as it
@@ -558,10 +565,21 @@ public:
 	 * @li @c services - @c share/services
 	 * @li @c servicetypes - @c share/servicetypes
 	 * @li @c mime - @c share/mimelnk
+	 * @li @c cgi - @c cgi-bin
 	 * @li @c wallpaper - @c share/wallpapers
 	 * @li @c templates - @c share/templates
 	 * @li @c exe - @c bin
-	 * @li @c lib - @c lib
+	 * @li @c lib - @c lib[suffix]
+	 * @li @c module - @c lib[suffix]/kde4
+	 * @li @c qtplugins - @c lib[suffix]/kde4/plugins
+	 * @li @c kcfg - @c share/config.kcfg
+	 * @li @c emoticons - @c share/emoticons
+	 * @li @c xdgdata-apps - @c applications
+	 * @li @c xdgdata-icon - @c icons
+	 * @li @c xdgdata-pixmap - @c pixmaps
+	 * @li @c xdgdata-dirs - @c desktop-directories
+	 * @li @c xdgdata-mime - @c mime
+	 * @li @c xdgconf-menu - @c menus
 	 *
 	 * @returns Static default for the specified resource.  You
 	 *          should probably be using locate() or locateLocal()

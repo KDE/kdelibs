@@ -165,7 +165,14 @@ static QString kfsstnd_defaultlibexecdir()
     return s->defaultlibexecdir;
 }
 
-/* Regenerate using generate_string_table.pl and the following data:
+/* If you add a new resource type here, make sure to
+ * 1) regenerate using "generate_string_table.pl types" and the data below.
+ * 2) update the KStandardDirs class documentation
+ * 3) update the kde_default code
+ * 4) update the kde_default documentation
+ * 5) update the list in kde-config.cpp.in
+
+
 icon
 apps
 sound
@@ -182,16 +189,17 @@ pixmap
 templates
 module
 qtplugins
+kcfg
+emoticons
 xdgdata-apps
 xdgdata-dirs
 xdgconf-menu
 xdgdata-icon
 xdgdata-pixmap
-kcfg
-emoticons
+xdgdata-mime
  */
 static const char types[] =
-    "icon\0"
+   "icon\0"
     "apps\0"
     "sound\0"
     "data\0"
@@ -207,19 +215,21 @@ static const char types[] =
     "templates\0"
     "module\0"
     "qtplugins\0"
+    "kcfg\0"
+    "emoticons\0"
     "xdgdata-apps\0"
     "xdgdata-dirs\0"
     "xdgconf-menu\0"
     "xdgdata-icon\0"
     "xdgdata-pixmap\0"
-    "kcfg\0"
-    "emoticons\0"
+    "xdgdata-mime\0"
     "\0";
 
 static const int types_indices[] = {
        0,    5,   10,   16,   21,   28,   37,   42,
       55,   62,   66,   76,   80,   87,   97,  104,
-     114,  127,  140,  153,  166,  181,  186,   -1
+     114,  119,  129,  142,  155,  168,  181,  196,
+      -1
 };
 
 static int tokenize( QStringList& token, const QString& str,
@@ -1188,6 +1198,10 @@ static int tokenize( QStringList& tokens, const QString& str,
 }
 
 QString KStandardDirs::kde_default(const char *type) {
+
+    // The documentation for this method has all the information below.
+    // Make sure to update it if you update the code.
+
     if (!strcmp(type, "data"))
 	return "share/apps/";
     if (!strcmp(type, "html"))
@@ -1224,6 +1238,10 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "lib" KDELIBSUFF "/kde4/";
     if (!strcmp(type, "qtplugins"))
         return "lib" KDELIBSUFF "/kde4/plugins";
+    if (!strcmp(type, "kcfg"))
+	return "share/config.kcfg";
+    if (!strcmp(type, "emoticons"))
+        return "share/emoticons";
     if (!strcmp(type, "xdgdata-apps"))
         return "applications/";
     if (!strcmp(type, "xdgdata-icon"))
@@ -1232,12 +1250,10 @@ QString KStandardDirs::kde_default(const char *type) {
         return "pixmaps/";
     if (!strcmp(type, "xdgdata-dirs"))
         return "desktop-directories/";
+    if (!strcmp(type, "xdgdata-mime"))
+        return "mime/";
     if (!strcmp(type, "xdgconf-menu"))
         return "menus/";
-    if (!strcmp(type, "kcfg"))
-	return "share/config.kcfg";
-    if (!strcmp(type, "emoticons"))
-        return "share/emoticons";
 
 
     qFatal("unknown resource type %s", type);
