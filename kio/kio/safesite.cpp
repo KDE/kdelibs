@@ -20,6 +20,7 @@
 
 #include "safesite.h"
 #include <QApplication>
+#include <QStringList>
 #include <QTimer>
 #include <assert.h>
 
