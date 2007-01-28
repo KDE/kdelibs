@@ -46,7 +46,7 @@ class KBzip2Filter::KBzip2FilterPrivate
 {
 public:
     bz_stream zStream;
-    KBzip2FilterPrivate() { memset(this, 0, sizeof(*this)); }
+    KBzip2FilterPrivate() { memset(&zStream, 0, sizeof(zStream)); }
 };
 
 KBzip2Filter::KBzip2Filter()
