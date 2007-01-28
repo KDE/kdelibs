@@ -729,6 +729,8 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
     switch(style()->textAlign()) {
         case LEFT:
         case KHTML_LEFT:
+            if (style()->direction() == RTL && totWidth > availableWidth)
+                x -= (totWidth - availableWidth);
             numSpaces = 0;
             break;
         case JUSTIFY:
@@ -742,7 +744,8 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
                 break;
         case RIGHT:
         case KHTML_RIGHT:
-            x += availableWidth - totWidth;
+            if (style()->direction() == RTL || totWidth < availableWidth)
+                x += availableWidth - totWidth;
             numSpaces = 0;
             break;
         case CENTER:
