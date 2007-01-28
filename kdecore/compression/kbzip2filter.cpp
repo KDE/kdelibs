@@ -46,14 +46,12 @@ class KBzip2Filter::KBzip2FilterPrivate
 {
 public:
     bz_stream zStream;
+    KBzip2FilterPrivate() { memset(this, 0, sizeof(*this)); }
 };
 
 KBzip2Filter::KBzip2Filter()
 	:d(new KBzip2FilterPrivate)
 {
-    d->zStream.bzalloc = 0;
-    d->zStream.bzfree = 0;
-    d->zStream.opaque = 0;
     m_mode = 0;
 }
 
