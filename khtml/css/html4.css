@@ -359,6 +359,7 @@ input { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         border: 2px -khtml-native;
+        background-color: window;
 }
 
 input[type="hidden"] {
@@ -426,6 +427,7 @@ textarea {
         -khtml-background-clip: padding;
         font-family: monospace;
         border: 2px -khtml-native;
+        cursor: text;
 }
 
 /*
