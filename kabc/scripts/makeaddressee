@@ -16,10 +16,11 @@ if (!open( ENTRIES, "$srcdir/entrylist" ) ) {
     if (!/^.+,(\w+),(\w+)/) { next; }
     push @entryCtrl, @entries[0];
     push @entryRealNames, @entries[1];
-    push @entryTypes, @entries[2];
-    push @entryNames, @entries[3];
-    push @entryCategory, @entries[4];
-    push @entryDebug, @entries[5];
+    push @entryComments, @entries[2];
+    push @entryTypes, @entries[3];
+    push @entryNames, @entries[4];
+    push @entryCategory, @entries[5];
+    push @entryDebug, @entries[6];
   }
 
 close ENTRIES;
@@ -100,7 +101,11 @@ if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
         }
         $label = join ' ', @labelwords;
         print CPP_OUT "QString Addressee::$entryNames[$i]Label()\n{\n";
-        print CPP_OUT "  return i18n(\"$label\");\n";
+        if ( $entryComments[$i] ) {
+          print CPP_OUT "  return i18n(\"$entryComments[$i]\",\"$label\");\n";
+        } else {
+          print CPP_OUT "  return i18n(\"$label\");\n";
+        }
         print CPP_OUT "}\n\n\n";
       }
     } elsif (/--EQUALSTEST--/) {
