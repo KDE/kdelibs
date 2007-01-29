@@ -218,7 +218,7 @@ QString CAItem::configName() const
 
 
 KCryptoConfig::KCryptoConfig(QWidget *parent, const QStringList &)
-  : KCModule(KryptoFactory::instance(), parent)
+  : KCModule(KryptoFactory::componentData(), parent)
 {
 QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
