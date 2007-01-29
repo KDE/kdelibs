@@ -47,7 +47,10 @@ public slots:
       KCmdLineArgs::loadAppArgs(ds);
     }
 
-    return parent()->newInstance();
+    int ret = parent()->newInstance();
+    // Must be done out of the newInstance code, in case it is overloaded
+    parent()->d->firstInstance = false;
+    return ret;
   }
 };
 

@@ -48,7 +48,6 @@
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapplication.h"
-#include "kuniqueapplication_p.h"
 
 #if defined Q_WS_X11
 #include <netwm.h>
@@ -62,6 +61,14 @@
 #  endif
 #endif
 
+class KUniqueApplication::Private
+{
+public:
+   bool processingRequest;
+   bool firstInstance;
+};
+#include "kuniqueapplication_p.h"
+
 bool KUniqueApplication::s_nofork = false;
 bool KUniqueApplication::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
@@ -71,13 +78,6 @@ static KCmdLineOptions kunique_options[] =
 {
   { "nofork", "Don't run in the background.", 0 },
   KCmdLineLastOption
-};
-
-class KUniqueApplication::Private
-{
-public:
-   bool processingRequest;
-   bool firstInstance;
 };
 
 void
