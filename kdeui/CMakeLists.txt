@@ -50,6 +50,7 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarspaceraction.cpp
  dialogs/kaboutdialog.cpp
  dialogs/kaboutkde.cpp
+ dialogs/kaboutkdedialog.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
@@ -63,6 +64,7 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplication.cpp
+ dialogs/kaboutapplicationdialog.cpp
  dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
@@ -243,8 +245,10 @@ install( FILES
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
  dialogs/kaboutapplication.h
+ dialogs/kaboutapplicationdialog.h
  dialogs/kaboutdialog.h
  dialogs/kaboutkde.h
+ dialogs/kaboutkdedialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
  dialogs/kcolordialog.h

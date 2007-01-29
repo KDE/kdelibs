@@ -26,9 +26,9 @@
 #include <QWidget>
 #include <QWhatsThis>
 
-#include <kaboutapplication.h>
+#include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
-#include <kaboutkde.h>
+#include <kaboutkdedialog.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kapplication.h>
@@ -77,7 +77,7 @@ public:
 
     KMenu *mMenu;
     KDialog *mAboutApp;
-    KAboutKDE *mAboutKDE;
+    KAboutKDEDialog *mAboutKDE;
     KBugReport *mBugReport;
 
 // TODO evaluate if we use static_cast<QWidget*>(parent()) instead of mParent to win that bit of memory
@@ -222,7 +222,7 @@ void KHelpMenu::aboutApplication()
   {
     if( !d->mAboutApp )
     {
-      d->mAboutApp = new KAboutApplication( d->mAboutData, d->mParent, false );
+      d->mAboutApp = new KAboutApplicationDialog( d->mAboutData, d->mParent );
       connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     d->mAboutApp->show();
@@ -262,7 +262,7 @@ void KHelpMenu::aboutKDE()
 {
   if( !d->mAboutKDE )
   {
-    d->mAboutKDE = new KAboutKDE( d->mParent, false );
+    d->mAboutKDE = new KAboutKDEDialog( d->mParent );
     connect( d->mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }
   d->mAboutKDE->show();

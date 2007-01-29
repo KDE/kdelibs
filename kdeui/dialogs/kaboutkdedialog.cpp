@@ -1,0 +1,154 @@
+/* This file is part of the KDE libraries
+   Copyright (C) 2007 Urs Wolfer <uwolfer at kde.org>
+
+   Parts of this class have been take from the KAboutKDE class, which was
+   Copyright (C) 2000 Espen Sand <espen@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
+#include <QFrame>
+#include <QLabel>
+#include <QLayout>
+#include <QTabWidget>
+
+#include <kdeversion.h>
+#include <kglobalsettings.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
+
+#include "kaboutkdedialog.h"
+
+KAboutKDEDialog::KAboutKDEDialog(QWidget *parent)
+  : KDialog(parent)
+{
+    setPlainCaption(i18n("About KDE"));
+    setButtons(KDialog::Help | KDialog::Close);
+    setDefaultButton(KDialog::Close);
+    setHelp("khelpcenter/main.html");
+    setModal(false);
+
+    QFont font(KGlobalSettings::generalFont());
+    int fontSize = font.pointSize();
+    if (fontSize == -1)
+        fontSize = QFontInfo(font).pointSize();
+    fontSize += 2;
+
+    QLabel *headerLabel = new QLabel;
+    headerLabel->setMargin(5);
+    headerLabel->setStyleSheet(QString("QLabel {font-weight: bold; font-size: %1px;}").arg(fontSize));
+    headerLabel->setText(i18n("K Desktop Environment. Release %1", QString(KDE_VERSION_STRING)));
+    headerLabel->setFrameShape(QFrame::StyledPanel);
+    headerLabel->setFrameShadow(QFrame::Plain);
+    headerLabel->setAutoFillBackground(true);
+    headerLabel->setBackgroundRole(QPalette::Base);
+
+    QLabel *about = new QLabel;
+    about->setMargin(10);
+    about->setAlignment(Qt::AlignTop);
+    about->setWordWrap(true);
+    about->setOpenExternalLinks(true);
+    about->setText(i18n(""
+        "The <b>K Desktop Environment</b> is written and maintained by the "
+        "KDE Team, a world-wide network of software engineers committed to "
+        "<a href=\"http://www.gnu.org/philosophy/free-sw.html\">Free Software</a> development.<br><br>"
+        "No single group, company or organization controls the KDE source "
+        "code. Everyone is welcome to contribute to KDE.<br><br>"
+        "Visit <a href=\"http://www.kde.org/\">http://www.kde.org</A> for "
+        "more information on the KDE project."));
+
+    QLabel *report = new QLabel;
+    report->setMargin(10);
+    report->setAlignment(Qt::AlignTop);
+    report->setWordWrap(true);
+    report->setOpenExternalLinks(true);
+    report->setText(i18n(""
+        "Software can always be improved, and the KDE Team is ready to "
+        "do so. However, you - the user - must tell us when "
+        "something does not work as expected or could be done better.<br><br>"
+        "The K Desktop Environment has a bug tracking system. Visit "
+        "<a href=\"http://bugs.kde.org/\">http://bugs.kde.org</a> or "
+        "use the \"Report Bug...\" dialog from the \"Help\" menu to report bugs.<br><br>"
+        "If you have a suggestion for improvement then you are welcome to use "
+        "the bug tracking system to register your wish. Make sure you use the "
+        "severity called \"Wishlist\"." ));
+
+    QLabel *join = new QLabel;
+    join->setMargin(10);
+    join->setAlignment(Qt::AlignTop);
+    join->setWordWrap(true);
+    join->setOpenExternalLinks(true);
+    join->setText(i18n(""
+        "You do not have to be a software developer to be a member of the "
+        "KDE team. You can join the national teams that translate "
+        "program interfaces. You can provide graphics, themes, sounds, and "
+        "improved documentation. You decide!"
+        "<br><br>"
+        "Visit "
+        "<a href=\"http://www.kde.org/jobs/\">http://www.kde.org/jobs/</A> "
+        "for information on some projects in which you can participate."
+        "<br><br>"
+        "If you need more information or documentation, then a visit to "
+        "<a href=\"http://developer.kde.org/\">http://developer.kde.org</A> "
+        "will provide you with what you need."));
+
+    QLabel *support = new QLabel;
+    support->setMargin(10);
+    support->setAlignment(Qt::AlignTop);
+    support->setWordWrap(true);
+    support->setOpenExternalLinks(true);
+    support->setText(i18n(""
+        "KDE is available free of charge, but making it is not free.<br><br>"
+        "Thus, the KDE team formed the KDE e.V., a non-profit organization"
+        " legally founded in Tuebingen, Germany. The KDE e.V. represents"
+        " the KDE project in legal and financial matters."
+        " See <a href=\"http://www.kde-ev.org/\">http://www.kde-ev.org</a>"
+        " for information on the KDE e.V.<br><br>"
+        "The KDE team does need financial support. Most of the money is used to "
+        "reimburse members and others on expenses they experienced when "
+        "contributing to KDE. You are encouraged to support KDE through a financial "
+        "donation, using one of the ways described at "
+        "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
+        "<br><br>Thank you very much in advance for your support."));
+
+    QTabWidget *tabWidget = new QTabWidget;
+    tabWidget->setUsesScrollButtons(false);
+    tabWidget->addTab(about, i18nc("About KDE","&About"));
+    tabWidget->addTab(report, i18n("&Report Bugs or Wishes"));
+    tabWidget->addTab(join, i18n("&Join the KDE Team"));
+    tabWidget->addTab(support, i18n("&Support KDE"));
+
+    QLabel *image = new QLabel;
+    image->setFrameShape(QFrame::StyledPanel);
+    image->setFrameShadow(QFrame::Plain);
+    image->setAutoFillBackground(true);
+    image->setBackgroundRole(QPalette::Base);
+    image->setPixmap(KStandardDirs::locate("data", "kdeui/pics/aboutkde.png"));
+
+    QHBoxLayout *midLayout = new QHBoxLayout;
+    midLayout->addWidget(image);
+    midLayout->addWidget(tabWidget);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(headerLabel);
+    mainLayout->addLayout(midLayout);
+
+    QWidget *mainWidget = new QWidget;
+    mainWidget->setLayout(mainLayout);
+
+    setMainWidget(mainWidget);
+}
+
+#include "kaboutkdedialog.moc"

@@ -33,7 +33,6 @@ class QWidget;
 class QAction;
 
 class KAboutData;
-class KAboutKDE;
 class KBugReport;
 class KDialog;
 class KHelpMenuPrivate;
@@ -202,7 +201,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * The method will try to open the about box using the following steps:
      * - If the showAboutApplication() signal is connected, then it will be called.
      *   This means there is an application defined aboutBox.
-     * - If the aboutData was set in the constructor a KAboutApplication will be created.
+     * - If the aboutData was set in the constructor a KAboutApplicationDialog will be created.
      * - Else a default about box using the aboutAppText from the constructor will be created.
      */
     void aboutApplication();
