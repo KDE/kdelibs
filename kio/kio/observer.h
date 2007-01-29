@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE libraries
-  * Copyright (C) 2006 Rafael Fernández López <ereslibre@gmail.com>
+  * Copyright (C) 2007, 2006 Rafael Fernández López <ereslibre@gmail.com>
   * Copyright (C) 2000 Matej Koss <koss@miesto.sk>
   *                    David Faure <faure@kde.org>
   *
@@ -39,52 +39,19 @@ namespace KIO {
 }
 
 /**
- * Observer for KJob progress information.
+ * Observer for progress information.
  *
  * This class, of which there is always only one instance,
  * "observes" what jobs do and forwards this information
  * to the progress-info server.
  *
  * It is a DBus object so that the UI server can call the
- * kill method when the user presses Cancel.
+ * proper method when on the UI server an action is performed.
  *
  * Usually jobs are automatically registered by the
  * KIO::Scheduler, so you do not have to care about that.
  *
- * Examples:
- * \code
- *    int myJob = Observer::self()->newJob();
- *    Observer::self()->setInfoMessage(myJob, "Processing input database");
- *    // If you need to know what action was executed you can use only one parameter
- *    // and the actionId will be passed to the slot
- *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopProcessing(int)));
- *    int theProgress = 0;
- *    while (...)
- *    {
- *       ...
- *       Observer::self()->setPercent(myJob, theProgress);
- *       ...
- *       theProgress = ...
- *    }
- * \endcode
- *
- * \code
- *    int myJob = Observer::self()->newJob();
- *    Observer::self()->setInfoMessage(myJob, "Processing input database");
- *    // If you need to know what action was executed referred to what job
- *    // you can use two parameters and the actionId and jobId will be passed to the slot
- *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopProcessing(int,int)));
- *    int theProgress = 0;
- *    while (...)
- *    {
- *       ...
- *       Observer::self()->setPercent(myJob, theProgress);
- *       ...
- *       theProgress = ...
- *    }
- * \endcode
- *
- * @short Observer for KJob progress information
+ * @short Observer for progress information
  * @author David Faure <faure@kde.org>
  */
 class KIO_EXPORT Observer
@@ -92,8 +59,23 @@ class KIO_EXPORT Observer
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.kde.KIO.Observer")
+    Q_ENUMS(JobVisibility StandardActions)
 
 public:
+    enum JobVisibility
+    {
+        JobHidden = 0,
+        JobShown = 1
+    };
+
+    enum StandardActions
+    {
+        ActionPause,
+        ActionResume,
+        ActionCancel
+    };
+
+
     /**
       * Returns the unique observer object
       *
@@ -111,11 +93,18 @@ public:
       * Called by the job constructor, to signal its presence to the
       * UI Server
       *
-      * @param job          the new job
-      * @param showProgress true to show progress, false otherwise
-      * @return             the progress ID assigned by the UI Server to the Job.
+      * @param job              the new job
+      * @param visibility       whether the job is shown or not
+      * @param icon             the icon to be shown, if not specified, the default icon
+      *                         of the app that launched the job will be loaded
+      * @return                 the progress ID assigned by the UI Server to the Job
+      *
+      * @warning                Will return 0 if @p job is null
+      *
+      * @note                   If successful will be called automatically job->setProgressId(newJobId);
+      *                         where newJobId is the return value of this method
       */
-    int newJob(KJob * job, bool showProgress);
+    int newJob(KJob *job, JobVisibility visibility = JobShown, const QString &icon = QString());
 
     /**
       * If you don't have a KJob, but want to show some kind of
@@ -193,32 +182,66 @@ public:
 
     /**
       * Adds an action to a job
+      *
       * @param jobId        the identification number of the job
+      * @param actionId     the action identification number that will have the new action
       * @param actionText   the text that will be shown on the button
       * @param receiver     the QObject pointer where slot @p slotName lives
       * @param slotName     the slot that will be called when button is clicked
-      *
-      * Example:
-      * \code
-      *    int myJob = Observer::self()->newJob();
-      *    Observer::self()->setInfoMessage(myJob, "Downloading icon theme");
-      *    // No data will be passed to the stopDownloadingIconTheme() slot, just will be called
-      *    Observer::self()->addAction(myJob, "Cancel", this, SLOT(stopDownloadingIconTheme()));
-      * \endcode
       */
-    int addAction(int jobId, const QString &actionText, QObject *receiver, const char *slotName);
+    void addAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
 
-    // TODO: addAction with enum support for standard actions as thiago suggested (ereslibre)
+    /**
+      * Adds a standard action to a job
+      *
+      * @param jobId        the identification number of the job
+      * @param action       the standard action that will be added
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the slot that will be called when button is clicked
+      */
+    void addStandardAction(int jobId, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
+
+    /**
+      * Adds an action to a job
+      *
+      * @param job          the job to which the action will be added
+      * @param actionId     the action identification number that will have the new action
+      * @param actionText   the text that will be shown on the button
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the slot that will be called when button is clicked
+      */
+    void addAction(KJob *job, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
+
+    /**
+      * Adds a standard action to a job
+      *
+      * @param job          the job to which the action will be added
+      * @param action       the typical action that will be added
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the slot that will be called when button is clicked
+      */
+    void addStandardAction(KJob *job, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
 
     /**
       * Edits an existing action
       *
+      * @param jobId        the identification number of the job
       * @param actionId     the action that is going to be edited
       * @param actionText   the new text that is going to be shown on the button
       * @param receiver     the QObject pointer where slot @p slotName lives
       * @param slotName     the new slot that will be called if the action is performed
       */
-    void editAction(int actionId, const QString &actionText, QObject *receiver, const char *slotName);
+    void editAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
+
+    /**
+      * Edits an existing standard action
+      *
+      * @param jobId        the identification number of the job
+      * @param action       the standard action that will be added
+      * @param receiver     the QObject pointer where slot @p slotName lives
+      * @param slotName     the new slot that will be called if the action is performed
+      */
+    void editStandardAction(int jobId, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
 
     /**
       * Enables an existing action (the press button)
@@ -237,9 +260,10 @@ public:
     /**
       * Removes an existing action
       *
+      * @param jobId    the identification number of the job
       * @param actionId the action that is going to be removed
       */
-    void removeAction(int actionId);
+    void removeAction(int jobId, int actionId);
 
 public Q_SLOTS:
     /**
@@ -271,16 +295,15 @@ public Q_SLOTS:
     Q_SCRIPTABLE QVariantMap metadata(int progressId);
 
 protected:
-    struct slotInfo
+    struct SlotInfo
     {
         QObject *receiver;
         QByteArray slotName;
     };
 
-    struct slotCall
+    struct SlotCall
     {
-        int owner;
-        QList<slotInfo> theSlotInfo;
+        QList<SlotInfo> theSlotInfo;
     };
 
     static Observer *s_pObserver;
@@ -290,7 +313,7 @@ protected:
     OrgKdeKIOUIServerInterface *m_uiserver;
 
     QMap<int, KJob*> m_dctJobs;
-    QHash<int, slotCall> m_hashActions;
+    QHash<int /* jobId */, QHash<int /* actionId */, SlotCall> > m_hashActions;
 
 public Q_SLOTS:
     void setTotalSize(int jobId, qulonglong size);
@@ -327,12 +350,13 @@ public:
     void unmounting(KJob *job, const QString &point);
 
 private Q_SLOTS:
-    void actionPerformed(int actionId);
-    void jobPaused(int actionId);
-    void jobResumed(int actionId);
+    void slotActionPerformed(int actionId, int jobId);
+    void jobPaused(KJob *job, int actionId);
+    void jobResumed(KJob *job, int actionId);
+    void jobCanceled(KJob *job, int actionId);
 
 Q_SIGNALS:
-    void actionPerformed(int actionId, int jobId);
+    void actionPerformed(KJob *job, int actionId);
 };
 
 #endif

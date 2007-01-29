@@ -93,7 +93,7 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
     if ( d->showProgressInfo )
     {
         KIO::Job* kioJob = static_cast<KIO::Job*>( job );
-        const int progressId = Observer::self()->newJob( kioJob, true );
+        const int progressId = Observer::self()->newJob( kioJob, Observer::JobShown );
         job->setProgressId( progressId );
         kioJob->addMetaData("progress-id", QString::number(progressId));
 

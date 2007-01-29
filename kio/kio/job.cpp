@@ -519,7 +519,7 @@ void SimpleJob::slotConnected()
 void SimpleJob::slotNeedProgressId()
 {
     if ( !progressId() )
-        setProgressId( Observer::self()->newJob( this, false ) );
+        setProgressId( Observer::self()->newJob( this, Observer::JobHidden ) );
     m_slave->setProgressId( progressId() );
 }
 

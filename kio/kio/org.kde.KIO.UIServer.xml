@@ -4,6 +4,7 @@
   <interface name="org.kde.KIO.UIServer">
     <signal name="actionPerformed">
       <arg name="actionId" type="i" direction="out"/>
+      <arg name="jobId" type="i" direction="out"/>
     </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
@@ -19,23 +20,28 @@
     </method>
     <method name="newAction">
       <arg name="jobId" type="i" direction="in"/>
+      <arg name="actionId" type="i" direction="in"/>
       <arg name="actionText" type="s" direction="in"/>
-      <arg name="actionId" type="i" direction="out"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="editAction">
+      <arg name="jobId" type="i" direction="in"/>
       <arg name="actionId" type="i" direction="in"/>
       <arg name="actionText" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="enableAction">
+      <arg name="jobId" type="i" direction="in"/>
       <arg name="actionId" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="disableAction">
+      <arg name="jobId" type="i" direction="in"/>
       <arg name="actionId" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="removeAction">
+      <arg name="jobId" type="i" direction="in"/>
       <arg name="actionId" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
