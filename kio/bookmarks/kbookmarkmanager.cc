@@ -686,7 +686,9 @@ KBookmarkSettings *KBookmarkSettings::self()
 
 void KBookmarkOwner::openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km)
 {
-
+   Q_UNUSED(bm)
+   Q_UNUSED(mb)
+   Q_UNUSED(km)
 }
 
 #include "kbookmarkmanager.moc"

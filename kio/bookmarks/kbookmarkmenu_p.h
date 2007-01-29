@@ -155,7 +155,11 @@ public:
   ~KImportedBookmarkActionMenu()
   {}
   virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
-  {}
+  {
+    Q_UNUSED(pos)
+    Q_UNUSED(m_pManager)
+    Q_UNUSED(m_pOwner)
+  }
 };
 
 class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
