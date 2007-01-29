@@ -86,6 +86,18 @@ namespace Solid
          */
         virtual ~Capability();
 
+        /**
+         *
+         * @return the name of the capability type
+         */
+        static QString typeToString(Type type);
+
+        /**
+         *
+         * @return the capability type for the given name
+         */
+        static Type stringToType(const QString &type);
+
     private:
         friend class Device;
     };

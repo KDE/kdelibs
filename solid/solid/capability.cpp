@@ -21,6 +21,8 @@
 
 #include <solid/ifaces/capability.h>
 
+#include <QMetaEnum>
+
 Solid::Capability::Capability( QObject *backendObject )
     : FrontendObject()
 {
@@ -29,6 +31,20 @@ Solid::Capability::Capability( QObject *backendObject )
 
 Solid::Capability::~Capability()
 {
+}
+
+QString Solid::Capability::typeToString(Type type)
+{
+    int index = staticMetaObject.indexOfEnumerator("Type");
+    QMetaEnum metaEnum = staticMetaObject.enumerator(index);
+    return QString(metaEnum.valueToKey((int)type));
+}
+
+Solid::Capability::Type Solid::Capability::stringToType(const QString &type)
+{
+    int index = staticMetaObject.indexOfEnumerator("Type");
+    QMetaEnum metaEnum = staticMetaObject.enumerator(index);
+    return (Type)metaEnum.keyToValue(type.toUtf8());
 }
 
 #include "capability.moc"
