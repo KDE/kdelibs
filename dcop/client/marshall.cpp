@@ -169,7 +169,7 @@ QCString demarshal( QDataStream &stream, const QString &type )
         QSize s;
         stream >> s;
         result.sprintf( "%dx%d", s.width(), s.height() );
-    } else if ( type == "QPixmap" || type == "QImage" ) 
+    } else if ( type == "QPixmap" || type == "QImage" )
     {
         QImage i;
         stream >> i;
@@ -271,16 +271,17 @@ QCString demarshal( QDataStream &stream, const QString &type )
 
 void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 {
+    if( i >= args.count() )
+    {
+	qWarning("Not enough arguments (expected %d, got %d).",  i,  args.count());
+	exit(1);
+    }
+    QString s = QString::fromLocal8Bit( args[ i ] );
+
     if (type == "QStringList")
        type = "QValueList<QString>";
     if (type == "QCStringList")
        type = "QValueList<QCString>";
-    if( i >= args.count() )
-    {
-	qWarning("Not enough arguments.");
-	exit(1);
-    }
-    QString s = QString::fromLocal8Bit( args[ i ] );
 
     if ( type == "int" )
 	arg << s.toInt();
