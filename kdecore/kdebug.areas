@@ -49,6 +49,7 @@
 400        artskde
 410        kross (kdelibs)
 500        kdeprint
+550        knewstuff
 600        phonon (core)
 602        phonon (ui)
 603        phonon (ALSA deviceenumerator)
