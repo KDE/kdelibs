@@ -41,6 +41,7 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
+#include <kconfiggroup.h>
 
 #include "kfileiconview.h"
 #include "config-kfile.h"

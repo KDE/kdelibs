@@ -50,7 +50,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qfont.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -90,7 +90,7 @@ static Display *X11display = 0;
 static int X11_startup_notify_fd = -1;
 static Display *X11_startup_notify_display = 0;
 #endif
-static const KInstance *s_instance = 0;
+static KComponentData *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 //static char sock_file_old[MAX_SOCK_FILE];
@@ -384,7 +384,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   {
      lib = name = _name;
      exec = name;
-     libpath = QFile::encodeName(KLibLoader::findLibrary( lib, s_instance ));
+     libpath = QFile::encodeName(KLibLoader::findLibrary(lib.constData(), *s_instance));
      execpath = execpath_avoid_loops( exec, envc, envs, avoid_loops );
   }
   else
@@ -1450,7 +1450,7 @@ static void kdeinit_library_path()
    // And for KDE4 it became kdeinit4_display_with_underscores, to avoid messing up the kde3 kdeinit.
    // Compat code needed just in case we need it later for something else.
 #if 0
-   QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(QLatin1String(display)), s_instance));
+   QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(QLatin1String(display)), *s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit4: Aborting. Socket name will be too long:\n");
@@ -1462,7 +1462,7 @@ static void kdeinit_library_path()
 
    display.replace(":","_");
    // WARNING, if you change the socket name, adjust kwrapper too
-   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), s_instance));
+   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), *s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit4: Aborting. Socket name will be too long:\n");
@@ -1674,7 +1674,7 @@ int main(int argc, char **argv, char **envp)
       setsid();
 
    /** Create our instance **/
-   s_instance = new KInstance("kdeinit4");
+   s_instance = new KComponentData("kdeinit4"); // "kdeinit4" is special cased in KComponentData to not register with KGlobal
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
@@ -1682,8 +1682,8 @@ int main(int argc, char **argv, char **envp)
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
-   // which seems to be buggy and always use KGlobal instead of the maching KInstance)
-   KGlobal::_instance = 0L;
+   // which seems to be buggy and always use KGlobal instead of the maching KComponentData)
+   Q_ASSERT(!KGlobal::hasMainComponent());
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");

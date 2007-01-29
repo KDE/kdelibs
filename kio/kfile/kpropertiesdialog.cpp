@@ -117,6 +117,7 @@ extern "C" {
 #include <k3listview.h>
 #include <kvbox.h>
 #include <kacl.h>
+#include <kconfiggroup.h>
 #include "kfilesharedialog.h"
 
 #include "ui_kpropertiesdesktopbase.h"

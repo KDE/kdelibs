@@ -45,7 +45,7 @@ void AudioEffectPrivate::createIface()
 	if( backendObject )
 		return;
 	K_Q( AudioEffect );
-	backendObject = Factory::self()->createAudioEffect( type, q );
+    backendObject = Factory::createAudioEffect(type, q);
 	if( backendObject )
 		q->setupIface();
 }

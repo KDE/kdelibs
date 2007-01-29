@@ -116,6 +116,7 @@
 #include <qevent.h>
 #include <QDesktopWidget>
 #include <QMetaObject>
+#include <kcomponentdata.h>
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
@@ -157,8 +158,37 @@ void KApplication_init_windows();
 class KApplication::Private
 {
 public:
+  Private(const QByteArray &cName)
+      : componentData(cName),
+      checkAccelerators(0),
+      startup_id("0"),
+      app_started_timer(0),
+      session_save(false)
+#ifdef Q_WS_X11
+      , oldIceIOErrorHandler(0)
+      , oldXErrorHandler(0)
+      , oldXIOErrorHandler(0)
+#endif
+  {
+  }
+
+  Private(const KComponentData &cData)
+      : componentData(cData),
+      checkAccelerators(0),
+      startup_id("0"),
+      app_started_timer(0),
+      session_save(false)
+#ifdef Q_WS_X11
+      , oldIceIOErrorHandler(0)
+      , oldXErrorHandler(0)
+      , oldXIOErrorHandler(0)
+#endif
+  {
+  }
+
   Private()
-    : checkAccelerators( 0 ),
+      : componentData(KCmdLineArgs::about),
+      checkAccelerators(0),
       startup_id( "0" ),
       app_started_timer( 0 ),
       session_save( false )
@@ -174,6 +204,7 @@ public:
   {
   }
 
+  KComponentData componentData;
   KCheckAccelerators* checkAccelerators;
   QByteArray startup_id;
   QTimer* app_started_timer;
@@ -291,62 +322,57 @@ static SmcConn mySmcConnection = 0;
 // Possibly "steal" XFree86's libSM?
 #endif
 
-KApplication::KApplication( bool GUIenabled ) :
-  QApplication( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
-                GUIenabled ),
-  KInstance( KCmdLineArgs::about ), d (new Private)
+KApplication::KApplication(bool GUIenabled)
+    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
+    d(new Private)
 {
-
     read_app_startup_id();
-    setApplicationName(QLatin1String(instanceName()));
+    setApplicationName(QLatin1String(d->componentData.componentName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     init();
 }
 
 #ifdef Q_WS_X11
-KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap ) :
-  QApplication( dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
-                visual, colormap ),
-  KInstance( KCmdLineArgs::about ), d (new Private)
+KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
+    : QApplication(dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d(new Private)
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(instanceName()));
+    setApplicationName(QLatin1String(d->componentData.componentName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     init();
 }
 
-KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
-		            KInstance * _instance ) :
-  QApplication( dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
-                visual, colormap ),
-  KInstance( _instance ), d (new Private)
+KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap, const KComponentData &cData)
+    : QApplication(dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d (new Private(cData))
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(instanceName()));
-    setOrganizationDomain( aboutData()->organizationDomain() );
+    setApplicationName(QLatin1String(d->componentData.componentName()));
+    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init();
 }
 #endif
 
-KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
-  QApplication( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(),
-                GUIenabled ),
-  KInstance( _instance ), d (new Private)
+KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
+    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
+    d (new Private(cData))
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(instanceName()));
-    setOrganizationDomain( aboutData()->organizationDomain() );
+    setApplicationName(QLatin1String(d->componentData.componentName()));
+    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init();
 }
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
-                           bool GUIenabled ) :
-  QApplication( display ), KInstance(rAppName), d (new Private)
+        bool GUIenabled)
+    : QApplication(display),
+    d(new Private(rAppName))
 {
     Q_UNUSED(GUIenabled);
     read_app_startup_id();
@@ -505,7 +531,7 @@ void KApplication::init()
   // Trigger creation of locale.
   (void) KGlobal::locale();
 
-  KConfig* config = KGlobal::config();
+  KSharedConfig::Ptr config = d->componentData.config();
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && applicationName() != QLatin1String("kdialog"))
   {
@@ -762,7 +788,7 @@ void KApplication::parseCommandLine( )
         }
         else {
             QIcon icon = windowIcon();
-            QPixmap largeIcon = DesktopIcon(QFile::decodeName(instanceName()));
+            QPixmap largeIcon = DesktopIcon(QFile::decodeName(d->componentData.componentName()));
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             setWindowIcon(icon);
         }
@@ -774,7 +800,7 @@ void KApplication::parseCommandLine( )
     if (args->isSet("config"))
     {
         QString config = QString::fromLocal8Bit(args->getOption("config"));
-        setConfigName(config);
+        d->componentData.setConfigName(config);
     }
 
     if (args->isSet("style"))
@@ -1044,7 +1070,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
-        topWidget->setWindowTitle( KInstance::caption() );
+        topWidget->setWindowTitle(KGlobal::caption());
     }
 
 #if defined Q_WS_X11

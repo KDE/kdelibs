@@ -31,7 +31,7 @@ typedef KGenericFactory<PhononKcm, QWidget> PhononKcmFactory;
 K_EXPORT_COMPONENT_FACTORY( kcm_phonon, PhononKcmFactory("kcm_phonon"))
 
 PhononKcm::PhononKcm( QWidget* parent, const QStringList& args )
-	: KCModule( PhononKcmFactory::instance(), parent, args )
+	: KCModule( PhononKcmFactory::componentData(), parent, args )
 {
 	KAboutData *about = new KAboutData(
 			"kcm_phonon", I18N_NOOP( "Phonon Configuration Module" ),

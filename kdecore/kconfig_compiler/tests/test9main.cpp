@@ -19,13 +19,13 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test9.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include <kdebug.h>
 #include <qdir.h>
 
 int main( int, char** )
 {
-  KInstance i("test");
+  KComponentData i("test");
   Test9 *t = new Test9( QString::null, QString::null );
 
   QStringList myPathsList2 = t->myPathsList2();

@@ -40,10 +40,10 @@ namespace KSettings
  * K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
  *
  * MyAppPluginConfig( QWidget * parent, const QStringList & args )
- *     : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
+ *     : PluginPage( MyAppPluginConfigFactory::componentData(), parent, args )
  * {
- *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "General Plugins" ), "General" );
- *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "Effects" ), "Effects" );
+ *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "General Plugins" ), "General" );
+ *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "Effects" ), "Effects" );
  * }
  * \endcode
  *
@@ -83,7 +83,7 @@ class KUTILS_EXPORT PluginPage : public KCModule
          * Standart KCModule constructor. Automatically creates the the
          * KPluginSelector widget.
          */
-        PluginPage( KInstance * instance, QWidget * parent = 0, const QStringList & args = QStringList() );
+        PluginPage(const KComponentData &componentData, QWidget *parent = 0, const QStringList &args = QStringList());
 
         ~PluginPage();
 

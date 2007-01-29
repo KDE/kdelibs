@@ -76,20 +76,20 @@ public:
 
      /**
       * If you have a part contained in a shared library you might want to query
-      * for meta-information like the about-data, or the KInstance in general.
+      * for meta-information like the about-data, or the KComponentData in general.
       * If the part is exported using KParts::GenericFactory then this method will
       * return the instance that belongs to the part without the need to instantiate
       * the part component.
       */
-     virtual const KInstance *partInstance();
+     virtual KComponentData partComponentData();
 
      /**
-      * A convenience method for partInstance that takes care of retrieving
-      * the factory for a given library name and calling partInstance on it.
+      * A convenience method for partComponentData that takes care of retrieving
+      * the factory for a given library name and calling partComponentData on it.
       *
       * @param libraryName name of the library to query the instance from
       */
-     static const KInstance *partInstanceFromLibrary( const QByteArray &libraryName );
+     static KComponentData partComponentDataFromLibrary(const QByteArray &libraryName);
 
 protected:
 

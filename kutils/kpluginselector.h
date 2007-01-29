@@ -26,14 +26,12 @@
 #include <QList>
 
 #include <kdelibs_export.h>
+#include <kconfig.h>
 
-class KInstance;
+class KComponentData;
 class KPluginInfo;
-class KConfig;
-class KConfigGroup;
 class KCModuleInfo;
 class QTreeWidgetItem;
-class KPluginInfoLVI;
 
 /**
   * @short A widget to select what plugins to load and configure the plugins.
@@ -80,7 +78,7 @@ public:
       * The information about the plugins will be loaded from the
       * share/apps/&lt;instancename&gt;/kpartplugins directory
       *
-      * @param instanceName The name of the KInstance of the plugin's parent.
+      * @param componentName The name of the KComponentData of the plugin's parent.
       * @param categoryName The translated name of the category. This is the
       *                     name that is shown in the title
       * @param category     When you have different categories of KParts
@@ -92,26 +90,26 @@ public:
       *                     and all plugins are shown
       * @param config       The KConfig object that holds the state of the
       *                     plugins being enabled or not. By default it should
-      *                     be instance->config(). It is recommended to
+      *                     be componentData.config(). It is recommended to
       *                     always pass a KConfig object if you use
       *                     KSettings::PluginPage since you never know from where the
       *                     page will be called (think global config app).
       *                     For example KViewCanvas passes KSimpleConfig(
       *                     "kviewcanvas" )
       */
-    void addPlugins(const QString &instanceName,
+    void addPlugins(const QString &componentName,
                     const QString &categoryName = QString(),
                     const QString &category = QString(),
-                    KConfig *config = 0);
+                    KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     /**
       * Add a list of KParts plugins. Convenience method for the one above.
-      * If not set explicitly, @p config is set to instance->config()
+      * If not set explicitly, @p config is set to componentData.config()
       */
-    void addPlugins(const KInstance *instance,
+    void addPlugins(const KComponentData &instance,
                     const QString &categoryName = QString(),
                     const QString &category = QString(),
-                    KConfig *config = 0);
+                    const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
 
     /**
       * Add a list of non-KParts plugins
@@ -140,7 +138,7 @@ public:
     void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
                     const QString &categoryName = QString(),
                     const QString &category = QString(),
-                    KConfig *config = 0);
+                    const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
 
     /**
       * Load the state of the plugins (selected or not) from the KPluginInfo
@@ -169,7 +167,7 @@ Q_SIGNALS:
       * argument is the name of the parent component that needs to reload
       * its config
       */
-    void configCommitted(const QByteArray &instanceName);
+    void configCommitted(const QByteArray &componentName);
 
 private:
     enum CheckWhatDependencies

@@ -27,7 +27,6 @@
 
 class QString;
 class QTimer;
-class KInstance;
 class KLibFactory;
 class KLibFactoryPrivate;
 class KLibraryPrivate;
@@ -149,12 +148,12 @@ class KLibWrapPrivate;
  * NOTE: you probably want to use KGenericFactory<PluginClassName>
  * instead of writing your own factory.
  *
- * In the constructor of your factory you should create an instance of KInstance
+ * In the constructor of your factory you should create an instance of KComponentData
  * like this:
  * \code
- *     s_global = new KInstance( "kspread" );
+ *     s_global = new KComponentData( "kspread" );
  * \endcode
- * This KInstance is comparable to KGlobal used by normal applications.
+ * This KComponentData is comparable to KGlobal used by normal applications.
  * It allows you to find resource files (images, XML, sound etc.) belonging
  * to the library.
  *
@@ -413,10 +412,9 @@ public:
      * @param name of the library. If it is not a path, the function searches in
      *             the "module" and "lib" resources. If there is no extension,
      *             ".la" will be appended.
-     * @param instance a KInstance used to get the standard paths
+     * @param cData a KComponentData used to get the standard paths
      */
-    static QString findLibrary( const char * name, const KInstance * instance = KGlobal::instance() );
-
+    static QString findLibrary(const char *name, const KComponentData &cData = KGlobal::mainComponent());
 
     /**
      * This enum type defines the possible error cases that can happen

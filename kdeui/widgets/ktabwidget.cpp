@@ -34,6 +34,7 @@
 #include <ktabbar.h>
 
 #include "ktabwidget.h"
+#include <kconfiggroup.h>
 
 class KTabWidget::Private
 {

@@ -39,7 +39,7 @@
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kstandardguiitem.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kurl.h>
 #include <kurllabel.h>
 
@@ -83,12 +83,11 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   showButtonSeparator(true);
   setModal(modal);
 
-  // Use supplied aboutdata, otherwise the one from the active instance
+  // Use supplied aboutdata, otherwise the one from the active componentData
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
-  m_aboutData = aboutData
-    ? aboutData
-    : ( KGlobal::activeInstance() ? KGlobal::activeInstance()->aboutData()
-                                  : KGlobal::instance()->aboutData() );
+  m_aboutData = aboutData ? aboutData
+      : (KGlobal::activeComponent().isValid() ? KGlobal::activeComponent().aboutData()
+                                  : KGlobal::mainComponent().aboutData());
   m_process = 0;
   QWidget * parent = new QWidget(this);
   d->submitBugButton = 0;

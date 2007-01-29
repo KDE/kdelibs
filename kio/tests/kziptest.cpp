@@ -18,7 +18,7 @@
 
 #include "kzip.h"
 #include <stdio.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <qfile.h>
 
@@ -97,7 +97,7 @@ int main( int argc, char** argv )
  " ./kziptest transfer file.zip newfile.zip         complete transfer.\n" );
     return 1;
   }
-  KInstance instance("kziptest");
+  KComponentData componentData("kziptest");
   QString command = argv[1];
   if ( command == "list" )
   {

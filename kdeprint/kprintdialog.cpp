@@ -453,7 +453,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	}
 	else
 	{
-		KConfig	*config = KGlobal::config();
+		KSharedConfig::Ptr config = KGlobal::config();
 		config->setGroup("KPrinter Settings");
 		expandDialog(!config->readEntry("DialogReduced", QVariant(KMFactory::self()->settings()->application != KPrinter::StandAlone)).toBool());
 	}
@@ -461,7 +461,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 
 KPrintDialog::~KPrintDialog()
 {
-	KConfig	*config = KGlobal::config();
+	KSharedConfig::Ptr config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
 	config->writeEntry("DialogReduced", d->m_reduced);
 

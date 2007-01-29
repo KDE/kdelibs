@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kiconloader.h>
+#include <kconfiggroup.h>
 
 #include "kmessagebox.h"
 
@@ -329,7 +330,7 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
                                 ButtonCode &result)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    KConfigGroup cg( againConfig ? againConfig : KGlobal::config(), "Notification Messages" );
+    KConfigGroup cg( againConfig ? againConfig : KGlobal::config().data(), "Notification Messages" );
     QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
     if (dontAsk == "yes" || dontAsk == "true") {
         result = Yes;
@@ -346,7 +347,7 @@ bool
 KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    KConfigGroup cg( againConfig ? againConfig : KGlobal::config(), "Notification Messages" );
+    KConfigGroup cg( againConfig ? againConfig : KGlobal::config().data(), "Notification Messages" );
     return cg.readEntry(dontShowAgainName, true);
 }
 
@@ -358,7 +359,7 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
     if (dontShowAgainName[0] == ':')
         flags |= KConfigBase::Global;
-    KConfigGroup cg( againConfig? againConfig : KGlobal::config(), "Notification Messages" );
+    KConfigGroup cg( againConfig? againConfig : KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, result==Yes, flags );
     cg.sync();
 }
@@ -370,7 +371,7 @@ KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
     if (dontShowAgainName[0] == ':')
         flags |= KConfigBase::Global;
-    KConfigGroup cg( againConfig? againConfig: KGlobal::config(), "Notification Messages" );
+    KConfigGroup cg( againConfig? againConfig: KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, false, flags );
     cg.sync();
 }
@@ -954,7 +955,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
 void
 KMessageBox::enableAllMessages()
 {
-   KConfig *config = againConfig ? againConfig : KGlobal::config();
+   KConfig *config = againConfig ? againConfig : KGlobal::config().data();
    if (!config->hasGroup("Notification Messages"))
       return;
 
@@ -975,7 +976,7 @@ KMessageBox::enableAllMessages()
 void
 KMessageBox::enableMessage(const QString &dontShowAgainName)
 {
-   KConfig *config = againConfig ? againConfig : KGlobal::config();
+   KConfig *config = againConfig ? againConfig : KGlobal::config().data();
    if (!config->hasGroup("Notification Messages"))
       return;
 
@@ -991,7 +992,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
 {
     QString _caption = caption;
     if (_caption.isEmpty())
-        _caption = i18n("About %1", kapp->caption());
+        _caption = i18n("About %1", KGlobal::caption());
 
     KDialog *dialog= new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption );

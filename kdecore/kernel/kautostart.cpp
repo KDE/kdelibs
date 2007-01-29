@@ -22,7 +22,7 @@
 
 #include "kaboutdata.h"
 #include "kglobal.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kdesktopfile.h"
 #include "kstandarddirs.h"
 
@@ -54,7 +54,8 @@ KAutostart::KAutostart(const QString& entryName,
     KGlobal::dirs()->addResourceType("autostart", "share/autostart");
     if (entryName.isEmpty())
     {
-        d->name = KGlobal::instance()->aboutData()->appName();
+        // XXX sure that the mainComponent is available at this point?
+        d->name = KGlobal::mainComponent().aboutData()->appName();
     }
     else
     {

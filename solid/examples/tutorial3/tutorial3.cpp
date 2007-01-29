@@ -8,7 +8,7 @@
 #include <solid/processor.h>
 
 //kde specific includes
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int args, char **argv)
 {
-    KInstance instance("tutorial3");
+    KComponentData componentData("tutorial3");
     
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     

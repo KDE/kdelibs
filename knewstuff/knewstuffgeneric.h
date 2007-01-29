@@ -22,8 +22,7 @@
 #define KNEWSTUFFGENERIC_H
 
 #include "knewstuff.h"
-
-class KConfig;
+#include <kconfig.h>
 
 /**
  * @short Basic KNewStuff class with predefined actions.
@@ -80,7 +79,7 @@ class KNEWSTUFF_EXPORT KNewStuffGeneric : public KNewStuff
   private:
     QString destinationPath( KNS::Entry *entry );
 
-    KConfig *mConfig;
+    KSharedConfig::Ptr mConfig;
 };
 
 #endif

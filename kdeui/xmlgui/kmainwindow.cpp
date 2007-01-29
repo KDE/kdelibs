@@ -60,6 +60,7 @@
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwin.h>
+#include <kconfiggroup.h>
 
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
@@ -237,7 +238,7 @@ void KMainWindow::initKMainWindow()
     }
 
     if ( kapp )
-        setWindowTitle( kapp->caption() );
+        setWindowTitle( KGlobal::caption() );
     new KMainWindowInterface(this);
 
     // Get notified when settings change
@@ -380,7 +381,7 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
     if( !mHelpMenu ) {
         if ( aboutAppText.isEmpty() )
-            mHelpMenu = new KHelpMenu( this, instance()->aboutData(), showWhatsThis);
+            mHelpMenu = new KHelpMenu( this, componentData().aboutData(), showWhatsThis);
         else
             mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
 
@@ -457,7 +458,7 @@ KXMLGUIFactory *KMainWindow::guiFactory()
 
 void KMainWindow::configureToolbars()
 {
-    saveMainWindowSettings(KGlobal::config());
+    saveMainWindowSettings(KGlobal::config().data());
     if (!d->toolBarEditor) {
       d->toolBarEditor = new KEditToolbar(actionCollection(), xmlFile(), true, this);
       connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
@@ -468,7 +469,7 @@ void KMainWindow::configureToolbars()
 void KMainWindow::saveNewToolbarConfig()
 {
     createGUI(xmlFile());
-    applyMainWindowSettings( KGlobal::config() );
+    applyMainWindowSettings(KGlobal::config().data());
 }
 
 void KMainWindow::setupGUI( StandardWindowOptions options, const QString & xmlfile ) {
@@ -536,19 +537,19 @@ void KMainWindow::createGUI( const QString &xmlfile )
     if (d->showHelpMenu) {
         // we always want a help menu
         if (!helpMenu2)
-            helpMenu2 = new KHelpMenu(this, instance()->aboutData(), true,
+            helpMenu2 = new KHelpMenu(this, componentData().aboutData(), true,
                                       actionCollection());
     }
 
     // we always want to load in our global standards file
-    setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", instance() ) );
+    setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
 
     // now, merge in our local xml file.  if this is null, then that
     // means that we will be only using the global file
     if ( !xmlfile.isNull() ) {
         setXMLFile( xmlfile, true );
     } else {
-        QString auto_file(instance()->instanceName() + "ui.rc");
+        QString auto_file(componentData().componentName() + "ui.rc");
         setXMLFile( auto_file, true );
     }
 
@@ -1028,7 +1029,7 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveWindowSize = saveWindowSize;
 
     // Now read the previously saved settings
-    applyMainWindowSettings( KGlobal::config(), groupName );
+    applyMainWindowSettings(KGlobal::config().data(), groupName);
 }
 
 void KMainWindow::resetAutoSaveSettings()
@@ -1052,7 +1053,7 @@ void KMainWindow::saveAutoSaveSettings()
 {
     Q_ASSERT( d->autoSaveSettings );
     //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
-    saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
+    saveMainWindowSettings(KGlobal::config().data(), d->autoSaveGroup);
     KGlobal::config()->sync();
     d->settingsDirty = false;
     if ( d->settingsTimer )

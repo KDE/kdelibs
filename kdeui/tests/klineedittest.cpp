@@ -136,7 +136,7 @@ void KLineEditTest::slotHide()
 int main ( int argc, char **argv)
 {
     KAboutData aboutData( "klineedittest", "klineedittest", "1.0" );
-    KInstance i( &aboutData );
+    KComponentData i( &aboutData );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addStdCmdLineOptions();
 

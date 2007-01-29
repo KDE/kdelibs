@@ -28,7 +28,7 @@
 #include <qapplication.h>
 
 #include "kstandarddirs.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kdebug.h"
 #include "klocale.h"
 
@@ -395,7 +395,7 @@ static inline QByteArray makeLibName( const char* name )
     return libname;
 }
 
-static inline QString findLibraryInternal( const char * name, const KInstance * instance )
+static inline QString findLibraryInternal(const char *name, const KComponentData &cData)
 {
     QByteArray libname = makeLibName( name );
 
@@ -407,10 +407,10 @@ static inline QString findLibraryInternal( const char * name, const KInstance * 
     }
     else
     {
-      libfile = instance->dirs()->findResource( "module", libname );
+      libfile = cData.dirs()->findResource("module", libname);
       if ( libfile.isEmpty() )
       {
-        libfile = instance->dirs()->findResource( "lib", libname );
+        libfile = cData.dirs()->findResource("lib", libname);
 #ifndef NDEBUG
         if ( !libfile.isEmpty() && libname.startsWith( "lib" ) ) // don't warn for kdeinit modules
           kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
@@ -421,15 +421,15 @@ static inline QString findLibraryInternal( const char * name, const KInstance * 
 }
 
 //static
-QString KLibLoader::findLibrary( const char * _name, const KInstance * instance )
+QString KLibLoader::findLibrary(const char *_name, const KComponentData &cData)
 {
 #ifndef Q_OS_WIN
-    return findLibraryInternal( _name, instance );
+    return findLibraryInternal(_name, cData);
 #else
     QByteArray name( _name );
     name = name.replace( '\\', '/' );
 
-    QString libname = findLibraryInternal( name, instance );
+    QString libname = findLibraryInternal(name, cData);
 
     // we don't have 'lib' prefix on windows -> remove it and try again
     if( libname.isEmpty() )
@@ -452,7 +452,7 @@ QString KLibLoader::findLibrary( const char * _name, const KInstance * instance 
       if( !file.startsWith( "lib" ) )
           return libname;
 
-      libname = findLibraryInternal( name, instance );
+      libname = findLibraryInternal(name, cData);
     }
 
     return libname;

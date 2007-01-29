@@ -31,6 +31,7 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kstringhandler.h"
+#include "kcomponentdata.h"
 
 #include <qcolor.h>
 #include <qdatetime.h>
@@ -52,14 +53,35 @@ public:
 
 KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
-    bReadOnly(false), bExpand(false), d(0)
+    bReadOnly(false), bExpand(false),
+    mComponentData(new KComponentData(KGlobal::mainComponent())),
+    d(0)
+{
+    setGroup(QString());
+}
+
+KConfigBase::KConfigBase(const KComponentData &componentData)
+    : backEnd(0L),
+    bDirty(false),
+    bLocaleInitialized(false),
+    bReadOnly(false),
+    bExpand(false),
+    mComponentData(new KComponentData(componentData)),
+    d(0)
 {
     setGroup(QString());
 }
 
 KConfigBase::~KConfigBase()
 {
+    delete mComponentData;
+    mComponentData = 0;
     delete d;
+}
+
+const KComponentData &KConfigBase::componentData() const
+{
+    return *mComponentData;
 }
 
 void KConfigBase::setLocale()
@@ -211,11 +233,11 @@ QString KConfigBase::readEntry( const char *pKey, const char *aDefault ) const
 QString KConfigBase::readEntry( const char *pKey,
                                 const QString& aDefault ) const
 {
-  // we need to access _locale instead of the method locale()
+  // we need to access hasLocale() instead of the method locale()
   // because calling locale() will create a locale object if it
   // doesn't exist, which requires KConfig, which will create a infinite
   // loop, and nobody likes those.
-  if (!bLocaleInitialized && KGlobal::_locale) {
+  if (!bLocaleInitialized && KGlobal::hasLocale()) {
     // get around const'ness.
     KConfigBase *that = const_cast<KConfigBase *>(this);
     that->setLocale();
@@ -270,7 +292,7 @@ QString KConfigBase::readEntry( const char *pKey,
 
           QString result;
           QByteArray oldpath = qgetenv( "PATH" );
-          QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+          QByteArray newpath = QFile::encodeName( componentData().dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
           if( !newpath.isEmpty() && !oldpath.isEmpty() )
                   newpath += KPATH_SEPARATOR;
           newpath += oldpath;
@@ -1152,7 +1174,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
 
 void KConfigBase::parseConfigFiles()
 {
-  if (!bLocaleInitialized && KGlobal::_locale) {
+  if (!bLocaleInitialized && KGlobal::hasLocale()) {
     setLocale();
   }
   if (backEnd)
@@ -1251,99 +1273,8 @@ bool KConfigBase::hasDefault(const QString &key) const
   return false;
 }
 
-KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
-{
-  mMaster = master;
-  backEnd = mMaster->backEnd; // Needed for getConfigState()
-  bLocaleInitialized = true;
-  bReadOnly = mMaster->bReadOnly;
-  bExpand = false;
-  bDirty = false; // Not used
-  mGroup = _group.toUtf8();
-  aLocaleString = mMaster->aLocaleString;
-  setReadDefaults(mMaster->readDefaults());
-}
-
-KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
-{
-  mMaster = master;
-  backEnd = mMaster->backEnd; // Needed for getConfigState()
-  bLocaleInitialized = true;
-  bReadOnly = mMaster->bReadOnly;
-  bExpand = false;
-  bDirty = false; // Not used
-  mGroup = _group;
-  aLocaleString = mMaster->aLocaleString;
-  setReadDefaults(mMaster->readDefaults());
-}
-
-KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
-{
-  mMaster = master;
-  backEnd = mMaster->backEnd; // Needed for getConfigState()
-  bLocaleInitialized = true;
-  bReadOnly = mMaster->bReadOnly;
-  bExpand = false;
-  bDirty = false; // Not used
-  mGroup = _group;
-  aLocaleString = mMaster->aLocaleString;
-  setReadDefaults(mMaster->readDefaults());
-}
-
-KConfigGroup::~KConfigGroup()
-{
-}
-
-void KConfigGroup::deleteGroup(WriteConfigFlags pFlags)
-{
-  mMaster->deleteGroup(KConfigBase::group(), pFlags);
-}
-
-bool KConfigGroup::groupIsImmutable() const
-{
-    return mMaster->groupIsImmutable(KConfigBase::group());
-}
-
-void KConfigGroup::setDirty(bool _bDirty)
-{
-  mMaster->setDirty(_bDirty);
-}
-
-void KConfigGroup::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
-{
-  mMaster->putData(_key, _data, _checkGroup);
-}
-
-KEntry KConfigGroup::lookupData(const KEntryKey &_key) const
-{
-  return mMaster->lookupData(_key);
-}
-
-void KConfigGroup::sync()
-{
-  mMaster->sync();
-}
-
-QStringList KConfigGroup::groupList() const
-{
-  return QStringList();
-}
-
-KEntryMap KConfigGroup::internalEntryMap( const QString&) const
-{
-  return KEntryMap();
-}
-
-KEntryMap KConfigGroup::internalEntryMap() const
-{
-  return KEntryMap();
-}
-
 void KConfigBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-
-void KConfigGroup::virtual_hook( int id, void* data )
-{ KConfigBase::virtual_hook( id, data ); }
 
 bool KConfigBase::checkConfigFilesWritable(bool warnUser)
 {

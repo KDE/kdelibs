@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 
-class KInstance;
+class KComponentData;
 class KXMLGUIBuilderPrivate;
 class KXMLGUIClient;
 
@@ -49,9 +49,9 @@ class KDEUI_EXPORT KXMLGUIBuilder
   /* @internal */
   void setBuilderClient( KXMLGUIClient *client );
   /* @internal */
-  KInstance *builderInstance() const;
+  KComponentData builderComponentData() const;
   /* @internal */
-  void setBuilderInstance( KInstance *instance );
+  void setBuilderComponentData(const KComponentData &componentData);
   /* @internal */
   QWidget *widget();
 

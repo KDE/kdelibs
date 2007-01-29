@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <ktoolinvocation.h>
@@ -26,7 +26,7 @@ int
 main(int argc, char *argv[])
 {
    KAboutData about("ktoolinvocationtest", "ktoolinvocationtest", "version");
-   KInstance instance(&about);
+   KComponentData cData(&about);
    //KCmdLineArgs::init(argc, argv, &about);
    //KApplication a;
 

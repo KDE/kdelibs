@@ -28,21 +28,23 @@
 
 namespace Phonon
 {
+    class FactoryPrivate;
 
 class BasePrivate
 {
 	K_DECLARE_PUBLIC( Base )
-	friend class Phonon::Factory;
+    friend class Phonon::FactoryPrivate;
 	protected:
 		BasePrivate()
-			: backendObject( 0 )
+            : q_ptr(0),
+            backendObject( 0 )
 		{
-			Factory::self()->registerFrontendObject( this );
+			Factory::registerFrontendObject( this );
 		}
 
 		virtual ~BasePrivate()
 		{
-			Factory::self()->deregisterFrontendObject( this );
+			Factory::deregisterFrontendObject( this );
 			delete backendObject;
 			backendObject = 0;
 		}
@@ -69,7 +71,7 @@ class BasePrivate
 		 * implementation is
 		 * \code
 		 * Q_Q( ClassName );
-		 * m_iface = Factory::self()->createClassName( this );
+		 * m_iface = Factory::createClassName( this );
 		 * return m_iface;
 		 * \endcode
 		 *
@@ -115,6 +117,8 @@ class BasePrivate
 
 	private:
 		QList<BaseDestructionHandler*> handlers;
+        BasePrivate(const BasePrivate&);
+        BasePrivate& operator=(const BasePrivate&);
 };
 } //namespace Phonon
 

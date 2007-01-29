@@ -73,6 +73,7 @@
 #include <kuser.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
+#include <kconfiggroup.h>
 
 #include "config-kfile.h"
 #include "kpreviewwidgetbase.h"
@@ -184,7 +185,7 @@ KFileDialog::~KFileDialog()
 {
     hide();
 
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
 
     if (d->urlBar)
         d->urlBar->save( config );
@@ -628,13 +629,13 @@ void KFileDialog::accept()
         locationEdit->insertItem( 1,file);
     }
 
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
     config->setForceGlobal( true );
     KConfigGroup grp(config,ConfigGroup);
     writeConfig(&grp);
     config->setForceGlobal( false );
 
-    saveRecentFiles( config );
+    saveRecentFiles(config.data());
     config->sync();
 
     KDialog::accept();
@@ -1008,8 +1009,8 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
 
     initGUI(); // activate GM
 
-    KConfig* config = KGlobal::config();
-    readRecentFiles( config );
+    KSharedConfig::Ptr config = KGlobal::config();
+    readRecentFiles(config.data());
 
     adjustSize();
 
@@ -1760,7 +1761,7 @@ void KFileDialog::slotCancel()
     ops->close();
     reject(); //KDialog::slotCancel();
 
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
     config->setForceGlobal( true );
     KConfigGroup grp(config,ConfigGroup);
     writeConfig(&grp);

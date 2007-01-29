@@ -43,7 +43,7 @@
 
 #include "kglobal.h"
 #include "krandom.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "ktempdir.h"
 #include "kstandarddirs.h"
 #include <kdebug.h>
@@ -67,7 +67,7 @@ public:
 
 KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new Private)
 {
-    (void) create( directoryPrefix.isEmpty() ? KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName()) : directoryPrefix , mode);
+    (void) create( directoryPrefix.isEmpty() ? KStandardDirs::locateLocal("tmp", KGlobal::mainComponent().componentName()) : directoryPrefix , mode);
 }
 
 bool KTempDir::create(const QString &directoryPrefix, int mode)

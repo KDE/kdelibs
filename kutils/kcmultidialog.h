@@ -92,16 +92,16 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      * to.
      *
      * You can make use of this if you have more than one component in your
-     * application. instanceName tells you the instance that has to reload its
+     * application. componentName tells you the instance that has to reload its
      * configuration.
      *
      * The applyClicked and okClicked signals are emitted before the
      * configuration is saved.
      *
-     * @param instanceName The name of the instance that needs to reload its
+     * @param componentName The name of the instance that needs to reload its
      *                     configuration.
      */
-    void configCommitted( const QByteArray & instanceName );
+    void configCommitted( const QByteArray & componentName );
 
   protected Q_SLOTS:
     /**

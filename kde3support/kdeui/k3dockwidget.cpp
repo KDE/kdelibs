@@ -2553,7 +2553,9 @@ void K3DockManager::setReadDockConfigMode(int mode)
 void K3DockManager::writeConfig( KConfig* c, QString group )
 {
   //debug("BEGIN Write Config");
-  if ( !c ) c = KGlobal::config();
+  if (!c) {
+      c = KGlobal::config().data();
+  }
   if ( group.isEmpty() ) group = "dock_setting_default";
 
   c->setGroup( group );
@@ -2699,7 +2701,9 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
 #include <qmessagebox.h>
 void K3DockManager::readConfig( KConfig* c, QString group )
 {
-  if ( !c ) c = KGlobal::config();
+  if (!c) {
+      c = KGlobal::config().data();
+  }
   if ( group.isEmpty() ) group = "dock_setting_default";
 
   c->setGroup( group );

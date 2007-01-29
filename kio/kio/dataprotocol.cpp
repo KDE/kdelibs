@@ -45,7 +45,7 @@ using namespace KIO;
 extern "C" {
 
   int kdemain( int argc, char **argv ) {
-    KInstance instance( "kio_data" );
+    KComponentData componentData( "kio_data" );
 
     kDebug(7101) << "*** Starting kio_data " << endl;
 

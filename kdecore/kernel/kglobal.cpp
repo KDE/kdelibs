@@ -35,85 +35,174 @@
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kstandarddirs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <qcoreapplication.h>
 #include "kstaticdeleter.h"
+#include "kcmdlineargs.h"
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \
-   qFatal("Fatal error: you need to have a KInstance object before\n" \
+   qFatal("Fatal error: you need to have a KComponentData object before\n" \
          "you do anything that requires it! Examples of this are config\n" \
          "objects, standard directories or translations.");
 #else
 #define MYASSERT(x) /* nope */
 #endif
 
-static void kglobal_init();
+class KStringDict : public QSet<QString>
+{
+    public:
+        KStringDict() { }
+};
+
+class KStaticDeleterList : public QList<KStaticDeleterBase*>
+{
+    public:
+        KStaticDeleterList() { }
+};
+
+class KGlobalPrivate
+{
+    public:
+        inline KGlobalPrivate()
+            : stringDict(0),
+            locale(0),
+            charsets(0),
+            staticDeleters(new KStaticDeleterList)
+        {
+        }
+
+        inline ~KGlobalPrivate()
+        {
+            delete locale;
+            locale = 0;
+            delete charsets;
+            charsets = 0;
+            delete stringDict;
+            stringDict = 0;
+
+            deleteStaticDeleters();
+        }
+
+        void deleteStaticDeleters();
+
+        KComponentData activeComponent;
+        KComponentData mainComponent;
+        KStringDict *stringDict;
+        KLocale *locale;
+        KCharsets *charsets;
+        KStaticDeleterList *staticDeleters;
+};
+
+void KGlobalPrivate::deleteStaticDeleters()
+{
+    if (!staticDeleters) {
+        return;
+    }
+
+    while (!staticDeleters->isEmpty()) {
+        staticDeleters->takeLast()->destructObject();
+    }
+
+    delete staticDeleters;
+    staticDeleters = 0;
+}
+
+K_GLOBAL_STATIC(KGlobalPrivate, globalData);
+
+#define PRIVATE_DATA KGlobalPrivate *d = globalData
 
 KStandardDirs *KGlobal::dirs()
 {
-    MYASSERT(_instance);
-
-    return _instance->dirs();
+    PRIVATE_DATA;
+    MYASSERT(d->mainComponent.isValid());
+    return d->mainComponent.dirs();
 }
 
-KConfig	*KGlobal::config()
+KSharedConfig::Ptr KGlobal::config()
 {
-    MYASSERT(_instance);
-
-    return _instance->config();
+    PRIVATE_DATA;
+    MYASSERT(d->mainComponent.isValid());
+    return d->mainComponent.config();
 }
 
-KSharedConfig* KGlobal::sharedConfig()
+const KComponentData &KGlobal::mainComponent()
 {
-    MYASSERT(_instance);
-
-    return _instance->sharedConfig();
+    PRIVATE_DATA;
+    MYASSERT(d->mainComponent.isValid());
+    return d->mainComponent;
 }
 
-KInstance *KGlobal::instance()
+bool KGlobal::hasMainComponent()
 {
-    MYASSERT(_instance);
-    return _instance;
+    PRIVATE_DATA;
+    return d->mainComponent.isValid();
 }
 
-KLocale	*KGlobal::locale()
+KLocale *KGlobal::locale()
 {
-    if( _locale == 0 ) {
-	if (!_instance)
-	   return 0;
-        kglobal_init();
+    PRIVATE_DATA;
+    if (d->locale == 0) {
+        if (!d->mainComponent.isValid()) {
+            return 0;
+        }
 
-        // will set _locale if it works - otherwise 0 is returned
+        // TODO will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
-        if( _instance->aboutData())
-            _instance->aboutData()->translateInternalProgramName();
+        if (d->mainComponent.aboutData()) {
+            d->mainComponent.aboutData()->translateInternalProgramName();
+        }
     }
 
-    return _locale;
+    return d->locale;
+}
+
+bool KGlobal::hasLocale()
+{
+    PRIVATE_DATA;
+    return (d->locale != 0);
 }
 
 KCharsets *KGlobal::charsets()
 {
-    if( _charsets == 0 ) {
-        _charsets =new KCharsets();
-        kglobal_init();
+    PRIVATE_DATA;
+    if (d->charsets == 0) {
+        d->charsets = new KCharsets;
     }
 
-    return _charsets;
+    return d->charsets;
 }
 
-void KGlobal::setActiveInstance(KInstance *i)
+const KComponentData &KGlobal::activeComponent()
 {
-    _activeInstance = i;
-    if (i && _locale)
-	_locale->setActiveCatalog(QString::fromUtf8(i->instanceName()));
+    PRIVATE_DATA;
+    MYASSERT(d->activeComponent.isValid());
+    return d->activeComponent;
 }
 
-void KGlobal::setMainInstance( KInstance* i )
+void KGlobal::setActiveComponent(const KComponentData &c)
 {
-    _instance = i;
-    setActiveInstance( i );
+    PRIVATE_DATA;
+    d->activeComponent = c;
+    if (c.isValid() && d->locale) {
+        d->locale->setActiveCatalog(QString::fromUtf8(c.componentName()));
+    }
+}
+
+void KGlobal::newComponentData(const KComponentData &c)
+{
+    PRIVATE_DATA;
+    if (d->mainComponent.isValid()) {
+        return;
+    }
+    d->mainComponent = c;
+    KGlobal::setActiveComponent(c);
+}
+
+void KGlobal::setLocale(KLocale *locale)
+{
+    PRIVATE_DATA;
+    d->locale = locale;
 }
 
 /**
@@ -122,17 +211,10 @@ void KGlobal::setMainInstance( KInstance* i )
  * To be used inside functions(!) like:
  * static const QString &myString = KGlobal::staticQString("myText");
  */
-const QString &
-KGlobal::staticQString(const char *str)
+const QString &KGlobal::staticQString(const char *str)
 {
-   return staticQString(QLatin1String(str));
+    return staticQString(QLatin1String(str));
 }
-
-class KStringDict : public QSet<QString>
-{
-public:
-   KStringDict() { }
-};
 
 /**
  * Create a static QString
@@ -140,52 +222,58 @@ public:
  * To be used inside functions(!) like:
  * static const QString &myString = KGlobal::staticQString(i18n("My Text"));
  */
-const QString &
-KGlobal::staticQString(const QString &str)
+const QString &KGlobal::staticQString(const QString &str)
 {
-    if (!_stringDict) {
-      _stringDict = new KStringDict;
-      kglobal_init();
+    PRIVATE_DATA;
+    if (!d->stringDict) {
+        d->stringDict = new KStringDict;
     }
 
-   return *_stringDict->insert(str);
+   return *d->stringDict->insert(str);
 }
 
-class KStaticDeleterList: public QList<KStaticDeleterBase*>
+void KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
 {
-public:
-   KStaticDeleterList() { }
-};
-
-void
-KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
-{
-   if (!_staticDeleters)
-      kglobal_init();
-   if (_staticDeleters->indexOf(obj) == -1)
-      _staticDeleters->append(obj);
+    PRIVATE_DATA;
+    Q_ASSERT(d->staticDeleters);
+    if (d->staticDeleters->indexOf(obj) == -1) {
+        d->staticDeleters->append(obj);
+    }
 }
 
-void
-KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
+void KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
 {
-   if (_staticDeleters)
-      _staticDeleters->removeAll(obj);
-}
-
-void
-KGlobal::deleteStaticDeleters()
-{
-    if (!KGlobal::_staticDeleters)
+    if (globalData.isDestroyed()) {
         return;
-
-    for(;_staticDeleters->count();)
-    {
-        _staticDeleters->takeFirst()->destructObject();
     }
+    PRIVATE_DATA;
+    if (d->staticDeleters) {
+        d->staticDeleters->removeAll(obj);
+    }
+}
 
-    delete KGlobal::_staticDeleters;
-    KGlobal::_staticDeleters = 0;
+void KGlobal::deleteStaticDeleters()
+{
+    PRIVATE_DATA;
+    d->deleteStaticDeleters();
+}
+
+QString KGlobal::caption()
+{
+    PRIVATE_DATA;
+    // Caption set from command line ?
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+    if (args && args->isSet("caption")) {
+        return QString::fromLocal8Bit(args->getOption("caption"));
+    } else {
+        // We have some about data ?
+        if (d->mainComponent.aboutData()) {
+            return d->mainComponent.aboutData()->programName();
+        } else {
+            // Last resort : application name
+            return QCoreApplication::instance()->applicationName();
+        }
+    }
 }
 
 /**
@@ -206,55 +294,7 @@ void KGlobal::deref()
 {
     --s_refCount;
     //kDebug() << "KGlobal::deref() : refCount = " << s_refCount << endl;
-    if ( s_refCount <= 0 )
+    if (s_refCount <= 0) {
         QCoreApplication::instance()->quit();
+    }
 }
-
-// The Variables
-
-KStringDict     *KGlobal::_stringDict   = 0;
-KInstance       *KGlobal::_instance     = 0;
-KInstance       *KGlobal::_activeInstance = 0;
-KLocale         *KGlobal::_locale	= 0;
-KCharsets       *KGlobal::_charsets	= 0;
-KStaticDeleterList *KGlobal::_staticDeleters = 0;
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-static void kglobal_init();
-static void kglobal_freeAll();
-BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID impLoad )
-{
-	if (reason == DLL_PROCESS_ATTACH) {
-		kglobal_init();
-	}
-	if (reason == DLL_PROCESS_DETACH)
-        kglobal_freeAll();
-    return true;
-}
-# define ATTRIBUTE_DESTRUCTOR
-#else
-# define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
-#endif
-static ATTRIBUTE_DESTRUCTOR void kglobal_freeAll()
-{
-    delete KGlobal::_locale;
-    KGlobal::_locale = 0;
-    delete KGlobal::_charsets;
-    KGlobal::_charsets = 0;
-    delete KGlobal::_stringDict;
-    KGlobal::_stringDict = 0;
-    KGlobal::deleteStaticDeleters();
-    // so that we don't hold a reference and see memory leaks :/
-    KGlobal::setActiveInstance(0);
-}
-
-static void kglobal_init()
-{
-    if (KGlobal::_staticDeleters)
-        return;
-
-    KGlobal::_staticDeleters = new KStaticDeleterList;
-}
-
-

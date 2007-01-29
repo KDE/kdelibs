@@ -30,7 +30,7 @@
 
 class KAboutData;
 class KCModuleInfo;
-class KInstance;
+class KComponentData;
 
 /**
  *
@@ -156,11 +156,11 @@ public:
 	// this one's available via realModule()->
 
 	/**
-	 * Returns the embedded KCModule's KInstance.
-	 * @return The module's KInstance.
+	 * Returns the embedded KCModule's KComponentData.
+	 * @return The module's KComponentData.
 	 * @deprecated
 	 */
-	KInstance * instance() const;
+	KComponentData componentData() const;
 	//KDE4 remove. There's a limit for convenience functions,
 	// this one's available via realModule()
 

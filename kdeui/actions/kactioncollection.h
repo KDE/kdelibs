@@ -29,10 +29,10 @@
 #include <qobject.h>
 #include <kstandardaction.h>
 #include <kdelibs_export.h>
+#include <kcomponentdata.h>
 
 class QAction;
 class KConfigBase;
-class KInstance;
 class KXMLGUIClient;
 
 class QActionGroup;
@@ -61,10 +61,10 @@ class KDEUI_EXPORT KActionCollection : public QObject
 
 public:
   /**
-   * Constructor.  Allows specification of a KInstance other than the default
-   * global instance, where needed.
+   * Constructor.  Allows specification of a KComponentData other than the default
+   * global KComponentData, where needed.
    */
-  explicit KActionCollection( QObject *parent, KInstance *instance = 0 );
+  explicit KActionCollection(QObject *parent, const KComponentData &cData = KComponentData());
 
   /**
    * Destructor.
@@ -287,14 +287,14 @@ public:
   const QList<QAction*> actionsInGroup(QActionGroup* group) const;
 
   /**
-   * Set the \a instance associated with this action collection.
+   * Set the \a componentData associated with this action collection.
    *
-   * \param instance the KInstance which is to be associated with this action collection, or to null to indicate the default KInstance.
+   * \param componentData the KComponentData which is to be associated with this action collection, or to null to indicate the default KComponentData.
    */
-  void setInstance( KInstance *instance );
+  void setComponentData(const KComponentData &componentData);
 
-  /** The instance with which this class is associated. */
-  KInstance *instance() const;
+  /** The KComponentData with which this class is associated. */
+  const KComponentData &componentData() const;
 
   /**
    * The parent KXMLGUIClient, or null if not available.

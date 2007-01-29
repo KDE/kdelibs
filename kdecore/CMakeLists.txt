@@ -100,6 +100,7 @@ set(kdecore_LIB_SRCS
    compression/kfilterdev.cpp
    config/kconfig.cpp
    config/kconfigbase.cpp
+   config/kconfiggroup.cpp
    config/kconfigskeleton.cpp
    config/kconfigbackend.cpp
    config/kdesktopfile.cpp
@@ -136,7 +137,7 @@ set(kdecore_LIB_SRCS
    kernel/kaboutdata.cpp
    kernel/kcmdlineargs.cpp
    kernel/kglobal.cpp
-   kernel/kinstance.cpp
+   kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
    services/kservice.cpp
@@ -253,6 +254,7 @@ install( FILES
    compression/kfilterdev.h
    config/kconfig.h
    config/kconfigbase.h
+   config/kconfiggroup.h
    config/kconfigbackend.h
    config/kconfigskeleton.h
    config/kconfigdata.h
@@ -285,7 +287,7 @@ install( FILES
    kernel/kautostart.h
    kernel/kcmdlineargs.h
    kernel/kglobal.h
-   kernel/kinstance.h
+   kernel/kcomponentdata.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
    network/kbufferedsocket.h

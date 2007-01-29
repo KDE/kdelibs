@@ -27,6 +27,7 @@
 #include <kdebug.h>
 
 #include <assert.h>
+#include <kcomponentdata.h>
 
 using namespace KXMLGUI;
 
@@ -818,14 +819,14 @@ QWidget *BuildHelper::createContainer( QWidget *parent, int index,
         }
     }
 
-    KInstance *oldInstance = m_state.builder->builderInstance();
+    KComponentData oldInstance = m_state.builder->builderComponentData();
     KXMLGUIClient *oldClient = m_state.builder->builderClient();
 
     m_state.builder->setBuilderClient( m_state.guiClient );
 
     res = m_state.builder->createContainer( parent, index, element, id );
 
-    m_state.builder->setBuilderInstance( oldInstance );
+    m_state.builder->setBuilderComponentData(oldInstance);
     m_state.builder->setBuilderClient( oldClient );
 
     if ( res )

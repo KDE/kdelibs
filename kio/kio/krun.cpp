@@ -64,6 +64,7 @@
 #include <kshell.h>
 #include <QTextDocument>
 #include <kde_file.h>
+#include <kconfiggroup.h>
 
 #ifdef Q_WS_X11
 #include <kwin.h>

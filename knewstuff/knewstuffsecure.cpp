@@ -143,7 +143,7 @@ void KNewStuffSecure::slotValidated(int result)
      emit installFinished();
   } else
   {
-    KConfig *cfg = KGlobal::config();
+    KSharedConfig::Ptr cfg = KGlobal::config();
     cfg->deleteGroup("KNewStuffStatus");
     cfg->setGroup("KNewStuffStatus");
     for (QMap<QString, QString>::ConstIterator it = m_installedResources.constBegin(); it != m_installedResources.constEnd(); ++it)
@@ -158,7 +158,7 @@ void KNewStuffSecure::slotValidated(int result)
 
 void KNewStuffSecure::downloadResource()
 {
-  KConfig *cfg = KGlobal::config();
+  KSharedConfig::Ptr cfg = KGlobal::config();
   m_installedResources = cfg->entryMap("KNewStuffStatus");
   engine()->ignoreInstallResult(true);
   KNewStuff::download();

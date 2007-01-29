@@ -22,6 +22,7 @@
 #include <kurlbar.h>
 
 class KConfig;
+class KSharedConfigPtr;
 
 class KIO_EXPORT KFileSpeedBar : public KUrlBar
 {
@@ -30,7 +31,7 @@ public:
     KFileSpeedBar( QWidget *parent = 0 );
     ~KFileSpeedBar();
 
-    virtual void save( KConfig *config );
+    virtual void save(KSharedConfigPtr config);
     virtual QSize sizeHint() const;
 
 private:

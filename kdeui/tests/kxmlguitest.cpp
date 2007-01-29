@@ -41,8 +41,8 @@ int main( int argc, char **argv )
     KXMLGUIFactory *factory = new KXMLGUIFactory( builder );
 
     Client *shell = new Client;
-    shell->setInstance( new KInstance( "konqueror" ) );
-    shell->instance()->dirs()->addResourceDir( "data", QDir::currentPath() );
+    shell->setComponentData(KComponentData("konqueror"));
+    shell->componentData().dirs()->addResourceDir( "data", QDir::currentPath() );
 
     a = new KAction( KIcon( "view_left_right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );

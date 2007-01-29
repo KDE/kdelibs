@@ -24,7 +24,7 @@
 #include <kglobal.h>
 #include <kicondialog.h>
 #include <kiconloader.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmimetype.h>
@@ -47,6 +47,7 @@
 
 #include <unistd.h>
 #include <kvbox.h>
+#include <kconfiggroup.h>
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -989,10 +990,10 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
 
     if ( allowGlobal ) {
         QString appName;
-        if ( KGlobal::instance()->aboutData() )
-            appName = KGlobal::instance()->aboutData()->programName();
+        if ( KGlobal::mainComponent().aboutData() )
+            appName = KGlobal::mainComponent().aboutData()->programName();
         if ( appName.isEmpty() )
-            appName = QLatin1String( KGlobal::instance()->instanceName() );
+            appName = QLatin1String( KGlobal::mainComponent().componentName() );
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), box );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "

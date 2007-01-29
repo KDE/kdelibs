@@ -89,10 +89,7 @@ QStringList KBlacklistWorker::blacklist;
 
 void KBlacklistWorker::init()
 {
-  // HACK!
-  // FIXME KDE4: How do I detect there is an instance, without triggering
-  // its creation or an assertion fault?
-  if (!KGlobal::_instance)
+  if (!KGlobal::hasMainComponent())
     return;
 
   static bool beenhere = false;

@@ -35,6 +35,7 @@
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
+#include <kconfiggroup.h>
 
 #if defined Q_WS_X11
 #include <kstartupinfo.h>
@@ -319,18 +320,18 @@ KUniqueApplication::~KUniqueApplication()
 }
 
 // this gets called before even entering QApplication::QApplication()
-KInstance* KUniqueApplication::initHack( bool configUnique )
+KComponentData KUniqueApplication::initHack(bool configUnique)
 {
-  KInstance* inst = new KInstance( KCmdLineArgs::about );
+  KComponentData cData(KCmdLineArgs::about);
   if (configUnique)
   {
-     KConfigGroup cg( inst->config(), "KDE" );
+     KConfigGroup cg(cData.config(), "KDE");
      s_multipleInstances = cg.readEntry("MultipleInstances", false);
   }
   if( !start())
      // Already running
      ::exit( 0 );
-  return inst;
+  return cData;
 }
 
 void KUniqueApplication::newInstanceNoFork()
@@ -380,9 +381,6 @@ void KUniqueApplication::setHandleAutoStarted()
 {
     s_handleAutoStarted = false;
 }
-
-void KUniqueApplication::virtual_hook( int id, void* data )
-{ KApplication::virtual_hook( id, data ); }
 
 #include "kuniqueapplication.moc"
 #include "kuniqueapplication_p.moc"

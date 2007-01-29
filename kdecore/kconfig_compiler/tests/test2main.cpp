@@ -19,11 +19,11 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test2.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 
 int main( int, char** )
 {
-  KInstance i("test");
+  KComponentData i("test");
   Test2 *t = new Test2();
   delete t;
 }

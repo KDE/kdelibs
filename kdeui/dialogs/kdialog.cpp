@@ -40,7 +40,7 @@
 #include <kconfig.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
@@ -458,7 +458,7 @@ QString KDialog::makeStandardCaption( const QString &userCaption,
                                       CaptionFlags flags )
 {
   Q_UNUSED(window);
-  QString caption = KInstance::caption();
+  QString caption = KGlobal::caption();
   QString captionString = userCaption.isEmpty() ? caption : userCaption;
 
   // If the document is modified, add '[modified]'.

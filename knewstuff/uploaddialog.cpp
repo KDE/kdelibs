@@ -38,6 +38,7 @@
 #include "entry.h"
 
 #include "uploaddialog.h"
+#include <kconfiggroup.h>
 #include "uploaddialog.moc"
 
 using namespace KNS;

@@ -176,7 +176,7 @@ void MediaObjectPrivate::setupKioStreaming()
 {
 	K_Q( MediaObject );
 	Q_ASSERT( backendObject == 0 );
-	backendObject = Factory::self()->createByteStream( q );
+    backendObject = Factory::createByteStream(q);
 	if( backendObject )
 	{
 		QObject::connect( backendObject, SIGNAL( destroyed( QObject* ) ), q, SLOT( _k_cleanupByteStream() ) );

@@ -54,6 +54,7 @@
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 #include <kactionmenu.h>
+#include <kconfiggroup.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"

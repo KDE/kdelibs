@@ -24,6 +24,7 @@
 #include <qlayout.h>
 #include <kdialog.h>
 #include "ksettings/dispatcher.h"
+#include <kcomponentdata.h>
 
 namespace KSettings
 {
@@ -39,7 +40,7 @@ class PluginPage::PluginPagePrivate
         KPluginSelector * selwid;
 };
 
-    PluginPage::PluginPage( QWidget * parent, const char * name, const QStringList & args )
+PluginPage::PluginPage( QWidget * parent, const char * name, const QStringList & args )
     : KCModule( parent, name, args )
     , d( new PluginPagePrivate )
 {
@@ -48,8 +49,8 @@ class PluginPage::PluginPagePrivate
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
 }
 
-    PluginPage::PluginPage( KInstance * instance, QWidget * parent, const QStringList & args )
-    : KCModule( instance, parent, args )
+PluginPage::PluginPage(const KComponentData &componentData, QWidget * parent, const QStringList & args )
+    : KCModule( componentData, parent, args )
     , d( new PluginPagePrivate )
 {
 //    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );

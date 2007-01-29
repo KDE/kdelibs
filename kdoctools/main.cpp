@@ -19,7 +19,7 @@ extern int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltutils.h>
 #include <qstring.h>
 #include <kstandarddirs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <stdlib.h>
 #include "kio_help.h"
@@ -29,9 +29,9 @@ extern "C"
 {
     KDE_EXPORT int kdemain( int argc, char **argv )
     {
-        KInstance instance( "kio_help" );
-        fillInstance(instance);
-        (void)instance.config(); // we need this one to make sure system globals are read
+        KComponentData componentData( "kio_help" );
+        fillInstance(componentData);
+        (void)componentData.config(); // we need this one to make sure system globals are read
 
         kDebug(7101) << "Starting " << getpid() << endl;
 

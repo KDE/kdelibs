@@ -3,6 +3,7 @@
 #define __parts_h__
 
 #include <kparts/part.h>
+#include <kcomponentdata.h>
 
 class QTextEdit;
 namespace KParts {
@@ -21,7 +22,7 @@ protected:
 
 protected:
   QTextEdit * m_edit;
-  KInstance *m_instance;
+  KComponentData m_componentData;
 };
 
 class Part2 : public KParts::Part
@@ -37,7 +38,7 @@ protected:
   // (i.e. in a part manager)
   // There is a default impl for ReadOnlyPart...
   virtual void guiActivateEvent( KParts::GUIActivateEvent * );
-  KInstance *m_instance;
+  KComponentData m_componentData;
 };
 
 #endif

@@ -44,7 +44,7 @@ void PrinterFilter::update()
 	m_printers = conf->readEntry("Printers", QStringList());
 	// filter enable state is saved on a per application basis,
 	// so this option is retrieve from the application config file
-	conf = KGlobal::config();
+	conf = KGlobal::config().data();
 	conf->setGroup("KPrinter Settings");
 	m_enabled = conf->readEntry("FilterEnabled", false);
 }
@@ -52,7 +52,7 @@ void PrinterFilter::update()
 void PrinterFilter::setEnabled(bool on)
 {
 	m_enabled = on;
-	KConfig	*conf = KGlobal::config();
+	KSharedConfig::Ptr conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	conf->writeEntry("FilterEnabled", m_enabled);
 }

@@ -24,6 +24,7 @@
 #include <kglobal.h>
 
 #include <qframe.h>
+#include <kconfiggroup.h>
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent) :
@@ -62,9 +63,9 @@ void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
 KStatusBar::KStatusBar( QWidget *parent )
   : QStatusBar( parent )
 {
-  // make the size grip stuff configurable
-  // ...but off by default (sven)
-  KConfig *config = KGlobal::config();
+    // make the size grip stuff configurable
+    // ...but off by default (sven)
+    KSharedConfig::Ptr config = KGlobal::config();
 
   KConfigGroup group( config, QLatin1String("StatusBar style") );
   bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);

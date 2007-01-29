@@ -35,12 +35,12 @@ int main( int argc, char **argv )
 	new K3ListViewItem( view, "Item 1");
 	new K3ListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
-	view->restoreLayout( KGlobal::config(), "ListView" );
+	view->restoreLayout( KGlobal::config().data(), "ListView" );
 
 	new K3ListViewItem( view, "Item 3" );
 
 	dialog.exec();
-	view->saveLayout( KGlobal::config(), "ListView" );
+	view->saveLayout( KGlobal::config().data(), "ListView" );
 
 	return 0;
 }

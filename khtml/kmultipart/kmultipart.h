@@ -29,7 +29,7 @@
 #include <qdatetime.h>
 
 class KHTMLPart;
-class KInstance;
+class KComponentData;
 class KTemporaryFile;
 class KLineParser;
 

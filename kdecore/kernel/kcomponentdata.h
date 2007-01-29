@@ -15,17 +15,17 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KINSTANCE_H
-#define KINSTANCE_H
+#ifndef KCOMPONENTDATA_H
+#define KCOMPONENTDATA_H
 
 #include "kdelibs_export.h"
+#include <kconfig.h>
 
 class QByteArray;
 class QString;
 class KAboutData;
-class KConfig;
-class KSharedConfig;
 class KStandardDirs;
+class KComponentDataPrivate;
 
 /**
  * Access to KDE global objects for use in shared libraries.  In
@@ -35,59 +35,54 @@ class KStandardDirs;
  *
  * @author Torben Weis
  */
-class KDECORE_EXPORT KInstance
+class KDECORE_EXPORT KComponentData
 {
     friend class KStandardDirs;
-    KConfig* privateConfig() const;
+    KSharedConfig::Ptr &privateConfig() const;
 
- public:
+public:
+    KComponentData();
+    KComponentData(const KComponentData&);
+    KComponentData &operator=(const KComponentData&);
+    bool operator==(const KComponentData&) const;
+    bool operator!=(const KComponentData &rhs) const { return !operator==(rhs); }
+
     /**
      *  Constructor.
-     *  @param instanceName the name of the instance
+     *  @param componentName the name of the instance
      */
-    explicit KInstance( const QByteArray& instanceName) ;
+    explicit KComponentData(const QByteArray &componentName);
 
     /**
      *  Constructor.
-     *  When building a KInstance that is not your KApplication,
-     *  make sure that the KAboutData and the KInstance have the same life time.
+     *  When building a KComponentData that is not your KApplication,
+     *  make sure that the KAboutData and the KComponentData have the same life time.
      *  You have to destroy both, since the instance doesn't own the about data.
      *  Don't build a KAboutData on the stack in this case !
      *  Building a KAboutData on the stack is only ok for usage with
      *  KCmdLineArgs and KApplication (not destroyed until the app exits).
      *  @param aboutData data about this instance (see KAboutData)
      */
-    explicit KInstance( const KAboutData * aboutData );
-
-    /**
-     * Only for K(Unique)Application
-     * Initialize from src and delete it.
-     * @internal
-     */
-    explicit KInstance( KInstance* src );
+    explicit KComponentData(const KAboutData *aboutData);
 
     /**
      * Destructor.
      */
-    virtual ~KInstance();
+    virtual ~KComponentData();
+
+    bool isValid() const;
 
     /**
      * Returns the application standard dirs object.
      * @return The KStandardDirs of the application.
      */
-    KStandardDirs*	dirs() const;
+    KStandardDirs *dirs() const;
 
     /**
      * Returns the general config object ("appnamerc").
      * @return the KConfig object for the instance.
      */
-    KConfig*            config() const;
-
-    /**
-     * Returns the general config object ("appnamerc").
-     * @return the KConfig object for the instance.
-     */
-    KSharedConfig*      sharedConfig() const;
+    const KSharedConfig::Ptr &config() const;
 
     /**
      *  Returns the about data of this instance
@@ -95,42 +90,32 @@ class KDECORE_EXPORT KInstance
      * @return the about data of the instance, or 0 if it has
      *         not been set yet
      */
-    const KAboutData* aboutData() const;
+    const KAboutData *aboutData() const;
 
     /**
      * Returns the name of the instance
-     * @return the instance name, can be null if the KInstance has been
+     * @return the instance name, can be null if the KComponentData has been
      *         created with a null name
      */
-    QByteArray          instanceName() const;
-
-    /**
-     * Returns a text for the window caption.
-     *
-     * This may be set by
-     * "-caption", otherwise it will be equivalent to the name of the
-     * executable.
-     * @return the text for the window caption
-     */
-    static QString caption();
+    QByteArray componentName() const;
 
 protected:
+    friend class KApplication;
+    friend class KSharedConfigPtr;
+
     /**
      * Set name of default config file.
      * @param name the name of the default config file
      */
     void setConfigName(const QString &name);
+
+    void _checkConfig();
+
     /** Standard trick to add virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );
 
 private:
-    // Copying is not allowed
-    KInstance( const KInstance& );
-    KInstance& operator=(const KInstance&);
-
-    class Private;
-    Private * d; // can't be const because of special KApplication constructor
+    KComponentDataPrivate *d;
 };
 
-#endif
-
+#endif // KCOMPONENTDATA_H

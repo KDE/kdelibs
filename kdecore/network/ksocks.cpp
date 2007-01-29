@@ -37,6 +37,7 @@
 #include <unistd.h>
 
 #include "ksocks.h"
+#include <kconfiggroup.h>
 
 // DO NOT RE-ORDER THESE.
 enum SymbolKeys {
@@ -211,7 +212,7 @@ void KSocks::disable()
 KSocks *KSocks::self() {
   // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
-     if (KGlobal::_instance) {
+     if (KGlobal::hasMainComponent()) {
         KConfigGroup cfg(KGlobal::config(), "Socks");
         _me = new KSocks(&cfg);
      } else {

@@ -23,9 +23,6 @@
 #include "audiooutputadaptor.h"
 #include "globalconfig.h"
 
-#include <kglobal.h>
-#include <kinstance.h>
-#include <kaboutdata.h>
 #include <cmath>
 
 #define PHONON_CLASSNAME AudioOutput
@@ -51,7 +48,7 @@ void AudioOutputPrivate::createIface()
 	if( backendObject )
 		return;
 	K_Q( AudioOutput );
-	backendObject = Factory::self()->createAudioOutput( q );
+    backendObject = Factory::createAudioOutput(q);
 	if( backendObject )
 		q->setupIface();
 }

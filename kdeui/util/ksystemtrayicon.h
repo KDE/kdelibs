@@ -93,12 +93,12 @@ public:
     QWidget *parentWidget() const;
 
     /**
-     * Loads an icon @p icon using the icon loader class of the given instance @p instance.
+     * Loads an icon @p icon using the icon loader class of the given componentData @p componentData.
      * The icon is applied the panel effect as it should only be used to be shown in the
      * system tray.
      * It's commonly used in the form : systray->setPixmap( systray->loadIcon( "mysystray" ) );
      */
-    static QIcon loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
+    static QIcon loadIcon(const QString &icon, const KComponentData &componentData = KGlobal::mainComponent());
 
 Q_SIGNALS:
     /**

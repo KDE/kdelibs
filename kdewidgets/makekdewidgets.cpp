@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2005 ian reinhart geiser <geiseri@sourcextreme.com> */
 #include <kaboutdata.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kmacroexpander.h>
@@ -38,7 +38,7 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
 static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
                                 "	: QObject(parent)"
                                 "{\n"
-                                "	(void) new KInstance(\"makekdewidgets\");\n"
+                                "	(void) new KComponentData(\"makekdewidgets\");\n"
                                 "%CollectionAdd\n"
                                 "}\n\n";
 
@@ -85,7 +85,7 @@ static QString buildWidgetInclude( const QString &name, KConfig &input );
 static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath );
 
 int main( int argc, char **argv ) {
-    new KInstance( "makekdewidgets" );
+    new KComponentData( "makekdewidgets" );
 
     KAboutData about( "makekdewidgets", I18N_NOOP( "makekdewidgets" ), version, description, KAboutData::License_GPL, "(C) 2004-2005 Ian Reinhart Geiser", 0, 0, "geiseri@kde.org" );
     about.addAuthor( "Ian Reinhart Geiser", 0, "geiseri@kde.org" );

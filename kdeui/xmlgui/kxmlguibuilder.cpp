@@ -38,14 +38,14 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include "kmenumenuhandler_p.h"
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 using namespace KDEPrivate;
 
 class KXMLGUIBuilderPrivate
 {
   public:
-    KXMLGUIBuilderPrivate() : m_instance(0L) , m_client(0L)  {}
+    KXMLGUIBuilderPrivate() : m_client(0L)  {}
     ~KXMLGUIBuilderPrivate() { }
 
     QWidget *m_widget;
@@ -69,7 +69,7 @@ class KXMLGUIBuilderPrivate
 
     QString attrIcon;
 
-    KInstance *m_instance;
+    KComponentData m_componentData;
     KXMLGUIClient *m_client;
 
     KMenuMenuHandler *m_menumenuhandler;
@@ -186,13 +186,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QString icon = element.attribute( d->attrIcon );
     KIcon pix;
 
-    if ( !icon.isEmpty() )
-    {
-      KInstance *instance = d->m_instance;
-      if ( !instance )
-        instance = KGlobal::instance();
-
-      pix = KIcon( icon );
+    if (!icon.isEmpty()) {
+        pix = KIcon( icon );
     }
 
     if ( parent && qobject_cast<KMenuBar*>( parent ) )
@@ -375,10 +370,6 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
 
       if ( !icon.isEmpty() )
       {
-        KInstance *instance = d->m_instance;
-        if ( !instance )
-          instance = KGlobal::instance();
-
         pix = KIcon( icon );
       }
 
@@ -410,17 +401,17 @@ void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
 {
   d->m_client = client;
   if ( client )
-      setBuilderInstance( client->instance() );
+      setBuilderComponentData( client->componentData() );
 }
 
-KInstance *KXMLGUIBuilder::builderInstance() const
+KComponentData KXMLGUIBuilder::builderComponentData() const
 {
-  return d->m_instance;
+  return d->m_componentData;
 }
 
-void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
+void KXMLGUIBuilder::setBuilderComponentData(const KComponentData &componentData)
 {
-  d->m_instance = instance;
+  d->m_componentData = componentData;
 }
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )

@@ -27,8 +27,8 @@
 #include <kglobal.h>
 #include <qmap.h>
 
-class KConfig;
 class KStandardDirsPrivate;
+class KConfig;
 
 /**
  * @short Site-independent access to standard KDE directories.
@@ -175,10 +175,10 @@ class KStandardDirsPrivate;
 class KDECORE_EXPORT KStandardDirs
 {
 public:
-        /**
-	 * KStandardDirs' constructor. It just initializes the caches.
-	 **/
-	KStandardDirs( );
+    /**
+     * KStandardDirs' constructor. It just initializes the caches.
+     **/
+    KStandardDirs(const KComponentData &componentData = KGlobal::mainComponent());
 
 	/**
 	 * KStandardDirs' destructor.
@@ -657,12 +657,12 @@ public:
 	 *
 	 * @param type   The type of the wanted resource, see KStandardDirs
 	 * @param filename   A relative filename of the resource
-	 * @param instance   The KInstance object
+	 * @param cData   The KComponentData object
 	 *
 	 * @return A full path to the filename specified in the second
 	 *         argument, or QString() if not found
 	 **/
-	static QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+	static QString locate( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
 
 	/**
 	 * This function is much like locate. However it returns a
@@ -673,12 +673,12 @@ public:
 	 *
 	 * @param type   The type of the wanted resource, see KStandardDirs
 	 * @param filename   A relative filename of the resource
-	 * @param instance   The KInstance object
+	 * @param cData   The KComponentData object
 	 *
 	 * @return A full path to the filename specified in the second
 	 *         argument, or QString() if not found
 	 **/
-	static QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+	static QString locateLocal( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
 
 	/**
 	 * This function is much like locate. No check is made if the
@@ -691,12 +691,12 @@ public:
 	 * @param filename   A relative filename of the resource
 	 * @param createDir  If @c true, missing directories are created,
 	 *        if @c false, no directory is created
-	 * @param instance   The KInstance object
+	 * @param cData   The KComponentData object
 	 *
 	 * @return A full path to the filename specified in the second
 	 *         argument, or QString() if not found
 	 **/
-	static QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
+	static QString locateLocal( const char *type, const QString& filename, bool createDir, const KComponentData &cData = KGlobal::mainComponent() );
 
 	/**
 	 * Check, if a file may be accessed in a given mode.

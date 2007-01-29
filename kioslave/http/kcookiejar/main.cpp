@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
    KCmdLineArgs::addCmdLineOptions( options );
 
-   KInstance a("kcookiejar");
+   KComponentData a("kcookiejar");
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

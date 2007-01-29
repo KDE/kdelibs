@@ -21,16 +21,16 @@
 #include "kdelibs_export.h"
 #include <QAtomicPointer>
 
-class KInstance;
+class KComponentData;
 class KCharsets;
 class KConfig;
-class KSharedConfig;
 class KLocale;
 class KStandardDirs;
 class KStaticDeleterBase;
 class KStaticDeleterList;
 class KStringDict;
 class QString;
+class KSharedConfigPtr;
 
 typedef void (*KdeCleanUpFunction)();
 
@@ -177,36 +177,41 @@ class KDECORE_EXPORT KGlobal
 public:
 
     /**
-     * Returns the global instance.  There is always at least
+     * Returns the global component data.  There is always at least
      * one instance of a component in one application (in most
      * cases the application itself).
-     * @return the global instance
+     * @return the global component data
      */
-    static KInstance            *instance();
+    static const KComponentData &mainComponent();
+
+    /**
+     * \internal
+     * Returns whether a main KComponentData is available.
+     */
+    static bool hasMainComponent();
 
     /**
      *  Returns the application standard dirs object.
      * @return the global standard dir object
      */
-    static KStandardDirs	*dirs();
+    static KStandardDirs *dirs();
 
     /**
      *  Returns the general config object.
      * @return the global configuration object.
      */
-    static KConfig		*config();
-
-    /**
-     *  Returns the general config object.
-     * @return the global configuration object.
-     */
-    static KSharedConfig        *sharedConfig();
+    static KSharedConfigPtr config();
 
     /**
      * Returns the global locale object.
      * @return the global locale object
      */
     static KLocale              *locale();
+    /**
+     * \internal
+     * Returns whether KGlobal has a valid KLocale object
+     */
+    static bool hasLocale();
 
     /**
      * The global charset manager.
@@ -293,40 +298,38 @@ public:
      */
     static void deref();
 
-    //private:
-    /** Data which ought to be private but isn't. @internal */
-    static  KStringDict         *_stringDict;
-    /** Data which ought to be private but isn't. @internal */
-    static  KInstance           *_instance;
-    /** Data which ought to be private but isn't. @internal */
-    static  KLocale             *_locale;
-    /** Data which ought to be private but isn't. @internal */
-    static  KCharsets	        *_charsets;
-    /** Data which ought to be private but isn't. @internal */
-    static  KStaticDeleterList  *_staticDeleters;
-
     /**
-     * The instance currently active (useful in a multi-instance
+     * The component currently active (useful in a multi-component
      * application, such as a KParts application).
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      * @internal
      */
-    static KInstance *activeInstance() { return _activeInstance; }
+    static const KComponentData &activeComponent();
 
     /**
-     * Set the active instance for use by KAboutDialog and KBugReport.
-     * To be used only by a multi-instance (KParts) application.
+     * Set the active component for use by KAboutDialog and KBugReport.
+     * To be used only by a multi-component (KParts) application.
      *
-     * @see activeInstance()
+     * @see activeComponent()
      */
-    static void setActiveInstance(KInstance *d);
+    static void setActiveComponent(const KComponentData &d);
 
-private:
-    friend class KInstance;
+    /**
+     * Returns a text for the window caption.
+     *
+     * This may be set by
+     * "-caption", otherwise it will be equivalent to the name of the
+     * executable.
+     * @return the text for the window caption
+     */
+    static QString caption();
+
     ///@internal
-    static void setMainInstance( KInstance* i );
-
-    static  KInstance           *_activeInstance;
+    static void setLocale(KLocale *);
+private:
+    friend class KComponentData;
+    ///@internal
+    static void newComponentData(const KComponentData &c);
 };
 
 #ifdef KDE_SUPPORT

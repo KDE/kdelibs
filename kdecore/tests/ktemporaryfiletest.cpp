@@ -28,7 +28,7 @@ those things work. These should only test KDE specific functionality.
 void KTemporaryFileTest::initTestCase()
 {
     kdeTempDir = KStandardDirs::locateLocal("tmp", "");
-    instanceName = KGlobal::instance()->instanceName();
+    componentName = KGlobal::mainComponent().componentName();
 
     QDir qdir ( kdeTempDir );
     qdir.mkdir("foo");
@@ -48,7 +48,7 @@ void KTemporaryFileTest::testKTemporaryFile()
     {
         KTemporaryFile file;
         QVERIFY(file.open());
-        QVERIFY(file.fileName().startsWith(kdeTempDir + instanceName));
+        QVERIFY(file.fileName().startsWith(kdeTempDir + componentName));
         QVERIFY(file.fileName().endsWith(".tmp"));
         QVERIFY(QFile::exists(file.fileName()));
     }

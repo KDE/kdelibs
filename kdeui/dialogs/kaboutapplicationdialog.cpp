@@ -42,7 +42,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     setModal(false);
 
     if (aboutData == 0)
-        aboutData = KGlobal::instance()->aboutData();
+        aboutData = KGlobal::mainComponent().aboutData();
 
     if (!aboutData)
     {

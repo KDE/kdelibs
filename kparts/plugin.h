@@ -25,7 +25,7 @@
 #include <kaction.h>
 #include <kxmlguiclient.h>
 
-class KInstance;
+class KComponentData;
 
 namespace KParts
 {
@@ -87,7 +87,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const KInstance * instance );
+    static void loadPlugins( QObject *parent, const KComponentData &instance );
 
     /**
      * Load the plugin libraries specified by the list @p docs and make the
@@ -105,7 +105,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KInstance * instance );
+    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KComponentData &instance );
 
     /**
      * Load the plugin libraries for the given @p instance, make the
@@ -144,7 +144,9 @@ public:
      * }
      * \endcode
      */
-    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true, int interfaceVersionRequired = 0 );
+    static void loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
+            const KComponentData &instance, bool enableNewPluginsByDefault = true,
+            int interfaceVersionRequired = 0);
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This
@@ -160,7 +162,7 @@ protected:
      *
      * @return A list of QDomDocument s, containing the parsed xml documents returned by plugins.
      */
-    static QList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
+    static QList<Plugin::PluginInfo> pluginInfos(const KComponentData &instance);
 
     /**
      * @internal
@@ -168,7 +170,7 @@ protected:
      */
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
-    virtual void setInstance( KInstance *instance );
+    virtual void setComponentData(const KComponentData &instance);
 
 private:
     static bool hasPlugin( QObject* parent, const QString& library );

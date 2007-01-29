@@ -39,7 +39,7 @@ void VideoDataOutputPrivate::createIface()
 	if( backendObject )
 		return;
 	K_Q( VideoDataOutput );
-	backendObject = Factory::self()->createVideoDataOutput( q );
+    backendObject = Factory::createVideoDataOutput(q);
 	if( backendObject )
 		q->setupIface();
 }
@@ -48,7 +48,7 @@ PHONON_GETTER( quint32, format, d->format )
 
 bool VideoDataOutput::formatSupported( quint32 fourcc )
 {
-	QObject* backend = Factory::self()->backend();
+    QObject *backend = Factory::backend();
 	if( backend )
 	{
 		bool ret;

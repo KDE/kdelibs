@@ -35,7 +35,7 @@
 #include <QTextCodec>
 
 #include <kdebug.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kglobal.h>
 #include <kshortcut.h>
 #include <kstandarddirs.h>
@@ -96,21 +96,21 @@ public:
     BuildStateStack m_stateStack;
 };
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, const KInstance *instance )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponentData &componentData )
 {
-    return readConfigFile( filename, false, instance );
+    return readConfigFile( filename, false, componentData );
 }
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, const KInstance *_instance )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, const KComponentData &_componentData )
 {
-    const KInstance *instance = _instance ? _instance : KGlobal::instance();
+    KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
     QString xml_file;
 
     if (!QDir::isRelativePath(filename))
         xml_file = filename;
     else
     {
-        xml_file = KStandardDirs::locate("data", QLatin1String(instance->instanceName() + '/' ) + filename);
+        xml_file = KStandardDirs::locate("data", QLatin1String(componentData.componentName() + '/' ) + filename);
         if ( !QFile::exists( xml_file ) )
           xml_file = KStandardDirs::locate( "data", filename );
     }
@@ -130,13 +130,13 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
-                                     const QString& filename, const KInstance *_instance )
+                                     const QString& filename, const KComponentData &_componentData )
 {
-    const KInstance *instance = _instance ? _instance : KGlobal::instance();
+    KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))
-        xml_file = KStandardDirs::locateLocal("data", QLatin1String( instance->instanceName() + '/' )
+        xml_file = KStandardDirs::locateLocal("data", QLatin1String( componentData.componentName() + '/' )
                                               + filename);
 
     QFile file( xml_file );

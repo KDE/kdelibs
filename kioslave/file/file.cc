@@ -75,7 +75,7 @@
 
 #include <kdebug.h>
 #include <kurl.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <ksimpleconfig.h>
 #include <ktemporaryfile.h>
 #include <klocale.h>
@@ -114,7 +114,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   KLocale::setMainCatalog("kdelibs");
 
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-  KInstance instance( "kio_file" );
+  KComponentData componentData( "kio_file" );
   ( void ) KGlobal::locale();
 
   kDebug(7101) << "Starting " << getpid() << endl;

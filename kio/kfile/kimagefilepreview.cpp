@@ -24,6 +24,7 @@
 #include <kfiledialog.h>
 #include <kfileitem.h>
 #include <kio/previewjob.h>
+#include <kconfiggroup.h>
 
 #include "kimagefilepreview.h"
 #include "config-kfile.h"

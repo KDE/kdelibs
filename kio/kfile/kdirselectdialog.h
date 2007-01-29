@@ -31,6 +31,7 @@ class KFileTreeView;
 class KFileTreeViewItem;
 class KToggleAction;
 class Q3ListViewItem;
+class KSharedConfigPtr;
 
 
 class K3ListView;
@@ -112,8 +113,8 @@ private Q_SLOTS:
     void slotMkdir();
 
 private:
-    void readConfig( KConfig *config, const QString& group );
-    void saveConfig( KConfig *config, const QString& group );
+    void readConfig(const KSharedConfigPtr &config, const QString& group);
+    void saveConfig(KSharedConfigPtr config, const QString& group);
     void openNextDir( KFileTreeViewItem *parent );
     KFileTreeBranch * createBranch( const KUrl& url );
 

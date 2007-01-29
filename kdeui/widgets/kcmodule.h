@@ -32,7 +32,7 @@ class KAboutData;
 class KConfigDialogManager;
 class KConfigSkeleton;
 class KCModulePrivate;
-class KInstance;
+class KComponentData;
 
 /**
  * The base class for configuration modules.
@@ -66,7 +66,7 @@ class KInstance;
  * The constructor of the KCModule then looks like this:
  * \code
  * YourKCModule::YourKCModule( QWidget* parent )
- *   : KCModule( YourKCModuleFactory::instance(), parent )
+ *   : KCModule( YourKCModuleFactory::componentData(), parent )
  * {
  *   KAboutData *about = new KAboutData(
  *     <kcm name>, I18N_NOOP( "..." ),
@@ -116,7 +116,7 @@ public:
   /*
    * Base class for all KControlModules.
    */
-  explicit KCModule( KInstance *instance, QWidget *parent = 0, const QStringList& args = QStringList() );
+  explicit KCModule(const KComponentData &componentData, QWidget *parent = 0, const QStringList& args = QStringList() );
 
   /*
    * Destroys the module.
@@ -184,7 +184,7 @@ public:
    */
   bool useRootOnlyMessage() const;
 
-  KInstance *instance() const;
+  KComponentData componentData() const;
 
   /**
    * @return a list of @ref KConfigDialogManager's in use, if any.

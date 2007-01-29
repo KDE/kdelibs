@@ -104,7 +104,7 @@ bool ObjectDescription<T>::isValid() const
 template<ObjectDescriptionType T>
 ObjectDescription<T> ObjectDescription<T>::fromIndex( int index )
 {
-    QObject* b = Factory::self()->backend();
+    QObject* b = Factory::backend();
     BackendInterface *iface = qobject_cast<BackendInterface*>(b);
     QSet<int> indexes = iface->objectDescriptionIndexes(T);
     if (!indexes.contains(index)) {

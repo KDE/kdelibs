@@ -24,7 +24,7 @@
 #include <kaboutdata.h>
 #include <kaction.h>
 #include <qapplication.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kguiitem.h>
@@ -91,13 +91,13 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       case AboutApp:
       case HelpContents:
       {
-        const KAboutData *aboutData = KGlobal::instance()->aboutData();
+        const KAboutData *aboutData = KGlobal::mainComponent().aboutData();
         /* TODO KDE4
         const KAboutData *aboutData;
         if ( parent )
-          aboutData = parent->instance()->aboutData();
+          aboutData = parent->componentData().aboutData();
         else
-          aboutData = KGlobal::instance()->aboutData();
+          aboutData = KGlobal::aboutData();
         */
         QString appName = (aboutData) ? aboutData->programName() : qApp->applicationName();
         sLabel = i18n( pInfo->psLabel, appName );

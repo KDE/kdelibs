@@ -40,7 +40,7 @@ class UiFactory::Private
 
 		void createBackend()
 		{
-			const char* lib = Phonon::Factory::self()->uiLibrary();
+			const char* lib = Phonon::Factory::uiLibrary();
 			if( lib == 0 )
 			{
 				KMessageBox::error( 0, i18n( "The current backend does not support any graphical user interface functionality. Choose a different backend if this is not what you want." ) ); //FIXME: Make this error message more useful: Offer the user a simple way to change the backend
@@ -49,7 +49,7 @@ class UiFactory::Private
 
 			QStringList errormsg;
 			KLibFactory* factory = 0;
-			const char* symbol = Phonon::Factory::self()->uiSymbol();
+			const char* symbol = Phonon::Factory::uiSymbol();
 			if( symbol == 0 )
 				factory = KLibLoader::self()->factory( lib );
 			else
@@ -104,9 +104,8 @@ UiFactory* UiFactory::self()
 	if( !m_self )
 	{
 		m_self = new UiFactory();
-		Phonon::Factory* f = Phonon::Factory::self();
-		connect( f, SIGNAL( backendChanged() ), m_self, SIGNAL( backendChanged() ) );
-		connect( Phonon::Factory::self(), SIGNAL( aboutToBeDestroyed() ), m_self, SLOT( deleteNow() ) );
+        connect(Phonon::Factory::sender(), SIGNAL(backendChanged()), m_self, SIGNAL(backendChanged()));
+        connect(Phonon::Factory::sender(), SIGNAL(aboutToBeDestroyed()), m_self, SLOT(deleteNow()));
 	}
 	return m_self;
 }
@@ -135,7 +134,7 @@ QObject* UiFactory::createVideoWidget( QWidget* parent )
 		QObject* ret;
 		if( QMetaObject::invokeMethod( d->backend, "createVideoWidget", Qt::DirectConnection, Q_RETURN_ARG( QObject*, ret ), Q_ARG( QWidget*, parent ) ) )
 		{
-			Phonon::Factory::self()->registerQObject( ret );
+            Phonon::Factory::registerQObject(ret);
 			return ret;
 		}
 	}

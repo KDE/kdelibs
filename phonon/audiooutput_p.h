@@ -24,7 +24,7 @@
 #include "abstractaudiooutput_p.h"
 #include <kaboutdata.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 namespace Phonon
 {
@@ -37,11 +37,11 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 			: volume( 1.0 )
 			, outputDeviceIndex( -1 )
 		{
-			const KAboutData* ad = KGlobal::instance()->aboutData();
+			const KAboutData* ad = KGlobal::mainComponent().aboutData();
 			if( ad )
 				name = ad->programName();
 			else
-				name = KGlobal::instance()->instanceName();
+				name = KGlobal::mainComponent().componentName();
 		}
 
 	private:

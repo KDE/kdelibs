@@ -61,7 +61,7 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     , KXMLGUIClient(guiclient)
     , d(new Private())
 {
-    setInstance( GUIClient::instance() );
+    setComponentData( GUIClient::componentData() );
 
     d->guiclient = guiclient;
     //d->actions = Manager::self().actionCollection();
@@ -87,7 +87,7 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     connect(&Manager::self(), SIGNAL( finished(Kross::Action*) ), this, SLOT( finished(Kross::Action*) ));
 
     // try to read the main ActionCollection.
-    QByteArray partname = d->guiclient->instance()->instanceName(); //KApplication::kApplication()->objectName()
+    QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
     Manager::self().actionCollection()->readXmlResource("data", partname + "/scripts/*.rc");
 }
 
@@ -127,7 +127,7 @@ bool GUIClient::writeConfigFromPackages()
     config->setGroup("scripts");
     QStringList names = config->readEntry("names", QStringList());
 
-    QByteArray partname = d->guiclient->instance()->instanceName();
+    QByteArray partname = d->guiclient->componentData().componentName();
     QStringList files = KGlobal::dirs()->findAllResources("data", partname + "/scripts/*/install.rc");
     files.sort();
     foreach(QString file, files) {

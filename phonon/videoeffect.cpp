@@ -46,7 +46,7 @@ void VideoEffectPrivate::createIface()
 	if( backendObject )
 		return;
 	K_Q( VideoEffect );
-	backendObject = Factory::self()->createVideoEffect( type, q );
+    backendObject = Factory::createVideoEffect(type, q);
 	if( backendObject )
 		q->setupIface();
 }

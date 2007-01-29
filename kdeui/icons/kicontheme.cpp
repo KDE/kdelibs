@@ -31,10 +31,11 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 #include "kicontheme.h"
 #include "kstaticdeleter.h"
+#include <kconfiggroup.h>
 
 class KIconThemePrivate
 {

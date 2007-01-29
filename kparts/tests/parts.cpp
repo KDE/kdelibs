@@ -19,17 +19,17 @@
 #include <kstandarddirs.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
-    : KParts::ReadOnlyPart( parent )
+    : KParts::ReadOnlyPart(parent),
+    m_componentData("kpartstestpart")
 {
     setObjectName( "Part1" );
-    m_instance = new KInstance( "kpartstestpart" );
-    setInstance( m_instance );
+    setComponentData( m_componentData );
     m_edit = new QTextEdit( parentWidget );
     setWidget( m_edit );
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
-    m_instance->dirs()->addResourceDir( "data", KDESRCDIR );
+    m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "kpartstest_part1.rc" );
 
     /*KAction * paBlah = */ //new KAction( "Blah", "filemail", 0, actionCollection(), "p1_blah" );
@@ -37,7 +37,6 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 
 Part1::~Part1()
 {
-    delete m_instance;
 }
 
 bool Part1::openFile()
@@ -62,11 +61,11 @@ bool Part1::openFile()
 }
 
 Part2::Part2( QObject *parent, QWidget * parentWidget )
-    : KParts::Part( parent )
+    : KParts::Part(parent),
+    m_componentData("part2")
 {
     setObjectName( "Part2" );
-    m_instance = new KInstance( "part2" );
-    setInstance( m_instance );
+    setComponentData( m_componentData );
     QWidget * w = new QWidget( parentWidget );
     w->setObjectName( "Part2Widget" );
     setWidget( w );
@@ -85,7 +84,6 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
 
 Part2::~Part2()
 {
-    delete m_instance;
 }
 
 void Part2::guiActivateEvent( KParts::GUIActivateEvent * event )

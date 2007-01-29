@@ -35,7 +35,7 @@ KSettingsWidgetAdaptor::~KSettingsWidgetAdaptor()
 
 QString KSettingsWidgetAdaptor::applicationName()
 {
-	return kapp->caption();
+	return KGlobal::caption();
 }
 
 #include "ksettingswidgetadaptor.moc"

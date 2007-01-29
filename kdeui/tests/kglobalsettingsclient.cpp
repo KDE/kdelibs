@@ -21,7 +21,7 @@
 #include <QApplication>
 #include <kglobalsettings.h>
 #include <kdebug.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 KCmdLineOptions options[] =
 {
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KInstance instance(&about); // for KConfig
+    KComponentData componentData(&about); // for KConfig
     QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
     if (args->isSet("p")) {

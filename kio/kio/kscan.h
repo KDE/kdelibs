@@ -21,7 +21,7 @@
 #define KSCAN_H
 
 #include <kpagedialog.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klibloader.h>
 
 class QByteArray;
@@ -199,21 +199,21 @@ protected:
 
     /**
      * Creates a new instance with the given name.
-     * @param instanceName the name of the instance
+     * @param componentName the name of the instance
      */
-    void setName( const QByteArray& instanceName ) {
-	delete m_instance;
-	m_instance = new KInstance( instanceName );
+    void setName(const QByteArray &componentName)
+    {
+        m_componentData = KComponentData(componentName);
     }
 
     /**
      * Returns the instance.
-     * @return the KInstance
+     * @return the KComponentData
      */
-    KInstance *instance() const { return m_instance; }
+    const KComponentData &componentData() const { return m_componentData; }
 
 private:
-    KInstance *m_instance;
+    KComponentData m_componentData;
 private:
     class KScanDialogFactoryPrivate* d;
 };
@@ -325,21 +325,21 @@ protected:
 
     /**
      * Creates a new instance with the given name.
-     * @param instanceName the name of the instance
+     * @param componentName the name of the instance
      */
-    void setName( const QByteArray& instanceName ) {
-	delete m_instance;
-	m_instance = new KInstance( instanceName );
+    void setName(const QByteArray &componentName)
+    {
+        m_componentData = KComponentData(componentName);
     }
 
     /**
      * Returns the instance.
-     * @return the KInstance
+     * @return the KComponentData
      */
-    KInstance *instance() const { return m_instance; }
+    const KComponentData &componentData() const { return m_componentData; }
 
 private:
-    KInstance *m_instance;
+    KComponentData m_componentData;
 private:
     class KOCRDialogFactory* d;
 };

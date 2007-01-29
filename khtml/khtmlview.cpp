@@ -79,6 +79,7 @@
 #include <kstandarddirs.h>
 #include <kstandardshortcut.h>
 #include <kstringhandler.h>
+#include <kconfiggroup.h>
 
 #include <qbitmap.h>
 #include <qlabel.h>

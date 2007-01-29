@@ -29,6 +29,7 @@
 #include <kvbox.h>
 #include <QLabel>
 #include <QTextDocument>
+#include <kconfiggroup.h>
 
 NotifyByPopup::NotifyByPopup(QObject *parent) : KNotifyPlugin(parent)
 {

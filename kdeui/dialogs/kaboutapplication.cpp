@@ -41,12 +41,12 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   setModal( modal );
 
   if( aboutData == 0 )
-    aboutData = KGlobal::instance()->aboutData();
+    aboutData = KGlobal::mainComponent().aboutData();
 
   if( !aboutData )
   {
     // Recovery
-    setProduct( kapp ? kapp->caption() : QString(), i18n("??"), QString(), QString() );
+    setProduct(KGlobal::caption(), i18n("??"), QString(), QString());
     KAboutContainer *appPage = addContainerPage( i18n("&About"));
 
     QString appPageText =

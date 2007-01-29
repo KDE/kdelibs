@@ -25,6 +25,7 @@
 #include <solid/devicemanager.h>
 #include <solid/device.h>
 #include <solid/audiohw.h>
+#include <kconfiggroup.h>
 
 namespace Phonon
 {

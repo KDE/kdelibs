@@ -27,42 +27,23 @@
 #include <kmimetype.h>
 #include "phonondefs_p.h"
 #include "backendinterface.h"
+#include <kglobal.h>
+#include "backendcapabilities_p.h"
 
-static KStaticDeleter<Phonon::BackendCapabilities> sd;
+K_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 
 namespace Phonon
 {
 
-class BackendCapabilities::Private
+QObject *BackendCapabilities::notifier()
 {
-};
-
-BackendCapabilities* BackendCapabilities::m_self = 0;
-
-BackendCapabilities* BackendCapabilities::self()
-{
-	if( !m_self )
-		::sd.setObject( m_self, new BackendCapabilities() );
-	return m_self;
-}
-
-BackendCapabilities::BackendCapabilities()
-	: d( 0 ) //when changing this also uncomment the delete in the dtor
-{
-	m_self = this;
-	connect( Factory::self(), SIGNAL( backendChanged() ), SLOT( _k_slotBackendChanged() ) );
-}
-
-BackendCapabilities::~BackendCapabilities()
-{
-	// delete d;
-	// d = 0;
+    return globalBCPrivate;
 }
 
 #define SUPPORTS( foo ) \
 bool BackendCapabilities::supports ## foo() \
 { \
-	QObject* backendObject = Factory::self()->backend(); \
+	QObject* backendObject = Factory::backend(); \
 	if( !backendObject ) \
 		return false; \
 	bool ret; \
@@ -76,7 +57,7 @@ SUPPORTS( Subtitles )
 
 QStringList BackendCapabilities::knownMimeTypes()
 {
-	QObject* backendObject = Factory::self()->backend( false );
+	QObject* backendObject = Factory::backend( false );
 	if( backendObject )
 	{
 		QStringList ret;
@@ -98,7 +79,7 @@ QStringList BackendCapabilities::knownMimeTypes()
 
 bool BackendCapabilities::isMimeTypeKnown( const QString& mimeType )
 {
-	QObject* backendObject = Factory::self()->backend( false );
+	QObject* backendObject = Factory::backend( false );
 	if( backendObject )
 	{
 		QStringList ret;
@@ -118,7 +99,7 @@ bool BackendCapabilities::isMimeTypeKnown( const QString& mimeType )
 #define availableDevicesImpl( T ) \
 QList<T> BackendCapabilities::available ## T ## s() \
 { \
-    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend()); \
+    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::backend()); \
 	QList<T> ret; \
     if (backendIface) { \
         QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
@@ -131,7 +112,7 @@ QList<T> BackendCapabilities::available ## T ## s() \
 #define availableDevicesImpl2( T ) \
 QList<T ## Description> BackendCapabilities::available ## T ## s() \
 { \
-    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend()); \
+    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::backend()); \
 	QList<T ## Description> ret; \
 	if (backendIface) { \
         QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
@@ -151,11 +132,7 @@ availableDevicesImpl2( ContainerFormat )
 availableDevicesImpl2( AudioEffect )
 availableDevicesImpl2( VideoEffect )
 
-void BackendCapabilities::_k_slotBackendChanged()
-{
-	emit capabilitiesChanged();
-}
-
 } // namespace Phonon
-#include "backendcapabilities.moc"
+
+#include "backendcapabilities_p.moc"
 // vim: sw=4 ts=4

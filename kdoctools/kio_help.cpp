@@ -27,7 +27,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 #include "kio_help.h"
 #include <libxslt/xsltutils.h>

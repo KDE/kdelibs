@@ -361,7 +361,7 @@ void EvalMultiLineEdit::keyPressEvent(QKeyEvent * e)
 }
 //-------------------------------------------------------------------------
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
-  : KMainWindow(parent, name, Qt::WType_TopLevel), KInstance("kjs_debugger")
+  : KMainWindow(parent, name, Qt::WType_TopLevel), KComponentData("kjs_debugger")
 {
   m_breakpoints = 0;
   m_breakpointCount = 0;
@@ -456,7 +456,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   menuBar()->insertItem("&Debug",debugMenu);
 
   m_actionCollection = new KActionCollection(this);
-  m_actionCollection->setInstance(this);
+  m_actionCollection->setComponentData(*this);
 
   // Venkman use F12, KDevelop F10
   KShortcut scNext = KShortcut(KKeySequence(KKey(Qt::Key_F12)));

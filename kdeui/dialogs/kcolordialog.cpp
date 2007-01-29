@@ -66,6 +66,7 @@
 #include "kselector.h"
 #include "kcolorvalueselector.h"
 #include "kxyselector.h"
+#include <kconfiggroup.h>
 
 #include "config.h"
 #ifdef Q_WS_X11

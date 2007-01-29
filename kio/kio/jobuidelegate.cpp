@@ -25,7 +25,7 @@
 #include <kmessagebox.h>
 #include <kjob.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include "kio/observer.h"
 #include "kio/scheduler.h"

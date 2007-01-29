@@ -25,6 +25,7 @@
 
 #include <QMap>
 #include <QString>
+#include <kconfiggroup.h>
 
 /**
  * Represent the config for an event

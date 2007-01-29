@@ -32,7 +32,7 @@
 #include <QWidgetAction>
 
 #include <kdebug.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 
@@ -168,14 +168,14 @@ void KLiveUiComponent::removeComponentGui()
 {
 }
 
-void KLiveUiComponent::setInstance(KInstance *instance)
+void KLiveUiComponent::setComponentData(const KComponentData &cData)
 {
-    d->instance = instance;
+    d->componentData = cData;
 }
 
-KInstance *KLiveUiComponent::instance() const
+KComponentData KLiveUiComponent::componentData() const
 {
-    return d->instance ? d->instance : KGlobal::instance();
+    return d->componentData.isValid() ? d->componentData : KGlobal::mainComponent();
 }
 
 void KLiveUiComponent::addSubComponent(KLiveUiComponent *component)
@@ -692,10 +692,10 @@ void KLiveUiBuilder::populateFromXmlGui(const QString &fileName, KActionCollecti
     QString file = fileName;
 
     if (QDir::isRelativePath(fileName) && !QFile::exists(file)) {
-        KInstance *instance = KGlobal::instance();
+        KComponentData cData = KGlobal::mainComponent();
         if (d->component)
-            instance = d->component->instance();
-        file = instance->dirs()->locate("data", fileName);
+            cData = d->component->componentData();
+        file = cData.dirs()->locate("data", fileName);
     }
 
     QFile f(file);

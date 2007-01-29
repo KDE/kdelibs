@@ -31,7 +31,7 @@
 
 #include <kjobuidelegate.h>
 #include <kio/job.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kvbox.h>
@@ -41,16 +41,16 @@
 // just for khtmlimagepart. See khtmlimage_init.cpp
 K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory, KHTMLImageFactory )
 
-KInstance *KHTMLImageFactory::s_instance = 0;
+KComponentData *KHTMLImageFactory::s_componentData = 0;
 
 KHTMLImageFactory::KHTMLImageFactory()
 {
-    s_instance = new KInstance( "khtmlimage" );
+    s_componentData = new KComponentData( "khtmlimage" );
 }
 
 KHTMLImageFactory::~KHTMLImageFactory()
 {
-    delete s_instance;
+    delete s_componentData;
 }
 
 KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget,
@@ -68,7 +68,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     : KParts::ReadOnlyPart( parent ), m_image( 0 )
 {
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
-    setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
+    setComponentData( KHTMLImageFactory::componentData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
     KVBox *box = new KVBox( parentWidget );
 

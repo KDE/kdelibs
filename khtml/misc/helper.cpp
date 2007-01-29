@@ -184,7 +184,7 @@ QColor khtml::colorForCSSValue( int css_value )
     QColor c = pal.color( uicol->group, uicol->role );
 #ifndef APPLE_CHANGES
     if ( uicol->configEntry ) {
-	KConfig *globalConfig = KGlobal::config();
+	KSharedConfig::Ptr globalConfig = KGlobal::config();
 	globalConfig->setGroup( uicol->configGroup );
 	c = globalConfig->readEntry( uicol->configEntry, c );
     }

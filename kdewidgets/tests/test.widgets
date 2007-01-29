@@ -1,7 +1,7 @@
 [Global]
 PluginName=KDEWidgets
-Includes=kinstance.h,classpreviews.h
-Init=new KInstance("kdewidgets");
+Includes=kcomponentdata.h,classpreviews.h
+Init=new KComponentData("kdewidgets");
 
 [KActiveLabel]
 ToolTip=Active Label (KDE)

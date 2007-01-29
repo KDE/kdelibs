@@ -30,7 +30,7 @@ class QWidget;
 
 class QAction;
 class KActionCollection;
-class KInstance;
+class KComponentData;
 class KXMLGUIClientPrivate;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
@@ -90,9 +90,9 @@ public:
   virtual KActionCollection* actionCollection() const;
 
   /**
-   * @return The instance ( KInstance ) for this GUI client.
+   * @return The componentData ( KComponentData ) for this GUI client.
    */
-  virtual KInstance *instance() const;
+  virtual KComponentData componentData() const;
 
   /**
    * @return The parsed XML in a QDomDocument, set by
@@ -263,12 +263,12 @@ protected:
   //bool addSuperClient( KXMLGUIClient * );
 
   /**
-   * Sets the instance ( KInstance) for this part.
+   * Sets the componentData ( KComponentData) for this part.
    *
    * Call this first in the inherited class constructor.
    * (At least before setXMLFile().)
    */
-  virtual void setInstance( KInstance *instance );
+  virtual void setComponentData(const KComponentData &componentData);
 
   /**
    * Sets the name of the rc file containing the XML for the part.
@@ -278,7 +278,7 @@ protected:
    * @param file Either an absolute path for the file, or simply the
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
-   *             the instance.
+   *             the componentData.
    * @param merge Whether to merge with the global document.
    * @param setXMLDoc Specify whether to call setXML. Default is true.
    *               and the DOM document at once.

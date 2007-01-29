@@ -22,7 +22,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
                           const QStringList& )
  : KParts::ReadWritePart( parent )
 {
-  setInstance( NotepadFactory::instance() );
+  setComponentData( NotepadFactory::componentData() );
 
   m_edit = new QTextEdit( parentWidget );
   m_edit->setPlainText( "NotepadPart's multiline edit" );
@@ -34,7 +34,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
 
   // KXMLGUIClient looks in the "data" resource for the .rc files
   // This line is for test programs only!
-  instance()->dirs()->addResourceDir( "data", KDESRCDIR );
+  componentData().dirs()->addResourceDir( "data", KDESRCDIR );
   setXMLFile( "notepadpart.rc" );
 
   setReadWrite( true );

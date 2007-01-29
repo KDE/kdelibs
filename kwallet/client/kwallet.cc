@@ -29,7 +29,7 @@
 
 #include <assert.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 
 using namespace KWallet;
@@ -43,12 +43,14 @@ Q_DECLARE_METATYPE(StringByteArrayMap)
 
 static QString appid()
 {
-    KInstance* instance = KGlobal::instance();
-    const KAboutData* aboutData = instance->aboutData();
-    if (aboutData)
-        return aboutData->programName();
-    if (instance)
-        return instance->instanceName();
+    KComponentData cData = KGlobal::mainComponent();
+    if (cData.isValid()) {
+        const KAboutData* aboutData = cData.aboutData();
+        if (aboutData) {
+            return aboutData->programName();
+        }
+        return cData.componentName();
+    }
     return qApp->applicationName();
 }
 

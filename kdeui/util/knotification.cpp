@@ -53,21 +53,21 @@
 
 struct KNotification::Private
 {
-	QString eventId;
-	unsigned int id;
-	int ref;
-	
-	QWidget *widget;
-	QString text;
-	QStringList actions;
-	QPixmap pixmap;
-	ContextList contexts;
-	NotificationFlags flags;
-	const KInstance *instance;
-	
-	QTimer updateTimer;
+    QString eventId;
+    unsigned int id;
+    int ref;
 
-	Private() :  id(0), ref(1) , widget(0l) , instance(0L) {}
+    QWidget *widget;
+    QString text;
+    QStringList actions;
+    QPixmap pixmap;
+    ContextList contexts;
+    NotificationFlags flags;
+    KComponentData componentData;
+
+    QTimer updateTimer;
+
+    Private() : id(0), ref(1), widget(0l) {}
 };
 
 KNotification::KNotification(const QString& eventId, QWidget *parent, const NotificationFlags& flags) :
@@ -172,9 +172,9 @@ void KNotification::setFlags(const NotificationFlags & flags)
 }
 
 
-void KNotification::setInstance( const KInstance * i)
+void KNotification::setComponentData(const KComponentData &c)
 {
-	d->instance=i;
+    d->componentData = c;
 }
 
 void KNotification::activate(unsigned int action)
@@ -243,12 +243,12 @@ void KNotification::raiseWidget(QWidget *w)
 
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
-			const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KInstance *instance)
+        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KComponentData &componentData)
 {
 	KNotification *notify=new KNotification(eventid, widget, flags);
 	notify->setText(text);
 	notify->setPixmap(pixmap);
-	notify->setInstance(instance);
+	notify->setComponentData(componentData);
 
 	QTimer::singleShot(0,notify,SLOT(sendEvent()));
 	
@@ -308,11 +308,12 @@ void KNotification::sendEventSync()
 		
 		if(d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
-		else if(d->instance)
-			appname = QString::fromLatin1(d->instance->instanceName());
-		else
-			appname = QString::fromLatin1(KGlobal::instance()->instanceName());
-		
+                else if(d->componentData.isValid()) {
+                    appname = QString::fromLatin1(d->componentData.componentName());
+                } else {
+                    appname = QString::fromLatin1(KGlobal::mainComponent().componentName());
+                }
+
 		if(!(d->flags & Persistant))
 		{
 			QTimer::singleShot(6*1000, this, SLOT(close()));

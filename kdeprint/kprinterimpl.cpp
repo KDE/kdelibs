@@ -211,7 +211,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 		message.prepend(i18n("Printing document: %1", printer->docName())+"\n");
 
         QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
-        (void)kdeprintd.call( "statusMessage", msg, int(getpid()), kapp->caption() );
+        (void)kdeprintd.call( "statusMessage", msg, int(getpid()), KGlobal::caption() );
 }
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
@@ -552,7 +552,7 @@ void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
 
 void KPrinterImpl::loadAppOptions()
 {
-	KConfig	*conf = KGlobal::config();
+	KSharedConfig::Ptr conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	QStringList	opts = conf->readEntry("ApplicationOptions", QStringList());
 	for (int i=0; i<opts.count(); i+=2)
@@ -567,7 +567,7 @@ void KPrinterImpl::saveAppOptions()
 		if (it.key().startsWith("app-"))
 			optlist << it.key() << it.value();
 
-	KConfig	*conf = KGlobal::config();
+	KSharedConfig::Ptr conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	conf->writeEntry("ApplicationOptions", optlist);
 }

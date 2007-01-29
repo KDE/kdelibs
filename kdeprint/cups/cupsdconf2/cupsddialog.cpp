@@ -46,7 +46,7 @@
 #include <kglobal.h>
 #include <kicon.h>
 #include <kiconloader.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kpagewidgetmodel.h>
 #include <qstringlist.h>
 #include <kpassworddialog.h>

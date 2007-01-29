@@ -33,6 +33,7 @@
 #include <kglobalsettings.h>
 #include <kicontheme.h>
 #include "kiconeffect.h"
+#include <kconfiggroup.h>
 
 
 class KIconEffectPrivate
@@ -55,7 +56,7 @@ KIconEffect::~KIconEffect()
 
 void KIconEffect::init()
 {
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
 
     int i, j, effect=-1;
     QStringList groups;

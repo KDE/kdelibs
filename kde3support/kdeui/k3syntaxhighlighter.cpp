@@ -34,6 +34,7 @@
 #include <QKeyEvent>
 
 #include "k3syntaxhighlighter.h"
+#include <kconfiggroup.h>
 
 static int dummy, dummy2, dummy3, dummy4;
 static int *Okay = &dummy;

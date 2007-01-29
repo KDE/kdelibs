@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <kdelibs_export.h>
 #include <klocalizedstring.h>
+#include <kconfig.h>
 
 class QStringList;
 class QTextCodec;
@@ -34,7 +35,6 @@ class QDateTime;
 
 class KDateTime;
 class KGlobal;
-class KConfigBase;
 class KCatalog;
 class KCalendarSystem;
 class KLocalePrivate;
@@ -75,7 +75,7 @@ public:
    * @param catalog The name of the main language file
    * @param config The configuration file to use.
    */
-  explicit KLocale( const QString& catalog, KConfigBase *config = 0 );
+  explicit KLocale(const QString& catalog, KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
   /**
    * Copy constructor.

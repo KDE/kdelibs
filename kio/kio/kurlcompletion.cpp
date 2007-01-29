@@ -57,6 +57,7 @@
 #include <pwd.h>
 #include <time.h>
 #include <sys/param.h>
+#include <kconfiggroup.h>
 
 static bool expandTilde(QString &);
 static bool expandEnv(QString &);

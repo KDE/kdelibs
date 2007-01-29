@@ -51,7 +51,7 @@
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kcodecs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kresolver.h>
 #include <krandom.h>
 #include <kmimetype.h>
@@ -94,7 +94,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
     KLocale::setMainCatalog("kdelibs");
 
     QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-    KInstance instance( "kio_http" );
+    KComponentData componentData( "kio_http" );
     (void) KGlobal::locale();
 
     if (argc != 4)

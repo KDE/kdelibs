@@ -51,6 +51,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "kmimetypefactory.h"
+#include <kconfiggroup.h>
 
 template class KSharedPtr<KMimeType>;
 

@@ -47,7 +47,7 @@
 #include "kconfigdata.h"
 #include "kde_file.h"
 #include "kglobal.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "klocale.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
@@ -235,10 +235,10 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
    else if (!QDir::isRelativePath(mfileName))
       mLocalFileName = mfileName;
    else
-      mLocalFileName = KGlobal::dirs()->saveLocation(resType) + mfileName;
+      mLocalFileName = pConfig->componentData().dirs()->saveLocation(resType) + mfileName;
 
    if (useKDEGlobals)
-      mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
+      mGlobalFileName = pConfig->componentData().dirs()->saveLocation("config") +
 	      QLatin1String("kdeglobals");
    else
       mGlobalFileName.clear();
@@ -343,7 +343,7 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
   while(bReadFile) {
     bReadFile = false;
     QString bootLanguage;
-    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
+    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::hasLocale()) {
        // Boot strap language
        bootLanguage = KLocale::_initLanguage(pConfig);
        setLocaleString(bootLanguage.toUtf8());
@@ -354,7 +354,7 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
     if ( !QDir::isRelativePath(fileName) )
        list << fileName;
     else
-       list = KGlobal::dirs()->findAllResources(resType, fileName);
+       list = pConfig->componentData().dirs()->findAllResources(resType, fileName);
 
     QListIterator<QString> it( list );
     it.toBack();
@@ -372,7 +372,7 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
             break;
       }
     }
-    if (KGlobal::dirs()->isRestrictedResource(resType, fileName))
+    if (pConfig->componentData().dirs()->isRestrictedResource(resType, fileName))
        bFileImmutable = true;
     QString currentLanguage;
     if (!bootLanguage.isEmpty())
@@ -396,7 +396,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
   // Parse the general config files
   if (useKDEGlobals) {
-    QStringList kdercs = KGlobal::dirs()->
+    QStringList kdercs = pConfig->componentData().dirs()->
       findAllResources("config", QLatin1String("kdeglobals"));
 
 #ifdef Q_WS_WIN
@@ -408,7 +408,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     if (KStandardDirs::checkAccess(etc_kderc, R_OK))
       kdercs += etc_kderc;
 
-    kdercs += KGlobal::dirs()->
+    kdercs += pConfig->componentData().dirs()->
       findAllResources("config", QLatin1String("system.kdeglobals"));
 
     QListIterator<QString> it( kdercs );
@@ -1135,10 +1135,9 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
     // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
     errorMsg += i18n("Please contact your system administrator.");
     QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
-    KInstance *instance = KGlobal::instance();
-    if (!cmdToExec.isEmpty() && instance)
+    if (!cmdToExec.isEmpty() && pConfig->componentData().isValid())
     {
-      QProcess::execute(cmdToExec,QStringList() << "--title" << instance->instanceName() << "--msgbox" << errorMsg.toLocal8Bit());
+      QProcess::execute(cmdToExec,QStringList() << "--title" << pConfig->componentData().componentName() << "--msgbox" << errorMsg.toLocal8Bit());
     }
   }
   return allWritable;

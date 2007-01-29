@@ -40,6 +40,7 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include <kconfig.h>
+#include <kconfiggroup.h>
 
 KGlobalAccel* KGlobalAccel::s_instance = 0L;
 static KStaticDeleter<KGlobalAccel> sd;
@@ -111,8 +112,9 @@ void KGlobalAccel::setConfigGroup( const QString& s )
 
 bool KGlobalAccel::readSettings( KConfigBase* config )
 {
-	if (!config)
-		config = KGlobal::config();
+    if (!config) {
+        config = KGlobal::config().data();
+    }
 
 	QMapIterator<QString, QString> it = config->entryMap( configGroup() );
 	while (it.hasNext()) {
@@ -138,10 +140,11 @@ bool KGlobalAccel::readSettings( KConfigBase* config )
 
 bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KAction* oneAction ) const
 {
-	if (!config)
-		config = KGlobal::config();
+    if (!config) {
+        config = KGlobal::config().data();
+    }
 
-	KConfigGroup cg( config, configGroup() );
+    KConfigGroup cg(config, configGroup());
 
 	if (oneAction) {
 		if (writeDefaults || oneAction->globalShortcut(KAction::ActiveShortcut)

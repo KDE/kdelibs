@@ -44,7 +44,8 @@ typedef void Display;
 #endif
 
 #include <qapplication.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
+#include <kglobal.h>
 
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>
@@ -80,7 +81,7 @@ class KUrl;
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */
-class KDEUI_EXPORT KApplication : public QApplication, public KInstance
+class KDEUI_EXPORT KApplication : public QApplication
 {
     /**
       @port4 isRestored() should now use qApp->isSessionRestored().
@@ -119,7 +120,7 @@ class KDEUI_EXPORT KApplication : public QApplication, public KInstance
         }
       }
     </pre>
-      @port4 caption() has moved to KInstance
+      @port4 caption() has moved to KGlobal
       @port4 makeStdCaption(const QString&, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&, CaptionFlags)
       @port4 addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()
     */
@@ -422,14 +423,14 @@ protected:
   /**
    * @internal Used by KUniqueApplication
    */
-  KApplication( bool GUIenabled, KInstance* _instance );
+  KApplication(bool GUIenabled, const KComponentData &cData);
 
 #ifdef Q_WS_X11
   /**
    * @internal Used by KUniqueApplication
    */
-  KApplication( Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
-		KInstance* _instance );
+  KApplication(Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
+          const KComponentData &cData);
 
   /**
    * Used to catch X11 events
@@ -518,7 +519,7 @@ Q_SIGNALS:
 
 private:
 #ifndef KDE3_SUPPORT
-  KConfig *config() { return KInstance::config(); }
+  KConfig *config() { return KGlobal::config().data(); }
 #endif
 
   KApplication(const KApplication&);

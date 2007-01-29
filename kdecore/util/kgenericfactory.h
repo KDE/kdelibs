@@ -21,7 +21,7 @@
 
 #include <klibloader.h>
 #include <ktypelist.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kgenericfactory.tcc>
 #include <kglobal.h>
 #include <klocale.h>
@@ -32,8 +32,8 @@ template <class T>
 class KGenericFactoryBase
 {
 public:
-    explicit KGenericFactoryBase( const char *instanceName )
-        : m_instanceName( instanceName )
+    explicit KGenericFactoryBase( const char *componentName )
+        : m_componentName( componentName )
     {
         m_aboutData=0L;
         s_self = this;
@@ -48,31 +48,34 @@ public:
 
     virtual ~KGenericFactoryBase()
     {
-        if ( s_instance )
-            KGlobal::locale()->removeCatalog( QString::fromAscii( s_instance->instanceName() ) );
-        delete s_instance;
-        s_instance = 0;
+        if (s_componentData) {
+            KGlobal::locale()->removeCatalog(QString::fromAscii(s_componentData->componentName()));
+            delete s_componentData;
+            s_componentData = 0;
+        }
         s_self = 0;
     }
 
-    static KInstance *instance();
+    static KComponentData componentData();
 
 protected:
-    virtual KInstance *createInstance()
+    virtual KComponentData *createComponentData()
     {
-        if ( m_aboutData )
-            return new KInstance( m_aboutData );
-        if ( m_instanceName.isNull() ) {
-            kWarning() << "KGenericFactory: instance requested but no instance name or about data passed to the constructor!" << endl;
+        if (m_aboutData) {
+            return new KComponentData(m_aboutData);
+        }
+        if (m_componentName.isNull()) {
+            kWarning() << "KGenericFactory: componentData requested but no component name or about data passed to the constructor!" << endl;
             return 0;
         }
-        return new KInstance( m_instanceName );
+        return new KComponentData(m_componentName);
     }
 
     virtual void setupTranslations( void )
     {
-        if ( instance() )
-            KGlobal::locale()->insertCatalog( QString::fromAscii( instance()->instanceName() ) );
+        if (componentData().isValid()) {
+            KGlobal::locale()->insertCatalog(QString::fromAscii(componentData().componentName()));
+        }
     }
 
     void initializeMessageCatalog()
@@ -85,17 +88,17 @@ protected:
     }
 
 private:
-    QByteArray m_instanceName;
+    QByteArray m_componentName;
     const KAboutData *m_aboutData;
     bool m_catalogInitialized;
 
-    static KInstance *s_instance;
+    static KComponentData *s_componentData;
     static KGenericFactoryBase<T> *s_self;
 };
 
 /* @internal */
 template <class T>
-KInstance *KGenericFactoryBase<T>::s_instance = 0;
+KComponentData *KGenericFactoryBase<T>::s_componentData = 0;
 
 /* @internal */
 template <class T>
@@ -103,11 +106,15 @@ KGenericFactoryBase<T> *KGenericFactoryBase<T>::s_self = 0;
 
 /* @internal */
 template <class T>
-KInstance *KGenericFactoryBase<T>::instance()
+KComponentData KGenericFactoryBase<T>::componentData()
 {
-    if ( !s_instance && s_self )
-        s_instance = s_self->createInstance();
-    return s_instance;
+    if (!s_componentData && s_self ){
+        s_componentData = s_self->createComponentData();
+        if (!s_componentData) {
+            s_componentData = new KComponentData; //invalid
+        }
+    }
+    return *s_componentData;
 }
 
 /**
@@ -141,17 +148,17 @@ KInstance *KGenericFactoryBase<T>::instance()
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central
- * KInstance object for your component, accessible through the
- * static instance() method. The instanceName argument of the
- * KGenericFactory constructor is passed to the KInstance object.
+ * KComponentData object for your component, accessible through the
+ * static componentData() method. The componentName argument of the
+ * KGenericFactory constructor is passed to the KComponentData object.
  *
- * The creation of the KInstance object can be customized by inheriting
- * from this template class and re-implementing the virtual createInstance
+ * The creation of the KComponentData object can be customized by inheriting
+ * from this template class and re-implementing the virtual createComponentData
  * method. For example it could look like this:
  * \code
- *     KInstance *MyFactory::createInstance()
+ *     KComponentData *MyFactory::createComponentData()
  *     {
- *         return new KInstance( myAboutData );
+ *         return new KComponentData( myAboutData );
  *     }
  * \endcode
  *
@@ -172,8 +179,8 @@ template <class Product, class ParentType = QObject>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
 {
 public:
-    explicit KGenericFactory( const char *instanceName = 0 )
-        : KGenericFactoryBase<Product>( instanceName )
+    explicit KGenericFactory( const char *componentName = 0 )
+        : KGenericFactoryBase<Product>( componentName )
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -220,17 +227,17 @@ protected:
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central
- * KInstance object for your component, accessible through the
- * static instance() method. The instanceName argument of the
- * KGenericFactory constructor is passed to the KInstance object.
+ * KComponentData object for your component, accessible through the
+ * static componentData() method. The componentName argument of the
+ * KGenericFactory constructor is passed to the KComponentData object.
  *
- * The creation of the KInstance object can be customized by inheriting
- * from this template class and re-implementing the virtual createInstance
+ * The creation of the KComponentData object can be customized by inheriting
+ * from this template class and re-implementing the virtual createComponentData
  * method. For example it could look like this:
  * \code
- *     KInstance *MyFactory::createInstance()
+ *     KComponentData *MyFactory::createComponentData()
  *     {
- *         return new KInstance( myAboutData );
+ *         return new KComponentData( myAboutData );
  *     }
  * \endcode
  *
@@ -264,8 +271,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *instanceName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
+    explicit KGenericFactory( const char *componentName  = 0 )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName )
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -312,17 +319,17 @@ protected:
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central
- * KInstance object for your component, accessible through the
- * static instance() method. The instanceName argument of the
- * KGenericFactory constructor is passed to the KInstance object.
+ * KComponentData object for your component, accessible through the
+ * static componentData() method. The componentName argument of the
+ * KGenericFactory constructor is passed to the KComponentData object.
  *
- * The creation of the KInstance object can be customized by inheriting
- * from this template class and re-implementing the virtual createInstance
+ * The creation of the KComponentData object can be customized by inheriting
+ * from this template class and re-implementing the virtual createComponentData
  * method. For example it could look like this:
  * \code
- *     KInstance *MyFactory::createInstance()
+ *     KComponentData *MyFactory::createComponentData()
  *     {
- *         return new KInstance( myAboutData );
+ *         return new KComponentData( myAboutData );
  *     }
  * \endcode
  *
@@ -358,8 +365,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *instanceName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
+    explicit KGenericFactory( const char *componentName  = 0 )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName )
     {}
     explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )

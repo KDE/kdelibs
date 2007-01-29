@@ -40,7 +40,7 @@ namespace KPAC
 
     ProxyScout::ProxyScout()
         : KDEDModule(),
-          m_instance( new KInstance( "proxyscout" ) ),
+          m_componentData("proxyscout"),
           m_downloader( 0 ),
           m_script( 0 ),
           m_suspendTime( 0 )
@@ -50,7 +50,6 @@ namespace KPAC
     ProxyScout::~ProxyScout()
     {
         delete m_script;
-        delete m_instance;
     }
 
     QString ProxyScout::proxyForUrl( const KUrl& url, const QDBusMessage &msg )
@@ -121,7 +120,7 @@ namespace KPAC
             {
                 KNotification *notify= new KNotification ( "script-error" );
                 notify->setText( i18n("The proxy configuration script is invalid:\n%1" , e.message() ) );
-                notify->setInstance( m_instance );
+                notify->setComponentData(m_componentData);
                 notify->sendEvent();
                 success = false;
             }
@@ -129,7 +128,7 @@ namespace KPAC
         {
 		KNotification *notify = new KNotification ("download-error");
 		notify->setText( m_downloader->error() );
-		notify->setInstance( m_instance);
+        notify->setComponentData(m_componentData);
 		notify->sendEvent();
         }
 
@@ -185,7 +184,7 @@ namespace KPAC
         {
 		KNotification *n=new KNotification( "evaluation-error" );
 		n->setText( i18n( "The proxy configuration script returned an error:\n%1" , e.message() ) );
-		n->setInstance(m_instance);
+        n->setComponentData(m_componentData);
 		n->sendEvent();
         }
         return "DIRECT";

@@ -36,7 +36,7 @@
  * @see KGlobal::unregisterStaticDeleter()
  * @see KGlobal::deleteStaticDeleters()
  */
-class KDECORE_EXPORT KStaticDeleterBase {
+class KDECORE_EXPORT_DEPRECATED KStaticDeleterBase {
 public:
     virtual ~KStaticDeleterBase();
     /**
@@ -81,7 +81,7 @@ public:
  * @warning Don't delete an object which is managed by KStaticDeleter without
  * calling setObject() with a null pointer.
  */
-template<class type> class KStaticDeleter : public KStaticDeleterBase {
+template<class type> class KDE_DEPRECATED KStaticDeleter : public KStaticDeleterBase {
 public:
     /**
      * Constructor. Initializes the KStaticDeleter. Note that the static

@@ -41,6 +41,7 @@
 
 #include "kacceleratormanager.h"
 #include "kcheckaccelerators.h"
+#include <kconfiggroup.h>
 
 /*
 

@@ -15,7 +15,7 @@
 #include <qdir.h>
 #include <qregexp.h>
 #include <xslt.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include "kio_help.h"
 #include <klocale.h>
 #include <assert.h>
@@ -181,7 +181,7 @@ QString splitOut(const QString &parsed, int index)
     return filedata;
 }
 
-void fillInstance(KInstance &ins, const QString &srcdir) {
+void fillInstance(KComponentData &ins, const QString &srcdir) {
     QString catalogs;
 
     if ( srcdir.isEmpty() ) {

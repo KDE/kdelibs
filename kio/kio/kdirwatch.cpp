@@ -49,6 +49,7 @@
 #include <kglobal.h>
 #include <kstaticdeleter.h>
 #include <kde_file.h>
+#include <kconfiggroup.h>
 
 // debug
 #include <sys/ioctl.h>

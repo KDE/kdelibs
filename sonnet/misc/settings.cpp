@@ -31,6 +31,7 @@
 
 #include <qmap.h>
 #include <qstringlist.h>
+#include <kconfiggroup.h>
 
 namespace KSpell2
 {

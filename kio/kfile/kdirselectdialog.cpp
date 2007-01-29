@@ -47,6 +47,7 @@
 
 #include "kfiletreeview.h"
 #include "kdirselectdialog.h"
+#include <kconfiggroup.h>
 
 // ### add mutator for treeview!
 
@@ -286,7 +287,7 @@ void KDirSelectDialog::slotNextDirToList( KFileTreeViewItem *item )
     }
 }
 
-void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
+void KDirSelectDialog::readConfig(const KSharedConfig::Ptr &config, const QString& group)
 {
     d->urlCombo->clear();
 
@@ -296,7 +297,7 @@ void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
     resize( conf.readEntry( "DirSelectDialog Size", QSize( 400, 450 ) ) );
 }
 
-void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
+void KDirSelectDialog::saveConfig(KSharedConfig::Ptr config, const QString& group)
 {
     KConfigGroup conf( config, group );
     conf.writePathEntry( "History Items", d->urlCombo->historyItems(), ',',

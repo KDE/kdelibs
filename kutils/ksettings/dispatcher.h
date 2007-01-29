@@ -23,10 +23,10 @@
 #include <qobject.h>
 #include <qmap.h>
 #include <kdelibs_export.h>
+#include <kcomponentdata.h>
 
 class Q3Signal;
 template<class T> class KStaticDeleter;
-class KInstance;
 class KConfig;
 
 namespace KSettings
@@ -39,7 +39,7 @@ namespace KSettings
  * into the KConfigureDialog you need a way to get notified. This is what you
  * do:
  * \code
- * Dispatcher::self()->registerInstance( instance(), this, SLOT( loadSettings() ) );
+ * Dispatcher::self()->registerComponent( componentData(), this, SLOT( loadSettings() ) );
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
@@ -56,44 +56,38 @@ class KUTILS_EXPORT Dispatcher : public QObject
         static Dispatcher * self();
 
         /**
-         * Register a slot to be called when the configuration for the instance
-         * has changed. @p instance is the KInstance object
+         * Register a slot to be called when the configuration for the componentData
+         * has changed. @p componentData is the KComponentData object
          * that is passed to KGenericFactory (if it is used). You can query
-         * it with KGenericFactory<YourClassName>::instance().
-         * instance->instanceName() is also the same name that is put into the
+         * it with KGenericFactory<YourClassName>::componentData().
+         * componentData.componentName() is also the same name that is put into the
          * .desktop file of the KCMs for the X-KDE-ParentComponents.
          *
-         * @param instance     The KInstance object
+         * @param componentData     The KComponentData object
          * @param recv         The object that should receive the signal
          * @param slot         The slot to be called: SLOT( slotName() )
          */
-        void registerInstance( KInstance * instance, QObject * recv, const char * slot );
+        void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
 
         /**
-         * @return the KConfig object that belongs to the instanceName
+         * @return the KConfig object that belongs to the componentName
          */
-        KConfig * configForInstanceName( const QByteArray & instanceName );
+        const KSharedConfig::Ptr &configForComponentName(const QByteArray &componentName);
 
         /**
-         * @return a list of all the instance names that are currently
+         * @return a list of all the componentData names that are currently
          * registered
          */
-        QList<QByteArray> instanceNames() const;
-
-//X         /**
-//X          * @return The KInstance object belonging to the instance name you pass
-//X          * (only works for registered instances of course).
-//X          */
-//X         KInstance * instanceForName( const QCString & instanceName );
+        QList<QByteArray> componentNames() const;
 
     public Q_SLOTS:
         /**
          * Call this slot when the configuration belonging to the associated
-         * instance name has changed. The registered slot will be called.
+         * componentData name has changed. The registered slot will be called.
          *
-         * @param instanceName The value of X-KDE-ParentComponents.
+         * @param componentName The value of X-KDE-ParentComponents.
          */
-        void reparseConfiguration( const QByteArray & instanceName );
+        void reparseConfiguration(const QByteArray &componentName);
 
         /**
          * When this slot is called the KConfig objects of all the registered
@@ -104,23 +98,24 @@ class KUTILS_EXPORT Dispatcher : public QObject
         void syncConfiguration();
 
     private Q_SLOTS:
-        void unregisterInstance( QObject * );
+        void unregisterComponent(QObject *);
 
     private:
-        Dispatcher( QObject * parent = 0 );
+        Dispatcher(QObject *parent = 0);
         ~Dispatcher();
-        static Dispatcher * m_self;
+        static Dispatcher *m_self;
 
-        struct InstanceInfo {
-            KInstance * instance;
-            Q3Signal * signal;
+        struct ComponentInfo
+        {
+            KComponentData componentData;
+            Q3Signal *signal;
             int count;
         };
-        QMap<QByteArray, InstanceInfo> m_instanceInfo;
-        QMap<QObject *, QByteArray> m_instanceName;
+        QMap<QByteArray, ComponentInfo> m_componentInfo;
+        QMap<QObject *, QByteArray> m_componentName;
 
         class DispatcherPrivate;
-        DispatcherPrivate * d;
+        DispatcherPrivate *d;
 };
 
 }

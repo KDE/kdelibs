@@ -26,7 +26,7 @@
 #include <qsettings.h>
 #include <qcoreapplication.h>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -38,7 +38,7 @@
 
 int main(int argc, char **argv)
 {
-    KInstance instance("kinstalltheme"); // TODO use KAboutData
+    KComponentData componentData("kinstalltheme"); // TODO use KAboutData
     QCoreApplication qapp(argc, argv);
 
     KGlobal::dirs()->addResourceType("themercs", KGlobal::dirs()->kde_default("data")+QString("kstyle/themes"));

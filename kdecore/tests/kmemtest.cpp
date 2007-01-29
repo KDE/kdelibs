@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <QApplication>
 #include <stdlib.h>
 #include <errno.h>
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
 
    KAboutData about("kmemtest", "kmemtest", "version");
    //KCmdLineArgs::init(argc, argv, &about);
-   KInstance instance(&about);
+   KComponentData cData(&about);
 
    QApplication a(argc, argv);
 

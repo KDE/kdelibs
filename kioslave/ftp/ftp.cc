@@ -62,7 +62,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
@@ -139,7 +139,7 @@ using namespace KNetwork;
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
-  KInstance instance( "kio_ftp" );
+  KComponentData componentData( "kio_ftp" );
   ( void ) KGlobal::locale();
 
   kDebug(7102) << "Starting " << getpid() << endl;

@@ -52,6 +52,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <knuminput.h>
+#include <kconfiggroup.h>
 
 #include "kfontdialog.moc"
 

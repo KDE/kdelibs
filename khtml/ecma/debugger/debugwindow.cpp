@@ -114,7 +114,7 @@ void DebugWindow::setNextSourceInfo(QString url, int baseLine)
 
 DebugWindow::DebugWindow(QWidget *parent)
   : KMainWindow(parent, "DebugWindow", Qt::WType_TopLevel),
-    KInstance("kjs_debugger")
+    KComponentData("kjs_debugger")
 {
     setCaption(i18n("JavaScript Debugger"));
     kDebug() << "creating DebugWindow" << endl;

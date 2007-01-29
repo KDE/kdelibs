@@ -21,7 +21,7 @@
 #include "config.h"
 #include "kaboutdata.h"
 #include "kaction.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "klocale.h"
 #include "kmenu.h"
 #include "kmessagebox.h"
@@ -41,6 +41,7 @@
 
 #include <QApplication>
 #include <QMouseEvent>
+#include <kconfiggroup.h>
 
 class KSystemTrayIconPrivate
 {
@@ -90,8 +91,8 @@ void KSystemTrayIcon::init( QWidget* parent )
     d = new KSystemTrayIconPrivate( this, parent );
 
     d->menu = new KMenu( parent );
-    d->menu->addTitle( qApp->windowIcon(), KInstance::caption() );
-    d->menu->setTitle( KGlobal::instance()->aboutData()->programName() );
+    d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
+    d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );
     connect( d->menu, SIGNAL( aboutToShow() ), this, SLOT( contextMenuAboutToShow() ) );
     setContextMenu( d->menu );
 
@@ -181,7 +182,7 @@ void KSystemTrayIcon::minimizeRestoreAction()
 
 void KSystemTrayIcon::maybeQuit()
 {
-    QString caption = KInstance::caption();
+    QString caption = KGlobal::caption();
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>",
                          caption);
     if (KMessageBox::warningContinueCancel(d->window, query,
@@ -284,9 +285,9 @@ KActionCollection* KSystemTrayIcon::actionCollection()
     return d->actionCollection;
 }
 
-QIcon KSystemTrayIcon::loadIcon( const QString &icon, KInstance *instance )
+QIcon KSystemTrayIcon::loadIcon(const QString &icon, const KComponentData &componentData)
 {
-    KConfigGroup cg(instance->config(), "System Tray");
+    KConfigGroup cg(componentData.config(), "System Tray");
     int iconWidth = cg.readEntry("systrayIconWidth", 22);
     return KIconLoader::global()->loadIcon( icon, K3Icon::Panel, iconWidth );
 }

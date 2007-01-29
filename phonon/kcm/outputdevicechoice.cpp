@@ -27,6 +27,7 @@
 #include <phonon/audiodeviceenumerator.h>
 #include <phonon/audiodevice.h>
 #include <QList>
+#include <kconfiggroup.h>
 
 class CategoryItem : public QStandardItem {
     public:

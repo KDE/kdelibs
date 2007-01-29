@@ -28,6 +28,7 @@
 #include "k3sconfig.h"
 #include "k3spelldlg.h"
 #include "ui_k3spellui.h"
+#include <kconfiggroup.h>
 
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2

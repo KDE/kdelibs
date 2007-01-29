@@ -42,6 +42,7 @@
 #include <kicondialog.h>
 
 #include "kfdtest.h"
+#include <kconfiggroup.h>
 
 static const KCmdLineOptions options[] =
 {

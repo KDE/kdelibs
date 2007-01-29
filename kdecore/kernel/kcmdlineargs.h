@@ -575,7 +575,7 @@ public:
   static char **qtArgv();
 
   /**
-   * Returns the KAboutData for consumption by KInstance
+   * Returns the KAboutData for consumption by KComponentData
    */
   static const KAboutData *aboutData() { return about; }
 

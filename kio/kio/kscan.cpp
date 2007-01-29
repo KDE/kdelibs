@@ -84,14 +84,12 @@ KOCRDialog::~KOCRDialog()
 
 
 KScanDialogFactory::KScanDialogFactory( QObject *parent )
-    : KLibFactory( parent ),
-      m_instance( 0L )
+    : KLibFactory(parent)
 {
 }
 
 KScanDialogFactory::~KScanDialogFactory()
 {
-    delete m_instance;
 }
 
 QObject *KScanDialogFactory::createObject( QObject *parent,
@@ -114,14 +112,12 @@ QObject *KScanDialogFactory::createObject( QObject *parent,
 
 
 KOCRDialogFactory::KOCRDialogFactory( QObject *parent )
-    : KLibFactory( parent ),
-      m_instance( 0L )
+    : KLibFactory(parent)
 {
 }
 
 KOCRDialogFactory::~KOCRDialogFactory()
 {
-    delete m_instance;
 }
 
 QObject *KOCRDialogFactory::createObject( QObject *parent,

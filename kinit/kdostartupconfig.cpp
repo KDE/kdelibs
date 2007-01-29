@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -62,7 +62,7 @@ QString get_entry( QString* ll )
 
 int main()
     {
-    KInstance inst( "kdostartupconfig" );
+    KComponentData inst( "kdostartupconfig" );
     kDebug() << "Running kdostartupconfig." << endl;
     QString keysname = KStandardDirs::locateLocal( "config", "startupconfigkeys" );
     QFile keys( keysname );

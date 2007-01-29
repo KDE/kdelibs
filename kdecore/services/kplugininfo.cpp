@@ -27,6 +27,7 @@
 #include <kdesktopfile.h>
 #include <kservice.h>
 #include <QList>
+#include <kconfiggroup.h>
 
 class KPluginInfo::KPluginInfoPrivate
 {

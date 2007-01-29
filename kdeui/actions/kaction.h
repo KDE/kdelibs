@@ -32,7 +32,6 @@
 #include <kguiitem.h>
 #include <kshortcut.h>
 
-class KInstance;
 class KIcon;
 
 /**

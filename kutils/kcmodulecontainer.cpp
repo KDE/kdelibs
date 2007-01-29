@@ -63,17 +63,17 @@ class KCModuleContainer::KCModuleContainerPrivate
 
 
 // The KCModuleContainer is only a wrapper around real KCModules. Therefore it doesn't need a
-// special KInstance and can just use the global instance. The contained KCModules create their own
-// KInstance objects when needed.
+// special KComponentData and can just use the global instance. The contained KCModules create their own
+// KComponentData objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-	: KCModule( KGlobal::instance(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( " " ).split( "," ) ))
+	: KCModule( KGlobal::mainComponent(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( " " ).split( "," ) ))
 {
 	init();
 }
 
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
-	: KCModule( KGlobal::instance(), parent ), d( new KCModuleContainerPrivate( mods ) )
+	: KCModule( KGlobal::mainComponent(), parent ), d( new KCModuleContainerPrivate( mods ) )
 {
 	init();
 }

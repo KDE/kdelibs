@@ -59,7 +59,7 @@ void PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )::createIface() \
 	if( backendObject ) \
 		return; \
 	K_Q( PHONON_CLASSNAME ); \
-	backendObject = Factory::self()->PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
+	backendObject = Factory::PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
 	if( backendObject ) \
 		q->setupIface(); \
 }
@@ -76,7 +76,7 @@ void PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )::createIface() \
 	if( backendObject ) \
 		return; \
 	K_Q( PHONON_CLASSNAME ); \
-	backendObject = Factory::self()->PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
+	backendObject = Factory::PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
 	if( backendObject ) \
 		q->setupIface(); \
 }

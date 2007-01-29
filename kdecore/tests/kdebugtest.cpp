@@ -1,6 +1,6 @@
 #include "kdebug.h"
 #include <qwidget.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <iostream>
 #include <QApplication>
 #include <qpen.h>
@@ -26,7 +26,7 @@ public:
     kDebug(2 == 2) << "this is right " << perror << endl;
     kDebug() << "Before instance creation" << endl;
     kDebug(1202) << "Before instance creation" << endl;
-    KInstance i("kdebugtest");
+    KComponentData i("kdebugtest");
     kDebug(1) << "kDebugInfo with inexisting area number" << endl;
     kDebug(1202) << "This number has a value of " << 5 << endl;
     // kDebug() << "This number should come out as appname " << 5 << " " << "test" << endl;

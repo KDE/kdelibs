@@ -41,6 +41,7 @@
 
 #include <sys/types.h>
 #include <utime.h>
+#include <kconfiggroup.h>
 
 QString KRecentDocument::recentDocumentDirectory()
 {
@@ -74,8 +75,8 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const KUrl& url)
 {
-    KRecentDocument::add(url, KGlobal::instance()->instanceName());
-    // ### instanceName might not match the service filename...
+    KRecentDocument::add(url, KGlobal::mainComponent().componentName());
+    // ### componentName might not match the service filename...
 }
 
 void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
@@ -87,7 +88,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
     kDebug(250) << "KRecentDocument::add for " << openStr << endl;
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QLatin1String("RecentDocuments"));
     bool useRecent = config->readEntry(QLatin1String("UseRecent"), true);

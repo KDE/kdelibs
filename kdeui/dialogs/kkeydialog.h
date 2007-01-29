@@ -258,7 +258,7 @@ public:
 	 * Simply call insert with the action collections of each one in turn.
 	 *
 	 * @param title the title associated with the collection (if null, the
-	 * KAboutData::progName() of the collection's instance is used)
+	 * KAboutData::progName() of the collection's componentData is used)
 	 */
 	void insert(KActionCollection *, const QString &title = QString());
 

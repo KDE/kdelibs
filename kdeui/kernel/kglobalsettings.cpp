@@ -38,7 +38,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kcharsets.h>
 #include <klocale.h>
 #include <kprotocolinfo.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include "kstaticdeleter.h"
 
 #include <qcolor.h>
@@ -63,6 +63,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #endif
 
 #include <stdlib.h>
+#include <kconfiggroup.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;

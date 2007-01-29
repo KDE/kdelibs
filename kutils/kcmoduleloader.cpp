@@ -43,7 +43,7 @@ class KCMError : public KCModule
 {
 	public:
 		KCMError( const QString& msg, const QString& details, QWidget* parent )
-			: KCModule( KGlobal::instance(), parent )
+			: KCModule( KGlobal::mainComponent(), parent )
 		{
 			QVBoxLayout* topLayout = new QVBoxLayout( this );
       QLabel *lab = new QLabel( msg, this );

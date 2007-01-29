@@ -43,9 +43,9 @@ void KStandarddirsTest::testSaveLocation()
 
 void KStandarddirsTest::testAppData()
 {
-    // In addition to testSaveLocation(), we want to also check other KInstances
-    KInstance instance( "foo" );
-    const QString fooAppData = instance.dirs()->saveLocation( "appdata" );
+    // In addition to testSaveLocation(), we want to also check other KComponentDatas
+    KComponentData cData("foo");
+    const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
     QCOMPARE( fooAppData, QDir::home().canonicalPath() + "/.kde-unit-test/share/apps/foo/" );
 }
 

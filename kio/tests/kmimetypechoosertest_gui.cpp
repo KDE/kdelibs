@@ -20,11 +20,11 @@
 #include <QApplication>
 #include <kmimetypechooser.h>
 #include <klocale.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );
-    KInstance instance("kmimetypechoosertest_gui");
+    KComponentData componentData("kmimetypechoosertest_gui");
 
     QString text = i18n("Select the MimeTypes you want for this file type.");
     QStringList list; list << "inode/directory"; list << "text/plain";

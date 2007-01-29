@@ -44,6 +44,7 @@ class Q3StrList;
 
 class KConfigBackEnd;
 class KConfigGroup;
+class KComponentData;
 struct KEntry;
 struct KEntryKey;
 typedef QMap<KEntryKey, KEntry> KEntryMap;
@@ -117,9 +118,16 @@ public:
   KConfigBase();
 
   /**
+   * Construct a KConfigBase object.
+   */
+  KConfigBase(const KComponentData &componentData);
+
+  /**
    * Destructs the KConfigBase object.
    */
   virtual ~KConfigBase();
+
+  const KComponentData &componentData() const;
 
   /**
    * Specifies the group in which keys will be read and written.
@@ -1447,6 +1455,7 @@ protected:
   bool bLocaleInitialized;
   bool bReadOnly;           // currently only used by KSimpleConfig
   mutable bool bExpand;     // whether dollar expansion is used
+  KComponentData *mComponentData;
 
 protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining
@@ -1647,87 +1656,5 @@ private:
   Private *d;
 };
 #endif
-
-/**
- * A KConfigBase derived class for one specific group in a KConfig object.
- */
-class KDECORE_EXPORT KConfigGroup: public KConfigBase
-{
-public:
-   /**
-    * Construct a config group corresponding to @p group in @p master.
-    * @p group is the group name encoded in UTF-8.
-    */
-   KConfigGroup(KConfigBase *master, const QByteArray &group);
-   /**
-    * This is an overloaded constructor provided for convenience.
-    * It behaves essentially like the above function.
-    *
-    * Construct a config group corresponding to @p group in @p master
-    */
-   KConfigGroup(KConfigBase *master, const QString &group);
-   /**
-    * This is an overloaded constructor provided for convenience.
-    * It behaves essentially like the above function.
-    *
-    * Construct a config group corresponding to @p group in @p master
-    * @p group is the group name encoded in UTF-8.
-    */
-   KConfigGroup(KConfigBase *master, const char * group);
-
-   ~KConfigGroup();
-
-   /**
-    * Delete all entries in the entire group
-    * @param pFlags flags passed to KConfigBase::deleteGroup
-    */
-   void deleteGroup(WriteConfigFlags pFlags=Normal);
-
-   /**
-   * Checks whether it is possible to change this group.
-   * @return whether changes may be made to this group in this configuration
-   * file.
-   */
-  bool groupIsImmutable() const;
-
-   // The following functions are reimplemented:
-   virtual void setDirty(bool _bDirty);
-   virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
-   virtual KEntry lookupData(const KEntryKey &_key) const;
-   virtual void sync();
-
-private:
-   // Hide the following members:
-   void setGroup() { }
-   void setDesktopGroup() { }
-   void group() { }
-   void hasGroup() { }
-   void setReadOnly(bool) { }
-   void isDirty() { }
-
-   // The following members are not used.
-   virtual QStringList groupList() const;
-   virtual void rollback(bool) { }
-   virtual void reparseConfiguration() { }
-   virtual QMap<QString, QString> entryMap(const QString &) const
-    { return QMap<QString,QString>(); }
-   virtual KEntryMap internalEntryMap( const QString&) const;
-   virtual KEntryMap internalEntryMap() const;
-   virtual bool internalHasGroup(const QByteArray &) const
-    { return false; }
-
-   void getConfigState() { }
-
-   KConfigBase *mMaster;
-protected:
-   /** Virtual hook, used to add new "virtual" functions while maintaining
-       binary compatibility. Unused in this class.
-   */
-   virtual void virtual_hook( int id, void* data );
-private:
-   Q_DISABLE_COPY(KConfigGroup)
-   class Private;
-   Private* d;
-};
 
 #endif

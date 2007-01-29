@@ -23,7 +23,7 @@
 #include "kjob.h"
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 
 #include <kdebug.h>
@@ -42,14 +42,11 @@ public:
 KJobUiDelegate::KJobUiDelegate()
     : QObject(), d( new Private() )
 {
-    KInstance *instance = KGlobal::instance();
+    KComponentData cData = KGlobal::mainComponent();
 
-    if ( instance && instance->aboutData() )
-    {
-        d->jobIcon = instance->aboutData()->appName();
-    }
-    else
-    {
+    if (cData.isValid() && cData.aboutData()) {
+        d->jobIcon = cData.aboutData()->appName();
+    } else {
         kDebug() << "Couldn't retrieve application job launcher information. Some information won't be shown on the kio_uiserver" << endl;
 
         d->jobIcon = QString();

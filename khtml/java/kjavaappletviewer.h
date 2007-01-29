@@ -41,7 +41,7 @@ class QLabel;
 class KJavaProcess;
 class KJavaAppletViewer;
 class KAboutData;
-class KInstance;
+class KComponentData;
 class KConfig;
 class CoverWidget;
 
@@ -126,10 +126,10 @@ public:
         (QWidget *wparent,
          QObject *parent,
          const char *className, const QStringList &args);
-    static KInstance * instance () { return s_instance; }
+    static const KComponentData &componentData() { return *s_componentData; }
     static KIconLoader * iconLoader () { return s_iconLoader; }
 private:
-    static KInstance * s_instance;
+    static KComponentData *s_componentData;
     static KIconLoader * s_iconLoader;
 };
 

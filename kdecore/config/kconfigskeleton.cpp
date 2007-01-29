@@ -767,7 +767,7 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
   }
   else
   {
-    mConfig = KGlobal::sharedConfig();
+    mConfig = KGlobal::config();
   }
 }
 

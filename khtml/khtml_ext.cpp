@@ -405,7 +405,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   d->m_url = url;
   bool isImage = false;
   bool hasSelection = khtml->hasSelection();
-  setInstance( khtml->instance() );
+  setComponentData( khtml->componentData() );
 
   DOM::Element e;
   e = khtml->nodeUnderMouse();

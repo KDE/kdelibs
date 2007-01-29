@@ -27,7 +27,7 @@
 #include "misc/loader_client.h"
 
 class KHTMLPart;
-class KInstance;
+class KComponentData;
 
 namespace khtml
 {
@@ -48,10 +48,10 @@ public:
                                             QObject *parent,
                                             const char *className, const QStringList &args );
 
-    static KInstance *instance() { return s_instance; }
+    static const KComponentData &componentData() { return *s_componentData; }
 
 private:
-    static KInstance *s_instance;
+    static KComponentData *s_componentData;
 };
 
 /**

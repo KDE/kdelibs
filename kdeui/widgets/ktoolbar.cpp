@@ -51,6 +51,7 @@
 #include <kxmlguifactory.h>
 
 #include "ktoolbar.h"
+#include <kconfiggroup.h>
 
 class KToolBar::Private
 {
@@ -431,13 +432,13 @@ void KToolBar::Private::slotReadConfig()
    * but a well behaved application will call applyMainWindowSettings
    * anyway, right ?)
    */
-  parent->applyAppearanceSettings( KGlobal::config(), QString() );
+  parent->applyAppearanceSettings(KGlobal::config().data(), QString());
 }
 
 void KToolBar::Private::slotAppearanceChanged()
 {
   // Read appearance settings from global file.
-  parent->applyAppearanceSettings( KGlobal::config(), QString(), true /* lose local settings */ );
+  parent->applyAppearanceSettings(KGlobal::config().data(), QString(), true /* lose local settings */);
 
   // And remember to save the new look later
   KMainWindow *kmw = qobject_cast<KMainWindow *>( parent->mainWindow() );
@@ -962,7 +963,7 @@ void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configG
   // This is the reason for the xmlgui tests below.
   bool xmlgui = d->xmlguiClient && !d->xmlguiClient->xmlFile().isEmpty();
 
-  KConfig *gconfig = KGlobal::config();
+  KSharedConfig::Ptr gconfig = KGlobal::config();
 
   // we actually do this in two steps.
   // First, we read in the global styles [Toolbar style] (from the KControl module).

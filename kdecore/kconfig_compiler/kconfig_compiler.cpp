@@ -1319,7 +1319,7 @@ int main( int argc, char **argv )
     h << "    " << className << "(";
     if (cfgFileNameArg)
        h << " KSharedConfig::Ptr config"
-         << (parameters.isEmpty() ? " = KSharedConfig::Ptr ( KGlobal::sharedConfig() )" : ", ");
+         << (parameters.isEmpty() ? " = KGlobal::config()" : ", ");
     for (QList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {

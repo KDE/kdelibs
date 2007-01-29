@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <kaboutdata.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <QApplication>
 
 #include <signal.h>
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
  KProcess p1, p2, p3, p4;
  Dummy dummy;
  KAboutData about("kprocesstest", "kprocesstest", "version");
- KInstance instance(&about);
+ KComponentData cData(&about);
  //KCmdLineArgs::init(argc, argv, &about);
  //KApplication app;
  QApplication app(argc, argv);

@@ -18,7 +18,7 @@
 
 #include "ktar.h"
 #include <stdio.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 
 void recursive_print( const KArchiveDirectory * dir, const QString & path )
@@ -46,7 +46,7 @@ int main( int argc, char** argv )
                " ./ktartest /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n" );
         return 1;
     }
-    KInstance instance("ktartest");
+    KComponentData componentData("ktartest");
     KTar tar( argv[1] );
 
     if ( !tar.open( QIODevice::ReadOnly ) )

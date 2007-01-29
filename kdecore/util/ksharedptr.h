@@ -128,7 +128,7 @@ public:
      * Returns the number of references.
      * @return the number of references
      */
-    inline int count() const { return d ? (int)d->ref : 0; } // for debugging purposes
+    inline int count() const { return d ? static_cast<int>(d->ref) : 0; } // for debugging purposes
 
     /**
      * Detach the pointer by attaching a new copy of the pointer.
@@ -183,7 +183,7 @@ public:
         return KSharedPtr<T>( dynamic_cast<T *>( o.d ) );
     }
 
-private:
+protected:
     T* d;
 };
 
@@ -214,7 +214,7 @@ Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T* p)
 template <class T>
 Q_INLINE_TEMPLATE void KSharedPtr<T>::clear()
 {
-    attach((T*)0);
+    attach(static_cast<T*>(0));
 }
 
 template <class T>

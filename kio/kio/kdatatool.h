@@ -25,11 +25,11 @@
 
 #include <kaction.h>
 #include <kservice.h>
+#include <kcomponentdata.h>
 
 class KDataTool;
 class QPixmap;
 class QStringList;
-class KInstance;
 class KActionCollection;
 
 // If you're only looking at implementing a data-tool, skip directly to the last
@@ -56,7 +56,7 @@ public:
      * @param service the corresponding service
      * @param instance the instance to use
      */
-    KDataToolInfo( const KService::Ptr& service, KInstance* instance );
+    KDataToolInfo(const KService::Ptr& service, const KComponentData &instance);
     /**
      * Copy constructor.
      */
@@ -153,7 +153,7 @@ public:
      * The instance of the service.
      * @return the instance
      */
-    KInstance* instance() const { return m_instance; }
+    const KComponentData &componentData() const { return m_componentData; }
 
     /**
      * A DataToolInfo may be invalid if the KService passed to its constructor does
@@ -170,11 +170,11 @@ public:
      * and also used if the tool wants to read its configuration in the app's config file).
      * @return the list of results
      */
-    static QList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
+    static QList<KDataToolInfo> query(const QString& datatype, const QString& mimetype, const KComponentData &instance);
 
 private:
     KService::Ptr m_service;
-    KInstance* m_instance;
+    KComponentData m_componentData;
 private:
     class KDataToolInfoPrivate* d;
 };
@@ -262,14 +262,14 @@ public:
     /**
      * @internal. Do not use under any circumstance (including bad weather).
      */
-    void setInstance( KInstance* instance ) { m_instance = instance; }
+    void setComponentData(const KComponentData &componentData) { m_componentData = componentData; }
 
     /**
      * Returns the instance of the part that created this tool.
      * Usually used if the tool wants to read its configuration in the app's config file.
      * @return the instance of the part that created this tool.
      */
-    KInstance* instance() const;
+    const KComponentData &componentData() const;
 
     /**
      * Interface for 'running' this tool.
@@ -287,7 +287,7 @@ public:
     virtual bool run( const QString& command, void* data, const QString& datatype, const QString& mimetype) = 0;
 
 private:
-    KInstance * m_instance;
+    KComponentData m_componentData;
 private:
     class KDataToolPrivate;
     KDataToolPrivate * d;

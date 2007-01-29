@@ -352,9 +352,9 @@ bool KCModuleProxy::useRootOnlyMessage() const
 	return realModule() ? realModule()->useRootOnlyMessage() : true;
 }
 
-KInstance * KCModuleProxy::instance() const
+KComponentData KCModuleProxy::componentData() const
 {
-	return realModule() ? realModule()->instance() : 0;
+	return realModule() ? realModule()->componentData() : KComponentData();
 }
 
 bool KCModuleProxy::changed() const

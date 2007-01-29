@@ -20,7 +20,7 @@
 #include "kmultipart.h"
 
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kjobuidelegate.h>
@@ -101,7 +101,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 {
     m_filter = 0L;
 
-    setInstance( KMultiPartFactory::instance() );
+    setComponentData( KMultiPartFactory::componentData() );
 
     KVBox *box = new KVBox( parentWidget );
     setWidget( box );
@@ -400,7 +400,7 @@ void KMultiPart::setPart( const QString& mimeType )
     // Load the part's plugins too.
     // ###### This is a hack. The bug is that KHTMLPart doesn't load its plugins
     // if className != "Browser/View".
-    loadPlugins( this, m_part, m_part->instance() );
+    loadPlugins( this, m_part, m_part->componentData() );
     // Get the part's GUI to appear
     if ( guiFactory )
         guiFactory->addClient( this );

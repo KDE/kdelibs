@@ -36,12 +36,12 @@
 #include <QProcess>
 #include <QtDBus/QtDBus>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kdeversion.h>
 
-static const KInstance *s_instance = 0;
+static KComponentData *s_instance = 0;
 
 // print verbose messages
 int verbose=0;
@@ -283,9 +283,7 @@ int main(int argc, char **argv, char **envp)
     /** Make process group leader (for shutting down children later) **/
 
     /** Create our instance **/
-    s_instance = new KInstance("kdeinit");
-    // Don't make it the global instance
-    KGlobal::_instance = 0L;
+    s_instance = new KComponentData("kdeinit4"); // "kdeinit4" is special cased in KComponentData to not register with KGlobal
 
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {

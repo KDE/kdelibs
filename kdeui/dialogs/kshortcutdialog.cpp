@@ -43,6 +43,7 @@
 #include <kpushbutton.h>
 
 #include "kkeyserver.h"
+#include <kconfiggroup.h>
 
 bool KShortcutDialog::s_showMore = false;
 

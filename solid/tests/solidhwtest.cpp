@@ -21,7 +21,7 @@
 
 #include <qtest_kde.h>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 
 #include <solid/devicemanager.h>

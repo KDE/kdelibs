@@ -295,7 +295,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     kss->listen();
     QString sockname = kss->localAddress().serviceName();
 #else
-    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
+    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
     KTemporaryFile *socketfile = new KTemporaryFile();
     socketfile->setPrefix(prefix);
     socketfile->setSuffix(QLatin1String(".slave-socket"));
@@ -403,7 +403,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
     QString sockname = kss->localAddress().serviceName();
 #else
-    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
+    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
     KTemporaryFile *socketfile = new KTemporaryFile();
     socketfile->setPrefix(prefix);
     socketfile->setSuffix(QLatin1String(".slave-socket"));

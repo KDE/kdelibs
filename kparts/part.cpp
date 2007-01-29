@@ -35,7 +35,7 @@
 
 #include <kdirnotify.h>
 #include <kfiledialog.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
@@ -108,24 +108,25 @@ QObject *PartBase::partObject() const
   return m_obj;
 }
 
-void PartBase::setInstance( KInstance *inst )
+void PartBase::setComponentData(const KComponentData &componentData)
 {
-  setInstance( inst, true );
+    setComponentData(componentData, true);
 }
 
-void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
+void PartBase::setComponentData(const KComponentData &componentData, bool bLoadPlugins)
 {
-  KXMLGUIClient::setInstance( inst );
-  KGlobal::locale()->insertCatalog( inst->instanceName() );
-  // install 'instancename'data resource type
-  KGlobal::dirs()->addResourceType( inst->instanceName() + "data",
-                                    KStandardDirs::kde_default( "data" )
-                                    + QLatin1String( inst->instanceName() ) + '/' );
-  if ( bLoadPlugins )
-    loadPlugins( m_obj, this, instance() );
+    KXMLGUIClient::setComponentData(componentData);
+    KGlobal::locale()->insertCatalog(componentData.componentName());
+    // install 'instancename'data resource type
+    KGlobal::dirs()->addResourceType(componentData.componentName() + "data",
+            KStandardDirs::kde_default("data")
+            + QLatin1String(componentData.componentName()) + '/');
+    if (bLoadPlugins) {
+        loadPlugins(m_obj, this, componentData);
+    }
 }
 
-void PartBase::loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance )
+void PartBase::loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KComponentData &instance)
 {
   if( d->m_pluginLoadingMode != DoNotLoadPlugins )
     Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins, d->m_pluginInterfaceVersion );
@@ -191,8 +192,8 @@ QWidget *Part::widget()
 KIconLoader* Part::iconLoader()
 {
   if (!d->m_iconLoader) {
-    Q_ASSERT(instance());
-    d->m_iconLoader = new KIconLoader( instance() );
+    Q_ASSERT(componentData().isValid());
+    d->m_iconLoader = new KIconLoader( componentData() );
   }
   return d->m_iconLoader;
 }
@@ -720,4 +721,4 @@ bool ReadWritePart::waitSaveComplete()
 }
 
 #include "part.moc"
-// vim:sw=2:ts=8:et
+// vim:ts=8:et

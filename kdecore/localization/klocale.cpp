@@ -37,13 +37,14 @@
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "ksimpleconfig.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kcalendarsystemfactory.h"
 #include "klocalizedstring.h"
+#include "kconfiggroup.h"
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -72,7 +73,7 @@ public:
    * @param config The configuration object used for init
    * @param useEnv True if we should use environment variables
    */
-  void initLanguageList(KConfigBase * config, bool useEnv);
+  void initLanguageList(KConfigBase *config, bool useEnv);
 
   /**
    * @internal Figures out which encoding the user prefers.
@@ -183,7 +184,7 @@ public:
   // Misc
   QString encoding;
   QTextCodec * codecForEncoding;
-  KConfigBase * config;
+  KSharedConfig::Ptr config;
   int pageSize;
   KLocale::MeasureSystem measureSystem;
   QStringList langTwoAlpha;
@@ -203,7 +204,7 @@ public:
 
 static KLocale *this_klocale = 0;
 
-KLocale::KLocale( const QString & catalog, KConfigBase * config )
+KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
 	: d(new KLocalePrivate)
 {
   d->config = config;
@@ -214,14 +215,14 @@ KLocale::KLocale( const QString & catalog, KConfigBase * config )
   d->initEncoding(0);
   d->initFileNameEncoding(0);
 
-  KConfigBase *cfg = d->config;
+  KSharedConfig::Ptr cfg = d->config;
   this_klocale = this;
-  if (!cfg) cfg = KGlobal::instance()->config();
+  if (!cfg) cfg = KGlobal::config();
   this_klocale = 0;
   Q_ASSERT( cfg );
 
   d->appName = catalog;
-  d->initLanguageList( cfg, config == 0);
+  d->initLanguageList(cfg.data(), !config);
   d->initMainCatalogs(catalog);
 }
 
@@ -261,7 +262,7 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
   }
 }
 
-void KLocalePrivate::initLanguageList(KConfigBase * config, bool useEnv)
+void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
 {
   KConfigGroup cg(config, "Locale");
 
@@ -316,16 +317,18 @@ void KLocalePrivate::doFormatInit(const KLocale *parent)
 
 void KLocalePrivate::initFormat(KLocale *parent)
 {
-  if (!config) config = KGlobal::instance()->config();
-  Q_ASSERT( config );
+    if (!config) {
+        config = KGlobal::config();
+    }
+    Q_ASSERT(config);
 
   kDebug(173) << "KLocale::initFormat" << endl;
 
   // make sure the config files are read using the correct locale
   // ### Why not add a KConfigBase::setLocale( const KLocale * )?
   // ### Then we could remove this hack
-  KLocale *lsave = KGlobal::_locale;
-  KGlobal::_locale = parent;
+  KLocale *lsave = KGlobal::locale();
+  KGlobal::setLocale(parent);
 
   KConfigGroup cg(config, "Locale");
 
@@ -343,10 +346,6 @@ void KLocalePrivate::initFormat(KLocale *parent)
   save = (type)entry.readEntry(key, int(default)); \
   save = (type)cg.readEntry(key, int(save));
 
-#define readConfigBoolEntry(key, default, save) \
-  save = entry.readEntry(key, default); \
-  save = cg.readEntry(key, save);
-
   readConfigEntry("DecimalSymbol", ".", decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", thousandsSeparator);
   thousandsSeparator.replace( QString::fromLatin1("$0"), QString() );
@@ -363,9 +362,9 @@ void KLocalePrivate::initFormat(KLocale *parent)
   monetaryThousandsSeparator.replace(QString::fromLatin1("$0"), QString());
 
   readConfigNumEntry("FracDigits", 2, fracDigits, int);
-  readConfigBoolEntry("PositivePrefixCurrencySymbol", true,
+  readConfigEntry("PositivePrefixCurrencySymbol", true,
 		      positivePrefixCurrencySymbol);
-  readConfigBoolEntry("NegativePrefixCurrencySymbol", true,
+  readConfigEntry("NegativePrefixCurrencySymbol", true,
 		      negativePrefixCurrencySymbol);
   readConfigNumEntry("PositiveMonetarySignPosition", KLocale::BeforeQuantityMoney,
 		     positiveMonetarySignPosition, KLocale::SignPosition);
@@ -403,7 +402,7 @@ void KLocalePrivate::initFormat(KLocale *parent)
 		       dateMonthNamePossessive);
 
   // end of hack
-  KGlobal::_locale = lsave;
+  KGlobal::setLocale(lsave);
 }
 
 bool KLocale::setCountry(const QString & aCountry)
@@ -579,7 +578,7 @@ void KLocale::removeCatalog(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog )) {
     d->catalogNames.removeAll( catalog );
-    if (KGlobal::_instance)
+    if (KGlobal::hasMainComponent())
       d->updateCatalogs();  // walk through the KCatalog instances and weed out everything we no longer need
   }
 }
@@ -1782,18 +1781,20 @@ QString KLocale::formatDateTime(const KDateTime &pDateTime,
 
 void KLocale::initInstance()
 {
-  if (KGlobal::_locale)
-    return;
+    if (KGlobal::hasLocale()) {
+        return;
+    }
 
-  KInstance *app = KGlobal::instance();
-  if (app) {
-    KGlobal::_locale = new KLocale(QString::fromLatin1(app->instanceName()));
+    KComponentData app = KGlobal::mainComponent();
+    if (app.isValid()) {
+        KLocale *locale = new KLocale(QString::fromLatin1(app.componentName()));
+        KGlobal::setLocale(locale);
 
-    // only do this for the global instance
-    QTextCodec::setCodecForLocale(KGlobal::_locale->codecForEncoding());
-  }
-  else
-    kDebug(173) << "no app name available using KLocale - nothing to do\n";
+        // only do this for the global instance
+        QTextCodec::setCodecForLocale(locale->codecForEncoding());
+    } else {
+        kDebug(173) << "no app name available using KLocale - nothing to do\n";
+    }
 }
 
 QString KLocale::langLookup(const QString &fname, const char *rtype)

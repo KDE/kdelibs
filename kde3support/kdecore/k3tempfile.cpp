@@ -49,7 +49,7 @@
 
 #include "kglobal.h"
 #include "krandom.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "k3tempfile.h"
 #include "kstandarddirs.h"
 #include "kde_file.h"
@@ -96,7 +96,7 @@ K3TempFile::K3TempFile(const QString& filePrefix,
       extension = QLatin1String(".tmp");
    if (prefix.isEmpty())
    {
-      prefix = KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName());
+      prefix = KStandardDirs::locateLocal("tmp", KGlobal::mainComponent().componentName());
    }
    (void) create(prefix, extension, mode);
 }

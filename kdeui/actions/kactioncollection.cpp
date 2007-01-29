@@ -44,6 +44,8 @@
 #include <QAction>
 
 #include <stdio.h>
+#include <kcomponentdata.h>
+#include <kconfiggroup.h>
 
 QList<KActionCollection*> KActionCollection::s_allCollections;
 
@@ -53,7 +55,6 @@ public:
   KActionCollectionPrivate()
   {
     q = 0;
-    m_instance = 0;
     m_parentGUIClient = 0L;
 
     defaultShortcutContext = static_cast<Qt::ShortcutContext>(-1);
@@ -69,7 +70,7 @@ public:
   void _k_widgetDestroyed(QObject *obj);
   void _k_actionDestroyed(QObject *obj);
 
-  KInstance *m_instance;
+  KComponentData m_componentData;
   QList<KActionCollection*> m_docList;
 
   QMap<QString, QAction*> actionByName;
@@ -95,15 +96,14 @@ public:
   KActionCollection *q;
 };
 
-KActionCollection::KActionCollection( QObject *parent,
-                                      KInstance *instance )
+KActionCollection::KActionCollection(QObject *parent, const KComponentData &cData)
   : QObject( parent )
   , d(new KActionCollectionPrivate)
 {
   d->q = this;
   s_allCollections.append(this);
 
-  setInstance( instance );
+  setComponentData(cData);
 }
 
 KActionCollection::KActionCollection( const KXMLGUIClient *parent )
@@ -114,7 +114,7 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
   s_allCollections.append(this);
 
   d->m_parentGUIClient=parent;
-  d->m_instance=parent->instance();
+  d->m_componentData = parent->componentData();
 }
 
 KActionCollection::~KActionCollection()
@@ -182,17 +182,18 @@ int KActionCollection::count() const
   return d->nameByAction.count();
 }
 
-void KActionCollection::setInstance( KInstance *instance )
+void KActionCollection::setComponentData(const KComponentData &cData)
 {
-  if ( instance )
-    d->m_instance = instance;
-  else
-    d->m_instance = KGlobal::instance();
+  if (cData.isValid()) {
+    d->m_componentData = cData;
+  } else {
+    d->m_componentData = KGlobal::mainComponent();
+  }
 }
 
-KInstance *KActionCollection::instance() const
+const KComponentData &KActionCollection::componentData() const
 {
-  return d->m_instance;
+  return d->m_componentData;
 }
 
 const KXMLGUIClient *KActionCollection::parentGUIClient() const
@@ -414,7 +415,7 @@ void KActionCollection::readSettings( KConfigBase* config )
 {
   kDebug(125) << k_funcinfo << " ( \"" << configGroup() << "\", " << config << " ) start" << endl;
   if( !config )
-    config = KGlobal::config();
+    config = KGlobal::config().data();
 
   kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )" << endl;
   if( !config->hasGroup( configGroup() ) )
@@ -458,7 +459,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
     QString attrShortcut  = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml( KXMLGUIFactory::readConfigFile( parentGUIClient()->xmlFile(), false, instance() ) );
+    QString sXml(KXMLGUIFactory::readConfigFile(parentGUIClient()->xmlFile(), false, componentData()));
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -496,12 +497,12 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile( doc, parentGUIClient()->xmlFile(), instance() );
+    KXMLGUIFactory::saveConfigFile(doc, parentGUIClient()->xmlFile(), componentData());
     return;
   }
 
   if( !config )
-      config = KGlobal::config();
+      config = KGlobal::config().data();
 
   KConfigGroup cg( config, configGroup() );
 

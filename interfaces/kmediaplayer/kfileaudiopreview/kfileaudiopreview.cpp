@@ -40,6 +40,7 @@
 #include <phonon/backendcapabilities.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/mediacontrols.h>
+#include <kconfiggroup.h>
 
 class KFileAudioPreviewFactory : public KLibFactory
 {
@@ -92,7 +93,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
 
     (void) new QWidget( box ); // spacer
 
-    setSupportedMimeTypes( BackendCapabilities::self()->knownMimeTypes() );
+    setSupportedMimeTypes( BackendCapabilities::knownMimeTypes() );
 
     d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
     d->audioPath = new AudioPath( this );

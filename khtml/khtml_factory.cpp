@@ -31,7 +31,7 @@
 
 #include <QLinkedList>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -42,7 +42,7 @@
 
 KHTMLFactory *KHTMLFactory::s_self = 0;
 unsigned long int KHTMLFactory::s_refcnt = 0;
-KInstance *KHTMLFactory::s_instance = 0;
+KComponentData *KHTMLFactory::s_componentData = 0;
 KIconLoader *KHTMLFactory::s_iconLoader = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
@@ -62,7 +62,7 @@ KHTMLFactory::~KHTMLFactory()
         assert( !s_refcnt );
 
         delete s_iconLoader;
-        delete s_instance;
+        delete s_componentData;
         delete s_about;
         delete s_settings;
 	delete KHTMLSettings::avFamilies;
@@ -73,7 +73,7 @@ KHTMLFactory::~KHTMLFactory()
         }
 
         s_iconLoader = 0;
-        s_instance = 0;
+        s_componentData = 0;
         s_about = 0;
         s_settings = 0;
         s_parts = 0;
@@ -106,7 +106,7 @@ void KHTMLFactory::ref()
         // we can't use a staticdeleter here, because that would mean
         // that the factory gets deleted from within a qPostRoutine, called
         // from the QApplication destructor. That however is too late, because
-        // we want to destruct a KInstance object, which involves destructing
+        // we want to destruct a KComponentData object, which involves destructing
         // a KConfig object, which might call KGlobal::dirs() (in sync()) which
         // probably is not going to work ;-)
         // well, perhaps I'm wrong here, but as I'm unsure I try to stay on the
@@ -155,11 +155,11 @@ void KHTMLFactory::deregisterPart( KHTMLPart *part )
     }
 }
 
-KInstance *KHTMLFactory::instance()
+const KComponentData &KHTMLFactory::componentData()
 {
   assert( s_self );
 
-  if ( !s_instance )
+  if ( !s_componentData )
   {
     s_about = new KAboutData( "khtml", I18N_NOOP( "KHTML" ), "4.0",
                               I18N_NOOP( "Embeddable HTML component" ),
@@ -174,17 +174,17 @@ KInstance *KHTMLFactory::instance()
     s_about->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
     s_about->addAuthor( "Tobias Anton", 0, "anton@stud.fbi.fh-darmstadt.de" );
 
-    s_instance = new KInstance( s_about );
+    s_componentData = new KComponentData( s_about );
   }
 
-  return s_instance;
+  return *s_componentData;
 }
 
 KIconLoader *KHTMLFactory::iconLoader()
 {
   if ( !s_iconLoader )
   {
-    s_iconLoader = new KIconLoader(instance()->instanceName(), instance()->dirs());
+    s_iconLoader = new KIconLoader(componentData().componentName(), componentData().dirs());
   }
 
   return s_iconLoader;

@@ -26,6 +26,7 @@
 #include <kglobal.h>
 
 #include "kkeyserver.h"
+#include <kconfiggroup.h>
 
 namespace KKeyServer {
 //---------------------------------------------------------------------

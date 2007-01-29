@@ -19,7 +19,7 @@
  */
 
 #include "ktemporaryfile.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
 // Empty, but provided to ensure future compatibility
@@ -30,7 +30,7 @@ class KTemporaryFile::Private
 KTemporaryFile::KTemporaryFile()
 {
     QString temp = KStandardDirs::locateLocal("tmp",
-        KGlobal::instance()->instanceName());
+        KGlobal::mainComponent().componentName());
     setFileTemplate(temp + "XXXXXX.tmp");
 }
 
@@ -46,7 +46,7 @@ void KTemporaryFile::setPrefix(const QString &prefix)
 
     if ( newPrefix.isEmpty() ) {
         newPrefix = KStandardDirs::locateLocal("tmp",
-            KGlobal::instance()->instanceName());
+            KGlobal::mainComponent().componentName());
     } else {
         if ( !newPrefix.startsWith('/') ) {
             newPrefix.prepend ( KStandardDirs::locateLocal("tmp", "") );

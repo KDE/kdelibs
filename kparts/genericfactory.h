@@ -26,38 +26,38 @@ namespace KParts
         virtual ~GenericFactoryBase()
         {
             delete s_aboutData;
-            delete s_instance;
+            delete s_componentData;
             s_aboutData = 0;
-            s_instance = 0;
+            s_componentData = 0;
             s_self = 0;
         }
 
-        static KInstance *instance();
+        static const KComponentData &componentData();
         static KAboutData *aboutData();
-        virtual const KInstance* partInstance()
+        virtual KComponentData partComponentData()
         {
-            return instance();
+            return componentData();
         }
 
 
     protected:
-        virtual KInstance *createInstance()
+        virtual KComponentData *createComponentData()
         {
-            return new KInstance( aboutData() );
+            return new KComponentData(aboutData());
         }
 
 
     private:
         static GenericFactoryBase<T> *s_self;
-        static KInstance *s_instance;
+        static KComponentData *s_componentData;
         static KAboutData *s_aboutData;
     };
 
     /**
      * A template for a KParts::Factory implementation. It implements the pure virtual
      * createPartObject method by instantiating the template argument when requested
-     * through the className field. In addition it is a container for a part's KInstance
-     * object, by providing a static KInstance *instance() method.
+     * through the className field. In addition it is a container for a part's KComponentData
+     * object, by providing a static KComponentData componentData() method.
      *
      * The template argument has to inherit from KParts::Part and has to implement two methods:
      *  1) There needs to be a public constructor with the following signature:
@@ -68,11 +68,11 @@ namespace KParts
      *     The signature of that static method has to be
      *         KAboutData *createAboutData()
      *
-     * The template will take care of memory management of the KInstance and the KAboutData object,
+     * The template will take care of memory management of the KComponentData and the KAboutData object,
      * meaning ownership of what createAboutData returns is passed to the caller (this template) .
      *
      * For advanced use you can also inherit from the template and re-implement additionally the
-     * virtual KInstance *createInstance() method, for example in case you want to extend the
+     * virtual KComponentData createComponentData() method, for example in case you want to extend the
      * paths of your instance's KStandardDirs object.
      *
      * If a KParts::ReadOnlyPart is requested through this factory and the template argument
@@ -151,7 +151,7 @@ namespace KParts
      * @internal
      */
     template <class T>
-    KInstance *GenericFactoryBase<T>::s_instance = 0;
+    KComponentData *GenericFactoryBase<T>::s_componentData = 0;
 
     /**
      * @internal
@@ -163,16 +163,16 @@ namespace KParts
      * @internal
      */
     template <class T>
-    KInstance *GenericFactoryBase<T>::instance()
+    const KComponentData &GenericFactoryBase<T>::componentData()
     {
-        if ( !s_instance )
+        if ( !s_componentData )
         {
             if ( s_self )
-                s_instance = s_self->createInstance();
+                s_componentData = s_self->createComponentData();
             else
-                s_instance = new KInstance( aboutData() );
+                s_componentData = new KComponentData(aboutData());
         }
-        return s_instance;
+        return *s_componentData;
     }
 
     /**

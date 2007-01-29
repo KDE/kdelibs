@@ -49,6 +49,7 @@
 #include <kstandarddirs.h>
 #include <kservice.h>
 #include <qlinkedlist.h>
+#include <kconfiggroup.h>
 
 #include "previewjob.moc"
 

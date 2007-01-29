@@ -47,7 +47,7 @@ testWindow::testWindow (QWidget *)
 
     setCentralWidget(widget);
 
-    setCaption( KApplication::kApplication()->caption() );
+    setCaption( KGlobal::caption() );
 
     smenu = new QMenu;
 

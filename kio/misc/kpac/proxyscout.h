@@ -29,8 +29,7 @@
 #include <QtDBus/QtDBus>
 
 #include <time.h>
-
-class KInstance;
+#include <kcomponentdata.h>
 
 namespace KPAC
 {
@@ -57,7 +56,7 @@ namespace KPAC
         bool startDownload();
         QString handleRequest( const KUrl& url );
 
-        KInstance* m_instance;
+        KComponentData m_componentData;
         Downloader* m_downloader;
         Script* m_script;
 

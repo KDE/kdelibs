@@ -37,7 +37,7 @@
 #include <kicon.h>
 #include <kicontheme.h>
 #include <kiconloader.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <kseparator.h>
@@ -179,10 +179,10 @@ public:
      * In a KParts application we let create a KXMLGUIClient create a dummy one,
      * but it probably isn't used.
      */
-  KEditToolbarWidgetPrivate(KInstance *instance, KActionCollection* collection)
+  KEditToolbarWidgetPrivate(const KComponentData &cData, KActionCollection* collection)
       : m_collection( collection )
   {
-    m_instance = instance;
+    m_componentData = cData;
     m_isPart   = false;
     m_helpArea = 0L;
     m_kdialogProcess = 0;
@@ -193,7 +193,7 @@ public:
 
   QString xmlFile(const QString& xml_file)
   {
-    return xml_file.isNull() ? QString(m_instance->instanceName()) + "ui.rc" :
+    return xml_file.isNull() ? QString(m_componentData.componentName()) + "ui.rc" :
                                xml_file;
   }
 
@@ -209,7 +209,7 @@ public:
     if ( !QDir::isRelativePath(xml_file) )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
     else
-      raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_instance);
+      raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_componentData);
 
     return raw_xml;
   }
@@ -303,7 +303,7 @@ public:
 
   //QValueList<KAction*> m_actionList;
   KActionCollection* m_collection;
-  KInstance         *m_instance;
+  KComponentData m_componentData;
 
   XmlData*     m_currentXmlData;
   QDomElement m_currentToolbarElem;
@@ -436,8 +436,8 @@ void KEditToolbar::slotDefault()
 
             if (QDir::isRelativePath(file))
             {
-                const KInstance *instance = client->instance() ? client->instance() : KGlobal::instance();
-                file = KStandardDirs::locateLocal("data", QLatin1String( instance->instanceName() + '/' ) + file);
+                const KComponentData cData = client->componentData().isValid() ? client->componentData() : KGlobal::mainComponent();
+                file = KStandardDirs::locateLocal("data", QLatin1String( cData.componentName() + '/' ) + file);
             }
             else
             {
@@ -458,7 +458,7 @@ void KEditToolbar::slotDefault()
         int slash = d->m_file.lastIndexOf('/')+1;
         if (slash)
             d->m_file = d->m_file.mid(slash);
-        QString xml_file = KStandardDirs::locateLocal("data", QLatin1String( KGlobal::instance()->instanceName() + '/' ) + d->m_file);
+        QString xml_file = KStandardDirs::locateLocal("data", QLatin1String( KGlobal::mainComponent().componentName() + '/' ) + d->m_file);
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )
@@ -511,7 +511,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
                                        const QString& file,
                                        bool global, QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance(), collection))
+    d(new KEditToolbarWidgetPrivate(componentData(), collection))
 {
   initNonKPart(collection, file, global);
   // now load in our toolbar combo box
@@ -525,7 +525,7 @@ KEditToolbarWidget::KEditToolbarWidget(const QString& defaultToolbar,
                                        const QString& file, bool global,
                                        QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance(), collection))
+    d(new KEditToolbarWidgetPrivate(componentData(), collection))
 {
   initNonKPart(collection, file, global);
   // now load in our toolbar combo box
@@ -537,7 +537,7 @@ KEditToolbarWidget::KEditToolbarWidget(const QString& defaultToolbar,
 KEditToolbarWidget::KEditToolbarWidget( KXMLGUIFactory* factory,
                                         QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
+    d(new KEditToolbarWidgetPrivate(componentData(), KXMLGUIClient::actionCollection() /*create new one*/))
 {
   initKPart(factory);
   // now load in our toolbar combo box
@@ -550,7 +550,7 @@ KEditToolbarWidget::KEditToolbarWidget( const QString& defaultToolbar,
                                         KXMLGUIFactory* factory,
                                         QWidget *parent)
   : QWidget(parent),
-    d(new KEditToolbarWidgetPrivate(instance(), KXMLGUIClient::actionCollection() /*create new one*/))
+    d(new KEditToolbarWidgetPrivate(componentData(), KXMLGUIClient::actionCollection() /*create new one*/))
 {
   initKPart(factory);
   // now load in our toolbar combo box
@@ -629,7 +629,7 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
     } else {
       data.m_type = XmlData::Part;
     }
-    data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->instance() ) );
+    data.m_document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->componentData() ) );
     elem = data.m_document.documentElement().toElement();
     data.m_barList = d->findToolbars(elem);
     data.m_actionCollection = client->actionCollection();
@@ -701,7 +701,7 @@ void KEditToolbarWidget::rebuildKXMLGUIClients()
   //kDebug(240) << "rebuilding the gui" << endl;
   foreach (KXMLGUIClient* client, clients)
   {
-    //kDebug(240) << "updating client " << client << " " << client->instance()->instanceName() << "  xmlFile=" << client->xmlFile() << endl;
+    //kDebug(240) << "updating client " << client << " " << client->componentData().componentName() << "  xmlFile=" << client->xmlFile() << endl;
     QString file( client->xmlFile() ); // before setting ui_standards!
     if ( !file.isEmpty() )
     {

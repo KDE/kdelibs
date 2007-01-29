@@ -4,7 +4,7 @@
  */
 
 #include <QApplication>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
@@ -19,7 +19,7 @@ int main( int argc, char *argv[] )
 {
   QApplication app( argc, argv );
   KAboutData aboutData( "kinputdialogtest", "kinputdialogtest", "1.0" );
-  KInstance i( &aboutData );
+  KComponentData i( &aboutData );
 
   bool ok;
   QString svalue;

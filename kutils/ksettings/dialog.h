@@ -53,7 +53,7 @@ namespace KSettings
  * \code
  * QStringList kpartslist;
  * for( all my kparts )
- *   kpartslist += m_mypart->instance().instanceName();
+ *   kpartslist += m_mypart->componentData().componentName();
  * m_cfgdlg = new Dialog( kpartslist, this );
  * \endcode
  * and the action for the config dialog is connected to the show slot:
@@ -93,7 +93,7 @@ class KUTILS_EXPORT Dialog : public QObject
 
         /**
          * Construct a new Preferences Dialog for the application. It uses all
-         * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
+         * KCMs with X-KDE-ParentApp set to KGlobal::mainComponent().componentName().
          *
          * @param content      Select whether you want a static or configurable
          *                     config dialog.

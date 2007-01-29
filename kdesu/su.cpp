@@ -55,7 +55,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     m_User = user;
     m_Command = command;
 
-    KConfig* config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
     config->setGroup("super-user-command");
     superUserCommand = config->readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
     if ( superUserCommand != "sudo" && superUserCommand != "su" ) {

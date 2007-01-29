@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "kaboutdata.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kcmdlineargs.h"
 #include "klocale.h"
 #include "kstandardshortcut.h"
@@ -310,7 +310,7 @@ int main( int argc, char **argv )
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );
 
-	KInstance instance( &aboutData );
+	KComponentData componentData( &aboutData );
 	QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

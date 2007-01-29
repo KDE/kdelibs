@@ -39,7 +39,7 @@
 #include "kaboutdata.h"
 #include "klocale.h"
 #include "kdeversion.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kglobal.h"
 #include "kstringhandler.h"
 #include "kstaticdeleter.h"
@@ -803,20 +803,20 @@ void
 KCmdLineArgs::enable_i18n()
 {
     // called twice or too late
-    if (KGlobal::_locale)
+    if (KGlobal::hasLocale())
       return;
 
-    if (!KGlobal::_instance) {
-  KInstance *instance = new KInstance(about);
-  (void) instance->config();
-  // Don't delete instance!
+    if (!KGlobal::hasMainComponent()) {
+        KComponentData mainComponentData(about);
+        mainComponentData.config();
+        // mainComponentData is now the main component and won't disappear until KGlobal deletes it
     }
 }
 
 void
 KCmdLineArgs::usage(const QString &error)
 {
-    Q_ASSERT(KGlobal::_locale);
+    Q_ASSERT(KGlobal::hasLocale());
     QByteArray localError = error.toLocal8Bit();
     if (localError[error.length()-1] == '\n')
   localError = localError.left(error.length()-1);

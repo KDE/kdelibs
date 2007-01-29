@@ -20,7 +20,7 @@
 
 #include "kcertpart.h"
 #include <kparts/genericfactory.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <qframe.h>
 #include <klocale.h>
@@ -128,12 +128,12 @@ class KCertPartPrivate {
 KCertPart::KCertPart(QWidget *parentWidget,
 					 QObject *parent,
 					 const QStringList & /*args*/ )
-	: KParts::ReadWritePart(parent),d(new KCertPartPrivate)
+    : KParts::ReadWritePart(parent),
+    d(new KCertPartPrivate)
 {
-
-	KInstance *instance = new KInstance("KCertPart");
-	QGridLayout *grid;
-	setInstance(instance);
+    KComponentData componentData("KCertPart");
+    setComponentData(componentData);
+    QGridLayout *grid;
 
 
 	_signers = new KSSLSigners;

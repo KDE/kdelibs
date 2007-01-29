@@ -28,7 +28,7 @@
 #include <qregexp.h>
 #include <qpointer.h>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kauthorized.h>
@@ -43,7 +43,7 @@ class KXMLGUIClientPrivate
 public:
   KXMLGUIClientPrivate()
   {
-    m_instance = KGlobal::instance();
+    m_componentData = KGlobal::mainComponent();
     m_parent = 0L;
     m_builder = 0L;
     m_actionCollection = 0;
@@ -52,7 +52,7 @@ public:
   {
   }
 
-  KInstance *m_instance;
+  KComponentData m_componentData;
 
   QDomDocument m_doc;
   KActionCollection *m_actionCollection;
@@ -120,9 +120,9 @@ QAction *KXMLGUIClient::action( const QDomElement &element ) const
   return actionCollection()->action( qPrintable(element.attribute( attrName )) );
 }
 
-KInstance *KXMLGUIClient::instance() const
+KComponentData KXMLGUIClient::componentData() const
 {
-  return d->m_instance;
+  return d->m_componentData;
 }
 
 QDomDocument KXMLGUIClient::domDocument() const
@@ -143,7 +143,7 @@ QString KXMLGUIClient::localXMLFile() const
   if ( !QDir::isRelativePath(d->m_xmlFile) )
       return QString(); // can't save anything here
 
-  return KStandardDirs::locateLocal( "data", QLatin1String( instance()->instanceName() + '/' ) + d->m_xmlFile );
+  return KStandardDirs::locateLocal( "data", QLatin1String( componentData().componentName() + '/' ) + d->m_xmlFile );
 }
 
 
@@ -154,10 +154,10 @@ void KXMLGUIClient::reloadXML()
         setXMLFile( file );
 }
 
-void KXMLGUIClient::setInstance( KInstance *instance )
+void KXMLGUIClient::setComponentData(const KComponentData &componentData)
 {
-  d->m_instance = instance;
-  actionCollection()->setInstance( instance );
+  d->m_componentData = componentData;
+  actionCollection()->setComponentData( componentData );
   if ( d->m_builder )
     d->m_builder->setBuilderClient( this );
 }
@@ -176,9 +176,9 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   {
     QString doc;
 
-    QString filter = QLatin1String( instance()->instanceName() + '/' ) + _file;
+    QString filter = QLatin1String(componentData().componentName() + '/') + _file;
 
-    QStringList allFiles = instance()->dirs()->findAllResources( "data", filter ) + instance()->dirs()->findAllResources( "data", _file );
+    QStringList allFiles = componentData().dirs()->findAllResources("data", filter) + componentData().dirs()->findAllResources("data", _file);
 
     file = findMostRecentXMLFile( allFiles, doc );
 
@@ -586,7 +586,7 @@ void KXMLGUIClient::setClientBuilder( KXMLGUIBuilder *builder )
 {
   d->m_builder = builder;
   if ( builder )
-    builder->setBuilderInstance( instance() );
+    builder->setBuilderComponentData( componentData() );
 }
 
 KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const

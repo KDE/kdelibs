@@ -32,27 +32,15 @@
 
 #define MAX_DIR_HISTORY 3
 
-static void recentdirs_done(KConfig *config)
+static KSharedConfig::Ptr recentdirs_readList(QString &key, QStringList &result, bool readOnly)
 {
-   if (config == KGlobal::config())
-   {
-      config->sync();
-   }
-   else
-   {
-      delete config;
-   }
-}
-
-static KConfig *recentdirs_readList(QString &key, QStringList &result, bool readOnly)
-{
-   KConfig *config;
+    KSharedConfig::Ptr config;
    if ((key.length() < 2) || (key[0] != ':'))
      key = ":default";
    if (key[1] == ':') 
    {
       key = key.mid(2);
-      config = new KSimpleConfig(QLatin1String("krecentdirsrc"), readOnly);
+      config = KSharedConfig::openConfig(QLatin1String("krecentdirsrc"), readOnly);
    }
    else
    {
@@ -73,7 +61,7 @@ QStringList KRecentDirs::list(const QString &fileClass)
 {
    QString key = fileClass;
    QStringList result;
-   recentdirs_done(recentdirs_readList(key, result, true));
+   recentdirs_readList(key, result, true)->sync();
    return result;
 }
     
@@ -87,13 +75,13 @@ void KRecentDirs::add(const QString &fileClass, const QString &directory)
 {
    QString key = fileClass;
    QStringList result;
-   KConfig *config = recentdirs_readList(key, result, false);
+   KSharedConfig::Ptr config = recentdirs_readList(key, result, false);
    // make sure the dir is first in history
    result.removeAll(directory);
    result.prepend(directory);
    while(result.count() > MAX_DIR_HISTORY)
       result.removeLast();
    config->writePathEntry(key, result);
-   recentdirs_done(config);
+   config->sync();
 }
 

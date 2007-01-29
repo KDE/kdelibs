@@ -28,7 +28,7 @@
 #include <kxmlguiclient.h>
 
 class KIconLoader;
-class KInstance;
+class KComponentData;
 class QWidget;
 class KAction;
 class KActionCollection;
@@ -82,24 +82,24 @@ public:
 
 protected:
   /**
-   * Set the instance ( KInstance) for this part.
+   * Set the componentData(KComponentData) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogs.
    */
-  virtual void setInstance( KInstance *instance );
+  virtual void setComponentData(const KComponentData &componentData);
 
   /**
-   * Set the instance ( KInstance) for this part.
+   * Set the componentData(KComponentData) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogs.
    */
-  virtual void setInstance( KInstance *instance, bool loadPlugins );
+  virtual void setComponentData(const KComponentData &componentData, bool loadPlugins);
 
   /**
    * We have three different policies, whether to load new plugins or not. The
-   * value in the KConfig object of the KInstance object always overrides
+   * value in the KConfig object of the KComponentData object always overrides
    * LoadPlugins and LoadPluginsIfEnabled.
    */
   enum PluginLoadingMode {
@@ -139,13 +139,13 @@ protected:
    * }
    * \endcode
    */
-  void loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance );
+  void loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KComponentData &componentData);
 
   /**
    * Set how plugins should be loaded
    * @param loadingMode see PluginLoadingMode
    *
-   * For a KParts::Part: call this before setInstance.
+   * For a KParts::Part: call this before setComponentData.
    * For a KParts::MainWindow: call this before createGUI.
    */
   void setPluginLoadingMode( PluginLoadingMode loadingMode );
@@ -159,7 +159,7 @@ protected:
    *
    * @param version the interface version that plugins must have in order to be loaded.
    *
-   * For a KParts::Part: call this before setInstance.
+   * For a KParts::Part: call this before setComponentData.
    * For a KParts::MainWindow: call this before createGUI.
    */
   void setPluginInterfaceVersion( int version );
@@ -266,7 +266,7 @@ public:
      * i.e. icons installed into this part's own directories as opposed to standard
      * kde icons. Use KIcon("myicon", iconLoader()).
      *
-     * Make sure to call setInstance before calling iconLoader.
+     * Make sure to call setComponentData before calling iconLoader.
      */
     KIconLoader* iconLoader();
 

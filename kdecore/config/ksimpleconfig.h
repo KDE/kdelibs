@@ -22,6 +22,7 @@
 #define KSIMPLECONFIG_H
 
 #include <kconfig.h>
+#include <kglobal.h>
 
 /**
  * KDE Configuration entries
@@ -49,7 +50,8 @@ public:
    *                  directory for "config" files is used.
    * @param bReadOnly Whether the object should be read-only.
    */
-  explicit KSimpleConfig( const QString &fileName, bool bReadOnly = false);
+  explicit KSimpleConfig(const QString &fileName, bool bReadOnly = false,
+          const KComponentData &componentData = KGlobal::mainComponent());
 
   explicit KSimpleConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
 

@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kurl.h>
 #include <kfilemetainfo.h>
 #include <kmimetype.h>
 
 int main (int argc, char **argv)
 {
-	KInstance ins("kmfitest");
+	KComponentData ins("kmfitest");
 
 	if (argc < 2) {
 		printf("usage: %s <file>\n", argv[0]);

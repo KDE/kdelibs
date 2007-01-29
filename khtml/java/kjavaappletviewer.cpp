@@ -49,17 +49,17 @@
 
 K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory)
 
-KInstance *KJavaAppletViewerFactory::s_instance = 0;
+KComponentData *KJavaAppletViewerFactory::s_componentData = 0;
 KIconLoader *KJavaAppletViewerFactory::s_iconLoader = 0;
 
 KJavaAppletViewerFactory::KJavaAppletViewerFactory () {
-    s_instance = new KInstance ("kjava");
-    s_iconLoader = new KIconLoader(s_instance->instanceName(), s_instance->dirs());
+    s_componentData = new KComponentData("kjava");
+    s_iconLoader = new KIconLoader(s_componentData->componentName(), s_componentData->dirs());
 }
 
 KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
     delete s_iconLoader;
-    delete s_instance;
+    delete s_componentData;
 }
 
 KParts::Part *KJavaAppletViewerFactory::createPartObject
@@ -354,7 +354,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (wparent)
         wparent->topLevelWidget ()->installEventFilter (this);
 
-    setInstance (KJavaAppletViewerFactory::instance ());
+    setComponentData (KJavaAppletViewerFactory::componentData());
     KParts::Part::setWidget (m_view);
 
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));

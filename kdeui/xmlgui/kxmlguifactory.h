@@ -24,12 +24,13 @@
 #include <qobject.h>
 
 #include <kdelibs_export.h>
+#include <kcomponentdata.h>
 
 class QAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
-class KInstance;
+class KComponentData;
 
 class QDomAttr;
 class QDomDocument;
@@ -82,10 +83,12 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   ~KXMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
-  static QString readConfigFile( const QString &filename, bool never_null, const KInstance *instance = 0 );
-  static QString readConfigFile( const QString &filename, const KInstance *instance = 0 );
-  static bool saveConfigFile( const QDomDocument& doc, const QString& filename,
-                              const KInstance *instance = 0 );
+  static QString readConfigFile(const QString &filename, bool never_null,
+          const KComponentData &componentData = KComponentData());
+  static QString readConfigFile(const QString &filename,
+          const KComponentData &componentData = KComponentData());
+  static bool saveConfigFile(const QDomDocument& doc, const QString& filename,
+          const KComponentData &componentData = KComponentData());
 
   static QString documentToXML( const QDomDocument& doc );
   static QString elementToXML( const QDomElement& elem );

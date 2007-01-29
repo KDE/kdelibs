@@ -83,7 +83,7 @@ void tst_KActionCollection::take()
 
 void tst_KActionCollection::writeSettings()
 {
-    KConfig *cfg = clearConfig();
+    KSharedConfig::Ptr cfg = clearConfig();
 
     KShortcut defaultShortcut;
     defaultShortcut.setPrimary(Qt::Key_A);
@@ -115,7 +115,7 @@ void tst_KActionCollection::writeSettings()
     actionToDelete->setShortcut(defaultShortcut, KAction::ActiveShortcut);
     collection->addAction("actionToDelete", actionToDelete);
 
-    collection->writeSettings(cfg);
+    collection->writeSettings(cfg.data());
 
     QCOMPARE(cfg->readEntry("actionWithDifferentShortcut", QString()), KShortcut(actionWithDifferentShortcut->shortcuts()).toString());
     QCOMPARE(cfg->readEntry("immutableAction", QString()), QString());
@@ -127,7 +127,7 @@ void tst_KActionCollection::writeSettings()
 
 void tst_KActionCollection::readSettings()
 {
-    KConfig *cfg = clearConfig();
+    KSharedConfig::Ptr cfg = clearConfig();
 
     KShortcut defaultShortcut;
     defaultShortcut.setPrimary(Qt::Key_A);
@@ -156,7 +156,7 @@ void tst_KActionCollection::readSettings()
     empty->setShortcut(defaultShortcut, KAction::DefaultShortcut);
     QCOMPARE(KShortcut(empty->shortcuts()).toString(), temporaryShortcut.toString());
 
-    collection->readSettings(cfg);
+    collection->readSettings(cfg.data());
 
     QCOMPARE(KShortcut(normal->shortcuts()).toString(), defaultShortcut.toString());
     QCOMPARE(KShortcut(empty->shortcuts()).toString(), defaultShortcut.toString());
@@ -200,9 +200,9 @@ void tst_KActionCollection::insertReplaces2()
     delete a;
 }
 
-KConfig *tst_KActionCollection::clearConfig()
+KSharedConfig::Ptr tst_KActionCollection::clearConfig()
 {
-    KConfig *cfg = KGlobal::config();
+    KSharedConfig::Ptr cfg = KGlobal::config();
     foreach (const QString &key, cfg->entryMap(collection->configGroup()).keys())
         cfg->deleteEntry(key);
     cfg->setGroup(collection->configGroup());

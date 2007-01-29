@@ -30,7 +30,7 @@
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <ksimpleconfig.h>
 #include <ksvgrenderer.h>
 
@@ -43,6 +43,7 @@
 #include <unistd.h>     //for readlink
 #include <dirent.h>
 #include <assert.h>
+#include <kconfiggroup.h>
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -177,15 +178,15 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject*
     init( _appname, _dirs );
 }
 
-KIconLoader::KIconLoader(KInstance* instance, QObject* parent)
+KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
     : QObject(parent)
 {
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
 #ifdef KICONLOADER_CHECKS
-    registerIconLoader(this, instance->instanceName());
+    registerIconLoader(this, componentData.componentName());
 #endif
-    init( instance->instanceName(), instance->dirs() );
+    init(componentData.componentName(), componentData.dirs());
 }
 
 void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
@@ -211,7 +212,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
     QString appname = _appname;
     if (appname.isEmpty())
-	appname = KGlobal::instance()->instanceName();
+	appname = KGlobal::mainComponent().componentName();
 
     // Add the default theme and its base themes to the theme tree
     KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
@@ -237,7 +238,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
-    KConfig *config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
 
     // loading config and default sizes
     d->mpGroups = new KIconGroup[(int) K3Icon::LastGroup];
@@ -435,7 +436,7 @@ QString KIconLoader::removeIconExtension(const QString &name) const
     if ( extensionLength > 0 )
     {
 #ifndef NDEBUG
-	kDebug(264) << "Application " << KGlobal::instance()->instanceName()
+	kDebug(264) << "Application " << KGlobal::mainComponent().componentName()
                      << " loads icon " << name << " with extension." << endl;
 #endif
 
@@ -1250,7 +1251,7 @@ QPixmap KIconLoader::unknown()
 }
 
 /*** the global icon loader ***/
-Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::instance(), 0))
+Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
 
 KIconLoader *KIconLoader::global()
 {

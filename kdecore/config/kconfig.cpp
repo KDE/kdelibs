@@ -35,9 +35,46 @@
 #include "kstandarddirs.h"
 #include "kstaticdeleter.h"
 #include "ktoolinvocation.h"
+#include "kcomponentdata.h"
 
 #include <qtimer.h>
 #include <qfileinfo.h>
+
+KConfig::KConfig(const KComponentData &componentData, const QString &fileName,
+                 bool readOnly, bool bUseKderc, const char *resType)
+    : KConfigBase(componentData),
+    bGroupImmutable(false),
+    bFileImmutable(false),
+    bForceGlobal(false)
+{
+  // set the object's read-only status.
+  setReadOnly(readOnly);
+
+  // for right now we will hardcode that we are using the INI
+  // back end driver.  In the future this should be converted over to
+  // a object factory of some sorts.
+  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
+						      fileName,
+                                                      resType,
+						      bUseKderc);
+
+  // set the object's back end pointer to this new backend
+  backEnd = aBackEnd;
+
+  // read initial information off disk
+  reparseConfiguration();
+
+  // we let KStandardDirs add custom user config files. It will do
+  // this only once. So only the first call ever to this constructor
+  // will anything else than return here We have to reparse here as
+  // configuration files may appear after customized directories have
+  // been added. and the info they contain needs to be inserted into the
+  // config object.
+  // Since this makes only sense for config directories, addCustomized
+  // returns true only if new config directories appeared.
+  if (componentData.dirs()->addCustomized(this))
+      reparseConfiguration();
+}
 
 KConfig::KConfig( const QString& fileName,
                  bool readOnly, bool bUseKderc, const char *resType )
@@ -69,7 +106,7 @@ KConfig::KConfig( const QString& fileName,
   // config object.
   // Since this makes only sense for config directories, addCustomized
   // returns true only if new config directories appeared.
-  if (KGlobal::dirs()->addCustomized(this))
+  if (componentData().dirs()->addCustomized(this))
       reparseConfiguration();
 }
 
@@ -325,42 +362,77 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-static KStaticDeleter< QList<KSharedConfig*> > sd;
-static QList<KSharedConfig*> *s_list = 0;
+K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList);
 
-KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool bReadOnly, 
-                                            bool useKDEGlobals, const char* resType )
+KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName, bool bReadOnly,
+        bool bUseKDEGlobals, const char *resType)
 {
-  if (s_list)
-  {
-     for(QList<KSharedConfig*>::ConstIterator it = s_list->begin();
-         it != s_list->end(); ++it)
-     {
-        if ((*it)->backEnd->fileName() == fileName &&
-                (*it)->bReadOnly == bReadOnly &&
-                (*it)->backEnd->useKDEGlobals == useKDEGlobals &&
-                (*it)->backEnd->resType == resType)
-           return Ptr(*it);
-     }
-  }
-  return Ptr(new KSharedConfig(fileName, bReadOnly, useKDEGlobals,resType));
+    return openConfig(KGlobal::mainComponent(), fileName, bReadOnly, bUseKDEGlobals, resType);
+}
+
+KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
+        const QString& fileName, bool bReadOnly, bool useKDEGlobals, const char *resType)
+{
+    QList<KSharedConfig*> *list = globalSharedConfigList;
+    if (list) {
+        for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
+            if (
+                    (*it)->backEnd->fileName() == fileName &&
+                    (*it)->bReadOnly == bReadOnly &&
+                    (*it)->backEnd->useKDEGlobals == useKDEGlobals &&
+                    (*it)->backEnd->resType == resType &&
+                    (*it)->componentData() == componentData
+               ) {
+                return KSharedConfigPtr(*it);
+            }
+        }
+    }
+    return KSharedConfigPtr(new KSharedConfig(fileName, bReadOnly, useKDEGlobals, resType, componentData));
 }
 
 
-KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals,
-                              const char *resType)
- : KConfig(fileName, readonly, usekdeglobals, resType)
+KSharedConfig::KSharedConfig(const QString &fileName, bool readonly, bool usekdeglobals,
+        const char *resType, const KComponentData &componentData)
+    : KConfig(componentData, fileName, readonly, usekdeglobals, resType)
 {
-  if (!s_list)
-  {
-    sd.setObject(s_list, new QList<KSharedConfig*>);
-  }
-
-  s_list->append(this);
+    globalSharedConfigList->append(this);
 }
 
 KSharedConfig::~KSharedConfig()
 {
-  if ( s_list )
-    s_list->removeAll(this);
+    if (!globalSharedConfigList.isDestroyed()) {
+        globalSharedConfigList->removeAll(this);
+    }
+}
+
+KSharedConfigPtr::~KSharedConfigPtr()
+{
+    if (d) {
+        if (!d->ref.deref()) {
+            delete d;
+        } else if (d->ref == 1 && d->componentData().isValid()) {
+            // it might be KComponentData holding the last ref
+            const_cast<KComponentData&>(d->componentData())._checkConfig();
+        }
+        d = 0;
+    }
+}
+
+void KSharedConfigPtr::attach(KSharedConfig *p)
+{
+    if (d != p) {
+        KSharedConfig *x = p;
+        if (x) {
+            x->ref.ref();
+        }
+        x = qAtomicSetPtr(&d, x);
+        if (x) {
+            if (!x->ref.deref()) {
+                delete x;
+            } else if (x->ref == 1 && d->componentData().isValid()) {
+                // it might be KComponentData holding the last ref
+                const_cast<KComponentData&>(x->componentData())._checkConfig();
+            }
+        }
+    }
 }

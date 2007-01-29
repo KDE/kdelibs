@@ -77,7 +77,7 @@ int PtyProcess::waitMS(int fd,int ms)
 */
 bool PtyProcess::checkPid(pid_t pid)
 {
-	KConfig* config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
 	config->setGroup("super-user-command");
 	QString superUserCommand = config->readEntry("super-user-command", "sudo");
 	//sudo does not accept signals from user so we except it

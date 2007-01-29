@@ -34,7 +34,7 @@
 #include <q3ptrstack.h>
 #include <qcheckbox.h>
 #include <kdialog.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kmainwindow.h>
 #include <q3scrollview.h>
 
@@ -161,7 +161,7 @@ namespace KJS {
    *
    * There is only one debug window per program. This can be obtained by calling #instance
    */
-  class KJSDebugWin : public KMainWindow, public Debugger, public KInstance
+  class KJSDebugWin : public KMainWindow, public Debugger, public KComponentData
   {
     Q_OBJECT
     friend class SourceDisplay;

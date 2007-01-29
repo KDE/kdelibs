@@ -31,7 +31,7 @@
 #include "ksettings/componentsdialog.h"
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <kvbox.h>
 #include <qlabel.h>
@@ -425,11 +425,11 @@ KCMultiDialog * Dialog::dialog()
 QList<KService::Ptr> Dialog::instanceServices() const
 {
 	kDebug( 700 ) << k_funcinfo << endl;
-	QString instanceName = KGlobal::instance()->instanceName();
-	d->registeredComponents.append( instanceName );
-	kDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName
+	QString componentName = KGlobal::mainComponent().componentName();
+	d->registeredComponents.append( componentName );
+	kDebug( 700 ) << "calling KServiceGroup::childGroup( " << componentName
 		<< " )" << endl;
-	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
+	KServiceGroup::Ptr service = KServiceGroup::childGroup( componentName );
 
 	QList<KService::Ptr> ret;
 
@@ -529,7 +529,7 @@ void Dialog::createDialogFromServices()
 {
 	// read .setdlg files
 	QString setdlgpath = KStandardDirs::locate( "appdata",
-                                                    KGlobal::instance()->instanceName() + ".setdlg" );
+                                                    KGlobal::mainComponent().componentName() + ".setdlg" );
 	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
 			"ksettingsdialog/*.setdlg" );
 	if( ! setdlgpath.isNull() )

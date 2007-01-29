@@ -33,7 +33,7 @@
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 
 class KCModulePrivate
@@ -43,17 +43,15 @@ public:
         _buttons( KCModule::Help | KCModule::Default | KCModule::Apply ),
         _about( 0 ),
         _useRootOnlyMessage( false ),
-        _hasOwnInstance( false ),
         _firstshow(false),
         _unmanagedWidgetChangeState( false )
         { }
 
     KCModule::Buttons _buttons;
-    KInstance *_instance;
+    KComponentData _componentData;
     const KAboutData *_about;
     QString _rootOnlyMessage;
     bool _useRootOnlyMessage;
-    bool _hasOwnInstance;
     bool _firstshow;
     QList<KConfigDialogManager*> managers;
     QString _quickHelp;
@@ -69,21 +67,20 @@ KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
     : QWidget(parent), d(new KCModulePrivate)
 {
     if (name && strlen(name)) {
-        d->_instance = new KInstance(name);
+        d->_componentData = KComponentData(name);
         KGlobal::locale()->insertCatalog(name);
     } else
-        d->_instance = new KInstance("kcmunnamed");
-    d->_hasOwnInstance = true;
+        d->_componentData = KComponentData("kcmunnamed");
 }
 
-KCModule::KCModule( KInstance *instance, QWidget *parent, const QStringList& )
+KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const QStringList &)
     : QWidget( parent ), d(new KCModulePrivate)
 {
-    Q_ASSERT( instance );
+    Q_ASSERT(componentData.isValid());
 
-    KGlobal::locale()->insertCatalog(instance->instanceName());
+    KGlobal::locale()->insertCatalog(componentData.componentName());
 
-    d->_instance = instance;
+    d->_componentData = componentData;
 }
 
 void KCModule::showEvent(QShowEvent *ev)
@@ -118,8 +115,6 @@ KCModule::~KCModule()
 {
     qDeleteAll(d->managers);
     d->managers.clear();
-    if (d->_hasOwnInstance)
-       delete d->_instance;
     delete d->_about;
     delete d;
 }
@@ -205,9 +200,9 @@ void KCModule::changed()
     emit changed(true);
 }
 
-KInstance *KCModule::instance() const
+KComponentData KCModule::componentData() const
 {
-    return d->_instance;
+    return d->_componentData;
 }
 
 void KCModule::setQuickHelp( const QString& help )

@@ -3,6 +3,7 @@
 
 #include "qtest_kde.h"
 #include "kactioncollection.h"
+#include <kconfig.h>
 
 class tst_KActionCollection : public QObject
 {
@@ -22,7 +23,7 @@ private Q_SLOTS:
     void insertReplaces2();
 
 private:
-    KConfig *clearConfig();
+    KSharedConfig::Ptr clearConfig();
 
     KActionCollection *collection;
 };

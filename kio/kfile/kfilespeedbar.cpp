@@ -28,6 +28,7 @@
 #include <kprotocolinfo.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
+#include <kconfiggroup.h>
 
 KFileSpeedBar::KFileSpeedBar( QWidget *parent )
     : KUrlBar( true, parent )
@@ -35,7 +36,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent )
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
     m_initializeSpeedbar = cg.readEntry( "Set speedbar defaults", true );
     setIconSize(K3Icon::SizeSmallMedium);
-    readConfig( KGlobal::config(), "KFileDialog Speedbar" );
+    readConfig( KGlobal::config().data(), "KFileDialog Speedbar" );
 
     if ( m_initializeSpeedbar )
     {
@@ -75,7 +76,7 @@ KFileSpeedBar::~KFileSpeedBar()
 {
 }
 
-void KFileSpeedBar::save( KConfig *config )
+void KFileSpeedBar::save(KSharedConfigPtr config)
 {
     if ( m_initializeSpeedbar && isModified() )
     {
@@ -85,7 +86,7 @@ void KFileSpeedBar::save( KConfig *config )
                          KConfigBase::Persistent|KConfigBase::Global );
     }
 
-    writeConfig( config, "KFileDialog Speedbar" );
+    writeConfig(config.data(), "KFileDialog Speedbar");
 }
 
 QSize KFileSpeedBar::sizeHint() const

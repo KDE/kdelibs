@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <kurl.h>
+#include <kconfiggroup.h>
 
 #ifdef HAVE_PATHS_H
 //#include <paths.h>
@@ -196,10 +197,10 @@ public:
     Q_ASSERT_X(QCoreApplication::instance(),"KAuthorizedPrivate()","There has to be an existing QCoreApplication::instance() pointer");
     Q_ASSERT_X(!QCoreApplication::instance()->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QCoreApplication::instance()lication::setApplicationName)");
 
-    KConfig* config = KGlobal::config();
+    KSharedConfig::Ptr config = KGlobal::config();
 
     Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KGlobal::config() pointer");
-    if (config==0) {
+    if (!config) {
       blockEverything=true;
       return;
     }
@@ -228,7 +229,7 @@ bool KAuthorized::authorize(const QString &genericAction)
    if (!d->actionRestrictions)
       return true;
 
-   KConfigGroup cg( KGlobal::config(), "KDE Action Restrictions" );
+   KConfigGroup cg(KGlobal::config(), "KDE Action Restrictions");
    return cg.readEntry(genericAction, true);
 }
 
@@ -246,13 +247,13 @@ bool KAuthorized::authorizeControlModule(const QString &menuId)
 {
    if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
-   KConfigGroup cg( KGlobal::config(), "KDE Control Module Restrictions" );
+   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
    return cg.readEntry(menuId, true);
 }
 
 QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
 {
-   KConfigGroup cg( KGlobal::config(), "KDE Control Module Restrictions" );
+   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
    QStringList result;
    for(QStringList::ConstIterator it = menuIds.begin();
        it != menuIds.end(); ++it)
@@ -306,7 +307,7 @@ static void initUrlActionRestrictions()
 	URLActionRule("redirect", "about", Any, Any, Any, Any, Any, true));
 
 
-  KConfigGroup cg( KGlobal::config(), "KDE URL Restrictions" );
+  KConfigGroup cg(KGlobal::config(), "KDE URL Restrictions");
   int count = cg.readEntry("rule_count", 0);
   QString keyFormat = QString("rule_%1");
   for(int i = 1; i <= count; i++)

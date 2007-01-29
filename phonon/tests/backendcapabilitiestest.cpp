@@ -24,25 +24,26 @@
 #include "../objectdescription.h"
 #include <QStringList>
 #include <QSet>
+#include "../backendinterface.h"
 
 using namespace Phonon;
 
 void BackendCapabilitiesTest::initTestCase()
 {
-	QVERIFY( BackendCapabilities::self() );
+    QVERIFY(BackendCapabilities::notifier());
 }
 
 void BackendCapabilitiesTest::checkMimeTypes()
 {
-	QVERIFY( Factory::self()->backend( false ) == 0 );
+	QVERIFY( Factory::backend( false ) == 0 );
 	QStringList mimeTypes = BackendCapabilities::knownMimeTypes();
 	QVERIFY( mimeTypes.size() > 0 ); // a backend that doesn't know any mimetypes is useless
 	foreach( QString mimeType, mimeTypes ) {
 		qDebug( "%s", qPrintable( mimeType ) );
 		QVERIFY( BackendCapabilities::isMimeTypeKnown( mimeType ) );
 	}
-	QVERIFY( Factory::self()->backend( false ) == 0 ); // the backend should not have been created at this point
-	QVERIFY( Factory::self()->backend( true ) != 0 );  // create the backend
+	QVERIFY( Factory::backend( false ) == 0 ); // the backend should not have been created at this point
+	QVERIFY( Factory::backend( true ) != 0 );  // create the backend
 	QStringList realMimeTypes = BackendCapabilities::knownMimeTypes(); // this list has to be a subset of the one before
 	foreach( QString mimeType, realMimeTypes ) {
 		qDebug( "%s", qPrintable( mimeType ) );
@@ -51,22 +52,21 @@ void BackendCapabilitiesTest::checkMimeTypes()
 	}
 }
 
-#define VERIFY_TUPLE( T ) \
-QVERIFY( BackendCapabilities::available ## T ## s().size() >= 0 ); \
-for( int i = 0; i < BackendCapabilities::available ## T ## s().size(); ++i ) \
-{ \
-	ObjectDescription<T ## Type> device = BackendCapabilities::available ## T ## s().at( i ); \
-	QVERIFY( device.index() >= 0 ); \
-	QObject* backend = Factory::self()->backend(); \
-	QSet<int> indexes; \
-	QMetaObject::invokeMethod( backend, "objectDescriptionIndexes", Qt::DirectConnection, \
-			Q_RETURN_ARG( QSet<int>, indexes ), Q_ARG( ObjectDescriptionType, Phonon::T ## Type ) ); \
-	QVERIFY( indexes.contains( device.index() ) ); \
-	QVERIFY( !device.name().isEmpty() ); \
-} do {} while( false )
+#define VERIFY_TUPLE(T) \
+QVERIFY(BackendCapabilities::available##T##s().size() >= 0); \
+do { \
+    for (int i = 0; i < BackendCapabilities::available##T##s().size(); ++i) { \
+        ObjectDescription<T ## Type> device = BackendCapabilities::available##T##s().at(i); \
+        QVERIFY(device.index() >= 0); \
+        QSet<int> indexes = iface->objectDescriptionIndexes(Phonon::T##Type);\
+        QVERIFY(indexes.contains( device.index())); \
+        QVERIFY(!device.name().isEmpty()); \
+    } \
+} while(false)
 
 void BackendCapabilitiesTest::sensibleValues()
 {
+    BackendInterface *iface = qobject_cast<BackendInterface*>(Factory::backend());
 	//if( BackendCapabilities::supportsVideo() ) create VideoWidget and such - needs UI libs
 	VERIFY_TUPLE( AudioOutputDevice );
 	VERIFY_TUPLE( AudioCaptureDevice );
@@ -82,9 +82,9 @@ void BackendCapabilitiesTest::sensibleValues()
 
 void BackendCapabilitiesTest::checkSignals()
 {
-	QSignalSpy spy( BackendCapabilities::self(), SIGNAL( capabilitiesChanged() ) );
+    QSignalSpy spy(BackendCapabilities::notifier(), SIGNAL(capabilitiesChanged()));
 	QCOMPARE( spy.size(), 0 );
-	QMetaObject::invokeMethod( Factory::self(), "phononBackendChanged", Qt::DirectConnection );
+    QMetaObject::invokeMethod(Factory::sender(), "phononBackendChanged", Qt::DirectConnection);
 	QCOMPARE( spy.size(), 1 );
 }
 

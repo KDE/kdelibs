@@ -26,6 +26,7 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "kshortcut.h"
+#include <kconfiggroup.h>
 
 #include <qkeysequence.h>
 #ifdef Q_WS_X11

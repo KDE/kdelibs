@@ -59,6 +59,7 @@
 #include <qglobal.h>
 #include <QFile>
 #include <errno.h>
+#include <kconfiggroup.h>
 
 void KToolInvocation::invokeHelp( const QString& anchor,
                                   const QString& _appname,

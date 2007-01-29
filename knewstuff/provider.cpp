@@ -219,7 +219,7 @@ void ProviderLoader::load( const QString &category, const QString &providersList
   mProviders.clear();
   mJobData = "";
 
-  KConfig *cfg = KGlobal::config();
+  KSharedConfig::Ptr cfg = KGlobal::config();
   cfg->setGroup("KNewStuff");
 
   QString providersUrl = providersList;

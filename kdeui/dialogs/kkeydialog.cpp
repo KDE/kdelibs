@@ -39,7 +39,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kicon.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
@@ -47,6 +47,7 @@
 #include <kshortcut.h>
 #include <kstaticdeleter.h>
 #include <kstandardshortcut.h>
+#include <kconfiggroup.h>
 
 #include "kactioncollection.h"
 
@@ -166,9 +167,10 @@ KKeyChooser::~KKeyChooser()
 
 bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
 {
-	QString str = title;
-	if ( title.isEmpty() && pColl->instance() && pColl->instance()->aboutData() )
-		str = pColl->instance()->aboutData()->programName();
+    QString str = title;
+    if (title.isEmpty() && pColl->componentData().isValid() && pColl->componentData().aboutData()) {
+        str = pColl->componentData().aboutData()->programName();
+    }
 
 	d->rgpLists.append( pColl->actions() );
 	d->collections.append( pColl );

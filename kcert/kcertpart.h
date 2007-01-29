@@ -111,7 +111,6 @@ protected:
 
 
   // The rest
-  KInstance *_instance;
   QPushButton *_import, *_save, *_done, *_launch, *_importAll;
   // Store the pointer to the current item
   KSSLPKCS12 *_p12;

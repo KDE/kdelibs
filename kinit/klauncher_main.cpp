@@ -23,7 +23,7 @@
 #include <fcntl.h>
 
 #include "klauncher.h"
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include "kcrash.h"
 #include "kdebug.h"
 #include <stdio.h>
@@ -56,7 +56,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       return 1;
    }
 #endif
-   KInstance instance("klauncher");
+   KComponentData componentData("klauncher");
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));

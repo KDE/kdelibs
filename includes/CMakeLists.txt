@@ -254,7 +254,7 @@ install( FILES
   KImageFilePreview
   KImageIO
   KInputDialog
-  KInstance
+  KComponentData
   KIntNumInput
   KIntSpinBox
   KIntValidator

@@ -24,8 +24,9 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <assert.h>
+#include <kglobal.h>
 
 namespace KSettings
 {
@@ -36,120 +37,115 @@ namespace KSettings
 
 static KStaticDeleter<Dispatcher> ksd_kpd;
 
-Dispatcher * Dispatcher::m_self = 0;
+Dispatcher *Dispatcher::m_self = 0;
 
-Dispatcher * Dispatcher::self()
+Dispatcher *Dispatcher::self()
 {
-    kDebug( 701 ) << k_funcinfo << endl;
-    if( m_self == 0 )
-        ksd_kpd.setObject( m_self, new Dispatcher() );
+    kDebug(701) << k_funcinfo << endl;
+    if (m_self == 0)
+        ksd_kpd.setObject(m_self, new Dispatcher());
     return m_self;
 }
 
-Dispatcher::Dispatcher( QObject * parent )
-    : QObject( parent )
-    //, d( 0 )
+Dispatcher::Dispatcher(QObject *parent)
+    : QObject(parent)
+    //, d(0)
 {
-    kDebug( 701 ) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo << endl;
 }
 
 Dispatcher::~Dispatcher()
 {
-    kDebug( 701 ) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo << endl;
     //delete d;
 }
 
-void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const char * slot )
+void Dispatcher::registerComponent(const KComponentData &componentData, QObject *recv, const char *slot)
 {
-    assert( instance != 0 );
-    // keep the KInstance around and call
-    // instance->config()->reparseConfiguration when the app should reparse
-    QByteArray instanceName = instance->instanceName();
-    kDebug( 701 ) << k_funcinfo << instanceName << endl;
-    m_instanceName[ recv ] = instanceName;
-    Q3Signal * sig;
-    if( m_instanceInfo.contains( instanceName ) )
-    {
-        sig = m_instanceInfo[ instanceName ].signal;
+    Q_ASSERT(componentData.isValid());
+    // keep the KComponentData around and call
+    // componentData.config()->reparseConfiguration when the app should reparse
+    QByteArray componentName = componentData.componentName();
+    kDebug(701) << k_funcinfo << componentName << endl;
+    m_componentName[recv] = componentName;
+    Q3Signal *sig;
+    if (m_componentInfo.contains(componentName)) {
+        sig = m_componentInfo[componentName].signal;
+    } else {
+        sig = new Q3Signal(this, "signal dispatcher");
+        m_componentInfo[componentName].signal = sig;
+        m_componentInfo[componentName].componentData = componentData;
     }
-    else
-    {
-        sig = new Q3Signal( this, "signal dispatcher" );
-        m_instanceInfo[ instanceName ].signal = sig;
-        m_instanceInfo[ instanceName ].instance = instance;
-    }
-    sig->connect( recv, slot );
+    sig->connect(recv, slot);
 
-    ++m_instanceInfo[ instanceName ].count;
-    connect( recv, SIGNAL( destroyed( QObject * ) ), this, SLOT( unregisterInstance( QObject * ) ) );
+    ++m_componentInfo[componentName].count;
+    connect(recv, SIGNAL(destroyed(QObject *)), this, SLOT(unregisterComponent(QObject *)));
 }
 
-KConfig * Dispatcher::configForInstanceName( const QByteArray & instanceName )
+const KSharedConfig::Ptr &Dispatcher::configForComponentName(const QByteArray &componentName)
 {
-    kDebug( 701 ) << k_funcinfo << endl;
-    if( m_instanceInfo.contains( instanceName ) )
-    {
-        KInstance * inst = m_instanceInfo[ instanceName ].instance;
-        if( inst )
-            return inst->config();
+    kDebug(701) << k_funcinfo << endl;
+    if (m_componentInfo.contains(componentName)) {
+        KComponentData componentData = m_componentInfo[componentName].componentData;
+        if (componentData.isValid()) {
+            return componentData.config();
+        }
     }
-    //if( fallback )
-        //return new KSimpleConfig( instanceName );
-    return 0;
+    kError(701) << "configForComponentName('" << componentName.constData()
+        << "') could not find the KComponentData object" << endl;
+    Q_ASSERT(!m_componentInfo.isEmpty());
+    return m_componentInfo.constBegin()->componentData.config();
 }
 
-QList<QByteArray> Dispatcher::instanceNames() const
+QList<QByteArray> Dispatcher::componentNames() const
 {
-    kDebug( 701 ) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo << endl;
     QList<QByteArray> names;
-    for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
-        if( ( *it ).count > 0 )
-            names.append( it.key() );
+    for (QMap<QByteArray, ComponentInfo>::ConstIterator it = m_componentInfo.begin(); it != m_componentInfo.end(); ++it) {
+        if ((*it).count > 0) {
+            names.append(it.key());
+        }
+    }
     return names;
 }
 
-void Dispatcher::reparseConfiguration( const QByteArray & instanceName )
+void Dispatcher::reparseConfiguration(const QByteArray & componentName)
 {
-    kDebug( 701 ) << k_funcinfo << instanceName << endl;
-    // check if the instanceName is valid:
-    if( ! m_instanceInfo.contains( instanceName ) )
+    kDebug(701) << k_funcinfo << componentName << endl;
+    // check if the componentName is valid:
+    if (! m_componentInfo.contains(componentName)) {
         return;
-    // first we reparse the config of the instance so that the KConfig object
+    }
+    // first we reparse the config of the componentData so that the KConfig object
     // will be up to date
-    m_instanceInfo[ instanceName ].instance->config()->reparseConfiguration();
-    Q3Signal * sig = m_instanceInfo[ instanceName ].signal;
-    if( sig )
-    {
-        kDebug( 701 ) << "emit signal to instance" << endl;
+    KSharedConfig::Ptr config = m_componentInfo[componentName].componentData.config();
+    config->reparseConfiguration();
+    Q3Signal *sig = m_componentInfo[componentName].signal;
+    if (sig) {
+        kDebug(701) << "emit signal to componentData" << endl;
         sig->activate();
     }
 }
 
 void Dispatcher::syncConfiguration()
 {
-    for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
-    {
-        ( *it ).instance->config()->sync();
+    for (QMap<QByteArray, ComponentInfo>::ConstIterator it = m_componentInfo.begin(); it != m_componentInfo.end(); ++it) {
+        KSharedConfig::Ptr config = (*it).componentData.config();
+        config->sync();
     }
 }
 
-void Dispatcher::unregisterInstance( QObject * obj )
+void Dispatcher::unregisterComponent(QObject *obj)
 {
-    kDebug( 701 ) << k_funcinfo << endl;
-    QByteArray name = m_instanceName[ obj ];
-    m_instanceName.remove( obj ); //obj will be destroyed when we return, so we better remove this entry
-    --m_instanceInfo[ name ].count;
-    if( m_instanceInfo[ name ].count == 0 )
-    {
-        delete m_instanceInfo[ name ].signal;
-        m_instanceInfo.remove( name );
+    kDebug(701) << k_funcinfo << endl;
+    QByteArray name = m_componentName[obj];
+    m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
+    --m_componentInfo[name].count;
+    if (m_componentInfo[name].count == 0) {
+        delete m_componentInfo[name].signal;
+        m_componentInfo.remove(name);
     }
 }
-
-//X KInstance * Dispatcher::instanceForName( const QCString & instanceName )
-//X {
-//X     return m_instanceInfo[ instanceName ].instance;
-//X }
 
 } //namespace
 

@@ -43,6 +43,7 @@
 #include <kmessagebox.h>
 
 #include "k3passworddialog.h"
+#include <kconfiggroup.h>
 
 /*
  * Password line editor.

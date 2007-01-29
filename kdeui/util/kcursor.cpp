@@ -33,6 +33,7 @@
 #include <kconfig.h>
 #include <kcursor.h>
 #include "kcursor_p.h"
+#include <kconfiggroup.h>
 
 KCursor::KCursor()
 {

@@ -45,6 +45,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <kbuildsycocaprogressdialog.h>
+#include <kconfiggroup.h>
 
 template <> inline
 void KConfigBase::writeEntry( const char *pKey,

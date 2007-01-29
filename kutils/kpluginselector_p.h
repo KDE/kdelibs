@@ -28,6 +28,7 @@
 #include <klocale.h>
 
 #include <kdelibs_export.h>
+#include <kconfiggroup.h>
 
 class QTreeWidget;
 class KPluginInfo;
@@ -35,6 +36,7 @@ class KCModuleProxy;
 class QSplitter;
 class QStackedWidget;
 class KPluginSelectionWidget;
+class KPluginInfoLVI;
 
 class KPluginSelector::Private
     : public QObject

@@ -2,7 +2,7 @@
 
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -12,6 +12,7 @@
 #include <kdeversion.h>
 #include <QDir>
 #include <config.h>
+#include <kconfiggroup.h>
 
 #ifdef Q_WS_WIN
 #include <win32_utils.h>
@@ -128,7 +129,7 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-    KInstance a("kde4-config");
+    KComponentData a("kde4-config");
     (void)KGlobal::dirs(); // trigger the creation
     (void)KGlobal::config();
 

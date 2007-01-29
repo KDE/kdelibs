@@ -180,7 +180,7 @@ void Kded::messageFilter(const QDBusMessage &message)
 void Kded::initModules()
 {
      m_dontLoad.clear();
-     KConfig *config = KGlobal::config();
+     KSharedConfig::Ptr config = KGlobal::config();
      bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
 
      // Preload kded modules.
@@ -226,7 +226,7 @@ void Kded::initModules()
 void Kded::loadSecondPhase()
 {
      kDebug(7020) << "Loading second phase autoload" << endl;
-     KConfig *config = KGlobal::config();
+     KSharedConfig::Ptr config = KGlobal::config();
      KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
@@ -832,8 +832,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // Parse command line before checking DCOP
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-     KInstance *instance = new KInstance(&aboutData);
-     KConfig *config = instance->config(); // Enable translations.
+     KComponentData componentData(&aboutData);
+     KSharedConfig::Ptr config = componentData.config(); // Enable translations.
 
      if (args->isSet("check"))
      {
@@ -922,7 +922,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      int result = k.exec(); // keep running
 
      delete kded;
-     delete instance; // Deletes config as well
 
      return result;
 }

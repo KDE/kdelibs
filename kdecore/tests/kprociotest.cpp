@@ -13,7 +13,7 @@
 #include <string.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <QApplication>
 
 #include <signal.h>
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
  KAboutData about("kprociotest", "kprociotest", "version");
  //KCmdLineArgs::init(argc, argv, &about);
- KInstance instance(&about);
+ KComponentData cData(&about);
 
  QApplication app(argc, argv);
 

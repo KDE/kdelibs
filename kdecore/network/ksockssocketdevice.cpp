@@ -468,7 +468,7 @@ void KSocksSocketDevice::initSocks()
 
   if (QCoreApplication::instance() == 0L)
     return;			// no KApplication, so don't initialize
-                                // this should, however, test for KInstance
+                                // this should, however, test for KComponentData
 
   init = true;
 

@@ -45,6 +45,7 @@
 #include <QTimer> // hack
 #include <QTreeWidget>
 #include <QTabWidget>
+#include <kconfiggroup.h>
 
 using namespace KNS;
 

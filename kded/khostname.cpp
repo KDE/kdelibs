@@ -230,7 +230,7 @@ int main(int argc, char **argv)
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
 
-   KInstance k(&d);
+   KComponentData k(&d);
 
    KHostName hn;
 

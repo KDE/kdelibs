@@ -37,6 +37,7 @@
 #include <kstandardguiitem.h>
 
 #include "k3sconfig.h"
+#include <kconfiggroup.h>
 
 class K3SpellConfigPrivate
 {
@@ -47,7 +48,6 @@ public:
 
 K3SpellConfig::K3SpellConfig (const K3SpellConfig &_ksc)
   : QWidget(0), nodialog(true)
-  , kc(0)
   , cb0(0)
   , cb1(0)
   , cb2(0)

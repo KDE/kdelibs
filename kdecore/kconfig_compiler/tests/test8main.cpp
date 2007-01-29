@@ -21,11 +21,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "test8a.h"
 #include "test8b.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 
 int main( int, char** )
 {
-  KInstance i("test");
+  KComponentData i("test");
   Test8a *config1 = new Test8a( KSharedConfig::openConfig( QString::null ) );
   Test8a *config2 = new Test8a();
   Test8b::self();

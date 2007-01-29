@@ -25,7 +25,7 @@
 
 #include <klocale.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <assert.h>
 
 using namespace KParts;
@@ -47,23 +47,23 @@ Part *Factory::createPart( QWidget *parentWidget, QObject *parent, const char *c
     return part;
 }
 
-const KInstance *Factory::partInstance()
+KComponentData Factory::partComponentData()
 {
-	return 0;
+    return KComponentData();
 }
 
-const KInstance *Factory::partInstanceFromLibrary( const QByteArray &libraryName )
+KComponentData Factory::partComponentDataFromLibrary( const QByteArray &libraryName )
 {
     KLibrary *library = KLibLoader::self()->library( libraryName );
     if ( !library )
-        return 0;
+        return KComponentData();
     KLibFactory *factory = library->factory();
     if ( !factory )
-        return 0;
+        return KComponentData();
     KParts::Factory *pfactory = dynamic_cast<KParts::Factory *>( factory );
     if ( !pfactory )
-        return 0;
-    return pfactory->partInstance();
+        return KComponentData();
+    return pfactory->partComponentData();
 }
 
 Part *Factory::createPartObject( QWidget *, QObject *, const char *, const QStringList & )

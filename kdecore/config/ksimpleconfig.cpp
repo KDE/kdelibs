@@ -33,16 +33,17 @@
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kconfigbackend.h"
+#include "kcomponentdata.h"
 
 #include "ksimpleconfig.h"
 
-KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly)
-  : KConfig(QLatin1String(""), bReadOnly, false)
+KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly, const KComponentData &componentData)
+  : KConfig(componentData, QLatin1String(""), bReadOnly, false)
 {
   // the difference between KConfig and KSimpleConfig is just that
   // for KSimpleConfig an absolute filename is guaranteed
   if (!fileName.isNull() && QDir::isRelativePath(fileName)) {
-     backEnd->changeFileName( KGlobal::dirs()->
+     backEnd->changeFileName( mComponentData->dirs()->
 	saveLocation("config", QString(), !bReadOnly)+fileName, "config", false);
   } else {
      backEnd->changeFileName(fileName, "config", false);

@@ -35,7 +35,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <ktemporaryfile.h>
 #include <kurl.h>
 
@@ -951,7 +951,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KCmdLineArgs::init(argc, argv, &aboutData);
    KCmdLineArgs::addCmdLineOptions(options);
 
-   KInstance instance(&aboutData);
+   KComponentData componentData(&aboutData);
 
    KonfUpdate konfUpdate;
 

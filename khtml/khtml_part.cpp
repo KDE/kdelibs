@@ -122,6 +122,7 @@ using namespace DOM;
 #include "rendering/render_form.h"
 #include "misc/loader.h"
 #include <kwin.h>
+#include <kconfiggroup.h>
 
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
@@ -210,9 +211,9 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
+    setComponentData(  KHTMLFactory::componentData(), prof == BrowserViewGUI && !parentPart() );
     // TODO KDE4 - don't load plugins yet
-    //setInstance( KHTMLFactory::instance(), false );
+    //setComponentData( KHTMLFactory::componentData(), false );
     init( new KHTMLView( this, parentWidget ), prof );
 }
 
@@ -221,9 +222,9 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
+    setComponentData(  KHTMLFactory::componentData(), prof == BrowserViewGUI && !parentPart() );
     // TODO KDE4 - don't load plugins yet
-    //setInstance( KHTMLFactory::instance(), false );
+    //setComponentData( KHTMLFactory::componentData(), false );
     assert( view );
     init( view, prof );
 }
@@ -332,7 +333,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->addAction( d->m_manualDetection );
 
 
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
   if ( config->hasGroup( "HTML Settings" ) ) {
     config->setGroup( "HTML Settings" );
     khtml::Decoder::AutoDetectLanguage language;
@@ -480,7 +481,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
-  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( KStandardDirs::locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
+  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( KStandardDirs::locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::componentData() ) );
 
   connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
@@ -506,7 +507,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // TODO KDE4 - load plugins now (see also the constructors)
   //if ( prof == BrowserViewGUI && !parentPart() )
-  //        loadPlugins( partObject(), this, instance() );
+  //        loadPlugins( partObject(), this, componentData() );
 
   // "khtml" catalog does not exist, our translations are in kdelibs.
   // removing this catalog from KGlobal::locale() prevents problems
@@ -518,7 +519,7 @@ KHTMLPart::~KHTMLPart()
 {
   //kDebug(6050) << "KHTMLPart::~KHTMLPart " << this << endl;
 
-  KConfig *config = KGlobal::config();
+  KSharedConfig::Ptr config = KGlobal::config();
   config->setGroup( "HTML Settings" );
   config->writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 

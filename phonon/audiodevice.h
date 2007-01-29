@@ -21,10 +21,11 @@
 #define PHONON_AUDIODEVICE_H
 
 #include <kdelibs_export.h>
-#include <kconfig.h>
 #include <solid/audiohw.h>
+#include <kconfig.h>
 class QString;
 class QStringList;
+class KConfigGroup;
 
 namespace Solid
 {

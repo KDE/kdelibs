@@ -294,7 +294,8 @@ void KPrinter::loadSettings()
 	setSearchName(option("kde-searchname"));
 	d->m_options.remove("kde-searchname");
 
-	KConfig	*conf = KGlobal::config(), *pconf = KMFactory::self()->printConfig();
+    KSharedConfig::Ptr conf = KGlobal::config();
+    KConfig *pconf = KMFactory::self()->printConfig();
 	conf->setGroup("KPrinter Settings");
 	pconf->setGroup("General");
 
@@ -319,7 +320,7 @@ void KPrinter::saveSettings()
 	}
 
 	// save latest used printer to config file
-	KConfig	*conf = KGlobal::config();
+	KSharedConfig::Ptr conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	conf->writeEntry("Printer",searchName());
 	// latest used print command

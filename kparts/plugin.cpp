@@ -30,22 +30,21 @@
 #include <qfileinfo.h>
 
 #include <klibloader.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
+#include <kconfiggroup.h>
 
 using namespace KParts;
 
 class Plugin::PluginPrivate
 {
 public:
-    PluginPrivate() : m_parentInstance( 0 ) {}
-
-    const KInstance *m_parentInstance;
+    KComponentData m_parentInstance;
     QString m_library; // filename of the library
 };
 
@@ -64,10 +63,10 @@ QString Plugin::xmlFile() const
 {
     QString path = KXMLGUIClient::xmlFile();
 
-    if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
+    if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locate( "data", QLatin1String( d->m_parentInstance->instanceName() ) + '/' + path );
+    QString absPath = KStandardDirs::locate( "data", QLatin1String( d->m_parentInstance.componentName() ) + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -76,25 +75,25 @@ QString Plugin::localXMLFile() const
 {
     QString path = KXMLGUIClient::xmlFile();
 
-    if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
+    if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locateLocal( "data", QLatin1String( d->m_parentInstance->instanceName() ) + '/' + path );
+    QString absPath = KStandardDirs::locateLocal( "data", QLatin1String( d->m_parentInstance.componentName() ) + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
 
 //static
-QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
+QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentData)
 {
-  if ( !instance )
-    kError(1000) << "No instance ???" << endl;
+  if (!componentData.isValid())
+    kError(1000) << "No componentData ???" << endl;
 
   QList<PluginInfo> plugins;
 
   // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
-  const QStringList pluginDocs = instance->dirs()->findAllResources(
-    "data", instance->instanceName()+"/kpartplugins/*", true, false );
+  const QStringList pluginDocs = componentData.dirs()->findAllResources(
+    "data", componentData.componentName()+"/kpartplugins/*", true, false );
 
   QMap<QString,QStringList> sortedPlugins;
 
@@ -137,12 +136,12 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
   return plugins;
 }
 
-void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
+void Plugin::loadPlugins(QObject *parent, const KComponentData &componentData)
 {
-  loadPlugins( parent, pluginInfos( instance ), instance );
+  loadPlugins( parent, pluginInfos( componentData ), componentData );
 }
 
-void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KInstance *instance )
+void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, const KComponentData &componentData)
 {
    QList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
    QList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
@@ -157,7 +156,7 @@ void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos,
 
      if ( plugin )
      {
-       plugin->d->m_parentInstance = instance;
+       plugin->d->m_parentInstance = componentData;
        plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
        plugin->setDOMDocument( (*pIt).m_document );
 
@@ -168,7 +167,7 @@ void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos,
 
 void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos )
 {
-   loadPlugins(parent, pluginInfos, 0);
+   loadPlugins(parent, pluginInfos, KComponentData());
 }
 
 // static
@@ -217,16 +216,18 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
   return false;
 }
 
-void Plugin::setInstance( KInstance *instance )
+void Plugin::setComponentData(const KComponentData &componentData)
 {
-    KGlobal::locale()->insertCatalog( instance->instanceName() );
-    KXMLGUIClient::setInstance( instance );
+    KGlobal::locale()->insertCatalog(componentData.componentName());
+    KXMLGUIClient::setComponentData(componentData);
 }
 
-void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault, int interfaceVersionRequired )
+void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
+        const KComponentData &componentData, bool enableNewPluginsByDefault,
+        int interfaceVersionRequired)
 {
-    KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
-    QList<PluginInfo> plugins = pluginInfos( instance );
+    KConfigGroup cfgGroup( componentData.config(), "KParts Plugins" );
+    QList<PluginInfo> plugins = pluginInfos( componentData );
     QList<PluginInfo>::ConstIterator pIt = plugins.begin();
     const QList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
@@ -247,11 +248,11 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
         else
         { // no user-setting, load plugin default setting
-            QString relPath = QString( instance->instanceName() ) + '/' + (*pIt).m_relXMLFileName;
+            QString relPath = QString( componentData.componentName() ) + '/' + (*pIt).m_relXMLFileName;
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
             //kDebug(1000) << "looking for " << relPath << endl;
-            const QString desktopfile = instance->dirs()->findResource( "data", relPath );
+            const QString desktopfile = componentData.dirs()->findResource( "data", relPath );
             if( !desktopfile.isEmpty() )
             {
                 //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
@@ -309,7 +310,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
 
         if ( plugin )
         {
-            plugin->d->m_parentInstance = instance;
+            plugin->d->m_parentInstance = componentData;
             plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
             plugin->setDOMDocument( (*pIt).m_document );
             parentGUIClient->insertChildClient( plugin );

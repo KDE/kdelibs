@@ -20,7 +20,7 @@ private slots:
 
 private:
     QString kdeTempDir;
-    QString instanceName;
+    QString componentName;
 };
 
 #endif

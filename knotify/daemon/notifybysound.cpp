@@ -40,7 +40,7 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <config.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 
 // Phonon headers
 #include <phonon/mediaobject.h>
@@ -87,7 +87,7 @@ NotifyBySound::~NotifyBySound()
 void NotifyBySound::loadConfig()
 {
     // load external player settings
-	KConfig *kc = KGlobal::config();
+	KSharedConfig::Ptr kc = KGlobal::config();
 	kc->setGroup("Misc");
 	d->useExternal = kc->readEntry( "Use external player", false );
 	d->externalPlayer = kc->readPathEntry("External player");
@@ -130,7 +130,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 	if ( KUrl::isRelativeUrl(soundFile) )
 	{
 		QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
-		search = KGlobal::instance()->dirs()->findResource("data", search);
+		search = KGlobal::mainComponent().dirs()->findResource("data", search);
 		if ( search.isEmpty() )
 			soundFile = KStandardDirs::locate( "sound", soundFile );
 		else

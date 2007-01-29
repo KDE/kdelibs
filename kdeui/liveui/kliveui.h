@@ -35,7 +35,7 @@ class QIcon;
 class KMainWindow;
 class KMenu;
 class KToolBar;
-class KInstance;
+class KComponentData;
 
 class KLiveUiBuilder;
 class KLiveUiBuilderPrivate;
@@ -73,8 +73,8 @@ public:
     void createGui();
     void removeGui();
 
-    void setInstance(KInstance *instance);
-    KInstance *instance() const;
+    void setComponentData(const KComponentData &componentData);
+    KComponentData componentData() const;
 
     void addSubComponent(KLiveUiComponent *component);
     void removeSubComponent(KLiveUiComponent *component);

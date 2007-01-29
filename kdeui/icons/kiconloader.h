@@ -25,7 +25,7 @@ class QPixmap;
 
 struct KIconGroup;
 class KIconThemeNode;
-class KInstance;
+class KComponentData;
 class KConfig;
 struct KIconLoaderPrivate;
 class KStandardDirs;
@@ -81,21 +81,21 @@ public:
      *
      * Usually, you use the default iconloader, which can be accessed via
      * KIconLoader::global(), so you hardly ever have to create an
-     * iconloader object yourself. That one is the current KInstance's
+     * iconloader object yourself. That one is the current KComponentData's
      * (typically KApplication's) iconloader.
      */
     explicit KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0, QObject* parent = 0);
 
     /**
      * Constructs an iconloader.
-     * @param instance the KInstance to use to create this icon loader.
+     * @param componentData the KComponentData to use to create this icon loader.
      *
      * Usually, you use the default iconloader, which can be accessed via
      * KIconLoader::global(), so you hardly ever have to create an
-     * iconloader object yourself. That one is the current KInstance's
+     * iconloader object yourself. That one is the current KComponentData's
      * (typically KApplication's) iconloader.
      */
-    KIconLoader(KInstance* instance, QObject* parent = 0);
+    KIconLoader(const KComponentData &componentData, QObject* parent = 0);
 
     /**
      * Cleanup
@@ -103,8 +103,8 @@ public:
     ~KIconLoader();
 
     /**
-     * Returns the global icon loader initialized with the global KInstance.
-     * Therefore you must have a KInstance instantiated before calling this.
+     * Returns the global icon loader initialized with the global KComponentData.
+     * Therefore you must have a KComponentData instantiated before calling this.
      * @return global icon loader
      */
     static KIconLoader* global();
@@ -291,7 +291,7 @@ public:
     KIconEffect *iconEffect() const;
 
     /**
-     * Called by KInstance::newIconLoader to reconfigure the icon loader.
+     * Called by KComponentData::newIconLoader to reconfigure the icon loader.
      * @param _appname the new application name
      * @param _dirs the new standard directories. If 0, the directories
      *              from KGlobal will be taken.
@@ -390,7 +390,7 @@ KDEUI_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
+ * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
 KDEUI_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0);
 
@@ -403,7 +403,7 @@ KDEUI_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=K3Icon::
 /**
  * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
+ * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
 KDEUI_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
 
@@ -417,7 +417,7 @@ KDEUI_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a small icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
+ * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
 KDEUI_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
 
@@ -431,7 +431,7 @@ KDEUI_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a main toolbar icon, and apply the effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
+ * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
 KDEUI_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0);
 
@@ -444,7 +444,7 @@ KDEUI_EXPORT QPixmap UserIcon(const QString& name, int state=K3Icon::DefaultStat
 /**
  * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,instance->iconLoader()) instead
+ * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
  */
 KDEUI_EXPORT_DEPRECATED QIcon UserIconSet(const QString& name);
 

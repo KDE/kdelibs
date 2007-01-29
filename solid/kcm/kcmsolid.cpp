@@ -34,7 +34,7 @@ K_EXPORT_COMPONENT_FACTORY( kcm_solid, KcmSolidFactory("kcm_solid"))
 
 
 KcmSolid::KcmSolid( QWidget* parent, const QStringList& args )
-    : KCModule( KcmSolidFactory::instance(), parent, args ),
+    : KCModule( KcmSolidFactory::componentData(), parent, args ),
       m_changedChooser( 0 )
 {
     KAboutData *about = new KAboutData(

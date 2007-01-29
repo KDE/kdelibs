@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
 
    KCmdLineArgs::addCmdLineOptions( options );
 
-   KInstance a("kcookietest");
+   KComponentData a("kcookietest");
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    if (args->count() != 1)

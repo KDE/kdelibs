@@ -33,7 +33,6 @@
 #endif
 
 #include "kglobal.h"
-#include "kinstance.h"
 #include "kstandarddirs.h"
 #include "kdatetime.h"
 
@@ -56,6 +55,7 @@
 #include <string.h>
 #include <kconfig.h>
 #include "kstaticdeleter.h"
+#include "kcomponentdata.h"
 #include <config.h>
 
 #ifdef HAVE_BACKTRACE
@@ -197,25 +197,25 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       }
   }
 
-  if (!kDebug_data->config && KGlobal::_instance )
+  if (!kDebug_data->config && KGlobal::hasMainComponent() )
   {
       kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), false, false);
       kDebug_data->config->setGroup( QLatin1String("0") );
 
       //AB: this is necessary here, otherwise all output with area 0 won't be
       //prefixed with anything, unless something with area != 0 is called before
-      if ( KGlobal::_instance )
-        kDebug_data->aAreaName = KGlobal::instance()->instanceName();
+      //if ( KGlobal::hasMainComponent() ) <- XXX why is this needed?
+      kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
   }
 
   if (kDebug_data->config && kDebug_data->oldarea != nArea) {
     kDebug_data->config->setGroup( QString::number(nArea) );
     kDebug_data->oldarea = nArea;
-    if ( nArea > 0 && KGlobal::_instance )
+    if ( nArea > 0 && KGlobal::hasMainComponent() )
       kDebug_data->aAreaName = getDescrFromNum(nArea);
     if ((nArea == 0) || kDebug_data->aAreaName.isEmpty())
-      if ( KGlobal::_instance )
-        kDebug_data->aAreaName = KGlobal::instance()->instanceName();
+      if ( KGlobal::hasMainComponent() )
+        kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
   }
 
   int nPriority = 0;

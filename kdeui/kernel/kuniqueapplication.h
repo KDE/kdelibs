@@ -166,17 +166,12 @@ private Q_SLOTS:
   void newInstanceNoFork();
 
 private:
-  static KInstance* initHack( bool configUnique );
+  static KComponentData initHack(bool configUnique);
 
   static bool s_nofork;
   static bool s_multipleInstances;
   static bool s_handleAutoStarted;
 
-protected:
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
 private:
   friend class KUniqueApplicationAdaptor;
   class Private;

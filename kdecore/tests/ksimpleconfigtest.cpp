@@ -6,7 +6,7 @@
 #include <ksimpleconfig.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <QApplication>
 #include <QDir>
 #include <unistd.h>
@@ -19,7 +19,7 @@
 int main( int argc, char **argv )
 {
   KAboutData about("kconfigtest", "kconfigtest", "version");
-  KInstance instance(&about);
+  KComponentData cData(&about);
   //KCmdLineArgs::init(argc, argv, &about);
   //KApplication a;
 

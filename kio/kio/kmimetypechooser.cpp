@@ -30,6 +30,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <kconfiggroup.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate

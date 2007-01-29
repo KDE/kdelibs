@@ -51,7 +51,7 @@
 #include "kstandarddirs.h"
 #include "kconfig.h"
 #include "kdebug.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "kshell.h"
 #include "ksimpleconfig.h"
 #include "kuser.h"
@@ -62,10 +62,11 @@
 class KStandardDirs::KStandardDirsPrivate
 {
 public:
-    KStandardDirsPrivate()
+    KStandardDirsPrivate(const KComponentData &cd)
         : restrictionsActive(false),
           dataRestrictionActive(false),
           checkRestrictions(true),
+          componentData(cd),
           addedCustoms(false)
     { }
 
@@ -77,6 +78,7 @@ public:
     QStringList xdgconf_prefixes;
 
     QStringList prefixes;
+    KComponentData componentData;
 
     // Directory dictionaries
     QMap<QByteArray, QStringList> absolutes;
@@ -235,8 +237,8 @@ static const int types_indices[] = {
 static int tokenize( QStringList& token, const QString& str,
                      const QString& delim );
 
-KStandardDirs::KStandardDirs()
-    : d(new KStandardDirsPrivate)
+KStandardDirs::KStandardDirs(const KComponentData &componentData)
+    : d(new KStandardDirsPrivate(componentData))
 {
     addKDEDefaults();
 }
@@ -459,11 +461,8 @@ static quint32 updateHash(const QString &file, quint32 hash)
 {
     QByteArray cFile = QFile::encodeName(file);
     KDE_struct_stat buff;
-    if ((access(cFile, R_OK) == 0) &&
-        (KDE_stat( cFile, &buff ) == 0) &&
-        (S_ISREG( buff.st_mode )))
-    {
-       hash = hash + (quint32) buff.st_ctime;
+    if ((access(cFile, R_OK) == 0) && (KDE_stat(cFile, &buff) == 0) && (S_ISREG(buff.st_mode))) {
+        hash = hash + static_cast<quint32>(buff.st_ctime);
     }
     return hash;
 }
@@ -1369,7 +1368,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
           if (KDE_lstat(baseEncoded, &st) == 0)
               (void)unlink(baseEncoded); // try removing
 
-	  if ( KDE_mkdir(baseEncoded, (mode_t) mode) != 0) {
+          if (KDE_mkdir(baseEncoded, static_cast<mode_t>(mode)) != 0) {
             baseEncoded.prepend( "trying to create local folder " );
 	    perror(baseEncoded.data());
 	    return false; // Couldn't create it :-(
@@ -1593,11 +1592,16 @@ void KStandardDirs::addKDEDefaults()
 
 void KStandardDirs::checkConfig() const
 {
-    if (!d->addedCustoms && KGlobal::_instance && KGlobal::_instance->privateConfig())
-        const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->privateConfig());
+    if (!d->addedCustoms) {
+        if (d->componentData.isValid() && d->componentData.privateConfig()) {
+            const_cast<KStandardDirs*>(this)->addCustomized(d->componentData.privateConfig().data());
+        } else if (KGlobal::hasMainComponent() && KGlobal::mainComponent().privateConfig()) {
+            const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::mainComponent().privateConfig().data());
+        }
+    }
 }
 
-static QStringList lookupProfiles(const QString &mapFile)
+static QStringList lookupProfiles(const QString &mapFile, const KComponentData &componentData)
 {
     QStringList profiles;
 
@@ -1619,7 +1623,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     gid_t sup_gids[512];
     int sup_gids_nr = getgroups(512, sup_gids);
 
-    KSimpleConfig mapCfg(mapFile, true);
+    KSimpleConfig mapCfg(mapFile, true, componentData);
     mapCfg.setGroup("Users");
     if (mapCfg.hasKey(user.data()))
     {
@@ -1719,7 +1723,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         QStringList profiles;
         if (readProfiles)
-            profiles = lookupProfiles(userMapFile);
+            profiles = lookupProfiles(userMapFile, d->componentData);
         QString profile;
 
         bool priority = false;
@@ -1819,31 +1823,32 @@ QString KStandardDirs::localxdgconfdir() const
 
 // just to make code more readable without macros
 QString KStandardDirs::locate( const char *type,
-		const QString& filename, const KInstance* inst )
+        const QString& filename, const KComponentData &cData)
 {
-    return inst->dirs()->findResource(type, filename);
+    return cData.dirs()->findResource(type, filename);
 }
 
 QString KStandardDirs::locateLocal( const char *type,
-	             const QString& filename, const KInstance* inst )
+        const QString& filename, const KComponentData &cData)
 {
-    return locateLocal(type, filename, true, inst);
+    return locateLocal(type, filename, true, cData);
 }
 
 QString KStandardDirs::locateLocal( const char *type,
                                     const QString& filename, bool createDir,
-                                    const KInstance* inst )
+                                    const KComponentData &cData)
 {
     // try to find slashes. If there are some, we have to
     // create the subdir first
     int slash = filename.lastIndexOf('/')+1;
-    if (!slash) // only one filename
-	return inst->dirs()->saveLocation(type, QString(), createDir) + filename;
+    if (!slash) { // only one filename
+        return cData.dirs()->saveLocation(type, QString(), createDir) + filename;
+    }
 
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return inst->dirs()->saveLocation(type, dir, createDir) + file;
+    return cData.dirs()->saveLocation(type, dir, createDir) + file;
 }
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)

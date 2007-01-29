@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstring.h>
 #include <QtDBus/QtDBus>
 
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
@@ -199,7 +199,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    bool deleteAll = args->isSet("clear-all");
 
-   KInstance ins( appName );
+   KComponentData ins( appName );
 
    if (!deleteAll)
    {

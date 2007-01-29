@@ -129,11 +129,11 @@ class KDECORE_EXPORT KPluginInfo
         static KPluginInfo::List fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString() );
 
         /**
-         * @return A list of KPluginInfo objects for the KParts plugins of an
-         * instance. You only need the name of the instance not a pointer to the
-         * KInstance object.
+         * @return A list of KPluginInfo objects for the KParts plugins of a
+         * component. You only need the name of the component not a pointer to the
+         * KComponentData object.
          */
-        static KPluginInfo::List fromKPartsInstanceName( const QString &, KConfig * config = 0, const QString & group = QString() );
+        static KPluginInfo::List fromKPartsInstanceName(const QString &componentName, KConfig *config = 0, const QString &group = QString());
 
         /**
          * @return Whether the plugin should be hidden.

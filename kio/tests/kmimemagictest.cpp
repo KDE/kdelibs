@@ -18,7 +18,7 @@
  */
 
 #include <kmimetype.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <stdio.h>
 
 int main( int argc, char** argv )
@@ -29,7 +29,7 @@ int main( int argc, char** argv )
              "Usage : ./kmimemagictest file\n");
       return 1;
   }
-  KInstance blah("kmimemagictest");
+  KComponentData blah("kmimemagictest");
 
   QString file = QString::fromLocal8Bit( argv[1] );
 

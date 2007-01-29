@@ -20,7 +20,7 @@ extern int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltutils.h>
 #include <qstring.h>
 #include <kstandarddirs.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <xslt.h>
 #include <qfile.h>
 #include <qdir.h>
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs::addCmdLineOptions( options );
 
     KLocale::setMainCatalog("kio_help");
-    KInstance ins("meinproc");
+    KComponentData ins("meinproc");
     KGlobal::locale();
 
 

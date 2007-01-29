@@ -39,7 +39,7 @@
 
 #include "krandom.h"
 #include "kglobal.h"
-#include "kinstance.h"
+#include "kcomponentdata.h"
 #include "ktemporaryfile.h"
 #include "kde_file.h"
 
@@ -139,11 +139,11 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  QByteArray instanceName = KGlobal::instance()->instanceName();
+  QByteArray componentName = KGlobal::mainComponent().componentName();
 
   QTextStream stream(&uniqueFile);
   stream << QString::number(getpid()) << endl
-      << instanceName << endl
+      << componentName << endl
       << hostname << endl;
   stream.flush();
 

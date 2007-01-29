@@ -130,7 +130,7 @@ KMenu* KHelpMenu::menu()
 {
   if( !d->mMenu )
   {
-    const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::instance()->aboutData();
+    const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::mainComponent().aboutData();
     QString appName = (aboutData)? aboutData->programName() : qApp->applicationName();
 
     d->mMenu = new KMenu();
@@ -232,7 +232,7 @@ void KHelpMenu::aboutApplication()
     if( !d->mAboutApp )
     {
       d->mAboutApp = new KDialog( d->mParent, Qt::Dialog );
-      d->mAboutApp->setCaption( i18n("About %1", kapp->caption() ) );
+      d->mAboutApp->setCaption( i18n("About %1", KGlobal::caption() ) );
       d->mAboutApp->setButtons( KDialog::Yes );
       d->mAboutApp->setObjectName( "about" );
       d->mAboutApp->showButtonSeparator( true );

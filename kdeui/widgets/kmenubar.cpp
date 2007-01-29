@@ -42,6 +42,7 @@
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kmanagerselection.h>
+#include <kconfiggroup.h>
 
 #ifdef Q_WS_X11
 #include <kwin.h>

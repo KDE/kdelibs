@@ -76,7 +76,7 @@ int main( int argc, char **argv )
   KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication app;
 
-  KGlobal::instance()->dirs()->addResourceDir( "data", "." );
+  KGlobal::mainComponent().dirs()->addResourceDir( "data", "." );
 
   MainWindow* mw = new MainWindow;
   mw->show();

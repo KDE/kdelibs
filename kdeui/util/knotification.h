@@ -25,9 +25,9 @@
 #include <qobject.h>
 #include <qpair.h>
 #include <kdelibs_export.h>
+#include <kcomponentdata.h>
 
 class QWidget;
-class KInstance;
 
 /**
  * KNotification is used to notify some event to the user.
@@ -341,13 +341,13 @@ public:
      * should be called before sendEvent().
      */
     void setFlags(const NotificationFlags &flags);
-	
-	/**
-	 * The instance is used to determine the location of the config file.  By default, kapp is used
-	 * @param instance the new instance
-	 */
-	void setInstance( const KInstance *instance);
-    
+
+    /**
+     * The componentData is used to determine the location of the config file.  By default, kapp is used
+     * @param componentData the new componentData
+     */
+    void setComponentData(const KComponentData &componentData);
+
    Q_SIGNALS:
 	/**
 	 * Emit only when the default activation has occurred
@@ -469,11 +469,12 @@ public:
 	 * @param actions is a list of action texts.
 	 * @param contexts is the lists of contexts, see ContextList
 	 * @param flags is a bitmask of NotificationFlag
-     * @param instance used to determine the location of the config file.  by default, kapp is used
+         * @param componentData used to determine the location of the config file.  by default, kapp is used
 	 */
-	static KNotification *event( const QString& eventId , const QString& text=QString(),
-			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-			const NotificationFlags &flags=CloseOnTimeout , const KInstance *instance=0l );
+        static KNotification *event(const QString &eventId , const QString &text = QString(),
+                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
+                const NotificationFlags &flags = CloseOnTimeout,
+                const KComponentData &componentData = KComponentData());
 
 	/**
 	 * @brief emit standard an event

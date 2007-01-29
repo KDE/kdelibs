@@ -29,6 +29,7 @@
 #include <QPointer>
 
 #include <kdelibs_export.h>
+#include <kcomponentdata.h>
 
 namespace KLiveUi
 {
@@ -68,7 +69,6 @@ class KLiveUiComponentPrivate
 public:
     KLiveUiComponentPrivate()
     {
-        instance = 0;
     }
 
     ~KLiveUiComponentPrivate()
@@ -89,7 +89,7 @@ public:
     KLiveUiStorage    storage;
     QList<KLiveUiComponent *> subComponents;
     QSet<QAction *> activeActions;
-    KInstance *instance;
+    KComponentData componentData;
     KLiveUiComponent *q;
 };
 

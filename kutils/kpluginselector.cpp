@@ -33,7 +33,7 @@
 #include <QBrush>
 #include <klocale.h>
 #include <ktabwidget.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kplugininfo.h>
 #include <kstandarddirs.h>
 #include <kconfigbase.h>
@@ -42,6 +42,7 @@
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
+#include <kconfiggroup.h>
 
 KPluginInfoLVI::KPluginInfoLVI(QString itemTitle, QTreeWidget *parent)
     : QTreeWidgetItem(parent, QStringList(itemTitle))
@@ -223,13 +224,13 @@ KPluginSelector::~KPluginSelector()
     delete d;
 }
 
-void KPluginSelector::addPlugins(const QString &instanceName,
+void KPluginSelector::addPlugins(const QString &componentName,
                                  const QString &categoryName,
                                  const QString &category,
-                                 KConfig *config)
+                                 KSharedConfig::Ptr config)
 {
     QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
-        instanceName + "/kpartplugins/*.desktop", true, false);
+        componentName + "/kpartplugins/*.desktop", true, false);
 
     QList<KPluginInfo*> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
 
@@ -238,7 +239,7 @@ void KPluginSelector::addPlugins(const QString &instanceName,
 
     Q_ASSERT(config);
     if (!config)
-        config = new KSimpleConfig(instanceName);
+        config = KSharedConfig::openConfig(componentName);
 
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
@@ -248,18 +249,18 @@ void KPluginSelector::addPlugins(const QString &instanceName,
     d->addPluginsInternal(pluginInfoList, categoryName, cfgGroup, category);
 }
 
-void KPluginSelector::addPlugins(const KInstance *instance,
+void KPluginSelector::addPlugins(const KComponentData &instance,
                                  const QString &categoryName,
                                  const QString &category,
-                                 KConfig *config)
+                                 const KSharedConfig::Ptr &config)
 {
-    addPlugins(instance->instanceName(), categoryName, category, config);
+    addPlugins(instance.componentName(), categoryName, category, config);
 }
 
 void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
                                  const QString &categoryName,
                                  const QString &category,
-                                 KConfig *config)
+                                 const KSharedConfig::Ptr &config)
 {
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;

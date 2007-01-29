@@ -25,6 +25,7 @@
 #include <QtCore/QMimeData>
 #include <QtDBus/QtDBus>
 #include <QtGui/QApplication>
+#include <kconfiggroup.h>
 
 /*
  * This class provides an automatic synchronization of the X11 Clipboard and Selection

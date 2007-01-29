@@ -38,6 +38,7 @@
 #include <kconfig.h>
 #include <kcursor.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 
 #if 0
 

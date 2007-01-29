@@ -24,6 +24,7 @@
 #include "objectdescription.h"
 #include "phonondefs_p.h"
 #include "backendinterface.h"
+#include <kconfiggroup.h>
 
 namespace Phonon
 {
@@ -41,10 +42,10 @@ QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) c
 {
 	//The devices need to be stored independently for every backend
     const KConfigGroup backendConfig(const_cast<KSharedConfig*>(m_config.data()),
-            QLatin1String("AudioOutputDevice_") + Factory::self()->identifier());
+            QLatin1String("AudioOutputDevice_") + Factory::identifier());
 
     //First we lookup the available devices directly from the backend
-    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend());
+    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::backend());
     QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
 
 	QList<int> defaultList = deviceIndexes.toList();
@@ -80,7 +81,7 @@ int GlobalConfig::audioOutputDeviceFor( Phonon::Category category ) const
 QList<int> GlobalConfig::audioCaptureDeviceList() const
 {
     //First we lookup the available devices directly from the backend
-    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::self()->backend());
+    BackendInterface *backendIface = qobject_cast<BackendInterface*>(Factory::backend());
     QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
 
     QList<int> defaultList = deviceIndexes.toList();
@@ -89,7 +90,7 @@ QList<int> GlobalConfig::audioCaptureDeviceList() const
     //Now the list from the phononrc file
     //The devices need to be stored independently for every backend
     const KConfigGroup backendConfig(const_cast<KSharedConfig*>(m_config.data()),
-            QLatin1String("AudioCaptureDevice_") + Factory::self()->identifier());
+            QLatin1String("AudioCaptureDevice_") + Factory::identifier());
     QList<int> deviceList = backendConfig.readEntry<QList<int> >(QLatin1String("DeviceOrder"), QList<int>());
     if (deviceList.isEmpty()) {
         //try to read from global group for defaults

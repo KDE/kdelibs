@@ -33,7 +33,7 @@
 
 // KDE
 #include <kdebug.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>

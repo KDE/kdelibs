@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <kaboutdata.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <QApplication>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -198,7 +198,7 @@ int main( int argc, char **argv )
 {
     KAboutData about("kconfigtestgui", "kconfigtestgui", "version");
     //KCmdLineArgs::init(argc, argv, &about);
-    KInstance instance(&about);
+    KComponentData cData(&about);
 
     QApplication app( argc, argv );
 

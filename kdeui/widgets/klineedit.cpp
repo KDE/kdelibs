@@ -48,6 +48,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOption>
+#include <kconfiggroup.h>
 
 #include "klineedit.moc"
 

@@ -26,7 +26,7 @@
 #include <ktoolinvocation.h>
 #include <kurl.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 
 #include "jobclasses.h"
@@ -85,13 +85,13 @@ int Observer::newJob(KJob *job, JobVisibility visibility, const QString &icon)
 
     if (job)
     {
-        KInstance *instance = KGlobal::instance();
+        KComponentData componentData = KGlobal::mainComponent();
 
         QString jobIcon;
         if (icon.isEmpty())
         {
             if (job->uiDelegate()->jobIcon().isEmpty())
-                kWarning() << "No icon set for a job launched from " << instance->aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
+                kWarning() << "No icon set for a job launched from " << componentData.aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
 
             jobIcon = job->uiDelegate()->jobIcon();
         }
@@ -101,8 +101,8 @@ int Observer::newJob(KJob *job, JobVisibility visibility, const QString &icon)
         }
 
         progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), visibility,
-                                        instance->aboutData()->appName(), jobIcon,
-                                        instance->aboutData()->programName());
+                                        componentData.aboutData()->appName(), jobIcon,
+                                        componentData.aboutData()->programName());
 
         m_dctJobs.insert(progressId, job); // Keep the result in a dict
         m_hashActions.insert(progressId, QHash<int, SlotCall>());
@@ -115,14 +115,14 @@ int Observer::newJob(KJob *job, JobVisibility visibility, const QString &icon)
 
 int Observer::newJob(const QString &icon)
 {
-    KInstance *instance = KGlobal::instance();
+    KComponentData componentData = KGlobal::mainComponent();
     QString jobIcon = icon;
 
     if (icon.isEmpty())
-        jobIcon = instance->aboutData()->appName();
+        jobIcon = componentData.aboutData()->appName();
 
     int progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), true,
-                                         instance->aboutData()->appName(), jobIcon, instance->aboutData()->programName());
+                                         componentData.aboutData()->appName(), jobIcon, componentData.aboutData()->programName());
 
     return progressId;
 }

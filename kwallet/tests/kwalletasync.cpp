@@ -3,7 +3,7 @@
 #include <qtimer.h>
 
 #include <kaboutdata.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -47,7 +47,7 @@ void WalletReceiver::walletOpened( bool got )
 int main( int argc, char *argv[] )
 {
 	KAboutData aboutData( "kwalletasync", "kwalletasync", "version" );
-	KInstance instance(&aboutData);
+	KComponentData componentData(&aboutData);
 	QApplication app( argc, argv );
 
 	// force name with D-BUS

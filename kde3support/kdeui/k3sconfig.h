@@ -22,12 +22,12 @@
 #include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
+#include <kconfig.h>
 
 class QCheckBox;
 class QComboBox;
 class QLabel;
 
-class KConfig;
 class K3SpellConfigPrivate;
 
 /**
@@ -268,7 +268,7 @@ class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellConfig : public QWidget
     QString qspdict;		// -p [dict]
     QStringList ignorelist;
     enum {rdictlist=3, rencoding=4, rhelp=6};
-    KConfig *kc;
+    KSharedConfig::Ptr kc;
     int iclient;            // defaults to ispell, may be aspell, too
 
     QCheckBox *cb0, *cb1, *cb2;

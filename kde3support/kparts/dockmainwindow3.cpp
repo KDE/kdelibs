@@ -24,7 +24,7 @@
 #include <kparts/part.h>
 #include <kparts/plugin.h>
 #include <kstatusbar.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
 #include <qapplication.h>
@@ -96,7 +96,7 @@ void DockMainWindow3::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    loadPlugins( this, this, KGlobal::instance() );
+    loadPlugins( this, this, KGlobal::mainComponent() );
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }
@@ -133,15 +133,15 @@ void DockMainWindow3::createShellGUI( bool create )
     if ( create )
     {
         if ( isHelpMenuEnabled() )
-            d->m_helpMenu = new KHelpMenu( this, instance()->aboutData(), true, actionCollection() );
+            d->m_helpMenu = new KHelpMenu( this, componentData().aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
-        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", instance() ) );
+        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", componentData() ) );
         if ( !f.isEmpty() )
             setXMLFile( f, true );
         else
         {
-            QString auto_file( instance()->instanceName() + "ui.rc" );
+            QString auto_file( componentData().componentName() + "ui.rc" );
             setXMLFile( auto_file, true );
         }
 

@@ -26,7 +26,7 @@
 
 #include <kdelibs_export.h>
 
-class KInstance;
+class KComponentData;
 
 namespace KParts
 {
@@ -251,7 +251,7 @@ protected:
    * The active instance is used by KBugReport and KAboutDialog.
    * Override if you really need to - usually you don't need to.
    */
-  virtual void setActiveInstance( KInstance * instance );
+  virtual void setActiveComponent(const KComponentData &instance);
 
 protected Q_SLOTS:
   /**

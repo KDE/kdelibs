@@ -44,7 +44,7 @@
 
 #include <qwindowdefs.h>
 #include <kglobal.h>
-#include <kinstance.h>
+#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
 #include <kapplication.h>
@@ -238,8 +238,8 @@ KCrash::defaultCrashHandler (int sig)
           argv[i++] = "--pid";
           argv[i++] = pidtxt;
 
-          const KInstance *instance = KGlobal::instance();
-          const KAboutData *about = instance ? instance->aboutData() : 0;
+          const KComponentData componentData = KGlobal::mainComponent();
+          const KAboutData *about = componentData.isValid() ? componentData.aboutData() : 0;
           char sidtxt[256];
           if (about) {
             if (about->internalVersion()) {
