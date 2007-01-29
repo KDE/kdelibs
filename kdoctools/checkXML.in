@@ -1,6 +1,0 @@
-#! /bin/sh
-
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exit `@bindir@/meinproc --check --stdout $@ > /dev/null`
-
