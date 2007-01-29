@@ -96,13 +96,6 @@ struct param_struct params[] =
 #define P_APP_STARTUP_ID 12
 #define P_LAST 13
 
-/* Prototypes */
-char *xmalloc(size_t);
-char *xrealloc(char *ptr, int size);
-int xsetenv(const char *name, const char *value);
-char *xstrdup(char *src);
-char **xstrsep(char *str);
-
 /**
  * Safe malloc functions.
  */
@@ -115,7 +108,7 @@ char *xmalloc(size_t size)
 }
 
 
-char *xrealloc(char *ptr, int size)
+char **xrealloc(char **ptr, int size)
 {
     ptr = realloc(ptr, size);
     if (ptr) return ptr;
