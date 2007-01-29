@@ -97,7 +97,7 @@ static bool isExecutable(const QString &exe)
 #ifdef Q_OS_WIN
     return ( exe.endsWith( ".exe" ) || exe.endsWith( ".bat" ) );
 #else
-    return ::access( QFile::encodeName( exe ), X_OK );
+    return (::access( QFile::encodeName( exe ), X_OK )==0);
 #endif
 }
 
