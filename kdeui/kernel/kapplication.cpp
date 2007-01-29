@@ -187,7 +187,7 @@ public:
   }
 
   Private()
-      : componentData(KCmdLineArgs::about),
+      : componentData(KCmdLineArgs::aboutData()),
       checkAccelerators(0),
       startup_id( "0" ),
       app_started_timer( 0 ),
