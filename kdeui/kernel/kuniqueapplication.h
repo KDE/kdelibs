@@ -105,10 +105,10 @@ public:
    *
    *    if (!KUniqueApplication::start()) {
    *       fprintf(stderr, "myAppName is already running!\n");
-   *       exit(0);
+   *       return 0;
    *    }
    *    KUniqueApplication a;
-   *    a.exec();
+   *    return a.exec();
    * }
    * \endcode
    * Note that it's not necessary to call start() explicitly. It will be
