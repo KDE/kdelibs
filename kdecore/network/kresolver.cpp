@@ -569,7 +569,7 @@ QString KResolver::errorString(int errorcode, int syserror)
   if (errorcode == Canceled)
     return i18n("request was canceled");
 
-  Q_ASSERT(int(SystemError) <= -(int)sizeof(messages_indices)/sizeof(messages_indices[0]));
+  Q_ASSERT(int(SystemError) <= -(int)(sizeof(messages_indices)/sizeof(messages_indices[0])));
   if (errorcode > 0 || errorcode < SystemError)
     return QString();
 
