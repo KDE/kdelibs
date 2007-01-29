@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -92,9 +92,9 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
   QString downloadurl = providerxml.attribute("downloadurl");
   QString uploadurl = providerxml.attribute("uploadurl");
   QString nouploadurl = providerxml.attribute("nouploadurl");
-  provider.setDownloadUrl(KURL(downloadurl));
-  provider.setUploadUrl(KURL(uploadurl));
-  provider.setNoUploadUrl(KURL(nouploadurl));
+  provider.setDownloadUrl(KUrl(downloadurl));
+  provider.setUploadUrl(KUrl(uploadurl));
+  provider.setNoUploadUrl(KUrl(nouploadurl));
 
   QString downloadlatest = providerxml.attribute("downloadurl-latest");
   QString downloadscore = providerxml.attribute("downloadurl-score");
@@ -103,7 +103,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
  
   // FIXME: what exactly is the following condition supposed to do?
   // FIXME: make sure new KUrl in KDE 4 handles this right
-  KURL iconurl(providerxml.attribute("icon"));
+  KUrl iconurl(providerxml.attribute("icon"));
   if(!iconurl.isValid()) iconurl.setPath(providerxml.attribute("icon"));
   provider.setIcon(iconurl);
 
@@ -117,7 +117,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
     }
     else if(e.tagName() == "title")
     {
-      provider.setName(e.text().stripWhiteSpace());
+      provider.setName(e.text().trimmed());
     }
   }
 

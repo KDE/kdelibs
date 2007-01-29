@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,12 +21,10 @@
 #ifndef KNEWSTUFF2_PROVIDER_LOADER_H
 #define KNEWSTUFF2_PROVIDER_LOADER_H
 
-#include "provider.h"
+#include <knewstuff2/provider.h>
 
-#include <qcstring.h>
 #include <qdom.h>
 #include <qobject.h>
-#include <qptrlist.h>
 #include <qstring.h>
 
 #include <kurl.h>
@@ -50,10 +48,8 @@ class KDE_EXPORT ProviderLoader : public QObject
   public:
     /**
      * Constructor.
-     *
-     * @param parentWidget the parent widget
      */
-    ProviderLoader( QWidget *parentWidget );
+    ProviderLoader();
 
     /**
      * Starts asynchronously loading the list of providers of the
@@ -64,22 +60,20 @@ class KDE_EXPORT ProviderLoader : public QObject
      *    we first try the ProvidersUrl from KGlobal::config, then we
      *    fall back to a hardcoded value.
      */
-    void load( const QString &type, const QString &providerList = QString::null );
+    void load(const QString &providersurl);
 
   signals:
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
-    void signalProvidersLoaded( KNS::Provider::List * );
+    void signalProvidersLoaded(KNS::Provider::List *);
     void signalProvidersFailed();
 
   protected slots:
-    void slotJobData( KIO::Job *, const QByteArray & );
-    void slotJobResult( KIO::Job * );
+    void slotJobData(KIO::Job *, const QByteArray &);
+    void slotJobResult(KIO::Job *);
 
   private:
-    QWidget *mParentWidget;
-
     QString mJobData;
 
     Provider::List mProviders;

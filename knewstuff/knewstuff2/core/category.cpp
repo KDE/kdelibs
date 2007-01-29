@@ -1,6 +1,6 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2006, 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -67,12 +67,12 @@ KTranslatable Category::description() const
   return mDescription;
 }
 
-void Category::setIcon(const KURL& icon)
+void Category::setIcon(const KUrl& icon)
 {
   mIcon = icon;
 }
 
-KURL Category::icon() const
+KUrl Category::icon() const
 {
   return mIcon;
 }

@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,12 +23,9 @@
 
 #include <knewstuff2/provider.h>
 
-//#include <kurl.h>
-
-#include <qcstring.h>
 #include <qdom.h>
 #include <qobject.h>
-#include <qptrlist.h>
+//#include <qlist.h>
 #include <qstring.h>
 
 namespace KIO { class Job; }

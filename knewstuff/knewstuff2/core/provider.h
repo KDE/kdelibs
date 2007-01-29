@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,10 +23,9 @@
 
 #include <kurl.h>
 
-#include <qcstring.h>
 #include <qdom.h>
 #include <qobject.h>
-#include <qptrlist.h>
+#include <qlist.h>
 #include <qstring.h>
 
 namespace KIO { class Job; }
@@ -47,7 +46,7 @@ namespace KNS {
 class KDE_EXPORT Provider
 {
   public:
-    typedef QPtrList<Provider> List;
+    typedef QList<Provider> List;
 
     /**
      * Constructor.
@@ -74,14 +73,14 @@ class KDE_EXPORT Provider
     /**
      * Sets the download URL.
      */
-    void setDownloadUrl( const KURL & );
+    void setDownloadUrl( const KUrl & );
 
     /**
      * Retrieves the download URL.
      *
      * @return download URL
      */
-    KURL downloadUrl() const;
+    KUrl downloadUrl() const;
 
     /**
      * Variant to retrieve 'tagged' download URLs.
@@ -89,19 +88,19 @@ class KDE_EXPORT Provider
      *
      * @return download specific URL
      */
-    KURL downloadUrlVariant( QString variant ) const;
+    KUrl downloadUrlVariant( QString variant ) const;
 
     /**
      * Sets the upload URL.
      */
-    void setUploadUrl( const KURL & );
+    void setUploadUrl( const KUrl & );
 
     /**
      * Retrieves the upload URL.
      *
      * @return upload URL
      */
-    KURL uploadUrl() const;
+    KUrl uploadUrl() const;
 
     /**
      * Sets the URL where a user is led if the provider does not support
@@ -109,7 +108,7 @@ class KDE_EXPORT Provider
      *
      * @see setNoUpload
      */
-    void setNoUploadUrl( const KURL & );
+    void setNoUploadUrl( const KUrl & );
 
     /**
      * Retrieves the URL where a user is led if the provider does not
@@ -117,7 +116,7 @@ class KDE_EXPORT Provider
      *
      * @return website URL
      */
-    KURL noUploadUrl() const;
+    KUrl noUploadUrl() const;
 
     /**
      * Indicate whether provider supports uploads.
@@ -136,25 +135,25 @@ class KDE_EXPORT Provider
      * The icon should be in 32x32 format. If not set, the default icon
      * of KDialogBase is used.
      */
-    void setIcon( const KURL & );
+    void setIcon( const KUrl & );
 
     /**
      * Retrieves the icon URL for this provider.
      *
      * @return icon URL
      */
-    KURL icon() const;
+    KUrl icon() const;
 
   private:
     QString mName;
-    KURL mDownloadUrl;
-    KURL mUploadUrl;
-    KURL mNoUploadUrl;
-    KURL mIcon;
+    KUrl mDownloadUrl;
+    KUrl mUploadUrl;
+    KUrl mNoUploadUrl;
+    KUrl mIcon;
     bool mNoUpload;
-    KURL mDownloadUrlLatest;
-    KURL mDownloadUrlScore;
-    KURL mDownloadUrlDownloads;
+    KUrl mDownloadUrlLatest;
+    KUrl mDownloadUrlScore;
+    KUrl mDownloadUrlDownloads;
 
     class ProviderPrivate *d;
 };

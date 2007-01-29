@@ -1,6 +1,6 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2006, 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -83,19 +83,19 @@ class Category
     /**
      * Sets the icon.
      */
-    void setIcon(const KURL& icon);
+    void setIcon(const KUrl& icon);
 
     /**
      * Retrieve the icon of the category.
      *
      * @return category icon
      */
-    KURL icon() const;
+    KUrl icon() const;
 
   private:
     KTranslatable mName;
     KTranslatable mDescription;
-    KURL mIcon;
+    KUrl mIcon;
     QString mId;
 
     class CategoryPrivate *d;

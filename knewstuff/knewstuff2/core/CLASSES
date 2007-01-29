@@ -13,4 +13,5 @@ Parser/dumper classes:
 
 Engine classes (asynchronous, therefore qobjects):
  ProviderLoader
+ Engine
 

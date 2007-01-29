@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +23,8 @@
 
 #include "providerhandler.h"
 
+#include <qbytearray.h>
+
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kio/job.h>
@@ -32,36 +34,20 @@
 
 using namespace KNS;
 
-ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
-  mParentWidget( parentWidget )
+ProviderLoader::ProviderLoader()
 {
-  mProviders.setAutoDelete( true );
 }
 
-void ProviderLoader::load( const QString &type, const QString &providersList )
+void ProviderLoader::load(const QString &providersurl)
 {
-  Q_UNUSED(type);
-
-  kdDebug(5850) << "ProviderLoader::load()" << endl;
+  kDebug(550) << "ProviderLoader::load()" << endl;
 
   mProviders.clear();
   mJobData = "";
 
-  KConfig *cfg = KGlobal::config();
-  cfg->setGroup("KNewStuff");
-
-  QString providersUrl = providersList;
-  if( providersUrl.isEmpty() )
-  	providersUrl = cfg->readEntry( "ProvidersUrl" );
-
-  if ( providersUrl.isEmpty() ) {
-    emit signalProvidersFailed();
-    return;
-  }
-
-  kdDebug(5850) << "ProviderLoader::load(): providersUrl: " << providersUrl << endl;
+  kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl << endl;
   
-  KIO::TransferJob *job = KIO::get( KURL( providersUrl ), false, false );
+  KIO::TransferJob *job = KIO::get( KUrl( providersurl ), false, false );
   connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
@@ -72,37 +58,34 @@ void ProviderLoader::load( const QString &type, const QString &providersList )
 
 void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kdDebug(5850) << "ProviderLoader::slotJobData()" << endl;
+  kDebug(550) << "ProviderLoader::slotJobData()" << endl;
 
   if ( data.size() == 0 ) return;
 
-  QCString str( data, data.size() + 1 );
-
-  mJobData.append( QString::fromUtf8( str ) );
+  mJobData.append( QString::fromUtf8( data ) );
 // FIXME: utf-8 conversion only at the end!!!
 }
 
 void ProviderLoader::slotJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    //job->showErrorDialog( mParentWidget );
     emit signalProvidersFailed();
     return;
   }
 
-  kdDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
+  kDebug(550) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
             << endl;
 
   QDomDocument doc;
   if ( !doc.setContent( mJobData ) ) {
-    KMessageBox::error( mParentWidget, i18n("Error parsing providers list.") );
+    emit signalProvidersFailed();
     return;
   }
 
   QDomElement providers = doc.documentElement();
 
   if ( providers.isNull() ) {
-    kdDebug(5850) << "No document in Providers.xml." << endl;
+    kDebug(550) << "No document in Providers.xml." << endl;
   }
 
   QDomNode n;
@@ -111,7 +94,7 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
  
     if ( p.tagName() == "provider" ) {
       ProviderHandler handler(p);
-      mProviders.append(handler.providerptr());
+      mProviders.append(*handler.providerptr());
     }
   }
   

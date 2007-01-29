@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,7 +45,7 @@ Provider::~Provider()
 {
 }
 
-KURL Provider::downloadUrlVariant( QString variant ) const
+KUrl Provider::downloadUrlVariant( QString variant ) const
 {
   if((variant == "latest") && (mDownloadUrlLatest.isValid()))
 	return mDownloadUrlLatest;
@@ -67,42 +67,42 @@ QString Provider::name() const
   return mName;
 }
 
-void Provider::setIcon( const KURL &url )
+void Provider::setIcon( const KUrl &url )
 {
   mIcon = url;
 }
 
-KURL Provider::icon() const
+KUrl Provider::icon() const
 {
   return mIcon;
 }
 
-void Provider::setDownloadUrl( const KURL &url )
+void Provider::setDownloadUrl( const KUrl &url )
 {
   mDownloadUrl = url;
 }
 
-KURL Provider::downloadUrl() const
+KUrl Provider::downloadUrl() const
 {
   return mDownloadUrl;
 }
 
-void Provider::setUploadUrl( const KURL &url )
+void Provider::setUploadUrl( const KUrl &url )
 {
   mUploadUrl = url;
 }
 
-KURL Provider::uploadUrl() const
+KUrl Provider::uploadUrl() const
 {
   return mUploadUrl;
 }
 
-void Provider::setNoUploadUrl( const KURL &url )
+void Provider::setNoUploadUrl( const KUrl &url )
 {
   mNoUploadUrl = url;
 }
 
-KURL Provider::noUploadUrl() const
+KUrl Provider::noUploadUrl() const
 {
   return mNoUploadUrl;
 }

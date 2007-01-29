@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2006 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -146,28 +146,28 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     if(e.tagName() == "name")
     {
       QString lang = e.attribute("lang");
-      name.addString(lang, e.text().stripWhiteSpace());
+      name.addString(lang, e.text().trimmed());
     }
     else if(e.tagName() == "author")
     {
       Author author;
       QString email = e.attribute("email");
-      author.setName(e.text().stripWhiteSpace());
+      author.setName(e.text().trimmed());
       author.setEmail(email);
       entry.setAuthor(author);
     }
     else if(e.tagName() == "licence")
     {
-      entry.setLicense(e.text().stripWhiteSpace());
+      entry.setLicense(e.text().trimmed());
     }
     else if(e.tagName() == "summary")
     {
       QString lang = e.attribute("lang");
-      summary.addString(lang, e.text().stripWhiteSpace());
+      summary.addString(lang, e.text().trimmed());
     }
     else if(e.tagName() == "version")
     {
-      entry.setVersion(e.text().stripWhiteSpace());
+      entry.setVersion(e.text().trimmed());
     }
     else if(e.tagName() == "release")
     {
@@ -175,18 +175,18 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     }
     else if(e.tagName() == "releasedate")
     {
-      QDate date = QDate::fromString(e.text().stripWhiteSpace(), Qt::ISODate);
+      QDate date = QDate::fromString(e.text().trimmed(), Qt::ISODate);
       entry.setReleaseDate(date);
     }
     else if(e.tagName() == "preview")
     {
       QString lang = e.attribute("lang");
-      preview.addString(lang, e.text().stripWhiteSpace());
+      preview.addString(lang, e.text().trimmed());
     }
     else if(e.tagName() == "payload")
     {
       QString lang = e.attribute("lang");
-      payload.addString(lang, e.text().stripWhiteSpace());
+      payload.addString(lang, e.text().trimmed());
     }
     else if(e.tagName() == "rating")
     {
