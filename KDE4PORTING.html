@@ -154,17 +154,19 @@ instead.</li>
 
 <h4>KApplication</h4>
 <p>Moved to kdeui. This means no change for GUI applications.
-For text-based applications, you should consider switching to QCoreApplication + KInstance.
+For text-based applications, you should consider switching to QCoreApplication + KComponentData.
 There are two cases:
 <ul>
 	<li>Command-line argument parsing needed: use KCmdLineArgs as usual and then
 	<pre>QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );</pre></li>
-	<li>No command-line argument parsing needed: simply create a KInstance (with &amp;aboutData or just a name),
+	<li>No command-line argument parsing needed: simply create a KComponentData (with &amp;aboutData or just a name),
 	and then use <pre>QCoreApplication app( argc, argv );</pre>
 	</li>
 </ul>
 <p>Of course if you don't create a KApplication, then you should turn any "kapp-&gt;" into "qApp-&gt;" in the
 rest of the code.</p>
+<p>KApplication does not inherit KInstance/KComponentData anymore. The object is available through
+KGlobal::mainComponent().</p>
 
 <h4>KAudioPlayer</h4>
 <p>Removed, use now Phonon::AudioPlayer</p>
@@ -258,7 +260,7 @@ config-&gt;readXXX("entry name");
 </pre>
 should be rewritten as:
 <pre>
-KConfig *config = KGlobal::config();
+KSharedConfig::Ptr config = KGlobal::config();
 KConfigGroup cg(config, "group name");
   ...
 cg.readXXX("entry name");
@@ -298,6 +300,14 @@ Desktop Entry Spec</a>
 <ul>
 <li>&quot;int kasciistricmp( const char *str1, const char *str2 )&quot; has been moved into kascii.h</li>
 <li>&quot;KIconLoader* iconLoader()&quot; has been moved to KIconLoader::global()</li>
+<li>instance() renamed to mainComponent()</li>
+<li>activeInstance() renamed to activeComponent()</li>
+<li>setActiveInstance() renamed to setActiveComponent()</li>
+<li>static members _locale, _instance and so on are private now, if you want to get or set the
+KLocale use locale()/setLocale()/hasLocale() and if you want to know whether a mainComponent is set use
+hasMainComponent()</li>
+<li>config() returns a KSharedConfig::Ptr now instead of KConfig*</li>
+<li>sharedConfig() has been removed in favour of config()</li>
 </ul>
 
 <h4>KGlobalAccel</h4>
@@ -326,11 +336,16 @@ Desktop Entry Spec</a>
 Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
 on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
 With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.
-These deprecated methods were also altered to not take a KInstance*, which was an optional parameter in KDE3.</li>
+These deprecated methods were also altered to not take a KComponentData (KInstance* in KDE3), which was an optional parameter in KDE3.</li>
 </ul>
 
 <h4>KInstance</h4>
 <ul>
+<li>renamed to KComponentData</li>
+<li>value based class using shared data: In KDE4 don't work with pointers to KComponentData anymore.
+Internally it is reference counted and the data deleted when the last reference goes out of scope.</li>
+<li>config() returns a KSharedConfigPtr</li>
+<li>sharedConfig() was removed in favour of config()</li>
 <li>iconLoader() was moved to KApplication</li>
 <li>newIconLoader() was moved to KApplication</li>
 </ul>
