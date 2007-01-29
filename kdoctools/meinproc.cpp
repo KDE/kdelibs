@@ -153,12 +153,12 @@ int main(int argc, char **argv) {
 #if defined( XMLLINT )
         exe = XMLLINT;
 #endif
-        if ( ::access( QFile::encodeName( exe ), X_OK ) ) {
+        if ( (::access( QFile::encodeName( exe ), X_OK )!=0) ) {
             exe = KStandardDirs::findExe( "xmllint" );
             if (exe.isEmpty())
                 exe = locate( "exe", "xmllint" );
         }
-        if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
+        if ( ::access( QFile::encodeName( exe ), X_OK )==0 ) {
             chdir( QFile::encodeName( file.dirPath( true ) ) );
             QString cmd = exe;
             cmd += " --catalogs --valid --noout ";
