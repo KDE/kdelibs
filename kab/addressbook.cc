@@ -189,7 +189,7 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
 	 ||
 	 !fields->insert
 	 (map<const char*, QString, less<const char*> >::value_type
-	 (Fields[counter++], i18n("Address"))).second
+	 (Fields[counter++], i18n("street/postal","Address"))).second
 	 ||
 	 !fields->insert
 	 (map<const char*, QString, less<const char*> >::value_type
@@ -260,7 +260,7 @@ bool AddressBook::Entry::nameOfField(const char* key, QString& value)
       Q_CHECK_PTR(fields);
       if(!fields->insert
 	 (map<const char*, QString, less<const char*> >::value_type
-	  (Fields[counter++], i18n("Title"))).second
+	  (Fields[counter++], i18n("person","Title"))).second
 	 ||
 	 !fields->insert
 	 (map<const char*, QString, less<const char*> >::value_type

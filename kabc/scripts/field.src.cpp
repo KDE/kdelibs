@@ -98,7 +98,7 @@ QString Field::categoryLabel( int category )
     case Frequent:
       return i18n("Frequent");
     case Address:
-      return i18n("Address");
+      return i18n("street/postal","Address");
     case Email:
       return i18n("Email");
     case Personal:
