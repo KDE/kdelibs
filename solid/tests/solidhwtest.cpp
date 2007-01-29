@@ -27,6 +27,7 @@
 #include <solid/devicemanager.h>
 #include <solid/device.h>
 #include <solid/processor.h>
+#include <solid/volume.h>
 #include <solid/predicate.h>
 
 #include <fakemanager.h>
@@ -287,6 +288,43 @@ void SolidHwTest::testDeviceCapabilities()
     QCOMPARE( iface, processor );
 }
 
+void SolidHwTest::testCapabilityIntrospection_data()
+{
+    QTest::addColumn<QString>("name");
+    QTest::addColumn<int>("value");
+
+    QTest::newRow("Capability: Unknown") << "Unknown" << (int)Solid::Capability::Unknown;
+    QTest::newRow("Capability: Processor") << "Processor" << (int)Solid::Capability::Processor;
+    QTest::newRow("Capability: Block") << "Block" << (int)Solid::Capability::Block;
+    QTest::newRow("Capability: Storage") << "Storage" << (int)Solid::Capability::Storage;
+    QTest::newRow("Capability: Cdrom") << "Cdrom" << (int)Solid::Capability::Cdrom;
+    QTest::newRow("Capability: Volume") << "Volume" << (int)Solid::Capability::Volume;
+    QTest::newRow("Capability: OpticalDisc") << "OpticalDisc" << (int)Solid::Capability::OpticalDisc;
+    QTest::newRow("Capability: Camera") << "Camera" << (int)Solid::Capability::Camera;
+    QTest::newRow("Capability: PortableMediaPlayer") << "PortableMediaPlayer" << (int)Solid::Capability::PortableMediaPlayer;
+    QTest::newRow("Capability: NetworkHw") << "NetworkHw" << (int)Solid::Capability::NetworkHw;
+    QTest::newRow("Capability: AcAdapter") << "AcAdapter" << (int)Solid::Capability::AcAdapter;
+    QTest::newRow("Capability: Battery") << "Battery" << (int)Solid::Capability::Battery;
+    QTest::newRow("Capability: Button") << "Button" << (int)Solid::Capability::Button;
+    QTest::newRow("Capability: Display") << "Display" << (int)Solid::Capability::Display;
+    QTest::newRow("Capability: AudioHw") << "AudioHw" << (int)Solid::Capability::AudioHw;
+}
+
+void SolidHwTest::testCapabilityIntrospection()
+{
+    QFETCH(QString, name);
+    QFETCH(int, value);
+
+    QCOMPARE(Solid::Capability::typeToString((Solid::Capability::Type)value), name);
+    QCOMPARE((int)Solid::Capability::stringToType(name), value);
+}
+
+void SolidHwTest::testCapabilityIntrospectionCornerCases()
+{
+    QCOMPARE(Solid::Capability::typeToString((Solid::Capability::Type)-1), QString());
+    QCOMPARE((int)Solid::Capability::stringToType("blup"), -1);
+}
+
 static QSet<QString> to_string_set(const Solid::DeviceList &list)
 {
     QSet<QString> res;
@@ -317,13 +355,28 @@ void SolidHwTest::testPredicate()
     QVERIFY( p3.matches( dev ) );
     QVERIFY( !p4.matches( dev ) );
 
+    Solid::Predicate p6 = Solid::Predicate::fromString( "Volume.usage == 'Other'" );
+    Solid::Predicate p7 = Solid::Predicate::fromString( QString("Volume.usage == %1").arg((int)Solid::Volume::Other) );
+    QVERIFY( !p6.matches( dev ) );
+    QVERIFY( !p7.matches( dev ) );
+    dev = Solid::Device( "/org/kde/solid/fakehw/volume_part2_size_1024" );
+    QVERIFY( p6.matches( dev ) );
+    QVERIFY( p7.matches( dev ) );
 
+    Solid::Predicate p8 = Solid::Predicate::fromString( "AudioHw.deviceType == 'AudioInput|AudioOutput'" );
+    Solid::Predicate p9 = Solid::Predicate::fromString( "AudioHw.deviceType == 'AudioInput'" );
+    Solid::Predicate p10 = Solid::Predicate::fromString( "AudioHw.deviceType & 'AudioInput'" );
+    QVERIFY( !p8.matches( dev ) );
+    QVERIFY( !p9.matches( dev ) );
+    QVERIFY( !p10.matches( dev ) );
+    dev = Solid::Device( "/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0" );
+    QVERIFY( p8.matches( dev ) );
+    QVERIFY( !p9.matches( dev ) );
+    QVERIFY( p10.matches( dev ) );
 
     QString str_pred = "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
     QCOMPARE( Solid::Predicate::fromString( str_pred ).toString(), str_pred );
-
-
 
 
     QString parentUdi = "/org/kde/solid/fakehw/storage_model_solid_reader";
@@ -372,10 +425,6 @@ void SolidHwTest::testPredicate()
 
     list = manager.findDevicesFromQuery( "[Processor.number==1 OR IS Volume]",
                                          parentUdi );
-
-    foreach (Solid::Device dev, list) {
-        kDebug() << dev.udi() << endl;
-    }
 
     QSet<QString> set;
 

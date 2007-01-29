@@ -36,6 +36,9 @@ private slots:
     void testDeviceLocking();
     void testManagerSignals();
     void testDeviceSignals();
+    void testCapabilityIntrospection_data();
+    void testCapabilityIntrospection();
+    void testCapabilityIntrospectionCornerCases();
     void testDeviceCapabilities();
     void testPredicate();
 
