@@ -362,7 +362,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList);
+K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
 KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName, bool bReadOnly,
         bool bUseKDEGlobals, const char *resType)
