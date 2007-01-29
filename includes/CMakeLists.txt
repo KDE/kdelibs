@@ -45,11 +45,13 @@ install( FILES
   K3Wizard
   KACL
   KAboutApplication
+  KAboutApplicationDialog
   KAboutContainer
   KAboutContributor
   KAboutData
   KAboutDialog
   KAboutKDE
+  KAboutKDEDialog
   KAboutPerson
   KAboutTranslator
   KAboutWidget
