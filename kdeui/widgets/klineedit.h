@@ -524,9 +524,11 @@ protected:
     virtual void contextMenuEvent( QContextMenuEvent * );
 
     /**
-    * To modify context menu overwrite this function.
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QLineEdit::createStandardContextMenu().
     */
-    virtual QMenu* createStandardContextMenu();
+    QMenu* createStandardContextMenu();
 
     /**
     * Re-implemented to handle URI drops.
