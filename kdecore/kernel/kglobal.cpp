@@ -108,7 +108,7 @@ void KGlobalPrivate::deleteStaticDeleters()
     staticDeleters = 0;
 }
 
-K_GLOBAL_STATIC(KGlobalPrivate, globalData);
+K_GLOBAL_STATIC(KGlobalPrivate, globalData)
 
 #define PRIVATE_DATA KGlobalPrivate *d = globalData
 
