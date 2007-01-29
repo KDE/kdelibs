@@ -244,7 +244,11 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 
     // fe->setScale( scale );
 
-    QFontCache::Key key( request, script, fp->screen );
+    QFontCache::Key key( request, script, fp->screen
+#if QT_VERSION >= 0x030308
+                         , fp->paintdevice
+#endif
+                         );
     QFontCache::instance->insertEngine( key, fe );
     return fe;
 }
