@@ -1,0 +1,1 @@
+#define XMLLINT "${XMLLINT_EXECUTABLE}"

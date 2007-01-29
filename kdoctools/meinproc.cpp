@@ -4,6 +4,7 @@
 extern int xmlLoadExtDtdDefaultValue;
 #endif
 
+#include <config-kdoctools.h>
 #include <config.h>
 #include <string.h>
 #include <sys/time.h>
