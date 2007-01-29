@@ -45,6 +45,14 @@ namespace Solid
     {
     public:
         /**
+         * The comparison operator which can be used for matching within the predicate.
+         *
+         * - Equals, the property and the value will match for strict equality
+         * - Mask, the property and the value will match if the bitmasking is not null
+         */
+        enum ComparisonOperator { Equals, Mask };
+
+        /**
          * Constructs an invalid predicate.
          */
         Predicate();
@@ -63,9 +71,11 @@ namespace Solid
          * @param capability the capability the device must have
          * @param property the property name of the capability
          * @param value the value the property must have to make the device match
+         * @param compOperator the operator to apply between the property and the value when matching
          */
         Predicate( const Capability::Type &capability,
-                   const QString &property, const QVariant &value );
+                   const QString &property, const QVariant &value,
+                   ComparisonOperator compOperator = Equals );
 
         /**
          * Constructs a predicate matching the value of a property in
@@ -74,9 +84,11 @@ namespace Solid
          * @param capability the capability the device must have
          * @param property the property name of the capability
          * @param value the value the property must have to make the device match
+         * @param compOperator the operator to apply between the property and the value when matching
          */
         Predicate( const QString &capability,
-                   const QString &property, const QVariant &value );
+                   const QString &property, const QVariant &value,
+                   ComparisonOperator compOperator = Equals );
 
         /**
          * Constructs a predicate matching devices being of a particular capability

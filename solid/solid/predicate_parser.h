@@ -40,26 +40,28 @@
       know about them.  */
    enum yytokentype {
      EQ = 258,
-     AND = 259,
-     OR = 260,
-     IS = 261,
-     VAL_BOOL = 262,
-     VAL_STRING = 263,
-     VAL_ID = 264,
-     VAL_NUM = 265,
-     VAL_FLOAT = 266
+     MASK = 259,
+     AND = 260,
+     OR = 261,
+     IS = 262,
+     VAL_BOOL = 263,
+     VAL_STRING = 264,
+     VAL_ID = 265,
+     VAL_NUM = 266,
+     VAL_FLOAT = 267
    };
 #endif
 /* Tokens.  */
 #define EQ 258
-#define AND 259
-#define OR 260
-#define IS 261
-#define VAL_BOOL 262
-#define VAL_STRING 263
-#define VAL_ID 264
-#define VAL_NUM 265
-#define VAL_FLOAT 266
+#define MASK 259
+#define AND 260
+#define OR 261
+#define IS 262
+#define VAL_BOOL 263
+#define VAL_STRING 264
+#define VAL_ID 265
+#define VAL_NUM 266
+#define VAL_FLOAT 267
 
 
 
@@ -75,7 +77,7 @@ typedef union YYSTYPE
      void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 79 "predicate_parser.tab.h"
+#line 81 "predicate_parser.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

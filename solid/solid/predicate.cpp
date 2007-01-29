@@ -22,6 +22,8 @@
 #include <solid/device.h>
 #include <solid/capability.h>
 #include <QStringList>
+#include <QMetaProperty>
+#include <QMetaEnum>
 
 namespace Solid
 {
@@ -31,7 +33,8 @@ namespace Solid
         enum OperatorType { AtomType, AndType, OrType, IsType };
 
         Private() : isValid( false ), type( AtomType ),
-                    operand1( 0 ), operand2( 0 ) {}
+                    operand1( 0 ), operand2( 0 ),
+                    compOperator( Predicate::Equals ) {}
 
         bool isValid;
         OperatorType type;
@@ -39,6 +42,7 @@ namespace Solid
         Capability::Type capability;
         QString property;
         QVariant value;
+        Predicate::ComparisonOperator compOperator;
 
         Predicate *operand1;
         Predicate *operand2;
@@ -58,41 +62,31 @@ Solid::Predicate::Predicate( const Predicate &other )
 }
 
 Solid::Predicate::Predicate( const Capability::Type &capability,
-                             const QString &property, const QVariant &value )
+                             const QString &property, const QVariant &value,
+                             ComparisonOperator compOperator )
     : d( new Private() )
 {
     d->isValid = true;
     d->capability = capability;
     d->property = property;
     d->value = value;
+    d->compOperator = compOperator;
 }
 
 Solid::Predicate::Predicate( const QString &capability,
-                             const QString &property, const QVariant &value )
+                             const QString &property, const QVariant &value,
+                             ComparisonOperator compOperator )
     : d( new Private() )
 {
-    QMap<QString, Capability::Type> map;
-    map["Processor"] = Capability::Processor;
-    map["Block"] = Capability::Block;
-    map["Storage"] = Capability::Storage;
-    map["Cdrom"] = Capability::Cdrom;
-    map["Volume"] = Capability::Volume;
-    map["OpticalDisc"] = Capability::OpticalDisc;
-    map["Camera"] = Capability::Camera;
-    map["PortableMediaPlayer"] = Capability::PortableMediaPlayer;
-    map["NetworkHw"] = Capability::NetworkHw;
-    map["AcAdapter"] = Capability::AcAdapter;
-    map["Battery"] = Capability::Battery;
-    map["Button"] = Capability::Button;
-    map["Display"] = Capability::Display;
-    map["AudioHw"] = Capability::AudioHw;
+    Capability::Type cap_type = Capability::stringToType(capability);
 
-    if ( map.contains( capability ) )
+    if ( ((int)cap_type)!=-1 )
     {
         d->isValid = true;
-        d->capability = map[capability];
+        d->capability = cap_type;
         d->property = property;
         d->value = value;
+        d->compOperator = compOperator;
     }
 }
 
@@ -107,27 +101,13 @@ Solid::Predicate::Predicate( const Capability::Type &capability )
 Solid::Predicate::Predicate( const QString &capability )
     : d( new Private() )
 {
-    QMap<QString, Capability::Type> map;
-    map["Processor"] = Capability::Processor;
-    map["Block"] = Capability::Block;
-    map["Storage"] = Capability::Storage;
-    map["Cdrom"] = Capability::Cdrom;
-    map["Volume"] = Capability::Volume;
-    map["OpticalDisc"] = Capability::OpticalDisc;
-    map["Camera"] = Capability::Camera;
-    map["PortableMediaPlayer"] = Capability::PortableMediaPlayer;
-    map["NetworkHw"] = Capability::NetworkHw;
-    map["AcAdapter"] = Capability::AcAdapter;
-    map["Battery"] = Capability::Battery;
-    map["Button"] = Capability::Button;
-    map["Display"] = Capability::Display;
-    map["AudioHw"] = Capability::AudioHw;
+    Capability::Type cap_type = Capability::stringToType(capability);
 
-    if ( map.contains( capability ) )
+    if ( ((int)cap_type)!=-1 )
     {
         d->isValid = true;
         d->type = Private::IsType;
-        d->capability = map[capability];
+        d->capability = cap_type;
     }
 }
 
@@ -156,6 +136,7 @@ Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
         d->capability = other.d->capability;
         d->property = other.d->property;
         d->value = other.d->value;
+        d->compOperator = other.d->compOperator;
     }
 
     return *this;
@@ -209,7 +190,26 @@ bool Solid::Predicate::matches( const Device &device ) const
         if ( iface!=0 )
         {
             QVariant value = iface->property( d->property.toLatin1() );
-            return ( value == d->value );
+            QVariant expected = d->value;
+
+            int index = iface->metaObject()->indexOfProperty(d->property.toLatin1());
+            QMetaProperty metaProp = iface->metaObject()->property(index);
+
+            if (metaProp.isEnumType() && expected.type()==QVariant::String) {
+                QMetaEnum metaEnum = metaProp.enumerator();
+                expected = QVariant( metaEnum.keysToValue(d->value.toString().toLatin1()) );
+            }
+
+            if (d->compOperator==Mask) {
+                bool v_ok;
+                int v = value.toInt(&v_ok);
+                bool e_ok;
+                int e = expected.toInt(&e_ok);
+
+                return (e_ok && v_ok && (v&e));
+            } else {
+                return (value == expected);
+            }
         }
         break;
     }
@@ -258,55 +258,9 @@ QString Solid::Predicate::toString() const
     }
     else
     {
-        QString capability = "Unknown";
+        QString capability = Capability::typeToString(d->capability);
 
-        switch( d->capability )
-        {
-        case Capability::Processor:
-            capability = "Processor";
-            break;
-        case Capability::Block:
-            capability = "Block";
-            break;
-        case Capability::Storage:
-            capability = "Storage";
-            break;
-        case Capability::Cdrom:
-            capability = "Cdrom";
-            break;
-        case Capability::Volume:
-            capability = "Volume";
-            break;
-        case Capability::OpticalDisc:
-            capability = "OpticalDisc";
-            break;
-        case Capability::Camera:
-            capability = "Camera";
-            break;
-        case Capability::PortableMediaPlayer:
-            capability = "PortableMediaPlayer";
-            break;
-        case Capability::NetworkHw:
-            capability = "NetworkHw";
-            break;
-        case Capability::AcAdapter:
-            capability = "AcAdapter";
-            break;
-        case Capability::Battery:
-            capability = "Battery";
-            break;
-        case Capability::Button:
-            capability = "Button";
-            break;
-        case Capability::Display:
-            capability = "Display";
-            break;
-        case Capability::AudioHw:
-            capability = "AudioHw";
-            break;
-        case Capability::Unknown:
-            break;
-        }
+        if (capability.isEmpty()) capability = "Unknown";
 
         if (d->type==Private::IsType) {
             return "IS "+capability;
@@ -352,7 +306,11 @@ QString Solid::Predicate::toString() const
             break;
         }
 
-        return capability+'.'+d->property+" == "+value;
+        QString str_operator = "==";
+        if (d->compOperator!=Equals) str_operator = "&";
+
+
+        return capability+'.'+d->property+" "+str_operator+" "+value;
     }
 }
 

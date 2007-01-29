@@ -16,6 +16,7 @@ DIGIT [0-9]
 %%
 
 "==" { return EQ; }
+"&" { return MASK; }
 
 "AND" { return AND; }
 "OR" { return OR; }

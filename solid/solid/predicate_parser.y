@@ -20,6 +20,7 @@ void PredicateParse_mainParse( const char *_code );
 }
 
 %token EQ
+%token MASK
 
 %token AND
 %token OR
@@ -46,6 +47,7 @@ predicate: predicate_atom { PredicateParse_setResult( $<ptr>1 ); $$ = $<ptr>1; }
          | '[' predicate_and ']' { PredicateParse_setResult( $<ptr>2 ); $$ = $<ptr>2; }
 
 predicate_atom: VAL_ID '.' VAL_ID EQ value { $$ = PredicateParse_newAtom( $<name>1, $<name>3, $<ptr>5 ); }
+              | VAL_ID '.' VAL_ID MASK value { $$ = PredicateParse_newMaskAtom( $<name>1, $<name>3, $<ptr>5 ); }
               | IS VAL_ID { $$ = PredicateParse_newIsAtom( $<name>2 ); }
 
 predicate_or: predicate OR predicate { $$ = PredicateParse_newOr( $<ptr>1, $<ptr>3 ); }

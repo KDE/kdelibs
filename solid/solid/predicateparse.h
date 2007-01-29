@@ -24,6 +24,7 @@ void PredicateParse_setResult( void *result );
 void PredicateParse_errorDetected();
 
 void *PredicateParse_newAtom( char *capability, char *property, void *value );
+void *PredicateParse_newMaskAtom( char *capability, char *property, void *value );
 void *PredicateParse_newIsAtom( char *capability );
 void *PredicateParse_newAnd( void *pred1, void *pred2 );
 void *PredicateParse_newOr( void *pred1, void *pred2 );
