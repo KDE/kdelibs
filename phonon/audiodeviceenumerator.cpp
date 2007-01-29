@@ -76,25 +76,23 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 
     QSet<QString> alreadyFoundCards;
 
-    Solid::DeviceList devices = manager.findDevicesFromQuery(Solid::Capability::AudioHw);
+    Solid::DeviceList devices = manager.findDevicesFromQuery("AudioHw.deviceType & 'AudioInput|AudioOutput'");
     foreach (Solid::Device device, devices) {
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
-        if (audiohw->deviceType() & Solid::AudioHw::AudioOutput || audiohw->deviceType() & Solid::AudioHw::AudioInput) {
-            AudioDevice dev(audiohw, config);
-            if (dev.isValid()) {
-                if (dev.isCaptureDevice()) {
-                    capturedevicelist << dev;
-                    if (dev.isPlaybackDevice()) {
-                        playbackdevicelist << dev;
-                        alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.cardName();
-                    } else {
-                        alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
-                    }
-                } else {
+        AudioDevice dev(audiohw, config);
+        if (dev.isValid()) {
+            if (dev.isCaptureDevice()) {
+                capturedevicelist << dev;
+                if (dev.isPlaybackDevice()) {
                     playbackdevicelist << dev;
-                    alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.cardName();
+                    alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.cardName();
+                } else {
+                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
                 }
+            } else {
+                playbackdevicelist << dev;
+                alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.cardName();
             }
         }
     }
