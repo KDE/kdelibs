@@ -66,7 +66,7 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
     // a problem for unit testing.
     foreach ( const QString &capability, d->capabilityList )
     {
-        Solid::Capability::Type type = FakeCapability::fromString( capability );
+        Solid::Capability::Type type = Solid::Capability::stringToType( capability );
         createCapability( type );
     }
 }
@@ -193,7 +193,7 @@ void FakeDevice::raiseCondition( const QString &condition, const QString &reason
 
 bool FakeDevice::queryCapability(const Solid::Capability::Type &capability) const
 {
-    return d->capabilityList.contains( FakeCapability::toString(capability) );
+    return d->capabilityList.contains( Solid::Capability::typeToString(capability) );
 }
 
 QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
@@ -254,7 +254,7 @@ QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
 
     if(iface)
     {
-        QDBusConnection::sessionBus().registerObject( d->udi+'/'+FakeCapability::toString( capability ), iface,
+        QDBusConnection::sessionBus().registerObject( d->udi+'/'+Solid::Capability::typeToString( capability ), iface,
                                                       QDBusConnection::ExportNonScriptableSlots );
     }
 
