@@ -90,17 +90,6 @@ static KCmdLineOptions options[] =
 };
 
 
-static bool isExecutable(const QString &exe)
-{
-    if( exe.isEmpty() )
-        return false;
-#ifdef Q_OS_WIN
-    return ( exe.endsWith( ".exe" ) || exe.endsWith( ".bat" ) );
-#else
-    return (::access( QFile::encodeName( exe ), X_OK )==0);
-#endif
-}
-
 int main(int argc, char **argv) {
 
     // xsltSetGenericDebugFunc(stderr, NULL);
@@ -158,17 +147,17 @@ int main(int argc, char **argv) {
         catalogs += " ";
         catalogs += KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
 
-        setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
+        setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).constData(), 1);
         QString exe;
 #if defined( XMLLINT )
         exe = XMLLINT;
 #endif
-        if ( !isExecutable( exe ) ) {
+        if ( !QFileInfo( exe ).isExecutable() ) {
             exe = KStandardDirs::findExe( "xmllint" );
             if (exe.isEmpty())
                 exe = KStandardDirs::locate( "exe", "xmllint" );
         }
-        if ( isExecutable( exe ) ) {
+        if ( QFileInfo( exe ).isExecutable() ) {
             QDir::setCurrent( file.absolutePath() );
             QString cmd = exe;
             cmd += " --catalogs --valid --noout ";
@@ -178,7 +167,7 @@ int main(int argc, char **argv) {
             cmd += KProcess::quote(file.fileName());
 #endif
             cmd += " 2>&1";
-            FILE *xmllint = popen( QFile::encodeName( cmd ), "r" );
+            FILE *xmllint = popen( QFile::encodeName( cmd ).constData(), "r" );
             char buf[ 512 ];
             bool noout = true;
             unsigned int n;
@@ -236,7 +225,7 @@ int main(int argc, char **argv) {
 
         if (style_sheet != NULL) {
 
-            xmlDocPtr doc = xmlParseFile( QFile::encodeName( args->arg( 0 ) ) );
+            xmlDocPtr doc = xmlParseFile( QFile::encodeName( args->arg( 0 ) ).constData() );
 
             xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, &params[0]);
 

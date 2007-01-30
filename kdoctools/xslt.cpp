@@ -186,7 +186,11 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
 
     if ( srcdir.isEmpty() ) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
+#ifdef Q_OS_WIN
+        catalogs += ';';
+#else
         catalogs += ':';
+#endif
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
     } else {
@@ -194,7 +198,7 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
-    xmlLoadCatalogs(catalogs.toLatin1());
+    xmlLoadCatalogs(QFile::encodeName(catalogs).constData());
 }
 
 static QIODevice *getBZip2device(const QString &fileName )
