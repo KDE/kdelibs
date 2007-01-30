@@ -48,7 +48,7 @@ set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 kde4_automoc(${meinproc_SRCS})
 
-kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
+kde4_add_executable(meinproc NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
 
 target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 
