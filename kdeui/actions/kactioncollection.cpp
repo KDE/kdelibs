@@ -325,9 +325,6 @@ QAction* KActionCollection::takeAction(QAction *action)
     foreach (QWidget* w, d->associatedWidgets)
       w->removeAction(action);
 
-  if ( action->parent() == this )
-      action->setParent(0L);
-
   emit removed( action );
   return action;
 }
