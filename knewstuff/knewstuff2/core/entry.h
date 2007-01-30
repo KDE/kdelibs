@@ -45,6 +45,8 @@ namespace KNS {
 class Entry
 {
   public:
+    typedef QList<Entry*> List;
+
     /**
      * Constructor.
      */

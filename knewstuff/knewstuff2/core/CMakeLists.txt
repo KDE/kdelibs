@@ -8,6 +8,7 @@ set(knewstuff2_LIB_SRCS
    category.cpp
    entry.cpp
    entryhandler.cpp
+   entryloader.cpp
    provider.cpp
    providerhandler.cpp
    providerloader.cpp
@@ -20,7 +21,7 @@ kde4_add_library(knewstuff2 SHARED ${knewstuff2_LIB_SRCS})
 target_link_libraries(knewstuff2 ${KDE4_KDECORE_LIBS} kio)
 set_target_properties(knewstuff2 PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS knewstuff2 DESTINATION ${LIB_INSTALL_DIR})
-install(FILES author.h category.h engine.h entry.h entryhandler.h ktranslatable.h provider.h providerhandler.h providerloader.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2)
+install(FILES author.h category.h engine.h entry.h entryhandler.h entryloader.h ktranslatable.h provider.h providerhandler.h providerloader.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2)
 
 ##########################
  

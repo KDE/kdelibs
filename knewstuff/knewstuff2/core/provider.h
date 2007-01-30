@@ -46,7 +46,7 @@ namespace KNS {
 class KDE_EXPORT Provider
 {
   public:
-    typedef QList<Provider> List;
+    typedef QList<Provider*> List;
 
     /**
      * Constructor.

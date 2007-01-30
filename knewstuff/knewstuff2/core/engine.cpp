@@ -35,6 +35,11 @@ Engine::Engine()
 {
 }
 
+Engine::~Engine()
+{
+	shutdown();
+}
+
 bool Engine::init(const QString &configfile)
 {
 	KConfig conf(configfile);
@@ -56,6 +61,9 @@ bool Engine::init(const QString &configfile)
 	QString providersurl = conf.readEntry("ProvidersUrl", QString());
 	QString localregistrydir = conf.readEntry("LocalRegistryDir", QString());
 
+	loadProvidersCache();
+	loadEntryCache();
+
 	// FIXME: LocalRegistryDir must be created in $KDEHOME if missing?
 	// FIXME: rename registry to cache?
 
@@ -63,8 +71,6 @@ bool Engine::init(const QString &configfile)
 	{
 		loadRegistry(localregistrydir);
 	}
-
-	loadProvidersCache();
 
 	return true;
 }
@@ -79,8 +85,8 @@ void Engine::loadRegistry(const QString &registrydir)
 	for(QStringList::Iterator it = dirs.begin(); it != dirs.end(); it++)
 	{
 		kDebug(550) << " + Load from directory '" + (*it) + "'." << endl;
-		QDir d((*it));
-		QStringList files = d.entryList();
+		QDir dir((*it));
+		QStringList files = dir.entryList();
 		for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
 		{
 			QString filepath = (*it) + "/" + (*fit);
@@ -124,9 +130,13 @@ void Engine::loadRegistry(const QString &registrydir)
 				continue;
 			}
 
-			Entry e = handler.entry();
-			Q_UNUSED(e);
-			// TODO: store into runtime cache
+			Entry *e = handler.entryptr();
+			m_entry_cache.append(e);
+			m_entry_index[id(e)] = e;
+
+			// FIXME: we must overwrite cache entries with registered entries
+			// and not just append the latter ones
+			// (m_entry_index is correct here but m_entry_cache not yet)
 		}
 	}
 }
@@ -188,12 +198,138 @@ void Engine::loadProvidersCache()
 			continue;
 		}
 
-		Provider p = handler.provider();
-		Q_UNUSED(p);
-		// TODO: store into runtime cache
+		Provider *p = handler.providerptr();
+		m_provider_cache.append(p);
+		m_provider_index[pid(p)] = p;
 
 		provider = root.nextSiblingElement("provider");
 	}
+}
+
+void Engine::loadEntryCache()
+{
+	KStandardDirs d;
+
+	kDebug(550) << "Loading entry cache." << endl;
+
+	QStringList cachedirs = d.findDirs("cache", "knewstuff2-entries.cache");
+	if(cachedirs.size() == 0)
+	{
+		kDebug(550) << "Cache directory not present, skip loading." << endl;
+		return;
+	}
+	QString cachedir = cachedirs.first();
+
+	kDebug(550) << " + Load from directory '" + cachedir + "'." << endl;
+
+	QDir dir(cachedir);
+	QStringList files = dir.entryList();
+	for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
+	{
+		QString filepath = cachedir + "/" + (*fit);
+		kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
+
+		bool ret;
+		QFile f(filepath);
+		ret = f.open(QIODevice::ReadOnly);
+		if(!ret)
+		{
+			kWarning(550) << "The file could not be opened." << endl;
+			return;
+		}
+
+		QDomDocument doc;
+		ret = doc.setContent(&f);
+		if(!ret)
+		{
+			kWarning(550) << "The file could not be parsed." << endl;
+			return;
+		}
+
+		QDomElement root = doc.documentElement();
+		if(root.tagName() != "ghnscache")
+		{
+			kWarning(550) << "The file doesn't seem to be of interest." << endl;
+			return;
+		}
+
+		QDomElement stuff = root.firstChildElement("stuff");
+		if(stuff.isNull())
+		{
+			kWarning(550) << "Missing GHNS cache metadata." << endl;
+			return;
+		}
+
+		EntryHandler handler(stuff);
+		if(!handler.isValid())
+		{
+			kWarning(550) << "Invalid GHNS installation metadata." << endl;
+			continue;
+		}
+
+		Entry *e = handler.entryptr();
+		m_entry_cache.append(e);
+		m_entry_index[id(e)] = e;
+	}
+}
+
+void Engine::shutdown()
+{
+	m_entry_index.clear();
+	m_provider_index.clear();
+
+	qDeleteAll(m_entry_cache);
+	qDeleteAll(m_provider_cache);
+
+	m_entry_cache.clear();
+	m_provider_cache.clear();
+}
+
+void Engine::mergeProviders(Provider::List providers)
+{
+	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
+	{
+		// TODO: find entry in providercache, replace if needed
+		Provider *p = (*it);
+
+		if(m_provider_index.contains(pid(p)))
+		{
+		}
+
+		m_provider_cache.append(p);
+		m_provider_index[pid(p)] = p;
+	}
+}
+
+void Engine::mergeEntries(Entry::List entries)
+{
+	for(Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
+	{
+		// TODO: find entry in entrycache, replace if needed
+		// don't forget marking as 'updateable'
+		Entry *e = (*it);
+
+		if(m_entry_index.contains(id(e)))
+		{
+		}
+
+		m_entry_cache.append(e);
+		m_entry_index[id(e)] = e;
+	}
+}
+
+QString Engine::id(Entry *e)
+{
+	// This is the primary key of an entry:
+	// A lookup on the untranslated original name, which must exist
+	return e->name().translated(QString());
+}
+
+QString Engine::pid(Provider *p)
+{
+	// This is the primary key of a provider:
+	// The download URL
+	return p->downloadUrl().url();
 }
 
 #include "engine.moc"

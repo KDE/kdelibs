@@ -21,11 +21,13 @@
 #define KNEWSTUFF2_ENGINE_H
 
 #include <knewstuff2/provider.h>
+#include <knewstuff2/entry.h>
 
 #include <kdelibs_export.h>
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qmap.h>
 
 namespace KNS {
 
@@ -43,6 +45,12 @@ class KDE_EXPORT Engine : public QObject
      * Constructor.
      */
     Engine();
+
+    /**
+     * Destructor. Frees up all the memory again which might be taken
+     * by cached entries and providers.
+     */
+    ~Engine();
 
     /**
      * Initializes the engine. This step is application-specific and relies
@@ -66,6 +74,18 @@ class KDE_EXPORT Engine : public QObject
   private:
     void loadRegistry(const QString &registrydir);
     void loadProvidersCache();
+    void loadEntryCache();
+    void mergeProviders(Provider::List providers);
+    void mergeEntries(Entry::List entries);
+    void shutdown();
+    QString id(Entry *e);
+    QString pid(Provider *p);
+
+    QList<Provider*> m_provider_cache;
+    QList<Entry*> m_entry_cache;
+
+    QMap<QString, Provider*> m_provider_index;
+    QMap<QString, Entry*> m_entry_index;
 };
 
 }

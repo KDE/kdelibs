@@ -1,7 +1,6 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,10 +17,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KNEWSTUFF2_PROVIDER_LOADER_H
-#define KNEWSTUFF2_PROVIDER_LOADER_H
+#ifndef KNEWSTUFF2_ENTRY_LOADER_H
+#define KNEWSTUFF2_ENTRY_LOADER_H
 
-#include <knewstuff2/provider.h>
+#include <knewstuff2/entry.h>
 
 #include <qdom.h>
 #include <qobject.h>
@@ -34,34 +33,33 @@ namespace KIO { class Job; }
 namespace KNS {
 
 /**
- * KNewStuff provider loader.
- * This class sets up a list of all possible providers by querying
- * the main provider database for this specific application.
- * It should probably not be used directly by the application.
+ * KNewStuff entry loader.
+ * Loads any entries from a given file and notifies about when the
+ * loading has completed.
  */
-class KDE_EXPORT ProviderLoader : public QObject
+class KDE_EXPORT EntryLoader : public QObject
 {
     Q_OBJECT
   public:
     /**
      * Constructor.
      */
-    ProviderLoader();
+    EntryLoader();
 
     /**
-     * Starts asynchronously loading the list of providers from the
-     * specified URL.
+     * Starts asynchronously loading the list of entries from the
+     * given URL.
      *
-     * @param providersurl location of the XML file containing the providers
+     * @param stuffurl location of the XML file containing the entries
      */
-    void load(const QString &providersurl);
+    void load(const QString &stuffurl);
 
   signals:
     /**
-     * Indicates that the list of providers has been successfully loaded.
+     * Indicates that the list of entries has been successfully loaded.
      */
-    void signalProvidersLoaded(KNS::Provider::List *);
-    void signalProvidersFailed();
+    void signalEntriesLoaded(KNS::Entry::List *);
+    void signalEntriesFailed();
 
   protected slots:
     void slotJobData(KIO::Job *, const QByteArray &);
@@ -70,7 +68,7 @@ class KDE_EXPORT ProviderLoader : public QObject
   private:
     QString mJobData;
 
-    Provider::List mProviders;
+    Entry::List mEntries;
 };
 
 }

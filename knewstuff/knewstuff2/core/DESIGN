@@ -1,0 +1,43 @@
+KNewStuff2 Engine Design
+========================
+
+The KNewStuff2 engine is one of the central pieces of activity of the
+KNewStuff2 library. First and foremost, it handles the synchronization of
+data on the internet with data on the local hard disk. The local data
+might come from previous downloads, but also from (initial) installation.
+
+On startup, after being initialized to use a certain configuration,
+the engine loads up potentially dozens of files. This will require some
+activity on the harddisk, but will speed up network operations by quite
+a bit afterwards.
+
+There are three groups of files being loaded: the cache for providers,
+the cache for entries, and the registry of entries.
+The first two ones may contain all data about providers and entries
+ever downloaded by KNewStuff2. The cache doesn't have to survive
+machine reboots, but should generally live very long. A strategy for
+file replacements and invalidation will have to be found.
+The third group contains all the entries which are currently installed.
+This group starts out empty, or with some initial system-wide installed
+files. For every download, the corresponding cache file (which exists) is
+copied to the registry dir, after which the cached file isn't strictly
+needed anymore. Such files might also be removed again, in case the referenced
+data is deinstalled.
+
+Entity         | Loading                 | Root tag
+---------------+-------------------------+---------
+               |                         |
+provider cache | file(s)                 | <ghnsproviders>
+               |                         |
+entry cache    | directory(ies)->file(s) | <ghnscache>
+               |                         |
+entry registry | directory->file(s)      | <ghnsinstall>
+
+Directly after a download, the downloaded files are scanned for their
+objects (providers or entries), which are added to the in-memory cache.
+By doing so, they might replace older cached entries. For all those older
+entries which are already installed, their status is marked as updateable.
+
+On shutdown of the engine, e.g. when deleting the object, the whole
+cache in memory is freed, but the cache files remain of course.
+

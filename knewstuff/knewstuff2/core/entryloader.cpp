@@ -1,7 +1,6 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
-    Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,9 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "providerloader.h"
+#include "entryloader.h"
 
-#include "providerhandler.h"
+#include "entryhandler.h"
 
 #include <qbytearray.h>
 
@@ -32,20 +31,20 @@
 
 using namespace KNS;
 
-ProviderLoader::ProviderLoader()
+EntryLoader::EntryLoader()
 {
 }
 
-void ProviderLoader::load(const QString &providersurl)
+void EntryLoader::load(const QString &stuffurl)
 {
-  kDebug(550) << "ProviderLoader::load()" << endl;
+  kDebug(550) << "EntryLoader::load()" << endl;
 
-  mProviders.clear();
+  mEntries.clear();
   mJobData = "";
 
-  kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl << endl;
+  kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl << endl;
   
-  KIO::TransferJob *job = KIO::get( KUrl( providersurl ), false, false );
+  KIO::TransferJob *job = KIO::get( KUrl( stuffurl ), false, false );
   connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
@@ -54,9 +53,9 @@ void ProviderLoader::load(const QString &providersurl)
 //  job->dumpObjectInfo();
 }
 
-void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
+void EntryLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kDebug(550) << "ProviderLoader::slotJobData()" << endl;
+  kDebug(550) << "EntryLoader::slotJobData()" << endl;
 
   if ( data.size() == 0 ) return;
 
@@ -64,39 +63,39 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 // FIXME: utf-8 conversion only at the end!!!
 }
 
-void ProviderLoader::slotJobResult( KIO::Job *job )
+void EntryLoader::slotJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    emit signalProvidersFailed();
+    emit signalEntriesFailed();
     return;
   }
 
-  kDebug(550) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
+  kDebug(550) << "--ENTRIES-START--" << endl << mJobData << "--ENTRIES_END--"
             << endl;
 
   QDomDocument doc;
   if ( !doc.setContent( mJobData ) ) {
-    emit signalProvidersFailed();
+    emit signalEntriesFailed();
     return;
   }
 
-  QDomElement providers = doc.documentElement();
+  QDomElement entries = doc.documentElement();
 
-  if ( providers.isNull() ) {
-    kDebug(550) << "No document in Providers.xml." << endl;
+  if ( entries.isNull() ) {
+    kDebug(550) << "No document in stuff.xml." << endl;
   }
 
   QDomNode n;
-  for ( n = providers.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-    QDomElement p = n.toElement();
+  for ( n = entries.firstChild(); !n.isNull(); n = n.nextSibling() ) {
+    QDomElement e = n.toElement();
  
-    if ( p.tagName() == "provider" ) {
-      ProviderHandler handler(p);
-      mProviders.append(handler.providerptr());
+    if ( e.tagName() == "stuff" ) {
+      EntryHandler handler(e);
+      mEntries.append(handler.entryptr());
     }
   }
   
-  emit signalProvidersLoaded( &mProviders );
+  emit signalEntriesLoaded( &mEntries );
 }
 
-#include "providerloader.moc"
+#include "entryloader.moc"
