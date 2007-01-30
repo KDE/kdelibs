@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -136,23 +137,37 @@ void KComponentData::_checkConfig()
 
 inline void KComponentDataPrivate::checkConfig()
 {
-    if (sharedConfig.isUnique() && refCount == 1) { // sharedConfig is the only object holding a ref to us
-        sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
+    if (sharedConfig.isUnique()) {
+        if (refCount == 1) {
+            sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
+        } else if (refCount == 2 && dirs) { // KStandardDirs also holds a ref to us
+            KStandardDirs *tmp = dirs;
+            dirs = 0;
+            delete tmp; // calls deref()
+        }
     }
 }
 
 inline void KComponentDataPrivate::ref()
 {
     ++refCount;
+    //qDebug() << k_funcinfo << refCount - 1 << "->" << refCount << kBacktrace() << endl;
 }
 
 inline void KComponentDataPrivate::deref()
 {
     --refCount;
+    //qDebug() << k_funcinfo << refCount + 1 << "->" << refCount << kBacktrace() << endl;
     if (refCount == 0) {
         delete this;
-    } else if (sharedConfig.isUnique() && refCount == 1) {
-        sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
+    } else if (sharedConfig.isUnique()) {
+        if (refCount == 1) {
+            sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
+        } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
+            KStandardDirs *tmp = dirs;
+            dirs = 0;
+            delete tmp; // calls deref()
+        }
     }
 }
 
