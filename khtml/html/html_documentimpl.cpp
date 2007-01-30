@@ -222,7 +222,7 @@ ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExcep
 
 void HTMLDocumentImpl::slotHistoryChanged()
 {
-    if ( !m_render )
+    if ( true || !m_render )
         return;
 
     recalcStyle( Force );
