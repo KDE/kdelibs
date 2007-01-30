@@ -425,7 +425,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * userCaption using a standard layout.
      *
      * To make a compliant caption for your window, simply do:
-     * @p setWindowTitle(KComponentData::makeStandardCaption(yourCaption));
+     * @p setWindowTitle(KDialog::makeStandardCaption(yourCaption));
      *
      * To ensure that the caption is appropriate to the desktop in which the
      * application is running, pass in a pointer to the window the caption will
