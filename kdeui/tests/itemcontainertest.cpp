@@ -55,8 +55,6 @@ static const char * item_xpm[] = {
 "        ......        "};
 
 
-KApplication *app;
-
 TopLevel::TopLevel(QWidget *parent)
     : QWidget(parent)
 {
@@ -216,13 +214,13 @@ void TopLevel::slotToggleSingleColumn( bool b )
 int main( int argc, char ** argv )
 {
     KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
-    app = new KApplication;
+    KApplication app;
 
     TopLevel *toplevel = new TopLevel(0);
 
     toplevel->show();
     toplevel->resize( 600, 300 );
-    app->exec();
+    app.exec();
 }
 
 #include "itemcontainertest.moc"
