@@ -158,7 +158,7 @@ class KAboutData;
  *     { "+file", I18N_NOOP("A required argument 'file'"), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'"), 0 },
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'"), 0 },
- *     { "", I18N_NOOP("Additional help text not associated with any particular option") 0 },
+ *     { "", I18N_NOOP("Additional help text not associated with any particular option"), 0 },
  *     KCmdLineLastOption // End of options.
  *  };
  *  \endcode
