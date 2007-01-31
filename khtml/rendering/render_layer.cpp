@@ -1152,9 +1152,7 @@ bool RenderLayer::intersectsDamageRect(const QRect& layerBounds, const QRect& da
 
 bool RenderLayer::containsPoint(int x, int y, const QRect& damageRect) const
 {
-    return (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isBody() ||
-            renderer()->hasOverhangingFloats() ||
-            (renderer()->isInline() && !renderer()->isReplaced()) ||
+    return (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isInlineFlow() ||
             damageRect.contains(x, y));
 }
 
