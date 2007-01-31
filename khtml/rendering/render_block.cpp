@@ -2990,9 +2990,7 @@ void RenderBlock::calcBlockMinMaxWidth()
     bool nowrap = !style()->autoWrap();
 
     RenderObject *child = firstChild();
-    RenderObject* prevFloat = 0;
-    int floatWidths = 0;
-    int floatMaxWidth = 0;
+    int floatLeftWidth = 0, floatRightWidth = 0, floatMaxWidth = 0;
 
     while(child != 0)
     {
@@ -3002,11 +3000,16 @@ void RenderBlock::calcBlockMinMaxWidth()
             continue;
         }
 
-        if (prevFloat && (!child->isFloating() ||
-                          ((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
-                          ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
-            m_maxWidth = qMax(floatWidths, m_maxWidth);
-            floatWidths = 0;
+         if (child->isFloating() || child->flowAroundFloats()) {
+             int floatTotalWidth = floatLeftWidth + floatRightWidth;
+             if (child->style()->clear() & CLEFT) {
+                 m_maxWidth = qMax(floatTotalWidth, m_maxWidth);
+                 floatLeftWidth = 0;
+             }
+             if (child->style()->clear() & CRIGHT) {
+                 m_maxWidth = qMax(floatTotalWidth, m_maxWidth);
+                 floatRightWidth = 0;
+             }
         }
 
         Length ml = child->style()->marginLeft();
@@ -3024,35 +3027,60 @@ void RenderBlock::calcBlockMinMaxWidth()
         // Percentage margins are computed as a percentage of the width we calculated in
         // the calcWidth call above.  In this case we use the actual cached margin values on
         // the RenderObject itself.
-        int margin = 0;
+        int margin = 0, marginLeft = 0, marginRight = 0;
         if (ml.isFixed())
-            margin += ml.value();
+            marginLeft += ml.value();
         else if (ml.isPercent())
-            margin += child->marginLeft();
+            marginLeft += child->marginLeft();
 
         if (mr.isFixed())
-            margin += mr.value();
+            marginRight += mr.value();
         else if (mr.isPercent())
-            margin += child->marginRight();
+            marginRight += child->marginRight();
 
-        if (margin < 0) margin = 0;
+        margin = marginLeft + marginRight;
 
         int w = child->minWidth() + margin;
         if(m_minWidth < w) m_minWidth = w;
+
         // IE ignores tables for calculation of nowrap. Makes some sense.
         if ( nowrap && !child->isTable() && m_maxWidth < w )
             m_maxWidth = w;
 
         w = child->maxWidth() + margin;
 
-        if(m_maxWidth < w) m_maxWidth = w;
+         if (!child->isFloating()) {
+             if (child->flowAroundFloats()) {
+                 // Determine a left and right max value based on whether or not the floats can fit in the
+                 // margins of the object.  For negative margins, we will attempt to overlap the float if the negative margin
+                 // is smaller than the float width.
+                 int maxLeft = marginLeft > 0 ? qMax(floatLeftWidth, marginLeft) : floatLeftWidth + marginLeft;
+                 int maxRight = marginRight > 0 ? qMax(floatRightWidth, marginRight) : floatRightWidth + marginRight;
+                 w = child->maxWidth() + maxLeft + maxRight;
+                 w = qMax(w, floatLeftWidth + floatRightWidth);
+             }
+             else
+                 m_maxWidth = qMax(floatLeftWidth + floatRightWidth, m_maxWidth);
+             floatLeftWidth = floatRightWidth = 0;
+         }
 
         if (child->isFloating()) {
-            if (prevFloat && (floatWidths + w > floatMaxWidth)) {
-               m_maxWidth = qMax(floatWidths, m_maxWidth);
-               floatWidths = w;
-            } else
-               floatWidths += w;
+             if (!floatMaxWidth) 
+                 floatMaxWidth = availableWidth();
+             if (style()->floating() & FLEFT) {
+                 if (floatLeftWidth + w > floatMaxWidth) {
+                     m_maxWidth = qMax(floatLeftWidth+floatRightWidth, m_maxWidth);
+                     floatLeftWidth = w;
+                 } else
+                     floatLeftWidth += w;
+                 
+             } else {
+                 if (floatRightWidth + w > floatMaxWidth) {
+                     m_maxWidth = qMax(floatLeftWidth+floatRightWidth, m_maxWidth);
+                     floatRightWidth = w;
+                 } else
+                     floatRightWidth += w;
+             }
         } else if (m_maxWidth < w)
             m_maxWidth = w;
 
@@ -3077,14 +3105,9 @@ void RenderBlock::calcBlockMinMaxWidth()
             if (!cb->isTableCell())
                 m_maxWidth = BLOCK_MAX_WIDTH;
         }
-        if (child->isFloating()) {
-            prevFloat = child;
-            if (!floatMaxWidth)
-                floatMaxWidth = availableWidth();
-        }
         child = child->nextSibling();
     }
-    m_maxWidth = qMax(floatWidths, m_maxWidth);
+    m_maxWidth = qMax(floatLeftWidth + floatRightWidth, m_maxWidth);
 }
 
 void RenderBlock::close()
