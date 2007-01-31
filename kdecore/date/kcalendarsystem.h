@@ -258,6 +258,10 @@ public:
    * ("of January", "of February", etc.)
    * It's needed in long format dates in some languages.
    * If an invalid month is specified, QString() is returned.
+   * Note: this method is intended to be used by the localization system to
+   *       format dates. Using this method directly in your application may result
+   *       in the inability to localize it properly.
+   * @see KLocale::formatDate
    *
    * @param month The month number
    * @param year The year the month belongs to
@@ -271,6 +275,11 @@ public:
    * Returns a string containing the possessive form of the month name.
    * ("of January", "of February", etc.)
    * It's needed in long format dates in some languages.
+   * Note: this method is intended to be used by the localization system to
+   *       format dates. Using this method directly in your application may result
+   *       in the inability to localize it properly.
+   * @see KLocale::formatDate
+   *
    *
    * @param date Gregorian date
    * @param shortName Specifies if the short month name should be used
