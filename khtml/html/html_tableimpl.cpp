@@ -868,16 +868,18 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         //addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
         break;
     case ATTR_ROWSPAN:
-        // ###
         rSpan = attr->val() ? attr->val()->toInt() : 1;
         // limit this to something not causing an overflow with short int
         if(rSpan < 1 || rSpan > 1024) rSpan = 1;
+        if (renderer())
+            renderer()->updateFromElement();                    
         break;
     case ATTR_COLSPAN:
-        // ###
         cSpan = attr->val() ? attr->val()->toInt() : 1;
         // limit this to something not causing an overflow with short int
         if(cSpan < 1 || cSpan > 1024) cSpan = 1;
+        if (renderer())
+            renderer()->updateFromElement();        
         break;
     case ATTR_NOWRAP:
         if (attr->val() != 0)

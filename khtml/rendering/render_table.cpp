@@ -129,6 +129,16 @@ short RenderTable::baselinePosition(bool b) const
     return RenderBlock::baselinePosition(b);
 }
 
+static inline void resetSectionPointerIfNotBefore(RenderTableSection*& ptr, RenderObject* before)
+{
+    if (!before || !ptr)
+        return;
+    RenderObject* o = before->previousSibling();
+    while (o && o != ptr)
+        o = o->previousSibling();
+    if (!o)
+        ptr = 0;
+}
 
 void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
@@ -141,33 +151,50 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
         case TABLE_CAPTION:
-            if (child->isRenderBlock())
-                tCaption = static_cast<RenderBlock *>(child);
+            if (child->isRenderBlock()) {
+                // First caption wins.
+                if (beforeChild && tCaption) {
+                    RenderObject* o = beforeChild->previousSibling();
+                    while (o && o != tCaption)
+                        o = o->previousSibling();
+                    if (!o)
+                        tCaption = 0;
+                }
+                if (!tCaption)
+                    tCaption = static_cast<RenderBlock*>(child);
+            }
             break;
         case TABLE_COLUMN:
         case TABLE_COLUMN_GROUP:
             has_col_elems = true;
             break;
         case TABLE_HEADER_GROUP:
-            if ( !head ) {
-                if (child->isTableSection())
+            if (child->isTableSection()) {
+                resetSectionPointerIfNotBefore(head, beforeChild);
+                if (!head) {
                     head = static_cast<RenderTableSection *>(child);
+                } else {
+                    resetSectionPointerIfNotBefore(firstBody, beforeChild);
+                    if (!firstBody) 
+                        firstBody = static_cast<RenderTableSection*>(child);
+                }
             }
-            else if ( !firstBody )
-                if (child->isTableSection())
-                    firstBody = static_cast<RenderTableSection *>(child);
             break;
         case TABLE_FOOTER_GROUP:
-            if ( !foot ) {
-                if (child->isTableSection())
+            if (child->isTableSection()) {
+                resetSectionPointerIfNotBefore(foot, beforeChild);
+                if (!foot) {
                     foot = static_cast<RenderTableSection *>(child);
-                break;
+                    break;
+                }
             }
             // fall through
         case TABLE_ROW_GROUP:
-            if(!firstBody)
-                if (child->isTableSection())
-                    firstBody = static_cast<RenderTableSection *>(child);
+            if (child->isTableSection()) {
+                resetSectionPointerIfNotBefore(firstBody, beforeChild);
+                if (!firstBody)
+                    firstBody = static_cast<RenderTableSection*>(child);
+            }
             break;
         case TABLE_CELL:
         case TABLE_ROW:
@@ -368,21 +395,14 @@ void RenderTable::layout()
         bl += paddingLeft();
 
     // position the table sections
-    if ( head ) {
-	head->setPos(bl, m_height);
-	m_height += head->height();
-    }
-    RenderObject *body = firstBody;
-    while ( body ) {
-	if ( body != head && body != foot && body->isTableSection() ) {
-	    body->setPos(bl, m_height);
-	    m_height += body->height();
-	}
-	body = body->nextSibling();
-    }
-    if ( foot ) {
-	foot->setPos(bl, m_height);
-	m_height += foot->height();
+    RenderTableSection* section = head ? head : (firstBody ? firstBody : foot);
+    while (section) {
+        section->setPos(bl, m_height);
+
+        m_height += section->height();
+        m_overflowLeft = qMin(m_overflowLeft, section->effectiveXPos());
+        m_overflowWidth = qMax(m_overflowWidth, section->effectiveXPos() + section->effectiveWidth());
+        section = sectionBelow(section);
     }
 
     m_height += bpBottom;
@@ -772,7 +792,7 @@ RenderTableSection* RenderTable::sectionAbove(const RenderTableSection* section,
 {
     if (section == head)
         return 0;
-    RenderObject *prevSection = (section == foot ? lastChild() : const_cast<RenderTableSection *>(section))->previousSibling();
+    RenderObject *prevSection = section == foot ? lastChild() : section->previousSibling();
     while (prevSection) {
         if (prevSection->isTableSection() && prevSection != head && prevSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(prevSection)->numRows()))
             break;
@@ -787,7 +807,7 @@ RenderTableSection* RenderTable::sectionBelow(const RenderTableSection* section,
 {
     if (section == foot)
         return 0;
-    RenderObject *nextSection = (section == head ? firstChild() : const_cast<RenderTableSection *>(section))->nextSibling();
+    RenderObject *nextSection = section == head ? firstChild() : section->nextSibling();
     while (nextSection) {
         if (nextSection->isTableSection() && nextSection != head && nextSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(nextSection)->numRows()))
             break;
@@ -1197,12 +1217,6 @@ void RenderTableSection::setCellWidths()
 	}
     }
 }
-
-short RenderTableSection::width() const
-{
-  return table()->width();
-}
-
 
 void RenderTableSection::calcRowHeight()
 {
@@ -2250,8 +2264,16 @@ void RenderTableCell::updateFromElement()
   DOM::NodeImpl *node = element();
   if ( node && (node->id() == ID_TD || node->id() == ID_TH) ) {
       DOM::HTMLTableCellElementImpl *tc = static_cast<DOM::HTMLTableCellElementImpl *>(node);
+      int oldCSpan = cSpan;
+      int oldRSpan = rSpan;
+
       cSpan = tc->colSpan();
       rSpan = tc->rowSpan();
+      if ((oldRSpan != rSpan || oldCSpan != cSpan) && style() && parent()) {
+          setNeedsLayoutAndMinMaxRecalc();
+          if (section())
+              section()->setNeedCellRecalc();
+      }
   } else {
       cSpan = rSpan = 1;
   }
