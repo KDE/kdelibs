@@ -34,4 +34,5 @@ kde4_automoc(${knewstuff2_test_SRCS})
 kde4_add_executable(knewstuff2_test ${knewstuff2_test_SRCS})
 
 target_link_libraries(knewstuff2_test ${KDE4_KDECORE_LIBS} knewstuff2)
+install(FILES knewstuff2_test.knsrc DESTINATION ${CONFIG_INSTALL_DIR})
 

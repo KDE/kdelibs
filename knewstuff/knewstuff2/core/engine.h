@@ -31,6 +31,9 @@
 
 namespace KNS {
 
+class ProviderLoader;
+class EntryLoader;
+
 /**
  * KNewStuff engine.
  * An engine keeps track of data which is available locally and remote
@@ -78,6 +81,7 @@ class KDE_EXPORT Engine : public QObject
     void mergeProviders(Provider::List providers);
     void mergeEntries(Entry::List entries);
     void shutdown();
+
     QString id(Entry *e);
     QString pid(Provider *p);
 
@@ -86,6 +90,9 @@ class KDE_EXPORT Engine : public QObject
 
     QMap<QString, Provider*> m_provider_index;
     QMap<QString, Entry*> m_entry_index;
+
+    ProviderLoader *m_provider_loader;
+    EntryLoader *m_entry_loader;
 };
 
 }

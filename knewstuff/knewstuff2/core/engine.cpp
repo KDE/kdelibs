@@ -19,8 +19,11 @@
 */
 
 #include "engine.h"
+
 #include "entryhandler.h"
 #include "providerhandler.h"
+#include "entryloader.h"
+#include "providerloader.h"
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -33,6 +36,8 @@ using namespace KNS;
 
 Engine::Engine()
 {
+	m_provider_loader = NULL;
+	m_entry_loader = NULL;
 }
 
 Engine::~Engine()
@@ -71,6 +76,19 @@ bool Engine::init(const QString &configfile)
 	{
 		loadRegistry(localregistrydir);
 	}
+
+	m_provider_loader = new ProviderLoader();
+	m_provider_loader->load(providersurl);
+
+	// FIXME: I think we need a slot so we can delete the loader again
+	// we could have one for the entire lifetime, but for entry loaders this
+	// would result in too many objects active at once
+	connect(m_provider_loader,
+		SIGNAL(signalProvidersLoaded(KNS::Providers::List*)),
+		SIGNAL(signalProvidersLoaded(KNS::Providers::List*)));
+	connect(m_provider_loader,
+		SIGNAL(signalProvidersFailed()),
+		SIGNAL(signalProvidersFailed()));
 
 	return true;
 }

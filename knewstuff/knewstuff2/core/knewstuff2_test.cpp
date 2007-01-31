@@ -1,12 +1,10 @@
-#include <knewstuff2/provider.h>
-#include <knewstuff2/providerhandler.h>
-#include <knewstuff2/engine.h>
+#include "knewstuff2_test.h"
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
+KNewStuff2Test::KNewStuff2Test()
+{
+}
 
-void providerTest()
+void KNewStuff2Test::providerTest()
 {
 	kDebug() << "-- test kns2 provider class" << endl;
 
@@ -15,19 +13,53 @@ void providerTest()
 	p.setDownloadUrl(KUrl("http://localhost:8080"));
 
 	KNS::ProviderHandler ph(p);
-	QDomElement e = ph.providerXML();
+	QDomElement pxml = ph.providerXML();
 
-	kDebug() << "-- test result: " << e.text() << endl;
+	kDebug() << "-- test result: " << pxml.text() << endl;
+
+	if(pxml.isNull())
+	{
+		kDebug() << "-- quitting now..." << endl;
+		kapp->quit();
+	}
 }
 
-void engineTest()
+void KNewStuff2Test::engineTest()
 {
 	kDebug() << "-- test kns2 engine" << endl;
 
-	KNS::Engine e;
-	bool ret = e.init("knewstuff2.knsrc");
+	KNS::Engine *engine = new KNS::Engine();
+	bool ret = engine->init("knewstuff2_test.knsrc");
 
 	kDebug() << "-- test result: " << ret << endl;
+
+	if(ret)
+	{
+		connect(engine,
+			SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
+			SLOT(slotProvidersLoaded(KNS::Provider::List*)));
+		connect(engine,
+			SIGNAL(signalProvidersFailed()),
+			SLOT(slotProvidersFailed()));
+	}
+	else
+	{
+		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
+
+		kDebug() << "-- quitting now..." << endl;
+		kapp->quit();
+	}
+}
+
+void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
+{
+	kDebug() << "SLOT: slotProvidersLoaded" << endl;
+	kDebug() << "-- providers: " << list->count() << endl;
+}
+
+void KNewStuff2Test::slotProvidersFailed()
+{
+	kDebug() << "SLOT: slotProvidersFailed" << endl;
 }
 
 int main(int argc, char **argv)
@@ -35,9 +67,11 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, "knewstuff2_test", NULL, NULL, NULL);
 	KApplication app(false);
 
-	providerTest();
-	engineTest();
+	KNewStuff2Test *test = new KNewStuff2Test();
+	test->providerTest();
+	test->engineTest();
 
 	return app.exec();
 }
 
+#include "knewstuff2_test.moc"
