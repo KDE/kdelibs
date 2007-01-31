@@ -55,6 +55,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     deviceList->setDragEnabled(true);
     deviceList->setAcceptDrops(true);
     deviceList->setDropIndicatorShown(true);
+    deviceList->setWrapping(true);
     //deviceList->setSpacing(4);
     deviceList->setDragDropMode(QAbstractItemView::InternalMove);
     /*qApp->setStyleSheet("QListView { background-image: url(/home/mkretz/KDE/src/kdelibs/phonon/kcm/speaker.svg);"
@@ -69,7 +70,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     parentItem->appendRow(m_captureItem);
 
     parentItem = outputItem;
-    for (int i = 0; i < Phonon::LastCategory; ++i) {
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
         m_outputModel[i] = new Phonon::AudioOutputDeviceModel;
         QStandardItem *item = new CategoryItem(static_cast<Phonon::Category>(i));
         parentItem->appendRow(item);
@@ -85,6 +86,17 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     connect(categoryTree->selectionModel(),
             SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
             SLOT(updateDeviceList()));
+
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        connect(m_outputModel[i], SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(layoutChanged()), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SIGNAL(changed()));
+    }
+    connect(&m_captureModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(layoutChanged()), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SIGNAL(changed()));
 }
 
 void OutputDeviceChoice::updateDeviceList()
@@ -122,7 +134,7 @@ void OutputDeviceChoice::load()
     foreach (Phonon::AudioOutputDevice dev, list) {
         hash.insert(dev.index(), dev);
     }
-    for (int i = 0; i < Phonon::LastCategory; ++i) {
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
         QList<int> order = outputDeviceGroup.readEntry<QList<int> >(QLatin1String("Category") + QString::number(i), QList<int>());
         QList<Phonon::AudioOutputDevice> orderedList;
@@ -163,7 +175,7 @@ void OutputDeviceChoice::save()
     KSimpleConfig config("phononrc");
     {
         KConfigGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
-        for (int i = 0; i < Phonon::LastCategory; ++i) {
+        for (int i = 0; i <= Phonon::LastCategory; ++i) {
             if (m_outputModel.value(i)) {
                 globalGroup.writeEntry(QLatin1String("Category") + QString::number(i), m_outputModel.value(i)->tupleIndexOrder());
             }
@@ -178,7 +190,7 @@ void OutputDeviceChoice::save()
 void OutputDeviceChoice::defaults()
 {
     QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
-    for (int i = 0; i < Phonon::LastCategory; ++i) {
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
         m_outputModel[i]->setModelData(list);
     }
 
