@@ -127,7 +127,7 @@ static void setTimeStamp( const QString& path )
     utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
     utbuf.modtime = tp.tv_sec - 60; // 60 second ago
     utime( QFile::encodeName( path ), &utbuf );
-    qDebug( "Time changed for %s", qPrintable( path ) );
+    kDebug() << "Time changed for " << path << endl;
 #endif
 }
 

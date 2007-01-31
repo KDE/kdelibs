@@ -30,17 +30,18 @@
 #include <kdebug.h>
 #include <kio/deletejob.h>
 #include <kio/netaccess.h>
+#include <kdirwatch.h>
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
 QDateTime s_referenceTimeStamp;
 
-static void setTimeStamp( const QString& path )
+static void setTimeStamp( const QString& path, const QDateTime& mtime )
 {
 #ifdef Q_OS_UNIX
     // Put timestamp in the past so that we can check that the listing is correct
     struct utimbuf utbuf;
-    utbuf.actime = s_referenceTimeStamp.toTime_t();
+    utbuf.actime = mtime.toTime_t();
     utbuf.modtime = utbuf.actime;
     utime( QFile::encodeName( path ), &utbuf );
     qDebug( "Time changed for %s", qPrintable( path ) );
@@ -54,7 +55,7 @@ static void createTestFile( const QString& path )
         kFatal() << "Can't create " << path << endl;
     f.write( QByteArray( "Hello world" ) );
     f.close();
-    setTimeStamp( path );
+    setTimeStamp( path, s_referenceTimeStamp );
 }
 
 static void createTestDirectory( const QString& path )
@@ -66,7 +67,7 @@ static void createTestDirectory( const QString& path )
     createTestFile( path + "/testfile" );
     //createTestSymlink( path + "/testlink" );
     //QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
-    setTimeStamp( path );
+    setTimeStamp( path, s_referenceTimeStamp );
 }
 
 void KDirModelTest::initTestCase()
@@ -128,15 +129,12 @@ void KDirModelTest::fillModel( bool reload )
 
 void KDirModelTest::enterLoop()
 {
-    QEventLoop eventLoop;
-    connect(this, SIGNAL(exitLoop()),
-            &eventLoop, SLOT(quit()));
-    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    m_eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void KDirModelTest::slotListingCompleted()
 {
-    emit exitLoop();
+    m_eventLoop.quit();
 }
 
 void KDirModelTest::testRowCount()
@@ -294,10 +292,10 @@ void KDirModelTest::testDeleteFile()
 
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
     connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             this, SIGNAL(exitLoop()) );
+             &m_eventLoop, SLOT(quit()) );
 
     KIO::DeleteJob* job = KIO::del(url);
-    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    bool ok = job->exec();
     QVERIFY(ok);
 
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
@@ -306,4 +304,38 @@ void KDirModelTest::testDeleteFile()
     // If we come here, then rowsRemoved() was emitted - all good.
     const int topLevelRowCount = m_dirModel.rowCount();
     QCOMPARE(topLevelRowCount, 3); // one less than before
+    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                &m_eventLoop, SLOT(quit()) );
+}
+
+void KDirModelTest::testCreateFile()
+{
+    // TODO
+    //createTestFile("toplevelfile_4");
+}
+
+void KDirModelTest::testModifyFile()
+{
+    const QString file = m_tempDir.name() + "toplevelfile_2";
+    const KUrl url(file);
+
+    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+             &m_eventLoop, SLOT(quit()) );
+
+    // "Touch" the file
+    setTimeStamp(file, s_referenceTimeStamp.addSecs(20) );
+
+    // In stat mode, kdirwatch doesn't notice file changes; we need to trigger it
+    // by creating a file.
+    //createTestFile(m_tempDir.name() + "toplevelfile_5");
+    KDirWatch::self()->setDirty(m_tempDir.name());
+
+    // Wait for KDirWatch to notify the change (especially when using Stat)
+    enterLoop();
+
+    // If we come here, then dataChanged() was emitted - all good.
+
+    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                &m_eventLoop, SLOT(quit()) );
 }

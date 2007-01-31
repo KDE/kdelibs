@@ -23,6 +23,7 @@
 #include <ktempdir.h>
 #include <QDateTime>
 #include <kdirmodel.h>
+#include <QEventLoop>
 
 class KDirModelTest : public QObject
 {
@@ -37,9 +38,8 @@ private Q_SLOTS:
     void testData();
     void testReload();
     void testDeleteFile();
-
-Q_SIGNALS:
-    void exitLoop();
+    void testCreateFile();
+    void testModifyFile();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();
@@ -49,6 +49,7 @@ private:
     void fillModel( bool reload );
 
 private:
+    QEventLoop m_eventLoop;
     KTempDir m_tempDir;
     KDirModel m_dirModel;
     QModelIndex m_fileIndex;

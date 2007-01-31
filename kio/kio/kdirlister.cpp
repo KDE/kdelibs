@@ -1526,13 +1526,13 @@ void KDirListerCache::slotUpdateResult( KJob * j )
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
     delayedMimeTypes &= kdl->d->delayedMimeTypes;
 
-  QHash<QString, KFileItem *> fileItems;
+  QHash<QString, KFileItem *> fileItems; // fileName -> KFileItem*
 
   // Unmark all items in url
   for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
   {
     (*kit)->unmark();
-    fileItems.insert( (*kit)->url().url(), *kit );
+    fileItems.insert( (*kit)->name(), *kit );
   }
 
   KFileItem *tmp;
@@ -1569,7 +1569,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     }
 
     // Find this item
-    if ( (tmp = fileItems.value(item.url().url())) )
+    if ( (tmp = fileItems.value(item.name())) )
     {
       // check if something changed for this file
       if ( !tmp->cmp( item ) )
