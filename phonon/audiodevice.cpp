@@ -52,9 +52,10 @@ AudioDevice::AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
             d->icon = QLatin1String("headset");
             break;
         case Solid::AudioHw::Modem:
-            // should a modem be an invalid device so that it's not shown to the user?
             d->icon = QLatin1String("modem");
-            break;
+            // should a modem be a valid device so that it's shown to the user?
+            d->valid = false;
+            return;
     }
     d->driver = audioHw->driver();
     d->available = true;
