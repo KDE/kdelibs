@@ -29,6 +29,12 @@ class AvCapturePrivate : public AbstractMediaProducerPrivate
 {
 	K_DECLARE_PUBLIC( AvCapture )
 	PHONON_PRIVATECLASS( AbstractMediaProducer )
+    public:
+        AvCapturePrivate()
+            : audioCaptureDevice(-1),
+            videoCaptureDevice(-1)
+        {
+        }
 	protected:
 		int audioCaptureDevice;
 		int videoCaptureDevice;
