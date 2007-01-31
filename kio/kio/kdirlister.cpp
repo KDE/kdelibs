@@ -1526,8 +1526,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
     delayedMimeTypes &= kdl->d->delayedMimeTypes;
 
-  // should be enough to get reasonable speed in most cases
-  Q3Dict<KFileItem> fileItems( 9973 );
+  QHash<QString, KFileItem *> fileItems;
 
   // Unmark all items in url
   for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
@@ -1570,10 +1569,8 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     }
 
     // Find this item
-    if ( (tmp = fileItems[item.url().url()]) )
+    if ( (tmp = fileItems.value(item.url().url())) )
     {
-      tmp->mark();
-
       // check if something changed for this file
       if ( !tmp->cmp( item ) )
       {
@@ -1586,6 +1583,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         for ( kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->addRefreshItem( tmp );
       }
+      tmp->mark();
     }
     else // this is a new file
     {
