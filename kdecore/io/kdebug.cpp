@@ -64,85 +64,7 @@
 
 #include "kdebugdbusiface_p.h"
 
-struct KDebugEntry
-{
-    KDebugEntry (unsigned int n = 0, const QByteArray& d = QByteArray()) {number=n; descr=d;}
-    unsigned int number;
-    QByteArray descr;
-};
-
-typedef QHash<unsigned int, KDebugEntry> debug_cache;
-static debug_cache *KDebugCache;
-
 KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface = false;
-
-static KStaticDeleter< debug_cache > kdd;
-
-static QByteArray getDescrFromNum(unsigned int _num)
-{
-  if (!KDebugCache) {
-    kdd.setObject(KDebugCache, new debug_cache);
-    // Do not call this deleter from ~KApplication
-    KGlobal::unregisterStaticDeleter(&kdd);
-  }
-
-  if ( KDebugCache->contains( _num ) )
-    return KDebugCache->value( _num ).descr;
-
-  if ( !KDebugCache->isEmpty() ) // areas already loaded
-    return QByteArray();
-
-  QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
-  if (filename.isEmpty())
-      return QByteArray();
-
-  QFile file(filename);
-  if (!file.open(QIODevice::ReadOnly)) {
-    qWarning("Couldn't open %s", filename.toLocal8Bit().constData());
-    file.close();
-    return QByteArray();
-  }
-
-  uint lineNumber=0;
-  QByteArray line(1024, 0);
-  int len;
-
-  while (( len = file.readLine(line.data(),line.size()-1) ) > 0) {
-      int i=0;
-      ++lineNumber;
-
-      while (line[i] && line[i] <= ' ')
-        i++;
-
-      unsigned char ch=line[i];
-
-      if ( !ch || ch =='#' || ch =='\n')
-          continue; // We have an eof, a comment or an empty line
-
-      if (ch < '0' && ch > '9') {
-          qWarning("Syntax error: no number (line %u)",lineNumber);
-          continue;
-      }
-
-      const int numStart=i;
-      do {
-          ch=line[++i];
-      } while ( ch >= '0' && ch <= '9');
-
-      unsigned int number = line.mid(numStart, i).toUInt(); // ###
-
-      while (line[i] && line[i] <= ' ')
-        i++;
-
-      KDebugCache->insert(number, KDebugEntry(number, line.mid(i, len-i-1)));
-  }
-  file.close();
-
-  if ( KDebugCache->contains( _num ) )
-      return KDebugCache->value( _num ).descr;
-
-  return QByteArray();
-}
 
 enum DebugLevels {
     KDEBUG_INFO=    0,
@@ -150,7 +72,6 @@ enum DebugLevels {
     KDEBUG_ERROR=   2,
     KDEBUG_FATAL=   3
 };
-
 
 struct kDebugPrivate
 {
@@ -182,10 +103,66 @@ struct kDebugPrivate
         delete kDebugDBusIface;
     }
 
+    QByteArray getDescrFromNum(unsigned int num)
+    {
+        if (!cache.isEmpty()) { // areas already loaded
+            return cache.value(num);
+        }
+
+        QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
+        if (filename.isEmpty()) {
+            return QByteArray();
+        }
+        QFile file(filename);
+        if (!file.open(QIODevice::ReadOnly)) {
+            qWarning("Couldn't open %s", filename.toLocal8Bit().constData());
+            file.close();
+            return QByteArray();
+        }
+
+        uint lineNumber=0;
+        QByteArray line(1024, 0);
+        int len;
+
+        while ((len = file.readLine(line.data(),line.size()-1)) > 0) {
+            int i=0;
+            ++lineNumber;
+
+            while (line[i] && line[i] <= ' ')
+                i++;
+
+            unsigned char ch=line[i];
+
+            if (!ch || ch =='#' || ch =='\n')
+                continue; // We have an eof, a comment or an empty line
+
+            if (ch < '0' && ch > '9') {
+                qWarning("Syntax error: no number (line %u)",lineNumber);
+                continue;
+            }
+
+            const int numStart=i;
+            do {
+                ch=line[++i];
+            } while (ch >= '0' && ch <= '9');
+
+            unsigned int number = line.mid(numStart, i).toUInt(); // ###
+
+            while (line[i] && line[i] <= ' ')
+                i++;
+
+            cache.insert(number, line.mid(i, len-i-1));
+        }
+        file.close();
+
+        return cache.value(num);
+    }
+
     QByteArray aAreaName;
     unsigned int oldarea;
     KConfig *config;
     KDebugDBusIface *kDebugDBusIface;
+    QHash<unsigned int, QByteArray> cache;
 };
 
 K_GLOBAL_STATIC(kDebugPrivate, kDebug_data)
@@ -241,7 +218,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
             kDebug_data->oldarea = nArea;
             if (KGlobal::hasMainComponent()) {
                 if (nArea > 0) {
-                    kDebug_data->aAreaName = getDescrFromNum(nArea);
+                    kDebug_data->aAreaName = kDebug_data->getDescrFromNum(nArea);
                 }
                 if ((nArea == 0) || kDebug_data->aAreaName.isEmpty()) {
                     kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
