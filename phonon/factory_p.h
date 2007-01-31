@@ -21,6 +21,7 @@
 #define PHONON_FACTORY_P_H
 
 #include "factory.h"
+#include <QPointer>
 
 namespace Phonon
 {
@@ -33,7 +34,7 @@ class FactoryPrivate : public QObject
         ~FactoryPrivate();
         void createBackend();
 
-        QObject* backend;
+        QPointer<QObject> backend;
         KService::Ptr service;
 
         QList<QObject*> objects;
