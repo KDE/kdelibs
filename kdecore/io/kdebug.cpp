@@ -152,124 +152,123 @@ enum DebugLevels {
 };
 
 
-struct kDebugPrivate {
-  kDebugPrivate() :
-	oldarea(0), config(0) { }
+struct kDebugPrivate
+{
+    kDebugPrivate()
+        : oldarea(0),
+        config(0),
+        kDebugDBusIface(0)
+    {
+        // Create the dbus interface if it has not been created yet
+        // But only register to DBus if we are in a process with a dbus event loop,
+        // otherwise introspection will just hang.
+        // Examples of processes without a dbus event loop: kioslaves and the main kdeinit process.
+        //
+        // How to know that we have a real event loop? That's tricky.
+        // We could delay registration in kDebugDBusIface with a QTimer, but
+        // it would still get triggered by kioslaves that use enterLoop/exitLoop
+        // to run kio jobs synchronously.
+        //
+        // Solution: we have a bool that is set by KApplication
+        // (kioslaves should use QCoreApplication but not KApplication).
+        if (kde_kdebug_enable_dbus_interface) {
+            kDebugDBusIface = new KDebugDBusIface;
+        }
+    }
 
-  ~kDebugPrivate() { delete config; }
+    ~kDebugPrivate()
+    {
+        delete config;
+        delete kDebugDBusIface;
+    }
 
-  QByteArray aAreaName;
-  unsigned int oldarea;
-  KConfig *config;
+    QByteArray aAreaName;
+    unsigned int oldarea;
+    KConfig *config;
+    KDebugDBusIface *kDebugDBusIface;
 };
 
-static kDebugPrivate *kDebug_data = 0;
-static KStaticDeleter<kDebugPrivate> pcd;
-static KStaticDeleter<KDebugDBusIface> dbussd;
-static KDebugDBusIface* kDebugDBusIface = 0;
+K_GLOBAL_STATIC(kDebugPrivate, kDebug_data)
 
 // ######## KDE4: kDebug is not threadsafe!  Races and crashes apps that call
 //                it from both threads.  Let's rework this altogether, and
 //                maybe make it faster too.
 static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
 {
-  if ( !kDebug_data )
-  {
-      pcd.setObject(kDebug_data, new kDebugPrivate());
-      // Do not call this deleter from ~KApplication
-      KGlobal::unregisterStaticDeleter(&pcd);
-
-      // Create the dbus interface if it has not been created yet
-      // But only register to DBus if we are in a process with a dbus event loop,
-      // otherwise introspection will just hang.
-      // Examples of processes without a dbus event loop: kioslaves and the main kdeinit process.
-      //
-      // How to know that we have a real event loop? That's tricky.
-      // We could delay registration in kDebugDBusIface with a QTimer, but
-      // it would still get triggered by kioslaves that use enterLoop/exitLoop
-      // to run kio jobs synchronously.
-      //
-      // Solution: we have a bool that is set by KApplication
-      // (kioslaves should use QCoreApplication but not KApplication).
-      if (!kDebugDBusIface && kde_kdebug_enable_dbus_interface)
-      {
-          kDebugDBusIface = dbussd.setObject(kDebugDBusIface, new KDebugDBusIface);
-      }
-  }
-
-  if (!kDebug_data->config && KGlobal::hasMainComponent() )
-  {
-      kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), false, false);
-      kDebug_data->config->setGroup( QLatin1String("0") );
-
-      //AB: this is necessary here, otherwise all output with area 0 won't be
-      //prefixed with anything, unless something with area != 0 is called before
-      //if ( KGlobal::hasMainComponent() ) <- XXX why is this needed?
-      kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
-  }
-
-  if (kDebug_data->config && kDebug_data->oldarea != nArea) {
-    kDebug_data->config->setGroup( QString::number(nArea) );
-    kDebug_data->oldarea = nArea;
-    if ( nArea > 0 && KGlobal::hasMainComponent() )
-      kDebug_data->aAreaName = getDescrFromNum(nArea);
-    if ((nArea == 0) || kDebug_data->aAreaName.isEmpty())
-      if ( KGlobal::hasMainComponent() )
-        kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
-  }
-
-  int nPriority = 0;
-  QString aCaption;
-
     /* Determine output */
 
-  QString key;
-  switch( nLevel )
-  {
-  case KDEBUG_INFO:
-      key = QLatin1String( "InfoOutput" );
-      aCaption = QLatin1String( "Info" );
-      nPriority = LOG_INFO;
-      break;
-  case KDEBUG_WARN:
-      key = QLatin1String( "WarnOutput" );
-      aCaption = QLatin1String( "Warning" );
-      nPriority = LOG_WARNING;
-	break;
-  case KDEBUG_FATAL:
-      key = QLatin1String( "FatalOutput" );
-      aCaption = QLatin1String( "Fatal Error" );
-      nPriority = LOG_CRIT;
-      break;
-  case KDEBUG_ERROR:
-  default:
-      /* Programmer error, use "Error" as default */
-      key = QLatin1String( "ErrorOutput" );
-      aCaption = QLatin1String( "Error" );
-      nPriority = LOG_ERR;
-      break;
-  }
+    QString key;
+    QString aCaption;
+    int nPriority = 0;
+    switch (nLevel) {
+    case KDEBUG_INFO:
+        key = QLatin1String( "InfoOutput" );
+        aCaption = QLatin1String( "Info" );
+        nPriority = LOG_INFO;
+        break;
+    case KDEBUG_WARN:
+        key = QLatin1String( "WarnOutput" );
+        aCaption = QLatin1String( "Warning" );
+        nPriority = LOG_WARNING;
+        break;
+    case KDEBUG_FATAL:
+        key = QLatin1String( "FatalOutput" );
+        aCaption = QLatin1String( "Fatal Error" );
+        nPriority = LOG_CRIT;
+        break;
+    case KDEBUG_ERROR:
+    default:
+        /* Programmer error, use "Error" as default */
+        key = QLatin1String( "ErrorOutput" );
+        aCaption = QLatin1String( "Error" );
+        nPriority = LOG_ERR;
+        break;
+    }
 
-  short nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2) : 2;
+    short nOutput = 2;
+    if (!kDebug_data.isDestroyed()) {
+        if (!kDebug_data->config && KGlobal::hasMainComponent()) {
+            kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), false, false);
+            kDebug_data->config->setGroup(QLatin1String("0"));
 
-  if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
-      return;
+            //AB: this is necessary here, otherwise all output with area 0 won't be
+            //prefixed with anything, unless something with area != 0 is called before
+            kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
+        }
 
-  const int BUFSIZE = 4096;
-  char buf[BUFSIZE];
+        if (kDebug_data->config && kDebug_data->oldarea != nArea) {
+            kDebug_data->config->setGroup(QString::number(nArea));
+            kDebug_data->oldarea = nArea;
+            if (KGlobal::hasMainComponent()) {
+                if (nArea > 0) {
+                    kDebug_data->aAreaName = getDescrFromNum(nArea);
+                }
+                if ((nArea == 0) || kDebug_data->aAreaName.isEmpty()) {
+                    kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
+                }
+            }
+        }
+        nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2) : 2;
+        if (nOutput == 4 && nLevel != KDEBUG_FATAL) {
+            return;
+        }
+    }
+
+    const int BUFSIZE = 4096;
+    char buf[BUFSIZE];
 #ifdef Q_WS_WIN
-  sprintf(buf,"[%d] ",getpid());
+    sprintf(buf,"[%d] ",getpid());
 #else
-  strlcpy(buf,"",BUFSIZE);
+    strlcpy(buf,"",BUFSIZE);
 #endif
 
-  if ( !kDebug_data->aAreaName.isEmpty() ) {
-      strlcat( buf, kDebug_data->aAreaName.data(), BUFSIZE );
-      strlcat( buf, ": ", BUFSIZE );
-      strlcat( buf, data, BUFSIZE );
-  }
-  else
-      strlcat( buf, data, BUFSIZE );
+    if (!kDebug_data.isDestroyed() && !kDebug_data->aAreaName.isEmpty()) {
+        strlcat(buf, kDebug_data->aAreaName.data(), BUFSIZE);
+        strlcat(buf, ": ", BUFSIZE);
+        strlcat(buf, data, BUFSIZE);
+    } else {
+        strlcat(buf, data, BUFSIZE);
+    }
 
 
   // Output
@@ -294,6 +293,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
           aKey = "ErrorFilename";
           break;
       }
+      // if nOutput != 2 then kDebug_data is still valid
       QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
       aOutputFile.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered );
       aOutputFile.write( buf, strlen( buf ) );
@@ -303,6 +303,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   case 1: // Message Box
   {
       // Since we are in kdecore here, we cannot use KMsgBox 
+      // if nOutput != 2 then kDebug_data is still valid
       if ( !kDebug_data->aAreaName.isEmpty() )
           aCaption += QString::fromAscii("(%1)").arg( QString::fromUtf8( kDebug_data->aAreaName.data() ) );
       KMessage::message( KMessage::Information , QString::fromUtf8( data ) , aCaption );
@@ -321,10 +322,10 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
 
   // check if we should abort
-  if( ( nLevel == KDEBUG_FATAL )
-      && ( !kDebug_data->config ||
-           kDebug_data->config->readEntry( "AbortFatal", true ) ) )
+  if ((nLevel == KDEBUG_FATAL) && (kDebug_data.isDestroyed()
+              || !kDebug_data->config || kDebug_data->config->readEntry("AbortFatal", true))) {
         abort();
+  }
 }
 
 kdbgstream &perror( kdbgstream &s)
