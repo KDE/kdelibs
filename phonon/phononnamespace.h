@@ -123,13 +123,13 @@ namespace Phonon
          * Holds the largest value of categories.
          */
         LastCategory = AccessibilityCategory
-	};
+    };
 
-	/**
-	 * Returns a (translated) string to show to the user identifying the given
-	 * Category.
-	 */
-	QString PHONONCORE_EXPORT categoryToString( Category c );
+    /**
+     * Returns a (translated) string to show to the user identifying the given
+     * Category.
+     */
+    PHONONCORE_EXPORT QString categoryToString(Category c);
 } //namespace Phonon
 
 class kdbgstream;
