@@ -148,6 +148,7 @@ install( FILES
   KCursor
   KCustomMenuEditor
   KDBusServiceStarter
+  KDebug
   KDEDModule
   KDEDesktopMimeType
   KDEsuClient
