@@ -144,7 +144,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
   case ResponseText:
     return ::getStringOrNull(DOM::DOMString(response));
   case ResponseXML:
-    if (state != Completed) {
+    if (state != XHRS_Loaded) {
       return Undefined();
     }
     if (!createdDocument) {
@@ -159,6 +159,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 	responseXML = doc->implementation()->createDocument();
 
 	responseXML->open();
+	responseXML->setURL(url.url());
 	responseXML->write(response);
 	responseXML->finishParsing();
 	responseXML->close();
@@ -171,7 +172,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     }
 
     if (!typeIsXML) {
-      return Undefined();
+      return Null();
     }
 
     return getDOMNode(exec,responseXML.get());
@@ -226,10 +227,11 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
     async(true),
     contentType(QString()),
     job(0),
-    state(Uninitialized),
+    state(XHRS_Uninitialized),
     onReadyStateChangeListener(0),
     onLoadListener(0),
     decoder(0),
+    response(QString::fromLatin1("")),
     createdDocument(false),
     aborted(false)
 {
@@ -260,7 +262,7 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       onReadyStateChangeListener->handleEvent(ev);
     }
 
-    if (state == Completed && onLoadListener != 0 && doc->view() && doc->view()->part()) {
+    if (state == XHRS_Loaded && onLoadListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("load", true, true);
       onLoadListener->handleEvent(ev);
@@ -299,26 +301,19 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
   // clear stuff from possible previous load
   requestHeaders.clear();
   responseHeaders.clear();
-  response.clear();
+  response = QString::fromLatin1("");
   createdDocument = false;
   responseXML = 0;
-
-  changeState(Uninitialized);
-
-  if (aborted) {
-    return;
-  }
 
   if (!urlMatchesDocumentDomain(_url)) {
     return;
   }
 
-
   method = _method.toLower();
   url = _url;
   async = _async;
 
-  changeState(Loading);
+  changeState(XHRS_Open);
 }
 
 void XMLHttpRequest::send(const QString& _body)
@@ -423,6 +418,7 @@ void XMLHttpRequest::abort()
   delete decoder;
   decoder = 0;
   aborted = true;
+  changeState(XHRS_Uninitialized);
 }
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
@@ -557,7 +553,7 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KUrl &
   }
 
   responseHeaders = headers;
-  changeState(Loaded);
+  changeState(XHRS_Sent);
   if (aborted) {
     return;
   }
@@ -587,7 +583,7 @@ void XMLHttpRequest::slotFinished(KJob *)
   // make sure to forget about the job before emitting completed,
   // since changeState triggers JS code, which might e.g. call abort.
   job = 0;
-  changeState(Completed);
+  changeState(XHRS_Loaded);
 
   delete decoder;
   decoder = 0;
@@ -606,7 +602,7 @@ void XMLHttpRequest::slotData( KIO::Job*, const char *data, int len )
 void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 {
-  if (state < Loaded ) {
+  if (state < XHRS_Sent ) {
     responseHeaders = job->queryMetaData("HTTP-Headers");
 
     // NOTE: Replace a 304 response with a 200! Both IE and Mozilla do this.
@@ -618,7 +614,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
         responseHeaders.replace(codeStart, (codeEnd-codeStart), "200 OK");
     }
 
-    changeState(Loaded);
+    changeState(XHRS_Sent);
   }
 
 #ifndef APPLE_CHANGES
@@ -656,7 +652,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   response += decoded;
 
   if (!aborted) {
-    changeState(Interactive);
+    changeState(XHRS_Receiving);
   }
 }
 
@@ -718,7 +714,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
         return Undefined();
       }
 
-      if (request->state != Loading) {
+      if (request->state != XHRS_Open) {
 	return Undefined();
       }
 

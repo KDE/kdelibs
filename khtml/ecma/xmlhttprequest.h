@@ -34,11 +34,11 @@ namespace KJS {
 
   // these exact numeric values are important because JS expects them
   enum XMLHttpRequestState {
-    Uninitialized = 0,
-    Loading = 1,
-    Loaded = 2,
-    Interactive = 3,
-    Completed = 4
+    XHRS_Uninitialized = 0,
+    XHRS_Open = 1,
+    XHRS_Sent = 2,
+    XHRS_Receiving = 3,
+    XHRS_Loaded = 4
   };
 
   class XMLHttpRequestConstructorImp : public ObjectImp {
