@@ -182,11 +182,15 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
 
     if ( backend == 0 ) return list;
 
-    QSet<Capability::Type> capabilities = predicate.usedCapabilities();
     QSet<QString> udis;
+    if ( predicate.isValid() ) {
+        QSet<Capability::Type> capabilities = predicate.usedCapabilities();
 
-    foreach (Capability::Type capability, capabilities) {
-        udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, capability));
+        foreach (Capability::Type capability, capabilities) {
+            udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, capability));
+        }
+    } else {
+        udis+= QSet<QString>::fromList(backend->allDevices());
     }
 
     foreach( const QString &udi, udis )
