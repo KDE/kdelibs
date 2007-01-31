@@ -78,6 +78,10 @@ namespace Phonon
 			 * \return the Iface object, might return \c 0
 			 */
 			QObject* iface();
+
+        private:
+            Base(const Base&);
+            Base& operator=(const Base&);
 	};
 } //namespace Phonon
 

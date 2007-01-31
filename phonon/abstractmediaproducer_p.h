@@ -36,7 +36,13 @@ class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestruction
 		AbstractMediaProducerPrivate()
 			: state( Phonon::LoadingState )
 			, currentTime( 0 )
-			, tickInterval( 0 )
+            , tickInterval(0),
+            videoPaths(),
+            audioPaths(),
+            selectedAudioStream(),
+            selectedVideoStream(),
+            selectedSubtitleStream(),
+            metaData()
 		{ }
 
 		State state;
