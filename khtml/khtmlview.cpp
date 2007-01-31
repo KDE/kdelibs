@@ -136,7 +136,7 @@ public:
     };
 
     KHTMLViewPrivate()
-        : underMouse( 0 ), underMouseNonShared( 0 ), visibleWidgets( 107 )
+        : underMouse( 0 ), underMouseNonShared( 0 ), oldUnderMouse( 0 ), visibleWidgets( 107 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -163,6 +163,8 @@ public:
 	    underMouse->deref();
         if (underMouseNonShared)
 	    underMouseNonShared->deref();
+        if (oldUnderMouse)
+            oldUnderMouse->deref();
 
 #ifndef KHTML_NO_CARET
 	delete m_caretViewContext;
@@ -180,6 +182,9 @@ public:
         if (underMouseNonShared)
 	    underMouseNonShared->deref();
 	underMouseNonShared = 0;
+	if (oldUnderMouse)
+	    oldUnderMouse->deref();
+        oldUnderMouse = 0;
         linkPressed = false;
         useSlowRepaints = false;
 	tabMovePending = false;
@@ -207,8 +212,6 @@ public:
         paged = false;
 	clickX = -1;
 	clickY = -1;
-        prevMouseX = -1;
-        prevMouseY = -1;
         contentsX = 0;
         contentsY = 0;
 	clickCount = 0;
@@ -309,6 +312,7 @@ public:
 
     NodeImpl *underMouse;
     NodeImpl *underMouseNonShared;
+    NodeImpl *oldUnderMouse;
 
     bool tabMovePending:1;
     bool lastTabbingDirection:1;
@@ -331,7 +335,6 @@ public:
     int clickX, clickY, clickCount;
     bool isDoubleClick;
 
-    int prevMouseX, prevMouseY;
     int contentsX, contentsY;
     bool scrollingSelf;
     int layoutTimerId;
@@ -1224,9 +1227,6 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     if (r && r->isWidget()) {
 	_mouse->ignore();
     }
-
-    d->prevMouseX = xm;
-    d->prevMouseY = ym;
 
     if (!swallowEvent) {
         khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
@@ -3163,51 +3163,39 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     bool metaKey = (_mouse->modifiers() & Qt::MetaModifier);
 
     // mouseout/mouseover
-    if (setUnder && (d->prevMouseX != pageX || d->prevMouseY != pageY)) {
-
-        // ### this code sucks. we should save the oldUnder instead of calculating
-        // it again. calculating is expensive! (Dirk)
-        // ###
-        NodeImpl *oldUnder = 0;
-	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
-	    NodeImpl::MouseEvent mev( _mouse->buttons(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
-	    m_part->xmlDocImpl()->prepareMouseEvent( true, d->prevMouseX, d->prevMouseY, &mev );
-	    oldUnder = mev.innerNode.handle();
-
-            if (oldUnder && oldUnder->isTextNode())
-                oldUnder = oldUnder->parentNode();
-	}
-// 	qDebug("oldunder=%p (%s), target=%p (%s) x/y=%d/%d", oldUnder, oldUnder ? oldUnder->renderer()->renderName() : 0, targetNode,  targetNode ? targetNode->renderer()->renderName() : 0, _mouse->x(), _mouse->y());
-	if (oldUnder != targetNode) {
-	    // send mouseout event to the old node
-	    if (oldUnder){
-		oldUnder->ref();
-		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOUT_EVENT,
+    if (setUnder && d->oldUnderMouse != targetNode) {
+        if (d->oldUnderMouse && d->oldUnderMouse->getDocument() != targetNode->getDocument()) {
+            d->oldUnderMouse->deref();
+            d->oldUnderMouse = 0;
+        }
+        // send mouseout event to the old node
+        if (d->oldUnderMouse) {
+        // send mouseout event to the old node
+            MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOUT_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
 							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,targetNode);
-		me->ref();
-		oldUnder->dispatchEvent(me,exceptioncode,true);
-		me->deref();
-	    }
-
-	    // send mouseover event to the new node
-	    if (targetNode) {
-		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
+            me->ref();
+            d->oldUnderMouse->dispatchEvent(me,exceptioncode,true);
+            me->deref();
+        }
+        // send mouseover event to the new node
+	if (targetNode) {
+	    MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
 							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
-							button,oldUnder);
+							button,d->oldUnderMouse);
 
-		me->ref();
-		targetNode->dispatchEvent(me,exceptioncode,true);
-		me->deref();
-	    }
-
-            if (oldUnder)
-                oldUnder->deref();
-        }
+            me->ref();
+            targetNode->dispatchEvent(me,exceptioncode,true);
+	    me->deref();
+	}
+	if (d->oldUnderMouse)
+	    d->oldUnderMouse->deref();
+        d->oldUnderMouse = targetNode;
+        d->oldUnderMouse->ref();
     }
 
     bool swallowEvent = false;
