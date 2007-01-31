@@ -57,7 +57,9 @@ namespace Solid
          * - Dvdplusrw : A ReWritable Digital Versatile Disc (DVD+RW)
          * - Dvdplusdl : A Dual Layer Digital Versatile Disc (DVD+R DL)
          */
-        enum MediumType { Cdr, Cdrw, Dvd, Dvdr, Dvdrw, Dvdram, Dvdplusr, Dvdplusrw, Dvdplusdl };
+        enum MediumType { Cdr=0x001, Cdrw=0x002, Dvd=0x004, Dvdr=0x008, 
+                          Dvdrw=0x010, Dvdram=0x020, Dvdplusr=0x040, 
+                          Dvdplusrw=0x080, Dvdplusdl=0x100 };
 
         /**
          * This type stores an OR combination of MediumType values.
