@@ -40,8 +40,8 @@ void ProviderLoader::load(const QString &providersurl)
 {
   kDebug(550) << "ProviderLoader::load()" << endl;
 
-  mProviders.clear();
-  mJobData = "";
+  m_providers.clear();
+  m_jobdata.clear();
 
   kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl << endl;
   
@@ -50,18 +50,13 @@ void ProviderLoader::load(const QString &providersurl)
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
            SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
-
-//  job->dumpObjectInfo();
 }
 
 void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
   kDebug(550) << "ProviderLoader::slotJobData()" << endl;
 
-  if ( data.size() == 0 ) return;
-
-  mJobData.append( QString::fromUtf8( data ) );
-// FIXME: utf-8 conversion only at the end!!!
+  m_jobdata.append(data);
 }
 
 void ProviderLoader::slotJobResult( KIO::Job *job )
@@ -71,11 +66,12 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
     return;
   }
 
-  kDebug(550) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
-            << endl;
+  kDebug(550) << "--PROVIDERS-START--" << endl;
+  kDebug(550) << m_jobdata << endl;
+  kDebug(550) << "--PROVIDERS-END--" << endl;
 
   QDomDocument doc;
-  if ( !doc.setContent( mJobData ) ) {
+  if ( !doc.setContent( m_jobdata ) ) {
     emit signalProvidersFailed();
     return;
   }
@@ -92,11 +88,11 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
  
     if ( p.tagName() == "provider" ) {
       ProviderHandler handler(p);
-      mProviders.append(handler.providerptr());
+      m_providers.append(handler.providerptr());
     }
   }
-  
-  emit signalProvidersLoaded( &mProviders );
+ 
+  emit signalProvidersLoaded( &m_providers );
 }
 
 #include "providerloader.moc"

@@ -39,8 +39,8 @@ void EntryLoader::load(const QString &stuffurl)
 {
   kDebug(550) << "EntryLoader::load()" << endl;
 
-  mEntries.clear();
-  mJobData = "";
+  m_entries.clear();
+  m_jobdata.clear();
 
   kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl << endl;
   
@@ -49,18 +49,13 @@ void EntryLoader::load(const QString &stuffurl)
            SLOT( slotJobResult( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
            SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
-
-//  job->dumpObjectInfo();
 }
 
 void EntryLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
   kDebug(550) << "EntryLoader::slotJobData()" << endl;
 
-  if ( data.size() == 0 ) return;
-
-  mJobData.append( QString::fromUtf8( data ) );
-// FIXME: utf-8 conversion only at the end!!!
+  m_jobdata.append(data);
 }
 
 void EntryLoader::slotJobResult( KIO::Job *job )
@@ -70,11 +65,14 @@ void EntryLoader::slotJobResult( KIO::Job *job )
     return;
   }
 
-  kDebug(550) << "--ENTRIES-START--" << endl << mJobData << "--ENTRIES_END--"
-            << endl;
+  //QString contents = QString::fromUtf8(m_jobdata);
+
+  kDebug(550) << "--ENTRIES-START--" << endl;
+  kDebug(550) << m_jobdata << endl;
+  kDebug(550) << "--ENTRIES-END--" << endl;
 
   QDomDocument doc;
-  if ( !doc.setContent( mJobData ) ) {
+  if ( !doc.setContent( m_jobdata ) ) {
     emit signalEntriesFailed();
     return;
   }
@@ -91,11 +89,11 @@ void EntryLoader::slotJobResult( KIO::Job *job )
  
     if ( e.tagName() == "stuff" ) {
       EntryHandler handler(e);
-      mEntries.append(handler.entryptr());
+      m_entries.append(handler.entryptr());
     }
   }
-  
-  emit signalEntriesLoaded( &mEntries );
+ 
+  emit signalEntriesLoaded( &m_entries );
 }
 
 #include "entryloader.moc"

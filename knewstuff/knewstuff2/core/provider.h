@@ -21,6 +21,8 @@
 #ifndef KNEWSTUFF2_PROVIDER_H
 #define KNEWSTUFF2_PROVIDER_H
 
+#include <knewstuff2/feed.h>
+
 #include <kurl.h>
 
 #include <qdom.h>
@@ -83,12 +85,22 @@ class KDE_EXPORT Provider
     KUrl downloadUrl() const;
 
     /**
-     * Variant to retrieve 'tagged' download URLs.
-     * Variant can be one of 'score', 'downloads', 'latest'.
-     *
-     * @return download specific URL
+     * Adds a feed URL.
      */
-    KUrl downloadUrlVariant( QString variant ) const;
+    void addDownloadUrlFeed( QString feedtype, Feed *feed );
+
+    /**
+     * Feed to retrieve 'tagged' (variant) download URLs.
+     * Feed can be one of 'score', 'downloads', 'latest'.
+     *
+     * @return download URL of a certain feed
+     */
+    Feed *downloadUrlFeed( QString feedtype ) const;
+
+    /**
+     * Returns a list of all feeds.
+     */
+    QStringList feeds() const;
 
     /**
      * Sets the upload URL.
@@ -151,9 +163,7 @@ class KDE_EXPORT Provider
     KUrl mNoUploadUrl;
     KUrl mIcon;
     bool mNoUpload;
-    KUrl mDownloadUrlLatest;
-    KUrl mDownloadUrlScore;
-    KUrl mDownloadUrlDownloads;
+    QMap<QString, Feed*> mFeeds;
 
     class ProviderPrivate *d;
 };

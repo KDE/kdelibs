@@ -68,9 +68,9 @@ class KDE_EXPORT ProviderLoader : public QObject
     void slotJobResult(KIO::Job *);
 
   private:
-    QString mJobData;
+    QByteArray m_jobdata;
 
-    Provider::List mProviders;
+    Provider::List m_providers;
 };
 
 }

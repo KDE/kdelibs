@@ -17,58 +17,75 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KNEWSTUFF2_ENTRY_LOADER_H
-#define KNEWSTUFF2_ENTRY_LOADER_H
+#ifndef KNEWSTUFF2_FEED_H
+#define KNEWSTUFF2_FEED_H
 
-#include <knewstuff2/entry.h>
-
-#include <qdom.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <knewstuff2/ktranslatable.h>
 
 #include <kurl.h>
-
-namespace KIO { class Job; }
 
 namespace KNS {
 
 /**
- * KNewStuff entry loader.
- * Loads any entries from a given file and notifies about when the
- * loading has completed.
+ * @short KNewStuff feed.
+ *
+ * @author Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT EntryLoader : public QObject
+class Feed
 {
-    Q_OBJECT
   public:
     /**
      * Constructor.
      */
-    EntryLoader();
+    Feed();
 
     /**
-     * Starts asynchronously loading the list of entries from the
-     * given URL.
+     * Destructor.
+     */
+    ~Feed();
+
+    /**
+     * Sets the name for this feed.
+     */
+    void setName(const KTranslatable& name);
+
+    /**
+     * Retrieve the name of the feed.
      *
-     * @param stuffurl location of the XML file containing the entries
+     * @return feed name (potentially translated)
      */
-    void load(const QString &stuffurl);
+    KTranslatable name() const;
 
-  signals:
     /**
-     * Indicates that the list of entries has been successfully loaded.
+     * Sets the feed description.
      */
-    void signalEntriesLoaded(KNS::Entry::List *);
-    void signalEntriesFailed();
+    void setDescription(const KTranslatable& type);
 
-  protected slots:
-    void slotJobData(KIO::Job *, const QByteArray &);
-    void slotJobResult(KIO::Job *);
+    /**
+     * Retrieve the description of the feed.
+     *
+     * @return feed description
+     */
+    KTranslatable description() const;
+
+    /**
+     * Sets the URL for this feed.
+     */
+    void setFeedUrl(const KUrl& feedurl);
+
+    /**
+     * Retrieve the URL of the feed.
+     *
+     * @return URL of this feed
+     */
+    KUrl feedUrl() const;
 
   private:
-    QByteArray m_jobdata;
+    KTranslatable mName;
+    KTranslatable mDescription;
+    KUrl mFeed;
 
-    Entry::List m_entries;
+    class FeedPrivate *d;
 };
 
 }

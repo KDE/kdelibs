@@ -28,6 +28,8 @@
 
 #include "providerhandler.h"
 
+#include "feed.h"
+
 using namespace KNS;
 
 ProviderHandler::ProviderHandler(const Provider& provider)
@@ -63,7 +65,13 @@ Provider *ProviderHandler::providerptr()
   provider->setNoUploadUrl(mProvider.noUploadUrl());
   provider->setNoUpload(mProvider.noUpload());
   provider->setIcon(mProvider.icon());
-  // FIXME: download url variants
+
+  QStringList feeds = mProvider.feeds();
+  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++)
+  {
+    Feed *feed = mProvider.downloadUrlFeed((*it));
+    provider->addDownloadUrlFeed((*it), feed);
+  }
   return provider;
 }
 
@@ -99,7 +107,28 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
   QString downloadlatest = providerxml.attribute("downloadurl-latest");
   QString downloadscore = providerxml.attribute("downloadurl-score");
   QString downloaddownloads = providerxml.attribute("downloadurl-downloads");
-  // FIXME: we throw those away
+
+  if(!downloadlatest.isEmpty())
+  {
+    Feed *feedlatest = new Feed();
+    feedlatest->setName(i18n("Latest"));
+    feedlatest->setFeedUrl(downloadlatest);
+    provider.addDownloadUrlFeed("latest", feedlatest);
+  }
+  if(!downloadscore.isEmpty())
+  {
+    Feed *feedscore = new Feed();
+    feedscore->setName(i18n("Highest Rated"));
+    feedscore->setFeedUrl(downloadscore);
+    provider.addDownloadUrlFeed("score", feedscore);
+  }
+  if(!downloaddownloads.isEmpty())
+  {
+    Feed *feeddownloads = new Feed();
+    feeddownloads->setName(i18n("Most Downloads"));
+    feeddownloads->setFeedUrl(downloaddownloads);
+    provider.addDownloadUrlFeed("downloads", feeddownloads);
+  }
  
   // FIXME: what exactly is the following condition supposed to do?
   // FIXME: make sure new KUrl in KDE 4 handles this right

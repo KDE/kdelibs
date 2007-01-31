@@ -43,18 +43,27 @@ Provider::Provider() :
 
 Provider::~Provider()
 {
+  //qDeleteAll(mFeeds);
 }
 
-KUrl Provider::downloadUrlVariant( QString variant ) const
+void Provider::addDownloadUrlFeed( QString feedtype, Feed *feed )
 {
-  if((variant == "latest") && (mDownloadUrlLatest.isValid()))
-	return mDownloadUrlLatest;
-  if((variant == "score") && (mDownloadUrlScore.isValid()))
-	return mDownloadUrlScore;
-  if((variant == "downloads") && (mDownloadUrlDownloads.isValid()))
-	return mDownloadUrlDownloads;
+  mFeeds[feedtype] = feed;
+  // FIXME: check for "blessed" feed types?
+}
 
-  return mDownloadUrl;
+Feed *Provider::downloadUrlFeed( QString feedtype ) const
+{
+  if(mFeeds.contains(feedtype))
+  {
+    return mFeeds[feedtype];
+  }
+  else
+  {
+    //return mDownloadUrl;
+    return NULL;
+    // FIXME: this API makes it impossible to have "default feed"
+  }
 }
 
 void Provider::setName( const QString &name )
@@ -115,5 +124,10 @@ void Provider::setNoUpload( bool enabled )
 bool Provider::noUpload() const
 {
   return mNoUpload;
+}
+
+QStringList Provider::feeds() const
+{
+  return mFeeds.keys();
 }
 
