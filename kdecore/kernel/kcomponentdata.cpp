@@ -139,8 +139,12 @@ inline void KComponentDataPrivate::checkConfig()
 {
     if (sharedConfig.isUnique()) {
         if (refCount == 1) {
+            sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig object
+                                  // anymore
             sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
-        } else if (refCount == 2 && dirs) { // KStandardDirs also holds a ref to us
+        } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
+            sharedConfig->sync(); // sync before KComponentData doesn't have a KStandardDirs or
+                                  // KSharedConfig object anymore
             KStandardDirs *tmp = dirs;
             dirs = 0;
             delete tmp; // calls deref()
@@ -160,14 +164,8 @@ inline void KComponentDataPrivate::deref()
     //qDebug() << k_funcinfo << refCount + 1 << "->" << refCount << kBacktrace() << endl;
     if (refCount == 0) {
         delete this;
-    } else if (sharedConfig.isUnique()) {
-        if (refCount == 1) {
-            sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
-        } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
-            KStandardDirs *tmp = dirs;
-            dirs = 0;
-            delete tmp; // calls deref()
-        }
+    } else {
+        checkConfig();
     }
 }
 
