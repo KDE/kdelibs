@@ -95,6 +95,9 @@ class OutputWidget : public QFrame
 
 		AudioOutput *output() const { return m_output; }
 
+    private Q_SLOTS:
+        void deviceChange(int);
+
 	private:
 		VolumeSlider *m_volslider;
 		AudioOutput *m_output;

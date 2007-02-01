@@ -49,6 +49,8 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QComboBox>
+#include <phonon/objectdescriptionmodel.h>
 
 using namespace Phonon;
 
@@ -61,11 +63,26 @@ OutputWidget::OutputWidget( QWidget *parent )
 
 	m_output->setName( "GUI-Test" );
 
-	QHBoxLayout *hlayout = new QHBoxLayout( this );
+	QVBoxLayout *vlayout = new QVBoxLayout( this );
+
+    QComboBox *deviceComboBox = new QComboBox(this);
+    vlayout->addWidget(deviceComboBox);
+    QList<AudioOutputDevice> deviceList = BackendCapabilities::availableAudioOutputDevices();
+    deviceComboBox->setModel(new AudioOutputDeviceModel(deviceList, deviceComboBox));
+    deviceComboBox->setCurrentIndex(deviceList.indexOf(m_output->outputDevice()));
+    connect(deviceComboBox, SIGNAL(currentIndexChanged(int)), SLOT(deviceChange(int)));
 
 	m_volslider = new VolumeSlider( this );
 	m_volslider->setAudioOutput( m_output );
-	hlayout->addWidget( m_volslider );
+	vlayout->addWidget( m_volslider );
+}
+
+void OutputWidget::deviceChange(int modelIndex)
+{
+    QList<AudioOutputDevice> deviceList = BackendCapabilities::availableAudioOutputDevices();
+    if (modelIndex >= 0 && modelIndex < deviceList.size()) {
+        m_output->setOutputDevice(deviceList[modelIndex]);
+    }
 }
 
 PathWidget::PathWidget( QWidget *parent )

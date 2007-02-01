@@ -80,11 +80,17 @@ namespace Phonon
             void *qt_metacast(const char *_clname);
             //int qt_metacall(QMetaObject::Call _c, int _id, void **_a);
 
-			/**
-			 * Constructs a ObjectDescription model with the
-			 * given \p parent.
-			 */
-			ObjectDescriptionModel( QObject* parent = 0 );
+            /**
+             * Constructs a ObjectDescription model with the
+             * given \p parent.
+             */
+            explicit ObjectDescriptionModel(QObject *parent = 0);
+
+            /**
+             * Constructs a ObjectDescription model with the
+             * given \p parent and the given \p data.
+             */
+            explicit ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent = 0);
 
 			virtual ~ObjectDescriptionModel();
 

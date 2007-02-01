@@ -141,6 +141,15 @@ ObjectDescriptionModel<type>::ObjectDescriptionModel( QObject* parent )
 }
 
 template<ObjectDescriptionType type>
+ObjectDescriptionModel<type>::ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent)
+    : QAbstractListModel(parent),
+    d_ptr(new ObjectDescriptionModelPrivate<type>)
+{
+    d_ptr->q_ptr = this;
+    setModelData(data);
+}
+
+template<ObjectDescriptionType type>
 ObjectDescriptionModel<type>::~ObjectDescriptionModel()
 {
 	delete d_ptr;
