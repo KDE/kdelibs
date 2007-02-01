@@ -183,9 +183,12 @@ const QValueList<WId>& KWinModule::systemTrayWindows() const
 QSize KWinModulePrivate::numberOfViewports(int desktop) const
 {
     NETSize netdesktop = desktopGeometry(desktop);
-
-    return QSize(netdesktop.width / QApplication::desktop()->width(),
+    QSize s(netdesktop.width / QApplication::desktop()->width(),
             netdesktop.height / QApplication::desktop()->height());
+
+    // workaround some kwin bugs
+    if (s.width() < 1) s.setWidth(1);
+    if (s.height() < 1) s.setHeight(1);
 }
 
 QPoint KWinModulePrivate::currentViewport(int desktop) const
