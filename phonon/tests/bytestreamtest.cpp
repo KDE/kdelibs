@@ -462,7 +462,7 @@ void ByteStreamTest::testSeek()
 
 void ByteStreamTest::testAboutToFinish()
 {
-    const qint32 aboutToFinishTime = 1000;
+    const qint32 aboutToFinishTime = 2000;
 
     m_media->setAboutToFinishTime(aboutToFinishTime);
     QCOMPARE(m_media->aboutToFinishTime(), qint32(aboutToFinishTime));

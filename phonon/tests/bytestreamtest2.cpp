@@ -341,7 +341,7 @@ void ByteStreamTest2::testSeek()
 
 void ByteStreamTest2::testAboutToFinish()
 {
-    const qint32 aboutToFinishTime = 1000;
+    const qint32 aboutToFinishTime = 2000;
 
     m_media->setAboutToFinishTime(aboutToFinishTime);
     QCOMPARE(m_media->aboutToFinishTime(), qint32(aboutToFinishTime));
@@ -580,6 +580,6 @@ QByteArray ByteStreamTest2::pcmBlock() const
 	return data;
 }
 
-QTEST_KDEMAIN( ByteStreamTest2, NoGUI )
+QTEST_KDEMAIN( ByteStreamTest2, GUI )
 #include "bytestreamtest2.moc"
 // vim: sw=4 ts=4

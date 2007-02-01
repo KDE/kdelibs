@@ -29,7 +29,15 @@ class MediaObjectTest : public QObject
 {
 	Q_OBJECT
 
+    Q_SIGNALS:
+        void continueTestPlayOnFinish();
+    protected Q_SLOTS:
+        void setMediaAndPlay();
+
 	private Q_SLOTS:
+        void init();
+        void cleanup();
+
 		void initTestCase();
 		void setMedia();
 		void checkForDefaults();
@@ -50,6 +58,7 @@ class MediaObjectTest : public QObject
 
 		void testSeek();
 		void testAboutToFinish();
+        void testPlayOnFinish();
 		void testTickSignal();
 
 		void cleanupTestCase();
@@ -58,6 +67,7 @@ class MediaObjectTest : public QObject
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
+        void waitForSignal(QObject *obj, const char *signalName);
 
 		KUrl m_url;
 		Phonon::MediaObject* m_media;
