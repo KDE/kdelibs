@@ -205,6 +205,15 @@ public:
    * @internal
    */
   static void setConfigurationMode() { s_configurationMode = true; }
+
+  /**
+   * This method deactivates the special mode above of KServiceTypeProfile
+   * It is meant for the configuration module _only_.
+   * @internal
+   * @since 3.5.7
+   */
+  static void unsetConfigurationMode() { s_configurationMode = false; }
+
   /**
    * @internal
    */
