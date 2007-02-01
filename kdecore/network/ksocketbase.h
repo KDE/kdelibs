@@ -459,6 +459,7 @@ private:
  */
 class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
+  Q_OBJECT
 public:
   /**
    * Constructor.

@@ -390,3 +390,6 @@ KPassiveSocketBase::KPassiveSocketBase()
 KPassiveSocketBase::~KPassiveSocketBase()
 {
 }
+
+#include "ksocketbase.moc"
+
