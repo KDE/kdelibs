@@ -189,6 +189,7 @@ QSize KWinModulePrivate::numberOfViewports(int desktop) const
     // workaround some kwin bugs
     if (s.width() < 1) s.setWidth(1);
     if (s.height() < 1) s.setHeight(1);
+    return s;
 }
 
 QPoint KWinModulePrivate::currentViewport(int desktop) const
