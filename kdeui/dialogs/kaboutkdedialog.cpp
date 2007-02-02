@@ -48,8 +48,8 @@ KAboutKDEDialog::KAboutKDEDialog(QWidget *parent)
 
     QLabel *headerLabel = new QLabel;
     headerLabel->setMargin(5);
-    headerLabel->setStyleSheet(QString("QLabel {font-weight: bold; font-size: %1px;}").arg(fontSize));
-    headerLabel->setText(i18n("K Desktop Environment. Release %1", QString(KDE_VERSION_STRING)));
+    //headerLabel->setStyleSheet(QString("QLabel {font-weight: bold; font-size: %1px;}").arg(fontSize));
+    headerLabel->setText(i18n("<html><font size=\"4\">K Desktop Environment</font><br><b>version %1</b></html>", QString(KDE_VERSION_STRING)));
     headerLabel->setFrameShape(QFrame::StyledPanel);
     headerLabel->setFrameShadow(QFrame::Plain);
     headerLabel->setAutoFillBackground(true);
@@ -144,6 +144,7 @@ KAboutKDEDialog::KAboutKDEDialog(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(headerLabel);
     mainLayout->addLayout(midLayout);
+    mainLayout->setMargin(0);
 
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
