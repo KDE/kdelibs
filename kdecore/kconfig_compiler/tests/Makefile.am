@@ -57,8 +57,10 @@ test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
 check_LTLIBRARIES = kunittest_kconfigcompiler_test.la
 
 kunittest_kconfigcompiler_test_la_SOURCES = kconfigcompiler_test.cpp
-kunittest_kconfigcompiler_test_la_LIBADD = -lkunittest
-kunittest_kconfigcompiler_test_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
+kunittest_kconfigcompiler_test_la_LIBADD = \
+	$(top_builddir)/kunittest/libkunittest.la
+kunittest_kconfigcompiler_test_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) \
+	$(all_libraries)
 
 
 test1main.o test1.o: test1.h
