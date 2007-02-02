@@ -85,6 +85,7 @@ pre {
     border-width: 1px;
     overflow: auto;
     line-height: 1.1em;
+    max-height: 55em;
 }
 
 input, textarea, select {
