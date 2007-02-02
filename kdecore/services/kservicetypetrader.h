@@ -192,9 +192,6 @@ private:
      * @internal
      */
     KServiceTypeTrader();
-
-private:
-    static KServiceTypeTrader* s_self;
 };
 
 #endif

@@ -33,15 +33,15 @@ using namespace KTraderParse;
 
 // --------------------------------------------------
 
-KServiceTypeTrader* KServiceTypeTrader::s_self = 0;
+static KServiceTypeTrader* s_globalServiceTypeTrader = 0;
 static KStaticDeleter<KServiceTypeTrader> ktradersd;
 
 KServiceTypeTrader* KServiceTypeTrader::self()
 {
-    if ( !s_self )
-	ktradersd.setObject( s_self, new KServiceTypeTrader );
+    if ( !s_globalServiceTypeTrader )
+	ktradersd.setObject( s_globalServiceTypeTrader, new KServiceTypeTrader );
 
-    return s_self;
+    return s_globalServiceTypeTrader;
 }
 
 KServiceTypeTrader::KServiceTypeTrader()
