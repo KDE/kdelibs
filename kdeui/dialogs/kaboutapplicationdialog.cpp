@@ -52,7 +52,13 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         return;
     }
 
-    QLabel *iconLabel = new QLabel;
+    QFrame* titleLabel = new QFrame();
+    titleLabel->setAutoFillBackground(true);
+    titleLabel->setFrameShape(QFrame::StyledPanel);
+    titleLabel->setFrameShadow(QFrame::Plain);
+    titleLabel->setBackgroundRole(QPalette::Base);
+
+    QLabel *iconLabel = new QLabel(titleLabel);
     iconLabel->setFixedSize(64, 64);
     iconLabel->setPixmap(qApp->windowIcon().pixmap(64, 64));
     if (aboutData->programLogo().canConvert<QPixmap>())
@@ -60,16 +66,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     else if (aboutData->programLogo().canConvert<QImage>())
         iconLabel->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()));
 
-    QLabel *headerLabel = new QLabel;
+    QLabel *headerLabel = new QLabel(titleLabel);
     headerLabel->setMargin(3);
-    headerLabel->setAlignment(Qt::AlignHCenter);
-    headerLabel->setStyleSheet(QString("QLabel {font-weight: bold;}"));
-    headerLabel->setText(i18n("%1 %2 (Using KDE %3)", aboutData->programName(),
+    headerLabel->setAlignment(Qt::AlignLeft);
+    headerLabel->setText(i18n("<html><font size=\"5\">%1</font><br><b>version %2</b><br>Using KDE %3</html>", aboutData->programName(),
                          aboutData->version(), QString(KDE_VERSION_STRING)));
-    headerLabel->setFrameShape(QFrame::StyledPanel);
-    headerLabel->setFrameShadow(QFrame::Plain);
-    headerLabel->setAutoFillBackground(true);
-    headerLabel->setBackgroundRole(QPalette::Base);
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
@@ -139,6 +140,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         }
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
+        authorTextBrowser->setFrameStyle(QFrame::NoFrame);
         authorTextBrowser->setHtml(authorPageText);
         tabWidget->addTab(authorTextBrowser, authorPageTitle);
     }
@@ -161,6 +163,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
+        creditsTextBrowser->setFrameStyle( QFrame::NoFrame );
         creditsTextBrowser->setHtml(creditsPageText);
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
@@ -182,6 +185,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         translatorPageText += KAboutData::aboutTranslationTeam();
 
         KTextBrowser *translatorTextBrowser = new KTextBrowser;
+        translatorTextBrowser->setFrameStyle( QFrame::NoFrame );
         translatorTextBrowser->setHtml(translatorPageText);
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
     }
@@ -189,16 +193,25 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     if (!aboutData->license().isEmpty())
     {
         KTextBrowser *licenseBrowser = new KTextBrowser;
+        licenseBrowser->setFrameStyle( QFrame::NoFrame );
         licenseBrowser->setFont(KGlobalSettings::fixedFont());
         licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
         licenseBrowser->setText(aboutData->license());
+        
         tabWidget->addTab(licenseBrowser, i18n("&License Agreement"));
     }
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(iconLabel, 0, Qt::AlignHCenter);
-    mainLayout->addWidget(headerLabel);
+         
+    QHBoxLayout *titleLayout = new QHBoxLayout;
+    titleLayout->setMargin(3);
+    titleLayout->addWidget(iconLabel,0,Qt::AlignVCenter);
+    titleLayout->addWidget(headerLabel,0,Qt::AlignVCenter);
+    titleLabel->setLayout(titleLayout);
+
+    mainLayout->addWidget(titleLabel);
     mainLayout->addWidget(tabWidget);
+    mainLayout->setMargin(0);
 
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
