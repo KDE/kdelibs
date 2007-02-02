@@ -157,6 +157,14 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
 
   RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
+  // make sure our graph exists
+  // ==========================
+  if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
+    if( rr.addGraph( KMetaData::defaultGraph() ) ) {
+      return;
+    }
+  }
+
   QList<Statement> statementsToAdd;
   QList<Statement> statementsToRemove;
   QList<ResourceData*> syncedResources;
