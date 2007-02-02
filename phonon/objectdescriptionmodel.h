@@ -72,6 +72,9 @@ namespace Phonon
 		inline const ObjectDescriptionModelPrivate<type>* d_func() const { return reinterpret_cast<const ObjectDescriptionModelPrivate<type> *>(d_ptr); } \
 		friend class ObjectDescriptionModelPrivate<type>;
 		public:
+#if QT_VERSION >= 0x040300
+            Q_OBJECT_CHECK
+#endif
             /** \internal */
             static const QMetaObject staticMetaObject;
             /** \internal */
