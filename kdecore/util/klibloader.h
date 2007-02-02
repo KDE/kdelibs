@@ -128,7 +128,7 @@ private:
      */
     ~KLibrary();
 
-    KLibraryPrivate *d;
+    KLibraryPrivate * const d;
 };
 
 class KLibWrapPrivate;
@@ -265,7 +265,7 @@ protected:
 
 
 private:
-    KLibFactoryPrivate *d;
+    KLibFactoryPrivate *const d;
 };
 
 /**

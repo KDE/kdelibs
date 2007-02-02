@@ -74,7 +74,7 @@ KLibLoader* KLibLoader::s_self = 0;
 // -------------------------------------------------------------------------
 
 KLibFactory::KLibFactory( QObject* _parent )
-    : QObject( _parent )
+    : QObject( _parent ), d(0)
 {
 }
 
@@ -111,10 +111,10 @@ public:
 };
 
 KLibrary::KLibrary( const QString& libname, const QString& filename, QLibrary * handle )
+    : d(new KLibraryPrivate(this))
 {
     /* Make sure, we have a KLibLoader */
     (void) KLibLoader::self();
-    d = new KLibraryPrivate(this);
     d->libname = libname;
     d->filename = filename;
     d->handle = handle;
@@ -143,7 +143,6 @@ KLibrary::~KLibrary()
     qDeleteAll( d->factories );
     d->factories.clear();
     delete d;
-    d = 0;
 }
 
 QString KLibrary::name() const

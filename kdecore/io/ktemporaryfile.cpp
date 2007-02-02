@@ -23,11 +23,12 @@
 #include "kstandarddirs.h"
 
 // Empty, but provided to ensure future compatibility
-class KTemporaryFile::Private
-{
-};
+//class KTemporaryFile::Private
+//{
+//};
 
 KTemporaryFile::KTemporaryFile()
+    : d(0)
 {
     QString temp = KStandardDirs::locateLocal("tmp",
         KGlobal::mainComponent().componentName());

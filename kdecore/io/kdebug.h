@@ -286,7 +286,7 @@ class KDECORE_EXPORT kdbgstream {
 
  private:
     class Private;
-    mutable Private* d;
+    Private* const d;
 };
 
 template <typename T>
