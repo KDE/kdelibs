@@ -3,6 +3,9 @@
 #include <kurl.h>
 
 #include <stdio.h>
+#include <assert.h>
+#include <QDir>
+#include <kdebug.h>
 
 // we use our own macro to not bother translators
 // but still demonstrate the use. You would use I18N_NOOP
@@ -68,6 +71,17 @@ main(int argc, char *argv[])
       printf("%d: %s\n", i, args->arg(i));
       printf("%d: %s\n", i, args->url(i).url().toAscii().constData());
    }
+
+   // Check how KCmdLineArgs::url() works
+   KUrl u = KCmdLineArgs::makeURL("/tmp");
+   kDebug() << u << endl;
+   assert(u.path() == "/tmp");
+   u = KCmdLineArgs::makeURL("foo");
+   kDebug() << u << "  expected: " << KUrl(QDir::currentPath()+"/foo") << endl;
+   assert(u.path() == QDir::currentPath()+"/foo");
+   u = KCmdLineArgs::makeURL("http://www.kde.org");
+   kDebug() << u << endl;
+   assert(u.url() == "http://www.kde.org");
 
    args->clear(); // Free up memory.
 
