@@ -21,6 +21,7 @@
 #include <kmimetype.h>
 #include <ksycoca.h>
 #include <kglobal.h>
+#include <kuser.h>
 #include <kstandarddirs.h>
 
 #include <qtest_kde.h>
@@ -73,6 +74,9 @@ void KMimeTypeTest::testIcons()
     // Obviously those tests will need to be fixed if we ever change the name of the icons
     // but at least they unit-test KMimeType::iconNameForURL.
     checkIcon( KUrl( "file:/tmp/" ), "folder" );
+
+    if ( KUser().isSuperUser() ) // Can't test this one if running as root
+        QSKIP( "running as root", SkipAll );
     if ( QFile::exists( "/root/.ssh/" ) )
         checkIcon( KUrl( "file:/root/.ssh/" ), "folder_locked" );
 }
