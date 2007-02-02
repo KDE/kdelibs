@@ -67,7 +67,6 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         iconLabel->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()));
 
     QLabel *headerLabel = new QLabel(titleLabel);
-    headerLabel->setMargin(3);
     headerLabel->setAlignment(Qt::AlignLeft);
     headerLabel->setText(i18n("<html><font size=\"5\">%1</font><br><b>version %2</b><br>Using KDE %3</html>", aboutData->programName(),
                          aboutData->version(), QString(KDE_VERSION_STRING)));
@@ -205,8 +204,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
          
     QHBoxLayout *titleLayout = new QHBoxLayout;
     titleLayout->setMargin(3);
+    titleLayout->setSpacing(KDialog::spacingHint());
     titleLayout->addWidget(iconLabel,0,Qt::AlignVCenter);
     titleLayout->addWidget(headerLabel,0,Qt::AlignVCenter);
+    titleLayout->addStretch(1);
+
     titleLabel->setLayout(titleLayout);
 
     mainLayout->addWidget(titleLabel);

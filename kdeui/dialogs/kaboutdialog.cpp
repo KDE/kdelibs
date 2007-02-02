@@ -169,7 +169,7 @@ KAboutContributor::KAboutContributor(QWidget *_parent,
   : QFrame(_parent), d(new Private(this))
 {
   if (showFrame)
-    setFrameStyle(QFrame::Panel | QFrame::Raised);
+    setFrameStyle(QFrame::Panel | QFrame::Plain);
 
   d->showHeader = showHeader;
   d->showBold = showBold;
@@ -304,11 +304,15 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
 
   if (layoutType & KAboutDialog::Product)
   {
-      QWidget* const productArea = new  QWidget(this);
-      mTopLayout->addWidget(productArea, 0, QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft);
+      QFrame* const productArea = new  QFrame(this);
+      productArea->setFrameStyle( QFrame::StyledPanel );
+      productArea->setFrameShadow( QFrame::Plain );
+      productArea->setBackgroundRole(QPalette::Base);
+      productArea->setAutoFillBackground(true);
 
-      QHBoxLayout* const hbox = new QHBoxLayout(productArea);
-      hbox->setMargin(0);
+
+      QHBoxLayout* const hbox = new QHBoxLayout();
+      hbox->setMargin(3);
       hbox->setSpacing(KDialog::spacingHint());
 
       mIconLabel = new QLabel(productArea);
@@ -316,7 +320,6 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
 
       QVBoxLayout* const vbox = new QVBoxLayout();
       if (!vbox) { return; }
-      hbox->addLayout(vbox);
 
       mVersionLabel = new QLabel(productArea);
       mVersionLabel->setObjectName("version");
@@ -324,9 +327,18 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
       mAuthorLabel->setObjectName("author");
       vbox->addWidget(mVersionLabel);
       vbox->addWidget(mAuthorLabel);
-      hbox->activate();
+      vbox->setMargin(3);
 
-      mTopLayout->addSpacing(KDialog::spacingHint());
+      hbox->addLayout(vbox);
+
+      if ( QApplication::isRightToLeft() )
+        hbox->insertStretch(0  /* add stretch at start */ , 1);
+      else 
+        hbox->insertStretch(-1 /* add stretch at end   */ , 1);
+
+      productArea->setLayout(hbox);
+
+      mTopLayout->addWidget(productArea, 0); 
   }
 
   QHBoxLayout* const hbox = new QHBoxLayout();
@@ -430,7 +442,6 @@ void KAboutContainerBase::fontChange(const QFont &/*oldFont*/)
   if (mVersionLabel)
   {
     QFont f(KGlobalSettings::generalFont());
-    f.setBold(true);
     mVersionLabel->setFont(f);
     mAuthorLabel->setFont(f);
     mVersionLabel->parentWidget()->layout()->activate();
@@ -453,6 +464,7 @@ QFrame *KAboutContainerBase::addTextPage(const QString &title,
   if (richText)
   {
     QTextBrowser *browser = new QTextBrowser(page);
+    browser->setFrameStyle( QFrame::NoFrame );
     browser->setOpenExternalLinks(true);
     browser->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     browser->setHtml(text);
@@ -463,6 +475,7 @@ QFrame *KAboutContainerBase::addTextPage(const QString &title,
   else
   {
     KTextEdit *const textEdit = new KTextEdit(page);
+    textEdit->setFrameStyle( QFrame::NoFrame );
     textEdit->setObjectName("text");
     textEdit->setReadOnly(true);
     textEdit->setMinimumHeight(fontMetrics().lineSpacing()*numLines);
@@ -483,7 +496,10 @@ QFrame *KAboutContainerBase::addLicensePage(const QString &title,
   QVBoxLayout* const vbox = new QVBoxLayout(page);
   vbox->setSpacing(KDialog::spacingHint());
 
+  vbox->setMargin(0);
+
   KTextEdit* const textEdit = new KTextEdit(page);
+  textEdit->setFrameStyle(QFrame::NoFrame);
   textEdit->setObjectName("license");
   textEdit->setFont(KGlobalSettings::fixedFont());
   textEdit->setReadOnly(true);
@@ -527,7 +543,10 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
   QFrame *const page = addEmptyPage(title);
   QVBoxLayout* const vbox = new QVBoxLayout(page);
   vbox->setSpacing(KDialog::spacingHint());
+  vbox->setMargin(0);
+
   QScrollArea* const scrollView = new QScrollArea(page);
+  scrollView->setFrameStyle(QFrame::Plain);
   vbox->addWidget(scrollView);
 
   KAboutContainer* const container = new KAboutContainer(scrollView,
@@ -664,7 +683,7 @@ void KAboutContainerBase::setProduct(const QString &appName,
   int size = IconSize(K3Icon::Desktop);
   mIconLabel->setPixmap(qApp->windowIcon().pixmap(size,size));
 
-  const QString msg1 = i18n("%1 %2 (Using KDE %3)", appName, version,
+  const QString msg1 = i18n("<html><font size=\"5\">%1</font><br/><b>version %2</b><br/>Using KDE %3</html>", appName, version,
     QLatin1String(KDE_VERSION_STRING));
   const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3", QChar(0xA9), year,
     author) : QLatin1String("");
@@ -696,6 +715,8 @@ KAboutContainer::KAboutContainer(QWidget *parent,
   : QFrame(parent), d(new Private)
 {
   d->alignment = innerAlignment;
+
+  setFrameStyle(QFrame::NoFrame);
 
   QGridLayout* const gbox = new QGridLayout(this);
   gbox->setMargin(margin);
