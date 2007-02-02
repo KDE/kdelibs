@@ -89,7 +89,7 @@ public:
    */
   int hndays(int month, int year) const;
 
-  KCalendarSystemHijriPrivate * d;
+  KCalendarSystemHijriPrivate * const d;
 };
 
 #endif

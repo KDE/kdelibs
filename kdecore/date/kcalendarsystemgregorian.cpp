@@ -30,7 +30,7 @@
 #include <qstring.h>
 
 KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale * locale)
-  : KCalendarSystem(locale)
+  : KCalendarSystem(locale), d(0)
 {
 }
 
@@ -317,7 +317,7 @@ int KCalendarSystemGregorian::yearStringToInteger(const QString & sNum, int & iL
 {
   int iYear;
   iYear = KCalendarSystem::yearStringToInteger(sNum, iLength);
-  
+
   // Qt treats a year in the range 0-100 as 1900-1999.
   // It is nicer for the user if we treat 0-68 as 2000-2068
   if (iYear < 69)

@@ -43,7 +43,7 @@ KTzfileTimeZone::KTzfileTimeZone(KTzfileTimeZoneSource *source, const QString &n
         const QString &countryCode, float latitude, float longitude,
         const QString &comment)
   : KTimeZone(source, name, countryCode, latitude, longitude, comment)
-//    , d(0)
+    , d(0)
 {
 }
 

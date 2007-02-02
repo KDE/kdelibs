@@ -94,7 +94,7 @@ private:
    */
   int hndays(int year, int mon) const;
 
-  KCalendarSystemHebrewPrivate * d;
+  KCalendarSystemHebrewPrivate * const d;
 };
 
 #endif

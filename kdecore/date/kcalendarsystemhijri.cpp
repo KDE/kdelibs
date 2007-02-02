@@ -179,7 +179,7 @@ static void gregorianToHijri(const QDate & date, int * pYear, int * pMonth,
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri(const KLocale * locale)
-  : KCalendarSystem(locale)
+  : KCalendarSystem(locale), d(0)
 {
 }
 

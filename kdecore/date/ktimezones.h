@@ -136,7 +136,7 @@ class KTimeZoneLeapSecondsPrivate;
  * KTzfileTimeZone class provides better guarantees of accurary, although it
  * cannot handle dates earlier than 1902. It also provides more detailed
  * information, and allows you to read non-system tzfile files. Alternatively,
- * the KSystemTimeZones::readZone() method uses the KTzfileTimeZone class to 
+ * the KSystemTimeZones::readZone() method uses the KTzfileTimeZone class to
  * read system time zone definition files.
  *
  * KTzfileTimeZone uses the KTzfileTimeZoneSource and KTzfileTimeZoneData classes
@@ -374,7 +374,7 @@ private:
     KTimeZones(const KTimeZones &);              // prohibit copying
     KTimeZones &operator=(const KTimeZones &);   // prohibit copying
 
-    KTimeZonesPrivate *d;
+    KTimeZonesPrivate * const d;
 };
 
 
@@ -532,7 +532,7 @@ public:
         bool operator<(const Transition &rhs) const;
 
     private:
-        KTimeZoneTransitionPrivate *d;
+        KTimeZoneTransitionPrivate *const d;
     };
 
 
@@ -587,7 +587,7 @@ public:
         QString comment() const;
 
     private:
-        KTimeZoneLeapSecondsPrivate *d;
+        KTimeZoneLeapSecondsPrivate *const d;
     };
 
 
@@ -955,7 +955,7 @@ public:
      * value, which is signed.
      *
      * @return converted time, or -1 if the date is out of range for time_t or
-     *         @p utcDateTime.timeSpec() is not Qt::UTC 
+     *         @p utcDateTime.timeSpec() is not Qt::UTC
      * @see fromTime_t()
      */
     static time_t toTime_t(const QDateTime &utcDateTime);
@@ -1002,7 +1002,7 @@ protected:
     void setData(KTimeZoneData *data);
 
 private:
-    KTimeZonePrivate *d;
+    KTimeZonePrivate *const d;
 };
 
 
@@ -1247,7 +1247,7 @@ protected:
     void setLeapSecondChanges(const QList<KTimeZone::LeapSeconds> &adjusts);
 
 private:
-    KTimeZoneDataPrivate *d;
+    KTimeZoneDataPrivate * const d;
 };
 
 #endif

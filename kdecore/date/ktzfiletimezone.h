@@ -143,7 +143,7 @@ public:
      * Creates a new copy of this object.
      * The caller is responsible for deleting the copy.
      * Derived classes must reimplement this method to return a copy of the
-     * calling instance 
+     * calling instance
      *
      * @return copy of this instance. This is a KTzfileTimeZoneData pointer.
      */
@@ -157,7 +157,8 @@ public:
     virtual bool hasTransitions() const;
 
 private:
-    KTzfileTimeZoneDataPrivate *d;
+    // Enable this if you add KDECORE_EXPORT to this class
+    //KTzfileTimeZoneDataPrivate * const d;
 };
 
 #endif

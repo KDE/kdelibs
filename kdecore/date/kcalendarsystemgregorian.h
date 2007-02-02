@@ -83,7 +83,7 @@ public:
   virtual bool isSolar() const;
 
 private:
-  KCalendarSystemGregorianPrivate * d;
+  KCalendarSystemGregorianPrivate * const d;
 };
 
 #endif
