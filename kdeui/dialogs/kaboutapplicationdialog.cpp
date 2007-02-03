@@ -68,7 +68,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     QLabel *headerLabel = new QLabel(titleLabel);
     headerLabel->setAlignment(Qt::AlignLeft);
-    headerLabel->setText(i18n("<html><font size=\"5\">%1</font><br><b>version %2</b><br>Using KDE %3</html>", aboutData->programName(),
+    headerLabel->setText(i18n("<font size=\"5\">%1</font><br><b>Version %2</b><br>Using KDE %3</html>", aboutData->programName(),
                          aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
@@ -162,7 +162,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
-        creditsTextBrowser->setFrameStyle( QFrame::NoFrame );
+        creditsTextBrowser->setFrameStyle(QFrame::NoFrame);
         creditsTextBrowser->setHtml(creditsPageText);
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
@@ -184,7 +184,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         translatorPageText += KAboutData::aboutTranslationTeam();
 
         KTextBrowser *translatorTextBrowser = new KTextBrowser;
-        translatorTextBrowser->setFrameStyle( QFrame::NoFrame );
+        translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
         translatorTextBrowser->setHtml(translatorPageText);
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
     }
@@ -196,12 +196,9 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         licenseBrowser->setFont(KGlobalSettings::fixedFont());
         licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
         licenseBrowser->setText(aboutData->license());
-        
         tabWidget->addTab(licenseBrowser, i18n("&License Agreement"));
     }
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-         
     QHBoxLayout *titleLayout = new QHBoxLayout;
     titleLayout->setMargin(3);
     titleLayout->setSpacing(KDialog::spacingHint());
@@ -211,6 +208,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     titleLabel->setLayout(titleLayout);
 
+    QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(titleLabel);
     mainLayout->addWidget(tabWidget);
     mainLayout->setMargin(0);

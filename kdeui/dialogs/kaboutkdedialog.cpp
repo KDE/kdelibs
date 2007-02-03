@@ -40,16 +40,9 @@ KAboutKDEDialog::KAboutKDEDialog(QWidget *parent)
     setHelp("khelpcenter/main.html");
     setModal(false);
 
-    QFont font(KGlobalSettings::generalFont());
-    int fontSize = font.pointSize();
-    if (fontSize == -1)
-        fontSize = QFontInfo(font).pointSize();
-    fontSize += 2;
-
     QLabel *headerLabel = new QLabel;
     headerLabel->setMargin(5);
-    //headerLabel->setStyleSheet(QString("QLabel {font-weight: bold; font-size: %1px;}").arg(fontSize));
-    headerLabel->setText(i18n("<html><font size=\"4\">K Desktop Environment</font><br><b>version %1</b></html>", QString(KDE_VERSION_STRING)));
+    headerLabel->setText(i18n("<font size=\"4\">K Desktop Environment</font><br><b>Version %1</b>", QString(KDE_VERSION_STRING)));
     headerLabel->setFrameShape(QFrame::StyledPanel);
     headerLabel->setFrameShadow(QFrame::Plain);
     headerLabel->setAutoFillBackground(true);
