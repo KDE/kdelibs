@@ -153,6 +153,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     // add file to list
     const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
+    // TODO: This action should be prepended like in KDE 3 - Clarence.
     addAction(action, url, tmpName);
 }
 
