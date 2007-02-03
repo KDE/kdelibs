@@ -18,6 +18,7 @@
 */
 
 #include "bytestreamtest.h"
+#include "qtesthelper.h"
 #include <cstdlib>
 #include <qtest_kde.h>
 #include <QTime>
