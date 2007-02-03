@@ -1,3 +1,7 @@
+- add Player dbus interface in MediaProducer
+
+- add global setting to pause video when it's not visible
+
 - move setupIface to the Private class (if possible)
 
 - Add MIME types to the backends desktop file that give the types the backend
