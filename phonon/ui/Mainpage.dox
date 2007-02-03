@@ -1,9 +1,0 @@
-/** \mainpage The GUI dependent classes of Phonon.
-
-
-\page phonon_UiBackend The UiBackend Class
-\section phonon_UiBackend_requiredmethods Required Methods
-\section phonon_UiBackend_optionalmethods Optional Methods
-
-*/
-// DOXYGEN_REFERENCES = kdecore kdeui kio phonon
