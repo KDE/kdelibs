@@ -84,10 +84,12 @@ bool Engine::init(const QString &configfile)
 	// we could have one for the entire lifetime, but for entry loaders this
 	// would result in too many objects active at once
 	connect(m_provider_loader,
-		SIGNAL(signalProvidersLoaded(KNS::Providers::List*)),
-		SIGNAL(signalProvidersLoaded(KNS::Providers::List*)));
+		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
+		this,
+		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)));
 	connect(m_provider_loader,
 		SIGNAL(signalProvidersFailed()),
+		this,
 		SIGNAL(signalProvidersFailed()));
 
 	return true;
