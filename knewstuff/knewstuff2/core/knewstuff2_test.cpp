@@ -60,6 +60,9 @@ void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
 void KNewStuff2Test::slotProvidersFailed()
 {
 	kDebug() << "SLOT: slotProvidersFailed" << endl;
+	kDebug() << " ... aborting" << endl;
+	deleteLater();
+	kapp->quit();
 }
 
 int main(int argc, char **argv)
