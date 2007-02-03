@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>538</width>
     <height>300</height>
    </rect>
   </property>
@@ -19,6 +19,14 @@
    </property>
    <item>
     <widget class="QTreeView" name="categoryTree" >
+     <property name="sizePolicy" >
+      <sizepolicy>
+       <hsizetype>4</hsizetype>
+       <vsizetype>7</vsizetype>
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="alternatingRowColors" >
       <bool>true</bool>
      </property>
