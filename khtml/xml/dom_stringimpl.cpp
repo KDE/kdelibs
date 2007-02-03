@@ -289,15 +289,15 @@ khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
     len = str.count(' ') + 1;
     khtml::Length* r = new khtml::Length[len];
 
-    int i = 0;
+    int j = 0;
     int pos = 0;
     int pos2;
 
     while((pos2 = str.indexOf(QLatin1Char(' '), pos)) != -1) {
-        r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
+        r[j++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
         pos = pos2+1;
     }
-    r[i] = parseLength((QChar *) str.unicode()+pos, str.length()-pos);
+    r[j] = parseLength((QChar *) str.unicode()+pos, str.length()-pos);
 
     return r;
 }
