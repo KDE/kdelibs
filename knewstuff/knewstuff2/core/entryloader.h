@@ -28,6 +28,8 @@
 
 #include <kurl.h>
 
+class KJob;
+
 namespace KIO { class Job; }
 
 namespace KNS {
@@ -63,7 +65,7 @@ class KDE_EXPORT EntryLoader : public QObject
 
   protected slots:
     void slotJobData(KIO::Job *, const QByteArray &);
-    void slotJobResult(KIO::Job *);
+    void slotJobResult(KJob *);
 
   private:
     QByteArray m_jobdata;

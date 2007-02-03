@@ -45,8 +45,8 @@ void EntryLoader::load(const QString &stuffurl)
   kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl << endl;
   
   KIO::TransferJob *job = KIO::get( KUrl( stuffurl ), false, false );
-  connect( job, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotJobResult( KIO::Job * ) ) );
+  connect( job, SIGNAL( result( KJob * ) ),
+           SLOT( slotJobResult( KJob * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
            SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
 }
@@ -58,7 +58,7 @@ void EntryLoader::slotJobData( KIO::Job *, const QByteArray &data )
   m_jobdata.append(data);
 }
 
-void EntryLoader::slotJobResult( KIO::Job *job )
+void EntryLoader::slotJobResult( KJob *job )
 {
   if ( job->error() ) {
     emit signalEntriesFailed();
