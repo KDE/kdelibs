@@ -67,7 +67,7 @@ class MediaObjectTest : public QObject
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );
-        void waitForSignal(QObject *obj, const char *signalName);
+        void waitForSignal(QObject *obj, const char *signalName, int timeout = 0);
 
 		KUrl m_url;
 		Phonon::MediaObject* m_media;
