@@ -59,7 +59,7 @@ kde4_automoc(${phononcore_LIB_SRCS})
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
-target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(phononcore ${KDE4_KIO_LIBS})
 
 set_target_properties(phononcore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
@@ -113,7 +113,7 @@ set(kaudiodevicelist_LIB_SRCS
 	)
 kde4_automoc(${kaudiodevicelist_LIB_SRCS})
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
-target_link_libraries(kaudiodevicelist ${KDE4_KDECORE_LIBS} solid)
+target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS})
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 

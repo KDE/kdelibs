@@ -9,7 +9,7 @@ MACRO(PHONON_BUILD_TESTS)
 	FOREACH(_testname ${ARGN})
 		kde4_automoc(${_testname}.cpp)
 		kde4_add_executable(${_testname} NOGUI ${_testname}.cpp)
-		target_link_libraries(${_testname} ${KDE4_KIO_LIBS} phononcore ${QT_QTTEST_LIBRARY})
+		target_link_libraries(${_testname} ${KDE4_PHONONCORE_LIBS} ${QT_QTTEST_LIBRARY})
 	ENDFOREACH(_testname)
 ENDMACRO(PHONON_BUILD_TESTS)
 MACRO(PHONON_EXECUTE_TESTS)
@@ -32,7 +32,7 @@ PHONON_BUILD_TESTS(
 	bytestreamtest2
 	audiodevicelisttest
 	)
-target_link_libraries(audiodevicelisttest kaudiodevicelist)
+target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
 PHONON_EXECUTE_TESTS(
 	methodtest
 	backendcapabilitiestest
