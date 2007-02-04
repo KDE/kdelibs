@@ -198,6 +198,7 @@ ActionCollectionProxyModel::ActionCollectionProxyModel(QObject* parent, ActionCo
     : QSortFilterProxyModel(parent)
 {
     setSourceModel( new ActionCollectionModel(this, collection) );
+    setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 
 ActionCollectionProxyModel::~ActionCollectionProxyModel()
@@ -216,9 +217,12 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
         return false;
     ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
     switch( item->type ) {
-            case ActionCollectionModelItem::ActionType:
-                return item->action->isEnabled();
-            case ActionCollectionModelItem::CollectionType:
+            case ActionCollectionModelItem::ActionType: {
+                if ( ! item->action->isEnabled() )
+                    return false;
+                return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
+            } break;
+            case ActionCollectionModelItem::CollectionType: // fall through
             default: break;
     }
     return true;
