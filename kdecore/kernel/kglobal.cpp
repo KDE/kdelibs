@@ -135,6 +135,9 @@ const KComponentData &KGlobal::mainComponent()
 
 bool KGlobal::hasMainComponent()
 {
+    if (globalData.isDestroyed()) {
+        return false;
+    }
     PRIVATE_DATA;
     return d->mainComponent.isValid();
 }
@@ -147,7 +150,7 @@ KLocale *KGlobal::locale()
             return 0;
         }
 
-        // TODO will set _locale if it works - otherwise 0 is returned
+        // will set d->locale if it works - otherwise 0 is returned
         KLocale::initInstance();
         if (d->mainComponent.aboutData()) {
             d->mainComponent.aboutData()->translateInternalProgramName();
@@ -159,6 +162,9 @@ KLocale *KGlobal::locale()
 
 bool KGlobal::hasLocale()
 {
+    if (globalData.isDestroyed()) {
+        return false;
+    }
     PRIVATE_DATA;
     return (d->locale != 0);
 }
@@ -298,3 +304,5 @@ void KGlobal::deref()
         QCoreApplication::instance()->quit();
     }
 }
+
+#undef PRIVATE_DATA
