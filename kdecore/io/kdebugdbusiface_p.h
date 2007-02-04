@@ -35,7 +35,7 @@ public:
     KDebugDBusIface();
     ~KDebugDBusIface();
 
-public slots:
+public Q_SLOTS:
     /**
      * The kdebugrc has been changed and should be reparsed now.
      * This will simply call kClearDebugConfig

@@ -75,7 +75,7 @@ class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
   protected:
     bool eventFilter( QObject* object, QEvent* event );
 
-  private slots:
+  private Q_SLOTS:
     virtual void slotToggled( bool checked );
 
   private:

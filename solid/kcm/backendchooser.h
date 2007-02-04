@@ -38,12 +38,12 @@ public:
     void save();
     void defaults();
 
-private slots:
+private Q_SLOTS:
     void slotSelectionChanged();
     void slotUpClicked();
     void slotDownClicked();
 
-signals:
+Q_SIGNALS:
     void changed( bool state );
 
 private:

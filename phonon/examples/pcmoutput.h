@@ -32,7 +32,7 @@ class PcmPlayer : public QWidget
 	public:
 		PcmPlayer( QWidget* parent = 0 );
 
-	private slots:
+	private Q_SLOTS:
 		void setFrequency( int f );
 		void sendData();
 

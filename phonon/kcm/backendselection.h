@@ -38,12 +38,12 @@ class BackendSelection : public QWidget, private Ui::BackendSelection
 		void save();
 		void defaults();
 
-	private slots:
+	private Q_SLOTS:
 		void selectionChanged();
 		void up();
 		void down();
 
-	signals:
+ Q_SIGNALS:
 		void changed();
 
 	private:

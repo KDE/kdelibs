@@ -32,7 +32,7 @@ class ThreadWeaver::ThreadRunHelper : public QObject
 public:
     explicit ThreadRunHelper ();
 
-signals: // see Thread:
+Q_SIGNALS: // see Thread:
 
     /** The thread has been started. */
     void started ( Thread* );

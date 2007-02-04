@@ -67,13 +67,13 @@ public:
 
     const KUrl& url() const;
 
-protected slots:
+protected Q_SLOTS:
     void serviceReported(Service *s);
 
-private slots:
+private Q_SLOTS:
     void next();
 
-signals:
+Q_SIGNALS:
     void done();
     void serviceReported(const QString& service);
 

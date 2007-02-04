@@ -39,7 +39,7 @@ namespace Phonon
                         QList<int> audioCaptureDeviceList() const;
                         int audioCaptureDevice() const;
 
-		signals:
+                Q_SIGNALS:
 			void audioOutputDeviceConfigChanged();
 
 		private:

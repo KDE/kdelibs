@@ -44,7 +44,7 @@ public:
 	void setAllowFixed(bool on);
 	bool hasConflict() const 	{ return (m_conflict != 0); }
 
-signals:
+Q_SIGNALS:
   void itemSelected( QTreeWidgetItem* );
 
 protected Q_SLOTS:

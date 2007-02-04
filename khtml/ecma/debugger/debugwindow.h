@@ -79,7 +79,7 @@ public:
                       // as soon as possible
     };
 
-signals:
+Q_SIGNALS:
     void quitLoop();
 
 public:
@@ -101,7 +101,7 @@ public:
     bool callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
     bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
 
-public slots:
+public Q_SLOTS:
     void stopExecution();
     void continueExecution();
     void stepInto();
@@ -113,7 +113,7 @@ protected:
     void disableOtherWindows();
     void enableOtherWindows();
 
-private slots:
+private Q_SLOTS:
     void displayScript(KJS::DebugDocument *document);
     void closeTab();
     void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,

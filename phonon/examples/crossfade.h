@@ -36,7 +36,7 @@ class Crossfader : public QObject
 	public:
 		Crossfader( const KUrl& url1, const KUrl& url2, QObject* parent = 0 );
 
-	private slots:
+	private Q_SLOTS:
 		void finished();
 
 	private:

@@ -28,7 +28,7 @@ public:
 
     KHTMLPart *doc() const;
 
-public slots:
+public Q_SLOTS:
     void openUrl(const KUrl &url, const KParts::URLArgs &args);
     void openUrl(const KUrl &url);
     void openUrl(const QString &url);
@@ -38,7 +38,7 @@ public slots:
     void toggleNavigable(bool s);
     void toggleEditable(bool s);
 
-private slots:
+private Q_SLOTS:
     void startLoading();
     void finishedLoading();
 

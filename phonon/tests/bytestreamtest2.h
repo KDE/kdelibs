@@ -66,7 +66,7 @@ class ByteStreamTest2 : public QObject
 
 		void cleanupTestCase();
 
-    protected slots:
+    protected Q_SLOTS:
 		void seekStream( qint64 );
 		void sendBlock();
 

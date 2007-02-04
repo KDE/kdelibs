@@ -51,7 +51,7 @@ namespace ThreadWeaver {
         };
         Jobs (QWidget *parent = 0);
         virtual ~Jobs();
-    protected slots:
+    protected Q_SLOTS:
         void slotStart();
         void slotStop();
         void slotQuit();
@@ -64,7 +64,7 @@ namespace ThreadWeaver {
         State m_state;
         Ui::JobsBase ui;
         WeaverObserverTest *m_log;
-    protected slots:
+    protected Q_SLOTS:
         void slotJobDone (Job*);
         void slotStopped ();
     };

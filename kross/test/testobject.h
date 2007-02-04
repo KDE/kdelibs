@@ -88,13 +88,13 @@ class TestObject : public QObject
         QVariantList listProperty() const { return m_listproperty; }
         void setListProperty(QVariantList prop) { m_listproperty = prop; }
 
-    signals:
+    Q_SIGNALS:
         void signalVoid();
         void signalBool(bool);
         void signalInt(int);
         void signalString(const QString&);
 
-    public slots:
+    public Q_SLOTS:
 
         // return the objectname
         QString name();

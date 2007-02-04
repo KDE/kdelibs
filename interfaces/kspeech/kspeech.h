@@ -664,7 +664,7 @@ protected:
                             const QString &text, const QString &sound, const QString &file,
                             const int present, const int level, const int winId, const int eventId );
 
-private slots:
+private Q_SLOTS:
     void slotJobStateChanged(const QString& appId, int jobNum, KSpeech::JobState state);
     void slotMarker(const QString& appId, int jobNum, KSpeech::MarkerType markerType, const QString& markerData);
     void slotFilteringFinished();

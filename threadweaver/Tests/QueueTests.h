@@ -54,7 +54,7 @@ class QueueTests : public QObject
 public:
     explicit QueueTests( QObject* parent = 0 );
 
-public slots:
+public Q_SLOTS:
     // this slot (which is not a test) is part of
     // DeleteDoneJobsFromSequenceTest
     void deleteJob( Job* );
@@ -67,7 +67,7 @@ private:
     // this is part of DeleteCollectionOnDoneTest
     ThreadWeaver::JobCollection* autoDeleteCollection;
 
-private slots:
+private Q_SLOTS:
 
     void initTestCase ();
 

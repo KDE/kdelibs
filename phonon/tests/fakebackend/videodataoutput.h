@@ -41,7 +41,7 @@ namespace Fake
 			VideoDataOutput( QObject* parent );
 			~VideoDataOutput();
 
-		public slots:
+		public Q_SLOTS:
 			int frameRate() const;
 			void setFrameRate( int frameRate );
 

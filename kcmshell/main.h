@@ -91,7 +91,7 @@ public:
      */
     KCMShellMultiDialog(KPageDialog::FaceType dialogFace, QWidget *parent = 0);
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Activate a module with id @p asn_id . This is used when

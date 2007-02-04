@@ -28,7 +28,7 @@ namespace ThreadWeaver {
         Q_OBJECT
     public:
         WeaverObserverTest ( QObject *parent=0 );
-    protected slots:
+    protected Q_SLOTS:
         void slotWeaverStateChanged ( State* );
         void slotThreadStarted ( Thread* );
         void slotThreadBusy ( Thread*,  Job* );

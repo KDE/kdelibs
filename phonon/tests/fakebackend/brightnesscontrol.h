@@ -36,7 +36,7 @@ namespace Fake
 			BrightnessControl( QObject* parent );
 			~BrightnessControl();
 
-		public slots:
+		public Q_SLOTS:
 			int brightness() const;
 			void setBrightness( int brightness );
 

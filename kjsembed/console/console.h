@@ -33,7 +33,7 @@ class Console : public QMainWindow
     Console( QWidget *parent = 0);
     ~Console();
 
-    public slots:
+    public Q_SLOTS:
         void on_mExecute_clicked();
         void on_actionOpenScript_activated();
         void on_actionCloseScript_activated();

@@ -50,7 +50,7 @@ Q_INTERFACES( Solid::Ifaces::NetworkManager )
 
         bool isNetworkingEnabled() const;
         bool isWirelessEnabled() const;
-    public slots:
+    public Q_SLOTS:
         void setWirelessEnabled( bool );
         void setNetworkingEnabled( bool );
         void notifyHiddenNetwork( const QString & );

@@ -174,7 +174,7 @@ namespace ThreadWeaver {
          */
         void removeQueuePolicy ( QueuePolicy* );
 
-    signals:
+    Q_SIGNALS:
 	/** This signal is emitted when this job is being processed by a
 	    thread. */
 	void started ( Job* );

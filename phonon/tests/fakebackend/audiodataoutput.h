@@ -37,7 +37,7 @@ namespace Fake
 			AudioDataOutput( QObject* parent );
 			~AudioDataOutput();
 
-		public slots:
+		public Q_SLOTS:
 			Phonon::AudioDataOutput::Format format() const;
 			int dataSize() const;
 			int sampleRate() const;

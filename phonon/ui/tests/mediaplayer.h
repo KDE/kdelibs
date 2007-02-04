@@ -39,7 +39,7 @@ class MediaPlayer : public QWidget
 		MediaPlayer( QWidget* parent = 0 );
 		void setUrl( const KUrl& url );
 
-	private slots:
+	private Q_SLOTS:
 		void openEffectWidget();
 	private:
 		Phonon::MediaObject* m_media;

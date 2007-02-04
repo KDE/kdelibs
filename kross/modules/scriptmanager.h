@@ -50,14 +50,14 @@ namespace Kross {
             ScriptManagerModule* module() const;
             bool isModified() const;
 
-        public slots:
+        public Q_SLOTS:
             void slotRun();
             void slotStop();
             bool slotInstall();
             //void slotUninstall();
             //void slotNewScripts();
 
-        private slots:
+        private Q_SLOTS:
             void slotSelectionChanged();
             void slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
             //void slotNewScriptsInstallFinished();
@@ -78,7 +78,7 @@ namespace Kross {
             explicit ScriptManagerModule();
             virtual ~ScriptManagerModule();
 
-        public slots:
+        public Q_SLOTS:
 
             /**
             * Install the scriptpackage \p file . The scriptpackage should be a

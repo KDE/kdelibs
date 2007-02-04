@@ -10,7 +10,7 @@ class KWalletWizard : public Q3Wizard, public Ui_KWalletWizardBase
     KWalletWizard( QWidget *parent = 0 );
     void init();
     void destroy();
-  protected slots:    
+  protected Q_SLOTS:
     void passwordPageUpdate();
     void setAdvanced();
     void setBasic();

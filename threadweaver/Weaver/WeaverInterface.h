@@ -147,7 +147,7 @@ namespace ThreadWeaver {
 	    necessary. */
         virtual void requestAbort() = 0;
 
-    signals:
+    Q_SIGNALS:
 	/** This signal is emitted when the Weaver has finished ALL currently
 	    queued jobs.
 	    If a number of jobs is enqueued sequentially, this signal might be

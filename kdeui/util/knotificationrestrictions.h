@@ -79,7 +79,7 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
                                            QObject* parent = 0);
         virtual ~KNotificationRestrictions();
 
-    private slots:
+    private Q_SLOTS:
         void screensaverFakeKeyEvent();
 
     private:

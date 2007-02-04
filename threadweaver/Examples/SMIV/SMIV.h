@@ -44,7 +44,7 @@ private:
     int m_noOfJobs;
     bool m_quit;
     QTime m_startTime;
-private slots:
+private Q_SLOTS:
     void on_pbSelectFiles_clicked();
     void on_pbCancel_clicked();
     void on_pbSuspend_clicked();

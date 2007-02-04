@@ -29,7 +29,7 @@ class ThreadWeaver::JobRunHelper : public QObject
 public:
     JobRunHelper();
 
-signals:
+Q_SIGNALS:
     void started ( Job* );
     void done ( Job* );
     void failed( Job* );

@@ -161,7 +161,7 @@ namespace Kross {
              */
             bool isFinalized() const;
 
-        public slots:
+        public Q_SLOTS:
 
             /**
              * \return the optional description for this Action.
@@ -200,7 +200,7 @@ namespace Kross {
              */
             QString currentPath() const;
 
-        signals:
+        Q_SIGNALS:
 
             /**
              * This signal is emitted before the script got executed.
@@ -212,7 +212,7 @@ namespace Kross {
              */
             void finished(Kross::Action*);
 
-        private slots:
+        private Q_SLOTS:
 
             /**
              * This private slot is connected with the \a QAction::triggered

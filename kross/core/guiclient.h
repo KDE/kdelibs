@@ -83,7 +83,7 @@ namespace Kross {
             bool writeConfigFromPackages();
 #endif
 
-        public slots:
+        public Q_SLOTS:
 
             /**
             * A KFileDialog will be displayed to let the user choose the scriptfile
@@ -104,7 +104,7 @@ namespace Kross {
             */
             void showManager();
 
-        private slots:
+        private Q_SLOTS:
 
             /**
              * Called before the "Scripts" menu is shown to update the list of displayed scripts.

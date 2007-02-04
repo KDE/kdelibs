@@ -13,7 +13,7 @@ class JobTests : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
 
     void initTestCase ();
 
@@ -54,7 +54,7 @@ private slots:
 
     void JobSignalsAreEmittedAsynchronouslyTest();
 
-public slots: // slots used during tests that are not test cases
+public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted( Job* );
     void jobDone( Job* );
 };

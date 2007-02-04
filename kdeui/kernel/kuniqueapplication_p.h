@@ -35,7 +35,7 @@ public:
   inline KUniqueApplication *parent() const
   { return static_cast<KUniqueApplication *>(QDBusAbstractAdaptor::parent()); }
 
-public slots:
+public Q_SLOTS:
   int newInstance(const QByteArray &asn_id = QByteArray(), const QByteArray &args = QByteArray())
   {
     if (!asn_id.isEmpty())

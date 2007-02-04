@@ -56,7 +56,7 @@ public:
 
 	bool startPreview();
 
-signals:
+Q_SIGNALS:
   void finished();
 
 protected Q_SLOTS:

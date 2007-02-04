@@ -45,7 +45,7 @@ namespace Kross {
              */
             enum Mode { Other = 0, Opening, Saving };
 
-        public slots:
+        public Q_SLOTS:
 
             /**
              * Set the \a Mode the FormFileWidget should have to \p mode .
@@ -118,7 +118,7 @@ namespace Kross {
             FormDialog(const QString& caption);
             virtual ~FormDialog();
 
-        public slots:
+        public Q_SLOTS:
 
             /**
              * Set the buttons.
@@ -193,7 +193,7 @@ namespace Kross {
              */
             QString result();
 
-        private slots:
+        private Q_SLOTS:
             virtual void slotButtonClicked(int button);
             void slotCurrentPageChanged(KPageWidgetItem* current);
 
@@ -228,7 +228,7 @@ namespace Kross {
             explicit FormModule();
             virtual ~FormModule();
 
-        public slots:
+        public Q_SLOTS:
 
             /**
              * \return the active modal widget. Modal widgets are special top-level

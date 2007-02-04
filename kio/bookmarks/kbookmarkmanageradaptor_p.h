@@ -30,7 +30,7 @@ class KBookmarkManagerAdaptor: public QDBusAbstractAdaptor
 public:
     KBookmarkManagerAdaptor(QObject *parent);
 
-signals:
+Q_SIGNALS:
     void bookmarkCompleteChange( QString caller );
 
     void bookmarksChanged( QString groupAddress );

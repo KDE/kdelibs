@@ -340,7 +340,7 @@ public:
      */
     void setGlobalShortcutAllowed(bool allowed);
 
-signals:
+Q_SIGNALS:
 #ifdef KDE3_SUPPORT
     /**
      * Emitted when this action is activated

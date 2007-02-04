@@ -13,7 +13,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     MainWindow ( QWidget *parent = 0 );
-private slots:
+private Q_SLOTS:
     void on_pushButtonStart_clicked();
     void on_pushButtonQuit_clicked();
 

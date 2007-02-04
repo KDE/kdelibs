@@ -89,7 +89,7 @@ public:
      */
     virtual void start(Slave *slave);
 
-signals:
+Q_SIGNALS:
     /**
      * Data from the slave has arrived.
      * @param job the job that emitted this signal
@@ -139,7 +139,7 @@ signals:
      */
     void position( KIO::Job *job, KIO::filesize_t offset);
 
-private slots:
+private Q_SLOTS:
     virtual void slotRedirection( const KUrl &url);
     virtual void slotData( const QByteArray &data);
     virtual void slotMimetype( const QString &mimetype );

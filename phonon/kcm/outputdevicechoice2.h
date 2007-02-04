@@ -32,7 +32,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 		void save();
 		void defaults();
 
-	private slots:
+	private Q_SLOTS:
 		void on_notificationCombo_activated();
 		void on_musicCombo_activated();
 		//void on_videoCombo_activated();

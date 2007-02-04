@@ -53,7 +53,7 @@ public:
     bool isActive() const;
 
     QString uni() const;
-signals:
+Q_SIGNALS:
     void ipDetailsChanged();
     void activationStateChanged( bool );
 

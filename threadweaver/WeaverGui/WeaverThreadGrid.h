@@ -32,7 +32,7 @@ namespace ThreadWeaver {
         QColor m_colorBusy;
         QColor m_colorIdleFrame;
         QColor m_colorIdle;
-    protected slots:
+    protected Q_SLOTS:
         void threadStarted ( Thread* );
         void threadBusy ( Thread*, Job* );
         void threadSuspended ( Thread* );

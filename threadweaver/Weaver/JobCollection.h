@@ -50,7 +50,7 @@ namespace ThreadWeaver {
         /** Overload to manage recursive sets. */
         bool canBeExecuted();
 
-    public slots:
+    public Q_SLOTS:
         /** Stop processing, dequeue all remaining Jobs.
             job is supposed to be an element of the collection.
             */

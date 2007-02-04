@@ -149,7 +149,7 @@ namespace Kross {
              */
             bool writeXml(QIODevice* device, int indent = 2);
 
-        signals:
+        Q_SIGNALS:
             //void inserted(ActionCollection* self, ActionCollection* into);
             //void updated(ActionCollection* self);
             //void removed(ActionCollection* self, ActionCollection* from);

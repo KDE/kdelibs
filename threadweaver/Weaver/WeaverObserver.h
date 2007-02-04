@@ -49,7 +49,7 @@ namespace ThreadWeaver {
     public:
         explicit WeaverObserver ( QObject *parent = 0 );
         virtual ~WeaverObserver();
-    signals:
+    Q_SIGNALS:
         void threadStarted ( Thread* );
         void threadBusy( Thread*,  Job* );
         void threadSuspended ( Thread* );

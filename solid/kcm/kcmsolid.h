@@ -34,7 +34,7 @@ public:
     virtual void save();
     virtual void defaults();
 
-private slots:
+private Q_SLOTS:
     void slotChooserChanged( bool state );
 
 private:

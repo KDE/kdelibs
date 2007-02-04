@@ -13,7 +13,7 @@ class KJSErrorDlg : public QDialog, public Ui_KJSErrorDlgBase
 
     void addError( const QString &error );
     void setURL( const QString &url );
-  protected slots:
+  protected Q_SLOTS:
     void clear();
   private:
     void init();

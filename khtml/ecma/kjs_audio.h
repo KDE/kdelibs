@@ -45,7 +45,7 @@ namespace KJS {
   };
 
   ////////////////////// Audio Object ////////////////////////
-  
+
   class JSEventListener;
   class AudioQObject;
 
@@ -61,12 +61,12 @@ namespace KJS {
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Onload, Onerror, Loop, Play, Stop }; 
+    enum { Onload, Onerror, Loop, Play, Stop };
 
     void play();
     void stop();
     void loop(int n=-1);
-    
+
   private:
     friend class AudioProtoFunc;
     friend class AudioQObject;
@@ -74,20 +74,20 @@ namespace KJS {
     // from CachedObjectClient
     virtual void notifyFinished(khtml::CachedObject *);
     virtual void error(int err, const QString &text);
-    
+
     void refLoader();
 
     QString m_url;
     QPointer<DOM::DocumentImpl> m_doc;
     khtml::CachedSound* m_cs;
-    
+
     AudioQObject* m_qObj;
 
     JSEventListener *m_onLoadListener;
     JSEventListener *m_onErrorListener;
   };
 
-  // Needs a separate class as QObjects confuse the hell out of 
+  // Needs a separate class as QObjects confuse the hell out of
   // KJS's garbage collector
   class AudioQObject: public QObject {
       Q_OBJECT
@@ -102,14 +102,14 @@ namespace KJS {
       void stop();
       void loop(int n=-1);
 
-  protected slots:
+  protected Q_SLOTS:
     void nextIteration();
     void refLoader();
     void reset();
-    
+
   private:
     Audio* m_jObj;
-    
+
     Phonon::ByteStream*  m_media;
     QByteArray m_sound;
     int m_playCount;

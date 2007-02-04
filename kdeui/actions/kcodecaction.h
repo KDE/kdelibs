@@ -56,10 +56,10 @@ public:
 	int currentCodecMib() const;
 	bool setCurrentCodec(int mib);
 
-signals:
+Q_SIGNALS:
 	void triggered(QTextCodec *codec);
 
-protected slots:
+protected Q_SLOTS:
 	virtual void actionTriggered(QAction *action);
 
 private:

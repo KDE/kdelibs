@@ -151,7 +151,7 @@ public:
     /// Reimplemented from QAbstractItemModel. Not implemented.
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
-private slots:
+private Q_SLOTS:
     void slotNewItems( const KFileItemList& );
     void slotDeleteItem( KFileItem *item );
     void slotRefreshItems( const KFileItemList& );

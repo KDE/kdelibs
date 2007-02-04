@@ -15,7 +15,7 @@ class DeleteTest : public QCoreApplication
 public:
   DeleteTest(int argc, char **argv);
 
-public slots:
+public Q_SLOTS:
   void deleteSequence(Job* job);
 
 private:

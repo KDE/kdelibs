@@ -114,7 +114,7 @@ public:
     void setText( const QString &text );
 
 
-signals:
+Q_SIGNALS:
     /**
      * Emitted when the mouse is hovered over the text edit component.
      * @param word The word under the mouse pointer
@@ -128,7 +128,7 @@ signals:
      */
     void mouseHover( const QPoint &pos, const QString &word );
 
-protected slots:
+protected Q_SLOTS:
     /** @internal Used to update the highlight on the current line. */
     void textChanged( int pos, int added, int removed );
 

@@ -22,13 +22,13 @@ public:
 
     void addDocument(KJS::DebugDocument *document);
 
-public slots:
+public Q_SLOTS:
     void documentDestroyed(KJS::DebugDocument *document);
 
-signals:
+Q_SIGNALS:
      void displayScript(KJS::DebugDocument *document);
 
-private slots:
+private Q_SLOTS:
     void scriptSelected(QTreeWidgetItem *item, int column);
 
 private:

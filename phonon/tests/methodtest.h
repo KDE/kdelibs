@@ -25,7 +25,7 @@
 class MethodTest : public QObject
 {
 	Q_OBJECT
-	private slots:
+	private Q_SLOTS:
         void checkBackendInterface();
 
 		void checkAudioDataOutputMethods_data();

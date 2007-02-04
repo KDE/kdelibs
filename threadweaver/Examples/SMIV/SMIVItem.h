@@ -40,9 +40,9 @@ public:
     QString desc1() const;
     QString desc2() const;
     QImage thumb() const;
-signals:
+Q_SIGNALS:
     void thumbReady( SMIVItem* );
-private slots:
+private Q_SLOTS:
     void fileLoaderReady ( Job* );
     void imageLoaderReady ( Job* );
     void computeThumbReady ( Job* );

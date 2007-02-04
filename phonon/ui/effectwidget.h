@@ -41,7 +41,7 @@ class Effect;
 			EffectWidget( EffectWidgetPrivate& dd, Effect* effect, QWidget* parent );
 			EffectWidgetPrivate* d_ptr;
 
-		private slots:
+		private Q_SLOTS:
 			void setToggleParameter( bool checked );
 			void setIntParameter( int value );
 			void setDoubleParameter( double value );

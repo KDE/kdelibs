@@ -33,7 +33,7 @@ namespace Fake
 			AudioOutput( QObject* parent );
 			~AudioOutput();
 
-		public slots:
+		public Q_SLOTS:
 			// Attributes Getters:
 			float volume() const;
 			int outputDevice() const;

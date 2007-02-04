@@ -75,7 +75,7 @@ public:
      * set the authentication currently in use on this network
      */
     void setAuthentication( Authentication * );
-signals:
+Q_SIGNALS:
     void signalStrengthChanged( int );
     void bitrateChanged( int );
     void associationChanged( bool );

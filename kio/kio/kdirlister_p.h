@@ -136,7 +136,7 @@ public:
   KFileItem *itemForUrl( const KUrl& url ) const;
   KFileItemList *itemsForDir( const KUrl& dir ) const;
 
-public slots:
+public Q_SLOTS:
   /**
    * Notify that files have been added in @p directory
    * The receiver will list that directory again to find

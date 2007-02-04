@@ -49,7 +49,7 @@ class KNotify : public QObject
 		~KNotify();
 		void addPlugin( KNotifyPlugin *p );
 
-	public slots:
+	public Q_SLOTS:
 		void reconfigure();
 		void closeNotification( int id);
 		

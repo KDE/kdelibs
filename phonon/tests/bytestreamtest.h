@@ -65,7 +65,7 @@ class ByteStreamTest : public QObject
 
 		void cleanupTestCase();
 
-    protected slots:
+    protected Q_SLOTS:
 		void kioTotalSize(KJob*,qulonglong size);
 		void kioData(KIO::Job*,const QByteArray&);
 		void kioResult(KJob*);

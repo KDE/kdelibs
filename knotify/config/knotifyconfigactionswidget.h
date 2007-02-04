@@ -37,10 +37,10 @@ class KNotifyConfigActionsWidget : public QWidget
 	public:
 		KNotifyConfigActionsWidget( QWidget *parent);
 		~KNotifyConfigActionsWidget() {}
-		
+
 		void setConfigElement( KNotifyConfigElement *config );
 		void save( KNotifyConfigElement *config );
-	signals:
+        Q_SIGNALS:
 		void changed();
 	private:
 		Ui::KNotifyConfigActionsWidgetBase m_ui;

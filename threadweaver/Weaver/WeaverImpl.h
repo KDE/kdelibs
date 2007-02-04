@@ -102,7 +102,7 @@ namespace ThreadWeaver {
         /** Dump the current jobs to the console. Not part of the API. */
         void dumpJobs();
 
-    signals:
+    Q_SIGNALS:
         /** A Thread has been created. */
         void threadStarted ( Thread* );
         /** A thread has exited. */
@@ -113,7 +113,7 @@ namespace ThreadWeaver {
         void threadBusy ( Thread*,  Job* j);
 
         // FIXME (0.7) this seems to be unnecessary
-        // some more private signals: There are situations where other threads
+        // some more private Q_SIGNALS: There are situations where other threads
         // call functions of (this). In this case, there may be confusion
         // about whether to handle th signals synchroneously or not. The
         // following signals are asynchroneoulsy connected to their siblings.

@@ -25,7 +25,7 @@
 class MethodTest : public QObject
 {
 	Q_OBJECT
-	private slots:
+	private Q_SLOTS:
 		void checkUiBackendMethods_data();
 		void checkUiBackendMethods();
 		void checkVideoWidgetMethods_data();

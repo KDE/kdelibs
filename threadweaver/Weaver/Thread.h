@@ -81,7 +81,7 @@ namespace ThreadWeaver {
          */
         void requestAbort();
 
-    signals:
+    Q_SIGNALS:
         /** The thread has been started. */
         void started ( Thread* );
         /** The thread started to process a job. */

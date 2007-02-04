@@ -35,7 +35,7 @@ class Visualization : public QObject
 	public:
 		Visualization( QObject* parent = 0 );
 
-	public slots:
+	public Q_SLOTS:
 		int visualization() const;
 		void setVisualization( int newVisualization );
 		void setAudioPath( QObject* audioPath );

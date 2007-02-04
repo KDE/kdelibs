@@ -135,7 +135,7 @@ namespace Kross {
              */
             ActionCollection* actionCollection() const;
 
-        public slots:
+        public Q_SLOTS:
 
             /**
              * \return a list of names of all supported scripting interpreters.
@@ -178,7 +178,7 @@ namespace Kross {
             /** Return a new \a DateTime object. */
             QObject* datetime();
 
-        signals:
+        Q_SIGNALS:
 
             /**
              * This signal is emitted when the execution of a script is started.

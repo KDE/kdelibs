@@ -39,7 +39,7 @@ class TestWindow : public KMainWindow
     public:
         TestWindow(const QString& interpretername, const QString& scriptcode);
         virtual ~TestWindow();
-    private slots:
+    private Q_SLOTS:
         void execute();
     private:
         QString m_interpretername;
