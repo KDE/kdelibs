@@ -162,7 +162,8 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
-    KComponentDataPrivate *d;
+    // Ref-counted data
+    KComponentDataPrivate* d; // krazy:exclude=dpointer
 };
 
 #endif // KCOMPONENTDATA_H

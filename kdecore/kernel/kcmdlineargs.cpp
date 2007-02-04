@@ -459,7 +459,7 @@ findOption(const KCmdLineOptions *options, QByteArray &opt,
 
 
 void
-KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled, bool &moreOptions)
+KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled, bool &moreOptions) // krazy:exclude=passbyvalue
 {
    KCmdLineArgsList::Iterator args = argsList->begin();
    const char *opt_name;
@@ -1050,7 +1050,7 @@ KCmdLineArgs::usage(const char *id)
  */
 KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions *_options,
                             const char *_name, const char *_id)
-  : options(_options), name(_name), id(_id)
+  : options(_options), name(_name), id(_id), d(0)
 {
   parsedOptionList = 0;
   parsedArgList = 0;
