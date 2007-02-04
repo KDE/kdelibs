@@ -26,6 +26,7 @@
 #include <QString>
 
 #include <kservice.h>
+class KCModuleProxy;
 
 class BackendSelection : public QWidget, private Ui::BackendSelection
 {
@@ -46,8 +47,11 @@ class BackendSelection : public QWidget, private Ui::BackendSelection
 		void changed();
 
 	private:
+        void showBackendKcm(const KService::Ptr &backendService);
 		void loadServices( const KService::List& offers );
 		QHash<QString, KService::Ptr> m_services;
+        QHash<QString, KCModuleProxy *> m_kcms;
+        int m_emptyPage;
 };
 
 // vim: sw=4 ts=4 tw=80

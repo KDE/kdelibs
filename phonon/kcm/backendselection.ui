@@ -17,29 +17,15 @@
    <property name="spacing" >
     <number>6</number>
    </property>
-   <item rowspan="2" row="0" column="1" >
-    <widget class="QStackedWidget" name="stackedWidget" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>7</hsizetype>
-       <vsizetype>5</vsizetype>
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <widget class="QWidget" name="page" />
-     <widget class="QWidget" name="page_2" />
-    </widget>
-   </item>
    <item row="0" column="0" >
-    <layout class="QHBoxLayout" >
+    <layout class="QGridLayout" >
      <property name="margin" >
       <number>0</number>
      </property>
      <property name="spacing" >
-      <number>0</number>
+      <number>6</number>
      </property>
-     <item>
+     <item row="0" column="0" colspan="3" >
       <widget class="QListWidget" name="m_select" >
        <property name="sizePolicy" >
         <sizepolicy>
@@ -57,63 +43,50 @@
        </property>
       </widget>
      </item>
-     <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
+     <item row="1" column="1" >
+      <widget class="QToolButton" name="m_up" >
+       <property name="enabled" >
+        <bool>false</bool>
        </property>
-       <property name="spacing" >
-        <number>6</number>
+       <property name="text" >
+        <string>prefer</string>
        </property>
-       <item>
-        <widget class="QToolButton" name="m_up" >
-         <property name="sizePolicy" >
-          <sizepolicy>
-           <hsizetype>0</hsizetype>
-           <vsizetype>7</vsizetype>
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>prefer the selected backend</string>
-         </property>
-         <property name="text" >
-          <string>move up</string>
-         </property>
-         <property name="autoRaise" >
-          <bool>true</bool>
-         </property>
-         <property name="arrowType" >
-          <enum>Qt::UpArrow</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="m_down" >
-         <property name="sizePolicy" >
-          <sizepolicy>
-           <hsizetype>0</hsizetype>
-           <vsizetype>7</vsizetype>
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>no preference for the selected backend</string>
-         </property>
-         <property name="text" >
-          <string>move down</string>
-         </property>
-         <property name="autoRaise" >
-          <bool>true</bool>
-         </property>
-         <property name="arrowType" >
-          <enum>Qt::DownArrow</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
+       <property name="toolButtonStyle" >
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType" >
+        <enum>Qt::UpArrow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" >
+      <widget class="QToolButton" name="m_down" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>defer</string>
+       </property>
+       <property name="toolButtonStyle" >
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType" >
+        <enum>Qt::DownArrow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>81</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -232,6 +205,20 @@
        </spacer>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item rowspan="2" row="0" column="1" >
+    <widget class="QStackedWidget" name="stackedWidget" >
+     <property name="sizePolicy" >
+      <sizepolicy>
+       <hsizetype>7</hsizetype>
+       <vsizetype>5</vsizetype>
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <widget class="QWidget" name="page" />
+     <widget class="QWidget" name="page_2" />
     </widget>
    </item>
   </layout>

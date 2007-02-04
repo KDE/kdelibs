@@ -28,11 +28,14 @@
 #include <kicon.h>
 #include <QList>
 #include <QtDBus/QtDBus>
+#include <kcmoduleproxy.h>
 
 BackendSelection::BackendSelection( QWidget* parent )
 	: QWidget( parent )
 {
 	setupUi( this );
+
+    m_emptyPage = stackedWidget->addWidget(new QWidget());
 
 	connect( m_select, SIGNAL( itemSelectionChanged() ),
 			SLOT( selectionChanged() ) );
@@ -48,6 +51,34 @@ void BackendSelection::load()
 			"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 	// the offers are already sorted for preference
     loadServices(offers);
+    foreach (KCModuleProxy *proxy, m_kcms) {
+        if (proxy) {
+            proxy->load();
+        }
+    }
+}
+
+void BackendSelection::showBackendKcm(const KService::Ptr &backendService)
+{
+    QString parentComponent = backendService->library();
+    if (!m_kcms.contains(parentComponent)) {
+        const KService::List offers = KServiceTypeTrader::self()->query("KCModule",
+                QString("'%1' in [X-KDE-ParentComponents]").arg(parentComponent));
+        if (offers.isEmpty()) {
+            m_kcms.insert(parentComponent, 0);
+        } else {
+            KCModuleProxy *proxy = new KCModuleProxy(offers.first());
+            connect(proxy, SIGNAL(changed(bool)), SIGNAL(changed()));
+            m_kcms.insert(parentComponent, proxy);
+            stackedWidget->addWidget(proxy);
+        }
+    }
+    QWidget *w = m_kcms.value(parentComponent);
+    if (w) {
+        stackedWidget->setCurrentWidget(w);
+    } else {
+        stackedWidget->setCurrentIndex(m_emptyPage);
+    }
 }
 
 void BackendSelection::loadServices( const KService::List& offers )
@@ -68,6 +99,13 @@ void BackendSelection::loadServices( const KService::List& offers )
 
 void BackendSelection::save()
 {
+    // save embedded KCMs
+    foreach (KCModuleProxy *proxy, m_kcms) {
+        if (proxy) {
+            proxy->save();
+        }
+    }
+
 	// save to servicetype profile
 	KService::List services;
 	unsigned int count = m_select->count();
@@ -85,30 +123,36 @@ void BackendSelection::save()
 
 void BackendSelection::defaults()
 {
+    foreach (KCModuleProxy *proxy, m_kcms) {
+        if (proxy) {
+            proxy->defaults();
+        }
+    }
+
 	loadServices( KServiceTypeTrader::self()->defaultOffers( "PhononBackend" ) );
 }
 
 void BackendSelection::selectionChanged()
 {
 	KService::Ptr service;
-	for( int i = 0; i < m_select->count(); ++i )
-	{
-		QListWidgetItem* item = m_select->item( i );
-		if( m_select->isItemSelected( item ) )
-		{
-			service = m_services[ item->text() ];
-			break;
-		}
-	}
-	if( service )
-	{
-		m_icon->setPixmap( KIcon( service->icon() ).pixmap( 32 ) );
-		m_name->setText( service->name() );
-		m_comment->setText( service->comment() );
-		m_website->setText( service->property( "X-KDE-PhononBackendInfo-Website" ).toString() );
-		//m_website->setURL( m_website->text() );
-		m_version->setText( service->property( "X-KDE-PhononBackendInfo-Version" ).toString() );
-	}
+    foreach (QListWidgetItem *item, m_select->selectedItems()) {
+        service = m_services[item->text()];
+        m_up->setEnabled(m_select->row(item) > 0);
+        m_down->setEnabled(m_select->row(item) < m_select->count() - 1);
+        break;
+    }
+    if(service) {
+        m_icon->setPixmap(KIcon(service->icon()).pixmap(32));
+        m_name->setText(service->name());
+        m_comment->setText(service->comment());
+        const QString website = service->property("X-KDE-PhononBackendInfo-Website").toString();
+        m_website->setText(QString("<a href=\"%1\">%1</a>").arg(website));
+        m_version->setText(service->property("X-KDE-PhononBackendInfo-Version").toString());
+        showBackendKcm(service);
+    } else {
+        m_up->setEnabled(false);
+        m_down->setEnabled(false);
+    }
 }
 
 void BackendSelection::up()
