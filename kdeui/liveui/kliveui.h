@@ -116,7 +116,7 @@ public:
     void endToolBar();
 
     void addAction(QAction *action);
-    void addActions(QList<QAction *> &actions);
+    void addActions(const QList<QAction *> &actions);
 
     // convenience
     QAction *addAction(const QString &text);

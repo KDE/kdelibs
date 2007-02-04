@@ -547,7 +547,7 @@ void KLiveUiBuilder::addAction(QAction *action)
         d->component->d->addActiveAction(action);
 }
 
-void KLiveUiBuilder::addActions(QList<QAction *> &actions)
+void KLiveUiBuilder::addActions(const QList<QAction *> &actions)
 {
     for (int i = 0; i < actions.count(); ++i)
         addAction(actions.at(i));
