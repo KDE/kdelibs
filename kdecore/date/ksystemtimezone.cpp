@@ -390,7 +390,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
             QString referenceMd5Sum = context.hexDigest();
             f.close();
 
-            if (m_haveCountryCodes)
+            if (m_haveCountryCodes && KGlobal::locale())
             {
                 /* Look for time zones with the user's country code.
                  * This has two advantages: 1) it shortens the search;
