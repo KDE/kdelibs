@@ -546,17 +546,17 @@ bool KIMProxy::startPreferredApp()
 #ifdef __GNUC__
 # warning "unused variable: preferences"
 #endif
-	QString preferences = QString("[X-DCOP-ServiceName] = '%1'").arg( preferredApp() );
-	// start/find an instance of DCOP/InstantMessenger
+	QString preferences = QString("[X-DBUS-ServiceName] = '%1'").arg( preferredApp() );
+	// start/find an instance of DBUS/InstantMessenger
 	QString error;
-	QString dcopService;
+	QString dbusService;
 	// Get a preferred IM client.
 	// The app will notify itself to us using nameOwnerChanged, so we don't need to record a stub for it here
 	// FIXME: error in preferences, see debug output
 	preferences.clear();
-	int result = KDBusServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dcopService );
+	int result = KDBusServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dbusService );
 
-	kDebug( 790 ) << k_funcinfo << "error was: " << error << ", dcopService: " << dcopService << endl;
+	kDebug( 790 ) << k_funcinfo << "error was: " << error << ", dbusService: " << dbusService << endl;
 
 	return ( result == 0 );
 }
