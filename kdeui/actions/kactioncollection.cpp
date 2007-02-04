@@ -203,7 +203,7 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 
 QList<QAction*> KActionCollection::actions() const
 {
-  return d->nameByAction.keys();
+  return d->actionByName.values();
 }
 
 const QList< QAction* > KActionCollection::actionsWithoutGroup( ) const
@@ -222,16 +222,6 @@ const QList< QActionGroup * > KActionCollection::actionGroups( ) const
     if (action->actionGroup())
       set.insert(action->actionGroup());
   return set.toList();
-}
-
-const QList< QAction* > KActionCollection::actionsInGroup( QActionGroup * group ) const
-{
-  QList<QAction*> ret;
-  foreach (QAction* action, group->actions())
-    if (action->parent() == this)
-      if (QAction* kaction = qobject_cast<QAction*>(action))
-        ret.append(kaction);
-  return ret;
 }
 
 QAction *KActionCollection::addAction(const QString &name, QAction *action)

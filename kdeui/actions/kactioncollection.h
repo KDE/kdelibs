@@ -281,12 +281,6 @@ public:
   const QList<QActionGroup*> actionGroups() const;
 
   /**
-   * Returns all KActions which are both within the supplied \a group, and
-   * part of this action collection.
-   */
-  const QList<QAction*> actionsInGroup(QActionGroup* group) const;
-
-  /**
    * Set the \a componentData associated with this action collection.
    *
    * \param componentData the KComponentData which is to be associated with this action collection, or to null to indicate the default KComponentData.
