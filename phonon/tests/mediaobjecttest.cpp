@@ -367,7 +367,7 @@ void MediaObjectTest::setMediaAndPlay()
     m_stateChangedSignalSpy->clear();
     QCOMPARE(m_stateChangedSignalSpy->count(), 0);
 
-	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( qint64 ) ) );
+    QSignalSpy lengthSignalSpy(m_media, SIGNAL(length(qint64)));
     QVERIFY(!m_media->url().isEmpty());
     Phonon::State state = m_media->state();
     QVERIFY(state == Phonon::StoppedState || state == Phonon::PlayingState);
@@ -375,10 +375,20 @@ void MediaObjectTest::setMediaAndPlay()
     // before calling play() we better make sure that if play() finishes very fast that we don't get
     // called again
     disconnect(m_media, SIGNAL(finished()), this, SLOT(setMediaAndPlay()));
+    m_stateChangedSignalSpy->clear();
+    state = m_media->state();
     m_media->play();
-    while (m_media->state() != Phonon::PlayingState) {
+    while (state != Phonon::PlayingState) {
         QVERIFY(m_media->state() != Phonon::ErrorState);
-        waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+        if (m_stateChangedSignalSpy->isEmpty()) {
+            waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 5000);
+            // if it times out the backend has a bug
+        }
+        QVERIFY(m_stateChangedSignalSpy->count() > 0);
+        QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
+        Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
+        QCOMPARE(oldstate, state);
+        state = qvariant_cast<Phonon::State>(args.at(0));
     }
 
     /*
