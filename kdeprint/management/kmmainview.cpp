@@ -567,7 +567,7 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		}
 		if (!printer->isSpecial())
 		{
-			QList<QAction*>	pactions = m_actions->actionsInGroup(m_manager->pluginGroup());
+			QList<QAction*>	pactions = m_manager->pluginGroup()->actions();
 			foreach (QAction* action, pactions)
 				m_pop->addAction(action);
 			if (pactions.count() > 0)
@@ -898,7 +898,7 @@ bool KMMainView::printerInfosShown() const
 void KMMainView::loadPluginActions()
 {
 	KMFactory::self()->manager()->createPluginActions(m_actions);
-	QList<QAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	QList<QAction*>	pactions = KMFactory::self()->manager()->pluginGroup()->actions();
 	QAction*	before = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
 	QMenu *menu = static_cast<KActionMenu*>(m_menubar->actions().at( 1 ))->menu();
@@ -912,7 +912,7 @@ void KMMainView::loadPluginActions()
 
 void KMMainView::removePluginActions()
 {
-	QList<QAction*>	pactions = m_actions->actionsInGroup(KMFactory::self()->manager()->pluginGroup());
+	QList<QAction*>	pactions = KMFactory::self()->manager()->pluginGroup()->actions();
 	qDeleteAll(pactions);
 }
 
