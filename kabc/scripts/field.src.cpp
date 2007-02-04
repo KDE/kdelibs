@@ -191,6 +191,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.address( Address::Home ).postalCode();
     case FieldImpl::HomeAddressCountry:
       return a.address( Address::Home ).country();
+    case FieldImpl::HomeAddressLabel:
+      return a.address( Address::Home ).label();
     case FieldImpl::BusinessAddressStreet:
       return a.address( Address::Work ).street();
     case FieldImpl::BusinessAddressLocality:
@@ -201,6 +203,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.address( Address::Work ).postalCode();
     case FieldImpl::BusinessAddressCountry:
       return a.address( Address::Work ).country();
+    case FieldImpl::BusinessAddressLabel:
+      return a.address( Address::Work ).label();
     case FieldImpl::CustomField:
       return a.custom( mImpl->app(), mImpl->key() );
     default:
