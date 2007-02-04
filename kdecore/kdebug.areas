@@ -55,6 +55,8 @@
 603        phonon (ALSA deviceenumerator)
 604        phonon (fake backend)
 610        phonon (xine backend)
+611        phonon (GStreamer backend)
+612        phonon (GStreamer wrapper)
 700        kutils (KSettings::Dialog)
 701        kutils (KSettings::Dispatcher)
 702        kutils (KPluginSelector)
