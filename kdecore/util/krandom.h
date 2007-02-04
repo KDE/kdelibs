@@ -21,8 +21,6 @@
 #ifndef KRANDOM_H
 #define KRANDOM_H
 
-// Version macros. Never put this further down.
-#include "kdeversion.h"
 #include "kdelibs_export.h"
 
 #include <QtCore/QString>
