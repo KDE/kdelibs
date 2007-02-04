@@ -285,7 +285,10 @@ bool KSocketDevice::bind(const KResolverEntry& address)
   if (kde_bind(m_sockfd, address.address(), address.length()) == -1)
     {
       if (errno == EADDRINUSE)
+      {
 	setError(AddressInUse);
+	return false;
+      }
       else if (errno == EINVAL)
 	setError(AlreadyBound);
       else 
