@@ -58,6 +58,31 @@ public:
     KLineEdit *klineEdit;
 };
 
+class KHistoryCombo::KHistoryComboPrivate
+{
+public:
+    KHistoryComboPrivate(KHistoryCombo *q): q(q), myPixProvider(0) {}
+  
+    KHistoryCombo *q;
+  
+    /**
+    * The current position (index) in the combobox, used for Up and Down
+     */
+    int myIterateIndex;
+
+    /**
+    * The text typed before Up or Down was pressed.
+     */
+    QString myText;
+
+    /**
+    * Indicates that the user at least once rotated Up through the entire list
+     * Needed to allow going back after rotation.
+     */
+    bool myRotated;
+    KPixmapProvider *myPixProvider;
+};
+
 KComboBox::KComboBox( QWidget *parent )
     : QComboBox( parent ), d(new KComboBoxPrivate)
 {
@@ -367,7 +392,7 @@ void KComboBox::lineEditDeleted()
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( QWidget *parent )
-    : KComboBox( true, parent ), d(0)
+    : KComboBox( true, parent ), d(new KHistoryComboPrivate(this))
 {
     init( true ); // using completion
 }
@@ -375,7 +400,7 @@ KHistoryCombo::KHistoryCombo( QWidget *parent )
 // we are always read-write
 KHistoryCombo::KHistoryCombo( bool useCompletion,
                               QWidget *parent )
-    : KComboBox( true, parent ), d(0)
+    : KComboBox( true, parent ), d(new KHistoryComboPrivate(this))
 {
     init( useCompletion );
 }
@@ -389,9 +414,9 @@ void KHistoryCombo::init( bool useCompletion )
         completionObject()->setOrder( KCompletion::Weighted );
 
     setInsertPolicy( NoInsert );
-    myIterateIndex = -1;
-    myRotated = false;
-    myPixProvider = 0L;
+    d->myIterateIndex = -1;
+    d->myRotated = false;
+    d->myPixProvider = 0L;
 
     // obey HISTCONTROL setting
     QByteArray histControl = getenv("HISTCONTROL");
@@ -407,7 +432,8 @@ void KHistoryCombo::init( bool useCompletion )
 
 KHistoryCombo::~KHistoryCombo()
 {
-    delete myPixProvider;
+    delete d->myPixProvider;
+    delete d;
 }
 
 void KHistoryCombo::setHistoryItems( const QStringList &items,
@@ -494,8 +520,8 @@ void KHistoryCombo::addToHistory( const QString& item )
     }
 
     // now add the item
-    if ( myPixProvider )
-        insertItem( 0, myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
+    if ( d->myPixProvider )
+        insertItem( 0, d->myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
     else
         insertItem( 0, item );
 
@@ -551,70 +577,70 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
 void KHistoryCombo::rotateUp()
 {
     // save the current text in the lineedit
-    if ( myIterateIndex == -1 )
-        myText = currentText();
+    if ( d->myIterateIndex == -1 )
+        d->myText = currentText();
 
-    ++myIterateIndex;
+    ++d->myIterateIndex;
 
     // skip duplicates/empty items
     const int last = count() - 1; // last valid index
     const QString currText = currentText();
 
-    while ( myIterateIndex < last &&
-            (currText == itemText( myIterateIndex ) ||
-             itemText( myIterateIndex ).isEmpty()) )
-        ++myIterateIndex;
+    while ( d->myIterateIndex < last &&
+            (currText == itemText( d->myIterateIndex ) ||
+             itemText( d->myIterateIndex ).isEmpty()) )
+        ++d->myIterateIndex;
 
-    if ( myIterateIndex >= count() ) {
-        myRotated = true;
-        myIterateIndex = -1;
+    if ( d->myIterateIndex >= count() ) {
+        d->myRotated = true;
+        d->myIterateIndex = -1;
 
         // if the typed text is the same as the first item, skip the first
-        if ( count() > 0 && myText == itemText(0) )
-            myIterateIndex = 0;
+        if ( count() > 0 && d->myText == itemText(0) )
+            d->myIterateIndex = 0;
 
-        setEditText( myText );
+        setEditText( d->myText );
     }
     else
-        setEditText( itemText( myIterateIndex ));
+        setEditText( itemText( d->myIterateIndex ));
 }
 
 void KHistoryCombo::rotateDown()
 {
     // save the current text in the lineedit
-    if ( myIterateIndex == -1 )
-        myText = currentText();
+    if ( d->myIterateIndex == -1 )
+        d->myText = currentText();
 
-    --myIterateIndex;
+    --d->myIterateIndex;
 
     const QString currText = currentText();
     // skip duplicates/empty items
-    while ( myIterateIndex >= 0 &&
-            (currText == itemText( myIterateIndex ) ||
-             itemText( myIterateIndex ).isEmpty()) )
-        --myIterateIndex;
+    while ( d->myIterateIndex >= 0 &&
+            (currText == itemText( d->myIterateIndex ) ||
+             itemText( d->myIterateIndex ).isEmpty()) )
+        --d->myIterateIndex;
 
 
-    if ( myIterateIndex < 0 ) {
-        if ( myRotated && myIterateIndex == -2 ) {
-            myRotated = false;
-            myIterateIndex = count() - 1;
-            setEditText( itemText(myIterateIndex) );
+    if ( d->myIterateIndex < 0 ) {
+        if ( d->myRotated && d->myIterateIndex == -2 ) {
+            d->myRotated = false;
+            d->myIterateIndex = count() - 1;
+            setEditText( itemText(d->myIterateIndex) );
         }
         else { // bottom of history
-            if ( myIterateIndex == -2 ) {
+            if ( d->myIterateIndex == -2 ) {
                 KNotification::event( KNotification::Notification , 
                                       i18n("No further item in the history."),
                                        QPixmap() , this);
             }
 
-            myIterateIndex = -1;
-            if ( currentText() != myText )
-                setEditText( myText );
+            d->myIterateIndex = -1;
+            if ( currentText() != d->myText )
+                setEditText( d->myText );
         }
     }
     else
-        setEditText( itemText( myIterateIndex ));
+        setEditText( itemText( d->myIterateIndex ));
 
 }
 
@@ -654,18 +680,18 @@ void KHistoryCombo::wheelEvent( QWheelEvent *ev )
 
 void KHistoryCombo::slotReset()
 {
-    myIterateIndex = -1;
-    myRotated = false;
+    d->myIterateIndex = -1;
+    d->myRotated = false;
 }
 
 
 void KHistoryCombo::setPixmapProvider( KPixmapProvider *prov )
 {
-    if ( myPixProvider == prov )
+    if ( d->myPixProvider == prov )
         return;
 
-    delete myPixProvider;
-    myPixProvider = prov;
+    delete d->myPixProvider;
+    d->myPixProvider = prov;
 
     // re-insert all the items with/without pixmap
     // I would prefer to use changeItem(), but that doesn't honor the pixmap
@@ -685,8 +711,8 @@ void KHistoryCombo::insertItems( const QStringList& items )
     while ( it != itEnd ) {
         const QString item = *it;
         if ( !item.isEmpty() ) { // only insert non-empty items
-            if ( myPixProvider )
-                addItem( myPixProvider->pixmapFor(item, K3Icon::SizeSmall),
+            if ( d->myPixProvider )
+                addItem( d->myPixProvider->pixmapFor(item, K3Icon::SizeSmall),
                             item );
             else
                 addItem( item );
@@ -709,6 +735,16 @@ void KHistoryCombo::slotSimulateActivated( const QString& text )
     */
     if (insertPolicy() == NoInsert && findText(text) == -1)
         emit activated(text);
+}
+
+KPixmapProvider *KHistoryCombo::pixmapProvider() const
+{
+  return d->myPixProvider;
+}
+
+void KHistoryCombo::reset()
+{
+  slotReset();
 }
 
 #include "kcombobox.moc"

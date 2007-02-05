@@ -660,13 +660,13 @@ public:
      * @see setPixmapProvider
      * @see KPixmapProvider
      */
-    KPixmapProvider * pixmapProvider() const { return myPixProvider; }
+    KPixmapProvider * pixmapProvider() const;
 
     /**
      * Resets the current position of the up/down history. Call this
      * when you manually call setCurrentItem() or clearEdit().
      */
-    void reset() { slotReset(); }
+    void reset(); 
 
 public Q_SLOTS:
     /**
@@ -754,26 +754,12 @@ private:
     void rotateUp();
     void rotateDown();
 
-    /**
-     * The current position (index) in the combobox, used for Up and Down
-     */
-    int myIterateIndex;
-
-    /**
-     * The text typed before Up or Down was pressed.
-     */
-    QString myText;
-
-    /**
-     * Indicates that the user at least once rotated Up through the entire list
-     * Needed to allow going back after rotation.
-     */
-    bool myRotated;
-    KPixmapProvider *myPixProvider;
-
 private:
     class KHistoryComboPrivate;
+    friend class KHistoryComboPrivate;
     KHistoryComboPrivate* const d;
+    
+    Q_DISABLE_COPY(KHistoryCombo)
 };
 
 
