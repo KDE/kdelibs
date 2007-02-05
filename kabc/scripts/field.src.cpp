@@ -23,6 +23,7 @@
 #include <kglobal.h>
 
 #include "field.h"
+#include "address.h"
 
 using namespace KABC;
 
@@ -216,10 +217,138 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
 {
   switch ( mImpl->fieldId() ) {
     --CASESETVALUE--
+    case FieldImpl::MobilePhone:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Cell );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::HomeFax:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::BusinessFax:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::CarPhone:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Car );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::Isdn:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Isdn );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::Pager:
+      {
+        PhoneNumber number = a.phoneNumber( PhoneNumber::Pager );
+        number.setNumber( value );
+        a.insertPhoneNumber( number );
+        return true;
+      }
+    case FieldImpl::HomeAddressStreet:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setStreet( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::HomeAddressLocality:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setLocality( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::HomeAddressRegion:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setRegion( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::HomeAddressPostalCode:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setPostalCode( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::HomeAddressCountry:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setCountry( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::HomeAddressLabel:
+      {
+        KABC::Address address = a.address( Address::Home );
+        address.setLabel( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressStreet:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setStreet( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressLocality:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setLocality( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressRegion:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setRegion( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressPostalCode:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setPostalCode( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressCountry:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setCountry( value );
+        a.insertAddress( address );
+        return true;
+      }
+    case FieldImpl::BusinessAddressLabel:
+      {
+        KABC::Address address = a.address( Address::Work );
+        address.setLabel( value );
+        a.insertAddress( address );
+        return true;
+      }
     case FieldImpl::Birthday:
       a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
+      return true;
     case FieldImpl::CustomField:
       a.insertCustom( mImpl->app(), mImpl->key(), value );
+      return true;
     default:
       return false;
   }
