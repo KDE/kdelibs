@@ -129,7 +129,7 @@ void KColorButton::paintEvent( QPaintEvent* )
 
   //First, we need to draw the bevel.
   QStyleOptionButton butOpt;
-  initStyleOption(&butOpt);
+  d->initStyleOption(&butOpt);
   style()->drawControl( QStyle::CE_PushButtonBevel, &butOpt, &painter, this );
 
   //OK, now we can muck around with drawing out pretty little color box
