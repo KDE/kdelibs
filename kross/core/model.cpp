@@ -222,9 +222,10 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
                     return false;
                 return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
             } break;
-            case ActionCollectionModelItem::CollectionType: // fall through
+            case ActionCollectionModelItem::CollectionType: {
                 if( ! item->collection->isEnabled() )
                     return false;
+            } break;
             default: break;
     }
     return true;
