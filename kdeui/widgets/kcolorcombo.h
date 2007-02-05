@@ -81,12 +81,13 @@ private Q_SLOTS:
 
 private:
 	void addColors();
-	QColor customColor;
-	QColor internalcolor;
 
 private:
 	class KColorComboPrivate;
+        friend class KColorComboPrivate;
 	KColorComboPrivate *d;
+        
+        Q_DISABLE_COPY(KColorCombo)
 };
 
 #endif	// KCOLORCOMBO_H

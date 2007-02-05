@@ -103,19 +103,24 @@ class KColorCombo::KColorComboPrivate
 {
 	protected:
 	friend class KColorCombo;
-	KColorComboPrivate(){}
+  
+	KColorComboPrivate(KColorCombo *q){}
 	~KColorComboPrivate(){}
+        
+        KColorCombo *q;
+	QColor customColor;
+	QColor internalcolor;
 	bool showEmptyList;
 };
 
 KColorCombo::KColorCombo( QWidget *parent )
 	: QComboBox( parent )
 {
-	d=new KColorComboPrivate();
+	d=new KColorComboPrivate(this);
 	d->showEmptyList=false;
 
-	customColor.setRgb( 255, 255, 255 );
-	internalcolor.setRgb( 255, 255, 255 );
+	d->customColor.setRgb( 255, 255, 255 );
+	d->internalcolor.setRgb( 255, 255, 255 );
 
 	createStandardPalette();
 
@@ -135,7 +140,7 @@ KColorCombo::~KColorCombo()
  */
 void KColorCombo::setColor( const QColor &col )
 {
-	internalcolor = col;
+	d->internalcolor = col;
 	d->showEmptyList=false;
 	addColors();
 }
@@ -145,7 +150,7 @@ void KColorCombo::setColor( const QColor &col )
    Returns the currently selected color
  */
 QColor KColorCombo::color() const {
-  return internalcolor;
+  return d->internalcolor;
 }
 
 void KColorCombo::resizeEvent( QResizeEvent *re )
@@ -168,20 +173,20 @@ void KColorCombo::slotActivated( int index )
 {
 	if ( index == 0 )
 	{
-	    if ( KColorDialog::getColor( customColor, this ) == QDialog::Accepted )
+	    if ( KColorDialog::getColor( d->customColor, this ) == QDialog::Accepted )
 		{
 			QPainter painter;
 			QPen pen;
 			QRect rect( 0, 0, width(), QFontMetrics(painter.font()).height()+4);
 			QPixmap pixmap( rect.width(), rect.height() );
 
-			if ( qGray( customColor.rgb() ) < 128 )
+			if ( qGray( d->customColor.rgb() ) < 128 )
 				pen.setColor( Qt::white );
 			else
 				pen.setColor( Qt::black );
 
 			painter.begin( &pixmap );
-			QBrush brush( customColor );
+			QBrush brush( d->customColor );
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
 			painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
@@ -191,22 +196,22 @@ void KColorCombo::slotActivated( int index )
 			pixmap.detach();
 		}
 
-		internalcolor = customColor;
+		d->internalcolor = d->customColor;
 	}
 	else
-		internalcolor = standardPalette[ index - 1 ];
+		d->internalcolor = standardPalette[ index - 1 ];
 
-	emit activated( internalcolor );
+	emit activated( d->internalcolor );
 }
 
 void KColorCombo::slotHighlighted( int index )
 {
 	if ( index == 0 )
-		internalcolor = customColor;
+		d->internalcolor = d->customColor;
 	else
-		internalcolor = standardPalette[ index - 1 ];
+		d->internalcolor = standardPalette[ index - 1 ];
 
-	emit highlighted( internalcolor );
+	emit highlighted( d->internalcolor );
 }
 
 void KColorCombo::addColors()
@@ -223,18 +228,18 @@ void KColorCombo::addColors()
 	createStandardPalette();
 
 	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
-		if ( standardPalette[i] == internalcolor ) break;
+		if ( standardPalette[i] == d->internalcolor ) break;
 
 	if ( i == STANDARD_PAL_SIZE )
-		customColor = internalcolor;
+		d->customColor = d->internalcolor;
 
-	if ( qGray( customColor.rgb() ) < 128 )
+	if ( qGray( d->customColor.rgb() ) < 128 )
 		pen.setColor( Qt::white );
 	else
 		pen.setColor( Qt::black );
 
 	painter.begin( &pixmap );
-	QBrush brush( customColor );
+	QBrush brush( d->customColor );
 	painter.fillRect( rect, brush );
 	painter.setPen( pen );
 	painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
@@ -253,7 +258,7 @@ void KColorCombo::addColors()
 		addItem( QIcon(pixmap), QString() );
 		pixmap.detach();
 
-		if ( standardPalette[i] == internalcolor )
+		if ( standardPalette[i] == d->internalcolor )
 			setCurrentIndex( i + 1 );
 	}
 }
