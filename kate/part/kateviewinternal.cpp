@@ -2674,6 +2674,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
 
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
+          updateCursor( selEndCached );
 
           e->accept ();
           return;
@@ -2683,6 +2684,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
         {
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
+          updateCursor( selEndCached );
         }
         else
           selStartCached.setLine( -1 ); // invalidate
@@ -2725,6 +2727,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
         updateSelection( cursor, true );
+        updateCursor( selEndCached );
       }
       else
       {
@@ -2737,6 +2740,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
+        updateCursor( selEndCached );
 
         // if we didn't actually select anything, restore the selection mode
         // -- see bug #131369 (kling)
@@ -2753,6 +2757,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
 
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
+        updateCursor( selEndCached );
       }
 
       possibleTripleClick = true;
@@ -2785,6 +2790,14 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
         QApplication::clipboard()->setSelectionMode( true );
         m_view->copy();
         QApplication::clipboard()->setSelectionMode( false );
+        // Set cursor to edge of selection... which edge depends on what
+        // "direction" the selection was made in
+        if ( m_view->selectStart.line() < selStartCached.line() ||
+            ( m_view->selectStart.line() == selStartCached.line() &&
+              m_view->selectStart.col() < selStartCached.col() ) )
+          updateCursor( m_view->selectStart );
+        else
+          updateCursor( m_view->selectEnd );
 
         m_selChangedByUser = false;
       }
