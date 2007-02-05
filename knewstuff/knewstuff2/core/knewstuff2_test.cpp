@@ -1,6 +1,7 @@
 #include "knewstuff2_test.h"
 
 KNewStuff2Test::KNewStuff2Test()
+: QObject()
 {
 }
 
@@ -15,12 +16,11 @@ void KNewStuff2Test::providerTest()
 	KNS::ProviderHandler ph(p);
 	QDomElement pxml = ph.providerXML();
 
-	kDebug() << "-- test result: " << pxml.text() << endl;
+	kDebug() << "-- provider test result: " << pxml.text() << endl;
 
 	if(pxml.isNull())
 	{
-		kDebug() << "-- quitting now..." << endl;
-		kapp->quit();
+		quitTest();
 	}
 }
 
@@ -31,7 +31,7 @@ void KNewStuff2Test::engineTest()
 	KNS::Engine *engine = new KNS::Engine();
 	bool ret = engine->init("knewstuff2_test.knsrc");
 
-	kDebug() << "-- test result: " << ret << endl;
+	kDebug() << "-- engine test result: " << ret << endl;
 
 	if(ret)
 	{
@@ -45,9 +45,7 @@ void KNewStuff2Test::engineTest()
 	else
 	{
 		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
-
-		kDebug() << "-- quitting now..." << endl;
-		kapp->quit();
+		quitTest();
 	}
 }
 
@@ -60,7 +58,12 @@ void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
 void KNewStuff2Test::slotProvidersFailed()
 {
 	kDebug() << "SLOT: slotProvidersFailed" << endl;
-	kDebug() << " ... aborting" << endl;
+	quitTest();
+}
+
+void KNewStuff2Test::quitTest()
+{
+	kDebug() << "-- quitting now..." << endl;
 	deleteLater();
 	kapp->quit();
 }

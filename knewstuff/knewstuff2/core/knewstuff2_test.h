@@ -21,6 +21,8 @@ public:
 public slots:
 	void slotProvidersLoaded(KNS::Provider::List *list);
 	void slotProvidersFailed();
+private:
+	void quitTest();
 };
 
 #endif
