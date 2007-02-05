@@ -900,14 +900,15 @@ char *gai_strerror(int errorcode)
     I18N_NOOP("'ai_socktype' not supported")"\0"	// EAI_SOCKTYPE
     I18N_NOOP("system error")"\0"			// EAI_SYSTEM
     "\0"
-  }
+  };
+
   static const int messages_indices[] =
   {
       0,    9,   51,   88,  117,  160,  186,  212,
       248,  274,  313,  341,    0
   };
 
-  Q_ASSERT(sizeof(messages_indices)/sizeof(messages_indices[0]) >= EAI_SYSTEM)
+  Q_ASSERT(sizeof(messages_indices)/sizeof(messages_indices[0]) >= EAI_SYSTEM);
   if (errorcode > EAI_SYSTEM || errorcode < 0)
     return NULL;
 
