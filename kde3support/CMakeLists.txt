@@ -26,6 +26,8 @@ set(kde3support_LIB_SRCS
   kdecore/k3tempfile.cpp
   kdecore/k3mimesourcefactory.cpp
   #kdeui/qxembed.cpp
+  kdeui/k3aboutapplication.cpp
+  kdeui/k3aboutdialog.cpp
   kdeui/k3activelabel.cpp
   kdeui/k3dockwidget.cpp
   kdeui/k3dockwidget_private.cpp
@@ -67,6 +69,8 @@ install( FILES
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
   kdecore/k3mimesourcefactory.h
+  kdeui/k3aboutapplication.h
+  kdeui/k3aboutdialog.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
   kdeui/k3popupmenu.h

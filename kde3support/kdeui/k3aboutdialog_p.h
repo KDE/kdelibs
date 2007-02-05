@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef KABOUTDIALOG_P_H
-#define KABOUTDIALOG_P_H
+#ifndef K3ABOUTDIALOG_P_H
+#define K3ABOUTDIALOG_P_H
 
 #include <qwidget.h>
 
@@ -29,14 +29,14 @@ class QLabel;
 class QFrame;
 class QTabWidget;
 class QVBoxLayout;
-class KAboutContainer;
-class KAboutContainerBasePrivate;
+class K3AboutContainer;
+class K3AboutContainerBasePrivate;
 
 /**
- * Used internally by KAboutDialog
+ * Used internally by K3AboutDialog
  * @internal
  */
-class KAboutContainerBase : public QWidget
+class K3AboutContainerBase : public QWidget
 {
   Q_OBJECT
 
@@ -56,7 +56,7 @@ class KAboutContainerBase : public QWidget
     };
 
   public:
-    KAboutContainerBase( int layoutType, QWidget *parent = 0 );
+    K3AboutContainerBase( int layoutType, QWidget *parent = 0 );
     QSize sizeHint( void ) const;
 
     void setTitle( const QString &title );
@@ -72,14 +72,14 @@ class KAboutContainerBase : public QWidget
 			 bool richText=false, int numLines=10 );
     QFrame *addLicensePage( const QString &title, const QString &text,
 			 int numLines=10 );
-    KAboutContainer *addContainerPage( const QString &title,
+    K3AboutContainer *addContainerPage( const QString &title,
       Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
-    KAboutContainer *addScrolledContainerPage( const QString &title,
+    K3AboutContainer *addScrolledContainerPage( const QString &title,
       Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
     QFrame *addEmptyPage( const QString &title );
 
-    KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
+    K3AboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
   protected:
     void fontChange( const QFont &oldFont );
@@ -95,7 +95,7 @@ class KAboutContainerBase : public QWidget
     QTabWidget *mPageTab;
     QFrame *mPlainSpace;
 
-    KAboutContainerBasePrivate* const d;
+    K3AboutContainerBasePrivate* const d;
 };
 
 #endif

@@ -27,8 +27,8 @@
  */
 
 
-#ifndef KABOUTDIALOG_H
-#define KABOUTDIALOG_H
+#ifndef K3ABOUTDIALOG_H
+#define K3ABOUTDIALOG_H
 
 #include <QtGui/QFrame>
 #include <kdialog.h>
@@ -39,23 +39,23 @@ class QLabel;
 class QVBoxLayout;
 class QTabWidget;
 class QLabel;
-class KAboutContainer;
-class KAboutContainerBase;
+class K3AboutContainer;
+class K3AboutContainerBase;
 
 /**
- *  KAboutContainer can be used to make a application specific AboutDialog.
+ *  K3AboutContainer can be used to make a application specific AboutDialog.
  */
-class KDEUI_EXPORT KAboutContainer : public QFrame
+class KDE3SUPPORT_EXPORT K3AboutContainer : public QFrame
 {
   Q_OBJECT
 
   public:
-    KAboutContainer( QWidget *parent = 0,
+    K3AboutContainer( QWidget *parent = 0,
                      int margin = 0, int spacing = 0,
                      Qt::Alignment childAlignment = Qt::AlignCenter,
                      Qt::Alignment innerAlignment = Qt::AlignCenter );
 
-    ~KAboutContainer();
+    ~K3AboutContainer();
 
     void addWidget( QWidget *widget );
 
@@ -78,15 +78,15 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
 };
 
 /**
- * Used internally by KAboutWidget
+ * Used internally by K3AboutWidget
  * @internal
  */
-class KDEUI_EXPORT KAboutContributor : public QFrame
+class KDE3SUPPORT_EXPORT K3AboutContributor : public QFrame
 {
   Q_OBJECT
 
   public:
-    KAboutContributor( QWidget *parent = 0,
+    K3AboutContributor( QWidget *parent = 0,
                        const QString &username = QString(),
                        const QString &email = QString(),
                        const QString &url = QString(),
@@ -94,7 +94,7 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
                        bool showHeader = false, bool showFrame = true,
                        bool showBold = false );
 
-    ~KAboutContributor();
+    ~K3AboutContributor();
 
     void setName( const QString &text, const QString &header = QString(),
                   bool update = true );
@@ -126,11 +126,11 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 };
 
 /**
- * KAboutWidget is the main widget for KAboutDialog.
+ * K3AboutWidget is the main widget for K3AboutDialog.
  *
  * It has a minimum size set.
  */
-class KDEUI_EXPORT KAboutWidget : public QWidget
+class KDE3SUPPORT_EXPORT K3AboutWidget : public QWidget
 {
   Q_OBJECT
 
@@ -139,7 +139,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
     /**
      * Creates a new about widget.
      */
-    KAboutWidget( QWidget* parent=0 );
+    K3AboutWidget( QWidget* parent=0 );
 
     /**
      * Adjust the minimum size (after setting the properties of the image and
@@ -201,12 +201,12 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
     /**
      * The application developer.
      */
-    KAboutContributor *author;
+    K3AboutContributor *author;
 
     /**
      * The application maintainer.
      */
-    KAboutContributor *maintainer;
+    K3AboutContributor *maintainer;
 
     /**
      * Show the maintainer?
@@ -216,7 +216,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
     /**
      * A set of people who contributed to the application.
      */
-    QList<KAboutContributor *> contributors;
+    QList<K3AboutContributor *> contributors;
 
   private:
     class Private;
@@ -229,7 +229,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
  * As a KDialog it uses your application wide settings
  * for KDialog
  * objects (base frame tiles, main frame tiles etc).
- * To use it, simply create a KAboutDialog object, set all (or some) of its
+ * To use it, simply create a K3AboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
  * until you need some cool features that are unsupported and you have
  * contacted me to add them.
@@ -254,7 +254,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espensa@online.no)
  * @see KDialog
  */
-class KDEUI_EXPORT KAboutDialog : public KDialog
+class KDE3SUPPORT_EXPORT K3AboutDialog : public KDialog
 {
   Q_OBJECT
 
@@ -286,7 +286,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      * addContributor(), or setVersion().
      * The dialog will be laid out automatically.
      */
-    KAboutDialog( QWidget *parent=0 );
+    K3AboutDialog( QWidget *parent=0 );
 
     /**
      * The extended constructor. (Constructor II).
@@ -301,7 +301,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      *        by i18n("About").
      * @param parent Parent of the dialog.
      */
-    KAboutDialog( int dialogLayout, const QString &caption, QWidget *parent=0 );
+    K3AboutDialog( int dialogLayout, const QString &caption, QWidget *parent=0 );
 
     /**
      * Adjusts the dialog.
@@ -357,7 +357,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      * (Constructor II only)
      * Define the program logo to be shown in the dialog.  Use this to override the
      * default program logo. For example, use this function if the
-     * KAboutDialog is for a panel applet and you want to override the
+     * K3AboutDialog is for a panel applet and you want to override the
      * appletproxy logo with your own pixmap.
      *
      * @param pixmap The logo pixmap.
@@ -437,7 +437,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      *        respect to each other.
      * @return The new container.
      */
-    KAboutContainer *addContainerPage( const QString &title,
+    K3AboutContainer *addContainerPage( const QString &title,
                                        Qt::Alignment childAlignment = Qt::AlignCenter,
                                        Qt::Alignment innerAlignment = Qt::AlignCenter );
 
@@ -453,7 +453,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      *        respect to each other.
      * @return The new container.
      */
-    KAboutContainer *addScrolledContainerPage( const QString &title,
+    K3AboutContainer *addScrolledContainerPage( const QString &title,
                                                Qt::Alignment childAlignment = Qt::AlignCenter,
                                                Qt::Alignment innerAlignment = Qt::AlignCenter );
 
@@ -467,7 +467,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      *        respect to each other.
      * @return The new container.
      */
-    KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
+    K3AboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
     /**
      * (Constructor II only)
@@ -523,16 +523,16 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
     /**
      * The main widget (Constructor I)
      */
-    KAboutWidget *mAbout;
+    K3AboutWidget *mAbout;
 
     /**
      * The main widget (Constructor II)
      */
-    KAboutContainerBase *mContainerBase;
+    K3AboutContainerBase *mContainerBase;
 
   private:
     class Private;
     Private* const d;
 };
 
-#endif // defined KABOUTDIALOG_H
+#endif // defined K3ABOUTDIALOG_H

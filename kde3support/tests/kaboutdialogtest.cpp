@@ -10,17 +10,17 @@
 #include <QImage>
 #include <QPixmap>
 
-#include "kaboutdialog.h"
+#include "k3aboutdialog.h"
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kaboutapplication.h>
+#include <k3aboutapplication.h>
 #include <kapplication.h>
 #include <klocale.h>
 
 int main(int argc, char** argv)
 {
-  KAboutData aboutData("KAboutDialogTest", "KAboutDialogTest", "version", "KAboutDialog Test, Enjoy!", KAboutData::License_GPL, I18N_NOOP("(c) 1997-2006, The KDE Developers"));
+  KAboutData aboutData("K3AboutDialogTest", "K3AboutDialogTest", "version", "K3AboutDialog Test, Enjoy!", KAboutData::License_GPL, I18N_NOOP("(c) 1997-2006, The KDE Developers"));
   aboutData.addAuthor("Bob Dobbs", I18N_NOOP("Current Maintainer"), "bob@subgenius.com");
   aboutData.addAuthor("Gregory S. Hayes", I18N_NOOP("Developer"), "syncomm@gmail.com");
   aboutData.addAuthor("Random Authors from KFind");
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
   QImage logo;
   QImage bg;
   QPixmap pix;
-  KAboutDialog about;
+  K3AboutDialog about;
   // -----
   // kimgioRegister();
   if(logo.load("RayTracedGear.png"))
@@ -71,8 +71,8 @@ int main(int argc, char** argv)
 //      ("Cl&ose", "Close this dialog.",
 //       "<b>Close</b> the dialog<br>"
 //  	  "<i>(there are no settings to save).</i>");
-  about.setCaption("KAboutDialog example");
-  about.setVersion("KAboutDialog, Draft Study");
+  about.setCaption("K3AboutDialog example");
+  about.setVersion("K3AboutDialog, Draft Study");
   about.setHelp("kdehelp/intro.html", "intro");
   // ----- set the application author:
   about.setAuthor
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
   about.adjust();
   about.exec();
   // -----
-  KAboutApplication aboutApp(&aboutData, app.activeWindow(), true);
+  K3AboutApplication aboutApp(&aboutData, app.activeWindow(), true);
   aboutApp.exec();
   return 0;
 }

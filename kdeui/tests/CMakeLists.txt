@@ -12,17 +12,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 ########### next target ###############
 
-set(kaboutdialogtest_SRCS kaboutdialogtest.cpp)
-
-kde4_automoc(${kaboutdialogtest_SRCS})
-
-kde4_add_executable(kaboutdialogtest NOGUI RUN_UNINSTALLED ${kaboutdialogtest_SRCS})
-
-target_link_libraries(kaboutdialogtest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(kblendtest_SRCS kblendtest.cpp)
 
 kde4_automoc(${kblendtest_SRCS})

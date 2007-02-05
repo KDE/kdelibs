@@ -20,8 +20,8 @@
  *
  */
 
-#include "kaboutdialog.h"
-#include "kaboutdialog_p.h"
+#include "k3aboutdialog.h"
+#include "k3aboutdialog_p.h"
 #include <kdeversion.h>
 #include <qclipboard.h>
 #include <qimage.h>
@@ -47,7 +47,7 @@
 #include <ktextedit.h>
 
 #ifndef Q_MOC_RUN
-template class QList<KAboutContributor *>;
+template class QList<K3AboutContributor *>;
 #endif
 
 #define WORKTEXT_IDENTATION 16
@@ -55,19 +55,19 @@ template class QList<KAboutContributor *>;
 
 // ##############################################################
 // MOC OUTPUT FILES:
-#include "kaboutdialog.moc"
-#include "kaboutdialog_p.moc"
+#include "k3aboutdialog.moc"
+#include "k3aboutdialog_p.moc"
 // ##############################################################
 
-class KAboutContributor::Private
+class K3AboutContributor::Private
 {
   public:
-    Private(KAboutContributor *_parent)
+    Private(K3AboutContributor *_parent)
       : parent(_parent)
     {
     }
 
-    KAboutContributor *parent;
+    K3AboutContributor *parent;
     QLabel *label[4];
     QLabel *text[4];
     bool showHeader;
@@ -76,7 +76,7 @@ class KAboutContributor::Private
     void updateLayout();
 };
 
-void KAboutContributor::Private::updateLayout()
+void K3AboutContributor::Private::updateLayout()
 {
   delete parent->layout();
 
@@ -161,7 +161,7 @@ void KAboutContributor::Private::updateLayout()
   parent->setMinimumSize(parent->sizeHint());
 }
 
-KAboutContributor::KAboutContributor(QWidget *_parent,
+K3AboutContributor::K3AboutContributor(QWidget *_parent,
                                       const QString &_name,const QString &_email,
                                       const QString &_url, const QString &_work,
                                       bool showHeader, bool showFrame,
@@ -193,12 +193,12 @@ KAboutContributor::KAboutContributor(QWidget *_parent,
   d->updateLayout();
 }
 
-KAboutContributor::~KAboutContributor()
+K3AboutContributor::~K3AboutContributor()
 {
   delete d;
 }
 
-void KAboutContributor::setName(const QString &_text, const QString &_header,
+void K3AboutContributor::setName(const QString &_text, const QString &_header,
                                  bool _update)
 {
   d->label[0]->setText(_header);
@@ -207,7 +207,7 @@ void KAboutContributor::setName(const QString &_text, const QString &_header,
 }
 
 
-void KAboutContributor::setEmail(const QString &_text, const QString &_header,
+void K3AboutContributor::setEmail(const QString &_text, const QString &_header,
                                   bool _update)
 {
   if (_text.isEmpty())
@@ -217,7 +217,7 @@ void KAboutContributor::setEmail(const QString &_text, const QString &_header,
   if (_update) { d->updateLayout(); }
 }
 
-void KAboutContributor::setUrl(const QString &_text, const QString &_header,
+void K3AboutContributor::setUrl(const QString &_text, const QString &_header,
                                 bool _update)
 {
     if (_text.isEmpty())
@@ -227,7 +227,7 @@ void KAboutContributor::setUrl(const QString &_text, const QString &_header,
   if (_update) { d->updateLayout(); }
 }
 
-void KAboutContributor::setWork(const QString &_text, const QString &_header,
+void K3AboutContributor::setWork(const QString &_text, const QString &_header,
                                  bool _update)
 {
   d->label[3]->setText(_header);
@@ -235,27 +235,27 @@ void KAboutContributor::setWork(const QString &_text, const QString &_header,
   if (_update) { d->updateLayout(); }
 }
 
-QString KAboutContributor::name() const
+QString K3AboutContributor::name() const
 {
   return d->text[0]->text();
 }
 
-QString KAboutContributor::email() const
+QString K3AboutContributor::email() const
 {
   return d->text[1]->text();
 }
 
-QString KAboutContributor::url() const
+QString K3AboutContributor::url() const
 {
   return d->text[2]->text();
 }
 
-QString KAboutContributor::work() const
+QString K3AboutContributor::work() const
 {
   return d->text[3]->text();
 }
 
-void KAboutContributor::fontChange(const QFont &/*oldFont*/)
+void K3AboutContributor::fontChange(const QFont &/*oldFont*/)
 {
   if (d->showBold)
   {
@@ -266,15 +266,15 @@ void KAboutContributor::fontChange(const QFont &/*oldFont*/)
   update();
 }
 
-QSize KAboutContributor::sizeHint(void) const
+QSize K3AboutContributor::sizeHint(void) const
 {
   return minimumSizeHint();
 }
 
 //
-// Internal widget for the KAboutDialog class.
+// Internal widget for the K3AboutDialog class.
 //
-KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
+K3AboutContainerBase::K3AboutContainerBase(int layoutType, QWidget *_parent)
   : QWidget(_parent),
     mImageLabel(0), mTitleLabel(0), mIconLabel(0),mVersionLabel(0),
     mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0),d(0)
@@ -284,16 +284,16 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
   mTopLayout->setSpacing(KDialog::spacingHint());
   if (!mTopLayout) { return; }
 
-  if (layoutType & KAboutDialog::ImageOnly)
+  if (layoutType & K3AboutDialog::ImageOnly)
   {
-    layoutType &= ~(KAboutDialog::ImageLeft|KAboutDialog::ImageRight|KAboutDialog::Tabbed|KAboutDialog::Plain);
+    layoutType &= ~(K3AboutDialog::ImageLeft|K3AboutDialog::ImageRight|K3AboutDialog::Tabbed|K3AboutDialog::Plain);
   }
-  if (layoutType & KAboutDialog::ImageLeft)
+  if (layoutType & K3AboutDialog::ImageLeft)
   {
-    layoutType &= ~KAboutDialog::ImageRight;
+    layoutType &= ~K3AboutDialog::ImageRight;
   }
 
-  if (layoutType & KAboutDialog::Title)
+  if (layoutType & K3AboutDialog::Title)
   {
     mTitleLabel = new QLabel(this);
     mTitleLabel->setObjectName("title");
@@ -302,7 +302,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
     mTopLayout->addSpacing(KDialog::spacingHint());
   }
 
-  if (layoutType & KAboutDialog::Product)
+  if (layoutType & K3AboutDialog::Product)
   {
       QFrame* const productArea = new  QFrame(this);
       productArea->setFrameStyle( QFrame::StyledPanel );
@@ -345,7 +345,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
   if (!hbox) { return; }
   mTopLayout->addLayout(hbox, 10);
 
-  if (layoutType & KAboutDialog::ImageLeft)
+  if (layoutType & K3AboutDialog::ImageLeft)
   {
     QVBoxLayout* vbox = new QVBoxLayout();
     hbox->addLayout(vbox);
@@ -365,14 +365,14 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
     vbox->activate();
   }
 
-  if (layoutType & KAboutDialog::Tabbed)
+  if (layoutType & K3AboutDialog::Tabbed)
   {
     mPageTab = new QTabWidget(this);
     if (!mPageTab) { return; }
     mPageTab->setUsesScrollButtons(false);
     hbox->addWidget(mPageTab, 10);
   }
-  else if (layoutType & KAboutDialog::ImageOnly)
+  else if (layoutType & K3AboutDialog::ImageOnly)
   {
     mImageFrame = new QFrame(this);
     mImageFrame->setAutoFillBackground(true);
@@ -398,7 +398,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
     hbox->addWidget(mPlainSpace, 10);
   }
 
-  if (layoutType & KAboutDialog::ImageRight)
+  if (layoutType & K3AboutDialog::ImageRight)
   {
     QVBoxLayout *vbox = new QVBoxLayout();
     hbox->addLayout(vbox);
@@ -421,12 +421,12 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
   fontChange(font());
 }
 
-QSize KAboutContainerBase::sizeHint() const
+QSize K3AboutContainerBase::sizeHint() const
 {
     return minimumSize().expandedTo(QSize(QWidget::sizeHint().width(), 0));
 }
 
-void KAboutContainerBase::fontChange(const QFont &/*oldFont*/)
+void K3AboutContainerBase::fontChange(const QFont &/*oldFont*/)
 {
   if (mTitleLabel)
   {
@@ -450,7 +450,7 @@ void KAboutContainerBase::fontChange(const QFont &/*oldFont*/)
   update();
 }
 
-QFrame *KAboutContainerBase::addTextPage(const QString &title,
+QFrame *K3AboutContainerBase::addTextPage(const QString &title,
 					  const QString &text,
 					  bool richText, int numLines)
 {
@@ -486,7 +486,7 @@ QFrame *KAboutContainerBase::addTextPage(const QString &title,
   return page;
 }
 
-QFrame *KAboutContainerBase::addLicensePage(const QString &title,
+QFrame *K3AboutContainerBase::addLicensePage(const QString &title,
 					  const QString &text, int numLines)
 {
   QFrame *const page = addEmptyPage(title);
@@ -511,7 +511,7 @@ QFrame *KAboutContainerBase::addLicensePage(const QString &title,
 }
 
 
-KAboutContainer *KAboutContainerBase::addContainerPage(const QString &title,
+K3AboutContainer *K3AboutContainerBase::addContainerPage(const QString &title,
 							Qt::Alignment childAlignment,
 							Qt::Alignment innerAlignment)
 {
@@ -521,7 +521,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage(const QString &title,
     return 0;
   }
 
-  KAboutContainer* const container = new KAboutContainer(0,
+  K3AboutContainer* const container = new K3AboutContainer(0,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
 						  innerAlignment);
   mPageTab->addTab(container, title);
@@ -529,7 +529,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage(const QString &title,
 }
 
 
-KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
+K3AboutContainer *K3AboutContainerBase::addScrolledContainerPage(
 				      const QString &title,
 				      Qt::Alignment childAlignment,
 				      Qt::Alignment innerAlignment)
@@ -549,7 +549,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
   scrollView->setFrameStyle(QFrame::Plain);
   vbox->addWidget(scrollView);
 
-  KAboutContainer* const container = new KAboutContainer(scrollView,
+  K3AboutContainer* const container = new K3AboutContainer(scrollView,
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
     innerAlignment);
   scrollView->setWidget(container);
@@ -557,7 +557,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 }
 
 
-QFrame *KAboutContainerBase::addEmptyPage(const QString &title)
+QFrame *K3AboutContainerBase::addEmptyPage(const QString &title)
 {
   if (!mPageTab)
   {
@@ -574,10 +574,10 @@ QFrame *KAboutContainerBase::addEmptyPage(const QString &title)
 }
 
 
-KAboutContainer *KAboutContainerBase::addContainer(Qt::Alignment childAlignment,
+K3AboutContainer *K3AboutContainerBase::addContainer(Qt::Alignment childAlignment,
 						    Qt::Alignment innerAlignment)
 {
-  KAboutContainer* const container = new KAboutContainer(this,
+  K3AboutContainer* const container = new K3AboutContainer(this,
     0, KDialog::spacingHint(), childAlignment, innerAlignment);
   container->setObjectName("container");
   mTopLayout->addWidget(container, 0, childAlignment);
@@ -586,7 +586,7 @@ KAboutContainer *KAboutContainerBase::addContainer(Qt::Alignment childAlignment,
 
 
 
-void KAboutContainerBase::setTitle(const QString &title)
+void K3AboutContainerBase::setTitle(const QString &title)
 {
   if (!mTitleLabel)
   {
@@ -597,7 +597,7 @@ void KAboutContainerBase::setTitle(const QString &title)
 }
 
 
-void KAboutContainerBase::setImage(const QString &fileName)
+void K3AboutContainerBase::setImage(const QString &fileName)
 {
   if (!mImageLabel)
   {
@@ -616,7 +616,7 @@ void KAboutContainerBase::setImage(const QString &fileName)
   mImageFrame->layout()->activate();
 }
 
-void KAboutContainerBase::setProgramLogo(const QString &fileName)
+void K3AboutContainerBase::setProgramLogo(const QString &fileName)
 {
   if (fileName.isNull())
   {
@@ -627,7 +627,7 @@ void KAboutContainerBase::setProgramLogo(const QString &fileName)
   setProgramLogo(logo);
 }
 
-void KAboutContainerBase::setProgramLogo(const QPixmap &pixmap)
+void K3AboutContainerBase::setProgramLogo(const QPixmap &pixmap)
 {
   if (!mIconLabel)
   {
@@ -640,7 +640,7 @@ void KAboutContainerBase::setProgramLogo(const QPixmap &pixmap)
   }
 }
 
-void KAboutContainerBase::setImageBackgroundColor(const QColor &color)
+void K3AboutContainerBase::setImageBackgroundColor(const QColor &color)
 {
   if (mImageFrame)
   {
@@ -651,7 +651,7 @@ void KAboutContainerBase::setImageBackgroundColor(const QColor &color)
 }
 
 
-void KAboutContainerBase::setImageFrame(bool state)
+void K3AboutContainerBase::setImageFrame(bool state)
 {
   if (mImageFrame)
   {
@@ -669,7 +669,7 @@ void KAboutContainerBase::setImageFrame(bool state)
 }
 
 
-void KAboutContainerBase::setProduct(const QString &appName,
+void K3AboutContainerBase::setProduct(const QString &appName,
 				      const QString &version,
 				      const QString &author,
 				      const QString &year)
@@ -701,14 +701,14 @@ void KAboutContainerBase::setProduct(const QString &appName,
   mIconLabel->parentWidget()->layout()->activate();
 }
 
-class KAboutContainer::Private
+class K3AboutContainer::Private
 {
   public:
     QVBoxLayout *vbox;
     Qt::Alignment alignment;
 };
 
-KAboutContainer::KAboutContainer(QWidget *parent,
+K3AboutContainer::K3AboutContainer(QWidget *parent,
                                   int margin, int spacing,
                                   Qt::Alignment childAlignment,
                                   Qt::Alignment innerAlignment)
@@ -755,12 +755,12 @@ KAboutContainer::KAboutContainer(QWidget *parent,
   gbox->activate();
 }
 
-KAboutContainer::~KAboutContainer()
+K3AboutContainer::~K3AboutContainer()
 {
   delete d;
 }
 
-QSize KAboutContainer::sizeHint(void) const
+QSize K3AboutContainer::sizeHint(void) const
 {
   //
   // The size is computed by adding the sizeHint().height() of all
@@ -814,12 +814,12 @@ QSize KAboutContainer::sizeHint(void) const
 }
 
 
-QSize KAboutContainer::minimumSizeHint(void) const
+QSize K3AboutContainer::minimumSizeHint(void) const
 {
   return sizeHint();
 }
 
-void KAboutContainer::addWidget(QWidget *widget)
+void K3AboutContainer::addWidget(QWidget *widget)
 {
   widget->setParent(this);
 
@@ -837,19 +837,19 @@ void KAboutContainer::addWidget(QWidget *widget)
 
 }
 
-void KAboutContainer::addPerson(const QString &_name, const QString &_email,
+void K3AboutContainer::addPerson(const QString &_name, const QString &_email,
 				 const QString &_url, const QString &_task,
 				 bool showHeader, bool showFrame,bool showBold)
 {
 
-  KAboutContributor* const cont = new KAboutContributor(this,
+  K3AboutContributor* const cont = new K3AboutContributor(this,
     _name, _email, _url, _task, showHeader, showFrame, showBold);
   cont->setObjectName("pers");
   addWidget(cont);
 }
 
 
-void KAboutContainer::addTitle(const QString &title, Qt::Alignment alignment,
+void K3AboutContainer::addTitle(const QString &title, Qt::Alignment alignment,
 				bool showFrame, bool showBold)
 {
 
@@ -869,7 +869,7 @@ void KAboutContainer::addTitle(const QString &title, Qt::Alignment alignment,
 }
 
 
-void KAboutContainer::addImage(const QString &fileName, Qt::Alignment alignment)
+void K3AboutContainer::addImage(const QString &fileName, Qt::Alignment alignment)
 {
   if (fileName.isNull())
   {
@@ -889,13 +889,13 @@ void KAboutContainer::addImage(const QString &fileName, Qt::Alignment alignment)
   addWidget(label);
 }
 
-KAboutWidget::KAboutWidget(QWidget *_parent)
+K3AboutWidget::K3AboutWidget(QWidget *_parent)
   : QWidget(_parent),
     version(new QLabel(this)),
     cont(new QLabel(this)),
     logo(new QLabel(this)),
-    author(new KAboutContributor(this)),
-    maintainer(new KAboutContributor(this)),
+    author(new K3AboutContributor(this)),
+    maintainer(new K3AboutContributor(this)),
     showMaintainer(false),
     d(0)
 {
@@ -906,7 +906,7 @@ KAboutWidget::KAboutWidget(QWidget *_parent)
 }
 
 
-void KAboutWidget::adjust()
+void K3AboutWidget::adjust()
 {
   int cx, cy, tempx;
   int maintWidth, maintHeight;
@@ -935,7 +935,7 @@ void KAboutWidget::adjust()
     {
       cx=qMax(cx, cont->sizeHint().width());
       cy+=cont->sizeHint().height()+Grid;
-      foreach(KAboutContributor* currEntry, contributors)
+      foreach(K3AboutContributor* currEntry, contributors)
 	{
 	  cy+=currEntry->sizeHint().height();
 	}
@@ -944,12 +944,12 @@ void KAboutWidget::adjust()
   setMinimumSize(cx, cy);
 }
 
-void KAboutWidget::setLogo(const QPixmap& i)
+void K3AboutWidget::setLogo(const QPixmap& i)
 {
   logo->setPixmap(i);
 }
 
-void KAboutWidget::setAuthor(const QString &_name, const QString &_email,
+void K3AboutWidget::setAuthor(const QString &_name, const QString &_email,
 			const QString &_url, const QString &_w)
 {
   author->setName(_name);
@@ -958,7 +958,7 @@ void KAboutWidget::setAuthor(const QString &_name, const QString &_email,
   author->setWork(_w);
 }
 
-void KAboutWidget::setMaintainer(const QString &_name, const QString &_email,
+void K3AboutWidget::setMaintainer(const QString &_name, const QString &_email,
 			    const QString &_url, const QString &_w)
 {
   maintainer->setName(_name);
@@ -968,10 +968,10 @@ void KAboutWidget::setMaintainer(const QString &_name, const QString &_email,
   showMaintainer=true;
 }
 
-void KAboutWidget::addContributor(const QString &_name, const QString &_email,
+void K3AboutWidget::addContributor(const QString &_name, const QString &_email,
 			     const QString &_url, const QString &_w)
 {
-  KAboutContributor* const c=new KAboutContributor(this);
+  K3AboutContributor* const c=new K3AboutContributor(this);
   // -----
   c->setName(_name);
   c->setEmail(_email);
@@ -980,12 +980,12 @@ void KAboutWidget::addContributor(const QString &_name, const QString &_email,
   contributors.append(c);
 }
 
-void KAboutWidget::setVersion(const QString &_name)
+void K3AboutWidget::setVersion(const QString &_name)
 {
   version->setText(_name);
 }
 
-void KAboutWidget::resizeEvent(QResizeEvent*)
+void K3AboutWidget::resizeEvent(QResizeEvent*)
 {
   int _x=0, _y, cx, tempx, tempy;
   // ----- set version label geometry:
@@ -1014,7 +1014,7 @@ void KAboutWidget::resizeEvent(QResizeEvent*)
     } else {
       cont->hide();
     }
-  foreach(KAboutContributor *currEntry, contributors)
+  foreach(K3AboutContributor *currEntry, contributors)
     {
       tempy=currEntry->sizeHint().height();
       // y+=Grid;
@@ -1029,16 +1029,16 @@ void KAboutWidget::resizeEvent(QResizeEvent*)
     }
 }
 
-KAboutDialog::KAboutDialog(QWidget *_parent)
+K3AboutDialog::K3AboutDialog(QWidget *_parent)
   : KDialog(_parent),
-    mAbout(new KAboutWidget(this)), mContainerBase(0), d(0)
+    mAbout(new K3AboutWidget(this)), mContainerBase(0), d(0)
 {
   setButtons(Ok);
   setModal(true);
   setMainWidget(mAbout);
 }
 
-KAboutDialog::KAboutDialog(int layoutType, const QString &_caption, QWidget *_parent)
+K3AboutDialog::K3AboutDialog(int layoutType, const QString &_caption, QWidget *_parent)
   : KDialog(_parent),
     mAbout(0), d(0)
 {
@@ -1046,12 +1046,12 @@ KAboutDialog::KAboutDialog(int layoutType, const QString &_caption, QWidget *_pa
   showButtonSeparator(false);
   setPlainCaption(i18n("About %1", _caption));
 
-  mContainerBase = new KAboutContainerBase(layoutType, this);
+  mContainerBase = new K3AboutContainerBase(layoutType, this);
   setMainWidget(mContainerBase);
 }
 
 
-void KAboutDialog::show(void)
+void K3AboutDialog::show(void)
 {
   adjust();
   if (mContainerBase) { mContainerBase->show(); }
@@ -1059,14 +1059,14 @@ void KAboutDialog::show(void)
 }
 
 
-void KAboutDialog::show(QWidget * /*centerParent*/)
+void K3AboutDialog::show(QWidget * /*centerParent*/)
 {
   adjust();
   if (mContainerBase) { mContainerBase->show(); }
   QDialog::show();
 }
 
-void KAboutDialog::adjust()
+void K3AboutDialog::adjust()
 {
   if (!mAbout)
     return;
@@ -1075,7 +1075,7 @@ void KAboutDialog::adjust()
   resize(sizeHint());
 }
 
-void KAboutDialog::setLogo(const QPixmap& i)
+void K3AboutDialog::setLogo(const QPixmap& i)
 {
   if (!mAbout)
     return;
@@ -1083,7 +1083,7 @@ void KAboutDialog::setLogo(const QPixmap& i)
   mAbout->setLogo(i);
 }
 
-void KAboutDialog::setMaintainer(const QString &_name, const QString &_email,
+void K3AboutDialog::setMaintainer(const QString &_name, const QString &_email,
 				 const QString &_url, const QString &_w)
 {
   if (!mAbout)
@@ -1092,7 +1092,7 @@ void KAboutDialog::setMaintainer(const QString &_name, const QString &_email,
   mAbout->setMaintainer(_name, _email, _url, _w);
 }
 
-void KAboutDialog::setAuthor(const QString &_name, const QString &_email,
+void K3AboutDialog::setAuthor(const QString &_name, const QString &_email,
 			     const QString &_url, const QString &_work)
 {
   if (!mAbout)
@@ -1101,7 +1101,7 @@ void KAboutDialog::setAuthor(const QString &_name, const QString &_email,
   mAbout->setAuthor(_name, _email, _url, _work);
 }
 
-void KAboutDialog::addContributor(const QString &_name, const QString &_email,
+void K3AboutDialog::addContributor(const QString &_name, const QString &_email,
 				  const QString &_url, const QString &_w)
 {
   if (!mAbout)
@@ -1110,7 +1110,7 @@ void KAboutDialog::addContributor(const QString &_name, const QString &_email,
   mAbout->addContributor(_name, _email, _url, _w);
 }
 
-void KAboutDialog::setVersion(const QString &_name)
+void K3AboutDialog::setVersion(const QString &_name)
 {
   if (!mAbout)
     return;
@@ -1118,21 +1118,21 @@ void KAboutDialog::setVersion(const QString &_name)
   mAbout->setVersion(_name);
 }
 
-QFrame *KAboutDialog::addTextPage(const QString &title, const QString &text,
+QFrame *K3AboutDialog::addTextPage(const QString &title, const QString &text,
 				   bool richText, int numLines)
 {
   if (!mContainerBase) { return 0; }
   return mContainerBase->addTextPage(title, text, richText, numLines);
 }
 
-QFrame *KAboutDialog::addLicensePage(const QString &title, const QString &text,
+QFrame *K3AboutDialog::addLicensePage(const QString &title, const QString &text,
 				   int numLines)
 {
   if (!mContainerBase) { return 0; }
   return mContainerBase->addLicensePage(title, text, numLines);
 }
 
-KAboutContainer *KAboutDialog::addContainerPage(const QString &title,
+K3AboutContainer *K3AboutDialog::addContainerPage(const QString &title,
 				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment)
 {
   if (!mContainerBase) { return 0; }
@@ -1140,7 +1140,7 @@ KAboutContainer *KAboutDialog::addContainerPage(const QString &title,
 					    innerAlignment);
 }
 
-KAboutContainer *KAboutDialog::addScrolledContainerPage(const QString &title,
+K3AboutContainer *K3AboutDialog::addScrolledContainerPage(const QString &title,
 				  Qt::Alignment childAlignment, Qt::Alignment innerAlignment)
 {
   if (!mContainerBase) { return 0; }
@@ -1148,14 +1148,14 @@ KAboutContainer *KAboutDialog::addScrolledContainerPage(const QString &title,
 						    innerAlignment);
 }
 
-QFrame *KAboutDialog::addPage(const QString &title)
+QFrame *K3AboutDialog::addPage(const QString &title)
 {
   if (!mContainerBase) { return 0; }
   return mContainerBase->addEmptyPage(title);
 }
 
 
-KAboutContainer *KAboutDialog::addContainer(Qt::Alignment childAlignment,
+K3AboutContainer *K3AboutDialog::addContainer(Qt::Alignment childAlignment,
 					     Qt::Alignment innerAlignment)
 {
   if (!mContainerBase) { return 0; }
@@ -1163,54 +1163,54 @@ KAboutContainer *KAboutDialog::addContainer(Qt::Alignment childAlignment,
 }
 
 
-void KAboutDialog::setTitle(const QString &title)
+void K3AboutDialog::setTitle(const QString &title)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setTitle(title);
 }
 
-void KAboutDialog::setImage(const QString &fileName)
+void K3AboutDialog::setImage(const QString &fileName)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setImage(fileName);
 }
 
-void KAboutDialog::setProgramLogo(const QString &fileName)
+void K3AboutDialog::setProgramLogo(const QString &fileName)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setProgramLogo(fileName);
 }
 
-void KAboutDialog::setProgramLogo(const QPixmap &pixmap)
+void K3AboutDialog::setProgramLogo(const QPixmap &pixmap)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setProgramLogo(pixmap);
 }
 
-void KAboutDialog::setImageBackgroundColor(const QColor &color)
+void K3AboutDialog::setImageBackgroundColor(const QColor &color)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setImageBackgroundColor(color);
 }
 
-void KAboutDialog::setImageFrame(bool state)
+void K3AboutDialog::setImageFrame(bool state)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setImageFrame(state);
 }
 
-void KAboutDialog::setProduct(const QString &appName, const QString &version,
+void K3AboutDialog::setProduct(const QString &appName, const QString &version,
 			       const QString &author, const QString &year)
 {
   if (!mContainerBase) { return; }
   mContainerBase->setProduct(appName, version, author, year);
 }
 
-void KAboutDialog::imageUrl(QWidget *_parent, const QString &_caption,
+void K3AboutDialog::imageUrl(QWidget *_parent, const QString &_caption,
 			     const QString &_path, const QColor &_imageColor,
 			     const QString &_url)
 {
-  KAboutDialog a(ImageOnly, QString(), _parent);
+  K3AboutDialog a(ImageOnly, QString(), _parent);
   a.setButtons(Close);
   a.setDefaultButton(Close);
   a.setObjectName("image");
@@ -1218,7 +1218,7 @@ void KAboutDialog::imageUrl(QWidget *_parent, const QString &_caption,
   a.setImage(_path);
   a.setImageBackgroundColor(_imageColor);
 
-  KAboutContainer* const c = a.addContainer(Qt::AlignCenter, Qt::AlignCenter);
+  K3AboutContainer* const c = a.addContainer(Qt::AlignCenter, Qt::AlignCenter);
   if (c)
   {
     c->addPerson(QString(), QString(), _url, QString());

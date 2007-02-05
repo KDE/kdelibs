@@ -20,10 +20,10 @@
  *
  */
 
-#ifndef KABOUT_APPLICATION_H
-#define KABOUT_APPLICATION_H
+#ifndef K3ABOUT_APPLICATION_H
+#define K3ABOUT_APPLICATION_H
 
-#include <kaboutdialog.h>
+#include <k3aboutdialog.h>
 
 class KAboutData;
 
@@ -42,7 +42,7 @@ class KAboutData;
  * @author Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
  */
 
-class KDEUI_EXPORT KAboutApplication : public KAboutDialog
+class KDE3SUPPORT_EXPORT K3AboutApplication : public K3AboutDialog
 {
   public:
     /**
@@ -58,7 +58,7 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec().
      */
-    explicit KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
+    explicit K3AboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
 
   private:
     class Private;

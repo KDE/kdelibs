@@ -48,11 +48,15 @@ if(KDE4_BUILD_TESTS)
    
    target_link_libraries(kdocktest  ${KDE4_KDECORE_LIBS} kde3support)
 
+
+   ########### next target ###############
+
+   set(kaboutdialogtest_SRCS kaboutdialogtest.cpp)
+
+   kde4_automoc(${kaboutdialogtest_SRCS})
+
+   kde4_add_executable(kaboutdialogtest NOGUI RUN_UNINSTALLED ${kaboutdialogtest_SRCS})
+
+   target_link_libraries(kaboutdialogtest ${KDE4_KDEUI_LIBS} kde3support)
+
 endif(KDE4_BUILD_TESTS)
-
-########### install files ###############
-
-
-
-
-

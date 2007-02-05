@@ -23,8 +23,8 @@
 #include <QList>
 #include <QPixmap>
 
-#include <kaboutapplication.h>
-#include <kaboutdialog_p.h>
+#include <k3aboutapplication.h>
+#include <k3aboutdialog_p.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <qlabel.h>
@@ -32,8 +32,8 @@
 #include <klocale.h>
 #include <qstyle.h>
 
-KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
-  :KAboutDialog( Tabbed|Product, aboutData->programName(), parent ),
+K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
+  :K3AboutDialog( Tabbed|Product, aboutData->programName(), parent ),
    d( 0 )
 {
   setButtons( Close );
@@ -47,7 +47,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   {
     // Recovery
     setProduct(KGlobal::caption(), i18n("??"), QString(), QString());
-    KAboutContainer *appPage = addContainerPage( i18n("&About"));
+    K3AboutContainer *appPage = addContainerPage( i18n("&About"));
 
     QString appPageText =
       i18n("No information available.\n"
@@ -73,7 +73,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   if (!aboutData->copyrightStatement().isEmpty())
     appPageText += "\n" + aboutData->copyrightStatement()+'\n';
 
-  KAboutContainer *appPage = addContainerPage( i18n("&About"));
+  K3AboutContainer *appPage = addContainerPage( i18n("&About"));
 
   QLabel *appPageLabel = new QLabel( appPageText, 0 );
   appPage->addWidget( appPageLabel );
@@ -92,7 +92,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   {
     QString authorPageTitle = authorCount == 1 ?
       i18n("A&uthor") : i18n("A&uthors");
-    KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle, Qt::AlignLeft, Qt::AlignLeft );
+    K3AboutContainer *authorPage = addScrolledContainerPage( authorPageTitle, Qt::AlignLeft, Qt::AlignLeft );
 
     if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty ())
     {
@@ -133,7 +133,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   int creditsCount = aboutData->credits().count();
   if (creditsCount)
   {
-    KAboutContainer *creditsPage = addScrolledContainerPage( i18n("&Thanks To") );
+    K3AboutContainer *creditsPage = addScrolledContainerPage( i18n("&Thanks To") );
 
     QList<KAboutPerson> lst = aboutData->credits();
     for (int i = 0; i < lst.size(); ++i)
