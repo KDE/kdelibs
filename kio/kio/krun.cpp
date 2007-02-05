@@ -540,7 +540,7 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
   {
       if( service )
       {
-          if( service->type() == "Application" )
+          if( service->isApplication() )
               wmclass = "0"; // doesn't have .desktop entries needed, start as non-compliant
           else
               return false; // no startup notification at all

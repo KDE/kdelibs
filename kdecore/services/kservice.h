@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
    Copyright     1999-2006  David Faure <faure@kde.org>
@@ -22,13 +21,12 @@
 #ifndef KSERVICE_H
 #define KSERVICE_H
 
-#include <qstringlist.h>
-#include <qmap.h>
-#include <qvariant.h>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
 #include <klibloader.h>
+#include "ksycocaentry.h"
 
-#include "kservicetype.h"
-
+class KServiceType;
 class QDataStream;
 class KDesktopFile;
 
@@ -50,540 +48,527 @@ class KDesktopFile;
  */
 class KDECORE_EXPORT KService : public KSycocaEntry
 {
-  K_SYCOCATYPE( KST_KService, KSycocaEntry )
+    K_SYCOCATYPE( KST_KService, KSycocaEntry )
 
-  friend class KBuildSycoca;
+    friend class KBuildSycoca;
 
 public:
-  typedef KSharedPtr<KService> Ptr;
-  typedef QList<Ptr> List;
-public:
-  /**
-   * Construct a temporary service with a given name, exec-line and icon.
-   * @param _name the name of the service
-   * @param _exec the executable
-   * @param _icon the name of the icon
-   */
-  KService( const QString & _name, const QString &_exec, const QString &_icon);
+    typedef KSharedPtr<KService> Ptr;
+    typedef QList<Ptr> List;
 
-  /**
-   * Construct a service and take all information from a config file.
-   *
-   * @param _fullpath Full path to the config file.
-   */
-  explicit KService( const QString & _fullpath );
+    /**
+     * Construct a temporary service with a given name, exec-line and icon.
+     * @param name the name of the service
+     * @param exec the executable
+     * @param icon the name of the icon
+     */
+    KService(const QString & name, const QString &exec, const QString &icon);
 
-  /**
-   * Construct a service and take all information from a desktop file.
-   * @param config the desktop file to read
-   */
-  explicit KService( const KDesktopFile *config );
+    /**
+     * Construct a service and take all information from a config file.
+     *
+     * @param fullpath Full path to the config file.
+     */
+    explicit KService( const QString & fullpath );
 
-  /**
-   * @internal
-   * Construct a service from a stream.
-   * The stream must already be positionned at the correct offset.
-   */
-  KService( QDataStream& _str, int offset );
+    /**
+     * Construct a service and take all information from a desktop file.
+     * @param config the desktop file to read
+     */
+    explicit KService( const KDesktopFile *config );
 
-  virtual ~KService();
+    /**
+     * @internal
+     * Construct a service from a stream.
+     * The stream must already be positionned at the correct offset.
+     */
+    KService( QDataStream& str, int offset );
 
-  // KDE4 TODO: enum Type { Application, Service }
-  /**
-   * Returns the type of the service.
-   * @return the type of the service ("Application" or "Service")
-   */
-  virtual QString type() const { return m_strType; }
-  /**
-   * Returns the name of the service.
-   * @return the name of the service,
-   *         or QString() if not set
-   */
-  virtual QString name() const { return m_strName; }
-  /**
-   * Returns the executable.
-   * @return the command that the service executes,
-   *         or QString() if not set
-   */
-  QString exec() const { return m_strExec; }
-  /**
-   * Returns the name of the service's library.
-   * @return the name of the library that contains the services
-   *         implementation,
-   *         or QString() if not set
-   */
-  QString library() const { return m_strLibrary; }
+    virtual ~KService();
 
-  /**
-   * Returns the name of the icon.
-   * @return the icon associated with the service,
-   *         or QString() if not set
-   */
-  QString icon() const { return m_strIcon; }
-  /**
-   * Checks whethe the service should be run in a terminal.
-   * @return true if the service is to be run in a terminal.
-   */
-  bool terminal() const { return m_bTerminal; }
-  /**
-   * Returns any options associated with the terminal the service
-   * runs in, if it requires a terminal.
-   *
-   * The service must be a tty-oriented program.
-   * @return the terminal options,
-   *         or QString() if not set
-   */
-  QString terminalOptions() const { return m_strTerminalOptions; }
-  /**
-   * Checks whether the service runs with a different user id.
-   * @return true if the service has to be run under a different uid.
-   * @see username()
-   */
-  bool substituteUid() const;
-  /**
-   * Returns the user name, if the service runs with a
-   * different user id.
-   * @return the username under which the service has to be run,
-   *         or QString() if not set
-   * @see substututeUid()a
-   */
-  QString username() const;
+    /**
+     * Services are either applications (executables) or dlopened libraries (plugins).
+     * @return true if this service is an application, i.e. it has Type=Application in its
+     * .desktop file and exec() will not be empty.
+     */
+    bool isApplication() const;
 
-  /**
-   * Returns the path to the location where the service desktop entry
-   * is stored.
-   *
-   * This is a relative path if the desktop entry was found in any
-   * of the locations pointed to by $KDEDIRS (e.g. "Internet/kppp.desktop")
-   * It is a full path if the desktop entry originates from another
-   * location.
-   * @return the path of the service's desktop file,
-   *         or QString() if not set
-   */
-  QString desktopEntryPath() const { return entryPath(); }
+    /**
+     * Returns the type of the service.
+     * @return the type of the service ("Application" or "Service")
+     * @deprecated use isApplication()
+     */
+    KDE_DEPRECATED QString type() const;
 
-  /**
-   * Returns the filename of the service desktop entry without any
-   * extension. E.g. "kppp"
-   * @return the name of the desktop entry without path or extension,
-   *         or QString() if not set
-   */
-  QString desktopEntryName() const { return m_strDesktopEntryName; }
+    /**
+     * Returns the name of the service.
+     * @return the name of the service,
+     *         or QString() if not set
+     */
+    QString name() const;
 
-  /**
-   * Returns the menu ID of the service desktop entry.
-   * The menu ID is used to add or remove the entry to a menu.
-   * @return the menu ID
-   */
-  QString menuId() const;
+    /**
+     * Returns the executable.
+     * @return the command that the service executes,
+     *         or QString() if not set
+     */
+    QString exec() const;
+    /**
+     * Returns the name of the service's library.
+     * @return the name of the library that contains the service's
+     *         implementation, or QString() if not set
+     */
+    QString library() const;
 
-  /**
-   * Returns a normalized ID suitable for storing in configuration files.
-   * It will be based on the menu-id when available and otherwise falls
-   * back to desktopEntryPath()
-   * @return the storage ID
-   */
-  QString storageId() const;
+    /**
+     * Returns the name of the icon.
+     * @return the icon associated with the service,
+     *         or QString() if not set
+     */
+    QString icon() const;
+    /**
+     * Checks whethe the service should be run in a terminal.
+     * @return true if the service is to be run in a terminal.
+     */
+    bool terminal() const;
 
-  /**
-   * Describes the DBUS Startup type of the service.
-   * @li None - This service has no DBUS support
-   * @li Unique - This service provides a unique DBUS service.
-   *              The service name is equal to the desktopEntryName.
-   * @li Multi - This service provides a DBUS service which can be run
-   *             with multiple instances in parallel. The service name of
-   *             an instance is equal to the desktopEntryName + "-" +
-   *             the PID of the process.
-   * @li Wait - This service has no DBUS support, the launcher will wait
-   *            till it is finished.
-   */
-  enum DBUSStartupType_t { DBUS_None = 0, DBUS_Unique, DBUS_Multi, DBUS_Wait };
+    /**
+     * Returns any options associated with the terminal the service
+     * runs in, if it requires a terminal.
+     *
+     * The service must be a tty-oriented program.
+     * @return the terminal options,
+     *         or QString() if not set
+     */
+    QString terminalOptions() const;
+    /**
+     * Checks whether the service runs with a different user id.
+     * @return true if the service has to be run under a different uid.
+     * @see username()
+     */
+    bool substituteUid() const;
+    /**
+     * Returns the user name, if the service runs with a
+     * different user id.
+     * @return the username under which the service has to be run,
+     *         or QString() if not set
+     * @see substututeUid()a
+     */
+    QString username() const;
 
-  /**
-   * Returns the DBUSStartupType supported by this service.
-   * @return the DBUSStartupType supported by this service
-   */
-  DBUSStartupType_t DBUSStartupType() const { return m_DBUSStartusType; }
+    /**
+     * Returns the path to the location where the service desktop entry
+     * is stored.
+     *
+     * This is a relative path if the desktop entry was found in any
+     * of the locations pointed to by $KDEDIRS (e.g. "Internet/kppp.desktop")
+     * It is a full path if the desktop entry originates from another
+     * location.
+     * @return the path of the service's desktop file,
+     *         or QString() if not set
+     */
+    QString desktopEntryPath() const;
 
-  /**
-   * Returns the working directory to run the program in.
-   * @return the working directory to run the program in,
-   *         or QString() if not set
-   */
-  QString path() const { return m_strPath; }
+    /**
+     * Returns the filename of the service desktop entry without any
+     * extension. E.g. "kppp"
+     * @return the name of the desktop entry without path or extension,
+     *         or QString() if not set
+     */
+    QString desktopEntryName() const;
 
-  /**
-   * Returns the descriptive comment for the service, if there is one.
-   * @return the descriptive comment for the service, or QString()
-   *         if not set
-   */
-  QString comment() const { return m_strComment; }
+    /**
+     * Returns the menu ID of the service desktop entry.
+     * The menu ID is used to add or remove the entry to a menu.
+     * @return the menu ID
+     */
+    QString menuId() const;
 
-  /**
-   * Returns the generic name for the service, if there is one
-   * (e.g. "Mail Client").
-   * @return the generic name,
-   *         or QString() if not set
-   */
-  QString genericName() const { return m_strGenName; }
+    /**
+     * Returns a normalized ID suitable for storing in configuration files.
+     * It will be based on the menu-id when available and otherwise falls
+     * back to desktopEntryPath()
+     * @return the storage ID
+     */
+    QString storageId() const;
 
-  /**
-   * Returns the untranslated (US English) generic name
-   * for the service, if there is one
-   * (e.g. "Mail Client").
-   * @return the generic name,
-   *         or QString() if not set
-   */
-  QString untranslatedGenericName() const;
+    /**
+     * Describes the DBUS Startup type of the service.
+     * @li None - This service has no DBUS support
+     * @li Unique - This service provides a unique DBUS service.
+     *              The service name is equal to the desktopEntryName.
+     * @li Multi - This service provides a DBUS service which can be run
+     *             with multiple instances in parallel. The service name of
+     *             an instance is equal to the desktopEntryName + "-" +
+     *             the PID of the process.
+     * @li Wait - This service has no DBUS support, the launcher will wait
+     *            till it is finished.
+     */
+    enum DBUSStartupType_t { DBUS_None = 0, DBUS_Unique, DBUS_Multi, DBUS_Wait };
 
-  /**
-   * Returns a list of descriptive keywords the service, if there are any.
-   * @return the list of keywords
-   */
-  QStringList keywords() const { return m_lstKeywords; }
+    /**
+     * Returns the DBUSStartupType supported by this service.
+     * @return the DBUSStartupType supported by this service
+     */
+    DBUSStartupType_t DBUSStartupType() const;
 
-  /**
-   * Returns a list of VFolder categories.
-   * @return the list of VFolder categories
-   */
-  QStringList categories() const;
+    /**
+     * Returns the working directory to run the program in.
+     * @return the working directory to run the program in,
+     *         or QString() if not set
+     */
+    QString path() const;
 
-  /**
-   * Returns the service types that this service supports.
-   * @return the list of service types that are supported
-   * Note that this doesn't include inherited servicetypes or mimetypes,
-   * only the service types listed in the .desktop file.
-   */
-  QStringList serviceTypes() const { return m_lstServiceTypes; }
+    /**
+     * Returns the descriptive comment for the service, if there is one.
+     * @return the descriptive comment for the service, or QString()
+     *         if not set
+     */
+    QString comment() const;
 
-  /**
-   * Checks whether the service supports this service type
-   * @param serviceTypePtr The name of the service type you are
-   *        interested in determining whether this service supports.
-   *
-   * @return true if the service type you specified is supported, otherwise false.
-   */
-  bool hasServiceType( const QString& serviceTypePtr ) const;
+    /**
+     * Returns the generic name for the service, if there is one
+     * (e.g. "Mail Client").
+     * @return the generic name,
+     *         or QString() if not set
+     */
+    QString genericName() const;
 
-  /**
-   * Checks whether the mime supports this mime type
-   * @param mimeTypePtr The name of the mime type you are
-   *        interested in determining whether this service supports.
-   *
-   * Note that if you only have the name of the mime type, you have to look it up
-   * with KMimeType::mimeType( mimetype ) and use .data() on the result (this is
-   * because KService doesn't know KMimeType for dependency reasons)
-   *
-   * Warning this method will fail to return true if this KService isn't from ksycoca
-   * (i.e. it was created with a full path or a KDesktopFile) *and* the mimetype
-   * isn't explicited listed in the .desktop file but a parent mimetype is.
-   * For this reason you should generally get KServices with KMimeTypeTrader
-   * or one of the KService::serviceBy methods.
-   *
-   * @return true if the mime type you specified is supported, otherwise false.
-   */
-  bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+    /**
+     * Returns the untranslated (US English) generic name
+     * for the service, if there is one
+     * (e.g. "Mail Client").
+     * @return the generic name,
+     *         or QString() if not set
+     */
+    QString untranslatedGenericName() const;
 
-  /**
-   * Set to true if it is allowed to use this service as the default (main)
-   * action for the files it supports (e.g. Left Click in a file manager, or KRun in general).
-   *
-   * If not, then this service is only available in RMB popups, so it must
-   * be selected explicitly by the user in order to be used.
-   * Note that servicemenus supersede this functionality though, at least in konqueror.
-   *
-   * @return true if the service may be used as the default (main) handler
-   */
-  bool allowAsDefault() const { return m_bAllowAsDefault; }
+    /**
+     * Returns a list of descriptive keywords the service, if there are any.
+     * @return the list of keywords
+     */
+    QStringList keywords() const;
 
-  /**
-   * Checks whether this service can handle several files as
-   * startup arguments.
-   * @return true if multiple files may be passed to this service at
-   * startup. False if only one file at a time may be passed.
-   */
-  bool allowMultipleFiles() const;
+    /**
+     * Returns a list of VFolder categories.
+     * @return the list of VFolder categories
+     */
+    QStringList categories() const;
 
-  /**
-   * What preference to associate with this service initially (before
-   * the user has had any chance to define a profile for it).
-   * The bigger the value, the most preferred the service is.
-   * @return the service preference level of the service
-   */
-  int initialPreference() const { return m_initialPreference; }
+    /**
+     * Returns the service types that this service supports.
+     * @return the list of service types that are supported
+     * Note that this doesn't include inherited servicetypes or mimetypes,
+     * only the service types listed in the .desktop file.
+     */
+    QStringList serviceTypes() const;
 
-  /**
-   * @internal. Allows KServiceType::offers to tweak the initial preference.
-   */
-  void setInitialPreference( int i ) { m_initialPreference = i; }
+    /**
+     * Checks whether the service supports this service type
+     * @param serviceTypePtr The name of the service type you are
+     *        interested in determining whether this service supports.
+     *
+     * @return true if the service type you specified is supported, otherwise false.
+     */
+    bool hasServiceType( const QString& serviceTypePtr ) const;
 
-  /**
-   * Whether the entry should be suppressed in menus.
-   * @return true to suppress this service
-   */
-  bool noDisplay() const;
+    /**
+     * Checks whether the mime supports this mime type
+     * @param mimeTypePtr The name of the mime type you are
+     *        interested in determining whether this service supports.
+     *
+     * Note that if you only have the name of the mime type, you have to look it up
+     * with KMimeType::mimeType( mimetype ) and use .data() on the result (this is
+     * because KService doesn't know KMimeType for dependency reasons)
+     *
+     * Warning this method will fail to return true if this KService isn't from ksycoca
+     * (i.e. it was created with a full path or a KDesktopFile) *and* the mimetype
+     * isn't explicited listed in the .desktop file but a parent mimetype is.
+     * For this reason you should generally get KServices with KMimeTypeTrader
+     * or one of the KService::serviceBy methods.
+     *
+     * @return true if the mime type you specified is supported, otherwise false.
+     */
+    bool hasMimeType( const KServiceType* mimeTypePtr ) const;
 
-  /**
-   * Name of the application this service belongs to.
-   * (Useful for e.g. plugins)
-   * @return the parent application, or QString() if not set
-   */
-  QString parentApp() const;
+    /**
+     * Set to true if it is allowed to use this service as the default (main)
+     * action for the files it supports (e.g. Left Click in a file manager, or KRun in general).
+     *
+     * If not, then this service is only available in RMB popups, so it must
+     * be selected explicitly by the user in order to be used.
+     * Note that servicemenus supersede this functionality though, at least in konqueror.
+     *
+     * @return true if the service may be used as the default (main) handler
+     */
+    bool allowAsDefault() const;
 
-  /**
-   * Returns the requested property. Some often used properties
-   * have convenience access functions like exec(),
-   * serviceTypes etc.
-   *
-   * It depends upon the serviceTypes() of this service which
-   * properties a service can have.
-   *
-   * @param _name the name of the property
-   * @return the property, or invalid if not found
-   * @see KServiceType
-   */
-  virtual QVariant property( const QString& _name ) const;
+    /**
+     * Checks whether this service can handle several files as
+     * startup arguments.
+     * @return true if multiple files may be passed to this service at
+     * startup. False if only one file at a time may be passed.
+     */
+    bool allowMultipleFiles() const;
 
-  /**
-   * Returns the requested property.
-   *
-   * @param _name the name of the property
-   * @param t the assumed type of the property
-   * @return the property, or invalid if not found
-   * @see KServiceType
-   */
-  QVariant property( const QString& _name, QVariant::Type t ) const;
+    /**
+     * What preference to associate with this service initially (before
+     * the user has had any chance to define a profile for it).
+     * The bigger the value, the most preferred the service is.
+     * @return the service preference level of the service
+     */
+    int initialPreference() const;
 
-  /**
-   * Returns the list of all properties that this service can have.
-   * That means, that some of these properties may be empty.
-   * @return the list of supported properties
-   */
-  virtual QStringList propertyNames() const;
+    /**
+     * @internal. Allows KServiceType::offers to tweak the initial preference.
+     */
+    //void setInitialPreference( int i );
 
-  /**
-   * Checks whether the service is valid.
-   * @return true if the service is valid (e.g. name is not empty)
-   */
-  bool isValid() const { return m_bValid; }
+    /**
+     * Whether the entry should be suppressed in menus.
+     * @return true to suppress this service
+     */
+    bool noDisplay() const;
 
-  /**
-   * Returns a path that can be used for saving changes to this
-   * service
-   * @return path that can be used for saving changes to this service
-   */
-  QString locateLocal() const;
+    /**
+     * Name of the application this service belongs to.
+     * (Useful for e.g. plugins)
+     * @return the parent application, or QString() if not set
+     */
+    QString parentApp() const;
 
-  /**
-   * @internal
-   * Load the service from a stream.
-   */
-  virtual void load( QDataStream& );
-  /**
-   * @internal
-   * Save the service to a stream.
-   */
-  virtual void save( QDataStream& );
-  /**
-   * @internal
-   * Set the menu id
-   */
-  void setMenuId(const QString &menuId);
-  /**
-   * @internal
-   * Sets whether to use a terminal or not
-   */
-  void setTerminal(bool b) { m_bTerminal = b; }
-  /**
-   * @internal
-   * Sets the terminal options to use
-   */
-  void setTerminalOptions(const QString &options) { m_strTerminalOptions = options; }
+    /**
+     * Returns the requested property. Some often used properties
+     * have convenience access functions like exec(),
+     * serviceTypes etc.
+     *
+     * It depends upon the serviceTypes() of this service which
+     * properties a service can have.
+     *
+     * @param _name the name of the property
+     * @return the property, or invalid if not found
+     * @see KServiceType
+     */
+    QVariant property( const QString& _name ) const;
 
-  /**
-   * Find a service by name, i.e. the translated Name field. You should
-   * never use this method with a literal name as argument, since the name
-   * is translated Name field of the desktop file. See serviceByStorageId instead.
-   *
-   * @param _name the name to search
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * @em Very @em important: Don't store the result in a KService* !
-   */
-  static Ptr serviceByName( const QString& _name );
+    /**
+     * Returns the requested property.
+     *
+     * @param _name the name of the property
+     * @param t the assumed type of the property
+     * @return the property, or invalid if not found
+     * @see KServiceType
+     */
+    QVariant property( const QString& _name, QVariant::Type t ) const;
 
-  /**
-   * Find a service based on its path as returned by desktopEntryPath().
-   * It's usually better to use serviceByStorageId() instead.
-   *
-   * @param _path the path of the configuration file
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * @em Very @em important: Don't store the result in a KService* !
-   */
-  static Ptr serviceByDesktopPath( const QString& _path );
+    /**
+     * Returns the list of all properties that this service can have.
+     * That means, that some of these properties may be empty.
+     * @return the list of supported properties
+     */
+    QStringList propertyNames() const;
 
-  /**
-   * Find a service by the name of its desktop file, not depending on
-   * its actual location (as long as it's under the applnk or service
-   * directories). For instance "konqbrowser" or "kcookiejar". Note that
-   * the ".desktop" extension is implicit.
-   *
-   * This is the recommended method (safe even if the user moves stuff)
-   * but note that it assumes that no two entries have the same filename.
-   *
-   * @param _name the name of the configuration file
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * @em Very @em important: Don't store the result in a KService* !
-   */
-  static Ptr serviceByDesktopName( const QString& _name );
+    /**
+     * Checks whether the service is valid.
+     * @return true if the service is valid (e.g. name is not empty)
+     */
+    bool isValid() const;
 
-  /**
-   * Find a service by its menu-id
-   *
-   * @param _menuId the menu id of the service
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * @em Very @em important: Don't store the result in a KService* !
-   */
-  static Ptr serviceByMenuId( const QString& _menuId );
+    /**
+     * Returns a path that can be used for saving changes to this
+     * service
+     * @return path that can be used for saving changes to this service
+     */
+    QString locateLocal() const;
 
-  /**
-   * Find a service by its storage-id or desktop-file path. This
-   * function will try very hard to find a matching service.
-   *
-   * @param _storageId the storage id or desktop-file path of the service
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * @em Very @em important: Don't store the result in a KService* !
-   */
-  static Ptr serviceByStorageId( const QString& _storageId );
+    /**
+     * @internal
+     * Load the service from a stream.
+     */
+    void load( QDataStream& );
+    /**
+     * @internal
+     * Save the service to a stream.
+     */
+    void save( QDataStream& );
+    /**
+     * @internal
+     * Set the menu id
+     */
+    void setMenuId(const QString &menuId);
+    /**
+     * @internal
+     * Sets whether to use a terminal or not
+     */
+    void setTerminal(bool b);
+    /**
+     * @internal
+     * Sets the terminal options to use
+     */
+    void setTerminalOptions(const QString &options);
 
-  /**
-   * Returns the whole list of services.
-   *
-   *  Useful for being able to
-   * to display them in a list box, for example.
-   * More memory consuming than the ones above, don't use unless
-   * really necessary.
-   * @return the list of all services
-   */
-  static List allServices();
+    /**
+     * Find a service by name, i.e. the translated Name field. You should
+     * never use this method with a literal name as argument, since the name
+     * is translated Name field of the desktop file. See serviceByStorageId instead.
+     *
+     * @param _name the name to search
+     * @return a pointer to the requested service or 0 if the service is
+     *         unknown.
+     * @em Very @em important: Don't store the result in a KService* !
+     */
+    static Ptr serviceByName( const QString& _name );
 
-  /**
-   * Returns a path that can be used to create a new KService based
-   * on @p suggestedName.
-   * @param showInMenu true, if the service should be shown in the KDE menu
-   *        false, if the service should be hidden from the menu
-   * @param suggestedName name to base the file on, if a service with such
-   *        name already exists, a prefix will be added to make it unique.
-   * @param menuId If provided, menuId will be set to the menu id to use for
-   *        the KService
-   * @param reservedMenuIds If provided, the path and menu id will be chosen
-   *        in such a way that the new menu id does not conflict with any
-   *        of the reservedMenuIds
-   * @return The path to use for the new KService.
-   */
-  static QString newServicePath(bool showInMenu, const QString &suggestedName,
-                                QString *menuId = 0,
-                                const QStringList *reservedMenuIds = 0);
+    /**
+     * Find a service based on its path as returned by desktopEntryPath().
+     * It's usually better to use serviceByStorageId() instead.
+     *
+     * @param _path the path of the configuration file
+     * @return a pointer to the requested service or 0 if the service is
+     *         unknown.
+     * @em Very @em important: Don't store the result in a KService* !
+     */
+    static Ptr serviceByDesktopPath( const QString& _path );
 
-  /**
-   * This template allows to load the library for the specified service and ask the
-   * factory to create an instance of the given template type.
-   *
-   * @param service The service describing the library to open
-   * @param parent The parent object (see QObject constructor)
-   * @param args A list of string arguments, passed to the factory and possibly
-   *             to the component (see KLibFactory)
-   * @param error see KLibLoader
-   * @return A pointer to the newly created object or a null pointer if the
-   *         factory was unable to create an object of the given type.
-   */
-  template <class T>
-  static T *createInstance( const KService::Ptr &service,
-                            QObject *parent = 0,
-                            const QStringList &args = QStringList(),
-                            int *error = 0 )
-  {
-    const QString library = service->library();
-    if ( library.isEmpty() ) {
-      if ( error )
-        *error = KLibLoader::ErrServiceProvidesNoLibrary;
-      return 0;
+    /**
+     * Find a service by the name of its desktop file, not depending on
+     * its actual location (as long as it's under the applnk or service
+     * directories). For instance "konqbrowser" or "kcookiejar". Note that
+     * the ".desktop" extension is implicit.
+     *
+     * This is the recommended method (safe even if the user moves stuff)
+     * but note that it assumes that no two entries have the same filename.
+     *
+     * @param _name the name of the configuration file
+     * @return a pointer to the requested service or 0 if the service is
+     *         unknown.
+     * @em Very @em important: Don't store the result in a KService* !
+     */
+    static Ptr serviceByDesktopName( const QString& _name );
+
+    /**
+     * Find a service by its menu-id
+     *
+     * @param _menuId the menu id of the service
+     * @return a pointer to the requested service or 0 if the service is
+     *         unknown.
+     * @em Very @em important: Don't store the result in a KService* !
+     */
+    static Ptr serviceByMenuId( const QString& _menuId );
+
+    /**
+     * Find a service by its storage-id or desktop-file path. This
+     * function will try very hard to find a matching service.
+     *
+     * @param _storageId the storage id or desktop-file path of the service
+     * @return a pointer to the requested service or 0 if the service is
+     *         unknown.
+     * @em Very @em important: Don't store the result in a KService* !
+     */
+    static Ptr serviceByStorageId( const QString& _storageId );
+
+    /**
+     * Returns the whole list of services.
+     *
+     *  Useful for being able to
+     * to display them in a list box, for example.
+     * More memory consuming than the ones above, don't use unless
+     * really necessary.
+     * @return the list of all services
+     */
+    static List allServices();
+
+    /**
+     * Returns a path that can be used to create a new KService based
+     * on @p suggestedName.
+     * @param showInMenu true, if the service should be shown in the KDE menu
+     *        false, if the service should be hidden from the menu
+     * @param suggestedName name to base the file on, if a service with such
+     *        name already exists, a prefix will be added to make it unique.
+     * @param menuId If provided, menuId will be set to the menu id to use for
+     *        the KService
+     * @param reservedMenuIds If provided, the path and menu id will be chosen
+     *        in such a way that the new menu id does not conflict with any
+     *        of the reservedMenuIds
+     * @return The path to use for the new KService.
+     */
+    static QString newServicePath(bool showInMenu, const QString &suggestedName,
+                                  QString *menuId = 0,
+                                  const QStringList *reservedMenuIds = 0);
+
+    /**
+     * This template allows to load the library for the specified service and ask the
+     * factory to create an instance of the given template type.
+     *
+     * @param service The service describing the library to open
+     * @param parent The parent object (see QObject constructor)
+     * @param args A list of string arguments, passed to the factory and possibly
+     *             to the component (see KLibFactory)
+     * @param error see KLibLoader
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    static T *createInstance( const KService::Ptr &service,
+                              QObject *parent = 0,
+                              const QStringList &args = QStringList(),
+                              int *error = 0 )
+    {
+        const QString library = service->library();
+        if ( library.isEmpty() ) {
+            if ( error )
+                *error = KLibLoader::ErrServiceProvidesNoLibrary;
+            return 0;
+        }
+
+        return KLibLoader::createInstance<T>( library.toLocal8Bit().constData(), parent,
+                                              args, error );
     }
 
-    return KLibLoader::createInstance<T>( library.toLocal8Bit().constData(), parent,
-                                          args, error );
-  }
+    /**
+     * This template allows to create a component from a list of services,
+     * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
+     *
+     * @param begin The start iterator to the service describing the library to open
+     * @param end The end iterator to the service describing the library to open
+     * @param parent The parent object (see QObject constructor)
+     * @param args A list of string arguments, passed to the factory and possibly
+     *             to the component (see KLibFactory)
+     * @param error see KLibLoader
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T, class ServiceIterator>
+    static T *createInstance( ServiceIterator begin, ServiceIterator end,
+                              QObject *parent = 0,
+                              const QStringList &args = QStringList(),
+                              int *error = 0 )
+    {
+        for (; begin != end; ++begin ) {
+            KService::Ptr service = *begin;
+            if ( error )
+                *error = 0;
 
-  /**
-   * This template allows to create a component from a list of services,
-   * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
-   *
-   * @param begin The start iterator to the service describing the library to open
-   * @param end The end iterator to the service describing the library to open
-   * @param parent The parent object (see QObject constructor)
-   * @param args A list of string arguments, passed to the factory and possibly
-   *             to the component (see KLibFactory)
-   * @param error see KLibLoader
-   * @return A pointer to the newly created object or a null pointer if the
-   *         factory was unable to create an object of the given type.
-   */
-  template <class T, class ServiceIterator>
-  static T *createInstance( ServiceIterator begin, ServiceIterator end,
-                            QObject *parent = 0,
-                            const QStringList &args = QStringList(),
-                            int *error = 0 )
-  {
-    for (; begin != end; ++begin ) {
-      KService::Ptr service = *begin;
-      if ( error )
-        *error = 0;
-
-      T *component = createInstance<T>( service, parent, args, error );
-      if ( component )
-        return component;
+            T *component = createInstance<T>( service, parent, args, error );
+            if ( component )
+                return component;
+        }
+        if ( error )
+            *error = KLibLoader::ErrNoServiceFound;
+        return 0;
     }
-    if ( error )
-      *error = KLibLoader::ErrNoServiceFound;
-    return 0;
-  }
 
 protected:
 
-  void init(const KDesktopFile *config);
+    /// @internal for KBuildSycoca only
+    QStringList &accessServiceTypes();
 
-  /// @internal for KBuildSycoca only
-  QStringList &accessServiceTypes() { return m_lstServiceTypes; }
-
-private:
-  Q_DISABLE_COPY(KService)
-
-  QString m_strType;
-  QString m_strName;
-  QString m_strExec;
-  QString m_strIcon;
-  QString m_strTerminalOptions;
-  QString m_strPath;
-  QString m_strComment;
-  QString m_strLibrary;
-  QStringList m_lstServiceTypes;
-  int m_initialPreference;
-  QString m_strDesktopEntryName;
-  DBUSStartupType_t m_DBUSStartusType;
-  QMap<QString,QVariant> m_mapProps;
-  QStringList m_lstKeywords;
-  QString m_strGenName;
-  bool m_bAllowAsDefault;
-  bool m_bTerminal;
-  bool m_bValid;
-  bool m_unused;
 protected:
-  virtual void virtual_hook( int id, void* data );
+    virtual void virtual_hook( int id, void* data );
 private:
-  class Private;
-  Private *const d;
+    Q_DISABLE_COPY(KService)
+    class Private;
+    friend class Private;
+    Private *const d;
 };
 #endif

@@ -75,7 +75,7 @@ void KMimeType::buildDefaultType()
      KStandardDirs stdDirs;
      QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+defaultMimeType()+".desktop";
      s_pDefaultType = new KMimeType( sDefaultMimeType, defaultMimeType(),
-                                     "unknown", "mime", QStringList() );
+                                     "unknown", "mime" );
   }
 }
 
@@ -390,21 +390,11 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   return result;
 }
 
-// Used to create the default mimetype, in particular
+// Used only to create the default mimetype
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-                      const QString& _comment, const QStringList& _patterns )
+                      const QString& _comment )
   : KServiceType( _fullpath, _type, _comment ), m_strIcon( _icon ), d( 0 )
 {
-  m_lstPatterns = _patterns;
-}
-
-KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath ), d( 0 )
-{
-  KDesktopFile _cfg( _fullpath, true );
-  init ( &_cfg );
-
-  if ( !isValid() )
-    kWarning(7009) << "mimetype not valid '" << name() << "' (missing entry in the file ?)" << endl;
 }
 
 KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d( 0 )

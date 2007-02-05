@@ -12,7 +12,7 @@ kde4_automoc(${kded_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kded  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_kded  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kdeinit_kded  DESTINATION ${LIB_INSTALL_DIR} )
 
@@ -40,6 +40,8 @@ kde4_add_kdeinit_executable( kbuildsycoca NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 target_link_libraries(kdeinit_kbuildsycoca  ${KDE4_KDECORE_LIBS} kio )
 
 install(TARGETS kdeinit_kbuildsycoca  DESTINATION ${LIB_INSTALL_DIR} )
+# ## test. but ideally we don't want the .so installed
+set_target_properties(kdeinit_kbuildsycoca PROPERTIES SOVERSION 4)
 
 target_link_libraries( kbuildsycoca kdeinit_kbuildsycoca )
 install(TARGETS kbuildsycoca DESTINATION ${BIN_INSTALL_DIR} )

@@ -52,27 +52,6 @@ public:
   typedef KSharedPtr<KMimeType> Ptr;
   typedef QList<Ptr> List;
 public:
-  /**
-   * Constructor.
-   *
-   * You may pass in arguments to create a mimetype with
-   * specific properties.
-   *
-   * @param _fullpath the path to the configuration file (.desktop)
-   * @param _type the mime type itself
-   * @param _icon the name of the icon that represens the mime type
-   * @param _comment a comment describing the mime type
-   * @param _patterns a list of file globs that describes the names (or
-   *                  extensions) of the files with this mime type
-   */
-  KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-	     const QString& _comment, const QStringList& _patterns );
-
-  /**
-   * Construct a mimetype and take all information from a config file.
-   * @param _fullpath the path to the configuration file (.desktop)
-   */
-  KMimeType( const QString & _fullpath );
 
   /**
    * Construct a mimetype and take all information from a desktop file.
@@ -423,6 +402,8 @@ public:
   static QString extractKnownExtension( const QString &fileName );
 
 private:
+  KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
+	     const QString& _comment/*, const QStringList& _patterns*/ );
   void loadInternal( QDataStream& );
   void init( KDesktopFile * );
 

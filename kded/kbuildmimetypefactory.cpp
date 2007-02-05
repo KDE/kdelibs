@@ -30,6 +30,7 @@
 #include <assert.h>
 #include <kdesktopfile.h>
 #include <qhash.h>
+#include <QFile>
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
   KMimeTypeFactory()
@@ -150,6 +151,19 @@ KBuildMimeTypeFactory::save(QDataStream &str)
    str.device()->seek(endOfFactoryData);
 }
 
+static bool isFastPattern(const QString& pattern)
+{
+   // starts with "*.", has no other '*' and no other '.'
+   return pattern.lastIndexOf('*') == 0
+      && pattern.lastIndexOf('.') == 1
+      // and is max 6 chars
+      && pattern.length() <= 6
+      // and contains no other special character
+      && !pattern.contains('?')
+      && !pattern.contains('[')
+      ;
+}
+
 void
 KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
 {
@@ -172,11 +186,7 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
       for ( ; patit != pat.end() ; ++patit )
       {
          const QString &pattern = *patit;
-         if ( pattern.lastIndexOf('*') == 0
-              && pattern.lastIndexOf('.') == 1
-              && pattern.length() <= 6 )
-            // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
-            // => fast patttern
+         if (isFastPattern(pattern))
             fastPatterns.append( pattern );
          else if (!pattern.isEmpty()) // some stupid mimetype files have "Patterns=;"
             otherPatterns.append( pattern );
@@ -185,6 +195,48 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
          dict.insert( pattern, mimeType.constData() );
       }
    }
+
+#if 0
+   // XDG shared-mime-info support
+   const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
+   kDebug() << k_funcinfo << globFiles << endl;
+   QListIterator<QString> globIter( globFiles );
+   globIter.toBack();
+   while (globIter.hasPrevious()) {
+      const QString fileName = globIter.previous();
+      QFile globFile( fileName );
+      kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+      if (globFile.open(QIODevice::ReadOnly)) {
+         QTextStream stream(&globFile);
+         stream.setCodec("UTF-8");
+         while (!stream.atEnd()) {
+            const QString line = stream.readLine();
+            if (line.isEmpty() || line[0] == '#')
+               continue;
+            const int pos = line.indexOf(':');
+            if (pos == -1) // syntax error
+               continue;
+            const QString mimeTypeName = line.left(pos);
+            KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName);
+            if (!mimeType)
+               kWarning(7012) << fileName << " refers to unknown mimetype " << mimeTypeName << endl;
+            else {
+               const QString pattern = line.mid(pos+1);
+               kDebug() << "mime type: " << mimeTypeName << " pattern: " << pattern << endl;
+               assert(!pattern.isEmpty());
+               if ( isFastPattern(pattern) )
+                  fastPatterns.append( pattern );
+               else
+                  otherPatterns.append( pattern );
+               // Assumption : there is only one mimetype for that pattern
+               // It doesn't really make sense otherwise, anyway.
+               dict.insert( pattern, mimeType.constData() );
+            }
+         }
+      }
+   }
+#endif
+
    // Sort the list - the fast one, useless for the other one
    fastPatterns.sort();
 
@@ -203,7 +255,8 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
    {
      int start = str.device()->pos();
      // Justify to 6 chars with spaces, so that the size remains constant
-     // in the database file.
+     // in the database file. This is useful for doing a binary search in kmimetypefactory.cpp
+     // TODO: we could use a hash-table instead, for more performance and no extension-length limit.
      QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
      //kDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;

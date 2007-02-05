@@ -109,18 +109,29 @@ public:
     */
    virtual void saveHeader(QDataStream &str);
 
-   /**
-    * @return the resources for which this factory is responsible.
-    */
-   virtual const KSycocaResourceList * resourceList() const { return m_resourceList; }
+    /**
+     * @return the resources for which this factory is responsible.
+     * @internal to kbuildsycoca
+     */
+    const KSycocaResourceList * resourceList() const { return m_resourceList; }
+
+    /**
+     * @return the sycoca dict, for factories to find entries by name.
+     */
+    const KSycocaDict *sycocaDict() const { return m_sycocaDict; }
+
+    /**
+     * @return true if the factory is completely empty - no entries defined
+     */
+    bool isEmpty() const { return m_beginEntryOffset != m_endEntryOffset; }
 
 private:
    int mOffset;
-
-protected:
    int m_sycocaDictOffset;
    int m_beginEntryOffset;
    int m_endEntryOffset;
+
+protected:
    QDataStream *m_str;
 
    KSycocaResourceList *m_resourceList;

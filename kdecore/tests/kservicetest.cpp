@@ -25,6 +25,7 @@
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
 #include <kservicetypetrader.h>
+#include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
 #include <qprocess.h>
@@ -87,9 +88,6 @@ void KServiceTest::testAllServices()
         const KService::Ptr service = (*it);
         QVERIFY( service->isType( KST_KService ) );
 
-        const QString type = service->type();
-        QVERIFY( !type.isEmpty() );
-        QVERIFY( type == "Application" || type == "Service" );
         const QString name = service->name();
         const QString dep = service->desktopEntryPath();
         //qDebug( "%s %s", qPrintable( name ), qPrintable( dep ) );
@@ -100,7 +98,7 @@ void KServiceTest::testAllServices()
         QVERIFY( lookedupService ); // not null
         QCOMPARE( lookedupService->desktopEntryPath(), dep );
 
-        if ( type == "Application" )
+        if ( service->isApplication() )
         {
             const QString menuId = service->menuId();
             if ( menuId.isEmpty() )
@@ -109,6 +107,10 @@ void KServiceTest::testAllServices()
             lookedupService = KService::serviceByMenuId( menuId );
             QVERIFY( lookedupService ); // not null
             QCOMPARE( lookedupService->menuId(), menuId );
+
+            if (service->exec().isEmpty())
+                qWarning( "%s has an empty exec!", qPrintable( dep ) );
+            QVERIFY(!service->exec().isEmpty());
         }
     }
 }

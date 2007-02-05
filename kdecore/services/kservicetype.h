@@ -31,6 +31,7 @@
 #include <ksimpleconfig.h>
 
 class KDesktopFile;
+class KServiceTypePrivate;
 
 /**
  * A service type is, well, a type of service, where a service is an application or plugin.
@@ -46,13 +47,6 @@ class KDECORE_EXPORT KServiceType : public KSycocaEntry
 public:
     typedef KSharedPtr<KServiceType> Ptr;
     typedef QList<Ptr> List;
-
-    /**
-     * Construct a service type and take all information from a config file.
-     * @param _fullpath path of the desktop file, set to "" if calling from
-     *                  a inherited constructor.
-     */
-    explicit KServiceType( const QString& _fullpath ); // KDE4 TODO: remove
 
     /**
      * Construct a service type and take all information from a desktop file.
@@ -72,13 +66,13 @@ public:
      * Returns the descriptive comment associated, if any.
      * @return the comment, or QString()
      */
-    QString comment() const { return m_strComment; }
+    QString comment() const;
 
     /**
      * Returns the name of this service type.
      * @return the name of the service type
      */
-    QString name() const { return m_strName; }
+    QString name() const;
 
     /**
      * Returns the relative path to the desktop entry file responsible for
@@ -86,14 +80,14 @@ public:
      * For instance inode/directory.desktop, or kpart.desktop
      * @return the path of the desktop file
      */
-    QString desktopEntryPath() const { return entryPath(); }
+    QString desktopEntryPath() const;
 
     /**
      * Checks whether this service type inherits another one.
      * @return true if this service type inherits another one
      * @see parentServiceType()
      */
-    bool isDerived() const { return m_bDerived; }
+    bool isDerived() const;
 
     /**
      * If this service type inherits from another service type,
@@ -137,7 +131,7 @@ public:
      * Checks whether the service type is valid.
      * @return true if the service is valid (e.g. name is not empty)
      */
-    bool isValid() const { return m_bValid; }
+    bool isValid() const;
 
     /**
      * Returns the type of the property definition with the given @p _name.
@@ -146,7 +140,7 @@ public:
      * @return the property type, or null if not found
      * @see propertyDefNames
      */
-    virtual QVariant::Type propertyDef( const QString& _name ) const; // KDE4 TODO: remove virtual
+    QVariant::Type propertyDef( const QString& _name ) const;
 
     /**
      * Returns the list of all property definitions for this servicetype.
@@ -161,8 +155,10 @@ public:
      * X-KDevelop-Version=<some value>
      * @endcode
      */
-    virtual QStringList propertyDefNames() const; // KDE4 TODO: remove virtual
-    virtual const QMap<QString,QVariant::Type>& propertyDefs() const { return m_mapPropDefs; } // ditto
+    QStringList propertyDefNames() const;
+
+    /// @internal (for KBuildServiceTypeFactory)
+    const QMap<QString,QVariant::Type>& propertyDefs() const;
 
     /**
      * @internal
@@ -222,22 +218,11 @@ protected: // used by KMimeType
     KServiceType( const QString& _fullpath, const QString& _name,
                   const QString& _comment );
 
-private:
-    void init( KDesktopFile *config );
-
-    QString m_strName;
-    QString m_strComment;
-    int m_serviceOffersOffset;
-    QMap<QString,QVariant::Type> m_mapPropDefs;
-    bool m_bValid;
-    bool m_bDerived;
-    bool m_parentTypeLoaded;
-    bool m_unused; // for future usage
 protected:
     virtual void virtual_hook( int id, void* data );
-private:
-    class KServiceTypePrivate;
-    KServiceTypePrivate* d;
+
+    friend class KServiceTypePrivate;
+    KServiceTypePrivate* const d;
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

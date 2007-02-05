@@ -76,7 +76,7 @@ bool KMimeTypeFactory::checkMimeTypes()
    if (!str) return false;
 
    // check if there are mimetypes
-   return (m_beginEntryOffset != m_endEntryOffset);
+   return !isEmpty();
 }
 
 KMimeType * KMimeTypeFactory::createEntry(int offset)
@@ -131,6 +131,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromPattern( const QString &_filename, QStr
     qint32 matchingOffset = 0;
 
     // Let's go for a binary search in the "fast" pattern index
+    // TODO: we could use a hash-table instead, for more performance and no extension-length limit.
     qint32 left = 0;
     qint32 right = nrOfEntries - 1;
     qint32 middle;
