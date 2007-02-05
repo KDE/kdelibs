@@ -75,10 +75,14 @@ void KMimeTypeTest::testIcons()
     // but at least they unit-test KMimeType::iconNameForURL.
     checkIcon( KUrl( "file:/tmp/" ), "folder" );
 
-    if ( KUser().isSuperUser() ) // Can't test this one if running as root
-        QSKIP( "running as root", SkipAll );
-    if ( QFile::exists( "/root/.ssh/" ) )
-        checkIcon( KUrl( "file:/root/.ssh/" ), "folder_locked" );
+    if ( !KUser().isSuperUser() ) // Can't test this one if running as root
+    {
+        KTemporaryDir tmp( QString(), 0 );
+        tmp.setAutoDelete( true );
+        KUrl url( tmp.name() );
+        checkIcon( url, "folder_locked" );
+        chmod( QFile::encodeName( tmp.name() ), 0500 ); // so we can 'rm -rf' it
+    }
 }
 
 void KMimeTypeTest::testFindByPath()
