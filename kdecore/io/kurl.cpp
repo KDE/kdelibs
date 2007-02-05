@@ -327,7 +327,7 @@ KUrl::KUrl( const QString &str )
 #else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
-#endif     
+#endif
     else
       setEncodedUrl( str.toUtf8(), QUrl::TolerantMode );
   }
@@ -786,7 +786,9 @@ QString KUrl::fileEncoding() const
 
 bool KUrl::hasSubUrl() const
 {
-  if ( scheme().isEmpty() || !isValid() )
+  // The isValid call triggers QUrlPrivate::validate which needs the full encoded url,
+  // all this takes too much time for isLocalFile()
+  if ( scheme().isEmpty() /*|| !isValid()*/ )
     return false;
   const QString ref = fragment();
   if (ref.isEmpty())
