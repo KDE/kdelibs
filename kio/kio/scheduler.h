@@ -27,6 +27,7 @@
 #include <qtimer.h>
 #include <qmap.h>
 #include <qwindowdefs.h>
+#include <sys/types.h> // pid_t
 
 namespace KIO {
 

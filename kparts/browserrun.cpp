@@ -22,6 +22,7 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
+#include <kio/copyjob.h>
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstringhandler.h>

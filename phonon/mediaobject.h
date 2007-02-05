@@ -20,7 +20,6 @@
 #define Phonon_MEDIAOBJECT_H
 
 #include "abstractmediaproducer.h"
-#include <kmimetype.h>
 #include <kdelibs_export.h>
 #include "phonondefs.h"
 

@@ -1275,9 +1275,4 @@ public:
     };
 }
 
-// Source compat includes
-
-#include <kio/copyjob.h>
-#include <kio/deletejob.h>
-
 #endif

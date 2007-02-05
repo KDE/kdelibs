@@ -42,6 +42,8 @@
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <kio/job.h>
+#include <kio/deletejob.h>
+#include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>

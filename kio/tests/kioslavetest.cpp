@@ -22,6 +22,8 @@
 #include <kstatusbar.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
+#include <kio/copyjob.h>
+#include <kio/deletejob.h>
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
 #include <qtimer.h>

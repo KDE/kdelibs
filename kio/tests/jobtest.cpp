@@ -48,6 +48,7 @@
 #include <kprotocolinfo.h>
 #include <kio/scheduler.h>
 #include <kio/directorysizejob.h>
+#include <kio/copyjob.h>
 
 QTEST_KDEMAIN( JobTest, GUI )
 

@@ -40,6 +40,8 @@
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include <kio/job.h>
+#include <kio/copyjob.h>
+#include <kio/deletejob.h>
 #include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
 

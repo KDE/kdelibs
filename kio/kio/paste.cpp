@@ -25,7 +25,7 @@
 #include "paste.h"
 #include "pastedialog.h"
 
-#include "kio/job.h"
+#include "kio/copyjob.h"
 #include "kio/global.h"
 #include "kio/netaccess.h"
 #include "kio/observer.h"

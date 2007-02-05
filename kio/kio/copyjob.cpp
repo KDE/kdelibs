@@ -20,6 +20,7 @@
 */
 
 #include "copyjob.h"
+#include "deletejob.h"
 
 #include <klocale.h>
 #include <ksimpleconfig.h>

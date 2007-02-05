@@ -18,6 +18,7 @@
 */
 
 #include <kdebug.h>
+#include <kio/deletejob.h>
 #include <kio/job.h>
 #include <kmimetype.h>
 #include <kprotocolinfo.h>

@@ -94,6 +94,7 @@ extern "C" {
 #include <kstandarddirs.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
+#include <kio/copyjob.h>
 #include <kio/chmodjob.h>
 #include <kio/directorysizejob.h>
 #include <kio/renamedialog.h>

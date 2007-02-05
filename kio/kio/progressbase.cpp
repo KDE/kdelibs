@@ -18,6 +18,8 @@
 
 #include "jobclasses.h"
 #include "progressbase.h"
+#include "copyjob.h"
+#include "deletejob.h"
 
 namespace KIO {
 
