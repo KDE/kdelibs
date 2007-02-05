@@ -22,10 +22,14 @@
 #include "objectdescription.h"
 #include "audiooutputadaptor.h"
 #include "globalconfig.h"
+#include "audiooutputinterface.h"
 
 #include <cmath>
+#include <knotification.h>
+#include <klocale.h>
 
 #define PHONON_CLASSNAME AudioOutput
+#define PHONON_INTERFACENAME AudioOutputInterface
 
 namespace Phonon
 {
@@ -65,8 +69,8 @@ void AudioOutput::setName( const QString& newName )
 	d->name = newName;
 }
 
-PHONON_GETTER( float, volume, d->volume )
-PHONON_SETTER( setVolume, volume, float )
+PHONON_INTERFACE_GETTER( float, volume, d->volume )
+PHONON_INTERFACE_SETTER( setVolume, volume, float )
 
 static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
@@ -91,25 +95,26 @@ AudioOutputDevice AudioOutput::outputDevice() const
 	K_D( const AudioOutput );
 	int index;
 	if( d->backendObject )
-		BACKEND_GET( int, index, "outputDevice" );
+        index = INTERFACE_CALL(outputDevice, ());
 	else
 		index = d->outputDeviceIndex;
 	return AudioOutputDevice::fromIndex( index );
 }
 
-void AudioOutput::setOutputDevice( const AudioOutputDevice& newAudioOutputDevice )
+bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
 {
-	K_D( AudioOutput );
-	if( iface() )
-		BACKEND_CALL1( "setOutputDevice", int, newAudioOutputDevice.index() );
-	else
-		d->outputDeviceIndex = newAudioOutputDevice.index();
+    K_D(AudioOutput);
+    if (iface()) {
+        return INTERFACE_CALL(setOutputDevice, (newAudioOutputDevice.index()));
+    }
+    d->outputDeviceIndex = newAudioOutputDevice.index();
+    return true;
 }
 
 bool AudioOutputPrivate::aboutToDeleteIface()
 {
 	if( backendObject )
-		pBACKEND_GET( float, volume, "volume" );
+        volume = pINTERFACE_CALL(volume, ());
 	return AbstractAudioOutputPrivate::aboutToDeleteIface();
 }
 
@@ -122,12 +127,35 @@ void AudioOutput::setupIface()
 	connect( d->backendObject, SIGNAL( volumeChanged( float ) ), SIGNAL( volumeChanged( float ) ) );
 
 	// set up attributes
-	BACKEND_CALL1( "setVolume", float, d->volume );
-	BACKEND_CALL1( "setOutputDevice", int, d->outputDeviceIndex );
+    INTERFACE_CALL(setVolume, (d->volume));
+
+    if (!INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex))) {
+        QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(d->category);
+        if (d->outputDeviceIndex == deviceList.takeFirst()) { // removing the first device so that
+            // if it's the same device as the one we tried we only try all the following
+            foreach (int devIndex, deviceList) {
+                if (INTERFACE_CALL(setOutputDevice, (devIndex))) {
+                    AudioOutputDevice device1 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
+                    d->outputDeviceIndex = devIndex;
+                    KNotification *notification = new KNotification("AudioDeviceFallback");
+                    notification->setComponentData(Factory::componentData());
+                    AudioOutputDevice device2 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
+                    notification->setText(i18n("The audio playback device <i>%1</i> does not work. "
+                                "Falling back to <i>%2</i>.").arg(device1.name()).arg(device2.name()));
+                    //notification->setPixmap(...);
+                    notification->setActions(QStringList(i18n("Revert back to device <i>%1</i>").arg(device1.name())));
+                    notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
+                    connect(notification, SIGNAL(activated(unsigned int)), SLOT(revertFallback()));
+                    notification->sendEvent();
+                    break; // found one that works
+                }
+            }
+        }
+    }
 }
 
 } //namespace Phonon
 
 #include "audiooutput.moc"
 
-// vim: sw=4 ts=4 tw=80
+// vim: sw=4 ts=4 tw=100 et

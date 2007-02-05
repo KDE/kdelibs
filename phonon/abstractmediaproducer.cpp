@@ -104,7 +104,7 @@ void AbstractMediaProducer::selectAudioStream( const QString& streamName, AudioP
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
-		INTERFACE_CALL2( selectAudioStream, streamName, audioPath->iface() );
+        INTERFACE_CALL(selectAudioStream, (streamName, audioPath->iface()));
 	else
 		d->selectedAudioStream[ audioPath ] = streamName;
 }
@@ -113,7 +113,7 @@ void AbstractMediaProducer::selectVideoStream( const QString& streamName, VideoP
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
-		INTERFACE_CALL2( selectVideoStream, streamName, videoPath->iface() );
+        INTERFACE_CALL(selectVideoStream, (streamName, videoPath->iface()));
 	else
 		d->selectedVideoStream[ videoPath ] = streamName;
 }
@@ -122,7 +122,7 @@ void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, Vid
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
-		INTERFACE_CALL2( selectSubtitleStream, streamName, videoPath->iface() );
+        INTERFACE_CALL(selectSubtitleStream, (streamName, videoPath->iface()));
 	else
 		d->selectedSubtitleStream[ videoPath ] = streamName;
 }
@@ -143,14 +143,14 @@ void AbstractMediaProducer::play()
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
-		INTERFACE_CALL( play );
+        INTERFACE_CALL(play, ());
 }
 
 void AbstractMediaProducer::pause()
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
-		INTERFACE_CALL( pause );
+        INTERFACE_CALL(pause, ());
 }
 
 void AbstractMediaProducer::stop()
@@ -158,7 +158,7 @@ void AbstractMediaProducer::stop()
 	K_D( AbstractMediaProducer );
 	if( iface() )
 	{
-		INTERFACE_CALL( stop );
+        INTERFACE_CALL(stop, ());
 		if( tickInterval() > 0 )
 			emit tick( 0 );
 	}
@@ -169,7 +169,25 @@ void AbstractMediaProducer::seek( qint64 time )
 	K_D( AbstractMediaProducer );
 	State s = state();
 	if( iface() && ( s == Phonon::PlayingState || s == Phonon::BufferingState || s == Phonon::PausedState ) )
-		INTERFACE_CALL1( seek, time );
+        INTERFACE_CALL(seek, (time));
+}
+
+QString AbstractMediaProducer::errorString() const
+{
+    if (state() == Phonon::ErrorState) {
+        K_D(const AbstractMediaProducer);
+        return INTERFACE_CALL(errorString, ());
+    }
+    return QString();
+}
+
+ErrorType AbstractMediaProducer::errorType() const
+{
+    if (state() == Phonon::ErrorState) {
+        K_D(const AbstractMediaProducer);
+        return INTERFACE_CALL(errorType, ());
+    }
+    return Phonon::NoError;
 }
 
 bool AbstractMediaProducerPrivate::aboutToDeleteIface()
@@ -195,7 +213,7 @@ void AbstractMediaProducer::setupIface()
 	connect( d->backendObject, SIGNAL( metaDataChanged( const QMultiMap<QString, QString>& ) ), SLOT( _k_metaDataChanged( const QMultiMap<QString, QString>& ) ) );
 
 	// set up attributes
-	INTERFACE_CALL1( setTickInterval, d->tickInterval );
+    INTERFACE_CALL(setTickInterval, (d->tickInterval));
 
 	foreach( AudioPath* a, d->audioPaths )
 	{

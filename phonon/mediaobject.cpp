@@ -385,7 +385,7 @@ void MediaObject::setupIface()
 	// set up attributes
     BACKEND_CALL1("setAboutToFinishTime", qint32, d->aboutToFinishTime);
     if(!d->url.isEmpty()) {
-        INTERFACE_CALL1(setUrl, d->url);
+        INTERFACE_CALL(setUrl, (d->url));
         // if the state changes to ErrorState it will be handled in
         // _k_stateChanged and a ByteStream will be used.
     }

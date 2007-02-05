@@ -33,16 +33,30 @@
 #include <QtDBus/QtDBus>
 #include "backendinterface.h"
 #include "factory_p.h"
+#include <kglobal.h>
 
-#define PHONON_LOAD_BACKEND_GLOBAL 1
+#define PHONON_LOAD_BACKEND_GLOBAL 0
 
 namespace Phonon
 {
 
 K_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 
+const KComponentData &Factory::componentData()
+{
+    if (!globalFactory->componentData.isValid()) {
+        Q_ASSERT(KGlobal::hasMainComponent());
+        globalFactory->componentData = KComponentData("phonon");
+    }
+    return globalFactory->componentData;
+}
+
 void FactoryPrivate::createBackend()
 {
+    /*if (service) {
+        // we already have a valid backend lib opened. force it to unload:
+        KLibLoader::self()->unloadLibrary(QFile::encodeName(ptr->library()));
+    }*/
     const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
             "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
     KService::List::const_iterator it = offers.begin();
@@ -105,6 +119,10 @@ FactoryPrivate::FactoryPrivate()
     : QObject(0),
     backend(0)
 {
+    // Add the post routine to make sure that all other global statics (especially the ones from Qt)
+    // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
+    // as the whole backend might still be alive.
+    qAddPostRoutine(globalFactory.destroy);
     qRegisterMetaType<qint64>("qint64");
     qRegisterMetaType<qint32>("qint32");
     QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",

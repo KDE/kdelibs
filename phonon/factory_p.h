@@ -22,6 +22,7 @@
 
 #include "factory.h"
 #include <QPointer>
+#include <kcomponentdata.h>
 
 namespace Phonon
 {
@@ -39,6 +40,7 @@ class FactoryPrivate : public QObject
 
         QList<QObject*> objects;
         QList<BasePrivate*> basePrivateList;
+        KComponentData componentData;
 
     Q_SIGNALS:
         /**

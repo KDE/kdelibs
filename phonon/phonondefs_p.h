@@ -107,33 +107,11 @@ QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_AR
 #define pBACKEND_CALL2( methodName, varType1, var1, varType2, var2 ) \
 QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
 
-#define INTERFACE_CALL( function ) \
-qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function()
-#define INTERFACE_CALL1( function, arg1 ) \
-qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function( arg1 )
-#define INTERFACE_CALL2( function, arg1, arg2 ) \
-qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function( arg1, arg2 )
+#define INTERFACE_CALL(function, arg) \
+qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->function arg
 
-#define INTERFACE_GET( function ) \
-return qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function()
-#define INTERFACE_GET1( function, arg1 ) \
-return qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function( arg1 )
-#define INTERFACE_GET2( function, arg1, arg2 ) \
-return qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->function( arg1, arg2 )
-
-#define pINTERFACE_CALL( function ) \
-qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function()
-#define pINTERFACE_CALL1( function, arg1 ) \
-qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function( arg1 )
-#define pINTERFACE_CALL2( function, arg1, arg2 ) \
-qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function( arg1, arg2 )
-
-#define pINTERFACE_GET( function ) \
-return qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function()
-#define pINTERFACE_GET1( function, arg1 ) \
-return qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function( arg1 )
-#define pINTERFACE_GET2( function, arg1, arg2 ) \
-return qobject_cast<PHONON_INTERFACENAME*>( backendObject )->function( arg1, arg2 )
+#define pINTERFACE_CALL(function, arg) \
+qobject_cast<PHONON_INTERFACENAME*>(backendObject)->function arg
 
 #define PHONON_GETTER( rettype, name, retdefault ) \
 rettype PHONON_CLASSNAME::name() const \

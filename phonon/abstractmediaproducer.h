@@ -244,6 +244,18 @@ namespace Phonon
 			QString metaDataItem( const QString& key ) const;
 			QStringList metaDataItems( const QString& key ) const;
 
+            /**
+             * A translated string describing the error.
+             */
+            QString errorString() const;
+
+            /**
+             * Tells your program what to do about the error.
+             *
+             * \see Phonon::ErrorType
+             */
+            ErrorType errorType() const;
+
 		public Q_SLOTS:
 			/**
 			 * Selects an audio stream from the media.

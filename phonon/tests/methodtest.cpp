@@ -24,6 +24,7 @@
 #include <phonon/mediaproducerinterface.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/backendinterface.h>
+#include <phonon/audiooutputinterface.h>
 
 using namespace Phonon;
 
@@ -110,6 +111,7 @@ void MethodTest::checkByteStreamInterfaces()
 	QVERIFY( qobject_cast<Phonon::ByteStreamInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaObjectInterface*>( backendObject ) == 0 );
+    delete backendObject;
 }
 
 void MethodTest::checkMediaObjectInterfaces()
@@ -119,6 +121,7 @@ void MethodTest::checkMediaObjectInterfaces()
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
 	QVERIFY( qobject_cast<Phonon::MediaObjectInterface*>( backendObject ) != 0 );
+    delete backendObject;
 }
 
 void MethodTest::checkAvCapturetInterfaces()
@@ -127,6 +130,16 @@ void MethodTest::checkAvCapturetInterfaces()
 	if( !backendObject )
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	QVERIFY( qobject_cast<Phonon::MediaProducerInterface*>( backendObject ) != 0 );
+    delete backendObject;
+}
+
+void MethodTest::checkAudioOutputInterface()
+{
+    QObject *backendObject = Factory::createAudioOutput();
+    if (!backendObject)
+        QSKIP("The back-end's create method returned 0. No tests possible.", SkipAll);
+    QVERIFY(qobject_cast<Phonon::AudioOutputInterface *>(backendObject) != 0);
+    delete backendObject;
 }
 
 void MethodTest::addColumns()

@@ -272,11 +272,23 @@ class PHONONCORE_EXPORT MediaProducerInterface
          * Get the current state.
          */
         virtual Phonon::State state() const = 0;
+
+        /**
+         * A translated string describing the error.
+         */
+        virtual QString errorString() const = 0;
+
+        /**
+         * Tells your program what to do about the error.
+         *
+         * \see Phonon::ErrorType
+         */
+        virtual Phonon::ErrorType errorType() const = 0;
 };
 
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE( Phonon::MediaProducerInterface, "org.kde.Phonon.MediaProducerInterface/0.1" )
+Q_DECLARE_INTERFACE( Phonon::MediaProducerInterface, "org.kde.Phonon.MediaProducerInterface/0.2" )
 
 #endif // PHONON_MEDIAPRODUCERINTERFACE_H
 // vim: sw=4 ts=4 tw=80

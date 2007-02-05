@@ -130,7 +130,7 @@ namespace Phonon
 			float volume() const;
 			void setVolume( float newVolume );
 			void setVolumeDecibel( double newVolumeDecibel );
-			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
+            bool setOutputDevice(const AudioOutputDevice &newAudioOutputDevice);
 
 		Q_SIGNALS:
 			/**

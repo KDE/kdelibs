@@ -72,6 +72,9 @@ namespace Fake
 			void stop();
 			void seek( qint64 time );
 
+            QString errorString() const;
+            Phonon::ErrorType errorType() const;
+
 			void setBufferSize( int size );
 
 		Q_SIGNALS:

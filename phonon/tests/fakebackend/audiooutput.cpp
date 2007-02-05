@@ -61,11 +61,12 @@ void AudioOutput::setVolume( float newVolume )
 	emit volumeChanged( m_volume );
 }
 
-void AudioOutput::setOutputDevice( int newDevice )
+bool AudioOutput::setOutputDevice(int newDevice)
 {
 	Q_ASSERT( newDevice >= 10000 );
 	Q_ASSERT( newDevice <= 10001 );
 	m_device = newDevice;
+    return true;
 }
 
 void AudioOutput::processBuffer( const QVector<float>& buffer )

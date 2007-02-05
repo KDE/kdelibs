@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2004-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2004-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -202,6 +202,7 @@ namespace Factory
     PHONONCORE_EXPORT QObject* registerQObject( QObject* o );
     PHONONCORE_EXPORT void registerFrontendObject(BasePrivate *);
     PHONONCORE_EXPORT void deregisterFrontendObject(BasePrivate *);
+    PHONONCORE_EXPORT const KComponentData &componentData();
 
 //X    It is probably better if we can get away with internal handling of
 //X    freeing the soundcard device when it's not needed anymore and

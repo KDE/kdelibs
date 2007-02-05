@@ -61,6 +61,7 @@ class MethodTest : public QObject
 		void checkByteStreamInterfaces();
 		void checkMediaObjectInterfaces();
 		void checkAvCapturetInterfaces();
+        void checkAudioOutputInterface();
 
 	private:
 		void addColumns();

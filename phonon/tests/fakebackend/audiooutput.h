@@ -21,14 +21,16 @@
 
 #include "abstractaudiooutput.h"
 #include <QFile>
+#include <phonon/audiooutputinterface.h>
 
 namespace Phonon
 {
 namespace Fake
 {
-	class AudioOutput : public AbstractAudioOutput
+    class AudioOutput : public AbstractAudioOutput, public AudioOutputInterface
 	{
 		Q_OBJECT
+        Q_INTERFACES(Phonon::AudioOutputInterface)
 		public:
 			AudioOutput( QObject* parent );
 			~AudioOutput();
@@ -40,7 +42,7 @@ namespace Fake
 
 			// Attributes Setters:
 			void setVolume( float newVolume );
-			void setOutputDevice( int newDevice );
+            bool setOutputDevice(int newDevice);
 
 		public:
 			virtual void processBuffer( const QVector<float>& buffer );

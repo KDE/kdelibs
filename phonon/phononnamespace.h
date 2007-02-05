@@ -33,8 +33,6 @@
  * If you want to write a new backend take a look at \ref phonon_backend_development_page.
  *
  * \author Matthias Kretz <kretz@kde.org>
- *
- * \see Phonon::Ui
  */
 namespace Phonon
 {
@@ -123,6 +121,29 @@ namespace Phonon
          * Holds the largest value of categories.
          */
         LastCategory = AccessibilityCategory
+    };
+
+    /**
+     * Tells your program how to recover from an error.
+     *
+     * \see AbstractMediaProducer::errorType()
+     */
+    enum ErrorType {
+        /**
+         * No error. AbstractMediaProducer::errorType() returns this if
+         * AbstractMediaProducer::state() != Phonon::ErrorState.
+         */
+        NoError = 0,
+        /**
+         * Playback should work, and trying with another URL should work.
+         */
+        NormalError = 1,
+        /**
+         * Something important does not work. Your program cannot continue
+         * playback or capture or whatever it was trying to do
+         * without help from the user.
+         */
+        FatalError = 2
     };
 
     /**

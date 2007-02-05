@@ -253,6 +253,16 @@ void AbstractMediaProducer::seek( qint64 time )
 	}
 }
 
+QString AbstractMediaProducer::errorString() const
+{
+    return QString();
+}
+
+Phonon::ErrorType AbstractMediaProducer::errorType() const
+{
+    return Phonon::NoError;
+}
+
 void AbstractMediaProducer::setState( State newstate )
 {
 	if( newstate == m_state )
