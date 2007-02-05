@@ -79,11 +79,6 @@
  * destroyed, you need to call setAutoRemove(false), but make sure you have a
  * good reason for leaving your temp files around.
  *
- * @port4 If you are porting old KTempFile calls to KTemporaryFile, you need to
- *  remember that KTempFile by default will not automatically remove the file
- *  once the object is destroyed, but KTemporaryFile will! You also need to call
- *  open() in order to actually create the file.
- *
  * @see QTemporaryFile
  *
  * @author Jaison Lee <lee.jaison@gmail.com>

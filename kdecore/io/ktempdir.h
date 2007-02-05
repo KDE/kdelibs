@@ -81,7 +81,6 @@ public:
     * Turn automatic deletion of the directory on or off.
     * Automatic deletion is on by default.
     * @param autoRemove toggle automatic deletion on or off
-    * @port4 The default for setAutoRemove() is now true
     **/
    void setAutoRemove(bool autoRemove);
 

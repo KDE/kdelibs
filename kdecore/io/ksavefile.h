@@ -85,11 +85,6 @@
  * changes, we would instead call abort() to cancel all the I/O without
  * affecting the target file.
  *
- * @port4 KSaveFile now derives from QFile, so you can use it just like you
- * would use a normal QFile. The close() function has been renamed to
- * finalize(). Use the error() and errorString() functions to check for
- * errors instead of status().
- * 
  * @see QFile
  *
  * @author Jaison Lee <lee.jaison@gmail.com>
