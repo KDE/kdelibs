@@ -26,6 +26,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <QPointer>
 
 namespace Phonon
 {
@@ -94,7 +95,7 @@ class UiFactory::Private
 				KMessageBox::error( 0, i18n( "Unable to use the UI part of the loaded Multimedia Backend" ) );
 		}
 
-		QObject* backend;
+        QPointer<QObject> backend;
 };
 
 UiFactory* UiFactory::m_self = 0;
