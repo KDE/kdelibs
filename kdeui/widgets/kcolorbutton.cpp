@@ -164,7 +164,7 @@ void KColorButton::paintEvent( QPaintEvent* )
 QSize KColorButton::sizeHint() const
 {
     QStyleOptionButton opt;
-    initStyleOption(&opt);
+    d->initStyleOption(&opt);
     return style()->sizeFromContents(QStyle::CT_PushButton, &opt, QSize(40, 15), this).
 	  	expandedTo(QApplication::globalStrut());
 }
