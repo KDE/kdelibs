@@ -8,6 +8,7 @@
     </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
+      <arg name="capabilities" type="i" direction="in"/>
       <arg name="showProgress" type="b" direction="in"/>
       <arg name="internalAppName" type="s" direction="in"/>
       <arg name="jobIcon" type="s" direction="in"/>
@@ -16,33 +17,6 @@
     </method>
     <method name="jobFinished">
       <arg name="id" type="i" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
-    <method name="newAction">
-      <arg name="jobId" type="i" direction="in"/>
-      <arg name="actionId" type="i" direction="in"/>
-      <arg name="actionText" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
-    <method name="editAction">
-      <arg name="jobId" type="i" direction="in"/>
-      <arg name="actionId" type="i" direction="in"/>
-      <arg name="actionText" type="s" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
-    <method name="enableAction">
-      <arg name="jobId" type="i" direction="in"/>
-      <arg name="actionId" type="i" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
-    <method name="disableAction">
-      <arg name="jobId" type="i" direction="in"/>
-      <arg name="actionId" type="i" direction="in"/>
-      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-    </method>
-    <method name="removeAction">
-      <arg name="jobId" type="i" direction="in"/>
-      <arg name="actionId" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="totalSize">

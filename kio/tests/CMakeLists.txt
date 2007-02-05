@@ -301,6 +301,16 @@ target_link_libraries(netaccesstest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
+set(kioobservertest_SRCS kioobservertest.cpp)
+
+kde4_automoc(${kioobservertest_SRCS})
+
+kde4_add_executable(kioobservertest NOGUI RUN_UNINSTALLED ${kioobservertest_SRCS})
+
+target_link_libraries(kioobservertest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
+
+########### next target ###############
+
 set(jobtest_SRCS jobtest.cpp)
 
 kde4_automoc(${jobtest_SRCS})

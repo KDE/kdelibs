@@ -64,9 +64,16 @@ class KJobUiDelegate;
 class KDECORE_EXPORT KJob : public QObject
 {
     Q_OBJECT
-    Q_ENUMS( KillVerbosity )
+    Q_ENUMS( KillVerbosity Capability )
+    Q_FLAGS( Capabilities )
 
 public:
+    enum Capability { NoCapabilities = 0x0000,
+                      Killable       = 0x0001,
+                      Pausable       = 0x0002 };
+
+    Q_DECLARE_FLAGS( Capabilities, Capability )
+
     /**
      * Creates a new KJob object.
      *
@@ -98,6 +105,14 @@ public:
     KJobUiDelegate *uiDelegate() const;
 
     /**
+     * Returns the capabilities of this job.
+     *
+     * @return the capabilities that this job supports
+     * @see setCapabilities()
+     */
+    Capabilities capabilities() const;
+
+    /**
      * Starts the job asynchronously. When the job is finished,
      * result() is emitted.
      */
@@ -127,6 +142,14 @@ protected:
      * @return true if the operation is supported and succeeded, false otherwise
      */
     virtual bool doKill() { return false; }
+
+    /**
+     * Sets the capabilities for this job.
+     *
+     * @param capabilities are the capabilities supported by this job
+     * @see capabilities()
+     */
+    void setCapabilities( Capabilities capabilities );
 
 public:
     /**
@@ -356,5 +379,7 @@ private:
     class Private;
     Private *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KJob::Capabilities )
 
 #endif

@@ -97,6 +97,7 @@ public:
 
 Job::Job(bool showProgressInfo) : KCompositeJob(0), m_speedTimer(0), d( new JobPrivate )
 {
+    setCapabilities( KJob::Killable | KJob::Pausable );
     setUiDelegate( new JobUiDelegate( showProgressInfo ) );
 }
 

@@ -78,51 +78,32 @@ Observer::Observer()
 
 int Observer::newJob(KJob *job, JobVisibility visibility, const QString &icon)
 {
-    int progressId = 0;
+    if (!job) return 0;
 
-    // Tell the UI Server about this new job, and give it the application id
-    // at the same time
+    KComponentData componentData = KGlobal::mainComponent();
 
-    if (job)
+    QString jobIcon;
+    if (icon.isEmpty())
     {
-        KComponentData componentData = KGlobal::mainComponent();
+        if (job->uiDelegate()->jobIcon().isEmpty())
+            kWarning() << "No icon set for a job launched from " << componentData.aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
 
-        QString jobIcon;
-        if (icon.isEmpty())
-        {
-            if (job->uiDelegate()->jobIcon().isEmpty())
-                kWarning() << "No icon set for a job launched from " << componentData.aboutData()->appName() << ". No associated icon will be shown on kuiserver" << endl;
-
-            jobIcon = job->uiDelegate()->jobIcon();
-        }
-        else
-        {
-            jobIcon = icon;
-        }
-
-        progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), visibility,
-                                        componentData.aboutData()->appName(), jobIcon,
-                                        componentData.aboutData()->programName());
-
-        m_dctJobs.insert(progressId, job); // Keep the result in a dict
-        m_hashActions.insert(progressId, QHash<int, SlotCall>());
-
-        job->setProgressId(progressId); // Just to make sure this attribute is set (will be read later)
+        jobIcon = job->uiDelegate()->jobIcon();
+    }
+    else
+    {
+        jobIcon = icon;
     }
 
-    return progressId;
-}
+    // Notify the kuiserver about the new job
 
-int Observer::newJob(const QString &icon)
-{
-    KComponentData componentData = KGlobal::mainComponent();
-    QString jobIcon = icon;
+    int progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), job->capabilities(),
+                                        visibility, componentData.aboutData()->appName(),
+                                        jobIcon, componentData.aboutData()->programName());
 
-    if (icon.isEmpty())
-        jobIcon = componentData.aboutData()->appName();
+    m_dctJobs.insert(progressId, job);
 
-    int progressId = m_uiserver->newJob(QDBusConnection::sessionBus().baseService(), true,
-                                         componentData.aboutData()->appName(), jobIcon, componentData.aboutData()->programName());
+    job->setProgressId(progressId); // Just to make sure this attribute is set
 
     return progressId;
 }
@@ -132,7 +113,6 @@ void Observer::jobFinished(int progressId)
     m_uiserver->jobFinished(progressId);
 
     m_dctJobs.remove(progressId);
-    m_hashActions.remove(progressId);
 }
 
 void Observer::killJob(int progressId)
@@ -140,7 +120,7 @@ void Observer::killJob(int progressId)
     KJob *job = m_dctJobs.value(progressId);
 
     if (job)
-        job->kill(KJob::EmitResult /* not quietly */);
+        job->kill(KJob::EmitResult /* not quietly */ );
 }
 
 void Observer::suspend(int progressId)
@@ -180,82 +160,23 @@ QVariantMap Observer::metadata(int progressId)
 
 void Observer::slotActionPerformed(int actionId, int jobId)
 {
-    if (!m_hashActions.contains(jobId) ||
-        !m_hashActions[jobId].contains(actionId) ||
-        !m_dctJobs.contains(jobId) ||
-        !m_dctJobs[jobId])
-        return;
+    QByteArray slotName;
 
-    SlotCall theSlotCall = m_hashActions[jobId][actionId];
-
-    /// This way of calling the slot is more flexible than using QMetaObject::invokeMethod because
-    /// the slot can have no arguments, 1 argument (the actionId) or 2 arguments (the actionId and the jobId).
-    /// But if we used QMetaObject::invokeMethod we are forcing the slot to have 2 arguments, or wont be
-    /// called (ereslibre)
-
-    foreach (SlotInfo slot, theSlotCall.theSlotInfo)
+    switch (actionId)
     {
-        connect(this, SIGNAL(actionPerformed(KJob*,int)), slot.receiver, slot.slotName);
-        emit actionPerformed(m_dctJobs[jobId], actionId);
-        disconnect(this, SIGNAL(actionPerformed(KJob*,int)), slot.receiver, slot.slotName);
+        case KJob::Pausable:
+                slotName = SLOT(suspend());
+            break;
+        case KJob::Killable:
+                slotName = SLOT(kill());
+            break;
+        default:
+            return;
     }
-}
 
-
-/// ===========================================================
-
-
-void Observer::setTotalSize(int jobId, qulonglong size)
-{
-    m_uiserver->totalSize(jobId, size);
-}
-
-void Observer::setTotalFiles(int jobId, unsigned long files)
-{
-    m_uiserver->totalFiles(jobId, files);
-}
-
-void Observer::setTotalDirs(int jobId, unsigned long dirs)
-{
-    m_uiserver->totalDirs(jobId, dirs);
-}
-
-void Observer::setProcessedSize(int jobId, qulonglong size)
-{
-    m_uiserver->processedSize(jobId, size);
-}
-
-void Observer::setProcessedFiles(int jobId, unsigned long files)
-{
-    m_uiserver->processedFiles(jobId, files);
-}
-
-void Observer::setProcessedDirs(int jobId, unsigned long dirs)
-{
-    m_uiserver->processedDirs(jobId, dirs);
-}
-
-void Observer::setSpeed(int jobId, unsigned long speed)
-{
-    if (speed)
-        m_uiserver->speed(jobId, KIO::convertSize(speed) + QString("/s"));
-    else
-        m_uiserver->speed(jobId, QString());
-}
-
-void Observer::setPercent(int jobId, unsigned long percent)
-{
-    m_uiserver->percent(jobId, percent);
-}
-
-void Observer::setInfoMessage(int jobId, const QString &msg)
-{
-    m_uiserver->infoMessage(jobId, msg);
-}
-
-void Observer::setProgressMessage(int jobId, const QString &msg)
-{
-    m_uiserver->progressInfoMessage(jobId, msg);
+    connect(this, SIGNAL(actionPerformed(KJob*,int)), m_dctJobs[jobId], slotName);
+    emit actionPerformed(m_dctJobs[jobId], actionId);
+    disconnect(this, SIGNAL(actionPerformed(KJob*,int)), m_dctJobs[jobId], slotName);
 }
 
 
@@ -321,11 +242,7 @@ void Observer::slotProgressMessage(KJob *job, const QString &msg)
 
 void Observer::slotCopying(KJob *job, const KUrl &from, const KUrl &to)
 {
-    if (m_uiserver->copying(job->progressId(), from.url(), to.url()))
-    {
-        addStandardAction(job->progressId(), ActionPause);
-        addStandardAction(job->progressId(), ActionCancel);
-    }
+    m_uiserver->copying(job->progressId(), from.url(), to.url());
 }
 
 void Observer::slotMoving(KJob *job, const KUrl &from, const KUrl &to)
@@ -504,207 +421,6 @@ SkipDialog_Result Observer::open_SkipDialog(KJob* job,
     if (job && job->progressId())
         m_uiserver->setJobVisible(job->progressId(), true);
     return res;
-}
-
-
-/// ===========================================================
-
-
-void Observer::addAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName)
-{
-    if (!m_dctJobs.contains(jobId)) return;
-
-    m_uiserver->newAction(jobId, actionId, actionText);
-
-    SlotCall newSlotCall;
-    SlotInfo newSlotInfo;
-
-    newSlotInfo.receiver = receiver;
-    newSlotInfo.slotName = slotName;
-
-    newSlotCall.theSlotInfo.append(newSlotInfo);
-
-    m_hashActions[jobId].insert(actionId, newSlotCall);
-}
-
-void Observer::addStandardAction(int jobId, StandardActions action, QObject *receiver, const char *slotName)
-{
-    if (!m_dctJobs.contains(jobId)) return;
-
-    QString actionText;
-    QObject *theReceiver = receiver;
-    QByteArray theSlotName = slotName;
-    QByteArray defaultSlotName;
-    int defaultActionId;
-    bool successful = true;
-
-    switch (action)
-    {
-        case ActionPause:
-            actionText = i18n("Pause");
-            defaultActionId = 0;
-            defaultSlotName = SLOT(jobPaused(KJob*,int));
-            break;
-        case ActionResume:
-            actionText = i18n("Resume");
-            defaultActionId = 0;
-            defaultSlotName = SLOT(jobResumed(KJob*,int));
-            break;
-        case ActionCancel:
-            actionText = i18n("Cancel");
-            defaultActionId = 1;
-            defaultSlotName = SLOT(jobCanceled(KJob*,int));
-            break;
-        default:
-            kWarning() << "Could not find any slot available for unknown action identifier " << action << endl;
-            successful = false;
-    }
-
-    if (!successful) return;
-
-    if (!theReceiver)
-        theReceiver = this;
-
-    if (theSlotName.isEmpty())
-        theSlotName = defaultSlotName;
-
-    return addAction(jobId, defaultActionId, actionText, theReceiver, theSlotName);
-}
-
-void Observer::addAction(KJob *job, int actionId, const QString &actionText, QObject *receiver, const char *slotName)
-{
-    addAction(job->progressId(), actionId, actionText, receiver, slotName);
-}
-
-void Observer::addStandardAction(KJob *job, StandardActions action, QObject *receiver, const char *slotName)
-{
-    addStandardAction(job->progressId(), action, receiver, slotName);
-}
-
-void Observer::editAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName)
-{
-    if (!m_hashActions.contains(jobId) ||
-        !m_hashActions[jobId].contains(actionId))
-        return;
-
-    m_uiserver->editAction(jobId, actionId, actionText);
-
-    m_hashActions[jobId][actionId].theSlotInfo.clear();
-
-    SlotCall newSlotCall;
-    SlotInfo newSlotInfo;
-
-    newSlotInfo.receiver = receiver;
-    newSlotInfo.slotName = slotName;
-
-    newSlotCall.theSlotInfo.append(newSlotInfo);
-
-    m_hashActions[jobId][actionId] = newSlotCall;
-}
-
-void Observer::editStandardAction(int jobId, StandardActions action, QObject *receiver, const char *slotName)
-{
-    QString actionText;
-    QObject *theReceiver = receiver;
-    QByteArray theSlotName = slotName;
-    QByteArray defaultSlotName;
-    int defaultActionId;
-    bool successful = true;
-
-    switch (action)
-    {
-        case ActionPause:
-            actionText = i18n("Pause");
-            defaultActionId = 0;
-            defaultSlotName = SLOT(jobPaused(KJob*,int));
-            break;
-        case ActionResume:
-            actionText = i18n("Resume");
-            defaultActionId = 0;
-            defaultSlotName = SLOT(jobResumed(KJob*,int));
-            break;
-        case ActionCancel:
-            actionText = i18n("Cancel");
-            defaultActionId = 1;
-            defaultSlotName = SLOT(jobCanceled(KJob*,int));
-            break;
-        default:
-            kWarning() << "Could not find any slot available for unknown action identifier " << action << endl;
-            successful = false;
-    }
-
-    if (!successful ||
-        (!theReceiver && !theSlotName.isEmpty()) ||
-        (theReceiver && theSlotName.isEmpty())) return;
-
-    if (!theReceiver)
-        theReceiver = this;
-
-    if (theSlotName.isEmpty())
-        theSlotName = defaultSlotName;
-
-    editAction(jobId, defaultActionId, actionText, theReceiver, theSlotName);
-}
-
-void Observer::removeAction(int jobId, int actionId)
-{
-    if (!m_hashActions.contains(jobId) ||
-        !m_hashActions[jobId].contains(actionId))
-        return;
-
-    m_uiserver->removeAction(jobId, actionId);
-
-    m_hashActions[jobId][actionId].theSlotInfo.clear();
-
-    m_hashActions.remove(actionId);
-}
-
-/// ===========================================================
-
-
-void Observer::jobPaused(KJob *job, int actionId)
-{
-    Q_UNUSED(actionId);
-
-    if (!job) return;
-
-    KIO::Job *kioJob = static_cast<KIO::Job*>(job);
-
-    if (kioJob)
-    {
-        kioJob->suspend();
-    }
-    else return;
-
-    editStandardAction(job->progressId(), ActionResume);
-}
-
-void Observer::jobResumed(KJob *job, int actionId)
-{
-    Q_UNUSED(actionId);
-
-    if (!job) return;
-
-    KIO::Job *kioJob = static_cast<KIO::Job*>(job);
-
-    if (kioJob)
-    {
-        kioJob->resume();
-    }
-    else return;
-
-    editStandardAction(job->progressId(), ActionPause);
-}
-
-void Observer::jobCanceled(KJob *job, int actionId)
-{
-    Q_UNUSED(actionId);
-
-    if (!job) return;
-
-    int progressId = job->progressId();
-    job->kill();
-    jobFinished(progressId);
 }
 
 #include "observer.moc"

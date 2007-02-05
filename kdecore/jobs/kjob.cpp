@@ -30,7 +30,7 @@ class KJob::Private
 {
 public:
     Private() : uiDelegate( 0 ), progressId( 0 ), error( KJob::NoError ),
-                processedSize( 0 ), totalSize( 0 ), percentage( 0 ) {}
+                processedSize( 0 ), totalSize( 0 ), percentage( 0 ), capabilities( KJob::NoCapabilities ) {}
 
     KJobUiDelegate *uiDelegate;
     int progressId;
@@ -39,6 +39,7 @@ public:
     qulonglong processedSize;
     qulonglong totalSize;
     unsigned long percentage;
+    KJob::Capabilities capabilities;
 };
 
 KJob::KJob( QObject *parent )
@@ -75,6 +76,11 @@ KJobUiDelegate *KJob::uiDelegate() const
     return d->uiDelegate;
 }
 
+KJob::Capabilities KJob::capabilities() const
+{
+    return d->capabilities;
+}
+
 bool KJob::kill( KillVerbosity verbosity )
 {
     if ( doKill() )
@@ -102,6 +108,11 @@ bool KJob::kill( KillVerbosity verbosity )
     {
         return false;
     }
+}
+
+void KJob::setCapabilities( KJob::Capabilities capabilities )
+{
+    d->capabilities = capabilities;
 }
 
 bool KJob::exec()

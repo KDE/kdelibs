@@ -107,15 +107,6 @@ public:
     int newJob(KJob *job, JobVisibility visibility = JobShown, const QString &icon = QString());
 
     /**
-      * If you don't have a KJob, but want to show some kind of
-      * progress into the UI Server, you have to call this method
-      *
-      * @param icon the icon to be shown on the UI Server
-      * @return     the progress ID assigned by the UI Server
-      */
-    int newJob(const QString &icon = QString());
-
-    /**
       * Called by the job destructor, to tell the UI Server that
       * the job ended
       *
@@ -180,90 +171,8 @@ public:
                                             bool multi,
                                             const QString & error_text);
 
-    /**
-      * Adds an action to a job
-      *
-      * @param jobId        the identification number of the job
-      * @param actionId     the action identification number that will have the new action
-      * @param actionText   the text that will be shown on the button
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the slot that will be called when button is clicked
-      */
-    void addAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
-
-    /**
-      * Adds a standard action to a job
-      *
-      * @param jobId        the identification number of the job
-      * @param action       the standard action that will be added
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the slot that will be called when button is clicked
-      */
-    void addStandardAction(int jobId, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
-
-    /**
-      * Adds an action to a job
-      *
-      * @param job          the job to which the action will be added
-      * @param actionId     the action identification number that will have the new action
-      * @param actionText   the text that will be shown on the button
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the slot that will be called when button is clicked
-      */
-    void addAction(KJob *job, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
-
-    /**
-      * Adds a standard action to a job
-      *
-      * @param job          the job to which the action will be added
-      * @param action       the typical action that will be added
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the slot that will be called when button is clicked
-      */
-    void addStandardAction(KJob *job, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
-
-    /**
-      * Edits an existing action
-      *
-      * @param jobId        the identification number of the job
-      * @param actionId     the action that is going to be edited
-      * @param actionText   the new text that is going to be shown on the button
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the new slot that will be called if the action is performed
-      */
-    void editAction(int jobId, int actionId, const QString &actionText, QObject *receiver, const char *slotName);
-
-    /**
-      * Edits an existing standard action
-      *
-      * @param jobId        the identification number of the job
-      * @param action       the standard action that will be added
-      * @param receiver     the QObject pointer where slot @p slotName lives
-      * @param slotName     the new slot that will be called if the action is performed
-      */
-    void editStandardAction(int jobId, StandardActions action, QObject *receiver = 0, const char *slotName = 0);
-
-    /**
-      * Enables an existing action (the press button)
-      *
-      * @param actionId the action that is going to be enabled
-      */
-    void enableAction(int actionId);
-
-    /**
-      * Disables an existing action (the press button)
-      *
-      * @param actionId the action that is going to be disabled
-      */
-    void disableAction(int actionId);
-
-    /**
-      * Removes an existing action
-      *
-      * @param jobId    the identification number of the job
-      * @param actionId the action that is going to be removed
-      */
-    void removeAction(int jobId, int actionId);
+// FIXME: Are these slots necessary now that we have slotActionPerformed ?
+//        I don't think so (ereslibre)
 
 public Q_SLOTS:
     /**
@@ -295,17 +204,6 @@ public Q_SLOTS:
     Q_SCRIPTABLE QVariantMap metadata(int progressId);
 
 protected:
-    struct SlotInfo
-    {
-        QObject *receiver;
-        QByteArray slotName;
-    };
-
-    struct SlotCall
-    {
-        QList<SlotInfo> theSlotInfo;
-    };
-
     static Observer *s_pObserver;
     Observer();
     ~Observer() {}
@@ -313,19 +211,11 @@ protected:
     OrgKdeKIOUIServerInterface *m_uiserver;
 
     QMap<int, KJob*> m_dctJobs;
-    QHash<int /* jobId */, QHash<int /* actionId */, SlotCall> > m_hashActions;
 
 public Q_SLOTS:
-    void setTotalSize(int jobId, qulonglong size);
-    void setTotalFiles(int jobId, unsigned long files);
-    void setTotalDirs(int jobId, unsigned long dirs);
-    void setProcessedSize(int jobId, qulonglong size);
-    void setProcessedFiles(int jobId, unsigned long files);
-    void setProcessedDirs(int jobId, unsigned long dirs);
-    void setSpeed(int jobId, unsigned long speed);
-    void setPercent(int jobId, unsigned long percent);
-    void setInfoMessage(int jobId, const QString &msg);
-    void setProgressMessage(int jobId, const QString &msg);
+    // TODO: Maybe it is more cute having all these methods called setFoo, instead of slotFoo.
+    //       Anyway this doesn't seem a trivial change on kdelibs and kdebase, so I will go on it
+    //       when have more time. Well, if you wanna try, tell me :) (ereslibre)
 
     void slotTotalSize(KJob *job, qulonglong size);
     void slotTotalFiles(KJob *job, unsigned long files);
@@ -351,9 +241,6 @@ public:
 
 private Q_SLOTS:
     void slotActionPerformed(int actionId, int jobId);
-    void jobPaused(KJob *job, int actionId);
-    void jobResumed(KJob *job, int actionId);
-    void jobCanceled(KJob *job, int actionId);
 
 Q_SIGNALS:
     void actionPerformed(KJob *job, int actionId);
