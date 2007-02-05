@@ -24,6 +24,7 @@
 #include "ecma/kjs_binding.h"
 #include <kjs/object.h>
 #include <QPointer>
+#include <phonon/phononnamespace.h>
 
 #include "misc/loader.h"
 
@@ -105,6 +106,10 @@ namespace KJS {
   protected Q_SLOTS:
     void nextIteration();
     void refLoader();
+    void finished();
+    void slotStateChanged(Phonon::State newstate, Phonon::State oldstate);
+    
+  protected:
     void reset();
 
   private:
@@ -113,6 +118,7 @@ namespace KJS {
     Phonon::ByteStream*  m_media;
     QByteArray m_sound;
     int m_playCount;
+    bool m_stopping;
 
     static Phonon::AudioPath*   s_audioPath;
     static Phonon::AudioOutput* s_audioOutput;

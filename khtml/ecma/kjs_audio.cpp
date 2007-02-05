@@ -230,7 +230,8 @@ using namespace Phonon;
 AudioQObject::AudioQObject(Audio* jObj)
   : m_jObj( jObj ),
     m_media(0), 
-    m_playCount(0)
+    m_playCount(0),
+    m_stopping(false)
 {
     // sound might be immediately available, so delay ref'ing until
     // listeners have had a chance to register.
@@ -273,36 +274,53 @@ void AudioQObject::setupPlayer()
     m_media->setStreamSeekable( true );
 
     connect(m_media, SIGNAL(needData()), this, SLOT(nextIteration()));
-    connect(m_media, SIGNAL(finished()), this, SLOT(reset()));
+    connect(m_media, SIGNAL(finished()), this, SLOT(finished()));
+    connect(m_media, SIGNAL(stateChanged(Phonon::State,Phonon::State)), 
+            this,    SLOT(slotStateChanged(Phonon::State,Phonon::State)));
+
+    m_media->setStreamSize( m_sound.size()-1 );
+    m_playCount = 1;
+    nextIteration();
+}
+
+void AudioQObject::finished()
+{
+    reset();
+    if (m_playCount > 0)
+        m_playCount--;
+    loop(m_playCount);
 }
 
 void AudioQObject::reset()
 {
     if (!m_media || m_media->state() == LoadingState) 
         return;
-    m_media->seek(0);
-    m_media->stop();
+    if (m_media->state() != StoppedState) {
+        // ### bah. it doesn't help.
+        //m_stopping = true;
+        m_media->stop();
+    }
+    //m_media->seek(0);
+}
+
+void AudioQObject::slotStateChanged(Phonon::State newstate, Phonon::State oldstate)
+{
+    qDebug("newstate %d oldstate %d m_stopping %d", newstate, oldstate, m_stopping); 
+    if (newstate == StoppedState && m_stopping) {
+        m_stopping = false;
+        loop(m_playCount);
+    }
 }
 
 void AudioQObject::nextIteration()
 {
-    if (!m_playCount) {
-        m_media->endOfData();
-        return;
-    }
-
-    if (m_playCount > 0)
-        m_playCount--;
-
     m_media->writeData(m_sound);
+    m_media->endOfData();    
 }
 
 void AudioQObject::play()
 {
-    m_playCount = 1;
-    if (!m_media || m_media->state() == PlayingState)
-        return;
-    m_media->play();
+    loop(1);
 }
 
 void AudioQObject::stop()
@@ -314,7 +332,7 @@ void AudioQObject::stop()
 void AudioQObject::loop(int n)
 {
     m_playCount = n;
-    if (!m_media || m_media->state() == PlayingState)
+    if (!m_media || !m_playCount || m_stopping || m_media->state() == PlayingState)
         return;
     m_media->play();
 }
