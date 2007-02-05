@@ -33,17 +33,17 @@ void MethodTest::checkBackendInterface()
     QVERIFY(qobject_cast<Phonon::BackendInterface*>(Factory::backend()) != 0);
 }
 
-void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
-#include "methods/abstractaudiooutput.cpp"
-#include "methods/audiodataoutput.cpp"
-}
+//void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
+//#include "methods/abstractaudiooutput.cpp"
+//#include "methods/audiodataoutput.cpp"
+//}
 void MethodTest::checkAudioEffectMethods_data() { addColumns();
 #include "methods/audioeffect.cpp"
 }
-void MethodTest::checkAudioOutputMethods_data() { addColumns();
-#include "methods/abstractaudiooutput.cpp"
-#include "methods/audiooutput.cpp"
-}
+//void MethodTest::checkAudioOutputMethods_data() { addColumns();
+//#include "methods/abstractaudiooutput.cpp"
+//#include "methods/audiooutput.cpp"
+//}
 void MethodTest::checkAudioPathMethods_data() { addColumns();
 #include "methods/audiopath.cpp"
 }
@@ -87,9 +87,9 @@ void MethodTest::checkVisualizationMethods_data() { addColumns();
 void MethodTest::checkVolumeFaderEffectMethods_data() { addColumns();
 #include "methods/volumefadereffect.cpp"
 }
-void MethodTest::checkAudioDataOutputMethods()   { checkMethods( Factory::createAudioDataOutput() ); }
+//void MethodTest::checkAudioDataOutputMethods()   { checkMethods( Factory::createAudioDataOutput() ); }
 void MethodTest::checkAudioEffectMethods()       { checkMethods( Factory::createAudioEffect( 1 ) ); }
-void MethodTest::checkAudioOutputMethods()       { checkMethods( Factory::createAudioOutput() ); }
+//void MethodTest::checkAudioOutputMethods()       { checkMethods( Factory::createAudioOutput() ); }
 void MethodTest::checkAudioPathMethods()         { checkMethods( Factory::createAudioPath() ); }
 void MethodTest::checkAvCaptureMethods()         { checkMethods( Factory::createAvCapture() ); }
 void MethodTest::checkBackendMethods()           { checkMethods( Factory::backend() ); }

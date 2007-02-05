@@ -28,12 +28,12 @@ class MethodTest : public QObject
 	private Q_SLOTS:
         void checkBackendInterface();
 
-		void checkAudioDataOutputMethods_data();
-		void checkAudioDataOutputMethods();
+        //void checkAudioDataOutputMethods_data();
+        //void checkAudioDataOutputMethods();
 		void checkAudioEffectMethods_data();
 		void checkAudioEffectMethods();
-		void checkAudioOutputMethods_data();
-		void checkAudioOutputMethods();
+        //void checkAudioOutputMethods_data();
+        //void checkAudioOutputMethods();
 		void checkAudioPathMethods_data();
 		void checkAudioPathMethods();
 		void checkAvCaptureMethods_data();
