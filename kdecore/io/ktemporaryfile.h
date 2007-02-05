@@ -98,7 +98,7 @@ public:
      * \param componentData The KComponentData to use for the name of the file and to look up the
      * directory.
      */
-    KTemporaryFile(const KComponentData &componentData = KGlobal::mainComponent());
+    explicit KTemporaryFile(const KComponentData &componentData = KGlobal::mainComponent());
 
     /**
      * Destructor.
