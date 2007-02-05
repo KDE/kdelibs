@@ -48,7 +48,6 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
  dialogs/kaboutdialog.cpp
- dialogs/kaboutkde.cpp
  dialogs/kaboutkdedialog.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
@@ -247,7 +246,6 @@ install( FILES
  dialogs/kaboutapplication.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kaboutdialog.h
- dialogs/kaboutkde.h
  dialogs/kaboutkdedialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h

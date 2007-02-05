@@ -50,7 +50,6 @@ install( FILES
   KAboutContributor
   KAboutData
   KAboutDialog
-  KAboutKDE
   KAboutKDEDialog
   KAboutPerson
   KAboutTranslator
