@@ -30,9 +30,9 @@ KJS::JSValue *callValueType( KJS::ExecState *exec, KJS::JSObject *self, const KJ
     KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
     if( imp )
     {
-        return KJS::String( imp->className().ascii() );
+        return KJS::jsString( imp->className().ascii() );
     }
-    return KJS::Null();
+    return KJS::jsNull();
 }
 
 const Method ValueFactory::ValueMethods[] =

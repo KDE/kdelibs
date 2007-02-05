@@ -20,7 +20,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-var console = new Form("console.ui", this);
+var uiLoader = new QUiLoader(this);
+
+var console = uiLoader.load("console.ui", this);
 connect( console.commandLine, "returnPressed()", this, "callCommand()" );
 console.show();
 exec();

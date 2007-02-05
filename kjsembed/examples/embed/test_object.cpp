@@ -28,7 +28,7 @@ using namespace KJSEmbed;
 namespace TestObjectNS
 {
 START_VARIANT_METHOD( callPrint, CustomValue )
-    qDebug() << "TestObject Print:" << value.index++ << args[0]->toString(exec).qstring();
+    qDebug() << "TestObject Print:" << value.index++ << toQString(args[0]->toString(exec));
 END_VARIANT_METHOD
 }
 
@@ -44,7 +44,7 @@ START_CTOR( TestObject, TestObject, 1 )
     CustomValue value;
     value.index = 1;
     if( args.size() == 1 )
-        value.index = args[0]->toNumber(exec);
+        value.index = int(args[0]->toNumber(exec));
     KJS::JSObject *object = new KJSEmbed::VariantBinding(exec, qVariantFromValue(value) ); // For custom variants you must use qVariantFromValue
     StaticBinding::publish( exec, object, TestObject::methods() );
     return object;

@@ -77,18 +77,18 @@ QPaintDevice *extractPaintDevice( KJS::ExecState *exec, KJS::JSValue *arg)
 }
 
 START_OBJECT_METHOD( callPainterBegin, QPainter )
-  result = KJS::Boolean(false);
+  result = KJS::jsBoolean(false);
   QPaintDevice *device = extractPaintDevice(exec, args[0]);
   if( device )
   {
-    result = KJS::Boolean(object->begin(device));
+    result = KJS::jsBoolean(object->begin(device));
   } else {
-    result = KJS::Boolean(false);
+    result = KJS::jsBoolean(false);
   }
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callPainterEnd, QPainter )
-    result = KJS::Boolean(object->end());
+    result = KJS::jsBoolean(object->end());
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callbackground, QPainter )
@@ -98,7 +98,7 @@ END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callbackgroundMode, QPainter )
     Qt::BGMode cppValue = object->backgroundMode();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callboundingRect, QPainter )
@@ -498,7 +498,7 @@ START_CTOR( Painter, QPainter, 0 )
         }
         else
         {
-            KJS::throwError( exec, KJS::EvalError, QString("Cannot paint to object %1").arg(args[0]->toString(exec).qstring()) );
+            KJS::throwError( exec, KJS::EvalError, QString("Cannot paint to object %1").arg(toQString(args[0]->toString(exec))));
 	    return 0L;
         }
     }

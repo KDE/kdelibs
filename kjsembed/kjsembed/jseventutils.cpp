@@ -157,16 +157,16 @@ namespace JSEventUtils
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QEvent *ev)
     {
         ObjectBinding *evnt = new ObjectBinding( exec, "QEvent", ev );
-        evnt->put( exec, "type", KJS::Number( (int) ev->type()) );
-        evnt->put( exec, "spontaneous", KJS::Boolean(ev->spontaneous()) );
-        evnt->put( exec, "isAccepted", KJS::Boolean(ev->isAccepted()) );
+        evnt->put( exec, "type", KJS::jsNumber( (int) ev->type()) );
+        evnt->put( exec, "spontaneous", KJS::jsBoolean(ev->spontaneous()) );
+        evnt->put( exec, "isAccepted", KJS::jsBoolean(ev->isAccepted()) );
         return evnt;
     }
 
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QInputEvent *ev)
     {
         KJS::JSObject *iev = convertEvent( exec, (QEvent *)ev );
-        iev->put( exec, "modifiers", KJS::Number( ev->modifiers() ));
+        iev->put( exec, "modifiers", KJS::jsNumber( ev->modifiers() ));
         return iev;
     }
 
@@ -175,15 +175,15 @@ namespace JSEventUtils
         KJS::JSObject *mev = convertEvent( exec, (QInputEvent *)ev );
 
         mev->put( exec, "pos", convertToValue( exec, ev->pos() ));
-        mev->put( exec, "x", KJS::Number( ev->x() ));
-        mev->put( exec, "y", KJS::Number( ev->y() ));
+        mev->put( exec, "x", KJS::jsNumber( ev->x() ));
+        mev->put( exec, "y", KJS::jsNumber( ev->y() ));
 
         mev->put( exec, "globalPos", convertToValue( exec, ev->globalPos() ));
-        mev->put( exec, "globalX", KJS::Number( ev->globalX() ));
-        mev->put( exec, "globalY", KJS::Number( ev->globalY() ));
+        mev->put( exec, "globalX", KJS::jsNumber( ev->globalX() ));
+        mev->put( exec, "globalY", KJS::jsNumber( ev->globalY() ));
 
-        mev->put( exec, "button", KJS::Number(ev->button()) );
-        mev->put( exec, "buttons", KJS::Number(ev->buttons()) );
+        mev->put( exec, "button", KJS::jsNumber(ev->button()) );
+        mev->put( exec, "buttons", KJS::jsNumber(ev->buttons()) );
 
         return mev;
     }
@@ -201,10 +201,10 @@ namespace JSEventUtils
     {
         KJS::JSObject *kev = convertEvent( exec, (QInputEvent *)ev );
 
-        kev->put( exec, "key", KJS::Number(ev->key()) );
-        kev->put( exec, "text", KJS::String(ev->text()));
-        kev->put( exec, "isAutoRepeat", KJS::Boolean(ev->isAutoRepeat()) );
-        kev->put( exec, "count", KJS::Number( ev->count()) );
+        kev->put( exec, "key", KJS::jsNumber(ev->key()) );
+        kev->put( exec, "text", KJS::jsString(ev->text()));
+        kev->put( exec, "isAutoRepeat", KJS::jsBoolean(ev->isAutoRepeat()) );
+        kev->put( exec, "count", KJS::jsNumber( ev->count()) );
         return kev;
     }
 
@@ -212,10 +212,10 @@ namespace JSEventUtils
     {
         KJS::JSObject *qev = convertEvent( exec, (QEvent *)ev );
 
-        qev->put( exec, "commitString", KJS::String(ev->commitString()) );
-        qev->put( exec, "preeditString", KJS::String(ev->preeditString()) );
-        qev->put( exec, "replacementLength", KJS::Number(ev->replacementLength()) );
-        qev->put( exec, "replacementStart", KJS::Number(ev->replacementStart()) );
+        qev->put( exec, "commitString", KJS::jsString(ev->commitString()) );
+        qev->put( exec, "preeditString", KJS::jsString(ev->preeditString()) );
+        qev->put( exec, "replacementLength", KJS::jsNumber(ev->replacementLength()) );
+        qev->put( exec, "replacementStart", KJS::jsNumber(ev->replacementStart()) );
         return qev;
     }
 
@@ -232,7 +232,7 @@ namespace JSEventUtils
     {
         KJS::JSObject *cev = convertEvent( exec, (QEvent *)ev );
 
-        cev->put( exec, "isAccepted", KJS::Boolean(ev->isAccepted()) );
+        cev->put( exec, "isAccepted", KJS::jsBoolean(ev->isAccepted()) );
         return cev;
     }
 
@@ -249,15 +249,15 @@ namespace JSEventUtils
     {
         KJS::JSObject *wev = convertEvent( exec, (QInputEvent *)ev );
 
-        wev->put( exec, "delta", KJS::Number(ev->delta()) );
+        wev->put( exec, "delta", KJS::jsNumber(ev->delta()) );
         wev->put( exec, "pos", convertToValue( exec, ev->pos() ) );
         wev->put( exec, "globalPos", convertToValue( exec, ev->globalPos() ) );
-        wev->put( exec, "x", KJS::Number(ev->x()) );
-        wev->put( exec, "y", KJS::Number(ev->y()) );
-        wev->put( exec, "globalX", KJS::Number(ev->globalX()) );
-        wev->put( exec, "globalY", KJS::Number(ev->globalY()) );
-        wev->put( exec, "orientation", KJS::Number(ev->orientation()) );
-        wev->put( exec, "buttons", KJS::Number(ev->buttons()) );
+        wev->put( exec, "x", KJS::jsNumber(ev->x()) );
+        wev->put( exec, "y", KJS::jsNumber(ev->y()) );
+        wev->put( exec, "globalX", KJS::jsNumber(ev->globalX()) );
+        wev->put( exec, "globalY", KJS::jsNumber(ev->globalY()) );
+        wev->put( exec, "orientation", KJS::jsNumber(ev->orientation()) );
+        wev->put( exec, "buttons", KJS::jsNumber(ev->buttons()) );
 
         return wev;
     }
@@ -267,10 +267,10 @@ namespace JSEventUtils
         KJS::JSObject *dev = convertEvent( exec, (QEvent *)ev );
         dev->put( exec, "pos", convertToValue( exec, ev->pos() ) );
         dev->put( exec, "source", new QObjectBinding(exec, (QObject*)ev->source() ) );
-        dev->put( exec, "dropAction", KJS::Number( (int)(ev->dropAction()) ) );
-        dev->put( exec, "keyboardModifiers", KJS::Number( (int)(ev->keyboardModifiers()) ) );
-        dev->put( exec, "possibleActions", KJS::Number( (int)(ev->possibleActions()) ) );
-        dev->put( exec, "proposedAction", KJS::Number( (int)(ev->proposedAction()) ) );
+        dev->put( exec, "dropAction", KJS::jsNumber( (int)(ev->dropAction()) ) );
+        dev->put( exec, "keyboardModifiers", KJS::jsNumber( (int)(ev->keyboardModifiers()) ) );
+        dev->put( exec, "possibleActions", KJS::jsNumber( (int)(ev->possibleActions()) ) );
+        dev->put( exec, "proposedAction", KJS::jsNumber( (int)(ev->proposedAction()) ) );
         return dev;
     }
 
@@ -284,30 +284,30 @@ namespace JSEventUtils
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QTimerEvent *ev)
     {
         KJS::JSObject *dev = convertEvent( exec, (QEvent *)ev );
-        dev->put( exec, "timerId", KJS::Number(ev->timerId()) );
+        dev->put( exec, "timerId", KJS::jsNumber(ev->timerId()) );
         return dev;
     }
 
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QContextMenuEvent *ev)
     {
         KJS::JSObject *cxev = convertEvent( exec, (QInputEvent *)ev );
-        cxev->put( exec, "x", KJS::Number(ev->x()) );
-        cxev->put( exec, "y", KJS::Number(ev->y()) );
-        cxev->put( exec, "globalX", KJS::Number(ev->globalX()) );
-        cxev->put( exec, "globalY", KJS::Number(ev->globalY()) );
+        cxev->put( exec, "x", KJS::jsNumber(ev->x()) );
+        cxev->put( exec, "y", KJS::jsNumber(ev->y()) );
+        cxev->put( exec, "globalX", KJS::jsNumber(ev->globalX()) );
+        cxev->put( exec, "globalY", KJS::jsNumber(ev->globalY()) );
         cxev->put( exec, "pos",convertToValue( exec, ev->pos() ) );
         cxev->put( exec, "globalPos", convertToValue( exec, ev->globalPos() ) );
-        cxev->put( exec, "reason", KJS::Number((int)ev->reason()) );
+        cxev->put( exec, "reason", KJS::jsNumber((int)ev->reason()) );
         return cxev;
     }
 
     KJS::JSObject *convertEvent( KJS::ExecState *exec, const QFocusEvent *ev)
     {
          KJS::JSObject *dev = convertEvent( exec, (QEvent *)ev );
-         dev->put( exec, "gotFocus", KJS::Boolean( ev->gotFocus() ) );
-         dev->put( exec, "lostFocus", KJS::Boolean( ev->lostFocus() ));
+         dev->put( exec, "gotFocus", KJS::jsBoolean( ev->gotFocus() ) );
+         dev->put( exec, "lostFocus", KJS::jsBoolean( ev->lostFocus() ));
          //Gold star trolltech!
-         dev->put( exec, "reason", KJS::Number((int) const_cast<QFocusEvent*>( ev )->reason() ) );
+         dev->put( exec, "reason", KJS::jsNumber((int) const_cast<QFocusEvent*>( ev )->reason() ) );
          return dev;
     }
 }// namespace JSEventUtils

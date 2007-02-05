@@ -1,12 +1,22 @@
 
 project(kjsembed-kjsembed)
 
+if (NOT QTONLY_WEBKIT)
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/kjsembed 
-    ${CMAKE_BINARY_DIR}/kjs
+   ${CMAKE_BINARY_DIR}/kjs
     ${KDE4_KDECORE_INCLUDES}
 )
+else (NOT QTONLY_WEBKIT)
+include_directories(
+    $(QTONLY_WEBKIT_DIR)/JavaScriptCore/kjs
+    $(QTONLY_WEBKIT_DIR)/JavaScriptCore
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/kjsembed 
+    ${KDE4_KDECORE_INCLUDES}
+)
+endif (NOT QTONLY_WEBKIT)
 
 
 ########### next target ###############
@@ -50,13 +60,18 @@ if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)
    set(KJSEMBEDLIBNAME kjsembed)
 else (NOT DEFINED QT_ONLY)
-   set(KJSLIBNAME qkjs)
-   set(KJSEMBEDLIBNAME qkjsembed)
+   if (NOT QTONLY_WEBKIT)
+      set(KJSLIBNAME qkjs)
+      set(KJSEMBEDLIBNAME qkjsembed)
+   else (NOT QTONLY_WEBKIT)
+	    set(KJSLIBNAME "${WEBKIT_KJS_LIBRARY}")
+      set(KJSEMBEDLIBNAME qwkjsembed)
+   endif (NOT QTONLY_WEBKIT)
 endif (NOT DEFINED QT_ONLY)
 
 kde4_add_library(${KJSEMBEDLIBNAME} SHARED ${kjsembed_LIB_SRCS})
 
-target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${KJSLIBNAME})
+target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${KJSLIBNAME} )
 
 set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSEMBEDLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )

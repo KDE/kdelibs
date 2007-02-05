@@ -31,27 +31,27 @@ namespace TextCursorNS {
 
 START_OBJECT_METHOD( anchor, QTextCursor )
     int i = object->anchor();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( atBlockEnd, QTextCursor )
     bool b = object->atBlockEnd();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( atBlockStart, QTextCursor )
     bool b = object->atBlockStart();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( atEnd, QTextCursor )
     bool b = object->atEnd();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( atStart, QTextCursor )
     bool b = object->atStart();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( beginEditBlock, QTextCursor )
@@ -76,12 +76,12 @@ END_OBJECT_METHOD
 
 START_OBJECT_METHOD( hasComplexSelection, QTextCursor )
     bool b = object->hasComplexSelection();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( hasSelection, QTextCursor )
     bool b = object->hasSelection();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( insertBlock, QTextCursor )
@@ -100,7 +100,7 @@ END_OBJECT_METHOD
 
 START_OBJECT_METHOD( isNull, QTextCursor )
     bool b = object->isNull();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( joinPreviousEditBlock, QTextCursor )
@@ -109,7 +109,7 @@ END_OBJECT_METHOD
 
 START_OBJECT_METHOD( position, QTextCursor )
     int i = object->position();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( removeSelectedText, QTextCursor )
@@ -123,17 +123,17 @@ END_OBJECT_METHOD
 
 START_OBJECT_METHOD( selectedText, QTextCursor )
     QString s = object->selectedText();
-    result = KJS::String( s );
+    result = KJS::jsString( s );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( selectionStart, QTextCursor )
     int i = object->selectionStart();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( selectionEnd, QTextCursor )
     int i = object->selectionEnd();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_OBJECT_METHOD
 
 };

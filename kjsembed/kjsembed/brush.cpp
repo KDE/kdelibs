@@ -53,7 +53,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisOpaque, QBrush )
     bool cppValue = value.isOpaque();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetColor, QBrush )
@@ -73,7 +73,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstyle, QBrush )
     Qt::BrushStyle cppValue = value.style();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltexture, QBrush )

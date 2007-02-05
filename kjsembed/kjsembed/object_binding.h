@@ -41,7 +41,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         Q_UNUSED(exec);\
         Q_UNUSED(self);\
         Q_UNUSED(args);\
-        KJS::JSValue *result = KJS::Null(); \
+        KJS::JSValue *result = KJS::jsNull(); \
         KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec, self ); \
         if( imp ) \
         { \
@@ -68,7 +68,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         Q_UNUSED(exec);\
         Q_UNUSED(self);\
         Q_UNUSED(args);\
-        KJS::JSValue *result = KJS::Null(); \
+        KJS::JSValue *result = KJS::jsNull(); \
 
 #define END_STATIC_OBJECT_METHOD \
         return result; \
@@ -192,13 +192,13 @@ namespace KJSEmbed
 
     /**
     * Can create any known KJSEmbed::ObjectBinding object and set the value.
-    * On failure a KJS::Null will be returned and the exception set.
+    * On failure a KJS::jsNull will be returned and the exception set.
     */
     template< typename T>
     KJS::JSValue *createObject(KJS::ExecState *exec, const KJS::UString &className, const T *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned )
     {
         if ( 0 == value )
-            return KJS::Null();
+            return KJS::jsNull();
 
         KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
@@ -215,14 +215,14 @@ namespace KJSEmbed
             else
             {
 	            throwError(exec, KJS::TypeError, i18n("%1 is not an Object type", className.ascii()));
-                return KJS::Null();
+                return KJS::jsNull();
             }
         }
         else
         {
             throwError(exec, KJS::GeneralError, "Could not construct value");
             //throwError(exec, "Could not construct value" );
-            return KJS::Null();
+            return KJS::jsNull();
         }
 
         return returnValue;

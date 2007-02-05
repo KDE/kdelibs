@@ -115,7 +115,7 @@ bool EventProxy::callHandler( QEvent *e )
     args.append( JSEventUtils::event(exec, e) );
 
     // Call handler
-    KJS::JSValue *result = fun->call( exec, jsobj, args );
+    fun->call( exec, jsobj, args );
 
     if ( exec->hadException() ) {
     //TODO ext the script here with the error

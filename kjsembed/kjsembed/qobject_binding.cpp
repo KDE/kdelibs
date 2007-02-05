@@ -152,10 +152,10 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
 
         if( validSignal(senderMetaMethod, senderImp->access()) && ( !receiverImp || validSlot(receiverMetaMethod, receiverImp->access()) ) )
         {
-            return KJS::Boolean(QObject::connect(sender, signal, receiver, slot));
+            return KJS::jsBoolean(QObject::connect(sender, signal, receiver, slot));
         }
 
-        return KJS::Boolean(false);
+        return KJS::jsBoolean(false);
     }
     return KJS::throwError(exec, KJS::GeneralError, i18n("Incorrect number of arguments."));
     //return KJSEmbed::throwError(exec, i18n("Incorrect number of arguments."));
@@ -189,7 +189,7 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
                 if(childImp)
                 {
                     childImp->setAccess( imp->access() ); // inherit access from parent
-                    target->put(exec, KJS::Identifier(objectName), childObject);
+                    target->put(exec, KJS::Identifier(toUString(objectName)), childObject);
                 }
             }
         }
@@ -217,7 +217,7 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
         for( int key = 0; key < keys; ++key)
         {
             target->put(exec, KJS::Identifier( enumerator.key(key) ),
-                    KJS::Number(enumerator.value(key)), KJS::DontDelete|KJS::ReadOnly);
+                    KJS::jsNumber(enumerator.value(key)), KJS::DontDelete|KJS::ReadOnly);
         }
     }
 }
@@ -382,7 +382,7 @@ bool QObjectBinding::canPut(KJS::ExecState *exec, const KJS::Identifier &propert
 
 KJS::UString QObjectBinding::className() const
 {
-    return KJS::UString( typeName() );
+    return toUString( typeName() );
 }
 
 KJS::UString QObjectBinding::toString(KJS::ExecState *exec) const
@@ -391,7 +391,7 @@ KJS::UString QObjectBinding::toString(KJS::ExecState *exec) const
     QString s( "%1 (%2)" );
     s = s.arg( object<QObject>()->objectName() );
     s = s.arg( typeName() );
-    return KJS::UString( s );
+    return toUString( s );
 }
 
 PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const KJS::List &args, int idx)
@@ -437,7 +437,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case QVariant::String:
             if( args[idx]->type() == KJS::StringType )
-                return new Value<QString>( args[idx]->toString(exec).qstring() );
+                return new Value<QString>( toQString(args[idx]->toString(exec) ));
             break;
         case QVariant::StringList:
             if( args[idx]->type() == KJS::ObjectType )
@@ -486,7 +486,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 {
     QObjectBinding *imp = extractBindingImp<QObjectBinding>(exec,self);
     if( imp == 0 )
-        return KJS::Null();
+        return KJS::jsNull();
 
     PointerBase *qtArgs[10];
     void *param[11];
@@ -544,7 +544,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 
     switch( returnTypeId ) {
         case QVariant::Invalid:
-            return KJS::Null();
+            return KJS::jsNull();
         case QVariant::UserType: {
             int tp = QMetaType::type( metaMember.typeName() );
             switch( tp ) {
@@ -564,12 +564,12 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
 }
 
 SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
-    : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()))
+  : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()),
+                             KJS::Identifier(toUString(extractMemberName(member))))
 {
     m_memberName = extractMemberName(member);
     int count = member.parameterNames().count();
     putDirect( KJS::lengthPropertyName, count, LengthFlags );
-    setFunctionName( KJS::Identifier( m_memberName ) );
 }
 
 
@@ -586,7 +586,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
     do
     {
         clazz = meta->className();
-        if ( parent->hasProperty( exec, KJS::Identifier(clazz) ) )
+        if ( parent->hasProperty( exec, KJS::Identifier(toUString(clazz)) ) )
         {
 #ifdef CREATEQOBJ_DIAG
             qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
@@ -599,7 +599,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
 #ifdef CREATEQOBJ_DIAG
             qDebug("\tresort to construct() method.");
 #endif
-            returnValue = StaticConstructor::construct( exec, parent, clazz );
+            returnValue = StaticConstructor::construct( exec, parent, toUString(clazz) );
             if( returnValue )
             {
                 // If its a value type setValue
@@ -657,11 +657,11 @@ START_QOBJECT_METHOD( callParent, QObject )
     }
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callIsWidgetType, QObject )
-    result = KJS::Boolean(object->isWidgetType());
+    result = KJS::jsBoolean(object->isWidgetType());
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callInherits, QObject)
     QByteArray className = KJSEmbed::extractQString(exec, args, 0).toLatin1();
-    result = KJS::Boolean(object->inherits(className.constData()));
+    result = KJS::jsBoolean(object->inherits(className.constData()));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( callSetParent, QObject )
     if( imp->access() & QObjectBinding::SetParentObject )

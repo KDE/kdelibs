@@ -39,7 +39,7 @@ START_STATIC_OBJECT_METHOD( callStaticPrint )
 END_STATIC_OBJECT_METHOD
 
 START_OBJECT_METHOD( callName, Line )
-    result = KJS::String( object->name );
+    result = KJS::jsString( object->name );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callSetName, Line )
@@ -66,7 +66,7 @@ START_CTOR( TestPointer, Line, 0 )
     Line *line = new Line();
     line->name = "unnamed";
     if( args.size() == 1 )
-        line->name = args[0]->toString(exec).qstring();
+        line->name = toQString(args[0]->toString(exec));
     KJS::JSObject * object = new KJSEmbed::ObjectBinding(exec, "Line", line );
     StaticBinding::publish( exec, object, TestPointer::methods() );
     return object;

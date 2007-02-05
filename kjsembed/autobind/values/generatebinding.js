@@ -354,7 +354,7 @@ function write_method_new(compound, memberName, overloadList)
     header += indent + 'Q_UNUSED(args); \n';
 
     header +=
-        indent + 'KJS::JSValue *result = KJS::Null(); \n' +
+        indent + 'KJS::JSValue *result = KJS::jsNull(); \n' +
         indent + 'KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
         indent + 'if( !imp ) \n' +
         indent + indent + 'return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
@@ -424,7 +424,7 @@ function write_method( compound, memberName, overloadList )
     methodHeader += indent + 'Q_UNUSED(args); \n';
 
     methodHeader +=
-        indent + 'KJS::JSValue *result = KJS::Null(); \n' +
+        indent + 'KJS::JSValue *result = KJS::jsNull(); \n' +
         indent + 'KJSEmbed::' + compound.bindingBase + ' *imp = KJSEmbed::extractBindingImp<KJSEmbed::' + compound.bindingBase + '>(exec, self); \n' +
         indent + 'if( !imp ) \n' +
         indent + indent + 'return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");\n' +
@@ -562,7 +562,7 @@ function write_method( compound, memberName, overloadList )
             if (isNotImplemented(tempCoreParamType))    // NOTE: it is tempCoreParam type not tempCoreMethodType
             {
                 tempMethodCallStart += '// value\n';
-                tempMethodCallEnd += 'result = KJS::Null();\n';
+                tempMethodCallEnd += 'result = KJS::jsNull();\n';
             }
             else if (contains(tempCoreMethodType, 'void')) // since method type is void, we don't need to assign anything
             {
@@ -574,7 +574,7 @@ function write_method( compound, memberName, overloadList )
                 tempMethodCallStart +=
                     compound.enums[tempCoreMethodType] + '::' + tempCoreMethodType + ' tmp = value.' + memberName + '(';
                 tempMethodCallEnd += 
-                    'result = KJS::Number( tmp );\n';
+                    'result = KJS::jsNumber( tmp );\n';
             }
             else
             {
@@ -584,7 +584,7 @@ function write_method( compound, memberName, overloadList )
                     isInteger(tempCoreMethodType) )
                 {
                     tempMethodCallEnd +=
-                        'result = KJS::Number( tmp );\n';
+                        'result = KJS::jsNumber( tmp );\n';
                 }
                 else if (isBool(tempCoreMethodType))
                 {
@@ -601,7 +601,7 @@ function write_method( compound, memberName, overloadList )
                     tempMethodCallEnd +=
                                 indent + '// Not currently implemented\n' +
                                 indent + '// ' + tempCoreMethodType + '\n' +
-                                indent + 'result = KJS::Null();\n';
+                                indent + 'result = KJS::jsNull();\n';
                 }
             }
 

@@ -39,8 +39,6 @@
 
 #include <kjs/object.h>
 
-#include "global.h"
-
 namespace KJSEmbed {
 
 class JSObjectProxy;

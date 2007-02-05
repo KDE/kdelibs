@@ -63,7 +63,7 @@ START_STATIC_OBJECT_METHOD( callSetPath )
     // QSettings::Scope scope = (QSettings::Scope) KJSEmbed::extractVariant<uint>(exec, args, 1);
     QString path = KJSEmbed::extractQString(exec, args, 2);
     //QSettings::setSystemIniPath(format,scope,path);
-    return KJS::Null();
+    return KJS::jsNull();
 END_STATIC_OBJECT_METHOD
 
 START_METHOD_LUT( SettingsBinding )

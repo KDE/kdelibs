@@ -30,7 +30,7 @@ namespace QBrushNS
 KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -39,7 +39,7 @@ KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
     if (args.size() == 0 )
     {
         Qt::BrushStyle tmp = value.style();
-        result = KJS::Number( tmp );
+        result = KJS::jsNumber( tmp );
         imp->setValue(qVariantFromValue(value)); 
         return result; 
     }
@@ -51,7 +51,7 @@ KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
 KJS::JSValue *setStyle( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -77,7 +77,7 @@ KJS::JSValue *setStyle( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -98,7 +98,7 @@ KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Lis
 KJS::JSValue *setTexture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -124,7 +124,7 @@ KJS::JSValue *setTexture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -145,7 +145,7 @@ KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
 KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -178,7 +178,7 @@ KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");
@@ -199,7 +199,7 @@ KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *isOpaque( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     Q_UNUSED(args); 
-    KJS::JSValue *result = KJS::Null(); 
+    KJS::JSValue *result = KJS::jsNull(); 
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( !imp ) 
         return KJS::throwError(exec, KJS::GeneralError, "No implementation? Huh?");

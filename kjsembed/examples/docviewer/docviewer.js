@@ -1,7 +1,8 @@
 #!/usr/bin/env kjscmd
 
 // Load the view
-var viewer = new Form('docviewer.ui', this);
+var uiLoader = new QUiLoader();
+var viewer = uiLoader.load('docviewer.ui', this);
 var text = viewer.findChild('textBrowser');
 
 // Uncommenting pretty much any bit of this crashes it...
@@ -27,10 +28,10 @@ for( i in this ) {
 html += '</ul>';
 
 // Object Docs
-for( i in this ) {
+for( var i in this ) {
     println( 'Doing ' + i );
     if ( i == 'connect' || i == 'Application' || i == 'viewer' || i == 'text'
-	 || i == 'html' || i == 'inst' )
+	 || i == 'html' || i == 'inst' || i == 'uiLoader' )
       continue;
 
     html += '<a name="' + i + '"><h2>' + i + '</h2></a><ul>';

@@ -76,12 +76,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldefaultDepth, QPixmap )
     int cppValue = value.defaultDepth();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldepth, QPixmap )
     int cppValue = value.depth();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfill, QPixmap )
@@ -134,27 +134,27 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callhasAlpha, QPixmap )
     bool cppValue = value.hasAlpha();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callhasAlphaChannel, QPixmap )
     bool cppValue = value.hasAlphaChannel();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callheight, QPixmap )
     int cppValue = value.height();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisNull, QPixmap )
     bool cppValue = value.isNull();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisQBitmap, QPixmap )
     bool cppValue = value.isQBitmap();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callload, QPixmap )
@@ -162,7 +162,7 @@ START_VARIANT_METHOD( callload, QPixmap )
     QByteArray arg1 = KJSEmbed::extractQString( exec, args, 1 ).toLatin1();
     Qt::ImageConversionFlags arg2 = (Qt::ImageConversionFlags) KJSEmbed::extractInt(exec, args, 2);
     bool cppValue = value.load(arg0, arg1, arg2);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmask, QPixmap )
@@ -180,7 +180,7 @@ START_VARIANT_METHOD( callsave, QPixmap )
     QByteArray arg1 = KJSEmbed::extractQString( exec, args, 1 ).toLatin1();
     int arg2 = KJSEmbed::extractInt(exec, args, 2, -1);
     bool cppValue = value.save(arg0, arg1, arg2);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callscaled, QPixmap )
@@ -219,7 +219,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callserialNumber, QPixmap )
     int cppValue = value.serialNumber();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetAlphaChannel, QPixmap )
@@ -244,7 +244,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QPixmap )
     int cppValue = value.width();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 }
@@ -300,7 +300,7 @@ START_CTOR( Pixmap, QPixmap, 0)
     }
     else if( args.size() == 3 )
     {
-        QString tmp = args[2]->toObject(exec)->className().qstring();
+        QString tmp = toQString(args[2]->toObject(exec)->className());
         qDebug() << tmp;
 
         return new KJSEmbed::PixmapBinding(exec,

@@ -42,7 +42,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         Q_UNUSED(exec);\
         Q_UNUSED(self);\
         Q_UNUSED(args);\
-        KJS::JSValue *result = KJS::Null(); \
+        KJS::JSValue *result = KJS::jsNull(); \
         KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self ); \
         if( imp ) \
         { \
@@ -163,7 +163,7 @@ namespace KJSEmbed
 
     /**
     * Can create any known KJSEmbed::VariantBinding object and set the value.
-    * On failure a KJS::Null will be returned and the exception set. Only values
+    * On failure a KJS::jsNull will be returned and the exception set. Only values
     * that are supported by QVariant will work.
     */
     template< typename T>
@@ -180,14 +180,14 @@ namespace KJSEmbed
                 imp->setValue( qVariantFromValue( value ) );
             else
             {
-                throwError(exec, KJS::TypeError, QString("Created failed to cast to %1 failed").arg(className.qstring()) );
-                return KJS::Null();
+                throwError(exec, KJS::TypeError, toUString(QString("Created failed to cast to %1 failed").arg(toQString(className)) ));
+                return KJS::jsNull();
             }
         }
         else
         {
-            throwError(exec, KJS::TypeError, QString("Could not construct a %1").arg(className.qstring() ));
-            return KJS::Null();
+            throwError(exec, KJS::TypeError, toUString(QString("Could not construct a %1").arg(toQString(className) )));
+            return KJS::jsNull();
         }
         return returnValue;
     }

@@ -104,7 +104,7 @@ public:
 
     /**
     * Create a new instance of an object that the Javascript engine knows about.  If the object
-    * doesn't exist a KJS::Null() is returned and an exception thrown.
+    * doesn't exist a KJS::jsNull() is returned and an exception thrown.
     */
     KJS::JSObject *construct( const KJS::UString &className, const KJS::List &args = KJS::List() ) const;
 

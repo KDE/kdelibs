@@ -6,12 +6,25 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
-
 project(qtonly)
+
+option(QTONLY_WEBKIT  "Build using WEBKIT from this directoy")
+set(QTONLY_WEBKIT_DIR "${QTONLY_WEBKIT_DIR}")
 
 # This is the QT_ONLY build, make sure the CMakeList.txt and source files know.
 set(QT_ONLY Y)
 add_definitions(-DQT_ONLY)
+
+if (QTONLY_WEBKIT)
+   add_definitions(-DQTONLY_WEBKIT)
+	 set(WEBKIT_LIB_SEARCH_PATH
+			 "${CMAKE_SOURCE_DIR}/WebKit"
+	     "${QTONLY_WEBKIT_DIR}/lib/"
+       "${QTONLY_WEBKIT_DIR}/WebKitBuild/Release/lib/"
+       "${QTONLY_WEBKIT_DIR}/WebKitBuild/Debug/lib/"
+   )
+   FIND_LIBRARY(WEBKIT_KJS_LIBRARY NAMES JavaScriptCore PATHS ${WEBKIT_LIB_SEARCH_PATH} NO_DEFAULT_PATH)
+endif (QTONLY_WEBKIT)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../cmake/modules;${CMAKE_SOURCE_DIR}")
@@ -114,11 +127,18 @@ o fix compile it and remove KDE4_NO_ENABLE_FINAL macro. Thanks")
 
    endif(KDE4_ENABLE_FINAL)
 ENDMACRO(KDE4_NO_ENABLE_FINAL _project_name)
+if (NOT QTONLY_WEBKIT)
 include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../kxmlcore ${CMAKE_SOURCE_DIR}/../../kjsembed ${CMAKE_BINARY_DIR}/kjs ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+else (NOT QTONLY_WEBKIT)
+include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+endif (NOT QTONLY_WEBKIT)
 
 # list the subdirectories
-add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kxmlcore kxmlcore )
+if (NOT QTONLY_WEBKIT)
+#add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kxmlcore kxmlcore )
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kjs kjs )
+endif (NOT QTONLY_WEBKIT)
+
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../kjsembed kjsembed )
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../kjscmd qjscmd )
 

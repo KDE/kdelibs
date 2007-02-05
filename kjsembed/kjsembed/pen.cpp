@@ -44,7 +44,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcapStyle, QPen )
     Qt::PenCapStyle cppValue = value.capStyle();
-    result = KJS::Number( cppValue );
+    result = KJS::jsNumber( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcolor, QPen )
@@ -54,12 +54,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisSolid, QPen )
     bool cppValue = value.isSolid();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calljoinStyle, QPen )
     Qt::PenJoinStyle cppValue = value.joinStyle();
-    result = KJS::Number( cppValue );
+    result = KJS::jsNumber( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBrush, QPen )
@@ -94,12 +94,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstyle, QPen )
     Qt::PenStyle cppValue = value.style();
-    result = KJS::Number( cppValue );
+    result = KJS::jsNumber( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QPen )
     int cppValue = value.width();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 }

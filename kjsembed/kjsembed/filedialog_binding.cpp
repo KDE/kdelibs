@@ -24,7 +24,6 @@
 
 #include <kjs/object.h>
 
-#include "global.h"
 #include "static_binding.h"
 #include "filedialog_binding.h"
 
@@ -37,7 +36,7 @@ KJS::JSValue *callGetExistingDirectory( KJS::ExecState *exec, KJS::JSObject * /*
     QString dir = KJSEmbed::extractVariant<QString>(exec, args, 2, QString());
     QFileDialog::Options options = (QFileDialog::Options)KJSEmbed::extractVariant<uint>(exec, args, 3, QFileDialog::ShowDirsOnly);
 
-    return KJS::String( QFileDialog::getExistingDirectory(parent, caption, dir, options) );
+    return KJS::jsString( QFileDialog::getExistingDirectory(parent, caption, dir, options) );
 }
 
 KJS::JSValue *callGetOpenFileName( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
@@ -49,7 +48,7 @@ KJS::JSValue *callGetOpenFileName( KJS::ExecState *exec, KJS::JSObject * /*self*
 //    QString *selectedFilter = KJSEmbed::extractVariant<QString>(exec, args, 4, 0);
     QFileDialog::Options options = (QFileDialog::Options)KJSEmbed::extractVariant<uint>(exec, args, 4, 0);
 
-    return KJS::String( QFileDialog::getOpenFileName(parent, caption, dir, filter, 0, options) );
+    return KJS::jsString( QFileDialog::getOpenFileName(parent, caption, dir, filter, 0, options) );
 }
 
 KJS::JSValue *callGetOpenFileNames( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
@@ -75,7 +74,7 @@ KJS::JSValue *callGetSaveFileName( KJS::ExecState *exec, KJS::JSObject * /*self*
 //    QString *selectedFilter = KJSEmbed::extractVariant<QString>(exec, args, 4, 0);
     QFileDialog::Options options = (QFileDialog::Options)KJSEmbed::extractVariant<uint>(exec, args, 4, 0);
 
-    return KJS::String( QFileDialog::getSaveFileName(parent, caption, dir, filter, 0, options) );
+    return KJS::jsString( QFileDialog::getSaveFileName(parent, caption, dir, filter, 0, options) );
 }
 const Method FileDialog::FileDialogMethods[] =
 {

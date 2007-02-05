@@ -42,7 +42,7 @@ QString KJSEmbed::extractQString( KJS::ExecState *exec, KJS::JSValue *value, con
 {
     if( !value )
         return defaultValue;
-    return value->toString(exec).qstring();
+    return toQString(value->toString(exec));
 }
 
 QByteArray KJSEmbed::extractQByteArray( KJS::ExecState *exec, const KJS::List &args, int idx, const QByteArray &defaultValue )
@@ -58,13 +58,13 @@ QByteArray KJSEmbed::extractQByteArray( KJS::ExecState *exec, KJS::JSValue *valu
 {
     if( !value )
         return defaultValue;
-    return value->toString(exec).qstring().toLatin1();
+    return toQString(value->toString(exec)).toLatin1();
 }
 
 KJS::JSValue *KJSEmbed::createQByteArray( KJS::ExecState *exec, const QByteArray &value )
 {
     Q_UNUSED( exec );
-    return KJS::String( value.data() );
+    return KJS::jsString( value.data() );
 }
 
 int KJSEmbed::extractInt( KJS::ExecState *exec, const KJS::List &args, int idx, int defaultValue )
@@ -86,13 +86,13 @@ int KJSEmbed::extractInt( KJS::ExecState *exec, KJS::JSValue *value, int default
 KJS::JSValue *KJSEmbed::createQString( KJS::ExecState *exec, const QString &value )
 {
     Q_UNUSED( exec );
-    return KJS::String( value );
+    return KJS::jsString( toUString(value) );
 }
 
 KJS::JSValue *KJSEmbed::createInt( KJS::ExecState *exec, int value  )
 {
     Q_UNUSED( exec );
-    return KJS::Number( value );
+    return KJS::jsNumber( value );
 }
 
 double KJSEmbed::extractDouble( KJS::ExecState *exec, const KJS::List &args, int idx, double defaultValue )
@@ -115,7 +115,7 @@ double KJSEmbed::extractDouble( KJS::ExecState *exec, KJS::JSValue *value, doubl
 KJS::JSValue *KJSEmbed::createDouble( KJS::ExecState *exec, double value  )
 {
     Q_UNUSED( exec );
-    return KJS::Number( value );
+    return KJS::jsNumber( value );
 }
 
 
@@ -140,7 +140,7 @@ float KJSEmbed::extractFloat( KJS::ExecState *exec, KJS::JSValue *value, float d
 KJS::JSValue *KJSEmbed::createFloat( KJS::ExecState *exec, float value  )
 {
     Q_UNUSED( exec );
-    return KJS::Number( value );
+    return KJS::jsNumber( value );
 }
 
 
@@ -165,7 +165,7 @@ bool KJSEmbed::extractBool( KJS::ExecState *exec, KJS::JSValue *value, bool defa
 KJS::JSValue *KJSEmbed::createBool( KJS::ExecState *exec, bool value  )
 {
     Q_UNUSED( exec );
-    return KJS::Boolean( value );
+    return KJS::jsBoolean( value );
 }
 
 

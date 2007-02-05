@@ -260,18 +260,18 @@ JSEventMapper::~JSEventMapper()
 
 void JSEventMapper::addEvent( const KJS::Identifier &name, QEvent::Type t )
 {
-    m_handlerToEvent[ name.qstring() ] = t;
+    m_handlerToEvent[ toQString(name) ] = t;
     m_eventToHandler[ t ] = name;
 }
 
 QEvent::Type JSEventMapper::findEventType( const KJS::Identifier &name ) const
 {
-    return  m_handlerToEvent[ name.qstring() ];
+    return  m_handlerToEvent[ toQString(name) ];
 }
 
 bool JSEventMapper::isEventHandler( const KJS::Identifier &name ) const
 {
-    return m_handlerToEvent.contains( name.qstring() );
+    return m_handlerToEvent.contains( toQString(name) );
 }
 
 KJS::Identifier JSEventMapper::findEventHandler( QEvent::Type t ) const

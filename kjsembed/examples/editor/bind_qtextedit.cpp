@@ -33,7 +33,7 @@ namespace TextEditNS {
 
 START_QOBJECT_METHOD( alignment, QTextEdit )
     int i = (int) object->alignment();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( append, QTextEdit )
@@ -67,52 +67,52 @@ START_QOBJECT_METHOD( find, QTextEdit )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     int arg1 = KJSEmbed::extractInt(exec, args, 1, 0);
     bool b = object->find( arg0, (QTextDocument::FindFlags) arg1 );
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( fontFamily, QTextEdit )
     QString s = object->fontFamily();
-    result = KJS::String( s );
+    result = KJS::jsString( s );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( fontItalic, QTextEdit )
     bool b = object->fontItalic();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( fontPointSize, QTextEdit )
     double d = object->fontPointSize();
-    result = KJS::Number( d );
+    result = KJS::jsNumber( d );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( fontUnderline, QTextEdit )
     bool b = object->fontUnderline();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( fontWeight, QTextEdit )
     int i = object->fontWeight();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( isReadOnly, QTextEdit )
     bool b= object->isReadOnly();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( isUndoRedoEnabled, QTextEdit )
     bool b = object->isUndoRedoEnabled();
-    result = KJS::Boolean( b );
+    result = KJS::jsBoolean( b );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( lineWrapColumnOrWidth, QTextEdit )
     int i = object->lineWrapColumnOrWidth();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( lineWrapMode, QTextEdit )
     int i = object->lineWrapMode();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( loadResource, QTextEdit )
@@ -165,12 +165,12 @@ END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( toHtml, QTextEdit )
     QString s = object->toHtml();
-    result = KJS::String( s );
+    result = KJS::jsString( s );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( toPlainText, QTextEdit )
     QString s = object->toPlainText();
-    result = KJS::String( s );
+    result = KJS::jsString( s );
 END_QOBJECT_METHOD
 
 };

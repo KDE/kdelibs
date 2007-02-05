@@ -29,11 +29,11 @@ namespace KJSEmbed {
 using namespace KJSEmbed;
 
 StaticBinding::StaticBinding(KJS::ExecState *exec, const Method *method )
-    : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())),
-      m_method(method)
+  : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), 
+                             method->name),
+    m_method(method)
 {
     putDirect( KJS::lengthPropertyName, m_method->argc, LengthFlags );
-    setFunctionName( m_method->name );
 }
 
 KJS::JSValue *StaticBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
@@ -42,14 +42,14 @@ KJS::JSValue *StaticBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject
   {
       //throwError(exec, "Bad method id");      // NOTE: fix
       KJS::throwError(exec, KJS::GeneralError, "Bad method id");
-      return KJS::Null();
+      return KJS::jsNull();
   }
 
   KJS::JSValue *retValue = (*m_method->call)(exec,self,args);
   
   if( exec->hadException() )
   {
-    return KJS::Null();
+    return KJS::jsNull();
   }
   return retValue;
   
@@ -66,12 +66,12 @@ void StaticBinding::publish( KJS::ExecState *exec, KJS::JSObject *object, const 
 }
 
 StaticConstructor::StaticConstructor(KJS::ExecState *exec, const Constructor *constructor )
-    : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())),
-      m_constructor( constructor )
+  : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()),
+                             constructor->name),
+    m_constructor( constructor )
 {
     putDirect( KJS::lengthPropertyName, m_constructor->argc, LengthFlags );
-    setFunctionName( m_constructor->name );
-    m_default = KJS::Null();
+    m_default = KJS::jsNull();
 }
 
 KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, const KJS::List &args )
@@ -106,7 +106,7 @@ KJS::JSObject *StaticConstructor::add( KJS::ExecState *exec, KJS::JSObject *obje
         while( constructor->enumerators[idx].name != 0 )
         {
             obj->put( exec, constructor->enumerators[idx].name,
-                KJS::Number(constructor->enumerators[idx].value), KJS::DontDelete|KJS::ReadOnly);
+                KJS::jsNumber(constructor->enumerators[idx].value), KJS::DontDelete|KJS::ReadOnly);
             idx++;
         }
     }
@@ -117,12 +117,12 @@ KJS::JSObject *StaticConstructor::add( KJS::ExecState *exec, KJS::JSObject *obje
 
 const Method *StaticConstructor::methods( const KJS::UString &className )
 {
-    return KJSEmbed::g_ctorHash[className.qstring()]->methods;
+    return KJSEmbed::g_ctorHash[toQString(className)]->methods;
 }
 
 const Constructor *StaticConstructor::constructor( const KJS::UString &className )
 {
-    return KJSEmbed::g_ctorHash[className.qstring()];
+    return KJSEmbed::g_ctorHash[toQString(className)];
 }
 
 KJS::JSObject* StaticConstructor::bind(KJS::ExecState* exec, const QString& className, PointerBase& objPtr)
@@ -147,7 +147,7 @@ KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject
         }
     }
     qDebug("cannot create '%s'", className.ascii() );
-    return KJS::throwError( exec, KJS::TypeError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
+    return KJS::throwError( exec, KJS::TypeError, toUString(QString("Cannot create %1 objects from javascript.").arg(toQString(className)) ));
 }
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

@@ -128,7 +128,7 @@ int main( int argc, char **argv )
             else
             {
                 if (!script.isEmpty())
-                    scriptArgs.append(KJS::String(arg));
+                    scriptArgs.append(KJS::jsString(arg));
                 else
                     script = arg;
             }
@@ -192,7 +192,7 @@ int main( int argc, char **argv )
 
     if (!script.isEmpty())
     {
-        result = kernel.runFile(script);
+        result = kernel.runFile(toUString(script));
     }
     else // exec shell
     {
@@ -202,7 +202,7 @@ int main( int argc, char **argv )
     if ( result != Engine::Success )
     {
         KJS::Completion jsres = kernel.completion();
-       (*KJSEmbed::conerr()) << jsres.value()->toString(exec).qstring() << endl;
+       (*KJSEmbed::conerr()) << toQString(jsres.value()->toString(exec)) << endl;
     }
     return (int)result;
 }

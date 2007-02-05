@@ -37,22 +37,22 @@ namespace PointNS
 
 START_VARIANT_METHOD( callisNull, QPoint )
     bool cppValue = value.isNull();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmanhattanLength, QPoint )
     int cppValue = value.manhattanLength();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrx, QPoint )
     int cppValue = value.rx();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callry, QPoint )
     int cppValue = value.ry();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetX, QPoint )
@@ -67,12 +67,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callx, QPoint )
     int cppValue = value.x();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( cally, QPoint )
     int cppValue = value.y();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 }

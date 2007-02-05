@@ -44,7 +44,7 @@ START_CTOR( FormBuilder, Form, 2 )
         {
             parentWidget = parentImp->object<QWidget>();
         }
-        QString fileName = args[0]->toString(exec).qstring();
+        QString fileName = toQString(args[0]->toString(exec));
         QFile uiFile(fileName);
         if( uiFile.open(QIODevice::ReadOnly | QIODevice::Text) )
         {

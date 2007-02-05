@@ -72,7 +72,7 @@ KJSO_START_CTOR( Layout, QLayout, 0 )
 
     if( args.size() > 0 )
     {
-        QString layoutName = args[0]->toString(exec).qstring();
+        QString layoutName = toQString(args[0]->toString(exec));
         QObject *parentObject = 0;
         KJSEmbed::QObjectBinding *parentImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[1] );
         if( parentImp )

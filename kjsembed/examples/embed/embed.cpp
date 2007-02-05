@@ -47,13 +47,13 @@ int main( int argc, char **argv )
     KJS::JSValue *val = KJSEmbed::createObject<Line>(exec, "Line", &obj, KJSEmbed::ObjectBinding::CPPOwned);
     globalObject->put( exec, "Test", val ); // Static object
 
-    KJS::JSObject *appobj = kernel->addObject( &app, "Application" );
+    /*KJS::JSObject *appobj =*/ kernel->addObject( &app, "Application" );
 
     KJSEmbed::Engine::ExitStatus result = kernel->runFile( ":/test.js" );
     if ( result != KJSEmbed::Engine::Success )
     {
         KJS::Completion jsres = kernel->completion();
-        qDebug() << jsres.value()->toString(exec).qstring();
+        qDebug() << KJSEmbed::toQString(jsres.value()->toString(exec));
         return 0;
     }
     return result;

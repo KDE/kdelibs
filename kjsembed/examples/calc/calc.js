@@ -58,7 +58,8 @@ function Calculator(ui)
   ui.connect( ui.findChild('clear'), 'clicked()', this, 'clear()' );
 }
 
-var ui = new Form('calc.ui', this);
+var loader = new QUiLoader();
+var ui = loader.load('calc.ui', this);
 var calc = new Calculator(ui);
 
 ui.show();

@@ -20,7 +20,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-var browser = new Widget("QTextBrowser", this);
+var browser = new QWidget("QTextBrowser", this);
 browser.html = '<html><a href="#test">Test Link</a></html>';
 connect( browser, "anchorClicked(const QUrl&)", this, "click(const QUrl&)");
 

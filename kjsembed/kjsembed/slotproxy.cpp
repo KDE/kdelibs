@@ -99,13 +99,13 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
     {
     //TODO ext the script here with the error
       m_interpreter->deref();
-      return KJS::Null();
+      return KJS::jsNull();
     }
     else
     {
         if( retValue->type() == 1 || retValue->type() == 0)
         {
-            return KJS::Null();
+            return KJS::jsNull();
         }
     }
     return retValue;

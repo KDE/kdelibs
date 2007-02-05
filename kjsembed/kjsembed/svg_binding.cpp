@@ -31,7 +31,7 @@ using namespace KJSEmbed;
 
 namespace SvgRendererNS {
 START_QOBJECT_METHOD( animationDuration, QSvgRenderer )
-    result = KJS::Number(object->animationDuration());
+    result = KJS::jsNumber(object->animationDuration());
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( defaultSize, QSvgRenderer )
@@ -39,11 +39,11 @@ START_QOBJECT_METHOD( defaultSize, QSvgRenderer )
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( isValid, QSvgRenderer )
-    result = KJS::Boolean(object->isValid());
+    result = KJS::jsBoolean(object->isValid());
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( animated, QSvgRenderer )
-    result = KJS::Boolean(object->animated());
+    result = KJS::jsBoolean(object->animated());
 END_QOBJECT_METHOD
 }
 

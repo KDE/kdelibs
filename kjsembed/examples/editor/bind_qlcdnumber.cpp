@@ -37,22 +37,22 @@ END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( intValue, QLCDNumber )
     int i = object->intValue();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( mode, QLCDNumber )
     int i = (int) object->mode();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( numDigits, QLCDNumber )
     int i = (int) object->numDigits();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( segmentStyle, QLCDNumber )
     int i = (int) object->segmentStyle();
-    result = KJS::Number( i );
+    result = KJS::jsNumber( i );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( setMode, QLCDNumber )
@@ -77,7 +77,7 @@ END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( value, QLCDNumber )
     double d = object->value();
-    result = KJS::Number( d );
+    result = KJS::jsNumber( d );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( display, QLCDNumber )

@@ -23,6 +23,7 @@
 #include <QFileDialog>
 #include <QFile>
 
+#include <kjsembed/kjseglobal.h>
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
@@ -63,12 +64,12 @@ void Console::on_mExecute_clicked()
     KJS::JSValue *value = jsres.value();
     if ( result != KJSEmbed::Engine::Success )
     {
-        m_ui.mConsole->append(errorTemplate.arg( jsres.value()->toString(exec).qstring() ) );
+        m_ui.mConsole->append(errorTemplate.arg( KJSEmbed::toQString(jsres.value()->toString(exec)) ));
     }
     else
     {
         if(value)
-            m_ui.mConsole->append( jsres.value()->toString(exec).qstring() );
+            m_ui.mConsole->append( KJSEmbed::toQString(jsres.value()->toString(exec) ));
     }
     KJS::JSObject *obj = js->globalObject();
     m_model->updateModel(obj);
@@ -118,12 +119,12 @@ void Console::on_actionRun_activated()
     KJS::JSValue *value = jsres.value();
     if ( result != KJSEmbed::Engine::Success )
     {
-        m_ui.mConsole->append(errorTemplate.arg( jsres.value()->toString(exec).qstring() ) );
+        m_ui.mConsole->append(errorTemplate.arg( KJSEmbed::toQString(jsres.value()->toString(exec)) ) );
     }
     else
     {
         if(value)
-            m_ui.mConsole->append( jsres.value()->toString(exec).qstring() );
+            m_ui.mConsole->append( KJSEmbed::toQString(jsres.value()->toString(exec)));
     }
     KJS::JSObject *obj = js->globalObject();
     m_model->updateModel(obj);

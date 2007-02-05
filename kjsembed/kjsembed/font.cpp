@@ -37,28 +37,28 @@ namespace FontNS
 
 START_VARIANT_METHOD( callbold, QFont )
     bool cppValue = value.bold();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callexactMatch, QFont )
     bool cppValue = value.exactMatch();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfamily, QFont )
     QString cppValue = value.family();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfixedPitch, QFont )
     bool cppValue = value.fixedPitch();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfromString, QFont )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     bool cppValue = value.fromString(arg0);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callinsertSubstitution, QFont )
@@ -76,57 +76,57 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callisCopyOf, QFont )
     QFont arg0 = KJSEmbed::extractVariant<QFont>(exec,args, 0);
     bool cppValue = value.isCopyOf(arg0);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callitalic, QFont )
     bool cppValue = value.italic();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callkerning, QFont )
     bool cppValue = value.kerning();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callkey, QFont )
     QString cppValue = value.key();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calllastResortFamily, QFont )
     QString cppValue = value.lastResortFamily();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calllastResortFont, QFont )
     QString cppValue = value.lastResortFont();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calloverline, QFont )
     bool cppValue = value.overline();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callpixelSize, QFont )
     int cppValue = value.pixelSize();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callpointSize, QFont )
     int cppValue = value.pointSize();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrawMode, QFont )
     bool cppValue = value.rawMode();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrawName, QFont )
     QString cppValue = value.rawName();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callremoveSubstitution, QFont )
@@ -228,33 +228,33 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstretch, QFont )
     int cppValue = value.stretch();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstrikeOut, QFont )
     bool cppValue = value.strikeOut();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstyle, QFont )
     QFont::Style cppValue = value.style();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstyleHint, QFont )
     QFont::StyleHint cppValue = value.styleHint();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callstyleStrategy, QFont )
     QFont::StyleStrategy cppValue = value.styleStrategy();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsubstitute, QFont )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QString cppValue = value.substitute(arg0);
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsubstitutes, QFont )
@@ -270,17 +270,17 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltoString, QFont )
     QString cppValue = value.toString();
-    result = KJS::String( cppValue );
+    result = KJS::jsString( cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callunderline, QFont )
     bool cppValue = value.underline();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callweight, QFont )
     int cppValue = value.weight();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 }
 

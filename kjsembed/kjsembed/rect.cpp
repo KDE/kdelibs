@@ -55,7 +55,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callbottom, QRect )
     int cppValue = value.bottom();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callbottomLeft, QRect )
@@ -80,7 +80,7 @@ START_VARIANT_METHOD( callcontains, QRect )
         QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
         bool arg1 = KJSEmbed::extractBool(exec, args, 1);
         bool cppValue = value.contains(arg0, arg1);
-        result = KJS::Boolean(cppValue);
+        result = KJS::jsBoolean(cppValue);
     }
     //2
     else if( args.size() == 3 )
@@ -89,7 +89,7 @@ START_VARIANT_METHOD( callcontains, QRect )
         int arg1 = KJSEmbed::extractInt(exec, args, 1);
         bool arg2 = KJSEmbed::extractBool(exec, args, 2);
         bool cppValue = value.contains(arg0, arg1, arg2);
-        result = KJS::Boolean(cppValue);
+        result = KJS::jsBoolean(cppValue);
     }
     // 3
     else
@@ -97,13 +97,13 @@ START_VARIANT_METHOD( callcontains, QRect )
         int arg0 = KJSEmbed::extractInt(exec, args, 0);
         int arg1 = KJSEmbed::extractInt(exec, args, 1);
         bool cppValue = value.contains(arg0, arg1);
-        result = KJS::Boolean(cppValue);
+        result = KJS::jsBoolean(cppValue);
     }
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callheight, QRect )
     int cppValue = value.height();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callintersect, QRect )
@@ -115,27 +115,27 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callintersects, QRect )
     QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
     bool cppValue = value.intersects(arg0);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisEmpty, QRect )
     bool cppValue = value.isEmpty();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisNull, QRect )
     bool cppValue = value.isNull();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisValid, QRect )
     bool cppValue = value.isValid();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callleft, QRect )
     int cppValue = value.left();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveBottom, QRect )
@@ -204,7 +204,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callright, QRect )
     int cppValue = value.right();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBottom, QRect )
@@ -295,7 +295,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltop, QRect )
     int cppValue = value.top();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltopLeft, QRect )
@@ -346,17 +346,17 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QRect )
     int cppValue = value.width();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callx, QRect )
     int cppValue = value.x();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( cally, QRect )
     int cppValue = value.y();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 }
 

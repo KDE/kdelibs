@@ -127,7 +127,7 @@ START_VARIANT_METHOD( callConvertTo, QColor )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callSpec, QColor )
-    result = KJS::Number( value.spec() );
+    result = KJS::jsNumber( value.spec() );
 END_VARIANT_METHOD
 
 START_METHOD_LUT( Color )

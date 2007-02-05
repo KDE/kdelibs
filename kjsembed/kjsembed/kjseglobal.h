@@ -53,6 +53,32 @@ KJSEMBED_EXPORT QTextStream *conout();
 KJSEMBED_EXPORT QTextStream *conerr();
 }
 
+#include <kjs/ustring.h>
+#include <kjs/identifier.h>
+#include <kjs/value.h>
+
+namespace KJSEmbed {
+	inline QString toQString(const KJS::UString& u)
+	{
+		return QString((QChar*)u.data(), u.size());
+	}
+	inline QString toQString(const KJS::Identifier& i)
+	{
+		return QString((QChar*)i.data(), i.size());
+	}
+	inline KJS::UString toUString(const QString& qs)
+	{
+		return KJS::UString((KJS::UChar*)qs.data(), qs.size());
+	}
+}
+
+namespace KJS {
+	inline KJS::JSCell* jsString(const QString& s)
+	{
+		return jsString(KJSEmbed::toUString(s)); 
+	}
+}
+
 #ifndef QT_ONLY
 
 /*

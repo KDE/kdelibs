@@ -49,32 +49,32 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callheight, QSize )
     int cppValue = value.height();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisEmpty, QSize )
     bool cppValue = value.isEmpty();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisNull, QSize )
     bool cppValue = value.isNull();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisValid, QSize )
     bool cppValue = value.isValid();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrheight, QSize )
     int cppValue = value.rheight();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrwidth, QSize )
     int cppValue = value.rwidth();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callscale, QSize )
@@ -109,7 +109,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QSize )
     int cppValue = value.width();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 }

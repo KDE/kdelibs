@@ -37,12 +37,12 @@ namespace UrlNS
 
 START_VARIANT_METHOD( callisValid, QUrl )
     bool cppValue = value.isValid();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( toString, QUrl )
     QUrl::FormattingOptions opts = (QUrl::FormattingOptions)KJSEmbed::extractInt(exec, args, 0, QUrl::None);
-    result = KJS::String( value.toString( opts ) );
+    result = KJS::jsString( value.toString( opts ) );
 END_VARIANT_METHOD
 }
 

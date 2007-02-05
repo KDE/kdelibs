@@ -71,7 +71,7 @@
 *
 */
 namespace KJS {
-
+#ifndef QTONLY_WEBKIT
     UString::UString( const QString &d )
     {
         uint len = d.length();
@@ -89,7 +89,7 @@ namespace KJS {
     {
         return QString((QChar*) data(), size());
     }
-
+#endif
 }
 
 namespace KJSEmbed {
@@ -184,7 +184,7 @@ KJS::JSObject *Engine::addObject( QObject *obj, KJS::JSObject *parent, const KJS
 {
     KJS::ExecState *exec = dptr->m_interpreter->globalExec();
     KJS::JSObject *returnObject = KJSEmbed::createQObject(exec , obj, KJSEmbed::ObjectBinding::CPPOwned );
-    KJS::Identifier jsName( !name.isEmpty() ? name : obj->objectName() );
+    KJS::Identifier jsName( !name.isEmpty() ? name : toUString(obj->objectName()) );
 
     parent->putDirect(jsName, returnObject, KJS::DontDelete|KJS::ReadOnly );
     return returnObject;
@@ -207,9 +207,9 @@ KJS::Interpreter *Engine::interpreter() const
 
 KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UString &fileName )
 {
-//    qDebug() << "runFile: " << fileName.qstring();
+//    qDebug() << "runFile: " << toQString(fileName);
     KJS::UString code;
-    QFile file( fileName.qstring() );
+    QFile file( toQString(fileName) );
     if( file.open( QFile::ReadOnly ) )
     {
         QTextStream ts( &file );
@@ -218,17 +218,17 @@ KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UStri
         while( !ts.atEnd() )
         {
             line = ts.readLine();
-            if( line[0] != '#' ) code += line + '\n';
+            if( line[0] != '#' ) code += toUString(line + '\n');
         }
         file.close();
     }
     else
     {
         code = "println('Could not open file.');";
-        qWarning() << "Could not open file " << fileName.qstring();
+        qWarning() << "Could not open file " << toQString(fileName);
     }
 
-//    qDebug() << "Loaded code: " << code.qstring();
+//    qDebug() << "Loaded code: " << toQString(code);
     
     return interpreter->evaluate( KJS::UString(""), 0, code, 0 );
 }
@@ -268,12 +268,12 @@ KJS::JSValue *Engine::callMethod( const KJS::UString &methodName, const KJS::Lis
     KJS::JSObject *global = dptr->m_interpreter->globalObject();
     KJS::ExecState *exec = dptr->m_interpreter->globalExec();
 
-    KJS::Identifier id = KJS::Identifier( KJS::UString( methodName.qstring() ) );
+    KJS::Identifier id = KJS::Identifier( KJS::UString( methodName ) );
     KJS::JSObject *fun = global->get( exec, id )->toObject( exec );
     KJS::JSValue *retValue;
 
     if ( !fun->implementsCall() ) {
-	QString msg = i18n( "%1 is not a function and cannot be called.", methodName.qstring() );
+	QString msg = i18n( "%1 is not a function and cannot be called.", toQString(methodName) );
 	return throwError( exec, KJS::TypeError, msg );
     }
 
@@ -290,12 +290,12 @@ KJS::JSValue *Engine::callMethod(  KJS::JSObject *parent,
 {
     KJS::ExecState *exec = dptr->m_interpreter->globalExec();
 
-    KJS::Identifier id = KJS::Identifier( KJS::UString( methodName.qstring() ) );
+    KJS::Identifier id = KJS::Identifier( methodName);
     KJS::JSObject *fun = parent->get( exec, id )->toObject( exec );
     KJS::JSValue *retValue;
 
     if ( !fun->implementsCall() ) {
-	QString msg = i18n( "%1 is not a function and cannot be called.", methodName.qstring() );
+	QString msg = i18n( "%1 is not a function and cannot be called.", toQString(methodName) );
 	return throwError( exec, KJS::TypeError, msg );
     }
 

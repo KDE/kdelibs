@@ -74,9 +74,9 @@ KJS::JSValue *callPointerName( KJS::ExecState *exec, KJS::JSObject *self, const 
     KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec,  self );
     if( imp )
     {
-        return KJS::String( imp->typeName() );
+        return KJS::jsString( imp->typeName() );
     }
-    return KJS::Null();
+    return KJS::jsNull();
 }
 
 KJS::JSValue *callPointerCast( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &/*args*/ )
@@ -84,9 +84,9 @@ KJS::JSValue *callPointerCast( KJS::ExecState *exec, KJS::JSObject *self, const 
     KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec,  self );
     if( imp )
     {
-        return KJS::Boolean(false);
+        return KJS::jsBoolean(false);
     }
-    return KJS::Null();
+    return KJS::jsNull();
 }
 
 KJS::JSValue *callPointerToString( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &/*args*/ )
@@ -95,9 +95,9 @@ KJS::JSValue *callPointerToString( KJS::ExecState *exec, KJS::JSObject *self, co
     if( imp )
     {
         qDebug("Object to string");
-        return KJS::String( imp->typeName() );
+        return KJS::jsString( imp->typeName() );
     }
-    return KJS::Null();
+    return KJS::jsNull();
 }
 
 const Method ObjectFactory::ObjectMethods[] =

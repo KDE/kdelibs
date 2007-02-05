@@ -40,7 +40,7 @@ namespace ImageNS
 {
 START_VARIANT_METHOD( callallGray, QImage )
     bool cppValue = value.allGray();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callalphaChannel, QImage )
@@ -71,22 +71,22 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldepth, QImage )
     int cppValue = value.depth();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldevType, QImage )
     int cppValue = value.devType();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldotsPerMeterX, QImage )
     int cppValue = value.dotsPerMeterX();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldotsPerMeterY, QImage )
     int cppValue = value.dotsPerMeterY();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfill, QImage )
@@ -96,12 +96,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callhasAlphaChannel, QImage )
     bool cppValue = value.hasAlphaChannel();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callheight, QImage )
     int cppValue = value.height();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callinvertPixels, QImage )
@@ -111,19 +111,19 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisGrayscale, QImage )
     bool cppValue = value.isGrayscale();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisNull, QImage )
     bool cppValue = value.isNull();
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callload, QImage )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QByteArray arg1 = KJSEmbed::extractQString( exec, args, 1 ).toLatin1();
     bool cppValue = value.load(arg0, arg1);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmirrored, QImage )
@@ -135,12 +135,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callnumBytes, QImage )
     int cppValue = value.numBytes();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callnumColors, QImage )
     int cppValue = value.numColors();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calloffset, QImage )
@@ -152,14 +152,14 @@ START_VARIANT_METHOD( callpixel, QImage )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
     int arg1 = KJSEmbed::extractInt(exec, args, 1);
     QRgb cppValue = value.pixel(arg0, arg1);
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callpixelIndex, QImage )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
     int arg1 = KJSEmbed::extractInt(exec, args, 1);
     int cppValue = value.pixelIndex(arg0, arg1);
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrect, QImage )
@@ -177,7 +177,7 @@ START_VARIANT_METHOD( callsave, QImage )
     QByteArray arg1 = KJSEmbed::extractQString( exec, args, 1 ).toLatin1();
     int arg2 = KJSEmbed::extractInt(exec, args, 2);
     bool cppValue = value.save(arg0, arg1, arg2);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callscaled, QImage )
@@ -216,7 +216,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callserialNumber, QImage )
     int cppValue = value.serialNumber();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetAlphaChannel, QImage )
@@ -266,12 +266,12 @@ START_VARIANT_METHOD( callvalid, QImage )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
     int arg1 = KJSEmbed::extractInt(exec, args, 1);
     bool cppValue = value.valid(arg0, arg1);
-    result = KJS::Boolean(cppValue);
+    result = KJS::jsBoolean(cppValue);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QImage )
     int cppValue = value.width();
-    result = KJS::Number(cppValue);
+    result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
 }

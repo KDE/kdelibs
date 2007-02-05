@@ -31,21 +31,21 @@ using namespace KJSEmbed;
 
 KJS::JSValue *callPrint( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
-    (*KJSEmbed::conout()) << args[0]->toString(exec).qstring();
-    return KJS::Null();
+    (*KJSEmbed::conout()) << toQString(args[0]->toString(exec));
+    return KJS::jsNull();
 }
 
 KJS::JSValue * callPrintLn( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
-    (*KJSEmbed::conout()) << args[0]->toString(exec).qstring() << endl;
-    return KJS::Null();
+    (*KJSEmbed::conout()) << toQString(args[0]->toString(exec)) << endl;
+    return KJS::jsNull();
 }
 
 KJS::JSValue * callDebug( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
-    //(*KJSEmbed::conerr())  << "Debug: " << args[0]->toString(exec).qstring() << endl;
-    qDebug()  << "Debug: " << args[0]->toString(exec).qstring();
-    return KJS::Null();
+    //(*KJSEmbed::conerr())  << "Debug: " << toQString(args[0]->toString(exec)) << endl;
+    qDebug()  << "Debug: " << toQString(args[0]->toString(exec));
+    return KJS::jsNull();
 }
 
 KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
@@ -53,13 +53,13 @@ KJS::JSValue * callReadLine( KJS::ExecState *exec, KJS::JSObject * /*self*/, con
     Q_UNUSED(exec);
     Q_UNUSED(args);
     QString line = conin()->readLine();
-    return KJS::String( line );
+    return KJS::jsString( line );
 }
 
 KJS::JSValue * callSystem( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args )
 {
     QProcess systemProcess;
-    QStringList processArgs = args[0]->toString(exec).qstring().split( ' ' );
+    QStringList processArgs = toQString(args[0]->toString(exec)).split( ' ' );
     QString app = processArgs[0];
     processArgs.pop_front();
 
@@ -72,7 +72,7 @@ KJS::JSValue * callSystem( KJS::ExecState *exec, KJS::JSObject * /*self*/, const
     {
         return KJS::throwError(exec, KJS::GeneralError, "Application crashed.");
     }
-    return KJS::String( systemProcess.readAll().data() );
+    return KJS::jsString( systemProcess.readAll().data() );
 }
 
 const Method IoFactory::IoMethods[] =

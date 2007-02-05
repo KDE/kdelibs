@@ -34,7 +34,7 @@ FileIOBinding::FileIOBinding( KJS::ExecState *exec,  QFile *value )
 }
 
 START_OBJECT_METHOD( callFileOpen, QFile )
-    result = KJS::Boolean( object->open( (QIODevice::OpenModeFlag) KJSEmbed::extractInt(exec, args, 0)));
+    result = KJS::jsBoolean( object->open( (QIODevice::OpenModeFlag) KJSEmbed::extractInt(exec, args, 0)));
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileClose, QFile )
@@ -42,19 +42,19 @@ START_OBJECT_METHOD( callFileClose, QFile )
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileReadLine, QFile )
-    result = KJS::String( object->readLine().data() );
+    result = KJS::jsString( object->readLine().data() );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileReadAll, QFile )
-    result = KJS::String( object->readAll().data() );
+    result = KJS::jsString( object->readAll().data() );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileWriteLine, QFile )
-    result = KJS::Number( (long int)object->write(KJSEmbed::extractQByteArray(exec, args, 0) + '\n') );
+    result = KJS::jsNumber( (long int)object->write(KJSEmbed::extractQByteArray(exec, args, 0) + '\n') );
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callFileAtEnd, QFile )
-    result = KJS::Boolean(object->atEnd());
+    result = KJS::jsBoolean(object->atEnd());
 END_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callOpenFile )
@@ -65,29 +65,29 @@ START_STATIC_OBJECT_METHOD( callOpenFile )
     }
     delete file;
     KJS::throwError(exec, KJS::TypeError, i18n("Could not open file '%1'",  KJSEmbed::extractQString( exec, args, 0)));
-    return KJS::Null();
+    return KJS::jsNull();
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callRemoveFile )
-    return KJS::Boolean( QFile::remove(KJSEmbed::extractQString( exec, args, 0) ));
+    return KJS::jsBoolean( QFile::remove(KJSEmbed::extractQString( exec, args, 0) ));
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callCopyFile )
-    return KJS::Boolean( QFile::copy(KJSEmbed::extractQString( exec, args, 0),KJSEmbed::extractQString( exec, args, 0) ));
+    return KJS::jsBoolean( QFile::copy(KJSEmbed::extractQString( exec, args, 0),KJSEmbed::extractQString( exec, args, 0) ));
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callMoveFile )
     if( QFile::copy(KJSEmbed::extractQString( exec, args, 0),KJSEmbed::extractQString( exec, args, 0) ) )
-            return KJS::Boolean( QFile::remove(KJSEmbed::extractQString( exec, args, 0) ) );
-    return KJS::Boolean(false);
+            return KJS::jsBoolean( QFile::remove(KJSEmbed::extractQString( exec, args, 0) ) );
+    return KJS::jsBoolean(false);
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callLinkFile )
-    return KJS::Boolean( QFile::link(KJSEmbed::extractQString( exec, args, 0),KJSEmbed::extractQString( exec, args, 0) ));
+    return KJS::jsBoolean( QFile::link(KJSEmbed::extractQString( exec, args, 0),KJSEmbed::extractQString( exec, args, 0) ));
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callExistsFile )
-    return KJS::Boolean( QFile::exists(KJSEmbed::extractQString( exec, args, 0) ));
+    return KJS::jsBoolean( QFile::exists(KJSEmbed::extractQString( exec, args, 0) ));
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callTempFile )

@@ -2,7 +2,7 @@
 
 function scribble() {
 
-  frame = new Widget("QFrame", this);
+  frame = new QWidget("QFrame", this);
   frame.startX = 0;
   frame.startY = 0;
   frame.endX = 0;

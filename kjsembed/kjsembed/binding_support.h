@@ -172,6 +172,12 @@ KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
         return new NAME(exec, object); \
 }
 
+namespace KJS
+{
+	inline JSObject* throwError(ExecState* e, ErrorType t, const QString& m)
+		{ return throwError(e, t, KJSEmbed::toUString(m)); }
+}
+
 namespace KJSEmbed
 {
     class KJSEMBED_EXPORT ProxyBinding : public KJS::JSObject

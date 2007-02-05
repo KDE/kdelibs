@@ -37,15 +37,15 @@ DomNodeBinding::DomNodeBinding( KJS::ExecState *exec, const QDomNode &value )
 namespace DomNodeNS
 {
 START_VALUE_METHOD( nodeType, QDomNode )
-    result = KJS::Number((int)value.nodeType());
+    result = KJS::jsNumber((int)value.nodeType());
 END_VALUE_METHOD
 
 START_VALUE_METHOD( nodeName, QDomNode )
-    result = KJS::String( value.nodeName());
+    result = KJS::jsString( value.nodeName());
 END_VALUE_METHOD
 
 START_VALUE_METHOD( nodeValue, QDomNode )
-    result = KJS::String( value.nodeValue());
+    result = KJS::jsString( value.nodeValue());
 END_VALUE_METHOD
 
 START_VALUE_METHOD( appendChild, QDomNode )
@@ -86,11 +86,11 @@ START_VALUE_METHOD( firstChildElement, QDomNode )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( hasAttributes, QDomNode )
-    result = KJS::Boolean( value.hasAttributes() );
+    result = KJS::jsBoolean( value.hasAttributes() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( hasChildNodes, QDomNode )
-    result = KJS::Boolean( value.hasChildNodes() );
+    result = KJS::jsBoolean( value.hasChildNodes() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( insertBefore, QDomNode )
@@ -108,65 +108,65 @@ START_VALUE_METHOD( insertAfter, QDomNode )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isAttr, QDomNode )
-    result = KJS::Boolean( value.isAttr() );
+    result = KJS::jsBoolean( value.isAttr() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isCDATASection, QDomNode )
-    result = KJS::Boolean( value.isCDATASection() );
+    result = KJS::jsBoolean( value.isCDATASection() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isCharacterData, QDomNode )
-    result = KJS::Boolean( value.isCharacterData() );
+    result = KJS::jsBoolean( value.isCharacterData() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isComment, QDomNode )
-    result = KJS::Boolean( value.isComment() );
+    result = KJS::jsBoolean( value.isComment() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isDocument, QDomNode )
-    result = KJS::Boolean( value.isDocument() );
+    result = KJS::jsBoolean( value.isDocument() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isDocumentFragment, QDomNode )
-    result = KJS::Boolean( value.isDocumentFragment() );
+    result = KJS::jsBoolean( value.isDocumentFragment() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isDocumentType, QDomNode )
-    result = KJS::Boolean( value.isDocumentType() );
+    result = KJS::jsBoolean( value.isDocumentType() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isElement, QDomNode )
-    result = KJS::Boolean( value.isElement() );
+    result = KJS::jsBoolean( value.isElement() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isEntity, QDomNode )
-    result = KJS::Boolean( value.isEntity() );
+    result = KJS::jsBoolean( value.isEntity() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isEntityReference, QDomNode )
-    result = KJS::Boolean( value.isEntityReference() );
+    result = KJS::jsBoolean( value.isEntityReference() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isNotation, QDomNode )
-    result = KJS::Boolean( value.isNotation() );
+    result = KJS::jsBoolean( value.isNotation() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isNull, QDomNode )
-    result = KJS::Boolean( value.isNull() );
+    result = KJS::jsBoolean( value.isNull() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isProcessingInstruction, QDomNode )
-    result = KJS::Boolean( value.isProcessingInstruction() );
+    result = KJS::jsBoolean( value.isProcessingInstruction() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isSupported, QDomNode )
     QString arg0 = KJSEmbed::extractQString(exec, args, 0);
     QString arg1 = KJSEmbed::extractQString(exec, args, 1);
-    result = KJS::Boolean( value.isSupported( arg0, arg1 ) );
+    result = KJS::jsBoolean( value.isSupported( arg0, arg1 ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( isText, QDomNode )
-    result = KJS::Boolean( value.isText() );
+    result = KJS::jsBoolean( value.isText() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( lastChild, QDomNode )
@@ -181,7 +181,7 @@ START_VALUE_METHOD( lastChildElement, QDomNode )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( localName, QDomNode )
-    result = KJS::String( value.localName() );
+    result = KJS::jsString( value.localName() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( namedItem, QDomNode )
@@ -191,7 +191,7 @@ START_VALUE_METHOD( namedItem, QDomNode )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( namespaceURI, QDomNode )
-    result = KJS::String( value.namespaceURI() );
+    result = KJS::jsString( value.namespaceURI() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( nextSibling, QDomNode )
@@ -220,7 +220,7 @@ START_VALUE_METHOD( parentNode, QDomNode )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( prefix, QDomNode )
-    result = KJS::String( value.prefix() );
+    result = KJS::jsString( value.prefix() );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( previousSibling, QDomNode )
@@ -360,7 +360,7 @@ START_VALUE_METHOD( setContent, QDomDocument )
     int row = 0;
     int col = 0;
     bool success = value.setContent(xml, &message, &row, &col );
-    result = KJS::Boolean( success );
+    result = KJS::jsBoolean( success );
     if( !success )
     {
         KJS::throwError(exec, KJS::SyntaxError, parserErrorTemplate.arg(message).arg(row).arg(col) );
@@ -369,7 +369,7 @@ END_VALUE_METHOD
 
 START_VALUE_METHOD( toString, QDomDocument )
     int indent = KJSEmbed::extractInt( exec, args, 0, 1);
-    result = KJS::String(value.toString(indent));
+    result = KJS::jsString(value.toString(indent));
 END_VALUE_METHOD
 
 START_VALUE_METHOD( documentElement, QDomDocument )
@@ -490,11 +490,11 @@ DomElementBinding::DomElementBinding( KJS::ExecState *exec, const QDomElement &v
 
 namespace DomElementNS {
 START_VALUE_METHOD( toString, QDomElement )
-    result = KJS::String( value.text( ) );
+    result = KJS::jsString( value.text( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( tagName, QDomElement )
-    result = KJS::String( value.tagName( ) );
+    result = KJS::jsString( value.tagName( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( setTagName, QDomElement )
@@ -505,7 +505,7 @@ END_VALUE_METHOD
 START_VALUE_METHOD( attribute, QDomElement )
     QString tag = KJSEmbed::extractQString(exec, args, 0);
     QString defaultValue = KJSEmbed::extractQString(exec, args, 1, QString::null);
-    result = KJS::String( value.attribute(tag,defaultValue) );
+    result = KJS::jsString( value.attribute(tag,defaultValue) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( setAttribute, QDomElement )
@@ -516,7 +516,7 @@ END_VALUE_METHOD
 
 START_VALUE_METHOD( hasAttribute, QDomElement )
     QString attr = KJSEmbed::extractQString(exec, args, 0);
-    result = KJS::Boolean( value.hasAttribute(attr) );
+    result = KJS::jsBoolean( value.hasAttribute(attr) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( removeAttribute, QDomElement )
@@ -535,13 +535,13 @@ START_VALUE_METHOD( attributeNS, QDomElement )
     QString nsURI = KJSEmbed::extractQString(exec, args, 0);
     QString localName = KJSEmbed::extractQString(exec, args, 1);
     QString defValue = KJSEmbed::extractQString( exec, args, 1, QString::null );
-    result = KJS::String( value.attributeNS( nsURI, localName, defValue ));
+    result = KJS::jsString( value.attributeNS( nsURI, localName, defValue ));
 END_VALUE_METHOD
 
 START_VALUE_METHOD( hasAttributeNS, QDomElement )
     QString ns = KJSEmbed::extractQString(exec, args, 0);
     QString attr = KJSEmbed::extractQString(exec, args, 1);
-    result = KJS::Boolean( value.hasAttributeNS(ns, attr) );
+    result = KJS::jsBoolean( value.hasAttributeNS(ns, attr) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( removeAttributeNS, QDomElement )
@@ -634,11 +634,11 @@ DomAttrBinding::DomAttrBinding( KJS::ExecState *exec, const QDomAttr &value )
 
 namespace AttrElementNS {
 START_VALUE_METHOD( name, QDomAttr )
-    result = KJS::String( value.value( ) );
+    result = KJS::jsString( value.value( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( specified, QDomAttr )
-    result = KJS::Boolean( value.specified( ) );
+    result = KJS::jsBoolean( value.specified( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( ownerElement, QDomAttr )
@@ -647,7 +647,7 @@ START_VALUE_METHOD( ownerElement, QDomAttr )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( value, QDomAttr )
-    result = KJS::String( value.value( ) );
+    result = KJS::jsString( value.value( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( setValue, QDomAttr )
@@ -681,11 +681,11 @@ DomNodeListBinding::DomNodeListBinding( KJS::ExecState *exec, const QDomNodeList
 
 namespace NodeListNS {
 START_VALUE_METHOD( count, QDomNodeList )
-    result = KJS::Number( value.count( ) );
+    result = KJS::jsNumber( value.count( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( length, QDomNodeList )
-    result = KJS::Number( value.length( ) );
+    result = KJS::jsNumber( value.length( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( item, QDomNodeList )
@@ -719,19 +719,19 @@ DomDocumentTypeBinding::DomDocumentTypeBinding( KJS::ExecState *exec, const QDom
 
 namespace DomDocumentTypeNS {
 START_VALUE_METHOD( internalSubset, QDomDocumentType )
-    result = KJS::String( value.internalSubset( ) );
+    result = KJS::jsString( value.internalSubset( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( name, QDomDocumentType )
-    result = KJS::String( value.name( ) );
+    result = KJS::jsString( value.name( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( publicId, QDomDocumentType )
-    result = KJS::String( value.publicId( ) );
+    result = KJS::jsString( value.publicId( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( systemId, QDomDocumentType )
-    result = KJS::String( value.systemId( ) );
+    result = KJS::jsString( value.systemId( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( entities, QDomDocumentType )
@@ -769,11 +769,11 @@ DomNamedNodeMapBinding::DomNamedNodeMapBinding( KJS::ExecState *exec, const QDom
 namespace NamedNodeMapNS {
 START_VALUE_METHOD( contains, QDomNamedNodeMap )
     QString name = KJSEmbed::extractQString( exec, args, 0);
-    result = KJS::Boolean( value.contains(name) );
+    result = KJS::jsBoolean( value.contains(name) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( count, QDomNamedNodeMap )
-    result = KJS::Number(value.count());
+    result = KJS::jsNumber(value.count());
 END_VALUE_METHOD
 
 START_VALUE_METHOD( item, QDomNamedNodeMap )
@@ -783,7 +783,7 @@ START_VALUE_METHOD( item, QDomNamedNodeMap )
 END_VALUE_METHOD
 
 START_VALUE_METHOD( length, QDomNamedNodeMap )
-    result = KJS::Number( value.length( ) );
+    result = KJS::jsNumber( value.length( ) );
 END_VALUE_METHOD
 
 START_VALUE_METHOD( namedItem, QDomNamedNodeMap )
