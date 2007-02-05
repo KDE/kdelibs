@@ -18,8 +18,12 @@
 
 #include <kmimetype.h>
 #include <kinstance.h>
+#include <ktempdir.h>
+#include <kprotocolinfo.h>
+#include <qdir.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 static void checkIcon( const KURL& url, const QString& expectedIcon )
 {
@@ -38,10 +42,26 @@ int main( int argc, char** argv )
 
   // Obviously those tests will need to be fixed if we ever change the name of the icons
   // but at least they unit-test KMimeType::iconForURL.
-  checkIcon( "file:/tmp/", "folder" );
-  checkIcon( "file:/root/", "folder_locked" );
-  checkIcon( "trash:/", "trashcan_full" ); // #100321
-  checkIcon( "trash:/foo/", "folder" );
+  KURL url;
+
+  // safely check a "regular" folder
+  url.setPath( QDir::homeDirPath() );
+  checkIcon( url, "folder" );
+  
+  // safely check a non-readable folder
+  if (0 != geteuid()) { // can't do this test if we're root
+    KTempDir tmp( QString::null, 0 );
+    tmp.setAutoDelete( true );
+    url.setPath( tmp.name() );
+    checkIcon( url, "folder_locked" );
+    chmod( QFile::encodeName( tmp.name() ), 0500 ); // so we can 'rm -rf' it
+  }
+
+  // safely check the trash folder
+  if ( KProtocolInfo::isKnownProtocol( QString("trash") ) ) {
+    checkIcon( "trash:/", "trashcan_full" ); // #100321
+    checkIcon( "trash:/foo/", "folder" );
+  }
 
   return 0;
 }
