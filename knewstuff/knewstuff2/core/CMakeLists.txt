@@ -30,6 +30,9 @@ set(knewstuff2_test_SRCS
    knewstuff2_test.cpp
 )
 
+add_definitions(-DKNSSRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\")
+set(CMAKE_SKIP_RPATH TRUE)
+
 kde4_automoc(${knewstuff2_test_SRCS})
 kde4_add_executable(knewstuff2_test ${knewstuff2_test_SRCS})
 

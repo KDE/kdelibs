@@ -68,7 +68,7 @@ void EntryLoader::slotJobResult( KJob *job )
   //QString contents = QString::fromUtf8(m_jobdata);
 
   kDebug(550) << "--ENTRIES-START--" << endl;
-  kDebug(550) << m_jobdata << endl;
+  kDebug(550) << QString(m_jobdata) << endl;
   kDebug(550) << "--ENTRIES-END--" << endl;
 
   QDomDocument doc;

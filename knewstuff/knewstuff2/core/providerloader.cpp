@@ -67,8 +67,7 @@ void ProviderLoader::slotJobResult( KJob *job )
   }
 
   kDebug(550) << "--PROVIDERS-START--" << endl;
-  kDebug(550) << m_jobdata << endl;
-  kDebug(550) << QString( m_jobdata ) << endl;
+  kDebug(550) << QString(m_jobdata) << endl;
   kDebug(550) << "--PROVIDERS-END--" << endl;
 
   QDomDocument doc;

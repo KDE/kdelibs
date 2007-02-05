@@ -1,5 +1,7 @@
 #include "knewstuff2_test.h"
 
+#include <kstandarddirs.h>
+
 KNewStuff2Test::KNewStuff2Test()
 : QObject()
 {
@@ -45,6 +47,7 @@ void KNewStuff2Test::engineTest()
 	else
 	{
 		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
+		kWarning() << "Although this is not required anymore, so something went really wrong." << endl;
 		quitTest();
 	}
 }
@@ -72,6 +75,10 @@ int main(int argc, char **argv)
 {
 	KCmdLineArgs::init(argc, argv, "knewstuff2_test", NULL, NULL, NULL);
 	KApplication app(false);
+
+	// Take source directory into account
+	kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
+	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
 
 	KNewStuff2Test *test = new KNewStuff2Test();
 	test->providerTest();
