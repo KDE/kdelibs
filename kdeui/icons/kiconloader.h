@@ -95,7 +95,7 @@ public:
      * iconloader object yourself. That one is the current KComponentData's
      * (typically KApplication's) iconloader.
      */
-    KIconLoader(const KComponentData &componentData, QObject* parent = 0);
+    explicit KIconLoader(const KComponentData &componentData, QObject* parent = 0);
 
     /**
      * Cleanup
