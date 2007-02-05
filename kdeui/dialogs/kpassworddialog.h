@@ -59,8 +59,9 @@ public:
     
     enum KPasswordDialogFlag
     {
+        NoFlags = 0x00,
         /**
-         * If this falg is set, the "keep this password" checkbox will been shown,
+         * If this flag is set, the "keep this password" checkbox will been shown,
          * otherwhise, it will not be shown and keepPassword will have no effect
          */
         ShowKeepPassword = 0x01,
@@ -74,16 +75,41 @@ public:
          */
         UsernameReadOnly = 0x04
     };
-    Q_DECLARE_FLAGS(KPasswordDialogFlags,KPasswordDialogFlag)
-    
+    Q_DECLARE_FLAGS(KPasswordDialogFlags, KPasswordDialogFlag)
+
+    enum ErrorType
+    {
+        UnknownError = 0,
+
+        /**
+         * A problem with the user name as entered
+         **/
+        UsernameError,
+
+        /**
+         * Incorrect password
+         */
+        PasswordError,
+
+        /**
+         * Error preventing further attempts, will result in disabling most of the interface
+         */
+        FatalError
+    };
+
     /**
      * create a password dialog 
-     * 
+     *
      * @param parent the parent widget (default:NULL).
      * @param flags a set of KPasswordDialogFlag flags
+     * @param otherButtons buttons to show in the dialog besides Ok and Cancel.
+     *                     Useful for adding application-specific buttons like
+     *                     "ignore" or "skip".
      */
-    KPasswordDialog( QWidget *parent=0L, const KPasswordDialogFlags& flags = 0 );
-    
+    explicit KPasswordDialog( QWidget *parent = 0L,
+                              const KPasswordDialogFlags& flags = 0,
+                              const KDialog::ButtonCodes otherButtons = 0);
+
     /**
      * Destructor
      */
@@ -94,12 +120,12 @@ public:
      * @param prompt        instructional text to be shown.
      */
     void setPrompt( const QString& prompt );
-    
+
     /**
      * Returns the prompt
      */
     QString prompt() const;
-    
+
     /**
      * set an image that appears next to the prompt.
      */
@@ -119,14 +145,21 @@ public:
      * @param label       label for comment (ex:"Command:")
      * @param comment     the actual comment text.
      */
-    void addCommentLine( const QString& label, const QString comment );
+    void addCommentLine( const QString& label, const QString& comment );
+
+    /**
+     * Shows an error message in the dialog box. Prevents having to show a dialog-on-a-dialog.
+     *
+     * @param message the error message to show
+     */
+    void showErrorMessage( const QString& message, const ErrorType type = PasswordError );
 
     /**
      * Returns the password entered by the user.
      * @return the password
      */
     QString password() const;
-    
+
     /**
      * set the default username.
      */
@@ -183,12 +216,12 @@ public:
      * @param knownLogins map of known logins: the keys are usernames, the values are passwords.
      */
     void setKnownLogins( const QMap<QString, QString>& knownLogins );
-    
+
     /**
      * @internal
      */
     void accept();
-    
+
 Q_SIGNALS:
     /**
      * emitted when the dialog has been accepted
@@ -196,7 +229,7 @@ Q_SIGNALS:
      * @param keep true if the "remember password" checkbox was checked, false otherwhise.  false if ShowKeepPassword was not set in the constructor
      */
     void gotPassword( const QString& password , bool keep );
-    
+
     /**
      * emitted when the dialog has been accepted, and ShowUsernameLine was set on the constructor
      * @param username the entered username
@@ -205,8 +238,18 @@ Q_SIGNALS:
      */
     void gotUsernameAndPassword( const QString& username, const QString& password , bool keep );
 
+protected:
+    /**
+     * Virtual function that can be overridden to provide password
+     * checking in derived classes. It should return @p true if the
+     * password is valid, @p false otherwise.
+     */
+    virtual bool checkPassword();
+
+
 private Q_SLOTS:
-    void slotActivated( const QString& userName );
+    void actuallyAccept();
+    void activated( const QString& userName );
 
 private:
     void init( const KPasswordDialogFlags& flags );
@@ -217,5 +260,5 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KPasswordDialog::KPasswordDialogFlags)
-        
+
 #endif

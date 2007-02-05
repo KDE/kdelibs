@@ -1543,3 +1543,9 @@ void KLineEdit::setPasswordMode(bool b)
         setEchoMode( Normal );
     }
 }
+
+bool KLineEdit::passwordMode() const
+{
+    return echoMode() == NoEcho || echoMode() == Password;
+}
+

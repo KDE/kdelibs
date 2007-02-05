@@ -154,7 +154,8 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool squeezedTextEnabled READ isSqueezedTextEnabled WRITE setSqueezedTextEnabled )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
     Q_PROPERTY( bool showClearButton READ isClearButtonShown WRITE setClearButtonShown )
-    
+    Q_PROPERTY( bool passwordMode READ passwordMode WRITE setPasswordMode )
+
 public:
 
     /**
@@ -462,6 +463,11 @@ public Q_SLOTS:
      * @param b true to set in password mode
      */
     void setPasswordMode( bool b = true );
+
+    /**
+     * @return returns true if the lineedit is set to password mode echoing
+     */
+    bool passwordMode( ) const;
 
 
 protected Q_SLOTS:

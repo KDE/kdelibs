@@ -44,6 +44,19 @@ public:
      */
     int checkNeedPassword();
 
+    /**
+     * Checks what the default super user command is, e.g. sudo, su, etc
+     * @return the default super user command
+     */
+    QString superUserCommand();
+
+    /**
+     * Checks whether or not the user's password is being asked for or another
+     * user's password. Due to usage of systems such as sudo, even when attempting
+     * to switch to another user one may need to enter their own password.
+     */
+    bool useUsersOwnPassword();
+
 private:
     enum SuErrors { error=-1, ok=0, killme=1, notauthorized=2 } ;
     int ConverseSU(const char *password);
@@ -53,7 +66,7 @@ protected:
 private:
     class SuProcessPrivate;
     SuProcessPrivate *d;
-    QString superUserCommand;
+    QString m_superUserCommand;
 };
 
 #endif

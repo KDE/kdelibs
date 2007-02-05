@@ -26,7 +26,6 @@ include_directories(
 add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( liveui/tests )
-add_subdirectory( dialogs )
 
 ########### next target ###############
 
@@ -210,6 +209,7 @@ set( kdeui_UI
    dialogs/kkeydialog.ui
    dialogs/kshortcutdialog_simple.ui
    dialogs/kshortcutdialog_advanced.ui
+   dialogs/kpassworddialog.ui
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
@@ -382,6 +382,7 @@ install( FILES
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
+install( FILES dialogs/40.colors dialogs/Web.colors dialogs/Royal.colors dialogs/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 
 
