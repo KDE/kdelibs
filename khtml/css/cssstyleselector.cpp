@@ -749,7 +749,7 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
     // FIXME: We only need to invalidate the fixed regions when scrolling.  It's total overkill to
     // prevent the entire view from blitting on a scroll.
     if (style->hasFixedBackgroundImage() && view)
-        view->useSlowRepaints();
+        view->setHasStaticBackground();
 }
 
 unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
@@ -2414,7 +2414,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             p = ABSOLUTE; break;
         case CSS_VAL_FIXED:
             {
-                view->useSlowRepaints();
+                view->setHasStaticBackground();
                 p = FIXED;
                 break;
             }

@@ -5754,11 +5754,16 @@ void KHTMLPart::setZoomFactor (int percent)
   if (d->m_zoomFactor == percent) return;
   d->m_zoomFactor = percent;
 
-  if(d->m_doc) {
+  if(d->m_view) {
       QApplication::setOverrideCursor( Qt::WaitCursor );
-    if (d->m_doc->styleSelector())
-      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_zoomFactor);
-    d->m_doc->recalcStyle( NodeImpl::Force );
+
+// ### make the increasing/decreasing of font size a separate setting
+//
+//    if (d->m_doc->styleSelector())
+//      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_zoomFactor);
+//    d->m_doc->recalcStyle( NodeImpl::Force );
+
+    d->m_view->setZoomLevel( d->m_zoomFactor );
     QApplication::restoreOverrideCursor();
   }
 

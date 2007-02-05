@@ -524,7 +524,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     }
     m_view->setWidgetVisible(this, true);
     if (!khtmlw)
-        m_widget->move( xPos, yPos );
+        m_view->addChild( m_widget, xPos, yPos );
     else
         m_widget->move( xPos, -500000 +yPos);
     m_widget->show();

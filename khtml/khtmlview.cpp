@@ -186,10 +186,11 @@ public:
 	    oldUnderMouse->deref();
         oldUnderMouse = 0;
         linkPressed = false;
-        useSlowRepaints = false;
+        staticWidget = false;
 	tabMovePending = false;
 	lastTabbingDirection = true;
 	pseudoFocusNode = PFNone;
+	zoomLevel = 100;
 #ifndef KHTML_NO_SCROLLBARS
         //We don't turn off the toolbars here
 	//since if the user turns them
@@ -287,6 +288,8 @@ public:
         scrollSuspended = false;
     }
 
+    bool haveZoom() const { return zoomLevel != 100; }
+
 #ifndef KHTML_NO_CARET
     /** this function returns an instance of the caret view context. If none
      * exists, it will be instantiated.
@@ -324,9 +327,10 @@ public:
     Qt::ScrollBarPolicy hpolicy;
     bool prevScrollbarVisible:1;
     bool linkPressed:1;
-    bool useSlowRepaints:1;
+    bool staticWidget:1;
     bool ignoreWheelEvents:1;
 
+    int zoomLevel;
     int borderX, borderY;
     KSimpleConfig *formCompletions;
 
@@ -510,9 +514,13 @@ void KHTMLView::init()
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
 
-    // ### we'll enable redirection of khtmlview here
-    //     when event and painting issues have been thoroughly worked out
-    // m_kwp->setIsRedirected(true);
+    // ### we'll enable redirection of khtmlview
+    //     when event issues have been thoroughly worked out
+
+    bool redirect = false; // m_part->parentPart() && !isFrame() ...
+
+    m_kwp->setIsRedirected( redirect );
+    d->staticWidget = redirect;
 }
 
 void KHTMLView::clear()
@@ -640,6 +648,7 @@ void KHTMLView::viewportToContents(int x, int y, int& cx, int& cy) const
 
 void KHTMLView::updateContents(int x, int y, int w, int h)
 {
+    applyTransforms(x, y, w, h);
     widget()->update(x, y, w, h);
 }
 
@@ -650,6 +659,7 @@ void KHTMLView::updateContents( const QRect& r )
 
 void KHTMLView::repaintContents(int x, int y, int w, int h)
 {
+    applyTransforms(x, y, w, h);
     widget()->repaint(x, y, w, h);
 }
 
@@ -658,6 +668,42 @@ void KHTMLView::repaintContents( const QRect& r )
     repaintContents( r.x(), r.y(), r.width(), r.height() );
 }
 
+void KHTMLView::applyTransforms( int& x, int& y, int& w, int& h) const
+{
+     if (d->staticWidget) {
+        x -= contentsX();
+        y -= contentsY();
+    }
+    if (d->haveZoom()) {
+        const int z = d->zoomLevel;
+        x = x*z/100;
+        y = y*z/100;
+        w = w*z/100;
+        h = h*z/100;
+    }
+}
+
+void KHTMLView::revertTransforms( int& x, int& y, int& w, int& h) const
+{
+     if (d->staticWidget) {
+        x += contentsX();
+        y += contentsY();
+    }
+    if (d->haveZoom()) {
+        const int z = d->zoomLevel;
+        x = x*100/z;
+        y = y*100/z;
+        w = w*100/z;
+        h = h*100/z;
+    }
+}
+
+void KHTMLView::revertTransforms( int& x, int& y ) const
+{
+    int dummy = 0;
+    revertTransforms(x, y, dummy, dummy);
+}
+   
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     int dw = e->oldSize().width() - e->size().width();
@@ -692,16 +738,30 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     QRect r = e->rect();
     QRect v(contentsX(), contentsY(), visibleWidth(), visibleHeight());
+    if (d->staticWidget) {
+        QPoint off(contentsX(),contentsY());
+        p.translate(-off);
+        r.translate(off);
+    }
 
     r = r.intersect(v);
     if (!r.isValid() || r.isEmpty()) return;
-    p.setClipRect(v);
+    
+    if (d->haveZoom()) {
+        p.scale( d->zoomLevel/100., d->zoomLevel/100.);
 
+        r.setX(r.x()*100/d->zoomLevel);
+        r.setY(r.y()*100/d->zoomLevel);
+        r.setWidth(r.width()*100/d->zoomLevel);
+        r.setHeight(r.height()*100/d->zoomLevel);
+    }
+    p.setClipRect(r);
+  
     int ex = r.x();
     int ey = r.y();
     int ew = r.width();
     int eh = r.height();
-    
+
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p.fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
         return;
@@ -882,6 +942,23 @@ void KHTMLView::closeEvent( QCloseEvent* ev )
     QScrollArea::closeEvent( ev );
 }
 
+void KHTMLView::setZoomLevel(int percent)
+{
+    percent = percent < 20 ? 20 : (percent > 800 ? 800 : percent);
+    int oldpercent = d->zoomLevel;
+    d->zoomLevel = percent;
+    if (percent != oldpercent) {
+        if (d->layoutSchedulingEnabled)
+            layout();
+        widget()->update();
+    }
+}
+
+int KHTMLView::zoomLevel() const
+{
+    return d->zoomLevel;
+}
+
 //
 // Event Handling
 //
@@ -898,6 +975,7 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
 
     int xm = _mouse->x();
     int ym = _mouse->y();
+    revertTransforms(xm, ym);
 
     // kDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()-contentsX()<<"/"<<_mouse->y()-contentsY()<<"), contents=(" << xm << "/" << ym << ")\n";
 
@@ -1018,6 +1096,7 @@ void KHTMLView::mouseDoubleClickEvent( QMouseEvent *_mouse )
 
     int xm = _mouse->x();
     int ym = _mouse->y();
+    revertTransforms(xm, ym);
 
     // kDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
@@ -1087,6 +1166,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 
     int xm = _mouse->x();
     int ym = _mouse->y();
+    revertTransforms(xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseMove );
     // Do not modify :hover/:active state while mouse is pressed.
@@ -1240,6 +1320,7 @@ void KHTMLView::mouseReleaseEvent( QMouseEvent * _mouse )
 
     int xm = _mouse->x();
     int ym = _mouse->y();
+    revertTransforms(xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->buttons(), DOM::NodeImpl::MouseRelease );
 
@@ -3001,10 +3082,11 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 }
 
 
-void KHTMLView::useSlowRepaints()
+void KHTMLView::setHasStaticBackground()
 {
-    d->useSlowRepaints = true;
-//    setStaticBackground(true); ### ?? FIXME
+    if (!d->staticWidget)
+        widget()->move(0,0);
+    d->staticWidget = true;
 }
 
 
@@ -3136,6 +3218,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     int exceptioncode = 0;
     int pageX = _mouse->x();
     int pageY = _mouse->y();
+    revertTransforms(pageX, pageY);
     int clientX = pageX - contentsX();
     int clientY = pageY - contentsY();
     int screenX = _mouse->globalX();
@@ -3164,7 +3247,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 
     // mouseout/mouseover
     if (setUnder && d->oldUnderMouse != targetNode) {
-        if (d->oldUnderMouse && d->oldUnderMouse->getDocument() != targetNode->getDocument()) {
+        if (d->oldUnderMouse && d->oldUnderMouse->getDocument() != m_part->xmlDocImpl()) {
             d->oldUnderMouse->deref();
             d->oldUnderMouse = 0;
         }
@@ -3436,14 +3519,27 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
                      horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
     d->contentsY = verticalScrollBar()->value();
 
-    if (d->useSlowRepaints) {
-        widget()->blockSignals( true );
-        widget()->move( widget()->pos().x() + dx, widget()->pos().y() +dy );
-        widget()->blockSignals( false );
+    if ( d->staticWidget ) {
         widget()->repaint();
         return;
     }
     QScrollArea::scrollContentsBy(dx, dy);
+}
+
+void KHTMLView::addChild(QWidget * child, int x, int y)
+{
+    if (!child) 
+        return;
+
+    if (child->parent() != widget())
+        child->setParent( widget() );
+    
+    // ### handle pseudo-zooming of non-redirected widgets (e.g. just resize'em)
+
+    if (!d->staticWidget)
+        child->move(x, y);
+    else
+        child->move(x-contentsX(), y-contentsY());
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
@@ -3518,9 +3614,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	}
     }
 
-//    setStaticBackground(d->useSlowRepaints); ?? ### FIXME
-
-//        kDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     if (d->repaintTimerId)
         killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;

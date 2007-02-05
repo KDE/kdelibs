@@ -220,35 +220,42 @@ void RenderCanvas::updateDocumentSize()
      // update our cached document size
     int hDocH = m_cachedDocHeight = docHeight();
     int hDocW = m_cachedDocWidth = docWidth();
+    
+    int zLevel = m_view? m_view->zoomLevel() : 100;
+    hDocW = hDocW*zLevel/100;
+    hDocH = hDocH*zLevel/100;
 
     if (!m_pagedMode && m_view) {
 
         bool vss = !m_view->verticalScrollBar()->isHidden();
         bool hss = !m_view->horizontalScrollBar()->isHidden();
         QSize s = m_view->maximumViewportSize();
-        if ( m_cachedDocWidth > s.width() )
+
+        int zoomedDocWidth = m_cachedDocWidth*zLevel/100;
+        int zoomedDocHeight = m_cachedDocHeight*zLevel/100;
+        if ( zoomedDocWidth > s.width() )
             s.setWidth( s.width()-m_view->verticalScrollBar()->sizeHint().width() );
-        if ( m_cachedDocHeight > s.height() )
+        if ( zoomedDocHeight > s.height() )
             s.setHeight( s.height()-m_view->horizontalScrollBar()->sizeHint().height() );
    
         // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
         // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
 
         if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
-            m_cachedDocWidth <= m_width)
-            hDocW = qMin( m_cachedDocWidth, s.width() );
+            zoomedDocWidth <= m_width)
+            hDocW = qMin( zoomedDocWidth, s.width() );
 
         if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
-            m_cachedDocHeight <= m_height)
-            hDocH = qMin( m_cachedDocHeight, s.height() );
+            zoomedDocHeight <= m_height)
+            hDocH = qMin( zoomedDocHeight, s.height() );
 
         // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
         // think again if we are falling downright in the hysteresis zone
 
-        if (vss && s.width() > m_cachedDocWidth && m_cachedDocWidth > m_view->visibleWidth())
+        if (vss && s.width() > zoomedDocWidth && zoomedDocWidth > m_view->visibleWidth())
             hDocW = s.width()+1;
 
-        if (hss && s.height() > m_cachedDocHeight && m_cachedDocHeight > m_view->visibleHeight())
+        if (hss && s.height() > zoomedDocHeight && zoomedDocHeight > m_view->visibleHeight())
             hDocH = s.height()+1;
 
         m_view->resizeContents(hDocW, hDocH);

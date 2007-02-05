@@ -503,6 +503,8 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     int exceptioncode = 0;
     int pageX = _mouse->x();
     int pageY = _mouse->y();
+    if ( getDocument()->view() )
+        getDocument()->view()->revertTransforms( pageX, pageY );
     int clientX = pageX;
     int clientY = pageY;
     if ( getDocument()->view() )

@@ -98,6 +98,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class DOM::HTMLFormElementImpl;
     friend class DOM::HTMLAnchorElementImpl;
     friend class DOM::HTMLInputElementImpl;
+    friend class DOM::NodeImpl;
     friend class DOM::DocumentImpl;
     friend class KHTMLPart;
     friend class khtml::RenderCanvas;
@@ -257,6 +258,8 @@ public:
      */
     void updateContents( const QRect& r );
     void updateContents(int x, int y, int w, int h);
+    
+    void addChild(QWidget *child, int dx, int dy);
 
     /**
      * Requests an immediate repaint of the content area
@@ -264,6 +267,18 @@ public:
      */
     void repaintContents( const QRect& r );
     void repaintContents(int x, int y, int w, int h);
+    
+    /**
+     * Apply a zoom level to the content area
+     * @param percent a zoom level expressed as a percentage
+     */
+    void setZoomLevel( int percent );
+    
+    /**
+     * Retrieve the current zoom level
+     *
+     */
+    int zoomLevel() const;
 
 public Q_SLOTS:
     /**
@@ -393,7 +408,10 @@ private:
     QMap< DOM::ElementImpl*, QChar > buildFallbackAccessKeys() const;
     void displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVector< QChar >& taken, bool use_fallbacks );
 
-    void useSlowRepaints();
+    void setHasStaticBackground();
+    void applyTransforms( int& x, int& y, int& w, int& h) const;
+    void revertTransforms( int& x, int& y, int& w, int& h) const;
+    void revertTransforms( int& x, int& y ) const;
 
     void setIgnoreWheelEvents(bool e);
 
@@ -698,6 +716,7 @@ private:
  private:
 
     void setWidgetVisible(::khtml::RenderWidget*, bool visible);
+
 
     int _width;
     int _height;
