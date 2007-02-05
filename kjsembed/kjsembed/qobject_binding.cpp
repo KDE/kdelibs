@@ -55,20 +55,20 @@ bool validSlot(const QMetaMethod& method, QObjectBinding::AccessFlags accessflag
 {
     switch( method.access() ) {
         case QMetaMethod::Private: {
-            if(! accessflags & QObjectBinding::PrivateSlots) return false;
+            if(! (accessflags & QObjectBinding::PrivateSlots)) return false;
         } break;
         case QMetaMethod::Protected: {
-            if(! accessflags & QObjectBinding::ProtectedSlots) return false;
+            if(! (accessflags & QObjectBinding::ProtectedSlots)) return false;
         } break;
         case QMetaMethod::Public: {
-            if(! accessflags & QObjectBinding::PublicSlots) return false;
+            if(! (accessflags & QObjectBinding::PublicSlots)) return false;
         } break;
     }
     if(method.attributes() & QMetaMethod::Scriptable) {
-        if(! accessflags & QObjectBinding::ScriptableSlots) return false;
+        if(! (accessflags & QObjectBinding::ScriptableSlots)) return false;
     }
     else {
-        if(! accessflags & QObjectBinding::NonScriptableSlots) return false;
+        if(! (accessflags & QObjectBinding::NonScriptableSlots)) return false;
     }
     return true;
 }
@@ -77,20 +77,20 @@ bool validSignal(const QMetaMethod& method, QObjectBinding::AccessFlags accessfl
 {
     switch( method.access() ) {
         case QMetaMethod::Private: {
-            if(! accessflags & QObjectBinding::PrivateSignals) return false;
+            if(! (accessflags & QObjectBinding::PrivateSignals)) return false;
         } break;
         case QMetaMethod::Protected: {
-            if(! accessflags & QObjectBinding::ProtectedSignals) return false;
+            if(! (accessflags & QObjectBinding::ProtectedSignals)) return false;
         } break;
         case QMetaMethod::Public: {
-            if(! accessflags & QObjectBinding::PublicSignals) return false;
+            if(! (accessflags & QObjectBinding::PublicSignals)) return false;
         } break;
     }
     if(method.attributes() & QMetaMethod::Scriptable) {
-        if(! accessflags & QObjectBinding::ScriptableSignals) return false;
+        if(! (accessflags & QObjectBinding::ScriptableSignals)) return false;
     }
     else {
-        if(! accessflags & QObjectBinding::NonScriptableSignals) return false;
+        if(! (accessflags & QObjectBinding::NonScriptableSignals)) return false;
     }
     return true;
 }
@@ -98,10 +98,10 @@ bool validSignal(const QMetaMethod& method, QObjectBinding::AccessFlags accessfl
 bool validProperty(const QMetaProperty& property, QObjectBinding::AccessFlags accessflags)
 {
     if(property.isScriptable()) {
-        if(! accessflags & QObjectBinding::ScriptableProperties) return false;
+        if(! (accessflags & QObjectBinding::ScriptableProperties)) return false;
     }
     else {
-        if(! accessflags & QObjectBinding::NonScriptableProperties) return false;
+        if(! (accessflags & QObjectBinding::NonScriptableProperties)) return false;
     }
     return true;
 }
