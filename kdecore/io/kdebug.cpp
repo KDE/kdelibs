@@ -63,6 +63,7 @@
 #endif
 
 #include "kdebugdbusiface_p.h"
+#include <QMutex>
 
 KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface = false;
 
@@ -163,6 +164,7 @@ struct kDebugPrivate
     KConfig *config;
     KDebugDBusIface *kDebugDBusIface;
     QHash<unsigned int, QByteArray> cache;
+    QMutex mutex;
 };
 
 K_GLOBAL_STATIC(kDebugPrivate, kDebug_data)
@@ -204,6 +206,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
     short nOutput = 2;
     if (!kDebug_data.isDestroyed()) {
+        kDebug_data->mutex.lock();
         if (!kDebug_data->config && KGlobal::hasMainComponent()) {
             kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), false, false);
             kDebug_data->config->setGroup(QLatin1String("0"));
@@ -227,6 +230,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         }
         nOutput = kDebug_data->config ? kDebug_data->config->readEntry(key, 2) : 2;
         if (nOutput == 4 && nLevel != KDEBUG_FATAL) {
+            kDebug_data->mutex.unlock();
             return;
         }
     }
@@ -302,6 +306,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   if ((nLevel == KDEBUG_FATAL) && (kDebug_data.isDestroyed()
               || !kDebug_data->config || kDebug_data->config->readEntry("AbortFatal", true))) {
         abort();
+  }
+  if (!kDebug_data.isDestroyed()) {
+      kDebug_data->mutex.unlock();
   }
 }
 
