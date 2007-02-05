@@ -496,16 +496,14 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
             if (canClose || handleBrokenComments || scriptEnd ){
                 ++src;
                 if ( !( title || script || xmp || textarea || style) ) {
-#ifdef COMMENTS_IN_DOM
                     checkScriptBuffer();
                     scriptCode[ scriptCodeSize ] = 0;
                     scriptCode[ scriptCodeSize + 1 ] = 0;
                     currToken.tid = ID_COMMENT;
-                    processListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
+                    processListing(TokenizerString(scriptCode, scriptCodeSize - 2));
                     processToken();
                     currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
                     processToken();
-#endif
                     scriptCodeSize = 0;
                 }
                 comment = false;
@@ -1655,7 +1653,8 @@ void HTMLTokenizer::processToken()
 #endif
         currToken.text = new DOMStringImpl( buffer, dest - buffer );
         currToken.text->ref();
-        currToken.tid = ID_TEXT;
+        if (currToken.tid != ID_COMMENT)
+            currToken.tid = ID_TEXT;
     }
     else if(!currToken.tid) {
         currToken.reset();

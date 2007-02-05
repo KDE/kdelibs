@@ -397,13 +397,14 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 return insertNode(n);
             }
             break;
-        case ID_COMMENT:
-            break;
         case ID_HEAD:
             // ### allow not having <HTML> in at all, as per HTML spec
             if (!current->isDocumentNode() && current->id() != ID_HTML )
                 return false;
             break;
+        case ID_COMMENT:
+            if( head )
+                break;
         case ID_META:
         case ID_LINK:
         case ID_ISINDEX:
@@ -799,7 +800,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         default:
             if(current->isDocumentNode())
             {
-                if(current->firstChild() == 0) {
+                if(current->firstChild() == 0 || !current->firstChild()->isHTMLElement()) {
                     e = new HTMLHtmlElementImpl(document);
                     insertNode(e);
                     handled = true;
@@ -1197,9 +1198,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new TextImpl(document, t->text);
         break;
     case ID_COMMENT:
-#ifdef COMMENTS_IN_DOM
         n = new CommentImpl(document, t->text);
-#endif
         break;
     default:
         kDebug( 6035 ) << "Unknown tag " << t->tid << "!" << endl;

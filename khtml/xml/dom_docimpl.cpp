@@ -2770,6 +2770,8 @@ DOMString DocumentFragmentImpl::toString() const
     DOMString result;
 
     for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+        if (child->nodeType() == Node::COMMENT_NODE || child->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
+            continue;
 	result += child->toString();
     }
 
