@@ -1,5 +1,7 @@
 
 ########### next target ###############
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 
 kde4_automoc(${kcm_crypto_PART_SRCS})
