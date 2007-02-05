@@ -44,16 +44,16 @@ install( FILES
   K3URLDrag
   K3Wizard
   KACL
-  KAboutApplication
+  K3AboutApplication
   KAboutApplicationDialog
-  KAboutContainer
-  KAboutContributor
+  K3AboutContainer
+  K3AboutContributor
   KAboutData
-  KAboutDialog
-  KAboutKDEDialog
+  K3AboutDialog
+  KAboutKdeDialog
   KAboutPerson
   KAboutTranslator
-  KAboutWidget
+  K3AboutWidget
   KAcceleratorManager
   KAction
   KActionCollection
