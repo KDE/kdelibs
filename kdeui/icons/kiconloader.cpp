@@ -1251,11 +1251,11 @@ QPixmap KIconLoader::unknown()
 }
 
 /*** the global icon loader ***/
-Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
+K_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
 
 KIconLoader *KIconLoader::global()
 {
-    return globalIconLoader( );
+    return globalIconLoader;
 }
 
 void KIconLoader::newIconLoader()
