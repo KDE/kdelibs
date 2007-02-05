@@ -62,8 +62,7 @@ public:
     /**
      * Returns the currently chosen color.
      */
-    QColor color() const
-        { return col; }
+    QColor color() const;
 
     /**
      * Sets the current color to @p c.
@@ -100,11 +99,6 @@ protected:
     virtual void mousePressEvent( QMouseEvent *e );
     virtual void mouseMoveEvent( QMouseEvent *e);
     virtual void keyPressEvent( QKeyEvent *e );
-private:
-    QColor col;
-    QPoint mPos;
-    bool dragFlag;
-    void initStyleOption(QStyleOptionButton* opt) const;
 
 private:
     class KColorButtonPrivate;

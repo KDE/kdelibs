@@ -36,13 +36,22 @@
 class KColorButton::KColorButtonPrivate
 {
 public:
+    KColorButtonPrivate(KColorButton *q): q(q) {}
+  
+    KColorButton *q;
     bool m_bdefaultColor;
     QColor m_defaultColor;
+  
+    QColor col;
+    QPoint mPos;
+    bool dragFlag;
+    
+    void initStyleOption(QStyleOptionButton* opt) const;    
 };
 
 KColorButton::KColorButton( QWidget *parent ) : QPushButton( parent )
 {
-  d = new KColorButtonPrivate;
+  d = new KColorButtonPrivate(this);
   d->m_bdefaultColor = false;
   d->m_defaultColor = QColor();
   setAcceptDrops( true);
@@ -51,9 +60,10 @@ KColorButton::KColorButton( QWidget *parent ) : QPushButton( parent )
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
-KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( parent ), col(c)
+KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( parent )
 {
-  d = new KColorButtonPrivate;
+  d = new KColorButtonPrivate(this);
+  d->col = c;
   d->m_bdefaultColor = false;
   d->m_defaultColor = QColor();
   setAcceptDrops( true);
@@ -63,9 +73,10 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( pa
 }
 
 KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent )
-  : QPushButton( parent ), col(c)
+  : QPushButton( parent )
 {
-  d = new KColorButtonPrivate;
+  d = new KColorButtonPrivate(this);
+  d->col = c;
   d->m_bdefaultColor = true;
   d->m_defaultColor = defaultColor;
   setAcceptDrops( true);
@@ -79,12 +90,17 @@ KColorButton::~KColorButton()
   delete d;
 }
 
+QColor KColorButton::color() const
+{
+  return d->col;
+}
+
 void KColorButton::setColor( const QColor &c )
 {
-  if ( col != c ) {
-    col = c;
+  if ( d->col != c ) {
+    d->col = c;
     repaint();
-    emit changed( col );
+    emit changed( d->col );
   }
 }
 
@@ -99,9 +115,9 @@ void KColorButton::setDefaultColor( const QColor &c )
   d->m_defaultColor = c;
 }
 
-void KColorButton::initStyleOption(QStyleOptionButton* opt) const
+void KColorButton::KColorButtonPrivate::initStyleOption(QStyleOptionButton* opt) const
 {
-    opt->init(this);
+    opt->init(q);
     opt->text.clear();
     opt->icon = QIcon();
     opt->features = QStyleOptionButton::None;
@@ -130,7 +146,7 @@ void KColorButton::paintEvent( QPaintEvent* )
     y += style()->pixelMetric( QStyle::PM_ButtonShiftVertical   );
   }
 
-  QColor fillCol = isEnabled() ? col : palette().color(backgroundRole());
+  QColor fillCol = isEnabled() ? d->col : palette().color(backgroundRole());
   qDrawShadePanel( &painter, x, y, w, h, palette(), true, 1, NULL);
   if ( fillCol.isValid() )
     painter.fillRect( x+1, y+1, w-2, h-2, fillCol );
@@ -185,14 +201,14 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
 
 void KColorButton::mousePressEvent( QMouseEvent *e)
 {
-  mPos = e->pos();
+  d->mPos = e->pos();
   QPushButton::mousePressEvent(e);
 }
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
   if( (e->buttons() & Qt::LeftButton) &&
-    (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
+    (e->pos()-d->mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     KColorMimeData::createDrag(color(),this)->start();
     setDown(false);
