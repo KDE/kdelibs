@@ -1,6 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
- *                     David Faure   <faure@kde.org>
+ *                2000-2007 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,8 +23,10 @@
 #include "kmimetypefactory.h"
 #include "kmimemagic.h"
 #include "kprotocolmanager.h"
+#include "kmimetypefactory.h"
 #include <kde_file.h>
 
+#include <kconfiggroup.h>
 #include <kmessageboxwrapper.h>
 
 #include <kdebug.h>
@@ -50,49 +52,77 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "kmimetypefactory.h"
-#include <kconfiggroup.h>
 
 template class KSharedPtr<KMimeType>;
 
-KMimeType::Ptr KMimeType::s_pDefaultType;
-bool KMimeType::s_bChecked = false;
+static KMimeType::Ptr s_pDefaultMimeType;
 
+static void errorMissingMimeType( const QString& _type )
+{
+    KMessageBoxWrapper::sorry(
+        0, i18n( "Could not find mime type\n%1", _type ) );
+}
+
+// KDE4 TODO: when we are in kdecore, share d pointer with KServiceType
+class KMimeType::Private
+{
+public:
+    QStringList m_lstPatterns;
+    QString m_strIcon;
+    void loadInternal( QDataStream& _str );
+};
+
+void KMimeType::Private::loadInternal( QDataStream& _str )
+{
+    // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
+    _str >> m_lstPatterns >> m_strIcon;
+}
+
+/**
+ * This function makes sure that the default mime type exists.
+ * Not file-static because it needs access to the private KMimeType constructor...
+ */
 void KMimeType::buildDefaultType()
 {
-  assert ( !s_pDefaultType );
-  // Try to find the default type
-  KMimeType::Ptr mime = KMimeTypeFactory::self()->
-        findMimeTypeByName( defaultMimeType() );
+    assert ( !s_pDefaultMimeType );
+    // Try to find the default type
+    KMimeType::Ptr mime = KMimeTypeFactory::self()->
+                          findMimeTypeByName( KMimeType::defaultMimeType() );
 
-  if (mime)
-  {
-      s_pDefaultType = mime;
-  }
-  else
-  {
-     errorMissingMimeType( defaultMimeType() );
-     KStandardDirs stdDirs;
-     QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+defaultMimeType()+".desktop";
-     s_pDefaultType = new KMimeType( sDefaultMimeType, defaultMimeType(),
-                                     "unknown", "mime" );
-  }
+    if (mime)
+    {
+        s_pDefaultMimeType = mime;
+    }
+    else
+    {
+        QString defaultMimeType = KMimeType::defaultMimeType();
+        errorMissingMimeType( defaultMimeType );
+        // TODO: port to xdg mime
+        KStandardDirs stdDirs;
+        QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+defaultMimeType+".desktop";
+        s_pDefaultMimeType = new KMimeType( sDefaultMimeType, defaultMimeType,
+                                            "unknown", "mime" );
+    }
 }
 
 KMimeType::Ptr KMimeType::defaultMimeTypePtr()
 {
-  if ( !s_pDefaultType ) // we need a default type first
-    buildDefaultType();
-  return s_pDefaultType;
+    if ( !s_pDefaultMimeType ) // we need a default type first
+        buildDefaultType();
+    return s_pDefaultMimeType;
 }
 
-// Check for essential mimetypes
+/**
+ * This function makes sure that vital mime types are installed.
+ */
 void KMimeType::checkEssentialMimeTypes()
 {
-  if ( s_bChecked ) // already done
-    return;
-  if ( !s_pDefaultType ) // we need a default type first
-    buildDefaultType();
+    static bool s_bChecked = false;
+
+    if ( s_bChecked ) // already done
+        return;
+    if ( !s_pDefaultMimeType ) // we need a default type first
+        KMimeType::buildDefaultType();
 
   s_bChecked = true; // must be done before building mimetypes
 
@@ -124,13 +154,6 @@ void KMimeType::checkEssentialMimeTypes()
     errorMissingMimeType( "application/x-desktop" );
 }
 
-void KMimeType::errorMissingMimeType( const QString& _type )
-{
-  QString tmp = i18n( "Could not find mime type\n%1" ,  _type );
-
-  KMessageBoxWrapper::sorry( 0, tmp );
-}
-
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
   KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( _name );
@@ -140,9 +163,9 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   // is used instead.
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
-    if ( !s_pDefaultType )
+    if ( !s_pDefaultMimeType )
       buildDefaultType();
-    return s_pDefaultType;
+    return s_pDefaultMimeType;
   }
 
   // We got a mimetype
@@ -393,11 +416,12 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
 // Used only to create the default mimetype
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
                       const QString& _comment )
-  : KServiceType( _fullpath, _type, _comment ), m_strIcon( _icon ), d( 0 )
+  : KServiceType( _fullpath, _type, _comment ), d(new Private)
 {
+    d->m_strIcon = _icon;
 }
 
-KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d( 0 )
+KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d(new Private)
 {
   init( config );
 
@@ -408,8 +432,8 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d( 0 )
 void KMimeType::init( KDesktopFile * config )
 {
   config->setDesktopGroup();
-  m_strIcon = config->readIcon();
-  m_lstPatterns = config->readEntry( "Patterns", QStringList(), ';' );
+  d->m_strIcon = config->readIcon();
+  d->m_lstPatterns = config->readEntry( "Patterns", QStringList(), ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
@@ -434,21 +458,15 @@ void KMimeType::init( KDesktopFile * config )
     m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy, QString() ) );
 }
 
-KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset ), d( 0 )
+KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset ), d(new Private)
 {
-  loadInternal( _str ); // load our specific stuff
+  d->loadInternal( _str ); // load our specific stuff
 }
 
 void KMimeType::load( QDataStream& _str )
 {
   KServiceType::load( _str );
-  loadInternal( _str );
-}
-
-void KMimeType::loadInternal( QDataStream& _str )
-{
-  // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
-  _str >> m_lstPatterns >> m_strIcon;
+  d->loadInternal( _str );
 }
 
 void KMimeType::save( QDataStream& _str )
@@ -456,15 +474,15 @@ void KMimeType::save( QDataStream& _str )
   KServiceType::save( _str );
   // Warning adding/removing fields here involves a binary incompatible change - update version
   // number in ksycoca.h
-  _str << m_lstPatterns << m_strIcon;
+  _str << d->m_lstPatterns << d->m_strIcon;
 }
 
 QVariant KMimeType::property( const QString& _name ) const
 {
   if ( _name == "Patterns" )
-    return QVariant( m_lstPatterns );
+    return QVariant( d->m_lstPatterns );
   if ( _name == "Icon" )
-    return QVariant( m_strIcon );
+    return QVariant( d->m_strIcon );
 
   return KServiceType::property( _name );
 }
@@ -689,6 +707,21 @@ const QString & KMimeType::defaultMimeType()
     static const QString & s_strDefaultMimeType =
         KGlobal::staticQString( "application/octet-stream" );
     return s_strDefaultMimeType;
+}
+
+QString KMimeType::iconName() const
+{
+    return d->m_strIcon;
+}
+
+QString KMimeType::iconName( const KUrl& ) const
+{
+    return d->m_strIcon;
+}
+
+const QStringList& KMimeType::patterns() const
+{
+    return d->m_lstPatterns;
 }
 
 void KMimeType::virtual_hook( int id, void* data )

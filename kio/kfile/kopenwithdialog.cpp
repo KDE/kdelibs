@@ -603,7 +603,7 @@ void KOpenWithDialog::slotOK()
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
         ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
-        if ( serv && serv->type() == "Application")
+        if (serv && serv->isApplication())
         {
             QString exec = serv->exec();
             fullExec = exec;
