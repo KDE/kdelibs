@@ -19,7 +19,9 @@ driver_SOURCES = driver.cpp test.stub
 driver_LDADD = $(LIB_KDECORE)
 driver_LDFLAGS = $(KDE_RPATH)
 
-CLEANFILES = batch.generated definitions.generated driver.generated shell.generated
+CLEANFILES = batch.generated definitions.generated driver.generated shell.generated test.h
+
+BUILT_SOURCES = test.h
 
 test-clean:
 	rm batch.returns driver.returns shell.returns batch.stdout driver.stdout shell.stdout
