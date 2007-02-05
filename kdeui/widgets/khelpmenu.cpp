@@ -77,7 +77,7 @@ public:
 
     KMenu *mMenu;
     KDialog *mAboutApp;
-    KAboutKDEDialog *mAboutKDE;
+    KAboutKdeDialog *mAboutKDE;
     KBugReport *mBugReport;
 
 // TODO evaluate if we use static_cast<QWidget*>(parent()) instead of mParent to win that bit of memory
@@ -262,7 +262,7 @@ void KHelpMenu::aboutKDE()
 {
   if( !d->mAboutKDE )
   {
-    d->mAboutKDE = new KAboutKDEDialog( d->mParent );
+    d->mAboutKDE = new KAboutKdeDialog( d->mParent );
     connect( d->mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }
   d->mAboutKDE->show();

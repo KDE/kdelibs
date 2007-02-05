@@ -31,7 +31,7 @@
 
 #include "kaboutkdedialog.h"
 
-KAboutKDEDialog::KAboutKDEDialog(QWidget *parent)
+KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
   : KDialog(parent)
 {
     setPlainCaption(i18n("About KDE"));

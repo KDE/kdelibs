@@ -37,7 +37,7 @@
  * @author Urs Wolfer uwolfer @ kde.org
  */
 
-class KDEUI_EXPORT KAboutKDEDialog : public KDialog
+class KDEUI_EXPORT KAboutKdeDialog : public KDialog
 {
     Q_OBJECT
 
@@ -50,7 +50,7 @@ class KDEUI_EXPORT KAboutKDEDialog : public KDialog
          * @param parent The parent of the dialog box. You should use the
          *        toplevel window so that the dialog becomes centered.
          */
-        explicit KAboutKDEDialog(QWidget *parent = 0);
+        explicit KAboutKdeDialog(QWidget *parent = 0);
 };
 
 #endif
