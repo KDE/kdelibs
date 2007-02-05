@@ -49,9 +49,15 @@ class SeekSliderPrivate
 		}
 
 		SeekSlider* q_ptr;
-		
+
 	private:
-		void setEnabled( bool );
+        void setEnabled( bool );
+        void _k_stateChanged(Phonon::State);
+        void _k_mediaDestroyed();
+        void _k_seek(int);
+        void _k_tick(qint64);
+        void _k_length(qint64);
+        void _k_seekableChanged(bool);
 
 		QHBoxLayout layout;
 		QSlider slider;

@@ -99,12 +99,13 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 		 */
 		void setMediaProducer( AbstractMediaProducer* );
 
-	private Q_SLOTS:
-		void stateChanged( Phonon::State );
-		void mediaDestroyed();
-		void seek( int );
-		void tick( qint64 );
-		void length( qint64 );
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State))
+        Q_PRIVATE_SLOT(d_func(), void _k_mediaDestroyed())
+        Q_PRIVATE_SLOT(d_func(), void _k_seek(int))
+        Q_PRIVATE_SLOT(d_func(), void _k_tick(qint64))
+        Q_PRIVATE_SLOT(d_func(), void _k_length(qint64))
+        Q_PRIVATE_SLOT(d_func(), void _k_seekableChanged(bool))
 
 	protected:
 		SeekSlider( SeekSliderPrivate& d, QWidget* parent );

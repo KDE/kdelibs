@@ -61,33 +61,58 @@ void SeekSlider::setMediaProducer( AbstractMediaProducer* media )
 
 	Q_D( SeekSlider );
 	d->media = media;
-	connect( media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( stateChanged( Phonon::State ) ) );
-	connect( &d->slider, SIGNAL( valueChanged( int ) ), SLOT( seek( int ) ) );
-	connect( media, SIGNAL( length( qint64 ) ), SLOT( length( qint64 ) ) );
-	connect( media, SIGNAL( tick( qint64 ) ), SLOT( tick( qint64 ) ) );
-	stateChanged( media->state() );
+    connect(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+            SLOT(_k_stateChanged(Phonon::State)));
+    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_seek(int)));
+    connect(media, SIGNAL(length(qint64)), SLOT(_k_length(qint64)));
+    connect(media, SIGNAL(tick(qint64)), SLOT(_k_tick(qint64)));
+    connect(media, SIGNAL(seekableChanged(bool)), SLOT(_k_seekableChanged(bool)));
+    d->_k_stateChanged(media->state());
 }
 
-void SeekSlider::seek( int msec )
+void SeekSliderPrivate::_k_seek(int msec)
 {
-	Q_D( SeekSlider );
-	if( ! d->ticking && d->media )
-		d->media->seek( msec );
+    if (!ticking && media) {
+        media->seek(msec);
+    }
 }
 
-void SeekSlider::tick( qint64 msec )
+void SeekSliderPrivate::_k_tick(qint64 msec)
 {
-	Q_D( SeekSlider );
-	d->ticking = true;
-	d->slider.setValue( msec );
-	d->ticking = false;
+    ticking = true;
+    slider.setValue(msec);
+    ticking = false;
 }
 
-void SeekSlider::length( qint64 msec )
+void SeekSliderPrivate::_k_length(qint64 msec)
 {
-	Q_D( SeekSlider );
-	d->slider.setRange( 0, msec );
+    slider.setRange(0, msec);
+}
+
+void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
+{
+    if (!isSeekable) {
+        setEnabled(false);
+    } else {
+        switch (media->state()) {
+            case Phonon::PlayingState:
+                if (media->tickInterval() == 0) {
+                    // if the tick signal is not enabled the slider is useless
+                    // set the tickInterval to some common value
+                    media->setTickInterval(350);
+                }
+            case Phonon::BufferingState:
+            case Phonon::PausedState:
+                setEnabled(true);
+                break;
+            case Phonon::StoppedState:
+            case Phonon::LoadingState:
+            case Phonon::ErrorState:
+                setEnabled(false);
+                slider.setValue(0);
+                break;
+        }
+    }
 }
 
 void SeekSliderPrivate::setEnabled( bool x )
@@ -96,41 +121,36 @@ void SeekSliderPrivate::setEnabled( bool x )
 	icon.setPixmap( x ? iconPixmap : disabledIconPixmap );
 }
 
-void SeekSlider::stateChanged( State newstate )
+void SeekSliderPrivate::_k_stateChanged(State newstate)
 {
-	Q_D( SeekSlider );
-	if( !d->media->isSeekable() )
-	{
-		d->setEnabled( false );
-		return;
-	}
-	switch( newstate )
-	{
+	if (!media->isSeekable()) {
+        setEnabled(false);
+        return;
+    }
+    switch (newstate) {
 		case Phonon::PlayingState:
-			if( d->media->tickInterval() == 0 )
-			{
+            if (media->tickInterval() == 0) {
 				// if the tick signal is not enabled the slider is useless
 				// set the tickInterval to some common value
-				d->media->setTickInterval( 350 );
+                media->setTickInterval(350);
 			}
 		case Phonon::BufferingState:
 		case Phonon::PausedState:
-			d->setEnabled( true );
+            setEnabled(true);
 			break;
 		case Phonon::StoppedState:
 		case Phonon::LoadingState:
 		case Phonon::ErrorState:
-			d->setEnabled( false );
-			d->slider.setValue( 0 );
+            setEnabled(false);
+            slider.setValue(0);
 			break;
 	}
 }
 
-void SeekSlider::mediaDestroyed()
+void SeekSliderPrivate::_k_mediaDestroyed()
 {
-	Q_D( SeekSlider );
-	d->media = 0;
-	d->setEnabled( false );
+    media = 0;
+    setEnabled(false);
 }
 
 bool SeekSlider::hasTracking() const
