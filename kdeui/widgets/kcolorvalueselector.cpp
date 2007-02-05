@@ -22,21 +22,57 @@
 #include <QPainter>
 #include <kstaticdeleter.h>
 
+class KColorValueSelector::Private
+{
+public:
+  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0) {}
+  
+  KColorValueSelector *q;
+  int _hue;
+  int _sat;
+  QPixmap pixmap;
+};
+
 KColorValueSelector::KColorValueSelector( QWidget *parent )
-	: KSelector( Qt::Vertical, parent ), _hue(0), _sat(0)
+	: KSelector( Qt::Vertical, parent ), d(new Private(this))
 {
 	setRange( 0, 255 );
 }
 
 KColorValueSelector::KColorValueSelector(Qt::Orientation o, QWidget *parent )
-	: KSelector( o, parent ), _hue(0), _sat(0)
+	: KSelector( o, parent ), d(new Private(this))
 {
 	setRange( 0, 255 );
 }
 
+KColorValueSelector::~KColorValueSelector()
+{
+  delete d;
+}
+
+int KColorValueSelector::hue() const
+{
+  return d->_hue;
+}
+
+void KColorValueSelector::setHue( int h )
+{
+  d->_hue = h;
+}
+
+int KColorValueSelector::saturation() const
+{
+  return d->_sat;
+}
+
+void KColorValueSelector::setSaturation( int s )
+{
+  d->_sat = s;
+}
+
 void KColorValueSelector::updateContents()
 {
-	drawPalette(&pixmap);
+	drawPalette(&d->pixmap);
 }
 
 void KColorValueSelector::resizeEvent( QResizeEvent * )
@@ -46,7 +82,7 @@ void KColorValueSelector::resizeEvent( QResizeEvent * )
 
 void KColorValueSelector::drawContents( QPainter *painter )
 {
-	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
+	painter->drawPixmap( contentsRect().x(), contentsRect().y(), d->pixmap );
 }
 
 void KColorValueSelector::drawPalette( QPixmap *pixmap )
@@ -65,7 +101,7 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 
 			for( int x = 0; x < xSize; x++ )
 			{
-				col.setHsv( _hue, _sat, 255*x/((xSize == 1) ? 1 : xSize-1) );
+				col.setHsv( d->_hue, d->_sat, 255*x/((xSize == 1) ? 1 : xSize-1) );
 				rgb = col.rgb();
 				*p++ = rgb;
 			}
@@ -77,7 +113,7 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 		for ( int v = 0; v < ySize; v++ )
 		{
 			p = (uint *) image.scanLine( ySize - v - 1 );
-			col.setHsv( _hue, _sat, 255*v/((ySize == 1) ? 1 : ySize-1) );
+			col.setHsv( d->_hue, d->_sat, 255*v/((ySize == 1) ? 1 : ySize-1) );
 			rgb = col.rgb();
 			for ( int i = 0; i < xSize; i++ )
 				*p++ = rgb;

@@ -36,14 +36,12 @@ public:
    */
   KColorValueSelector( Qt::Orientation o, QWidget *parent = 0 );
 
-  int hue() const
-        { return _hue; }
-  void setHue( int h )
-        { _hue = h; }
-  int saturation() const
-        { return _sat; }
-  void setSaturation( int s )
-        { _sat = s; }
+  ~KColorValueSelector();
+  
+  int hue() const;
+  void setHue( int h );
+  int saturation() const;
+  void setSaturation( int s );
 
   void updateContents();
 
@@ -63,9 +61,11 @@ protected:
   virtual void drawContents( QPainter *painter );
 
 private:
-  int _hue;
-  int _sat;
-  QPixmap pixmap;
+  class Private;
+  friend class Private;
+  Private *const d;
+  
+  Q_DISABLE_COPY(KColorValueSelector)
 };
 
 #endif /* KVALUESELECTOR_H */
