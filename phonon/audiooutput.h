@@ -151,6 +151,9 @@ namespace Phonon
 			 * \see outputDevice
 			 */
 			void outputDeviceChanged( const AudioOutputDevice& newAudioOutputDevice );
+
+        private:
+            Q_PRIVATE_SLOT(k_func(), void _k_revertFallback())
 	};
 } //namespace Phonon
 

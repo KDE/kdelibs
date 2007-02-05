@@ -27,6 +27,7 @@
 #include <cmath>
 #include <knotification.h>
 #include <klocale.h>
+#include <QApplication>
 
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface
@@ -135,23 +136,38 @@ void AudioOutput::setupIface()
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
                 if (INTERFACE_CALL(setOutputDevice, (devIndex))) {
-                    AudioOutputDevice device1 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
+                    d->deviceBeforeFallback = d->outputDeviceIndex;
                     d->outputDeviceIndex = devIndex;
-                    KNotification *notification = new KNotification("AudioDeviceFallback");
-                    notification->setComponentData(Factory::componentData());
-                    AudioOutputDevice device2 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
-                    notification->setText(i18n("The audio playback device <i>%1</i> does not work. "
-                                "Falling back to <i>%2</i>.").arg(device1.name()).arg(device2.name()));
-                    //notification->setPixmap(...);
-                    notification->setActions(QStringList(i18n("Revert back to device <i>%1</i>").arg(device1.name())));
-                    notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
-                    connect(notification, SIGNAL(activated(unsigned int)), SLOT(revertFallback()));
-                    notification->sendEvent();
+                    emit outputDeviceChanged(AudioOutputDevice::fromIndex(d->outputDeviceIndex));
+                    if (QApplication::type() != QApplication::Tty) {
+                        KNotification *notification = new KNotification("AudioDeviceFallback");
+                        notification->setComponentData(Factory::componentData());
+                        AudioOutputDevice device1 = AudioOutputDevice::fromIndex(d->deviceBeforeFallback);
+                        AudioOutputDevice device2 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
+                        notification->setText(i18n("The audio playback device '<i>%1</i>' does not work. "
+                                    "Falling back to '<i>%2</i>'.", device1.name(), device2.name()));
+                        //notification->setPixmap(...);
+                        notification->setActions(QStringList(i18n("Revert back to device '%1'", device1.name())));
+                        notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
+                        connect(notification, SIGNAL(activated(unsigned int)), SLOT(_k_revertFallback()));
+                        notification->sendEvent();
+                    }
                     break; // found one that works
                 }
             }
         }
     }
+}
+
+void AudioOutputPrivate::_k_revertFallback()
+{
+    if (deviceBeforeFallback == -1) {
+        return;
+    }
+    outputDeviceIndex = deviceBeforeFallback;
+    pINTERFACE_CALL(setOutputDevice, (outputDeviceIndex));
+    Q_Q(AudioOutput);
+    emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
 }
 
 } //namespace Phonon

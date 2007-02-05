@@ -34,8 +34,9 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 	PHONON_PRIVATECLASS( AbstractAudioOutput )
 	protected:
 		AudioOutputPrivate()
-			: volume( 1.0 )
-			, outputDeviceIndex( -1 )
+            : volume(1.0),
+            outputDeviceIndex(-1),
+            deviceBeforeFallback(-1)
 		{
 			const KAboutData* ad = KGlobal::mainComponent().aboutData();
 			if( ad )
@@ -44,11 +45,14 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 				name = KGlobal::mainComponent().componentName();
 		}
 
+        void _k_revertFallback();
+
 	private:
 		float volume;
 		Category category;
 		QString name;
 		int outputDeviceIndex;
+        int deviceBeforeFallback;
 };
 } //namespace Phonon
 
