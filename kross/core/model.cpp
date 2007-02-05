@@ -218,11 +218,13 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
     ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
     switch( item->type ) {
             case ActionCollectionModelItem::ActionType: {
-                if ( ! item->action->isEnabled() )
+                if( ! item->action->isEnabled() )
                     return false;
                 return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
             } break;
             case ActionCollectionModelItem::CollectionType: // fall through
+                if( ! item->collection->isEnabled() )
+                    return false;
             default: break;
     }
     return true;

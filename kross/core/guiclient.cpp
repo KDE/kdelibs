@@ -203,14 +203,12 @@ void GUIClient::setDOMDocument(const QDomDocument &document, bool merge)
 
 void addMenu(QMenu* menu, ActionCollection* collection)
 {
-    foreach(QAction* a, collection->actions()) {
+    foreach(QAction* a, collection->actions())
         menu->addAction(a);
-    }
     foreach(QString collectionname, collection->collections()) {
         ActionCollection* c = collection->collection(collectionname);
-        QMenu* m = menu->addMenu( c->text() );
-        Q_ASSERT(c && m);
-        addMenu(m, c);
+        if( c->isEnabled() )
+            addMenu(menu->addMenu( c->text() ), c);
     }
 }
 

@@ -85,7 +85,7 @@ bool ActionCollection::hasCollection(const QString& name) const
 
 ActionCollection* ActionCollection::collection(const QString& name) const
 {
-    return d->collections[name];
+    return d->collections.contains(name) ? d->collections[name] : 0;
 }
 
 QStringList ActionCollection::collections() const
@@ -132,11 +132,14 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         if( elem.tagName() == "collection") {
             const QString name = elem.attribute("name");
             const QString text = elem.attribute("text");
+            bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
             ActionCollection* c = d->collections.contains(name) ? d->collections[name] : 0;
             if( ! c )
                 c = new ActionCollection(name, this);
             if( ! text.isNull() )
                 c->setText(text);
+            if( ! enabled )
+                c->setEnabled(false);
             if( ! c->readXml(elem, directory) )
                 ok = false;
         }
@@ -162,6 +165,8 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
             QString text = elem.attribute("text");
             if( text.isEmpty() )
                 text = file;
+
+            bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
 
             QString description = elem.attribute("comment");
             if( description.isEmpty() )
@@ -190,6 +195,8 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
             }
 
+            if( ! enabled )
+                a->setEnabled(false);
             a->setText(text);
             a->setDescription(description);
             if( ! icon.isNull() )
