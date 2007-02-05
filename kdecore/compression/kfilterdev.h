@@ -145,7 +145,6 @@ private:
      */
     explicit KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
 private:
-    KFilterBase *filter;
     class KFilterDevPrivate;
     KFilterDevPrivate* const d;
 };

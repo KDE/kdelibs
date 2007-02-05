@@ -40,12 +40,14 @@ public:
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
     QByteArray origFileName;
     KFilterBase::Result result;
+    KFilterBase *filter;
 };
 
 KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
-    : filter(_filter), d(new KFilterDevPrivate)
+    : d(new KFilterDevPrivate)
 {
-    assert(filter);
+    assert(_filter);
+    d->filter = _filter;
     d->autoDeleteFilterBase = autoDeleteFilterBase;
 }
 
@@ -54,7 +56,7 @@ KFilterDev::~KFilterDev()
     if ( isOpen() )
         close();
     if ( d->autoDeleteFilterBase )
-        delete filter;
+        delete d->filter;
     delete d;
 }
 
@@ -102,12 +104,12 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     else
     {
         d->buffer.resize( BUFFER_SIZE );
-        filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
+        d->filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
     }
     d->bNeedHeader = !d->bSkipHeaders;
-    filter->init( mode );
-    d->bOpenedUnderlyingDevice = !filter->device()->isOpen();
-    bool ret = d->bOpenedUnderlyingDevice ? filter->device()->open( mode ) : true;
+    d->filter->init( mode );
+    d->bOpenedUnderlyingDevice = !d->filter->device()->isOpen();
+    bool ret = d->bOpenedUnderlyingDevice ? d->filter->device()->open( mode ) : true;
     d->result = KFilterBase::OK;
 
     if ( !ret )
@@ -123,13 +125,13 @@ void KFilterDev::close()
     if ( !isOpen() )
         return;
     //kDebug(7005) << "KFilterDev::close" << endl;
-    if ( filter->mode() == QIODevice::WriteOnly )
+    if ( d->filter->mode() == QIODevice::WriteOnly )
         write( 0L, 0 ); // finish writing
     //kDebug(7005) << "KFilterDev::close. Calling terminate()." << endl;
 
-    filter->terminate();
+    d->filter->terminate();
     if ( d->bOpenedUnderlyingDevice )
-        filter->device()->close();
+        d->filter->device()->close();
     setOpenMode( QIODevice::NotOpen );
 }
 
@@ -141,17 +143,17 @@ bool KFilterDev::seek( qint64 pos )
 
     kDebug(7005) << "KFilterDev::seek(" << pos << ") called" << endl;
 
-    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
+    Q_ASSERT ( d->filter->mode() == QIODevice::ReadOnly );
 
     if ( pos == 0 )
     {
         // We can forget about the cached data
         d->bNeedHeader = !d->bSkipHeaders;
         d->result = KFilterBase::OK;
-        filter->setInBuffer(0L,0);
-        filter->reset();
+        d->filter->setInBuffer(0L,0);
+        d->filter->reset();
         QIODevice::seek(pos);
-        return filter->device()->reset();
+        return d->filter->device()->reset();
     }
 
     if ( ioIndex > pos ) // we can start from here
@@ -177,13 +179,14 @@ bool KFilterDev::atEnd() const
 {
     return (d->result == KFilterBase::END)
         && QIODevice::atEnd() // take QIODevice's internal buffer into account
-        && filter->device()->atEnd();
+        && d->filter->device()->atEnd();
 }
 
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
 {
-    Q_ASSERT ( filter->mode() == QIODevice::ReadOnly );
+    Q_ASSERT ( d->filter->mode() == QIODevice::ReadOnly );
     //kDebug(7005) << "KFilterDev::read maxlen=" << maxlen << endl;
+    KFilterBase* filter = d->filter;
 
     uint dataReceived = 0;
 
@@ -280,6 +283,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
 
 qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 {
+    KFilterBase* filter = d->filter;
     Q_ASSERT ( filter->mode() == QIODevice::WriteOnly );
     // If we had an error, return 0.
     if ( d->result != KFilterBase::OK )
