@@ -81,6 +81,7 @@ namespace Fake
 			void stateChanged( Phonon::State newstate, Phonon::State oldstate );
 			void tick( qint64 time );
 			void metaDataChanged( QMultiMap<QString, QString> );
+            void seekableChanged(bool);
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );

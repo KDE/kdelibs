@@ -150,6 +150,8 @@ namespace Phonon
 			 * If the current media may be seeked returns true.
 			 *
 			 * @return Whether the current media may be seeked.
+             *
+             * @see seekableChanged()
 			 */
 			bool isSeekable() const;
 
@@ -397,6 +399,20 @@ namespace Phonon
 			 * metaDataItems.
 			 */
 			void metaDataChanged();
+
+            /**
+             * Emitted whenever the return value of isSeekable() changes.
+             *
+             * Normally you'll check isSeekable() first and then let this signal
+             * tell you whether seeking is possible now or not. That way you
+             * don't have to poll isSeekable().
+             *
+             * \param isSeekable \p true  if the stream is seekable (i.e. calling
+             *                            seek() works)
+             *                   \p false if the stream is not seekable (i.e.
+             *                            all calls to seek() will be ignored)
+             */
+            void seekableChanged(bool isSeekable);
 
 		private:
 			Q_PRIVATE_SLOT( k_func(), void _k_resumePlay() )

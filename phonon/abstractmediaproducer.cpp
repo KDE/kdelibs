@@ -211,6 +211,7 @@ void AbstractMediaProducer::setupIface()
 	connect( d->backendObject, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ), SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	connect( d->backendObject, SIGNAL( tick( qint64 ) ), SIGNAL( tick( qint64 ) ) );
 	connect( d->backendObject, SIGNAL( metaDataChanged( const QMultiMap<QString, QString>& ) ), SLOT( _k_metaDataChanged( const QMultiMap<QString, QString>& ) ) );
+    connect(d->backendObject, SIGNAL(seekableChanged(bool)), SIGNAL(seekableChanged(bool)));
 
 	// set up attributes
     INTERFACE_CALL(setTickInterval, (d->tickInterval));
