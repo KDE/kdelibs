@@ -32,6 +32,9 @@
 
 class KActionSelectorPrivate {
   public:
+  KActionSelectorPrivate(KActionSelector *q): q(q) {}
+  
+  KActionSelector *q;
   QListWidget *availableListWidget, *selectedListWidget;
   QToolButton *btnAdd, *btnRemove, *btnUp, *btnDown;
   QLabel *lAvailable, *lSelected;
@@ -39,6 +42,33 @@ class KActionSelectorPrivate {
   QString addIcon, removeIcon, upIcon, downIcon;
   KActionSelector::InsertionPolicy availableInsertionPolicy, selectedInsertionPolicy;
   bool showUpDownButtons;
+
+  /**
+    Move item @p item to the other listbox
+   */
+  void moveItem( QListWidgetItem *item );
+  
+  /**
+    loads the icons for the move buttons.
+   */
+  void loadIcons();
+  
+  /**
+    @return the index to insert an item into listbox @p lb,
+   given InsertionPolicy @p policy.
+   
+   Note that if policy is Sorted, this will return -1.
+   Sort the listbox after inserting the item in that case.
+   */
+  int insertionIndex( QListWidget *lb, KActionSelector::InsertionPolicy policy );
+  
+  void buttonAddClicked();    
+  void buttonRemoveClicked();
+  void buttonUpClicked();
+  void buttonDownClicked();
+  void itemDoubleClicked( QListWidgetItem *item );
+  void slotCurrentChanged( QListWidgetItem * )
+  { q->setButtonsEnabled(); }
 };
 
 //BEGIN Constructor/destructor
@@ -46,7 +76,7 @@ class KActionSelectorPrivate {
 KActionSelector::KActionSelector( QWidget *parent )
   : QWidget( parent )
 {
-  d = new KActionSelectorPrivate();
+  d = new KActionSelectorPrivate(this);
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
   d->addIcon = QApplication::isRightToLeft()? "back" : "forward";
@@ -96,7 +126,7 @@ KActionSelector::KActionSelector( QWidget *parent )
   loVBtns->addWidget( d->btnDown );
   loVBtns->addStretch( 1 );
 
-  loadIcons();
+  d->loadIcons();
 
   connect( d->btnAdd, SIGNAL(clicked()), this, SLOT(buttonAddClicked()) );
   connect( d->btnRemove, SIGNAL(clicked()), this, SLOT(buttonRemoveClicked()) );
@@ -339,16 +369,16 @@ void KActionSelector::keyPressEvent( QKeyEvent *e )
     switch ( e->key() )
     {
       case Qt::Key_Right:
-      buttonAddClicked();
+      d->buttonAddClicked();
       break;
       case Qt::Key_Left:
-      buttonRemoveClicked();
+      d->buttonRemoveClicked();
       break;
       case Qt::Key_Up:
-      buttonUpClicked();
+      d->buttonUpClicked();
       break;
       case Qt::Key_Down:
-      buttonDownClicked();
+      d->buttonDownClicked();
       break;
       default:
       e->ignore();
@@ -366,16 +396,16 @@ bool KActionSelector::eventFilter( QObject *o, QEvent *e )
       switch ( ((QKeyEvent*)e)->key() )
       {
         case Qt::Key_Right:
-        buttonAddClicked();
+        d->buttonAddClicked();
         break;
         case Qt::Key_Left:
-        buttonRemoveClicked();
+        d->buttonRemoveClicked();
         break;
         case Qt::Key_Up:
-        buttonUpClicked();
+        d->buttonUpClicked();
         break;
         case Qt::Key_Down:
-        buttonDownClicked();
+        d->buttonDownClicked();
         break;
         default:
         return QWidget::eventFilter( o, e );
@@ -391,7 +421,7 @@ bool KActionSelector::eventFilter( QObject *o, QEvent *e )
         case Qt::Key_Enter:
         int index = lb->currentRow();
         if ( index < 0 ) break;
-        moveItem( lb->item( index ) );
+        d->moveItem( lb->item( index ) );
         return true;
       }
     }
@@ -403,61 +433,61 @@ bool KActionSelector::eventFilter( QObject *o, QEvent *e )
 
 //BEGIN Private Slots
 
-void KActionSelector::buttonAddClicked()
+void KActionSelectorPrivate::buttonAddClicked()
 {
   // move all selected items from available to selected listbox
-  QList<QListWidgetItem *> list = d->availableListWidget->selectedItems();
+  QList<QListWidgetItem *> list = availableListWidget->selectedItems();
   foreach (QListWidgetItem* item, list) {
-    d->availableListWidget->takeItem( d->availableListWidget->row( item ) );
-    d->selectedListWidget->insertItem( insertionIndex( d->selectedListWidget, d->selectedInsertionPolicy ), item );
-    d->selectedListWidget->setCurrentItem( item );
-    emit added( item );
+    availableListWidget->takeItem( availableListWidget->row( item ) );
+    selectedListWidget->insertItem( insertionIndex( selectedListWidget, selectedInsertionPolicy ), item );
+    selectedListWidget->setCurrentItem( item );
+    emit q->added( item );
   }
-  if ( d->selectedInsertionPolicy == Sorted )
-    d->selectedListWidget->sortItems();
-  d->selectedListWidget->setFocus();
+  if ( selectedInsertionPolicy == KActionSelector::Sorted )
+    selectedListWidget->sortItems();
+  selectedListWidget->setFocus();
 }
 
-void KActionSelector::buttonRemoveClicked()
+void KActionSelectorPrivate::buttonRemoveClicked()
 {
   // move all selected items from selected to available listbox
-  QList<QListWidgetItem *> list = d->selectedListWidget->selectedItems();
+  QList<QListWidgetItem *> list = selectedListWidget->selectedItems();
   foreach (QListWidgetItem* item, list) {
-    d->selectedListWidget->takeItem( d->selectedListWidget->row( item ) );
-    d->availableListWidget->insertItem( insertionIndex( d->availableListWidget, d->availableInsertionPolicy ), item );
-    d->availableListWidget->setCurrentItem( item );
-    emit removed( item );
+    selectedListWidget->takeItem( selectedListWidget->row( item ) );
+    availableListWidget->insertItem( insertionIndex( availableListWidget, availableInsertionPolicy ), item );
+    availableListWidget->setCurrentItem( item );
+    emit q->removed( item );
   }
-  if ( d->availableInsertionPolicy == Sorted )
-    d->availableListWidget->sortItems();
-  d->availableListWidget->setFocus();
+  if ( availableInsertionPolicy == KActionSelector::Sorted )
+    availableListWidget->sortItems();
+  availableListWidget->setFocus();
 }
 
-void KActionSelector::buttonUpClicked()
+void KActionSelectorPrivate::buttonUpClicked()
 {
-  int c = d->selectedListWidget->currentRow();
+  int c = selectedListWidget->currentRow();
   if ( c < 1 ) return;
-  QListWidgetItem *item = d->selectedListWidget->item( c );
-  d->selectedListWidget->takeItem( c );
-  d->selectedListWidget->insertItem( c-1, item );
-  d->selectedListWidget->setCurrentItem( item );
-  emit movedUp( item );
+  QListWidgetItem *item = selectedListWidget->item( c );
+  selectedListWidget->takeItem( c );
+  selectedListWidget->insertItem( c-1, item );
+  selectedListWidget->setCurrentItem( item );
+  emit q->movedUp( item );
 }
 
-void KActionSelector::buttonDownClicked()
+void KActionSelectorPrivate::buttonDownClicked()
 {
-  int c = d->selectedListWidget->currentRow();
-  if ( c < 0 || c == d->selectedListWidget->count() - 1 ) return;
-  QListWidgetItem *item = d->selectedListWidget->item( c );
-  d->selectedListWidget->takeItem( c );
-  d->selectedListWidget->insertItem( c+1, item );
-  d->selectedListWidget->setCurrentItem( item );
-  emit movedDown( item );
+  int c = selectedListWidget->currentRow();
+  if ( c < 0 || c == selectedListWidget->count() - 1 ) return;
+  QListWidgetItem *item = selectedListWidget->item( c );
+  selectedListWidget->takeItem( c );
+  selectedListWidget->insertItem( c+1, item );
+  selectedListWidget->setCurrentItem( item );
+  emit q->movedDown( item );
 }
 
-void KActionSelector::itemDoubleClicked( QListWidgetItem *item )
+void KActionSelectorPrivate::itemDoubleClicked( QListWidgetItem *item )
 {
-  if ( d->moveOnDoubleClick )
+  if ( moveOnDoubleClick )
     moveItem( item );
 }
 
@@ -465,51 +495,51 @@ void KActionSelector::itemDoubleClicked( QListWidgetItem *item )
 
 //BEGIN Private Methods
 
-void KActionSelector::loadIcons()
+void KActionSelectorPrivate::loadIcons()
 {
-  d->btnAdd->setIcon( KIcon( d->addIcon ) );
-  d->btnRemove->setIcon( KIcon( d->removeIcon ) );
-  d->btnUp->setIcon( KIcon( d->upIcon ) );
-  d->btnDown->setIcon( KIcon( d->downIcon ) );
+  btnAdd->setIcon( KIcon( addIcon ) );
+  btnRemove->setIcon( KIcon( removeIcon ) );
+  btnUp->setIcon( KIcon( upIcon ) );
+  btnDown->setIcon( KIcon( downIcon ) );
 }
 
-void KActionSelector::moveItem( QListWidgetItem *item )
+void KActionSelectorPrivate::moveItem( QListWidgetItem *item )
 {
   QListWidget *lbFrom = item->listWidget();
   QListWidget *lbTo;
-  if ( lbFrom == d->availableListWidget )
-    lbTo = d->selectedListWidget;
-  else if ( lbFrom == d->selectedListWidget )
-    lbTo = d->availableListWidget;
+  if ( lbFrom == availableListWidget )
+    lbTo = selectedListWidget;
+  else if ( lbFrom == selectedListWidget )
+    lbTo = availableListWidget;
   else  //?! somewhat unlikely...
     return;
 
-  InsertionPolicy p = ( lbTo == d->availableListWidget ) ?
-                        d->availableInsertionPolicy : d->selectedInsertionPolicy;
+  KActionSelector::InsertionPolicy p = ( lbTo == availableListWidget ) ?
+                        availableInsertionPolicy : selectedInsertionPolicy;
 
   lbFrom->takeItem( lbFrom->row( item ) );
   lbTo->insertItem( insertionIndex( lbTo, p ), item );
   lbTo->setFocus();
   lbTo->setCurrentItem( item );
 
-  if ( p == Sorted )
+  if ( p == KActionSelector::Sorted )
     lbTo->sortItems();
-  if ( lbTo == d->selectedListWidget )
-    emit added( item );
+  if ( lbTo == selectedListWidget )
+    emit q->added( item );
   else
-    emit removed( item );
+    emit q->removed( item );
 }
 
-int KActionSelector::insertionIndex( QListWidget *lb, InsertionPolicy policy )
+int KActionSelectorPrivate::insertionIndex( QListWidget *lb, KActionSelector::InsertionPolicy policy )
 {
   int index;
   switch ( policy )
   {
-    case BelowCurrent:
+    case KActionSelector::BelowCurrent:
     index = lb->currentRow();
     if ( index > -1 ) index += 1;
     break;
-    case AtTop:
+    case KActionSelector::AtTop:
     index = 0;
     break;
     default:

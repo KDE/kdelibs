@@ -312,62 +312,46 @@ protected:
   */
   bool eventFilter( QObject *, QEvent * );
 
-private Q_SLOTS:
+private:
   /**
     Move selected item from available box to the selected box
   */
-  void buttonAddClicked();
+  Q_PRIVATE_SLOT(d, void buttonAddClicked())
 
   /**
     Move selected item from selected box to available box
   */
-  void buttonRemoveClicked();
+  Q_PRIVATE_SLOT(d, void buttonRemoveClicked())
 
   /**
     Move selected item in selected box upwards
   */
-  void buttonUpClicked();
+  Q_PRIVATE_SLOT(d, void buttonUpClicked())
 
   /**
     Move seleted item in selected box downwards
   */
-  void buttonDownClicked();
+  Q_PRIVATE_SLOT(d, void buttonDownClicked())
 
   /**
     Moves the item @p item to the other listbox if moveOnDoubleClick is enabled.
   */
-  void  itemDoubleClicked( QListWidgetItem *item );
+  Q_PRIVATE_SLOT(d, void itemDoubleClicked( QListWidgetItem *item ))
 
   /**
     connected to both list boxes to set the buttons enabled
   */
-  void slotCurrentChanged( QListWidgetItem * ) { setButtonsEnabled(); };
+  Q_PRIVATE_SLOT(d, void slotCurrentChanged( QListWidgetItem * ))
 
 private:
-
-  /**
-    Move item @p item to the other listbox
-  */
-  void moveItem( QListWidgetItem *item );
-
-  /**
-    loads the icons for the move buttons.
-  */
-  void loadIcons();
-
-  /**
-    @return the index to insert an item into listbox @p lb,
-    given InsertionPolicy @p policy.
-
-    Note that if policy is Sorted, this will return -1.
-    Sort the listbox after inserting the item in that case.
-  */
-  int insertionIndex( QListWidget *lb, InsertionPolicy policy );
 
   /** @private
     Private data storage
   */
+  friend class KActionSelectorPrivate;
   KActionSelectorPrivate *d;
+  
+  Q_DISABLE_COPY(KActionSelector)
 };
 
 #endif // _KACTION_SELECTOR_H_
