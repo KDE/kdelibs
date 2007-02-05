@@ -68,10 +68,10 @@ KCertExport::KCertExport(QWidget *parent, const char *name)
    grid->addWidget(_choose, 6, 5);
    connect(_choose, SIGNAL(clicked()), this, SLOT(slotChoose()));
 
-   _export = new QPushButton(i18n("&Export"), this);
-   grid->addWidget(_export, 8, 4);
-   connect(_export, SIGNAL(clicked()), this, SLOT(slotExport()));
-   _export->setEnabled(false);
+   _exportBut = new QPushButton(i18n("&Export"), this);
+   grid->addWidget(_exportBut, 8, 4);
+   connect(_exportBut, SIGNAL(clicked()), this, SLOT(slotExport()));
+   _exportBut->setEnabled(false);
 
    _cancel = new QPushButton(i18n("&Cancel"), this);
    grid->addWidget(_cancel, 8, 5);
@@ -146,7 +146,7 @@ void KCertExport::slotChoose() {
 
 
 void KCertExport::slotTextChanged(const QString& x) {
-  _export->setEnabled(!x.isEmpty());
+  _exportBut->setEnabled(!x.isEmpty());
 }
 
 
