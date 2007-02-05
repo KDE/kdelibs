@@ -23,6 +23,7 @@
 #include <kglobal.h>
 #include <kuser.h>
 #include <kstandarddirs.h>
+#include <ktempdir.h>
 
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
@@ -77,8 +78,8 @@ void KMimeTypeTest::testIcons()
 
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
     {
-        KTemporaryDir tmp( QString(), 0 );
-        tmp.setAutoDelete( true );
+        KTempDir tmp( QString(), 0 );
+        tmp.setAutoRemove( true );
         KUrl url( tmp.name() );
         checkIcon( url, "folder_locked" );
         chmod( QFile::encodeName( tmp.name() ), 0500 ); // so we can 'rm -rf' it
