@@ -22,21 +22,32 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
-// Empty, but provided to ensure future compatibility
-//class KTemporaryFile::Private
-//{
-//};
-
-KTemporaryFile::KTemporaryFile()
-    : d(0)
+class KTemporaryFilePrivate
 {
-    QString temp = KStandardDirs::locateLocal("tmp",
-        KGlobal::mainComponent().componentName());
+    public:
+        KTemporaryFilePrivate(const KComponentData &c)
+            : componentData(c)
+        {
+        }
+
+        inline QString defaultPrefix() const
+        {
+            return KStandardDirs::locateLocal("tmp", componentData.componentName(), componentData);
+        }
+
+        KComponentData componentData;
+};
+
+KTemporaryFile::KTemporaryFile(const KComponentData &componentData)
+    : d(new KTemporaryFilePrivate(componentData))
+{
+    QString temp(d->defaultPrefix());
     setFileTemplate(temp + "XXXXXX.tmp");
 }
 
 KTemporaryFile::~KTemporaryFile()
 {
+    delete d;
 }
 
 void KTemporaryFile::setPrefix(const QString &prefix)
@@ -46,8 +57,7 @@ void KTemporaryFile::setPrefix(const QString &prefix)
     QString newPrefix = prefix;
 
     if ( newPrefix.isEmpty() ) {
-        newPrefix = KStandardDirs::locateLocal("tmp",
-            KGlobal::mainComponent().componentName());
+        newPrefix = d->defaultPrefix();
     } else {
         if ( !newPrefix.startsWith('/') ) {
             newPrefix.prepend ( KStandardDirs::locateLocal("tmp", "") );

@@ -22,6 +22,7 @@
 
 #include "kdelibs_export.h"
 #include <ksharedptr.h>
+#include <kglobal.h>
 
 class QString;
 
@@ -35,7 +36,7 @@ class KDECORE_EXPORT KLockFile : public KShared
 public:
    typedef KSharedPtr<KLockFile> Ptr;
 
-   explicit KLockFile(const QString &file);
+   explicit KLockFile(const QString &file, const KComponentData &componentName = KGlobal::mainComponent());
 
    /**
     * Destroys the object, releasing the lock if held

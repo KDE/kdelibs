@@ -48,6 +48,7 @@
 #include "kde_file.h"
 #include "kglobal.h"
 #include "kcomponentdata.h"
+#include "kcomponentdata_p.h"
 #include "klocale.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
@@ -245,8 +246,14 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
 
    d->localLastModified = QDateTime();
    d->localLastSize = 0;
-   d->localLockFile = 0;
-   d->globalLockFile = 0;
+   if (d->localLockFile) {
+       pConfig->componentData().d->ref(); // deleting the KLockFile derefs the KComponentData, but we derefed it manually
+       d->localLockFile = 0;
+   }
+   if (d->globalLockFile) {
+       pConfig->componentData().d->ref(); // deleting the KLockFile derefs the KComponentData, but we derefed it manually
+       d->globalLockFile = 0;
+   }
 }
 
 QStringList KConfigBackEnd::extraConfigFiles() const
@@ -272,7 +279,9 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
 
       if (!mGlobalFileName.isEmpty())
       {
-         d->globalLockFile = new KLockFile(mGlobalFileName+".lock");
+         d->globalLockFile = new KLockFile(mGlobalFileName+".lock", pConfig->componentData());
+         pConfig->componentData().d->deref(); // KLockFile refs the KComponentData, but it's enough
+                                              // if pConfig refs it
          return d->globalLockFile;
       }
    }
@@ -285,7 +294,9 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
                                              : mLocalFileName;
       if (!fileName.isEmpty())
       {
-         d->localLockFile = new KLockFile(fileName+".lock");
+         d->localLockFile = new KLockFile(fileName+".lock", pConfig->componentData());
+         pConfig->componentData().d->deref(); // KLockFile refs the KComponentData, but it's enough
+                                              // if pConfig refs it
          return d->localLockFile;
       }
    }
@@ -304,6 +315,12 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 
 KConfigBackEnd::~KConfigBackEnd()
 {
+   if (d->localLockFile) {
+       pConfig->componentData().d->ref(); // deleting the KLockFile derefs the KComponentData, but we derefed it manually
+   }
+   if (d->globalLockFile) {
+       pConfig->componentData().d->ref(); // deleting the KLockFile derefs the KComponentData, but we derefed it manually
+   }
    delete d;
 }
 
@@ -1031,7 +1048,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
 
   if (createNew)
   {
-     pConfigFile = new KSaveFile( filename );
+     pConfigFile = new KSaveFile(filename, pConfig->componentData());
 
      if (!pConfigFile->open())
      {

@@ -149,6 +149,7 @@ public:
 protected:
     friend class KApplication;
     friend class KSharedConfigPtr;
+    friend class KConfigBackEnd;
 
     /**
      * Set name of default config file.
@@ -161,7 +162,6 @@ protected:
     /** Standard trick to add virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );
 
-private:
     // Ref-counted data
     KComponentDataPrivate* d; // krazy:exclude=dpointer
 };

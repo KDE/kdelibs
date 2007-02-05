@@ -48,22 +48,29 @@
 class KLockFile::Private
 {
 public:
-   QString file;
-   int staleTime;
-   bool isLocked;
-   bool recoverLock;
-   bool linkCountSupport;
-   QTime staleTimer;
-   KDE_struct_stat statBuf;
-   int pid;
-   QString hostname;
-   QString instance;
-   QString lockRecoverFile;
+    Private(const KComponentData &c)
+        : componentData(c)
+    {
+    }
+
+    QString file;
+    int staleTime;
+    bool isLocked;
+    bool recoverLock;
+    bool linkCountSupport;
+    QTime staleTimer;
+    KDE_struct_stat statBuf;
+    int pid;
+    QString hostname;
+    QString instance;
+    QString lockRecoverFile;
+    KComponentData componentData;
 };
 
 
 // 30 seconds
-KLockFile::KLockFile(const QString &file) : d(new Private)
+KLockFile::KLockFile(const QString &file, const KComponentData &componentData)
+    : d(new Private(componentData))
 {
   d->file = file;
   d->staleTime = 30;
@@ -122,14 +129,15 @@ static bool testLinkCountSupport(const QByteArray &fileName)
 #endif
 }
 
-static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
+static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf,
+        bool &linkCountSupport, const KComponentData &componentData)
 {
   QByteArray lockFileName = QFile::encodeName( lockFile );
   int result = KDE_lstat( lockFileName, &st_buf );
   if (result == 0)
      return KLockFile::LockFail;
 
-  KTemporaryFile uniqueFile;
+  KTemporaryFile uniqueFile(componentData);
   uniqueFile.setFileTemplate(lockFile);
   if (!uniqueFile.open())
      return KLockFile::LockError;
@@ -139,7 +147,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  QByteArray componentName = KGlobal::mainComponent().componentName();
+  QByteArray componentName = componentData.componentName();
 
   QTextStream stream(&uniqueFile);
   stream << QString::number(getpid()) << endl
@@ -181,13 +189,13 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   return KLockFile::LockOK;
 }
 
-static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
+static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport, const KComponentData &componentData)
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
    
    // Create temp file
-   KTemporaryFile *ktmpFile = new KTemporaryFile();
+   KTemporaryFile *ktmpFile = new KTemporaryFile(componentData);
    ktmpFile->setFileTemplate(lockFile);
    if (!ktmpFile->open())
       return KLockFile::LockError;
@@ -254,7 +262,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
   while(true)
   {
      KDE_struct_stat st_buf;
-     result = lockFile(d->file, st_buf, d->linkCountSupport);
+     result = lockFile(d->file, st_buf, d->linkCountSupport, d->componentData);
      if (result == KLockFile::LockOK)
      {
         d->staleTimer = QTime();
@@ -300,7 +308,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
               if ((options & ForceFlag) == 0)
                  return KLockFile::LockStale;
 
-              result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport);
+              result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport, d->componentData);
 
               if (result == KLockFile::LockOK)
               {

@@ -23,6 +23,9 @@
 
 #include <QtCore/QTemporaryFile>
 #include "kdelibs_export.h"
+#include <kglobal.h>
+
+class KTemporaryFilePrivate;
 
 /**
  * @brief A QTemporaryFile that will save in the KDE temp directory.
@@ -91,8 +94,11 @@ public:
      * directory configured in KDE. The default prefix is the value of the
      * default KDE temporary directory, plus your application's instance name.
      * The default suffix is ".tmp".
+     *
+     * \param componentData The KComponentData to use for the name of the file and to look up the
+     * directory.
      */
-    KTemporaryFile();
+    KTemporaryFile(const KComponentData &componentData = KGlobal::mainComponent());
 
     /**
      * Destructor.
@@ -124,8 +130,7 @@ public:
     void setSuffix(const QString &suffix);
 
 private:
-    class Private;
-    Private * const d;
+    KTemporaryFilePrivate *const d;
 };
 
 #endif

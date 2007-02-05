@@ -33,6 +33,7 @@
 #include "kstandarddirs.h"
 #include "ktemporaryfile.h"
 #include <kconfiggroup.h>
+#include <kcomponentdata.h>
 
 class KSaveFile::Private
 {
@@ -44,8 +45,11 @@ public:
     QString errorString;
     bool wasFinalized;
     FILE *stream;
+    KComponentData componentData;
 
-    Private() {
+    Private(const KComponentData &c)
+        : componentData(c)
+    {
         error = QFile::NoError;
         wasFinalized = false;
         stream = 0;
@@ -53,12 +57,12 @@ public:
 };
 
 KSaveFile::KSaveFile()
- : d(new Private)
+ : d(new Private(KGlobal::mainComponent()))
 {
 }
 
-KSaveFile::KSaveFile(const QString &filename)
- : d(new Private)
+KSaveFile::KSaveFile(const QString &filename, const KComponentData &componentData)
+ : d(new Private(componentData))
 {
     KSaveFile::setFileName(filename);
 }
@@ -95,7 +99,7 @@ bool KSaveFile::open()
     }
 
     //Create our temporary file
-    KTemporaryFile tempFile;
+    KTemporaryFile tempFile(d->componentData);
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + "XXXXXX.new");
     if (!tempFile.open()) {

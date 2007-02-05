@@ -19,6 +19,7 @@
 
 #include "config.h"
 #include "kcomponentdata.h"
+#include "kcomponentdata_p.h"
 
 #include <stdlib.h>
 
@@ -33,45 +34,6 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include <QtDebug>
-
-class KComponentDataPrivate
-{
-public:
-    KComponentDataPrivate ()
-        : dirs(0),
-        aboutData(0),
-        ownAboutdata(false),
-        refCount(1)
-    {
-    }
-
-    ~KComponentDataPrivate ()
-    {
-        qDebug() << k_funcinfo;
-        if (ownAboutdata) {
-            delete aboutData;
-            aboutData = 0;
-        }
-        delete dirs;
-        dirs = 0;
-    }
-
-    void ref();
-    void deref();
-    void checkConfig();
-
-    KStandardDirs *dirs;
-    QByteArray name;
-    const KAboutData *aboutData;
-    QString configName;
-    bool ownAboutdata;
-    KSharedConfig::Ptr sharedConfig;
-
-private:
-    int refCount;
-    KComponentDataPrivate(const KComponentDataPrivate&);
-    KComponentDataPrivate &operator=(const KComponentDataPrivate&);
-};
 
 KComponentData::KComponentData()
     : d(0)
@@ -112,7 +74,6 @@ KComponentData::KComponentData(const QByteArray &name)
 
     d->name = name;
     d->aboutData = new KAboutData(name, "", 0);
-    d->ownAboutdata = true;
 
     if (name != "kdeinit4") {
         KGlobal::newComponentData(*this);
@@ -124,6 +85,7 @@ KComponentData::KComponentData(const KAboutData *aboutData)
 {
     d->name = aboutData->appName();
     d->aboutData = aboutData;
+    d->ownAboutdata = false;
 
     Q_ASSERT(!d->name.isEmpty());
 
@@ -135,37 +97,31 @@ void KComponentData::_checkConfig()
     d->checkConfig();
 }
 
-inline void KComponentDataPrivate::checkConfig()
+void KComponentDataPrivate::checkConfig()
 {
+    if (syncing) {
+        return;
+    }
     if (sharedConfig.isUnique()) {
         if (refCount == 1) {
-            sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig object
-                                  // anymore
+            if (!syncing) {
+                syncing = true;
+                sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig
+                                      // object anymore
+                syncing = false;
+            }
             sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
         } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
-            sharedConfig->sync(); // sync before KComponentData doesn't have a KStandardDirs or
-                                  // KSharedConfig object anymore
+            if (!syncing) {
+                syncing = true;
+                sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig
+                                      // object anymore
+                syncing = false;
+            }
             KStandardDirs *tmp = dirs;
             dirs = 0;
             delete tmp; // calls deref()
         }
-    }
-}
-
-inline void KComponentDataPrivate::ref()
-{
-    ++refCount;
-    //qDebug() << k_funcinfo << refCount - 1 << "->" << refCount << kBacktrace() << endl;
-}
-
-inline void KComponentDataPrivate::deref()
-{
-    --refCount;
-    //qDebug() << k_funcinfo << refCount + 1 << "->" << refCount << kBacktrace() << endl;
-    if (refCount == 0) {
-        delete this;
-    } else {
-        checkConfig();
     }
 }
 

@@ -26,6 +26,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QString>
+#include <kglobal.h>
 
 /**
  * @brief Class to allow for atomic file I/O, as well as utility functions.
@@ -100,9 +101,11 @@ public:
    
     /**
      * Creates a new KSaveFile and sets the target file to @p filename.
+     *
      * @param filename the path of the file
+     * @param componentData The KComponentData to use for the temporary file.
      */
-    explicit KSaveFile(const QString &filename);
+    explicit KSaveFile(const QString &filename, const KComponentData &componentData = KGlobal::mainComponent());
 
     /**
      * Destructor.
