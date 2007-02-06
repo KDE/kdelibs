@@ -188,7 +188,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
 bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     Q_UNUSED(value);
-    if( ! index.isValid() || ! (d->mode & UserCheckable) )
+    if( ! index.isValid() /*|| ! (d->mode & UserCheckable)*/ )
         return false;
     ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
     switch( item->type ) {
