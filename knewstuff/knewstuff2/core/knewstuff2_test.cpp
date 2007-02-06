@@ -2,6 +2,8 @@
 
 #include <kstandarddirs.h>
 
+#include <unistd.h>
+
 KNewStuff2Test::KNewStuff2Test()
 : QObject()
 {
@@ -69,6 +71,7 @@ void KNewStuff2Test::quitTest()
 	kDebug() << "-- quitting now..." << endl;
 	deleteLater();
 	kapp->quit();
+	exit(1);
 }
 
 int main(int argc, char **argv)
