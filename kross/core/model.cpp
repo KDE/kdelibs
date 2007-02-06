@@ -58,15 +58,17 @@ namespace Kross {
     {
         public:
             ActionCollectionModelItem* item;
+            Mode mode;
     };
 
 }
 
-ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* collection)
+ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* collection, Mode mode)
     : QAbstractItemModel(parent)
     , d( new Private() )
 {
     d->item = new ActionCollectionModelItem( collection ? collection : Kross::Manager::self().actionCollection() );
+    d->mode = mode;
 }
 
 ActionCollectionModel::~ActionCollectionModel()
@@ -131,7 +133,8 @@ Qt::ItemFlags ActionCollectionModel::flags(const QModelIndex &index) const
 {
     if( ! index.isValid() )
         return Qt::ItemIsEnabled;
-    //if(index.column() == 0 /*&& d->editable*/) return QAbstractItemModel::flags(index); // | Qt::ItemIsUserCheckable;
+    if(index.column() == 0 && (d->mode & UserCheckable))
+        return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
     return QAbstractItemModel::flags(index); // | Qt::ItemIsEditable;
 }
 
@@ -142,15 +145,21 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
         switch( item->type ) {
             case ActionCollectionModelItem::ActionType: {
                 switch( role ) {
-                    case Qt::DecorationRole:
-                        return item->action->icon();
+                    case Qt::DecorationRole: {
+                        if( d->mode & Icons )
+                            return item->action->icon();
+                    } break;
                     case Qt::DisplayRole:
                         return item->action->text().replace("&","");
                     case Qt::ToolTipRole: // fall through
-                    case Qt::WhatsThisRole:
-                        return item->action->description();
-                    //case Qt::CheckStateRole:
-                    //    return item->action->isVisible();
+                    case Qt::WhatsThisRole: {
+                        if( d->mode & ToolTips )
+                            return item->action->description();
+                    } break;
+                    case Qt::CheckStateRole: {
+                        if( d->mode & UserCheckable )
+                            return item->action->isEnabled();
+                    } break;
                     default: break;
                 }
             } break;
@@ -159,8 +168,14 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                     case Qt::DisplayRole:
                         return item->collection->text();
                     case Qt::ToolTipRole: // fall through
-                    case Qt::WhatsThisRole:
-                        return item->collection->description();
+                    case Qt::WhatsThisRole: {
+                        if( d->mode & ToolTips )
+                            return item->collection->description();
+                    } break;
+                    case Qt::CheckStateRole: {
+                        if( d->mode & UserCheckable )
+                            return item->collection->isEnabled();
+                    } break;
                     default: break;
                 }
             } break;
@@ -172,38 +187,39 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
 
 bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-#if 0
-    if( ! index.isValid() /*|| ! d->editable*/ )
+    Q_UNUSED(value);
+    if( ! index.isValid() || ! (d->mode & UserCheckable) )
         return false;
-    Action* action = static_cast< Action* >( index.internalPointer() );
-    switch( role ) {
-        case Qt::EditRole: {
-            action->setText( value.toString() );
+    ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
+    switch( item->type ) {
+        case ActionCollectionModelItem::ActionType: {
+            switch( role ) {
+                //case Qt::EditRole: item->action->setText( value.toString() ); break;
+                case Qt::CheckStateRole: item->action->setEnabled( ! item->action->isEnabled() ); break;
+                default: return false;
+            }
         } break;
-        case Qt::CheckStateRole: {
-            action->setVisible( ! action->isVisible() );
+        case ActionCollectionModelItem::CollectionType: {
+            switch( role ) {
+                //case Qt::EditRole: item->collection->setText( value.toString() ); break;
+                case Qt::CheckStateRole: item->collection->setEnabled( ! item->collection->isEnabled() ); break;
+                default: return false;
+            }
         } break;
-        default:
-            return false;
+        default: return false;
     }
     emit dataChanged(index, index);
     return true;
-#else
-    Q_UNUSED(index);
-    Q_UNUSED(value);
-    Q_UNUSED(role);
-    return false;
-#endif
 }
 
 /******************************************************************************
  * ActionCollectionProxyModel
  */
 
-ActionCollectionProxyModel::ActionCollectionProxyModel(QObject* parent, ActionCollection* collection)
+ActionCollectionProxyModel::ActionCollectionProxyModel(QObject* parent, ActionCollectionModel* model)
     : QSortFilterProxyModel(parent)
 {
-    setSourceModel( new ActionCollectionModel(this, collection) );
+    setSourceModel( model ? model : new ActionCollectionModel(this) );
     setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 

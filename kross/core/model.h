@@ -40,7 +40,15 @@ namespace Kross {
     class KROSSCORE_EXPORT ActionCollectionModel : public QAbstractItemModel
     {
         public:
-            explicit ActionCollectionModel(QObject* parent, ActionCollection* collection = 0);
+            enum Mode {
+                None = 0,
+                Icons = 1,
+                ToolTips = 2,
+                UserCheckable = 4
+                //Editable = 8
+            };
+
+            explicit ActionCollectionModel(QObject* parent, ActionCollection* collection = 0, Mode mode = Mode(Icons|ToolTips));
             virtual ~ActionCollectionModel();
 
             virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -68,7 +76,7 @@ namespace Kross {
     class KROSSCORE_EXPORT ActionCollectionProxyModel : public QSortFilterProxyModel
     {
         public:
-            ActionCollectionProxyModel(QObject* parent, ActionCollection* collection = 0);
+            ActionCollectionProxyModel(QObject* parent, ActionCollectionModel* model = 0);
             virtual ~ActionCollectionProxyModel();
 
         private:

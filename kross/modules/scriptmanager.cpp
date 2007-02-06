@@ -109,7 +109,8 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     d->view->setItemsExpandable(true);
     d->view->header()->hide();
 
-    ActionCollectionModel* model = new ActionCollectionModel(d->view, Kross::Manager::self().actionCollection());
+    ActionCollectionModel::Mode modelmode = ActionCollectionModel::Mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
+    ActionCollectionModel* model = new ActionCollectionModel(d->view, Kross::Manager::self().actionCollection(), modelmode);
     d->view->setModel(model);
 
     QItemSelectionModel* selectionmodel = new QItemSelectionModel(model, this);
