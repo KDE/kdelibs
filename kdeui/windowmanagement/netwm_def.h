@@ -260,8 +260,7 @@ public:
 	**/
 	Unknown  = -1,
 	/**
-	   indicates that this is a normal, top-level window. Windows with
-	   Unknown window type or WM_TRANSIENT_FOR unset must be taken as this type.
+	   indicates that this is a normal, top-level window
 	**/
 	Normal   = 0,
 	/**
@@ -272,8 +271,7 @@ public:
 	**/
 	Desktop  = 1,
 	/**
-	   indicates a dock or panel feature. Typically a window manager would
-	   keep such windows on top of all other windows.
+	   indicates a dock or panel feature
 	**/
 	Dock     = 2,
 	/**
@@ -281,12 +279,11 @@ public:
 	**/
 	Toolbar  = 3,
 	/**
-	   indicates a pinnable menu window
+	   indicates a pinnable (torn-off) menu window
 	**/
 	Menu     = 4,
 	/**
-	   indicates that this is a dialog window. If _NET_WM_WINDOW_TYPE is
-	   not set, then windows with WM_TRANSIENT_FOR set must be taken as this type.
+	   indicates that this is a dialog window
 	**/
 	Dialog   = 5,
 	/**
@@ -305,7 +302,31 @@ public:
 	/**
 	   indicates that this window is a splash screen window.
 	**/
-	Splash   = 9
+	Splash   = 9,
+        /**
+           indicates a dropdown menu (from a menubar typically)
+        **/
+        DropdownMenu = 10,
+        /**
+           indicates a popup menu (a context menu typically)
+        **/
+        PopupMenu = 11,
+        /**
+           indicates a tooltip window
+        **/
+        Tooltip = 12,
+        /**
+           indicates a notification window
+        **/
+        Notification = 13,
+        /**
+           indicates that the window is a list for a combobox
+        **/
+        ComboBox = 14,
+        /**
+           indicates a window that represents the dragged object during DND operation
+        **/
+        DNDIcon = 15
     };
     
     /**
@@ -322,7 +343,13 @@ public:
 	OverrideMask = 1<<6,   ///< @see Override
 	TopMenuMask  = 1<<7,   ///< @see TopMenu
 	UtilityMask  = 1<<8,   ///< @see Utility
-	SplashMask   = 1<<9    ///< @see Splash
+	SplashMask   = 1<<9,   ///< @see Splash
+        DropdownMenuMask = 1<<10, ///< @see DropdownMenu
+        PopupMenuMask    = 1<<11, ///< @see PopupMenu
+        TooltipMask      = 1<<12, ///< @see Tooltip
+        NotificationMask = 1<<13, ///< @see Notification
+        ComboBoxMask     = 1<<14, ///< @see ComboBox
+        DNDIconMask      = 1<<15  ///< @see DNDIcon
     };
 
     // KDE4 move to WindowTypeMask
