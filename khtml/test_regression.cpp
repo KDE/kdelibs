@@ -188,7 +188,7 @@ public:
         switch (type)
         {
         case CT_PushButton:
-            return QSize(size.width(), size.height() - 1); 
+            return QSize(size.width(), size.height() - 1);
         case CT_LineEdit:
 	    if (widget && widget->parentWidget() && !qstricmp(widget->parentWidget()->className(), "KUrlRequester"))
 		return QSize(size.width() + 1, size.height());
@@ -605,8 +605,8 @@ int main(int argc, char *argv[])
     setenv( "KDEHOME", kh.toLatin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
-    
-    // We want KIO to be in the slave-forking mode since 
+
+    // We want KIO to be in the slave-forking mode since
     // then it'll ask KProtocolInfo::exec for the binary to run,
     // and we intercept that, limiting the I/O to file://
     // and the magic data://. See Slave::createSlave in KIO's slave.cpp
@@ -651,7 +651,7 @@ int main(int argc, char *argv[])
             fprintf( stderr, "ERROR: We need Xvfb to be installed for reliable results\n" );
             exit( 1 );
         }
-        
+
         QByteArray xvfbPath8 = QFile::encodeName(xvfbPath);
         QStringList fpaths;
         fpaths.append(baseDir+"/resources");
@@ -684,10 +684,11 @@ int main(int argc, char *argv[])
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
-    KGlobal::instance()->config()->setGroup( "Notification Messages" );
-    KGlobal::instance()->config()->writeEntry( "kjscupguard_alarmhandler", true );
-    KGlobal::instance()->config()->setGroup("HTML Settings");
-    KGlobal::instance()->config()->writeEntry("ReportJSErrors", false);
+    KSharedConfigPtr config = KGlobal::mainComponent().config();
+    config->setGroup( "Notification Messages" );
+    config->writeEntry( "kjscupguard_alarmhandler", true );
+    config->setGroup("HTML Settings");
+    config->writeEntry("ReportJSErrors", false);
     KConfig cfg( "khtmlrc" );
     cfg.setGroup("HTML Settings");
     cfg.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
@@ -704,7 +705,7 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "WindowOpenPolicy", (int)KHTMLSettings::KJSWindowOpenAllow);
 
     cfg.sync();
-    
+
     KJS::ScriptInterpreter::turnOffCPUGuard();
 
     QPalette pal = a.palette();
