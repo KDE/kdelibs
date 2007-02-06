@@ -21,12 +21,11 @@
 #define KROSS_ACTIONCOLLECTION_H
 
 #include "krossconfig.h"
+#include "action.h"
 
 #include <QString>
 #include <QObject>
 #include <QDir>
-
-#include <kactioncollection.h>
 
 class QDomElement;
 class QIODevice;
@@ -37,7 +36,7 @@ namespace Kross {
      * The ActionCollection class manages collections of \a Action
      * instances.
      */
-    class KROSSCORE_EXPORT ActionCollection : public KActionCollection
+    class KROSSCORE_EXPORT ActionCollection : public QObject
     {
             Q_OBJECT
 
@@ -71,6 +70,26 @@ namespace Kross {
             void setText(const QString& text);
 
             /**
+             * \return the optional description for this ActionCollection.
+             */
+            QString description() const;
+
+            /**
+             * Set the optional description for this ActionCollection.
+             */
+            void setDescription(const QString& description);
+
+            /**
+             * Return the enable this ActionCollection has.
+             */
+            bool isEnabled() const;
+
+            /**
+             * Enable or disable this ActionCollection.
+             */
+            void setEnabled(bool enabled);
+
+            /**
              * \return the parent \a ActionCollection instance this
              * \collection is child of or NULL oif this collection
              * does not have a parent.
@@ -94,6 +113,12 @@ namespace Kross {
              * this collection has
              */
             QStringList collections() const;
+
+            QList<Action*> actions() const;
+            Action* action(const QString& name) const;
+            void addAction(const QString& name, Action* action);
+            void removeAction(const QString& name);
+            void removeAction(Action* action);
 
             /**
              * Load child \a Action and \a ActionCollection instances this

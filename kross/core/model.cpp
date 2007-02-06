@@ -158,6 +158,9 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                 switch( role ) {
                     case Qt::DisplayRole:
                         return item->collection->text();
+                    case Qt::ToolTipRole: // fall through
+                    case Qt::WhatsThisRole:
+                        return item->collection->description();
                     default: break;
                 }
             } break;
@@ -186,6 +189,9 @@ bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &va
     emit dataChanged(index, index);
     return true;
 #else
+    Q_UNUSED(index);
+    Q_UNUSED(value);
+    Q_UNUSED(role);
     return false;
 #endif
 }

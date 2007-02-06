@@ -407,6 +407,8 @@ void ScriptManagerModule::showManagerDialog()
         }
         QMetaObject::invokeMethod(&Manager::self(), "configChanged");
     }
+#else
+    Q_UNUSED(result);
 #endif
     dialog->delayedDestruct();
 }

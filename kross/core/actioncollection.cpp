@@ -21,6 +21,7 @@
 #include "action.h"
 #include "manager.h"
 
+#include <QHash>
 #include <QStringList>
 #include <QPointer>
 #include <QIODevice>
@@ -46,7 +47,12 @@ namespace Kross {
             QHash< QString, QPointer<ActionCollection> > collections;
             QStringList collectionnames;
 
+            QList< Action* > actionList;
+            QHash< QString, Action* > actionMap;
+
             QString text;
+            QString description;
+            bool enabled;
 
             Private(ActionCollection* const p) : parent(p) {}
     };
@@ -54,11 +60,12 @@ namespace Kross {
 }
 
 ActionCollection::ActionCollection(const QString& name, ActionCollection* parent)
-    : KActionCollection(parent)
+    : QObject(parent)
     , d( new Private(parent) )
 {
     setObjectName(name);
     d->text = name;
+    d->enabled = true;
     if( d->parent )
         d->parent->registerCollection(this);
 }
@@ -72,6 +79,12 @@ ActionCollection::~ActionCollection()
 
 QString ActionCollection::text() const { return d->text; }
 void ActionCollection::setText(const QString& text) { d->text = text; }
+
+QString ActionCollection::description() const { return d->description; }
+void ActionCollection::setDescription(const QString& description) { d->description = description; }
+
+bool ActionCollection::isEnabled() const { return d->enabled; }
+void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; }
 
 ActionCollection* ActionCollection::parentCollection() const
 {
@@ -107,6 +120,42 @@ void ActionCollection::unregisterCollection(const QString& name)
     d->collections.remove(name);
 }
 
+QList<Action*> ActionCollection::actions() const
+{
+    return d->actionList;
+}
+
+Action* ActionCollection::action(const QString& name) const
+{
+    return d->actionMap.contains(name) ? d->actionMap[name] : 0;
+}
+
+void ActionCollection::addAction(const QString& name, Action* action)
+{
+    if( d->actionMap.contains(name) )
+        d->actionList.removeAll( d->actionMap[name] );
+    d->actionMap.insert(name, action);
+    d->actionList.append(action);
+}
+
+void ActionCollection::removeAction(const QString& name)
+{
+    if( ! d->actionMap.contains(name) )
+        return;
+    d->actionList.removeAll( d->actionMap[name] );
+    d->actionMap.remove(name);
+}
+
+void ActionCollection::removeAction(Action* action)
+{
+    Q_ASSERT(action);
+    const QString name = action->objectName();
+    if( ! d->actionMap.contains(name) )
+        return;
+    d->actionList.removeAll(action);
+    d->actionMap.remove(name);
+}
+
 /*********************************************************************
  * Unserialize from XML / QIODevice / file / resource to child
  * ActionCollection's and Action's this ActionCollection has.
@@ -132,12 +181,14 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         if( elem.tagName() == "collection") {
             const QString name = elem.attribute("name");
             const QString text = elem.attribute("text");
+            const QString description = elem.attribute("comment");
             bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
             ActionCollection* c = d->collections.contains(name) ? d->collections[name] : 0;
             if( ! c )
                 c = new ActionCollection(name, this);
-            if( ! text.isNull() )
-                c->setText(text);
+            c->setText( text.isEmpty() ? name : text );
+            c->setDescription( description.isEmpty() ? c->text() : description );
+
             if( ! enabled )
                 c->setEnabled(false);
             if( ! c->readXml(elem, directory) )
@@ -277,6 +328,8 @@ QDomElement ActionCollection::writeXml()
         element.setAttribute("name", objectName());
     if( ! text().isNull() && text() != objectName() )
         element.setAttribute("text", text());
+    if( ! d->description.isNull() )
+        element.setAttribute("comment", d->description);
 
     foreach(QString name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
