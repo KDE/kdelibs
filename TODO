@@ -1,6 +1,9 @@
 This file is meant to be a place to track of medium to large-scale API changes
 that we would like to make for the next binary incompatible release.
 
+- Make kdeui qt3support-free   (which also includes rewriting/porting kfiledialog...)
+  (David, Robert Knight, ...)
+
 - Check for forked classes in kde pim and other modules
   (Danimo)
 
@@ -171,6 +174,9 @@ informations
   to merge that code.
   (David / Joseph Wenninger)
 
+- Implement XDG shared mime support
+  (David)
+
 - Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
   just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
   to have here for later doing.
@@ -226,12 +232,7 @@ informations
 
 - Increase version numbers in sonames of our libraries (*.so.version). 
 
-- Merge kdecore classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
-
-- Is the malloc.c implementation still needed now that glibc 2.3 is widely
-  available and glibc 2.4 is around the corner?  Also, there is a more recent
-  version of Doug Lea's malloc.c available, so perhaps updating to that
-  version would be a good move (bug fixes)? (Caleb)
+- Merge classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
 
 - It looks like most of the functions KStringHandler can be removed.  At least, insword, setword, 
   remrange, and remword could be removed.  Those four don't seem to be used anywhere inside of KDE.  Other
