@@ -23,9 +23,7 @@
 #include <qeventloop.h>
 #include <qapplication.h>
 #include <kurl.h>
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #include <netinet/in.h>
 #include "remoteservice.h"
 #include "responder.h"
