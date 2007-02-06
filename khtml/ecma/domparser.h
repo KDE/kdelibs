@@ -31,7 +31,7 @@
 
 namespace KJS {
 
-  class KHTML_EXPORT DOMParserConstructorImp : public ObjectImp {
+  class DOMParserConstructorImp : public ObjectImp {
   public:
     DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d);
     virtual bool implementsConstruct() const;
@@ -40,7 +40,7 @@ private:
     SharedPtr<DOM::DocumentImpl> doc;
   };
 
-  class KHTML_EXPORT DOMParser : public DOMObject {
+  class DOMParser : public DOMObject {
   public:
     DOMParser(ExecState *, DOM::DocumentImpl *d);
     virtual bool toBoolean(ExecState *) const { return true; }

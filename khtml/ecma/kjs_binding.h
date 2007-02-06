@@ -63,7 +63,7 @@ namespace KJS {
   /**
    * Base class for all objects in this binding. Doesn't manage exceptions any more
    */
-  class KHTML_EXPORT DOMObject : public ObjectImp {
+  class DOMObject : public ObjectImp {
   protected:
     DOMObject() : ObjectImp() {}
     DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
@@ -77,7 +77,7 @@ namespace KJS {
    * that the interpreter runs for.
    * The interpreter also stores the DOM object - >KJS::DOMObject cache.
    */
-  class KHTML_EXPORT ScriptInterpreter : public Interpreter
+  class ScriptInterpreter : public Interpreter
   {
   public:
     ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame );

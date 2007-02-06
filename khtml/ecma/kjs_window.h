@@ -76,7 +76,7 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  class KHTML_EXPORT Window : public ObjectImp {
+  class Window : public ObjectImp {
     friend QPointer<KHTMLPart> getInstance();
     friend class KJS::Location;
     friend class KJS::WindowFunc;
@@ -260,7 +260,7 @@ namespace KJS {
     int timerId;
   };
 
-  class KHTML_EXPORT WindowQObject : public QObject {
+  class WindowQObject : public QObject {
     Q_OBJECT
   public:
     WindowQObject(Window *w);
