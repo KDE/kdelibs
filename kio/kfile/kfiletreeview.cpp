@@ -358,7 +358,8 @@ void KFileTreeView::slotSelectionChanged()
 KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name,
                               bool showHidden )
 {
-    const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( K3Icon::Desktop,K3Icon::SizeSmall );
+    const QPixmap& folderPix = KIconLoader::global()->loadMimeTypeIcon( KMimeType::mimeType("inode/directory")->iconName(),
+                                                                        K3Icon::Desktop, K3Icon::SizeSmall );
 
     return addBranch( path, name, folderPix, showHidden);
 }
