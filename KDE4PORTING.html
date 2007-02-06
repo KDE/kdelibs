@@ -1539,6 +1539,8 @@ and subjobs.isEmpty() with !hasSubjobs()</li>
 <li><code>job-&gt;setWindow(QWidget*)</code> becomes <code>job-&gt;ui()-&gt;setWindow(QWidget*)</code></li>
 <li><code>job-&gt;window()</code> becomes <code>job-&gt;ui()-&gt;window()</code></li>
 <li><code>job-&gt;setInteractive( false )</code> becomes <code>job-&gt;setUiDelegate( 0 )</code></li>
+<li>Also note that you must now include &lt;kio/copyjob.h&gt; if you use KIO::copy, KIO::move or KIO::trash,
+and you must include &lt;kio/deletejob.h&gt; if you use KIO::del.</li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>
