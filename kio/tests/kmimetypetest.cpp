@@ -78,7 +78,8 @@ void KMimeTypeTest::testIcons()
 
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
     {
-        KTempDir tmp( QString(), 0 );
+        QString emptyString; // gcc-3.3 workaround
+        KTempDir tmp( emptyString, 0 );
         tmp.setAutoRemove( true );
         KUrl url( tmp.name() );
         checkIcon( url, "folder_locked" );
