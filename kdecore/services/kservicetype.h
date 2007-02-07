@@ -221,6 +221,7 @@ protected: // used by KMimeType
 protected:
     virtual void virtual_hook( int id, void* data );
 
+private:
     friend class KServiceTypePrivate;
     KServiceTypePrivate* const d;
 };
