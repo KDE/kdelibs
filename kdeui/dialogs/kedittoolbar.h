@@ -33,11 +33,13 @@ class QTreeWidgetItem;
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
 class KEditToolbarWidgetPrivate;
+#if 0
 namespace
 {
   class ToolbarItem;
   class ToolbarListView;
 }
+#endif
 /**
  * @short A dialog used to customize or configure toolbars.
  *
@@ -396,18 +398,12 @@ private Q_SLOTS:
 private:
   void setupLayout();
 
-  void insertActive(ToolbarItem *item, ToolbarItem *before, bool prepend = false);
-  void removeActive(ToolbarItem *item);
-  void moveActive(ToolbarItem *item, ToolbarItem *before);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
   void loadToolbarCombo(const QString& defaultToolbar = QString());
   void loadActionList(QDomElement& elem);
-  void updateLocal(QDomElement& elem);
 
 private:
-  ToolbarListView *m_inactiveList;
-  ToolbarListView *m_activeList;
   QComboBox *m_toolbarCombo;
 
   QToolButton *m_upAction;
@@ -416,6 +412,7 @@ private:
   QToolButton *m_downAction;
 
 private:
+  friend class KEditToolbarWidgetPrivate;
   KEditToolbarWidgetPrivate *d;
 };
 
