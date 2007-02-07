@@ -613,7 +613,7 @@ void KUrlBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KUrl url( config->readPathEntry( QString("URL_") + number ));
+    KUrl url( config->readPathEntry( QString(QLatin1String("URL_") + number).toUtf8().constData() ));
     if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -699,10 +699,10 @@ void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfig *config,
     KConfigBase::WriteConfigFlags flags = KConfigBase::Normal;
     if ( global )
         flags |= KConfigBase::Global;
-    config->writePathEntry( URL + number, item->url().prettyUrl(), flags );
-    config->writeEntry( Description + number, item->description(), flags );
-    config->writeEntry( Icon + number, item->icon(), flags );
-    config->writeEntry( IconGroup + number, item->iconGroup(), flags );
+    config->writePathEntry( QString(URL + number).toUtf8().constData(), item->url().prettyUrl(), flags );
+    config->writeEntry( QString(Description + number).toUtf8(), item->description(), flags );
+    config->writeEntry( QString(Icon + number).toUtf8(), item->icon(), flags );
+    config->writeEntry( QString(IconGroup + number).toUtf8().data(), item->iconGroup(), flags );
 }
 
 

@@ -1173,20 +1173,20 @@ void CopyJob::copyNextFile()
                         config.setDesktopGroup();
                         KUrl url = (*it).uSource;
                         url.setPass( "" );
-                        config.writePathEntry( QString::fromLatin1("URL"), url.url() );
-                        config.writeEntry( QString::fromLatin1("Name"), url.url() );
-                        config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
+                        config.writePathEntry( "URL", url.url() );
+                        config.writeEntry( "Name", url.url() );
+                        config.writeEntry( "Type", QString::fromLatin1("Link") );
                         QString protocol = (*it).uSource.protocol();
-                        if ( protocol == QString::fromLatin1("ftp") )
-                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
-                        else if ( protocol == QString::fromLatin1("http") )
-                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
-                        else if ( protocol == QString::fromLatin1("info") )
-                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
-                        else if ( protocol == QString::fromLatin1("mailto") )   // sven:
-                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
+                        if ( protocol == QLatin1String("ftp") )
+                            config.writeEntry( "Icon", QString::fromLatin1("ftp") );
+                        else if ( protocol == QLatin1String("http") )
+                            config.writeEntry( "Icon", QString::fromLatin1("www") );
+                        else if ( protocol == QLatin1String("info") )
+                            config.writeEntry( "Icon", QString::fromLatin1("info") );
+                        else if ( protocol == QLatin1String("mailto") )   // sven:
+                            config.writeEntry( "Icon", QString::fromLatin1("kmail") ); // added mailto: support
                         else
-                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
+                            config.writeEntry( "Icon", QString::fromLatin1("unknown") );
                         config.sync();
                         files.erase( it );
                         m_processedFiles++;
