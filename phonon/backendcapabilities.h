@@ -40,6 +40,37 @@ namespace Phonon
 namespace BackendCapabilities
 {
     /**
+     * Notifications about backend capabilities.
+     */
+    class Notifier : public QObject
+    {
+        Q_OBJECT
+        Q_SIGNALS:
+            /**
+             * This signal is emitted if the capabilities have changed. This can
+             * happen if the user has requested a backend change.
+             */
+            void capabilitiesChanged();
+    };
+
+    /**
+     * Use this function to get a QObject pointer to connect to the capabilitiesChanged signal.
+     *
+     * \return a pointer to a QObject.
+     *
+     * The capabilitiesChanged signal is emitted if the capabilities have changed. This can
+     * happen if the user has requested a backend change.
+     *
+     * To connect to this signal do the following:
+     * \code
+     * QObject::connect(BackendCapabilities::notifier(), SIGNAL(capabilitiesChanged()), ...
+     * \endcode
+     *
+     * \see Notifier::capabilitiesChanged()
+     */
+    PHONONCORE_EXPORT Notifier *notifier();
+
+    /**
      * Tells whether the backend is audio only or can handle video files
      * and display of videos.
      *
@@ -184,21 +215,6 @@ namespace BackendCapabilities
      * description for every supported container format.
      */
     PHONONCORE_EXPORT QList<ContainerFormatDescription> availableContainerFormats();
-
-    /**
-     * Use this function to get a QObject pointer to connect to the capabilitiesChanged signal.
-     *
-     * \return a pointer to a QObject.
-     *
-     * The capabilitiesChanged signal is emitted if the capabilities have changed. This can
-     * happen if the user has requested a backend change.
-     *
-     * To connect to this signal do the following:
-     * \code
-     * QObject::connect(BackendCapabilities::notifier(), SIGNAL(capabilitiesChanged()), ...
-     * \endcode
-     */
-    PHONONCORE_EXPORT QObject *notifier();
 } // namespace BackendCapabilities
 } // namespace Phonon
 

@@ -26,18 +26,14 @@
 
 namespace Phonon
 {
-class BackendCapabilitiesPrivate : public QObject
+class BackendCapabilitiesPrivate : public BackendCapabilities::Notifier
 {
     Q_OBJECT
     public:
         BackendCapabilitiesPrivate()
-            : QObject(0)
         {
             connect(Factory::sender(), SIGNAL(backendChanged()), SIGNAL(capabilitiesChanged()));
         }
-
-    Q_SIGNALS:
-        void capabilitiesChanged();
 };
 
 } // namespace Phonon

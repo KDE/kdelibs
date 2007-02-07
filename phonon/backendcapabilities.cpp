@@ -35,7 +35,7 @@ K_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 namespace Phonon
 {
 
-QObject *BackendCapabilities::notifier()
+BackendCapabilities::Notifier *BackendCapabilities::notifier()
 {
     return globalBCPrivate;
 }
@@ -134,5 +134,6 @@ availableDevicesImpl2( VideoEffect )
 
 } // namespace Phonon
 
+#include "backendcapabilities.moc"
 #include "backendcapabilities_p.moc"
 // vim: sw=4 ts=4
