@@ -562,14 +562,14 @@ void KActionCollection::connectNotify ( const char * signal )
   if (d->connectHighlighted && d->connectTriggered)
     return;
 
-  if (signal == SIGNAL(actionHighlighted(QAction*))) {
+  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal) {
     if (!d->connectHighlighted) {
       d->connectHighlighted = true;
       foreach (QAction* action, actions())
         connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
     }
 
-  } else if (signal == SIGNAL(actionTriggered(QAction*))) {
+  } else if (QMetaObject::normalizedSignature(SIGNAL(actionTriggered(QAction*))) == signal) {
     if (!d->connectTriggered) {
       d->connectTriggered = true;
       foreach (QAction* action, actions())
