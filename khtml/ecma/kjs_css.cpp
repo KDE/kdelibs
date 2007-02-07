@@ -246,7 +246,7 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
       if (propvalue.isEmpty())
         styleDecl.removeProperty(pId);
       else {
-        int important = propvalue.find("!important", 0, false);
+        int important = propvalue.indexOf("!important", 0, Qt::CaseInsensitive);
         if (important == -1)
             styleDecl.setProperty(pId, DOM::DOMString(propvalue), "", exception);
         else
