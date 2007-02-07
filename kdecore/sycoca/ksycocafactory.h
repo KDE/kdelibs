@@ -123,7 +123,7 @@ public:
     /**
      * @return true if the factory is completely empty - no entries defined
      */
-    bool isEmpty() const { return m_beginEntryOffset != m_endEntryOffset; }
+    bool isEmpty() const { return m_beginEntryOffset == m_endEntryOffset; }
 
 private:
    int mOffset;
