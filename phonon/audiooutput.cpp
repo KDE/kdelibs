@@ -105,18 +105,25 @@ AudioOutputDevice AudioOutput::outputDevice() const
 bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
 {
     K_D(AudioOutput);
-    if (iface()) {
-        return INTERFACE_CALL(setOutputDevice, (newAudioOutputDevice.index()));
+    if (!newAudioOutputDevice.isValid()) {
+        d->outputDeviceOverridden = false;
+        d->outputDeviceIndex = GlobalConfig().audioOutputDeviceFor(d->category);
+    } else {
+        d->outputDeviceOverridden = true;
+        d->outputDeviceIndex = newAudioOutputDevice.index();
     }
-    d->outputDeviceIndex = newAudioOutputDevice.index();
+    if (iface()) {
+        return INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex));
+    }
     return true;
 }
 
 bool AudioOutputPrivate::aboutToDeleteIface()
 {
-	if( backendObject )
+    if (backendObject) {
         volume = pINTERFACE_CALL(volume, ());
-	return AbstractAudioOutputPrivate::aboutToDeleteIface();
+    }
+    return AbstractAudioOutputPrivate::aboutToDeleteIface();
 }
 
 void AudioOutput::setupIface()
@@ -130,7 +137,9 @@ void AudioOutput::setupIface()
 	// set up attributes
     INTERFACE_CALL(setVolume, (d->volume));
 
-    if (!INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex))) {
+    // if the output device is not available and the device was not explicitely set
+    if (!INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex)) && !d->outputDeviceOverridden) {
+        // fall back in the preference list of output devices
         QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(d->category);
         if (d->outputDeviceIndex == deviceList.takeFirst()) { // removing the first device so that
             // if it's the same device as the one we tried we only try all the following

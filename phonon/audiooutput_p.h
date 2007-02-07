@@ -36,7 +36,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		AudioOutputPrivate()
             : volume(1.0),
             outputDeviceIndex(-1),
-            deviceBeforeFallback(-1)
+            deviceBeforeFallback(-1),
+            outputDeviceOverridden(false)
 		{
 			const KAboutData* ad = KGlobal::mainComponent().aboutData();
 			if( ad )
@@ -53,6 +54,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		QString name;
 		int outputDeviceIndex;
         int deviceBeforeFallback;
+        bool outputDeviceOverridden;
 };
 } //namespace Phonon
 
