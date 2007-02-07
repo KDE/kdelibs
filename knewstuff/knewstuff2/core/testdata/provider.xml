@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<provider downloadurl="http://some.http.server/stuff.xml"
+          downloadurl-latest="http://some.http.server/stuff.xml?list=latest"
+          downloadurl-score="http://some.http.server/stuff.xml?list=score"
+          downloadurl-downloads="http://some.http.server/stuff.xml?list=downloads"
+          uploadurl="ftp://somewhere.ftp.server"
+          webservice="http://some.http.server/service.wsdl"
+          icon="someapp"
+          webaccess="http://some.webfrontend.server/">
+  <title lang="en">Some cool stuff</title>
+  <title lang="de">Viele neue Dinge</title>
+</provider>

@@ -36,8 +36,7 @@ class ProviderPrivate
   ProviderPrivate(){}
 };
 
-Provider::Provider() :
-  mNoUpload( false )
+Provider::Provider()
 {
 }
 
@@ -66,12 +65,12 @@ Feed *Provider::downloadUrlFeed( QString feedtype ) const
   }
 }
 
-void Provider::setName( const QString &name )
+void Provider::setName( const KTranslatable &name )
 {
   mName = name;
 }
 
-QString Provider::name() const
+KTranslatable Provider::name() const
 {
   return mName;
 }
@@ -116,14 +115,24 @@ KUrl Provider::noUploadUrl() const
   return mNoUploadUrl;
 }
 
-void Provider::setNoUpload( bool enabled )
+void Provider::setWebAccess( const KUrl &url )
 {
-  mNoUpload = enabled;
+  mWebAccess = url;
 }
 
-bool Provider::noUpload() const
+KUrl Provider::webAccess() const
 {
-  return mNoUpload;
+  return mWebAccess;
+}
+
+void Provider::setWebService( const KUrl &url )
+{
+  mWebService = url;
+}
+
+KUrl Provider::webService() const
+{
+  return mWebService;
 }
 
 QStringList Provider::feeds() const

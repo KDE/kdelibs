@@ -63,7 +63,8 @@ Provider *ProviderHandler::providerptr()
   provider->setDownloadUrl(mProvider.downloadUrl());
   provider->setUploadUrl(mProvider.uploadUrl());
   provider->setNoUploadUrl(mProvider.noUploadUrl());
-  provider->setNoUpload(mProvider.noUpload());
+  provider->setWebAccess(mProvider.webAccess());
+  provider->setWebService(mProvider.webService());
   provider->setIcon(mProvider.icon());
 
   QStringList feeds = mProvider.feeds();
@@ -82,27 +83,76 @@ Provider ProviderHandler::provider()
 
 QDomElement ProviderHandler::serializeElement(const Provider& provider)
 {
-  //QDomDocument doc;
+  QDomDocument doc;
 
-// FIXME: not supported right now (not needed?)
-// FIXME: see EntryHandler::serializeElement()
-  Q_UNUSED(provider);
+  QDomElement el = doc.createElement("provider");
 
-  return QDomElement();
+  KTranslatable name = provider.name();
+
+  QStringList::ConstIterator it;
+  QDomElement e;
+  QStringList langs;
+
+  langs = name.languages();
+  for(it = langs.begin(); it != langs.end(); ++it)
+  {
+    e = addElement(doc, el, "title", name.translated(*it));
+    e.setAttribute("xml:lang", *it);
+  }
+
+  if(provider.downloadUrl().isValid())
+  {
+    el.setAttribute("downloadurl", provider.downloadUrl().url());
+  }
+  if(provider.uploadUrl().isValid())
+  {
+    el.setAttribute("uploadurl", provider.uploadUrl().url());
+  }
+  if(provider.noUploadUrl().isValid())
+  {
+    el.setAttribute("nouploadurl", provider.noUploadUrl().url());
+  }
+  if(provider.webAccess().isValid())
+  {
+    el.setAttribute("webaccess", provider.webAccess().url());
+  }
+  if(provider.webService().isValid())
+  {
+    el.setAttribute("webservice", provider.webService().url());
+  }
+  if(provider.icon().isValid())
+  {
+    el.setAttribute("icon", provider.icon().url());
+  }
+
+  QStringList feeds = provider.feeds();
+  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++)
+  {
+    Feed *feed = provider.downloadUrlFeed((*it));
+    el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
+  }
+
+  mValid = true;
+  return el;
 }
 
 Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
 {
   Provider provider;
+  KTranslatable name;
 
-  if(providerxml.tagName() != "provider") return Provider();
+  if(providerxml.tagName() != "provider") return provider;
 
   QString downloadurl = providerxml.attribute("downloadurl");
   QString uploadurl = providerxml.attribute("uploadurl");
   QString nouploadurl = providerxml.attribute("nouploadurl");
+  QString webservice = providerxml.attribute("webservice");
+  QString webaccess = providerxml.attribute("webaccess");
   provider.setDownloadUrl(KUrl(downloadurl));
   provider.setUploadUrl(KUrl(uploadurl));
   provider.setNoUploadUrl(KUrl(nouploadurl));
+  provider.setWebService(KUrl(webservice));
+  provider.setWebAccess(KUrl(webaccess));
 
   QString downloadlatest = providerxml.attribute("downloadurl-latest");
   QString downloadscore = providerxml.attribute("downloadurl-score");
@@ -132,6 +182,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
  
   // FIXME: what exactly is the following condition supposed to do?
   // FIXME: make sure new KUrl in KDE 4 handles this right
+  // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
   KUrl iconurl(providerxml.attribute("icon"));
   if(!iconurl.isValid()) iconurl.setPath(providerxml.attribute("icon"));
   provider.setIcon(iconurl);
@@ -140,17 +191,33 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
   for(n = providerxml.firstChild(); !n.isNull(); n = n.nextSibling())
   {
     QDomElement e = n.toElement();
-    if(e.tagName() == "noupload")
+    if(e.tagName() == "title")
     {
-      provider.setNoUpload(true);
-    }
-    else if(e.tagName() == "title")
-    {
-      provider.setName(e.text().trimmed());
+      QString lang = e.attribute("lang");
+      name.addString(lang, e.text().trimmed());
     }
   }
 
-  // FIXME: validate here
+  provider.setName(name);
+
+  // Validation
+
+  if((provider.noUploadUrl().isValid()) && (provider.uploadUrl().isValid()))
+  {
+  	kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given" << endl;
+  	return provider;
+  }
+
+  if((!provider.noUploadUrl().isValid()) && (!provider.uploadUrl().isValid()))
+  {
+  	if(!provider.webService().isValid())
+	{
+  		kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl nor DXS given" << endl;
+  		return provider;
+	}
+  }
+
+  // Provider is valid
 
   mValid = true;
   return provider;

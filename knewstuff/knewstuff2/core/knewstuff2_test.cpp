@@ -1,30 +1,103 @@
 #include "knewstuff2_test.h"
 
-#include <kstandarddirs.h>
+#include <knewstuff2/ktranslatable.h>
+#include <knewstuff2/providerhandler.h>
+#include <knewstuff2/entryhandler.h>
+#include <knewstuff2/engine.h>
+#include <knewstuff2/entryloader.h> // tmp (go to engine)
 
-#include <unistd.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kdebug.h>
+
+#include <qfile.h>
+
+#include <unistd.h> // for exit()
+#include <stdio.h> // for stdout
 
 KNewStuff2Test::KNewStuff2Test()
 : QObject()
 {
 }
 
+void KNewStuff2Test::entryTest()
+{
+	kDebug() << "-- test kns2 entry class" << endl;
+
+	QDomDocument doc;
+	QFile f(QString("%1/testdata/entry.xml").arg(KNSSRCDIR));
+	if(!f.open(QIODevice::ReadOnly))
+	{
+		kDebug() << "Error loading entry file." << endl;
+		quitTest();
+	}
+	if(!doc.setContent(&f))
+	{
+		kDebug() << "Error parsing entry file." << endl;
+		f.close();
+		quitTest();
+	}
+	f.close();
+
+	KNS::EntryHandler eh(doc.documentElement());
+	KNS::Entry e = eh.entry();
+
+	kDebug() << "-- xml->entry test result: " << eh.isValid() << endl;
+
+	KNS::EntryHandler eh2(e);
+	QDomElement exml = eh2.entryXML();
+
+	kDebug() << "-- entry->xml test result: " << eh.isValid() << endl;
+
+	if(!eh.isValid())
+	{
+		quitTest();
+	}
+	else
+	{
+		QTextStream out(stdout);
+		out << exml;
+	}
+}
+
 void KNewStuff2Test::providerTest()
 {
 	kDebug() << "-- test kns2 provider class" << endl;
 
-	KNS::Provider p;
-	p.setName("GHNS Example Provider");
-	p.setDownloadUrl(KUrl("http://localhost:8080"));
+	QDomDocument doc;
+	QFile f(QString("%1/testdata/provider.xml").arg(KNSSRCDIR));
+	if(!f.open(QIODevice::ReadOnly))
+	{
+		kDebug() << "Error loading provider file." << endl;
+		quitTest();
+	}
+	if(!doc.setContent(&f))
+	{
+		kDebug() << "Error parsing provider file." << endl;
+		f.close();
+		quitTest();
+	}
+	f.close();
 
-	KNS::ProviderHandler ph(p);
-	QDomElement pxml = ph.providerXML();
+	KNS::ProviderHandler ph(doc.documentElement());
+	KNS::Provider p = ph.provider();
 
-	kDebug() << "-- provider test result: " << pxml.text() << endl;
+	kDebug() << "-- xml->provider test result: " << ph.isValid() << endl;
 
-	if(pxml.isNull())
+	KNS::ProviderHandler ph2(p);
+	QDomElement pxml = ph2.providerXML();
+
+	kDebug() << "-- provider->xml test result: " << ph.isValid() << endl;
+
+	if(!ph.isValid())
 	{
 		quitTest();
+	}
+	else
+	{
+		QTextStream out(stdout);
+		out << pxml;
 	}
 }
 
@@ -58,11 +131,47 @@ void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
 {
 	kDebug() << "SLOT: slotProvidersLoaded" << endl;
 	kDebug() << "-- providers: " << list->count() << endl;
+
+	for(KNS::Provider::List::Iterator it = list->begin(); it != list->end(); it++)
+	{
+		KNS::Provider *provider = (*it);
+		kDebug() << "-- provider: " << provider->name().representation() << endl;
+
+		KNS::EntryLoader *el = new KNS::EntryLoader();
+		el->load(provider->downloadUrl().url());
+		// FIXME: loaders should probably accept KUrl directly
+
+		// FIXME: the engine should do this... for all feeds!
+		connect(el,
+			SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
+			SLOT(slotEntriesLoaded(KNS::Entry::List*)));
+		connect(el,
+			SIGNAL(signalEntriesFailed()),
+			SLOT(slotEntriesFailed()));
+	}
+}
+
+void KNewStuff2Test::slotEntriesLoaded(KNS::Entry::List *list)
+{
+	kDebug() << "SLOT: slotEntriesLoaded" << endl;
+	kDebug() << "-- entries: " << list->count() << endl;
+
+	for(KNS::Entry::List::Iterator it = list->begin(); it != list->end(); it++)
+	{
+		KNS::Entry *entry = (*it);
+		kDebug() << "-- entry: " << entry->name().representation() << endl;
+	}
 }
 
 void KNewStuff2Test::slotProvidersFailed()
 {
 	kDebug() << "SLOT: slotProvidersFailed" << endl;
+	quitTest();
+}
+
+void KNewStuff2Test::slotEntriesFailed()
+{
+	kDebug() << "SLOT: slotEntriesFailed" << endl;
 	quitTest();
 }
 
@@ -84,6 +193,7 @@ int main(int argc, char **argv)
 	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
 
 	KNewStuff2Test *test = new KNewStuff2Test();
+	test->entryTest();
 	test->providerTest();
 	test->engineTest();
 

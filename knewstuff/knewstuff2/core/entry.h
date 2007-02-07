@@ -42,7 +42,7 @@ namespace KNS {
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class Entry
+class KDE_EXPORT Entry
 {
   public:
     typedef QList<Entry*> List;

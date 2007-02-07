@@ -21,6 +21,8 @@
 
 #include "entryhandler.h"
 
+#include <kdebug.h>
+
 using namespace KNS;
 
 EntryHandler::EntryHandler(const Entry& entry)
@@ -75,7 +77,7 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
   QDomDocument doc;
 
   QDomElement el = doc.createElement("stuff");
-  el.setAttribute("type", entry.type());
+  el.setAttribute("category", entry.type());
 
 //  (void)addElement(doc, el, "author", entry.author());
 //  FIXME: rather include author XML element/reference here created by AuthorHandler!
@@ -107,21 +109,21 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
   langs = summary.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
-    e = addElement(doc, el, "name", summary.translated(*it));
+    e = addElement(doc, el, "summary", summary.translated(*it));
     e.setAttribute("xml:lang", *it);
   }
 
   langs = preview.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
-    e = addElement(doc, el, "name", preview.translated(*it));
+    e = addElement(doc, el, "preview", preview.translated(*it));
     e.setAttribute("xml:lang", *it);
   }
 
   langs = payload.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
-    e = addElement(doc, el, "name", payload.translated(*it));
+    e = addElement(doc, el, "payload", payload.translated(*it));
     e.setAttribute("xml:lang", *it);
   }
 
@@ -131,12 +133,11 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
 Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 {
   Entry entry;
-
   KTranslatable name, summary, preview, payload;
 
-  if(entryxml.tagName() != "stuff") return Entry();
+  if(entryxml.tagName() != "stuff") return entry;
 
-  QString type = entryxml.attribute("type");
+  QString type = entryxml.attribute("category");
   entry.setType(type);
 
   QDomNode n;
@@ -203,7 +204,21 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
   entry.setPreview(preview);
   entry.setPayload(payload);
 
-  // FIXME: validate here
+  // Validation
+
+  if(entry.name().isEmpty())
+  {
+  	kWarning(550) << "EntryHandler: no name given" << endl;
+  	return entry;
+  }
+
+  if(entry.payload().isEmpty())
+  {
+  	kWarning(550) << "EntryHandler: no payload URL given" << endl;
+  	return entry;
+  }
+
+  // Entry is valid
 
   mValid = true;
   return entry;

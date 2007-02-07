@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stuff category="app/media">
+  <name lang="en">Some Name</name>
+  <author email="some_guy@some.mail.server" im="some_guy@jabber.server">Anonymous Guy</author>
+  <licence licenceurl="http://server/">GPL</licence>
+  <version>1.0</version>
+  <releasedate>2005-06-17</releasedate>
+  <summary lang="en">This is what it is all about.</summary>
+  <preview lang="en">http://some.http.server/preview.png</preview>
+  <payload lang="en">http://some.http.server/coolstuff.tar.gz</payload>
+  <rating>10</rating>
+  <downloads>0</downloads>
+  <options resolution="1024x768"/>
+</stuff>

@@ -63,14 +63,14 @@ class KDE_EXPORT Provider
     /**
      * Sets the common name of the provider.
      */
-    void setName( const QString & );
+    void setName( const KTranslatable& name );
 
     /**
      * Retrieves the common name of the provider.
      *
      * @return provider name
      */
-    QString name() const;
+    KTranslatable name() const;
 
     /**
      * Sets the download URL.
@@ -117,8 +117,6 @@ class KDE_EXPORT Provider
     /**
      * Sets the URL where a user is led if the provider does not support
      * uploads.
-     *
-     * @see setNoUpload
      */
     void setNoUploadUrl( const KUrl & );
 
@@ -131,16 +129,28 @@ class KDE_EXPORT Provider
     KUrl noUploadUrl() const;
 
     /**
-     * Indicate whether provider supports uploads.
+     * Sets the URL of a web frontend for the provider.
      */
-    void setNoUpload( bool );
+    void setWebAccess( const KUrl & );
 
     /**
-     * Query whether provider supports uploads.
+     * Retrieves the web frontend URL.
      *
-     * @return upload support status
+     * @return web frontend URL
      */
-    bool noUpload() const;
+    KUrl webAccess() const;
+
+    /**
+     * Sets the URL of the DXS, if offered by the provider.
+     */
+    void setWebService( const KUrl & );
+
+    /**
+     * Retrieves the URL to the DXS Web Service.
+     *
+     * @return DXS Web Service URL
+     */
+    KUrl webService() const;
 
     /**
      * Sets the URL for an icon for this provider.
@@ -157,12 +167,13 @@ class KDE_EXPORT Provider
     KUrl icon() const;
 
   private:
-    QString mName;
+    KTranslatable mName;
     KUrl mDownloadUrl;
     KUrl mUploadUrl;
     KUrl mNoUploadUrl;
+    KUrl mWebAccess;
+    KUrl mWebService;
     KUrl mIcon;
-    bool mNoUpload;
     QMap<QString, Feed*> mFeeds;
 
     class ProviderPrivate *d;
