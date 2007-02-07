@@ -468,7 +468,7 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 	//  E.g., XK_Plus requires SHIFT on the en layout.
 	uint modExtra = getModsRequired(sym);
 	// Get the X modifier equivalent.
-	if( !sym || !keyQtToModX( keyQt & Qt::KeyboardModifierMask | modExtra, mod ) ) {
+	if( !sym || !keyQtToModX( (keyQt & Qt::KeyboardModifierMask) | modExtra, mod ) ) {
 		keyCode = 0;
 		return false;
 	}
@@ -481,8 +481,8 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 	if( sym == XK_Print && !(mod & Mod1Mask) &&
 			XKeycodeToKeysym( QX11Info::display(), 111, 0 ) == XK_Print )
 		keyCode = 111; // code for Print
-	else if( sym == XK_Break || (sym == XK_Pause && (mod & ControlMask)) &&
-			XKeycodeToKeysym( QX11Info::display(), 114, 0 ) == XK_Pause )
+	else if( sym == XK_Break || ((sym == XK_Pause && (mod & ControlMask)) &&
+			XKeycodeToKeysym( QX11Info::display(), 114, 0 ) == XK_Pause) )
 		keyCode = 114;
 	else
 		keyCode = XKeysymToKeycode( QX11Info::display(), sym );
