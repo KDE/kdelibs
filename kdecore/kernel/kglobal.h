@@ -32,8 +32,17 @@ class KStringDict;
 class QString;
 class KSharedConfigPtr;
 
+/**
+ * \internal
+ */
 typedef void (*KdeCleanUpFunction)();
 
+/**
+ * \internal
+ *
+ * Helper class for K_GLOBAL_STATIC to clean up the object on library unload or application
+ * shutdown.
+ */
 class KCleanUpGlobalStatic
 {
     public:
@@ -43,8 +52,19 @@ class KCleanUpGlobalStatic
 };
 
 #ifdef Q_CC_MSVC
+/**
+ * \internal
+ *
+ * MSVC seems to give anonymous structs the same name which fails at link time. So instead we name
+ * the struct and hope that by adding the line number to the name it's unique enough to never clash.
+ */
 # define K_GLOBAL_STATIC_STRUCT_NAME(NAME) _k_##NAME##__LINE__
 #else
+/**
+ * \internal
+ *
+ * Make the struct of the K_GLOBAL_STATIC anonymous.
+ */
 # define K_GLOBAL_STATIC_STRUCT_NAME(NAME)
 #endif
 
@@ -54,7 +74,7 @@ class KCleanUpGlobalStatic
  *
  * The object is destructed on library unload or application exit.
  * Be careful with calling other objects in the destructor of the class
- * as you have to be sure that they are not already destructed.
+ * as you have to be sure that they (or objects they depend on) are not already destructed.
  *
  * \param TYPE The type of the global static object. Do not add a *.
  * \param NAME The name of the function to get a pointer to the global static object.
@@ -62,7 +82,8 @@ class KCleanUpGlobalStatic
  * If you have code that might be called after the global object has been destroyed you can check
  * for that using the isDestroyed() function.
  *
- * If needed you can also install a qPostRoutine to clean up the object using the destroy() method.
+ * If needed you can also install a post routine (\ref qAddPostRoutine) to clean up the object
+ * using the destroy() method.
  *
  * Example:
  * \code
@@ -90,19 +111,87 @@ class KCleanUpGlobalStatic
  *     qAddPostRoutine(globalA.destroy);
  * }
  * \endcode
+ *
+ * A common case for the need of deletion on lib unload/app shutdown are Singleton classes. Here's
+ * an example how to do it:
+ * \code
+ * class MySingletonPrivate;
+ * class EXPORT_MACRO MySingleton
+ * {
+ * friend class MySingletonPrivate;
+ * public:
+ *     static MySingleton *self();
+ *     QString someFunction();
+ *
+ * private:
+ *     MySingleton();
+ *     ~MySingleton();
+ * };
+ * \endcode
+ * in the .cpp file:
+ * \code
+ * class MySingletonPrivate
+ * {
+ * public:
+ *     QString foo;
+ *     MySingleton instance;
+ * };
+ *
+ * K_GLOBAL_STATIC(MySingletonPrivate, mySingletonPrivate)
+ *
+ * MySingleton *MySingleton::self()
+ * {
+ *     return &mySingletonPrivate->instance;
+ * }
+ * QString MySingleton::someFunction()
+ * {
+ *     return mySingletonPrivate->foo;
+ * }
+ * \endcode
+ *
+ * Instead of the above you can use also the following pattern (ignore the name of the namespace):
+ * \code
+ * namespace MySingleton
+ * {
+ *     EXPORT_MACRO QString someFunction();
+ * }
+ * \endcode
+ * in the .cpp file:
+ * \code
+ * class MySingletonPrivate
+ * {
+ * public:
+ *     QString foo;
+ * };
+ *
+ * K_GLOBAL_STATIC(MySingletonPrivate, mySingletonPrivate)
+ *
+ * QString MySingleton::someFunction()
+ * {
+ *     return mySingletonPrivate->foo;
+ * }
+ * \endcode
+ *
+ * Now code that wants to call someFunction() doesn't have to do
+ * \code
+ * MySingleton::self()->someFunction();
+ * \endcode
+ * anymore but instead:
+ * \code
+ * MySingleton::someFunction();
+ * \endcode
  */
-#define K_GLOBAL_STATIC(TYPE, NAME)                                            \
-K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
+#define K_GLOBAL_STATIC(TYPE, NAME) K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 
 /**
  * @overload
  * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed 
  * to the object's constructor
- * 
+ *
  * \param TYPE The type of the global static object. Do not add a *.
  * \param NAME The name of the function to get a pointer to the global static object.
  * \param ARGS the list of arguments, between brackets
- * 
+ *
  * Example:
  * \code
  * class A
