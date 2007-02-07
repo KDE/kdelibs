@@ -1034,7 +1034,7 @@ bool Ftp::ftpCloseCommand()
   kDebug(7102) << "ftpCloseCommand: reading command result" << endl;
   m_bBusy = false;
 
-  if(ftpResponse(-1) <= 0 || (m_iRespType != 2) )
+  if(!ftpResponse(-1) || (m_iRespType != 2) )
   {
     kDebug(7102) << "ftpCloseCommand: no transfer complete message" << endl;
     return false;
