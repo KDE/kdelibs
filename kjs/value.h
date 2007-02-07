@@ -271,7 +271,8 @@ inline bool JSValue::isBoolean() const
 
 inline bool JSValue::isNumber() const
 {
-    return JSImmediate::isNumber(this) || !JSImmediate::isImmediate(this) && downcast()->isNumber();
+    return JSImmediate::isNumber(this) || 
+        (!JSImmediate::isImmediate(this) && downcast()->isNumber());
 }
 
 inline bool JSValue::isString() const
