@@ -116,8 +116,7 @@ void FactoryPrivate::createBackend()
 }
 
 FactoryPrivate::FactoryPrivate()
-    : QObject(0),
-    backend(0)
+    : backend(0)
 {
     // Add the post routine to make sure that all other global statics (especially the ones from Qt)
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
@@ -140,7 +139,7 @@ FactoryPrivate::~FactoryPrivate()
     delete backend;
 }
 
-QObject *Factory::sender()
+Factory::Sender *Factory::sender()
 {
     return globalFactory;
 }
@@ -226,6 +225,7 @@ FACTORY_IMPL(Visualization)
 FACTORY_IMPL(VideoPath)
 FACTORY_IMPL_1ARG(VideoEffect)
 FACTORY_IMPL(BrightnessControl)
+FACTORY_IMPL(DeinterlaceFilter)
 FACTORY_IMPL(VideoDataOutput)
 
 #undef FACTORY_IMPL
@@ -323,6 +323,7 @@ QObject* Factory::registerQObject(QObject* o)
 
 } //namespace Phonon
 
+#include "factory.moc"
 #include "factory_p.moc"
 
 // vim: sw=4 ts=4

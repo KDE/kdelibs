@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -27,6 +27,7 @@
 #include <QPushButton>
 #include "../../backendcapabilities.h"
 #include <QSlider>
+#include <QCheckBox>
 
 using namespace Phonon;
 
@@ -75,7 +76,21 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	slider->setValue( m_brightness->brightness() );
 	connect( slider, SIGNAL( valueChanged( int ) ), m_brightness, SLOT( setBrightness( int ) ) );
 
+    QCheckBox *deinterlaceCheck = new QCheckBox(this);
+    layout->addWidget(deinterlaceCheck);
+    connect(deinterlaceCheck, SIGNAL(toggled(bool)), SLOT(toggleDeinterlacing(bool)));
+
 	m_vpath->insertEffect( m_brightness );
+}
+
+void MediaPlayer::toggleDeinterlacing(bool deint)
+{
+    if (deint) {
+        m_deinterlaceFilter = new DeinterlaceFilter(this);
+        m_vpath->insertEffect(m_deinterlaceFilter);
+    } else {
+        delete m_deinterlaceFilter;
+    }
 }
 
 void MediaPlayer::openEffectWidget()

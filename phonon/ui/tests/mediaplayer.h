@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -27,6 +27,7 @@
 #include <phonon/audiopath.h>
 #include <phonon/audioeffect.h>
 #include <phonon/brightnesscontrol.h>
+#include <phonon/deinterlacefilter.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/mediacontrols.h>
 #include <phonon/ui/effectwidget.h>
@@ -41,6 +42,8 @@ class MediaPlayer : public QWidget
 
 	private Q_SLOTS:
 		void openEffectWidget();
+        void toggleDeinterlacing(bool);
+
 	private:
 		Phonon::MediaObject* m_media;
 		Phonon::AudioPath* m_apath;
@@ -51,6 +54,8 @@ class MediaPlayer : public QWidget
 		Phonon::VideoWidget* m_vwidget;
 		Phonon::MediaControls* m_controls;
 		Phonon::EffectWidget* m_effectWidget;
+        Phonon::DeinterlaceFilter *m_deinterlaceFilter;
 };
 
+// vim: ts=4
 #endif // MEDIAPLAYER_H

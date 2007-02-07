@@ -54,7 +54,8 @@ class PHONONCORE_EXPORT BackendInterface
             VisualizationClass,
             VideoPathClass,
             BrightnessControlClass,
-            VideoDataOutputClass
+            VideoDataOutputClass,
+            DeinterlaceFilterClass
         };
         /**
          * Classes that take one additional argument

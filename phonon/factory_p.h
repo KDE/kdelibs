@@ -26,7 +26,7 @@
 
 namespace Phonon
 {
-class FactoryPrivate : public QObject
+class FactoryPrivate : public Phonon::Factory::Sender
 {
     friend QObject *Factory::backend(bool);
     Q_OBJECT
@@ -41,17 +41,6 @@ class FactoryPrivate : public QObject
         QList<QObject*> objects;
         QList<BasePrivate*> basePrivateList;
         KComponentData componentData;
-
-    Q_SIGNALS:
-        /**
-         * Emitted after the backend has successfully been changed.
-         */
-        void backendChanged();
-
-        /**
-         * Emitted immediately when the dtor is called.
-         */
-        void aboutToBeDestroyed();
 
     private Q_SLOTS:
         /**

@@ -43,6 +43,7 @@ set(phononcore_LIB_SRCS
 	videoeffect.cpp
 	audiooutputadaptor.cpp
 	brightnesscontrol.cpp
+	deinterlacefilter.cpp
 	abstractaudiooutput.cpp
 	audiooutput.cpp
 	audiodataoutput.cpp
@@ -86,6 +87,7 @@ install( FILES
 	volumefadereffect.h
 	videoeffect.h
 	brightnesscontrol.h
+	deinterlacefilter.h
 	abstractaudiooutput.h
 	audiooutput.h
 	audiodataoutput.h

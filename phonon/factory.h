@@ -43,13 +43,30 @@ namespace Phonon
 namespace Factory
 {
     /**
-     * Returns a pointer to the factory.
-     * Use this function to get an instance of Factory.
-     *
-     * \return a pointer to the factory. If no factory exists until now then
-     * one is created
+     * Emits signals for Phonon::Factory.
      */
-    PHONONCORE_EXPORT QObject* sender();
+    class Sender : public QObject
+    {
+        Q_OBJECT
+        Q_SIGNALS:
+            /**
+             * Emitted after the backend has successfully been changed.
+             */
+            void backendChanged();
+
+            /**
+             * Emitted immediately when the dtor is called.
+             */
+            void aboutToBeDestroyed();
+    };
+
+    /**
+     * Returns a pointer to the object emitting the signals.
+     *
+     * \see Sender::backendChanged()
+     * \see Sender::aboutToBeDestroyed()
+     */
+    PHONONCORE_EXPORT Sender *sender();
 
     /**
      * Create a new backend object for a MediaObject.
@@ -132,6 +149,12 @@ namespace Factory
      * \return a pointer to the BrightnessControl the backend provides.
      */
     PHONONCORE_EXPORT QObject* createBrightnessControl(QObject *parent = 0);
+    /**
+     * Create a new backend object for a BrightnessControl.
+     *
+     * \return a pointer to the BrightnessControl the backend provides.
+     */
+    PHONONCORE_EXPORT QObject *createDeinterlaceFilter(QObject *parent = 0);
     /**
      * Create a new backend object for a VideoDataOutput.
      *
