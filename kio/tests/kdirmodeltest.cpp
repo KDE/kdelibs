@@ -102,12 +102,24 @@ void KDirModelTest::fillModel( bool reload )
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
+    m_dirIndex = QModelIndex();
+    m_fileIndex = QModelIndex();
+    m_secondFileIndex = QModelIndex();
     // Create the indexes once and for all
-    // Index of the first file
-    m_fileIndex = m_dirModel.index(0, 0, QModelIndex());
-    // Index of a directory
-    m_dirIndex = m_dirModel.index(3, 0, QModelIndex());
+    // The trouble is that the order of listing is undefined, one can get 1/2/3/subdir or subdir/3/2/1 for instance.
+    for (int row = 0; row < 4; ++row) {
+        QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
+        KFileItem* item = m_dirModel.itemForIndex(idx);
+        if (item->isDir())
+            m_dirIndex = idx;
+        else if (item->url().fileName() == "toplevelfile_1")
+            m_fileIndex = idx;
+        else if (item->url().fileName() == "toplevelfile_2")
+            m_secondFileIndex = idx;
+    }
     QVERIFY(m_dirIndex.isValid());
+    QVERIFY(m_fileIndex.isValid());
+    QVERIFY(m_secondFileIndex.isValid());
 
     // Now list subdir/
     QVERIFY(m_dirModel.canFetchMore(m_dirIndex));
@@ -115,8 +127,15 @@ void KDirModelTest::fillModel( bool reload )
     enterLoop();
 
     // Index of a file inside a directory (subdir/testfile)
-    m_fileInDirIndex = m_dirModel.index(0, 0, m_dirIndex);
-    QModelIndex subdirIndex = m_dirModel.index(1, 0, m_dirIndex);
+    QModelIndex subdirIndex;
+    m_fileInDirIndex = QModelIndex();
+    for (int row = 0; row < 2; ++row) {
+        QModelIndex idx = m_dirModel.index(row, 0, m_dirIndex);
+        if (m_dirModel.itemForIndex(idx)->isDir())
+            subdirIndex = idx;
+        else
+            m_fileInDirIndex = idx;
+    }
 
     // List subdir/subsubdir
     QVERIFY(m_dirModel.canFetchMore(subdirIndex));
@@ -151,7 +170,7 @@ void KDirModelTest::testIndex()
     // Index of the first file
     QVERIFY(m_fileIndex.isValid());
     QCOMPARE(m_fileIndex.model(), &m_dirModel);
-    QCOMPARE(m_fileIndex.row(), 0);
+    //QCOMPARE(m_fileIndex.row(), 0);
     QCOMPARE(m_fileIndex.column(), 0);
     QVERIFY(!m_fileIndex.parent().isValid());
     QVERIFY(!m_dirModel.hasChildren(m_fileIndex));
@@ -159,7 +178,7 @@ void KDirModelTest::testIndex()
     // Index of a directory
     QVERIFY(m_dirIndex.isValid());
     QCOMPARE(m_dirIndex.model(), &m_dirModel);
-    QCOMPARE(m_dirIndex.row(), 3);
+    //QCOMPARE(m_dirIndex.row(), 3);
     QCOMPARE(m_dirIndex.column(), 0);
     QVERIFY(!m_dirIndex.parent().isValid());
     QVERIFY(m_dirModel.hasChildren(m_dirIndex));
@@ -167,7 +186,7 @@ void KDirModelTest::testIndex()
     // Index of a file inside a directory (subdir/testfile)
     QVERIFY(m_fileInDirIndex.isValid());
     QCOMPARE(m_fileInDirIndex.model(), &m_dirModel);
-    QCOMPARE(m_fileInDirIndex.row(), 0);
+    //QCOMPARE(m_fileInDirIndex.row(), 0);
     QCOMPARE(m_fileInDirIndex.column(), 0);
     QVERIFY(m_fileInDirIndex.parent() == m_dirIndex);
     QVERIFY(!m_dirModel.hasChildren(m_fileInDirIndex));
@@ -175,7 +194,7 @@ void KDirModelTest::testIndex()
     // Index of subdir/subsubdir/testfile
     QVERIFY(m_fileInSubdirIndex.isValid());
     QCOMPARE(m_fileInSubdirIndex.model(), &m_dirModel);
-    QCOMPARE(m_fileInSubdirIndex.row(), 0);
+    //QCOMPARE(m_fileInSubdirIndex.row(), 0);
     QCOMPARE(m_fileInSubdirIndex.column(), 0);
     QVERIFY(m_fileInSubdirIndex.parent().parent() == m_dirIndex);
     QVERIFY(!m_dirModel.hasChildren(m_fileInSubdirIndex));
@@ -254,7 +273,7 @@ void KDirModelTest::testIndexForItem()
 void KDirModelTest::testData()
 {
     // First file
-    QModelIndex idx1col1 = m_dirModel.index(0, 1, QModelIndex());
+    QModelIndex idx1col1 = m_dirModel.index(m_fileIndex.row(), 1, QModelIndex());
     int size1 = m_dirModel.data(idx1col1, Qt::DisplayRole).toInt();
     QCOMPARE(size1, 11);
 
@@ -264,11 +283,10 @@ void KDirModelTest::testData()
 
     QCOMPARE(m_dirModel.data(m_fileIndex, KDirModel::ChildCountRole).toInt(), (int)KDirModel::ChildCountUnknown);
 
-    //QModelIndex idx1col2 = m_dirModel.index(0, 2, QModelIndex());
 
 
     // Second file
-    QModelIndex idx2col0 = m_dirModel.index(1, 0, QModelIndex());
+    QModelIndex idx2col0 = m_dirModel.index(m_secondFileIndex.row(), 0, QModelIndex());
     QString display2 = m_dirModel.data(idx2col0, Qt::DisplayRole).toString();
     QCOMPARE(display2, QString("toplevelfile_2"));
 
