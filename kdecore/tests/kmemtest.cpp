@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
   {
      char buf[257];
      int total = 0;
-     long val;
+     unsigned long val;
      while(true)
      {
         buf[0] = 0;

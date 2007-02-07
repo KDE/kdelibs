@@ -45,7 +45,7 @@ class Security : public QObject
 {
 Q_OBJECT
 public:
-  static Security* const ref()
+  static Security* ref()
   {
     static Security *m_ref;
     if (!m_ref) m_ref = new Security();

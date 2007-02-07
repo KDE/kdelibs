@@ -188,7 +188,7 @@ generate(Iter begin, Iter end, QStringList& target)
             for( j=0; j < item.length(); ++j ) {
                 if( isLegalAccelerator(item, j)
                     && !used_accels.contains(item[j])
-                    && (0 == j || j > 0 && item[j-1].isSpace()) ) {
+                    && (0 == j || (j > 0 && item[j-1].isSpace())) ) {
                     found = true;
                     found_idx = j;
                     break;

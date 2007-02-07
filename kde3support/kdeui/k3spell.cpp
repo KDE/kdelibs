@@ -428,8 +428,8 @@ K3Spell::cleanFputsWord( const QString & s, bool appendCR )
   for( int i = 0; i < qs.length(); i++ )
   {
     //we need some punctuation for ornaments
-    if ( qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-'
-         && qs[i].isPunct() || qs[i].isSpace() )
+    if ( (qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-'
+         && qs[i].isPunct()) || qs[i].isSpace() )
     {
       qs.remove(i,1);
       i--;
