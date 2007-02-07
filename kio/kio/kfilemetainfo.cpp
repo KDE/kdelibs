@@ -572,7 +572,7 @@ bool KFileMetaInfo::applyChanges( const QString& path )
     return ret;
 }
 
-KFilePlugin * const KFileMetaInfo::plugin() const
+KFilePlugin * KFileMetaInfo::plugin() const
 {
     assert(isValid());
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
