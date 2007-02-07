@@ -6437,7 +6437,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KUrl( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
-      pix = KMimeType::mimeType("image/png")->pixmap(K3Icon::Desktop);
+      pix = KIconLoader::global()->loadIcon(KMimeType::mimeType("image/png")->iconName(), K3Icon::Desktop);
     }
     else
     {
