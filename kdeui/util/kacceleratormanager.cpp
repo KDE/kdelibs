@@ -388,11 +388,6 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
         // don't put weight on group boxes, as usually the contents are more important
         if (qobject_cast<QGroupBox*>(w))
             weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
-
-        // put a lot of extra weight on the KDialogBaseButton's
-        if (w->inherits("KDialogBaseButton"))
-            weight += KAccelManagerAlgorithm::DIALOG_BUTTON_EXTRA_WEIGHT;
-
         i->m_content = KAccelString(content, weight);
         item->addChild(i);
     }
