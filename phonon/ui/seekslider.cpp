@@ -86,7 +86,9 @@ void SeekSliderPrivate::_k_tick(qint64 msec)
 
 void SeekSliderPrivate::_k_length(qint64 msec)
 {
+    ticking = true;
     slider.setRange(0, msec);
+    ticking = false;
 }
 
 void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
@@ -109,7 +111,9 @@ void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
             case Phonon::LoadingState:
             case Phonon::ErrorState:
                 setEnabled(false);
+                ticking = true;
                 slider.setValue(0);
+                ticking = false;
                 break;
         }
     }
@@ -142,7 +146,9 @@ void SeekSliderPrivate::_k_stateChanged(State newstate)
 		case Phonon::LoadingState:
 		case Phonon::ErrorState:
             setEnabled(false);
+            ticking = true;
             slider.setValue(0);
+            ticking = false;
 			break;
 	}
 }
