@@ -28,6 +28,7 @@
 #include <kio/netaccess.h>
 #include <kfiledialog.h>
 #include <klocale.h>
+#include <kglobal.h>
 #include <kiconloader.h>
 #include <krun.h>
 #include <kmimetype.h>
@@ -95,8 +96,8 @@ KFileList::KFileList(QWidget *parent)
 	m_block = false;
 
 	m_files = new QTreeWidget(this);
-  QStringList headerLabels;
-  headerLabels << i18n("Name") << i18n("Type") << i18n("Path");
+	QStringList headerLabels;
+	headerLabels << i18n("Name") << i18n("Type") << i18n("Path");
 	m_files->setAcceptDrops(false);
 	m_files->setWhatsThis(whatsThisFileSelectionListview);
 	connect(m_files, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
@@ -142,13 +143,13 @@ KFileList::KFileList(QWidget *parent)
 		"Leave empty for <b>&lt;STDIN&gt;</b>."));
 
 	QHBoxLayout	*l0 = new QHBoxLayout(this);
-  l0->setMargin(0);
-  l0->setSpacing(KDialog::spacingHint());
+	l0->setMargin(0);
+	l0->setSpacing(KDialog::spacingHint());
 	QVBoxLayout	*l1 = new QVBoxLayout();
 	l0->addWidget(m_files);
 	l0->addLayout(l1);
-  l1->setMargin(0);
-  l1->setSpacing(1);
+	l1->setMargin(0);
+	l1->setSpacing(1);
 	l1->addWidget(m_add);
 	l1->addWidget(m_remove);
 	l1->addWidget(m_open);
@@ -186,12 +187,12 @@ void KFileList::addFiles(const KUrl::List& files)
 		for (KUrl::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
                 {
 			KMimeType::Ptr	mime = KMimeType::findByUrl(*it, 0, true, false);
-        QStringList data;
-        data << (*it).fileName() << mime->comment() << (*it).url();
-				QTreeWidgetItem *item = new QTreeWidgetItem(data);
-				item->setIcon(0, mime->pixmap(*it, K3Icon::Small));
-        m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
-			}
+			QStringList data;
+			data << (*it).fileName() << mime->comment() << (*it).url();
+			QTreeWidgetItem *item = new QTreeWidgetItem(data);
+			item->setIcon(0, KIconLoader::global()->loadMimeTypeIcon(mime->iconName(*it), K3Icon::Small));
+			m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
+		}
 
 		slotSelectionChanged();
 		/*
@@ -209,23 +210,13 @@ void KFileList::addFiles(const KUrl::List& files)
 void KFileList::setFileList(const QStringList& files)
 {
 	m_files->clear();
-	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-	{
-		KUrl url( *it );
-		KMimeType::Ptr	mime = KMimeType::findByUrl(url, 0, true, false);
-    QStringList data;
-    data << url.fileName() << mime->comment() << url.url();
-		QTreeWidgetItem *item = new QTreeWidgetItem(data);
-		item->setIcon(0, mime->pixmap(url, K3Icon::Small));
-    m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
-	}
-	slotSelectionChanged();
+	addFiles(KUrl::List(files));
 }
 
 QStringList KFileList::fileList() const
 {
 	QStringList	l;
-  for (int i = 0; i < m_files->topLevelItemCount(); ++i)
+	for (int i = 0; i < m_files->topLevelItemCount(); ++i)
 		l << m_files->topLevelItem(i)->text(2);
 	return l;
 }
@@ -242,7 +233,7 @@ void KFileList::slotRemoveFile()
 	QList<QTreeWidgetItem*>	l;
 	selection(l);
 	m_block = true;
-  qDeleteAll(l);
+	qDeleteAll(l);
 	l.clear();
 	m_block = false;
 	slotSelectionChanged();
@@ -265,7 +256,7 @@ QSize KFileList::sizeHint() const
 
 void KFileList::selection(QList<QTreeWidgetItem*>& l)
 {
-  l = m_files->selectedItems();
+	l = m_files->selectedItems();
 }
 
 void KFileList::slotSelectionChanged()
@@ -285,16 +276,16 @@ void KFileList::slotUp()
 {
 	QList<QTreeWidgetItem*>	l;
 	selection(l);
-  int index = m_files->indexOfTopLevelItem(l.first());
+	int index = m_files->indexOfTopLevelItem(l.first());
 	if (l.count() == 1 && index > 0)
 	{
 		QTreeWidgetItem	*item(l.first()), *clone;
-    QStringList data;
-    data << item->text(0) << item->text(1) << item->text(2);
+		QStringList data;
+		data << item->text(0) << item->text(1) << item->text(2);
 		clone = new QTreeWidgetItem(data);
 		clone->setIcon(0, item->icon(0));
 		delete item;
-    m_files->insertTopLevelItem(index, clone);
+		m_files->insertTopLevelItem(index, clone);
 		m_files->setCurrentItem(clone);
 		m_files->setItemSelected(clone, true);
 	}
@@ -304,16 +295,16 @@ void KFileList::slotDown()
 {
 	QList<QTreeWidgetItem*>	l;
 	selection(l);
-  int index = m_files->indexOfTopLevelItem(l.first());
+	int index = m_files->indexOfTopLevelItem(l.first());
 	if (l.count() == 1 && index < m_files->topLevelItemCount() - 1)
 	{
 		QTreeWidgetItem	*item(l.first()), *clone;
-    QStringList data;
-    data << item->text(0) << item->text(1) << item->text(2);
+		QStringList data;
+		data << item->text(0) << item->text(1) << item->text(2);
 		clone = new QTreeWidgetItem(data);
 		clone->setIcon(0, item->icon(0));
 		delete item;
-    m_files->insertTopLevelItem(index+1, clone);
+		m_files->insertTopLevelItem(index+1, clone);
 		m_files->setCurrentItem(clone);
 		m_files->setItemSelected(clone, true);
 	}
