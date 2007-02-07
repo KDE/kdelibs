@@ -173,7 +173,7 @@ KComponentData object, but everything else probably is a bug).</li>
 <li>makeStdCaption() was moved to KDialog::makeStandardCaption()</li>
 </ul>
 <ul>
-<li>isRestored() should now use qApp->isSessionRestored().  </li>
+<li>isRestored() should now use qApp-&gt;isSessionRestored().  </li>
 <li>keyboardMouseState() has been removed, its functionality is now provided by QApplication::keyboardModifiers() and QApplication::mouseButtons() </li>
 <li>random() has been moved to the KRandom class </li>
 <li>For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized.  </li>
@@ -210,7 +210,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
     </pre>
 </li>
 <li>caption() has moved to KInstance </li>
-<li>makeStdCaption(const QString&, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&, CaptionFlags) </li>
+<li>makeStdCaption(const QString&amp;, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&amp;, CaptionFlags) </li>
 <li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()</li>
 </ul>
 
