@@ -11,3 +11,5 @@
    (This was for exec_prefix != prefix - still needed?) */
 #define __KDE_EXECPREFIX "NONE"
 
+#define LIBEXEC_INSTALL_DIR "${LIBEXEC_INSTALL_DIR}"
+
