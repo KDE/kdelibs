@@ -22,7 +22,7 @@ kde4_automoc(${kdefx_LIB_SRCS})
 
 kde4_add_library(kdefx SHARED ${kdefx_LIB_SRCS})
 
-target_link_libraries(kdefx  ${QT_QTCORE_LIBRARY}  ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kdefx ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kdefx PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kdefx  DESTINATION ${LIB_INSTALL_DIR} )
