@@ -36,20 +36,19 @@ class MediaQueuePrivate;
  * playback or crossfades.
  *
  * In general you'll set up one %MediaQueue object and connect to the
- * needNextMediaObject signal. When this signal is emitted you have to provide
- * the next MediaObject calling setNext.
+ * \ref needNextUrl signal. When this signal is emitted you have to provide
+ * the next URL calling \ref setNextUrl.
  * \code
- * m_mediaQueue = new MediaQueue( this );
- * m_mediaQueue->setUrl( m_playlist->nextUrl() );
- * m_mediaQueue->setNextUrl( m_playlist->nextUrl() );
- * connect( m_mediaQueue, SIGNAL(needNextUrl()), SLOT(prepareNextUrl()) );
+ * m_mediaQueue = new MediaQueue(this);
+ * m_mediaQueue->setUrl(m_playlist->nextUrl());
+ * connect(m_mediaQueue, SIGNAL(needNextUrl()), SLOT(prepareNextUrl()));
  * \endcode
  *
  * The slot could look like this:
  * \code
  * void MyClass::prepareNextUrl()
  * {
- *   m_mediaQueue->setNextUrl( m_playlist->nextUrl() );
+ *   m_mediaQueue->setNextUrl(m_playlist->nextUrl());
  * }
  * \endcode
  *
