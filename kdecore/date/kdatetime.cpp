@@ -193,7 +193,7 @@ const KTimeZone *KDateTime::Spec::timeZone() const
 bool KDateTime::Spec::isUtc() const
 {
     if (d->type == KDateTime::UTC
-    ||  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset == 0)
+    ||  (d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset == 0))
         return true;
     return false;
 }
@@ -212,8 +212,8 @@ int  KDateTime::Spec::utcOffset() const       { return d->type == KDateTime::Off
 bool KDateTime::Spec::operator==(const Spec &other) const
 {
     if (d->type != other.d->type
-    ||  d->type == KDateTime::TimeZone  &&  d->tz != other.d->tz
-    ||  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset != other.d->utcOffset)
+    ||  (d->type == KDateTime::TimeZone  &&  d->tz != other.d->tz)
+    ||  (d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset != other.d->utcOffset))
             return false;
     return true;
 }
@@ -223,14 +223,15 @@ bool KDateTime::Spec::equivalentTo(const Spec &other) const
     if (d->type == other.d->type)
     {
         if (d->type == KDateTime::TimeZone  &&  d->tz != other.d->tz
-        ||  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset != other.d->utcOffset)
+        ||  (d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset != other.d->utcOffset))
             return false;
         return true;
     }
     else
     {
         if (d->type == KDateTime::UTC  &&  other.d->type == KDateTime::OffsetFromUTC  &&  other.d->utcOffset == 0
-        ||  other.d->type == KDateTime::UTC  &&  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset == 0)
+        ||  (other.d->type == KDateTime::UTC  &&  d->type == KDateTime::OffsetFromUTC  &&
+            d->utcOffset == 0))
             return true;
         return false;
     }
@@ -530,8 +531,8 @@ void KDateTimePrivate::setSpec(const KDateTime::Spec &other)
 bool KDateTimePrivate::equalSpec(const KDateTimePrivate &other) const
 {
     if (specType != other.specType
-    ||  specType == KDateTime::TimeZone  &&  z.tz != other.z.tz
-    ||  specType == KDateTime::OffsetFromUTC  &&  z.utcOffset != other.z.utcOffset)
+    ||  (specType == KDateTime::TimeZone  &&  z.tz != other.z.tz)
+    ||  (specType == KDateTime::OffsetFromUTC  &&  z.utcOffset != other.z.utcOffset))
             return false;
     return true;
 }
@@ -1844,7 +1845,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 break;
             KDateTime result(qdate, QTime(hour, minute, second), Spec(OffsetFromUTC, offset));
             if (!result.isValid()
-            ||  dayOfWeek >= 0  &&  result.date().dayOfWeek() != dayOfWeek+1)
+            ||  (dayOfWeek >= 0  &&  result.date().dayOfWeek() != dayOfWeek+1))
                 break;    // invalid date/time, or weekday doesn't correspond with date
             if (!offset)
             {
