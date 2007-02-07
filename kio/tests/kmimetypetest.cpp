@@ -108,7 +108,7 @@ void KMimeTypeTest::testFindByPath()
 #endif
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = KStandardDirs::locate( "icon", "crystalsvg/22x22/filesystems/folder_home.png" );
+    QString fh = KStandardDirs::locate( "icon", "crystalsvg/22x22/places/folder_home.png" );
     QVERIFY( !fh.isEmpty() );
     mf = KMimeType::findByPath( fh );
     QVERIFY( mf );
