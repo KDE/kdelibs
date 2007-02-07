@@ -83,22 +83,18 @@ void VideoWidget::setFullScreen( bool newFullScreen )
 		BACKEND_GET( QWidget *, w, "widget" );
 	if( newFullScreen )
 	{
+        d->fullScreenWidget->show();
 		if( w )
 			w->setParent( d->fullScreenWidget );
-		else
-			d->fullScreenWidget->show();
-		hide();
 	}
 	else
 	{
-		show();
 		if( w )
 		{
 			w->setParent( this );
 			layout()->addWidget( w );
 		}
-		else
-			d->fullScreenWidget->hide();
+        d->fullScreenWidget->hide();
 	}
 	// make sure the action is in the right state
 	d->fullScreenAction->setChecked( newFullScreen );
