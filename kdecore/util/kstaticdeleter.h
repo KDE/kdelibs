@@ -78,8 +78,10 @@ public:
  * }
  * \endcode
  *
- * @warning Don't delete an object which is managed by KStaticDeleter without
+ * @warning Don't delete an object which is managed by %KStaticDeleter without
  * calling setObject() with a null pointer.
+ *
+ * @deprecated Use \ref K_GLOBAL_STATIC instead of %KStaticDeleter.
  */
 template<class type> class KDE_DEPRECATED KStaticDeleter : public KStaticDeleterBase {
 public:
