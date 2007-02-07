@@ -45,7 +45,9 @@ void KNSBookmarkImporterImpl::parse()
         static const int g_lineLimit = 16*1024;
         QByteArray s(g_lineLimit,0);
         // skip header
-        while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>"));
+        while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>")) {
+            ;
+        }
 
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.

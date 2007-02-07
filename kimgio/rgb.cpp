@@ -491,7 +491,7 @@ bool SGIImage::writeImage(const QImage& image)
 	m_bpc = 1;
 	m_xsize = img.width();
 	m_ysize = img.height();
-	m_pixmin = ~0;
+	m_pixmin = ~0u;
 	m_pixmax = 0;
 	m_colormap = NORMAL;
 
