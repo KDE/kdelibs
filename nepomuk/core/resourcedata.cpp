@@ -20,15 +20,15 @@
 #include <knep/knep.h>
 #include <knep/services/rdfrepository.h>
 #include <knep/services/resourceidservice.h>
-#include <knep/services/statementlistiterator.h>
+#include <knep/rdf/statementlistiterator.h>
 
 #include <kdebug.h>
 
 #include <QMutex>
 
 
-using namespace Nepomuk::Backbone::Services;
-using namespace Nepomuk::Backbone::Services::RDF;
+using namespace Nepomuk::Services;
+using namespace Nepomuk::RDF;
 
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
 
@@ -214,8 +214,9 @@ bool Nepomuk::KMetaData::ResourceData::load()
 
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-    StatementListIterator it( rr.listStatements( KMetaData::defaultGraph(), 
-						 Statement( m_uri, Node(), Node() ) ), 
+    StatementListIterator it( rr.queryListStatements( KMetaData::defaultGraph(), 
+						      Statement( m_uri, Node(), Node() ),
+						      0 ), 
 			      &rr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
@@ -321,12 +322,13 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
   // make sure our graph exists
   // ==========================
-  if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
-    if( rr.addGraph( KMetaData::defaultGraph() ) ) {
-      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-      m_modificationMutex.unlock();
-      return false;
-    }
+  if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
+    rr.createRepository( KMetaData::defaultGraph() );
+//     if( rr.createRepository( KMetaData::defaultGraph() ) ) {
+//       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+//       m_modificationMutex.unlock();
+//       return false;
+//     }
   }
 
   // if the resource has been deleted locally we are done after removing it
@@ -335,12 +337,13 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
     // remove everything about this resource from the store
     // ====================================================
-    if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
-      kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
-      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-      m_modificationMutex.unlock();
-      return false;
-    }
+    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) );
+//     if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
+//       kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
+//       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+//       m_modificationMutex.unlock();
+//       return false;
+//     }
 
     // FIXME: allow revive even after a sync
     m_properties.clear();
@@ -352,24 +355,26 @@ bool Nepomuk::KMetaData::ResourceData::save()
     // ================================================
     QList<Statement> sl = allStatementsToRemove();
     if( !sl.isEmpty() ) {
-      if( rr.removeStatements( KMetaData::defaultGraph(), sl ) ) {
-	kDebug(300004) << "(ResourceData) removing statements for resource " << m_uri << " failed." << endl;
-	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	m_modificationMutex.unlock();
-	return false;
-      }
+      rr.removeStatements( KMetaData::defaultGraph(), sl );
+//       if( rr.removeStatements( KMetaData::defaultGraph(), sl ) ) {
+// 	kDebug(300004) << "(ResourceData) removing statements for resource " << m_uri << " failed." << endl;
+// 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+// 	m_modificationMutex.unlock();
+// 	return false;
+//       }
     }
 
     // save all statements into the store
     // ==================================
     sl = allStatementsToAdd();
     if( !sl.isEmpty() ) {
-      if( rr.addStatements( KMetaData::defaultGraph(), sl ) ) {
-	kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
-	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-	m_modificationMutex.unlock();
-	return false;
-      }
+      rr.addStatements( KMetaData::defaultGraph(), sl );
+//       if( rr.addStatements( KMetaData::defaultGraph(), sl ) ) {
+// 	kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
+// 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+// 	m_modificationMutex.unlock();
+// 	return false;
+//       }
     }
 
     for( PropertiesMap::iterator it = m_properties.begin();
@@ -385,7 +390,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
 }
 
 
-QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( int flags ) const
+QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( int flags ) const
 {
   QList<Statement> statements;
 
@@ -433,7 +438,7 @@ QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceD
 }
 
 
-QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
+QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
 {
   QList<Statement> statements = allStatements( Modified );
 
@@ -445,7 +450,7 @@ QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceD
 }
 
 
-QList<Nepomuk::Backbone::Services::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
+QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
 {
   return allStatements( Removed|Deleted );
 }
@@ -573,7 +578,7 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
 
 Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uri, const QString& type )
 {
-  ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
+  Services::ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
   QString uniqueUri = resids.toUniqueUrl( uri );
   if( uniqueUri.isEmpty() ) {
     kDebug(300004) << "(ResourceData) determining unique URI failed. Falling back to plain URI." << endl;

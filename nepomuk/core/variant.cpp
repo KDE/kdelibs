@@ -41,6 +41,24 @@ Nepomuk::KMetaData::Variant::Variant( int i )
 }
 
 
+Nepomuk::KMetaData::Variant::Variant( qlonglong i )
+  : QVariant( i )
+{
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( uint i )
+  : QVariant( i )
+{
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( qulonglong i )
+  : QVariant( i )
+{
+}
+
+
 Nepomuk::KMetaData::Variant::Variant( bool b )
   : QVariant( b )
 {
@@ -97,6 +115,27 @@ Nepomuk::KMetaData::Variant::Variant( const Nepomuk::KMetaData::Resource& r )
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<int>& i )
+  : QVariant()
+{
+  setValue( i );
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( const QList<qlonglong>& i )
+  : QVariant()
+{
+  setValue( i );
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( const QList<uint>& i )
+  : QVariant()
+{
+  setValue( i );
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( const QList<qulonglong>& i )
   : QVariant()
 {
   setValue( i );
@@ -173,6 +212,27 @@ Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( int i )
 }
 
 
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( qlonglong i )
+{
+  setValue( i );
+  return *this;
+}
+
+
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( uint i )
+{
+  setValue( i );
+  return *this;
+}
+
+
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( qulonglong i )
+{
+  setValue( i );
+  return *this;
+}
+
+
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( bool b )
 {
   setValue( b );
@@ -230,6 +290,27 @@ Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const Resou
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<int>& i )
+{
+  setValue( i );
+  return *this;
+}
+
+
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<qlonglong>& i )
+{
+  setValue( i );
+  return *this;
+}
+
+
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<uint>& i )
+{
+  setValue( i );
+  return *this;
+}
+
+
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<qulonglong>& i )
 {
   setValue( i );
   return *this;
@@ -295,6 +376,30 @@ Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList
 void Nepomuk::KMetaData::Variant::append( int i )
 {
   QList<int> l = toIntList();
+  l.append( i );
+  operator=( l );
+}
+
+
+void Nepomuk::KMetaData::Variant::append( qlonglong i )
+{
+  QList<qlonglong> l = toInt64List();
+  l.append( i );
+  operator=( l );
+}
+
+
+void Nepomuk::KMetaData::Variant::append( uint i )
+{
+  QList<uint> l = toUnsignedIntList();
+  l.append( i );
+  operator=( l );
+}
+
+
+void Nepomuk::KMetaData::Variant::append( qulonglong i )
+{
+  QList<qulonglong> l = toUnsignedInt64List();
   l.append( i );
   operator=( l );
 }
@@ -369,6 +474,15 @@ void Nepomuk::KMetaData::Variant::append( const Variant& v )
   if( v.simpleType() == QVariant::Int ) {
     operator=( toIntList() += v.toIntList() );
   }
+  else if( v.simpleType() == QVariant::UInt ) {
+    operator=( toUnsignedIntList() += v.toUnsignedIntList() );
+  }
+  else if( v.simpleType() == QVariant::LongLong ) {
+    operator=( toInt64List() += v.toInt64List() );
+  }
+  else if( v.simpleType() == QVariant::ULongLong ) {
+    operator=( toUnsignedInt64List() += v.toUnsignedInt64List() );
+  }
   else if( v.simpleType() == QVariant::Bool ) {
     operator=( toBoolList() += v.toBoolList() );
   }
@@ -401,6 +515,24 @@ void Nepomuk::KMetaData::Variant::append( const Variant& v )
 bool Nepomuk::KMetaData::Variant::isInt() const
 {
   return( type() == QVariant::Int );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isInt64() const
+{
+  return( type() == QVariant::LongLong );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isUnsignedInt() const
+{
+  return( type() == QVariant::UInt );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isUnsignedInt64() const
+{
+  return( type() == QVariant::ULongLong );
 }
 
 
@@ -455,6 +587,24 @@ bool Nepomuk::KMetaData::Variant::isResource() const
 bool Nepomuk::KMetaData::Variant::isIntList() const
 {
   return( type() == qMetaTypeId<QList<int> >() );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isUnsignedIntList() const
+{
+  return( type() == qMetaTypeId<QList<uint> >() );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isInt64List() const
+{
+  return( type() == qMetaTypeId<QList<qlonglong> >() );
+}
+
+
+bool Nepomuk::KMetaData::Variant::isUnsignedInt64List() const
+{
+  return( type() == qMetaTypeId<QList<qulonglong> >() );
 }
 
 
@@ -513,6 +663,24 @@ int Nepomuk::KMetaData::Variant::toInt() const
 }
 
 
+qlonglong Nepomuk::KMetaData::Variant::toInt64() const
+{
+  return value<qlonglong>();
+}
+
+
+uint Nepomuk::KMetaData::Variant::toUnsignedInt() const
+{
+  return value<uint>();
+}
+
+
+qulonglong Nepomuk::KMetaData::Variant::toUnsignedInt64() const
+{
+  return value<qulonglong>();
+}
+
+
 bool Nepomuk::KMetaData::Variant::toBool() const
 {
   return value<bool>();
@@ -533,6 +701,12 @@ QString Nepomuk::KMetaData::Variant::toString() const
 
   else if( isInt() )
     return QString::number( toInt() );
+  else if( isInt64() )
+    return QString::number( toInt64() );
+  else if( isUnsignedInt() )
+    return QString::number( toUnsignedInt() );
+  else if( isUnsignedInt64() )
+    return QString::number( toUnsignedInt64() );
   else if( isBool() )
     return ( toBool() ? QString("true") : QString("false" ) );
   else if( isDouble() )
@@ -589,6 +763,24 @@ QList<int> Nepomuk::KMetaData::Variant::toIntList() const
 }
 
 
+QList<qlonglong> Nepomuk::KMetaData::Variant::toInt64List() const
+{
+  return listValue<qlonglong>();
+}
+
+
+QList<uint> Nepomuk::KMetaData::Variant::toUnsignedIntList() const
+{
+  return listValue<uint>();
+}
+
+
+QList<qulonglong> Nepomuk::KMetaData::Variant::toUnsignedInt64List() const
+{
+  return listValue<qulonglong>();
+}
+
+
 QList<bool> Nepomuk::KMetaData::Variant::toBoolList() const
 {
   return listValue<bool>();
@@ -620,6 +812,12 @@ QStringList Nepomuk::KMetaData::Variant::toStringList() const
 
   else if( isIntList() )
     return convertToStringList<int>( toIntList() );
+  else if( isInt64List() )
+    return convertToStringList<qlonglong>( toInt64List() );
+  else if( isUnsignedIntList() )
+    return convertToStringList<uint>( toUnsignedIntList() );
+  else if( isUnsignedInt64List() )
+    return convertToStringList<qulonglong>( toUnsignedInt64List() );
   else if( isBoolList() )
     return convertToStringList<bool>( toBoolList() );
   else if( isDoubleList() )
@@ -672,6 +870,9 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Variant::toResourceList(
 bool Nepomuk::KMetaData::Variant::isList() const
 {
   return( isIntList() ||
+	  isInt64List() ||
+	  isUnsignedIntList() ||
+	  isUnsignedInt64List() ||
 	  isBoolList() ||
 	  isDoubleList() ||
 	  isStringList() ||
@@ -693,6 +894,12 @@ int Nepomuk::KMetaData::Variant::simpleType() const
 {
   if( isIntList() )
     return QVariant::Int;
+  else if( isInt64List() )
+    return QVariant::LongLong;
+  else if( isUnsignedIntList() )
+    return QVariant::UInt;
+  else if( isUnsignedInt64List() )
+    return QVariant::ULongLong;
   else if( isBoolList() )
     return QVariant::Bool;
   else if( isDoubleList() )
@@ -721,6 +928,12 @@ bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
 
   else if( isInt() )
     return other.toInt() == toInt();
+  else if( isInt64() )
+    return other.toInt64() == toInt64();
+  else if( isUnsignedInt() )
+    return other.toUnsignedInt() == toUnsignedInt();
+  else if( isUnsignedInt64() )
+    return other.toUnsignedInt64() == toUnsignedInt64();
   else if( isBool() )
     return other.toBool() == toBool();
   else if( isDouble() )

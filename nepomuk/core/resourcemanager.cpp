@@ -20,7 +20,7 @@
 
 #include <knep/knep.h>
 #include <knep/services/rdfrepository.h>
-#include <knep/services/statementlistiterator.h>
+#include <knep/rdf/statementlistiterator.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -28,8 +28,8 @@
 #include <qthread.h>
 
 
-using namespace Nepomuk::Backbone::Services;
-using namespace Nepomuk::Backbone::Services::RDF;
+using namespace Nepomuk::Services;
+using namespace Nepomuk::RDF;
 
 
 class Nepomuk::KMetaData::ResourceManager::Private : public QThread
@@ -159,10 +159,8 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
 
   // make sure our graph exists
   // ==========================
-  if( !rr.listGraphs().contains( KMetaData::defaultGraph() ) ) {
-    if( rr.addGraph( KMetaData::defaultGraph() ) ) {
-      return;
-    }
+  if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
+    rr.createRepository( KMetaData::defaultGraph() );
   }
 
   QList<Statement> statementsToAdd;
@@ -184,8 +182,11 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
     }
   }
 
-  bool success = ( rr.addStatements( KMetaData::defaultGraph(), statementsToAdd ) == 0 &&
-		   rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove ) );
+  bool success = true; /*( rr.addStatements( KMetaData::defaultGraph(), statementsToAdd ) == 0 &&
+			 rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove ) );*/
+
+  rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
+  rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove );
 
   //
   // Release all the resource datas.
@@ -231,8 +232,9 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
     // check remote data
     RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-    StatementListIterator it( rdfr.listStatements( KMetaData::defaultGraph(), 
-						   Statement( Node(), KMetaData::typePredicate(), Node(type) ) ), 
+    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(), 
+							Statement( Node(), KMetaData::typePredicate(), Node(type) ),
+							100 ), 
 			      &rdfr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
@@ -273,15 +275,16 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     Node n;
     if( v.isResource() ) {
       n.value = v.toResource().uri();
-      n.type = Backbone::Services::RDF::NodeResource;
+      n.type = RDF::NodeResource;
     }
     else {
-      n.type = Backbone::Services::RDF::NodeLiteral;
+      n.type = RDF::NodeLiteral;
       n.value = KMetaData::valueToRDFLiteral( v );
     }
     
-    StatementListIterator it( rdfr.listStatements( KMetaData::defaultGraph(), 
-						   Statement( Node(), Node(uri), n ) ), &rdfr );
+    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(), 
+							Statement( Node(), Node(uri), n ),
+							100 ), &rdfr );
     
     while( it.hasNext() ) {
       const Statement& s = it.next();

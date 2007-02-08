@@ -48,6 +48,9 @@ namespace Nepomuk {
 	~Variant();
 	Variant( const Variant& other );
 	Variant( int i );
+	Variant( qlonglong i );
+	Variant( uint i );
+	Variant( qulonglong i );
 	Variant( bool b );
 	Variant( double d );
 	Variant( const char* string );
@@ -58,6 +61,9 @@ namespace Nepomuk {
 	Variant( const QUrl& url );
 	Variant( const Resource& r );
 	Variant( const QList<int>& i );
+	Variant( const QList<qlonglong>& i );
+	Variant( const QList<uint>& i );
+	Variant( const QList<qulonglong>& i );
 	Variant( const QList<bool>& b );
 	Variant( const QList<double>& d );
 	Variant( const QStringList& stringlist );
@@ -69,6 +75,9 @@ namespace Nepomuk {
 
 	Variant& operator=( const Variant& );
 	Variant& operator=( int i );
+	Variant& operator=( qlonglong i );
+	Variant& operator=( uint i );
+	Variant& operator=( qulonglong i );
 	Variant& operator=( bool b );
 	Variant& operator=( double d );
 	Variant& operator=( const QString& string );
@@ -78,6 +87,9 @@ namespace Nepomuk {
 	Variant& operator=( const QUrl& url );
 	Variant& operator=( const Resource& r );
 	Variant& operator=( const QList<int>& i );
+	Variant& operator=( const QList<qlonglong>& i );
+	Variant& operator=( const QList<uint>& i );
+	Variant& operator=( const QList<qulonglong>& i );
 	Variant& operator=( const QList<bool>& b );
 	Variant& operator=( const QList<double>& d );
 	Variant& operator=( const QStringList& stringlist );
@@ -92,6 +104,9 @@ namespace Nepomuk {
 	 * contains an int it will be converted to a list of int.
 	 */
 	void append( int i );
+	void append( qlonglong i );
+	void append( uint i );
+	void append( qulonglong i );
 	void append( bool b );
 	void append( double d );
 	void append( const QString& string );
@@ -139,6 +154,9 @@ namespace Nepomuk {
 	bool isList() const;
 
 	bool isInt() const;
+	bool isInt64() const;
+	bool isUnsignedInt() const;
+	bool isUnsignedInt64() const;
 	bool isBool() const;
 	bool isDouble() const;
 	bool isString() const;
@@ -149,6 +167,9 @@ namespace Nepomuk {
 	bool isResource() const;
 
 	bool isIntList() const;
+	bool isInt64List() const;
+	bool isUnsignedIntList() const;
+	bool isUnsignedInt64List() const;
 	bool isBoolList() const;
 	bool isDoubleList() const;
 	bool isStringList() const;
@@ -159,6 +180,10 @@ namespace Nepomuk {
 	bool isResourceList() const;
 
 	int toInt() const;
+	qlonglong toInt64() const;
+	uint toUnsignedInt() const;
+	qulonglong toUnsignedInt64() const;
+
 	bool toBool() const;
 	double toDouble() const;
 
@@ -178,6 +203,9 @@ namespace Nepomuk {
 	Resource toResource() const;
 
 	QList<int> toIntList() const;
+	QList<qlonglong> toInt64List() const;
+	QList<uint> toUnsignedIntList() const;
+	QList<qulonglong> toUnsignedInt64List() const;
 	QList<bool> toBoolList() const;
 	QList<double> toDoubleList() const;
 
@@ -221,6 +249,9 @@ namespace Nepomuk {
 Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
 Q_DECLARE_METATYPE(QList<Nepomuk::KMetaData::Resource>)
 Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<qlonglong>)
+Q_DECLARE_METATYPE(QList<uint>)
+Q_DECLARE_METATYPE(QList<qulonglong>)
 Q_DECLARE_METATYPE(QList<double>)
 Q_DECLARE_METATYPE(QList<bool>)
 Q_DECLARE_METATYPE(QList<QDate>)

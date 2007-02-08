@@ -19,7 +19,7 @@
 
 #include <variant.h>
 
-#include <knep/services/rdf.h>
+#include <knep/rdf/statement.h>
 
 
 namespace Nepomuk {
@@ -147,13 +147,13 @@ namespace Nepomuk {
 	 * Generates a list of all RDF statements this Resource data object currently represents.
 	 * \param flags A filter to be used. Only those properties that match flags are returned.
 	 */
-	QList<Backbone::Services::RDF::Statement> allStatements( int flags ) const;
+	QList<RDF::Statement> allStatements( int flags ) const;
 
 	/**
 	 * \return A list of all statements that have to be added to the store in a sync. This does not
 	 * include those statements that already exist in the store.
 	 */
-	QList<Backbone::Services::RDF::Statement> allStatementsToAdd() const;
+	QList<RDF::Statement> allStatementsToAdd() const;
 
 	/**
 	 * \return a list of all statements that need to be removed from the store in a sync, i.e. those
@@ -161,7 +161,7 @@ namespace Nepomuk {
 	 * recommended to not use this method but do a plain removal of all statements related to this 
 	 * resource.
 	 */
-	QList<Backbone::Services::RDF::Statement> allStatementsToRemove() const;
+	QList<RDF::Statement> allStatementsToRemove() const;
 
 	/**
 	 * Compares the properties of two ResourceData objects taking into account the Deleted flag

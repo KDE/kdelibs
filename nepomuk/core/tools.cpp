@@ -21,8 +21,7 @@
 
 QString Nepomuk::KMetaData::defaultGraph()
 {
-  // FIXME: replace this with the real thing
-  static QString s = "http://nepomuk.semanticdesktop.org/metadata";
+  static QString s = "main";
   return s;
 }
 

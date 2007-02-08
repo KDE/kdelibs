@@ -95,8 +95,30 @@ QString Property::name() const
 QString Property::typeString( bool simple, bool withNamespace ) const
 {
   QString t;
-  if( type.endsWith( "#Literal" ) ) {
-    // FIXME: map to all the simple types somehow
+  if( type.contains( "xs:" ) ) {
+    // XML Schema types
+    // FIXME: move this map somewhere else
+    QHash<QString, QString> xmlSchemaTypes;
+    xmlSchemaTypes.insert( "integer", "qint64" );
+    xmlSchemaTypes.insert( "nonNegativeInteger", "quint64" );
+    xmlSchemaTypes.insert( "nonPositiveInteger", "qint64" );
+    xmlSchemaTypes.insert( "negativeInteger", "qint64" );
+    xmlSchemaTypes.insert( "positiveInteger", "quint64" );
+    xmlSchemaTypes.insert( "long", "qint64" );
+    xmlSchemaTypes.insert( "unsignedLong", "quint64" );
+    xmlSchemaTypes.insert( "int", "qint32" );
+    xmlSchemaTypes.insert( "unsignedInt", "quint32" );
+    xmlSchemaTypes.insert( "short", "qint16" );
+    xmlSchemaTypes.insert( "unsignedShort", "quint16" );
+    xmlSchemaTypes.insert( "byte", "char" );
+    xmlSchemaTypes.insert( "unsignedByte", "unsigned char" );
+    xmlSchemaTypes.insert( "float", "float" );
+    xmlSchemaTypes.insert( "double", "double" );
+    xmlSchemaTypes.insert( "boolean", "bool" );
+    xmlSchemaTypes.insert( "dateTime", "QDateTime" );
+    t = xmlSchemaTypes[type.mid(type.indexOf( "xs:" ) + 3 )];
+  }
+  else if( type.endsWith( "#Literal" ) ) {
     t = "QString";
   }
   else {
@@ -118,7 +140,7 @@ QString Property::typeString( bool simple, bool withNamespace ) const
 
 bool Property::hasSimpleType() const
 {
-  return ( typeString( true ) == "QString" );
+  return ( type.contains( "xs:" ) || type.endsWith( "#Literal" ) );
 }
 
 
@@ -159,7 +181,7 @@ QString Property::reversePropertyGetterDeclaration( const ResourceClass* rc, boo
   return QString( "%1 %2%3Of() const" )
     .arg( ( list ? QString("QList<") : QString() ) + domain->name( withNamespace ) + ( list ? QString(">") : QString() ) )
     .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
-    .arg( name().toLower() );
+    .arg( name() );
 }
 
 
@@ -204,7 +226,13 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
   QString s = getterDeclaration( rc, true ) + "\n";
 
   if( hasSimpleType() ) {
-    if( list )
+    // string lists have to be handled separately
+    if( typeString( false ) == "QStringList" )
+      s += QString( "{\n"
+		    "   return getProperty( \"%1\" ).toStringList();\n"
+		    "}\n" )
+	.arg( uri );
+    else if( list )
       s += QString( "{\n"
 		    "   return getProperty( \"%2\" ).listValue<%1>();\n"
 		    "}\n" )

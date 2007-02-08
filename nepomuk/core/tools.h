@@ -26,6 +26,8 @@ namespace Nepomuk {
      * Used internally by Resource.
      * \return The URI of the RDF graph meta data is stored in.
      */
+    // FIXME: this should be called defaultRepository and once we use the OntologyService
+    // it can be removed anyway
     KMETADATA_EXPORT QString defaultGraph();
 
     /**
