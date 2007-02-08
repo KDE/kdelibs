@@ -34,6 +34,7 @@ BackendSelection::BackendSelection( QWidget* parent )
 	: QWidget( parent )
 {
 	setupUi( this );
+    m_comment->setWordWrap(true);
 
     m_emptyPage = stackedWidget->addWidget(new QWidget());
 
@@ -142,7 +143,7 @@ void BackendSelection::selectionChanged()
         break;
     }
     if(service) {
-        m_icon->setPixmap(KIcon(service->icon()).pixmap(32));
+        m_icon->setPixmap(KIcon(service->icon()).pixmap(128));
         m_name->setText(service->name());
         m_comment->setText(service->comment());
         const QString website = service->property("X-KDE-PhononBackendInfo-Website").toString();
