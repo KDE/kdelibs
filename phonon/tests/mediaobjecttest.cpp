@@ -33,12 +33,12 @@ using namespace Phonon;
 
 Q_DECLARE_METATYPE( Phonon::State )
 
-static const qint64 castQVariantToInt64( const QVariant& variant )
+static qint64 castQVariantToInt64( const QVariant& variant )
 {
 	return *reinterpret_cast<const qint64*>( variant.constData() );
 }
 
-static const qint32 castQVariantToInt32( const QVariant& variant )
+static qint32 castQVariantToInt32( const QVariant& variant )
 {
 	return *reinterpret_cast<const qint32*>( variant.constData() );
 }
