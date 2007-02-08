@@ -6,6 +6,11 @@
 
 #include <qobject.h>
 
+namespace KNS
+{
+	class Engine;
+};
+
 class KNewStuff2Test : public QObject
 {
 Q_OBJECT
@@ -19,8 +24,11 @@ public slots:
 	void slotProvidersFailed();
 	void slotEntriesLoaded(KNS::Entry::List *list);
 	void slotEntriesFailed();
+	void slotPayloadLoaded(KUrl payload);
+	void slotPayloadFailed();
 private:
 	void quitTest();
+	KNS::Engine *m_engine;
 };
 
 #endif

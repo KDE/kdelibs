@@ -19,6 +19,7 @@
 KNewStuff2Test::KNewStuff2Test()
 : QObject()
 {
+	m_engine = NULL;
 }
 
 void KNewStuff2Test::entryTest()
@@ -105,17 +106,17 @@ void KNewStuff2Test::engineTest()
 {
 	kDebug() << "-- test kns2 engine" << endl;
 
-	KNS::Engine *engine = new KNS::Engine();
-	bool ret = engine->init("knewstuff2_test.knsrc");
+	m_engine = new KNS::Engine();
+	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
 	kDebug() << "-- engine test result: " << ret << endl;
 
 	if(ret)
 	{
-		connect(engine,
+		connect(m_engine,
 			SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
 			SLOT(slotProvidersLoaded(KNS::Provider::List*)));
-		connect(engine,
+		connect(m_engine,
 			SIGNAL(signalProvidersFailed()),
 			SLOT(slotProvidersFailed()));
 	}
@@ -132,22 +133,19 @@ void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
 	kDebug() << "SLOT: slotProvidersLoaded" << endl;
 	kDebug() << "-- providers: " << list->count() << endl;
 
+	connect(m_engine,
+		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
+		SLOT(slotEntriesLoaded(KNS::Entry::List*)));
+	connect(m_engine,
+		SIGNAL(signalEntriesFailed()),
+		SLOT(slotEntriesFailed()));
+
 	for(KNS::Provider::List::Iterator it = list->begin(); it != list->end(); it++)
 	{
 		KNS::Provider *provider = (*it);
 		kDebug() << "-- provider: " << provider->name().representation() << endl;
 
-		KNS::EntryLoader *el = new KNS::EntryLoader();
-		el->load(provider->downloadUrl().url());
-		// FIXME: loaders should probably accept KUrl directly
-
-		// FIXME: the engine should do this... for all feeds!
-		connect(el,
-			SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
-			SLOT(slotEntriesLoaded(KNS::Entry::List*)));
-		connect(el,
-			SIGNAL(signalEntriesFailed()),
-			SLOT(slotEntriesFailed()));
+		m_engine->loadEntries(provider);
 	}
 }
 
@@ -161,6 +159,26 @@ void KNewStuff2Test::slotEntriesLoaded(KNS::Entry::List *list)
 		KNS::Entry *entry = (*it);
 		kDebug() << "-- entry: " << entry->name().representation() << endl;
 	}
+
+	kDebug() << "-- now, download the first entry" << endl;
+
+	connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
+	connect(m_engine, SIGNAL(signalPayloadFailed()), SLOT(slotPayloadFailed()));
+
+	m_engine->downloadPreview((*list->begin()));
+	m_engine->downloadPayload((*list->begin()));
+}
+
+void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
+{
+	kDebug() << "-- entry downloaded successfully" << endl;
+	kDebug() << "-- downloaded to " << payload.prettyUrl() << endl;
+}
+
+void KNewStuff2Test::slotPayloadFailed()
+{
+	kDebug() << "SLOT: slotPayloadFailed" << endl;
+	quitTest();
 }
 
 void KNewStuff2Test::slotProvidersFailed()
@@ -178,9 +196,17 @@ void KNewStuff2Test::slotEntriesFailed()
 void KNewStuff2Test::quitTest()
 {
 	kDebug() << "-- quitting now..." << endl;
-	deleteLater();
-	kapp->quit();
-	exit(1);
+	if(1 == 0)
+	{
+		// this would be the soft way out...
+		delete m_engine;
+		deleteLater();
+		kapp->quit();
+	}
+	else
+	{
+		exit(1);
+	}
 }
 
 int main(int argc, char **argv)

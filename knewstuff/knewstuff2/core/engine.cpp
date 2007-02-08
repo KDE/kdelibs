@@ -29,6 +29,10 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 
+#include <kio/job.h>
+//#include <kio/jobclasses.h>
+#include <krandom.h>
+
 #include <qdir.h>
 #include <qdom.h>
 
@@ -100,6 +104,59 @@ bool Engine::init(const QString &configfile)
 		SIGNAL(signalProvidersFailed()));
 
 	return true;
+}
+
+void Engine::loadEntries(Provider *provider)
+{
+	EntryLoader *entry_loader = new EntryLoader();
+	entry_loader->load(provider->downloadUrl().url());
+	// FIXME: loaders should probably accept KUrl directly
+
+	// FIXME: the engine should do this... for all feeds!
+	connect(entry_loader,
+		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
+		this,
+		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)));
+	connect(entry_loader,
+		SIGNAL(signalEntriesFailed()),
+		this,
+		SIGNAL(signalEntriesFailed()));
+	// FIXME: similar to the provider loading, we might need cleanup slot
+}
+
+void Engine::downloadPreview(Entry *entry)
+{
+	// ....
+	Q_UNUSED(entry);
+}
+
+void Engine::downloadPayload(Entry *entry)
+{
+	KUrl source = KUrl(entry->payload().representation());
+	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
+	kDebug(550) << "Downloading '" << source << "' to '" << destination << "'" << endl;
+
+	// FIXME: won't survive parallel downloads
+	//m_destination = destination;
+
+	// FIXME: check for validity (also in downloadPreview)
+	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, true, false, false);
+	connect(job,
+		SIGNAL(result(KJob*)),
+		SLOT(slotPayloadResult(KJob*)));
+}
+
+void Engine::slotPayloadResult(KJob *job)
+{
+	if(job->error())
+	{
+		emit signalPayloadFailed();
+	}
+	else
+	{
+		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+		emit signalPayloadLoaded(fcjob->destUrl());
+	}
 }
 
 void Engine::loadRegistry(const QString &registrydir)

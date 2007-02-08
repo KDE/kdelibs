@@ -29,6 +29,8 @@
 #include <qstring.h>
 #include <qmap.h>
 
+class KJob;
+
 namespace KNS {
 
 class ProviderLoader;
@@ -65,6 +67,10 @@ class KDE_EXPORT Engine : public QObject
      */
     bool init(const QString &configfile);
 
+    void loadEntries(Provider *provider);
+    void downloadPreview(Entry *entry);
+    void downloadPayload(Entry *entry);
+
   signals:
     /**
      * Indicates that the list of providers has been successfully loaded.
@@ -73,6 +79,15 @@ class KDE_EXPORT Engine : public QObject
      */
     void signalProvidersLoaded(KNS::Provider::List *list);
     void signalProvidersFailed();
+    void signalEntriesLoaded(KNS::Entry::List *list);
+    void signalEntriesFailed();
+    void signalPreviewLoaded(KUrl preview);
+    void signalPreviewFailed();
+    void signalPayloadLoaded(KUrl payload);
+    void signalPayloadFailed();
+
+  private slots:
+    void slotPayloadResult(KJob *job);
 
   private:
     void loadRegistry(const QString &registrydir);
@@ -93,6 +108,8 @@ class KDE_EXPORT Engine : public QObject
 
     ProviderLoader *m_provider_loader;
     EntryLoader *m_entry_loader;
+
+    //KUrl m_destination;
 };
 
 }
