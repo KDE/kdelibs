@@ -228,7 +228,7 @@ public:
      * friends, but is not for HTTP ( cgi scripts! ). You should use
      * KRun instead, but this function returns immediately while
      * KRun is async. If no extension matches, then
-     * the file will be examined if the URL a local file or
+     * the file contents will be examined if the URL is a local file, or
      * "application/octet-stream" is returned otherwise.
      *
      * @param _url Is the right most URL with a filesystem protocol. It
@@ -265,7 +265,7 @@ public:
      * friends, but is not for HTTP ( cgi scripts! ). You should use
      * KRun instead, but this function returns immediately while
      * KRun is async. If no extension matches, then
-     * the file will be examined if the URL a local file or
+     * the file contents will be examined if the URL is a local file, or
      * "application/octet-stream" is returned otherwise.
      *
      * Equivalent to
