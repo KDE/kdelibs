@@ -53,8 +53,35 @@ void VideoWidget::init()
 	d->fullScreenAction->setCheckable( true );
 	d->fullScreenAction->setChecked( false );
 	connect( d->fullScreenAction, SIGNAL( triggered( bool ) ), SLOT( setFullScreen( bool ) ) );
+
+    QObject::connect(&d->cursorTimer, SIGNAL(timeout()), SLOT(_k_cursorTimeout()));
+    d->cursorTimer.start();
+    setMouseTracking(true);
 }
 
+void VideoWidget::mouseMoveEvent(QMouseEvent *)
+{
+    K_D(VideoWidget);
+    if (iface()) {
+        QWidget *w = 0;
+        BACKEND_GET(QWidget *, w, "widget");
+        if (w && Qt::BlankCursor == w->cursor().shape()) {
+            w->unsetCursor();
+            d->cursorTimer.start();
+        }
+    }
+}
+
+void VideoWidgetPrivate::_k_cursorTimeout()
+{
+    if (backendObject) {
+        QWidget *w = 0;
+        pBACKEND_GET(QWidget *, w, "widget");
+        if (w && Qt::ArrowCursor == w->cursor().shape()) {
+            w->setCursor(Qt::BlankCursor);
+        }
+    }
+}
 void VideoWidgetPrivate::createIface()
 {
 	if( backendObject )

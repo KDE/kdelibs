@@ -27,6 +27,7 @@
 #include <QChildEvent>
 #include <QPalette>
 #include <QCloseEvent>
+#include <QTimer>
 
 namespace Phonon
 {
@@ -38,10 +39,32 @@ class FullScreenVideoWidget : public QWidget
 	protected:
 		void childEvent( QChildEvent* e );
 		void closeEvent( QCloseEvent* e );
+        void mouseMoveEvent(QMouseEvent *);
+    private Q_SLOTS:
+        void cursorTimeout();
+    private:
+        QWidget *child;
+        QTimer cursorTimer;
 };
 
+void FullScreenVideoWidget::mouseMoveEvent(QMouseEvent *)
+{
+    if (child && Qt::BlankCursor == child->cursor().shape()) {
+        child->unsetCursor();
+        cursorTimer.start();
+    }
+}
+
+void FullScreenVideoWidget::cursorTimeout()
+{
+    if (child && Qt::ArrowCursor == child->cursor().shape()) {
+        child->setCursor(Qt::BlankCursor);
+    }
+}
+
 FullScreenVideoWidget::FullScreenVideoWidget( QWidget* parent )
-	: QWidget( parent, Qt::Window )
+    : QWidget(parent, Qt::Window),
+    child(0)
 {
 	QPalette pal = palette();
 	pal.setColor( QPalette::Window, Qt::black );
@@ -51,6 +74,11 @@ FullScreenVideoWidget::FullScreenVideoWidget( QWidget* parent )
 	setLayout( new QHBoxLayout );
 	layout()->setMargin( 0 );
 	hide();
+
+    cursorTimer.setInterval(1000); // 1s timeout until the cursor disappears
+    cursorTimer.setSingleShot(true);
+    connect(&cursorTimer, SIGNAL(timeout()), SLOT(cursorTimeout()));
+    setMouseTracking(true);
 }
 
 void FullScreenVideoWidget::childEvent( QChildEvent* e )
@@ -58,7 +86,7 @@ void FullScreenVideoWidget::childEvent( QChildEvent* e )
 	if( !( e->child() && e->child()->isWidgetType() ) )
 		return;
 
-	QWidget* child = qobject_cast<QWidget*>( e->child() );
+	child = qobject_cast<QWidget*>( e->child() );
 	Q_ASSERT( child );
 	if( e->added() )
 	{
@@ -86,6 +114,8 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		virtual bool aboutToDeleteIface();
 		virtual void createIface();
 
+        void _k_cursorTimeout();
+
 	protected:
 		VideoWidgetPrivate( VideoWidget* parent )
 			: layout( parent )
@@ -93,12 +123,15 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 			, aspectRatio( VideoWidget::AspectRatioAuto )
 		{
 			layout.setMargin( 0 );
+            cursorTimer.setInterval(1000); // 1s timeout until the cursor disappears
+            cursorTimer.setSingleShot(true);
 		}
 
 		QHBoxLayout layout;
 		QAction* fullScreenAction;
 		FullScreenVideoWidget* fullScreenWidget;
 		VideoWidget::AspectRatio aspectRatio;
+        QTimer cursorTimer;
 };
 } // namespace Phonon
 
