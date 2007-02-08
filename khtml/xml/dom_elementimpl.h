@@ -370,7 +370,7 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
         }
     }
 
-    if (!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName) ||
+    if ((!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName)) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
         (qualifiedName.isNull() && !namespaceURI.isNull()) ||
         (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
