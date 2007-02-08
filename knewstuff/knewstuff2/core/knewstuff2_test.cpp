@@ -173,6 +173,9 @@ void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
 {
 	kDebug() << "-- entry downloaded successfully" << endl;
 	kDebug() << "-- downloaded to " << payload.prettyUrl() << endl;
+
+	kDebug() << "-- OK, finish test" << endl;
+	quitTest();
 }
 
 void KNewStuff2Test::slotPayloadFailed()

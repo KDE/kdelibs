@@ -71,6 +71,8 @@ class KDE_EXPORT Engine : public QObject
     void downloadPreview(Entry *entry);
     void downloadPayload(Entry *entry);
 
+    bool uploadEntry(Provider *provider, Entry *entry);
+
   signals:
     /**
      * Indicates that the list of providers has been successfully loaded.
@@ -85,9 +87,15 @@ class KDE_EXPORT Engine : public QObject
     void signalPreviewFailed();
     void signalPayloadLoaded(KUrl payload);
     void signalPayloadFailed();
+    void signalEntryUploaded();
+    void signalEntryFailed();
 
   private slots:
     void slotPayloadResult(KJob *job);
+    void slotPreviewResult(KJob *job);
+    void slotUploadPayloadResult(KJob *job);
+    void slotUploadPreviewResult(KJob *job);
+    void slotUploadMetaResult(KJob *job);
 
   private:
     void loadRegistry(const QString &registrydir);
@@ -109,7 +117,8 @@ class KDE_EXPORT Engine : public QObject
     ProviderLoader *m_provider_loader;
     EntryLoader *m_entry_loader;
 
-    //KUrl m_destination;
+    Entry *m_uploadedentry;
+    Provider *m_uploadprovider;
 };
 
 }

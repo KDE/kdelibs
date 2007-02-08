@@ -42,6 +42,9 @@ Engine::Engine()
 {
 	m_provider_loader = NULL;
 	m_entry_loader = NULL;
+
+	m_uploadedentry = NULL;
+	m_uploadprovider = NULL;
 }
 
 Engine::~Engine()
@@ -126,24 +129,61 @@ void Engine::loadEntries(Provider *provider)
 
 void Engine::downloadPreview(Entry *entry)
 {
-	// ....
-	Q_UNUSED(entry);
+	KUrl source = KUrl(entry->preview().representation());
+	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
+	kDebug(550) << "Downloading preview '" << source << "' to '" << destination << "'" << endl;
+
+	// FIXME: check for validity
+	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, true, false, false);
+	connect(job,
+		SIGNAL(result(KJob*)),
+		SLOT(slotPreviewResult(KJob*)));
 }
 
 void Engine::downloadPayload(Entry *entry)
 {
 	KUrl source = KUrl(entry->payload().representation());
 	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
-	kDebug(550) << "Downloading '" << source << "' to '" << destination << "'" << endl;
+	kDebug(550) << "Downloading payload '" << source << "' to '" << destination << "'" << endl;
 
-	// FIXME: won't survive parallel downloads
-	//m_destination = destination;
-
-	// FIXME: check for validity (also in downloadPreview)
+	// FIXME: check for validity
 	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, true, false, false);
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPayloadResult(KJob*)));
+}
+
+bool Engine::uploadEntry(Provider *provider, Entry *entry)
+{
+	kDebug(550) << "Uploading " << entry->name().representation() << "..." << endl;
+
+	if(m_uploadedentry)
+	{
+		kError(550) << "Another upload is in progress!" << endl;
+		return false;
+	}
+
+	if(!provider->uploadUrl().isValid())
+	{
+		kError(550) << "The provider doesn't support uploads." << endl;
+		return false;
+
+		// FIXME: support for <noupload> will go here (file bundle creation etc.)
+	}
+
+	// FIXME: validate files etc.
+
+	m_uploadedentry = entry;
+
+	KUrl sourcepayload = KUrl(entry->payload().representation());
+	KUrl destfolder = provider->uploadUrl();
+
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, true, false, false);
+	connect(fcjob,
+		SIGNAL(result(KJob*)),
+		SLOT(slotUploadPayloadResult(KJob*)));
+
+	return true;
 }
 
 void Engine::slotPayloadResult(KJob *job)
@@ -156,6 +196,97 @@ void Engine::slotPayloadResult(KJob *job)
 	{
 		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
 		emit signalPayloadLoaded(fcjob->destUrl());
+	}
+}
+
+// FIXME: this should be handled more internally to return a (cached) preview image
+void Engine::slotPreviewResult(KJob *job)
+{
+	if(job->error())
+	{
+		emit signalPreviewFailed();
+	}
+	else
+	{
+		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+		emit signalPreviewLoaded(fcjob->destUrl());
+	}
+}
+
+void Engine::slotUploadPayloadResult(KJob *job)
+{
+	if(job->error())
+	{
+		m_uploadedentry = NULL;
+		m_uploadprovider = NULL;
+
+		emit signalEntryFailed();
+	}
+
+	KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
+	KUrl destfolder = m_uploadprovider->uploadUrl();
+
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, true, false, false);
+	connect(fcjob,
+		SIGNAL(result(KJob*)),
+		SLOT(slotUploadPreviewResult(KJob*)));
+
+}
+
+void Engine::slotUploadPreviewResult(KJob *job)
+{
+	if(job->error())
+	{
+		m_uploadedentry = NULL;
+		m_uploadprovider = NULL;
+
+		emit signalEntryFailed();
+	}
+
+	// FIXME: adhere to meta naming rules as discussed
+	KUrl sourcemeta = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta";
+	KUrl destfolder = m_uploadprovider->uploadUrl();
+
+	EntryHandler eh(*m_uploadedentry);
+	QDomElement exml = eh.entryXML();
+
+	QFile f(sourcemeta.path());
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		kError(550) << "Cannot write meta information to '" << sourcemeta << "'." << endl;
+
+		m_uploadedentry = NULL;
+		m_uploadprovider = NULL;
+
+		emit signalEntryFailed();
+		return;
+	}
+	QTextStream metastream(&f);
+	metastream << exml;
+	f.close();
+
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, true, false, false);
+	connect(fcjob,
+		SIGNAL(result(KJob*)),
+		SLOT(slotUploadMetaResult(KJob*)));
+}
+
+void Engine::slotUploadMetaResult(KJob *job)
+{
+	if(job->error())
+	{
+		m_uploadedentry = NULL;
+		m_uploadprovider = NULL;
+
+		emit signalEntryFailed();
+	}
+	else
+	{
+		m_uploadedentry = NULL;
+		m_uploadprovider = NULL;
+
+		//KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+		emit signalEntryUploaded();
 	}
 }
 
