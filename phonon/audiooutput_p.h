@@ -47,6 +47,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		}
 
         void _k_revertFallback();
+        void _k_audioDeviceFailed();
 
 	private:
 		float volume;

@@ -154,6 +154,7 @@ namespace Phonon
 
         private:
             Q_PRIVATE_SLOT(k_func(), void _k_revertFallback())
+            Q_PRIVATE_SLOT(k_func(), void _k_audioDeviceFailed())
 	};
 } //namespace Phonon
 
