@@ -46,6 +46,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 				name = KGlobal::mainComponent().componentName();
 		}
 
+        void handleFallback(int newIndex);
+
         void _k_revertFallback();
         void _k_audioDeviceFailed();
 

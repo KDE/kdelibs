@@ -146,22 +146,7 @@ void AudioOutput::setupIface()
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
                 if (INTERFACE_CALL(setOutputDevice, (devIndex))) {
-                    d->deviceBeforeFallback = d->outputDeviceIndex;
-                    d->outputDeviceIndex = devIndex;
-                    emit outputDeviceChanged(AudioOutputDevice::fromIndex(d->outputDeviceIndex));
-                    if (QApplication::type() != QApplication::Tty) {
-                        KNotification *notification = new KNotification("AudioDeviceFallback");
-                        notification->setComponentData(Factory::componentData());
-                        AudioOutputDevice device1 = AudioOutputDevice::fromIndex(d->deviceBeforeFallback);
-                        AudioOutputDevice device2 = AudioOutputDevice::fromIndex(d->outputDeviceIndex);
-                        notification->setText(i18n("The audio playback device '<i>%1</i>' does not work. "
-                                    "Falling back to '<i>%2</i>'.", device1.name(), device2.name()));
-                        //notification->setPixmap(...);
-                        notification->setActions(QStringList(i18n("Revert back to device '%1'", device1.name())));
-                        notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
-                        connect(notification, SIGNAL(activated(unsigned int)), SLOT(_k_revertFallback()));
-                        notification->sendEvent();
-                    }
+                    d->handleFallback(devIndex);
                     break; // found one that works
                 }
             }
@@ -183,34 +168,38 @@ void AudioOutputPrivate::_k_revertFallback()
 void AudioOutputPrivate::_k_audioDeviceFailed()
 {
     kDebug(600) << k_funcinfo << endl;
-    Q_Q(AudioOutput);
     // outputDeviceIndex identifies a failing device
     // fall back in the preference list of output devices
     QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
     foreach (int devIndex, deviceList) {
         // if it's the same device as the one that failed, ignore it
-        if (outputDeviceIndex == devIndex) {
-            continue;
-        }
-        if (pINTERFACE_CALL(setOutputDevice, (devIndex))) {
-            deviceBeforeFallback = outputDeviceIndex;
-            outputDeviceIndex = devIndex;
-            emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
-            if (QApplication::type() != QApplication::Tty) {
-                KNotification *notification = new KNotification("AudioDeviceFallback");
-                notification->setComponentData(Factory::componentData());
-                AudioOutputDevice device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
-                AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
-                notification->setText(i18n("The audio playback device '<i>%1</i>' does not work. "
-                            "Falling back to '<i>%2</i>'.", device1.name(), device2.name()));
-                //notification->setPixmap(...);
-                notification->setActions(QStringList(i18n("Revert back to device '%1'", device1.name())));
-                notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
-                QObject::connect(notification, SIGNAL(activated(unsigned int)), q, SLOT(_k_revertFallback()));
-                notification->sendEvent();
+        if (outputDeviceIndex != devIndex) {
+            if (pINTERFACE_CALL(setOutputDevice, (devIndex))) {
+                handleFallback(devIndex);
+                break; // found one that works
             }
-            break; // found one that works
         }
+    }
+}
+
+void AudioOutputPrivate::handleFallback(int newIndex)
+{
+    Q_Q(AudioOutput);
+    deviceBeforeFallback = outputDeviceIndex;
+    outputDeviceIndex = newIndex;
+    emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
+    if (QApplication::type() != QApplication::Tty) {
+        KNotification *notification = new KNotification("AudioDeviceFallback");
+        notification->setComponentData(Factory::componentData());
+        AudioOutputDevice device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
+        AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
+        notification->setText(i18n("The audio playback device '<i>%1</i>' does not work. "
+                    "Falling back to '<i>%2</i>'.", device1.name(), device2.name()));
+        //notification->setPixmap(...);
+        notification->setActions(QStringList(i18n("Revert back to device '%1'", device1.name())));
+        notification->addContext(QLatin1String("Application"), KGlobal::mainComponent().componentName());
+        QObject::connect(notification, SIGNAL(activated(unsigned int)), q, SLOT(_k_revertFallback()));
+        notification->sendEvent();
     }
 }
 
