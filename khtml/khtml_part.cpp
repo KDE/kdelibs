@@ -333,9 +333,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->addAction( d->m_manualDetection );
 
 
-  KSharedConfig::Ptr config = KGlobal::config();
-  if ( config->hasGroup( "HTML Settings" ) ) {
-    config->setGroup( "HTML Settings" );
+  if ( KGlobal::config()->hasGroup( "HTML Settings" ) ) {
+    KConfigGroup config( KGlobal::config(), "HTML Settings" );
     khtml::Decoder::AutoDetectLanguage language;
     QByteArray name = QTextCodec::codecForLocale()->name();
     name = name.toLower();
@@ -373,7 +372,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     else
       language = khtml::Decoder::SemiautomaticDetection;
 
-    int _id = config->readEntry( "AutomaticDetectionLanguage", static_cast<int>(language) );
+    int _id = config.readEntry( "AutomaticDetectionLanguage", static_cast<int>(language) );
     d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->menu()->setItemChecked( 0, true );
 
@@ -518,10 +517,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 KHTMLPart::~KHTMLPart()
 {
   //kDebug(6050) << "KHTMLPart::~KHTMLPart " << this << endl;
-
-  KSharedConfig::Ptr config = KGlobal::config();
-  config->setGroup( "HTML Settings" );
-  config->writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
+  KConfigGroup config( KGlobal::config(), "HTML Settings" );
+  config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 
   delete d->m_automaticDetection;
   delete d->m_manualDetection;
