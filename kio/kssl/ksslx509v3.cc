@@ -53,10 +53,9 @@ bool KSSLX509V3::certTypeSSLCA()  const {
 	return (flags & ((1 << (16+X509_PURPOSE_NS_SSL_SERVER-1))|
                          (1 << (16+X509_PURPOSE_SSL_SERVER-1))|
                          (1 << (16+X509_PURPOSE_SSL_CLIENT-1)))) ? true :
-		(false || ((1 << (16+X509_PURPOSE_ANY-1)) &&
-			   (certTypeSSLServer() ||
-			    certTypeSSLClient() ||
-			    certTypeNSSSLServer())));
+		( certTypeSSLServer() ||
+		  certTypeSSLClient() ||
+		  certTypeNSSSLServer());
 #endif
 	return false;
 }
@@ -66,8 +65,7 @@ bool KSSLX509V3::certTypeEmailCA() const {
 #ifdef KSSL_HAVE_SSL
 	return (flags & ((1 << (16+X509_PURPOSE_SMIME_ENCRYPT-1))|
                          (1 << (16+X509_PURPOSE_SMIME_SIGN-1)))) ? true :
-		(false || ((1 << (16+X509_PURPOSE_ANY-1)) &&
-			   certTypeSMIME()));
+			  certTypeSMIME();
 #endif
 	return false;
 }
