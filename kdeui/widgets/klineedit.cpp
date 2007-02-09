@@ -521,6 +521,11 @@ void KLineEdit::setSqueezedText()
 
 void KLineEdit::copy() const
 {
+    copy(true);
+}
+
+void KLineEdit::copy(bool clipboard) const
+{
    if (!d->squeezedText.isEmpty() && d->squeezedStart)
    {
       KLineEdit *that = const_cast<KLineEdit *>(this);
@@ -540,7 +545,7 @@ void KLineEdit::copy() const
       QString t = d->squeezedText;
       t = t.mid(start, end - start);
       disconnect( QApplication::clipboard(), SIGNAL(selectionChanged()), this, 0);
-      QApplication::clipboard()->setText( t );
+      QApplication::clipboard()->setText( t, clipboard ? QClipboard::Clipboard : QClipboard::Selection );
       connect( QApplication::clipboard(), SIGNAL(selectionChanged()), this,
                SLOT(clipboardChanged()) );
       return;
@@ -987,6 +992,13 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
     }
 
     QLineEdit::mouseReleaseEvent( e );
+
+   // Call our own copy() to fix copying of squeezed text
+   if (QApplication::clipboard()->supportsSelection() ) {
+       if ( e->button() == Qt::LeftButton ) {
+           copy( FALSE );
+       }
+   }
 }
 
 void KLineEdit::tripleClickTimeout()
