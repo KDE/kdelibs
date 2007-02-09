@@ -71,6 +71,16 @@ public:
    */
   bool groupIsImmutable() const;
 
+  /**
+   * Returns a map (tree) of entries for all entries in this group.
+   *
+   * Only the actual entry string is returned, none of the
+   * other internal data should be included.
+   *
+   * @return A map of entries in this group, indexed by key.
+   */
+  QMap<QString, QString> entryMap() const;
+
    // The following functions are reimplemented:
    virtual void setDirty(bool _bDirty);
    virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);

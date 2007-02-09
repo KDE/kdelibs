@@ -107,6 +107,11 @@ void KConfigGroup::sync()
   mMaster->sync();
 }
 
+QMap<QString, QString> KConfigGroup::entryMap() const
+{
+  return mMaster->entryMap(mGroup);
+}
+
 QStringList KConfigGroup::groupList() const
 {
   return QStringList();
