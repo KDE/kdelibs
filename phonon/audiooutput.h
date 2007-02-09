@@ -30,7 +30,7 @@ class QString;
 class AudioOutputAdaptor;
 namespace Phonon
 {
-	class AudioOutputPrivate;
+    class AudioOutputPrivate;
 
 	/**
 	 * \short Class for audio output to the soundcard.
@@ -46,6 +46,7 @@ namespace Phonon
 	 */
 	class PHONONCORE_EXPORT AudioOutput : public AbstractAudioOutput
 	{
+        friend class FactoryPrivate;
 		friend class ::AudioOutputAdaptor;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioOutput )

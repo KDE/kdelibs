@@ -32,6 +32,9 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 {
 	K_DECLARE_PUBLIC( AudioOutput )
 	PHONON_PRIVATECLASS( AbstractAudioOutput )
+    public:
+        void deviceListChanged();
+
 	protected:
 		AudioOutputPrivate()
             : volume(1.0),
@@ -46,7 +49,11 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 				name = KGlobal::mainComponent().componentName();
 		}
 
-        void handleFallback(int newIndex);
+        enum DeviceChangeType {
+            FallbackChange,
+            HigherPreferenceChange
+        };
+        void handleAutomaticDeviceChange(int newIndex, DeviceChangeType type);
 
         void _k_revertFallback();
         void _k_audioDeviceFailed();
