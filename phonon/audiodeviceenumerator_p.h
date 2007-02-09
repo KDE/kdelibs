@@ -30,11 +30,18 @@ namespace Phonon
 class AudioDeviceEnumeratorPrivate
 {
     public:
+        AudioDeviceEnumeratorPrivate();
+
+        void _k_deviceAdded(const QString &);
+        void _k_deviceRemoved(const QString &);
+
         QList<AudioDevice> playbackdevicelist;
         QList<AudioDevice> capturedevicelist;
         void findDevices();
 
         KSharedConfig::Ptr config;
+
+        AudioDeviceEnumerator q;
 };
 } // namespace Phonon
 

@@ -146,8 +146,9 @@ namespace Phonon
             bool isPlaybackDevice() const;
 
         protected:
-            AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config);
+            AudioDevice(Solid::Device audioHw, KSharedConfig::Ptr config);
             AudioDevice(KConfigGroup &deviceGroup);
+            const QString &udi() const;
 
         private:
             AudioDevicePrivate *d;

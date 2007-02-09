@@ -44,6 +44,7 @@ class AudioDevicePrivate
         QString cardName;
         QStringList deviceIds;
         QString icon;
+        QString udi;
         Solid::AudioHw::AudioDriver driver;
         int index;
         bool available : 1;

@@ -22,6 +22,7 @@
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
 #include <kdebug.h>
+#include <solid/device.h>
 #include <solid/audiohw.h>
 #include <kconfiggroup.h>
 
@@ -32,10 +33,12 @@ AudioDevice::AudioDevice()
 {
 }
 
-AudioDevice::AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
+AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
+    Solid::AudioHw *audioHw = audioDevice.as<Solid::AudioHw>();
     kDebug(603) << k_funcinfo << audioHw->driverHandles() << endl;
+    d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
     d->deviceIds = audioHw->driverHandles();
     switch (audioHw->soundcardType()) {
@@ -79,8 +82,8 @@ AudioDevice::AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
     }
     groupName += d->cardName;
 
+    KConfigGroup deviceGroup(config.data(), groupName);
     if (config->hasGroup(groupName)) {
-        KConfigGroup deviceGroup(config.data(), groupName);
         d->index = deviceGroup.readEntry("index", -1);
     }
     if (d->index == -1) {
@@ -89,15 +92,20 @@ AudioDevice::AudioDevice(Solid::AudioHw *audioHw, KSharedConfig::Ptr config)
         d->index = nextIndex++;
         globalGroup.writeEntry("nextIndex", nextIndex);
 
-        KConfigGroup deviceGroup(config.data(), groupName);
         deviceGroup.writeEntry("index", d->index);
         deviceGroup.writeEntry("cardName", d->cardName);
         deviceGroup.writeEntry("icon", d->icon);
         deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+        deviceGroup.writeEntry("udi", d->udi);
+        config->sync();
+    } else if (!deviceGroup.hasKey("udi")) {
+        deviceGroup.writeEntry("udi", d->udi);
         config->sync();
     }
+    kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi << endl;
+    //Q_ASSERT(deviceGroup.readEntry("udi", d->udi) == d->udi);
 }
 
 AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
@@ -109,6 +117,7 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     d->driver = static_cast<Solid::AudioHw::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
     d->captureDevice = deviceGroup.readEntry("captureDevice", d->captureDevice);
     d->playbackDevice = deviceGroup.readEntry("playbackDevice", d->playbackDevice);
+    d->udi = deviceGroup.readEntry("udi", d->udi);
     d->valid = true;
     d->available = false;
     // deviceIds stays empty because it's not available
@@ -176,6 +185,11 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
     snd_pcm_info_free(pcmInfo);
 }
 #endif
+
+const QString &AudioDevice::udi() const
+{
+    return d->udi;
+}
 
 int AudioDevice::index() const
 {
@@ -255,11 +269,14 @@ AudioDevice &AudioDevice::operator=(const AudioDevice &rhs)
 
 bool AudioDevice::operator==(const AudioDevice &rhs) const
 {
+    return d->udi == rhs.d->udi;
+    /*
     return (d->cardName == rhs.d->cardName &&
             d->icon == rhs.d->icon &&
             d->deviceIds == rhs.d->deviceIds &&
             d->captureDevice == rhs.d->captureDevice &&
             d->playbackDevice == rhs.d->playbackDevice);
+            */
 }
 
 QString AudioDevice::cardName() const

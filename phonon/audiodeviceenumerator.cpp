@@ -30,15 +30,20 @@
 namespace Phonon
 {
 
-AudioDeviceEnumerator *AudioDeviceEnumerator::s_instance = 0;
+K_GLOBAL_STATIC(AudioDeviceEnumeratorPrivate, audioDeviceEnumeratorPrivate)
+
+AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
+{
+    q.d = this;
+    config = KSharedConfig::openConfig("phonondevicesrc", false, false);
+    findDevices();
+    QObject::connect(&Solid::DeviceManager::self(), SIGNAL(deviceAdded(const QString &)), &q, SLOT(_k_deviceAdded(const QString &)));
+    QObject::connect(&Solid::DeviceManager::self(), SIGNAL(deviceRemoved(const QString &)), &q, SLOT(_k_deviceRemoved(const QString &)));
+}
 
 AudioDeviceEnumerator *AudioDeviceEnumerator::self()
 {
-    if (!s_instance) {
-        s_instance = new AudioDeviceEnumerator;
-        s_instance->d->findDevices();
-    }
-    return s_instance;
+    return &audioDeviceEnumeratorPrivate->q;
 }
 
 /*
@@ -54,10 +59,8 @@ AudioDevice *AudioDeviceEnumerator::deviceFor(const QString &internalId)
 */
 
 AudioDeviceEnumerator::AudioDeviceEnumerator(QObject *parent)
-    : QObject(parent),
-    d(new AudioDeviceEnumeratorPrivate)
+    : QObject(parent)
 {
-    d->config = KSharedConfig::openConfig("phonondevicesrc", false, false);
 }
 
 void AudioDeviceEnumeratorPrivate::findDevices()
@@ -81,7 +84,7 @@ void AudioDeviceEnumeratorPrivate::findDevices()
     foreach (Solid::Device device, devices) {
         Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
         Q_ASSERT(audiohw);
-        AudioDevice dev(audiohw, config);
+        AudioDevice dev(device, config);
         if (dev.isValid()) {
             if (dev.isCaptureDevice()) {
                 capturedevicelist << dev;
@@ -119,8 +122,73 @@ void AudioDeviceEnumeratorPrivate::findDevices()
             alreadyFoundCards << groupName;
         }
     }
+}
 
-    // TODO register with Solid to emit the devicePlugged/deviceUnplugged signals
+void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
+{
+    kDebug(603) << k_funcinfo << udi << endl;
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    Solid::Device _device = manager.findDevice(udi);
+    Solid::AudioHw *audiohw = _device.as<Solid::AudioHw>();
+    if (audiohw && (audiohw->deviceType() & (Solid::AudioHw::AudioInput | Solid::AudioHw::AudioOutput))) {
+        // an audio i/o device was plugged in
+        AudioDevice dev(_device, config);
+        if (dev.isValid()) {
+            if (dev.isCaptureDevice()) {
+                foreach (const AudioDevice &listedDev, capturedevicelist) {
+                    if (listedDev == dev && !listedDev.isAvailable()) {
+                        // listedDev is the same devices as dev but shown as unavailable
+                        kDebug(603) << "removing from capturedevicelist: " << listedDev.cardName() << endl;
+                        capturedevicelist.removeAll(listedDev);
+                        break;
+                    }
+                }
+                capturedevicelist << dev;
+            }
+            if (dev.isPlaybackDevice()) {
+                foreach (const AudioDevice &listedDev, playbackdevicelist) {
+                    if (listedDev == dev && !listedDev.isAvailable()) {
+                        // listedDev is the same devices as dev but shown as unavailable
+                        kDebug(603) << "removing from playbackdevicelist: " << listedDev.cardName() << endl;
+                        playbackdevicelist.removeAll(listedDev);
+                        break;
+                    }
+                }
+                playbackdevicelist << dev;
+            }
+            kDebug(603) << "emit q.devicePlugged " << dev.cardName() << endl;
+            emit q.devicePlugged(dev);
+        }
+    }
+}
+
+void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
+{
+    kDebug(603) << k_funcinfo << udi << endl;
+    AudioDevice dev;
+    foreach (const AudioDevice &listedDev, capturedevicelist) {
+        if (listedDev.udi() == udi && listedDev.isAvailable()) {
+            // listedDev is the same devices as was removed
+            kDebug(603) << "removing from capturedevicelist: " << listedDev.cardName() << endl;
+            dev = listedDev;
+            capturedevicelist.removeAll(listedDev);
+            break;
+        }
+    }
+    foreach (const AudioDevice &listedDev, playbackdevicelist) {
+        if (listedDev.udi() == udi && listedDev.isAvailable()) {
+            // listedDev is the same devices as was removed
+            kDebug(603) << "removing from playbackdevicelist: " << listedDev.cardName() << endl;
+            dev = listedDev;
+            playbackdevicelist.removeAll(listedDev);
+            break;
+        }
+    }
+
+    if (dev.isValid()) {
+        kDebug(603) << "emit q.deviceUnplugged " << dev.cardName() << endl;
+        emit q.deviceUnplugged(dev);
+    }
 }
 
 /*
@@ -180,18 +248,16 @@ void AudioDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
 
 AudioDeviceEnumerator::~AudioDeviceEnumerator()
 {
-    delete d;
-    d = 0;
 }
 
 QList<AudioDevice> AudioDeviceEnumerator::availablePlaybackDevices()
 {
-    return self()->d->playbackdevicelist;
+    return audioDeviceEnumeratorPrivate->playbackdevicelist;
 }
 
 QList<AudioDevice> AudioDeviceEnumerator::availableCaptureDevices()
 {
-    return self()->d->capturedevicelist;
+    return audioDeviceEnumeratorPrivate->capturedevicelist;
 }
 
 } // namespace Phonon

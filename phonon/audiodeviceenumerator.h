@@ -45,6 +45,7 @@ namespace Phonon
     class KAUDIODEVICELIST_EXPORT AudioDeviceEnumerator : public QObject
     {
         friend class AudioDevicePrivate;
+        friend class AudioDeviceEnumeratorPrivate;
 
         Q_OBJECT
         public:
@@ -83,8 +84,9 @@ namespace Phonon
             AudioDevice *deviceFor(const QString &internalId);
 
         private:
-            static AudioDeviceEnumerator *s_instance;
             AudioDeviceEnumeratorPrivate *d;
+            Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString &))
+            Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString &))
     };
 } // namespace Phonon
 #endif // PHONON_AUDIODEVICEENUMERATOR_H
