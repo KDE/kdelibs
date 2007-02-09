@@ -52,6 +52,8 @@ class FactoryPrivate : public Phonon::Factory::Sender
          * unregisters the backend object
          */
         void objectDestroyed(QObject *);
+
+        void objectDescriptionChanged(ObjectDescriptionType);
 };
 } // namespace Phonon
 

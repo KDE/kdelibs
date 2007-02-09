@@ -34,6 +34,8 @@
 #include "backendinterface.h"
 #include "factory_p.h"
 #include <kglobal.h>
+#include "audiooutput.h"
+#include "audiooutput_p.h"
 
 #define PHONON_LOAD_BACKEND_GLOBAL 0
 
@@ -95,7 +97,10 @@ void FactoryPrivate::createBackend()
                 ":\n" << e << endl;
         }
     }
-    if (0 == backend) {
+    if (backend) {
+        connect(backend, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
+                SLOT(objectDescriptionChanged(ObjectDescriptionType)));
+    } else {
         if (offers.size() == 0) {
             KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
         } else {
@@ -137,6 +142,25 @@ FactoryPrivate::~FactoryPrivate()
     }
     qDeleteAll(objects);
     delete backend;
+}
+
+void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
+{
+    kDebug(600) << k_funcinfo << type << endl;
+    switch (type) {
+        case AudioOutputDeviceType:
+            // tell all AudioOutput objects to check their output device preference
+            foreach (BasePrivate *obj, globalFactory->basePrivateList) {
+                AudioOutputPrivate *output = dynamic_cast<AudioOutputPrivate *>(obj);
+                if (output) {
+                    output->deviceListChanged();
+                }
+            }
+            break;
+        default:
+            break;
+    }
+    //emit capabilitiesChanged();
 }
 
 Factory::Sender *Factory::sender()
