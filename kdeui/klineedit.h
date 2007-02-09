@@ -528,6 +528,13 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
+    * See QLineEdit::mouseReleaseEvent().
+    */
+    virtual void mouseReleaseEvent( QMouseEvent * );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
     * See QLineEdit::contextMenuEvent().
     */
     virtual void contextMenuEvent( QContextMenuEvent * );
@@ -620,6 +627,8 @@ private:
      * Initializes variables.  Called from the constructors.
      */
     void init();
+
+    void copy( bool clipboard ) const;
 
     /**
      * Checks whether we should/should not consume a key used as
