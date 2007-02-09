@@ -16,8 +16,8 @@ int main ( int argc, char** argv )
     label = "Site:";
     comment = "<b>localhost</b>";
     int res = KIO::PasswordDialog::getNameAndPassword( usr, pass, 0L,
-                                                       QString::null, false,
-                                                       QString::null, comment,
+                                                       QString(), false,
+                                                       QString(), comment,
                                                        label );
     if ( res == QDialog::Accepted )
         KMessageBox::information( 0L, QString("You entered:\n"

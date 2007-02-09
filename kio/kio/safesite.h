@@ -56,10 +56,10 @@ public:
 
     enum Result { Working = 0, Unknown = 1, Error = 2, KnownPhishing = 3, Indeterminate = 4, KnownGood = 5, Inconsistent = 6, Aborted = 7 };
 
-    Result result(const QString& service = QString::null) const;
-    QString extendedResultText(const QString& service = QString::null) const;
-    QString report(const QString& service = QString::null) const;
-    QMap<QString, QString> metaData(const QString& service = QString::null) const;
+    Result result(const QString& service = QString()) const;
+    QString extendedResultText(const QString& service = QString()) const;
+    QString report(const QString& service = QString()) const;
+    QMap<QString, QString> metaData(const QString& service = QString()) const;
     QStringList services() const;
     ServiceInfo serviceInfo(const QString& service);
 

@@ -10,7 +10,7 @@
 
 #define I18N_NOOP
 
- static KCmdLineOptions options[] = 
+ static KCmdLineOptions options[] =
   {
      { "+file", "File name", 0 },
      { "addgroup ", "Add a group to a file", 0},
@@ -26,12 +26,12 @@
      { "mimetypeinfo ", "the mimetype info for a mimetype", 0 },
      KCmdLineLastOption
   };
-  
+
 void printKeyValues(KFileMetaInfo& info)
-{    
+{
     QStringList l = info.preferredKeys();
     kDebug() << "found " << l.size() << " keys\n";
-    
+
     QString s;
     QStringList::Iterator it;
     for (it = l.begin(); it!=l.end(); ++it)
@@ -39,7 +39,7 @@ void printKeyValues(KFileMetaInfo& info)
         s +=" - " + *it;
     }
     kDebug() << "keys: " << s << endl;
-    
+
     for (it = l.begin(); it!=l.end(); ++it)
     {
         KFileMetaInfoItem item = info.item(*it);
@@ -49,7 +49,7 @@ void printKeyValues(KFileMetaInfo& info)
         }
     }
 }
-  
+
 void printMimeTypeInfo(QString mimetype)
 {
     const KFileMimeTypeInfo* info = KFileMetaInfoProvider::self()->mimeTypeInfo(mimetype);
@@ -72,7 +72,7 @@ void printMimeTypeInfo(QString mimetype)
     {
         kDebug() << *it << endl;
     }
-        
+
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
     {
         const KFileMimeTypeInfo::GroupInfo* groupinfo = info->groupInfo(*it);
@@ -90,7 +90,7 @@ void printMimeTypeInfo(QString mimetype)
         for (QStringList::Iterator kit=keys.begin(); kit!=keys.end(); ++kit)
         {
             kDebug() << "  " << *kit << endl;
-                
+
             const KFileMimeTypeInfo::ItemInfo* iti = groupinfo->itemInfo(*kit);
             kDebug() << "    Key:        " << iti->key() << endl;
             kDebug() << "    Translated: " << iti->key() << endl;
@@ -101,7 +101,7 @@ void printMimeTypeInfo(QString mimetype)
             kDebug() << "    Prefix:     " << iti->prefix() << endl;
             kDebug() << "    Suffix:     " << iti->suffix() << endl;
         }
-            
+
         kDebug() << "  name:       " << groupinfo->name() << endl;
         kDebug() << "  translated: " << groupinfo->translatedName() << endl;
         kDebug() << "  attributes: " << groupinfo->attributes() << endl;
@@ -112,7 +112,7 @@ void printMimeTypeInfo(QString mimetype)
             kDebug() << "  variable key type/attr: " << QVariant::typeToName(iti->type()) << " / " << iti->attributes() << endl;
         }
     }
-        
+
     kDebug() << endl;
     kDebug() << "Preferred keys:\n";
     kDebug() << "===============\n";
@@ -142,20 +142,20 @@ void addGroup(KFileMetaInfo& info, QString group)
     QStringList groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
         kDebug() << "  " << *it << endl;
-      
+
     if (info.addGroup(group))
        kDebug() << "addGroup succeeded\n";
     else
        kDebug() << "addGroup failed\n";
-    
+
     kDebug() << "trying another addGroup to see what happens\n";
-    
+
     if (info.addGroup(group))
        kDebug() << "addGroup succeeded\n";
     else
        kDebug() << "addGroup failed\n";
-    
-        
+
+
     kDebug() << "and afterwards: \n";
     groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
@@ -170,15 +170,15 @@ void removeGroup(KFileMetaInfo& info, QString group)
     QStringList groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
         kDebug() << "  " << *it << endl;
-      
+
     info.removeGroup(group);
-        
+
     kDebug() << "and afterwards: \n";
     groups = info.groups();
     for (QStringList::Iterator it=groups.begin() ; it!=groups.end(); ++it)
         kDebug() << "  " << *it << endl;
 }
-  
+
 int main( int argc, char **argv )
 {
     // Initialize command line args
@@ -189,7 +189,7 @@ int main( int argc, char **argv )
 
     // Add options from other components
     //KCmdLineArgs::addStdCmdLineOptions();
-    
+
     KApplication app;
 
     KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
@@ -200,11 +200,11 @@ int main( int argc, char **argv )
         printMimeTypeInfo(ov);
         return 0;
     }
-    
+
     if (!args->count()) return 1;
 
-    KFileMetaInfo info( args->url(0), QString::null, KFileMetaInfo::Everything);
-    
+    KFileMetaInfo info( args->url(0), QString(), KFileMetaInfo::Everything);
+
     if (args->isSet("groups"))
     {
         QStringList groups = info.groups();
@@ -214,7 +214,7 @@ int main( int argc, char **argv )
         }
         return 0;
     }
-    
+
     QString group, item;
 
     ov = args->getOption("addgroup");
@@ -222,13 +222,13 @@ int main( int argc, char **argv )
 
     ov = args->getOption("removegroup");
     if (!ov.isEmpty()) removeGroup(info, ov);
-    
+
     ov = args->getOption("group");
     if (!ov.isEmpty()) group = ov;
 
     ov = args->getOption("item");
     if (!ov.isEmpty()) item = ov;
-    
+
     ov = args->getOption("add");
     if (!ov.isEmpty() && !group.isNull() && !item.isNull())
     {
@@ -250,7 +250,7 @@ int main( int argc, char **argv )
         else
             kDebug() << "setValue failed\n";
     }
-    
+
     ov = args->getOption("set");
     if (!ov.isEmpty() && !group.isNull() && !item.isNull())
     {
@@ -259,7 +259,7 @@ int main( int argc, char **argv )
         else
             kDebug() << "setValue failed\n";
     }
-    
+
     ov = args->getOption("removeitem");
     if (!ov.isEmpty() && !group.isNull())
     {
@@ -280,9 +280,9 @@ int main( int argc, char **argv )
             kDebug() << "validator is a " << v->metaObject()->className() << endl;
             delete v;
         }
-        
+
     }
-    
+
     kDebug() << "is it valid?\n";
 
     if (!info.isValid()) return 1;
@@ -291,21 +291,21 @@ int main( int argc, char **argv )
 
     printKeyValues(info);
 
-      
+
     kDebug() << "========= again after applyChanges() =========\n";
-    
+
     info.applyChanges();
-    
+
     printKeyValues(info);
 
     KFileMetaInfoItem thumbitem = info.item(KFileMimeTypeInfo::Thumbnail);
 //    KFileMetaInfoItem thumbitem = info.item("Thumbnail");
-    
+
     if (!thumbitem.isValid()) kDebug() << "no thumbnail\n";
     else
         kDebug() << "type of thumbnail is " << thumbitem.value().typeName() << endl;
-    
-    
+
+
     if (thumbitem.isValid() && thumbitem.value().canConvert(QVariant::Image))
     {
         QLabel* label = new QLabel(0);
@@ -313,6 +313,6 @@ int main( int argc, char **argv )
         label->show();
         app.exec();
     }
-    
+
     return 0;
 }

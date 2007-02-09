@@ -56,7 +56,7 @@ KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
    grid->setMargin(KDialog::marginHint());
    grid->setSpacing(KDialog::spacingHint());
 
-   d->p_message = new QLabel(QString::null, this);
+   d->p_message = new QLabel(QString(), this);
    grid->addWidget(d->p_message);
    setHost(_host);
 

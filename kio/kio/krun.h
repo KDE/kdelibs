@@ -187,7 +187,7 @@ public:
    * @param suggestedFileName see setSuggestedFileName
    * @return the process id, or 0 on error
    */
-  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString::null );
+  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString() );
 
   /**
    * Open a list of URLs with.
@@ -223,7 +223,7 @@ public:
    * @param suggestedFileName see setSuggestedFileName
    * @return the process id, or 0 on error
    */
-  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString::null );
+  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString() );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -263,7 +263,7 @@ public:
    * @param suggestedFileName see setSuggestedFileName
    * @return false if the dialog was canceled
    */
-  static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString::null );
+  static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString() );
 
   /**
    * Quotes a string for the shell.
@@ -281,7 +281,7 @@ public:
    *
    * @return a list of arguments suitable for either system() or exec().
    */
-  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool tempFiles = false, const QString& suggestedFileName = QString::null );
+  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool tempFiles = false, const QString& suggestedFileName = QString() );
 
   /**
    * Given a full command line (e.g. the Exec= line from a .desktop file),
