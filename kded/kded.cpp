@@ -56,10 +56,6 @@
 #include <fixx11h.h>
 #endif
 
-#ifdef Q_WS_MAC
-#include <Carbon/Carbon.h>
-#endif
-
 #define MODULES_PATH "/modules/"
 
 Kded *Kded::_self = 0;
@@ -839,9 +835,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      {
         // KUniqueApplication not wanted here.
         KApplication app;
-#ifdef Q_WS_MAC
-        HideMenuBar();
-#endif
         config->setGroup("General");
         checkStamps = config->readEntry("CheckFileStamps", true);
         runBuildSycoca();
@@ -877,10 +870,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // but if it has to be, then it needsto be moved to the main thread
      // before it can use timers (DF)
      kded->moveToThread( k.thread() );
-
-#ifdef Q_WS_MAC
-     HideMenuBar();
-#endif
 
      kded->recreate(true); // initial
 
