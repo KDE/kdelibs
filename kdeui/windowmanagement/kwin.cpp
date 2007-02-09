@@ -64,6 +64,7 @@ static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
 static Atom wm_protocols;
 static Atom kwin_UTF8_STRING;
+static Atom net_wm_cm;
 
 static void kwin_net_create_atoms() {
     if (!atoms_created){
@@ -87,6 +88,11 @@ static void kwin_net_create_atoms() {
 
         atoms[n] = &wm_protocols;
         names[n++] = "WM_PROTOCOLS";
+        
+        char net_wm_cm_name[ 100 ];
+        sprintf( net_wm_cm_name, "_NET_WM_CM_S%d", DefaultScreen( QX11Info::display()));
+        atoms[n] = &net_wm_cm;
+        names[n++] = net_wm_cm_name;
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( QX11Info::display(), const_cast<char**>(names), n, false, atoms_return );
@@ -1138,6 +1144,16 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
     }
 #endif
     return result;
+}
+
+bool KWin::compositingActive()
+{
+#ifdef Q_WS_X11
+    kwin_net_create_atoms();
+    return XGetSelectionOwner( QX11Info::display(), net_wm_cm ) != None;
+#else
+    return false;
+#endif
 }
 
 #ifdef Q_WS_X11

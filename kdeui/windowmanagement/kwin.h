@@ -431,6 +431,11 @@ public:
      */
     static QString readNameProperty( WId window, unsigned long atom );
 
+    /**
+     * Returns true if a compositing manager is running (i.e. ARGB windows
+     * are supported, effects will be provided, etc.).
+     */
+    static bool compositingActive();
 };
 
 
