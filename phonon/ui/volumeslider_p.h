@@ -25,7 +25,8 @@
 #include <QSlider>
 #include <QLabel>
 #include <QPixmap>
-#include <kiconloader.h>
+#include <QToolButton>
+#include <kicon.h>
 
 namespace Phonon
 {
@@ -35,29 +36,50 @@ class VolumeSliderPrivate
     Q_DECLARE_PUBLIC( VolumeSlider )
     protected:
         VolumeSliderPrivate( VolumeSlider* parent )
-            : layout( parent ),
-            slider( Qt::Vertical, parent ),
-            icon( parent ),
-            output( 0 ),
-            ignoreVolumeChange( false )
+            : q_ptr(parent),
+            layout(QBoxLayout::LeftToRight, parent),
+            slider(Qt::Horizontal, parent),
+            icon(parent),
+            muteButton(parent),
+            volumeIcon("player_volume"),
+            muteIcon("player_mute"),
+            unmuteIcon("player_unmute"),
+            output(0),
+            ignoreVolumeChange(false)
         {
-            slider.setRange( 0, 100 );
-            slider.setPageStep( 5 );
-            slider.setSingleStep( 1 );
+            slider.setRange(0, 100);
+            slider.setPageStep(5);
+            slider.setSingleStep(1);
 
-            icon.setPixmap( SmallIcon( "player_volume" ) );
-            layout.setMargin( 0 );
-            layout.setSpacing( 2 );
-            layout.addWidget( &icon );
-            layout.addWidget( &slider );
+            muteButton.setCheckable(true);
+
+            icon.setPixmap(volumeIcon.pixmap(16));
+            icon.setAlignment(Qt::AlignCenter);
+            muteButton.setIcon(muteIcon);
+            muteButton.setAutoRaise(true);
+            layout.setMargin(0);
+            layout.setSpacing(2);
+            layout.addWidget(&icon);
+            layout.addWidget(&muteButton);
+            layout.addWidget(&slider);
         }
 
         VolumeSlider *q_ptr;
 
+        void _k_outputDestroyed();
+        void _k_sliderChanged(int);
+        void _k_volumeChanged(float);
+        void _k_mutedChanged(bool);
+        void _k_buttonToggled(bool);
+
     private:
-        QHBoxLayout layout;
+        QBoxLayout layout;
         QSlider slider;
         QLabel icon;
+        QToolButton muteButton;
+        KIcon volumeIcon;
+        KIcon muteIcon;
+        KIcon unmuteIcon;
 
         AudioOutput *output;
         bool ignoreVolumeChange;

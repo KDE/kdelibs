@@ -39,6 +39,16 @@ VolumeSlider::~VolumeSlider()
     delete d_ptr;
 }
 
+bool VolumeSlider::isMuteVisible() const
+{
+    return d_ptr->muteButton.isVisible();
+}
+
+void VolumeSlider::setMuteVisible(bool visible)
+{
+    d_ptr->muteButton.setVisible(visible);
+}
+
 float VolumeSlider::maximumVolume() const
 {
     return d_ptr->slider.maximum() * 0.01;
@@ -56,50 +66,70 @@ Qt::Orientation VolumeSlider::orientation() const
     return d_ptr->slider.orientation();
 }
 
-void VolumeSlider::setOrientation( Qt::Orientation o )
-{
-    d_ptr->slider.setOrientation(o);
-}
-
-void VolumeSlider::setAudioOutput( AudioOutput* output )
-{
-	if( !output )
-		return;
-    Q_D(VolumeSlider);
-
-	d->output = output;
-	d->slider.setValue( qRound( 100 * output->volume() ) );
-	d->slider.setEnabled( true );
-	connect( output, SIGNAL( destroyed() ), SLOT( outputDestroyed() ) );
-	connect( &d->slider, SIGNAL( valueChanged( int ) ), SLOT( sliderChanged( int ) ) );
-	connect( output, SIGNAL( volumeChanged( float ) ), SLOT( volumeChanged( float ) ) );
-}
-
-void VolumeSlider::sliderChanged( int value )
+void VolumeSlider::setOrientation(Qt::Orientation o)
 {
     Q_D(VolumeSlider);
-	setToolTip( i18n( "Volume: %1%" ,  value ) );
-	if( d->output )
-	{
-		d->ignoreVolumeChange = true;
-		d->output->setVolume( ( static_cast<float>( value ) ) * 0.01 );
-		d->ignoreVolumeChange = false;
-	}
+    d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
+    d->slider.setOrientation(o);
 }
 
-void VolumeSlider::volumeChanged( float value )
+void VolumeSlider::setAudioOutput(AudioOutput *output)
 {
+    if (!output) {
+        return;
+    }
     Q_D(VolumeSlider);
-	if( !d->ignoreVolumeChange )
-		d->slider.setValue( qRound( 100 * value ) );
+
+    d->output = output;
+    d->slider.setValue(qRound(100 * output->volume()));
+    d->slider.setEnabled(true);
+    connect(output, SIGNAL(destroyed()), SLOT(_k_outputDestroyed()));
+    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
+    connect(&d->muteButton, SIGNAL(toggled(bool)), SLOT(_k_buttonToggled(bool)));
+    connect(output, SIGNAL(volumeChanged(float)), SLOT(_k_volumeChanged(float)));
+    connect(output, SIGNAL(mutedChanged(bool)), SLOT(_k_mutedChanged(bool)));
 }
 
-void VolumeSlider::outputDestroyed()
+void VolumeSliderPrivate::_k_buttonToggled(bool muted)
 {
-    Q_D(VolumeSlider);
-	d->output = 0;
-	d->slider.setValue( 100 );
-	d->slider.setEnabled( false );
+    if (output) {
+        output->setMuted(muted);
+    }
+}
+
+void VolumeSliderPrivate::_k_mutedChanged(bool muted)
+{
+    muteButton.setDown(muted);
+    if (muted) {
+        muteButton.setIcon(unmuteIcon);
+    } else {
+        muteButton.setIcon(muteIcon);
+    }
+}
+
+void VolumeSliderPrivate::_k_sliderChanged(int value)
+{
+    Q_Q(VolumeSlider);
+    q->setToolTip(i18n("Volume: %1%", value));
+    if (output) {
+        ignoreVolumeChange = true;
+        output->setVolume((static_cast<float>(value)) * 0.01);
+        ignoreVolumeChange = false;
+    }
+}
+
+void VolumeSliderPrivate::_k_volumeChanged(float value)
+{
+    if (!ignoreVolumeChange) {
+        slider.setValue(qRound(100 * value));
+    }
+}
+
+void VolumeSliderPrivate::_k_outputDestroyed()
+{
+    output = 0;
+    slider.setValue(100);
+    slider.setEnabled(false);
 }
 
 bool VolumeSlider::isIconVisible() const

@@ -85,6 +85,8 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      * Defaults to 1 (1% of the voltage).
      */
     Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
+
+    Q_PROPERTY(bool muteVisible READ isMuteVisible WRITE setMuteVisible)
 	public:
 		/**
 		 * Constructs a new volume slider with a \p parent.
@@ -98,6 +100,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
         void setPageStep( int milliseconds );
         int singleStep() const;
         void setSingleStep( int milliseconds );
+        bool isMuteVisible() const;
 		float maximumVolume() const;
 		bool isIconVisible() const;
 		Qt::Orientation orientation() const;
@@ -106,16 +109,19 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 		void setMaximumVolume( float );
 		void setIconVisible( bool );
 		void setOrientation( Qt::Orientation );
+        void setMuteVisible(bool);
 
 		/**
 		 * Sets the audio output object to be controlled by this slider.
 		 */
 		void setAudioOutput( AudioOutput* );
 
-	private Q_SLOTS:
-		void outputDestroyed();
-		void sliderChanged( int );
-		void volumeChanged( float );
+    private:
+        Q_PRIVATE_SLOT(d_ptr, void _k_outputDestroyed())
+        Q_PRIVATE_SLOT(d_ptr, void _k_sliderChanged(int))
+        Q_PRIVATE_SLOT(d_ptr, void _k_volumeChanged(float))
+        Q_PRIVATE_SLOT(d_ptr, void _k_mutedChanged(bool))
+        Q_PRIVATE_SLOT(d_ptr, void _k_buttonToggled(bool))
 
     protected:
         VolumeSliderPrivate* d_ptr;
@@ -123,5 +129,5 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 
 } // namespace Phonon
 
-// vim: sw=4 tw=80 et
+// vim: sw=4 ts=4 et
 #endif // PHONON_UI_VOLUMESLIDER_H
