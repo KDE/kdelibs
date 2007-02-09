@@ -66,7 +66,7 @@ namespace Kross {
             /**
              * Set the error message.
              */
-            void setError(const QString& errormessage, const QString& tracemessage = QString::null, long lineno = -1) {
+            void setError(const QString& errormessage, const QString& tracemessage = QString(), long lineno = -1) {
                 m_error = errormessage;
                 m_trace = tracemessage;
                 m_lineno = lineno;

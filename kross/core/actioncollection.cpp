@@ -440,7 +440,7 @@ bool Manager::writeConfig()
     config->setGroup("scripts"); // according to the documentation it's needed to re-set the group after delete.
 
     QStringList names;
-    foreach(KAction* a, d->actioncollection->actions(QString::null)) {
+    foreach(KAction* a, d->actioncollection->actions(QString())) {
         Action* action = static_cast< Action* >(a);
         const QString name = action->objectName();
         names << name;

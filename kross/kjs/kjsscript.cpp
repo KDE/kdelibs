@@ -63,7 +63,7 @@ namespace Kross {
         const QString message = QString("%1%2: %3").arg( type ).arg((lineno >= 0) ? QString(" line %1").arg(lineno) : "").arg(value->toString(exec).qstring());
 
         ErrorInterface err;
-        err.setError(message, QString::null, lineno);
+        err.setError(message, QString(), lineno);
         return err;
     }
 

@@ -35,7 +35,7 @@ namespace Kross {
     {
         public:
 
-            inline void addObject(QObject* object, const QString& name = QString::null) {
+            inline void addObject(QObject* object, const QString& name = QString()) {
                 m_objects.insert(name.isNull() ? object->objectName() : name, object);
             }
 

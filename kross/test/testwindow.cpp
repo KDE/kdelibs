@@ -106,7 +106,7 @@ void TestWindow::execute()
         Kross::krossdebug( QString("EXCEPTION => %1").arg(m_action->getException()->toString()) );
     }
     else {
-        QString s = result ? result->toString() : QString::null;
+        QString s = result ? result->toString() : QString();
         Kross::krossdebug( QString("DONE => %1").arg(s) );
     }
 #endif
