@@ -152,9 +152,9 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
     KShortcut cut = KStandardShortcut::shortcut(pInfo->idAccel);
     if (!cut.isEmpty())
         pAction->setShortcut(cut);
-  }
 
-  pAction->setObjectName(pInfo->psName);
+    pAction->setObjectName(pInfo->psName);
+  }
 
   if (recvr && slot)
     if (id != OpenRecent)
