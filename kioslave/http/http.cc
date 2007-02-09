@@ -4996,9 +4996,9 @@ void HTTPProtocol::configAuth( char *p, bool b )
       else
       {
         if( b )
-          m_strProxyRealm = QString::fromAscii( p, i );
+          m_strProxyRealm = QString::fromLatin1( p, i );
         else
-          m_strRealm = QString::fromAscii( p, i );
+          m_strRealm = QString::fromLatin1( p, i );
       }
 
       if (!p[i]) break;
