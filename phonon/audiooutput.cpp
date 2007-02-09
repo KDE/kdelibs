@@ -70,8 +70,25 @@ void AudioOutput::setName( const QString& newName )
 	d->name = newName;
 }
 
-PHONON_INTERFACE_GETTER( float, volume, d->volume )
-PHONON_INTERFACE_SETTER( setVolume, volume, float )
+void AudioOutput::setVolume(float volume)
+{
+    K_D(AudioOutput);
+    d->volume = volume;
+    if (iface() && !d->muted) {
+        INTERFACE_CALL(setVolume, (volume));
+    } else {
+        emit volumeChanged(volume);
+    }
+}
+
+float AudioOutput::volume() const
+{
+    K_D(const AudioOutput);
+    if(d->muted || !d->backendObject) {
+        return d->volume;
+    }
+    return INTERFACE_CALL(volume, ());
+}
 
 static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
@@ -83,6 +100,27 @@ double AudioOutput::volumeDecibel() const
 void AudioOutput::setVolumeDecibel( double newVolumeDecibel )
 {
 	setVolume( exp( -newVolumeDecibel * log10over20 ) );
+}
+
+bool AudioOutput::isMuted() const
+{
+    K_D(const AudioOutput);
+    return d->muted;
+}
+
+void AudioOutput::setMuted(bool mute)
+{
+    K_D(AudioOutput);
+    if (d->muted != mute) {
+        if (mute) {
+            d->muted = mute;
+            INTERFACE_CALL(setVolume, (0.0));
+        } else {
+            INTERFACE_CALL(setVolume, (d->volume));
+            d->muted = mute;
+        }
+        emit mutedChanged(mute);
+    }
 }
 
 Category AudioOutput::category() const
@@ -132,7 +170,7 @@ void AudioOutput::setupIface()
 	Q_ASSERT( d->backendObject );
 	AbstractAudioOutput::setupIface();
 
-	connect( d->backendObject, SIGNAL( volumeChanged( float ) ), SIGNAL( volumeChanged( float ) ) );
+    connect(d->backendObject, SIGNAL(volumeChanged(float)), SLOT(_k_volumeChanged(float)));
     connect(d->backendObject, SIGNAL(audioDeviceFailed()), SLOT(_k_audioDeviceFailed()));
 
 	// set up attributes
@@ -151,6 +189,14 @@ void AudioOutput::setupIface()
                 }
             }
         }
+    }
+}
+
+void AudioOutputPrivate::_k_volumeChanged(float newVolume)
+{
+    if (!muted) {
+        Q_Q(AudioOutput);
+        emit q->volumeChanged(newVolume);
     }
 }
 

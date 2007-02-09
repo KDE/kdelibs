@@ -24,13 +24,14 @@
 
 class AudioOutputTest : public QObject
 {
-	Q_OBJECT
-	private slots:
-		void initTestCase();
-		void checkName();
-		void checkVolume();
-		void checkCategory();
-		void cleanupTestCase();
+    Q_OBJECT
+    private slots:
+        void initTestCase();
+        void checkName();
+        void checkVolume();
+        void checkMute();
+        void checkCategory();
+        void cleanupTestCase();
 };
 
 #endif // AUDIOOUTPUTTEST_H

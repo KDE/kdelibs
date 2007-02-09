@@ -87,6 +87,13 @@ namespace Phonon
 		 * \see outputDeviceChanged
 		 */
 		Q_PROPERTY( AudioOutputDevice outputDevice READ outputDevice WRITE setOutputDevice )
+
+        /**
+         * This property tells whether the output is muted.
+         *
+         * Muting the output has the same effect as calling setVolume(0.0).
+         */
+        Q_PROPERTY(bool muted READ isMuted WRITE setMuted NOTIFY mutedChanged)
 		public:
 			/**
 			 * Creates a new AudioOutput that defines output to a physical
@@ -116,6 +123,7 @@ namespace Phonon
 			 */
 			Phonon::Category category() const;
 			AudioOutputDevice outputDevice() const;
+            bool isMuted() const;
 
 		protected:
 			/**
@@ -132,6 +140,7 @@ namespace Phonon
 			void setVolume( float newVolume );
 			void setVolumeDecibel( double newVolumeDecibel );
             bool setOutputDevice(const AudioOutputDevice &newAudioOutputDevice);
+            void setMuted(bool mute);
 
 		Q_SIGNALS:
 			/**
@@ -141,6 +150,13 @@ namespace Phonon
 			 * to keep a widget showing the current volume up to date.
 			 */
 			void volumeChanged( float newVolume );
+
+            /**
+             * This signal is emitted when the muted property has changed. As
+             * this property can change by IPC (DBus) calls a UI element showing
+             * the muted property should listen to this signal.
+             */
+            void mutedChanged(bool);
 
 			/**
 			 * This signal is emitted when the (hardware) device for the output
@@ -154,6 +170,7 @@ namespace Phonon
 			void outputDeviceChanged( const AudioOutputDevice& newAudioOutputDevice );
 
         private:
+            Q_PRIVATE_SLOT(k_func(), void _k_volumeChanged(float))
             Q_PRIVATE_SLOT(k_func(), void _k_revertFallback())
             Q_PRIVATE_SLOT(k_func(), void _k_audioDeviceFailed())
 	};

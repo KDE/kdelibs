@@ -46,6 +46,16 @@ void AudioOutputAdaptor::setVolume(double value)
     parent()->setProperty("volume", QVariant::fromValue(static_cast<float>(value)));
 }
 
+bool AudioOutputAdaptor::muted() const
+{
+    return parent()->property("muted").toBool();
+}
+
+void AudioOutputAdaptor::setMuted(bool value)
+{
+    parent()->setProperty("muted", value);
+}
+
 QString AudioOutputAdaptor::category()
 {
     // handle method call org.kde.Phonon.AudioOutput.category

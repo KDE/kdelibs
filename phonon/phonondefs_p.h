@@ -156,21 +156,21 @@ rettype PHONON_CLASSNAME::name( argtype1 argvar1 ) const \
 #define PHONON_SETTER( functionname, privatevar, argtype1 ) \
 void PHONON_CLASSNAME::functionname( argtype1 x ) \
 { \
-	K_D( PHONON_CLASSNAME ); \
-	if( iface() ) \
-		BACKEND_CALL1( #functionname, argtype1, x ); \
-	else \
-		d->privatevar = x; \
+    K_D(PHONON_CLASSNAME); \
+    d->privatevar = x; \
+    if (iface()) { \
+        BACKEND_CALL1(#functionname, argtype1, x); \
+    } \
 }
 
 #define PHONON_INTERFACE_SETTER( functionname, privatevar, argtype1 ) \
 void PHONON_CLASSNAME::functionname( argtype1 x ) \
 { \
-	K_D( PHONON_CLASSNAME ); \
-	if( iface() ) \
-		qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->functionname( x ); \
-	else \
-		d->privatevar = x; \
+    K_D(PHONON_CLASSNAME); \
+    d->privatevar = x; \
+    if (iface()) { \
+        qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->functionname(x); \
+    } \
 }
 
 #endif // PHONONDEFS_P_H

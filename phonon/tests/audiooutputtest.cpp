@@ -55,27 +55,77 @@ void AudioOutputTest::checkVolume()
 	}
 }
 
+void AudioOutputTest::checkMute()
+{
+    AudioOutput ao(Phonon::CommunicationCategory, this);
+    QSignalSpy volumeSignalSpy(&ao, SIGNAL(volumeChanged(float)));
+    QSignalSpy muteSignalSpy(&ao, SIGNAL(mutedChanged(bool)));
+    float v = 1.0;
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), false);
+
+    ao.setMuted(true);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 1);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), true);
+    QCOMPARE(muteSignalSpy.takeFirst().at(0).toBool(), true);
+
+    ao.setMuted(true);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 0);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), true);
+
+    ao.setMuted(false);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 1);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), false);
+    QCOMPARE(muteSignalSpy.takeFirst().at(0).toBool(), false);
+
+    ao.setMuted(false);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 0);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), false);
+
+    ao.setMuted(true);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 1);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), true);
+    QCOMPARE(muteSignalSpy.takeFirst().at(0).toBool(), true);
+
+    v = 0.25f;
+    ao.setVolume(v);
+    QCOMPARE(volumeSignalSpy.size(), 1);
+    QCOMPARE(muteSignalSpy.size(), 0);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), true);
+    QCOMPARE(qvariant_cast<float>(volumeSignalSpy.takeFirst().at(0)), v);
+
+    ao.setMuted(true);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 0);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), true);
+
+    ao.setMuted(false);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    QCOMPARE(muteSignalSpy.size(), 1);
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(ao.isMuted(), false);
+    QCOMPARE(muteSignalSpy.takeFirst().at(0).toBool(), false);
+}
+
 void AudioOutputTest::checkCategory()
 {
-	AudioOutput* ao = new AudioOutput( Phonon::NotificationCategory, this );
-	QCOMPARE( ao->category(), Phonon::NotificationCategory );
-	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Notifications" ) );
-	delete ao;
-	ao = new AudioOutput( Phonon::MusicCategory, this );
-	QCOMPARE( ao->category(), Phonon::MusicCategory );
-	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Music" ) );
-	delete ao;
-	ao = new AudioOutput( Phonon::VideoCategory, this );
-	QCOMPARE( ao->category(), Phonon::VideoCategory );
-	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Video" ) );
-	delete ao;
-	ao = new AudioOutput( Phonon::CommunicationCategory, this );
-	QCOMPARE( ao->category(), Phonon::CommunicationCategory );
-	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Communication" ) );
-	delete ao;
-	ao = new AudioOutput( Phonon::GameCategory, this );
-	QCOMPARE( ao->category(), Phonon::GameCategory );
-	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Games" ) );
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        Phonon::Category cat = static_cast<Phonon::Category>(i);
+        AudioOutput ao(cat, this);
+        QCOMPARE(ao.category(), cat);
+    }
 }
 
 void AudioOutputTest::cleanupTestCase()

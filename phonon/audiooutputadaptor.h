@@ -27,14 +27,15 @@ class AudioOutputAdaptor: public QDBusAbstractAdaptor
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.kde.Phonon.AudioOutput")
     Q_CLASSINFO("D-Bus Introspection", ""
-"  <interface name=\"org.kde.Phonon.AudioOutput\" >\n"
-"    <method name=\"name\" >\n"
-"      <arg direction=\"out\" type=\"s\" name=\"name\" />\n"
+"  <interface name=\"org.kde.Phonon.AudioOutput\">\n"
+"    <property name=\"volume\" type=\"d\" access=\"readwrite\"/>\n"
+"    <property name=\"muted\" type=\"b\" access=\"readwrite\"/>\n"
+"    <method name=\"category\">\n"
+"      <arg type=\"s\" direction=\"out\"/>\n"
 "    </method>\n"
-"    <method name=\"category\" >\n"
-"      <arg direction=\"out\" type=\"s\" name=\"category\" />\n"
+"    <method name=\"name\">\n"
+"      <arg type=\"s\" direction=\"out\"/>\n"
 "    </method>\n"
-"    <property access=\"readwrite\" type=\"d\" name=\"volume\" />\n"
 "  </interface>\n"
         "")
 public:
@@ -45,6 +46,9 @@ public: // PROPERTIES
     Q_PROPERTY(double volume READ volume WRITE setVolume)
     double volume() const;
     void setVolume(double value);
+    Q_PROPERTY(bool muted READ muted WRITE setMuted)
+    bool muted() const;
+    void setMuted(bool value);
 
 public Q_SLOTS: // METHODS
     QString category();

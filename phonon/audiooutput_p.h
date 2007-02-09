@@ -40,7 +40,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
             : volume(1.0),
             outputDeviceIndex(-1),
             deviceBeforeFallback(-1),
-            outputDeviceOverridden(false)
+            outputDeviceOverridden(false),
+            muted(false)
 		{
 			const KAboutData* ad = KGlobal::mainComponent().aboutData();
 			if( ad )
@@ -55,6 +56,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
         };
         void handleAutomaticDeviceChange(int newIndex, DeviceChangeType type);
 
+        void _k_volumeChanged(float);
         void _k_revertFallback();
         void _k_audioDeviceFailed();
 
@@ -65,6 +67,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 		int outputDeviceIndex;
         int deviceBeforeFallback;
         bool outputDeviceOverridden;
+        bool muted;
 };
 } //namespace Phonon
 
