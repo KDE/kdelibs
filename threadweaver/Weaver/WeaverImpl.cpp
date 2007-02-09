@@ -306,7 +306,7 @@ void WeaverImpl::adjustActiveThreadCount( int diff )
     }
 }
 
-const int WeaverImpl::activeThreadCount()
+int WeaverImpl::activeThreadCount()
 {
     QMutexLocker l (m_mutex);
     return m_active;

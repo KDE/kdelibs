@@ -86,7 +86,7 @@ namespace ThreadWeaver {
         /** Returns the number of active threads.
             Threads are active if they process a job.
         */
-        const int activeThreadCount();
+        int activeThreadCount();
         /** Take the first available job out of the queue and return it.
             The job will be removed from the queue (therefore, take).
             Only jobs that have no unresolved dependencies are considered

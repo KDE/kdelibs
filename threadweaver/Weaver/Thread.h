@@ -72,7 +72,7 @@ namespace ThreadWeaver {
 	    specified. id() is the only way to uniquely identify a
 	    thread within ThreadWeaver.
 	    */
-	const unsigned int id();
+	unsigned int id();
 
         /** Request the abortion of the current job.
             If there is no current job, this method will do nothing, but can

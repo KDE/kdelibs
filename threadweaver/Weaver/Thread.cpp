@@ -106,7 +106,7 @@ Thread::~Thread()
     delete d; d = 0;
 }
 
-const unsigned int Thread::id()
+unsigned int Thread::id()
 {
     return d->id;
 }
