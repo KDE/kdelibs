@@ -547,7 +547,7 @@ void KLineEdit::copy(bool clipboard) const
       disconnect( QApplication::clipboard(), SIGNAL(selectionChanged()), this, 0);
       QApplication::clipboard()->setText( t, clipboard ? QClipboard::Clipboard : QClipboard::Selection );
       connect( QApplication::clipboard(), SIGNAL(selectionChanged()), this,
-               SLOT(clipboardChanged()) );
+               SLOT(_q_clipboardChanged()) );
       return;
    }
 
