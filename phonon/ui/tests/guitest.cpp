@@ -73,6 +73,7 @@ OutputWidget::OutputWidget( QWidget *parent )
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)), SLOT(deviceChange(int)));
 
 	m_volslider = new VolumeSlider( this );
+    m_volslider->setOrientation(Qt::Vertical);
 	m_volslider->setAudioOutput( m_output );
 	vlayout->addWidget( m_volslider );
 }
