@@ -424,6 +424,9 @@ public:
    *  You cannot test for the presence of an alias - you must always
    *  test for the full option.
    *
+   *  @note When an option is locale dependant you have to convert
+   *        the QByteArray by using QString::fromLocal8Bit().
+   *
    *  @param option The name of the option without '-'.
    *
    *  @return The value of the option. If the option was not
