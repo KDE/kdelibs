@@ -188,17 +188,17 @@ namespace Factory
      * Unique identifier for the Backend. Can be used in configuration files
      * for example.
      */
-    PHONONCORE_EXPORT QString identifier();
+    QString identifier();
 
     /**
      * Get the name of the Backend. It's the name from the .desktop file.
      */
-    PHONONCORE_EXPORT QString backendName();
+    QString backendName();
 
     /**
      * Get the comment of the Backend. It's the comment from the .desktop file.
      */
-    PHONONCORE_EXPORT QString backendComment();
+    QString backendComment();
 
     /**
      * Get the version of the Backend. It's the version from the .desktop file.
@@ -207,17 +207,17 @@ namespace Factory
      * available for binary incompatible versions of the backend's media
      * framework.
      */
-    PHONONCORE_EXPORT QString backendVersion();
+    QString backendVersion();
 
     /**
      * Get the icon (name) of the Backend. It's the icon from the .desktop file.
      */
-    PHONONCORE_EXPORT QString backendIcon();
+    QString backendIcon();
 
     /**
      * Get the website of the Backend. It's the website from the .desktop file.
      */
-    PHONONCORE_EXPORT QString backendWebsite();
+    QString backendWebsite();
 
     /**
      * registers the backend object
@@ -225,7 +225,7 @@ namespace Factory
     PHONONCORE_EXPORT QObject* registerQObject( QObject* o );
     PHONONCORE_EXPORT void registerFrontendObject(BasePrivate *);
     PHONONCORE_EXPORT void deregisterFrontendObject(BasePrivate *);
-    PHONONCORE_EXPORT const KComponentData &componentData();
+    const KComponentData &componentData();
 
 //X    It is probably better if we can get away with internal handling of
 //X    freeing the soundcard device when it's not needed anymore and
@@ -236,7 +236,7 @@ namespace Factory
 //X     * This is called when the application needs to free the soundcard
 //X     * device(s).
 //X     */
-//X    void freeSoundcardDevices() PHONONCORE_EXPORT;
+//X    void freeSoundcardDevices();
 } // namespace Factory
 } // namespace Phonon
 
