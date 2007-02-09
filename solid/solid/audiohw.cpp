@@ -73,14 +73,37 @@ QStringList Solid::AudioHw::driverHandles()
             }
             handle = handle.right(handle.size() - colon - 1);
 
-            // get cardnum and devicenum
-            const int comma = handle.indexOf( ',' );
+            // get cardnum, devicenum and subdevicenum
+            int comma = handle.indexOf( ',' );
+            QString cardnum;
+            QString devicenum;
+            QString subdevicenum;
             if (comma > -1)
             {
-                // if its X,0 make it X
-                if ( handle.right(handle.size() - 1 - comma) == QChar( '0' ) )
+                cardnum = handle.left( comma );
+                handle = handle.right( handle.size() - 1 - comma );
+                comma = handle.indexOf( ',' );
+                if ( comma > -1 )
                 {
-                    handle = handle.left( comma );
+                    devicenum = handle.left( comma );
+                    subdevicenum = handle.right( handle.size() - 1 - comma );
+                }
+                else
+                {
+                    devicenum = handle;
+                }
+            }
+            else
+            {
+                cardnum = handle;
+            }
+            handle = QLatin1String( "CARD=" ) + cardnum;
+            if ( !devicenum.isEmpty() )
+            {
+                handle += QLatin1String( ",DEV=" ) + devicenum;
+                if ( !subdevicenum.isEmpty() )
+                {
+                    handle += QLatin1String( ",SUBDEV=" ) + subdevicenum;
                 }
             }
 
