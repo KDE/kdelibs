@@ -4981,20 +4981,25 @@ void HTTPProtocol::configAuth( char *p, bool b )
     while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
     if ( strncasecmp( p, "realm=", 6 ) == 0 )
     {
-      //for sites like lib.homelinux.org
-      QTextCodec* oldCodec=QTextCodec::codecForCStrings();
-      if (KGlobal::locale()->language().contains("ru"))
-        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("CP1251"));
-
       p += 6;
       if (*p == '"') p++;
       while( p[i] && p[i] != '"' ) i++;
-      if( b )
-        m_strProxyRealm = QString::fromAscii( p, i );
-      else
-        m_strRealm = QString::fromAscii( p, i );
 
-      QTextCodec::setCodecForCStrings(oldCodec);
+      if (KGlobal::locale()->language().contains("ru"))
+      { //for sites like lib.homelinux.org
+        QTextCodec* codec = QTextCodec::codecForName("CP1251");
+        if( b )
+          m_strProxyRealm = codec->toUnicode( p, i );
+        else
+          m_strRealm = codec->toUnicode( p, i );
+      }
+      else
+      {
+        if( b )
+          m_strProxyRealm = QString::fromAscii( p, i );
+        else
+          m_strRealm = QString::fromAscii( p, i );
+      }
 
       if (!p[i]) break;
     }
