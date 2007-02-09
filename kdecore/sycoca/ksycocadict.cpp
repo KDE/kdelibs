@@ -114,7 +114,7 @@ KSycocaDict::find_string(const QString &key )
 
    if (!mStr || !mOffset)
    {
-      kError(7011) << "No database available!" << endl;
+      kError() << "No ksycoca4 database available!" << endl;
       return 0;
    }
 
