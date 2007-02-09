@@ -282,7 +282,6 @@ K3AboutContainerBase::K3AboutContainerBase(int layoutType, QWidget *_parent)
   mTopLayout = new QVBoxLayout(this);
   mTopLayout->setMargin(0);
   mTopLayout->setSpacing(KDialog::spacingHint());
-  if (!mTopLayout) { return; }
 
   if (layoutType & K3AboutDialog::ImageOnly)
   {
