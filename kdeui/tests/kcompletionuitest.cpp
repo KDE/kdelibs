@@ -1,8 +1,8 @@
-#include <Q3GroupBox>
 #include <QLabel>
-#include <Q3ListBox>
+#include <QListWidget>
 #include <QPushButton>
 #include <QLayout>
+#include <QGroupBox>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -27,9 +27,9 @@ Form1::Form1( QWidget* parent )
     Form1Layout->setSpacing( 6 );
     Form1Layout->setMargin( 11 );
 
-    GroupBox1 = new Q3GroupBox( this, "GroupBox1" );
+    GroupBox1 = new QGroupBox( this );
+    GroupBox1->setLayout( new QVBoxLayout() );
     GroupBox1->setTitle( "Completion Test" );
-    GroupBox1->setColumnLayout(0, Qt::Vertical );
     GroupBox1->layout()->setSpacing( 0 );
     GroupBox1->layout()->setMargin( 0 );
     GroupBox1Layout = new QVBoxLayout;
@@ -103,7 +103,7 @@ Form1::Form1( QWidget* parent )
     Layout8->setSpacing( 6 );
     Layout8->setMargin( 0 );
 
-    ListBox1 = new Q3ListBox( GroupBox1, "ListBox1" );
+    ListBox1 = new QListWidget( GroupBox1 );
     Layout8->addWidget( ListBox1 );
     connect( ListBox1, SIGNAL( highlighted( const QString& )),
 	     SLOT( slotHighlighted( const QString& )));
@@ -161,7 +161,7 @@ void Form1::slotList()
 {
     ListBox1->clear();
     QStringList items = edit->completionObject()->items();
-    ListBox1->insertStringList( items );
+    ListBox1->addItems( items );
 }
 
 void Form1::slotHighlighted( const QString& text )

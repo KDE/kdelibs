@@ -5,7 +5,7 @@
 
 #include <QCheckBox>
 #include <QRadioButton>
-#include <Q3ButtonGroup>
+#include <QFrame>
 
 #include <kapplication.h>
 #include <kmainwindow.h>
@@ -13,11 +13,10 @@
 
 class KRuler;
 class QWidget;
-class QFrame;
 class QGridLayout;
 class QCheckBox;
-class Q3GroupBox;
-
+class QGroupBox;
+class QButtonGroup;
 
 class MouseWidget : public QFrame
 {
@@ -77,11 +76,11 @@ private:
   QFrame *miniwidget, *bigwidget, *mainframe;
 
   QLabel *mouse_message;
-  Q3GroupBox *showMarks, *lineEdit, *vertrot;
+  QGroupBox *showMarks, *lineEdit, *vertrot;
   QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM, *showPT, *fixLen;
   KIntNumInput *beginMark, *endMark, *lengthInput;
   KDoubleNumInput *transX, *transY, *rotV;
-  Q3ButtonGroup *metricstyle;
+  QGroupBox *metricstyle;
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 
 };

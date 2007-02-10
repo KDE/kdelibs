@@ -7,6 +7,8 @@
 #include <QLayout>
 #include <QLabel>
 #include <QResizeEvent>
+#include <QGroupBox>
+#include <QButtonGroup>
 
 /*
 void
@@ -95,7 +97,7 @@ KRulerTest::KRulerTest()
   mouse_message->adjustSize();
   mouse_message->move(4,4);
 
-  showMarks = new Q3GroupBox("Show which marks ?", bigwidget);
+  showMarks = new QGroupBox("Show which marks ?", bigwidget);
   showMarks->setFixedSize(140, 160);
   showMarks->move(330,4);
   showTM = new QCheckBox("show tiny marks", showMarks);
@@ -135,7 +137,7 @@ KRulerTest::KRulerTest()
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotFixRulerLength(bool)) );
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotCheckLength(bool)) );
 
-  lineEdit = new Q3GroupBox("Value of begin/end", bigwidget);
+  lineEdit = new QGroupBox("Value of begin/end", bigwidget);
   lineEdit->setFixedSize(140, 80);
   lineEdit->move(330,4+160);
   beginMark = new KIntNumInput(0, lineEdit);
@@ -164,7 +166,7 @@ KRulerTest::KRulerTest()
 	  vruler, SLOT(slotEndOffset(int)) );
 
 
-  vertrot = new Q3GroupBox("Value of rotate translate for Vert.", bigwidget);
+  vertrot = new QGroupBox("Value of rotate translate for Vert.", bigwidget);
   vertrot->setFixedSize(140, 80);
   vertrot->move(330,4+160+80+4);
   transX = new KDoubleNumInput(vertrot);
@@ -193,30 +195,33 @@ KRulerTest::KRulerTest()
 	  SLOT(slotSetRotate(double)) );
   
 
-  metricstyle = new Q3ButtonGroup("metric styles", bigwidget);
+  metricstyle = new QGroupBox("metric styles", bigwidget);
+  
+  QButtonGroup* metricstyleButtons = new QButtonGroup(bigwidget);
+
   metricstyle->setFixedSize(100, 120);
   metricstyle->move(330-110,4);
   pixelmetric = new QRadioButton("pixel", metricstyle);
   pixelmetric->adjustSize();
   pixelmetric->move(5,15);
-  metricstyle->insert(pixelmetric, (int)KRuler::Pixel);
+  metricstyleButtons->addButton(pixelmetric, (int)KRuler::Pixel);
   inchmetric = new QRadioButton("inch", metricstyle);
   inchmetric->adjustSize();
   inchmetric->move(5,35);
-  metricstyle->insert(inchmetric, (int)KRuler::Inch);
+  metricstyleButtons->addButton(inchmetric, (int)KRuler::Inch);
   mmmetric = new QRadioButton("millimeter", metricstyle);
   mmmetric->adjustSize();
   mmmetric->move(5,55);
-  metricstyle->insert(mmmetric, (int)KRuler::Millimetres);
+  metricstyleButtons->addButton(mmmetric, (int)KRuler::Millimetres);
   cmmetric = new QRadioButton("centimeter", metricstyle);
   cmmetric->adjustSize();
   cmmetric->move(5,75);
-  metricstyle->insert(cmmetric, (int)KRuler::Centimetres);
+  metricstyleButtons->addButton(cmmetric, (int)KRuler::Centimetres);
   mmetric = new QRadioButton("meter", metricstyle);
   mmetric->adjustSize();
   mmetric->move(5,95);
-  metricstyle->insert(mmetric, (int)KRuler::Metres);
-  connect ( metricstyle, SIGNAL(clicked(int)), SLOT(slotSetMStyle(int)) );
+  metricstyleButtons->addButton(mmetric, (int)KRuler::Metres);
+  connect ( metricstyleButtons, SIGNAL(buttonClicked(int)), SLOT(slotSetMStyle(int)) );
 
   setCentralWidget(mainframe);
 
