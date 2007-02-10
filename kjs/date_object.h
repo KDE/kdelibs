@@ -77,7 +77,7 @@ namespace KJS {
             // non-normative properties (Appendix B)
             GetYear, SetYear, ToGMTString };
     private:
-        int id;
+        short id;
         bool utc;
     };
     
