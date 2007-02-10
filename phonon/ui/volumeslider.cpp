@@ -69,6 +69,7 @@ Qt::Orientation VolumeSlider::orientation() const
 void VolumeSlider::setOrientation(Qt::Orientation o)
 {
     Q_D(VolumeSlider);
+    d->outerlayout.setDirection(o == Qt::Horizontal ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
     d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
     d->slider.setOrientation(o);
 }

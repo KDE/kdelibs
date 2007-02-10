@@ -37,7 +37,8 @@ class VolumeSliderPrivate
     protected:
         VolumeSliderPrivate( VolumeSlider* parent )
             : q_ptr(parent),
-            layout(QBoxLayout::LeftToRight, parent),
+            outerlayout(QBoxLayout::TopToBottom, parent),
+            layout(QBoxLayout::LeftToRight),
             slider(Qt::Horizontal, parent),
             icon(parent),
             muteButton(parent),
@@ -57,6 +58,9 @@ class VolumeSliderPrivate
             icon.setAlignment(Qt::AlignCenter);
             muteButton.setIcon(muteIcon);
             muteButton.setAutoRaise(true);
+            outerlayout.addStretch();
+            outerlayout.addLayout(&layout);
+            outerlayout.addStretch();
             layout.setMargin(0);
             layout.setSpacing(2);
             layout.addWidget(&icon);
@@ -73,6 +77,7 @@ class VolumeSliderPrivate
         void _k_buttonToggled(bool);
 
     private:
+        QBoxLayout outerlayout;
         QBoxLayout layout;
         QSlider slider;
         QLabel icon;
