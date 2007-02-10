@@ -1524,7 +1524,7 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      QString pcaption = i18n("Password For '%1'").arg(x->getName());
+      QString pcaption = i18n("Password For '%1'", x->getName());
       QString oldpass;
       do {
          KPasswordDialog dlg(this);
@@ -1559,7 +1559,7 @@ QString iss;
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      QString pcaption = i18n("Password For '%1'").arg(x->getName());
+      QString pcaption = i18n("Password For '%1'", x->getName());
       QString oldpass;
       do {
          KPasswordDialog dlg(this);
@@ -1612,7 +1612,7 @@ QString iss;
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
-      QString pcaption = i18n("Password For '%1'").arg(x->getName());
+      QString pcaption = i18n("Password For '%1'", x->getName());
       QString oldpass;
       do {
          KPasswordDialog dlg(this);
@@ -1716,7 +1716,7 @@ void KCryptoConfig::slotYourPass() {
       pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPassCache());
    if (!pkcs) {
       QString pprompt = i18n("Enter the OLD password for the certificate:");
-      QString pcaption = i18n("Password For '%1'").arg(x->getName());
+      QString pcaption = i18n("Password For '%1'", x->getName());
       QString oldpass;
       do {
          KPasswordDialog dlg(this);
