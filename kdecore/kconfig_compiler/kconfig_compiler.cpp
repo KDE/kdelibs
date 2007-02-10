@@ -282,7 +282,7 @@ static QString enumName(const QString &n)
   return result;
 }
 
-static QString setFunction(const QString &n, const QString &className = QString::null)
+static QString setFunction(const QString &n, const QString &className = QString())
 {
   QString result = "set"+n;
   result[3] = result[3].toUpper();
@@ -293,7 +293,7 @@ static QString setFunction(const QString &n, const QString &className = QString:
 }
 
 
-static QString getFunction(const QString &n, const QString &className = QString::null)
+static QString getFunction(const QString &n, const QString &className = QString())
 {
   QString result = n;
   result[0] = result[0].toLower();
@@ -555,7 +555,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   if ( nameIsEmpty ) {
     name = key;
-    name.replace( " ", QString::null );
+    name.replace( " ", QString() );
   } else if ( name.contains( ' ' ) ) {
       std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can't contain spaces!"<<std::endl;
     name.remove( ' ' );
@@ -588,11 +588,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     // Adjust name
     paramName = name;
-    name.replace("$("+param+')', QString::null);
+    name.replace("$("+param+')', QString());
     // Lookup defaults for indexed entries
     for(int i = 0; i <= paramMax; i++)
     {
-      paramDefaultValues.append(QString::null);
+      paramDefaultValues.append(QString());
     }
 
     for ( QDomElement e = element.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) {
@@ -781,7 +781,7 @@ static QString itemDeclaration(const CfgEntry *e)
   fCap[0] = fCap[0].toUpper();
   return "  KConfigSkeleton::Item"+itemType( e->type() ) +
          "  *item" + fCap +
-         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString::null) +
+         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString()) +
          ";\n";
 }
 
@@ -825,7 +825,7 @@ static QString itemPath(const CfgEntry *e)
 }
 
 QString newItem( const QString &type, const QString &name, const QString &key,
-                 const QString &defaultValue, const QString &param = QString::null)
+                 const QString &defaultValue, const QString &param = QString())
 {
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
               "( currentGroup(), " + key + ", " + varPath( name ) + param;
@@ -884,7 +884,7 @@ QString paramString(const QString &group, const QList<Param> &parameters)
 }
 
 /* int i is the value of the parameter */
-QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QString i=QString::null )
+QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i=QString() )
 {
   QString txt;
   if (itemVarStr.isNull()) itemVarStr=itemPath(e);

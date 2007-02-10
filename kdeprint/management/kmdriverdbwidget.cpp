@@ -232,7 +232,7 @@ void KMDriverDbWidget::slotOtherClicked()
 	if (m_external.isEmpty())
 	{
 		KUrl startDir;
-		KFileDialog dlg( startDir, QString::null, this );
+		KFileDialog dlg( startDir, QString(), this );
 		KUrl url;
 
 		dlg.setMode( KFile::File );

@@ -504,7 +504,7 @@ END_VALUE_METHOD
 
 START_VALUE_METHOD( attribute, QDomElement )
     QString tag = KJSEmbed::extractQString(exec, args, 0);
-    QString defaultValue = KJSEmbed::extractQString(exec, args, 1, QString::null);
+    QString defaultValue = KJSEmbed::extractQString(exec, args, 1, QString());
     result = KJS::jsString( value.attribute(tag,defaultValue) );
 END_VALUE_METHOD
 
@@ -534,7 +534,7 @@ END_VALUE_METHOD
 START_VALUE_METHOD( attributeNS, QDomElement )
     QString nsURI = KJSEmbed::extractQString(exec, args, 0);
     QString localName = KJSEmbed::extractQString(exec, args, 1);
-    QString defValue = KJSEmbed::extractQString( exec, args, 1, QString::null );
+    QString defValue = KJSEmbed::extractQString( exec, args, 1, QString() );
     result = KJS::jsString( value.attributeNS( nsURI, localName, defValue ));
 END_VALUE_METHOD
 

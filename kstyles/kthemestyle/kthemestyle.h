@@ -74,7 +74,7 @@ public:
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
      */
-    KThemeStyle( const QString& configDir, const QString &configFile = QString::null );
+    KThemeStyle( const QString& configDir, const QString &configFile = QString() );
     ~KThemeStyle();
 
     virtual int pixelMetric ( PixelMetric metric, const QWidget * widget = 0 ) const;

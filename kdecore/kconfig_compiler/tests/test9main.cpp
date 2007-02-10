@@ -26,13 +26,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 int main( int, char** )
 {
   KComponentData i("test");
-  Test9 *t = new Test9( QString::null, QString::null );
+  Test9 *t = new Test9( QString(), QString() );
 
   QStringList myPathsList2 = t->myPathsList2();
   kWarning() << myPathsList2 << endl;
 
   // add another path
-  QStringList newlist; 
+  QStringList newlist;
   myPathsList2 << QDir::homePath() + QString::fromLatin1("/.kde");
   kWarning() << myPathsList2 << endl;
 

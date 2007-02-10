@@ -365,7 +365,7 @@ public:
      *
      * @return A pointer to the toolbar
      **/
-    KToolBar *toolBar( const QString& name = QString::null );
+    KToolBar *toolBar( const QString& name = QString() );
 
     /**
      * @return A list of all toolbars for this window

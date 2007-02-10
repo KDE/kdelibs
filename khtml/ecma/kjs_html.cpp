@@ -1841,7 +1841,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     if ( !href.isNull() ) {
       url = href.string();
       if ( href.isEmpty() )
-        url.setFileName( QString::null ); // href="" clears the filename (in IE)
+        url.setFileName( QString() ); // href="" clears the filename (in IE)
     }
     switch(token) {
       case AreaHref:
@@ -2892,7 +2892,7 @@ const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c)
   : DOMObject(HTMLCollectionProto::self(exec)), m_impl(c), hidden(false) {}
-  
+
 KJS::HTMLCollection::HTMLCollection(ObjectImp* proto, DOM::HTMLCollectionImpl* c)
   : DOMObject(proto), m_impl(c), hidden(false) {}
 
@@ -2912,7 +2912,7 @@ ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
 
 void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  for (unsigned i = 0; i < m_impl->length(); ++i) 
+  for (unsigned i = 0; i < m_impl->length(); ++i)
       propertyNames.add(Identifier::from(i));
 
   propertyNames.add(lengthPropertyName);
@@ -3115,7 +3115,7 @@ KJS_IMPLEMENT_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto, HTML
 
 const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
 
-KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, 
+KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c,
                                                 DOM::HTMLSelectElementImpl* e)
       : HTMLCollection(HTMLSelectCollectionProto::self(exec), c), element(e) { }
 
@@ -3230,7 +3230,7 @@ ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, Ob
   switch (id) {
   case KJS::HTMLSelectCollection::Add:
   {
-    //Non-standard select.options.add. 
+    //Non-standard select.options.add.
     //The first argument is the item, 2nd is offset.
     //IE and Mozilla are both quite picky here, too...
     DOM::NodeImpl* node = KJS::toNode(args[0]);
@@ -3245,14 +3245,14 @@ ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, Ob
       pos = element->length();
     else
       pos = (int)args[1]->toNumber(exec);
-      
+
     if (pos < 0)
       return throwError(exec, GeneralError, "Invalid index argument to HTMLOptionsCollection::add");
-    
+
     DOMExceptionTranslator exception(exec);
     if (pos >= element->length()) {
       //Append
-      element->add(option, 0, exception); 
+      element->add(option, 0, exception);
     } else {
       //Find what to prepend before..
       QVector<HTMLGenericFormElementImpl*> items = element->listItems();

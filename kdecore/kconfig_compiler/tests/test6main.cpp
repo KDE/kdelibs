@@ -25,6 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 int main( int, char** )
 {
   KComponentData i("test");
-  Test6 *t = new Test6(QString::null);
+  Test6 *t = new Test6(QString());
   delete t;
 }

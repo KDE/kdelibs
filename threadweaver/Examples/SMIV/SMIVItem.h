@@ -35,7 +35,7 @@ class SMIVItem : public QObject
     Q_OBJECT
 public:
     SMIVItem( Weaver *weaver = 0,
-              const QString& path  = QString::Null(), QObject *parent = 0 );
+              const QString& path  = QString(), QObject *parent = 0 );
     QString name() const;
     QString desc1() const;
     QString desc2() const;
