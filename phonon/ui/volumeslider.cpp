@@ -69,7 +69,9 @@ Qt::Orientation VolumeSlider::orientation() const
 void VolumeSlider::setOrientation(Qt::Orientation o)
 {
     Q_D(VolumeSlider);
-    d->outerlayout.setDirection(o == Qt::Horizontal ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+    Qt::Alignment align = (o == Qt::Horizontal ? Qt::AlignVCenter : Qt::AlignHCenter);
+    d->layout.setAlignment(&d->muteButton, align);
+    d->layout.setAlignment(&d->slider, align);
     d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
     d->slider.setOrientation(o);
 }
@@ -86,25 +88,24 @@ void VolumeSlider::setAudioOutput(AudioOutput *output)
     d->slider.setEnabled(true);
     connect(output, SIGNAL(destroyed()), SLOT(_k_outputDestroyed()));
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
-    connect(&d->muteButton, SIGNAL(toggled(bool)), SLOT(_k_buttonToggled(bool)));
+    connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
     connect(output, SIGNAL(volumeChanged(float)), SLOT(_k_volumeChanged(float)));
     connect(output, SIGNAL(mutedChanged(bool)), SLOT(_k_mutedChanged(bool)));
 }
 
-void VolumeSliderPrivate::_k_buttonToggled(bool muted)
+void VolumeSliderPrivate::_k_buttonClicked()
 {
     if (output) {
-        output->setMuted(muted);
+        output->setMuted(!output->isMuted());
     }
 }
 
 void VolumeSliderPrivate::_k_mutedChanged(bool muted)
 {
-    muteButton.setDown(muted);
     if (muted) {
-        muteButton.setIcon(unmuteIcon);
+        muteButton.setIcon(mutedIcon);
     } else {
-        muteButton.setIcon(muteIcon);
+        muteButton.setIcon(volumeIcon);
     }
 }
 
@@ -131,16 +132,6 @@ void VolumeSliderPrivate::_k_outputDestroyed()
     output = 0;
     slider.setValue(100);
     slider.setEnabled(false);
-}
-
-bool VolumeSlider::isIconVisible() const
-{
-    return d_ptr->icon.isVisible();
-}
-
-void VolumeSlider::setIconVisible( bool vis )
-{
-    d_ptr->icon.setVisible(vis);
 }
 
 bool VolumeSlider::hasTracking() const

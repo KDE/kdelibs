@@ -44,12 +44,6 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 	 */
 	Q_PROPERTY( float maximumVolume READ maximumVolume WRITE setMaximumVolume )
 	/**
-	 * This property holds whether the icon next to the slider is visible.
-	 *
-	 * By default the icon is visible.
-	 */
-	Q_PROPERTY( bool iconVisible READ isIconVisible WRITE setIconVisible )
-	/**
 	 * This property holds the orientation of the slider.
 	 *
 	 * The orientation must be Qt::Vertical (the default) or Qt::Horizontal.
@@ -86,6 +80,11 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      */
     Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
 
+    /**
+     * This property holds whether the mute button/icon next to the slider is visible.
+     *
+     * By default the mute button/icon is visible.
+     */
     Q_PROPERTY(bool muteVisible READ isMuteVisible WRITE setMuteVisible)
 	public:
 		/**
@@ -102,12 +101,10 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
         void setSingleStep( int milliseconds );
         bool isMuteVisible() const;
 		float maximumVolume() const;
-		bool isIconVisible() const;
 		Qt::Orientation orientation() const;
 
 	public Q_SLOTS:
 		void setMaximumVolume( float );
-		void setIconVisible( bool );
 		void setOrientation( Qt::Orientation );
         void setMuteVisible(bool);
 
@@ -121,7 +118,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
         Q_PRIVATE_SLOT(d_ptr, void _k_sliderChanged(int))
         Q_PRIVATE_SLOT(d_ptr, void _k_volumeChanged(float))
         Q_PRIVATE_SLOT(d_ptr, void _k_mutedChanged(bool))
-        Q_PRIVATE_SLOT(d_ptr, void _k_buttonToggled(bool))
+        Q_PRIVATE_SLOT(d_ptr, void _k_buttonClicked())
 
     protected:
         VolumeSliderPrivate* d_ptr;

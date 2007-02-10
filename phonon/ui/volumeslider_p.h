@@ -37,14 +37,11 @@ class VolumeSliderPrivate
     protected:
         VolumeSliderPrivate( VolumeSlider* parent )
             : q_ptr(parent),
-            outerlayout(QBoxLayout::TopToBottom, parent),
-            layout(QBoxLayout::LeftToRight),
+            layout(QBoxLayout::LeftToRight, parent),
             slider(Qt::Horizontal, parent),
-            icon(parent),
             muteButton(parent),
             volumeIcon("player_volume"),
-            muteIcon("player_mute"),
-            unmuteIcon("player_unmute"),
+            mutedIcon("player_volume_muted"),
             output(0),
             ignoreVolumeChange(false)
         {
@@ -52,20 +49,13 @@ class VolumeSliderPrivate
             slider.setPageStep(5);
             slider.setSingleStep(1);
 
-            muteButton.setCheckable(true);
-
-            icon.setPixmap(volumeIcon.pixmap(16));
-            icon.setAlignment(Qt::AlignCenter);
-            muteButton.setIcon(muteIcon);
+            muteButton.setIcon(volumeIcon);
             muteButton.setAutoRaise(true);
-            outerlayout.addStretch();
-            outerlayout.addLayout(&layout);
-            outerlayout.addStretch();
+            muteButton.setIconSize(QSize(32, 32));
             layout.setMargin(0);
             layout.setSpacing(2);
-            layout.addWidget(&icon);
-            layout.addWidget(&muteButton);
-            layout.addWidget(&slider);
+            layout.addWidget(&muteButton, 0, Qt::AlignVCenter);
+            layout.addWidget(&slider, 0, Qt::AlignVCenter);
         }
 
         VolumeSlider *q_ptr;
@@ -74,17 +64,14 @@ class VolumeSliderPrivate
         void _k_sliderChanged(int);
         void _k_volumeChanged(float);
         void _k_mutedChanged(bool);
-        void _k_buttonToggled(bool);
+        void _k_buttonClicked();
 
     private:
-        QBoxLayout outerlayout;
         QBoxLayout layout;
         QSlider slider;
-        QLabel icon;
         QToolButton muteButton;
         KIcon volumeIcon;
-        KIcon muteIcon;
-        KIcon unmuteIcon;
+        KIcon mutedIcon;
 
         AudioOutput *output;
         bool ignoreVolumeChange;
