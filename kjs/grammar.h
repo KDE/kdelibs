@@ -87,8 +87,9 @@
      XOREQUAL = 313,
      OREQUAL = 314,
      IDENT = 315,
-     AUTOPLUSPLUS = 316,
-     AUTOMINUSMINUS = 317
+     FUNCEXPRIDENT = 316,
+     AUTOPLUSPLUS = 317,
+     AUTOMINUSMINUS = 318
    };
 #endif
 /* Tokens.  */
@@ -150,8 +151,9 @@
 #define XOREQUAL 313
 #define OREQUAL 314
 #define IDENT 315
-#define AUTOPLUSPLUS 316
-#define AUTOMINUSMINUS 317
+#define FUNCEXPRIDENT 316
+#define AUTOPLUSPLUS 317
+#define AUTOMINUSMINUS 318
 
 
 
@@ -187,7 +189,7 @@ typedef union YYSTYPE {
   FinallyNode         *fnode;
 } YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 191 "grammar.tab.h"
+#line 193 "grammar.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

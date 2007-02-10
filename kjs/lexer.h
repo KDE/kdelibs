@@ -92,7 +92,7 @@ namespace KJS {
     bool delimited;
     bool skipLF;
     bool skipCR;
-    bool eatNextIdentifier;
+    bool convertNextIdentifier;
     int stackToken;
     int lastToken;
     bool foundBad;

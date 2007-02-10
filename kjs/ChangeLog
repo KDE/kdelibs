@@ -1,3 +1,7 @@
+2007-02-10  Harri Porten  <porten@kde.org>
+
+	* lexer.cpp: support named function expressions 
+
 2006-11-04  Harri Porten  <porten@kde.org>
 
 	* number_object.cpp: Fixed toFixed(n) calls on negative zero.

@@ -1045,15 +1045,16 @@ namespace KJS {
 
   class FuncExprNode : public Node {
   public:
-    FuncExprNode(FunctionBodyNode *b)
-      : param(0), body(b) { }
-    FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
-      : param(p->next), body(b) { p->next = 0; }
+    FuncExprNode(const Identifier &i, FunctionBodyNode *b)
+      : ident(i), param(0), body(b) { }
+    FuncExprNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
+      : ident(i), param(p->next), body(b) { p->next = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
+    Identifier ident;
     ParameterNode *param;
     FunctionBodyNode *body;
   };

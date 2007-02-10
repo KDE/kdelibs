@@ -3032,6 +3032,18 @@ bool FuncExprNode::deref()
 // ECMA 13
 Value FuncExprNode::evaluate(ExecState *exec) const
 {
+  ContextImp *context = exec->context().imp();
+  bool named = !ident.isNull();
+  Object functionScopeObject;
+
+  if (named) {
+    // named FunctionExpressions can recursively call themselves,
+    // but they won't register with the current scope chain and should
+    // be contained as single property in an anonymous object.
+    functionScopeObject = Object(new ObjectImp());
+    context->pushScope(functionScopeObject);
+  }
+
   FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null(), body, exec->context().imp()->scopeChain());
   Value ret(fimp);
   List empty;
@@ -3040,6 +3052,11 @@ Value FuncExprNode::evaluate(ExecState *exec) const
 
   for(const ParameterNode *p = param; p != 0L; p = p->nextParam())
     fimp->addParameter(p->ident());
+
+  if (named) {
+    functionScopeObject.put(exec, ident, Value(fimp), ReadOnly|DontDelete);
+    context->popScope();
+  }
 
   return ret;
 }

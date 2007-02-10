@@ -63,7 +63,7 @@ int kjsyylex()
 Lexer::Lexer()
   : yylineno(1),
     size8(128), size16(128), restrKeyword(false),
-    eatNextIdentifier(false), stackToken(-1), lastToken(-1), pos(0),
+    convertNextIdentifier(false), stackToken(-1), lastToken(-1), pos(0),
     code(0), length(0),
 #ifndef KJS_PURE_ECMA
     bol(true),
@@ -106,7 +106,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   yylineno = 1;
   restrKeyword = false;
   delimited = false;
-  eatNextIdentifier = false;
+  convertNextIdentifier = false;
   stackToken = -1;
   lastToken = -1;
   foundBad = false;
@@ -503,8 +503,8 @@ int Lexer::lex()
   }
 #endif
 
-  if (state != Identifier && eatNextIdentifier)
-    eatNextIdentifier = false;
+  if (state != Identifier && convertNextIdentifier)
+    convertNextIdentifier = false;
 
   restrKeyword = false;
   delimited = false;
@@ -524,27 +524,28 @@ int Lexer::lex()
     if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {
       // Lookup for keyword failed, means this is an identifier
       // Apply anonymous-function hack below (eat the identifier)
-      if (eatNextIdentifier) {
-        eatNextIdentifier = false;
+      if (convertNextIdentifier) {
+        convertNextIdentifier = false;
 #ifdef KJS_VERBOSE
         UString debugstr(buffer16, pos16); fprintf(stderr,"Anonymous function hack: eating identifier %s\n",debugstr.ascii());
 #endif
-        token = lex();
-        break;
+	token = FUNCEXPRIDENT;
+      } else {
+	token = IDENT;
       }
       /* TODO: close leak on parse error. same holds true for String */
       kjsyylval.ident = makeIdentifier(buffer16, pos16);
-      token = IDENT;
       break;
     }
 
-    eatNextIdentifier = false;
+    convertNextIdentifier = false;
     // Hack for "f = function somename() { ... }", too hard to get into the grammar
     // Same for building an array with function pointers ( 'name', func1, 'name2', func2 )
     // There are lots of other uses, we really have to get this into the grammar
     if ( token == FUNCTION &&
-         ( lastToken == '=' || lastToken == ',' || lastToken == '(' ) )
-            eatNextIdentifier = true;
+         ( lastToken == '=' || lastToken == ',' || lastToken == '(' ) ||
+	   lastToken == RETURN )
+            convertNextIdentifier = true;
 
     if (token == CONTINUE || token == BREAK ||
         token == RETURN || token == THROW)

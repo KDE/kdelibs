@@ -114,7 +114,7 @@ using namespace KJS;
 /* terminal types */
 %token <dval> NUMBER
 %token <ustr> STRING
-%token <ident> IDENT
+%token <ident> IDENT FUNCEXPRIDENT
 
 /* automatically inserted semicolon */
 %token AUTOPLUSPLUS AUTOMINUSMINUS
@@ -636,10 +636,14 @@ FunctionDeclarationInternal:
 ;
 
 FunctionExpr:
-    FUNCTION '(' ')' FunctionBody  { $$ = new FuncExprNode($4); }
+    FUNCTION '(' ')' FunctionBody 
+                       { $$ = new FuncExprNode(Identifier::null(), $4); }
   | FUNCTION '(' FormalParameterList ')' FunctionBody
-                                   { $$ = new FuncExprNode($3, $5); }
-
+                       { $$ = new FuncExprNode(Identifier::null(), $3, $5); }
+  | FUNCTION FUNCEXPRIDENT '(' ')' FunctionBody
+                       { $$ = new FuncExprNode(*$2, $5); }
+  | FUNCTION FUNCEXPRIDENT '(' FormalParameterList ')' FunctionBody
+                       { $$ = new FuncExprNode(*$2, $4, $6); }
 ;
 
 FormalParameterList:
