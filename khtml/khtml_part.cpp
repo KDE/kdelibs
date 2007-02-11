@@ -5219,7 +5219,8 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
   if (!checkFrameAccess(callingHtmlPart))
      return 0;
 
-  if (!childFrame && !parentPart() && (name() == f))
+  // match encoding used in KonqView::setViewName()
+  if (!childFrame && !parentPart() && (QString::fromLocal8Bit(name()) == f))
      return this;
 
   FrameIt it = d->m_frames.find( f );

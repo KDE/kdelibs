@@ -1,3 +1,14 @@
+2007-02-11  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp (executeOpenWindow): fixed location href
+	and pathname for about:blank windows
+
+	* khtml_part.cpp (findFrameParent): made frame name lookup locale
+	independant. Was mostly problematic with non-ascii names.
+
+	* html/html_formimpl.cpp (gatherWalletData): prevent crash occuring
+	on double form submits (bug report #105899)
+	
 2006-11-14  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement overflow-x and overflow-y
