@@ -2051,7 +2051,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
         case Word:
         {
           bool same = ( newCursor.line() == selStartCached.line() );
-          uint c;
+          int c;
           if ( newCursor.line() > selStartCached.line() ||
                ( same && newCursor.col() > selEndCached.col() ) )
           {
@@ -2072,7 +2072,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
             KateTextLine::Ptr l = m_doc->kateTextLine( newCursor.line() );
 
-            for ( c = newCursor.col(); c > 0; c-- )
+            for ( c = newCursor.col(); c >= 0; c-- )
               if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
                 break;
 
