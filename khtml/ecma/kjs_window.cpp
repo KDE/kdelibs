@@ -2709,7 +2709,7 @@ UString Location::toString(ExecState *exec) const
     Window* window = Window::retrieveWindow( m_frame->m_part );
     if ( window && window->isSafeScript(exec) )
     {
-      Kurl url = m_frame->m_part->url();
+      KUrl url = m_frame->m_part->url();
       if (url.isEmpty())
         return "about:blank";
       else if (!url.hasPath())
