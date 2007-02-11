@@ -529,7 +529,7 @@ void HTMLFormElementImpl::gatherWalletData()
     m_havePassword = false;
     m_haveTextarea = false;
     const KUrl formUrl(getDocument()->URL());
-    if (!view->nonPasswordStorableSite(formUrl.host())) {
+    if (view && !view->nonPasswordStorableSite(formUrl.host())) {
         for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
             if (it.current()->id() == ID_INPUT)  {
                 HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
