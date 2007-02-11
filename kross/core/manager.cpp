@@ -31,7 +31,6 @@
 #include <QFileInfo>
 
 #include <kapplication.h>
-#include <kactioncollection.h>
 #include <klibloader.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>

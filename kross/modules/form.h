@@ -81,6 +81,30 @@ namespace Kross {
             //QStringList selectedFiles() const { return KFileDialog::selectedFiles(); }
             //QString selectedUrl() const { return KFileDialog::selectedUrl().toLocalFile(); }
 
+        Q_SIGNALS:
+
+            /**
+            * Emitted when the user selects a file. It is only emitted in single-
+            * selection mode.
+            */
+            void fileSelected(const QString& file);
+
+            /**
+            * Emitted when the user highlights a file.
+            */
+            void fileHighlighted(const QString&);
+
+            /**
+            * Emitted when the user hilights one or more files in multiselection mode.
+            */
+            void selectionChanged();
+
+            /**
+            * Emitted when the filter changed, i.e. the user entered an own filter
+            * or chose one of the predefined set via setFilter().
+            */
+            void filterChanged(const QString& filter);
+
         private:
             virtual void showEvent(QShowEvent* event);
             virtual void hideEvent(QHideEvent* event);
@@ -305,6 +329,17 @@ namespace Kross {
              * \param name the objectName the new widget has.
              * \return the new QWidget instance or NULL.
              */
+            QWidget* createWidget(const QString& className);
+
+            /**
+             * Create and return a new QWidget instance.
+             *
+             * \param parent the parent QWidget the new QWidget is a child of.
+             * \param className the name of the class that should be created
+             * and returned. For example "QLabel" or "QForm".
+             * \param name the objectName the new widget has.
+             * \return the new QWidget instance or NULL.
+             */
             QWidget* createWidget(QWidget* parent, const QString& className, const QString& name = QString());
 
             /**
@@ -333,7 +368,7 @@ namespace Kross {
              * \param startDirOrVariable the start-directory or -variable.
              * \return the new \a FormFileWidget instance or NULL.
              */
-            QWidget* createFileWidget(QWidget* parent, const QString& startDirOrVariable);
+            QWidget* createFileWidget(QWidget* parent, const QString& startDirOrVariable = QString());
 
         private:
             /// \internal d-pointer class.

@@ -6,11 +6,12 @@ include_directories(
 )
 
 # the scriptmanager module
-set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp)
+set(krossmodulescriptmanager_PART_SRCS scriptmanagereditor.cpp scriptmanager.cpp)
 kde4_automoc(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 kde4_add_plugin(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 
-target_link_libraries(krossmodulescriptmanager ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} knewstuff krosscore)
+#target_link_libraries(krossmodulescriptmanager ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} knewstuff krosscore)
+target_link_libraries(krossmodulescriptmanager ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} krosscore)
 install(TARGETS krossmodulescriptmanager DESTINATION ${PLUGIN_INSTALL_DIR})
 
 # the forms module

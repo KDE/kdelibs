@@ -19,18 +19,25 @@
  ***************************************************************************/
 
 #include "scriptmanager.h"
+#include "scriptmanagereditor.h"
 
 #include "../core/manager.h"
 #include "../core/action.h"
 #include "../core/actioncollection.h"
 #include "../core/guiclient.h"
+//#include "../core/interpreter.h"
 #include "../core/model.h"
 
+#include <QFileInfo>
+#include <QDir>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
-#include <QFileInfo>
-#include <QDir>
+//#include <QLabel>
+//#include <QLineEdit>
+//#include <QComboBox>
+//#include <QCheckBox>
+#include <QTreeView>
 
 #include <kapplication.h>
 //#include <kdeversion.h>
@@ -42,13 +49,14 @@
 #include <kpushbutton.h>
 #include <kfiledialog.h>
 #include <kmenu.h>
+#include <kpagedialog.h>
 
 #include <ktar.h>
 #include <kio/netaccess.h>
-#include <knewstuff/provider.h>
-#include <knewstuff/engine.h>
-#include <knewstuff/downloaddialog.h>
-#include <knewstuff/knewstuffsecure.h>
+//#include <knewstuff/provider.h>
+//#include <knewstuff/engine.h>
+//#include <knewstuff/downloaddialog.h>
+//#include <knewstuff/knewstuffsecure.h>
 
 extern "C"
 {
@@ -66,6 +74,7 @@ using namespace Kross;
 
 namespace Kross {
 
+    /*
     /// \internal class that inherits \a KNewStuffSecure to implement the GHNS-functionality.
     class ScriptManagerNewStuff : public KNewStuffSecure
     {
@@ -78,17 +87,18 @@ namespace Kross {
             ScriptManagerCollection* m_collection;
             virtual void installResource() { m_collection->module()->installPackage( m_tarName ); }
     };
+    */
 
     /// \internal d-pointer class.
     class ScriptManagerCollection::Private
     {
         public:
             ScriptManagerModule* module;
-            ScriptManagerNewStuff* newstuff;
+            //ScriptManagerNewStuff* newstuff;
             bool modified;
             QTreeView* view;
-            KPushButton *runbtn, *stopbtn, *installbtn, *uninstallbtn, *newstuffbtn;
-            Private(ScriptManagerModule* m) : module(m), newstuff(0), modified(false) {}
+            KPushButton *runbtn, *stopbtn, *editbtn, *addbtn, *removebtn, *newstuffbtn;
+            Private(ScriptManagerModule* m) : module(m), /*newstuff(0),*/ modified(false) {}
     };
 
 }
@@ -103,11 +113,16 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
 
     d->view = new QTreeView(this);
     mainlayout->addWidget(d->view);
+    d->view->header()->hide();
+    d->view->setSelectionMode(QAbstractItemView::SingleSelection);
     d->view->setAlternatingRowColors(true);
     d->view->setRootIsDecorated(true);
-    d->view->setSortingEnabled(true);
+    d->view->setSortingEnabled(false);
     d->view->setItemsExpandable(true);
-    d->view->header()->hide();
+    d->view->setDragEnabled(true);
+    d->view->setAcceptDrops(true);
+    d->view->setDropIndicatorShown(true);
+    d->view->setDragDropMode(QAbstractItemView::InternalMove);
 
     ActionCollectionModel::Mode modelmode = ActionCollectionModel::Mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
     ActionCollectionModel* model = new ActionCollectionModel(d->view, Kross::Manager::self().actionCollection(), modelmode);
@@ -139,17 +154,31 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     btnlayout->addWidget(d->stopbtn);
     connect(d->stopbtn, SIGNAL(clicked()), this, SLOT(slotStop()) );
 
-    d->installbtn = new KPushButton(KIcon("fileimport"), i18n("Install"), btnwidget);
-    d->installbtn->setToolTip( i18n("Install a script-package.") );
-    d->installbtn->setEnabled(false);
-    btnlayout->addWidget(d->installbtn);
-    connect(d->installbtn, SIGNAL(clicked()), this, SLOT(slotInstall()) );
+    QFrame* hr1 = new QFrame(btnwidget);
+    hr1->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+    btnlayout->addWidget(hr1, 0);
 
-    d->uninstallbtn = new KPushButton(KIcon("fileclose"), i18n("Uninstall"), btnwidget);
-    d->uninstallbtn->setToolTip( i18n("Uninstall the selected script-package.") );
-    btnlayout->addWidget(d->uninstallbtn);
-    d->uninstallbtn->setEnabled(false);
-    //TODO connect(d->uninstallbtn, SIGNAL(clicked()), this, SLOT(slotUninstall()) );
+    d->editbtn = new KPushButton(KIcon("edit"), i18n("Edit..."), btnwidget);
+    d->editbtn->setToolTip( i18n("Edit selected script.") );
+    d->editbtn->setEnabled(false);
+    btnlayout->addWidget(d->editbtn);
+    connect(d->editbtn, SIGNAL(clicked()), this, SLOT(slotEdit()) );
+
+    d->addbtn = new KPushButton(KIcon("add"), i18n("Add..."), btnwidget);
+    d->addbtn->setToolTip( i18n("Add a new script.") );
+    btnlayout->addWidget(d->addbtn);
+    d->addbtn->setEnabled(false);
+    connect(d->addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
+
+    d->removebtn = new KPushButton(KIcon("remove"), i18n("Remove"), btnwidget);
+    d->removebtn->setToolTip( i18n("Remove selected script.") );
+    btnlayout->addWidget(d->removebtn);
+    d->removebtn->setEnabled(false);
+    connect(d->removebtn, SIGNAL(clicked()), this, SLOT(slotRemove()) );
+
+    QFrame* hr2 = new QFrame(btnwidget);
+    hr2->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+    btnlayout->addWidget(hr2, 0);
 
     d->newstuffbtn = new KPushButton(KIcon("knewstuff"), i18n("Get New Scripts"), btnwidget);
     d->newstuffbtn->setToolTip( i18n("Get new scripts from the internet.") );
@@ -182,6 +211,7 @@ void ScriptManagerCollection::slotSelectionChanged()
 {
     bool startenabled = d->view->selectionModel()->hasSelection();
     bool stopenabled = false;
+    bool hasselection = d->view->selectionModel()->selectedIndexes().count() > 0;
     foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
         Action* action = ActionCollectionModel::action(index);
         if( startenabled && ! action )
@@ -191,6 +221,8 @@ void ScriptManagerCollection::slotSelectionChanged()
     }
     d->runbtn->setEnabled(startenabled);
     d->stopbtn->setEnabled(stopenabled);
+    d->editbtn->setEnabled(hasselection);
+    //d->removebtn->setEnabled(hasselection);
 }
 
 void ScriptManagerCollection::slotDataChanged(const QModelIndex&, const QModelIndex&)
@@ -224,6 +256,31 @@ void ScriptManagerCollection::slotStop()
     slotSelectionChanged();
 }
 
+void ScriptManagerCollection::slotEdit()
+{
+    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
+        if( ! index.isValid() ) continue;
+        if( Action* action = ActionCollectionModel::action(index) )
+            d->module->showEditorDialog(action, this);
+        else if( ActionCollection* collection = ActionCollectionModel::collection(index) )
+            d->module->showEditorDialog(collection, this);
+        else
+            continue;
+        break;
+    }
+}
+
+void ScriptManagerCollection::slotAdd()
+{
+    KMessageBox::sorry(0, "TODO");
+}
+
+void ScriptManagerCollection::slotRemove()
+{
+    KMessageBox::sorry(0, "TODO");
+}
+
+#if 0
 bool ScriptManagerCollection::slotInstall()
 {
     KFileDialog* filedialog = new KFileDialog(
@@ -236,7 +293,6 @@ bool ScriptManagerCollection::slotInstall()
     return filedialog->exec() ? module()->installPackage(filedialog->selectedUrl().path()) : false;
 }
 
-#if 0
 void ScriptManagerView::slotUninstall()
 {
     foreach(QModelIndex index, d->selectionmodel->selectedIndexes())
@@ -347,9 +403,9 @@ bool ScriptManagerModule::installPackage(const QString& scriptpackagefile)
     int nodelistcount = nodelist.count();
     for(int i = 0; i < nodelistcount; ++i) {
         QDomElement element = nodelist.item(i).toElement();
-
-        Action* action = new Action(Manager::self().actionCollection(), element, packagepath);
-        Q_UNUSED(action);
+        const QString name = element.attribute("name");
+        Action* action = new Action(Manager::self().actionCollection(), name, packagepath);
+        action->readDomElement(element);
         //connect(action, SIGNAL( failed(const QString&, const QString&) ), this, SLOT( executionFailed(const QString&, const QString&) ));
         //connect(action, SIGNAL( success() ), this, SLOT( executionSuccessful() ));
         //connect(action, SIGNAL( activated(Kross::Action*) ), SIGNAL( executionStarted(Kross::Action*)));
@@ -387,13 +443,55 @@ bool ScriptManagerModule::uninstallPackage(Action* action)
 }
 #endif
 
+void ScriptManagerModule::showEditorDialog(QObject* object, QWidget* parent)
+{
+    Action* action = dynamic_cast< Action* >(object);
+    ActionCollection* collection = dynamic_cast< ActionCollection* >(object);
+    if( (! action) && (! collection) )
+        return;
+
+    KPageDialog* dialog = new KPageDialog(parent);
+    dialog->setCaption( i18n("Edit") );
+    dialog->setButtons( KDialog::Ok | KDialog::Cancel );
+    //dialog->enableButtonOk( false );
+    dialog->setFaceType( KPageDialog::Tabbed ); //Auto Plain List Tree Tabbed
+
+    ScriptManagerEditor* editor = 0;
+    ScriptManagerPropertiesEditor* propeditor = 0;
+    if( action ) {
+        editor = new ScriptManagerEditor(action, dialog->mainWidget());
+        propeditor = new ScriptManagerPropertiesEditor(action, dialog->mainWidget());
+    }
+    else {
+        editor = new ScriptManagerEditor(collection, dialog->mainWidget());
+        //propeditor = new ScriptManagerPropertiesEditor(collection, dialog->mainWidget());
+    }
+
+    if( editor )
+        dialog->addPage(editor, i18n("General"));
+    if( propeditor )
+        dialog->addPage(propeditor, i18n("Properties"));
+
+    //dialog->addPage(new QWidget(this), i18n("Security"));
+
+    dialog->resize( QSize(600, 400).expandedTo( dialog->minimumSizeHint() ) );
+    int result = dialog->exec();
+    if( result == QDialog::Accepted /*&& dialog->result() == KDialog::Ok*/ ) {
+        if( editor )
+            editor->commit();
+        if( propeditor )
+            propeditor->commit();
+    }
+    dialog->delayedDestruct();
+}
+
 void ScriptManagerModule::showManagerDialog()
 {
     KDialog* dialog = new KDialog();
     dialog->setCaption( i18n("Script Manager") );
     dialog->setButtons( KDialog::Ok | KDialog::Cancel );
     dialog->setMainWidget( new ScriptManagerCollection(this, dialog->mainWidget()) );
-    dialog->resize( QSize(460, 340).expandedTo( dialog->minimumSizeHint() ) );
+    dialog->resize( QSize(520, 380).expandedTo( dialog->minimumSizeHint() ) );
 
     int result = dialog->exec();
 #if 0

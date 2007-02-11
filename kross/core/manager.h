@@ -29,7 +29,6 @@
 #include "childreninterface.h"
 
 class QAbstractItemModel;
-class KActionCollection;
 class KMenu;
 
 namespace Kross {

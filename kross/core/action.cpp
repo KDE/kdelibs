@@ -24,14 +24,12 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QDir>
-#include <QDomElement>
 
 #include <klocale.h>
 #include <kicon.h>
 #include <kmimetype.h>
+#include <kapplication.h>
 #include <kstandarddirs.h>
-#include <kactioncollection.h>
 
 using namespace Kross;
 
@@ -54,6 +52,11 @@ namespace Kross {
             * Action to the user.
             */
             QString description;
+
+            /**
+            * The name of the icon.
+            */
+            QString iconname;
 
             /**
             * The scripting code.
@@ -84,29 +87,40 @@ namespace Kross {
             * Map of options that overwritte the \a InterpreterInfo::Option::Map
             * standard options.
             */
-            QMap<QString, QVariant> options;
+            QMap< QString, QVariant > options;
+
+            /**
+            * List of the names of all properties.
+            */
+            QStringList propertynames;
+
+            /**
+            * The properties as map of name=>value.
+            */
+            QHash< QString, QString > propertyvalues;
 
             Private() : script(0) {}
     };
 
 }
 
-Action::Action(QObject* parent, const QString& name)
-    : KAction(parent)
+Action::Action(QObject* parent, const QString& name, const QDir& packagepath)
+    : QAction(parent)
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
 {
     setObjectName(name);
     #ifdef KROSS_ACTION_DEBUG
-        krossdebug( QString("Action::Action(QObject*,QString) Ctor name='%1'").arg(objectName()) );
+        krossdebug( QString("Action::Action(QObject*,QString,QDir) Ctor name='%1'").arg(objectName()) );
     #endif
     setEnabled( false );
+    d->currentpath = packagepath.absolutePath();
     connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
 Action::Action(QObject* parent, const KUrl& url)
-    : KAction(parent)
+    : QAction(parent)
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
@@ -116,46 +130,8 @@ Action::Action(QObject* parent, const KUrl& url)
         krossdebug( QString("Action::Action(QObject*,KUrl) Ctor name='%1'").arg(objectName()) );
     #endif
     setText( url.fileName() );
-    setIcon( KIcon(KMimeType::iconNameForUrl(url)) );
+    setIconName( KMimeType::iconNameForUrl(url) );
     setFile( url.path() );
-    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
-}
-
-Action::Action(QObject* parent, const QDomElement& element, const QDir& packagepath)
-    : KAction(parent)
-    , ChildrenInterface()
-    , ErrorInterface()
-    , d( new Private() )
-{
-    setObjectName(element.attribute("name"));
-    #ifdef KROSS_ACTION_DEBUG
-        krossdebug( QString("Action::Action(QObject*,QDomElement,QDir) Ctor name='%1'").arg(objectName()) );
-    #endif
-
-    setText( element.attribute("text") );
-    setDescription( element.attribute("description") );
-    setInterpreter( element.attribute("interpreter") );
-
-    QString file = element.attribute("file");
-    if( ! file.isEmpty() ) {
-        if(! QFileInfo(file).exists()) {
-            QFileInfo fi(packagepath, file);
-            if(fi.exists())
-                file = fi.absoluteFilePath();
-            else
-                setEnabled(false);
-        }
-        setFile(file);
-    }
-    else {
-        d->currentpath = packagepath.absolutePath();
-    }
-
-    QString icon = element.attribute("icon");
-    if( icon.isEmpty() && ! d->scriptfile.isNull() )
-        icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
-    setIcon( KIcon(icon) );
-
     connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
@@ -168,6 +144,59 @@ Action::~Action()
     delete d;
 }
 
+void Action::readDomElement(const QDomElement& element)
+{
+    if( element.isNull() )
+        return;
+
+    QDir packagepath( d->currentpath );
+    QString file = element.attribute("file");
+    if( ! file.isEmpty() ) {
+        if( QFileInfo(file).exists() ) {
+            setFile(file);
+        }
+        else {
+            QFileInfo fi(packagepath, file);
+            if( fi.exists() )
+                setFile( fi.absoluteFilePath() );
+        }
+    }
+
+    setText( element.attribute("text") );
+    setDescription( element.attribute("comment") );
+    setInterpreter( element.attribute("interpreter") );
+
+    QString icon = element.attribute("icon");
+    if( icon.isEmpty() && ! d->scriptfile.isNull() )
+        icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
+    setIconName( icon );
+
+    d->propertynames.clear();
+    d->propertyvalues.clear();
+    for(QDomNode node = element.firstChild(); ! node.isNull(); node = node.nextSibling()) {
+        QDomElement e = node.toElement();
+        if( ! e.isNull() ) {
+            if( e.tagName() == "property" ) {
+                const QString n = e.attribute("name", QString());
+                if( ! n.isNull() ) {
+                    #ifdef KROSS_ACTION_DEBUG
+                        krossdebug(QString("Action::readDomElement: Setting property name=%1 value=%2").arg(n).arg(e.text()));
+                    #endif
+                    setProperty(n, e.text());
+                }
+            }
+        }
+    }
+
+    bool enabled = QVariant( element.attribute("enabled","true") ).toBool();
+    setEnabled(enabled);
+}
+
+QString Action::name() const
+{
+    return objectName();
+}
+
 QString Action::description() const
 {
     return d->description;
@@ -176,6 +205,30 @@ QString Action::description() const
 void Action::setDescription(const QString& description)
 {
     d->description = description;
+    emit updated();
+}
+
+QString Action::iconName() const
+{
+    return d->iconname;
+}
+
+void Action::setIconName(const QString& iconname)
+{
+    setIcon( KIcon(iconname) );
+    d->iconname = iconname;
+    emit updated();
+}
+
+bool Action::isEnabled() const
+{
+    return QAction::isEnabled();
+}
+
+void Action::setEnabled(bool enabled)
+{
+    QAction::setEnabled(enabled);
+    emit updated();
 }
 
 QString Action::code() const
@@ -188,6 +241,7 @@ void Action::setCode(const QString& code)
     if( d->code != code ) {
         finalize();
         d->code = code;
+        emit updated();
     }
 }
 
@@ -202,6 +256,7 @@ void Action::setInterpreter(const QString& interpretername)
         finalize();
         d->interpretername = interpretername;
         setEnabled( Manager::self().interpreters().contains(interpretername) );
+        emit updated();
     }
 }
 
@@ -241,7 +296,7 @@ QMap<QString, QVariant>& Action::options() const
     return d->options;
 }
 
-QVariant Action::option(const QString name, QVariant defaultvalue)
+QVariant Action::option(const QString& name, QVariant defaultvalue)
 {
     if(d->options.contains(name))
         return d->options[name];
@@ -249,7 +304,7 @@ QVariant Action::option(const QString name, QVariant defaultvalue)
     return info ? info->optionValue(name, defaultvalue) : defaultvalue;
 }
 
-bool Action::setOption(const QString name, const QVariant& value)
+bool Action::setOption(const QString& name, const QVariant& value)
 {
     InterpreterInfo* info = Manager::self().interpreterInfo( d->interpretername );
     if(info) {
@@ -259,6 +314,52 @@ bool Action::setOption(const QString name, const QVariant& value)
         } else krosswarning( QString("Kross::Action::setOption(%1, %2): No such option").arg(name).arg(value.toString()) );
     } else krosswarning( QString("Kross::Action::setOption(%1, %2): No such interpreterinfo").arg(name).arg(value.toString()) );
     return false;
+}
+
+QStringList Action::propertyNames() const
+{
+    return d->propertynames;
+}
+
+bool Action::hasProperty(const QString& name)
+{
+    return d->propertyvalues.contains(name);
+}
+
+QString Action::property(const QString& name, const QString& defaultvalue)
+{
+    if( d->propertyvalues.contains(name) )
+        return d->propertyvalues[name];
+
+    KConfig* config = KApplication::kApplication()->sessionConfig();
+    const QString groupname = QString("Script %1").arg(objectName());
+    if( config->hasGroup(groupname) ) {
+        config->setGroup(groupname);
+        return config->readEntry(name, defaultvalue);
+    }
+
+    return defaultvalue;
+}
+
+void Action::setProperty(const QString& name, const QString& value, bool persistent)
+{
+    if( ! d->propertyvalues.contains(name) )
+        d->propertynames.append(name);
+    d->propertyvalues.insert(name, value);
+
+    if( persistent ) {
+        KConfig* config = KApplication::kApplication()->sessionConfig();
+        config->setGroup( QString("Script %1").arg(objectName()) );
+        config->writeEntry(name, value);
+    }
+}
+
+void Action::removeProperty(const QString& name)
+{
+    if( ! d->propertyvalues.contains(name) )
+        return;
+    d->propertynames.removeAll(name);
+    d->propertyvalues.remove(name);
 }
 
 QStringList Action::functionNames()

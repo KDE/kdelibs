@@ -28,11 +28,11 @@
 #include <QTreeView>
 
 #include <kdialog.h>
-#include <kactioncollection.h>
 
 namespace Kross {
 
-    class Action;
+    //class Action;
+    //class ActionCollection;
     class GUIClient;
     class ScriptManagerModule;
 
@@ -53,8 +53,9 @@ namespace Kross {
         public Q_SLOTS:
             void slotRun();
             void slotStop();
-            bool slotInstall();
-            //void slotUninstall();
+            void slotEdit();
+            void slotAdd();
+            void slotRemove();
             //void slotNewScripts();
 
         private Q_SLOTS:
@@ -63,7 +64,9 @@ namespace Kross {
             //void slotNewScriptsInstallFinished();
 
         private:
+            /// \internal d-pointer class.
             class Private;
+            /// \internal d-pointer instance.
             Private* const d;
     };
 
@@ -100,13 +103,18 @@ namespace Kross {
             */
             bool uninstallPackage(Action* action);
 #endif
+
+            void showEditorDialog(QObject* object, QWidget* parent = 0);
+
             /**
             * Display the "Script Manager" KDialog.
             */
             void showManagerDialog();
 
         private:
+            /// \internal d-pointer class.
             class Private;
+            /// \internal d-pointer instance.
             Private* const d;
     };
 }

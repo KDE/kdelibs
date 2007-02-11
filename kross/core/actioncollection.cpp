@@ -77,14 +77,16 @@ ActionCollection::~ActionCollection()
     delete d;
 }
 
+QString ActionCollection::name() const { return objectName(); }
+
 QString ActionCollection::text() const { return d->text; }
-void ActionCollection::setText(const QString& text) { d->text = text; }
+void ActionCollection::setText(const QString& text) { d->text = text; emit updated(); }
 
 QString ActionCollection::description() const { return d->description; }
-void ActionCollection::setDescription(const QString& description) { d->description = description; }
+void ActionCollection::setDescription(const QString& description) { d->description = description; emit updated(); }
 
 bool ActionCollection::isEnabled() const { return d->enabled; }
-void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; }
+void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; emit updated(); }
 
 ActionCollection* ActionCollection::parentCollection() const
 {
@@ -108,16 +110,24 @@ QStringList ActionCollection::collections() const
 
 void ActionCollection::registerCollection(ActionCollection* collection)
 {
+    Q_ASSERT(collection);
     const QString name = collection->objectName();
     //Q_ASSERT( !name.isNull() );
     d->collections.insert(name, collection);
     d->collectionnames.append(name);
+    connect(collection, SIGNAL(updated()), this, SIGNAL(updated()));
+    //emit updated();
 }
 
 void ActionCollection::unregisterCollection(const QString& name)
 {
+    if( ! d->collections.contains(name) )
+        return;
+    ActionCollection* collection = d->collections[name];
     d->collectionnames.removeAll(name);
     d->collections.remove(name);
+    disconnect(collection, SIGNAL(updated()), this, SIGNAL(updated()));
+    //emit updated();
 }
 
 QList<Action*> ActionCollection::actions() const
@@ -136,14 +146,19 @@ void ActionCollection::addAction(const QString& name, Action* action)
         d->actionList.removeAll( d->actionMap[name] );
     d->actionMap.insert(name, action);
     d->actionList.append(action);
+    connect(action, SIGNAL(updated()), this, SIGNAL(updated()));
+    //emit updated();
 }
 
 void ActionCollection::removeAction(const QString& name)
 {
     if( ! d->actionMap.contains(name) )
         return;
-    d->actionList.removeAll( d->actionMap[name] );
+    Action* action = d->actionMap[name];
+    d->actionList.removeAll(action);
     d->actionMap.remove(name);
+    disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
+    //emit updated();
 }
 
 void ActionCollection::removeAction(Action* action)
@@ -154,6 +169,8 @@ void ActionCollection::removeAction(Action* action)
         return;
     d->actionList.removeAll(action);
     d->actionMap.remove(name);
+    disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
+    //emit updated();
 }
 
 /*********************************************************************
@@ -196,39 +213,6 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         }
         else if( elem.tagName() == "script") {
             QString name = elem.attribute("name");
-
-            QString file = elem.attribute("file");
-            if(! QFileInfo(file).exists()) {
-                QFileInfo fi(directory, file);
-                if( fi.exists() ) {
-                    file = fi.absoluteFilePath();
-                }
-                else {
-                    #ifdef KROSS_ACTIONCOLLECTION_DEBUG
-                        krosswarning( QString("    ActionCollection::readXml Failed to find file \"%1\" in the script-tag with name=\"%2\"").arg(file).arg(name) );
-                    #endif
-                    //QString resource = KGlobal::dirs()->findResource("appdata", QString("scripts/%1/%2").arg(name).arg(f));
-                    //if( ! resource.isNull() ) f = resource;
-                    file = QString();
-                }
-            }
-
-            QString text = elem.attribute("text");
-            if( text.isEmpty() )
-                text = file;
-
-            bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
-
-            QString description = elem.attribute("comment");
-            if( description.isEmpty() )
-                description = text.isEmpty() ? name : text;
-
-            QString icon = elem.attribute("icon");
-            if( icon.isEmpty() )
-                icon = KMimeType::iconNameForUrl( KUrl(file) );
-
-            QString interpreter = elem.attribute("interpreter");
-
             Action* a = dynamic_cast< Action* >( action(name) );
             if( a ) {
                 #ifdef KROSS_ACTIONCOLLECTION_DEBUG
@@ -240,24 +224,16 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                     krossdebug( QString("  ActionCollection::readXml Creating Action \"%1\"").arg(name) );
                 #endif
 
-                a = new Action(this, name);
+                a = new Action(this, name, directory);
                 addAction(name, a);
                 connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
             }
-
-            if( ! enabled )
-                a->setEnabled(false);
-            a->setText(text);
-            a->setDescription(description);
-            if( ! icon.isNull() )
-                a->setIcon(KIcon(icon));
-            if( ! interpreter.isNull() )
-                a->setInterpreter(interpreter);
-            a->setFile(file);
+            a->readDomElement(elem);
         }
         //else if( ! fromXml(elem) ) ok = false;
     }
+    emit updated();
     return ok;
 }
 
@@ -339,9 +315,8 @@ QDomElement ActionCollection::writeXml()
         element.appendChild(e);
     }
 
-    foreach(QAction* action, actions()) {
-        Action* a = dynamic_cast< Action* >(action);
-        if( ! a ) continue;
+    foreach(Action* a, actions()) {
+        Q_ASSERT(a);
 
         #ifdef KROSS_ACTIONCOLLECTION_DEBUG
             krossdebug( QString("  ActionCollection::writeXml action.objectName=\"%1\" action.file=\"%2\"").arg(a->objectName()).arg(a->file()) );
@@ -378,7 +353,7 @@ bool Manager::readConfig()
 
     // we need to remember the current names, to be able to remove "expired" actions later.
     QStringList actionnames;
-    foreach(KAction* a, d->actioncollection->actions())
+    foreach(Action* a, d->actioncollection->actions())
         actionnames.append( a->objectName() );
 
     // iterate now through the items in the [scripts]-section
@@ -420,7 +395,7 @@ bool Manager::readConfig()
 
     // remove actions that are not valid anymore
     foreach(QString n, actionnames) {
-        KAction* a = d->actioncollection->action(n);
+        Action* a = d->actioncollection->action(n);
         Q_ASSERT(a);
         d->actioncollection->remove(a);
         delete a;
@@ -440,8 +415,7 @@ bool Manager::writeConfig()
     config->setGroup("scripts"); // according to the documentation it's needed to re-set the group after delete.
 
     QStringList names;
-    foreach(KAction* a, d->actioncollection->actions(QString())) {
-        Action* action = static_cast< Action* >(a);
+    foreach(Action* action, d->actioncollection->actions(QString())) {
         const QString name = action->objectName();
         names << name;
         config->writeEntry(QString("%1_text").arg(name).toLatin1(), action->text());

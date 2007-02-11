@@ -59,8 +59,21 @@ namespace Kross {
             virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
             virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
+            virtual bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
+            virtual bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
+            virtual bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex());
+            virtual bool removeColumns(int column, int count, const QModelIndex& parent = QModelIndex());
+
+            //Qt::DropActions supportedDragActions() const;
+            virtual QStringList mimeTypes() const;
+            virtual QMimeData* mimeData(const QModelIndexList& indexes) const;
+            virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
+
+            virtual Qt::DropActions supportedDropActions() const;
+
             static Action* action(const QModelIndex& index);
             static ActionCollection* collection(const QModelIndex& index);
+
 
         private:
             /// \internal d-pointer class.

@@ -23,11 +23,10 @@
 #include "manager.h"
 
 #include <QEvent>
+#include <QMimeData>
 
 #include <kicon.h>
 #include <kmenu.h>
-//#include <kactioncollection.h>
-//#include <kactionmenu.h>
 
 using namespace Kross;
 
@@ -49,8 +48,15 @@ namespace Kross {
             };
             const QModelIndex parent;
 
-            ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex()) : type(ActionType), action(a), parent(p) {}
-            ActionCollectionModelItem(ActionCollection* c, const QModelIndex& p = QModelIndex()) : type(CollectionType), collection(c), parent(p) {}
+            ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex())
+                : type(ActionType), action(a), parent(p)
+            {
+            }
+
+            ActionCollectionModelItem(ActionCollection* c, const QModelIndex& p = QModelIndex())
+                : type(CollectionType), collection(c), parent(p)
+            {
+            }
     };
 
     /// \internal d-pointer class.
@@ -67,8 +73,11 @@ ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* 
     : QAbstractItemModel(parent)
     , d( new Private() )
 {
-    d->item = new ActionCollectionModelItem( collection ? collection : Kross::Manager::self().actionCollection() );
+    ActionCollection* c = collection ? collection : Kross::Manager::self().actionCollection();
+    d->item = new ActionCollectionModelItem(c);
     d->mode = mode;
+    //setSupportedDragActions(Qt::MoveAction);
+    QObject::connect(c, SIGNAL(updated()), this, SIGNAL(layoutChanged()));
 }
 
 ActionCollectionModel::~ActionCollectionModel()
@@ -86,7 +95,7 @@ Action* ActionCollectionModel::action(const QModelIndex& index)
 ActionCollection* ActionCollectionModel::collection(const QModelIndex& index)
 {
     ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : 0;
-    return (item && item->type == ActionCollectionModelItem::ActionType) ? item->collection : 0;
+    return (item && item->type == ActionCollectionModelItem::CollectionType) ? item->collection : 0;
 }
 
 int ActionCollectionModel::columnCount(const QModelIndex&) const
@@ -122,20 +131,23 @@ QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex&
 
 QModelIndex ActionCollectionModel::parent(const QModelIndex& index) const
 {
-    if( index.isValid() ) {
-        ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
-        return item->parent;
-    }
-    return QModelIndex();
+    if( ! index.isValid() )
+        return QModelIndex();
+    return static_cast<ActionCollectionModelItem*>(index.internalPointer())->parent;
 }
 
 Qt::ItemFlags ActionCollectionModel::flags(const QModelIndex &index) const
 {
+    Qt::ItemFlags flags = QAbstractItemModel::flags(index);
     if( ! index.isValid() )
-        return Qt::ItemIsEnabled;
-    if(index.column() == 0 && (d->mode & UserCheckable))
-        return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
-    return QAbstractItemModel::flags(index); // | Qt::ItemIsEditable;
+        return Qt::ItemIsDropEnabled /*| Qt::ItemIsEnabled*/ | flags;
+
+    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled; //FIXME: CRASHES
+    //flags |= Qt::ItemIsEditable;
+
+    if( (index.column() == 0) && (d->mode & UserCheckable) )
+        flags |= Qt::ItemIsUserCheckable;
+    return flags;
 }
 
 QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
@@ -153,8 +165,12 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                         return item->action->text().replace("&","");
                     case Qt::ToolTipRole: // fall through
                     case Qt::WhatsThisRole: {
-                        if( d->mode & ToolTips )
-                            return item->action->description();
+                        if( d->mode & ToolTips ) {
+                            const QString file = QFileInfo( item->action->file() ).fileName();
+                            return QString("<qt><b>%1</b><br>%2</qt>")
+                                .arg( file.isEmpty() ? item->action->name() : file )
+                                .arg( item->action->description() );
+                        }
                     } break;
                     case Qt::CheckStateRole: {
                         if( d->mode & UserCheckable )
@@ -170,7 +186,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                     case Qt::ToolTipRole: // fall through
                     case Qt::WhatsThisRole: {
                         if( d->mode & ToolTips )
-                            return item->collection->description();
+                            return QString("<qt><b>%1</b><br>%2</qt>").arg(item->collection->text()).arg(item->collection->description());
                     } break;
                     case Qt::CheckStateRole: {
                         if( d->mode & UserCheckable )
@@ -208,8 +224,79 @@ bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &va
         } break;
         default: return false;
     }
-    emit dataChanged(index, index);
+    //emit dataChanged(index, index);
     return true;
+}
+
+bool ActionCollectionModel::insertRows(int row, int count, const QModelIndex& parent)
+{
+    krossdebug( QString("ActionCollectionModel::insertRows: row=%1 count=%2").arg(row).arg(count) );
+    return QAbstractItemModel::insertRows(row, count, parent);
+}
+
+bool ActionCollectionModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+    krossdebug( QString("ActionCollectionModel::removeRows: row=%1 count=%2").arg(row).arg(count) );
+    return QAbstractItemModel::removeRows(row, count, parent);
+}
+
+bool ActionCollectionModel::insertColumns(int column, int count, const QModelIndex& parent)
+{
+    krossdebug( QString("ActionCollectionModel::insertColumns: column=%1 count=%2").arg(column).arg(count) );
+    return QAbstractItemModel::insertColumns(column, count, parent);
+}
+
+bool ActionCollectionModel::removeColumns(int column, int count, const QModelIndex& parent)
+{
+    krossdebug( QString("ActionCollectionModel::removeColumns: column=%1 count=%2").arg(column).arg(count) );
+    return QAbstractItemModel::removeColumns(column, count, parent);
+}
+
+QStringList ActionCollectionModel::mimeTypes() const
+{
+    //krossdebug( QString("ActionCollectionModel::mimeTypes") );
+    return QStringList() << "application/vnd.text.list";
+}
+
+QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
+{
+    //krossdebug( QString("ActionCollectionModel::mimeData") );
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encodedData;
+    /*
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    foreach(QModelIndex index, indexes) {
+        if( ! index.isValid() ) continue;
+        QString text = data(index, Qt::DisplayRole).toString();
+        stream << text;
+    }
+    */
+    mimeData->setData("application/vnd.text.list", encodedData);
+    return mimeData;
+}
+
+bool ActionCollectionModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+    krossdebug( QString("ActionCollectionModel::dropMimeData: row=%1 col=%2").arg(row).arg(column) );
+    if( action == Qt::IgnoreAction ) return true;
+    if( ! data->hasFormat("application/vnd.text.list") ) return false;
+    if( column > 0 ) return false;
+
+    //FIXME: return false for now since insertRows/removeRows need to be implemented before!
+    return false;
+    //return true;
+    //return QAbstractItemModel::dropMimeData(data, action, row, column, parent);
+}
+
+Qt::DropActions ActionCollectionModel::supportedDropActions() const
+{
+    //return Qt::MoveAction;
+    //return Qt::CopyAction | Qt::MoveAction;
+    //return Qt::TargetMoveAction;
+    //return Qt::MoveAction | Qt::TargetMoveAction;
+    return Qt::CopyAction | Qt::TargetMoveAction;
+    //return Qt::CopyAction | Qt::MoveAction | Qt::TargetMoveAction;
+    //return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
 /******************************************************************************

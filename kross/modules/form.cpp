@@ -44,14 +44,14 @@
 #include <kshell.h>
 #include <kicon.h>
 #include <kurlbar.h>
+#include <kaction.h>
+#include <kactioncollection.h>
 #include <kmessagebox.h>
 //#include <kio/netaccess.h>
 //#include <klocale.h>
 //#include <kicon.h>
 //#include <kmimetype.h>
 //#include <kstandarddirs.h>
-#include <kaction.h>
-#include <kactioncollection.h>
 
 extern "C"
 {
@@ -223,6 +223,10 @@ void FormFileWidget::showEvent(QShowEvent* event)
             d->impl->setMimeFilter(d->mimeFilter);
         else if( ! d->filter.isEmpty() )
             d->impl->setFilter(d->filter);
+        QObject::connect(d->impl, SIGNAL(fileSelected(const QString&)), this, SIGNAL(fileSelected(const QString&)));
+        QObject::connect(d->impl, SIGNAL(fileHighlighted(const QString&)), this, SIGNAL(fileHighlighted(const QString&)));
+        QObject::connect(d->impl, SIGNAL(selectionChanged()), this, SIGNAL(selectionChanged()));
+        QObject::connect(d->impl, SIGNAL(filterChanged(const QString&)), this, SIGNAL(filterChanged(const QString&)));
         d->impl->show();
     }
 }
@@ -495,33 +499,32 @@ QObject* FormModule::createLayout(QWidget* parent, const QString& layout)
     return l;
 }
 
+QWidget* FormModule::createWidget(const QString& className)
+{
+    return d->loader()->createWidget(className);
+}
+
 QWidget* FormModule::createWidget(QWidget* parent, const QString& className, const QString& name)
 {
-    if( ! parent )
-        return 0;
     QWidget* widget = d->loader()->createWidget(className, parent, name);
-    if( parent->layout() )
+    if( parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
 }
 
 QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
 {
-    if( ! parent )
-        return 0;
     QByteArray ba = xml.toUtf8();
     QBuffer buffer(&ba);
     buffer.open(QIODevice::ReadOnly);
     QWidget* widget = d->builder()->load(&buffer, parent);
-    if( widget && parent->layout() )
+    if( widget && parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
 }
 
 QWidget* FormModule::createWidgetFromUIFile(QWidget* parent, const QString& filename)
 {
-    if( ! parent )
-        return 0;
     QFile file(filename);
     if( ! file.exists() ) {
         kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename) << endl;
@@ -538,10 +541,8 @@ QWidget* FormModule::createWidgetFromUIFile(QWidget* parent, const QString& file
 
 QWidget* FormModule::createFileWidget(QWidget* parent, const QString& startDirOrVariable)
 {
-    if( ! parent )
-        return 0;
     FormFileWidget* widget = new FormFileWidget(parent, startDirOrVariable);
-    if( parent->layout() )
+    if( parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
 }

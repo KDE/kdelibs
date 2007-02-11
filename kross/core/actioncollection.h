@@ -60,6 +60,11 @@ namespace Kross {
             virtual ~ActionCollection();
 
             /**
+             * \return the objectName for this ActionCollection.
+             */
+            QString name() const;
+
+            /**
              * \return the display text
              */
             QString text() const;
@@ -175,6 +180,13 @@ namespace Kross {
             bool writeXml(QIODevice* device, int indent = 2);
 
         Q_SIGNALS:
+
+            /**
+             * This signal is emitted if the content of the ActionCollection
+             * was changed.
+             */
+            void updated();
+
             //void inserted(ActionCollection* self, ActionCollection* into);
             //void updated(ActionCollection* self);
             //void removed(ActionCollection* self, ActionCollection* from);

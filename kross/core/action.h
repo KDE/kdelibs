@@ -23,17 +23,14 @@
 #include <QString>
 #include <QVariant>
 #include <QObject>
-//#include <qdom.h>
+#include <QDir>
+#include <QDomElement>
+#include <QAction>
 
-#include <kaction.h>
 #include <kurl.h>
 
 #include "errorinterface.h"
 #include "childreninterface.h"
-
-class KActionCollection;
-class QDir;
-class QDomElement;
 
 namespace Kross {
 
@@ -49,7 +46,7 @@ namespace Kross {
      * The \a Manager takes care of handling the Action instances
      * application width.
      */
-    class KROSSCORE_EXPORT Action : public KAction, public ChildrenInterface, public ErrorInterface
+    class KROSSCORE_EXPORT Action : public QAction, public ChildrenInterface, public ErrorInterface
     {
             Q_OBJECT
 
@@ -63,7 +60,7 @@ namespace Kross {
              * e.g. at the \a Manager to identify the Action. The
              * name is accessible via \a QObject::objectName .
              */
-            Action(QObject* parent, const QString& name);
+            Action(QObject* parent, const QString& name, const QDir& packagepath = QDir());
 
             /**
              * Constructor.
@@ -78,31 +75,16 @@ namespace Kross {
             Action(QObject* parent, const KUrl& url);
 
             /**
-             * Constructor.
-             *
-             * \param parent The parent QObject this \a Action is child of.
-             * \param element The QDomElement that contains the details
-             * about e.g. the displayed text, the file to execute or the
-             * used interpreter.
-             * \param packagepath The directory where the script-package
-             * is located. This will be used to expand relative paths.
-             */
-            Action(QObject* parent, const QDomElement& element, const QDir& packagepath);
-
-            /**
              * Destructor.
              */
             virtual ~Action();
 
             /**
-             * \return the scriptfile that should be executed.
+             * Method to read settings from the QDomElement \p element that
+             * contains details about e.g. the displayed text, the file to
+             * execute or the used interpreter.
              */
-            QString file() const;
-
-            /**
-             * Set the scriptfile that should be executed.
-             */
-            bool setFile(const QString& scriptfile);
+            void readDomElement(const QDomElement& element);
 
             /**
              * \return a map of options this \a Action defines.
@@ -116,12 +98,12 @@ namespace Kross {
              * If there doesn't exists an option with such a name,
              * the \p defaultvalue is returned.
              */
-            QVariant option(const QString name, QVariant defaultvalue = QVariant());
+            QVariant option(const QString& name, QVariant defaultvalue = QVariant());
 
             /**
              * Set the \a Interpreter::Option value.
              */
-            bool setOption(const QString name, const QVariant& value);
+            bool setOption(const QString& name, const QVariant& value);
 
             /**
              * \return the list of functionnames.
@@ -164,6 +146,11 @@ namespace Kross {
         public Q_SLOTS:
 
             /**
+             * \return the objectName for this Action.
+             */
+            QString name() const;
+
+            /**
              * \return the optional description for this Action.
              */
             QString description() const;
@@ -172,6 +159,36 @@ namespace Kross {
              * Set the optional description for this Action.
              */
             void setDescription(const QString& description);
+
+            /**
+             * Return the name of the icon.
+             */
+            QString iconName() const;
+
+            /**
+             * Set the name of the icon to \p iconname .
+             */
+            void setIconName(const QString& iconname);
+
+            /**
+             * Return true if this Action is enabled else false is returned.
+             */
+            bool isEnabled() const;
+
+            /**
+             * Set the enable state of this Action to \p enabled .
+             */
+            void setEnabled(bool enabled);
+
+            /**
+             * \return the scriptfile that should be executed.
+             */
+            QString file() const;
+
+            /**
+             * Set the scriptfile that should be executed.
+             */
+            bool setFile(const QString& scriptfile);
 
             /**
              * \return the scriptcode this Action holds.
@@ -200,7 +217,41 @@ namespace Kross {
              */
             QString currentPath() const;
 
+            /**
+             * Returns the names of all properties.
+             */
+            QStringList propertyNames() const;
+
+            /**
+             * Returns true if there exist a property with the name \p name .
+             */
+            bool hasProperty(const QString& name);
+
+            /**
+             * Return the value of the property with the name \p name . If there
+             * exist no such property the \p defaultvalue got returned.
+             */
+            QString property(const QString& name, const QString& defaultvalue = QString());
+
+            /**
+             * Set the value of the property with the name \p name . If there
+             * exist no such property a new one got added. If \p persistent is
+             * true the property will be automaticly saved and restored.
+             */
+            void setProperty(const QString& name, const QString& value, bool persistent = false);
+
+            /**
+             * Remove the property with the name \p name .
+             */
+            void removeProperty(const QString& name);
+
         Q_SIGNALS:
+
+            /**
+             * This signal is emitted if the content of the ActionCollection
+             * was changed.
+             */
+            void updated();
 
             /**
              * This signal is emitted before the script got executed.

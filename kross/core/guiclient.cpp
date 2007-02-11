@@ -112,11 +112,6 @@ void GUIClient::setDOMDocument(const QDomDocument &document, bool merge)
 }
 
 #if 0
-KActionCollection* GUIClient::scriptsActionCollection() const
-{
-    return d->actions;
-}
-
 bool GUIClient::writeConfigFromPackages()
 {
     KConfig* config = KApplication::kApplication()->sessionConfig();
@@ -203,7 +198,7 @@ void GUIClient::setDOMDocument(const QDomDocument &document, bool merge)
 
 void addMenu(QMenu* menu, ActionCollection* collection)
 {
-    foreach(QAction* a, collection->actions())
+    foreach(Action* a, collection->actions())
         menu->addAction(a);
     foreach(QString collectionname, collection->collections()) {
         ActionCollection* c = collection->collection(collectionname);
