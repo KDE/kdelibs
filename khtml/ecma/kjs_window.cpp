@@ -297,6 +297,10 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
+# Normally found in prototype. Add to window object itself to make them
+# accessible in closed and cross-site windows
+  valueOf       Window::ValueOf		DontDelete|Function 0
+  toString      Window::ToString	DontDelete|Function 0
 # IE extension
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension
@@ -526,13 +530,21 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring() << endl;
 #endif
-  // we don't want any properties other than "closed" on a closed window
+  // we want only limited operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
-    if (propertyName == "closed") {
-      slot.setStaticEntry(this, Lookup::findEntry(&WindowTable, propertyName), staticValueGetter<Window>);
-      return true;
+    const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
+    if (entry) {
+      switch (entry->value) {
+      case Closed:
+      case _Location:
+      case ValueOf:
+      case ToString:
+	getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
+	return true;
+      default:
+	break;
+      }
     }
-
     slot.setUndefined(this);
     return true;
   }
@@ -584,6 +596,8 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     case Blur:
     case AToB:
     case BToA:
+    case ValueOf:
+    case ToString:
       getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
       return true;
     default:
@@ -716,8 +730,16 @@ ValueImp *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& 
 ValueImp* Window::getValueProperty(ExecState *exec, int token) const
 {
   KHTMLPart *part = m_frame.isNull() ? 0 : qobject_cast<KHTMLPart*>(m_frame->m_part);
-  if (!part)
-    return token == Closed ? Boolean(true) : Undefined();
+  if (!part) {
+    switch (token) {
+    case Closed:
+      return Boolean(true);
+    case _Location:
+      return Null();
+    default:
+      return Undefined();
+    }
+  }
 
   switch(token) {
     case Closed:
@@ -1749,6 +1771,13 @@ void Window::showSuppressedWindows()
 ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
+
+  // these should work no matter whether the window is already
+  // closed or not
+  if (id == Window::ValueOf || id == Window::ToString) {
+    return String("[object Window]");
+  }
+
   Window *window = static_cast<Window *>(thisObj);
   QString str, str2;
 
@@ -2192,7 +2221,7 @@ int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleS
   int id = ++lastTimerId;
   if (t < 10) t = 10;
   DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
-  
+
   ScheduledAction *action = new ScheduledAction(handler.qstring(),nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
@@ -2486,7 +2515,7 @@ bool FrameArray::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   if (getIndexSlot(this, part->frames().count(), propertyName, slot))
     return true;
 
-  // Fun IE quirk: name lookup in there is actually done by document.all 
+  // Fun IE quirk: name lookup in there is actually done by document.all
   // hence, it can find non-frame things (and even let them hide frame ones!)
   // We don't quite do that, but do this as a fallback.
   DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(part->document().handle());
@@ -2507,7 +2536,7 @@ UString FrameArray::toString(ExecState *) const
 ValueImp* FrameArray::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
 {
     //IE supports a subset of the get functionality as call...
-    //... basically, when the return is a window, it supports that, otherwise it 
+    //... basically, when the return is a window, it supports that, otherwise it
     //errors out. We do a cheap-and-easy emulation of that, and just do the same
     //thing as get does.
     if (args.size() == 1)
