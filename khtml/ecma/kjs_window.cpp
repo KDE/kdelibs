@@ -2508,11 +2508,15 @@ Value Location::get(ExecState *exec, const Identifier &p) const
     case Hostname:
       return String( url.host() );
     case Href:
-      if (!url.hasPath())
+      if (url.isEmpty())
+	return String("about:blank");
+      else if (!url.hasPath())
         return String( url.prettyURL()+"/" );
       else
         return String( url.prettyURL() );
     case Pathname:
+      if (url.isEmpty())
+	return String("");
       return String( url.path().isEmpty() ? QString("/") : url.path() );
     case Port:
       return String( url.port() ? QString::number((int)url.port()) : QString::fromLatin1("") );
