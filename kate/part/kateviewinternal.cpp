@@ -2731,21 +2731,29 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       }
       else
       {
-        // first clear the selection, otherweise we run into bug #106402
+        // first clear the selection, otherwise we run into bug #106402
+        // ...and set the cursor position, for the same reason (otherwise there
+        // are *other* idiosyncrasies we can't fix without reintroducing said
+        // bug)
         // Parameters: 1st false: don't redraw
         //             2nd false: don't emit selectionChanged signals, as
         //             selectWord() emits this already
         m_view->clearSelection( false, false );
+        placeCursor( e->pos() );
         m_view->selectWord( cursor );
-        selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
-        selStartCached = m_view->selectStart;
-        selEndCached = m_view->selectEnd;
-        updateCursor( selEndCached );
-
-        // if we didn't actually select anything, restore the selection mode
-        // -- see bug #131369 (kling)
-        if (!m_view->hasSelection())
+        if (m_view->hasSelection())
+        {
+          selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
+          selStartCached = m_view->selectStart;
+          selEndCached = m_view->selectEnd;
+          updateCursor( selEndCached );
+        }
+        else
+        {
+          // if we didn't actually select anything, restore the selection mode
+          // -- see bug #131369 (kling)
           m_selectionMode = Default;
+        }
       }
 
       // Move cursor to end of selected word
