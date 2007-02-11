@@ -161,6 +161,9 @@
 <!ENTITY traducteurLaurentRathle     '<othercredit role="translator"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLaurentRathle      '<othercredit role="relecteur"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurOlivierRenaud     '<othercredit role="translator"><firstname>Olivier</firstname><surname>Renaud</surname><affiliation><address><email>o.renaud@laposte.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY traducteurOlivierRenaud      '<othercredit role="relecteur"><firstname>Olivier</firstname><surname>Renaud</surname><affiliation><address><email>o.renaud@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurSebastienRenard     '<othercredit role="translator"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY traducteurSebastienRenard      '<othercredit role="relecteur"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -245,6 +248,7 @@
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
+<!ENTITY OlivierRenaud     'Olivier Renaud <email>o.renaud@laposte.net</email>'>
 <!ENTITY SebastienRenard     'Sébastien Renard <email>Sebastien.Renard@digitalfox.homeip.net</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY BriceRothschild 'Brice Rothschild <email>brice.rothschild@gmail.com</email>'>
