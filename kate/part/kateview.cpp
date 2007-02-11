@@ -1570,7 +1570,10 @@ void KateView::selectWord( const KateTextCursor& cursor )
 
 void KateView::selectLine( const KateTextCursor& cursor )
 {
-  setSelection (cursor.line(), 0, cursor.line()+1, 0);
+  if (cursor.line()+1 >= m_doc->numLines())
+    setSelection (cursor.line(), 0, cursor.line(), m_doc->lineLength(cursor.line()));
+  else
+    setSelection (cursor.line(), 0, cursor.line()+1, 0);
 }
 
 void KateView::selectLength( const KateTextCursor& cursor, int length )
