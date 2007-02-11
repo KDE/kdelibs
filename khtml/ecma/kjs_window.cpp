@@ -2603,11 +2603,15 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
     case Hostname:
       return String( UString(url.host()) );
     case Href:
-      if (!url.hasPath())
+      if (url.isEmpty())
+	return String("about:blank");
+      else if (!url.hasPath())
         return String( UString(url.prettyUrl()+"/") );
       else
         return String( UString(url.prettyUrl()) );
     case Pathname:
+      if (url.isEmpty())
+	return String("");
       return String( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
       return String( UString(url.port() ? QString::number((int)url.port()) : QLatin1String("")) );
