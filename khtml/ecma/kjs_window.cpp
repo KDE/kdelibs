@@ -2623,10 +2623,13 @@ UString Location::toString(ExecState *exec) const
     Window* window = Window::retrieveWindow( m_frame->m_part );
     if ( window && window->isSafeScript(exec) )
     {
-      if (!m_frame->m_part->url().hasPath())
-        return m_frame->m_part->url().prettyURL()+"/";
+      KURL url = m_frame->m_part->url();
+      if (url.isEmpty())
+	return "about:blank";
+      else if (!url.hasPath())
+        return url.prettyURL()+"/";
       else
-        return m_frame->m_part->url().prettyURL();
+        return url.prettyURL();
     }
   }
   return "";
