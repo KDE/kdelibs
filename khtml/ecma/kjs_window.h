@@ -139,6 +139,7 @@ namespace KJS {
            XMLHttpRequest, XMLSerializer, DOMParser,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
            Print, AddEventListener, RemoveEventListener, SideBar,
+           ValueOf, ToString,
            Onabort, Onblur,
            Onchange, Onclick, Ondblclick, Ondragdrop, Onerror, Onfocus,
            Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,

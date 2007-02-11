@@ -282,6 +282,10 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
+# Normally found in prototype. Add to window object itself to make them
+# accessible in closed and cross-site windows
+  valueOf       Window::ValueOf		DontDelete|Function 0
+  toString      Window::ToString	DontDelete|Function 0
 # IE extension
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension
@@ -553,10 +557,23 @@ Value Window::get(ExecState *exec, const Identifier &p) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Window("<<this<<")::get " << p.qstring() << endl;
 #endif
-  // we don't want any operations on a closed window
+  // we want only limited operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
-    if ( p == "closed" )
-      return Boolean( true );
+    const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
+    if (entry) {
+      switch (entry->value) {
+      case Closed:
+	return Boolean(true);
+      case _Location:
+	return Null();
+      case ValueOf:
+      case ToString:
+      return lookupOrCreateFunction<WindowFunc>(exec,p, this, entry->value,
+						entry->params, entry->attr);
+      default:
+	break;
+      }
+    }
     return Undefined();
   }
 
@@ -614,6 +631,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case AToB:
     case BToA:
     case GetComputedStyle:
+    case ValueOf:
+    case ToString:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     default:
       break;
@@ -1731,6 +1750,13 @@ void Window::showSuppressedWindows()
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
+
+  // these should work no matter whether the window is already
+  // closed or not
+  if (id == Window::ValueOf || id == Window::ToString) {
+    return String("[object Window]");
+  }
+
   Window *window = static_cast<Window *>(thisObj.imp());
   QString str, str2;
 
