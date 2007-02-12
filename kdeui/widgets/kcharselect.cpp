@@ -42,6 +42,27 @@
 #include <klocale.h>
 #include <qheaderview.h>
 
+class KCharSelectTablePrivate
+{
+public:
+    KCharSelectTablePrivate(KCharSelectTable *q): q(q), m_model(0) {}
+  
+    void _k_slotCurrentChanged( const QModelIndex & current, const QModelIndex & previous );
+  
+    KCharSelectTable *q;
+  
+    /** Current font name. @see setFont() */
+    QString vFont;
+    /** Currently highlighted character. @see chr() @see setChar() */
+    QChar vChr;
+    /** Current table number. @see setTable() */
+    int vTableNum;
+    QPoint vPos;
+    QChar focusItem;
+    QPoint focusPos;
+    int temp;
+    KCharSelectItemModel *m_model;
+};
 
 class KCharSelect::KCharSelectPrivate
 {
@@ -68,9 +89,16 @@ public:
 //==================================================================
 KCharSelectTable::KCharSelectTable( QWidget *parent, const QString &_font,
 				    const QChar &_chr, int _tableNum )
-    : QTableView( parent), vFont( _font ), vChr( _chr ),
-      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ),m_model(0), d(0)
+    : QTableView( parent), d(new KCharSelectTablePrivate(this))
 {
+    d->vFont = _font;
+    d->vChr = _chr;
+    d->vTableNum = _tableNum;
+    d->vPos = QPoint( 0, 0 );
+    d->focusItem = _chr;
+    d->focusPos = QPoint( 0, 0 );
+    d->m_model = 0;
+      
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
     QPalette _palette;
@@ -91,11 +119,21 @@ KCharSelectTable::KCharSelectTable( QWidget *parent, const QString &_font,
     //setBackgroundMode( Qt::NoBackground );
 }
 
+KCharSelectTable::~KCharSelectTable()
+{
+    delete d;
+}
+
 //==================================================================
 void KCharSelectTable::setFont( const QString &_font )
 {
-    vFont = _font;
-    if (m_model) m_model->setFont(_font);
+    d->vFont = _font;
+    if (d->m_model) d->m_model->setFont(_font);
+}
+
+QChar KCharSelectTable::chr()
+{
+    return d->vChr;
 }
 
 //==================================================================
@@ -103,7 +141,7 @@ void KCharSelectTable::setChar( const QChar &_chr )
 {
     //const uint short chr=_chr;
     //if (chr)
-    vChr = _chr;
+    d->vChr = _chr;
 #ifdef __GNUC__
     #warning fixme //repaintContents( false );
 #endif
@@ -112,18 +150,18 @@ void KCharSelectTable::setChar( const QChar &_chr )
 //==================================================================
 void KCharSelectTable::setTableNum( int _tableNum )
 {
-    focusItem = QChar( _tableNum * 256 );
+    d->focusItem = QChar( _tableNum * 256 );
 
-    vTableNum = _tableNum;
+    d->vTableNum = _tableNum;
     
-    KCharSelectItemModel *m=m_model;
-    m_model=new KCharSelectItemModel(_tableNum,vFont,this);
-    setModel(m_model);
-    QItemSelectionModel *selectionModel=new QItemSelectionModel(m_model);
+    KCharSelectItemModel *m=d->m_model;
+    d->m_model=new KCharSelectItemModel(_tableNum,d->vFont,this);
+    setModel(d->m_model);
+    QItemSelectionModel *selectionModel=new QItemSelectionModel(d->m_model);
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(selectionModel,SIGNAL(currentChanged ( const QModelIndex & ,const QModelIndex &)), this, SLOT(slotCurrentChanged ( const QModelIndex &, const QModelIndex &)));
+    connect(selectionModel,SIGNAL(currentChanged ( const QModelIndex & ,const QModelIndex &)), this, SLOT(_k_slotCurrentChanged ( const QModelIndex &, const QModelIndex &)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
 #ifdef __GNUC__
     #warning fixme //repaintContents( false );
@@ -131,12 +169,12 @@ void KCharSelectTable::setTableNum( int _tableNum )
 }
 
 //==================================================================
-void KCharSelectTable::slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ) {
+void KCharSelectTablePrivate::_k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ) {
 	Q_UNUSED(previous);
 	if (!m_model) return;
 	focusItem = m_model->data(current,KCharSelectItemModel::CharacterRole).toChar();
-	emit focusItemChanged( focusItem );
-	emit focusItemChanged();
+	emit q->focusItemChanged( focusItem );
+	emit q->focusItemChanged();
 }
 
 
@@ -187,17 +225,17 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
     const int row = rowAt( e->y() );
     const int col = columnAt( e->x() );
     if ( row >= 0 && row < numRows && col >= 0 && col < numCols ) {
-	const QPoint oldPos = vPos;
+	const QPoint oldPos = d->vPos;
 
-	vPos.setX( col );
-	vPos.setY( row );
+	d->vPos.setX( col );
+	d->vPos.setY( row );
 
-	vChr = QChar( vTableNum * 256 + numCols * vPos.y() + vPos.x() );
+	d->vChr = QChar( d->vTableNum * 256 + numCols * d->vPos.y() + d->vPos.x() );
 
-	const QPoint oldFocus = focusPos;
+	const QPoint oldFocus = d->focusPos;
 
-	focusPos = vPos;
-	focusItem = vChr;
+	d->focusPos = d->vPos;
+	d->focusItem = d->vChr;
 
 #ifdef __GNUC__
 #warning fixme
@@ -205,12 +243,12 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 /*	
 	repaintCell( oldFocus.y(), oldFocus.x(), true );
 	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( vPos.y(), vPos.x(), true );
+	repaintCell( d->vPos.y(), d->vPos.x(), true );
 */
-	/*emit highlighted( vChr );
+	/*emit highlighted( d->vChr );
 	emit highlighted();*/
 
-	emit focusItemChanged( focusItem );
+	emit focusItemChanged( d->focusItem );
 	emit focusItemChanged();
     }
 }
@@ -218,7 +256,7 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 //==================================================================
 void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 {
-    if (m_model)
+    if (d->m_model)
     switch ( e->key() ) {
     case Qt::Key_PageDown:
         emit tableDown();
@@ -235,12 +273,12 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
         break;
     case Qt::Key_Enter: case Qt::Key_Return: {
     	if (!currentIndex().isValid()) return;
-            const QPoint oldPos = vPos;
+            const QPoint oldPos = d->vPos;
 
-	    vPos = focusPos;
-	    vChr = focusItem;
+	    d->vPos = d->focusPos;
+	    d->vChr = d->focusItem;
 
-	    emit activated( m_model->data(currentIndex(),KCharSelectItemModel::CharacterRole).toChar());
+	    emit activated( d->m_model->data(currentIndex(),KCharSelectItemModel::CharacterRole).toChar());
 	    emit activated();
         }
 	return;

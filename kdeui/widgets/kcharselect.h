@@ -59,6 +59,8 @@ public:
     KCharSelectTable( QWidget *parent, const QString &_font,
 		      const QChar &_chr, int _tableNum );
 
+    ~KCharSelectTable();
+  
     virtual QSize sizeHint() const;
     virtual void resizeEvent( QResizeEvent * );
 
@@ -71,7 +73,7 @@ public:
     /*virtual no more*/ void setTableNum( int _tableNum );
 
     /** @return Currently highlighted character. */
-    virtual QChar chr() { return vChr; }
+    virtual QChar chr();
 
 protected:
     //virtual void paintCell( class QPainter *p, int row, int col );
@@ -83,17 +85,6 @@ protected:
 
     virtual void keyPressEvent( QKeyEvent *e );
 
-    /** Current font name. @see setFont() */
-    QString vFont;
-    /** Currently highlighted character. @see chr() @see setChar() */
-    QChar vChr;
-    /** Current table number. @see setTable() */
-    int vTableNum;
-    QPoint vPos;
-    QChar focusItem;
-    QPoint focusPos;
-    int temp;
-
 Q_SIGNALS:
     void activated( const QChar &c );
     void activated();
@@ -103,14 +94,16 @@ Q_SIGNALS:
     void tableDown();
     void doubleClicked();
 
-private Q_SLOTS:
-    void slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous );
+private:
+    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ));
+    
+    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
     
 private:
-    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
-private:
-    KCharSelectItemModel *m_model;
+    friend class KCharSelectTablePrivate;
     KCharSelectTablePrivate* const d;
+
+    Q_DISABLE_COPY(KCharSelectTable)
 };
 
 /**
