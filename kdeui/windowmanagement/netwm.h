@@ -335,6 +335,22 @@ public:
     int virtualRootsCount() const;
 
     /**
+       Returns the desktop layout orientation.
+    **/
+    NET::Orientation desktopLayoutOrientation() const;
+
+    /**
+       Returns the desktop layout number of columns and rows. Note that
+       either may be 0 (see _NET_DESKTOP_LAYOUT).
+    **/
+    QSize desktopLayoutColumnsRows() const;
+
+    /**
+       Returns the desktop layout starting corner.
+    **/
+    NET::DesktopLayoutCorner desktopLayoutCorner() const;
+
+    /**
        Returns the number of desktops.
 
        @return the number of desktops
@@ -476,6 +492,13 @@ public:
        @param count The number of windows in the array.
     **/
     void setVirtualRoots(Window *windows, unsigned int count);
+
+    /**
+       Sets the desktop layout. This is set by the pager. When setting, the pager must
+       own the _NET_DESKTOP_LAYOUT_Sn manager selection. See _NET_DESKTOP_LAYOUT for details.
+    **/
+    void setDesktopLayout(NET::Orientation orientation, int columns, int rows,
+        NET::DesktopLayoutCorner corner);
 
     /**
      * Sets the _NET_SHOWING_DESKTOP status (whether desktop is being shown).

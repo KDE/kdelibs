@@ -58,6 +58,7 @@ static Atom net_workarea             = 0;
 static Atom net_supporting_wm_check  = 0;
 static Atom net_virtual_roots        = 0;
 static Atom net_showing_desktop      = 0;
+static Atom net_desktop_layout       = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
@@ -238,7 +239,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 84;
+static const int netAtomCount = 85;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -255,6 +256,7 @@ static void create_atoms(Display *d) {
 	    "_NET_ACTIVE_WINDOW",
 	    "_NET_WORKAREA",
 	    "_NET_VIRTUAL_ROOTS",
+            "_NET_DESKTOP_LAYOUT",
             "_NET_SHOWING_DESKTOP",
 	    "_NET_CLOSE_WINDOW",
             "_NET_RESTACK_WINDOW",
@@ -350,6 +352,7 @@ static void create_atoms(Display *d) {
 	    &net_active_window,
 	    &net_workarea,
 	    &net_virtual_roots,
+            &net_desktop_layout,
             &net_showing_desktop,
 	    &net_close_window,
             &net_restack_window,
@@ -618,6 +621,9 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
+    p->desktop_layout_orientation = OrientationHorizontal;
+    p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
+    p->desktop_layout_columns = p->desktop_layout_rows = 0;
     setDefaultProperties();
     if( properties_size > PROPERTIES_SIZE ) {
         fprintf( stderr, "NETRootInfo::NETRootInfo(): properties array too large\n");
@@ -672,6 +678,9 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
+    p->desktop_layout_orientation = OrientationHorizontal;
+    p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
+    p->desktop_layout_columns = p->desktop_layout_rows = 0;
     setDefaultProperties();
     if( properties_size > 2 ) {
         fprintf( stderr, "NETWinInfo::NETWinInfo(): properties array too large\n");
@@ -730,6 +739,9 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
+    p->desktop_layout_orientation = OrientationHorizontal;
+    p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
+    p->desktop_layout_columns = p->desktop_layout_rows = 0;
     setDefaultProperties();
     p->client_properties[ PROTOCOLS ] = properties;
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
@@ -1127,6 +1139,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & VirtualRoots)
 	atoms[pnum++] = net_virtual_roots;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2DesktopLayout)
+	atoms[pnum++] = net_desktop_layout;
+
     if (p->properties[ PROTOCOLS ] & CloseWindow)
 	atoms[pnum++] = net_close_window;
 
@@ -1361,6 +1376,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_virtual_roots )
         p->properties[ PROTOCOLS ] |= VirtualRoots;
+
+    else if( atom == net_desktop_layout )
+        p->properties[ PROTOCOLS2 ] |= WM2DesktopLayout;
 
     else if( atom == net_close_window )
         p->properties[ PROTOCOLS ] |= CloseWindow;
@@ -1615,6 +1633,29 @@ void NETRootInfo::setVirtualRoots(Window *windows, unsigned int count) {
     XChangeProperty(p->display, p->root, net_virtual_roots, XA_WINDOW, 32,
 		    PropModeReplace, (unsigned char *) p->virtual_roots,
 		    p->virtual_roots_count);
+}
+
+
+void NETRootInfo::setDesktopLayout(NET::Orientation orientation, int columns, int rows,
+    NET::DesktopLayoutCorner corner)
+{
+    p->desktop_layout_orientation = orientation;
+    p->desktop_layout_columns = columns;
+    p->desktop_layout_rows = rows;
+    p->desktop_layout_corner = corner;
+
+#ifdef   NETWMDEBUG
+    fprintf(stderr, "NETRootInfo::setDesktopLayout: %d %d %d %d\n",
+	    orientation, columns, rows, corner);
+#endif
+
+    long data[ 4 ];
+    data[ 0 ] = orientation;
+    data[ 1 ] = columns;
+    data[ 2 ] = rows;
+    data[ 3 ] = corner;
+    XChangeProperty(p->display, p->root, net_desktop_layout, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *) &data, 4);
 }
 
 
@@ -2513,6 +2554,36 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 	}
     }
 
+    if (dirty2 & WM2DesktopLayout) {
+        p->desktop_layout_orientation = OrientationHorizontal;
+        p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
+        p->desktop_layout_columns = p->desktop_layout_rows = 0;
+	if (XGetWindowProperty(p->display, p->root, net_desktop_layout,
+			       0, MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32) {
+                long* data = (long*) data_ret;
+                if( nitems_ret >= 4 && data[ 3 ] >= 0 && data[ 3 ] <= 3 )
+                    p->desktop_layout_corner = (NET::DesktopLayoutCorner)data[ 3 ];
+                if( nitems_ret >= 3 ) {
+                    if( data[ 0 ] >= 0 && data[ 0 ] <= 1 )
+                        p->desktop_layout_orientation = (NET::Orientation)data[ 0 ];
+                    p->desktop_layout_columns = data[ 1 ];
+                    p->desktop_layout_rows = data[ 2 ];
+                }
+	    }
+
+#ifdef    NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo::updated: desktop layout updated (%d %d %d %d)\n",
+                p->desktop_layout_orientation, p->desktop_layout_columns,
+                p->desktop_layout_rows, p->desktop_layout_corner );
+#endif
+	    if ( data_ret )
+		XFree(data_ret);
+	}
+    }
+
     if (dirty2 & WM2ShowingDesktop) {
         p->showing_desktop = false;
 	if (XGetWindowProperty(p->display, p->root, net_showing_desktop,
@@ -2660,6 +2731,21 @@ const Window *NETRootInfo::virtualRoots( ) const {
 
 int NETRootInfo::virtualRootsCount() const {
     return p->virtual_roots_count;
+}
+
+
+NET::Orientation NETRootInfo::desktopLayoutOrientation() const {
+    return p->desktop_layout_orientation;
+}
+
+
+QSize NETRootInfo::desktopLayoutColumnsRows() const {
+    return QSize( p->desktop_layout_columns, p->desktop_layout_rows );
+}
+
+
+NET::DesktopLayoutCorner NETRootInfo::desktopLayoutCorner() const {
+    return p->desktop_layout_corner;
 }
 
 

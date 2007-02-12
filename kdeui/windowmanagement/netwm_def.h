@@ -618,6 +618,7 @@ public:
         @li WM2ClientMachine WM_CLIENT_MACHINE
         @li WM2ShowingDesktop
         @li WM2Opacity _NET_WM_WINDOW_OPACITY
+        @li WM2DesktopLayout _NET_DESKTOP_LAYOUT
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
@@ -634,7 +635,8 @@ public:
         WM2WindowRole          = 1<<11,
         WM2ClientMachine       = 1<<12,
         WM2ShowingDesktop      = 1<<13,
-        WM2Opacity             = 1<<14
+        WM2Opacity             = 1<<14,
+        WM2DesktopLayout       = 1<<15        
     };
 
     /**
@@ -660,6 +662,24 @@ public:
            indicated that the request comes from pager or similar tool
         **/
         FromTool
+    };
+    
+    /**
+      Orientation.
+    **/
+    enum Orientation {
+        OrientationHorizontal = 0,
+        OrientationVertical = 1
+    };
+    
+    /**
+     Starting corner for desktop layout.
+    **/
+    enum DesktopLayoutCorner {
+        DesktopLayoutCornerTopLeft = 0,
+        DesktopLayoutCornerTopRight = 1,
+        DesktopLayoutCornerBottomLeft = 2,
+        DesktopLayoutCornerBottomRight = 3
     };
     
     /**
