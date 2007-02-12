@@ -29,7 +29,6 @@
 #define __HIGHCOLOR_H
 
 #include <qbitmap.h>
-#include <q3intdict.h>
 #include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kstyle.h>
@@ -51,7 +50,7 @@ class GradientSet
 };
 
 
-class Q3PopupMenu;
+class QMenu;
 
 class HighColorStyle : public KStyle
 {
@@ -67,7 +66,7 @@ class HighColorStyle : public KStyle
 		void unPolish( QWidget* widget );
 
 		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg,
-								 	const Q3PopupMenu* popup ) const;
+								 	const QMenu* popup ) const;
 
 		void drawKStylePrimitive( KStylePrimitive kpe,
 					QPainter* p,

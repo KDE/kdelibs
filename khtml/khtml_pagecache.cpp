@@ -25,6 +25,7 @@
 #include <kstandarddirs.h>
 
 #include <q3intdict.h>
+#include <Q3PtrList>
 #include <qtimer.h>
 #include <qfile.h>
 #include <errno.h>

@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <khbox.h>
 #include <qsettings.h>
 #include <qcolor.h>
-#include <q3groupbox.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcolorbutton.h>

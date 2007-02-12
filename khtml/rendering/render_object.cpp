@@ -47,7 +47,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <qpainter.h>
-#include <q3pointarray.h>
 #include "khtmlview.h"
 #include <khtml_part.h>
 #include <QBitmap>

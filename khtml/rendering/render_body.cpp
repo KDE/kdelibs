@@ -28,6 +28,8 @@
 #include <kglobal.h>
 #include <kdebug.h>
 
+#include <QScrollBar>
+
 using namespace khtml;
 using namespace DOM;
 

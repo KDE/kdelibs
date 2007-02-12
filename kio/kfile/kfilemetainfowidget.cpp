@@ -29,7 +29,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
-#include <q3datetimeedit.h>
+#include <qdatetimeedit.h>
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qlayout.h>
@@ -288,7 +288,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
 
 QWidget* KFileMetaInfoWidget::makeDateWidget()
 {
-  QWidget *e = new Q3DateEdit(m_item.value().toDate(), this);
+  QWidget *e = new QDateEdit(m_item.value().toDate(), this);
   connect(e,    SIGNAL(valueChanged(const QDate&)),
           this, SLOT(slotDateChanged(const QDate&)));
   return e;
@@ -296,12 +296,12 @@ QWidget* KFileMetaInfoWidget::makeDateWidget()
 
 QWidget* KFileMetaInfoWidget::makeTimeWidget()
 {
-  return new Q3TimeEdit(m_item.value().toTime(), this);
+  return new QTimeEdit(m_item.value().toTime(), this);
 }
 
 QWidget* KFileMetaInfoWidget::makeDateTimeWidget()
 {
-  return new Q3DateTimeEdit(m_item.value().toDateTime(), this);
+  return new QDateTimeEdit(m_item.value().toDateTime(), this);
 }
 
 void KFileMetaInfoWidget::reparentValidator( QWidget *widget,
@@ -366,7 +366,7 @@ void KFileMetaInfoWidget::slotMultiLineEditChanged()
 
 void KFileMetaInfoWidget::slotDateChanged(const QDate& value)
 {
-    Q_ASSERT(qobject_cast<Q3DateEdit*>(m_widget));
+    Q_ASSERT(qobject_cast<QDateEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -374,7 +374,7 @@ void KFileMetaInfoWidget::slotDateChanged(const QDate& value)
 
 void KFileMetaInfoWidget::slotTimeChanged(const QTime& value)
 {
-    Q_ASSERT(qobject_cast<Q3TimeEdit*>(m_widget));
+    Q_ASSERT(qobject_cast<QTimeEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;
@@ -382,7 +382,7 @@ void KFileMetaInfoWidget::slotTimeChanged(const QTime& value)
 
 void KFileMetaInfoWidget::slotDateTimeChanged(const QDateTime& value)
 {
-    Q_ASSERT(qobject_cast<Q3DateTimeEdit*>(m_widget));
+    Q_ASSERT(qobject_cast<QDateTimeEdit*>(m_widget));
     m_value = QVariant(value);
     emit valueChanged(m_value);
     m_dirty = true;

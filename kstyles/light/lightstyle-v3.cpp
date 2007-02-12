@@ -29,7 +29,7 @@
 #include "qpalette.h"
 #include "qpushbutton.h"
 #include "qdrawutil.h"
-#include "q3progressbar.h"
+#include "qprogressbar.h"
 #include "qscrollbar.h"
 #include "qtabbar.h"
 #include "qpointer.h"
@@ -59,7 +59,7 @@ LightStyleV3::~LightStyleV3()
     delete basestyle;
 }
 
-void LightStyleV3::polishPopupMenu( Q3PopupMenu * menu)
+void LightStyleV3::polishPopupMenu( QMenu * menu)
 {
     KStyle::polishPopupMenu(menu);
     // empty to satisy pure virtual requirements
@@ -901,7 +901,7 @@ void LightStyleV3::drawControl( ControlElement control,
 	    if (! widget || data.isDefault())
 		break;
 
-	    const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
+	    const QMenu *popupmenu = (const QMenu *) widget;
 	    QMenuItem *mi = data.menuItem();
 	    int tab = data.tabWidth();
 	    int maxpmw = data.maxIconWidth();
@@ -1750,7 +1750,7 @@ QSize LightStyleV3::sizeFromContents( ContentsType contents,
 		break;
 
 	    QMenuItem *mi = data.menuItem();
-	    const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
+	    const QMenu *popupmenu = (const QMenu *) widget;
 	    int maxpmw = data.maxIconWidth();
 	    int w = contentsSize.width(), h = contentsSize.height();
 
@@ -1792,7 +1792,7 @@ QSize LightStyleV3::sizeFromContents( ContentsType contents,
 	
     case CT_ProgressBar:
 	{
-	    const Q3ProgressBar* pb = static_cast<const Q3ProgressBar*>(widget);
+	    const QProgressBar* pb = static_cast<const QProgressBar*>(widget);
 	    
 	    //If we have to display the indicator, and we do it on RHS, give some more room
 	    //for it. This tries to match the logic and the spacing in SR_ProgressBarGroove/Contents

@@ -61,7 +61,6 @@ using namespace DOM;
 #include "ecma/kjs_window.h"
 #include "khtml_settings.h"
 #include "kjserrordlg.h"
-#include <QTextDocument>
 
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
@@ -111,9 +110,9 @@ using namespace DOM;
 
 #include <qclipboard.h>
 #include <qfile.h>
-#include <qtooltip.h>
 #include <qmetaobject.h>
 #include <QTextDocument>
+#include <Q3CString>
 
 #include "khtmlpart_p.h"
 #include "khtmlpartadaptor.h"

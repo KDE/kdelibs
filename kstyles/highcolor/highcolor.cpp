@@ -37,7 +37,8 @@
 #include <qtabbar.h>
 #include <qtoolbutton.h>
 #include <q3toolbar.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
+#include <q3intdict.h>
 
 #include <kdrawutil.h>
 #include <kpixmapeffect.h>
@@ -226,7 +227,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 
 /* reimp. */
 void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg,
-		const Q3PopupMenu* /* popup */ ) const
+		const QMenu* /* popup */ ) const
 {
 	QColor col = cg.button();
 
@@ -1275,7 +1276,7 @@ void HighColorStyle::drawControl( ControlElement element,
 		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
-			const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
+			const QMenu *popupmenu = (const QMenu *) widget;
 
 			QMenuItem *mi = opt.menuItem();
 			if ( !mi ) {
@@ -1862,7 +1863,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			if ( ! widget || opt.isDefault() )
 				return contentSize;
 
-			const Q3PopupMenu *popup = (const Q3PopupMenu *) widget;
+			const QMenu *popup = (const QMenu *) widget;
 			bool checkable = popup->isCheckable();
 			QMenuItem *mi = opt.menuItem();
 			int maxpmw = opt.maxIconWidth();

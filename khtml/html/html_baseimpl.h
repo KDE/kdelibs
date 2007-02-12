@@ -31,8 +31,6 @@
 #include "html/html_elementimpl.h"
 #include "misc/khtmllayout.h"
 
-#include <q3scrollview.h>
-
 class KHTMLView;
 class KHTMLPart;
 

@@ -35,9 +35,6 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
-#include <q3cstring.h>
-
-
 class QString;
 class QStringList;
 class Q3CString;
@@ -49,6 +46,8 @@ class KSSLX509V3;
 
 #include <kdelibs_export.h>
 #include <ksslconfig.h>
+
+#include <QList>
 
 #ifdef KSSL_HAVE_SSL
 typedef struct x509_st X509;

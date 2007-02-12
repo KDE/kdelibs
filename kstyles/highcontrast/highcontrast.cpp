@@ -39,8 +39,8 @@
 #include <qtabbar.h>
 #include <qtoolbutton.h>
 #include <q3toolbar.h>
-#include <q3popupmenu.h>
-#include <q3progressbar.h>
+#include <qmenu.h>
+#include <qprogressbar.h>
 #include <q3listview.h>
 #include <qsettings.h>
 
@@ -822,7 +822,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			r.rect( &x, &y, &w, &h );
 			
 			if (element == CE_ProgressBarLabel) {
-				Q3ProgressBar* progressbar = (Q3ProgressBar*) widget;
+				QProgressBar* progressbar = (QProgressBar*) widget;
 				text = progressbar->progressString();
 				setColorsNormal (p, cg, flags);
 			}
@@ -942,7 +942,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 		// -------------------------------------------------------------------
 		case CE_ProgressBarGroove: {
 			setColorsText (p, cg, flags);
-			const Q3ProgressBar *progressbar = dynamic_cast<const Q3ProgressBar*>(widget);
+			const QProgressBar *progressbar = dynamic_cast<const QProgressBar*>(widget);
 			if (progressbar) {
 				QRect r2 (r);
 				r2.setLeft (p->boundingRect (r, Qt::AlignVCenter|Qt::AlignLeft|Qt::TextShowMnemonic, progressbar->progressString()).right()
@@ -952,7 +952,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			break;
 		}
 		case CE_ProgressBarContents: {
-			const Q3ProgressBar *progressbar = dynamic_cast<const Q3ProgressBar*>(widget);
+			const QProgressBar *progressbar = dynamic_cast<const QProgressBar*>(widget);
 			if (progressbar)
 			{
 				QRect r2 (r);
@@ -985,7 +985,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			setColorsNormal (p, cg, flags, Style_Active|Style_MouseOver);
 			p->fillRect (r, p->backgroundColor ());
 
-			const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
+			const QMenu *popupmenu = (const QMenu *) widget;
 			QMenuItem *mi = opt.menuItem();
 			if (!mi)
 				break;
@@ -1719,7 +1719,7 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 			if ( ! widget || opt.isDefault() )
 				return contentSize;
 
-			const Q3PopupMenu *popup = (const Q3PopupMenu *) widget;
+			const QMenu *popup = (const QMenu *) widget;
 			bool checkable = popup->isCheckable();
 			QMenuItem *mi = opt.menuItem();
 			int maxpmw = opt.maxIconWidth();

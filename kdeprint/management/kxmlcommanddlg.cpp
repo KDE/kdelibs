@@ -29,7 +29,6 @@
 #include <qcombobox.h>
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <q3widgetstack.h>
 #include <qtoolbutton.h>
 #include <kpushbutton.h>
 #include <qcheckbox.h>

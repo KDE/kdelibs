@@ -58,7 +58,7 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <qbitmap.h>
 
 using namespace khtml;

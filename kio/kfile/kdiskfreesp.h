@@ -23,12 +23,11 @@
  */
 
 
-#ifndef __KDISKFREESP_H__
-#define __KDISKFREESP_H__
+#ifndef KDISKFREESP_H
+#define KDISKFREESP_H
 
 #include <qobject.h>
 #include <qstring.h>
-#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 

@@ -46,7 +46,6 @@ class QPushButton;
 class KIconButton;
 class KPropertiesDialogPlugin;
 class QComboBox;
-class Q3ListBox;
 
 class KJob;
 namespace KIO { class Job; }

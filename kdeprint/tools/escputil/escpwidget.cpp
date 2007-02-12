@@ -24,7 +24,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <q3accel.h>
-#include <q3cstring.h>
+#include <qbytearray.h>
 #include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -245,13 +245,13 @@ void EscpWidget::slotProcessExited(KProcess*)
 
 void EscpWidget::slotReceivedStdout(KProcess*, char *buf, int len)
 {
-	QString	bufstr = Q3CString(buf, len);
+	QString	bufstr = QByteArray(buf, len);
 	m_outbuffer.append(bufstr);
 }
 
 void EscpWidget::slotReceivedStderr(KProcess*, char *buf, int len)
 {
-	QString	bufstr = Q3CString(buf, len);
+	QString	bufstr = QByteArray(buf, len);
 	m_errorbuffer.append(bufstr);
 }
 

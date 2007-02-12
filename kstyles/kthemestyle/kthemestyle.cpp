@@ -47,14 +47,14 @@ Port version 0.9.7
 #include <qlabel.h>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qpalette.h>
 #include <qtabbar.h>
 #include <qtoolbutton.h>
 #include <kglobalsettings.h>
 #include <kdrawutil.h>
 #include <qdrawutil.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include <qdir.h>
 #include <qapplication.h>
 #include <qmenubar.h>
@@ -251,7 +251,7 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
                 if ( ! widget || opt.isDefault() )
                     return contentSize;
 
-                const Q3PopupMenu *popup = ( const Q3PopupMenu * ) widget;
+                const QMenu *popup = ( const QMenu * ) widget;
                 bool checkable = popup->isCheckable();
                 QMenuItem *mi = opt.menuItem();
                 int maxpmw = opt.maxIconWidth();
@@ -550,7 +550,7 @@ void KThemeStyle::polish( QWidget *w )
     {
         w->setBackgroundMode( Qt::PaletteBackground );
     }
-    else if ( qobject_cast<Q3PopupMenu>(w) )
+    else if ( qobject_cast<QMenu>(w) )
     {
         popupPalette = w->palette();
         if ( isColor( MenuItem ) || isColor( MenuItemDown ) )
@@ -621,7 +621,7 @@ void KThemeStyle::unPolish( QWidget* w )
         w->setBackgroundMode( Qt::PaletteButton );
         
     //The same for menu bars, popup menus
-    else if ( qobject_cast<QMenuBar>(w) || qobject_cast<Q3PopupMenu>(w) )
+    else if ( qobject_cast<QMenuBar>(w) || qobject_cast<QMenu>(w) )
         w->setBackgroundMode( Qt::PaletteButton );
         
     //For toolbar internal separators, return to button, too (can't use qt_cast here since don't have access to the class)
@@ -631,7 +631,7 @@ void KThemeStyle::unPolish( QWidget* w )
     //For scrollbars, we don't do much, since the widget queries the style on the switch
 
     //Drop some custom palettes. ### this really should check the serial number to be 100% correct.
-    if ( qobject_cast<Q3PopupMenu>(w) || qobject_cast<QCheckBox>(w) || qobject_cast<QRadioButton>(w) || qobject_cast<QStatusBar>(w) )
+    if ( qobject_cast<QMenu>(w) || qobject_cast<QCheckBox>(w) || qobject_cast<QRadioButton>(w) || qobject_cast<QStatusBar>(w) )
         w->unsetPalette();
 
     KStyle::unPolish( w );
@@ -1426,7 +1426,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 int x, y, w, h;
                 r.rect( &x, &y, &w, &h );
 
-                const Q3PopupMenu *popupmenu = ( const Q3PopupMenu * ) widget;
+                const QMenu *popupmenu = ( const QMenu * ) widget;
                 QMenuItem *mi = opt.menuItem();
                 if ( mi )
                 {
@@ -1678,7 +1678,7 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_ProgressBarContents:
             {
-                const Q3ProgressBar* pb = (const Q3ProgressBar*)widget;
+                const QProgressBar* pb = (const QProgressBar*)widget;
                 QRect cr = subRect(SR_ProgressBarContents, widget);
                 double progress = pb->progress();
                 bool reverse = QApplication::isRightToLeft();

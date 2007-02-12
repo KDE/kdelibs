@@ -26,6 +26,8 @@
 
 #include <qstring.h>
 #include <qfile.h>
+#include <q3cstring.h>
+
 #include <ksslall.h>
 #include <kdebug.h>
 #include <ktemporaryfile.h>

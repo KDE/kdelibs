@@ -22,7 +22,7 @@
 #include <qlabel.h>
 #include <qdir.h>
 #include <qradiobutton.h>
-#include <q3buttongroup.h>
+#include <qbuttongroup.h>
 #include <qlayout.h>
 #include <kprocess.h>
 #include <kprocio.h>

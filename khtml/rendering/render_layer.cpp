@@ -59,7 +59,6 @@
 #include "html/html_blockimpl.h"
 #include "xml/dom_restyler.h"
 
-#include <q3ptrvector.h>
 #include <qstyle.h>
 
 using namespace DOM;

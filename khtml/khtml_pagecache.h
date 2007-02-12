@@ -21,7 +21,6 @@
 #define __khtml_pagecache_h__
 
 #include <qobject.h>
-#include <q3ptrlist.h>
 
 class KHTMLPageCachePrivate;
 

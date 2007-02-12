@@ -21,6 +21,8 @@
 
 #include <assert.h>
 
+#include <Q3CString>
+
 #include <kdebug.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>

@@ -25,6 +25,7 @@
 #endif
 
 #include <qtimer.h>
+#include <Q3CString>
 
 #include "kssld.h"
 #include <kconfig.h>
@@ -41,7 +42,6 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <qfile.h>
-#include <q3sortedlist.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>

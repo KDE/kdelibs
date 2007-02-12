@@ -70,7 +70,7 @@ KDiskFreeSp::~KDiskFreeSp()
 **/
 void KDiskFreeSp::receivedDFStdErrOut(KProcess *, char *data, int len)
 {
-  Q3CString tmp(data,len+1);  // adds a zero-byte
+  QByteArray tmp(data,len+1);  // adds a zero-byte
   dfStringErrOut.append(tmp);
 }
 

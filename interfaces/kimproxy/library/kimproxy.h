@@ -26,7 +26,6 @@
 
 #include <qhash.h>
 #include <qmap.h>
-#include <q3ptrdict.h>
 #include <qstringlist.h>
 #include <qpixmap.h>
 

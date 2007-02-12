@@ -41,8 +41,7 @@
 #include <kopenssl.h>
 #include <kdebug.h>
 #include <qstringlist.h>
-
-
+#include <Q3CString>
 
 #ifdef KSSL_HAVE_SSL
 #define sk_new d->kossl->sk_new
