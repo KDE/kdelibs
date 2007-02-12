@@ -140,7 +140,10 @@ FactoryPrivate::~FactoryPrivate()
     foreach(BasePrivate* bp, basePrivateList) {
         bp->deleteIface();
     }
-    qDeleteAll(objects);
+    if (objects.size() > 0) {
+        kError(600) << "The backend objects are not deleted as was requested." << endl;
+        qDeleteAll(objects);
+    }
     delete backend;
 }
 
@@ -170,12 +173,16 @@ Factory::Sender *Factory::sender()
 
 void Factory::registerFrontendObject(BasePrivate* bp)
 {
-    globalFactory->basePrivateList.append(bp);
+    globalFactory->basePrivateList.prepend(bp); // inserted last => deleted first
 }
 
 void Factory::deregisterFrontendObject(BasePrivate* bp)
 {
-    globalFactory->basePrivateList.removeAll(bp);
+    // The Factory can already be cleaned up while there are other frontend objects still alive.
+    // When those are deleted they'll call deregisterFrontendObject through ~BasePrivate
+    if (!globalFactory.isDestroyed()) {
+        globalFactory->basePrivateList.removeAll(bp);
+    }
 }
 
 void FactoryPrivate::phononBackendChanged()
