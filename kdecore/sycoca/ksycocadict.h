@@ -49,24 +49,24 @@ public:
 
    /**
     * Adds a 'payload' to the dictionary with key 'key'.
-    * 
-    * 'payload' should have a valid offset by the time  
+    *
+    * 'payload' should have a valid offset by the time
     * the dictionary gets saved.
     **/
    void add(const QString &key, const KSycocaEntry::Ptr& payload);
 
    /**
     * Removes the 'payload' from the dictionary with key 'key'.
-    * 
+    *
     * Not very fast, use with care O(N)
     **/
    void remove(const QString &key);
-   
+
    /**
     * Looks up an entry identified by 'key'.
     *
     * If 0 is returned, no matching entry exists.
-    * Otherwise, the offset of the entry is returned. 
+    * Otherwise, the offset of the entry is returned.
     *
     * NOTE: It is not guaranteed that this entry is
     * indeed the one you were looking for.
@@ -74,22 +74,22 @@ public:
     * indeed matches the search key. If it doesn't
     * then no matching entry exists.
     */
-   int find_string(const QString &key );
-   
+   int find_string(const QString &key ) const;
+
    /**
     * The number of entries in the dictionary.
     *
     * Only valid when building the database.
     */
    uint count();
-   
+
    /**
     * Reset the dictionary.
     *
     * Only valid when building the database.
     */
    void clear();
-   
+
    /**
     * Save the dictionary to the stream
     * A reasonable fast hash algorithm will be created.
@@ -109,11 +109,12 @@ public:
     *
     *   The hash table size will be approx. 20Kb.
     *   The duplicate list size will be approx. 12Kb.
-    **/    
+    **/
    void save(QDataStream &str);
 
-protected:
-   quint32 hashKey( const QString &);
+private:
+   quint32 hashKey( const QString &) const;
+
 private:
    KSycocaDictStringList *d;
    QDataStream *mStr;

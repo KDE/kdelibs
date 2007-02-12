@@ -38,76 +38,76 @@ typedef QHash<QString, KSycocaEntry::Ptr> KSycocaEntryDict;
 class KDECORE_EXPORT KSycocaFactory
 {
 public:
-   virtual KSycocaFactoryId factoryId() const = 0;
+    virtual KSycocaFactoryId factoryId() const = 0;
 
 protected: // virtual class
-   /**
-    * Create a factory which can be used to lookup from/create a database
-    * (depending on KSycoca::isBuilding())
-    */
-   explicit KSycocaFactory( KSycocaFactoryId factory_id );
+    /**
+     * Create a factory which can be used to lookup from/create a database
+     * (depending on KSycoca::isBuilding())
+     */
+    explicit KSycocaFactory( KSycocaFactoryId factory_id );
 
 public:
-   virtual ~KSycocaFactory();
+    virtual ~KSycocaFactory();
 
-   /**
-    * @return the position of the factory in the sycoca file
-    */
-   int offset() { return mOffset; }
+    /**
+     * @return the position of the factory in the sycoca file
+     */
+    int offset() const;
 
-   /**
-    * @return the dict, for special use by KBuildSycoca
-    */
-   KSycocaEntryDict * entryDict() { return m_entryDict; }
+    /**
+     * @return the dict, for special use by KBuildSycoca
+     */
+    KSycocaEntryDict * entryDict() { return m_entryDict; }
 
-   /**
-    * Construct an entry from a config file.
-    * To be implemented in the real factories.
-    */
-   virtual KSycocaEntry *createEntry(const QString &file, const char *resource) = 0;
+    /**
+     * Construct an entry from a config file.
+     * To be implemented in the real factories.
+     */
+    virtual KSycocaEntry *createEntry(const QString &file, const char *resource) = 0;
 
-   /**
-    * Add an entry
-    */
-   virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
+    /**
+     * Add an entry
+     */
+    virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
-   /**
-    * Remove all entries with the given name.
-    * Not very fast (O(N)), use with care.
-    */
-   void removeEntry(const QString& entryName);
+    /**
+     * Remove all entries with the given name.
+     * Not very fast (O(N)), use with care.
+     */
+    void removeEntry(const QString& entryName);
 
-   /**
-    * Read an entry from the database
-    */
-   virtual KSycocaEntry *createEntry(int offset)=0;
+    /**
+     * Read an entry from the database
+     */
+    virtual KSycocaEntry *createEntry(int offset)=0;
 
-   /**
-    * Get a list of all entries from the database.
-    */
-   virtual KSycocaEntry::List allEntries();
+    /**
+     * Get a list of all entries from the database.
+     */
+    virtual KSycocaEntry::List allEntries();
 
-   /**
-    * Saves all entries it maintains as well as index files
-    * for these entries to the stream 'str'.
-    *
-    * Also sets mOffset to the starting position.
-    *
-    * The stream is positioned at the end of the last index.
-    *
-    * Don't forget to call the parent first when you override
-    * this function.
-    */
-   virtual void save(QDataStream &str);
+    /**
+     * Saves all entries it maintains as well as index files
+     * for these entries to the stream 'str'.
+     *
+     * Also sets mOffset to the starting position.
+     *
+     * The stream is positioned at the end of the last index.
+     *
+     * Don't forget to call the parent first when you override
+     * this function.
+     */
+    virtual void save(QDataStream &str);
 
-   /**
-    * Writes out a header to the stream 'str'.
-    * The baseclass positions the stream correctly.
-    *
-    * Don't forget to call the parent first when you override
-    * this function.
-    */
-   virtual void saveHeader(QDataStream &str);
+    /**
+     * Writes out a header to the stream 'str'.
+     * The baseclass positions the stream correctly.
+     *
+     * Don't forget to call the parent first when you override
+     * this function.
+     */
+    virtual void saveHeader(QDataStream &str);
 
     /**
      * @return the resources for which this factory is responsible.
@@ -123,25 +123,24 @@ public:
     /**
      * @return true if the factory is completely empty - no entries defined
      */
-    bool isEmpty() const { return m_beginEntryOffset == m_endEntryOffset; }
+    bool isEmpty() const;
+
+protected:
+    QDataStream *m_str;
+
+    KSycocaResourceList *m_resourceList;
+    KSycocaEntryDict *m_entryDict;
 
 private:
-   int mOffset;
-   int m_sycocaDictOffset;
-   int m_beginEntryOffset;
-   int m_endEntryOffset;
+    KSycocaDict *m_sycocaDict;
+    class Private;
+    Private* const d;
 
 protected:
-   QDataStream *m_str;
-
-   KSycocaResourceList *m_resourceList;
-   KSycocaEntryDict *m_entryDict;
-   KSycocaDict *m_sycocaDict;
-protected:
-   /** Virtual hook, used to add new "virtual" functions while maintaining
-       binary compatibility. Unused in this class.
-   */
-   virtual void virtual_hook( int id, void* data );
+    /** Virtual hook, used to add new "virtual" functions while maintaining
+        binary compatibility. Unused in this class.
+    */
+    virtual void virtual_hook( int id, void* data );
 };
 
 /** This, instead of a typedef, allows to declare "class ..." in header files

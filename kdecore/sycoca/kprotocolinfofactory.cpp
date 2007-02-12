@@ -83,7 +83,7 @@ QStringList KProtocolInfoFactory::protocols()
 KProtocolInfo::Ptr
 KProtocolInfoFactory::findProtocol(const QString &protocol)
 {
-  if (!m_sycocaDict) return KProtocolInfo::Ptr(); // Error!
+  if (!sycocaDict()) return KProtocolInfo::Ptr(); // Error!
 
   QMap<QString,KProtocolInfo::Ptr>::iterator it = m_cache.find(protocol);
   if (it != m_cache.end())
@@ -91,7 +91,7 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
 
   int offset;
 
-  offset = m_sycocaDict->find_string( protocol );
+  offset = sycocaDict()->find_string( protocol );
 
   if (!offset) return KProtocolInfo::Ptr(); // Not found;
 

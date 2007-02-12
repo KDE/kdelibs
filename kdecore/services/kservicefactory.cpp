@@ -88,13 +88,13 @@ KServiceFactory * KServiceFactory::self()
 
 KService::Ptr KServiceFactory::findServiceByName(const QString &_name)
 {
-   if (!m_sycocaDict) return KService::Ptr(); // Error!
+   if (!sycocaDict()) return KService::Ptr(); // Error!
 
    // Warning : this assumes we're NOT building a database
    // But since findServiceByName isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
-   int offset = m_sycocaDict->find_string( _name );
+   int offset = sycocaDict()->find_string( _name );
    if (!offset) return KService::Ptr(); // Not found
 
    KService::Ptr newService(createEntry(offset));

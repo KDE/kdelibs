@@ -108,7 +108,7 @@ KSycocaDict::remove(const QString &key)
 }
 
 int
-KSycocaDict::find_string(const QString &key )
+KSycocaDict::find_string(const QString &key ) const
 {
    //kDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key) << endl;
 
@@ -175,7 +175,7 @@ KSycocaDict::clear()
 }
 
 uint
-KSycocaDict::hashKey( const QString &key)
+KSycocaDict::hashKey( const QString &key) const
 {
    int l = key.length();
    register uint h = 0;

@@ -69,9 +69,9 @@ KServiceTypeFactory * KServiceTypeFactory::self()
 
 KServiceType::Ptr KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
-   if (!m_sycocaDict) return KServiceType::Ptr(); // Error!
+   if (!sycocaDict()) return KServiceType::Ptr(); // Error!
    assert (!KSycoca::self()->isBuilding());
-   int offset = m_sycocaDict->find_string( _name );
+   int offset = sycocaDict()->find_string( _name );
    if (!offset) return KServiceType::Ptr(); // Not found
    KServiceType::Ptr newServiceType(createEntry(offset));
 
@@ -86,7 +86,7 @@ KServiceType::Ptr KServiceTypeFactory::findServiceTypeByName(const QString &_nam
 
 QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 {
-   if (!m_sycocaDict)
+   if (!sycocaDict())
       return QVariant::Invalid; // Error!
 
    assert (!KSycoca::self()->isBuilding());

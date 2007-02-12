@@ -14,7 +14,7 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
- **/
+ */
 
 #include <config.h>
 
@@ -28,169 +28,190 @@
 #include <qstringlist.h>
 #include <qhash.h>
 
-KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
- : m_resourceList(0), m_entryDict(0)
+class KSycocaFactory::Private
 {
-  if (!KSycoca::self()->isBuilding() && (m_str = KSycoca::self()->findFactory( factory_id )))
-  {
-      // Read position of index tables....
-      qint32 i;
-      (*m_str) >> i;
-      m_sycocaDictOffset = i;
-      (*m_str) >> i;
-      m_beginEntryOffset = i;
-      (*m_str) >> i;
-      m_endEntryOffset = i;
+public:
+    Private() {}
 
-      int saveOffset = m_str->device()->pos();
-      // Init index tables
-      m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);
-      saveOffset = m_str->device()->seek(saveOffset);
-   }
-   else
-   {
-      // Build new database!
-      m_str = 0;
-      m_entryDict = new KSycocaEntryDict;
-      m_sycocaDict = new KSycocaDict;
-      m_beginEntryOffset = 0;
-      m_endEntryOffset = 0;
+    int mOffset;
+    int m_sycocaDictOffset;
+    int m_beginEntryOffset;
+    int m_endEntryOffset;
+};
 
-      // m_resourceList will be filled in by inherited constructors
-   }
-   KSycoca::self()->addFactory(this);
+KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
+    : m_resourceList(0), m_entryDict(0), d(new Private)
+{
+    if (!KSycoca::self()->isBuilding() && (m_str = KSycoca::self()->findFactory( factory_id )))
+    {
+        // Read position of index tables....
+        qint32 i;
+        (*m_str) >> i;
+        d->m_sycocaDictOffset = i;
+        (*m_str) >> i;
+        d->m_beginEntryOffset = i;
+        (*m_str) >> i;
+        d->m_endEntryOffset = i;
+
+        int saveOffset = m_str->device()->pos();
+        // Init index tables
+        m_sycocaDict = new KSycocaDict(m_str, d->m_sycocaDictOffset);
+        saveOffset = m_str->device()->seek(saveOffset);
+    }
+    else
+    {
+        // Build new database!
+        m_str = 0;
+        m_entryDict = new KSycocaEntryDict;
+        m_sycocaDict = new KSycocaDict;
+        d->m_beginEntryOffset = 0;
+        d->m_endEntryOffset = 0;
+
+        // m_resourceList will be filled in by inherited constructors
+    }
+    KSycoca::self()->addFactory(this);
 }
 
 KSycocaFactory::~KSycocaFactory()
 {
-   delete m_entryDict;
-   delete m_sycocaDict;
+    delete m_entryDict;
+    delete m_sycocaDict;
+    delete d;
 }
 
 void
 KSycocaFactory::saveHeader(QDataStream &str)
 {
-   // Write header
-   str.device()->seek(mOffset);
-   str << (qint32) m_sycocaDictOffset;
-   str << (qint32) m_beginEntryOffset;
-   str << (qint32) m_endEntryOffset;
+    // Write header
+    str.device()->seek(d->mOffset);
+    str << (qint32) d->m_sycocaDictOffset;
+    str << (qint32) d->m_beginEntryOffset;
+    str << (qint32) d->m_endEntryOffset;
 }
 
 void
 KSycocaFactory::save(QDataStream &str)
 {
-   if (!m_entryDict) return; // Error! Function should only be called when
-                             // building database
-   if (!m_sycocaDict) return; // Error!
+    if (!m_entryDict) return; // Error! Function should only be called when
+    // building database
+    if (!m_sycocaDict) return; // Error!
 
-   mOffset = str.device()->pos(); // store position in member variable
-   m_sycocaDictOffset = 0;
+    d->mOffset = str.device()->pos(); // store position in member variable
+    d->m_sycocaDictOffset = 0;
 
-   // Write header (pass #1)
-   saveHeader(str);
+    // Write header (pass #1)
+    saveHeader(str);
 
-   m_beginEntryOffset = str.device()->pos();
+    d->m_beginEntryOffset = str.device()->pos();
 
-   // Write all entries.
-   int entryCount = 0;
-   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
-       it != m_entryDict->end(); ++it)
-   {
-      KSycocaEntry::Ptr entry = *it;
-      entry->save(str);
-      entryCount++;
-   }
+    // Write all entries.
+    int entryCount = 0;
+    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+        it != m_entryDict->end(); ++it)
+    {
+        KSycocaEntry::Ptr entry = *it;
+        entry->save(str);
+        entryCount++;
+    }
 
-   m_endEntryOffset = str.device()->pos();
+    d->m_endEntryOffset = str.device()->pos();
 
-   // Write indices...
-   // Linear index
-   str << (qint32) entryCount;
-   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
-       it != m_entryDict->end(); ++it)
-   {
-      str << qint32(it->data()->offset());
-   }
+    // Write indices...
+    // Linear index
+    str << (qint32) entryCount;
+    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+        it != m_entryDict->end(); ++it)
+    {
+        str << qint32(it->data()->offset());
+    }
 
-   // Dictionary index
-   m_sycocaDictOffset = str.device()->pos();
-   m_sycocaDict->save(str);
+    // Dictionary index
+    d->m_sycocaDictOffset = str.device()->pos();
+    m_sycocaDict->save(str);
 
-   int endOfFactoryData = str.device()->pos();
+    int endOfFactoryData = str.device()->pos();
 
-   // Update header (pass #2)
-   saveHeader(str);
+    // Update header (pass #2)
+    saveHeader(str);
 
-   // Seek to end.
-   str.device()->seek(endOfFactoryData);
+    // Seek to end.
+    str.device()->seek(endOfFactoryData);
 }
 
 void
 KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-   if (!m_entryDict) return; // Error! Function should only be called when
-                             // building database
+    if (!m_entryDict) return; // Error! Function should only be called when
+    // building database
 
-   if (!m_sycocaDict) return; // Error!
+    if (!m_sycocaDict) return; // Error!
 
-   // Note that we use a QMultiHash since there can be several entries
-   // with the same name (e.g. kfmclient.desktop and konqbrowser.desktop both
-   // have Name=Konqueror).
+    // Note that we use a QMultiHash since there can be several entries
+    // with the same name (e.g. kfmclient.desktop and konqbrowser.desktop both
+    // have Name=Konqueror).
 
-   const QString name = newEntry->name();
-   m_entryDict->insertMulti( name, newEntry );
-   m_sycocaDict->add( name, newEntry );
+    const QString name = newEntry->name();
+    m_entryDict->insertMulti( name, newEntry );
+    m_sycocaDict->add( name, newEntry );
 }
 
 void
 KSycocaFactory::removeEntry(const QString& entryName)
 {
-   if (!m_entryDict) return; // Error! Function should only be called when
-                             // building database
+    if (!m_entryDict) return; // Error! Function should only be called when
+    // building database
 
-   if (!m_sycocaDict) return; // Error!
+    if (!m_sycocaDict) return; // Error!
 
-   m_entryDict->remove( entryName );
-   m_sycocaDict->remove( entryName ); // O(N)
+    m_entryDict->remove( entryName );
+    m_sycocaDict->remove( entryName ); // O(N)
 }
 
 KSycocaEntry::List KSycocaFactory::allEntries()
 {
-   KSycocaEntry::List list;
-   if (!m_str) return list;
+    KSycocaEntry::List list;
+    if (!m_str) return list;
 
-   // Assume we're NOT building a database
+    // Assume we're NOT building a database
 
-   m_str->device()->seek(m_endEntryOffset);
-   qint32 entryCount;
-   (*m_str) >> entryCount;
+    m_str->device()->seek(d->m_endEntryOffset);
+    qint32 entryCount;
+    (*m_str) >> entryCount;
 
-   if (entryCount > 8192)
-   {
-      KSycoca::flagError();
-      return list;
-   }
+    if (entryCount > 8192)
+    {
+        KSycoca::flagError();
+        return list;
+    }
 
-   // offsetList is needed because createEntry() modifies the stream position
-   qint32 *offsetList = new qint32[entryCount];
-   for(int i = 0; i < entryCount; i++)
-   {
-      (*m_str) >> offsetList[i];
-   }
+    // offsetList is needed because createEntry() modifies the stream position
+    qint32 *offsetList = new qint32[entryCount];
+    for(int i = 0; i < entryCount; i++)
+    {
+        (*m_str) >> offsetList[i];
+    }
 
-   for(int i = 0; i < entryCount; i++)
-   {
-      KSycocaEntry *newEntry = createEntry(offsetList[i]);
-      if (newEntry)
-      {
-         list.append( KSycocaEntry::Ptr( newEntry ) );
-      }
-   }
-   delete [] offsetList;
-   return list;
+    for(int i = 0; i < entryCount; i++)
+    {
+        KSycocaEntry *newEntry = createEntry(offsetList[i]);
+        if (newEntry)
+        {
+            list.append( KSycocaEntry::Ptr( newEntry ) );
+        }
+    }
+    delete [] offsetList;
+    return list;
+}
+
+int KSycocaFactory::offset() const
+{
+    return d->mOffset;
+}
+
+bool KSycocaFactory::isEmpty() const
+{
+    return d->m_beginEntryOffset == d->m_endEntryOffset;
 }
 
 void KSycocaFactory::virtual_hook( int /*id*/, void* /*data*/)
 { /*BASE::virtual_hook( id, data );*/ }
-

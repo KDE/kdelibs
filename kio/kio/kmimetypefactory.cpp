@@ -55,9 +55,9 @@ KMimeTypeFactory * KMimeTypeFactory::self()
 
 KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name)
 {
-    if (!m_sycocaDict) return KMimeType::Ptr(); // Error!
+    if (!sycocaDict()) return KMimeType::Ptr(); // Error!
     assert (!KSycoca::self()->isBuilding());
-    int offset = m_sycocaDict->find_string( _name );
+    int offset = sycocaDict()->find_string( _name );
     if (!offset) return KMimeType::Ptr(); // Not found
     KMimeType::Ptr newMimeType(createEntry(offset));
 
