@@ -101,7 +101,10 @@ private:
 
 private:
   class Private;
+  friend class Private;
   Private * const d;
+  
+  Q_DISABLE_COPY(KSelector)
 };
 
 
@@ -140,36 +143,26 @@ public:
   /**
    * Sets the two colors which span the gradient.
    */
-  void setColors( const QColor &col1, const QColor &col2 )
-  {	color1 = col1; color2 = col2; update();}
-  void setText( const QString &t1, const QString &t2 )
-  {	text1 = t1; text2 = t2; update(); }
+  void setColors( const QColor &col1, const QColor &col2 );
+  void setText( const QString &t1, const QString &t2 );
 
   /**
    * Set each color on its own.
    */
-  void setFirstColor( const QColor &col )
-  { color1 = col; update(); }
-  void setSecondColor( const QColor &col )
-  { color2 = col; update(); }
+  void setFirstColor( const QColor &col );
+  void setSecondColor( const QColor &col );
 
   /**
    * Set each description on its own
    */
-  void setFirstText( const QString &t )
-  { text1 = t; update(); }
-  void setSecondText( const QString &t )
-  { text2 = t; update(); }
+  void setFirstText( const QString &t );
+  void setSecondText( const QString &t );
 
-  const QColor firstColor() const
-  { return color1; }
-  const QColor secondColor() const
-  { return color2; }
+  const QColor firstColor() const;
+  const QColor secondColor() const;
 
-  const QString firstText() const
-  { return text1; }
-  const QString secondText() const
-  { return text2; }
+  const QString firstText() const;
+  const QString secondText() const;
 
 protected:
 
@@ -178,15 +171,11 @@ protected:
   { return sizeHint(); }
 
 private:
-  void init();
-  QColor color1;
-  QColor color2;
-  QString text1;
-  QString text2;
-
-private:
   class KGradientSelectorPrivate;
+  friend class KGradientSelectorPrivate;
   KGradientSelectorPrivate *d;
+  
+  Q_DISABLE_COPY(KGradientSelector)
 };
 
 #endif		// KSELECTOR_H

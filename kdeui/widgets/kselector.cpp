@@ -44,6 +44,20 @@ public:
   bool m_indent;
 };
 
+class KGradientSelector::KGradientSelectorPrivate
+{
+public:
+  KGradientSelectorPrivate(KGradientSelector *q): q(q) {}
+  
+  void init();
+  
+  KGradientSelector *q;
+  QColor color1;
+  QColor color2;
+  QString text1;
+  QString text2;  
+};
+
 KSelector::KSelector( QWidget *parent )
   : QAbstractSlider( parent )
  , d(new Private)
@@ -229,24 +243,26 @@ void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 //----------------------------------------------------------------------------
 
 KGradientSelector::KGradientSelector( QWidget *parent )
-    : KSelector( parent )
+    : KSelector( parent ), d(new KGradientSelectorPrivate(this))
 {
-    init();
+    d->init();
 }
 
 
 KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent )
-    : KSelector( o, parent )
+    : KSelector( o, parent ), d(new KGradientSelectorPrivate(this))
 {
-    init();
+    d->init();
 }
 
 
 KGradientSelector::~KGradientSelector()
-{}
+{
+    delete d;
+}
 
 
-void KGradientSelector::init()
+void KGradientSelector::KGradientSelectorPrivate::init()
 {
     color1.setRgb( 0, 0, 0 );
     color2.setRgb( 255, 255, 255 );
@@ -262,18 +278,18 @@ void KGradientSelector::drawContents( QPainter *painter )
   QColor col;
   float scale;
 
-  int redDiff   = color2.red() - color1.red();
-  int greenDiff = color2.green() - color1.green();
-  int blueDiff  = color2.blue() - color1.blue();
+  int redDiff   = d->color2.red() - d->color1.red();
+  int greenDiff = d->color2.green() - d->color1.green();
+  int blueDiff  = d->color2.blue() - d->color1.blue();
 
   if ( orientation() == Qt::Vertical )
   {
     for ( int y = 0; y < image.height(); y++ )
     {
       scale = 1.0 * y / image.height();
-      col.setRgb( color1.red() + int(redDiff*scale),
-            color1.green() + int(greenDiff*scale),
-            color1.blue() + int(blueDiff*scale) );
+      col.setRgb( d->color1.red() + int(redDiff*scale),
+            d->color1.green() + int(greenDiff*scale),
+            d->color1.blue() + int(blueDiff*scale) );
 
       unsigned int *p = (uint *) image.scanLine( y );
       for ( int x = 0; x < image.width(); x++ )
@@ -287,9 +303,9 @@ void KGradientSelector::drawContents( QPainter *painter )
     for ( int x = 0; x < image.width(); x++ )
     {
       scale = 1.0 * x / image.width();
-      col.setRgb( color1.red() + int(redDiff*scale),
-            color1.green() + int(greenDiff*scale),
-            color1.blue() + int(blueDiff*scale) );
+      col.setRgb( d->color1.red() + int(redDiff*scale),
+            d->color1.green() + int(greenDiff*scale),
+            d->color1.blue() + int(blueDiff*scale) );
       *p++ = col.rgb();
     }
 
@@ -301,9 +317,9 @@ void KGradientSelector::drawContents( QPainter *painter )
   QColor ditherPalette[8];
 
   for ( int s = 0; s < 8; s++ )
-    ditherPalette[s].setRgb( color1.red() + redDiff * s / 8,
-                color1.green() + greenDiff * s / 8,
-                color1.blue() + blueDiff * s / 8 );
+    ditherPalette[s].setRgb( d->color1.red() + redDiff * s / 8,
+                d->color1.green() + greenDiff * s / 8,
+                d->color1.blue() + blueDiff * s / 8 );
 
   KImageEffect::dither( image, ditherPalette, 8 );
 
@@ -315,32 +331,89 @@ void KGradientSelector::drawContents( QPainter *painter )
   {
     int yPos = contentsRect().top() + painter->fontMetrics().ascent() + 2;
     int xPos = contentsRect().left() + (contentsRect().width() -
-       painter->fontMetrics().width( text2 )) / 2;
-    QPen pen( color2 );
+       painter->fontMetrics().width( d->text2 )) / 2;
+    QPen pen( d->color2 );
     painter->setPen( pen );
-    painter->drawText( xPos, yPos, text2 );
+    painter->drawText( xPos, yPos, d->text2 );
 
     yPos = contentsRect().bottom() - painter->fontMetrics().descent() - 2;
     xPos = contentsRect().left() + (contentsRect().width() -
-      painter->fontMetrics().width( text1 )) / 2;
-    pen.setColor( color1 );
+      painter->fontMetrics().width( d->text1 )) / 2;
+    pen.setColor( d->color1 );
     painter->setPen( pen );
-    painter->drawText( xPos, yPos, text1 );
+    painter->drawText( xPos, yPos, d->text1 );
   }
   else
   {
     int yPos = contentsRect().bottom()-painter->fontMetrics().descent()-2;
 
-    QPen pen( color2 );
+    QPen pen( d->color2 );
     painter->setPen( pen );
-    painter->drawText( contentsRect().left() + 2, yPos, text1 );
+    painter->drawText( contentsRect().left() + 2, yPos, d->text1 );
 
-    pen.setColor( color1 );
+    pen.setColor( d->color1 );
     painter->setPen( pen );
     painter->drawText( contentsRect().right() -
-       painter->fontMetrics().width( text2 ) - 2, yPos, text2 );
+       painter->fontMetrics().width( d->text2 ) - 2, yPos, d->text2 );
   }
 }
 
+void KGradientSelector::setColors( const QColor &col1, const QColor &col2 )
+{
+  d->color1 = col1;
+  d->color2 = col2;
+  update();
+}
+
+void KGradientSelector::setText( const QString &t1, const QString &t2 )
+{
+  d->text1 = t1;
+  d->text2 = t2;
+  update();
+}
+
+void KGradientSelector::setFirstColor( const QColor &col )
+{
+  d->color1 = col;
+  update();
+}
+
+void KGradientSelector::setSecondColor( const QColor &col )
+{
+  d->color2 = col;
+  update();
+}
+
+void KGradientSelector::setFirstText( const QString &t )
+{
+  d->text1 = t;
+  update();
+}
+
+void KGradientSelector::setSecondText( const QString &t )
+{
+  d->text2 = t;
+  update();
+}
+
+const QColor KGradientSelector::firstColor() const
+{
+  return d->color1;
+}
+
+const QColor KGradientSelector::secondColor() const
+{
+  return d->color2;
+}
+
+const QString KGradientSelector::firstText() const
+{
+  return d->text1;
+}
+
+const QString KGradientSelector::secondText() const
+{
+  return d->text2;
+}
 
 #include "kselector.moc"
