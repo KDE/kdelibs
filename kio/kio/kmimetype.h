@@ -25,9 +25,7 @@
 
 #include <qstringlist.h>
 #include <QtCore/QList>
-#include <qpixmap.h>
 
-#include <kicontheme.h>
 #include <kurl.h>
 #include <ksycocatype.h>
 #include <kservicetype.h>
@@ -80,6 +78,7 @@ public:
 
     /**
      * Return the filename of the icon associated with the mimetype.
+     * Use KIconLoader::loadMimeTypeIcon to load the icon.
      *
      * The url argument is unused, but is provided so that KMimeType-derived classes
      * can use it (e.g. KFolderType uses the URL to return one out of 2 icons)
@@ -88,51 +87,9 @@ public:
      */
     virtual QString iconName( const KUrl& ) const;
 
-
     /**
-     * Use this function only if you don't have a special URL
-     * for which you search a pixmap.
-     *
-     * This function is useful to find
-     * out, which icon is usually chosen for a certain mime type. Since
-     * no URL is passed, it is impossible to obey icon hints in desktop
-     * entries for example.
-     * @param group The icon group where the icon is going to be used.
-     * @param force_size Override globallly configured icon size.
-     *        Use 0 for the default size
-     * @param state The icon state, one of: @p K3Icon::DefaultState,
-     *         @p K3Icon::ActiveState or @p K3Icon::DisabledState.
-     * @param path Output parameter to get the full path. Seldom needed.
-     *              Ignored if 0
-     * @return the pixmap of the mime type, can be a default icon if not found
-     */
-    virtual KDE_DEPRECATED QPixmap pixmap( K3Icon::Group group, int force_size = 0, int state = 0,
-                                           QString * path = 0L ) const;
-
-    /**
-     * Find the pixmap for a given file of this mimetype.
-     *
-     * Convenience method that uses icon(), but also locates and
-     * load the pixmap.
-     *
-     * @param _url URL for the file.
-     * @param _group The icon group where the icon is going to be used.
-     * @param _force_size Override globallly configured icon size.
-     *        Use 0 for the default size
-     * @param _state The icon state, one of: K3Icon::DefaultState,
-     * K3Icon::ActiveState or K3Icon::DisabledState.
-     * @param _path Output parameter to get the full path. Seldom needed.
-     *              Ignored if 0
-     * @return the pixmap of the URL, can be a default icon if not found
-     */
-    virtual KDE_DEPRECATED QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
-                                           int _state = 0, QString * _path = 0L ) const;
-
-    /**
-     * The same functionality as pixmapForUrl(), but this method returns the name
-     * of the icon to load. You'll have to use KIconLoader to load the pixmap for it.
-     * The advantage of this method is that you can store the result, and then use it
-     * later on for any kind of size.
+     * Return the filename of the icon associated with the mimetype, for a given url.
+     * Use KIconLoader::loadMimeTypeIcon to load the icon.
      * @param _url URL for the file
      * @param _mode the mode of the file. The mode may modify the icon
      *              with overlays that show special properties of the
@@ -141,14 +98,6 @@ public:
      *         for the mime type
      */
     static QString iconNameForUrl( const KUrl & _url, mode_t _mode = 0 );
-
-
-    /**
-     * @deprecated the method was renamed, use iconNameForURL
-     * @param _url URL for the file
-     * @param _mode the mode of the file
-     */
-    static KDE_DEPRECATED QString iconForUrl( const KUrl & _url, mode_t _mode = 0 );
 
     /**
      * Return the "favicon" (see http://www.favicon.com) for the given @p url,

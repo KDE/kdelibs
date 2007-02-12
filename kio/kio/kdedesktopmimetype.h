@@ -60,8 +60,6 @@ public:
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const KUrl& _url ) const;
-  virtual KDE_DEPRECATED QPixmap pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size = 0,
-                          int _state = 0, QString * _path = 0L ) const;
   virtual QString comment( const KUrl& _url ) const;
 
   /**

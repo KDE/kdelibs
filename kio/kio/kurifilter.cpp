@@ -19,6 +19,7 @@
  **/
 
 #include <config.h>
+#include <QPixmap>
 
 #include <kdebug.h>
 #include <kiconloader.h>

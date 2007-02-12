@@ -500,23 +500,6 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( K3Icon::Group _group, int _force_size, int _state,
-                           QString * _path ) const
-{
-  return KIconLoader::global()->loadMimeTypeIcon( iconName(), _group, _force_size, _state, _path );
-}
-
-QPixmap KMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
-                           int _state, QString * _path ) const
-{
-  return KIconLoader::global()->loadMimeTypeIcon( iconName( _url ), _group, _force_size, _state, _path );
-}
-
-QString KMimeType::iconForUrl( const KUrl & _url, mode_t _mode )
-{
-  return iconNameForUrl(_url,_mode);
-}
-
 QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t _mode )
 {
     const KMimeType::Ptr mt = findByUrl( _url, _mode, _url.isLocalFile(),

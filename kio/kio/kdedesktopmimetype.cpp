@@ -77,27 +77,6 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
-                                    int _state, QString * _path ) const
-{
-  QString _icon = icon( _url );
-  QPixmap pix = KIconLoader::global()->loadIcon( _icon, _group,
-        _force_size, _state, _path, false );
-  if ( pix.isNull() )
-      pix = KIconLoader::global()->loadIcon( "unknown", _group,
-        _force_size, _state, _path, false );
-  return pix;
-}
-
-/*QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
-{
-  if ( !_is_local || _url.isEmpty() )
-    return KMimeType::comment( _url, _is_local );
-
-  KUrl u( _url );
-  return comment( u, _is_local );
-}*/
-
 QString KDEDesktopMimeType::comment( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
