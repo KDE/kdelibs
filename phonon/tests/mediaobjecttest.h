@@ -39,11 +39,7 @@ class MediaObjectTest : public QObject
         void cleanup();
 
 		void initTestCase();
-		void setMedia();
 		void checkForDefaults();
-
-		void addPaths();
-		void initOutput();
 
 		// state change tests
 		void stopToStop();
@@ -59,11 +55,16 @@ class MediaObjectTest : public QObject
 		void testSeek();
 		void testAboutToFinish();
         void testPlayOnFinish();
+        void testPlayBeforeFinish();
 		void testTickSignal();
 
 		void cleanupTestCase();
 
 	private:
+        void setMedia();
+        void addPaths();
+        void initOutput();
+
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
 		void pausePlayback( Phonon::State currentState );

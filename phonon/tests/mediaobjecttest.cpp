@@ -147,6 +147,10 @@ void MediaObjectTest::initTestCase()
 	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	QVERIFY( m_stateChangedSignalSpy->isValid() );
 	m_stateChangedSignalSpy->clear();
+
+    setMedia();
+    addPaths();
+    initOutput();
 }
 
 void MediaObjectTest::setMedia()
@@ -262,10 +266,10 @@ void MediaObjectTest::pauseToPause()
 
 void MediaObjectTest::pauseToPlay()
 {
-	startPlayback();
-	pausePlayback( Phonon::PlayingState );
+    startPlayback();
+    pausePlayback(Phonon::PlayingState);
     startPlayback(Phonon::PausedState);
-	stopPlayback( Phonon::PlayingState );
+    stopPlayback(Phonon::PlayingState);
 }
 
 void MediaObjectTest::pauseToStop()
@@ -330,7 +334,7 @@ void MediaObjectTest::testAboutToFinish()
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
 	if( m_media->isSeekable() )
-        m_media->seek(m_media->totalTime() - 2000 - requestedAboutToFinishTime); // give it 2 seconds
+        m_media->seek(m_media->totalTime() - 4000 - requestedAboutToFinishTime); // give it 4 seconds
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
@@ -442,6 +446,63 @@ void MediaObjectTest::testPlayOnFinish()
     waitForSignal(this, SIGNAL(continueTestPlayOnFinish()), 4000);
     ::sleep(1);
     m_stateChangedSignalSpy->clear();
+    stopPlayback(Phonon::PlayingState);
+}
+
+void MediaObjectTest::testPlayBeforeFinish()
+{
+    startPlayback();
+    QCOMPARE(m_stateChangedSignalSpy->size(), 0);
+    Phonon::State state = m_media->state();
+    QCOMPARE(state, Phonon::PlayingState);
+    m_media->setUrl(m_url);
+    m_media->play();
+    if (m_stateChangedSignalSpy->isEmpty()) {
+        waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+        if (0 == m_stateChangedSignalSpy->size()) {
+            QFAIL("no state change after setUrl() and play() were called");
+        }
+    }
+    // first state to reach is StoppedState
+    QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
+    Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
+    QCOMPARE(oldstate, state);
+    state = qvariant_cast<Phonon::State>(args.at(0));
+    QCOMPARE(state, Phonon::StoppedState);
+    if (m_stateChangedSignalSpy->isEmpty()) {
+        waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+        if (0 == m_stateChangedSignalSpy->size()) {
+            QFAIL("no state change after StoppedState after setUrl() and play() were called");
+        }
+    }
+    // next LoadingState
+    args = m_stateChangedSignalSpy->takeFirst();
+    oldstate = qvariant_cast<Phonon::State>(args.at(1));
+    QCOMPARE(oldstate, state);
+    state = qvariant_cast<Phonon::State>(args.at(0));
+    QCOMPARE(state, Phonon::LoadingState);
+    if (m_stateChangedSignalSpy->isEmpty()) {
+        waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+        if (0 == m_stateChangedSignalSpy->size()) {
+            QFAIL("no state change after LoadingState after setUrl() and play() were called");
+        }
+    }
+    // next either BufferingState or PlayingState
+    args = m_stateChangedSignalSpy->takeFirst();
+    oldstate = qvariant_cast<Phonon::State>(args.at(1));
+    QCOMPARE(oldstate, state);
+    state = qvariant_cast<Phonon::State>(args.at(0));
+    if (state == Phonon::BufferingState && m_stateChangedSignalSpy->size() == 0) {
+        waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+        if (0 == m_stateChangedSignalSpy->size()) {
+            QFAIL("no state change after BufferingState after setUrl() and play() were called");
+        }
+        args = m_stateChangedSignalSpy->takeFirst();
+        oldstate = qvariant_cast<Phonon::State>(args.at(1));
+        QCOMPARE(oldstate, state);
+        state = qvariant_cast<Phonon::State>(args.at(0));
+    }
+    QCOMPARE(state, Phonon::PlayingState);
     stopPlayback(Phonon::PlayingState);
 }
 
