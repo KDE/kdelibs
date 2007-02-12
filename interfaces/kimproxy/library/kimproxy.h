@@ -286,8 +286,6 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		PresenceMap m_presence_map;
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
-		// FIXME: remove for KDE4 - UNUSED but maintained for binary compatibility in KDE 3.4
-		Q3PtrDict<int> m_client_presence_strings;
 		Private * d;
 		bool m_apps_available;
 		bool m_initialized;
