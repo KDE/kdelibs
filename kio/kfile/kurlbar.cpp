@@ -367,7 +367,9 @@ void KUrlBar::setListBox( KUrlBarListWidget *view )
              SLOT( slotSelected(QListWidgetItem *)));
 
 
+#ifdef __GNUC__
 #warning "KDE4 - Port the drag/drop handling."
+#endif
 
     // These signals refer to the Q3ListBox class and are not
     // available in QListWidget.  They need to be ported

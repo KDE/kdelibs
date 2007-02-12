@@ -37,7 +37,7 @@
  * settings.  If you want to get informed when the user selects
  * something connect to the QListBox::selectionChanged() signal.
  **/
-class KDEUI_EXPORT K3ListBox : public Q3ListBox
+class KDE3SUPPORT_EXPORT K3ListBox : public Q3ListBox
 {
     Q_OBJECT
 

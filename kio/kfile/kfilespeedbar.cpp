@@ -61,7 +61,9 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent )
                                "folder_home" );
         item->setToolTip( i18n("Your personal home folder for your files and settings") );
 
+#ifdef __GNUC__
 #warning "KDE4 - Can we move the Floppy item into 'Storage Media' or lose it entirely?"
+#endif
 
         u = "floppy:/";
         if ( KProtocolInfo::isKnownProtocol( u ) ) {

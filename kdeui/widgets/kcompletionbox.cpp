@@ -70,7 +70,9 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     connect( this, SIGNAL( itemDoubleClicked( QListWidgetItem * )),
              SLOT( slotActivated( QListWidgetItem * )) );
 
+#ifdef __GNUC__
 #warning "Check if this workaround can be removed in KDE 4"
+#endif
 
     // grmbl, just QListBox workarounds :[ Thanks Volker.
     connect( this, SIGNAL( currentItemChanged( QListWidgetItem * , QListWidgetItem * )),
