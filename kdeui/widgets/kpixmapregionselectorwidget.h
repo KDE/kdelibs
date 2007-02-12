@@ -45,7 +45,6 @@ class QRubberBand;
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
    Q_OBJECT
-   struct Private;
 public:
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
@@ -68,7 +67,7 @@ public:
     * @return the original whole pixmap that we're using in this widget as the
     * pixmap the user is selecting a region from.
     */
-   QPixmap pixmap() const { return m_unzoomedPixmap; };
+   QPixmap pixmap() const;
 
    /**
     * Sets the selected region to be @p rect (in zoomed pixmap coordinates)
@@ -143,33 +142,12 @@ protected:
 
 private:
    bool eventFilter(QObject *obj, QEvent *ev);
-
-   /**
-    * Recalculates the pixmap that is shown based on the current selected area,
-    * the original image, etc.
-    */
-   void updatePixmap();
-
-   QRect calcSelectionRectangle( const QPoint &startPoint, const QPoint & endPoint );
-
-   enum CursorState { None=0, Resizing, Moving };
-   CursorState m_state;
-
-   QPixmap m_unzoomedPixmap;
-   QPixmap m_originalPixmap;
-   QPixmap m_linedPixmap;
-   QRect   m_selectedRegion;
-   QLabel *m_label;
-
-   QPoint m_tempFirstClick;
-   double m_forcedAspectRatio;
-
-   int m_maxWidth, m_maxHeight;
-   double m_zoomFactor;
-
-   QRubberBand *m_rubberBand;
-
-   Private* d;
+   
+   class Private;
+   friend class Private;
+   Private* const d;
+   
+   Q_DISABLE_COPY(KPixmapRegionSelectorWidget)
 };
 
 #endif

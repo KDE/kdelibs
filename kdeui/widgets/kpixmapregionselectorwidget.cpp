@@ -41,8 +41,41 @@
 #include <QMouseEvent>
 #include "kactioncollection.h"
 
+class KPixmapRegionSelectorWidget::Private
+{
+public:
+  Private(KPixmapRegionSelectorWidget *q): q(q) {}
+  
+  KPixmapRegionSelectorWidget *q;
+  
+  /**
+   * Recalculates the pixmap that is shown based on the current selected area,
+   * the original image, etc.
+   */
+  void updatePixmap();
+  
+  QRect calcSelectionRectangle( const QPoint &startPoint, const QPoint & endPoint );
+  
+  enum CursorState { None=0, Resizing, Moving };
+  CursorState m_state;
+  
+  QPixmap m_unzoomedPixmap;
+  QPixmap m_originalPixmap;
+  QPixmap m_linedPixmap;
+  QRect   m_selectedRegion;
+  QLabel *m_label;
+  
+  QPoint m_tempFirstClick;
+  double m_forcedAspectRatio;
+  
+  int m_maxWidth, m_maxHeight;
+  double m_zoomFactor;
+  
+  QRubberBand *m_rubberBand;  
+};
+
 KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent)
-    : QWidget( parent )
+    : QWidget( parent ), d(new Private(this))
 {
    QHBoxLayout * hboxLayout=new QHBoxLayout( this );
 
@@ -51,45 +84,51 @@ KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent)
    hboxLayout->addItem(vboxLayout);
 
    vboxLayout->addStretch();
-   m_label = new QLabel(this);
-   m_label->setAttribute(Qt::WA_NoSystemBackground,true);//setBackgroundMode( Qt::NoBackground );
-   m_label->installEventFilter( this );
+   d->m_label = new QLabel(this);
+   d->m_label->setAttribute(Qt::WA_NoSystemBackground,true);//setBackgroundMode( Qt::NoBackground );
+   d->m_label->installEventFilter( this );
 
-   vboxLayout->addWidget(m_label);
+   vboxLayout->addWidget(d->m_label);
    vboxLayout->addStretch();
 
    hboxLayout->addStretch();
 
-   m_forcedAspectRatio=0;
+   d->m_forcedAspectRatio=0;
 
-   m_zoomFactor=1.0;
-   m_rubberBand = new QRubberBand(QRubberBand::Rectangle, m_label);
-   m_rubberBand->hide();
+   d->m_zoomFactor=1.0;
+   d->m_rubberBand = new QRubberBand(QRubberBand::Rectangle, d->m_label);
+   d->m_rubberBand->hide();
 }
 
 KPixmapRegionSelectorWidget::~KPixmapRegionSelectorWidget()
 {
+  delete d;
+}
+
+QPixmap KPixmapRegionSelectorWidget::pixmap() const
+{
+  return d->m_unzoomedPixmap;
 }
 
 void KPixmapRegionSelectorWidget::setPixmap( const QPixmap &pixmap )
 {
    Q_ASSERT(!pixmap.isNull()); //This class isn't designed to deal with null pixmaps.
-   m_originalPixmap = pixmap;
-   m_unzoomedPixmap = pixmap;
-   m_label->setPixmap( pixmap );
+   d->m_originalPixmap = pixmap;
+   d->m_unzoomedPixmap = pixmap;
+   d->m_label->setPixmap( pixmap );
    resetSelection();
 }
 
 void KPixmapRegionSelectorWidget::resetSelection()
 {
-   m_selectedRegion = m_originalPixmap.rect();
-   m_rubberBand->hide();
-   updatePixmap();
+   d->m_selectedRegion = d->m_originalPixmap.rect();
+   d->m_rubberBand->hide();
+   d->updatePixmap();
 }
 
 QRect KPixmapRegionSelectorWidget::selectedRegion() const
 {
-     return m_selectedRegion;
+     return d->m_selectedRegion;
 }
 
 void KPixmapRegionSelectorWidget::setSelectedRegion(const QRect &rect)
@@ -97,16 +136,17 @@ void KPixmapRegionSelectorWidget::setSelectedRegion(const QRect &rect)
    if (!rect.isValid()) resetSelection();
    else
    {
-      m_selectedRegion=rect;
-      updatePixmap();
+      d->m_selectedRegion=rect;
+      d->updatePixmap();
 
       QRect r=unzoomedSelectedRegion();
    }
 }
 
-void KPixmapRegionSelectorWidget::updatePixmap()
+void KPixmapRegionSelectorWidget::Private::updatePixmap()
 {
-   Q_ASSERT(!m_originalPixmap.isNull()); if(m_originalPixmap.isNull()) { m_label->setPixmap(m_originalPixmap); return; }
+   Q_ASSERT(!m_originalPixmap.isNull());
+   if (m_originalPixmap.isNull()) { m_label->setPixmap(m_originalPixmap); return; }
    if (m_selectedRegion.width()>m_originalPixmap.width()) m_selectedRegion.setWidth( m_originalPixmap.width() );
    if (m_selectedRegion.height()>m_originalPixmap.height()) m_selectedRegion.setHeight( m_originalPixmap.height() );
 
@@ -132,7 +172,7 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 
    qApp->sendPostedEvents(0,QEvent::LayoutRequest);
 
-   if (m_selectedRegion == m_originalPixmap.rect())//m_label->rect()) //### CHECK!
+   if (m_selectedRegion == m_originalPixmap.rect())//d->m_label->rect()) //### CHECK!
         m_rubberBand->hide();
    else
    {
@@ -178,19 +218,19 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 
 void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction)
 {
-   int w=m_originalPixmap.width();
-   int h=m_originalPixmap.height();
-   QImage img=m_unzoomedPixmap.toImage();
+   int w=d->m_originalPixmap.width();
+   int h=d->m_originalPixmap.height();
+   QImage img=d->m_unzoomedPixmap.toImage();
    img= KImageEffect::rotate(img, direction);
-   m_unzoomedPixmap=QPixmap::fromImage(img);
+   d->m_unzoomedPixmap=QPixmap::fromImage(img);
 
-   img=m_originalPixmap.toImage();
+   img=d->m_originalPixmap.toImage();
    img= KImageEffect::rotate(img, direction);
-   m_originalPixmap=QPixmap::fromImage(img);
+   d->m_originalPixmap=QPixmap::fromImage(img);
 
-   m_linedPixmap=QPixmap();
+   d->m_linedPixmap=QPixmap();
 
-   if (m_forcedAspectRatio>0 && m_forcedAspectRatio!=1)
+   if (d->m_forcedAspectRatio>0 && d->m_forcedAspectRatio!=1)
       resetSelection();
    else
    {
@@ -198,20 +238,20 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
       {
          case ( KImageEffect::Rotate90 ):
             {
-              int x=h-m_selectedRegion.y()-m_selectedRegion.height();
-              int y=m_selectedRegion.x();
-              m_selectedRegion.setRect(x, y, m_selectedRegion.height(), m_selectedRegion.width() );
-              updatePixmap();
+              int x=h-d->m_selectedRegion.y()-d->m_selectedRegion.height();
+              int y=d->m_selectedRegion.x();
+              d->m_selectedRegion.setRect(x, y, d->m_selectedRegion.height(), d->m_selectedRegion.width() );
+              d->updatePixmap();
 //              qApp->sendPostedEvents(0,QEvent::LayoutRequest);
 //              updatePixmap();
 
             } break;
          case ( KImageEffect::Rotate270 ):
             {
-              int x=m_selectedRegion.y();
-              int y=w-m_selectedRegion.x()-m_selectedRegion.width();
-              m_selectedRegion.setRect(x, y, m_selectedRegion.height(), m_selectedRegion.width() );
-              updatePixmap();
+              int x=d->m_selectedRegion.y();
+              int y=w-d->m_selectedRegion.x()-d->m_selectedRegion.width();
+              d->m_selectedRegion.setRect(x, y, d->m_selectedRegion.height(), d->m_selectedRegion.width() );
+              d->updatePixmap();
 //              qApp->sendPostedEvents(0,QEvent::LayoutRequest);
 //              updatePixmap();
             } break;
@@ -247,21 +287,21 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 
       QCursor cursor;
 
-      if ( m_selectedRegion.contains( mev->pos() )
-          && m_selectedRegion!=m_originalPixmap.rect() )
+      if ( d->m_selectedRegion.contains( mev->pos() )
+          && d->m_selectedRegion!=d->m_originalPixmap.rect() )
       {
-         m_state=Moving;
+         d->m_state=Private::Moving;
          cursor.setShape( Qt::SizeAllCursor );
-         m_rubberBand->show();
+         d->m_rubberBand->show();
       }
       else
       {
-         m_state=Resizing;
+         d->m_state=Private::Resizing;
          cursor.setShape( Qt::CrossCursor );
       }
       QApplication::setOverrideCursor(cursor);
 
-      m_tempFirstClick=mev->pos();
+      d->m_tempFirstClick=mev->pos();
 
 
       return true;
@@ -273,54 +313,54 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 
       //kDebug() << QString("move to  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
-      if ( m_state == Resizing )
+      if ( d->m_state == Private::Resizing )
       {
          setSelectedRegion (
-              calcSelectionRectangle( m_tempFirstClick, mev->pos() ) );
+              d->calcSelectionRectangle( d->m_tempFirstClick, mev->pos() ) );
       }
-      else if (m_state == Moving )
+      else if (d->m_state == Private::Moving )
       {
          int mevx = mev->x();
          int mevy = mev->y();
          bool mouseOutside=false;
          if ( mevx < 0 )
          {
-           m_selectedRegion.translate(-m_selectedRegion.x(),0);
+           d->m_selectedRegion.translate(-d->m_selectedRegion.x(),0);
            mouseOutside=true;
          }
-         else if ( mevx > m_originalPixmap.width() )
+         else if ( mevx > d->m_originalPixmap.width() )
          {
-           m_selectedRegion.translate(m_originalPixmap.width()-m_selectedRegion.width()-m_selectedRegion.x(),0);
+           d->m_selectedRegion.translate(d->m_originalPixmap.width()-d->m_selectedRegion.width()-d->m_selectedRegion.x(),0);
            mouseOutside=true;
          }
          if ( mevy < 0 )
          {
-           m_selectedRegion.translate(0,-m_selectedRegion.y());
+           d->m_selectedRegion.translate(0,-d->m_selectedRegion.y());
            mouseOutside=true;
          }
-         else if ( mevy > m_originalPixmap.height() )
+         else if ( mevy > d->m_originalPixmap.height() )
          {
-           m_selectedRegion.translate(0,m_originalPixmap.height()-m_selectedRegion.height()-m_selectedRegion.y());
+           d->m_selectedRegion.translate(0,d->m_originalPixmap.height()-d->m_selectedRegion.height()-d->m_selectedRegion.y());
            mouseOutside=true;
          }
-         if (mouseOutside) { updatePixmap(); return true; };
+         if (mouseOutside) { d->updatePixmap(); return true; };
 
-         m_selectedRegion.translate( mev->x()-m_tempFirstClick.x(),
-                                  mev->y()-m_tempFirstClick.y() );
+         d->m_selectedRegion.translate( mev->x()-d->m_tempFirstClick.x(),
+                                  mev->y()-d->m_tempFirstClick.y() );
 
          // Check that the region has not fallen outside the image
-         if (m_selectedRegion.x() < 0)
-            m_selectedRegion.translate(-m_selectedRegion.x(),0);
-         else if (m_selectedRegion.right() > m_originalPixmap.width())
-            m_selectedRegion.translate(-(m_selectedRegion.right()-m_originalPixmap.width()),0);
+         if (d->m_selectedRegion.x() < 0)
+            d->m_selectedRegion.translate(-d->m_selectedRegion.x(),0);
+         else if (d->m_selectedRegion.right() > d->m_originalPixmap.width())
+            d->m_selectedRegion.translate(-(d->m_selectedRegion.right()-d->m_originalPixmap.width()),0);
 
-         if (m_selectedRegion.y() < 0)
-            m_selectedRegion.translate(0,-m_selectedRegion.y());
-         else if (m_selectedRegion.bottom() > m_originalPixmap.height())
-            m_selectedRegion.translate(0,-(m_selectedRegion.bottom()-m_originalPixmap.height()));
+         if (d->m_selectedRegion.y() < 0)
+            d->m_selectedRegion.translate(0,-d->m_selectedRegion.y());
+         else if (d->m_selectedRegion.bottom() > d->m_originalPixmap.height())
+            d->m_selectedRegion.translate(0,-(d->m_selectedRegion.bottom()-d->m_originalPixmap.height()));
 
-         m_tempFirstClick=mev->pos();
-         updatePixmap();
+         d->m_tempFirstClick=mev->pos();
+         d->updatePixmap();
       }
       return true;
    }
@@ -329,12 +369,12 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
    {
       QMouseEvent *mev= (QMouseEvent *)(ev);
 
-      if ( m_state == Resizing && mev->pos() == m_tempFirstClick)
+      if ( d->m_state == Private::Resizing && mev->pos() == d->m_tempFirstClick)
          resetSelection();
 
-      m_state=None;
+      d->m_state=Private::None;
       QApplication::restoreOverrideCursor();
-      m_rubberBand->hide();
+      d->m_rubberBand->hide();
       return true;
    }
 
@@ -342,7 +382,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
    return false;
 }
 
-QRect KPixmapRegionSelectorWidget::calcSelectionRectangle( const QPoint & startPoint, const QPoint & _endPoint )
+QRect KPixmapRegionSelectorWidget::Private::calcSelectionRectangle( const QPoint & startPoint, const QPoint & _endPoint )
 {
    QPoint endPoint = _endPoint;
    if ( endPoint.x() < 0 ) endPoint.setX(0);
@@ -412,64 +452,64 @@ QRect KPixmapRegionSelectorWidget::calcSelectionRectangle( const QPoint & startP
 
 QRect KPixmapRegionSelectorWidget::unzoomedSelectedRegion() const
 {
-  return QRect((int)(m_selectedRegion.x()/m_zoomFactor),
-               (int)(m_selectedRegion.y()/m_zoomFactor),
-               (int)(m_selectedRegion.width()/m_zoomFactor),
-               (int)(m_selectedRegion.height()/m_zoomFactor));
+  return QRect((int)(d->m_selectedRegion.x()/d->m_zoomFactor),
+               (int)(d->m_selectedRegion.y()/d->m_zoomFactor),
+               (int)(d->m_selectedRegion.width()/d->m_zoomFactor),
+               (int)(d->m_selectedRegion.height()/d->m_zoomFactor));
 }
 
 QImage KPixmapRegionSelectorWidget::selectedImage() const
 {
-   QImage origImage=m_unzoomedPixmap.toImage();
+   QImage origImage=d->m_unzoomedPixmap.toImage();
    return origImage.copy(unzoomedSelectedRegion());
 }
 
 void KPixmapRegionSelectorWidget::setSelectionAspectRatio(int width, int height)
 {
-   m_forcedAspectRatio=width/double(height);
+   d->m_forcedAspectRatio=width/double(height);
 }
 
 void KPixmapRegionSelectorWidget::setFreeSelectionAspectRatio()
 {
-   m_forcedAspectRatio=0;
+   d->m_forcedAspectRatio=0;
 }
 
 void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
 {
-   m_maxWidth=width;
-   m_maxHeight=height;
+   d->m_maxWidth=width;
+   d->m_maxHeight=height;
 
-   m_originalPixmap=m_unzoomedPixmap;
-   if (m_selectedRegion == m_originalPixmap.rect()) m_selectedRegion=QRect();
+   d->m_originalPixmap=d->m_unzoomedPixmap;
+   if (d->m_selectedRegion == d->m_originalPixmap.rect()) d->m_selectedRegion=QRect();
 
-//   kDebug() << QString(" original Pixmap :") << m_originalPixmap.rect() << endl;
-//   kDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(m_unzoomedPixmap.width()).arg(m_unzoomedPixmap.height()) << endl;
+//   kDebug() << QString(" original Pixmap :") << d->m_originalPixmap.rect() << endl;
+//   kDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(d->m_unzoomedPixmap.width()).arg(d->m_unzoomedPixmap.height()) << endl;
 
-   if ( !m_originalPixmap.isNull() &&
-       ( m_originalPixmap.width() > m_maxWidth ||
-         m_originalPixmap.height() > m_maxHeight ) )
+   if ( !d->m_originalPixmap.isNull() &&
+       ( d->m_originalPixmap.width() > d->m_maxWidth ||
+         d->m_originalPixmap.height() > d->m_maxHeight ) )
    {
          /* We have to resize the pixmap to get it complete on the screen */
-         QImage image=m_originalPixmap.toImage();
-         m_originalPixmap=QPixmap::fromImage( image.scaled( width, height, Qt::KeepAspectRatio,Qt::SmoothTransformation ) );
-         double oldZoomFactor = m_zoomFactor;
-         m_zoomFactor=m_originalPixmap.width()/(double)m_unzoomedPixmap.width();
+         QImage image=d->m_originalPixmap.toImage();
+         d->m_originalPixmap=QPixmap::fromImage( image.scaled( width, height, Qt::KeepAspectRatio,Qt::SmoothTransformation ) );
+         double oldZoomFactor = d->m_zoomFactor;
+         d->m_zoomFactor=d->m_originalPixmap.width()/(double)d->m_unzoomedPixmap.width();
 
-         if (m_selectedRegion.isValid())
+         if (d->m_selectedRegion.isValid())
          {
-            m_selectedRegion=
-                  QRect((int)(m_selectedRegion.x()*m_zoomFactor/oldZoomFactor),
-                        (int)(m_selectedRegion.y()*m_zoomFactor/oldZoomFactor),
-                        (int)(m_selectedRegion.width()*m_zoomFactor/oldZoomFactor),
-                        (int)(m_selectedRegion.height()*m_zoomFactor/oldZoomFactor) );
+            d->m_selectedRegion=
+                  QRect((int)(d->m_selectedRegion.x()*d->m_zoomFactor/oldZoomFactor),
+                        (int)(d->m_selectedRegion.y()*d->m_zoomFactor/oldZoomFactor),
+                        (int)(d->m_selectedRegion.width()*d->m_zoomFactor/oldZoomFactor),
+                        (int)(d->m_selectedRegion.height()*d->m_zoomFactor/oldZoomFactor) );
          }
    }
 
-   if (!m_selectedRegion.isValid()) m_selectedRegion = m_originalPixmap.rect();
+   if (!d->m_selectedRegion.isValid()) d->m_selectedRegion = d->m_originalPixmap.rect();
 
-   m_linedPixmap=QPixmap();
-   updatePixmap();
-   resize(m_label->width(), m_label->height());
+   d->m_linedPixmap=QPixmap();
+   d->updatePixmap();
+   resize(d->m_label->width(), d->m_label->height());
 }
 
 #include "kpixmapregionselectorwidget.moc"
