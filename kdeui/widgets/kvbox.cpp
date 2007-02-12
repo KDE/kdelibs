@@ -23,3 +23,9 @@ KVBox::KVBox( QWidget* parent )
     d( 0 )
 {
 }
+
+KVBox::~KVBox()
+{
+}
+
+#include "kvbox.moc"

@@ -46,6 +46,10 @@ KHBox::KHBox( bool /*vertical*/, QWidget* parent )
   setLayout( layout );
 }
 
+KHBox::~KHBox()
+{
+}
+
 void KHBox::childEvent( QChildEvent* event )
 {
   switch ( event->type() ) {
@@ -105,3 +109,5 @@ void KHBox::setMargin( int margin )
 {
 	layout()->setMargin( margin );
 }
+
+#include "khbox.moc"

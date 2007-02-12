@@ -34,11 +34,18 @@ class QChildEvent;
  */
 class KDEUI_EXPORT KHBox : public QFrame
 {
+  Q_OBJECT
+  
   public:
     /**
      * Creates a new hbox.
      */
     explicit KHBox( QWidget* parent = 0 );
+  
+    /**
+     * Destructor.
+     */
+    ~KHBox();
 
     /**
      * Sets the @p margin of the hbox.
@@ -68,7 +75,10 @@ class KDEUI_EXPORT KHBox : public QFrame
 
   private:
     class Private;
+    friend class Private;
     Private* const d;
+    
+    Q_DISABLE_COPY(KHBox)
 };
 
 #endif

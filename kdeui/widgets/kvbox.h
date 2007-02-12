@@ -30,6 +30,8 @@
  */
 class KDEUI_EXPORT KVBox : public KHBox
 {
+  Q_OBJECT
+  
   public:
     /**
      * Creates a new vbox.
@@ -37,10 +39,18 @@ class KDEUI_EXPORT KVBox : public KHBox
      * @param parent The parent widget.
      */
     explicit KVBox( QWidget* parent = 0 );
+  
+    /**
+     * Destructor.
+     */
+    ~KVBox();
 
   private:
     class Private;
+    friend class Private;
     Private* const d;
+
+    Q_DISABLE_COPY(KVBox)
 };
 
 #endif
