@@ -41,10 +41,20 @@ PHONON_ABSTRACTBASE_IMPL
 
 AbstractMediaProducer::~AbstractMediaProducer()
 {
-	K_D( AbstractMediaProducer );
-	Phonon::State s = state();
-	if( s != ErrorState || s != StoppedState || s != LoadingState )
-		stop();
+    K_D(AbstractMediaProducer);
+    if (d->backendObject) {
+        switch (state()) {
+            case PlayingState:
+            case BufferingState:
+            case PausedState:
+                stop();
+                break;
+            case ErrorState:
+            case StoppedState:
+            case LoadingState:
+                break;
+        }
+    }
     foreach(VideoPath* vp, d->videoPaths)
         d->removeDestructionHandler(vp, d);
     foreach(AudioPath* ap, d->audioPaths)
