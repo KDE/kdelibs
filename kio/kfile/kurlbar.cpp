@@ -367,16 +367,17 @@ void KUrlBar::setListBox( KUrlBarListWidget *view )
              SLOT( slotSelected(QListWidgetItem *)));
 
 
-#warning "KDE4 - Port the context menu and drag/drop handling."
+#warning "KDE4 - Port the drag/drop handling."
 
     // These signals refer to the Q3ListBox class and are not
     // available in QListWidget.  They need to be ported
 
+    m_listBox->setContextMenuPolicy(Qt::CustomContextMenu);
+    
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
-    connect( m_listBox, SIGNAL( contextMenuRequested( QListWidgetItem *,
-                                                      const QPoint& )),
-             SLOT( slotContextMenuRequested( QListWidgetItem *, const QPoint& )));
+    connect( m_listBox, SIGNAL( customContextMenuRequested(const QPoint &)),
+             SLOT( slotContextMenuRequested( const QPoint& )));
     
     connect( m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
              SLOT( slotSelected( QListWidgetItem * ) ));
@@ -592,7 +593,7 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
         {
             if ( item->applicationLocal() )
             {
-                writeItem( item, numLocal, config, false );
+                writeItem( item, numLocal, &cg, false );
                 numLocal++;
             }
 
@@ -630,7 +631,7 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
     m_isModified = false;
 }
 
-void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfig *config,
+void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfigBase *config,
                          bool global )
 {
     if ( !item->isPersistent() )
@@ -670,10 +671,12 @@ void KUrlBar::slotDropped( QDropEvent *e )
     }
 }
 
-void KUrlBar::slotContextMenuRequested( QListWidgetItem *_item, const QPoint& pos )
+void KUrlBar::slotContextMenuRequested( const QPoint& pos )
 {
     if (m_isImmutable)
         return;
+
+    QListWidgetItem *_item = m_listBox->itemAt(pos);
 
     KUrlBarItem *item = dynamic_cast<KUrlBarItem*>( _item );
 
@@ -698,7 +701,7 @@ void KUrlBar::slotContextMenuRequested( QListWidgetItem *_item, const QPoint& po
     if (item != 0L && item->isPersistent())
         RemoveItem = popup->addAction( KIcon("editdelete"), i18n("&Remove Entry"));
 
-    QAction* result = popup->exec( pos );
+    QAction* result = popup->exec( m_listBox->mapToGlobal(pos) );
     if (result == IconSize) {
         setIconSize( smallIcons ? K3Icon::SizeMedium : K3Icon::SizeSmallMedium );
 

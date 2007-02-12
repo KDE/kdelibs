@@ -346,7 +346,7 @@ public:
      * @p global tell whether it should be saved in the global configuration
      * or not (using KConfig::writeEntry( key, value, true, global ) ).
      */
-    virtual void writeItem( KUrlBarItem *item, int i, KConfig *, bool global );
+    virtual void writeItem( KUrlBarItem *item, int i, KConfigBase *, bool global );
 
     /**
      * @returns the current KUrlBarItem, or 0L if none.
@@ -441,7 +441,7 @@ protected Q_SLOTS:
      * Reimplemented to show a contextmenu, allowing the user to add, edit
      * or remove items, or change the iconsize.
      */
-    virtual void slotContextMenuRequested( QListWidgetItem *, const QPoint& pos );
+    virtual void slotContextMenuRequested( const QPoint& pos );
     /**
      * Called when an item has been selected. Emits the activated()
      * signal.
