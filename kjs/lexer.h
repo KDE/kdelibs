@@ -48,6 +48,8 @@ namespace KJS {
     enum State { Start,
                  Identifier,
                  InIdentifier,
+                 InIdentifierUnicodeEscapeStart,
+                 InIdentifierUnicodeEscape,
                  InSingleLineComment,
                  InMultiLineComment,
                  InNum,

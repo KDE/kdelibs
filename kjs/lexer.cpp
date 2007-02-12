@@ -222,6 +222,8 @@ int Lexer::lex()
       } else if (isIdentLetter(current)) {
         record16(current);
         state = InIdentifier;
+      } else if (current == '\\') {
+        state = InIdentifierUnicodeEscapeStart;
       } else if (current == '0') {
         record8(current);
         state = InNum0;
@@ -346,11 +348,12 @@ int Lexer::lex()
       }
       break;
     case InIdentifier:
-      if (isIdentLetter(current) || isDecimalDigit(current)) {
+      if (isIdentLetter(current) || isDecimalDigit(current))
         record16(current);
-        break;
-      }
-      setDone(Identifier);
+      else if (current == '\\')
+        state = InIdentifierUnicodeEscapeStart;
+      else
+        setDone(Identifier);
       break;
     case InNum0:
       if (current == 'x' || current == 'X') {
@@ -424,6 +427,21 @@ int Lexer::lex()
         record8(current);
       } else
         setDone(Number);
+      break;
+    case InIdentifierUnicodeEscapeStart:
+      if (current == 'u')
+        state = InIdentifierUnicodeEscape;
+      else
+        setDone(Bad);
+      break;
+    case InIdentifierUnicodeEscape:
+      if (isHexDigit(current) && isHexDigit(next1) && isHexDigit(next2) && isHexDigit(next3)) {
+        record16(convertUnicode(current, next1, next2, next3));
+        shift(3);
+        state = InIdentifier;
+      } else {
+        setDone(Bad);
+      }
       break;
     default:
       assert(!"Unhandled state in switch statement");
