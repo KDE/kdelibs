@@ -448,6 +448,7 @@ void KOpenWithDialog::init( const QString& _text, const QString& _value )
   }
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
+  connect ( this, SIGNAL(okClicked()),SLOT(slotOK()));
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
   m_pTree = new KApplicationTree( mainWidget );
