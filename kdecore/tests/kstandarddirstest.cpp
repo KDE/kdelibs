@@ -107,13 +107,15 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( oneEndsWith( configFiles, "share/config/kdebugrc" ) );
     QVERIFY( !oneEndsWith( configFiles, "share/config/colors/Web.colors" ) ); // recursive was false
 
-    const QStringList configFilesRecursive = KGlobal::dirs()->findAllResources( "config", QString(), true /*recursive*/ );
+    const QStringList configFilesRecursive = KGlobal::dirs()->findAllResources( "config", QString(),
+                                                                                KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursive.isEmpty() );
     QVERIFY( configFilesRecursive.count() > 5 ); // I have 15 here
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/kdebugrc" ) );
     QVERIFY( oneEndsWith( configFilesRecursive, "share/config/colors/Web.colors" ) ); // proves that recursive worked
 
-    const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc", true /*recursive*/ );
+    const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
+                                                                                          KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
     QVERIFY( configFilesRecursiveWithFilter.count() > 5 ); // back to ~ 9
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
@@ -164,8 +166,8 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( bin.endsWith( "lib/kde4/libexec/lnusertemp" EXT ) );
 
     // Check the "exe" resource too
-    QCOMPARE(KGlobal::dirs()->realFilePath(bin),
-             KGlobal::dirs()->locate("exe", "lnusertemp"));
+    QCOMPARE( KGlobal::dirs()->realFilePath(bin),
+              KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
 }
 
 void KStandarddirsTest::testLocate()
@@ -177,3 +179,11 @@ void KStandarddirsTest::testLocate()
     const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/plain.xml");
     QCOMPARE(res, textPlain);
 }
+
+void KStandarddirsTest::testRelativeLocation()
+{
+    const QString file = "kdebugrc";
+    QString located = KGlobal::dirs()->locate( "config", file );
+    QCOMPARE( KGlobal::dirs()->relativeLocation( "config", located ), file );
+}
+

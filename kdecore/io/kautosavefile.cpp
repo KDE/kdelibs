@@ -162,7 +162,8 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
     // get stale files
     QStringList files;
     if ( !url.isEmpty() )
-        files = KGlobal::dirs()->findAllResources( "stale", url+QChar::fromLatin1('*') , true, false );
+        files = KGlobal::dirs()->findAllResources( "stale", url+QChar::fromLatin1('*'),
+                                                   KStandardDirs::Recursive);
 
     QList<KAutoSaveFile *> list;
     KAutoSaveFile * asFile;
@@ -190,7 +191,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
         appName = QCoreApplication::instance()->applicationName();
 
     // get stale files
-    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QLatin1String("/*"), false, false );
+    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QLatin1String("/*") );
 
     QList<KAutoSaveFile *> list;
     QString file, sep;

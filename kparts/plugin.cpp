@@ -93,7 +93,7 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentDat
 
   // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
   const QStringList pluginDocs = componentData.dirs()->findAllResources(
-    "data", componentData.componentName()+"/kpartplugins/*", true, false );
+    "data", componentData.componentName()+"/kpartplugins/*", KStandardDirs::Recursive );
 
   QMap<QString,QStringList> sortedPlugins;
 

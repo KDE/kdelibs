@@ -32,7 +32,7 @@ QStringList
 KPalette::getPaletteList()
 {
   QStringList paletteList;
-  KGlobal::dirs()->findAllResources("config", "colors/*", false, true, paletteList);
+  KGlobal::dirs()->findAllResources("config", "colors/*", KStandardDirs::NoDuplicates, paletteList);
 
   int strip = strlen("colors/");
   for(QStringList::Iterator it = paletteList.begin();

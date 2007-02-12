@@ -163,8 +163,9 @@ QList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KConfig *
 
 QList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName( const QString & name, KConfig * config, const QString & group )
 {
-    QStringList files = KGlobal::dirs()->findAllResources( "data", name +
-            "/kpartplugins/*.desktop", true, false );
+    QStringList files = KGlobal::dirs()->findAllResources( "data",
+                                                           name + "/kpartplugins/*.desktop",
+                                                           KStandardDirs::Recursive );
     return fromFiles( files, config, group );
 }
 

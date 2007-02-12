@@ -96,8 +96,8 @@ static bool startCondition(const QString &condition)
 void
 AutoStart::loadAutoStartList()
 {
-   QStringList files = KGlobal::dirs()->findAllResources("autostart", "*.desktop", false, true);
-   
+   QStringList files = KGlobal::dirs()->findAllResources("autostart", "*.desktop", KStandardDirs::NoDuplicates);
+
    for(QStringList::ConstIterator it = files.begin();
        it != files.end();
        ++it)

@@ -230,7 +230,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
                                  KSharedConfig::Ptr config)
 {
     QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
-        componentName + "/kpartplugins/*.desktop", true, false);
+        componentName + "/kpartplugins/*.desktop", KStandardDirs::Recursive);
 
     QList<KPluginInfo*> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
 

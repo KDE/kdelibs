@@ -210,7 +210,8 @@ KonfUpdate::log()
 QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 {
    QStringList result;
-   QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd", false, true);
+   QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd",
+                                                        KStandardDirs::NoDuplicates);
    for(QStringList::ConstIterator it = list.begin();
        it != list.end();
        ++it)

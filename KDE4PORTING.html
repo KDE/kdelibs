@@ -531,6 +531,19 @@ Internally it is reference counted and the data deleted when the last reference 
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
 </ul>
 
+<h4>KStandardDirs</h4>
+<ul>
+<li>boolean values as parameters for recursive, uniqe and checking for executability in the following methods were changed to instead take SearchOptions flags for improved code readability:
+<ul>
+<li>calcResourceHash</li>
+<li>findAllResources</li>
+<li>findResource</li>
+<li>findExe</li>
+<li>findAllExe</li>
+</ul>
+</li>
+</ul>
+
 <h4>KStringHandler</h4>
 <ul>
 <li>static QString ljust( const QString &amp;text , int width ) -&gt; QString::leftJustified</li>
@@ -1201,8 +1214,8 @@ use( dlg.password() );
 <h4>KStatusBar</h4>
 <ul>
 <li>The unused BarStatus enum was removed.</li>
-<li>The 'permanent' bool has been removed in favor of more explicit naming.
-  insertItem(text,id,true) -&gt; insertPermanentItem(text,id),
+<li>The 'permanent' bool has been removed in favor of more explicit naming.<br>
+  insertItem(text,id,true) -&gt; insertPermanentItem(text,id),<br>
   insertFixedItem(text,id,true) -&gt; insertPermanentFixedItem(text,id)</li>
 </ul>
 

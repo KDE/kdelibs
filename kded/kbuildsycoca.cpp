@@ -181,7 +181,8 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    quint32 timeStamp = g_ctimeInfo->ctime(file);
    if (!timeStamp)
    {
-      timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file, true);
+      timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file,
+                                                     KStandardDirs::Recursive);
    }
    KSycocaEntry::Ptr entry;
    if (g_allEntries)
@@ -310,8 +311,8 @@ bool KBuildSycoca::build()
 
      (void) KGlobal::dirs()->findAllResources( g_resource,
                                                QString(),
-                                               true, // Recursive!
-                                               true, // unique
+                                               KStandardDirs::Recursive |
+                                               KStandardDirs::NoDuplicates,
                                                relFiles);
 
 
@@ -426,7 +427,8 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      quint32 timeStamp = g_ctimeInfo->ctime(directoryFile);
      if (!timeStamp)
      {
-        timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile, true);
+        timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile,
+                                                       KStandardDirs::Recursive );
      }
 
      KServiceGroup::Ptr entry;
@@ -583,7 +585,8 @@ void KBuildSycoca::save()
    (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
    (*m_str) << newTimestamp;
    (*m_str) << KGlobal::locale()->language();
-   (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
+   (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
+                                                 KStandardDirs::Recursive );
    (*m_str) << (*g_allResourceDirs);
 
    // Calculate per-servicetype/mimetype data
@@ -810,7 +813,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      KSycoca::self()->disableAutoRebuild(); // Prevent deadlock
      QString current_language = KGlobal::locale()->language();
      QString ksycoca_language = KSycoca::self()->language();
-     quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
+     quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
+                                                                    KStandardDirs::Recursive );
      quint32 ksycoca_update_sig = KSycoca::self()->updateSignature();
 
      if ((current_update_sig != ksycoca_update_sig) ||

@@ -180,6 +180,12 @@ public:
      **/
     KStandardDirs(const KComponentData &componentData = KGlobal::mainComponent());
 
+    enum SearchOption { NoSearchOptions = 0,
+                        Recursive = 1,
+                        NoDuplicates = 2,
+                        IgnoreExecBit = 4 };
+    Q_DECLARE_FLAGS( SearchOptions, SearchOption );
+
 	/**
 	 * KStandardDirs' destructor.
 	 */
@@ -296,16 +302,18 @@ public:
          * Returns a number that identifies this version of the resource.
          * When a change is made to the resource this number will change.
          *
-	 * @param type The type of the wanted resource
-	 * @param filename A relative filename of the resource.
-	 * @param deep If true, all resources are taken into account
-	 *        otherwise only the one returned by findResource().
-	 *
-	 * @return A number identifying the current version of the
-	 *          resource.
-	 */
-	quint32 calcResourceHash( const char *type,
-			      const QString& filename, bool deep) const;
+         * @param type The type of the wanted resource
+         * @param filename A relative filename of the resource.
+         * @param options If the flags includes Recursive,
+         *                all resources are taken into account
+         *                otherwise only the one returned by findResource().
+         *
+         * @return A number identifying the current version of the
+         *          resource.
+         */
+        quint32 calcResourceHash( const char *type,
+                                  const QString& filename,
+                                  SearchOptions options = NoSearchOptions) const;
 
 	/**
 	 * Tries to find all directories whose names consist of the
@@ -350,57 +358,54 @@ public:
 				 const QString& filename) const;
 
 
-	/**
-	 * Tries to find all resources with the specified type.
-	 *
-	 * The function will look into all specified directories
-	 * and return all filenames in these directories.
-	 *
-	 * @param type The type of resource to locate directories for.
-	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a QRegExp
-	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-	 *        Use QString() if you do not want a filter.
-	 * @param recursive Specifies if the function should decend
-	 *        into subdirectories.
-	 * @param unique If specified,  only return items which have
-	 *        unique suffixes - suppressing duplicated filenames.
-	 *
-	 * @return List of all the files whose filename matches the
-	 *         specified filter.
-	 */
-	QStringList findAllResources( const char *type,
-				       const QString& filter = QString(),
-				       bool recursive = false,
-				       bool unique = false) const;
+        /**
+         * Tries to find all resources with the specified type.
+         *
+         * The function will look into all specified directories
+         * and return all filenames in these directories.
+         *
+         * @param type The type of resource to locate directories for.
+         * @param filter Only accept filenames that fit to filter. The filter
+         *        may consist of an optional directory and a QRegExp
+         *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+         *        Use QString() if you do not want a filter.
+         * @param options if the flags passed include Recursive, subdirectories
+         *        will also be search; if NoDuplicates is passed then only entries with
+         *        unique filenames will be returned eliminating duplicates.
+         *
+         * @return List of all the files whose filename matches the
+         *         specified filter.
+         */
+        QStringList findAllResources( const char *type,
+                                      const QString& filter = QString(),
+                                      SearchOptions options = NoSearchOptions ) const;
 
-	/**
-	 * Tries to find all resources with the specified type.
-	 *
-	 * The function will look into all specified directories
-	 * and return all filenames (full and relative paths) in
-	 * these directories.
-	 *
-	 * @param type The type of resource to locate directories for.
-	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a QRegExp
-	 *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-	 *        Use QString() if you do not want a filter.
-	 * @param recursive Specifies if the function should decend
-	 *        into subdirectories.
-	 * @param unique If specified,  only return items which have
-	 *        unique suffixes.
-	 * @param relPaths The list to store the relative paths into
-	 *        These can be used later to ::locate() the file
-	 *
-	 * @return List of all the files whose filename matches the
-	 *         specified filter.
-	 */
-	QStringList findAllResources( const char *type,
-				       const QString& filter,
-				       bool recursive,
-				       bool unique,
-				       QStringList &relPaths) const;
+        /**
+         * Tries to find all resources with the specified type.
+         *
+         * The function will look into all specified directories
+         * and return all filenames (full and relative paths) in
+         * these directories.
+         *
+         * @param type The type of resource to locate directories for.
+         * @param filter Only accept filenames that fit to filter. The filter
+         *        may consist of an optional directory and a QRegExp
+         *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+         *        Use QString() if you do not want a filter.
+         * @param options if the flags passed include Recursive, subdirectories
+         *        will also be search; if NoDuplicates is passed then only entries with
+         *        unique filenames will be returned eliminating duplicates.
+         *
+         * @param relPaths The list to store the relative paths into
+         *        These can be used later to ::locate() the file
+         *
+         * @return List of all the files whose filename matches the
+         *         specified filter.
+         */
+        QStringList findAllResources( const char *type,
+                                      const QString& filter,
+                                      SearchOptions options,
+                                      QStringList &relPaths) const;
 
 	/**
 	 * Returns a QStringList list of pathnames in the system path.
@@ -413,48 +418,48 @@ public:
 	 */
 	static QStringList systemPaths( const QString& pstr=QString() );
 
-	/**
-	 * Finds the executable in the system path.
-	 *
-	 * A valid executable must
-	 * be a file and have its executable bit set.
-	 *
-	 * @param appname The name of the executable file for which to search.
-	 * @param pathstr The path which will be searched. If this is
-	 * 		null (default), the @c $PATH environment variable will
-	 *		be searched.
-	 * @param ignoreExecBit	If true, an existing file will be returned
-	 *			even if its executable bit is not set.
-	 *
-	 * @return The path of the executable. If it was not found,
-	 *         it will return QString().
-	 * @see findAllExe()
-	 */
-	static QString findExe( const QString& appname,
-				const QString& pathstr=QString(),
-				bool ignoreExecBit=false );
+        /**
+         * Finds the executable in the system path.
+         *
+         * A valid executable must
+         * be a file and have its executable bit set.
+         *
+         * @param appname The name of the executable file for which to search.
+         * @param pathstr The path which will be searched. If this is
+         *                null (default), the @c $PATH environment variable will
+         *                be searched.
+         * @param options if the flags passed include IgnoreExecBit the path returned
+         *                may not have the executable bit set.
+         *
+         * @return The path of the executable. If it was not found,
+         *         it will return QString().
+         * @see findAllExe()
+         */
+        static QString findExe( const QString& appname,
+                                const QString& pathstr = QString(),
+                                SearchOptions options = NoSearchOptions );
 
-	/**
-	 * Finds all occurrences of an executable in the system path.
-	 *
-	 * @param list	Will be filled with the pathnames of all the
-	 *		executables found. Will be empty if the executable
-	 *		was not found.
-	 * @param appname	The name of the executable for which to
-	 *	 		search.
-	 * @param pathstr	The path list which will be searched. If this
-	 *		is 0 (default), the @c $PATH environment variable will
-	 *		be searched.
-	 * @param ignoreExecBit If true, an existing file will be returned
-	 *			even if its executable bit is not set.
-	 *
-	 * @return The number of executables found, 0 if none were found.
-	 *
-	 * @see	findExe()
-	 */
-	static int findAllExe( QStringList& list, const QString& appname,
-			       const QString& pathstr=QString(),
-			       bool ignoreExecBit=false );
+        /**
+         * Finds all occurrences of an executable in the system path.
+         *
+         * @param list will be filled with the pathnames of all the
+         *             executables found. Will be empty if the executable
+         *             was not found.
+         * @param appname the name of the executable for which to
+         *                search.
+         * @param pathstr the path list which will be searched. If this
+         *                is 0 (default), the @c $PATH environment variable will
+         *                be searched.
+         * @param options if the flags passed include IgnoreExecBit the path returned
+         *                may not have the executable bit set.
+         *
+         * @return The number of executables found, 0 if none were found.
+         *
+         * @see findExe()
+         */
+        static int findAllExe( QStringList& list, const QString& appname,
+                               const QString& pathstr=QString(),
+                               SearchOptions options = NoSearchOptions );
 
 	/**
 	 * This function adds the defaults that are used by the current
@@ -744,5 +749,7 @@ public:
 	bool addResourceDir( const char *type,
 			     const QString& absdir, bool priority);
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KStandardDirs::SearchOptions)
 
 #endif // SSK_KSTDDIRS_H

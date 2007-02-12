@@ -2122,7 +2122,8 @@ KMimeMagic::KMimeMagic()
     QString mimefile = KStandardDirs::locate( "mime", "magic" );
     init( mimefile );
     // Add snippets from share/config/magic/*
-    QStringList snippets = KGlobal::dirs()->findAllResources( "config", "magic/*.magic", true );
+    QStringList snippets = KGlobal::dirs()->findAllResources( "config", "magic/*.magic", 
+                                                              KStandardDirs::Recursive );
     for ( QStringList::Iterator it = snippets.begin() ; it != snippets.end() ; ++it )
         if ( !mergeConfig( *it ) )
             kWarning() << k_funcinfo << "Failed to parse " << *it << endl;

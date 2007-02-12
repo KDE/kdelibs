@@ -684,7 +684,8 @@ void KSSLD::caVerifyUpdate() {
 		return;
 
 	cfg->setGroup(QString());
-	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
+	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist",
+                                                             KStandardDirs::Recursive);
 	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", 0);
 	if (oldStamp != newStamp)
 	{

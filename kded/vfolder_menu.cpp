@@ -648,12 +648,13 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          if (!QDir::isRelativePath(dir))
          {
             // Absolute
-            fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, false);
+            fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu");
          }
          else
          {
             // Relative
-            (void) KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, true, fileList);
+            (void) KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu",
+                                                     KStandardDirs::NoDuplicates, fileList);
          }
 
          for(QStringList::ConstIterator it=fileList.begin();
@@ -1040,8 +1041,8 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
 
    (void) KGlobal::dirs()->findAllResources( "apps",
                                              QString(),
-                                             true, // Recursive!
-                                             true, // unique
+                                             KStandardDirs::Recursive |
+                                             KStandardDirs::NoDuplicates,
                                              relFiles);
    for(QStringList::ConstIterator it = relFiles.begin();
        it != relFiles.end(); ++it)

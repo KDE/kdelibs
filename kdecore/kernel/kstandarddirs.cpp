@@ -468,7 +468,8 @@ static quint32 updateHash(const QString &file, quint32 hash)
 }
 
 quint32 KStandardDirs::calcResourceHash( const char *type,
-			      const QString& filename, bool deep) const
+                                         const QString& filename,
+                                         SearchOptions options ) const
 {
     quint32 hash = 0;
 
@@ -482,12 +483,12 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
     QStringList candidates = resourceDirs(type);
     QString fullPath;
 
-    for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); ++it)
+    foreach ( const QString& candidate, candidates )
     {
-        hash = updateHash(*it + filename, hash);
-        if (!deep && hash)
+        hash = updateHash(candidate + filename, hash);
+        if (  !( options & Recursive ) && hash ) {
            return hash;
+        }
     }
     return hash;
 }
@@ -746,30 +747,29 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
 QStringList
 KStandardDirs::findAllResources( const char *type,
-			         const QString& filter,
-				 bool recursive,
-			         bool unique,
+                                 const QString& filter,
+                                 SearchOptions options,
                                  QStringList &relList) const
 {
     QStringList list;
     QString filterPath;
     QString filterFile;
 
-    if (filter.length())
+    if ( filter.length() )
     {
        int slash = filter.lastIndexOf('/');
-       if (slash < 0)
-	   filterFile = filter;
-       else {
-	   filterPath = filter.left(slash + 1);
-	   filterFile = filter.mid(slash + 1);
+       if (slash < 0) {
+           filterFile = filter;
+       } else {
+           filterPath = filter.left(slash + 1);
+           filterFile = filter.mid(slash + 1);
        }
     }
 
     checkConfig();
 
     QStringList candidates;
-	if (!QDir::isRelativePath(filter)) // absolute path
+    if ( !QDir::isRelativePath(filter) ) // absolute path
     {
 #ifdef Q_OS_WIN
         candidates << filterPath.left(3); //e.g. "C:\"
@@ -781,20 +781,22 @@ KStandardDirs::findAllResources( const char *type,
     }
     else
     {
-        if (d->restrictionsActive && (strcmp(type, "data")==0))
+        if (d->restrictionsActive && (strcmp(type, "data")==0)) {
             applyDataRestrictions(filter);
+        }
         candidates = resourceDirs(type);
     }
-    if (filterFile.isEmpty())
-	filterFile = "*";
+
+    if (filterFile.isEmpty()) {
+        filterFile = "*";
+    }
 
     QRegExp regExp(filterFile, Qt::CaseSensitive, QRegExp::Wildcard);
 
-    for (QStringList::ConstIterator it = candidates.begin();
-         it != candidates.end(); ++it)
+    foreach ( const QString& candidate, candidates )
     {
-        lookupPrefix(*it, filterPath, "", regExp, list,
-                     relList, recursive, unique);
+        lookupPrefix(candidate, filterPath, "", regExp, list,
+                     relList, options & Recursive, options & NoDuplicates);
     }
 
     return list;
@@ -802,15 +804,18 @@ KStandardDirs::findAllResources( const char *type,
 
 QStringList
 KStandardDirs::findAllResources( const char *type,
-			         const QString& filter,
-				 bool recursive,
-			         bool unique) const
+                                 const QString& filter,
+                                 SearchOptions options ) const
 {
     QStringList relList;
-    return findAllResources(type, filter, recursive, unique, relList);
+    return findAllResources(type, filter, options, relList);
 }
 
 // ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
+// aseigo: QDir::canonicalPath returns QString() if the dir doesn't exist
+//         and this method is often used with the expectation for it to work
+//         even if the directory doesn't exist. so ... no, we can't drop this
+//         yet
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
@@ -830,6 +835,10 @@ KStandardDirs::realPath(const QString &dirname)
 }
 
 // ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
+// aseigo: QDir::canonicalPath returns QString() if the dir doesn't exist
+//         and this method is often used with the expectation for it to work
+//         even if the directory doesn't exist. so ... no, we can't drop this
+//         yet
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {
@@ -844,6 +853,7 @@ KStandardDirs::realFilePath(const QString &filename)
 
     return filename;
 }
+
 
 void KStandardDirs::createSpecialResource(const char *type)
 {
@@ -956,13 +966,14 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
             else
                 prefixList = &d->prefixes;
 
+            QDir dir;
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
                  ++pit)
             {
                 for (QStringList::ConstIterator it = dirs.begin();
                      it != dirs.end(); ++it) {
-                    QString path = realPath(*pit + *it);
+                    QString path = realPath( *pit + *it );
                     testdir.setPath(path);
                     if (local && restrictionActive)
                        continue;
@@ -978,11 +989,11 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                  it != dirs.end(); ++it)
             {
                 testdir.setPath(*it);
-                if (testdir.exists())
-                {
-                    QString filename = realPath(*it);
-                    if (!candidates.contains(filename))
+                if (testdir.exists()) {
+                    QString filename = realPath( *it );
+                    if (!candidates.contains(filename)) {
                         candidates.append(filename);
+                    }
                 }
             }
         d->dircache.insert(type, candidates);
@@ -1083,7 +1094,8 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
 }
 
 QString KStandardDirs::findExe( const QString& appname,
-				const QString& pstr, bool ignoreExecBit )
+                                const QString& pstr,
+                                SearchOptions options )
 {
     //kDebug(180) << "findExe(" << appname << ", pstr, " << ignoreExecBit << ") called" << endl;
 
@@ -1098,7 +1110,7 @@ QString KStandardDirs::findExe( const QString& appname,
     if (!QDir::isRelativePath(real_appname))
     {
         //kDebug(180) << "findExe(): absolute path given" << endl;
-        return checkExecutable(real_appname, ignoreExecBit);
+        return checkExecutable(real_appname, options & IgnoreExecBit);
     }
 
     //kDebug(180) << "findExe(): relative path given" << endl;
@@ -1106,14 +1118,14 @@ QString KStandardDirs::findExe( const QString& appname,
     // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
 
     QString p = kfsstnd_defaultbindir() + '/' + real_appname;
-    QString result = checkExecutable(p, ignoreExecBit);
+    QString result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result << endl;
         return result;
     }
 
     p = kfsstnd_defaultlibexecdir() + '/' + real_appname;
-    result = checkExecutable(p, ignoreExecBit);
+    result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result << endl;
         return result;
@@ -1127,7 +1139,7 @@ QString KStandardDirs::findExe( const QString& appname,
 	p += real_appname;
 
 	// Check for executable in this tokenized path
-        result = checkExecutable(p, ignoreExecBit);
+        result = checkExecutable(p, options & IgnoreExecBit);
         if (!result.isEmpty()) {
             //kDebug(180) << "findExe(): returning " << result << endl;
             return result;
@@ -1142,7 +1154,7 @@ QString KStandardDirs::findExe( const QString& appname,
 }
 
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
-                               const QString& pstr, bool ignoreExecBit )
+                               const QString& pstr, SearchOptions options )
 {
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
@@ -1161,7 +1173,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 
 	info.setFile( p );
 
-	if( info.exists() && (ignoreExecBit || info.isExecutable())
+	if( info.exists() && ( ( options & IgnoreExecBit ) || info.isExecutable())
 	    && info.isFile() ) {
 	    list.append( p );
 	}
@@ -1280,18 +1292,21 @@ QString KStandardDirs::saveLocation(const char *type,
        if (!dirs.isEmpty())
        {
           // Check for existence of typed directory + suffix
-          if (strncmp(type, "xdgdata-", 8) == 0)
-             path = realPath(localxdgdatadir() + dirs.last());
-          else if (strncmp(type, "xdgconf-", 8) == 0)
-             path = realPath(localxdgconfdir() + dirs.last());
-          else
-             path = realPath(localkdedir() + dirs.last());
+          if (strncmp(type, "xdgdata-", 8) == 0) {
+             path = realPath( localxdgdatadir() + dirs.last() ) ;
+          } else if (strncmp(type, "xdgconf-", 8) == 0) {
+             path = realPath( localxdgconfdir() + dirs.last() );
+          } else {
+             path = realPath( localkdedir() + dirs.last() );
+          }
        }
        else {
           dirs = d->absolutes.value(type);
-          if (dirs.isEmpty())
+          if (dirs.isEmpty()) {
              qFatal("KStandardDirs: The resource type %s is not registered", type);
-          path = realPath(dirs.last());
+          }
+
+          path = realPath( dirs.last() );
        }
 
        d->savelocations.insert(type, path);
@@ -1320,20 +1335,18 @@ QString KStandardDirs::relativeLocation(const char *type, const QString &absPath
 {
     QString fullPath = absPath;
     int i = absPath.lastIndexOf('/');
-    if (i != -1)
-    {
-       fullPath = realPath(absPath.left(i+1))+absPath.mid(i+1); // Normalize
+    if (i != -1) {
+       fullPath = realFilePath(absPath); // Normalize
     }
 
     QStringList candidates = resourceDirs(type);
 
     for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); ++it)
-      if (fullPath.startsWith(*it))
-      {
-	return fullPath.mid((*it).length());
-      }
-
+         it != candidates.end(); ++it) {
+        if (fullPath.startsWith(*it)) {
+            return fullPath.mid((*it).length());
+        }
+    }
     return absPath;
 }
 
