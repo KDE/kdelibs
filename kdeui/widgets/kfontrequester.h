@@ -60,35 +60,37 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      */
     explicit KFontRequester( QWidget *parent=0L, bool onlyFixed=false );
 
+    ~KFontRequester();
+
     /**
      * @return The currently selected font in the requester.
      */
-    QFont font() const { return m_selFont; }
+    QFont font() const;
 
     /**
      * @return Returns true if only fixed fonts are displayed.
      */
-    bool isFixedOnly() const { return m_onlyFixed; }
+    bool isFixedOnly() const;
 
     /**
      * @return The current text in the sample text input area.
      */
-    QString sampleText() const { return m_sampleText; }
+    QString sampleText() const;
 
     /**
      * @return The current title of the widget.
      */
-    QString title() const { return m_title; }
+    QString title() const;
 
     /**
      * @return Pointer to the label used for preview.
      */
-    QLabel *label() const { return m_sampleLabel; }
+    QLabel *label() const;
 
     /**
      * @return Pointer to the pushbutton in the widget.
      */
-    QPushButton *button() const { return m_button; }
+    QPushButton *button() const;
 
     /**
      * Sets the currently selected font in the requester.
@@ -135,18 +137,12 @@ class KDEUI_EXPORT KFontRequester : public QWidget
 
     virtual void buttonClicked();
 
-  protected:
-
-    bool m_onlyFixed;
-    QString m_sampleText, m_title;
-    QLabel *m_sampleLabel;
-    QPushButton *m_button;
-    QFont m_selFont;
-
   private:
-
     class KFontRequesterPrivate;
-    KFontRequesterPrivate *d;
+    friend class KFontRequesterPrivate;
+    KFontRequesterPrivate *const d;
+    
+    Q_DISABLE_COPY(KFontRequester)
 };
 
 #endif // KFONTREQUESTER_H
