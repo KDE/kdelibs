@@ -1047,6 +1047,7 @@ install( FILES
   Solid/Device
   Solid/DeviceManager
   Solid/Display
+  Solid/DvbHw
   Solid/FrontendObject
   Solid/ManagerBase
   Solid/Network
@@ -1076,6 +1077,7 @@ install( FILES
   Solid/Ifaces/Device
   Solid/Ifaces/DeviceManager
   Solid/Ifaces/Display
+  Solid/Ifaces/DvbHw
   Solid/Ifaces/Network
   Solid/Ifaces/NetworkHw
   Solid/Ifaces/NetworkInterface
