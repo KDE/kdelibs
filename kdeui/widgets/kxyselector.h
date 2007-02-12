@@ -86,11 +86,11 @@ public:
   /**
    * @return the current value in horizontal direction.
    */
-  int xValue() const {	return xPos; }
+  int xValue() const;
   /**
    * @return the current value in vertical direction.
    */
-  int yValue() const {	return yPos; }
+  int yValue() const;
 
   /**
    * @return the rectangle on which subclasses should draw.
@@ -136,18 +136,13 @@ protected:
 
 private:
   void setPosition( int xp, int yp );
-  int px;
-  int py;
-  int xPos;
-  int yPos;
-  int minX;
-  int maxX;
-  int minY;
-  int maxY;
 
 private:
   class Private;
+  friend class Private;
   Private * const d;
+  
+  Q_DISABLE_COPY(KXYSelector)
 };
 
 class KDEUI_EXPORT KHueSaturationSelector : public KXYSelector
@@ -159,6 +154,11 @@ public:
    */
   KHueSaturationSelector( QWidget *parent=0);
 
+  /**
+   * Destructor.
+   */
+  ~KHueSaturationSelector();
+  
 protected:
   /**
    * Draws the contents of the widget on a pixmap,
@@ -176,7 +176,12 @@ protected:
 
 private:
   void updateContents();
-  QPixmap pixmap;
+
+  class Private;
+  friend class Private;
+  Private * const d;
+  
+  Q_DISABLE_COPY(KHueSaturationSelector)
 };
 
 #endif /* KXYSELECTOR_H */

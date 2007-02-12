@@ -35,26 +35,61 @@
 class KXYSelector::Private
 {
 public:
+  Private(KXYSelector *q):
+    q(q),
+    xPos(0),
+    yPos(0),
+    minX(0),
+    minY(0),
+    maxX(100),
+    maxY(100),
+    m_markerColor(Qt::white)
+  {}
+
+  void setValues(int _xPos, int _yPos);
+
+  KXYSelector *q;
+  int px;
+  int py;
+  int xPos;
+  int yPos;
+  int minX;
+  int maxX;
+  int minY;
+  int maxY;  
   QColor m_markerColor;
+};
+
+class KHueSaturationSelector::Private
+{
+public:
+  Private(KHueSaturationSelector *q): q(q) {}
+  
+  KHueSaturationSelector *q;
+  QPixmap pixmap;
 };
 
 KXYSelector::KXYSelector( QWidget *parent )
   : QWidget( parent )
-    , d(new Private)
+    , d(new Private(this))
 {
-    xPos = 0;
-    yPos = 0;
-    minX = 0;
-    minY = 0;
-    maxX = 100;
-    maxY = 100;
-    d->m_markerColor = Qt::white;
 }
 
 
 KXYSelector::~KXYSelector()
-{}
+{
+  delete d;
+}
 
+int KXYSelector::xValue() const
+{
+  return d->xPos;
+}
+
+int KXYSelector::yValue() const
+{
+  return d->yPos;
+}
 
 void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 {
@@ -69,28 +104,33 @@ void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 
 
   int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-  px = w;
-  py = w;
-  minX = _minX;
-  minY = _minY;
-  maxX = _maxX;
-  maxY = _maxY;
+  d->px = w;
+  d->py = w;
+  d->minX = _minX;
+  d->minY = _minY;
+  d->maxX = _maxX;
+  d->maxY = _maxY;
 }
 
 void KXYSelector::setXValue( int _xPos )
 {
-  setValues(_xPos, yPos);
+  setValues(_xPos, d->yPos);
 }
 
 void KXYSelector::setYValue( int _yPos )
 {
-  setValues(xPos, _yPos);
+  setValues(d->xPos, _yPos);
 }
 
 void KXYSelector::setValues( int _xPos, int _yPos )
 {
-  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  d->setValues(_xPos, _yPos);
+}
 
+void KXYSelector::Private::setValues(int _xPos, int _yPos )
+{
+  int w = q->style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+  
   xPos = _xPos;
   yPos = _yPos;
 
@@ -105,12 +145,12 @@ void KXYSelector::setValues( int _xPos, int _yPos )
     yPos = minY;
 
   Q_ASSERT(maxX != minX);
-  int xp = w + (width() - 2 * w) * xPos / (maxX - minX);
+  int xp = w + (q->width() - 2 * w) * xPos / (maxX - minX);
   
   Q_ASSERT(maxY != minY);
-  int yp = height() - w - (height() - 2 * w) * yPos / (maxY - minY);
+  int yp = q->height() - w - (q->height() - 2 * w) * yPos / (maxY - minY);
 
-  setPosition( xp, yp );
+  q->setPosition( xp, yp );
 }
 
 void KXYSelector::setMarkerColor( const QColor &col )
@@ -141,7 +181,7 @@ void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
   painter.begin( this );
 
   drawContents( &painter );
-  drawMarker( &painter, px, py );
+  drawMarker( &painter, d->px, d->py );
 
   style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
 
@@ -160,7 +200,7 @@ void KXYSelector::mouseMoveEvent( QMouseEvent *e )
   valuesFromPosition( e->pos().x() - w, e->pos().y() - w, xVal, yVal );
   setValues( xVal, yVal );
 
-  emit valueChanged( xPos, yPos );
+  emit valueChanged( d->xPos, d->yPos );
 }
 
 void KXYSelector::wheelEvent( QWheelEvent *e )
@@ -170,25 +210,25 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
   else
     setValues( xValue(), yValue() + e->delta()/120 );
 
-  emit valueChanged( xPos, yPos );
+  emit valueChanged( d->xPos, d->yPos );
 }
 
 void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 {
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
 
-  xVal = ( ( maxX - minX ) * ( x - w ) ) / ( width() - 2 * w );
-  yVal = maxY - ( ( ( maxY - minY ) * (y - w) ) / ( height() - 2 * w ) );
+  xVal = ( ( d->maxX - d->minX ) * ( x - w ) ) / ( width() - 2 * w );
+  yVal = d->maxY - ( ( ( d->maxY - d->minY ) * (y - w) ) / ( height() - 2 * w ) );
 
-  if ( xVal > maxX )
-    xVal = maxX;
-  else if ( xVal < minX )
-    xVal = minX;
+  if ( xVal > d->maxX )
+    xVal = d->maxX;
+  else if ( xVal < d->minX )
+    xVal = d->minX;
 
-  if ( yVal > maxY )
-    yVal = maxY;
-  else if ( yVal < minY )
-    yVal = minY;
+  if ( yVal > d->maxY )
+    yVal = d->maxY;
+  else if ( yVal < d->minY )
+    yVal = d->minY;
 }
 
 void KXYSelector::setPosition( int xp, int yp )
@@ -205,8 +245,8 @@ void KXYSelector::setPosition( int xp, int yp )
   else if ( yp > height() - w )
     yp = height() - w;
 
-  px = xp;
-  py = yp;
+  d->px = xp;
+  d->py = yp;
 
   update();
 }
@@ -264,14 +304,19 @@ KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
 }
 
 KHueSaturationSelector::KHueSaturationSelector( QWidget *parent )
-	: KXYSelector( parent )
+	: KXYSelector( parent ), d(new Private(this))
 {
 	setRange( 0, 0, 359, 255 );
 }
 
+KHueSaturationSelector::~KHueSaturationSelector()
+{
+	delete d;
+}
+
 void KHueSaturationSelector::updateContents()
 {
-	drawPalette(&pixmap);
+	drawPalette(&d->pixmap);
 }
 
 void KHueSaturationSelector::resizeEvent( QResizeEvent * )
@@ -281,7 +326,7 @@ void KHueSaturationSelector::resizeEvent( QResizeEvent * )
 
 void KHueSaturationSelector::drawContents( QPainter *painter )
 {
-	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
+	painter->drawPixmap( contentsRect().x(), contentsRect().y(), d->pixmap );
 }
 
 void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
