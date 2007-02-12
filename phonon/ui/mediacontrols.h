@@ -28,6 +28,7 @@ namespace Phonon
 {
 class AbstractMediaProducer;
 class AudioOutput;
+class MediaControlsPrivate;
 
 /**
  * \short Simple widget showing buttons to control an AbstractMediaProducer
@@ -42,6 +43,7 @@ class AudioOutput;
 class PHONONUI_EXPORT MediaControls : public QWidget
 {
 	Q_OBJECT
+    Q_DECLARE_PRIVATE(MediaControls)
 	/**
 	 * This property holds whether the slider showing the progress of the
 	 * playback is visible.
@@ -94,13 +96,13 @@ class PHONONUI_EXPORT MediaControls : public QWidget
 		 */
 		void setAudioOutput( AudioOutput* audioOutput );
 
-	private Q_SLOTS:
-		void stateChanged( Phonon::State, Phonon::State );
-		void mediaDestroyed();
 
-	private:
-		class Private;
-		Private* d;
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State, Phonon::State))
+        Q_PRIVATE_SLOT(d_func(), void _k_mediaDestroyed())
+        Q_PRIVATE_SLOT(d_func(), void _k_finished())
+
+        MediaControlsPrivate *d_ptr;
 };
 
 } // namespace Phonon

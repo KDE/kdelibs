@@ -21,36 +21,47 @@
 #define SEEKSLIDER_P_H
 
 #include "seekslider.h"
-#include <QHBoxLayout>
+#include <QBoxLayout>
 #include <QSlider>
 #include <QLabel>
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <QPixmap>
+#include <kicon.h>
+#include <QStyle>
 
 namespace Phonon
 {
 class AbstractMediaProducer;
 class SeekSliderPrivate
 {
-	Q_DECLARE_PUBLIC( SeekSlider )
-	protected:
-		SeekSliderPrivate( SeekSlider* parent )
-			: layout( parent )
-			, slider( Qt::Horizontal, parent )
-			, icon( parent )
-			, media( 0 )
-			, ticking( false )
-			, iconPixmap( SmallIcon( "player_time", 16, K3Icon::DefaultState ) )
-			, disabledIconPixmap( SmallIcon( "player_time", 16, K3Icon::DisabledState ) )
-		{
-			slider.setPageStep( 5000 ); // 5 sec
-			slider.setSingleStep( 500 ); // 0.5 sec
-		}
+    Q_DECLARE_PUBLIC(SeekSlider)
+    protected:
+        SeekSliderPrivate(SeekSlider *parent)
+            : layout(QBoxLayout::LeftToRight, parent),
+            slider(Qt::Horizontal, parent),
+            iconLabel(parent),
+            media(0),
+            ticking(false),
+            icon("player_time")
+        {
+            const int e = parent->style()->pixelMetric(QStyle::PM_ButtonIconSize);
+            iconSize = QSize(e, e);
 
-		SeekSlider* q_ptr;
+            slider.setPageStep(5000); // 5 sec
+            slider.setSingleStep(500); // 0.5 sec
 
-	private:
+            layout.setMargin(0);
+            layout.setSpacing(2);
+            layout.addWidget(&iconLabel, 0, Qt::AlignVCenter);
+            layout.addWidget(&slider, 0, Qt::AlignVCenter);
+
+            setEnabled(false);
+        }
+
+        SeekSlider *q_ptr;
+
+    private:
         void setEnabled( bool );
         void _k_stateChanged(Phonon::State);
         void _k_mediaDestroyed();
@@ -59,13 +70,13 @@ class SeekSliderPrivate
         void _k_length(qint64);
         void _k_seekableChanged(bool);
 
-		QHBoxLayout layout;
-		QSlider slider;
-		QLabel icon;
-		AbstractMediaProducer* media;
-		bool ticking;
-		QPixmap iconPixmap;
-		QPixmap disabledIconPixmap;
+        QBoxLayout layout;
+        QSlider slider;
+        QLabel iconLabel;
+        AbstractMediaProducer *media;
+        bool ticking;
+        KIcon icon;
+        QSize iconSize;
 };
 } // namespace Phonon
 

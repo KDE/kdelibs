@@ -76,6 +76,20 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 	 */
 	Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
 
+    /**
+     * This property holds the orientation of the slider.
+     *
+     * The orientation must be Qt::Vertical or Qt::Horizontal (the default).
+     */
+    Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+
+    /**
+     * \brief the icon size used for the mute button/icon.
+     *
+     * The default size is defined by the GUI style.
+     */
+    Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
+
 	public:
 		/**
 		 * Constructs a new seek slider with a \p parent.
@@ -83,16 +97,20 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 		SeekSlider( QWidget* parent = 0 );
 		~SeekSlider();
 
-		bool isIconVisible() const;
 		bool hasTracking() const;
 		void setTracking( bool tracking );
 		int pageStep() const;
 		void setPageStep( int milliseconds );
 		int singleStep() const;
 		void setSingleStep( int milliseconds );
+        Qt::Orientation orientation() const;
+        bool isIconVisible() const;
+        QSize iconSize() const;
 
-	public Q_SLOTS:
-		void setIconVisible( bool );
+    public Q_SLOTS:
+        void setOrientation(Qt::Orientation);
+        void setIconVisible(bool);
+        void setIconSize(const QSize &size);
 
 		/**
 		 * Sets the media producer object to be controlled by this slider.
@@ -107,9 +125,9 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
         Q_PRIVATE_SLOT(d_func(), void _k_length(qint64))
         Q_PRIVATE_SLOT(d_func(), void _k_seekableChanged(bool))
 
-	protected:
-		SeekSlider( SeekSliderPrivate& d, QWidget* parent );
-		SeekSliderPrivate* d_ptr;
+    protected:
+        //SeekSlider(SeekSliderPrivate &d, QWidget *parent);
+        SeekSliderPrivate *d_ptr;
 };
 
 } // namespace Phonon

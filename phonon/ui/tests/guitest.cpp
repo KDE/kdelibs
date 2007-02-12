@@ -51,6 +51,8 @@
 #include <QPainter>
 #include <QComboBox>
 #include <phonon/objectdescriptionmodel.h>
+#include <kicon.h>
+#include <QToolButton>
 
 using namespace Phonon;
 
@@ -138,19 +140,25 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 
 	QFrame *frame1 = new QFrame( frame0 );
 	hlayout->addWidget( frame1 );
-	QVBoxLayout *vlayout = new QVBoxLayout( frame1 );
+    QHBoxLayout *vlayout = new QHBoxLayout(frame1);
 	vlayout->setMargin( 0 );
 
-	m_play = new QPushButton( frame1 );
+	m_play = new QToolButton( frame1 );
+    m_play->setIconSize(QSize(32, 32));
 	m_play->setText( "play" );
+    m_play->setIcon(KIcon("player_play"));
 	vlayout->addWidget( m_play );
 
-	m_pause = new QPushButton( frame1 );
+	m_pause = new QToolButton( frame1 );
+    m_pause->setIconSize(QSize(32, 32));
 	m_pause->setText( "pause" );
+    m_pause->setIcon(KIcon("player_pause"));
 	vlayout->addWidget( m_pause );
 
-	m_stop = new QPushButton( frame1 );
+	m_stop = new QToolButton( frame1 );
+    m_stop->setIconSize(QSize(32, 32));
 	m_stop->setText( "stop" );
+    m_stop->setIcon(KIcon("player_stop"));
 	vlayout->addWidget( m_stop );
 
 	QFrame *frame2 = new QFrame( frame0 );

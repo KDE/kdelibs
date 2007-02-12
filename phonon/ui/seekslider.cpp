@@ -29,25 +29,13 @@ SeekSlider::SeekSlider( QWidget* parent )
 	: QWidget( parent )
 	, d_ptr( new SeekSliderPrivate( this ) )
 {
-	Q_D( SeekSlider );
-	d->layout.setMargin( 0 );
-	d->layout.setSpacing( 2 );
-	d->setEnabled( false );
-	d->layout.addWidget( &d->icon );
-	d->layout.addWidget( &d->slider );
 }
 
-SeekSlider::SeekSlider( SeekSliderPrivate& _d, QWidget* parent )
+/*SeekSlider::SeekSlider( SeekSliderPrivate& _d, QWidget* parent )
 	: QWidget( parent )
 	, d_ptr( &_d )
 {
-	Q_D( SeekSlider );
-	d->layout.setMargin( 0 );
-	d->layout.setSpacing( 2 );
-	d->setEnabled( false );
-	d->layout.addWidget( &d->icon );
-	d->layout.addWidget( &d->slider );
-}
+}*/
 
 SeekSlider::~SeekSlider()
 {
@@ -119,10 +107,10 @@ void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
     }
 }
 
-void SeekSliderPrivate::setEnabled( bool x )
+void SeekSliderPrivate::setEnabled(bool x)
 {
-	slider.setEnabled( x );
-	icon.setPixmap( x ? iconPixmap : disabledIconPixmap );
+    slider.setEnabled(x);
+    iconLabel.setPixmap(icon.pixmap(iconSize, x ? QIcon::Normal : QIcon::Disabled));
 }
 
 void SeekSliderPrivate::_k_stateChanged(State newstate)
@@ -192,13 +180,40 @@ void SeekSlider::setSingleStep( int milliseconds )
 bool SeekSlider::isIconVisible() const
 {
 	Q_D( const SeekSlider );
-	return d->icon.isVisible();
+    return d->iconLabel.isVisible();
 }
 
 void SeekSlider::setIconVisible( bool vis )
 {
 	Q_D( SeekSlider );
-	d->icon.setVisible( vis );
+    d->iconLabel.setVisible(vis);
+}
+
+Qt::Orientation SeekSlider::orientation() const
+{
+    return d_ptr->slider.orientation();
+}
+
+void SeekSlider::setOrientation(Qt::Orientation o)
+{
+    Q_D(SeekSlider);
+    Qt::Alignment align = (o == Qt::Horizontal ? Qt::AlignVCenter : Qt::AlignHCenter);
+    d->layout.setAlignment(&d->iconLabel, align);
+    d->layout.setAlignment(&d->slider, align);
+    d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
+    d->slider.setOrientation(o);
+}
+
+QSize SeekSlider::iconSize() const
+{
+    return d_ptr->iconSize;
+}
+
+void SeekSlider::setIconSize(const QSize &iconSize)
+{
+    Q_D(SeekSlider);
+    d->iconSize = iconSize;
+    d->iconLabel.setPixmap(d->icon.pixmap(d->iconSize, d->slider.isEnabled() ? QIcon::Normal : QIcon::Disabled));
 }
 
 } // namespace Phonon

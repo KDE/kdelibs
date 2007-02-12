@@ -29,7 +29,7 @@
 
 class QLabel;
 class QString;
-class QPushButton;
+class QAbstractButton;
 class QFrame;
 namespace Phonon
 {
@@ -68,7 +68,7 @@ class ProducerWidget : public QFrame
 		SeekSlider *m_seekslider;
 		QLabel *m_statelabel, *m_totaltime, *m_currenttime, *m_remainingtime;
 		QLabel *m_metaDataLabel;
-		QPushButton *m_pause, *m_play, *m_stop;
+		QAbstractButton *m_pause, *m_play, *m_stop;
 		MediaObject *m_media;
 		qint64 m_length;
 		QList<AudioPath*> m_audioPaths;
