@@ -698,13 +698,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDEPrivate )
 
 
 install( FILES 
-  KDocument/Document
-  KDocument/GenericFactory
-  KDocument/View
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDocument )
-
-
-install( FILES 
   KHE/CharColumnInterface
   KHE/ClipboardInterface
   KHE/ValueColumnInterface
