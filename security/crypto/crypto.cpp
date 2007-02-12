@@ -772,13 +772,13 @@ QString whatstr;
   macCert = new QLineEdit(tabSSLCOpts);
   grid->addWidget(macCert, 4, 0, 1, 3 );
 
-  macBox = new Q3ListBox(tabSSLCOpts);
+  macBox = new QListWidget(tabSSLCOpts);
   whatstr = i18n("This list box shows which sites you have decided to accept"
                 " a certificate from even though the certificate might fail"
                 " the validation procedure.");
   macBox->setWhatsThis( whatstr);
-  caSSLBox->setSelectionMode(Q3ListBox::Single);
-  caSSLBox->setColumnMode(Q3ListBox::FixedNumber);
+  caSSLBox->setSelectionMode(QListWidget::Single);
+  caSSLBox->setColumnMode(QListWidget::FixedNumber);
   grid->addWidget(macBox, 5, 0, 4, 3 );
 
   macAdd = new QPushButton(i18n("&Add"), tabSSLCOpts);

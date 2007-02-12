@@ -31,7 +31,7 @@
 //Added by qt3to4:
 #include <QGridLayout>
 #include <QLabel>
-#include <Q3ListBox>
+#include <QListWidget>
 #include <kcmodule.h>
 #include <ksimpleconfig.h>
 
@@ -302,7 +302,7 @@ private:
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove;
   KPushButton *macClear;
-  Q3ListBox *macBox;
+  QListWidget *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
               *yourSSLUnlock, *yourSSLVerify;
