@@ -49,6 +49,17 @@ void VolumeSlider::setMuteVisible(bool visible)
     d_ptr->muteButton.setVisible(visible);
 }
 
+QSize VolumeSlider::iconSize() const
+{
+    return d_ptr->muteButton.iconSize();
+}
+
+void VolumeSlider::setIconSize(const QSize &iconSize)
+{
+    kDebug(602) << k_funcinfo << iconSize << endl;
+    d_ptr->muteButton.setIconSize(iconSize);
+}
+
 float VolumeSlider::maximumVolume() const
 {
     return d_ptr->slider.maximum() * 0.01;
