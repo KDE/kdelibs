@@ -184,7 +184,7 @@ public:
                         Recursive = 1,
                         NoDuplicates = 2,
                         IgnoreExecBit = 4 };
-    Q_DECLARE_FLAGS( SearchOptions, SearchOption );
+    Q_DECLARE_FLAGS( SearchOptions, SearchOption )
 
 	/**
 	 * KStandardDirs' destructor.
