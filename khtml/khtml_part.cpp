@@ -2146,7 +2146,7 @@ void KHTMLPart::slotProgressUpdate()
     if( d->m_bComplete )
       emit d->m_extension->infoMessage( i18n( "Page loaded." ));
     else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-      emit d->m_extension->infoMessage( i18np( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects, d->m_totalObjectCount) );
+      emit d->m_extension->infoMessage( i18np( "%1 Image of %2 loaded.", "%1 Images of %2 loaded.", d->m_loadedObjects, d->m_totalObjectCount) );
   }
 
   emit d->m_extension->loadingProgress( percent );
@@ -7429,7 +7429,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 void KHTMLPart::suppressedPopupMenu() {
   KMenu *m = new KMenu(0L);
   if ( d->m_openableSuppressedPopups )
-      m->insertItem(i18np("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
+      m->insertItem(i18np("&Show Blocked Popup Window","Show %1 Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
   m->insertItem(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
   m->setItemChecked(57,d->m_settings->jsPopupBlockerPassivePopup());
   m->insertItem(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));

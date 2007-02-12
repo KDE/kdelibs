@@ -40,7 +40,7 @@ class KLocalizedStringPrivate;
  *   (void) I18N_NOOP("hello");
  *   (void) I18N_NOOP("goodbye");
  *   ...
- *   mystring = i18n( say_something() );
+ *   mystring = i18n(say_something());
  * \endcode
  */
 #define I18N_NOOP(x) x
@@ -59,8 +59,8 @@ class KLocalizedStringPrivate;
  *   ...
  *   mystring = i18nc("greeting", say_something());
  * \endcode
- * \warning You need to call i18nc( context, stringVar ) later on, not just
- * i18n( stringVar ).
+ * \warning You need to call i18nc(context, stringVar) later on, not just
+ * i18n(stringVar).
  */
 #define I18N_NOOP2(comment,x) x
 #endif
@@ -109,17 +109,17 @@ class KLocalizedStringPrivate;
  * languages it might not be that simple, or it might be simpler. To handle
  * this properly, use plural call, i18np:
  * \code
- *   QString msg = i18np("1 image in album %1", "%n images in album %1",
+ *   QString msg = i18np("One image in album %2", "%1 images in album %2",
  *                       numImages, albumName);
  * \endcode
- * Note the %n placeholder, which indicates the number the plural form shall
- * be decided upon. It will be substituted by the first argument after the
- * message strings (numImages in the example above).
+ * Note that the plural form shall be decided by first integer-valued argument,
+ * (numImages in the example above). In rare cases when there are two integer
+ * arguments, you should take care to order them properly.
  *
  * Finally, message might need both context and plural, which is provided by
  * i18ncp call:
  * \code
- *   QString msg = i18ncp("Personal file", "1 file", "%n files", numFiles);
+ *   QString msg = i18ncp("Personal file", "One file", "%1 files", numFiles);
  * \endcode
  *
  * Be carefull not to use literal string as first argument after message text
@@ -149,7 +149,7 @@ class KLocalizedStringPrivate;
  *
  * Another case is when you want extra formatting of arguments, like field
  * width or number of decimals. subs methods can take these formatting
- * parameters. In particular, you shoul @e never use some custom way to
+ * parameters. In particular, you should @e never use some custom way to
  * format arguments, as subs methods will also properly localize them:
  * \code
  *   QString s = i18n("Rounds: %1", myNumberFormat(n, 8)); // bad, number not localized
@@ -159,13 +159,9 @@ class KLocalizedStringPrivate;
  * There are also context, plural and context-plural variants:
  * \code
  *   QString s = ki18nc("No function", "None").toString();
- *   QString s = ki18np("1 file found", "%n files found").subs(n).toString();
- *   QString s = ki18ncp("Personal file", "1 file", "%n files").subs(n).toString();
+ *   QString s = ki18np("File found", "%1 files found").subs(n).toString();
+ *   QString s = ki18ncp("Personal file", "One file", "%1 files").subs(n).toString();
  * \endcode
- *
- * Plural placeholder %n in this case will be substituted by the first
- * argument supplied by subs. If you give non-number as the first argument,
- * you will get a runtime error mark in the message (in debug mode).
  *
  * If you need translation using locale (ie. KLocale object) other than the
  * default, you can use overloaded toString method which takes pointer to a
@@ -186,14 +182,15 @@ class KLocalizedStringPrivate;
  *
  * \li All same-numbered placeholders are substituted with same argument.
  *
- * \li Always provide exactly as many arguments as there are unique
- *     placeholders. Otherwise you will get error marks in messages at runtime
- *     (when compiled in debug mode). The only exception is plural placeholder,
- *     which need not be present in singular form.
+ * \li Placeholders directly index arguments: they should be numbered from 1
+ *     upwards, without gaps in the sequence so that each argument is indexed.
+ *     Otherwise you will get error marks in messages at runtime (when compiled
+ *     in debug mode), and any invalid placeholder will be left unsubstituted.
+ *     The exception is plural-deciding argument in plural call, where it is
+ *     allowed to drop its placeholder in either singular or plural form.
  *
- * \li Plural placeholder %n will be substituted by the first supplied
- *     argument. If you give non-number as the first argument, you will get a
- *     runtime error mark in the message (in debug mode).
+ * \li If none of the arguments supplied to a plural call is integer-valued,
+ *     you will get an error mark in message at runtime (in debug mode).
  *
  * @see <a href="http://developer.kde.org/documentation/library/">[[Here goes the link to Programmer's i18n howto, sec. How to prepare the code]]</a>
  * @see KLocale
@@ -221,12 +218,12 @@ public:
     /**
      * Copy constructor.
      */
-    KLocalizedString (const KLocalizedString& rhs);
+    KLocalizedString (const KLocalizedString &rhs);
 
     /**
      * Assignment operator.
      */
-    KLocalizedString& operator= (const KLocalizedString& rhs);
+    KLocalizedString& operator= (const KLocalizedString &rhs);
 
     /**
      * Destructor.
@@ -261,87 +258,144 @@ public:
      * Checks whether the message is empty. This will happen if you just
      * constructed the object via default constructor.
      *
-     * Empty messages are not valid for finalization; if you use toString()
-     * on them, you will get error mark instead of empty QString (in debug mode).
+     * Empty messages are not valid for finalization; if you use toString() on
+     * them, you will get error mark instead of empty QString (in debug mode).
      *
      * @return @c true if the message is empty, else @c false
      */
     bool isEmpty() const;
 
     /**
-     * Substitutes an integer argument into the message.
+     * Substitutes an int argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (int a, int fieldWidth = 0) const;
+    KLocalizedString subs (int a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
-     * Substitutes an unsigned integer argument into the message.
+     * Substitutes an unsigned int argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (uint a, int fieldWidth = 0) const;
+    KLocalizedString subs (uint a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
      * Substitutes a long argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (long a, int fieldWidth = 0) const;
+    KLocalizedString subs (long a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
      * Substitutes an unsigned long argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (ulong a, int fieldWidth = 0) const;
+    KLocalizedString subs (ulong a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
+
+    /**
+     * Substitutes a long long argument into the message.
+     *
+     * @param a the argument
+     * @param fieldWidth width of the formatted field, padded by spaces.
+     *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
+     * @return resultant KLocalizedString
+     */
+    KLocalizedString subs (qlonglong a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
+
+    /**
+     * Substitutes an unsigned long long argument into the message.
+     *
+     * @param a the argument
+     * @param fieldWidth width of the formatted field, padded by spaces.
+     *                   Positive value aligns right, negative aligns left
+     * @param base the radix used to represent the number as a string.
+     *             Valid values range from 2 to 36
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
+     * @return resultant KLocalizedString
+     */
+    KLocalizedString subs (qulonglong a, int fieldWidth = 0, int base = 10,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
      * Substitutes a double argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
-     * @param fmt type of floating point formating, like in QString::arg
-     * @param prec number of digits after the decimal separator
-     *
-     * @see QString::arg()
+     * @param format type of floating point formating, like in QString::arg
+     * @param precision number of digits after the decimal separator
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
     KLocalizedString subs (double a, int fieldWidth = 0,
-                           char fmt = 'g', int prec = -1) const;
+                           char format = 'g', int precision = -1,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
      * Substitutes a QChar argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (QChar a, int fieldWidth = 0) const;
+    KLocalizedString subs (QChar a, int fieldWidth = 0,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
     /**
      * Substitutes a QString argument into the message.
      *
      * @param a the argument
-     * @param fieldWidth width of the formated field, padded by spaces.
+     * @param fieldWidth width of the formatted field, padded by spaces.
      *                   Positive value aligns right, negative aligns left
+     * @param fillChar the character used to fill up the empty places when
+     *                 field width is greater than argument width
      * @return resultant KLocalizedString
      */
-    KLocalizedString subs (const QString& a, int fieldWidth = 0) const;
+    KLocalizedString subs (const QString &a, int fieldWidth = 0,
+                           const QChar &fillChar = QLatin1Char(' ')) const;
 
 private:
     KLocalizedString (const char *ctxt,
@@ -403,6 +457,17 @@ extern KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char 
 */
 extern KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt, const char *singular, const char *plural);
 
+/**
+ * Qt's uic generates i18n( "msg", "comment" ) calls which conflict
+ * with our i18n method. We use uic -tr tr2i18n to redirect
+ * to the right i18n() function
+**/
+inline QString tr2i18n(const char* message, const char* =0) {
+    if (!message || !message[0])
+        return QString();
+    return ki18n(message).toString();
+}
+
 #ifndef NDEBUG
 #define I18N_ERR_MSG String_literal_as_second_argument_to_i18n___Perhaps_you_need_i18nc_or_i18np
 template <typename T, int s> class I18nTypeCheck {public: static void I18N_ERR_MSG () {}};
@@ -412,423 +477,658 @@ template <int s> class I18nTypeCheck<char[s], s> {};
 #define STATIC_ASSERT_NOT_LITERAL_STRING(T)
 #endif
 
-// >>> Basic calls
+// >>>>> Basic calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
  * Returns a localized version of a string.
  * @param text string to be localized
- * @return localized version of a string
+ * @return localized string
  */
-static inline QString i18n (const char *text)
+inline QString i18n (const char *text)
 {
-    return ki18n(text).toString();
+  return ki18n(text).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 1 parameter.
+ * Returns a localized version of a string with 1 argument.
  * @param text string to be localized
- * @param a1 string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @return localized string
  */
 template <typename A1>
 inline QString i18n (const char *text, const A1 &a1)
 {
-    STATIC_ASSERT_NOT_LITERAL_STRING(A1)
-    return ki18n(text).subs(a1).toString();
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 2 parameters.
+ * Returns a localized version of a string with 2 arguments.
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @return localized string
  */
 template <typename A1, typename A2>
 inline QString i18n (const char *text, const A1 &a1, const A2 &a2)
 {
-    STATIC_ASSERT_NOT_LITERAL_STRING(A1)
-    return ki18n(text).subs(a1).subs(a2).toString();
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 3 parameters.
+ * Returns a localized version of a string with 3 arguments.
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3>
 inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
 {
-    STATIC_ASSERT_NOT_LITERAL_STRING(A1)
-    return ki18n(text).subs(a1).subs(a2).subs(a3).toString();
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 4 parameters.
+ * Returns a localized version of a string with 4 arguments.
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4>
 inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
-    STATIC_ASSERT_NOT_LITERAL_STRING(A1)
-    return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 5 parameters.
+ * Returns a localized version of a string with 5 arguments.
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
 inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
-    STATIC_ASSERT_NOT_LITERAL_STRING(A1)
-    return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
-// <<< End of basic calls
-
-// >>> Context calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 6 arguments.
  * @param text string to be localized
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6)
+{
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 7 arguments.
+ * @param text string to be localized
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7)
+{
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 8 arguments.
+ * @param text string to be localized
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8)
+{
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 9 arguments.
+ * @param text string to be localized
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @param a9 ninth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8, const A9 &a9)
+{
+  STATIC_ASSERT_NOT_LITERAL_STRING(A1)
+  return ki18n(text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).subs(a9).toString();
+}
+// <<<<<<< End of basic calls
+
+// >>>>> Context calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string and a context.
+ * @param ctxt context of the string
+ * @param text string to be localized
+ * @return localized string
  */
 inline QString i18nc (const char *ctxt, const char *text)
 {
-    return ki18nc(ctxt, text).toString();
+  return ki18nc(ctxt, text).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 1 parameter with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 1 argument and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @return localized string
  */
 template <typename A1>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1)
 {
-    return ki18nc(ctxt, text).subs(a1).toString();
+  return ki18nc(ctxt, text).subs(a1).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 2 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 2 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @return localized string
  */
 template <typename A1, typename A2>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 3 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 3 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 4 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 4 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 5 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 5 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 6 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 6 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @param a6 sixth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 7 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 7 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @param a6 sixth string parameter
- * @param a7 seventh string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 8 parameters with a context.
- * @param ctxt context of a string
+ * Returns a localized version of a string with 8 arguments and a context.
+ * @param ctxt context of the string
  * @param text string to be localized
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @param a6 sixth string parameter
- * @param a7 seventh string parameter
- * @param a8 eighth string parameter
- * @return localized version of a string
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
 inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8)
 {
-    return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
 }
-// <<< End of context calls
-
-// >>> Plural calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @return localized version of a string
+ * Returns a localized version of a string with 9 arguments and a context.
+ * @param ctxt context of the string
+ * @param text string to be localized
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @param a9 ninth argument
+ * @return localized string
  */
-inline QString i18np (const char *sing, const char *plur, int n)
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8, const A9 &a9)
 {
-    return ki18np(sing, plur).subs(n).toString();
+  return ki18nc(ctxt, text).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).subs(a9).toString();
 }
+// <<<<< End of context calls
+
+// >>>>> Plural calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 1 parameter using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @return localized version of a string
+ * Returns a localized version of a string with 1 argument using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @return localized string
  */
 template <typename A1>
-inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1)
+inline QString i18np (const char *sing, const char *plur, const A1 &a1)
 {
-    return ki18np(sing, plur).subs(n).subs(a1).toString();
+  return ki18np(sing, plur).subs(a1).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 2 parameters using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @return localized version of a string
+ * Returns a localized version of a string with 2 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @return localized string
  */
 template <typename A1, typename A2>
-inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2)
 {
-    return ki18np(sing, plur).subs(n).subs(a1).subs(a2).toString();
+  return ki18np(sing, plur).subs(a1).subs(a2).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 3 parameters using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @return localized version of a string
+ * Returns a localized version of a string with 3 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3>
-static inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3)
 {
-    return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).toString();
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 4 parameters using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @return localized version of a string
+ * Returns a localized version of a string with 4 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
-    return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).toString();
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 5 parameters using right plural form.
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @return localized version of a string
+ * Returns a localized version of a string with 5 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString i18np (const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
-    return ki18np(sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
-// <<< End of plural calls
-
-// >>> Context plural calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with a context using right plural form.
- * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @return localized version of a string
+ * Returns a localized version of a string with 6 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @return localized string
  */
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n)
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).toString();
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 1 parameter and a context using
- * right plural form.
+ * Returns a localized version of a string with 7 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7)
+{
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 8 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8)
+{
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 9 arguments using correct plural form.
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @param a9 ninth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+inline QString i18np (const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8, const A9 &a9)
+{
+  return ki18np(sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).subs(a9).toString();
+}
+// <<<<< End of plural calls
+
+// >>>>> Context-plural calls
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 1 argument and a context using correct plural form.
  * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @return localized version of a string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @return localized string
  */
 template <typename A1>
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).toString();
+  return ki18ncp(ctxt, sing, plur).subs(a1).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 2 parameters and a context using
- * right plural form.
+ * Returns a localized version of a string with 2 arguments and a context using correct plural form.
  * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @return localized version of a string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @return localized string
  */
 template <typename A1, typename A2>
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).toString();
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 3 parameters and a context using
- * right plural form.
+ * Returns a localized version of a string with 3 arguments and a context using correct plural form.
  * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @return localized version of a string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3>
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).toString();
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 4 parameters and a context using
- * right plural form.
+ * Returns a localized version of a string with 4 arguments and a context using correct plural form.
  * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @return localized version of a string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4>
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).toString();
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Returns a localized version of a string with 5 parameters and a context using
- * right plural form.
+ * Returns a localized version of a string with 5 arguments and a context using correct plural form.
  * @param ctxt context of the string
- * @param sing string to be localized - singular version
- * @param plur string to be localized - plural version
- * @param n a number determining which form (singular or plural) to use
- * @param a1 first string parameter
- * @param a2 second string parameter
- * @param a3 third string parameter
- * @param a4 fourth string parameter
- * @param a5 fifth string parameter
- * @return localized version of a string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @return localized string
  */
 template <typename A1, typename A2, typename A3, typename A4, typename A5>
-inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int n, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5)
 {
-    return ki18ncp(ctxt, sing, plur).subs(n).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).toString();
 }
-// <<< End of context plural calls
-
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
 /**
- * Qt's uic generates i18n( "msg", "comment" ) calls which conflict
- * with our i18n method. We use uic -tr tr2i18n to redirect
- * to the right i18n() function
-**/
-inline QString tr2i18n(const char* message, const char* =0) {
-    if (!message || !message[0])
-        return QString();
-    return i18n(message);
+ * Returns a localized version of a string with 6 arguments and a context using correct plural form.
+ * @param ctxt context of the string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6)
+{
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).toString();
 }
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 7 arguments and a context using correct plural form.
+ * @param ctxt context of the string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7)
+{
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 8 arguments and a context using correct plural form.
+ * @param ctxt context of the string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8)
+{
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).toString();
+}
+// Autogenerated; contact KLocalizedString maintainer for batch changes.
+/**
+ * Returns a localized version of a string with 9 arguments and a context using correct plural form.
+ * @param ctxt context of the string
+ * @param sing string to be localized in singular
+ * @param plur string to be localized in plural
+ * @param a1 first argument
+ * @param a2 second argument
+ * @param a3 third argument
+ * @param a4 fourth argument
+ * @param a5 fifth argument
+ * @param a6 sixth argument
+ * @param a7 seventh argument
+ * @param a8 eighth argument
+ * @param a9 ninth argument
+ * @return localized string
+ */
+template <typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4, const A5 &a5, const A6 &a6, const A7 &a7, const A8 &a8, const A9 &a9)
+{
+  return ki18ncp(ctxt, sing, plur).subs(a1).subs(a2).subs(a3).subs(a4).subs(a5).subs(a6).subs(a7).subs(a8).subs(a9).toString();
+}
+// <<<<< End of context-plural calls
 
 #endif

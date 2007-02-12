@@ -199,7 +199,7 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
   : KPageDialog( parent ), d(new KPropertiesDialogPrivate)
 {
   if ( _items.count() > 1 )
-    setCaption( i18np( "Properties for 1 item", "Properties for %n Selected Items", _items.count() ) );
+    setCaption( i18np( "Properties for 1 item", "Properties for %1 Selected Items", _items.count() ) );
   else
     setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())) );
 
@@ -1186,8 +1186,8 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4",
 			   KIO::convertSize(totalSize),
                           KGlobal::locale()->formatNumber(totalSize, 0),
-         i18np("1 file","%n files",totalFiles),
-         i18np("1 sub-folder","%n sub-folders",totalSubdirs)));
+         i18np("1 file","%1 files",totalFiles),
+         i18np("1 sub-folder","%1 sub-folders",totalSubdirs)));
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
@@ -1202,8 +1202,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
 			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18np("1 file","%n files",totalFiles))
-        .arg(i18np("1 sub-folder","%n sub-folders",totalSubdirs)));
+        .arg(i18np("1 file","%1 files",totalFiles))
+        .arg(i18np("1 sub-folder","%1 sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)

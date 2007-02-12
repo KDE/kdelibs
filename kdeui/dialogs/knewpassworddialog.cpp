@@ -165,7 +165,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::slotTextChanged()
         matchLabel->setText( i18n("Password is empty") );
     } else {
         if ( pEdit->text().length() < minPasswordLength ) {
-            matchLabel->setText(i18np("Password must be at least 1 character long", "Password must be at least %n characters long", minPasswordLength));
+            matchLabel->setText(i18np("Password must be at least 1 character long", "Password must be at least %1 characters long", minPasswordLength));
         } else {
             matchLabel->setText( match? i18n("Passwords match")
                 :i18n("Passwords do not match") );

@@ -232,8 +232,8 @@ void DefaultProgress::showTotals()
     QString tmps;
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
-      tmps = i18np("%n folder", "%n folders", m_iTotalDirs) + "   ";
-    tmps += i18np("%n file", "%n files", m_iTotalFiles);
+      tmps = i18np("%1 folder", "%1 folders", m_iTotalDirs) + "   ";
+    tmps += i18np("%1 file", "%1 files", m_iTotalFiles);
     progressLabel->setText( tmps );
   }
 }
@@ -246,7 +246,7 @@ QString DefaultProgress::makePercentString( unsigned long percent,
   if ( totalSize )
       return i18n( "%1 % of %2 " ,  percent ,  KIO::convertSize( totalSize ) );
   else if ( totalFiles )
-      return i18np( "%1 % of 1 file", "%1 % of %n files", totalFiles ,  percent );
+      return i18np( "%2 % of 1 file", "%2 % of %1 files", totalFiles ,  percent );
   else
       return i18n( "%1 %" ,  percent );
 }
@@ -304,9 +304,9 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
   m_iProcessedDirs = dirs;
 
   QString tmps;
-  tmps = i18np("%1 / %n folder", "%1 / %n folders", m_iTotalDirs,  m_iProcessedDirs );
+  tmps = i18np("%2 / %1 folder", "%2 / %1 folders", m_iTotalDirs,  m_iProcessedDirs );
   tmps += "   ";
-  tmps += i18np("%1 / %n file", "%1 / %n files", m_iTotalFiles,  m_iProcessedFiles );
+  tmps += i18np("%2 / %1 file", "%2 / %1 files", m_iTotalFiles,  m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 
@@ -319,10 +319,10 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 
   QString tmps;
   if ( m_iTotalDirs > 1 ) {
-    tmps = i18np("%1 / %n folder", "%1 / %n folders", m_iTotalDirs,  m_iProcessedDirs );
+    tmps = i18np("%2 / %1 folder", "%2 / %1 folders", m_iTotalDirs,  m_iProcessedDirs );
     tmps += "   ";
   }
-  tmps += i18np("%1 / %n file", "%1 / %n files", m_iTotalFiles,  m_iProcessedFiles );
+  tmps += i18np("%2 / %1 file", "%2 / %1 files", m_iTotalFiles,  m_iProcessedFiles );
   progressLabel->setText( tmps );
 }
 

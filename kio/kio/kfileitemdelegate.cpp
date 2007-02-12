@@ -208,7 +208,7 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
     if (count == KDirModel::ChildCountUnknown)
         return i18nc("Items in a folder", "? items");
 
-    return ki18ncp("Items in a folder", "1 item", "%n items").subs(count).toString();
+    return i18ncp("Items in a folder", "1 item", "%1 items", count);
 }
 
 

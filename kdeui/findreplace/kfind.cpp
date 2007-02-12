@@ -637,7 +637,7 @@ void KFind::displayFinalDialog() const
 {
     QString message;
     if ( numMatches() )
-        message = i18np( "1 match found.", "%n matches found.", numMatches() );
+        message = i18np( "1 match found.", "%1 matches found.", numMatches() );
     else
         message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", Qt::escape(m_pattern));
     KMessageBox::information(dialogsParent(), message);
@@ -657,7 +657,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
     if ( showNumMatches )
     {
         if ( numMatches() )
-            message = i18np( "1 match found.", "%n matches found.", numMatches() );
+            message = i18np( "1 match found.", "%1 matches found.", numMatches() );
         else
             message = i18n("No matches found for '<b>%1</b>'.", Qt::escape(m_pattern));
     }

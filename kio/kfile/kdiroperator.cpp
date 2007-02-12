@@ -478,7 +478,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
-                i18np("Do you really want to delete this item?", "Do you really want to delete these %n items?", items.count() ),
+                i18np("Do you really want to delete this item?", "Do you really want to delete these %1 items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
                                                     KStandardGuiItem::del(), "AskForDelete" );
@@ -533,7 +533,7 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
-                i18np("translators: not called for n == 1", "Do you really want to trash these %n items?", items.count() ),
+                i18np("translators: not called for n == 1", "Do you really want to trash these %1 items?", items.count() ),
                                                     files,
                                                     i18n("Trash Files"),
                                                     KGuiItem(i18nc("to trash", "&Trash"),"edittrash"), "AskForTrash" );

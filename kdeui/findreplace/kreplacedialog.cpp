@@ -143,7 +143,7 @@ void KReplaceDialog::slotOk()
                         "Your replacement string is referencing a capture greater than '\\%1', ",  caps ) +
                     ( caps ?
                         i18np("but your pattern only defines 1 capture.",
-                             "but your pattern only defines %n captures.", caps ) :
+                             "but your pattern only defines %1 captures.", caps ) :
                         i18n("but your pattern defines no captures.") ) +
                     i18n("\nPlease correct.") );
                 return; // abort OKing

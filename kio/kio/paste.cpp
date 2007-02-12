@@ -279,9 +279,9 @@ KIO_EXPORT QString KIO::pasteActionText()
     KUrl::List urls = KUrl::List::fromMimeData( mimeData );
     if ( !urls.isEmpty() ) {
         if ( urls.first().isLocalFile() )
-            return i18np( "&Paste File", "&Paste %n Files", urls.count() );
+            return i18np( "&Paste File", "&Paste %1 Files", urls.count() );
         else
-            return i18np( "&Paste URL", "&Paste %n URLs", urls.count() );
+            return i18np( "&Paste URL", "&Paste %1 URLs", urls.count() );
     } else if ( !mimeData->formats().isEmpty() ) {
         return i18n( "&Paste Clipboard Contents" );
     } else {

@@ -108,7 +108,7 @@ void KReplace::displayFinalDialog() const
     if ( !m_replacements )
         KMessageBox::information(parentWidget(), i18n("No text was replaced."));
     else
-        KMessageBox::information(parentWidget(), i18np("1 replacement done.", "%n replacements done.", m_replacements ) );
+        KMessageBox::information(parentWidget(), i18np("1 replacement done.", "%1 replacements done.", m_replacements ) );
 }
 
 KFind::Result KReplace::replace()
@@ -303,7 +303,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( !m_replacements )
             message = i18n("No text was replaced.");
         else
-            message = i18np("1 replacement done.", "%n replacements done.", m_replacements );
+            message = i18np("1 replacement done.", "%1 replacements done.", m_replacements );
     }
     else
     {

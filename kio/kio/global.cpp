@@ -88,7 +88,7 @@ KIO_EXPORT QString KIO::convertSeconds( unsigned int seconds )
   const QTime time(hours, mins, seconds);
   const QString timeStr( KGlobal::locale()->formatTime(time, true /*with seconds*/, true /*duration*/) );
   if ( days > 0 )
-    return i18np("1 day %1", "%n days %1", days, timeStr);
+    return i18np("1 day %2", "%1 days %2", days, timeStr);
   else
     return timeStr;
 }
@@ -118,13 +118,13 @@ KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesi
 
 KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
-    const QString itemsText = items == 0 ? i18n( "No Items" ) : i18np( "One Item", "%n Items", items );
-    const QString filesText = files == 0 ? i18n( "No Files" ) : i18np( "One File", "%n Files", files );
+    const QString itemsText = items == 0 ? i18n( "No Items" ) : i18np( "One Item", "%1 Items", items );
+    const QString filesText = files == 0 ? i18n( "No Files" ) : i18np( "One File", "%1 Files", files );
     QString sizeText;
     if ( showSize && files > 0 ) {
         sizeText = i18n("(%1 Total)", KIO::convertSize( size ) );
     }
-    const QString foldersText = dirs == 0 ? i18n( "No Folders" ) : i18np("One Folder", "%n Folders", dirs);
+    const QString foldersText = dirs == 0 ? i18n( "No Folders" ) : i18np("One Folder", "%1 Folders", dirs);
     return i18nc("Items (Folders, Files), Size", "%1 (%2, %3), %4", itemsText, foldersText, filesText, sizeText);
 }
 

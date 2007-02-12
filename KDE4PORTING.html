@@ -1910,17 +1910,22 @@ i18n("Just plain info");
 <pre>
 i18n("%1 has scored %2", playerName, score);
 </pre>
-<p>Arguments can be of type <code>int</code>, <code>double</code>, <code>QString</code>, <code>QChar</code> (and perhaps more in the future).</p>
+<p>Arguments can be of several integer types, <code>double</code>, <code>QString</code>, <code>QChar</code> (and perhaps more in the future).</p>
 
-<p>Context and plural calls now have different names, <code>i18nc</code> and <code>i18np</code>, and take arguments in the same way:</p>
+<p>Context call now has a different name, <code>i18nc</code>, and takes arguments in the same way:</p>
 <pre>
 i18nc("Player name - score", "%1 - %2", playerName, score);
-i18np("1 image in album %1", "%n images in album %1", n, albumName);
 </pre>
 
-<p>There is one new variant, the context-plural call:</p>
+<p>Plural call is renamed to <code>i18np</code> and does away with <code>%n</code> placeholder, all being numbered instead:</p>
 <pre>
-i18ncp("Personal file", "1 file", "%n files", n);
+i18np("One image in album %2", "%1 images in album %2", n, albumName);
+</pre>
+<p>The plural form is decided by first integer-valued argument.</p>
+
+<p>There is one new call variant, the context-plural call:</p>
+<pre>
+i18ncp("Personal file", "One file", "%1 files", n);
 </pre>
 
 <p><code>i18n*</code> calls are realized as templates, and so will take at most some finite number of arguments.</p>
@@ -1929,7 +1934,7 @@ i18ncp("Personal file", "1 file", "%n files", n);
 <ul>
 <li>Placeholders are substituted in one pass, so no need to worry about argument itself containing a placeholder.</li>
 <li>All same-numbered placeholders are substituted with same argument. This is in contrast to what single-argument <code>arg</code> methods of <code>QString</code> do.</li>
-<li>Always provide exactly as many arguments as there are unique placeholders. Otherwise you will get error marks in messages at runtime (when compiled in debug mode). The only exception is plural placeholder, which need not be present in singular form.</li>
+<li>Placeholders directly index arguments: they should be numbered from 1 upwards, without gaps in the sequence so that each argument is indexed. The exception is plural-deciding argument in plural call, where it is allowed to drop its placeholder in either singular or plural form.</li>
 </ul>
 
 <p>Sometimes you might need old-style syntax for argument substitution. For example, when there are many arguments, or, more importantly, when it is convenient to <i>defer</i> substitution of arguments. This is possible using new <code>ki18n</code> call, with <code>subs</code> methods for argument substitution and <code>toString</code> method for finalization:</p>
@@ -1963,14 +1968,9 @@ ki18n("Rounds: %1").subs(n, 8).toString(); // good, number is localized
 <p>There is a context, plural and context-plural variant of <code>ki18n</code> as well:</p>
 <pre>
 ki18nc("No function", "None").toString();
-ki18np("1 file found", "%n files found").subs(n).toString();
-ki18ncp("Personal file", "1 file", "%n files").subs(n).toString();
+ki18np("One file found", "%1 files found").subs(n).toString();
+ki18ncp("Personal file", "One file", "%1 files").subs(n).toString();
 </pre>
-
-<p>Extra notes on placeholder substitution for <code>ki18n*</code> calls:</p>
-<ul>
-<li>Plural placeholder <code>%n</code> will be substituted by the first supplied argument. If you give non-number as the first argument, you will get a runtime error mark in the message (in debug mode).</li>
-</ul>
 
 <p>If you need translation using locale (KLocale object) other than the default, you can use overloaded <code>toString</code> method which takes pointer to locale object (this replaces <code>KLocale::translate(...)</code> from KDE3):</p>
 <pre>

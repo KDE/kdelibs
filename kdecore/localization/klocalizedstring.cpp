@@ -26,13 +26,16 @@
 #include <qstring.h>
 #include <qvector.h>
 
+typedef qulonglong pluraln;
+
 class KLocalizedStringPrivate
 {
     friend class KLocalizedString;
 
     QVector<QString> args;
     bool numberSet;
-    long number;
+    pluraln number;
+    int numberOrd;
     QByteArray ctxt;
     QByteArray msg;
     QByteArray plural;
@@ -45,6 +48,7 @@ KLocalizedString::KLocalizedString ()
 {
     d->numberSet = false;
     d->number = 0;
+    d->numberOrd = 0;
 }
 
 KLocalizedString::KLocalizedString (const char *ctxt,
@@ -56,14 +60,15 @@ KLocalizedString::KLocalizedString (const char *ctxt,
     d->plural = plural;
     d->numberSet = false;
     d->number = 0;
+    d->numberOrd = 0;
 }
 
-KLocalizedString::KLocalizedString(const KLocalizedString& rhs)
+KLocalizedString::KLocalizedString(const KLocalizedString &rhs)
 : d(new KLocalizedStringPrivate(*rhs.d))
 {
 }
 
-KLocalizedString& KLocalizedString::operator= (const KLocalizedString& rhs)
+KLocalizedString& KLocalizedString::operator= (const KLocalizedString &rhs)
 {
     if (&rhs != this)
     {
@@ -110,7 +115,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     {
         #ifndef NDEBUG
         kDebug(173) << QString("Plural argument to message {%1} not supplied before conversion.")
-                               .arg(QString::fromUtf8(msg).left(20)) << endl;
+                              .arg(QString::fromUtf8(msg).left(20)) << endl;
         #endif
     }
 
@@ -155,10 +160,8 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     //kDebug() << trans << endl;
     //kDebug() << args.size() << endl;
 
-    QVector<int> plinks; // ordinal numbers per placeholder number
     QVector<QString> tsegs; // text segments per placeholder occurrence
     QVector<int> plords; // ordinal numbers per placeholder occurrence
-    QVector<QString> plnames; // placeholder names per ordinal
 
     QVector<int> ords; // indicates which placeholders are present
     int slen = trans.length();
@@ -172,37 +175,29 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         if (tpos == slen)
         break;
 
-        if (trans[tpos].digitValue() >= 0 || trans[tpos] == 'n')
+        if (trans[tpos].digitValue() > 0) // %0 not considered a placeholder
         {
-            int plnum = 0;
-            if (trans[tpos] == 'n')
+            // Get the placeholder ordinal.
+            int plord = 0;
+            while (tpos < slen && trans[tpos].digitValue() >= 0)
             {
-                // Plural placeholder is treated as placeholder 0.
-                plnum = 0;
+                plord = 10 * plord + trans[tpos].digitValue();
                 tpos++;
             }
-            else
-            {
-                // Get the numbered placeholder.
-                while (tpos < slen && trans[tpos].digitValue() >= 0)
-                {
-                    plnum = 10 * plnum + trans[tpos].digitValue();
-                    tpos++;
-                }
-                // 0 can be only plural placeholder, so shift numbered one up.
-                plnum++;
-            }
+            plord--; // ordinals are zero based
 
             // Perhaps enlarge storage for indicators.
-            if (plnum >= ords.size())
-                ords.resize(plnum + 1);
+            // Note that QtVector<int> will initialize new elements to 0,
+            // as they are supposed to be.
+            if (plord >= ords.size())
+                ords.resize(plord + 1);
 
-            // Indicate that placeholder with computed number is present.
-            ords[plnum] = 1;
+            // Indicate that placeholder with computed ordinal is present.
+            ords[plord] = 1;
 
             // Store text segment prior to placeholder and placeholder number.
             tsegs.append(trans.mid(spos, ctpos - spos));
-            plords.append(plnum);
+            plords.append(plord);
 
             // Position of next text segment.
             spos = tpos;
@@ -215,42 +210,33 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Store last text segment.
     tsegs.append(trans.mid(spos));
 
+    // Perhaps enlarge storage for plural-number ordinal.
+    if (!plural.isEmpty() && numberOrd >= ords.size())
+        ords.resize(numberOrd + 1);
+
     // Message might have plural but without plural placeholder, which is an
-    // allowed state. So, for further logic, indicate plural placeholder is
-    // present anyway if message has plural.
+    // allowed state. To ease further logic, indicate that plural placeholder
+    // is present anyway if message has plural.
     if (!plural.isEmpty())
-    {
-        if (ords.size() < 1)
-            ords.resize(1);
-        ords[0] = 1;
-    }
-
-    // Set placeholder->ordinal links and unique placeholder names.
-    int ord = 0;
-    for (int i = 0; i < ords.size(); i++)
-        if (ords[i])
-        {
-            plinks.append(ord);
-            ord++;
-
-            if (i == 0)
-                plnames.append("%n"); // plural placeholder name
-            else
-                plnames.append('%' + QString::number(i - 1)); // numbered
-        }
-        else
-            plinks.append(0); // dummy
-
-    // Convert placeholder numbers per occurrence to ordinal numbers.
-    for (int i = 0; i < plords.size(); i++)
-        plords[i] = plinks.at(plords[i]);
+        ords[numberOrd] = 1;
 
     #ifndef NDEBUG
-    // Check for mismatch between number of unique placeholders and
+    // Check that there are no gaps in numbering sequence of placeholders.
+    bool gaps = false;
+    for (int i = 0; i < ords.size(); i++)
+    {
+        if (!ords.at(i))
+        {
+            gaps = true;
+            kDebug(173) << QString("Placeholder %%1 skipped in message {%2}.")
+                                  .arg(QString::number(i + 1), trans.left(20)) << endl;
+        }
+    }
+    // If no gaps, check for mismatch between number of unique placeholders and
     // actually supplied arguments.
-    if (plords.size() != args.size())
+    if (!gaps and ords.size() != args.size())
         kDebug(173) << QString("%1 instead of %2 arguments to message {%3} supplied before conversion.")
-                               .arg(args.size()).arg(plords.size()).arg(trans.left(20)) << endl;
+                              .arg(args.size()).arg(ords.size()).arg(trans.left(20)) << endl;
     #endif
 
     // Assemble the final string from text segments and arguments.
@@ -258,21 +244,11 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     for (int i = 0; i < plords.size(); i++)
     {
         final.append(tsegs.at(i));
-        if (!plural.isEmpty() && plords.at(i) == 0 && !numberSet)
-        // trying to substitute %n in plural with something strange
-        {
-            // put back the placeholder
-            final.append(plnames.at(plords.at(i)));
-            #ifndef NDEBUG
-            // spoof the message
-            final.append("(I18N_PLURAL_ARGUMENT_NOT_A_NUMBER)");
-            #endif
-        }
-        else if (plords.at(i) >= args.size())
+        if (plords.at(i) >= args.size())
         // too little arguments
         {
             // put back the placeholder
-            final.append(plnames.at(plords.at(i)));
+            final.append("%" + QString::number(plords.at(i) + 1));
             #ifndef NDEBUG
             // spoof the message
             final.append("(I18N_ARGUMENT_MISSING)");
@@ -285,11 +261,10 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     final.append(tsegs.last());
 
     #ifndef NDEBUG
-    if (ord < args.size())
-        final.append("(I18N_EXTRA_ARGUMENTS)");
-    #endif
-
-    #ifndef NDEBUG
+    if (gaps)
+        final.append("(I18N_GAPS_IN_PLACEHOLDER_SEQUENCE)");
+    if (ords.size() < args.size())
+        final.append("(I18N_EXCESS_ARGUMENTS_SUPPLIED)");
     if (!plural.isEmpty() && !numberSet)
         final.append("(I18N_PLURAL_ARGUMENT_MISSING)");
     #endif
@@ -297,73 +272,113 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     return final;
 }
 
-KLocalizedString KLocalizedString::subs (int a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && d->args.size() == 0)
+    if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<long>(a);
+        d->number = static_cast<pluraln>(abs(a));
         d->numberSet = true;
+        d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (uint a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && d->args.size() == 0)
+    if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<long>(a);
+        d->number = static_cast<pluraln>(abs(a));
         d->numberSet = true;
+        d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (long a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && d->args.size() == 0)
+    if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<long>(a);
+        d->number = static_cast<pluraln>(abs(a));
         d->numberSet = true;
+        d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
 {
-    if (!d->plural.isEmpty() && d->args.size() == 0)
+    if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<long>(a);
+        d->number = static_cast<pluraln>(abs(a));
         d->numberSet = true;
+        d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    return kls;
+}
+
+KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
+{
+    if (!d->plural.isEmpty() && !d->numberSet)
+    {
+        d->number = static_cast<pluraln>(abs(a));
+        d->numberSet = true;
+        d->numberOrd = d->args.size();
+    }
+    KLocalizedString kls(*this);
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    return kls;
+}
+
+KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
+                                         const QChar &fillChar) const
+{
+    if (!d->plural.isEmpty() && !d->numberSet)
+    {
+        d->number = static_cast<pluraln>(abs(a));
+        d->numberSet = true;
+        d->numberOrd = d->args.size();
+    }
+    KLocalizedString kls(*this);
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
     return kls;
 }
 
 KLocalizedString KLocalizedString::subs (double a, int fieldWidth,
-                                         char fmt, int prec) const
+                                         char format, int precision,
+                                         const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, fmt, prec));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, format, precision,
+                                         fillChar));
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (QChar a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (QChar a, int fieldWidth,
+                                         const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (const QString& a, int fieldWidth) const
+KLocalizedString KLocalizedString::subs (const QString &a, int fieldWidth,
+                                         const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth));
+    kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
     return kls;
 }
 
