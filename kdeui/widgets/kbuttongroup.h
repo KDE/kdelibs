@@ -91,11 +91,12 @@ class KDEUI_EXPORT KButtonGroup
      */
     virtual void childEvent( QChildEvent* event );
 
-  private Q_SLOTS:
-    void slotClicked( int id );
+  private:
+    Q_PRIVATE_SLOT(d, void slotClicked( int id ))
 
   private:
     class Private;
+    friend class Private;
     Private * const d;
 };
 

@@ -95,7 +95,7 @@ Q_SIGNALS:
     void doubleClicked();
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ));
+    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ))
     
     virtual void setFont(const QFont &f) { QTableView::setFont(f); }
     

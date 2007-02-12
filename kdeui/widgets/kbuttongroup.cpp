@@ -30,7 +30,7 @@ class KButtonGroup::Private
 {
   public:
     Private( KButtonGroup* q )
-      : clickedMapper(), pressedMapper(), releasedMapper(),
+      : q(q), clickedMapper(), pressedMapper(), releasedMapper(),
         currentId( -1 ), nextId( 0 )
     {
       connect( &clickedMapper, SIGNAL( mapped( int ) ), q, SLOT( slotClicked( int ) ) );
@@ -38,6 +38,9 @@ class KButtonGroup::Private
       connect( &releasedMapper, SIGNAL( mapped( int ) ), q, SIGNAL( released( int ) ) );
     }
 
+    void slotClicked( int id );
+
+    KButtonGroup *q;
     QSignalMapper clickedMapper;
     QSignalMapper pressedMapper;
     QSignalMapper releasedMapper;
@@ -124,11 +127,11 @@ void KButtonGroup::childEvent( QChildEvent* event )
   QGroupBox::childEvent( event );
 }
 
-void KButtonGroup::slotClicked( int id )
+void KButtonGroup::Private::slotClicked( int id )
 {
-  d->currentId = id;
-  emit clicked( id );
-  emit changed( id );
+  currentId = id;
+  emit q->clicked( id );
+  emit q->changed( id );
 }
 
 #include "kbuttongroup.moc"
