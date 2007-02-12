@@ -866,7 +866,6 @@ KApplication::~KApplication()
   // The static deleters may delete libraries for which they need KLibLoader.
   // KLibLoader will take care of the remaining ones.
   KGlobal::deleteStaticDeleters();
-  KLibLoader::cleanUp();
 
 #ifdef Q_WS_X11
   if ( d->oldXErrorHandler != NULL )

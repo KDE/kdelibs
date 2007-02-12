@@ -30,6 +30,7 @@ class QTimer;
 class KLibFactory;
 class KLibFactoryPrivate;
 class KLibraryPrivate;
+class KLibLoaderPrivate;
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { KDE_EXPORT void *init_##libname() { return new factory; } }
@@ -60,6 +61,7 @@ class KLibraryPrivate;
 class KDECORE_EXPORT KLibrary : public QObject
 {
     friend class KLibLoader;
+    friend class KLibLoaderPrivate;
     friend class KLibraryPrivate;
 
     KLibrary( const QString& libname, const QString& filename, QLibrary * handle );
@@ -282,16 +284,10 @@ class KDECORE_EXPORT KLibLoader : public QObject
 {
     friend class KLibrary;
     friend class KLibraryPrivate;
+    friend class KLibLoaderPrivate;
 
     Q_OBJECT
 public:
-    /**
-     * You should NEVER destruct an instance of KLibLoader
-     * until you know what you are doing. This will release
-     * the loaded libraries.
-     */
-    ~KLibLoader();
-
     /**
      * Loads and initializes a library. Loading a library multiple times is
      * handled gracefully.
@@ -395,16 +391,6 @@ public:
     static KLibLoader* self();
 
     /**
-     * @internal
-     * Internal Method, called by the KApplication destructor.
-     * Do not call it.
-     * This is what makes it possible to rely on ~KLibFactory
-     * being called in all cases, whether the library is unloaded
-     * while the application is running or when exiting.
-     */
-    static void cleanUp();
-
-    /**
      * Helper method which looks for a library in the standard paths
      * ("module" and "lib" resources).
      * Made public for code that doesn't use KLibLoader itself, but still
@@ -492,20 +478,18 @@ public:
         return res;
     }
 
-protected:
-    KLibLoader( QObject* parent = 0 );
+private:
+    /**
+     * You should NEVER destruct an instance of KLibLoader
+     * until you know what you are doing. This will release
+     * the loaded libraries.
+     */
+    ~KLibLoader();
+
+    KLibLoader(QObject *parent = 0);
 
 private Q_SLOTS:
     void slotLibraryDestroyed();
-private:
-    void close_pending( KLibWrapPrivate * );
-    QHash<QString, KLibWrapPrivate*> m_libs;
-
-    static KLibLoader* s_self;
-
-private:
-    class Private;
-    Private *const d;
 };
 
 #endif
