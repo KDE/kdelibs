@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include <q3buttongroup.h>
+#include <q3cstring.h>
 #include <QCheckBox>
 #include <QFile>
 #include <QFileInfo>
