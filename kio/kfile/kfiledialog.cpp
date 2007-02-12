@@ -312,7 +312,7 @@ KUrl KFileDialog::getCompleteUrl(const QString &_url)
 // FIXME: check for "existing" flag here?
 void KFileDialog::slotOk()
 {
-    kDebug(kfile_area) << "slotOK\n";
+    kDebug(kfile_area) << "slotOk\n";
 
     // a list of all selected files/directories (if any)
     // can only be used if the user didn't type any filenames/urls himself
