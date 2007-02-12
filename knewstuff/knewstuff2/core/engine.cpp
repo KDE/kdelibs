@@ -30,7 +30,6 @@
 #include <kstandarddirs.h>
 
 #include <kio/job.h>
-//#include <kio/jobclasses.h>
 #include <krandom.h>
 
 #include <qdir.h>
@@ -99,12 +98,10 @@ bool Engine::init(const QString &configfile)
 	// would result in too many objects active at once
 	connect(m_provider_loader,
 		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
-		this,
-		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)));
+		SLOT(slotProvidersLoaded(KNS::Provider::List*)));
 	connect(m_provider_loader,
 		SIGNAL(signalProvidersFailed()),
-		this,
-		SIGNAL(signalProvidersFailed()));
+		SLOT(slotProvidersFailed()));
 
 	return true;
 }
@@ -118,13 +115,10 @@ void Engine::loadEntries(Provider *provider)
 	// FIXME: the engine should do this... for all feeds!
 	connect(entry_loader,
 		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
-		this,
-		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)));
+		SLOT(slotEntriesLoaded(KNS::Entry::List*)));
 	connect(entry_loader,
 		SIGNAL(signalEntriesFailed()),
-		this,
-		SIGNAL(signalEntriesFailed()));
-	// FIXME: similar to the provider loading, we might need cleanup slot
+		SLOT(slotEntriesFailed()));
 }
 
 void Engine::downloadPreview(Entry *entry)
@@ -186,6 +180,42 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
 	return true;
 }
 
+void Engine::slotProvidersLoaded(KNS::Provider::List *list)
+{
+	mergeProviders(list);
+
+	for(Provider::List::Iterator it = list->begin(); it != list->end(); it++)
+	{
+		Provider *provider = (*it);
+		emit signalProviderLoaded(provider);
+	}
+	// FIXME: cleanup provider loader
+}
+
+void Engine::slotProvidersFailed()
+{
+	emit signalProvidersFailed();
+	// FIXME: cleanup provider loader
+}
+
+void Engine::slotEntriesLoaded(KNS::Entry::List *list)
+{
+	mergeEntries(list);
+
+	for(Entry::List::Iterator it = list->begin(); it != list->end(); it++)
+	{
+		Entry *entry = (*it);
+		emit signalEntryLoaded(entry);
+	}
+	// FIXME: cleanup entry loader
+}
+
+void Engine::slotEntriesFailed()
+{
+	emit signalEntriesFailed();
+	// FIXME: cleanup entry loader
+}
+
 void Engine::slotPayloadResult(KJob *job)
 {
 	if(job->error())
@@ -242,6 +272,9 @@ void Engine::slotUploadPreviewResult(KJob *job)
 
 		emit signalEntryFailed();
 	}
+
+	// FIXME: the following save code is also in cacheEntry()
+	// when we upload, the entry should probably be cached!
 
 	// FIXME: adhere to meta naming rules as discussed
 	KUrl sourcemeta = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta";
@@ -417,6 +450,8 @@ void Engine::loadProvidersCache()
 		m_provider_cache.append(p);
 		m_provider_index[pid(p)] = p;
 
+		emit signalProviderLoaded(p);
+
 		provider = root.nextSiblingElement("provider");
 	}
 }
@@ -450,7 +485,7 @@ void Engine::loadEntryCache()
 		if(!ret)
 		{
 			kWarning(550) << "The file could not be opened." << endl;
-			return;
+			continue;
 		}
 
 		QDomDocument doc;
@@ -458,21 +493,21 @@ void Engine::loadEntryCache()
 		if(!ret)
 		{
 			kWarning(550) << "The file could not be parsed." << endl;
-			return;
+			continue;
 		}
 
 		QDomElement root = doc.documentElement();
 		if(root.tagName() != "ghnscache")
 		{
 			kWarning(550) << "The file doesn't seem to be of interest." << endl;
-			return;
+			continue;
 		}
 
 		QDomElement stuff = root.firstChildElement("stuff");
 		if(stuff.isNull())
 		{
 			kWarning(550) << "Missing GHNS cache metadata." << endl;
-			return;
+			continue;
 		}
 
 		EntryHandler handler(stuff);
@@ -485,6 +520,8 @@ void Engine::loadEntryCache()
 		Entry *e = handler.entryptr();
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
+
+		emit signalEntryLoaded(e);
 	}
 }
 
@@ -500,15 +537,22 @@ void Engine::shutdown()
 	m_provider_cache.clear();
 }
 
-void Engine::mergeProviders(Provider::List providers)
+void Engine::mergeProviders(Provider::List *providers)
 {
-	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
+	for(Provider::List::Iterator it = providers->begin(); it != providers->end(); it++)
 	{
 		// TODO: find entry in providercache, replace if needed
 		Provider *p = (*it);
 
 		if(m_provider_index.contains(pid(p)))
 		{
+			kDebug(550) << "CACHE: hit provider " << p->name().representation() << endl;
+			// FIXME: if changed, emit signalProviderChanged()
+		}
+		else
+		{
+			kDebug(550) << "CACHE: miss provider " << p->name().representation() << endl;
+			cacheProvider(p);
 		}
 
 		m_provider_cache.append(p);
@@ -516,9 +560,9 @@ void Engine::mergeProviders(Provider::List providers)
 	}
 }
 
-void Engine::mergeEntries(Entry::List entries)
+void Engine::mergeEntries(Entry::List *entries)
 {
-	for(Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
+	for(Entry::List::Iterator it = entries->begin(); it != entries->end(); it++)
 	{
 		// TODO: find entry in entrycache, replace if needed
 		// don't forget marking as 'updateable'
@@ -526,11 +570,91 @@ void Engine::mergeEntries(Entry::List entries)
 
 		if(m_entry_index.contains(id(e)))
 		{
+			kDebug(550) << "CACHE: hit entry " << e->name().representation() << endl;
+			// FIXME: if changed, emit signalEntryChanged()
+		}
+		else
+		{
+			kDebug(550) << "CACHE: miss entry " << e->name().representation() << endl;
+			cacheEntry(e);
 		}
 
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
 	}
+}
+
+void Engine::cacheProvider(Provider *provider)
+{
+	KStandardDirs d;
+
+	kDebug(550) << "Caching provider." << endl;
+
+	QString cachedir = d.saveLocation("cache");
+	QString cachefile = cachedir + "knewstuff2-providers.cache.xml";
+
+	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("ghnsproviders");
+
+	for(Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); it++)
+	{
+		Provider *p = (*it);
+		ProviderHandler ph(*p);
+		QDomElement pxml = ph.providerXML();
+		root.appendChild(pxml);
+	}
+	ProviderHandler ph(*provider);
+	QDomElement pxml = ph.providerXML();
+	root.appendChild(pxml);
+
+	QFile f(cachefile);
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		kError(550) << "Cannot write meta information to '" << cachedir << "'." << endl;
+		// FIXME: ignore?
+		return;
+	}
+	QTextStream metastream(&f);
+	metastream << root;
+	f.close();
+}
+
+void Engine::cacheEntry(Entry *entry)
+{
+	KStandardDirs d;
+
+	kDebug(550) << "Caching entry." << endl;
+
+	QString cachedir = d.saveLocation("cache", "knewstuff2-entries.cache");
+
+	kDebug(550) << " + Save to directory '" + cachedir + "'." << endl;
+
+	QString cachefile = KRandom::randomString(10) + ".meta";
+
+	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
+
+	// FIXME: adhere to meta naming rules as discussed
+	// FIXME: maybe related filename to base64-encoded id(), or the reverse?
+
+	EntryHandler eh(*entry);
+	QDomElement exml = eh.entryXML();
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("ghnscache");
+	root.appendChild(exml);
+
+	QFile f(cachedir + cachefile);
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		kError(550) << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
+		// FIXME: ignore?
+		return;
+	}
+	QTextStream metastream(&f);
+	metastream << root;
+	f.close();
 }
 
 QString Engine::id(Entry *e)

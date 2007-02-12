@@ -1,34 +1,39 @@
-#ifndef KNEWSTUFF2_TEST_H
-#define KNEWSTUFF2_TEST_H
+#ifndef KNEWSTUFF2_DOWNLOAD_H
+#define KNEWSTUFF2_DOWNLOAD_H
 
 #include <knewstuff2/provider.h>
 #include <knewstuff2/entry.h>
 
-#include <qobject.h>
+#include <qwidget.h>
 
 namespace KNS
 {
 	class Engine;
 };
 
-class KNewStuff2Test : public QObject
+class QListWidget;
+class QTabWidget;
+
+class KNewStuff2Download : public QWidget
 {
 Q_OBJECT
 public:
-	KNewStuff2Test();
-	void entryTest();
-	void providerTest();
+	KNewStuff2Download();
 	void engineTest();
 public slots:
 	void slotProviderLoaded(KNS::Provider *provider);
 	void slotProvidersFailed();
 	void slotEntryLoaded(KNS::Entry *entry);
 	void slotEntriesFailed();
+	void slotPreviewLoaded(KUrl payload);
+	void slotPreviewFailed();
 	void slotPayloadLoaded(KUrl payload);
 	void slotPayloadFailed();
 private:
-	void quitTest();
 	KNS::Engine *m_engine;
+	QListWidget *m_providerlist;
+	QTabWidget *m_feeds;
+	QWidget *m_activefeed;
 };
 
 #endif

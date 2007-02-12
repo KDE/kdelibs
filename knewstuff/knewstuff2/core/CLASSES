@@ -6,6 +6,7 @@ Container classes:
  Entry
  Provider
  Category
+ Feed
 
 Parser/dumper classes:
  EntryHandler
@@ -15,4 +16,8 @@ Engine classes (asynchronous, therefore qobjects):
  EntryLoader
  ProviderLoader
  Engine
+
+Test classes:
+ KNewStuff2Test
+ KNewStuff2Download
 

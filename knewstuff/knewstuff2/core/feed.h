@@ -31,7 +31,7 @@ namespace KNS {
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class Feed
+class KDE_EXPORT Feed
 {
   public:
     /**

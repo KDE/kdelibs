@@ -20,7 +20,7 @@ file replacements and invalidation will have to be found.
 The third group contains all the entries which are currently installed.
 This group starts out empty, or with some initial system-wide installed
 files. For every download, the corresponding cache file (which exists) is
-copied to the registry dir, after which the cached file isn't strictly
+copied to the registry dir, afterwards the cached file isn't strictly
 needed anymore. Such files might also be removed again, in case the referenced
 data is deinstalled.
 

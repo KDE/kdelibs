@@ -79,9 +79,11 @@ class KDE_EXPORT Engine : public QObject
      * This signal might occur twice, for the local cache and for updated provider
      * information from the ProvidersUrl.
      */
-    void signalProvidersLoaded(KNS::Provider::List *list);
+    void signalProviderLoaded(KNS::Provider *provider);
+    void signalProviderChanged(KNS::Provider *provider);
     void signalProvidersFailed();
-    void signalEntriesLoaded(KNS::Entry::List *list);
+    void signalEntryLoaded(KNS::Entry *entry);
+    void signalEntryChanged(KNS::Entry *entry);
     void signalEntriesFailed();
     void signalPreviewLoaded(KUrl preview);
     void signalPreviewFailed();
@@ -91,6 +93,10 @@ class KDE_EXPORT Engine : public QObject
     void signalEntryFailed();
 
   private slots:
+    void slotProvidersLoaded(KNS::Provider::List *list);
+    void slotProvidersFailed();
+    void slotEntriesLoaded(KNS::Entry::List *list);
+    void slotEntriesFailed();
     void slotPayloadResult(KJob *job);
     void slotPreviewResult(KJob *job);
     void slotUploadPayloadResult(KJob *job);
@@ -101,8 +107,10 @@ class KDE_EXPORT Engine : public QObject
     void loadRegistry(const QString &registrydir);
     void loadProvidersCache();
     void loadEntryCache();
-    void mergeProviders(Provider::List providers);
-    void mergeEntries(Entry::List entries);
+    void cacheProvider(Provider *provider);
+    void cacheEntry(Entry *entry);
+    void mergeProviders(Provider::List *providers);
+    void mergeEntries(Entry::List *entries);
     void shutdown();
 
     QString id(Entry *e);

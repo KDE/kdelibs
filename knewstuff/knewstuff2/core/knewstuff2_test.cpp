@@ -4,7 +4,6 @@
 #include <knewstuff2/providerhandler.h>
 #include <knewstuff2/entryhandler.h>
 #include <knewstuff2/engine.h>
-#include <knewstuff2/entryloader.h> // tmp (go to engine)
 
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -114,11 +113,23 @@ void KNewStuff2Test::engineTest()
 	if(ret)
 	{
 		connect(m_engine,
-			SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
-			SLOT(slotProvidersLoaded(KNS::Provider::List*)));
+			SIGNAL(signalProviderLoaded(KNS::Provider*)),
+			SLOT(slotProviderLoaded(KNS::Provider*)));
 		connect(m_engine,
 			SIGNAL(signalProvidersFailed()),
 			SLOT(slotProvidersFailed()));
+		connect(m_engine,
+			SIGNAL(signalEntryLoaded(KNS::Entry*)),
+			SLOT(slotEntryLoaded(KNS::Entry*)));
+		connect(m_engine,
+			SIGNAL(signalEntriesFailed()),
+			SLOT(slotEntriesFailed()));
+		connect(m_engine,
+			SIGNAL(signalPayloadLoaded(KUrl)),
+			SLOT(slotPayloadLoaded(KUrl)));
+		connect(m_engine,
+			SIGNAL(signalPayloadFailed()),
+			SLOT(slotPayloadFailed()));
 	}
 	else
 	{
@@ -128,45 +139,23 @@ void KNewStuff2Test::engineTest()
 	}
 }
 
-void KNewStuff2Test::slotProvidersLoaded(KNS::Provider::List *list)
+void KNewStuff2Test::slotProviderLoaded(KNS::Provider *provider)
 {
-	kDebug() << "SLOT: slotProvidersLoaded" << endl;
-	kDebug() << "-- providers: " << list->count() << endl;
+	kDebug() << "SLOT: slotProviderLoaded" << endl;
+	kDebug() << "-- provider: " << provider->name().representation() << endl;
 
-	connect(m_engine,
-		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
-		SLOT(slotEntriesLoaded(KNS::Entry::List*)));
-	connect(m_engine,
-		SIGNAL(signalEntriesFailed()),
-		SLOT(slotEntriesFailed()));
-
-	for(KNS::Provider::List::Iterator it = list->begin(); it != list->end(); it++)
-	{
-		KNS::Provider *provider = (*it);
-		kDebug() << "-- provider: " << provider->name().representation() << endl;
-
-		m_engine->loadEntries(provider);
-	}
+	m_engine->loadEntries(provider);
 }
 
-void KNewStuff2Test::slotEntriesLoaded(KNS::Entry::List *list)
+void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry)
 {
-	kDebug() << "SLOT: slotEntriesLoaded" << endl;
-	kDebug() << "-- entries: " << list->count() << endl;
+	kDebug() << "SLOT: slotEntryLoaded" << endl;
+	kDebug() << "-- entry: " << entry->name().representation() << endl;
 
-	for(KNS::Entry::List::Iterator it = list->begin(); it != list->end(); it++)
-	{
-		KNS::Entry *entry = (*it);
-		kDebug() << "-- entry: " << entry->name().representation() << endl;
-	}
+	kDebug() << "-- now, download the entry" << endl;
 
-	kDebug() << "-- now, download the first entry" << endl;
-
-	connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
-	connect(m_engine, SIGNAL(signalPayloadFailed()), SLOT(slotPayloadFailed()));
-
-	m_engine->downloadPreview((*list->begin()));
-	m_engine->downloadPayload((*list->begin()));
+	m_engine->downloadPreview(entry);
+	m_engine->downloadPayload(entry);
 }
 
 void KNewStuff2Test::slotPayloadLoaded(KUrl payload)

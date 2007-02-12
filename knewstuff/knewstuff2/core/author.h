@@ -21,6 +21,8 @@
 #ifndef KNEWSTUFF2_AUTHOR_H
 #define KNEWSTUFF2_AUTHOR_H
 
+#include <kdelibs_export.h>
+
 #include <qstring.h>
 
 namespace KNS {
@@ -34,7 +36,7 @@ namespace KNS {
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class Author
+class KDE_EXPORT Author
 {
   public:
     /**
