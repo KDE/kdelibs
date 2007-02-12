@@ -421,8 +421,8 @@ void KCompletionBox::down()
 
 void KCompletionBox::up()
 {
-    if ( currentItem() > 0 )
-        setCurrentItem( currentItem() - 1 );
+    if ( currentItem() && row(currentItem()) > 0 )
+        setCurrentItem( item(row(currentItem()) - 1) );
 }
 
 void KCompletionBox::pageDown()
