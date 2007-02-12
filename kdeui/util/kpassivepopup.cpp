@@ -6,32 +6,33 @@
  *   email                : sascha.cunz@tiscali.de
  */
 
-#include <kconfig.h>
 
-#include <qapplication.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qtimer.h>
-
+// Qt
+#include <QApplication>
+#include <QBitmap>
+#include <QLabel>
+#include <QLayout>
 #include <QMouseEvent>
-#include <qpainter.h>
-#include <qtooltip.h>
-#include <qbitmap.h>
-#include <Q3PointArray>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPolygonF>
+#include <QTimer>
+#include <QToolTip>
+
+#include <kvbox.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
-#include <QPolygon>
-#include <kvbox.h>
 
+#include <kconfig.h>
 
-#include "config.h"
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
 
+#include "config.h"
 #include "kpassivepopup.h"
 #include "kpassivepopup.moc"
 
@@ -454,8 +455,9 @@ void KPassivePopup::updateMask()
 
     int i = 0, z = 0;
     for (; i < 4; ++i) {
-        Q3PointArray corner;
-        corner.makeArc(corners[i].x(), corners[i].y(), 40, 40, i * 16 * 90, 16 * 90);
+        QPainterPath path;
+        path.arcTo(corners[i].x(),corners[i].y(),40,40, i * 16 * 90 , 16 * 90);
+        QPolygon corner = path.toFillPolygon().toPolygon();
 
         d->surround.resize( z + corner.count() );
         for (int s = 0; s < corner.count() - 1; s++) {

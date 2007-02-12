@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kiconloader.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kdialog.h>
 
 KMConfigFilter::KMConfigFilter(QWidget *parent)
@@ -45,10 +45,10 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 	QGroupBox	*box = new QGroupBox(i18n("Printer Filter"), this);
 	box->setLayout( new QVBoxLayout );
 
-	m_list1 = new KListBox(box);
-	m_list1->setSelectionMode(KListBox::Extended);
-	m_list2 = new KListBox(box);
-	m_list2->setSelectionMode(KListBox::Extended);
+	m_list1 = new KListWidget(box);
+	m_list1->setSelectionMode(KListWidget::ExtendedSelection);
+	m_list2 = new KListWidget(box);
+	m_list2->setSelectionMode(KListWidget::ExtendedSelection);
 	m_add = new QToolButton( box );
 	m_add->setIcon(QApplication::isRightToLeft() ? KIcon( "back" ) : KIcon( "forward" ));
 	m_remove = new QToolButton( box );
@@ -108,12 +108,16 @@ void KMConfigFilter::loadConfig(KConfig *conf)
     KMPrinter *printer(it.next());
 		if (!printer->isSpecial() && !printer->isVirtual())
 		{
-			KListBox *lb = (m_plist.contains(printer->printerName()) ? m_list2 : m_list1);
-			lb->insertItem(SmallIcon(printer->pixmap()), printer->printerName());
-		}
+			KListWidget *lb = (m_plist.contains(printer->printerName()) ? m_list2 : m_list1);
+			
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setIcon(SmallIcon(printer->pixmap()));
+            item->setText(printer->printerName());
+		    lb->addItem(item);
+        }
 	}
-	m_list1->sort();
-	m_list2->sort();
+	m_list1->model()->sort(0);
+	m_list2->model()->sort(0);
 	m_locationre->setText(conf->readEntry("LocationRe"));
 }
 
@@ -121,25 +125,25 @@ void KMConfigFilter::saveConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
 	QStringList	plist;
-	for (uint i=0; i<m_list2->count(); i++)
-		plist << m_list2->text(i);
+	for (int i=0; i<m_list2->count(); i++)
+		plist << m_list2->item(i)->text();
 	conf->writeEntry("Printers", plist);
 	conf->writeEntry("LocationRe", m_locationre->text());
 }
 
-void KMConfigFilter::transfer(KListBox *from, KListBox *to)
+void KMConfigFilter::transfer(KListWidget *from, KListWidget *to)
 {
-	for (uint i=0; i<from->count();)
+	for (int i=0; i<from->count();)
 	{
-		if (from->isSelected(i))
+		if (from->item(i)->isSelected())
 		{
-			to->insertItem(*(from->pixmap(i)), from->text(i));
-			from->removeItem(i);
+			to->addItem(from->item(i)->clone());
+			delete from->takeItem(i);
 		}
 		else
 			i++;
 	}
-	to->sort();
+	to->model()->sort(0);
 }
 
 void KMConfigFilter::slotAddClicked()
@@ -154,12 +158,12 @@ void KMConfigFilter::slotRemoveClicked()
 
 void KMConfigFilter::slotSelectionChanged()
 {
-	const KListBox	*lb = static_cast<const KListBox*>(sender());
+	const KListWidget	*lb = static_cast<const KListWidget*>(sender());
 	if (!lb)
 		return;
 	QToolButton	*pb = (lb == m_list1 ? m_add : m_remove);
-	for (uint i=0; i<lb->count(); i++)
-		if (lb->isSelected(i))
+	for (int i=0; i<lb->count(); i++)
+		if (lb->item(i)->isSelected())
 		{
 			pb->setEnabled(true);
 			return;

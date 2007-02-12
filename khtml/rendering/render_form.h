@@ -41,7 +41,7 @@ class QListboxItem;
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
@@ -402,10 +402,10 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class ListBoxWidget: public KListBox, public KHTMLWidget 
+class ListBoxWidget: public KListWidget, public KHTMLWidget 
 { 
 public:
-    ListBoxWidget(QWidget* p): KListBox(p) { m_kwp->setIsRedirected(true); }
+    ListBoxWidget(QWidget* p): KListWidget(p) { m_kwp->setIsRedirected(true); }
 };
 
 class RenderSelect : public RenderFormElement

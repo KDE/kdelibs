@@ -24,7 +24,7 @@
 
 #include <qwidget.h>
 
-class KListBox;
+class KListWidget;
 class KMPrinter;
 class QPushButton;
 
@@ -50,7 +50,7 @@ protected:
 	void addButton(const QString& text, const QString& pixmap, const char *receiver);
 
 private:
-	KListBox		*m_view;
+	KListWidget		*m_view;
 	QList<QPushButton*>	m_buttons;
 	KMPrinter		*m_printer;
 };

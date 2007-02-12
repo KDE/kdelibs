@@ -47,7 +47,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <qlineedit.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -56,12 +56,12 @@
 
 #include "kfontdialog.moc"
 
-static int minimumListWidth( const Q3ListBox *list )
+static int minimumListWidth( const QListWidget *list )
 {
   int w=0;
-  for( uint i=0; i<list->count(); i++ )
+  for( int i=0; i<list->count(); i++ )
   {
-    int itemWidth = list->item(i)->width(list);
+    int itemWidth = list->visualItemRect(list->item(i)).width();
     w = qMax(w,itemWidth);
   }
   if( w == 0 ) { w = 40; }
@@ -70,9 +70,9 @@ static int minimumListWidth( const Q3ListBox *list )
   return w;
 }
 
-static int minimumListHeight( const Q3ListBox *list, int numVisibleEntry )
+static int minimumListHeight( const QListWidget *list, int numVisibleEntry )
 {
-  int w = list->count() > 0 ? list->item(0)->height(list) :
+  int w = list->count() > 0 ? list->visualItemRect(list->item(0)).height() :
     list->fontMetrics().lineSpacing();
 
   if( w < 0 ) { w = 10; }
@@ -200,7 +200,8 @@ KFontChooser::KFontChooser(QWidget *parent,
   //
   // now create the actual boxes that hold the info
   //
-  familyListBox = new KListBox( page, "familyListBox");
+  familyListBox = new KListWidget( page );
+  familyListBox->setObjectName("familyListBox");
   familyListBox->setEnabled( !diff );
   gridLayout->addWidget( familyListBox, row, 0 );
   QString fontFamilyWhatsThisText =
@@ -208,11 +209,11 @@ KFontChooser::KFontChooser(QWidget *parent,
   familyListBox->setWhatsThis(fontFamilyWhatsThisText );
   if (diff) ((QWidget *) familyCheckbox)->setWhatsThis(fontFamilyWhatsThisText );
   else ((QWidget *) familyLabel)->setWhatsThis(fontFamilyWhatsThisText );
-  connect(familyListBox, SIGNAL(highlighted(const QString &)),
+  connect(familyListBox, SIGNAL(currentTextChanged(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
   if(!fontList.isEmpty())
   {
-    familyListBox->insertStringList(fontList);
+    familyListBox->addItems(fontList);
   }
   else
   {
@@ -223,7 +224,8 @@ KFontChooser::KFontChooser(QWidget *parent,
   familyListBox->setMinimumHeight(
     minimumListHeight( familyListBox, visibleListSize  ) );
 
-  styleListBox = new KListBox( page, "styleListBox");
+  styleListBox = new KListWidget( page );
+  styleListBox->setObjectName("styleListBox");
   styleListBox->setEnabled( !diff );
   gridLayout->addWidget(styleListBox, row, 1);
   QString fontStyleWhatsThisText =
@@ -231,19 +233,20 @@ KFontChooser::KFontChooser(QWidget *parent,
   styleListBox->setWhatsThis(fontStyleWhatsThisText );
   if (diff) ((QWidget *)styleCheckbox)->setWhatsThis(fontFamilyWhatsThisText );
   else ((QWidget *)styleLabel)->setWhatsThis( fontFamilyWhatsThisText );
-  styleListBox->insertItem(i18n("Regular"));
-  styleListBox->insertItem(i18n("Italic"));
-  styleListBox->insertItem(i18n("Bold"));
-  styleListBox->insertItem(i18n("Bold Italic"));
+  styleListBox->addItem(i18n("Regular"));
+  styleListBox->addItem(i18n("Italic"));
+  styleListBox->addItem(i18n("Bold"));
+  styleListBox->addItem(i18n("Bold Italic"));
   styleListBox->setMinimumWidth( minimumListWidth( styleListBox ) );
   styleListBox->setMinimumHeight(
     minimumListHeight( styleListBox, visibleListSize  ) );
 
-  connect(styleListBox, SIGNAL(highlighted(const QString &)),
+  connect(styleListBox, SIGNAL(currentTextChanged(const QString &)),
 	  SLOT(style_chosen_slot(const QString &)));
 
 
-  sizeListBox = new KListBox( page, "sizeListBox");
+  sizeListBox = new KListWidget( page );
+  sizeListBox->setObjectName("sizeListBox");
   sizeOfFont = new KIntNumInput( page); // "sizeOfFont");
   sizeOfFont->setMinimum(4);
 
@@ -297,9 +300,15 @@ KFontChooser::KFontChooser(QWidget *parent,
   connect( sizeOfFont, SIGNAL( valueChanged(int) ),
            SLOT(size_value_slot(int)));
 
-  connect( sizeListBox, SIGNAL(highlighted(const QString&)),
+  connect( sizeListBox, SIGNAL(currentTextChanged(const QString&)),
 	   SLOT(size_chosen_slot(const QString&)) );
-  sizeListBox->setSelected(sizeListBox->findItem(QString::number(10)), true); // default to 10pt.
+ 
+  // default to 10pt font size 
+  QList<QListWidgetItem*> list = sizeListBox->findItems(QString::number(10),Qt::MatchContains);
+  if ( list.count() > 0 )
+      sizeListBox->setCurrentItem(list.first());
+
+  //sizeListBox->setSelected(sizeListBox->findItem(QString::number(10)), true); // default to 10pt.
 
   row ++;
 
@@ -374,7 +383,7 @@ void KFontChooser::fillSizeList() {
   };
   for(int i = 0; c[i]; ++i)
   {
-    sizeListBox->insertItem(QString::number(c[i]));
+    sizeListBox->addItem(QString::number(c[i]));
   }
 }
 
@@ -509,22 +518,25 @@ void KFontChooser::family_chosen_slot(const QString& family)
         if(pos >=0) style = style.replace(pos,6,i18n("Regular"));
         pos = style.indexOf("Oblique");
         if(pos >=0) style = style.replace(pos,7,i18n("Italic"));
-        if(!styleListBox->findItem(style)) {
-            styleListBox->insertItem(i18n(style.toUtf8()));
+        
+        QList<QListWidgetItem*> styleList = styleListBox->findItems(style,Qt::MatchContains);
+        if(!styleList.isEmpty()) {
+            styleListBox->addItem(i18n(style.toUtf8()));
             currentStyles.insert(i18n(style.toUtf8()), *it);
         }
     }
     if(styleListBox->count()==0) {
-        styleListBox->insertItem(i18n("Regular"));
+        styleListBox->addItem(i18n("Regular"));
         currentStyles.insert(i18n("Regular"), "Normal");
     }
 
     styleListBox->blockSignals(true);
-    Q3ListBoxItem *item = styleListBox->findItem(selectedStyle);
-    if (item)
-       styleListBox->setSelected(styleListBox->findItem(selectedStyle), true);
+
+    QList<QListWidgetItem*> selectedStyleList = styleListBox->findItems(selectedStyle,Qt::MatchContains);
+    if (!selectedStyleList.isEmpty())
+       styleListBox->setCurrentItem(selectedStyleList.first());
     else
-       styleListBox->setSelected(0, true);
+       styleListBox->setCurrentItem(0);
     styleListBox->blockSignals(false);
 
     style_chosen_slot(QString());
@@ -547,7 +559,7 @@ void KFontChooser::style_chosen_slot(const QString& style)
 {
     QString currentStyle;
     if (style.isEmpty())
-       currentStyle = styleListBox->currentText();
+       currentStyle = styleListBox->currentItem()->text();
     else
        currentStyle = style;
 
@@ -555,29 +567,33 @@ void KFontChooser::style_chosen_slot(const QString& style)
 
     sizeListBox->clear();
     QFontDatabase dbase;
-    if(dbase.isSmoothlyScalable(familyListBox->currentText(), currentStyles[currentStyle])) {  // is vector font
+    if(dbase.isSmoothlyScalable(familyListBox->currentItem()->text(), currentStyles[currentStyle])) {  // is vector font
         //sampleEdit->setPaletteBackgroundPixmap( VectorPixmap ); // TODO
         fillSizeList();
     } else {                                // is bitmap font.
         //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
-        QList<int> sizes = dbase.smoothSizes(familyListBox->currentText(), currentStyles[currentStyle]);
+        QList<int> sizes = dbase.smoothSizes(familyListBox->currentItem()->text(), currentStyles[currentStyle]);
         if(sizes.count() > 0) {
             QList<int>::const_iterator it;
             diff=1000;
             for ( it = sizes.constBegin(); it != sizes.constEnd(); ++it ) {
                 if(*it <= selectedSize || diff > *it - selectedSize) diff = selectedSize - *it;
-                sizeListBox->insertItem(QString::number(*it));
+                sizeListBox->addItem(QString::number(*it));
             }
-        } else // there are times QT does not provide the list..
+        } else // there are times Qt does not provide the list..
             fillSizeList();
     }
     sizeListBox->blockSignals(true);
-    sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
+    
+    QList<QListWidgetItem*> selectedSizeList = sizeListBox->findItems(QString::number(selectedSize),Qt::MatchContains);
+    if ( !selectedSizeList.isEmpty() )
+        sizeListBox->setCurrentItem(selectedSizeList.first());
+
     sizeListBox->blockSignals(false);
-    sizeListBox->ensureCurrentVisible();
+    //TODO - KDE4 : sizeListBox->scrollTo(sizeListBox->currentItem());
 
     //kDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
-    selFont = dbase.font(familyListBox->currentText(), currentStyles[currentStyle], selectedSize-diff);
+    selFont = dbase.font(familyListBox->currentItem()->text(), currentStyles[currentStyle], selectedSize-diff);
     emit fontSelected(selFont);
     if (!style.isEmpty())
         selectedStyle = style;
@@ -610,8 +626,8 @@ void KFontChooser::setupDisplay()
 
   numEntries = familyListBox->count();
   for (i = 0; i < numEntries; i++) {
-    if (family == familyListBox->text(i).toLower()) {
-      familyListBox->setCurrentItem(i);
+    if (family == familyListBox->item(i)->text().toLower()) {
+      familyListBox->setCurrentRow(i);
       break;
     }
   }
@@ -623,8 +639,8 @@ void KFontChooser::setupDisplay()
     {
       family = family.left(family.indexOf('[')).trimmed();
       for (i = 0; i < numEntries; i++) {
-        if (family == familyListBox->text(i).toLower()) {
-          familyListBox->setCurrentItem(i);
+        if (family == familyListBox->item(i)->text().toLower()) {
+          familyListBox->setCurrentRow(i);
           break;
         }
       }
@@ -636,8 +652,8 @@ void KFontChooser::setupDisplay()
   {
     QString fallback = family+" [";
     for (i = 0; i < numEntries; i++) {
-      if (familyListBox->text(i).toLower().startsWith(fallback)) {
-        familyListBox->setCurrentItem(i);
+      if (familyListBox->item(i)->text().toLower().startsWith(fallback)) {
+        familyListBox->setCurrentRow(i);
         break;
       }
     }
@@ -647,8 +663,8 @@ void KFontChooser::setupDisplay()
   if ( (i == numEntries) )
   {
     for (i = 0; i < numEntries; i++) {
-      if (familyListBox->text(i).toLower().startsWith(family)) {
-        familyListBox->setCurrentItem(i);
+      if (familyListBox->item(i)->text().toLower().startsWith(family)) {
+        familyListBox->setCurrentRow(i);
         break;
       }
     }
@@ -656,14 +672,14 @@ void KFontChooser::setupDisplay()
 
   // Fall back in case nothing matched. Otherwise, diff doesn't work
   if ( i == numEntries )
-    familyListBox->setCurrentItem( 0 );
+    familyListBox->setCurrentRow( 0 );
 
-  styleListBox->setCurrentItem(style);
+  styleListBox->setCurrentRow(style);
 
   numEntries = sizeListBox->count();
   for (i = 0; i < numEntries; i++){
-    if (sizeStr == sizeListBox->text(i)) {
-      sizeListBox->setCurrentItem(i);
+    if (sizeStr == sizeListBox->item(i)->text()) {
+      sizeListBox->setCurrentRow(i);
       break;
     }
   }
@@ -738,7 +754,7 @@ void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
   QStringList fontList;
   getFontList(fontList, onlyFixedFonts?FixedWidthFonts:0);
   familyListBox->clear();
-  familyListBox->insertStringList(fontList);
+  familyListBox->addItems(fontList);
 }
 
 void KFontChooser::showXLFDArea(bool show)

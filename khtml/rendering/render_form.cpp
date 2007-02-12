@@ -542,7 +542,7 @@ void RenderLineEdit::slotReturnPressed()
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = widget()->completionBox(false);
 
-    if ( box && box->isVisible() && box->currentItem() != -1 ) {
+    if ( box && box->isVisible() && box->currentRow() != -1 ) {
       box->hide();
       return;
     }
@@ -1033,7 +1033,9 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
+            static_cast<KListWidget*>(m_widget)->setSelectionMode(m_multiple ? 
+                                            QListWidget::ExtendedSelection 
+                                          : QListWidget::SingleSelection);
         }
         m_selectionChanged = true;
         m_optionsChanged = true;
@@ -1047,7 +1049,7 @@ void RenderSelect::updateFromElement()
         int listIndex;
 
         if(m_useListBox) {
-            static_cast<KListBox*>(m_widget)->clear();
+            static_cast<KListWidget*>(m_widget)->clear();
         }
 
         else
@@ -1060,10 +1062,10 @@ void RenderSelect::updateFromElement()
                     text = "";
 
                 if(m_useListBox) {
-                    Q3ListBoxText *item = new Q3ListBoxText(QString(text.implementation()->s, text.implementation()->l));
-                    static_cast<KListBox*>(m_widget)
-                        ->insertItem(item, listIndex);
-                    item->setSelectable(false);
+                    QListWidgetItem *item = new QListWidgetItem(QString(text.implementation()->s, text.implementation()->l));
+                    static_cast<KListWidget*>(m_widget)
+                        ->insertItem(listIndex,item);
+                    item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
                 }
                 else {
                     static_cast<KComboBox*>(m_widget)
@@ -1089,11 +1091,12 @@ void RenderSelect::updateFromElement()
                 }
 
                 if(m_useListBox) {
-                    KListBox *l = static_cast<KListBox*>(m_widget);
-                    l->insertItem(text, listIndex);
+                    KListWidget *l = static_cast<KListWidget*>(m_widget);
+                    l->insertItem(listIndex,text);
                     DOMString disabled = optElem->getAttribute(ATTR_DISABLED);
                     if (!disabled.isNull() && l->item( listIndex )) {
-                        l->item( listIndex )->setSelectable( false );
+                        l->item( listIndex )->setFlags( l->item(listIndex)->flags() 
+                                                            & ~Qt::ItemIsSelectable );
                     }
                 }  else
                     static_cast<KComboBox*>(m_widget)->insertItem(listIndex, text);
@@ -1150,15 +1153,15 @@ void RenderSelect::layout( )
 
     // calculate size
     if(m_useListBox) {
-        KListBox* w = static_cast<KListBox*>(m_widget);
+        KListWidget* w = static_cast<KListWidget*>(m_widget);
 
-        Q3ListBoxItem* p = w->firstItem();
         int width = 0;
         int height = 0;
-        while(p) {
-            width = qMax(width, p->width(p->listBox()));
-            height = qMax(height, p->height(p->listBox()));
-            p = p->next();
+
+        for ( int rowIndex = 0 ; rowIndex < w->count() ; rowIndex++ ) {
+            QListWidgetItem* p = w->item(0);
+            width = qMax(width, p->listWidget()->visualItemRect(p).width());
+            height = qMax(height, p->listWidget()->visualItemRect(p).height());
         }
         if ( !height )
             height = w->fontMetrics().height();
@@ -1172,7 +1175,7 @@ void RenderSelect::layout( )
         // the average of that is IMHO qMin(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = qMin(static_cast<KListBox*>(m_widget)->count(), 10u);
+            size = qMin(static_cast<KListWidget*>(m_widget)->count(), 10);
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = size*height + 2*w->frameWidth();
@@ -1275,7 +1278,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
         // again with updateSelection.
         if ( listItems[i]->id() == ID_OPTION )
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
-                ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
+                ->m_selected = static_cast<KListWidget*>( m_widget )->item(i)->isSelected();
 
     ref();
     element()->onChange();
@@ -1290,7 +1293,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 ListBoxWidget* RenderSelect::createListBox()
 {
     ListBoxWidget *lb = new ListBoxWidget(view()->widget());
-    lb->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
+    lb->setSelectionMode(m_multiple ? QListWidget::ExtendedSelection : QListWidget::SingleSelection);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
@@ -1311,9 +1314,9 @@ void RenderSelect::updateSelection()
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
-        KListBox *listBox = static_cast<KListBox*>(m_widget);
+        KListWidget *listBox = static_cast<KListWidget*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
-            listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
+            listBox->item(i)->setSelected(listItems[i]->id() == ID_OPTION &&
                                  static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {

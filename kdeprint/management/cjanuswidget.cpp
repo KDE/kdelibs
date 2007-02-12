@@ -17,15 +17,18 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "cjanuswidget.h"
-
-#include <QStackedWidget>
-#include <qlabel.h>
-#include <qpainter.h>
-#include <klistbox.h>
-#include <qlayout.h>
-#include <kseparator.h>
 #include <QEvent>
+#include <QLabel>
+#include <QLayout>
+#include <QPainter>
+#include <QScrollBar>
+#include <QStackedWidget>
+#include <QItemDelegate>
+
+#include <klistwidget.h>
+#include <kseparator.h>
+
+#include "cjanuswidget.h"
 
 class CJanusWidget::CPage
 {
@@ -39,51 +42,65 @@ public:
 
 //***********************************************************************************
 
-class CJanusWidget::CListBoxItem : public Q3ListBoxItem
+class CJanusWidget::CListBoxItem : public QListWidgetItem
 {
 public:
-	CListBoxItem(Q3ListBox *lb, Q3ListBoxItem *after, const QPixmap& pix, const QString& text);
-	int height(const Q3ListBox*) const;
-	int width(const Q3ListBox*) const;
-
-protected:
-	void paint(QPainter*);
+	CListBoxItem(QListWidget *lb, QListWidgetItem *after, const QPixmap& pix, const QString& text);
+	int height(const QListWidget*) const;
+	int width(const QListWidget*) const;
 
 private:
 	QPixmap	m_pix;
 };
 
-CJanusWidget::CListBoxItem::CListBoxItem(Q3ListBox *lb, Q3ListBoxItem *after, const QPixmap& pix, const QString& text)
-: Q3ListBoxItem(lb, after), m_pix(pix)
+class CJanusWidget::CListBoxItemDelegate : public QItemDelegate
 {
-	setText(text);
+public:
+    CListBoxItemDelegate(QObject* parent) : QItemDelegate(parent){}
+    
+    virtual void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
+};
+
+CJanusWidget::CListBoxItem::CListBoxItem(QListWidget *lb, QListWidgetItem *after, const QPixmap& pix, const QString& text)
+: QListWidgetItem(), m_pix(pix)
+{
+	lb->insertItem( lb->row(after) , this );
+    setText(text);
 }
 
-int CJanusWidget::CListBoxItem::height(const Q3ListBox *lb) const
+int CJanusWidget::CListBoxItem::height(const QListWidget *lb) const
 {
 	return (m_pix.height() + lb->fontMetrics().lineSpacing() + 12);
 }
 
-int CJanusWidget::CListBoxItem::width(const Q3ListBox *lb) const
+int CJanusWidget::CListBoxItem::width(const QListWidget *lb) const
 {
 	int	w = qMax(lb->fontMetrics().width(text()),m_pix.width());
 	return (w + 10);
 }
 
-void CJanusWidget::CListBoxItem::paint(QPainter *p)
+void CJanusWidget::CListBoxItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
+        const QModelIndex& index) const
 {
-	int	w1 = (listBox()->contentsWidth()-m_pix.width())/2;
 
-	p->drawPixmap(w1,5,m_pix);
-	p->drawText(0,7+m_pix.height(),listBox()->contentsWidth(),p->fontMetrics().lineSpacing(),Qt::AlignHCenter,text());
+    const QString text = index.data(Qt::DisplayRole).value<QString>();
+
+    const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
+
+	int	w1 = (option.rect.width()-pixmap.width())/2;
+	painter->drawPixmap(w1,5,pixmap);
+	painter->drawText(0,7+pixmap.height(),option.rect.width(),painter->fontMetrics().lineSpacing(),Qt::AlignHCenter,text);
+
 }
+
+
 
 //***********************************************************************************
 
-class CJanusWidget::CListBox : public KListBox
+class CJanusWidget::CListBox : public KListWidget
 {
 public:
-	CListBox(QWidget *parent = 0, const char *name = 0);
+	CListBox(QWidget *parent = 0);
 	~CListBox();
 
 	void computeWidth();
@@ -92,10 +109,12 @@ protected:
 	virtual bool eventFilter(QObject*, QEvent*);
 };
 
-CJanusWidget::CListBox::CListBox(QWidget *parent, const char *name)
-: KListBox(parent,name)
+CJanusWidget::CListBox::CListBox(QWidget *parent)
+: KListWidget(parent)
 {
 	verticalScrollBar()->installEventFilter(this);
+
+    setItemDelegate( new CJanusWidget::CListBoxItemDelegate(this) );
 }
 
 CJanusWidget::CListBox::~CListBox()
@@ -106,18 +125,18 @@ bool CJanusWidget::CListBox::eventFilter(QObject *o, QEvent *e)
 {
 	if (e->type() == QEvent::Show || e->type() == QEvent::Hide)
 		computeWidth();
-	return KListBox::eventFilter(o,e);
+	return KListWidget::eventFilter(o,e);
 }
 
 void CJanusWidget::CListBox::computeWidth()
 {
-	Q3ListBoxItem	*item = firstItem();
 	int	w(40);
-	while (item)
-	{
-		w = qMax(w,item->width(this));
-		item = item->next();
-	}
+    for (int rowIndex = 0 ; rowIndex < count() ; rowIndex++)
+    {
+	    QListWidgetItem	*listItem = item(rowIndex);
+		w = qMax(w,visualItemRect(listItem).width());
+    }
+
 	if (verticalScrollBar()->isVisible())
 		w += verticalScrollBar()->sizeHint().width();
 	w += (frameWidth()*2);
@@ -143,7 +162,7 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 	f = m_iconlist->font();
 	f.setBold(true);
 	m_iconlist->setFont(f);
-	connect(m_iconlist,SIGNAL(selectionChanged(Q3ListBoxItem*)),SLOT(slotSelected(Q3ListBoxItem*)));
+	connect(m_iconlist,SIGNAL(selectionChanged(QListWidgetItem*)),SLOT(slotSelected(QListWidgetItem*)));
 
 	m_empty = new QWidget( this );
         m_empty->setObjectName( "Empty" );
@@ -181,7 +200,7 @@ void CJanusWidget::addPage(QWidget *w, const QString& text, const QString& heade
 	m_stack->insertWidget(m_pages.count(),w);
 
 	if (m_iconlist->count() == 1)
-		m_iconlist->setSelected(page->m_item,true);
+		page->m_item->setSelected(true);
 }
 
 void CJanusWidget::enablePage(QWidget *w)
@@ -192,7 +211,7 @@ void CJanusWidget::enablePage(QWidget *w)
 		page->m_item = new CListBoxItem(m_iconlist,findPrevItem(page),page->m_pixmap,page->m_text);
 		m_iconlist->computeWidth();
 		if (m_iconlist->count() == 1)
-			m_iconlist->setSelected(page->m_item,true);
+			page->m_item->setSelected(true);
 	}
 }
 
@@ -201,19 +220,19 @@ void CJanusWidget::disablePage(QWidget *w)
 	CPage	*page = findPage(w);
 	if (page && page->m_item)
 	{
-		bool	needReselect(m_iconlist->isSelected(page->m_item));
+		bool	needReselect(page->m_item->isSelected());
 		delete page->m_item;
 		page->m_item = 0;
 		m_iconlist->computeWidth();
 		if (needReselect)
 			if (m_iconlist->count() > 0)
-				m_iconlist->setSelected(m_iconlist->firstItem(),true);
+                m_iconlist->item(0)->setSelected(true);
 			else
 				slotSelected(0);
 	}
 }
 
-void CJanusWidget::slotSelected(Q3ListBoxItem *item)
+void CJanusWidget::slotSelected(QListWidgetItem *item)
 {
 	CPage	*page = findPage(item);
 	if (page)
@@ -240,7 +259,7 @@ CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 	return NULL;
 }
 
-CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
+CJanusWidget::CPage* CJanusWidget::findPage(QListWidgetItem *i)
 {
 	QListIterator<CPage*>	it(m_pages);
 	while(it.hasNext())
@@ -252,7 +271,7 @@ CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
 	return NULL;
 }
 
-Q3ListBoxItem* CJanusWidget::findPrevItem(CPage *p)
+QListWidgetItem* CJanusWidget::findPrevItem(CPage *p)
 {
 	QListIterator<CPage*>   it(m_pages);
 

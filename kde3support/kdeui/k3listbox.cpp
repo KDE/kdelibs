@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "klistbox.h"
+#include "k3listbox.h"
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -26,7 +26,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 
-KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
+K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WFlags f )
     : Q3ListBox( parent, name, f ), d(0)
 {
     connect( this, SIGNAL( onViewport() ),
@@ -43,7 +43,7 @@ KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KListBox::slotOnItem( Q3ListBoxItem *item )
+void K3ListBox::slotOnItem( Q3ListBoxItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
@@ -55,7 +55,7 @@ void KListBox::slotOnItem( Q3ListBoxItem *item )
     }
 }
 
-void KListBox::slotOnViewport()
+void K3ListBox::slotOnViewport()
 {
     if ( m_bChangeCursorOverItem )
         viewport()->unsetCursor();
@@ -65,7 +65,7 @@ void KListBox::slotOnViewport()
 }
 
 
-void KListBox::slotSettingsChanged(int category)
+void K3ListBox::slotSettingsChanged(int category)
 {
     if (category != KGlobalSettings::SETTINGS_MOUSE)
         return;
@@ -102,7 +102,7 @@ void KListBox::slotSettingsChanged(int category)
         viewport()->unsetCursor();
 }
 
-void KListBox::slotAutoSelect()
+void K3ListBox::slotAutoSelect()
 {
   // check that the item still exists
   if( index( m_pCurrentItem ) == -1 )
@@ -172,7 +172,7 @@ void KListBox::slotAutoSelect()
     kDebug() << "That's not supposed to happen!!!!" << endl;
 }
 
-void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
+void K3ListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
 {
   Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
@@ -192,7 +192,7 @@ void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
 // to start help or close the dialog. This functionality
 // should be done in QListView but it is not (at least now)
 //
-void KListBox::keyPressEvent(QKeyEvent *e)
+void K3ListBox::keyPressEvent(QKeyEvent *e)
 {
   if( e->key() == Qt::Key_Escape )
   {
@@ -208,21 +208,21 @@ void KListBox::keyPressEvent(QKeyEvent *e)
   }
 }
 
-void KListBox::focusOutEvent( QFocusEvent *fe )
+void K3ListBox::focusOutEvent( QFocusEvent *fe )
 {
   m_pAutoSelect->stop();
 
   Q3ListBox::focusOutEvent( fe );
 }
 
-void KListBox::leaveEvent( QEvent *e )
+void K3ListBox::leaveEvent( QEvent *e )
 {
   m_pAutoSelect->stop();
 
   Q3ListBox::leaveEvent( e );
 }
 
-void KListBox::contentsMousePressEvent( QMouseEvent *e )
+void K3ListBox::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionMode() == Extended) && (e->modifiers() & Qt::ShiftModifier) && !(e->modifiers() & Qt::ControlModifier) ) {
     bool block = signalsBlocked();
@@ -236,7 +236,7 @@ void KListBox::contentsMousePressEvent( QMouseEvent *e )
   Q3ListBox::contentsMousePressEvent( e );
 }
 
-void KListBox::contentsMouseDoubleClickEvent ( QMouseEvent * e )
+void K3ListBox::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
   Q3ListBox::contentsMouseDoubleClickEvent( e );
 
@@ -250,10 +250,10 @@ void KListBox::contentsMouseDoubleClickEvent ( QMouseEvent * e )
   }
 }
 
-void KListBox::slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos )
+void K3ListBox::slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos )
 {
   if( (btn == Qt::LeftButton) && item )
     emitExecute( item, pos );
 }
 
-#include "klistbox.moc"
+#include "k3listbox.moc"

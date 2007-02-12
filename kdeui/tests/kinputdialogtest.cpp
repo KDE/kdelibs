@@ -8,7 +8,7 @@
 #include <kaboutdata.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 
 #include <qstring.h>
 #include <qvalidator.h>

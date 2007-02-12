@@ -37,12 +37,12 @@
  * settings.  If you want to get informed when the user selects
  * something connect to the QListBox::selectionChanged() signal.
  **/
-class KDEUI_EXPORT KListBox : public Q3ListBox
+class KDEUI_EXPORT K3ListBox : public Q3ListBox
 {
     Q_OBJECT
 
 public:
-  explicit KListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  explicit K3ListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
 Q_SIGNALS:
 
@@ -119,8 +119,8 @@ private Q_SLOTS:
   void slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos );
 
 private:
-  class KListBoxPrivate;
-  KListBoxPrivate* const d;
+  class K3ListBoxPrivate;
+  K3ListBoxPrivate* const d;
 };
 
 #endif

@@ -26,7 +26,7 @@
 
 class QStackedWidget;
 class QLabel;
-class Q3ListBoxItem;
+class QListWidgetItem;
 
 class CJanusWidget : public QWidget
 {
@@ -41,17 +41,18 @@ public:
 	void clearPages();
 
 protected Q_SLOTS:
-	void slotSelected(Q3ListBoxItem*);
+	void slotSelected(QListWidgetItem*);
 
 public:
 	class CPage;
 	class CListBox;
 	class CListBoxItem;
+    class CListBoxItemDelegate;
 
 private:
 	CPage* findPage(QWidget *w);
-	CPage* findPage(Q3ListBoxItem *i);
-	Q3ListBoxItem* findPrevItem(CPage*);
+	CPage* findPage(QListWidgetItem *i);
+	QListWidgetItem* findPrevItem(CPage*);
 
 private:
 	QList<CPage*>		m_pages;

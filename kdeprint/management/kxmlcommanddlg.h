@@ -31,7 +31,7 @@ class QLabel;
 class QLineEdit;
 class QComboBox;
 class QToolButton;
-class KListBox;
+class KListWidget;
 class Q3ListBoxItem;
 class QTextEdit;
 class QCheckBox;
@@ -116,7 +116,7 @@ private:
 	QLineEdit	*m_description;
 	QLabel		*m_idname;
 	QComboBox	*m_mimetype;
-	KListBox	*m_availablemime, *m_selectedmime;
+	KListWidget	*m_availablemime, *m_selectedmime;
 	QToolButton	*m_addmime, *m_removemime;
 	K3ListView	*m_requirements;
 	QToolButton	*m_removereq, *m_addreq;

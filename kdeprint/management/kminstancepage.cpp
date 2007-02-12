@@ -31,7 +31,7 @@
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
@@ -40,7 +40,7 @@
 KMInstancePage::KMInstancePage(QWidget *parent)
     : QWidget(parent)
 {
-	m_view = new KListBox(this);
+	m_view = new KListWidget(this);
 	m_printer = 0;
 
 	initActions();
@@ -98,7 +98,9 @@ void KMInstancePage::initActions()
 
 void KMInstancePage::setPrinter(KMPrinter *p)
 {
-	QString	oldText = m_view->currentText();
+    Q_ASSERT( m_view->currentItem() );
+
+	QString	oldText = m_view->currentItem()->text();
 
 	m_view->clear();
 	m_printer = p;
@@ -113,9 +115,13 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		{
       KMPrinter *printer(it.next());
 			QStringList	pair = printer->name().split('/', QString::SkipEmptyParts);
-			m_view->insertItem(SmallIcon((printer->isSoftDefault() ? "exec" : "fileprint")),(pair.count() > 1 ? pair[1] : i18n("(Default)")));
+			
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setIcon(SmallIcon((printer->isSoftDefault() ? "exec" : "fileprint")));
+            item->setText(pair.count() > 1 ? pair[1] : i18n("(Default)"));
+            m_view->addItem(item);
 		}
-		m_view->sort();
+		m_view->model()->sort(0);
 	}
 
 	for (QList<QPushButton*>::ConstIterator it=m_buttons.begin(); it!=m_buttons.end(); ++it)
@@ -124,11 +130,11 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 
 	//iif (!oldText.isEmpty())
 	//{
-		Q3ListBoxItem	*item = m_view->findItem(oldText);
+		QListWidgetItem	*item = m_view->findItems(oldText,Qt::MatchContains).value(0);
 		if (!item)
-			item = m_view->findItem(i18n("(Default)"));
+			item = m_view->findItems(i18n("(Default)"),Qt::MatchContains).value(0);
 		if (item)
-			m_view->setSelected(item,true);
+			item->setSelected(true);
 	//}
 }
 
@@ -160,7 +166,9 @@ void KMInstancePage::slotRemove()
 	KMTimer::self()->hold();
 	bool	reload(false);
 
-	QString	src = m_view->currentText();
+    Q_ASSERT(m_view->currentItem());
+
+	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
 	{
 	        QString msg = (src != i18n("(Default)") ? i18n("Do you really want to remove instance %1?", src) : i18n("You can not remove the default instance. However all settings of %1 will be discarded. Continue?", src));
@@ -181,7 +189,9 @@ void KMInstancePage::slotCopy()
 {
 	KMTimer::self()->hold();
 
-	QString	src = m_view->currentText();
+    Q_ASSERT( m_view->currentItem() );
+
+	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
 	{
 		bool	ok(false);
@@ -210,13 +220,15 @@ void KMInstancePage::slotSettings()
 {
 	KMTimer::self()->hold();
 
-	QString	src = m_view->currentText();
+    Q_ASSERT( m_view->currentItem() );
+
+	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
 	{
 		if (src == i18n("(Default)")) src.clear();
 		KMPrinter	*pr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
 		if ( !pr )
-			KMessageBox::error( this, i18n( "Unable to find instance %1." ,  m_view->currentText() ) );
+			KMessageBox::error( this, i18n( "Unable to find instance %1." ,  m_view->currentItem()->text() ) );
 		else if ( !pr->isSpecial() && !KMFactory::self()->manager()->completePrinterShort( pr ) )
 			KMessageBox::error( this, i18n( "Unable to retrieve printer information. Message from printing system: %1." ,  KMFactory::self()->manager()->errorMsg() ) );
 		else
@@ -244,7 +256,9 @@ void KMInstancePage::slotDefault()
 {
 	KMTimer::self()->hold();
 
-	QString	src = m_view->currentText();
+    Q_ASSERT( m_view->currentItem() );
+
+	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
 	{
 		if (src == i18n("(Default)"))
@@ -260,7 +274,9 @@ void KMInstancePage::slotTest()
 {
 	KMTimer::self()->hold();
 
-	QString	src = m_view->currentText();
+    Q_ASSERT( m_view->currentItem() );
+
+	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
 	{
 		if (src == i18n("(Default)"))

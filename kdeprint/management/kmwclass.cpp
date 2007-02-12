@@ -26,7 +26,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qtoolbutton.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kiconloader.h>
 
@@ -37,10 +37,10 @@ KMWClass::KMWClass(QWidget *parent)
 	m_title = i18n("Class Composition");
 	m_nextpage = KMWizard::Name;
 
-	m_list1 = new KListBox(this);
-	m_list1->setSelectionMode(Q3ListBox::Extended);
-	m_list2 = new KListBox(this);
-	m_list2->setSelectionMode(Q3ListBox::Extended);
+	m_list1 = new KListWidget(this);
+	m_list1->setSelectionMode(QListWidget::ExtendedSelection);
+	m_list2 = new KListWidget(this);
+	m_list2->setSelectionMode(QListWidget::ExtendedSelection);
 
 	QToolButton	*add = new QToolButton(this);
 	QToolButton	*remove = new QToolButton(this);
@@ -104,47 +104,60 @@ void KMWClass::initPrinter(KMPrinter *p)
 		KMPrinter *printer(it.next());
 		if (printer->instanceName().isEmpty() && !printer->isClass(true) &&
 			!printer->isSpecial() && !members.contains(printer->name()))
-			m_list1->insertItem(SmallIcon(printer->pixmap()), printer->name());
+        {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setIcon(SmallIcon(printer->pixmap()));
+            item->setText(printer->name());
+			m_list1->addItem(item);
+        }
 	}
-	m_list1->sort();
+	m_list1->model()->sort(0);
 
 	// set class printers
 	m_list2->clear();
 	for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
 	{
 		KMPrinter	*pr = mgr->findPrinter(*it);
-		if (pr) m_list2->insertItem(SmallIcon(pr->pixmap()), *it);
+		if (pr) 
+        {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setIcon(SmallIcon(pr->pixmap()));
+            item->setText(*it);
+            m_list2->addItem(item);
+        }
 	}
-	m_list2->sort();
+	m_list2->model()->sort(0);
 }
 
 void KMWClass::updatePrinter(KMPrinter *p)
 {
 	QStringList	members;
-	for (uint i=0; i<m_list2->count(); i++)
+	for (int i=0; i<m_list2->count(); i++)
 		members.append(m_list2->item(i)->text());
 	p->setMembers(members);
 }
 
 void KMWClass::slotAdd()
 {
-	for (uint i=0;i<m_list1->count();i++)
-		if (m_list1->isSelected(i))
+	for (int i=0;i<m_list1->count();i++)
+		if (m_list1->item(i)->isSelected())
 		{
-			m_list2->insertItem(*(m_list1->pixmap(i)), m_list1->text(i));
-			m_list1->removeItem(i--);
+            m_list2->addItem(m_list1->item(i)->clone());
+			QListWidgetItem* item = m_list1->takeItem(i--);
+            delete item;
 		}
-	m_list2->sort();
+	m_list2->model()->sort(0);
 }
 
 void KMWClass::slotRemove()
 {
-	for (uint i=0;i<m_list2->count();i++)
-		if (m_list2->isSelected(i))
+	for (int i=0;i<m_list2->count();i++)
+		if (m_list2->item(i)->isSelected())
 		{
-			m_list1->insertItem(*(m_list2->pixmap(i)), m_list2->text(i));
-			m_list2->removeItem(i--);
+            m_list1->addItem(m_list2->item(i)->clone());
+			QListWidgetItem* item = m_list2->takeItem(i--);
+            delete item;
 		}
-	m_list1->sort();
+	m_list1->model()->sort(0);
 }
 #include "kmwclass.moc"

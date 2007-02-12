@@ -32,7 +32,7 @@ class QFont;
 class QLabel;
 class QLineEdit;
 class QStringList;
-class KListBox;
+class KListWidget;
 class KIntNumInput;
 
 /**
@@ -278,9 +278,9 @@ private:
   QCheckBox    *styleCheckbox;
   QCheckBox    *sizeCheckbox;
   QLabel       *sizeLabel;
-  KListBox     *familyListBox;
-  KListBox     *styleListBox;
-  KListBox     *sizeListBox;
+  KListWidget     *familyListBox;
+  KListWidget     *styleListBox;
+  KListWidget     *sizeListBox;
   QCheckBox    *sizeIsRelativeCheckBox;
 
   QFont        selFont;

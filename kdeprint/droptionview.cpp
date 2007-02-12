@@ -25,7 +25,7 @@
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qlabel.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kbuttongroup.h>
 #include <qradiobutton.h>
 #include <QStackedWidget>
@@ -201,7 +201,7 @@ void OptionStringView::setValue(const QString& val)
 OptionListView::OptionListView(QWidget *parent)
     : OptionBaseView(parent)
 {
-	m_list = new KListBox(this);
+	m_list = new KListWidget(this);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);
@@ -220,7 +220,7 @@ void OptionListView::setOption(DrBase *opt)
 		m_choices.clear();
                 foreach (DrBase* choice, static_cast<DrListOption*>(opt)->choices())
 		{
-			m_list->insertItem(choice->get("text"));
+			m_list->addItem(choice->get("text"));
 			m_choices.append(choice->name());
 		}
 		blockSS = false;
@@ -230,14 +230,14 @@ void OptionListView::setOption(DrBase *opt)
 
 void OptionListView::setValue(const QString& val)
 {
-	m_list->setCurrentItem(m_choices.indexOf(val));
+	m_list->setCurrentRow(m_choices.indexOf(val));
 }
 
 void OptionListView::slotSelectionChanged()
 {
 	if (blockSS) return;
 
-	QString	s = m_choices[m_list->currentItem()];
+	QString	s = m_choices[m_list->currentRow()];
 	emit valueChanged(s);
 }
 

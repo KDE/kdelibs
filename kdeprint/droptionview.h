@@ -26,7 +26,7 @@
 class QLineEdit;
 class QSlider;
 class QLabel;
-class KListBox;
+class KListWidget;
 class KButtonGroup;
 class QRadioButton;
 class QStackedWidget;
@@ -91,7 +91,7 @@ protected Q_SLOTS:
 	void slotSelectionChanged();
 
 private:
-	KListBox	*m_list;
+	KListWidget	*m_list;
 	QStringList	m_choices;
 };
 

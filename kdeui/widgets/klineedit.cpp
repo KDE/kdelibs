@@ -1352,23 +1352,34 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
         if ( d->completionBox->isVisible() )
         {
-            bool wasSelected = d->completionBox->isSelected( d->completionBox->currentItem() );
-            const QString currentSelection = d->completionBox->currentText();
+            QListWidgetItem* currentItem = d->completionBox->currentItem();
+
+            bool wasSelected = false;
+            QString currentSelection;
+
+            if ( currentItem != 0 ) {
+                wasSelected = currentItem->isSelected();
+                currentSelection = currentItem->text();
+            }
+
             d->completionBox->setItems( items );
-            Q3ListBoxItem* item = d->completionBox->findItem( currentSelection, Q3ListBox::ExactMatch );
+
+            QList<QListWidgetItem*> matchedItems = d->completionBox->findItems( currentSelection , Qt::MatchExactly);
+            QListWidgetItem* matchedItem = matchedItems.isEmpty() ? 0 : matchedItems.first();
+
             // If no item is selected, that means the listbox hasn't been manipulated by the user yet,
             // because it's not possible otherwise to have no selected item. In such case make
             // always the first item current and unselected, so that the current item doesn't jump.
-            if( !item || !wasSelected )
+            if( !matchedItem || !wasSelected )
             {
                 wasSelected = false;
-                item = d->completionBox->item( 0 );
+                matchedItem = d->completionBox->item( 0 );
             }
-            if ( item )
+            if ( matchedItem )
             {
                 d->completionBox->blockSignals( true );
-                d->completionBox->setCurrentItem( item );
-                d->completionBox->setSelected( item, wasSelected );
+                d->completionBox->setCurrentItem( matchedItem );
+                matchedItem->setSelected(wasSelected);
                 d->completionBox->blockSignals( false );
             }
         }

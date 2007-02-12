@@ -21,10 +21,12 @@
 */
 
 
-#include <qapplication.h>
-#include <qcombobox.h>
-#include <qevent.h>
-#include <qstyle.h>
+#include <QApplication>
+#include <QComboBox>
+#include <QEvent>
+#include <QStyle>
+#include <QScrollBar>
+#include <QKeyEvent>
 
 #include <kdebug.h>
 #include <kconfig.h>
@@ -44,8 +46,9 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent )
- :KListBox( parent, 0, Qt::Popup ), d(new KCompletionBoxPrivate)
+ :KListWidget( parent), d(new KCompletionBoxPrivate)
 {
+    setWindowFlags(Qt::Popup);
 
     d->m_parent        = parent;
     d->tabHandling     = true;
@@ -53,7 +56,6 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     d->upwardBox       = false;
     d->emitSelected    = true;
 
-    setColumnMode( 1 );
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
 
@@ -62,17 +64,19 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     } else
         setFocusPolicy( Qt::NoFocus );
 
-    setVScrollBarMode( Auto );
-    setHScrollBarMode( AlwaysOff );
+    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    connect( this, SIGNAL( itemDoubleClicked( QListWidgetItem * )),
+             SLOT( slotActivated( QListWidgetItem * )) );
 
-    connect( this, SIGNAL( doubleClicked( Q3ListBoxItem * )),
-             SLOT( slotActivated( Q3ListBoxItem * )) );
+#warning "Check if this workaround can be removed in KDE 4"
 
     // grmbl, just QListBox workarounds :[ Thanks Volker.
-    connect( this, SIGNAL( currentChanged( Q3ListBoxItem * )),
+    connect( this, SIGNAL( currentItemChanged( QListWidgetItem * , QListWidgetItem * )),
              SLOT( slotCurrentChanged() ));
-    connect( this, SIGNAL( clicked( Q3ListBoxItem * )),
-             SLOT( slotItemClicked( Q3ListBoxItem * )) );
+    connect( this, SIGNAL( itemClicked( QListWidgetItem * )),
+             SLOT( slotItemClicked( QListWidgetItem * )) );
 }
 
 KCompletionBox::~KCompletionBox()
@@ -85,17 +89,17 @@ QStringList KCompletionBox::items() const
 {
     QStringList list;
 
-    const Q3ListBoxItem* currItem = firstItem();
+    for (int i = 0 ; i < count() ; i++)
+    {
+        const QListWidgetItem* currItem = item(i);
 
-    while (currItem) {
         list.append(currItem->text());
-        currItem = currItem->next();
     }
 
     return list;
 }
 
-void KCompletionBox::slotActivated( Q3ListBoxItem *item )
+void KCompletionBox::slotActivated( QListWidgetItem *item )
 {
     if ( !item )
         return;
@@ -141,7 +145,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     case Qt::Key_Up:
                         // If there is no selected item and we've popped up above
                         // our parent, select the first item when they press up.
-                        if ( selectedItem() ||
+                        if ( !selectedItems().isEmpty() ||
                              mapToGlobal( QPoint( 0, 0 ) ).y() >
                              d->m_parent->mapToGlobal( QPoint( 0, 0 ) ).y() )
                             up();
@@ -248,14 +252,16 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
         if ( !d->emitSelected && currentItem() && !qobject_cast<QScrollBar*>(o) )
         {
-          emit highlighted( currentText() );
+          Q_ASSERT( currentItem() );
+
+          emit currentTextChanged( currentItem()->text() );
           hide();
           ev->accept();  // Consume the mouse click event...
           return true;
         }
     }
 
-    return KListBox::eventFilter( o, e );
+    return KListWidget::eventFilter( o, e );
 }
 
 
@@ -264,7 +270,7 @@ void KCompletionBox::popup()
     if ( count() == 0 )
         hide();
     else {
-        ensureCurrentVisible();
+        //TODO KDE 4 - Port: ensureCurrentVisible();
         bool block = signalsBlocked();
         blockSignals( true );
         setCurrentItem( 0 );
@@ -330,7 +336,7 @@ void KCompletionBox::show()
     // of the parent, and calls hide() - and this hide() happen in the middle
     // of show(), causing inconsistent state. I'll try to submit a Qt patch too.
     qApp->sendPostedEvents();
-    KListBox::show();
+    KListWidget::show();
 }
 
 void KCompletionBox::hide()
@@ -338,17 +344,20 @@ void KCompletionBox::hide()
     if ( d->m_parent )
         qApp->removeEventFilter( this );
     d->cancelText.clear();
-    KListBox::hide();
+    KListWidget::hide();
 }
 
 QRect KCompletionBox::calculateGeometry() const
 {
     int x = 0, y = 0;
-    int ih = itemHeight();
+
+    Q_ASSERT( visualItemRect(item(0)).isValid() );
+
+    int ih = visualItemRect(item(0)).height();
     int h = qMin( 15 * ih, (int) count() * ih ) + 2*frameWidth();
 
-    int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
-    w = qMax( KListBox::minimumSizeHint().width(), w );
+    int w = (d->m_parent) ? d->m_parent->width() : KListWidget::minimumSizeHint().width();
+    w = qMax( KListWidget::minimumSizeHint().width(), w );
 
   //### M.O.: Qt4 doesn't actually honor SC_ComboBoxListBoxPopup ???
 #if 0
@@ -395,17 +404,17 @@ QSize KCompletionBox::sizeHint() const
 
 void KCompletionBox::down()
 {
-    int i = currentItem();
+    int i = currentRow();
 
     if ( i == 0 && d->down_workaround ) {
         d->down_workaround = false;
-        setCurrentItem( 0 );
-        setSelected( 0, true );
-        emit highlighted( currentText() );
+        setCurrentRow( 0 );
+        item(0)->setSelected(true);
+        emit currentTextChanged( currentItem()->text() );
     }
 
     else if ( i < (int) count() - 1 )
-        setCurrentItem( i + 1 );
+        setCurrentRow( i + 1 );
 }
 
 void KCompletionBox::up()
@@ -416,16 +425,19 @@ void KCompletionBox::up()
 
 void KCompletionBox::pageDown()
 {
-    int i = currentItem() + numItemsVisible();
-    i = i > (int)count() - 1 ? (int)count() - 1 : i;
-    setCurrentItem( i );
+    //int i = currentItem() + numItemsVisible();
+    //i = i > (int)count() - 1 ? (int)count() - 1 : i;
+    //setCurrentRow( i );
+    moveCursor(QAbstractItemView::MovePageDown , Qt::NoModifier);
 }
 
 void KCompletionBox::pageUp()
 {
-    int i = currentItem() - numItemsVisible();
-    i = i < 0 ? 0 : i;
-    setCurrentItem( i );
+    //int i = currentItem() - numItemsVisible();
+    //i = i < 0 ? 0 : i;
+    //setCurrentRow( i );
+    
+    moveCursor(QAbstractItemView::MovePageUp , Qt::NoModifier);
 }
 
 void KCompletionBox::home()
@@ -435,7 +447,7 @@ void KCompletionBox::home()
 
 void KCompletionBox::end()
 {
-    setCurrentItem( count() -1 );
+    setCurrentRow( count() -1 );
 }
 
 void KCompletionBox::setTabHandling( bool enable )
@@ -466,7 +478,7 @@ void KCompletionBox::canceled()
         hide();
 }
 
-class KCompletionBoxItem : public Q3ListBoxItem
+class KCompletionBoxItem : public QListWidgetItem
 {
 public:
     //Returns true if dirty.
@@ -484,7 +496,7 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
 {
     bool block = signalsBlocked();
     blockSignals( true );
-    insertStringList( items, index );
+    insertItems( items , index );
     blockSignals( block );
     d->down_workaround = true;
 }
@@ -494,9 +506,10 @@ void KCompletionBox::setItems( const QStringList& items )
     bool block = signalsBlocked();
     blockSignals( true );
 
-    Q3ListBoxItem* item = firstItem();
-    if ( !item ) {
-        insertStringList( items );
+    int rowIndex = 0;
+
+    if ( rowIndex >= count() ) {
+        addItems( items );
     }
     else {
         //Keep track of whether we need to change anything,
@@ -508,31 +521,36 @@ void KCompletionBox::setItems( const QStringList& items )
         const QStringList::ConstIterator itEnd = items.constEnd();
 
         for ( ; it != itEnd; ++it) {
-            if ( item ) {
-                const bool changed = ((KCompletionBoxItem*)item)->reuse( *it );
+            if ( rowIndex < count() ) {
+                const bool changed = ((KCompletionBoxItem*)item(rowIndex))->reuse( *it );
                 dirty = dirty || changed;
-                item = item->next();
+                
+                rowIndex++;
             }
             else {
                 dirty = true;
                 //Inserting an item is a way of making this dirty
-                insertItem( new Q3ListBoxText( *it ) );
+                addItem( *it );
             }
         }
 
         //If there is an unused item, mark as dirty -> less items now
-        if ( item ) {
+        if ( rowIndex < count() ) {
             dirty = true;
         }
 
-        Q3ListBoxItem* tmp = item;
-        while ( (item = tmp ) ) {
-            tmp = item->next();
+        // remove unused items with an index >= rowIndex
+        for ( ; rowIndex < count() ; ) {
+            QListWidgetItem* item = takeItem(rowIndex);
+            
+            Q_ASSERT(item);
+
             delete item;
         }
-
-        if (dirty)
-            triggerUpdate( false );
+        
+        //TODO KDE4 : Port me
+        //if (dirty)
+        //    triggerUpdate( false );
     }
 
     if ( isVisible() && size().height() != sizeHint().height() )
@@ -547,17 +565,17 @@ void KCompletionBox::slotCurrentChanged()
     d->down_workaround = false;
 }
 
-void KCompletionBox::slotItemClicked( Q3ListBoxItem *item )
+void KCompletionBox::slotItemClicked( QListWidgetItem *item )
 {
     if ( item )
     {
         if ( d->down_workaround ) {
             d->down_workaround = false;
-            emit highlighted( item->text() );
+            emit currentTextChanged( item->text() );
         }
 
         hide();
-        emit activated( item->text() );
+        emit currentTextChanged( item->text() );
     }
 }
 

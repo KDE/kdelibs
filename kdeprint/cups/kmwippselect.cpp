@@ -23,7 +23,7 @@
 #include "cupsinfos.h"
 #include "ipprequest.h"
 
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -36,7 +36,7 @@ KMWIppSelect::KMWIppSelect(QWidget *parent)
 	m_title = i18n("Remote IPP Printer Selection");
 	m_nextpage = KMWizard::Driver;
 
-	m_list = new KListBox(this);
+	m_list = new KListWidget(this);
 
 	QVBoxLayout	*lay = new QVBoxLayout(this);
 	lay->setMargin(0);
@@ -46,7 +46,7 @@ KMWIppSelect::KMWIppSelect(QWidget *parent)
 
 bool KMWIppSelect::isValid(QString& msg)
 {
-	if (m_list->currentItem() == -1)
+	if (m_list->currentRow() == -1)
 	{
 		msg = i18n("You must select a printer.");
 		return false;
@@ -85,11 +85,15 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 		ipp_attribute_t	*attr = req.first();
 		while (attr)
 		{
-			if (attr->name && strcmp(attr->name,"printer-name") == 0)
-				m_list->insertItem(SmallIcon("kdeprint_printer"),QLatin1String(attr->values[0].string.text));
+			if (attr->name && strcmp(attr->name,"printer-name") == 0) {
+				QListWidgetItem* item = new QListWidgetItem();
+                item->setIcon(SmallIcon("kdeprint_printer"));
+                item->setText(QLatin1String(attr->values[0].string.text)); 
+                m_list->addItem(item);
+            }
 			attr = attr->next;
 		}
-		m_list->sort();
+		m_list->model()->sort(0);
 	}
 
 	// restore config
@@ -102,7 +106,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 void KMWIppSelect::updatePrinter(KMPrinter *p)
 {
 	KUrl	url = p->device();
-	QString	path = m_list->currentText();
+	QString	path = m_list->currentItem()->text();
 	path.prepend("/printers/");
 	url.setPath(path);
 	p->setDevice(url.url());

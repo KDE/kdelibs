@@ -25,7 +25,7 @@
 
 #include <kdialog.h>
 #include <kicontheme.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kurl.h>
 
 class KConfig;
@@ -33,14 +33,14 @@ class KConfigBase;
 class KUrlBar;
 
 /**
- * An item to be used in KUrlBar / KUrlBarListBox. All the properties
+ * An item to be used in KUrlBar / KUrlBarListWidget. All the properties
  * (url, icon, description, tooltip) can be changed dynamically.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @see KUrlBar
- * @see KUrlBarListBox
+ * @see KUrlBarListWidget
  */
-class KIO_EXPORT KUrlBarItem : public Q3ListBoxPixmap
+class KIO_EXPORT KUrlBarItem : public QListWidgetItem
 {
 public:
     /**
@@ -106,18 +106,13 @@ public:
     void setToolTip( const QString& tip );
 
     /**
-     * returns the preferred size of this item
-     */
-    QSize sizeHint() const;
-
-    /**
      * returns the width of this item.
      */
-    virtual int width( const Q3ListBox * ) const;
+    virtual int width( const QListWidget * ) const;
     /**
      * returns the height of this item.
      */
-    virtual int height( const Q3ListBox * ) const;
+    virtual int height( const QListWidget * ) const;
 
     /**
      * returns the url of this item.
@@ -171,8 +166,6 @@ public:
      */
     bool isPersistent() const;
 
-protected:
-    virtual void paint( QPainter *p );
 
 private:
     int iconSize() const;
@@ -198,7 +191,7 @@ private:
 ///////////////////////////////////////////////////////////////////
 
 
-class KUrlBarListBox;
+class KUrlBarListWidget;
 
 /**
  * KUrlBar is a widget that displays icons together with a description. They
@@ -287,17 +280,17 @@ public:
     Qt::Orientation orientation() const;
 
     /**
-     * Allows to set a custom KUrlBarListBox.
+     * Allows to set a custom KUrlBarListWidget.
      * Note: The previous listbox will be deleted. Items of the previous
      * listbox will not be moved to the new box.
      * @see listBox
      */
-    virtual void setListBox( KUrlBarListBox * );
+    virtual void setListBox( KUrlBarListWidget * );
     /**
-     * @returns the KUrlBarListBox that is used.
+     * @returns the KUrlBarListWidget that is used.
      * @see setListBox
      */
-    KUrlBarListBox *listBox() const { return m_listBox; }
+    KUrlBarListWidget *listBox() const { return m_listBox; }
 
     /**
      * Sets the default iconsize to be used for items inserted with
@@ -448,12 +441,12 @@ protected Q_SLOTS:
      * Reimplemented to show a contextmenu, allowing the user to add, edit
      * or remove items, or change the iconsize.
      */
-    virtual void slotContextMenuRequested( Q3ListBoxItem *, const QPoint& pos );
+    virtual void slotContextMenuRequested( QListWidgetItem *, const QPoint& pos );
     /**
      * Called when an item has been selected. Emits the activated()
      * signal.
      */
-    virtual void slotSelected( Q3ListBoxItem * );
+    virtual void slotSelected( QListWidgetItem * );
 
     /**
      * Called when a url was dropped onto the bar to show a
@@ -461,11 +454,8 @@ protected Q_SLOTS:
      */
     virtual void slotDropped( QDropEvent * );
 
-private Q_SLOTS:
-    void slotSelected( int button, Q3ListBoxItem * );
-
 private:
-    KUrlBarListBox *m_listBox;
+    KUrlBarListWidget *m_listBox;
     int m_iconSize;
 
 private:
@@ -481,26 +471,26 @@ private:
 class QMimeData;
 
 /**
- * This is the listbox used in KUrlBar. It is a subclass of KListBox to support
+ * This is the listbox used in KUrlBar. It is a subclass of KListWidget to support
  * drag & drop and to set up the row / column mode.
  *
  * The widget has just one row or one column, depending on orientation().
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlBarListBox : public KListBox
+class KIO_EXPORT KUrlBarListWidget : public KListWidget
 {
     Q_OBJECT
 
 public:
     /**
-     * Constructs a KUrlBarListBox.
+     * Constructs a KUrlBarListWidget.
      */
-    KUrlBarListBox( QWidget *parent = 0, const char *name = 0 );
+    KUrlBarListWidget( QWidget *parent = 0 );
     /**
      * Destroys the box.
      */
-    ~KUrlBarListBox();
+    ~KUrlBarListWidget();
 
     /**
      * Sets the orientation of the widget. Horizontal means, all items are
@@ -532,16 +522,15 @@ protected:
 
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
     virtual void contentsDropEvent( QDropEvent * );
-    virtual void contextMenuEvent( QContextMenuEvent * );
-    virtual void paintEvent( QPaintEvent* );
+    //virtual void paintEvent( QPaintEvent* );
     virtual bool event( QEvent* );
 
 private:
     Qt::Orientation m_orientation;
 
 private:
-    class KUrlBarListBoxPrivate;
-    KUrlBarListBoxPrivate *d;
+    class KUrlBarListWidgetPrivate;
+    KUrlBarListWidgetPrivate *d;
 };
 
 

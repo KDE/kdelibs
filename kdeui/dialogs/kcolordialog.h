@@ -32,12 +32,12 @@
 #else //UNIX, WIN32
 #include <kdialog.h>
 #include <qpixmap.h>
-#include <q3gridview.h>
 #include <qscrollarea.h>
+#include <qtablewidget.h>
 
 class QComboBox;
 class QLineEdit;
-class KListBox;
+class KListWidget;
 class KPalette;
 class KColorCells;
 
@@ -102,8 +102,8 @@ Q_SIGNALS:
   void colorDoubleClicked( const QColor &, const QString & );
 
 protected Q_SLOTS:
-  void slotColorCellSelected( int );
-  void slotColorCellDoubleClicked( int );
+  void slotColorCellSelected( int index , const QColor& );
+  void slotColorCellDoubleClicked( int index , const QColor& );
   void slotColorTextSelected( const QString &colorText );
   void slotSetPalette( const QString &_paletteName );
   void slotShowNamedColorReadError( void );
@@ -116,7 +116,7 @@ protected:
   QComboBox *combo;
   KColorCells *cells;
   QScrollArea *sv;
-  KListBox *mNamedColorList;
+  KListWidget *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;
   int mCols;
@@ -135,40 +135,50 @@ private:
 *
 * @author Martin Jones <mjones@kde.org>
 */
-class KDEUI_EXPORT KColorCells : public Q3GridView
+class KDEUI_EXPORT KColorCells : public QTableWidget
 {
   Q_OBJECT
 public:
-  KColorCells( QWidget *parent, int rows, int cols );
+  /** 
+   * Constructs a new table of color cells, consisting of
+   * @p rows * @p columns colors. 
+   *
+   * @param parent The parent of the new widget
+   * @param rows The number of rows in the table
+   * @param columns The number of columns in the table
+   */
+  KColorCells( QWidget *parent, int rows, int columns );
   ~KColorCells();
 
-  void setColor( int colNum, const QColor &col );
-  QColor color( int indx ) const
-  {	return colors[indx]; }
-  int numCells() const
-  {	return numRows() * numCols(); }
+  /** Sets the color in the given index in the table */
+  void setColor( int index, const QColor &col );
+  /** Returns the color at a given index in the table */
+  QColor color( int index ) const;
+  /** Returns the total number of color cells in the table */
+  int count() const
+  {	return rowCount() * columnCount(); }
 
-  void setShading(bool _shade) { shade = _shade; }
+  void setShading(bool shade);
+  void setAcceptDrags(bool acceptDrags);
 
-  void setAcceptDrags(bool _acceptDrags) { acceptDrags = _acceptDrags; }
-
-  void setSelected(int _selected)
-  {
-    Q_ASSERT( selected >= 0 && selected < numCells() );
-
-    selected = _selected;
-  }
-
-  int getSelected() const
-  {	return selected; }
-
-  Q_SIGNALS:
-  void colorSelected( int col );
-  void colorDoubleClicked( int col );
+  /** Sets the currently selected cell to @p index */
+  void setSelected(int index);
+  /** Returns the index of the cell which is currently selected */
+  int  selectedIndex() const;
+  
+Q_SIGNALS:
+  /** Emitted when a color is selected in the table */
+  void colorSelected( int index , const QColor& color );
+  /** Emitted when a color in the table is double-clicked */
+  void colorDoubleClicked( int index , const QColor& color );
 
 protected:
-  virtual void paintCell( QPainter *painter, int row, int col );
-  virtual void resizeEvent( QResizeEvent * );
+  // the three methods below are used to ensure equal column widths and row heights
+  // for all cells and to update the widths/heights when the widget is resized
+  virtual int sizeHintForColumn(int column) const;
+  virtual int sizeHintForRow(int column) const;
+  virtual void resizeEvent( QResizeEvent* event );
+
   virtual void mouseReleaseEvent( QMouseEvent * );
   virtual void mousePressEvent( QMouseEvent * );
   virtual void mouseMoveEvent( QMouseEvent * );
@@ -176,14 +186,7 @@ protected:
   virtual void dropEvent( QDropEvent *);
   virtual void mouseDoubleClickEvent( QMouseEvent * );
 
-  int posToCell(const QPoint &pos, bool ignoreBorders=false);
-
-  QColor *colors;
-  bool inMouse;
-  QPoint mPos;
-  int	selected;
-  bool shade;
-  bool acceptDrags;
+  int positionToCell(const QPoint &pos, bool ignoreBorders=false) const;
 
 private:
   class KColorCellsPrivate;

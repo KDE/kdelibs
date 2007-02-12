@@ -27,7 +27,7 @@ class QLabel;
 class Q3ListViewItem;
 class QPushButton;
 class QProgressBar;
-class KListBox;
+class KListWidget;
 class KLineEdit;
 
 //Possible result codes
@@ -54,7 +54,7 @@ class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellDlg : public KDialog
   K3SpellDlgPrivate *d;
   KLineEdit *editbox;
   QProgressBar *progbar;
-  KListBox *listbox;
+  KListWidget *listbox;
   QStringList *sugg;
   QPushButton *qpbrep, *qpbrepa;
   QLabel *wordlabel;

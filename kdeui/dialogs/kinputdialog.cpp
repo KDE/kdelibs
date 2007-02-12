@@ -25,7 +25,7 @@
 #include <klineedit.h>
 #include <knuminput.h>
 #include <kcombobox.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
 
@@ -41,7 +41,7 @@ class KInputDialogPrivate
     KIntSpinBox *m_intSpinBox;
     KDoubleSpinBox *m_doubleSpinBox;
     KComboBox *m_comboBox;
-    KListBox *m_listBox;
+    KListWidget *m_listBox;
     KTextEdit *m_textEdit;
 };
 
@@ -215,14 +215,13 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     slotUpdateButtons( d->m_comboBox->currentText() );
     d->m_comboBox->setFocus();
   } else {
-    d->m_listBox = new KListBox( frame );
-    d->m_listBox->insertStringList( list );
-    d->m_listBox->setSelected( current, true );
-    d->m_listBox->ensureCurrentVisible();
+    d->m_listBox = new KListWidget( frame );
+    d->m_listBox->addItems( list );
+    d->m_listBox->setCurrentRow(current);
     layout->addWidget( d->m_listBox, 10 );
-    connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( doubleClicked( QListWidgetItem * ) ),
       SLOT( accept() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
       SLOT( accept() ) );
 
     d->m_listBox->setFocus();
@@ -251,37 +250,35 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_listBox = new KListBox( frame );
-  d->m_listBox->insertStringList( list );
+  d->m_listBox = new KListWidget( frame );
+  d->m_listBox->addItems( list );
   layout->addWidget( d->m_listBox );
-
-  Q3ListBoxItem *item;
 
   if ( multiple )
   {
-    d->m_listBox->setSelectionMode( Q3ListBox::Extended );
+    d->m_listBox->setSelectionMode( QAbstractItemView::ExtendedSelection );
 
     for ( QStringList::ConstIterator it=select.begin(); it!=select.end(); ++it )
     {
-      item = d->m_listBox->findItem( *it, Qt::CaseSensitive|Q3ListBox::ExactMatch );
-      if ( item )
-        d->m_listBox->setSelected( item, true );
+      QList<QListWidgetItem*> matches = d->m_listBox->findItems( *it , Qt::MatchCaseSensitive|Qt::MatchExactly);
+      if ( !matches.isEmpty() )
+        d->m_listBox->setCurrentItem( matches.first() );
     }
   }
   else
   {
-    connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( doubleClicked( QListWidgetItem * ) ),
       SLOT( accept() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
       SLOT( accept() ) );
 
     QString text = select.first();
-    item = d->m_listBox->findItem( text, Qt::CaseSensitive|Q3ListBox::ExactMatch );
-    if ( item )
-      d->m_listBox->setSelected( item, true );
+    
+    QList<QListWidgetItem*> matches = d->m_listBox->findItems(text,Qt::MatchCaseSensitive|Qt::MatchExactly);
+    if ( !matches.isEmpty() )
+      d->m_listBox->setCurrentItem( matches.first() );
   }
 
-  d->m_listBox->ensureCurrentVisible();
   d->m_listBox->setFocus();
 
   layout->addStretch();
@@ -401,7 +398,7 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     editable, parent );
   if ( !editable)
   {
-      connect( dlg.listBox(),  SIGNAL(doubleClicked ( Q3ListBoxItem *)), &dlg, SLOT( accept()));
+      connect( dlg.listBox(),  SIGNAL(doubleClicked ( QListWidgetItem *)), &dlg, SLOT( accept()));
   }
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -409,11 +406,13 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     *ok = _ok;
 
   QString result;
-  if ( _ok )
+  if ( _ok ) {
+    
     if ( editable )
       result = dlg.comboBox()->currentText();
     else
-      result = dlg.listBox()->currentText();
+      result = dlg.listBox()->currentItem()->text();
+  }
 
   return result;
 }
@@ -433,9 +432,13 @@ QStringList KInputDialog::getItemList( const QString &caption,
   QStringList result;
   if ( _ok )
   {
-    for (const Q3ListBoxItem* i = dlg.listBox()->firstItem(); i != 0; i = i->next() )
-      if ( i->isSelected() )
-        result.append( i->text() );
+    for (int i=0 ; i < dlg.listBox()->count() ; i++) {
+
+      QListWidgetItem* item = dlg.listBox()->item(i);
+
+      if ( item->isSelected() )
+        result.append( item->text() );
+    }
   }
 
   return result;
@@ -481,7 +484,7 @@ KComboBox *KInputDialog::comboBox() const
   return d->m_comboBox;
 }
 
-KListBox *KInputDialog::listBox() const
+KListWidget *KInputDialog::listBox() const
 {
   return d->m_listBox;
 }

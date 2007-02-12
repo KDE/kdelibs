@@ -56,7 +56,7 @@ static inline KDE_DEPRECATED void kInstallKDEPropertyMap()
   kdeMap->insert( "KFontRequester", "font" );
   kdeMap->insert( "KFontChooser", "font" );
   kdeMap->insert( "KHistoryCombo", "currentItem" );
-  kdeMap->insert( "KListBox", "currentItem" );
+  kdeMap->insert( "KListWidget", "currentItem" );
   kdeMap->insert( "KLineEdit", "text" );
   kdeMap->insert( "KRestrictedLine", "text" );
   kdeMap->insert( "KTextBrowser", "source" );

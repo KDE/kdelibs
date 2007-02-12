@@ -26,6 +26,7 @@ install( FILES
   K3IconView
   K3IconViewItem
   K3IconViewSearchLine
+  K3ListBox
   K3ListView
   K3ListViewItem
   K3ListViewLineEdit
@@ -271,7 +272,7 @@ install( FILES
   KLibLoader
   KLibrary
   KLineEdit
-  KListBox
+  KListWidget
   KLocale
   KLocalizedString
   KLockFile

@@ -37,22 +37,24 @@
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <qfile.h>
+#include <qheaderview.h>
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <qvalidator.h>
 #include <qpainter.h>
 #include <qpushbutton.h>
+#include <qscrollbar.h>
 #include <qspinbox.h>
 #include <qtimer.h>
+#include <qvalidator.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kseparator.h>
@@ -181,42 +183,110 @@ KColor::hsv(int *_h, int *_s, int *_v) const
 
 //-----------------------------------------------------------------------------
 
-KColorCells::KColorCells( QWidget *parent, int rows, int cols )
-	: Q3GridView( parent )
+class KColorCells::KColorCellsPrivate
 {
+public:
+    KColorCellsPrivate()
+    {
+        colors = 0;
+        inMouse = false;
+        selected = -1;
+        shade = false;
+        acceptDrags = false;
+    }
+
+    QColor *colors;
+    bool inMouse;
+    QPoint mousePos;
+    int	selected;
+    bool shade;
+    bool acceptDrags;
+};
+
+KColorCells::KColorCells( QWidget *parent, int rows, int cols )
+	: QTableWidget( parent )
+{
+    d = new KColorCellsPrivate();
+
 	setFrameShape(QFrame::NoFrame);
-	shade = true;
-	setNumRows( rows );
-	setNumCols( cols );
-	colors = new QColor [ rows * cols ];
+	d->shade = true;
+	setRowCount( rows );
+	setColumnCount( cols );
+    
+    verticalHeader()->hide();
+    horizontalHeader()->hide();
+
+    d->colors = new QColor [ rows * cols ];
 
 	for ( int i = 0; i < rows * cols; i++ )
-		colors[i] = QColor();
+		d->colors[i] = QColor();
 
-	selected = 0;
-        inMouse = false;
+	d->selected = 0;
+    d->inMouse = false;
 
 	// Drag'n'Drop
 	setAcceptDrops( true);
 
-	setHScrollBarMode( AlwaysOff );
-	setVScrollBarMode( AlwaysOff );
+	setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+	setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 	viewport()->setBackgroundRole( QPalette::Background );
 	setBackgroundRole( QPalette::Background );
 }
 
 KColorCells::~KColorCells()
 {
-	delete [] colors;
+	delete [] d->colors;
+
+    delete d;
 }
 
-void KColorCells::setColor( int colNum, const QColor &col )
+QColor KColorCells::color(int index) const
 {
-	colors[colNum] = col;
-	updateCell( colNum/numCols(), colNum%numCols() );
+    return d->colors[index];
 }
 
-void KColorCells::paintCell( QPainter *painter, int row, int col )
+void KColorCells::setShading(bool _shade) 
+{ 
+    d->shade = _shade; 
+}
+
+void KColorCells::setAcceptDrags(bool _acceptDrags) 
+{ 
+    d->acceptDrags = _acceptDrags; 
+}
+
+void KColorCells::setSelected(int index)
+{
+    Q_ASSERT( index >= 0 && index < count() );
+
+    d->selected = index;
+}
+
+int KColorCells::selectedIndex() const
+{	
+    return d->selected; 
+}
+
+void KColorCells::setColor( int column, const QColor &color )
+{
+    const int tableRow = column / columnCount();
+    const int tableColumn = column % columnCount();
+
+    Q_ASSERT( tableRow >= 0 && tableRow < rowCount() );
+    Q_ASSERT( tableColumn >= 0 && tableColumn < columnCount() );
+
+    QTableWidgetItem* tableItem = item(tableRow,tableColumn);
+
+    if ( tableItem == 0 ) {
+        tableItem = new QTableWidgetItem();
+        setItem(tableRow,tableColumn,tableItem);
+    }
+
+	d->colors[column] = column;
+    tableItem->setData(Qt::BackgroundRole , QBrush(color));
+}
+
+/*void KColorCells::paintCell( QPainter *painter, int row, int col )
 {
     painter->setRenderHint( QPainter::Antialiasing , true );
 
@@ -244,27 +314,60 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 		painter->drawLine( colorRect.topLeft(), colorRect.bottomRight() );
 		painter->drawLine( colorRect.topRight(), colorRect.bottomLeft() );
 	}
+}*/
+
+void KColorCells::resizeEvent( QResizeEvent* event )
+{
+    // iterate over each column and each row and resize them to fit their contents.
+    // resizeColumnsToContents() and resizeRowsToContents() are not used because
+    // of a bug in Qt 4.2 where the aforementioned methods do not ignore the height/width
+    // of hidden headers as they should do.
+    //
+    // resizeColumnToContents() and resizeColumnsToContents() use completely different logic internally
+    // and the former correctly ignores the width of the header section for a column if the header is 
+    // hidden.  the latter does not.  the same applies to resizeRowToContents() and resizeRowsToContents() 
+    //
+    // TODO - Update with Qt task tracker bug id when reported.
+    //
+    for ( int index = 0 ; index < columnCount() ; index++ )
+        resizeColumnToContents(index);
+    for ( int index = 0 ; index < rowCount() ; index++ )
+        resizeRowToContents(index);
+
+    // use the method below when the bug is fixed:
+
+    //resizeColumnsToContents();
+    //resizeRowsToContents();
 }
 
-void KColorCells::resizeEvent( QResizeEvent * )
+int KColorCells::sizeHintForColumn(int /*column*/) const
 {
-	setCellWidth( width() / numCols() );
-	setCellHeight( height() / numRows() );
+    return width() / columnCount() ;
+}
+
+int KColorCells::sizeHintForRow(int /*row*/) const
+{
+    return height() / rowCount() ;
 }
 
 void KColorCells::mousePressEvent( QMouseEvent *e )
 {
-    inMouse = true;
-    mPos = e->pos();
+    d->inMouse = true;
+    d->mousePos = e->pos();
 }
 
-int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
-{
-   int row = pos.y() / cellHeight();
-   int col = pos.x() / cellWidth();
-   int cell = row * numCols() + col;
 
-   if (!ignoreBorders)
+int KColorCells::positionToCell(const QPoint &pos, bool ignoreBorders) const
+{
+   //TODO ignoreBorders not yet handled
+
+   QTableWidgetItem* tableItem = itemAt(pos);
+
+   const int itemRow = row(tableItem);
+   const int itemColumn = column(tableItem);
+   int cell = itemRow * columnCount() + itemColumn;
+
+   /*if (!ignoreBorders)
    {
       int border = 2;
       int x = pos.x() - col * cellWidth();
@@ -272,23 +375,25 @@ int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
       if ( (x < border) || (x > cellWidth()-border) ||
            (y < border) || (y > cellHeight()-border))
          return -1;
-   }
+   }*/
+
    return cell;
 }
+
 
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
 {
     if( !(e->buttons() & Qt::LeftButton)) return;
 
-    if(inMouse) {
+    if(d->inMouse) {
         int delay = KGlobalSettings::dndEventDelay();
-        if(e->x() > mPos.x()+delay || e->x() < mPos.x()-delay ||
-           e->y() > mPos.y()+delay || e->y() < mPos.y()-delay){
+        if(e->x() > d->mousePos.x()+delay || e->x() < d->mousePos.x()-delay ||
+           e->y() > d->mousePos.y()+delay || e->y() < d->mousePos.y()-delay){
             // Drag color object
-            int cell = posToCell(mPos);
-            if ((cell != -1) && colors[cell].isValid())
+            int cell = positionToCell(d->mousePos);
+            if ((cell != -1) && d->colors[cell].isValid())
             {
-               KColorMimeData::createDrag( colors[cell], this)->start();
+               KColorMimeData::createDrag( d->colors[cell], this)->start();
             }
         }
     }
@@ -296,47 +401,49 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
 {
-     event->setAccepted( acceptDrags && KColorMimeData::canDecode( event->mimeData()));
+     event->setAccepted( d->acceptDrags && KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorCells::dropEvent( QDropEvent *event)
 {
      QColor c=KColorMimeData::fromMimeData(event->mimeData());
      if( c.isValid()) {
-          int cell = posToCell(event->pos(), true);
+          int cell = positionToCell(event->pos(), true);
 	  setColor(cell,c);
      }
 }
 
 void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 {
-	int cell = posToCell(mPos);
-        int currentCell = posToCell(e->pos());
+	int cell = positionToCell(d->mousePos);
+    int currentCell = positionToCell(e->pos());
 
         // If we release the mouse in another cell and we don't have
         // a drag we should ignore this event.
         if (currentCell != cell)
            cell = -1;
 
-	if ( (cell != -1) && (selected != cell) )
+	if ( (cell != -1) && (d->selected != cell) )
 	{
-		int prevSel = selected;
-		selected = cell;
-		updateCell( prevSel/numCols(), prevSel%numCols() );
-		updateCell( cell/numCols(), cell%numCols() );
-        }
+		d->selected = cell;
+		
+        const int newRow = cell/columnCount();
+        const int newColumn = cell/rowCount();
 
-        inMouse = false;
-        if (cell != -1)
-	    emit colorSelected( cell );
+        item(newRow,newColumn)->setSelected(true);
+    }
+
+    d->inMouse = false;
+    if (cell != -1)
+	emit colorSelected( cell , color(cell) );
 }
 
 void KColorCells::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 {
-  int cell = posToCell(mPos);
+  int cell = positionToCell(d->mousePos);
 
   if (cell != -1)
-    emit colorDoubleClicked( cell );
+    emit colorDoubleClicked( cell , color(cell) );
 }
 
 
@@ -431,11 +538,12 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   sv->setFixedSize(minSize);
   layout->addWidget(sv);
 
-  mNamedColorList = new KListBox( this, "namedColorList", 0 );
+  mNamedColorList = new KListWidget(this);
+  mNamedColorList->setObjectName("namedColorList");
   mNamedColorList->setFixedSize(minSize);
   mNamedColorList->hide();
   layout->addWidget(mNamedColorList);
-  connect( mNamedColorList, SIGNAL(highlighted( const QString & )),
+  connect( mNamedColorList, SIGNAL(currentTextChanged( const QString & )),
 	   this, SLOT( slotColorTextSelected( const QString & )) );
 
   setFixedSize( sizeHint());
@@ -535,7 +643,7 @@ KPaletteTable::readNamedColor( void )
     }
 
     list.sort();
-    mNamedColorList->insertStringList( list );
+    mNamedColorList->addItems( list );
     break;
   }
 
@@ -589,13 +697,13 @@ KPaletteTable::slotSetPalette( const QString &_paletteName )
   setPalette( _paletteName );
   if( mNamedColorList->isVisible() )
   {
-    int item = mNamedColorList->currentItem();
-    mNamedColorList->setCurrentItem( item < 0 ? 0 : item );
-    slotColorTextSelected( mNamedColorList->currentText() );
+    int item = mNamedColorList->currentRow();
+    mNamedColorList->setCurrentRow( item < 0 ? 0 : item );
+    slotColorTextSelected( mNamedColorList->currentItem()->text() );
   }
   else
   {
-    slotColorCellSelected(0); // FIXME: We need to save the current value!!
+    slotColorCellSelected(0,QColor()); // FIXME: We need to save the current value!!
   }
 }
 
@@ -664,7 +772,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
       mPalette = new KPalette(paletteName);
       int rows = (mPalette->nrColors()+mCols-1) / mCols;
       if (rows < 1) rows = 1;
-      cells = new KColorCells( sv->viewport(), rows, mCols);
+      cells = new KColorCells(sv->viewport(), rows, mCols);
       cells->setShading(false);
       cells->setAcceptDrags(false);
       QSize cellSize = QSize( mMinWidth, mMinWidth * rows / mCols);
@@ -673,12 +781,13 @@ KPaletteTable::setPalette( const QString &_paletteName )
       {
         cells->setColor( i, mPalette->color(i) );
       }
-      connect( cells, SIGNAL( colorSelected( int ) ),
-	       SLOT( slotColorCellSelected( int ) ) );
-      connect( cells, SIGNAL( colorDoubleClicked( int ) ),
-	       SLOT( slotColorCellDoubleClicked( int ) ) );
+      connect( cells, SIGNAL( colorSelected( int , const QColor& ) ),
+	       SLOT( slotColorCellSelected( int , const QColor& ) ) );
+      connect( cells, SIGNAL( colorDoubleClicked( int , const QColor& ) ),
+	       SLOT( slotColorCellDoubleClicked( int , const QColor& ) ) );
       sv->setWidget( cells );
       cells->show();
+
       //sv->updateScrollBars();
     }
   }
@@ -687,19 +796,19 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
 
 void
-KPaletteTable::slotColorCellSelected( int col )
+KPaletteTable::slotColorCellSelected( int index , const QColor& /*color*/ )
 {
-  if (!mPalette || (col >= mPalette->nrColors()))
+  if (!mPalette || (index >= mPalette->nrColors()))
      return;
-  emit colorSelected( mPalette->color(col), mPalette->colorName(col) );
+  emit colorSelected( mPalette->color(index), mPalette->colorName(index) );
 }
 
 void
-KPaletteTable::slotColorCellDoubleClicked( int col )
+KPaletteTable::slotColorCellDoubleClicked( int index , const QColor& /*color*/ )
 {
-  if (!mPalette || (col >= mPalette->nrColors()))
+  if (!mPalette || (index >= mPalette->nrColors()))
      return;
-  emit colorDoubleClicked( mPalette->color(col), mPalette->colorName(col) );
+  emit colorDoubleClicked( mPalette->color(index), mPalette->colorName(index) );
 }
 
 

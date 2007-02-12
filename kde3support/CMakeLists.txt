@@ -31,6 +31,7 @@ set(kde3support_LIB_SRCS
   kdeui/k3activelabel.cpp
   kdeui/k3dockwidget.cpp
   kdeui/k3dockwidget_private.cpp
+  kdeui/k3listbox.cpp
   kdeui/k3popupmenu.cpp
   kdeui/k3textedit.cpp
   kdeui/k3colordrag.cpp

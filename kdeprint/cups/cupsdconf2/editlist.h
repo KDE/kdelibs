@@ -23,7 +23,7 @@
 #include <qwidget.h>
 #include <qpixmap.h>
 
-class KListBox;
+class KListWidget;
 class QPushButton;
 
 class EditList : public QWidget
@@ -53,7 +53,7 @@ protected Q_SLOTS:
 	void slotSelected(int);
 
 private:
-	KListBox	*list_;
+	KListWidget	*list_;
 	QPushButton	*addbtn_, *editbtn_, *delbtn_, *defbtn_;
 };
 

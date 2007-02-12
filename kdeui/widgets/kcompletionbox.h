@@ -23,7 +23,7 @@
 #ifndef KCOMPLETIONBOX_H
 #define KCOMPLETIONBOX_H
 
-#include <klistbox.h>
+#include <klistwidget.h>
 
 class QEvent;
 
@@ -40,7 +40,7 @@ class QEvent;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KCompletionBox : public KListBox
+class KDEUI_EXPORT KCompletionBox : public KListWidget
 {
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
@@ -213,7 +213,7 @@ protected:
     void sizeAndPosition();
 
     /**
-     * Reimplemented from KListBox to get events from the viewport (to hide
+     * Reimplemented from KListWidget to get events from the viewport (to hide
      * this widget on mouse-click, Escape-presses, etc.
      */
     virtual bool eventFilter( QObject *, QEvent * );
@@ -223,13 +223,13 @@ protected Q_SLOTS:
      * Called when an item was activated. Emits
      * activated() with the item.
      */
-    virtual void slotActivated( Q3ListBoxItem * );
+    virtual void slotActivated( QListWidgetItem * );
 
 private Q_SLOTS:
-    void slotSetCurrentItem( Q3ListBoxItem *i ) { setCurrentItem( i ); } // grrr
+    void slotSetCurrentItem( QListWidgetItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
     void canceled();
-    void slotItemClicked( Q3ListBoxItem * );
+    void slotItemClicked( QListWidgetItem * );
 
 private:
     class KCompletionBoxPrivate;

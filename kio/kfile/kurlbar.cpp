@@ -43,11 +43,20 @@
 #include <qpainter.h>
 #include <qmenu.h>
 #include <qstyle.h>
-
+#include <qitemdelegate.h>
 
 #include <unistd.h>
 #include <kvbox.h>
 #include <kconfiggroup.h>
+
+class KUrlBarItemDelegate : public QItemDelegate
+{
+public:
+    KUrlBarItemDelegate(QObject* parent) : QItemDelegate(parent) {}
+
+    virtual void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
+    virtual QSize sizeHint(const QStyleOptionViewItem& option , const QModelIndex& index) const;
+};
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -81,7 +90,7 @@ public:
 KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, bool persistent, const QString& description,
                           const QString& icon, K3Icon::Group group )
-    : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
+    : QListWidgetItem(),
       m_url( url ),
       m_pixmap( ),
       m_parent( parent ),
@@ -93,7 +102,7 @@ KUrlBarItem::KUrlBarItem( KUrlBar *parent,
 KUrlBarItem::KUrlBarItem( KUrlBar *parent,
                           const KUrl& url, const QString& description,
                           const QString& icon, K3Icon::Group group )
-    : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
+    : QListWidgetItem(),
       m_url( url ),
       m_pixmap(  ),
       m_parent( parent ),
@@ -105,9 +114,11 @@ KUrlBarItem::KUrlBarItem( KUrlBar *parent,
 void KUrlBarItem::init( const QString& icon, K3Icon::Group group,
                         const QString& description, bool persistent )
 {
+
+    qDebug() << __FUNCTION__ << "created noew KUrlBarItem with description" << description;
+
     d->isPersistent = persistent;
 
-    setCustomHighlighting( true );
     setIcon( icon, group );
     setDescription( description );
 }
@@ -130,10 +141,10 @@ void KUrlBarItem::setIcon( const QString& icon, K3Icon::Group group )
     m_group = group;
 
     if ( icon.isEmpty() )
-        m_pixmap = KIO::pixmapForUrl( m_url, 0, group, iconSize() );
+        QListWidgetItem::setIcon( KIO::pixmapForUrl( m_url, 0, group, iconSize() ) );
     else
-        m_pixmap = KIconLoader::global()->loadIcon( icon, group, iconSize(),
-                                                    K3Icon::DefaultState );
+        QListWidgetItem::setIcon( KIconLoader::global()->loadIcon( icon, group, iconSize(),
+                                                    K3Icon::DefaultState ) ); 
 }
 
 void KUrlBarItem::setDescription( const QString& desc )
@@ -168,130 +179,59 @@ int KUrlBarItem::iconSize() const
     return m_parent->iconSize();
 }
 
-void KUrlBarItem::paint( QPainter *p )
+QSize KUrlBarItemDelegate::sizeHint(const QStyleOptionViewItem& option , const QModelIndex& index) const
 {
-    Q3ListBox *box = listBox();
-    int w = width( box );
-    static const int margin = KDialog::spacingHint();
+    int width = 0;
+    int height = 0;
 
-    // draw sunken selection
-    if ( isCurrent() || isSelected() ) {
-        int h = height( box );
+    QString text = index.data(Qt::DisplayRole).toString();
 
-        QBrush brush = box->palette().brush( QPalette::Highlight );
-        p->fillRect( 0, 0, w, h, brush );
-        QPen pen = p->pen();
-        QPen oldPen = pen;
-        pen.setColor( box->palette().color( QPalette::Mid ) );
-        p->setPen( pen );
+    QFontMetrics metrics(option.font);
 
-        p->drawPoint( 0, 0 );
-        p->drawPoint( 0, h - 1 );
-        p->drawPoint( w - 1, 0 );
-        p->drawPoint( w - 1, h - 1 );
+    width = metrics.width(text) + option.decorationSize.width() + 
+                   KDialog::spacingHint() * 2;
+    
+    height = qMax( metrics.height() , option.decorationSize.height() ) +
+                    KDialog::spacingHint() * 2;
 
-        p->setPen( oldPen );
-    }
-
-    if ( m_parent->iconSize() < K3Icon::SizeMedium ) {
-        // small icon -> draw icon next to text
-
-        // ### mostly cut & paste of QListBoxPixmap::paint() until Qt 3.1
-        // (where it will properly use pixmap() instead of the internal pixmap)
-        const QPixmap *pm = pixmap();
-        int yPos = qMax( 0, (height(box) - pm->height())/2 );
-
-        p->drawPixmap( margin, yPos, *pm );
-        if ( !text().isEmpty() ) {
-            QFontMetrics fm = p->fontMetrics();
-            if ( pm->height() < fm.height() )
-                yPos = fm.ascent() + fm.leading()/2;
-            else
-                yPos = pm->height()/2 - fm.height()/2 + fm.ascent();
-
-            yPos += margin;
-            int stringWidth = box->width() - pm->width() - 2 - (margin * 2);
-            QString visibleText = fm.elidedText( text(), Qt::ElideRight, stringWidth );
-            int xPos = pm->width() + margin + 2;
-
-            if ( isCurrent() || isSelected() ) {
-                p->setPen( box->palette().color( QPalette::Highlight ).dark(115) );
-                p->drawText( xPos + ( QApplication::isRightToLeft() ? -1 : 1),
-                             yPos + 1, visibleText );
-                p->setPen( box->palette().color( QPalette::HighlightedText ) );
-            }
-
-            p->drawText( xPos, yPos, visibleText );
-        }
-        // end cut & paste (modulo pixmap centering)
-    }
-
-    else {
-        // big icons -> draw text below icon
-        int y = margin;
-        const QPixmap *pm = pixmap();
-
-        if ( !pm->isNull() ) {
-            int x = (w - pm->width()) / 2;
-            x = qMax( x, margin );
-            p->drawPixmap( x, y, *pm );
-        }
-
-        if ( !text().isEmpty() ) {
-            QFontMetrics fm = p->fontMetrics();
-            y += pm->height() + fm.height() - fm.descent();
-
-            int stringWidth = box->width() - (margin * 2);
-            QString visibleText = fm.elidedText( text(), Qt::ElideRight, stringWidth );
-            int x = (w - fm.width( visibleText )) / 2;
-            x = qMax( x, margin );
-
-            if ( isCurrent() || isSelected() ) {
-                p->setPen( box->palette().color( QPalette::Highlight ).dark(115) );
-                p->drawText( x + ( QApplication::isRightToLeft() ? -1 : 1),
-                             y + 1, visibleText );
-                p->setPen( box->palette().color( QPalette::HighlightedText ) );
-            }
-
-            p->drawText( x, y, visibleText );
-        }
-    }
+    return QSize( width , height );
 }
 
-QSize KUrlBarItem::sizeHint() const
+void KUrlBarItemDelegate::paint( QPainter *painter , const QStyleOptionViewItem& option , 
+                                 const QModelIndex& index) const
 {
-    int wmin = 0;
-    int hmin = 0;
-    const KUrlBarListBox *lb =static_cast<const KUrlBarListBox*>(listBox());
+    const QString text = index.data(Qt::DisplayRole).toString();
+    const QIcon icon = index.data(Qt::DecorationRole).value<QIcon>();
 
-    if ( m_parent->iconSize() < K3Icon::SizeMedium ) {
-        wmin = Q3ListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
-        hmin = Q3ListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
-    }
-    else {
-        wmin = qMax(lb->fontMetrics().width(text()), pixmap()->width()) + KDialog::spacingHint() * 2;
-        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + KDialog::spacingHint() * 2;
-    }
+    QRect decorationRect = option.rect;
+    QRect textRect = option.rect;
 
-    if ( lb->isVertical() )
-        wmin = qMin( wmin, lb->viewport()->sizeHint().width() );
-    else
-        hmin = qMin( hmin, lb->viewport()->sizeHint().height() );
+    const int decorationMargin = (option.rect.height() -
+                                  option.decorationSize.height()) / 2;
 
-    return QSize( wmin, hmin );
+    decorationRect.setTop( decorationRect.top() + decorationMargin );
+    decorationRect.setBottom( decorationRect.bottom() - decorationMargin );
+    decorationRect.setLeft( KDialog::spacingHint() );
+    decorationRect.setWidth( option.decorationSize.width() );
+    
+    textRect.setLeft(   decorationRect.right()  
+                      + KDialog::spacingHint() );
+
+    painter->drawPixmap( decorationRect , icon.pixmap(decorationRect.size()) );
+    painter->drawText( textRect , Qt::AlignVCenter , text );
 }
 
-int KUrlBarItem::width( const Q3ListBox *lb ) const
+int KUrlBarItem::width( const QListWidget *lb ) const
 {
-    if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
+    if ( static_cast<const KUrlBarListWidget *>( lb )->isVertical() )
         return qMax( sizeHint().width(), lb->viewport()->width() );
     else
         return sizeHint().width();
 }
 
-int KUrlBarItem::height( const Q3ListBox *lb ) const
+int KUrlBarItem::height( const QListWidget *lb ) const
 {
-    if ( static_cast<const KUrlBarListBox *>( lb )->isVertical() )
+    if ( static_cast<const KUrlBarListWidget *>( lb )->isVertical() )
         return sizeHint().height();
     else
         return qMax( sizeHint().height(), lb->viewport()->height() );
@@ -373,7 +313,7 @@ KUrlBarItem * KUrlBar::insertItem(const KUrl& url, const QString& description,
 {
     KUrlBarItem *item = new KUrlBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
-    m_listBox->insertItem( item );
+    m_listBox->addItem( item );
     return item;
 }
 
@@ -381,7 +321,7 @@ KUrlBarItem * KUrlBar::insertDynamicItem(const KUrl& url, const QString& descrip
                                          const QString& icon, K3Icon::Group group )
 {
     KUrlBarItem *item = new KUrlBarItem(this, url, false, description, icon, group);
-    m_listBox->insertItem( item );
+    m_listBox->addItem( item );
     return item;
 }
 
@@ -401,12 +341,13 @@ Qt::Orientation KUrlBar::orientation() const
     return m_listBox->orientation();
 }
 
-void KUrlBar::setListBox( KUrlBarListBox *view )
+void KUrlBar::setListBox( KUrlBarListWidget *view )
 {
     delete m_listBox;
 
     if ( !view ) {
-        m_listBox = new KUrlBarListBox( this, "urlbar listbox" );
+        m_listBox = new KUrlBarListWidget( this );
+        m_listBox->setObjectName("urlbar listbox" );
         setOrientation( Qt::Vertical );
     }
     else {
@@ -416,19 +357,31 @@ void KUrlBar::setListBox( KUrlBarListBox *view )
         m_listBox->resize( width(), height() );
     }
 
-    m_listBox->setSelectionMode( KListBox::Single );
+    m_listBox->setSelectionMode( QAbstractItemView::SingleSelection );
     paletteChange( palette() );
     m_listBox->setFocusPolicy( Qt::TabFocus );
 
-    connect( m_listBox, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *, const QPoint & ) ),
-             SLOT( slotSelected( int, Q3ListBoxItem * )));
+    m_listBox->setFrameStyle( QFrame::Plain | QFrame::Box );
+
+    connect( m_listBox, SIGNAL( itemClicked(QListWidgetItem *) ),
+             SLOT( slotSelected(QListWidgetItem *)));
+
+
+#warning "KDE4 - Port the context menu and drag/drop handling."
+
+    // These signals refer to the Q3ListBox class and are not
+    // available in QListWidget.  They need to be ported
+
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
-    connect( m_listBox, SIGNAL( contextMenuRequested( Q3ListBoxItem *,
+    connect( m_listBox, SIGNAL( contextMenuRequested( QListWidgetItem *,
                                                       const QPoint& )),
-             SLOT( slotContextMenuRequested( Q3ListBoxItem *, const QPoint& )));
-    connect( m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
-             SLOT( slotSelected( Q3ListBoxItem * ) ));
+             SLOT( slotContextMenuRequested( QListWidgetItem *, const QPoint& )));
+    
+    connect( m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
+             SLOT( slotSelected( QListWidgetItem * ) ));
+
+    // --  
 }
 
 void KUrlBar::setIconSize( int size )
@@ -439,10 +392,9 @@ void KUrlBar::setIconSize( int size )
     m_iconSize = size;
 
     // reload the icons with the new size
-    KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
-    while ( item ) {
+    for ( int rowIndex = 0 ; rowIndex < m_listBox->count() ; rowIndex++ ) {
+        KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->item(rowIndex) );
         item->setIcon( item->icon(), item->iconGroup() );
-        item = static_cast<KUrlBarItem*>( item->next() );
     }
 
     resize( sizeHint() );
@@ -461,9 +413,9 @@ void KUrlBar::resizeEvent( QResizeEvent *e )
 }
 
 
-void KUrlBar::paletteChange( const QPalette & )
+void KUrlBar::paletteChange( const QPalette & pal )
 {
-    QPalette pal = palette();
+    /*QPalette pal = palette();
     QColor selectedTextColor = pal.color( QPalette::Normal, QPalette::BrightText );
     QColor foreground = pal.color( QPalette::Normal, QPalette::Foreground );
     pal.setColor( QPalette::Normal,   QPalette::Base, Qt::gray );
@@ -472,7 +424,7 @@ void KUrlBar::paletteChange( const QPalette & )
     pal.setColor( QPalette::Inactive, QPalette::Base, Qt::gray );
     pal.setColor( QPalette::Inactive, QPalette::HighlightedText, selectedTextColor );
     pal.setColor( QPalette::Inactive, QPalette::Text, foreground );
-
+*/
     setPalette( pal );
 }
 
@@ -527,15 +479,7 @@ QSize KUrlBar::minimumSizeHint() const
     return QSize( w, h );
 }
 
-void KUrlBar::slotSelected( int button, Q3ListBoxItem *item )
-{
-    if ( button != Qt::LeftButton )
-        return;
-
-    slotSelected( item );
-}
-
-void KUrlBar::slotSelected( Q3ListBoxItem *item )
+void KUrlBar::slotSelected( QListWidgetItem *item )
 {
     if ( item && item != m_activeItem )
         m_activeItem = static_cast<KUrlBarItem*>( item );
@@ -556,16 +500,18 @@ void KUrlBar::setCurrentItem( const KUrl& url )
         return;
 
     bool hasURL = false;
-    Q3ListBoxItem *item = m_listBox->firstItem();
-    while ( item ) {
+    
+    for (int rowIndex = 0 ; rowIndex < m_listBox->count() ; rowIndex++ )
+    {
+        QListWidgetItem *item = m_listBox->item(rowIndex);
+    
       if ( static_cast<KUrlBarItem*>( item )->url().url(KUrl::RemoveTrailingSlash) == u ) {
             m_activeItem = static_cast<KUrlBarItem*>( item );
             m_listBox->setCurrentItem( item );
-            m_listBox->setSelected( item, true );
+            item->setSelected(true);
             hasURL = true;
             break;
         }
-        item = item->next();
     }
 
     if ( !hasURL ) {
@@ -576,7 +522,7 @@ void KUrlBar::setCurrentItem( const KUrl& url )
 
 KUrlBarItem * KUrlBar::currentItem() const
 {
-    Q3ListBoxItem *item = m_listBox->item( m_listBox->currentItem() );
+    QListWidgetItem *item = m_listBox->item( m_listBox->currentRow() );
     if ( item )
         return static_cast<KUrlBarItem *>( item );
     return 0L;
@@ -637,10 +583,11 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
 
     int i = 0;
     int numLocal = 0;
-    KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
-
-    while ( item )
+    
+    for ( int rowIndex = 0 ; rowIndex < m_listBox->count() ; rowIndex++ )
     {
+        KUrlBarItem *item = static_cast<KUrlBarItem*>( m_listBox->item(rowIndex) );
+
         if ( item->isPersistent() ) // we only save persistent items
         {
             if ( item->applicationLocal() )
@@ -651,7 +598,6 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
 
             i++;
         }
-        item = static_cast<KUrlBarItem*>( item->next() );
     }
     cg.writeEntry("Number of Entries", numLocal);
 
@@ -662,20 +608,20 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
         config->setGroup( itemGroup + " (Global)" );
 
         int numGlobals = 0;
-        item = static_cast<KUrlBarItem*>( m_listBox->firstItem() );
 
-        while ( item )
+        for ( int rowIndex = 0 ; rowIndex < m_listBox->count() ; rowIndex++ )
         {
-            if ( item->isPersistent() ) // we only save persistent items
+            KUrlBarItem* urlBarItem = static_cast<KUrlBarItem*>( m_listBox->item(rowIndex) );
+
+            if ( urlBarItem->isPersistent() ) // we only save persistent items
             {
-                if ( !item->applicationLocal() )
+                if ( !urlBarItem->applicationLocal() )
                 {
-                    writeItem( item, numGlobals, config, true );
+                    writeItem( urlBarItem, numGlobals, config, true );
                     numGlobals++;
                 }
             }
 
-            item = static_cast<KUrlBarItem*>( item->next() );
         }
         config->writeEntry("Number of Entries", numGlobals,
                            KConfigBase::Normal|KConfigBase::Global);
@@ -724,7 +670,7 @@ void KUrlBar::slotDropped( QDropEvent *e )
     }
 }
 
-void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos )
+void KUrlBar::slotContextMenuRequested( QListWidgetItem *_item, const QPoint& pos )
 {
     if (m_isImmutable)
         return;
@@ -755,7 +701,6 @@ void KUrlBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
     QAction* result = popup->exec( pos );
     if (result == IconSize) {
         setIconSize( smallIcons ? K3Icon::SizeMedium : K3Icon::SizeSmallMedium );
-        m_listBox->triggerUpdate( true );
 
     } else if (result == AddItem) {
         addNewItem();
@@ -778,7 +723,7 @@ bool KUrlBar::addNewItem()
     KUrlBarItem *item = new KUrlBarItem( this, d->currentURL,
                                          i18n("Enter a description") );
     if ( editItem( item ) ) {
-        m_listBox->insertItem( item );
+        m_listBox->addItem( item );
         return true;
     }
 
@@ -805,7 +750,6 @@ bool KUrlBar::editItem( KUrlBarItem *item )
         item->setDescription( description );
         item->setIcon( icon );
         item->setApplicationLocal( appLocal );
-        m_listBox->triggerUpdate( true );
         m_isModified = true;
         updateGeometry();
         return true;
@@ -818,33 +762,36 @@ bool KUrlBar::editItem( KUrlBarItem *item )
 ///////////////////////////////////////////////////////////////////
 
 
-KUrlBarListBox::KUrlBarListBox( QWidget *parent, const char *name )
-    : KListBox( parent, name )
+KUrlBarListWidget::KUrlBarListWidget( QWidget *parent )
+    : KListWidget( parent )
 {
+    setItemDelegate( new KUrlBarItemDelegate(this) );
+    setContextMenuPolicy(Qt::CustomContextMenu);
     setAcceptDrops( true );
     viewport()->setAcceptDrops( true );
 }
 
-KUrlBarListBox::~KUrlBarListBox()
+KUrlBarListWidget::~KUrlBarListWidget()
 {
 }
 
-void KUrlBarListBox::paintEvent( QPaintEvent* )
+/*void KUrlBarListWidget::paintEvent( QPaintEvent* )
 {
     QPainter p(this);
     p.setPen( palette().color( QPalette::Mid ) );
     p.drawRect( 0, 0, width() - 1, height() - 1 );
-}
+}*/
 
-void KUrlBarListBox::populateMimeData( QMimeData* mimeData )
+void KUrlBarListWidget::populateMimeData( QMimeData* mimeData )
 {
     KUrl::List urls;
-    KUrlBarItem *item = static_cast<KUrlBarItem*>( firstItem() );
+    
+    for (int rowIndex = 0 ; rowIndex < count() ; rowIndex++)
+    {
+        KUrlBarItem *urlBarItem = static_cast<KUrlBarItem*>( item(rowIndex) );
 
-    while ( item ) {
-        if ( item->isSelected() )
-            urls.append( item->url() );
-        item = static_cast<KUrlBarItem*>( item->next() );
+        if ( urlBarItem->isSelected() )
+            urls.append( urlBarItem->url() );
     }
 
     if ( !urls.isEmpty() ) {
@@ -853,45 +800,43 @@ void KUrlBarListBox::populateMimeData( QMimeData* mimeData )
     }
 }
 
-void KUrlBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
+void KUrlBarListWidget::contentsDragEnterEvent( QDragEnterEvent *e )
 {
     e->setAccepted( KUrl::List::canDecode( e->mimeData() ) );
 }
 
-void KUrlBarListBox::contentsDropEvent( QDropEvent *e )
+void KUrlBarListWidget::contentsDropEvent( QDropEvent *e )
 {
     emit dropped( e );
 }
 
-void KUrlBarListBox::contextMenuEvent( QContextMenuEvent *e )
+/*void KUrlBarListWidget::contextMenuEvent( QContextMenuEvent *e )
 {
     if (e)
     {
-        emit contextMenuRequested( itemAt( e->globalPos() ), e->globalPos() );
+        emit contextMenuRequested( item );
         e->accept(); // Consume the event to avoid multiple contextMenuEvent calls...
     }
-}
+}*/
 
-void KUrlBarListBox::setOrientation( Qt::Orientation orient )
+void KUrlBarListWidget::setOrientation( Qt::Orientation orient )
 {
     if ( orient == Qt::Vertical ) {
-        setColumnMode( 1 );
-        setRowMode( Variable );
+        //TODO KDE4 - Port me: setColumnMode( 1 );
     }
     else {
-        setRowMode( 1 );
-        setColumnMode( Variable );
+        //TODO KDE4 - Port me: setRowMode( 1 );
     }
 
     m_orientation = orient;
 }
 
-bool KUrlBarListBox::event( QEvent* e )
+bool KUrlBarListWidget::event( QEvent* e )
 {
     if ( e->type() == QEvent::ToolTip )
     {
         QHelpEvent* he = static_cast<QHelpEvent*>( e );
-        Q3ListBoxItem *item = itemAt( he->pos() );
+        QListWidgetItem *item = itemAt( he->pos() );
         if ( item ) {
             QString text = static_cast<KUrlBarItem*>( item )->toolTip();
             if ( !text.isEmpty() )
@@ -901,7 +846,7 @@ bool KUrlBarListBox::event( QEvent* e )
         return true;
     }
 
-    return KListBox::event(e);
+    return KListWidget::event(e);
 }
 
 

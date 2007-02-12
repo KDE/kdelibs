@@ -1,5 +1,5 @@
 /*
-* Tests the item container widgets K3IconView, K3ListView, KListBox
+* Tests the item container widgets K3IconView, K3ListView, KListWidget
 *
 * Copyright 2000 by Michael Reiher <michael.reiher@gmx.de>
 *
@@ -12,8 +12,8 @@
 
 class K3IconView;
 class K3ListView;
-class KListBox;
-class Q3ButtonGroup;
+class KListWidget;
+class QButtonGroup;
 class QLabel;
 
 class TopLevel : public QWidget
@@ -32,7 +32,7 @@ public Q_SLOTS:
 
     void slotIconViewExec( Q3IconViewItem* item );
     void slotListViewExec( Q3ListViewItem* item ); 
-    void slotListBoxExec( Q3ListBoxItem* item );
+    void slotListBoxExec( QListWidgetItem* item );
     void slotToggleSingleColumn( bool b );
 
     void slotClicked( Q3IconViewItem* ) { qDebug("CLICK");}
@@ -40,10 +40,10 @@ public Q_SLOTS:
 protected:
     K3IconView* m_pIconView;
     K3ListView* m_pListView;
-    KListBox* m_pListBox;
+    KListWidget* m_pListBox;
 
-    Q3ButtonGroup* m_pbgView;
-    Q3ButtonGroup* m_pbgMode;
+    QButtonGroup* m_pbgView;
+    QButtonGroup* m_pbgMode;
     QLabel* m_plblWidget;
     QLabel* m_plblSignal;
     QLabel* m_plblItem;

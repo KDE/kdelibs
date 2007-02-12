@@ -35,40 +35,56 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent )
 {
     KConfigGroup cg( KGlobal::config(), ConfigGroup );
     m_initializeSpeedbar = cg.readEntry( "Set speedbar defaults", true );
-    setIconSize(K3Icon::SizeSmallMedium);
+    setIconSize(K3Icon::SizeMedium);
     readConfig( KGlobal::config().data(), "KFileDialog Speedbar" );
 
     if ( m_initializeSpeedbar )
     {
         KUrl u;
+        KUrlBarItem* item = 0;
+
         u.setPath( KGlobalSettings::desktopPath() );
-        insertItem( u, i18n("Desktop"), false );
+        item = insertItem( u, i18n("Desktop"), false );
+        item->setToolTip( i18n("Files and folders found on your desktop") );
 
 //TODO: win32
         if ((KGlobalSettings::documentPath() != (QDir::homePath()+'/')) &&
             QDir(KGlobalSettings::documentPath()).exists())
         {
             u.setPath( KGlobalSettings::documentPath() );
-            insertItem( u, i18n("Documents"), false, "document" );
+            item = insertItem( u, i18n("Documents"), false, "document" );
+            item->setToolTip( i18n("Your personal documents folder") );
         }
 
         u.setPath( QDir::homePath() );
-        insertItem( u, i18n("Home Folder"), false,
+        item = insertItem( u, i18n("Home Folder"), false,
                                "folder_home" );
+        item->setToolTip( i18n("Your personal home folder for your files and settings") );
+
+#warning "KDE4 - Can we move the Floppy item into 'Storage Media' or lose it entirely?"
 
         u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Floppy"), false,
+        if ( KProtocolInfo::isKnownProtocol( u ) ) {
+            item = insertItem( u, i18n("Floppy"), false,
                                    KProtocolInfo::icon( "floppy" ) );
+            item->setToolTip( i18n("Files and folders on floppy disks") );
+        }
+
         u = "media:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Storage Media"), false,
+        if ( KProtocolInfo::isKnownProtocol( u ) ) {
+            item = insertItem( u, i18n("Storage Media"), false,
                                    KProtocolInfo::icon( "media" ) );
+        
+            item->setToolTip( i18n("Removable storage devices and media") );
+        }
 
         u = "remote:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Network Folders"), false,
+        if ( KProtocolInfo::isKnownProtocol( u ) ) {
+            item = insertItem( u, i18n("Network Folders"), false,
                                    KProtocolInfo::icon( "remote" ) );
+
+            item->setToolTip( i18n("Files and folders on network locations.") );
+        }
     }
 }
 
@@ -87,17 +103,6 @@ void KFileSpeedBar::save(KSharedConfigPtr config)
     }
 
     writeConfig(config.data(), "KFileDialog Speedbar");
-}
-
-QSize KFileSpeedBar::sizeHint() const
-{
-    QSize sizeHint = KUrlBar::sizeHint();
-    int ems = fontMetrics().width("mmmmmmmmmmmm");
-    if (sizeHint.width() < ems)
-    {
-        sizeHint.setWidth(ems);
-    }
-    return sizeHint;
 }
 
 #include "kfilespeedbar.moc"

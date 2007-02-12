@@ -795,6 +795,7 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
     toolbar->setMovable(false);
+
     qInstallMsgHandler( oldHandler );
 
     d->pathCombo = new KUrlComboBox( KUrlComboBox::Directories, true,
@@ -1023,6 +1024,8 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
 void KFileDialog::initSpeedbar()
 {
     d->urlBar = new KFileSpeedBar( d->mainWidget );
+    d->urlBar->setFrameStyle( QFrame::Box | QFrame::Plain );
+
     d->urlBar->setObjectName( QLatin1String( "url bar" ) );
     connect( d->urlBar, SIGNAL( activated( const KUrl& )),
              SLOT( enterUrl( const KUrl& )) );
@@ -2172,18 +2175,16 @@ void KFileDialog::toggleSpeedbar( bool show )
         d->urlBar->show();
 
         // check to see if they have a home item defined, if not show the home button
-        KUrlBarItem *urlItem = static_cast<KUrlBarItem*>( d->urlBar->listBox()->firstItem() );
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
-        while ( urlItem )
+        for ( int rowIndex = 0 ; rowIndex < d->urlBar->listBox()->count() ; rowIndex++ )
         {
-          if ( homeURL.equals( urlItem->url(), KUrl::CompareWithoutTrailingSlash ) )
-            {
+            KUrlBarItem *urlItem = static_cast<KUrlBarItem*>( d->urlBar->listBox()->item(rowIndex) );
+          
+            if ( homeURL.equals( urlItem->url(), KUrl::CompareWithoutTrailingSlash ) ) {
                 toolbar->removeAction( ops->actionCollection()->action( "home" ) );
                 break;
             }
-
-            urlItem = static_cast<KUrlBarItem*>( urlItem->next() );
         }
     }
     else

@@ -25,7 +25,7 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kurl.h>
@@ -40,7 +40,7 @@ KMWFax::KMWFax(QWidget *parent)
 	QLabel	*lab = new QLabel(this);
 	lab->setWordWrap(true);
 	lab->setText(i18n("<p>Select the device which your serial Fax/Modem is connected to.</p>"));
-	m_list = new KListBox(this);
+	m_list = new KListWidget(this);
 
 	QVBoxLayout	*l1 = new QVBoxLayout(this);
 	l1->setMargin(0);
@@ -60,7 +60,10 @@ KMWFax::KMWFax(QWidget *parent)
 		{
 			if (attr->name && strcmp(attr->name,"device-uri") == 0 && strncmp(attr->values[0].string.text,"fax",3) == 0)
 			{
-				m_list->insertItem(SmallIcon("blockdevice"),QLatin1String(attr->values[0].string.text));
+                QListWidgetItem* item = new QListWidgetItem();
+                item->setIcon(SmallIcon("blockdevice"));
+                item->setText(QLatin1String(attr->values[0].string.text));
+				m_list->addItem(item);
 			}
 			attr = attr->next;
 		}
@@ -69,7 +72,7 @@ KMWFax::KMWFax(QWidget *parent)
 
 bool KMWFax::isValid(QString& msg)
 {
-	if (m_list->currentItem() == -1)
+	if (m_list->currentRow() == -1)
 	{
 		msg = i18n("You must select a device.");
 		return false;
@@ -79,6 +82,6 @@ bool KMWFax::isValid(QString& msg)
 
 void KMWFax::updatePrinter(KMPrinter *printer)
 {
-	QString	uri = m_list->currentText();
+	QString	uri = m_list->currentItem()->text();
 	printer->setDevice(uri);
 }

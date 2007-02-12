@@ -41,7 +41,7 @@
 #include <kiconloader.h>
 #include <kdialog.h>
 #include <kseparator.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <krandom.h>
@@ -893,8 +893,8 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_removereq->setIcon(KIcon("editdelete"));
 	QPushButton	*m_edit = new KPushButton(KGuiItem(i18n("&Edit Command..."), "edit"), topmain);
 	m_mimetype = new QComboBox(dummy);
-	m_availablemime = new KListBox(m_gb1);
-	m_selectedmime = new KListBox(m_gb1);
+	m_availablemime = new KListWidget(m_gb1);
+	m_selectedmime = new KListWidget(m_gb1);
 	m_addmime = new QToolButton(m_gb1);
 	m_addmime->setIcon(QApplication::isRightToLeft()? KIcon("forward") : KIcon("back"));
 	m_removemime = new QToolButton(m_gb1);
@@ -987,7 +987,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 	m_mimelist.sort();
 	m_mimetype->addItems(m_mimelist);
-	m_availablemime->insertStringList(m_mimelist);
+	m_availablemime->addItems(m_mimelist);
 
 	setMainWidget(topmain);
 	setDetailsWidget(dummy);
@@ -1020,11 +1020,14 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 	list = xmlCmd->inputMimeTypes();
 	m_selectedmime->clear();
 	m_availablemime->clear();
-	m_availablemime->insertStringList(m_mimelist);
+	m_availablemime->addItems(m_mimelist);
 	for (QStringList::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
-		m_selectedmime->insertItem(*it);
-		delete m_availablemime->findItem(*it, Q3ListView::ExactMatch);
+		m_selectedmime->addItem(*it);
+		QList<QListWidgetItem*> items = m_availablemime->findItems(*it,Qt::MatchExactly);
+        foreach ( QListWidgetItem* item , items ) {
+            delete item;
+        }
 	}
 }
 
@@ -1043,8 +1046,8 @@ void KXmlCommandDlg::slotOk()
 		}
 		m_cmd->setRequirements(l);
 		l.clear();
-		for (uint i=0; i<m_selectedmime->count(); i++)
-			l << m_selectedmime->text(i);
+		for (int i=0; i<m_selectedmime->count(); i++)
+			l << m_selectedmime->item(i)->text();
 		m_cmd->setInputMimeTypes(l);
 	}
 	KDialog::accept();
@@ -1063,23 +1066,25 @@ bool KXmlCommandDlg::editCommand(KXmlCommand *xmlCmd, QWidget *parent)
 
 void KXmlCommandDlg::slotAddMime()
 {
-	int	index = m_availablemime->currentItem();
+	int	index = m_availablemime->currentRow();
 	if (index != -1)
 	{
-		m_selectedmime->insertItem(m_availablemime->currentText());
-		m_availablemime->removeItem(index);
-		m_selectedmime->sort();
+		m_selectedmime->addItem(m_availablemime->currentItem()->text());
+		QListWidgetItem* item = m_availablemime->takeItem(index);
+        delete item;
+		m_selectedmime->model()->sort(0);
 	}
 }
 
 void KXmlCommandDlg::slotRemoveMime()
 {
-	int	index = m_selectedmime->currentItem();
+	int	index = m_selectedmime->currentRow();
 	if (index != -1)
 	{
-		m_availablemime->insertItem(m_selectedmime->currentText());
-		m_selectedmime->removeItem(index);
-		m_availablemime->sort();
+		m_availablemime->addItem(m_selectedmime->currentItem()->text());
+		QListWidgetItem* item = m_selectedmime->takeItem(index);
+        delete item;
+		m_availablemime->model()->sort(0);
 	}
 }
 

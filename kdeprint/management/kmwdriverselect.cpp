@@ -26,7 +26,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <kpushbutton.h>
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 
@@ -38,7 +38,7 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent)
 	m_nextpage = KMWizard::DriverTest;
 	m_entries = NULL;
 
-	m_list = new KListBox(this);
+	m_list = new KListWidget(this);
 	QLabel	*l1 = new QLabel(this);
 	l1->setWordWrap(true);
 	l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
@@ -62,7 +62,7 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent)
 
 bool KMWDriverSelect::isValid(QString& msg)
 {
-	if (m_list->currentItem() == -1)
+	if (m_list->currentRow() == -1)
 	{
 		msg = i18n("You must select a driver.");
 		return false;
@@ -87,16 +87,16 @@ void KMWDriverSelect::initPrinter(KMPrinter *p)
 				recomm = m_list->count();
 				s.append(i18n(" [recommended]"));
 			}
-			m_list->insertItem(s);
+			m_list->addItem(s);
 		}
 		if (m_entries->count() > 0)
-			m_list->setSelected(recomm, true);
+			m_list->item(recomm)->setSelected(true);
 	}
 }
 
 void KMWDriverSelect::updatePrinter(KMPrinter *p)
 {
-	int	index = m_list->currentItem();
+	int	index = m_list->currentRow();
 	if (m_entries && index >= 0 && index < (int)(m_entries->count()))
 	{
 		KMDBEntry	*entry = m_entries->at(index);
@@ -112,7 +112,7 @@ void KMWDriverSelect::updatePrinter(KMPrinter *p)
 
 void KMWDriverSelect::slotDriverComment()
 {
-	int	index = m_list->currentItem();
+	int	index = m_list->currentRow();
 	if (m_entries && index >=0 && index < (int)(m_entries->count()) && !m_entries->at(index)->drivercomment.isEmpty())
 		KMessageBox::information(this, m_entries->at(index)->drivercomment, QString(), QString(), KMessageBox::AllowLink);
 	else

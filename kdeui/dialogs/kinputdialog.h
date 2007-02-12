@@ -28,7 +28,7 @@ class KDoubleSpinBox;
 class KComboBox;
 class KTextEdit;
 class KInputDialogPrivate;
-class KListBox;
+class KListWidget;
 
 #include <kdialog.h>
 #include <limits.h>
@@ -77,7 +77,7 @@ class KDEUI_EXPORT KInputDialog : public KDialog
     KIntSpinBox *intSpinBox() const;
     KDoubleSpinBox *doubleSpinBox() const;
     KComboBox *comboBox() const;
-    KListBox *listBox() const;
+    KListWidget *listBox() const;
     KTextEdit *textEdit() const;
 
   private Q_SLOTS:

@@ -19,7 +19,7 @@
 
 #include "editlist.h"
 
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
@@ -29,7 +29,7 @@
 EditList::EditList(QWidget *parent)
 	: QWidget(parent)
 {
-	list_ = new KListBox(this);
+	list_ = new KListWidget(this);
 	addbtn_ = new KPushButton(KGuiItem(i18n("Add..."), "filenew"), this);
 	editbtn_ = new KPushButton(KGuiItem(i18n("Edit..."), "edit"), this);
 	delbtn_ = new KPushButton(KGuiItem(i18n("Delete"), "editdelete"), this);
@@ -55,16 +55,16 @@ EditList::EditList(QWidget *parent)
 
 void EditList::slotEdit()
 {
-	int index = list_->currentItem();
+	int index = list_->currentRow();
 	if (index >= 0)
 		emit edit(index);
 }
 
 void EditList::slotDelete()
 {
-	int	index = list_->currentItem();
-	list_->removeItem(index);
-	slotSelected((list_->count() > 0 ? list_->currentItem() : -1));
+	int	index = list_->currentRow();
+	delete list_->takeItem(index);
+	slotSelected((list_->count() > 0 ? list_->currentRow() : -1));
 	emit deleted(index);
 }
 
@@ -76,18 +76,20 @@ void EditList::slotSelected(int index)
 
 QString EditList::text(int index)
 {
-	return list_->text(index);
+	return list_->item(index)->text();
 }
 
 void EditList::setText(int index, const QString& s)
 {
-	if (list_->text(index) != s)
+	if (list_->item(index)->text() != s)
 	{
-		Q3ListBoxItem	*it = list_->findItem(s, Q3ListBox::ExactMatch);
-		if (!it)
-			list_->changeItem(s, index);
-		else
-			list_->removeItem(index);
+		QListWidgetItem	*it = list_->findItems(s, Qt::MatchExactly).value(0);
+		if (!it) {
+			list_->item(index)->setText(s);
+        }
+		else {
+			delete list_->takeItem(index);
+        }
 	}
 }
 
@@ -99,14 +101,18 @@ void EditList::clear()
 
 void EditList::insertItem(const QString& s)
 {
-	if (!list_->findItem(s, Q3ListBox::ExactMatch))
-		list_->insertItem(s);
+	if (list_->findItems(s, Qt::MatchExactly).isEmpty())
+		list_->addItem(s);
 }
 
 void EditList::insertItem(const QPixmap& icon, const QString& s)
 {
-	if (!list_->findItem(s, Q3ListBox::ExactMatch))
-		list_->insertItem(icon, s);
+	if (!list_->findItems(s, Qt::MatchExactly).isEmpty()) { 
+	    QListWidgetItem* item = new QListWidgetItem();
+        item->setIcon(icon);
+        item->setText(s);
+        list_->addItem(item);
+    }
 }
 
 void EditList::insertItems(const QStringList& l)
@@ -118,8 +124,8 @@ void EditList::insertItems(const QStringList& l)
 QStringList EditList::items()
 {
 	QStringList l;
-	for (uint i=0; i<list_->count(); i++)
-		l << list_->text(i);
+	for (int i=0; i<list_->count(); i++)
+		l << list_->item(i)->text();
 	return l;
 }
 

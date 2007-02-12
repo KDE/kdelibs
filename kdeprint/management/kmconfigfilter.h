@@ -22,7 +22,7 @@
 
 #include "kmconfigpage.h"
 
-class KListBox;
+class KListWidget;
 class QToolButton;
 class QLineEdit;
 
@@ -41,10 +41,10 @@ protected Q_SLOTS:
 	void slotRemoveClicked();
 
 protected:
-	void transfer(KListBox *from, KListBox *to);
+	void transfer(KListWidget *from, KListWidget *to);
 
 private:
-	KListBox	*m_list1, *m_list2;
+	KListWidget	*m_list1, *m_list2;
 	QToolButton	*m_add, *m_remove;
 	QLineEdit	*m_locationre;
 };

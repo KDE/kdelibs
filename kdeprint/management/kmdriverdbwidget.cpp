@@ -23,7 +23,7 @@
 #include "kmmanager.h"
 #include "driver.h"
 
-#include <klistbox.h>
+#include <klistwidget.h>
 #include <kpushbutton.h>
 #include <qcheckbox.h>
 #include <kcursor.h>
@@ -45,8 +45,8 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	m_valid = false;
 
 	// build widget
-	m_manu = new KListBox(this);
-	m_model = new KListBox(this);
+	m_manu = new KListWidget(this);
+	m_model = new KListWidget(this);
 	m_postscript = new QCheckBox(i18n("&PostScript printer"),this);
 	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
 	m_postscript->setCursor(KCursor::handCursor());
@@ -80,7 +80,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	// build connections
 	connect(KMDriverDB::self(),SIGNAL(dbLoaded(bool)),SLOT(slotDbLoaded(bool)));
 	connect(KMDriverDB::self(), SIGNAL(error(const QString&)), SLOT(slotError(const QString&)));
-	connect(m_manu,SIGNAL(highlighted(const QString&)),SLOT(slotManufacturerSelected(const QString&)));
+	connect(m_manu,SIGNAL(currentTextChanged(const QString&)),SLOT(slotManufacturerSelected(const QString&)));
 	connect(m_raw,SIGNAL(toggled(bool)),m_manu,SLOT(setDisabled(bool)));
 	connect(m_raw,SIGNAL(toggled(bool)),m_model,SLOT(setDisabled(bool)));
 	connect(m_raw,SIGNAL(toggled(bool)),m_other,SLOT(setDisabled(bool)));
@@ -99,18 +99,26 @@ KMDriverDbWidget::~KMDriverDbWidget()
 
 void KMDriverDbWidget::setDriver(const QString& manu, const QString& model)
 {
-	Q3ListBoxItem	*item = m_manu->findItem(manu);
+	QList<QListWidgetItem*> items = m_manu->findItems(manu,Qt::MatchContains);
+    QListWidgetItem* item = items.isEmpty() ? 0 : items.first();
+
 	QString		model_(model);
 	if (item)
 	{
 		m_manu->setCurrentItem(item);
-		item = m_model->findItem(model_);
-		if (!item)
+		
+        items = m_model->findItems(model_,Qt::MatchContains);
+        item = items.isEmpty() ? 0 : items.first();
+		
+        if (!item)
+        {
 			// try by stripping the manufacturer name from
 			// the beginning of the model string. This is
 			// often the case with PPD files
-			item = m_model->findItem(model_.replace(0,manu.length()+1,QLatin1String("")));
-		if (item)
+			items = m_model->findItems(model_.replace(0,manu.length()+1,QLatin1String("")),Qt::MatchContains);
+            item = items.isEmpty() ? 0 : items.first();
+        }
+        if (item)
 			m_model->setCurrentItem(item);
 	}
 }
@@ -133,12 +141,16 @@ void KMDriverDbWidget::setHaveOther(bool on)
 
 QString KMDriverDbWidget::manufacturer()
 {
-	return m_manu->currentText();
+    Q_ASSERT(m_manu->currentItem());
+
+	return m_manu->currentItem()->text();
 }
 
 QString KMDriverDbWidget::model()
 {
-	return m_model->currentText();
+    Q_ASSERT(m_model->currentItem());
+
+	return m_model->currentItem()->text();
 }
 
 KMDBEntryList* KMDriverDbWidget::drivers()
@@ -158,7 +170,7 @@ void KMDriverDbWidget::init()
 		QApplication::setOverrideCursor(KCursor::waitCursor());
 		m_manu->clear();
 		m_model->clear();
-		m_manu->insertItem(i18n("Loading..."));
+		m_manu->addItem(i18n("Loading..."));
 		KMDriverDB::self()->init(this);
 	}
 }
@@ -167,16 +179,19 @@ void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 {
 	QApplication::restoreOverrideCursor();
 	m_valid = true;
-	if (reloaded || m_manu->count() == 0 || (m_manu->count() == 1 && m_manu->text(0) == i18n("Loading...")))
+
+    Q_ASSERT(m_manu->count() > 0);
+
+	if (reloaded || m_manu->count() == 0 || (m_manu->count() == 1 && m_manu->item(0)->text() == i18n("Loading...")))
 	{ // do something only if DB reloaded
 		m_manu->clear();
 		m_model->clear();
 		QHashIterator<QString, QHash<QString, KMDBEntryList*>* >	it(KMDriverDB::self()->manufacturers());
 		while (it.hasNext()) {
       it.next();
-			m_manu->insertItem(it.key());
+			m_manu->addItem(it.key());
     }
-		m_manu->sort();
+		m_manu->model()->sort(0);
 		m_manu->setCurrentItem(0);
 	}
 }
@@ -202,7 +217,7 @@ void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 			ilist.append(QString( it.key().toLatin1() ).toUpper());
     }
 		ilist.sort();
-		m_model->insertStringList(ilist);
+		m_model->addItems(ilist);
 		m_model->setCurrentItem(0);
 	}
 }
@@ -211,11 +226,15 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 {
 	if (on)
 	{
-		Q3ListBoxItem	*item = m_manu->findItem("GENERIC");
+		QList<QListWidgetItem*> items = m_manu->findItems("GENERIC",Qt::MatchExactly);
+        QListWidgetItem* item = items.isEmpty() ? 0 : items.first();
+
 		if (item)
 		{
 			m_manu->setCurrentItem(item);
-			item = m_model->findItem( "POSTSCRIPT PRINTER" );
+			items = m_model->findItems( "POSTSCRIPT PRINTER",Qt::MatchExactly);
+            item = items.isEmpty() ? 0 : items.first();
+
 			if ( item )
 			{
 				m_model->setCurrentItem( item );
@@ -249,13 +268,13 @@ void KMDriverDbWidget::slotOtherClicked()
 				if (driver)
 				{
 					m_external = filename;
-					disconnect(m_manu,SIGNAL(highlighted(const QString&)),this,SLOT(slotManufacturerSelected(const QString&)));
+					disconnect(m_manu,SIGNAL(currentTextChanged(const QString&)),this,SLOT(slotManufacturerSelected(const QString&)));
 					m_manu->clear();
 					m_model->clear();
 					QString	s = driver->get("manufacturer");
-					m_manu->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
+					m_manu->addItem((s.isEmpty() ? i18n("<Unknown>") : s));
 					s = driver->get("model");
-					m_model->insertItem((s.isEmpty() ? i18n("<Unknown>") : s));
+					m_model->addItem((s.isEmpty() ? i18n("<Unknown>") : s));
 					m_manu->setCurrentItem(0);
 					m_model->setCurrentItem(0);
 					m_other->setText(i18n("Database"));

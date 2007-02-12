@@ -354,11 +354,9 @@ KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_c
     d->charTable->resize( sz );
     //charTable->setMaximumSize( sz );
     d->charTable->setMinimumSize( sz );
-#ifdef __GNUC__
-    #warning fixme
-#endif
-/*    charTable->setHScrollBarMode( Q3ScrollView::AlwaysOff );
-    charTable->setVScrollBarMode( Q3ScrollView::AlwaysOff );*/
+
+    d->charTable->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    d->charTable->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     setFont( _font.isEmpty() ? KVBox::font().family() : _font );
     setTableNum( _tableNum );
