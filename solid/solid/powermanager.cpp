@@ -29,13 +29,13 @@ namespace Solid
     public:
         Private( PowerManager *manager ) : q( manager ) {}
 
-        void registerBackend( QObject *newBackend );
+        void connectBackend( QObject *newBackend );
 
         PowerManager *q;
     };
 }
 
-SOLID_SINGLETON_IMPLEMENTATION( Solid::PowerManager )
+SOLID_SINGLETON_IMPLEMENTATION( Solid::PowerManager, PowerManager )
 
 Solid::PowerManager::PowerManager()
     : ManagerBase( "Power Management", "SolidPowerManager", "Solid::Ifaces::PowerManager" ),
@@ -43,16 +43,7 @@ Solid::PowerManager::PowerManager()
 {
     if ( managerBackend() != 0 )
     {
-        d->registerBackend( managerBackend() );
-    }
-}
-
-Solid::PowerManager::PowerManager( QObject *backend )
-    : ManagerBase( backend ), d( new Private( this ) )
-{
-    if ( managerBackend() != 0 )
-    {
-        d->registerBackend( managerBackend() );
+        d->connectBackend( managerBackend() );
     }
 }
 
@@ -131,10 +122,16 @@ bool Solid::PowerManager::setCpuEnabled( int cpuNum, bool enabled )
     return_SOLID_CALL( Ifaces::PowerManager*, managerBackend(), false, setCpuEnabled( cpuNum, enabled ) );
 }
 
-void Solid::PowerManager::Private::registerBackend( QObject *newBackend )
+void Solid::PowerManager::setManagerBackend( QObject *backend )
 {
-    q->setManagerBackend( newBackend );
+    ManagerBase::setManagerBackend(backend);
+    if (backend) {
+        d->connectBackend(backend);
+    }
+}
 
+void Solid::PowerManager::Private::connectBackend( QObject *newBackend )
+{
     QObject::connect( newBackend, SIGNAL( schemeChanged( QString ) ),
                       q, SIGNAL( schemeChanged( QString ) ) );
     QObject::connect( newBackend, SIGNAL( acAdapterStateChanged( int ) ),

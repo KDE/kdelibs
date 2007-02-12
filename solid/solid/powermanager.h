@@ -262,8 +262,10 @@ namespace Solid
 
     private:
         PowerManager();
-        PowerManager( QObject *backend );
         ~PowerManager();
+
+    protected:
+        void setManagerBackend( QObject *backend );
 
     private:
         class Private;

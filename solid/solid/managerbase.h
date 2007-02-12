@@ -23,8 +23,7 @@
 #include <QObject>
 
 #include <kdelibs_export.h>
-
-#include <kstaticdeleter.h>
+#include <kglobal.h>
 
 namespace Solid
 {
@@ -61,13 +60,6 @@ namespace Solid
         ManagerBase( const QString &description, const char *serviceName, const char *backendClassName );
 
         /**
-         * Constructs a new manager from an already loaded backend.
-         *
-         * @param backend the backend object to use
-         */
-        explicit ManagerBase( QObject *backend );
-
-        /**
          * Destroys a ManagerBase object.
          */
         virtual ~ManagerBase();
@@ -80,7 +72,7 @@ namespace Solid
          *
          * @param backend the new backend
          */
-        void setManagerBackend( QObject *backend );
+        virtual void setManagerBackend( QObject *backend );
 
         /**
          * Load a backend from a plugin and set the error message if everything went wrong.
@@ -98,39 +90,36 @@ namespace Solid
         Private *d;
     };
 
-#define SOLID_SINGLETON( Type )                              \
-public:                                                      \
-    static Type &self();                                     \
-    static Type &selfForceBackend( QObject *backend );       \
-private:                                                     \
-    static Type *s_self;                                     \
-    friend void ::KStaticDeleter< Type >::destructObject();
+    /**
+     * @internal
+     */
+    template<typename T>
+    class SingletonHelper { public: T instance; };
 
-#define SOLID_SINGLETON_IMPLEMENTATION( Type )               \
-    static ::KStaticDeleter< Type > sd;                      \
-                                                             \
-    Type *Type::s_self = 0;                                  \
-                                                             \
-    Type &Type::self()                                       \
-    {                                                        \
-        if( !s_self )                                        \
-        {                                                    \
-            s_self = new Type();                             \
-            sd.setObject( s_self, s_self );                  \
-        }                                                    \
-                                                             \
-        return *s_self;                                      \
-    }                                                        \
-                                                             \
-    Type &Type::selfForceBackend( QObject *backend )         \
-    {                                                        \
-        if( !s_self )                                        \
-        {                                                    \
-            s_self = new Type( backend );                    \
-            sd.setObject( s_self, s_self );                  \
-        }                                                    \
-                                                             \
-        return *s_self;                                      \
+#define SOLID_SINGLETON( Type )                                   \
+public:                                                           \
+    static Type &self();                                          \
+    static Type &selfForceBackend( QObject *backend );            \
+private:                                                          \
+    friend class Solid::SingletonHelper< Type >;
+
+#define SOLID_SINGLETON_IMPLEMENTATION( Type, Name )              \
+    K_GLOBAL_STATIC(Solid::SingletonHelper< Type >, global##Name) \
+                                                                  \
+    Type &Type::self()                                            \
+    {                                                             \
+        Solid::SingletonHelper< Type > *singleton = global##Name; \
+                                                                  \
+        return singleton->instance;                               \
+    }                                                             \
+                                                                  \
+    Type &Type::selfForceBackend( QObject *backend )              \
+    {                                                             \
+        Solid::SingletonHelper< Type > *singleton = global##Name; \
+                                                                  \
+        singleton->instance.setManagerBackend( backend );         \
+                                                                  \
+        return singleton->instance;                               \
     }
 }
 

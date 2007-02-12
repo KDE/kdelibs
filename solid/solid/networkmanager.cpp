@@ -37,7 +37,7 @@ namespace Solid
         Private( NetworkManager *manager ) : q( manager ) {}
 
         QPair<NetworkInterface*, Ifaces::NetworkInterface*> findRegisteredNetworkInterface( const QString &uni );
-        void registerBackend( QObject *newBackend );
+        void connectBackend( QObject *newBackend );
 
         NetworkManager *q;
         QMap<QString, QPair<NetworkInterface*, Ifaces::NetworkInterface*> > networkInterfaceMap;
@@ -47,7 +47,7 @@ namespace Solid
     };
 }
 
-SOLID_SINGLETON_IMPLEMENTATION( Solid::NetworkManager )
+SOLID_SINGLETON_IMPLEMENTATION( Solid::NetworkManager, NetworkManager )
 
 
 Solid::NetworkManager::NetworkManager()
@@ -56,16 +56,7 @@ Solid::NetworkManager::NetworkManager()
 {
     if ( managerBackend() != 0 )
     {
-        d->registerBackend( managerBackend() );
-    }
-}
-
-Solid::NetworkManager::NetworkManager( QObject *backend )
-    : ManagerBase( backend ), d( new Private( this ) )
-{
-    if ( managerBackend() != 0 )
-    {
-        d->registerBackend( managerBackend() );
+        d->connectBackend( managerBackend() );
     }
 }
 
@@ -163,6 +154,14 @@ const Solid::NetworkInterface &Solid::NetworkManager::findNetworkInterface( cons
     }
 }
 
+void Solid::NetworkManager::setManagerBackend( QObject *backend )
+{
+    ManagerBase::setManagerBackend(backend);
+    if (backend) {
+        d->connectBackend(backend);
+    }
+}
+
 void Solid::NetworkManager::slotNetworkInterfaceAdded( const QString &uni )
 {
     QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = d->networkInterfaceMap.take( uni );
@@ -206,10 +205,8 @@ void Solid::NetworkManager::slotDestroyed( QObject *object )
 
 /***************************************************************************/
 
-void Solid::NetworkManager::Private::registerBackend( QObject *newBackend )
+void Solid::NetworkManager::Private::connectBackend( QObject *newBackend )
 {
-    q->setManagerBackend( newBackend );
-
     QObject::connect( newBackend, SIGNAL( networkInterfaceAdded( const QString & ) ),
                       q, SLOT( slotNetworkInterfaceAdded( const QString & ) ) );
     QObject::connect( newBackend, SIGNAL( networkInterfaceRemoved( const QString & ) ),

@@ -136,8 +136,10 @@ namespace Solid
 
     private:
         DeviceManager();
-        DeviceManager( QObject *backend );
         ~DeviceManager();
+
+    protected:
+        void setManagerBackend( QObject *backend );
 
     private Q_SLOTS:
         void slotDeviceAdded( const QString &udi );

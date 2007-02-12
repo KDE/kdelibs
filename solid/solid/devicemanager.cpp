@@ -35,7 +35,7 @@ namespace Solid
         Private( DeviceManager *manager ) : q( manager ) {}
 
         QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi );
-        void registerBackend( QObject *newBackend );
+        void connectBackend( QObject *newBackend );
 
         DeviceManager *q;
         QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
@@ -45,7 +45,7 @@ namespace Solid
     };
 }
 
-SOLID_SINGLETON_IMPLEMENTATION( Solid::DeviceManager )
+SOLID_SINGLETON_IMPLEMENTATION( Solid::DeviceManager, DeviceManager )
 
 Solid::DeviceManager::DeviceManager()
     : ManagerBase( "Hardware Discovery", "SolidDeviceManager", "Solid::Ifaces::DeviceManager" ),
@@ -53,16 +53,7 @@ Solid::DeviceManager::DeviceManager()
 {
     if ( managerBackend() != 0 )
     {
-        d->registerBackend( managerBackend() );
-    }
-}
-
-Solid::DeviceManager::DeviceManager( QObject *backend )
-    : ManagerBase( backend ), d( new Private( this ) )
-{
-    if ( managerBackend() != 0 )
-    {
-        d->registerBackend( managerBackend() );
+        d->connectBackend( managerBackend() );
     }
 }
 
@@ -215,6 +206,14 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
     return list;
 }
 
+void Solid::DeviceManager::setManagerBackend( QObject *backend )
+{
+    ManagerBase::setManagerBackend(backend);
+    if (backend) {
+        d->connectBackend(backend);
+    }
+}
+
 void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 {
     QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
@@ -293,10 +292,8 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::fin
     }
 }
 
-void Solid::DeviceManager::Private::registerBackend( QObject *newBackend )
+void Solid::DeviceManager::Private::connectBackend( QObject *newBackend )
 {
-    q->setManagerBackend( newBackend );
-
     QObject::connect( newBackend, SIGNAL( deviceAdded( QString ) ),
                       q, SLOT( slotDeviceAdded( QString ) ) );
     QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),

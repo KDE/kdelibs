@@ -58,18 +58,8 @@ Solid::ManagerBase::ManagerBase( const QString &description, const char *service
     }
 }
 
-Solid::ManagerBase::ManagerBase( QObject *backend )
-    : QObject(), d( new Private )
-{
-    if ( backend != 0 )
-    {
-        setManagerBackend( backend );
-    }
-}
-
 Solid::ManagerBase::~ManagerBase()
 {
-    delete d->backend;
     delete d;
 }
 

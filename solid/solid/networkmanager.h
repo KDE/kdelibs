@@ -120,9 +120,11 @@ namespace Solid
 
     private:
         NetworkManager();
-        NetworkManager( QObject *backend );
         virtual ~NetworkManager();
         NetworkInterfaceList buildDeviceList( const QStringList & udiList ) const;
+
+    protected:
+        void setManagerBackend( QObject *backend );
 
     private Q_SLOTS:
         void slotNetworkInterfaceAdded( const QString &uni );
