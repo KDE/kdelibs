@@ -64,24 +64,40 @@ const int XKeyRelease = KeyRelease;
 /*                                                                     */
 /***********************************************************************/
 
+class KKeyButton::KKeyButtonPrivate
+{
+public:
+	KKeyButtonPrivate(KKeyButton *q): q(q) {}
+  
+	KKeyButton *q;
+	KShortcut m_cut;
+	bool m_bEditing;
+};
+
 KKeyButton::KKeyButton(QWidget *parent)
-:	QPushButton( parent )
+:	QPushButton( parent ), d(new KKeyButtonPrivate(this))
 {
 	setFocusPolicy( Qt::StrongFocus );
-	m_bEditing = false;
+	d->m_bEditing = false;
 	connect( this, SIGNAL(clicked()), this, SLOT(captureShortcut()) );
 	setShortcut( KShortcut() );
 }
 
 KKeyButton::~KKeyButton ()
 {
+	delete d;
+}
+
+const KShortcut& KKeyButton::shortcut() const
+{
+	return d->m_cut;
 }
 
 void KKeyButton::setShortcut( const KShortcut& cut )
 {
-	m_cut = cut;
-	QString keyStr = m_cut.toString();
-	keyStr.replace('&', QLatin1String("&&"));
+	d->m_cut = cut;
+	QString keyStr = d->m_cut.toString();
+	keyStr.replace(QLatin1Char('&'), QLatin1String("&&"));
 	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
 }
 
@@ -95,11 +111,11 @@ void KKeyButton::captureShortcut()
 {
 	KShortcut cut;
 
-	m_bEditing = true;
+	d->m_bEditing = true;
 	repaint();
 
 	{
-		KShortcutDialog dlg( m_cut, this );
+		KShortcutDialog dlg( d->m_cut, this );
 		if( dlg.exec() == KDialog::Accepted )
 			cut = dlg.shortcut();
 	} // emit the signal after the dialog is destroyed, otherwise it still has grab
@@ -107,7 +123,7 @@ void KKeyButton::captureShortcut()
 	if( !cut.isEmpty() )
 		emit capturedShortcut( cut );
 
-	m_bEditing = false;
+	d->m_bEditing = false;
 	repaint();
 }
 
@@ -140,7 +156,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
   if( width() > 12 && height() > 8 )
     qDrawShadePanel( &painter, 6, 4, width() - 12, height() - 8,
                      palette(), true, 1, 0L );
-  if ( m_bEditing )
+  if ( d->m_bEditing )
   {
     painter.setPen( palette().color( QPalette::Base ) );
     painter.setBrush( palette().color( QPalette::Base ) );
@@ -159,7 +175,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
                          palette(), isEnabled(), text() );
 
   painter.setBrush( Qt::NoBrush );
-  if( hasFocus() || m_bEditing )
+  if( hasFocus() || d->m_bEditing )
   {
     if( width() > 16 && height() > 12 )
       painter.drawRect( 8, 6, width() - 16, height() - 12 );

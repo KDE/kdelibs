@@ -53,8 +53,7 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	virtual ~KKeyButton();
 
 	void setShortcut( const KShortcut& cut );
-	const KShortcut& shortcut() const
-		{ return m_cut; }
+	const KShortcut& shortcut() const;
 
 	/**
 	* Reimplemented for internal purposes.
@@ -72,16 +71,17 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	void captureShortcut();
 
  protected:
-	KShortcut m_cut;
-	bool m_bEditing;
-
 	/**
 	* Reimplemented for internal reasons.
 	*/
 	void paintEvent( QPaintEvent* pe );
 
  private:
-	class KKeyButtonPrivate* d;
+        class KKeyButtonPrivate;
+        friend class KKeyButtonPrivate;
+	KKeyButtonPrivate* const d;
+        
+        Q_DISABLE_COPY(KKeyButton)
 };
 
 #endif
