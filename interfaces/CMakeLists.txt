@@ -2,7 +2,6 @@
 
 project(interfaces)
 
-add_subdirectory( kdocument ) 
 add_subdirectory( ktexteditor ) 
 add_subdirectory( kregexpeditor ) 
 add_subdirectory( kmediaplayer ) 
