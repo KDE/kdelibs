@@ -74,6 +74,7 @@ install( FILES
   kdeui/k3aboutdialog.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
+  kdeui/k3listbox.h
   kdeui/k3popupmenu.h
   kdeui/k3textedit.h
   kdeui/k3colordrag.h
