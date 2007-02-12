@@ -66,7 +66,8 @@ namespace Solid
                     Camera = 64, PortableMediaPlayer = 128,
                     NetworkHw = 256, AcAdapter = 512,
                     Battery = 1024, Button = 2048,
-                    Display = 4096, AudioHw = 8192 };
+                    Display = 4096, AudioHw = 8192,
+                    DvbHw = 16384 };
 
         /**
          * This type stores an OR combination of Type values.

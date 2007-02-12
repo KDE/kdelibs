@@ -22,7 +22,8 @@ set(solid_fakehw_PART_SRCS
    fakebattery.cpp 
    fakebutton.cpp 
    fakedisplay.cpp
-   fakeaudiohw.cpp )
+   fakeaudiohw.cpp
+   fakedvbhw.cpp )
 
 kde4_automoc(${solid_fakehw_PART_SRCS})
 

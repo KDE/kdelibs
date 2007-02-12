@@ -52,6 +52,8 @@
 #include <solid/ifaces/display.h>
 #include <solid/audiohw.h>
 #include <solid/ifaces/audiohw.h>
+#include <solid/dvbhw.h>
+#include <solid/ifaces/dvbhw.h>
 
 namespace Solid
 {
@@ -241,6 +243,9 @@ const Solid::Capability *Solid::Device::asCapability( const Capability::Type &ca
                 break;
             case Capability::AudioHw:
                 iface = capability_cast<Ifaces::AudioHw, AudioHw>( cap_iface );
+                break;
+            case Capability::DvbHw:
+                iface = capability_cast<Ifaces::DvbHw, DvbHw>( cap_iface );
                 break;
             case Capability::Unknown:
                 break;

@@ -33,6 +33,7 @@
 #include "fakebutton.h"
 #include "fakedisplay.h"
 #include "fakeaudiohw.h"
+#include "fakedvbhw.h"
 
 #include <QStringList>
 #include <QDBusConnection>
@@ -247,6 +248,9 @@ QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
         break;
     case Solid::Capability::AudioHw:
         iface = new FakeAudioHw(this);
+        break;
+    case Solid::Capability::DvbHw:
+        iface = new FakeDvbHw(this);
         break;
     case Solid::Capability::Unknown:
         break;
