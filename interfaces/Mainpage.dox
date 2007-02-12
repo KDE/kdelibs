@@ -14,5 +14,5 @@
 *
 */
 // DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
-// DOXYGEN_EXCLUDE = kspeech ktexteditor kdocument
+// DOXYGEN_EXCLUDE = kspeech ktexteditor
 // DOXYGEN_SET_RECURSIVE = YES
