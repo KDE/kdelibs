@@ -146,30 +146,6 @@ public:
     static int messageBox(int progressId, int type, const QString &text, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
 
-    /**
-      * @internal
-      * See renamedialog.h
-      */
-    KIO::RenameDialog_Result open_RenameDialog(KJob * job,
-                                                const QString & caption,
-                                                const QString& src,
-                                                const QString & dest,
-                                                KIO::RenameDialog_Mode mode,
-                                                QString& newDest,
-                                                KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
-                                                KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
-                                                time_t ctimeSrc = (time_t) -1,
-                                                time_t ctimeDest = (time_t) -1,
-                                                time_t mtimeSrc = (time_t) -1,
-                                                time_t mtimeDest = (time_t) -1);
-
-    /**
-      * @internal
-      * See skipdialog.h
-      */
-    KIO::SkipDialog_Result open_SkipDialog(KJob * job,
-                                            bool multi,
-                                            const QString & error_text);
 
 // FIXME: Are these slots necessary now that we have slotActionPerformed ?
 //        I don't think so (ereslibre)

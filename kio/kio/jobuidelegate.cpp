@@ -29,6 +29,7 @@
 #include <kaboutdata.h>
 #include "kio/observer.h"
 #include "kio/scheduler.h"
+#include "uiserveriface.h"
 
 #if defined Q_WS_X11
 #include <QX11Info>
@@ -148,6 +149,54 @@ void KIO::JobUiDelegate::slotWarning( KJob * /*job*/, const QString &errorText )
         }
         // otherwise just discard it.
     }
+}
+
+KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
+                                                           const QString & caption,
+                                                           const QString& src,
+                                                           const QString & dest,
+                                                           KIO::RenameDialog_Mode mode,
+                                                           QString& newDest,
+                                                           KIO::filesize_t sizeSrc,
+                                                           KIO::filesize_t sizeDest,
+                                                           time_t ctimeSrc,
+                                                           time_t ctimeDest,
+                                                           time_t mtimeSrc,
+                                                           time_t mtimeDest)
+{
+    org::kde::KIO::UIServer uiserver("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
+
+    kDebug() << "Observer::open_RenameDialog job=" << job << endl;
+    if (job)
+        kDebug() << "                        progressId=" << job->progressId() << endl;
+    // Hide existing dialog box if any
+    if (job && job->progressId())
+        uiserver.setJobVisible(job->progressId(), false);
+    // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
+    // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
+    RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
+                                                     newDest, sizeSrc, sizeDest,
+                                                     ctimeSrc, ctimeDest, mtimeSrc,
+                                                     mtimeDest);
+    if (job && job->progressId())
+        uiserver.setJobVisible(job->progressId(), true);
+    return res;
+}
+
+KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
+                                              bool multi,
+                                              const QString & error_text)
+{
+    org::kde::KIO::UIServer uiserver("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
+
+    // Hide existing dialog box if any
+    if (job && job->progressId())
+        uiserver.setJobVisible(job->progressId(), false);
+    // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
+    SkipDialog_Result res = KIO::open_SkipDialog(multi, error_text);
+    if (job && job->progressId())
+        uiserver.setJobVisible(job->progressId(), true);
+    return res;
 }
 
 #include "jobuidelegate.moc"

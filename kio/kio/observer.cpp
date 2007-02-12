@@ -382,47 +382,4 @@ int Observer::messageBox(int progressId, int type, const QString &text,
     return result;
 }
 
-RenameDialog_Result Observer::open_RenameDialog(KJob* job,
-                                           const QString & caption,
-                                           const QString& src, const QString & dest,
-                                           RenameDialog_Mode mode, QString& newDest,
-                                           KIO::filesize_t sizeSrc,
-                                           KIO::filesize_t sizeDest,
-                                           time_t ctimeSrc,
-                                           time_t ctimeDest,
-                                           time_t mtimeSrc,
-                                           time_t mtimeDest
-                                          )
-{
-    kDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDialog job=" << job << endl;
-    if (job)
-        kDebug(KDEBUG_OBSERVER) << "                        progressId=" << job->progressId() << endl;
-    // Hide existing dialog box if any
-    if (job && job->progressId())
-        m_uiserver->setJobVisible(job->progressId(), false);
-    // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
-    // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
-    RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
-                                                      newDest, sizeSrc, sizeDest,
-                                                      ctimeSrc, ctimeDest, mtimeSrc,
-                                                      mtimeDest);
-    if (job && job->progressId())
-        m_uiserver->setJobVisible(job->progressId(), true);
-    return res;
-}
-
-SkipDialog_Result Observer::open_SkipDialog(KJob* job,
-                                             bool _multi,
-                                             const QString& _error_text)
-{
-    // Hide existing dialog box if any
-    if (job && job->progressId())
-        m_uiserver->setJobVisible(job->progressId(), false);
-    // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
-    SkipDialog_Result res = KIO::open_SkipDialog(_multi, _error_text);
-    if (job && job->progressId())
-        m_uiserver->setJobVisible(job->progressId(), true);
-    return res;
-}
-
 #include "observer.moc"

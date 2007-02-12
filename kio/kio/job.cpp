@@ -1636,7 +1636,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 QString newPath;
                 KIO::Job* job = ( !progressId() && parentJob() ) ? parentJob() : this;
                 // Ask confirmation about resuming previous transfer
-                res = Observer::self()->open_RenameDialog(
+                res = ui()->askFileRename(
                       job, i18n("File Already Exists"),
                       m_src.url(),
                       m_dest.url(),

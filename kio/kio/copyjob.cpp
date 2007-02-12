@@ -33,6 +33,7 @@
 #include "kprotocolmanager.h"
 
 #include "kio/observer.h"
+#include "kio/jobuidelegate.h"
 
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
@@ -756,7 +757,7 @@ void CopyJob::slotResultConflictCreatingDirs( KJob * job )
     QString newPath;
     if (m_reportTimer)
         m_reportTimer->stop();
-    RenameDialog_Result r = Observer::self()->open_RenameDialog( this, i18n("Folder Already Exists"),
+    RenameDialog_Result r = ui()->askFileRename( this, i18n("Folder Already Exists"),
                                          (*it).uSource.url(),
                                          (*it).uDest.url(),
                                          mode, newPath,
@@ -1029,14 +1030,14 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
         else
             mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
 
-        res = Observer::self()->open_RenameDialog( this, !isDir ?
-                                i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                                (*it).uSource.url(),
-                                (*it).uDest.url(),
-                                mode, newPath,
-                              (*it).size, destsize,
-                              (*it).ctime, destctime,
-                              (*it).mtime, destmtime );
+        res = ui()->askFileRename( this, !isDir ?
+                                   i18n("File Already Exists") : i18n("Already Exists as Folder"),
+                                   (*it).uSource.url(),
+                                   (*it).uDest.url(),
+                                   mode, newPath,
+                                   (*it).size, destsize,
+                                   (*it).ctime, destctime,
+                                   (*it).mtime, destmtime );
 
     }
     else
@@ -1049,8 +1050,8 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
         }
         else
         {
-            SkipDialog_Result skipResult = Observer::self()->open_SkipDialog( this, files.count() > 1,
-                                                                        job->errorString() );
+            SkipDialog_Result skipResult = ui()->askSkip( this, files.count() > 1,
+                                                          job->errorString() );
 
             // Convert the return code from SkipDialog into a RenameDialog code
             res = ( skipResult == S_SKIP ) ? R_SKIP :
@@ -1522,7 +1523,7 @@ void CopyJob::slotResultRenaming( KJob* job )
                     mtimeDest = stat_buf.st_mtime;
                 }
 
-                RenameDialog_Result r = Observer::self()->open_RenameDialog(
+                RenameDialog_Result r = ui()->askFileRename(
                     this,
                     err != ERR_DIR_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                     m_currentSrcURL.url(),

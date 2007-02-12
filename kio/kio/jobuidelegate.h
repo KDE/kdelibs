@@ -23,6 +23,8 @@
 #define KIO_JOBUI_H
 
 #include <kjobuidelegate.h>
+#include <kio/skipdialog.h>
+#include <kio/renamedialog.h>
 
 class KJob;
 namespace KIO
@@ -80,6 +82,47 @@ public:
     unsigned long userTimestamp() const;
 
     virtual void showErrorMessage();
+
+    /**
+     * \relates KIO::RenameDialog
+     * Construct a modal, parent-less "rename" dialog, and return
+     * a result code, as well as the new dest. Much easier to use than the
+     * class RenameDialog directly.
+     *
+     * @param caption the caption for the dialog box
+     * @param src the URL of the file/dir we're trying to copy, as it's part of the text message
+     * @param dest the URL of the destination file/dir, i.e. the one that already exists
+     * @param mode parameters for the dialog (which buttons to show...),
+     *             see RenameDialog_Mode
+     * @param newDestPath the new destination path, valid if R_RENAME was returned.
+     * @param sizeSrc size of source file
+     * @param sizeDest size of destination file
+     * @param ctimeSrc creation time of source file
+     * @param ctimeDest creation time of destination file
+     * @param mtimeSrc modification time of source file
+     * @param mtimeDest modification time of destination file
+     * @return the result
+     */
+    virtual RenameDialog_Result askFileRename(KJob * job,
+                                              const QString & caption,
+                                              const QString& src,
+                                              const QString & dest,
+                                              KIO::RenameDialog_Mode mode,
+                                              QString& newDest,
+                                              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
+                                              KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
+                                              time_t ctimeSrc = (time_t) -1,
+                                              time_t ctimeDest = (time_t) -1,
+                                              time_t mtimeSrc = (time_t) -1,
+                                              time_t mtimeDest = (time_t) -1);
+
+    /**
+     * @internal
+     * See skipdialog.h
+     */
+    virtual SkipDialog_Result askSkip(KJob * job,
+                                      bool multi,
+                                      const QString & error_text);
 
 protected:
      virtual void connectJob( KJob *job );
