@@ -51,39 +51,30 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
    Q_PROPERTY( QStringList items READ items WRITE setItems USER true )
 
 public:
+    class CustomEditorPrivate;
+  
     /**
      * Custom editor class
      **/
     class KDEUI_EXPORT CustomEditor
     {
     public:
-        CustomEditor()
-            : m_representationWidget( 0L ),
-              m_lineEdit( 0L ) {}
-        CustomEditor( QWidget *repWidget, KLineEdit *edit )
-            : m_representationWidget( repWidget ),
-              m_lineEdit( edit ) {}
+        CustomEditor();
+        CustomEditor( QWidget *repWidget, KLineEdit *edit );
         CustomEditor( KComboBox *combo );
-
-        virtual ~CustomEditor() {}
-
-        void setRepresentationWidget( QWidget *repWidget ) {
-            m_representationWidget = repWidget;
-        }
-        void setLineEdit( KLineEdit *edit ) {
-            m_lineEdit = edit;
-        }
-
-        virtual QWidget   *representationWidget() const {
-            return m_representationWidget;
-        }
-        virtual KLineEdit *lineEdit() const {
-            return m_lineEdit;
-        }
-
-    protected:
-        QWidget *m_representationWidget;
-        KLineEdit *m_lineEdit;
+        virtual ~CustomEditor();
+      
+        void setRepresentationWidget( QWidget *repWidget );
+        void setLineEdit( KLineEdit *edit );
+      
+        virtual QWidget *representationWidget() const;
+        virtual KLineEdit *lineEdit() const;
+        
+    private:
+        friend class CustomEditorPrivate;
+        CustomEditorPrivate *const d;
+        
+        Q_DISABLE_COPY(CustomEditor)
     };
 
    public:
@@ -146,32 +137,32 @@ public:
       /**
        * Return a pointer to the embedded QListView.
        */
-      QListView* listView() const     { return m_listView; }
+      QListView* listView() const;
       /**
        * Return a pointer to the embedded KLineEdit.
        */
-      KLineEdit* lineEdit() const     { return m_lineEdit; }
+      KLineEdit* lineEdit() const;
       /**
        * Return a pointer to the Add button
        */
-      QPushButton* addButton() const     { return servNewButton; }
+      QPushButton* addButton() const;
       /**
        * Return a pointer to the Remove button
        */
-      QPushButton* removeButton() const     { return servRemoveButton; }
+      QPushButton* removeButton() const;
       /**
        * Return a pointer to the Up button
        */
-      QPushButton* upButton() const     { return servUpButton; }
+      QPushButton* upButton() const;
       /**
        * Return a pointer to the Down button
        */
-      QPushButton* downButton() const     { return servDownButton; }
+      QPushButton* downButton() const;
 
       /**
        * See QListBox::count()
        */
-      int count() const   { return int(m_model->rowCount()); }
+      int count() const;
       /**
        * See QListBox::insertStringList()
        */
@@ -242,19 +233,16 @@ public:
       void typedSomething(const QString& text);
 
    private:
-      QListView *m_listView;
-      QPushButton *servUpButton, *servDownButton;
-      QPushButton *servNewButton, *servRemoveButton;
-      KLineEdit *m_lineEdit;
-      QStringListModel *m_model;
-
       //this is called in both ctors, to avoid code duplication
       void init( bool checkAtEntering, Buttons buttons,
                  QWidget *representationWidget = 0 );
-
+      
    private:
       //our lovely private d-pointer
+      friend class KEditListBoxPrivate;
       KEditListBoxPrivate* const d;
+      
+      Q_DISABLE_COPY(KEditListBox)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEditListBox::Buttons)

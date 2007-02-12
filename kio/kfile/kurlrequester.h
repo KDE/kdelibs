@@ -161,7 +161,7 @@ public:
      * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
      * \endcode
      */
-    KEditListBox::CustomEditor customEditor();
+    const KEditListBox::CustomEditor &customEditor();
 
 public Q_SLOTS:
     /**

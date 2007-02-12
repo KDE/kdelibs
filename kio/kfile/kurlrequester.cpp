@@ -142,6 +142,7 @@ public:
     KComboBox *combo;
     KFile::Modes fileDialogMode;
     QString fileDialogFilter;
+    KEditListBox::CustomEditor editor;
 };
 
 
@@ -357,7 +358,7 @@ KPushButton * KUrlRequester::button() const
     return myButton;
 }
 
-KEditListBox::CustomEditor KUrlRequester::customEditor()
+const KEditListBox::CustomEditor &KUrlRequester::customEditor()
 {
     setSizePolicy(QSizePolicy( QSizePolicy::Preferred,
                                QSizePolicy::Fixed));
@@ -371,8 +372,9 @@ KEditListBox::CustomEditor KUrlRequester::customEditor()
         kWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
 #endif
 
-    KEditListBox::CustomEditor editor( this, edit );
-    return editor;
+    d->editor.setRepresentationWidget(this);
+    d->editor.setLineEdit(edit);
+    return d->editor;
 }
 
 KUrlComboRequester::KUrlComboRequester( QWidget *parent)
