@@ -125,7 +125,7 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
         sizeText = i18n("(%1 Total)", KIO::convertSize( size ) );
     }
     const QString foldersText = dirs == 0 ? i18n( "No Folders" ) : i18np("One Folder", "%n Folders", dirs);
-    return i18nc("Items (Folders, Files) (Size)", "%1 (%2, %3) (%4)", itemsText, foldersText, filesText, sizeText);
+    return i18nc("Items (Folders, Files), Size", "%1 (%2, %3), %4", itemsText, foldersText, filesText, sizeText);
 }
 
 KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
