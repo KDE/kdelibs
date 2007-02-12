@@ -234,7 +234,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     }
     // If no gaps, check for mismatch between number of unique placeholders and
     // actually supplied arguments.
-    if (!gaps and ords.size() != args.size())
+    if (!gaps && ords.size() != args.size())
         kDebug(173) << QString("%1 instead of %2 arguments to message {%3} supplied before conversion.")
                               .arg(args.size()).arg(ords.size()).arg(trans.left(20)) << endl;
     #endif
