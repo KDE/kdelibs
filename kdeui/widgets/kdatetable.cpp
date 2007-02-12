@@ -43,6 +43,7 @@
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
 #include "kdatetable.h"
+#include "kdatetable_p.h"
 #include "kmenu.h"
 #include "kactioncollection.h"
 #include "kaction.h"
@@ -61,7 +62,7 @@
 class KDateTable::KDateTablePrivate
 {
 public:
-   KDateTablePrivate()
+   KDateTablePrivate(KDateTable *q): q(q)
    {
       popupMenuEnabled=false;
       useCustomColors=false;
@@ -71,6 +72,40 @@ public:
    {
    }
 
+   void nextMonth();
+   void previousMonth();
+   void beginningOfMonth();
+   void endOfMonth();
+   void beginningOfWeek();
+   void endOfWeek();
+  
+   KDateTable *q;
+
+   /**
+   * The font size of the displayed text.
+   */
+   int fontsize;
+   /**
+   * The currently selected date.
+   */
+   QDate mDate;
+   /**
+    * The day of the first day in the month [1..7].
+    */
+   int firstday;
+   /**
+    * The number of days in the current month.
+    */
+   int numdays;
+   /**
+    * The number of days in the previous month.
+    */
+   int numDaysPrevMonth;
+   /**
+    * Save the size of the largest used cell content.
+    */
+   QRect maxCell;
+  
    bool popupMenuEnabled;
    bool useCustomColors;
 
@@ -82,6 +117,27 @@ public:
    };
    QHash <QString,DatePaintingMode*> customPaintingModes;
 
+};
+
+
+class KPopupFrame::KPopupFramePrivate
+{
+public:
+  KPopupFramePrivate(KPopupFrame *q):
+    q(q),
+    result(0), // rejected
+    main(0) {}
+  
+  KPopupFrame *q;
+  
+  /**
+   * The result. It is returned from exec() when the popup window closes.
+   */
+  int result;
+  /**
+   * The only subwidget that uses the whole dialog window.
+   */
+  QWidget *main;
 };
 
 
@@ -119,7 +175,7 @@ KDateValidator::fixup( QString& ) const
 KDateTable::KDateTable(const QDate& date_, QWidget* parent)
   : Q3GridView(parent)
 {
-  d = new KDateTablePrivate;
+  d = new KDateTablePrivate(this);
   setFontSize(10);
   setFocusPolicy( Qt::StrongFocus );
   setNumRows(7); // 6 weeks max + headline
@@ -143,7 +199,7 @@ KDateTable::KDateTable(const QDate& date_, QWidget* parent)
 KDateTable::KDateTable(QWidget *parent)
   : Q3GridView(parent)
 {
-  d = new KDateTablePrivate;
+  d = new KDateTablePrivate(this);
   setFontSize(10);
   setFocusPolicy( Qt::StrongFocus );
   setNumRows(7); // 6 weeks max + headline
@@ -199,7 +255,7 @@ int KDateTable::posFromDate( const QDate &dt )
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
   const int firstWeekDay = KGlobal::locale()->weekStartDay();
   int pos = calendar->day( dt );
-  int offset = (firstday - firstWeekDay + 7) % 7;
+  int offset = (d->firstday - firstWeekDay + 7) % 7;
   // make sure at least one day of the previous month is visible.
   // adjust this <1 if more days should be forced visible:
   if ( offset < 1 ) offset += 7;
@@ -210,10 +266,10 @@ QDate KDateTable::dateFromPos( int pos )
 {
   QDate pCellDate;
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  calendar->setYMD(pCellDate, calendar->year(mDate), calendar->month(mDate), 1);
+  calendar->setYMD(pCellDate, calendar->year(d->mDate), calendar->month(d->mDate), 1);
 
   int firstWeekDay = KGlobal::locale()->weekStartDay();
-  int offset = (firstday - firstWeekDay + 7) % 7;
+  int offset = (d->firstday - firstWeekDay + 7) % 7;
   // make sure at least one day of the previous month is visible.
   // adjust this <1 if more days should be forced visible:
   if ( offset < 1 ) offset += 7;
@@ -275,7 +331,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       QDate pCellDate = dateFromPos( pos );
       // First day of month
       text = calendar->dayString(pCellDate, true);
-      if( calendar->month(pCellDate) != calendar->month(mDate) )
+      if( calendar->month(pCellDate) != calendar->month(d->mDate) )
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
@@ -312,11 +368,11 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 
       pen=painter->pen();
       int firstWeekDay=KGlobal::locale()->weekStartDay();
-      int offset=firstday-firstWeekDay;
+      int offset=d->firstday-firstWeekDay;
       if(offset<1)
         offset+=7;
-      int d = calendar->day(mDate);
-           if( (offset+d) == (pos+1))
+      int day = calendar->day(d->mDate);
+           if( (offset+day) == (pos+1))
         {
            // draw the currently selected date
 	   if (isEnabled())
@@ -346,40 +402,40 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->setPen(pen);
       painter->drawText(0, 0, w, h, Qt::AlignCenter, text, &rect);
     }
-  if(rect.width()>maxCell.width()) maxCell.setWidth(rect.width());
-  if(rect.height()>maxCell.height()) maxCell.setHeight(rect.height());
+  if(rect.width()>d->maxCell.width()) d->maxCell.setWidth(rect.width());
+  if(rect.height()>d->maxCell.height()) d->maxCell.setHeight(rect.height());
 }
 
-void KDateTable::nextMonth()
-{
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  setDate(calendar->addMonths( mDate, 1 ));
-}
-
-void KDateTable::previousMonth()
+void KDateTable::KDateTablePrivate::nextMonth()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  setDate(calendar->addMonths( mDate, -1 ));
+  q->setDate(calendar->addMonths( mDate, 1 ));
 }
 
-void KDateTable::beginningOfMonth()
+void KDateTable::KDateTablePrivate::previousMonth()
 {
-  setDate(mDate.addDays(1 - mDate.day()));
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  q->setDate(calendar->addMonths( mDate, -1 ));
 }
 
-void KDateTable::endOfMonth()
+void KDateTable::KDateTablePrivate::beginningOfMonth()
 {
-  setDate(mDate.addDays(mDate.daysInMonth() - mDate.day()));
+  q->setDate(mDate.addDays(1 - mDate.day()));
 }
 
-void KDateTable::beginningOfWeek()
+void KDateTable::KDateTablePrivate::endOfMonth()
 {
-  setDate(mDate.addDays(1 - mDate.dayOfWeek()));
+  q->setDate(mDate.addDays(mDate.daysInMonth() - mDate.day()));
 }
 
-void KDateTable::endOfWeek()
+void KDateTable::KDateTablePrivate::beginningOfWeek()
 {
-  setDate(mDate.addDays(7 - mDate.dayOfWeek()));
+  q->setDate(mDate.addDays(1 - mDate.dayOfWeek()));
+}
+
+void KDateTable::KDateTablePrivate::endOfWeek()
+{
+  q->setDate(mDate.addDays(7 - mDate.dayOfWeek()));
 }
 
 void
@@ -387,22 +443,22 @@ KDateTable::keyPressEvent( QKeyEvent *e )
 {
     switch( e->key() ) {
     case Qt::Key_Up:
-            setDate(mDate.addDays(-7));
+            setDate(d->mDate.addDays(-7));
         break;
     case Qt::Key_Down:
-            setDate(mDate.addDays(7));
+            setDate(d->mDate.addDays(7));
         break;
     case Qt::Key_Left:
-            setDate(mDate.addDays(-1));
+            setDate(d->mDate.addDays(-1));
         break;
     case Qt::Key_Right:
-            setDate(mDate.addDays(1));
+            setDate(d->mDate.addDays(1));
         break;
     case Qt::Key_Minus:
-        setDate(mDate.addDays(-1));
+        setDate(d->mDate.addDays(-1));
 	break;
     case Qt::Key_Plus:
-        setDate(mDate.addDays(1));
+        setDate(d->mDate.addDays(1));
 	break;
     case Qt::Key_N:
         setDate(QDate::currentDate());
@@ -440,27 +496,27 @@ KDateTable::setFontSize(int size)
   QFontMetrics metrics(fontMetrics());
   QRect rect;
   // ----- store rectangles:
-  fontsize=size;
+  d->fontsize=size;
   // ----- find largest day name:
-  maxCell.setWidth(0);
-  maxCell.setHeight(0);
+  d->maxCell.setWidth(0);
+  d->maxCell.setHeight(0);
   for(count=0; count<7; ++count)
     {
       rect=metrics.boundingRect(KGlobal::locale()->calendar()
                                 ->weekDayName(count+1, true));
-      maxCell.setWidth(qMax(maxCell.width(), rect.width()));
-      maxCell.setHeight(qMax(maxCell.height(), rect.height()));
+      d->maxCell.setWidth(qMax(d->maxCell.width(), rect.width()));
+      d->maxCell.setHeight(qMax(d->maxCell.height(), rect.height()));
     }
   // ----- compare with a real wide number and add some space:
   rect=metrics.boundingRect(QLatin1String("88"));
-  maxCell.setWidth(qMax(maxCell.width()+2, rect.width()));
-  maxCell.setHeight(qMax(maxCell.height()+4, rect.height()));
+  d->maxCell.setWidth(qMax(d->maxCell.width()+2, rect.width()));
+  d->maxCell.setHeight(qMax(d->maxCell.height()+4, rect.height()));
 }
 
 void
 KDateTable::wheelEvent ( QWheelEvent * e )
 {
-    setDate(mDate.addMonths( -(int)(e->delta()/120)) );
+    setDate(d->mDate.addMonths( -(int)(e->delta()/120)) );
     e->accept();
 }
 
@@ -494,7 +550,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   // the row with the days of the week in the calculation.
 
   // old selected date:
-  temp = posFromDate( mDate );
+  temp = posFromDate( d->mDate );
   // new position and date
   pos = (7 * (row - 1)) + col;
   QDate clickedDate = dateFromPos( pos );
@@ -530,23 +586,23 @@ KDateTable::setDate(const QDate& date_)
       kDebug() << "KDateTable::setDate: refusing to set invalid date." << endl;
       return false;
     }
-  if(mDate!=date_)
+  if(d->mDate!=date_)
     {
-      emit(dateChanged(mDate, date_));
-      mDate=date_;
-      emit(dateChanged(mDate));
+      emit(dateChanged(d->mDate, date_));
+      d->mDate=date_;
+      emit(dateChanged(d->mDate));
       changed=true;
     }
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  calendar->setYMD(temp, calendar->year(mDate), calendar->month(mDate), 1);
-  //temp.setYMD(mDate.year(), mDate.month(), 1);
+  calendar->setYMD(temp, calendar->year(d->mDate), calendar->month(d->mDate), 1);
+  //temp.setYMD(d->mDate.year(), d->mDate.month(), 1);
   //kDebug() << "firstDayInWeek: " << temp.toString() << endl;
-  firstday=temp.dayOfWeek();
-  numdays=calendar->daysInMonth(mDate);
+  d->firstday=temp.dayOfWeek();
+  d->numdays=calendar->daysInMonth(d->mDate);
 
   temp = calendar->addMonths(temp, -1);
-  numDaysPrevMonth=calendar->daysInMonth(temp);
+  d->numDaysPrevMonth=calendar->daysInMonth(temp);
   if(changed)
     {
       repaintContents(false);
@@ -557,7 +613,7 @@ KDateTable::setDate(const QDate& date_)
 const QDate&
 KDateTable::date() const
 {
-  return mDate;
+  return d->mDate;
 }
 
 // what are those repaintContents() good for? (pfeiffer)
@@ -576,10 +632,10 @@ void KDateTable::focusOutEvent( QFocusEvent *e )
 QSize
 KDateTable::sizeHint() const
 {
-  if(maxCell.height()>0 && maxCell.width()>0)
+  if(d->maxCell.height()>0 && d->maxCell.width()>0)
     {
-      return QSize(maxCell.width()*numCols()+2*frameWidth(),
-             (maxCell.height()+2)*numRows()+2*frameWidth());
+      return QSize(d->maxCell.width()*numCols()+2*frameWidth(),
+             (d->maxCell.height()+2)*numRows()+2*frameWidth());
     } else {
       kDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
       return QSize(-1, -1);
@@ -671,21 +727,7 @@ KDateInternalWeekSelector::setMaxWeek(int max)
   val->setRange(1, max);
 }
 
-// ### CFM To avoid binary incompatibility.
-//     In future releases, remove this and replace by  a QDate
-//     private member, needed in KDateInternalMonthPicker::paintCell
-class KDateInternalMonthPicker::KDateInternalMonthPrivate {
-public:
-        KDateInternalMonthPrivate (int y, int m, int d)
-        : year(y), month(m), day(d)
-        {};
-        int year;
-        int month;
-        int day;
-};
-
 KDateInternalMonthPicker::~KDateInternalMonthPicker() {
-   delete d;
 }
 
 KDateInternalMonthPicker::KDateInternalMonthPicker
@@ -704,7 +746,9 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setVScrollBarMode(AlwaysOff);
   setFrameStyle(QFrame::NoFrame);
   setNumCols(3);
-  d = new KDateInternalMonthPrivate(date.year(), date.month(), date.day());
+  year = date.year();
+  month = date.month();
+  day = date.day();
   // For monthsInYear != 12
   setNumRows( (KGlobal::locale()->calendar()->monthsInYear(date) + 2) / 3);
   // enable to find drawing failures:
@@ -760,8 +804,8 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   // ----- find the number of the cell:
   index=3*row+col+1;
   text=KGlobal::locale()->calendar()->monthName(index,
-    KGlobal::locale()->calendar()->year(QDate(d->year, d->month,
-    d->day)), false);
+    KGlobal::locale()->calendar()->year(QDate(year, month,
+    day)), false);
   painter->drawText(0, 0, cellWidth(), cellHeight(), Qt::AlignCenter, text);
   if ( activeCol == col && activeRow == row )
       painter->drawRect( 0, 0, cellWidth(), cellHeight() );
@@ -917,12 +961,15 @@ KDateInternalYearSelector::setYear(int year)
 }
 
 KPopupFrame::KPopupFrame(QWidget* parent)
-  : QFrame(parent, Qt::Popup),
-    result(0), // rejected
-    main(0)
+  : QFrame(parent, Qt::Popup), d(new KPopupFramePrivate(this))
 {
   setFrameStyle(QFrame::Box|QFrame::Raised);
   setMidLineWidth(2);
+}
+
+KPopupFrame::~KPopupFrame()
+{
+  delete d;
 }
 
 void
@@ -930,7 +977,7 @@ KPopupFrame::keyPressEvent(QKeyEvent* e)
 {
   if(e->key()==Qt::Key_Escape)
     {
-      result=0; // rejected
+      d->result=0; // rejected
       emit leaveModality();
       //qApp->exit_loop();
     }
@@ -939,7 +986,7 @@ KPopupFrame::keyPressEvent(QKeyEvent* e)
 void
 KPopupFrame::close(int r)
 {
-  result=r;
+  d->result=r;
   emit leaveModality();
   //qApp->exit_loop();
 }
@@ -947,19 +994,19 @@ KPopupFrame::close(int r)
 void
 KPopupFrame::setMainWidget(QWidget* m)
 {
-  main=m;
-  if(main)
+  d->main=m;
+  if(d->main)
     {
-      resize(main->width()+2*frameWidth(), main->height()+2*frameWidth());
+      resize(d->main->width()+2*frameWidth(), d->main->height()+2*frameWidth());
     }
 }
 
 void
 KPopupFrame::resizeEvent(QResizeEvent*)
 {
-  if(main)
+  if(d->main)
     {
-      main->setGeometry(frameWidth(), frameWidth(),
+      d->main->setGeometry(frameWidth(), frameWidth(),
           width()-2*frameWidth(), height()-2*frameWidth());
     }
 }
@@ -999,7 +1046,7 @@ KPopupFrame::exec(const QPoint &pos)
   eventLoop.exec();
 
   hide();
-  return result;
+  return d->result;
 }
 
 int
@@ -1009,3 +1056,4 @@ KPopupFrame::exec(int x, int y)
 }
 
 #include "kdatetable.moc"
+#include "kdatetable_p.moc"

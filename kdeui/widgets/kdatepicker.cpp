@@ -20,6 +20,7 @@
 
 #include "kdatepicker.h"
 #include "kdatetable.h"
+#include "kdatetable_p.h"
 
 #include <qapplication.h>
 #include <qcombobox.h>

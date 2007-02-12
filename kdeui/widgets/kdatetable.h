@@ -24,133 +24,9 @@
 #include <QtGui/QLineEdit>
 #include <QtCore/QDateTime>
 #include <Qt3Support/Q3GridView>
-
 #include <kdelibs_export.h>
 
 class KMenu;
-
-/** Week selection widget.
-* @internal
-* @author Stephan Binner
-*/
-class KDEUI_EXPORT KDateInternalWeekSelector : public QLineEdit
-{
-  Q_OBJECT
-protected:
-  QIntValidator *val;
-  int result;
-public Q_SLOTS:
-  void weekEnteredSlot();
-  void setMaxWeek(int max);
-Q_SIGNALS:
-  void closeMe(int);
-public:
-  KDateInternalWeekSelector( QWidget* parent=0);
-  int getWeek();
-  void setWeek(int week);
-
-private:
-  class KDateInternalWeekPrivate;
-  KDateInternalWeekPrivate *d;
-};
-
-/**
-* A table containing month names. It is used to pick a month directly.
-* @internal
-* @author Tim Gilman, Mirko Boehm
-*/
-class KDEUI_EXPORT KDateInternalMonthPicker : public Q3GridView
-{
-  Q_OBJECT
-protected:
-  /**
-   * Store the month that has been clicked [1..12].
-   */
-  int result;
-  /**
-   * the cell under mouse cursor when LBM is pressed
-   */
-  short int activeCol;
-  short int activeRow;
-  /**
-   * Contains the largest rectangle needed by the month names.
-   */
-  QRect max;
-Q_SIGNALS:
-  /**
-   * This is send from the mouse click event handler.
-   */
-  void closeMe(int);
-public:
-  /**
-   * The constructor.
-   */
-  KDateInternalMonthPicker(const QDate& date, QWidget* parent);
-  /**
-   * The destructor.
-   */
-  ~KDateInternalMonthPicker();
-  /**
-   * The size hint.
-   */
-  QSize sizeHint() const;
-  /**
-   * Return the result. 0 means no selection (reject()), 1..12 are the
-   * months.
-   */
-  int getResult() const;
-protected:
-  /**
-   * Set up the painter.
-   */
-  void setupPainter(QPainter *p);
-  /**
-   * The resize event.
-   */
-  virtual void viewportResizeEvent(QResizeEvent*);
-  /**
-   * Paint a cell. This simply draws the month names in it.
-   */
-  virtual void paintCell(QPainter* painter, int row, int col);
-  /**
-   * Catch mouse click and move events to paint a rectangle around the item.
-   */
-  virtual void contentsMousePressEvent(QMouseEvent *e);
-  virtual void contentsMouseMoveEvent(QMouseEvent *e);
-  /**
-   * Emit monthSelected(int) when a cell has been released.
-   */
-  virtual void contentsMouseReleaseEvent(QMouseEvent *e);
-
-private:
-  class KDateInternalMonthPrivate;
-  KDateInternalMonthPrivate *d;
-};
-
-/** Year selection widget.
-* @internal
-* @author Tim Gilman, Mirko Boehm
-*/
-class KDEUI_EXPORT KDateInternalYearSelector : public QLineEdit
-{
-  Q_OBJECT
-protected:
-  QIntValidator *val;
-  int result;
-public Q_SLOTS:
-  void yearEnteredSlot();
-Q_SIGNALS:
-  void closeMe(int);
-public:
-  KDateInternalYearSelector( QWidget* parent=0);
-  int getYear();
-  void setYear(int year);
-
-private:
-  class KDateInternalYearPrivate;
-  KDateInternalYearPrivate *d;
-
-};
 
 /**
  * Frame with popup menu behavior.
@@ -161,17 +37,10 @@ class KDEUI_EXPORT KPopupFrame : public QFrame
   Q_OBJECT
 protected:
   /**
-   * The result. It is returned from exec() when the popup window closes.
-   */
-  int result;
-  /**
    * Catch key press events.
    */
   virtual void keyPressEvent(QKeyEvent* e);
-  /**
-   * The only subwidget that uses the whole dialog window.
-   */
-  QWidget *main;
+  
 public Q_SLOTS:
   /**
    * Close the popup window. This is called from the main widget, usually.
@@ -183,6 +52,10 @@ public:
    * The contructor. Creates a dialog without buttons.
    */
   KPopupFrame(QWidget* parent=0);
+  /**
+   * The destructor
+   */
+  ~KPopupFrame();
   /**
    * Set the main widget. You cannot set the main widget from the constructor,
    * since it must be a child of the frame itselfes.
@@ -214,7 +87,10 @@ Q_SIGNALS:
 
 private:
   class KPopupFramePrivate;
+  friend class KPopupFramePrivate;
   KPopupFramePrivate *d;
+  
+  Q_DISABLE_COPY(KPopupFrame)
 };
 
 /**
@@ -339,32 +215,6 @@ protected:
     virtual void focusInEvent( QFocusEvent *e );
     virtual void focusOutEvent( QFocusEvent *e );
 
-    // ### KDE 4.0 make the following private and mark as members
-
-    /**
-     * The font size of the displayed text.
-     */
-    int fontsize;
-    /**
-     * The currently selected date.
-     */
-    QDate mDate;
-    /**
-     * The day of the first day in the month [1..7].
-     */
-    int firstday;
-    /**
-     * The number of days in the current month.
-     */
-    int numdays;
-    /**
-     * The number of days in the previous month.
-     */
-    int numDaysPrevMonth;
-    /**
-     * Save the size of the largest used cell content.
-     */
-    QRect maxCell;
 Q_SIGNALS:
     /**
      * The selected date changed.
@@ -389,19 +239,22 @@ Q_SIGNALS:
      */
     void aboutToShowContextMenu( KMenu * menu, const QDate &date);
 
-private Q_SLOTS:
-  void nextMonth();
-  void previousMonth();
-  void beginningOfMonth();
-  void endOfMonth();
-  void beginningOfWeek();
-  void endOfWeek();
+private:
+    Q_PRIVATE_SLOT(d, void nextMonth())
+    Q_PRIVATE_SLOT(d, void previousMonth())
+    Q_PRIVATE_SLOT(d, void beginningOfMonth())
+    Q_PRIVATE_SLOT(d, void endOfMonth())
+    Q_PRIVATE_SLOT(d, void beginningOfWeek())
+    Q_PRIVATE_SLOT(d, void endOfWeek())
 
 private:
     class KDateTablePrivate;
+    friend class KDateTablePrivate;
     KDateTablePrivate *d;
 
-  void initAccels();
+    void initAccels();
+  
+    Q_DISABLE_COPY(KDateTable)
 };
 
 #endif // KDATETBL_H
