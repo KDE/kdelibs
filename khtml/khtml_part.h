@@ -1446,7 +1446,7 @@ private Q_SLOTS:
   /*
    * @internal
    */
-  void slotJobSpeed( KIO::Job*, unsigned long );
+  void slotJobSpeed( KJob*, unsigned long );
 
   /**
    * @internal

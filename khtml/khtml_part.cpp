@@ -2151,7 +2151,7 @@ void KHTMLPart::slotProgressUpdate()
   emit d->m_extension->loadingProgress( percent );
 }
 
-void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
+void KHTMLPart::slotJobSpeed( KJob* /*job*/, unsigned long speed )
 {
   d->m_jobspeed = speed;
   if (!parentPart())
