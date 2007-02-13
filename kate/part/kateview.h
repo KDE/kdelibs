@@ -83,7 +83,7 @@ class KateView : public Kate::View,
   //
   public slots:
     // TODO: Factor out of m_viewInternal
-    void paste()         {  m_doc->paste( this ); m_viewInternal->repaint(); }
+    void paste();
     void cut();
     void copy() const;
 

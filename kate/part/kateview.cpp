@@ -1592,6 +1592,13 @@ void KateView::selectLength( const KateTextCursor& cursor, int length )
   setSelection (cursor.line(), start, cursor.line(), end);
 }
 
+void KateView::paste()
+{
+  m_doc->paste( this );
+  emit selectionChanged();
+  m_viewInternal->repaint();
+}
+
 void KateView::cut()
 {
   if (!hasSelection())

@@ -2097,23 +2097,13 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
           else // same line, ignore
             doSelect = false;
         break;
-        default: // *allways* keep original selection for mouse
+        default:
         {
           if ( selStartCached.line() < 0 ) // invalid
             break;
 
-          if ( newCursor.line() > selEndCached.line() ||
-               ( newCursor.line() == selEndCached.line() &&
-                 newCursor.col() > selEndCached.col() ) )
-            selectAnchor = selStartCached;
-
-          else if ( newCursor.line() < selStartCached.line() ||
-               ( newCursor.line() == selStartCached.line() &&
-                 newCursor.col() < selStartCached.col() ) )
-            selectAnchor = selEndCached;
-
-          else
-            doSelect = false;
+          selectAnchor = selStartCached;
+          doSelect = true;
         }
 //         break;
       }
@@ -3264,7 +3254,11 @@ void KateViewInternal::editSetCursor (const KateTextCursor &cursor)
 void KateViewInternal::viewSelectionChanged ()
 {
   if (!m_view->hasSelection())
+  {
     selectAnchor.setPos (-1, -1);
+    selEndCached = selectAnchor;
+    selStartCached = cursor;
+  }
 }
 
 //BEGIN IM INPUT STUFF
