@@ -124,7 +124,16 @@ namespace Nepomuk {
 	 */
 	void append( const Variant& v );
 
+	/**
+	 * Does compare two Variant objects. single-valued lists are treated
+	 * as the single value itself. For example a QStringList variant with
+	 * one element "x" equals a QString variant with value "x".
+	 */
 	bool operator==( const Variant& other ) const;
+
+	/**
+	 * Inverse of operator==
+	 */
 	bool operator!=( const Variant& other ) const;
 
 	/**
@@ -245,6 +254,8 @@ namespace Nepomuk {
   }
 }
 
+
+KMETADATA_EXPORT QDebug operator<<( QDebug dbg, const Nepomuk::KMetaData::Variant& );
 
 Q_DECLARE_METATYPE(Nepomuk::KMetaData::Resource)
 Q_DECLARE_METATYPE(QList<Nepomuk::KMetaData::Resource>)

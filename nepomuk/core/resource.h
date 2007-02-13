@@ -73,20 +73,52 @@ namespace Nepomuk {
 	 * The actual resource data is loaded on demand. Thus, it is possible to work
 	 * with Resources as if they were in memory all the time.
 	 *
-	 * \param uri The URI identifying the resource in question. This might also be 
-	 *            a file path.
+	 * \param uriOrIdentifier The unique URI or an arbitrary identifier of the resource. 
+	 *                        If the URI exists in the RDF store it is used to load the 
+	 *                        related properties. If not the passed string is treated
+	 *                        as an identifier.
+	 *                        If a resource exists in the store which has this identifier
+	 *                        set this resource's properties are loaded. Otherwise the
+	 *                        resource is created in the store
+	 *                        with a new random URI which can be accessed through \a uri
+	 *                        after the resource has been synced. The resource can later
+	 *                        again be found through the same identifier.
+	 *                        
 	 * \param type The URI identifying the type of the resource. If it is empty
 	 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
 	 *             in case the resource already exists the type will be read from the 
 	 *             store.
+	 *
+	 * Example:
+	 *
+	 * The best way to understand the URI and identifier system is through file resources.
+	 * When a Resource object is created with the local path of the file as an identifier:
+	 *
+	 * \code
+	 * Resource myfile( "/tmp/testfile.txt" );
+	 * \endcode
+	 *
+	 * Now the URI of the resource in the store representing metadata for the file /tmp/testfile.txt
+	 * is referred to by myfile.uri() which differs from the path of the file. However, the path of
+	 * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
+	 * the related resource.
 	 */
-	Resource( const QString& uri, const QString& type = QString() );
+	Resource( const QString& uriOrIdentifier, const QString& type = QString() );
 	virtual ~Resource();
 
 	Resource& operator=( const Resource& );
 
 	/**
-	 * The URI of the resource, uniquely identifying it.
+	 * The URI of the resource, uniquely identifying it. This URI in most
+	 * cases is a virtual one which has been created from a generic base
+	 * namespace and some identifier.
+	 *
+	 * the most important thing to remember is that the URI of for example
+	 * a file has no relation to its local path.
+	 *
+	 * In case the resource has not been synced yet the URI may be empty.
+	 *
+	 * \sa getIdentifiers
 	 */
 	const QString& uri() const;
 
@@ -95,6 +127,11 @@ namespace Nepomuk {
 	 * \sa name()
 	 */
 	const QString& type() const;
+
+	/**
+	 * Each resource may have multiple identifiers. For more information see the constructor and uri()
+	 */
+	QStringList getIdentifiers() const;
 
 	/**
 	 * The name of the class this Resource represents an object of.
@@ -255,6 +292,8 @@ namespace Nepomuk {
 
 	class Private;
 	Private* d; // unused
+
+	friend class ResourceData;
       };
   }
 }

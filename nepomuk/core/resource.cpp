@@ -46,7 +46,10 @@ Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  m_data->deref();
+  if( m_data->deref() == 0 &&
+      !ResourceManager::instance()->autoSync() ) {
+    m_data->deleteData();
+  }
 }
 
 
@@ -75,6 +78,16 @@ const QString& Nepomuk::KMetaData::Resource::type() const
 }
 
 
+QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
+{
+  // TODO: do not hardcode the hasIdentifier URI here!
+  QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
+  if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
+    il.append( m_data->kickoffUriOrId() );
+  return il;
+}
+
+
 QString Nepomuk::KMetaData::Resource::className() const
 {
   return type().section( QRegExp( "[#:]" ), -1 );
@@ -87,7 +100,9 @@ int Nepomuk::KMetaData::Resource::sync()
 
   m_data->startSync();
 
-  bool success = ( m_data->merge() &&
+  bool success = ( m_data->determineUri() &&
+		   m_data->determinePropertyUris() &&
+		   m_data->merge() &&
 		   m_data->save() );
 
   m_data->endSync( success );

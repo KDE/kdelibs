@@ -17,7 +17,7 @@
 
 #include <QtCore>
 
-#include <variant.h>
+#include <kmetadata/variant.h>
 
 #include <knep/rdf/statement.h>
 
@@ -28,6 +28,7 @@ namespace Nepomuk {
       {
       public:
 	ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
+	~ResourceData();
 
 	/**
 	 * Used instead of the destructor in Resource. The reason for the existance of
@@ -56,7 +57,21 @@ namespace Nepomuk {
 	  Syncing = 0x10 /*< The resource is currently being synced */
 	};
 
+	/**
+	 * Until the resource has not been synced or even loaded the actual URI is not known.
+	 * It might even be possible that none exists yet. Thus, the identifier used to create
+	 * the resource object is stored in the kickoffUriOrId. During the syncing it will be
+	 * determined if it is an actual existing URI or an existing identifier or if a new URI
+	 * has to be created.
+	 */
+	const QString& kickoffUriOrId() const;
+
+	/**
+	 * The URI of the resource. This might be empty if the resource was not synced yet.
+	 * \sa kickoffUriOrId
+	 */
 	const QString& uri() const;
+
 	const QString& type() const;
 
 	QHash<QString, Variant> allProperties() const;
@@ -81,6 +96,11 @@ namespace Nepomuk {
 
 	bool removed() const;
 
+	/**
+	 * This method only works with a proper URI, i.e. it does
+	 * not work on non-initialized resources that only know
+	 * their kickoffUriOrId
+	 */
 	bool exists() const;
 
 	bool isValid() const;
@@ -92,6 +112,19 @@ namespace Nepomuk {
 	 * Does nothing on subsequent calls.
 	 */
 	bool init();
+
+	/**
+	 * Makes sure the resource has a proper URI. This includes creating a new one
+	 * in the store if it does not exist yet.
+	 */
+	bool determineUri();
+
+	/**
+	 * Make sure all resources that are referenced in the properties of this resource
+	 * have a proper URI. This method call determineUri on all the resources in the
+	 * properties.
+	 */
+	bool determinePropertyUris();
 
 	/**
 	 * Load all properties stored in the local Nepomuk DB that have subject \a uri
@@ -146,12 +179,22 @@ namespace Nepomuk {
 	/**
 	 * Generates a list of all RDF statements this Resource data object currently represents.
 	 * \param flags A filter to be used. Only those properties that match flags are returned.
+	 *
+	 * Be aware that some of these statements might be invalid if the URI of this resource or
+	 * once related resource is still unknown.
+	 *
+	 * \sa determinePropertyUris
 	 */
 	QList<RDF::Statement> allStatements( int flags ) const;
 
 	/**
 	 * \return A list of all statements that have to be added to the store in a sync. This does not
 	 * include those statements that already exist in the store.
+	 *
+	 * Be aware that some of these statements might be invalid if the URI of this resource or
+	 * once related resource is still unknown.
+	 *
+	 * \sa determinePropertyUris
 	 */
 	QList<RDF::Statement> allStatementsToAdd() const;
 
@@ -160,6 +203,11 @@ namespace Nepomuk {
 	 * properties that have been removed. In case that the whole resource has been removed it is 
 	 * recommended to not use this method but do a plain removal of all statements related to this 
 	 * resource.
+	 *
+	 * Be aware that some of these statements might be invalid if the URI of this resource or
+	 * once related resource is still unknown.
+	 *
+	 * \sa determinePropertyUris
 	 */
 	QList<RDF::Statement> allStatementsToRemove() const;
 
@@ -175,10 +223,9 @@ namespace Nepomuk {
 	 *
 	 * The Resource constructors use this method in combination with ref()
 	 */
-	static ResourceData* data( const QString& uri, const QString& type );
+	static ResourceData* data( const QString& uriOrId, const QString& type );
 
       private:
-	~ResourceData();
 	bool loadProperty( const QString& name, const Variant& val );
 
 	typedef QHash<QString, QPair<Variant, int> > PropertiesMap;
@@ -188,6 +235,11 @@ namespace Nepomuk {
 	 */
 	PropertiesMap m_properties;
 
+	/**
+	 * The kickoff URI or ID is used as long as the resource has not been synced yet
+	 * to identify it.
+	 */
+	QString m_kickoffUriOrId;
 	QString m_uri;
 	QString m_type;
 
@@ -199,7 +251,16 @@ namespace Nepomuk {
 	QMutex m_syncingMutex;
 	QMutex m_modificationMutex;
 
+	/**
+	 * The data hash contains all resources with a URI
+	 */
 	static QHash<QString, ResourceData*> s_data;
+
+	/**
+	 * The data hash containing all resources
+	 */
+	static QHash<QString, ResourceData*> s_kickoffData;
+
 	static QString s_defaultType;
 
 	friend class ResourceManager;

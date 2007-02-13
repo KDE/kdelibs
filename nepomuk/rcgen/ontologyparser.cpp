@@ -46,14 +46,14 @@ public:
 OntologyParser::OntologyParser()
 {
   d = new Private;
-  d->rdfParser = Soprano::Manager::instance()->factory( "Redland" )->createParser();
+  d->rdfParser = Soprano::createParser();
+  Q_ASSERT( d->rdfParser );
 }
 
 
 OntologyParser::~OntologyParser()
 {
   delete d->rdfParser;
-  delete Soprano::Manager::instance();
   delete d;
 }
 

@@ -31,22 +31,29 @@ using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
 
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
+QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_kickoffData;
 
 
-Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uri_, const QString& type_ )
-  : m_uri( uri_ ),
+Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QString& type_ )
+  : m_kickoffUriOrId( uriOrId ),
     m_type( type_ ),
     m_flags(0),
     m_ref(0),
     m_initialized( false )
 {
-  if( !m_uri.isEmpty() && m_type.isEmpty() )
+  if( m_type.isEmpty() && !uriOrId.isEmpty() )
     m_type = ResourceManager::instance()->ontology()->defaultType();
 }
 
 
 Nepomuk::KMetaData::ResourceData::~ResourceData()
 {
+}
+
+
+const QString& Nepomuk::KMetaData::ResourceData::kickoffUriOrId() const
+{
+  return m_kickoffUriOrId;
 }
 
 
@@ -64,7 +71,10 @@ const QString& Nepomuk::KMetaData::ResourceData::type() const
 
 void Nepomuk::KMetaData::ResourceData::deleteData()
 {
-  s_data.remove( m_uri );
+  if( !m_uri.isEmpty() )
+    s_data.remove( m_uri );
+  if( !m_kickoffUriOrId.isEmpty() )
+    s_kickoffData.remove( m_kickoffUriOrId );
   delete this;
 }
 
@@ -176,10 +186,24 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
 {
   if( isValid() ) {
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
-    
-    // the resource has to exists either as a subject or as an object
-    return( rr.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) || 
-	    rr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
+
+    //
+    // If we have no final URI yet check if the kickoffUriOrId is in the store
+    //
+    if( uri().isEmpty() )
+      return( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ||
+	      rr.contains( KMetaData::defaultGraph(), 
+			   Statement( Node(), 
+				      Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
+				      Node(kickoffUriOrId(), NodeLiteral) ) ) );
+
+    //
+    // We have a URI -> just check for that
+    // the resource has to exists either as a subject or as an object (I think subject would be sufficient here)
+    //
+    else
+      return( rr.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) || 
+	      rr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
   }
   else
     return false;
@@ -189,23 +213,129 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
 bool Nepomuk::KMetaData::ResourceData::isValid() const
 {
   // FIXME: check namespaces and stuff
-  return( !m_uri.isEmpty() && !m_type.isEmpty() );
+  return( !m_type.isEmpty() );
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::inSync()
 {
-  init();
+  if( !init() )
+    return false;
 
-  ResourceData* currentData = new ResourceData( m_uri );
+  ResourceData* currentData = new ResourceData();
+  currentData->m_uri = m_uri;
+  currentData->m_type = m_type;
   bool ins = ( currentData->load() && *currentData == *this );
   delete currentData;
   return ins;
 }
 
 
+bool Nepomuk::KMetaData::ResourceData::determineUri()
+{
+  if( m_uri.isEmpty() ) {
+    RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+
+    if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
+      rr.createRepository( KMetaData::defaultGraph() );
+
+    if( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ) {
+      //
+      // The kickoffUriOrId is actually a URI
+      //
+      m_uri = kickoffUriOrId();
+      kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri() << endl;
+    }
+    else {
+      //
+      // Check if the kickoffUriOrId is a resource identifier
+      //
+      QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(), 
+					       Statement( Node(), 
+							  Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
+							  Node(kickoffUriOrId(), NodeLiteral) ) );
+
+      if( !sl.isEmpty() ) {
+	//
+	// The kickoffUriOrId is an identifier
+	//
+	m_uri = sl.first().subject.value;
+	kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri() << endl;
+      }
+      else {
+	//
+	// The resource does not exist, create a new one
+	//
+	// FIXME: replace this with a call to the ontology service or whatever once we have it
+	m_uri = ResourceManager::instance()->generateUniqueUri();
+	kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << uri() << endl;
+      }
+
+      //
+      // store the kickoffUriOrId as an identifier
+      //
+      // FIXME: do not use the URI of hasIdentifier here but use some method like Resource::addIdentifier
+      QStringList ids = getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
+      ids += kickoffUriOrId();
+      setProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier", ids );
+
+      // FIXME: We probably should already store the URI now since otherwise ResourceManager::generateUniqueUri could in
+      // theorie create the same URI again!
+    }
+
+    //
+    // Move us to the final data hash now that the URI is known
+    //
+    if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
+      s_data.insert( uri(), this );
+    }
+
+    return !uri().isEmpty();
+  }
+  else
+    return true;
+}
+
+
+bool Nepomuk::KMetaData::ResourceData::determinePropertyUris()
+{
+  for( PropertiesMap::const_iterator it = m_properties.constBegin();
+       it != m_properties.constEnd(); ++it ) {
+
+    const Variant& val = it.value().first;
+
+    //
+    // Make sure all resource properties have a URI
+    //
+    if( val.isResource() || val.isResourceList() ) {
+      QList<Resource> rl = val.toResourceList();
+      for( QList<Resource>::iterator rit = rl.begin(); rit != rl.end(); ++rit ) {
+	Resource& r = *rit;
+
+	//
+	// If the URI is still empty the data object is part of
+	// the kickoff hash. It will be moved by determineUri
+	//
+	if( r.uri().isEmpty() )
+	  if( !s_kickoffData[r.m_data->kickoffUriOrId()]->determineUri() )
+	    return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+
 bool Nepomuk::KMetaData::ResourceData::load()
 {
+  kDebug(300004) << k_funcinfo << " with URI " << uri() << " and kickoffUriOrId " << kickoffUriOrId() << " (object " << this << ")" << endl;
+
+  if( uri().isEmpty() ) {
+    kDebug(300004) << k_funcinfo << " without URI." << endl;
+    return false;
+  }
+
   if( isValid() ) {
     m_modificationMutex.lock();
 
@@ -215,11 +345,13 @@ bool Nepomuk::KMetaData::ResourceData::load()
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
     StatementListIterator it( rr.queryListStatements( KMetaData::defaultGraph(), 
-						      Statement( m_uri, Node(), Node() ),
-						      0 ), 
+						      Statement( uri(), Node(), Node() ),
+						      100 ), 
 			      &rr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
+
+      kDebug(300004) << "   (ResourceData) Loading statement " << s << endl;
 
       // load the type if we have no type or the default
       if( s.predicate.value == KMetaData::typePredicate() ) {
@@ -282,7 +414,7 @@ void Nepomuk::KMetaData::ResourceData::startSync()
   //
   for( PropertiesMap::iterator it = m_properties.begin();
        it != m_properties.end(); ++it ) {
-    it.value().second &= Syncing;
+    it.value().second |= Syncing;
   }
 
   m_modificationMutex.unlock();
@@ -461,9 +593,14 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
  */
 bool Nepomuk::KMetaData::ResourceData::merge()
 {
+  if( !determineUri() )
+    return false;
+
   // TODO: do more intelligent syncing
-  ResourceData* currentData = new ResourceData( m_uri );
-    
+  ResourceData* currentData = new ResourceData();
+  currentData->m_uri = uri();
+  currentData->m_type = type();
+
   if( currentData->load() ) {
     m_modificationMutex.lock();
 
@@ -513,6 +650,7 @@ bool Nepomuk::KMetaData::ResourceData::merge()
       PropertiesMap::const_iterator it2 = currentData->m_properties.constFind( it.key() );
       if( it2 == currentData->m_properties.constEnd() &&
 	  !(it.value().second & Modified) ) {
+	kDebug(300004) << "(ResourceData) removing local property: " << it.key() << endl;
 	it = this->m_properties.erase( it );
       }
       else {
@@ -541,34 +679,46 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
     return true;
 
   if( this->m_uri != other.m_uri ||
-      this->m_type != other.m_type )
+      this->m_type != other.m_type ) {
+    kDebug(300004) << k_funcinfo << "different uri or type" << endl;
     return false;
+  }
 
   // Evil is among us!
   const_cast<ResourceData*>(this)->init();
   const_cast<ResourceData*>(&other)->init();
 
-  if( exists() && m_flags != other.m_flags )
+  if( exists() && m_flags != other.m_flags ) {
+    kDebug(300004) << k_funcinfo << "different flags" << endl;
     return false;
+  }
 
   for( PropertiesMap::const_iterator it = other.m_properties.constBegin();
        it != other.m_properties.constEnd(); ++it ) {
     PropertiesMap::const_iterator it2 = this->m_properties.constFind( it.key() );
 
     // 1. the property does not exist here
-    if( it2 == this->m_properties.constEnd() )
+    if( it2 == this->m_properties.constEnd() ) {
+      kDebug(300004) << k_funcinfo << "property " << it.key() << " not in other" << endl;
       return false;
+    }
     // 2. the values differ or it has been removed here
     if( it.value().first != it2.value().first ||
-	it2.value().second & Removed )
+	it2.value().second & Removed ) {
+      kDebug(300004) << k_funcinfo << "property " << it.key() << " differs or has been removed here" << endl;
+      kDebug(300004) << "--- here:  " << it.value().first << endl
+		     << "--- there: " << it2.value().first << endl;
       return false;
+    }
   }
 
   for( PropertiesMap::const_iterator it = this->m_properties.constBegin();
        it != this->m_properties.constEnd(); ++it ) {
     // 3. the property does not exist there
-    if( other.m_properties.constFind( it.key() ) == this->m_properties.constEnd() )
+    if( other.m_properties.constFind( it.key() ) == this->m_properties.constEnd() ) {
+      kDebug(300004) << k_funcinfo << "property " << it.key() << " does only exist in other" << endl;
       return false;
+    }
     // 4. the values differ (already handled above)
   }
 
@@ -576,26 +726,36 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
 }
 
 
-Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uri, const QString& type )
+Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uriOrId, const QString& type )
 {
-  Services::ResourceIdService resids( ResourceManager::instance()->serviceRegistry()->discoverResourceIdService() );
-  QString uniqueUri = resids.toUniqueUrl( uri );
-  if( uniqueUri.isEmpty() ) {
-    kDebug(300004) << "(ResourceData) determining unique URI failed. Falling back to plain URI." << endl;
-    uniqueUri = uri;
+  QHash<QString, ResourceData*>::iterator it = s_data.find( uriOrId );
+
+  bool resFound = ( it != s_data.end() );
+
+  //
+  // The uriOrId is not a known local URI. Might be a kickoff value though
+  //
+  if( it == s_data.end() ) {
+    it = s_kickoffData.find( uriOrId );
+    resFound = ( it != s_kickoffData.end() );
   }
 
-  QHash<QString, ResourceData*>::iterator it = s_data.find( uniqueUri );
-  if( it == s_data.end() ) {
-    ResourceData* d = new ResourceData( uniqueUri, type );
-
-    s_data.insert( uniqueUri, d );
+  //
+  // The uriOrId has no local representation yet -> create one
+  //
+  if( !resFound ) {
+    //
+    // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
+    //
+    ResourceData* d = new ResourceData( uriOrId, type );
+    s_kickoffData.insert( uriOrId, d );
 
     return d;
   }
   else {
+    //
+    // Reuse the already existing ResourceData object
+    //
     return it.value();
   }
 }
-
-

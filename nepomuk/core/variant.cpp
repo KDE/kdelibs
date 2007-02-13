@@ -719,8 +719,13 @@ QString Nepomuk::KMetaData::Variant::toString() const
     return toDateTime().toString();
   else if( isUrl() )
     return toUrl().toString();
-  else if( isResource() )
-    return toResource().uri();
+  else if( isResource() ) {
+    Resource r = toResource();
+    if( !r.uri().isEmpty() )
+      return r.uri();
+    else
+      return r.getIdentifiers().first();
+  }
   else
     return value<QString>();
 }
@@ -807,6 +812,9 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
   //  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
+  if( !isValid() )
+    return QStringList();
+
   if( !isList() )
     return QStringList( toString() );
 
@@ -923,50 +931,32 @@ int Nepomuk::KMetaData::Variant::simpleType() const
 
 bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
 {
-  if( other.type() != this->type() )
+  if( other.simpleType() != this->simpleType() )
     return false;
 
-  else if( isInt() )
-    return other.toInt() == toInt();
-  else if( isInt64() )
-    return other.toInt64() == toInt64();
-  else if( isUnsignedInt() )
-    return other.toUnsignedInt() == toUnsignedInt();
-  else if( isUnsignedInt64() )
-    return other.toUnsignedInt64() == toUnsignedInt64();
-  else if( isBool() )
-    return other.toBool() == toBool();
-  else if( isDouble() )
-    return other.toDouble() == toDouble();
-  else if( isDate() )
-    return other.toDate() == toDate();
-  else if( isTime() )
-    return other.toTime() == toTime();
-  else if( isDateTime() )
-    return other.toDateTime() == toDateTime();
-  else if( isUrl() )
-    return other.toUrl() == toUrl();
-  else if( isResource() )
-    return other.toResource() == toResource();
-  else if( isString() )
-    return other.value<QString>() == value<QString>();
-  else if( isIntList() )
+  if( isInt() || isIntList() )
     return other.toIntList() == toIntList();
-  else if( isBoolList() )
+  else if( isInt64() || isInt64List() )
+    return other.toInt64List() == toInt64List();
+  else if( isUnsignedInt() || isUnsignedIntList() )
+    return other.toUnsignedIntList() == toUnsignedIntList();
+  else if( isUnsignedInt64() || isUnsignedInt64List() )
+    return other.toUnsignedInt64List() == toUnsignedInt64List();
+  else if( isBool() || isBoolList() )
     return other.toBoolList() == toBoolList();
-  else if( isDoubleList() )
+  else if( isDouble() || isDoubleList() )
     return other.toDoubleList() == toDoubleList();
-  else if( isStringList() )
+  else if( isString() || isStringList() )
     return other.value<QStringList>() == value<QStringList>();
-  else if( isDateList() )
+  else if( isDate() || isDateList() )
     return other.toDateList() == toDateList();
-  else if( isTimeList() )
+  else if( isTime() || isTimeList() )
     return other.toTimeList() == toTimeList();
-  else if( isDateTimeList() )
+  else if( isDateTime() || isDateTimeList() )
     return other.toDateTimeList() == toDateTimeList();
-  else if( isUrlList() )
+  else if( isUrl() || isUrlList() )
     return other.toUrlList() == toUrlList();
-  else if( isResourceList() )
+  else if( isResource() || isResourceList() )
     return other.toResourceList() == toResourceList();
   else
     return QVariant::operator==( other );
@@ -976,4 +966,14 @@ bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
 bool Nepomuk::KMetaData::Variant::operator!=( const Variant& other ) const
 {
   return !operator==( other );
+}
+
+
+QDebug operator<<( QDebug dbg, const Nepomuk::KMetaData::Variant& v )
+{
+  if( v.isList() )
+    dbg << v.toStringList();
+  else
+    dbg << v.toString();
+  return dbg;
 }
