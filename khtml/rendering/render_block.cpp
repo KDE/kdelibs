@@ -2847,6 +2847,8 @@ void RenderBlock::calcInlineMinMaxWidth()
                          ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
                         m_maxWidth = qMax(inlineMax, (int)m_maxWidth);
                         inlineMax = 0;
+                        m_minWidth = qMax(inlineMin, (int)m_minWidth);
+                        inlineMin = 0; 
                     }
                     prevFloat = child;
                     if (!floatMaxWidth)
