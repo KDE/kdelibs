@@ -50,6 +50,7 @@
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h"
 #include "misc/helper.h"
+#include "misc/paintbuffer.h"
 #include "css/cssvalues.h"
 #include <kdebug.h>
 
@@ -532,12 +533,19 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
-static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty)
+static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty, bool buffered = false)
 {
     if (r.isNull() || r.isEmpty() )
         return;
+
     QVector<QWidget*> cw;
     QVector<QRect> cr;
+    QPoint thePoint(tx, ty);
+    QMatrix m = p->matrix();
+    thePoint = thePoint * m;
+
+    if (!buffered && !m.isIdentity()) 
+        buffered = !qobject_cast<KHTMLView*>(widget);
 
     if (!widget->children().isEmpty()) {
         // build region
@@ -555,23 +563,33 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     }
 
     // send paint event
-    QPoint thePoint(tx, ty);
-    QMatrix m = p->matrix();
-    thePoint = thePoint * m;
     QPaintDevice *d = p->device();
-    QPainter::setRedirected(widget, d, -thePoint);
+    if (buffered) {
+        if (!widget->size().isValid())
+            return;
+        QPixmap* pm = PaintBuffer::grab(widget->size());
+        pm->fill(QColor(0,0,0,0));
+        d = pm;
+    }
+    QPainter::setRedirected(widget, d, buffered ? QPoint(0,0) : -thePoint);
     QPaintEvent e( r );
     QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
     p->setMatrix( m );
-    
+
+    if (buffered) {
+        // transfer results
+        p->drawPixmap(QPoint(tx, ty), static_cast<QPixmap&>(*d), r);
+        PaintBuffer::release();
+    }
+
     widget->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible hack - FIXME
 
     QVector<QWidget*>::iterator cwit = cw.begin();
     QVector<QWidget*>::iterator cwitEnd = cw.end();
     QVector<QRect>::const_iterator crit = cr.begin();
     for (; cwit != cwitEnd; ++cwit, ++crit)
-        copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
+        copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y(), buffered);
 }
 
 void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
