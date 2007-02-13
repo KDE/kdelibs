@@ -36,6 +36,20 @@ namespace Phonon
 
 	/**
 	 * \short Audio effects that can be inserted into an AudioPath.
+	 * An audio effect is a special object which can perform
+	 * transformations on the specified AudioPath. Examples may include simple
+	 * modifiers such as fading or pitch shifting, or more complex mathematical
+	 * transformations.
+	 *
+	 * In order to use an effect, insert it into the path as follows:
+	 * \code
+	 * AudioPath* path = new AudioPath( this );
+	 * AudioEffect *effect = new AudioEffect( this );
+	 * path->insertEffect( effect );
+	 * \endcode
+	 *
+	 * The AudioEffect will immediately begin applying it's transformations on
+	 * the AudioPath. To stop it, remove the Effect from the AudioPath.
 	 *
 	 * \warning This class is not finished.
 	 *

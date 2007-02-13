@@ -31,6 +31,27 @@ namespace Phonon
 {
 	class VideoEffectPrivate;
 
+	/**
+	 * \short Video effects that can be inserted into a VideoPath.
+	 * A video effect is a special object which can perform
+	 * transformations on the specified VideoPath. Examples may include simple
+	 * modifiers such as brightness or colour controls, or more complex mathematical
+	 * transformations.
+	 *
+	 * In order to use an effect, insert it into the path as follows:
+	 * \code
+	 * VideoPath* path = new VideoPath( this );
+	 * VideoEffect *effect = new VideoEffect( this );
+	 * path->insertEffect( effect );
+	 * \endcode
+	 *
+	 * The VideoEffect will immediately begin applying it's transformations on
+	 * the VideoPath. To stop it, remove the Effect from the VideoPath.
+	 *
+	 * \warning This class is not finished.
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
 	class PHONONCORE_EXPORT VideoEffect : public QObject, public Effect, public Base
 	{
 		friend class VideoPath;
