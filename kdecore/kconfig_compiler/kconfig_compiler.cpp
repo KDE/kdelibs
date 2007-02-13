@@ -1448,7 +1448,7 @@ int main( int argc, char **argv )
       QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
       for ( it = signal.arguments.constBegin(); it != itEnd; ) {
         SignalArguments argument = *it;
-        h << param(argument.type) << argument.variableName;
+        h << param(argument.type) << " " << argument.variableName;
         if ( ++it != itEnd ) {
          h << ", ";
         }
