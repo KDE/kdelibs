@@ -35,6 +35,7 @@ namespace KNS {
 
 class ProviderLoader;
 class EntryLoader;
+class Installation;
 
 /**
  * KNewStuff engine.
@@ -73,6 +74,8 @@ class KDE_EXPORT Engine : public QObject
     void downloadPayload(Entry *entry);
 
     bool uploadEntry(Provider *provider, Entry *entry);
+
+    bool install(QString payloadfile);
 
   signals:
     /**
@@ -133,8 +136,11 @@ class KDE_EXPORT Engine : public QObject
     QString m_localregistrydir;
 
     QMap<Entry*, QString> m_previewfiles;
+    QMap<Entry*, QString> m_payloadfiles;
 
     QMap<KJob*, Entry*> m_entry_jobs;
+
+    Installation *m_installation;
 };
 
 }

@@ -81,9 +81,13 @@ KNewStuff2Download::KNewStuff2Download()
 {
 	m_engine = NULL;
 	m_activefeed = NULL;
+	m_activeentry = NULL;
 
 	resize(800, 600);
 	setWindowTitle("KNewStuff2 Download Dialog Test");
+
+	QPushButton *installbutton = new QPushButton("Install");
+	connect(installbutton, SIGNAL(clicked()), SLOT(slotInstall()));
 
 	QPushButton *closebutton = new QPushButton("Close");
 	connect(closebutton, SIGNAL(clicked()), SLOT(close()));
@@ -100,21 +104,22 @@ KNewStuff2Download::KNewStuff2Download()
 	QVBoxLayout *vbox = new QVBoxLayout();
 	setLayout(vbox);
 	vbox->addLayout(hbox);
+	vbox->addWidget(installbutton);
 	vbox->addWidget(closebutton);
 
 	show();
 }
 
-void KNewStuff2Download::engineTest()
+void KNewStuff2Download::run()
 {
 	kDebug() << "-- test kns2 engine" << endl;
 
 	m_engine = new KNS::Engine();
-	bool ret = m_engine->init("knewstuff2_test.knsrc");
+	bool success = m_engine->init("knewstuff2_test.knsrc");
 
-	kDebug() << "-- engine test result: " << ret << endl;
+	kDebug() << "-- engine test result: " << success << endl;
 
-	if(ret)
+	if(success)
 	{
 		connect(m_engine,
 			SIGNAL(signalProviderLoaded(KNS::Provider*)),
@@ -148,6 +153,23 @@ void KNewStuff2Download::engineTest()
 		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
 		kWarning() << "Although this is not required anymore, so something went really wrong." << endl;
 	}
+}
+
+void KNewStuff2Download::slotInstall()
+{
+	kDebug() << "Attempt to install entry..." << endl;
+
+	if(!m_activeentry)
+	{
+		kError() << "No entries loaded!" << endl;
+		return;
+	}
+	else
+	{
+		kDebug() << "Entry to install is called " << m_activeentry->name().representation() << endl;
+	}
+
+	m_engine->downloadPayload(m_activeentry);
 }
 
 void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
@@ -186,6 +208,8 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry)
 	fw->addEntry(entry);
 
 	m_engine->downloadPreview(entry);
+
+	m_activeentry = entry;
 }
 
 void KNewStuff2Download::slotPreviewLoaded(KUrl preview)
@@ -206,6 +230,16 @@ void KNewStuff2Download::slotPayloadLoaded(KUrl payload)
 {
 	kDebug() << "-- entry downloaded successfully" << endl;
 	kDebug() << "-- downloaded to " << payload.prettyUrl() << endl;
+
+	bool success = m_engine->install(payload.path());
+	if(success)
+	{
+		kDebug() << "-- installation succeeded" << endl;
+	}
+	else
+	{
+		kError() << "-- installation failed" << endl;
+	}
 }
 
 void KNewStuff2Download::slotPayloadFailed()
@@ -232,8 +266,8 @@ int main(int argc, char **argv)
 	kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
 	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
 
-	KNewStuff2Download *test = new KNewStuff2Download();
-	test->engineTest();
+	KNewStuff2Download *download = new KNewStuff2Download();
+	download->run();
 
 	return app.exec();
 }

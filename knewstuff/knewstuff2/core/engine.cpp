@@ -24,6 +24,7 @@
 #include "providerhandler.h"
 #include "entryloader.h"
 #include "providerloader.h"
+#include "installation.h"
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -44,6 +45,8 @@ Engine::Engine()
 
 	m_uploadedentry = NULL;
 	m_uploadprovider = NULL;
+
+	m_installation = NULL;
 }
 
 Engine::~Engine()
@@ -78,6 +81,15 @@ bool Engine::init(const QString &configfile)
 	conf.setGroup("KNewStuff2");
 	m_providersurl = conf.readEntry("ProvidersUrl", QString());
 	m_localregistrydir = conf.readEntry("LocalRegistryDir", QString());
+
+	// FIXME: add support for several categories later on
+	// FIXME: read out only when actually installing as a performance improvement?
+	m_installation = new Installation();
+	m_installation->setUncompression(conf.readEntry("Uncompress", QString()));
+	m_installation->setCommand(conf.readEntry("InstallationCommand", QString()));
+	m_installation->setStandardResourceDir(conf.readEntry("StandardResource", QString()));
+	m_installation->setTargetDir(conf.readEntry("TargetDir", QString()));
+	m_installation->setInstallPath(conf.readEntry("InstallPath", QString()));
 
 	return true;
 }
@@ -158,6 +170,8 @@ void Engine::downloadPayload(Entry *entry)
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPayloadResult(KJob*)));
+
+	m_entry_jobs[job] = entry;
 }
 
 bool Engine::uploadEntry(Provider *provider, Entry *entry)
@@ -233,11 +247,22 @@ void Engine::slotPayloadResult(KJob *job)
 {
 	if(job->error())
 	{
+		m_entry_jobs.remove(job);
 		emit signalPayloadFailed();
 	}
 	else
 	{
 		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+
+		if(m_entry_jobs.contains(job))
+		{
+			// FIXME: this is only so exposing the KUrl suffices for downloaded entries
+			Entry *entry = m_entry_jobs[job];
+			m_entry_jobs.remove(job);
+			m_payloadfiles[entry] = fcjob->destUrl().path();
+		}
+		// FIXME: ignore if not? shouldn't happen...
+
 		emit signalPayloadLoaded(fcjob->destUrl());
 	}
 }
@@ -247,6 +272,7 @@ void Engine::slotPreviewResult(KJob *job)
 {
 	if(job->error())
 	{
+		m_entry_jobs.remove(job);
 		emit signalPreviewFailed();
 	}
 	else
@@ -284,7 +310,6 @@ void Engine::slotUploadPayloadResult(KJob *job)
 	connect(fcjob,
 		SIGNAL(result(KJob*)),
 		SLOT(slotUploadPreviewResult(KJob*)));
-
 }
 
 void Engine::slotUploadPreviewResult(KJob *job)
@@ -565,6 +590,12 @@ void Engine::shutdown()
 
 	m_entry_cache.clear();
 	m_provider_cache.clear();
+
+	delete m_installation;
+
+	delete m_provider_loader;
+	delete m_entry_loader;
+	// FIXME: entry loader object not used yet - must be a list of those
 }
 
 void Engine::mergeProviders(Provider::List *providers)
@@ -612,6 +643,7 @@ void Engine::mergeEntries(Entry::List *entries)
 			// FIXME: if changed, emit signalEntryChanged()
 			// we might have a cache on the whole content (e.g. base64) for that matter
 			// more robust than comparing all attributes? (-> xml infoset)
+			// FIXME: separate version updated from server-side translation updates
 			Entry *oldentry = m_entry_index[id(e)];
 			if(e->releaseDate() > oldentry->releaseDate())
 			{
@@ -730,6 +762,28 @@ QString Engine::pid(Provider *p)
 	// This is the primary key of a provider:
 	// The download URL
 	return p->downloadUrl().url();
+}
+
+bool Engine::install(QString payloadfile)
+{
+	QList<Entry*> entries = m_payloadfiles.keys(payloadfile);
+	if(entries.size() != 1)
+	{
+		// FIXME: shouldn't ever happen - make this an assertion?
+		kError(550) << "" << endl;
+		return false;
+	}
+
+	Entry *entry = entries.first();
+
+	kDebug(550) << "INSTALL resourceDir " << m_installation->standardResourceDir() << endl;
+	kDebug(550) << "INSTALL targetDir " << m_installation->targetDir() << endl;
+	kDebug(550) << "INSTALL installPath " << m_installation->installPath() << endl;
+	kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression() << endl;
+	kDebug(550) << "INSTALL + command " << m_installation->command() << endl;
+
+	kError(550) << "Help, don't know how to install " << entry->type() << " :-)" << endl;
+	return false;
 }
 
 #include "engine.moc"

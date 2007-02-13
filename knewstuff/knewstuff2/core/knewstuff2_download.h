@@ -19,7 +19,7 @@ class KNewStuff2Download : public QWidget
 Q_OBJECT
 public:
 	KNewStuff2Download();
-	void engineTest();
+	void run();
 public slots:
 	void slotProviderLoaded(KNS::Provider *provider);
 	void slotProvidersFailed();
@@ -29,11 +29,13 @@ public slots:
 	void slotPreviewFailed();
 	void slotPayloadLoaded(KUrl payload);
 	void slotPayloadFailed();
+	void slotInstall();
 private:
 	KNS::Engine *m_engine;
 	QListWidget *m_providerlist;
 	QTabWidget *m_feeds;
 	QWidget *m_activefeed;
+	KNS::Entry *m_activeentry;
 };
 
 #endif
