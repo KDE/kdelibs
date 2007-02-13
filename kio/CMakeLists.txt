@@ -35,7 +35,6 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
-add_subdirectory( bookmarks )
 add_subdirectory( kpasswdserver )
 add_subdirectory( misc )
 add_subdirectory( tests )
@@ -393,6 +392,20 @@ install( FILES
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
+  bookmarks/kbookmark.h
+  bookmarks/kbookmarkbar.h
+  bookmarks/kbookmarkexporter.h
+  bookmarks/kbookmarkimporter.h
+  bookmarks/kbookmarkmanager.h
+  bookmarks/kbookmarkmenu.h
+  bookmarks/kbookmarknotifier.h
+  bookmarks/kbookmarkimporter_crash.h
+  bookmarks/kbookmarkimporter_opera.h
+  bookmarks/kbookmarkimporter_ie.h
+  bookmarks/kbookmarkimporter_ns.h
+  bookmarks/kbookmarkimporter_kde1.h
+  bookmarks/kbookmarkdombuilder.h
+  bookmarks/konqbookmarkmenu.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
