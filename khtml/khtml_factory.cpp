@@ -28,6 +28,7 @@
 #include "rendering/break_lines.h"
 #include "misc/loader.h"
 #include "misc/arena.h"
+#include "misc/paintbuffer.h"
 
 #include <QLinkedList>
 
@@ -82,6 +83,7 @@ KHTMLFactory::~KHTMLFactory()
         // clean up static data
         khtml::CSSStyleSelector::clear();
         khtml::RenderStyle::cleanup();
+        khtml::PaintBuffer::cleanup();
         khtml::Cache::clear();
         khtml::cleanup_thaibreaks();
         khtml::ArenaFinish();
