@@ -33,8 +33,8 @@ namespace Solid
         enum OperatorType { AtomType, AndType, OrType, IsType };
 
         Private() : isValid( false ), type( AtomType ),
-                    operand1( 0 ), operand2( 0 ),
-                    compOperator( Predicate::Equals ) {}
+                    compOperator( Predicate::Equals ),
+                    operand1( 0 ), operand2( 0 ) {}
 
         bool isValid;
         OperatorType type;
