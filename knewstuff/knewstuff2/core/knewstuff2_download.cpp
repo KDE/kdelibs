@@ -140,6 +140,8 @@ void KNewStuff2Download::engineTest()
 		connect(m_engine,
 			SIGNAL(signalPreviewFailed()),
 			SLOT(slotPreviewFailed()));
+
+		m_engine->start();
 	}
 	else
 	{

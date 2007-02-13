@@ -76,22 +76,27 @@ bool Engine::init(const QString &configfile)
 	}
 
 	conf.setGroup("KNewStuff2");
-	QString providersurl = conf.readEntry("ProvidersUrl", QString());
-	QString localregistrydir = conf.readEntry("LocalRegistryDir", QString());
+	m_providersurl = conf.readEntry("ProvidersUrl", QString());
+	m_localregistrydir = conf.readEntry("LocalRegistryDir", QString());
 
+	return true;
+}
+
+void Engine::start()
+{
 	loadProvidersCache();
 	loadEntryCache();
 
 	// FIXME: LocalRegistryDir must be created in $KDEHOME if missing?
 	// FIXME: rename registry to cache?
 
-	if(!localregistrydir.isEmpty())
+	if(!m_localregistrydir.isEmpty())
 	{
-		loadRegistry(localregistrydir);
+		loadRegistry(m_localregistrydir);
 	}
 
 	m_provider_loader = new ProviderLoader();
-	m_provider_loader->load(providersurl);
+	m_provider_loader->load(m_providersurl);
 
 	// FIXME: I think we need a slot so we can delete the loader again
 	// we could have one for the entire lifetime, but for entry loaders this
@@ -102,8 +107,6 @@ bool Engine::init(const QString &configfile)
 	connect(m_provider_loader,
 		SIGNAL(signalProvidersFailed()),
 		SLOT(slotProvidersFailed()));
-
-	return true;
 }
 
 void Engine::loadEntries(Provider *provider)
@@ -123,6 +126,14 @@ void Engine::loadEntries(Provider *provider)
 
 void Engine::downloadPreview(Entry *entry)
 {
+	if(m_previewfiles.contains(entry))
+	{
+		// FIXME: ensure somewhere else that preview file even exists
+		kDebug(550) << "Reusing preview from '" << m_previewfiles[entry] << "'" << endl;
+		emit signalPreviewLoaded(KUrl::fromPath(m_previewfiles[entry]));
+		return;
+	}
+
 	KUrl source = KUrl(entry->preview().representation());
 	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
 	kDebug(550) << "Downloading preview '" << source << "' to '" << destination << "'" << endl;
@@ -132,6 +143,8 @@ void Engine::downloadPreview(Entry *entry)
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPreviewResult(KJob*)));
+
+	m_entry_jobs[job] = entry;
 }
 
 void Engine::downloadPayload(Entry *entry)
@@ -184,11 +197,11 @@ void Engine::slotProvidersLoaded(KNS::Provider::List *list)
 {
 	mergeProviders(list);
 
-	for(Provider::List::Iterator it = list->begin(); it != list->end(); it++)
+	/*for(Provider::List::Iterator it = list->begin(); it != list->end(); it++)
 	{
 		Provider *provider = (*it);
 		emit signalProviderLoaded(provider);
-	}
+	}*/
 	// FIXME: cleanup provider loader
 }
 
@@ -202,11 +215,11 @@ void Engine::slotEntriesLoaded(KNS::Entry::List *list)
 {
 	mergeEntries(list);
 
-	for(Entry::List::Iterator it = list->begin(); it != list->end(); it++)
+	/*for(Entry::List::Iterator it = list->begin(); it != list->end(); it++)
 	{
 		Entry *entry = (*it);
 		emit signalEntryLoaded(entry);
-	}
+	}*/
 	// FIXME: cleanup entry loader
 }
 
@@ -239,6 +252,17 @@ void Engine::slotPreviewResult(KJob *job)
 	else
 	{
 		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
+
+		if(m_entry_jobs.contains(job))
+		{
+			// now, assign temporary filename to entry and update entry cache
+			Entry *entry = m_entry_jobs[job];
+			m_entry_jobs.remove(job);
+			m_previewfiles[entry] = fcjob->destUrl().path();
+			cacheEntry(entry);
+		}
+		// FIXME: ignore if not? shouldn't happen...
+
 		emit signalPreviewLoaded(fcjob->destUrl());
 	}
 }
@@ -521,6 +545,12 @@ void Engine::loadEntryCache()
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
 
+		if(root.hasAttribute("previewfile"))
+		{
+			m_previewfiles[e] = root.attribute("previewfile");
+			// FIXME: check here for a [ -f previewfile ]
+		}
+
 		emit signalEntryLoaded(e);
 	}
 }
@@ -547,12 +577,20 @@ void Engine::mergeProviders(Provider::List *providers)
 		if(m_provider_index.contains(pid(p)))
 		{
 			kDebug(550) << "CACHE: hit provider " << p->name().representation() << endl;
-			// FIXME: if changed, emit signalProviderChanged()
+			// FIXME: see mergeEntries for the hit case
+			Provider *oldprovider = m_provider_index[pid(p)];
+			if(p->downloadUrl() != oldprovider->downloadUrl())
+			{
+				kDebug(550) << "CACHE: update provider" << endl;
+				cacheProvider(p);
+				emit signalProviderChanged(p);
+			}
 		}
 		else
 		{
 			kDebug(550) << "CACHE: miss provider " << p->name().representation() << endl;
 			cacheProvider(p);
+			emit signalProviderLoaded(p);
 		}
 
 		m_provider_cache.append(p);
@@ -572,11 +610,25 @@ void Engine::mergeEntries(Entry::List *entries)
 		{
 			kDebug(550) << "CACHE: hit entry " << e->name().representation() << endl;
 			// FIXME: if changed, emit signalEntryChanged()
+			// we might have a cache on the whole content (e.g. base64) for that matter
+			// more robust than comparing all attributes? (-> xml infoset)
+			Entry *oldentry = m_entry_index[id(e)];
+			if(e->releaseDate() > oldentry->releaseDate())
+			{
+				kDebug(550) << "CACHE: update entry" << endl;
+				// entry has changed
+				// FIXME: important: for cache filename, whole-content comparison
+				// is harmful, still needs id-based one!
+				cacheEntry(e);
+				emit signalEntryChanged(e);
+				// FIXME: oldentry can now be deleted, but it's still in the list!
+			}
 		}
 		else
 		{
 			kDebug(550) << "CACHE: miss entry " << e->name().representation() << endl;
 			cacheEntry(e);
+			emit signalEntryLoaded(e);
 		}
 
 		m_entry_cache.append(e);
@@ -631,7 +683,10 @@ void Engine::cacheEntry(Entry *entry)
 
 	kDebug(550) << " + Save to directory '" + cachedir + "'." << endl;
 
-	QString cachefile = KRandom::randomString(10) + ".meta";
+	//QString cachefile = KRandom::randomString(10) + ".meta";
+	//FIXME: this must be deterministic, but it could also be an OOB random string
+	//which gets stored into <ghnscache> just like preview...
+	QString cachefile = id(entry) + ".meta";
 
 	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
 
@@ -644,6 +699,11 @@ void Engine::cacheEntry(Entry *entry)
 	QDomDocument doc;
 	QDomElement root = doc.createElement("ghnscache");
 	root.appendChild(exml);
+
+	if(m_previewfiles.contains(entry))
+	{
+		root.setAttribute("previewfile", m_previewfiles[entry]);
+	}
 
 	QFile f(cachedir + cachefile);
 	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -661,6 +721,7 @@ QString Engine::id(Entry *e)
 {
 	// This is the primary key of an entry:
 	// A lookup on the untranslated original name, which must exist
+	// FIXME: this is not a valid assumption per GHNS spec!
 	return e->name().translated(QString());
 }
 

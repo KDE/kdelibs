@@ -130,6 +130,8 @@ void KNewStuff2Test::engineTest()
 		connect(m_engine,
 			SIGNAL(signalPayloadFailed()),
 			SLOT(slotPayloadFailed()));
+
+		m_engine->start();
 	}
 	else
 	{

@@ -66,6 +66,7 @@ class KDE_EXPORT Engine : public QObject
      * @return \b true if any configuration was found, \b false otherwise
      */
     bool init(const QString &configfile);
+    void start();
 
     void loadEntries(Provider *provider);
     void downloadPreview(Entry *entry);
@@ -127,6 +128,13 @@ class KDE_EXPORT Engine : public QObject
 
     Entry *m_uploadedentry;
     Provider *m_uploadprovider;
+
+    QString m_providersurl;
+    QString m_localregistrydir;
+
+    QMap<Entry*, QString> m_previewfiles;
+
+    QMap<KJob*, Entry*> m_entry_jobs;
 };
 
 }

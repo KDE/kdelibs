@@ -110,3 +110,14 @@ the provider supports DXS. Such interaction includes:
   directly), but they can also be requested for viewing.
 * Several others. See short descriptions in the feature guide.
 
+Library structure (under review)
+================================
+
+knewstuff/knewstuff2/core - conventional ghns
+knewstuff/knewstuff2/dxs  - dxs
+knewstuff/knewstuff2      - engine, ui
+knewstuff/tests           - test applications
+
+Note: should engine encapsulate both ghns and dxs stuff?
+There could also be a CoreEngine (in line with the trendy core-ui split).
+
