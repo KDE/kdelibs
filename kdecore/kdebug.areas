@@ -491,7 +491,7 @@
 30003        koffice (lib kofficecore)
 30004        koffice (lib kofficeui)
 30005        koffice (lib kopainter)
-30006        koffice (lib kospell)
+30006        koffice (lib flake)
 30007        koffice (lib koproperty)
 30500        koffice (filter manager)
 30501        csvfilter
