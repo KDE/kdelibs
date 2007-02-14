@@ -540,7 +540,8 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 
         if ( src == oldbg )
             delete oldbg;
-    }
+    } else if (src && !bg)
+        bg = new QPixmap(*src);
 
     if (bg)
         return *bg;

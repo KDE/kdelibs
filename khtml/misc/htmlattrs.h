@@ -149,18 +149,19 @@ using namespace DOM;
 #define ATTR_ONMOUSEUP 138
 #define ATTR_ONRESET 139
 #define ATTR_ONSELECT 140
-#define ATTR_ONSUBMIT 141
-#define ATTR_ONUNLOAD 142
-#define ATTR_PROFILE 143
-#define ATTR_PROMPT 144
-#define ATTR_SCHEME 145
-#define ATTR_SRC 146
-#define ATTR_STANDBY 147
-#define ATTR_SUMMARY 148
-#define ATTR_TITLE 149
-#define ATTR_USEMAP 150
-#define ATTR_VALUE 151
-#define ATTR_LAST_ATTR 151
+#define ATTR_ONSCROLL 141
+#define ATTR_ONSUBMIT 142
+#define ATTR_ONUNLOAD 143
+#define ATTR_PROFILE 144
+#define ATTR_PROMPT 145
+#define ATTR_SCHEME 146
+#define ATTR_SRC 147
+#define ATTR_STANDBY 148
+#define ATTR_SUMMARY 149
+#define ATTR_TITLE 150
+#define ATTR_USEMAP 151
+#define ATTR_VALUE 152
+#define ATTR_LAST_ATTR 152
 #define ATTR_LAST_CI_ATTR 103
 const char* getAttrName(unsigned short id) KDE_NO_EXPORT;
 

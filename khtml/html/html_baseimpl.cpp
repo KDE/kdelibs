@@ -170,6 +170,10 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         getDocument()->setHTMLWindowEventListener(EventImpl::KEYPRESS_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", NULL));
         break;
+    case ATTR_ONSCROLL:
+        getDocument()->setHTMLWindowEventListener(EventImpl::SCROLL_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(), "onscroll", NULL));
+        break;
     case ATTR_NOSAVE:
 	break;
     default:
