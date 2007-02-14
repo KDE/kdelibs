@@ -256,9 +256,10 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     //          << m_lstPlugins.count() << " available plugins" << endl;
     bool filtered = false;
     for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
-          it != end && !filtered ; ++it ) {
+          it != end; ++it ) {
         //kDebug() << "Using a filter plugin named: " << (*it)->name() << endl;
-        filtered = (*it)->filterUri( data );
+        if( (*it)->filterUri( data ))
+            filtered = true;
     }
     return filtered;
 }
