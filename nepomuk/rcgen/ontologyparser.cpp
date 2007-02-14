@@ -16,7 +16,7 @@
 #include "resourceclass.h"
 #include "resourcetemplate.h"
 
-#include <soprano/Soprano.h>
+#include <soprano/soprano.h>
 
 #include <QtCore>
 
