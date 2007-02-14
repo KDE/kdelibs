@@ -649,6 +649,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>kcolorbtn.h went away, use kcolorbutton.h</li>
 <li>kdatapik.h went away, use kdatepicker.h</li>
 <li>kdualcolorbtn.h went away, use kdualcolorbutton.h</li>
+<li>klistbox.h was renamed to klistwidget.h to reflect the class name</li>
 <li>kpassdlg.h went away, use kpassworddialog.h</li>
 <li>kxmlgui.h went away, use kxmlguifactory.h</li>
 <li>kfontcombo.h went away, use QFontComboBox</li>
@@ -849,6 +850,15 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 <li>Signal focusItemChanged is not emitted with the currently selected/focused character, not with the most recent activated one.</li>
 <li>Signal highlighted(...) has been removed.</li>
 <li>Protected members gotoleft/right/up/down are gone. If you really need to simulate them, use the qitemselectionmodel</li>
+</ul>
+
+<h4>KColorCells</h4>
+<ul>
+<li>KColorCells now inherits from QTableWidget instead of Q3GridView.</li>
+<li>numCells() has been replaced by count().</li>
+<li>getSelected() has been replaced by selectedIndex().</li>
+<li>The parameters of the colorSelected() and colorDoubleClicked() signals now include both the index of the color which
+was selected and the color itself as arguments</li>
 </ul>
 
 <h4>KColorDrag</h4>
@@ -1077,6 +1087,12 @@ if needed (see the KURLDrag section)</li>
 <h4>KListAction</h4>
 <ul>
 <li>Deleted - as per comments, did not add anything to KSelectAction</li>
+</ul>
+
+<h4>KListBox</h4>
+<ul>
+<li>Removed and replaced with KListWidget (based on the QListWidget class)</li>
+<li>K3ListBox has been added to kde3support to help with porting</li>
 </ul>
 
 <h4>KMainWindow</h4>
