@@ -422,19 +422,21 @@ RenderLayer* RenderObject::enclosingStackingContext() const
 
 int RenderObject::offsetLeft() const
 {
+    RenderObject* offsetPar = offsetParent();
+    if (!offsetPar)
+        return 0;
+    int x = xPos() -offsetPar->borderLeft();
     if ( isPositioned() )
-        return xPos();
+        return x;
 
     if ( isBody() && style()->htmlHacks() )
         return 0;
 
-    int x = xPos();
     if (isRelPositioned()) {
         int y = 0;
         static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
     }
 
-    RenderObject* offsetPar = offsetParent();
     for( RenderObject* curr = parent();
          curr && curr != offsetPar;
          curr = curr->parent() )
@@ -448,18 +450,21 @@ int RenderObject::offsetLeft() const
 
 int RenderObject::offsetTop() const
 {
+    RenderObject* offsetPar = offsetParent();
+    if (!offsetPar)
+        return 0;
+
+    int y = yPos() -offsetPar->borderTop();
     if ( isPositioned() )
-        return yPos();
+        return y;
 
     if ( isBody() && style()->htmlHacks() )
         return 0;
 
-    int y = yPos();
     if (isRelPositioned()) {
         int x = 0;
         static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
     }
-    RenderObject* offsetPar = offsetParent();
     for( RenderObject* curr = parent();
          curr && curr != offsetPar;
          curr = curr->parent() )
