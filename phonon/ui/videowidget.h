@@ -65,6 +65,8 @@ class AbstractVideoOutput;
 		 * \see AspectRatio
 		 */
 		Q_PROPERTY( AspectRatio aspectRatio READ aspectRatio WRITE setAspectRatio )
+		Q_PROPERTY( int xZoomPercent READ zoomX WRITE setZoomX )
+		Q_PROPERTY( int yZoomPercent READ zoomY WRITE setZoomY )
 		public:
 			/**
 			 * Defines the width:height to be used for the video.
@@ -108,6 +110,15 @@ class AbstractVideoOutput;
 
 			AspectRatio aspectRatio() const;
 			void setAspectRatio( AspectRatio );
+			
+			/**
+			 * Zoom in/out the image.
+			 * Reset with setzoomX(100);
+			 */
+			void setZoomX( int );
+			void setZoomY( int );
+			int zoomX() const;
+			int zoomY() const;
 
 		public Q_SLOTS:
 			void setFullScreen( bool fullscreen );

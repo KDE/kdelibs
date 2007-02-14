@@ -97,6 +97,12 @@ void VideoWidgetPrivate::createIface()
 PHONON_GETTER( Phonon::VideoWidget::AspectRatio, aspectRatio, d->aspectRatio )
 PHONON_SETTER( setAspectRatio, aspectRatio, Phonon::VideoWidget::AspectRatio )
 
+PHONON_GETTER( int, zoomX, d->xZoomPercent )
+PHONON_SETTER( setZoomX, xZoomPercent, int )
+
+PHONON_GETTER( int, zoomY, d->yZoomPercent )
+PHONON_SETTER( setZoomY, yZoomPercent, int )
+
 void VideoWidget::setFullScreen( bool newFullScreen )
 {
 	kDebug( 602 ) << k_funcinfo << newFullScreen << endl;

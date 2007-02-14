@@ -121,6 +121,8 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 			: layout( parent )
 			, fullScreenWidget( 0 )
 			, aspectRatio( VideoWidget::AspectRatioAuto )
+			, xZoomPercent( 100 )
+			, yZoomPercent( 100 )
 		{
 			layout.setMargin( 0 );
             cursorTimer.setInterval(1000); // 1s timeout until the cursor disappears
@@ -131,6 +133,7 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		QAction* fullScreenAction;
 		FullScreenVideoWidget* fullScreenWidget;
 		VideoWidget::AspectRatio aspectRatio;
+		int xZoomPercent, yZoomPercent;
         QTimer cursorTimer;
 };
 } // namespace Phonon
