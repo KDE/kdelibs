@@ -162,3 +162,23 @@ int Entry::downloads() const
   return mDownloads;
 }
 
+void Entry::setChecksum(QString checksum)
+{
+	mChecksum = checksum;
+}
+
+QString Entry::checksum()
+{
+	return mChecksum;
+}
+
+void Entry::setSignature(QString signature)
+{
+	mSignature = signature;
+}
+
+QString Entry::signature()
+{
+	return mSignature;
+}
+

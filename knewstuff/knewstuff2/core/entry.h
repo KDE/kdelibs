@@ -209,6 +209,12 @@ class KDE_EXPORT Entry
      */
     int downloads() const;
 
+    // FIXME: below here, everything under consideration
+    void setChecksum(QString checksum);
+    void setSignature(QString signature);
+    QString checksum();
+    QString signature();
+
   private:
     QString mType;
     QString mLicense;
@@ -222,6 +228,9 @@ class KDE_EXPORT Entry
     KTranslatable mSummary;
     KTranslatable mPayload;
     KTranslatable mPreview;
+
+    QString mChecksum;
+    QString mSignature;
 
     class EntryPrivate *d;
 };

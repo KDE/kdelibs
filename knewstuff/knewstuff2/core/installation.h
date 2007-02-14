@@ -44,12 +44,22 @@ class KDE_EXPORT Installation
      */
     ~Installation();
 
+    enum Policy
+    {
+      CheckNever,
+      CheckIfPossible,
+      CheckAlways
+    };
+
     void setUncompression(const QString& uncompression);
     void setCommand(const QString& command);
 
     void setStandardResourceDir(const QString& dir);
     void setTargetDir(const QString& dir);
     void setInstallPath(const QString& dir);
+
+    void setChecksumPolicy(Policy policy);
+    void setSignaturePolicy(Policy policy);
 
     QString uncompression() const;
     QString command() const;
@@ -58,12 +68,17 @@ class KDE_EXPORT Installation
     QString targetDir() const;
     QString installPath() const;
 
+    Policy checksumPolicy();
+    Policy signaturePolicy();
+
   private:
     QString m_command;
     QString m_uncompression;
     QString m_standardresourcedir;
     QString m_targetdir;
     QString m_installpath;
+    Policy m_checksumpolicy;
+    Policy m_signaturepolicy;
     class InstallationPrivate *d;
 };
 

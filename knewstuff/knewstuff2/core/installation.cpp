@@ -31,6 +31,8 @@ using namespace KNS;
 Installation::Installation()
 {
 	d = NULL;
+	m_checksumpolicy = CheckIfPossible;
+	m_signaturepolicy = CheckIfPossible;
 }
 
 Installation::~Installation()
@@ -62,6 +64,16 @@ void Installation::setInstallPath(const QString& dir)
 	m_installpath = dir;
 }
 
+void Installation::setChecksumPolicy(Policy policy)
+{
+	m_checksumpolicy = policy;
+}
+
+void Installation::setSignaturePolicy(Policy policy)
+{
+	m_signaturepolicy = policy;
+}
+
 QString Installation::uncompression() const
 {
 	return m_uncompression;
@@ -85,5 +97,15 @@ QString Installation::targetDir() const
 QString Installation::installPath() const
 {
 	return m_installpath;
+}
+
+Installation::Policy Installation::checksumPolicy()
+{
+	return m_checksumpolicy;
+}
+
+Installation::Policy Installation::signaturePolicy()
+{
+	return m_signaturepolicy;
 }
 

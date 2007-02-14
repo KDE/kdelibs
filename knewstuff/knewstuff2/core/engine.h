@@ -113,6 +113,7 @@ class KDE_EXPORT Engine : public QObject
     void loadEntryCache();
     void cacheProvider(Provider *provider);
     void cacheEntry(Entry *entry);
+    void registerEntry(Entry *entry);
     void mergeProviders(Provider::List *providers);
     void mergeEntries(Entry::List *entries);
     void shutdown();

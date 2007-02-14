@@ -3,3 +3,5 @@
 ProvidersUrl = http://localhost/provider.xml
 LocalRegistryDir = /tmp/knewstuff2.metafiles
 
+TargetDir = knewstuff2_test
+

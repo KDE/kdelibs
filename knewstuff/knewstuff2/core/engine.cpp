@@ -32,9 +32,12 @@
 
 #include <kio/job.h>
 #include <krandom.h>
+#include <ktar.h>
+#include <kzip.h>
 
 #include <qdir.h>
 #include <qdom.h>
+#include <qprocess.h>
 
 using namespace KNS;
 
@@ -90,6 +93,37 @@ bool Engine::init(const QString &configfile)
 	m_installation->setStandardResourceDir(conf.readEntry("StandardResource", QString()));
 	m_installation->setTargetDir(conf.readEntry("TargetDir", QString()));
 	m_installation->setInstallPath(conf.readEntry("InstallPath", QString()));
+
+	QString checksumpolicy = conf.readEntry("ChecksumPolicy", QString());
+	QString signaturepolicy = conf.readEntry("SignaturePolicy", QString());
+	if(!checksumpolicy.isEmpty())
+	{
+		if(checksumpolicy == "never")
+			m_installation->setChecksumPolicy(Installation::CheckNever);
+		else if(checksumpolicy == "ifpossible")
+			m_installation->setChecksumPolicy(Installation::CheckIfPossible);
+		else if(checksumpolicy == "always")
+			m_installation->setChecksumPolicy(Installation::CheckAlways);
+		else
+		{
+			kError(550) << "The checksum policy '" + checksumpolicy + "' is unknown." << endl;
+			return false;
+		}
+	}
+	if(!signaturepolicy.isEmpty())
+	{
+		if(signaturepolicy == "never")
+			m_installation->setSignaturePolicy(Installation::CheckNever);
+		else if(signaturepolicy == "ifpossible")
+			m_installation->setSignaturePolicy(Installation::CheckIfPossible);
+		else if(signaturepolicy == "always")
+			m_installation->setSignaturePolicy(Installation::CheckAlways);
+		else
+		{
+			kError(550) << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -575,6 +609,11 @@ void Engine::loadEntryCache()
 			m_previewfiles[e] = root.attribute("previewfile");
 			// FIXME: check here for a [ -f previewfile ]
 		}
+		if(root.hasAttribute("payloadfile"))
+		{
+			m_payloadfiles[e] = root.attribute("payloadfile");
+			// FIXME: check here for a [ -f payloadfile ]
+		}
 
 		emit signalEntryLoaded(e);
 	}
@@ -736,11 +775,55 @@ void Engine::cacheEntry(Entry *entry)
 	{
 		root.setAttribute("previewfile", m_previewfiles[entry]);
 	}
+	/*if(m_payloadfiles.contains(entry))
+	{
+		root.setAttribute("payloadfile", m_payloadfiles[entry]);
+	}*/
 
 	QFile f(cachedir + cachefile);
 	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		kError(550) << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
+		// FIXME: ignore?
+		return;
+	}
+	QTextStream metastream(&f);
+	metastream << root;
+	f.close();
+}
+
+void Engine::registerEntry(Entry *entry)
+{
+	KStandardDirs d;
+
+	kDebug(550) << "Registering entry." << endl;
+
+	// FIXME: this directory must match loadRegistry!
+	QString registrydir = d.saveLocation("data", "knewstuff2-entries.registry");
+
+	kDebug(550) << " + Save to directory '" + registrydir + "'." << endl;
+
+	// FIXME: see cacheEntry() for naming-related discussion
+	QString registryfile = id(entry) + ".meta";
+
+	kDebug(550) << " + Save to file '" + registryfile + "'." << endl;
+
+	EntryHandler eh(*entry);
+	QDomElement exml = eh.entryXML();
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("ghnsinstall");
+	root.appendChild(exml);
+
+	if(m_payloadfiles.contains(entry))
+	{
+		root.setAttribute("payloadfile", m_payloadfiles[entry]);
+	}
+
+	QFile f(registrydir + registryfile);
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		kError(550) << "Cannot write meta information to '" << registrydir + registryfile << "'." << endl;
 		// FIXME: ignore?
 		return;
 	}
@@ -770,11 +853,55 @@ bool Engine::install(QString payloadfile)
 	if(entries.size() != 1)
 	{
 		// FIXME: shouldn't ever happen - make this an assertion?
-		kError(550) << "" << endl;
+		kError(550) << "ASSERT: payloadfile is not associated" << endl;
 		return false;
 	}
 
 	Entry *entry = entries.first();
+
+	// FIXME: first of all, do the security stuff here
+	// this means check sum comparison and signature verification
+	// signature verification might take a long time - make async?!
+
+	if(m_installation->checksumPolicy() != Installation::CheckNever)
+	{
+		if(entry->checksum().isEmpty())
+		{
+			if(m_installation->checksumPolicy() == Installation::CheckIfPossible)
+			{
+				kDebug(550) << "Skip checksum verification" << endl;
+			}
+			else
+			{
+				kError(550) << "Checksum verification not possible" << endl;
+				return false;
+			}
+		}
+		else
+		{
+			kDebug(550) << "Verify checksum..." << endl;
+		}
+	}
+
+	if(m_installation->signaturePolicy() != Installation::CheckNever)
+	{
+		if(entry->signature().isEmpty())
+		{
+			if(m_installation->signaturePolicy() == Installation::CheckIfPossible)
+			{
+				kDebug(550) << "Skip signature verification" << endl;
+			}
+			else
+			{
+				kError(550) << "Signature verification not possible" << endl;
+				return false;
+			}
+		}
+		else
+		{
+			kDebug(550) << "Verify signature..." << endl;
+		}
+	}
 
 	kDebug(550) << "INSTALL resourceDir " << m_installation->standardResourceDir() << endl;
 	kDebug(550) << "INSTALL targetDir " << m_installation->targetDir() << endl;
@@ -782,8 +909,125 @@ bool Engine::install(QString payloadfile)
 	kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression() << endl;
 	kDebug(550) << "INSTALL + command " << m_installation->command() << endl;
 
-	kError(550) << "Help, don't know how to install " << entry->type() << " :-)" << endl;
-	return false;
+	QString ext = payloadfile.section('.', 1);
+	QString installfile = entry->name().representation();
+	installfile += "-" + entry->version();
+	if(!ext.isEmpty()) installfile += "." + ext;
+
+	QString installpath, installdir;
+	int pathcounter = 0;
+	if(!m_installation->standardResourceDir().isEmpty())
+	{
+		installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
+		pathcounter++;
+	}
+	if(!m_installation->targetDir().isEmpty())
+	{
+		installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + "/");
+		pathcounter++;
+	}
+	if(!m_installation->installPath().isEmpty())
+	{
+		installdir = QDir::home().path() + "/" + m_installation->installPath() + "/";
+		pathcounter++;
+	}
+	installpath = installdir + "/" + installfile;
+
+	if(pathcounter != 1)
+	{
+		kError(550) << "Wrong number of installation directories given." << endl;
+		return false;
+	}
+
+	kDebug(550) << "Install to file " << installpath << endl;
+	// FIXME: copy goes here (including overwrite checking)
+	// FIXME: what must be done now is to update the cache *again*
+	//        in order to set the new payload filename (on root tag only)
+	//        - this might or might not need to take uncompression into account
+	// FIXME: for updates, we might need to force an overwrite (that is, deleting before)
+	QFile file(payloadfile);
+	bool success = file.rename(installpath);
+	if(!success)
+	{
+		kError(550) << "Cannot move file to destination" << endl;
+		return false;
+	}
+
+	m_payloadfiles[entry] = installpath;
+	registerEntry(entry);
+	// FIXME: hm, do we need to update the cache really?
+	// only registration is probably be needed here
+
+	if(!m_installation->uncompression().isEmpty())
+	{
+		kDebug(550) << "Postinstallation: uncompress the file" << endl;
+
+		// FIXME: check for overwriting, malicious archive entries (../foo) etc.
+		// FIXME: KArchive should provide "safe mode" for this!
+		// FIXME: value for uncompression was application/x-gzip etc. - and now?
+
+		if(ext == "zip")
+		{
+			KZip zip(installpath);
+			bool success = zip.open(QIODevice::ReadOnly);
+			if(!success)
+			{
+				kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
+				return false;
+			}
+			const KArchiveDirectory *dir = zip.directory();
+			dir->copyTo(installdir);
+			zip.close();
+			QFile::remove(installpath);
+		}
+		else if((ext == "tar") || (ext == "gz") || (ext == "bz2"))
+		{
+			KTar tar(installpath);
+			bool success = tar.open(QIODevice::ReadOnly);
+			if(!success)
+			{
+				kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
+				return false;
+			}
+			const KArchiveDirectory *dir = tar.directory();
+			dir->copyTo(installdir);
+			tar.close();
+			QFile::remove(installpath);
+		}
+		else
+		{
+			kError(550) << "Unknown uncompression method " << ext << endl;
+			return false;
+		}
+	}
+
+	if(!m_installation->command().isEmpty())
+	{
+		kDebug(550) << "Postinstallation: execute command" << endl;
+		kDebug(550) << "Command is: " << m_installation->command() << endl;
+
+		// FIXME: knewstuff1 comment mentions kmacroexpander and kshell
+		//        but how would they help much here?
+		QStringList args;
+		QStringList list = m_installation->command().split(" ");
+		for(QStringList::iterator it = list.begin(); it != list.end(); it++)
+		{
+			args << (*it).replace("%f", installpath);
+		}
+		QString exe(args.takeFirst());
+		int exitcode = QProcess::execute(exe, args);
+
+		if(exitcode)
+		{
+			kError(550) << "Command failed" << endl;
+		}
+		else
+		{
+			kDebug(550) << "Command executed successfully" << endl;
+		}
+	}
+
+	return true;
 }
 
 #include "engine.moc"
