@@ -826,10 +826,6 @@ protected:
     bool settingsDirty() const;
     /**
      * For inherited classes
-     */
-    QString settingsGroup() const;
-    /**
-     * For inherited classes
      * Note that the group must be set before calling
      */
     void saveWindowSize( KConfig * config ) const;

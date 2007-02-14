@@ -1017,11 +1017,6 @@ bool KMainWindow::settingsDirty() const
     return d->settingsDirty;
 }
 
-QString KMainWindow::settingsGroup() const
-{
-    return d->autoSaveGroup;
-}
-
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
     d->autoSaveSettings = true;
