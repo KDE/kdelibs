@@ -873,7 +873,7 @@ void KateViewInternal::updateMicroFocusHint()
     /* Check for hasFocus() to avoid crashes in QXIMInputContext as in bug #131266.
     This is only a workaround until somebody can find the real reason of the crash
     (probably it's in Qt). */
-    if (line == -1 || !hasFocus()) 
+    if (line == -1 || !hasFocus())
         return;
 
     KateRenderer *renderer = m_view->renderer();
