@@ -34,29 +34,30 @@ VideoWidget::VideoWidget( QWidget* parent )
 	, Phonon::AbstractVideoOutput( *new VideoWidgetPrivate( this ) )
 {
 	K_D( VideoWidget );
-	init();
+    d->init();
 	d->createIface();
 }
 
-VideoWidget::VideoWidget( VideoWidgetPrivate& d, QWidget* parent )
-	: QWidget( parent )
-	, Phonon::AbstractVideoOutput( d )
+VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
+    : QWidget(parent),
+    Phonon::AbstractVideoOutput(dd)
 {
-	init();
+    K_D(VideoWidget);
+    d->init();
 }
 
-void VideoWidget::init()
+void VideoWidgetPrivate::init()
 {
-	K_D( VideoWidget );
-	d->fullScreenAction = new QAction( SmallIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), this );
-	d->fullScreenAction->setShortcut( Qt::Key_F );
-	d->fullScreenAction->setCheckable( true );
-	d->fullScreenAction->setChecked( false );
-	connect( d->fullScreenAction, SIGNAL( triggered( bool ) ), SLOT( setFullScreen( bool ) ) );
+    Q_Q(VideoWidget);
+    fullScreenAction = new QAction(SmallIcon("window_fullscreen"), i18n("F&ull Screen Mode"), q);
+    fullScreenAction->setShortcut(Qt::Key_F);
+    fullScreenAction->setCheckable(true);
+    fullScreenAction->setChecked(false);
+    QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), q, SLOT(setFullScreen(bool)));
 
-    QObject::connect(&d->cursorTimer, SIGNAL(timeout()), SLOT(_k_cursorTimeout()));
-    d->cursorTimer.start();
-    setMouseTracking(true);
+    QObject::connect(&cursorTimer, SIGNAL(timeout()), q, SLOT(_k_cursorTimeout()));
+    cursorTimer.start();
+    q->setMouseTracking(true);
 }
 
 void VideoWidget::mouseMoveEvent(QMouseEvent *)

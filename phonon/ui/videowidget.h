@@ -150,7 +150,6 @@ class AbstractVideoOutput;
             void mouseMoveEvent(QMouseEvent *);
 
 		private:
-			void init();
             Q_PRIVATE_SLOT(k_func(), void _k_cursorTimeout())
 	};
 } //namespace Phonon

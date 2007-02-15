@@ -116,7 +116,6 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 
         void _k_cursorTimeout();
 
-	protected:
 		VideoWidgetPrivate( VideoWidget* parent )
 			: layout( parent )
 			, fullScreenWidget( 0 )
@@ -135,6 +134,9 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		VideoWidget::AspectRatio aspectRatio;
 		int xZoomPercent, yZoomPercent;
         QTimer cursorTimer;
+
+    private:
+        void init();
 };
 } // namespace Phonon
 
