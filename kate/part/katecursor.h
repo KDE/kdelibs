@@ -23,6 +23,7 @@
 #define kate_cursor_h
 
 #include "../interfaces/document.h"
+#include <kdebug.h>
 
 class KateDocument;
 
@@ -53,7 +54,12 @@ class KateTextCursor
 
     friend bool operator<=(const KateTextCursor& c1, const KateTextCursor& c2)
       { return !(c1 > c2); }
-      
+
+    friend kdbgstream& operator<<(kdbgstream& stream, const KateTextCursor& c) {
+      stream << c.m_line << "," << c.m_col;
+      return stream;
+    }
+
 #ifndef Q_WS_WIN //not needed
     friend void qSwap(KateTextCursor & c1, KateTextCursor & c2) {
       KateTextCursor tmp = c1;
