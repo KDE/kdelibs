@@ -38,19 +38,15 @@ class Effect;
 			~EffectWidget();
 
 		protected:
-			EffectWidget( EffectWidgetPrivate& dd, Effect* effect, QWidget* parent );
+            //EffectWidget(EffectWidgetPrivate &dd, QWidget *parent);
 			EffectWidgetPrivate* d_ptr;
 
-		private Q_SLOTS:
-			void setToggleParameter( bool checked );
-			void setIntParameter( int value );
-			void setDoubleParameter( double value );
-
-		private:
-			void init( Effect* effect );
-			void autogenerateUi();
+        private:
+            Q_PRIVATE_SLOT(d_func(), void _k_setToggleParameter(bool checked))
+            Q_PRIVATE_SLOT(d_func(), void _k_setIntParameter(int value))
+            Q_PRIVATE_SLOT(d_func(), void _k_setDoubleParameter(double value))
 	};
 } // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_H
 
-// vim: sw=4 ts=4 tw=80
+// vim: sw=4 ts=4 tw=100

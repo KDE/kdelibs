@@ -30,11 +30,19 @@ namespace Phonon
 	{
 		Q_DECLARE_PUBLIC( EffectWidget )
 		protected:
+            EffectWidgetPrivate(Effect *effect);
+
 			EffectWidget* q_ptr;
 
 		private:
 			Effect* effect;
 			QHash<QObject*, Phonon::EffectParameter> parameterForObject;
+
+            void _k_setToggleParameter(bool checked);
+            void _k_setIntParameter(int value);
+            void _k_setDoubleParameter(double value);
+
+            void autogenerateUi();
 	};
 } // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_P_H
