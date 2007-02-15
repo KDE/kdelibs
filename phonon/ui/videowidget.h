@@ -47,7 +47,7 @@ class AbstractVideoOutput;
 	{
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
-		Q_ENUMS( AspectRatio )
+        Q_ENUMS(AspectRatio ScaleMode)
 		/**
 		 * This property holds whether the video is shown using the complete
 		 * screen.
@@ -65,8 +65,18 @@ class AbstractVideoOutput;
 		 * \see AspectRatio
 		 */
 		Q_PROPERTY( AspectRatio aspectRatio READ aspectRatio WRITE setAspectRatio )
-		Q_PROPERTY( int xZoomPercent READ zoomX WRITE setZoomX )
-		Q_PROPERTY( int yZoomPercent READ zoomY WRITE setZoomY )
+
+        /**
+         * If the size of the widget and the size of the video are not equal.
+         * The video will be zoomed to fit the widget. The smaller zoom
+         * (AddBarsScaleMode) adds black bars at the left/right or top/bottom to
+         * make all of the image visible (default). The bigger zoom (ExpandMode)
+         * fills the widget completely, keeping all information in one direction
+         * and leaving parts of the image outside of the widget in the other
+         * direction.
+         */
+        Q_PROPERTY(ScaleMode scaleMode READ scaleMode WRITE setScaleMode)
+
 		public:
 			/**
 			 * Defines the width:height to be used for the video.
@@ -81,11 +91,13 @@ class AbstractVideoOutput;
 				AspectRatioWidget = 0,
 				/**
 				 * Let the decoder find the aspect ratio automatically from the
-				 * media file.
+				 * media file (this is the default).
 				 */
 				AspectRatioAuto = 1,
 				/**
-				 * Make width and height of the video equal. (1:1)
+                 * Assume that every pixel of the video image needs to be displayed with the same
+                 * physical width and height. (1:1 image pixels, not imagewidth
+                 * = imageheight)
 				 */
 				AspectRatioSquare = 2,
 				/**
@@ -98,10 +110,15 @@ class AbstractVideoOutput;
 				 */
 				AspectRatioAnamorphic = 4,
 				/**
-				 * 2.11:1
+				 * 2:1
 				 */
-				AspectRatioDvb = 5
+				AspectRatioDvb = 5 //TODO: remove again? nonstandard?
 			};
+
+            enum ScaleMode {
+                AddBarsScaleMode = 0,
+                ExpandMode = 1
+            };
 
 			/**
 			 * Constructs a new video widget with a \p parent.
@@ -109,16 +126,7 @@ class AbstractVideoOutput;
 			VideoWidget( QWidget* parent = 0 );
 
 			AspectRatio aspectRatio() const;
-			void setAspectRatio( AspectRatio );
-			
-			/**
-			 * Zoom in/out the image.
-			 * Reset with setzoomX(100);
-			 */
-			void setZoomX( int );
-			void setZoomY( int );
-			int zoomX() const;
-			int zoomY() const;
+            ScaleMode scaleMode() const;
 
 		public Q_SLOTS:
 			void setFullScreen( bool fullscreen );
@@ -132,6 +140,9 @@ class AbstractVideoOutput;
 			 * Convenience slot, calling setFullScreen( true )
 			 */
 			void enterFullScreen();
+
+            void setAspectRatio(AspectRatio);
+            void setScaleMode(ScaleMode);
 
 		protected:
 			/**

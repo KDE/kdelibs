@@ -43,6 +43,8 @@ class MediaPlayer : public QWidget
 	private Q_SLOTS:
 		void openEffectWidget();
         void toggleDeinterlacing(bool);
+        void toggleScaleMode(bool);
+        void switchAspectRatio(int x);
 
 	private:
 		Phonon::MediaObject* m_media;

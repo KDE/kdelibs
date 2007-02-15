@@ -28,6 +28,7 @@
 #include "../../backendcapabilities.h"
 #include <QSlider>
 #include <QCheckBox>
+#include <QComboBox>
 
 using namespace Phonon;
 
@@ -57,6 +58,7 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	m_controls->setMediaProducer( m_media );
 	m_controls->setAudioOutput( m_aoutput );
 
+    /*
 	QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
 	if( !effectList.isEmpty() )
 	{
@@ -67,6 +69,7 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 		button->setText( "configure effect" );
 		connect( button, SIGNAL( clicked() ), SLOT( openEffectWidget() ) );
 	}
+    */
 
 	m_brightness = new BrightnessControl( this );
 	QSlider* slider = new QSlider( this );
@@ -75,12 +78,39 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	slider->setRange( m_brightness->lowerBound(), m_brightness->upperBound() );
 	slider->setValue( m_brightness->brightness() );
 	connect( slider, SIGNAL( valueChanged( int ) ), m_brightness, SLOT( setBrightness( int ) ) );
+    m_vpath->insertEffect(m_brightness);
 
     QCheckBox *deinterlaceCheck = new QCheckBox(this);
     layout->addWidget(deinterlaceCheck);
     connect(deinterlaceCheck, SIGNAL(toggled(bool)), SLOT(toggleDeinterlacing(bool)));
 
-	m_vpath->insertEffect( m_brightness );
+    QCheckBox *scaleModeCheck = new QCheckBox(this);
+    layout->addWidget(scaleModeCheck);
+    connect(scaleModeCheck, SIGNAL(toggled(bool)), SLOT(toggleScaleMode(bool)));
+
+    QComboBox *aspectRatioCombo = new QComboBox(this);
+    layout->addWidget(aspectRatioCombo);
+    connect(aspectRatioCombo, SIGNAL(currentIndexChanged(int)), SLOT(switchAspectRatio(int)));
+    aspectRatioCombo->addItem("AspectRatioWidget");
+    aspectRatioCombo->addItem("AspectRatioAuto");
+    aspectRatioCombo->addItem("AspectRatioSquare");
+    aspectRatioCombo->addItem("AspectRatio4_3");
+    aspectRatioCombo->addItem("AspectRatioAnamorphic");
+    aspectRatioCombo->addItem("AspectRatioDvb");
+}
+
+void MediaPlayer::switchAspectRatio(int x)
+{
+    m_vwidget->setAspectRatio(static_cast<VideoWidget::AspectRatio>(x));
+}
+
+void MediaPlayer::toggleScaleMode(bool mode)
+{
+    if (mode) {
+        m_vwidget->setScaleMode(VideoWidget::ExpandMode);
+    } else {
+        m_vwidget->setScaleMode(VideoWidget::AddBarsScaleMode);
+    }
 }
 
 void MediaPlayer::toggleDeinterlacing(bool deint)
