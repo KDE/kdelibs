@@ -113,9 +113,12 @@ void VolumeSliderPrivate::_k_buttonClicked()
 
 void VolumeSliderPrivate::_k_mutedChanged(bool muted)
 {
+    Q_Q(VolumeSlider);
     if (muted) {
+        q->setToolTip(i18n("Muted"));
         muteButton.setIcon(mutedIcon);
     } else {
+        q->setToolTip(i18n("Volume: %1%", static_cast<int>(output->volume() * 100.0f)));
         muteButton.setIcon(volumeIcon);
     }
 }
@@ -123,10 +126,12 @@ void VolumeSliderPrivate::_k_mutedChanged(bool muted)
 void VolumeSliderPrivate::_k_sliderChanged(int value)
 {
     Q_Q(VolumeSlider);
-    q->setToolTip(i18n("Volume: %1%", value));
+    if (!output->isMuted()) {
+        q->setToolTip(i18n("Volume: %1%", value));
+    }
     if (output) {
         ignoreVolumeChange = true;
-        output->setVolume((static_cast<float>(value)) * 0.01);
+        output->setVolume((static_cast<float>(value)) * 0.01f);
         ignoreVolumeChange = false;
     }
 }
