@@ -34,7 +34,7 @@ typedef QSharedData KShared;
 
 /**
  * Can be used to control the lifetime of an object that has derived
- * KShared (which is the same as QSharedData). As long a someone holds
+ * QSharedData. As long a someone holds
  * a KSharedPtr on some QSharedData object it won't become deleted but
  * is deleted once its reference count is 0.
  * This struct emulates C++ pointers virtually perfectly.
