@@ -2052,8 +2052,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
         {
           bool same = ( newCursor.line() == selStartCached.line() );
           int c;
-          if ( newCursor.line() > selStartCached.line() ||
-               ( same && newCursor.col() > selEndCached.col() ) )
+          if ( newCursor > selEndCached )
           {
             selectAnchor = selStartCached;
 
@@ -2065,8 +2064,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
             newCursor.setCol( c );
           }
-          else if ( newCursor.line() < selStartCached.line() ||
-               ( same && newCursor.col() < selStartCached.col() ) )
+          else if ( newCursor < selStartCached )
           {
             selectAnchor = selEndCached;
 
@@ -2792,9 +2790,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
         QApplication::clipboard()->setSelectionMode( false );
         // Set cursor to edge of selection... which edge depends on what
         // "direction" the selection was made in
-        if ( m_view->selectStart.line() < selStartCached.line() ||
-            ( m_view->selectStart.line() == selStartCached.line() &&
-              m_view->selectStart.col() < selStartCached.col() ) )
+        if ( m_view->selectStart < selStartCached )
           updateCursor( m_view->selectStart );
         else
           updateCursor( m_view->selectEnd );
