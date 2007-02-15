@@ -20,10 +20,10 @@
 #ifndef PHONON_EFFECTPARAMETER_H
 #define PHONON_EFFECTPARAMETER_H
 
-#include <QSharedDataPointer>
 #include <QString>
 #include <kdelibs_export.h>
 #include <QVariant>
+#include <ksharedptr.h>
 
 namespace Phonon
 {
@@ -246,7 +246,7 @@ class PHONONCORE_EXPORT EffectParameter
 		/**
 		 * The data is implicitly shared.
 		 */
-		QSharedDataPointer<EffectParameterPrivate> d;
+        KSharedPtr<EffectParameterPrivate> d;
 };
 
 } // namespace Phonon
