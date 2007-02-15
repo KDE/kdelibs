@@ -300,10 +300,15 @@ class Parser
             end
             break if token == "//"
           end
-          if token[0,1] == '"'
-            laststring = token
+          quote = token.index '"'
+          if quote != nil
+            laststring = token[quote..-1]
             instring = true
-            next
+            if quote > 0
+              token = token[0,quote]
+            else
+              next
+            end
           end
           semicolon = token.index ';'
           if not semicolon
