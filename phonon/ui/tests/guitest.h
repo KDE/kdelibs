@@ -83,6 +83,9 @@ class PathWidget : public QFrame
 		AudioPath *path() const { return m_path; }
 		bool connectOutput( OutputWidget* w );
 
+    private Q_SLOTS:
+        void addVolumeFader();
+
 	private:
 		AudioPath *m_path;
 };

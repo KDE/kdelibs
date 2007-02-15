@@ -24,7 +24,9 @@
 #include <phonon/audiooutput.h>
 #include <phonon/videopath.h>
 #include <phonon/backendcapabilities.h>
+#include <phonon/volumefadereffect.h>
 #include <phonon/ui/videowidget.h>
+#include <phonon/ui/effectwidget.h>
 
 #include <QApplication>
 #include <QPushButton>
@@ -94,6 +96,19 @@ PathWidget::PathWidget( QWidget *parent )
 {
 	setFrameShape( QFrame::Box );
 	setFrameShadow( QFrame::Raised );
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    QPushButton *button = new QPushButton(this);
+    layout->addWidget(button);
+    button->setText("add VolumeFader");
+    connect(button, SIGNAL(clicked()), SLOT(addVolumeFader()));
+}
+
+void PathWidget::addVolumeFader()
+{
+    VolumeFaderEffect *effect = new VolumeFaderEffect(m_path);
+    layout()->addWidget(new EffectWidget(effect, this));
+    m_path->insertEffect(effect);
 }
 
 bool PathWidget::connectOutput( OutputWidget *w )
