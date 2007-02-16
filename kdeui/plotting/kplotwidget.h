@@ -214,18 +214,18 @@ public:
 	/**
 	 * @return the background color of the plot
 	 */
-	QColor backgroundColor() const { return cBackground; }
+        QColor backgroundColor() const;
 
 	/**
 	 * @return the foreground color, used for the axes, tickmarks
 	 * and associated labels.
 	 */
-	QColor foregroundColor() const { return cForeground; }
+        QColor foregroundColor() const;
 
 	/**
 	 * @return the grid color
 	 */
-	QColor gridColor() const { return cGrid; }
+        QColor gridColor() const;
 
 	/**
 	 * Set the background color
@@ -237,25 +237,27 @@ public:
 	 * Set the foreground color
 	 * @param fg the new foreground color
 	 */
-	void setForegroundColor( const QColor &fg ) { cForeground = fg; }
+        void setForegroundColor( const QColor &fg );
 
 	/**
 	 * Set the grid color
 	 * @param gc the new grid color
 	 */
-	void setGridColor( const QColor &gc ) { cGrid = gc; }
+        void setGridColor( const QColor &gc );
 
 	/**
 	 * @return whether the grid lines are shown
 	 */
-	bool isGridShown() const { return ShowGrid; }
+        bool isGridShown() const;
 
 	/**
 	 * @return whether the tooltip for the point objects are shown
 	 */
-	bool areObjectToolTipsShown() const { return ShowObjectToolTips; }
+        bool areObjectToolTipsShown() const;
 
-	inline void setAntialias( bool b ) { UseAntialias = b; }
+        bool antialias() const;
+
+        void setAntialias( bool b );
 
 	/**
 	 * @return the number of pixels to the left of the plot area.
@@ -377,6 +379,10 @@ public slots:
 	 */
 	void setShowObjectToolTips( bool show );
 
+    private:
+        class Private;
+        Private * const d;
+
 protected:
 	/**
 	 * Generic event handler.
@@ -442,10 +448,6 @@ protected:
 	 */
 	QHash<Axis, KPlotAxis*> mAxes;
 
-	//Colors
-	QColor cBackground, cForeground, cGrid;
-	//draw options
-	bool ShowGrid, ShowObjectToolTips, UseAntialias;
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
 

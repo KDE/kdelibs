@@ -38,8 +38,26 @@
 #define SMALLTICKSIZE 4
 #define TICKOFFSET 0
 
+class KPlotWidget::Private
+{
+    public:
+        Private( KPlotWidget *qq )
+          : q( qq ),
+            cBackground( Qt::white ), cForeground( Qt::white ), cGrid( Qt::gray ),
+            showGrid( false ), showObjectToolTips( true ), useAntialias( false )
+        {
+        }
+
+        KPlotWidget *q;
+
+        //Colors
+        QColor cBackground, cForeground, cGrid;
+        //draw options
+        bool showGrid, showObjectToolTips, useAntialias;
+};
+
 KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
- : QFrame( parent ), ShowGrid( false ), ShowObjectToolTips( true ), UseAntialias( false )
+    : QFrame( parent ), d( new Private( this ) )
 {
 	setAttribute( Qt::WA_NoBackground, true );
 
@@ -59,11 +77,6 @@ KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, doub
 
 	setDefaultPaddings();
 
-	//default colors:
-	setBackgroundColor( Qt::black );
-	setForegroundColor( Qt::white );
-	setGridColor( Qt::gray );
-
 	setMinimumSize( 150, 150 );
 }
 
@@ -73,6 +86,8 @@ KPlotWidget::~KPlotWidget()
 	ObjectList.clear();
 	qDeleteAll( mAxes );
 	mAxes.clear();
+
+    delete d;
 }
 
 QSize KPlotWidget::minimumSizeHint() const
@@ -191,18 +206,67 @@ KPlotObject *KPlotWidget::object( int i ) {
 	return ObjectList.at(i);
 }
 
+QColor KPlotWidget::backgroundColor() const
+{
+    return d->cBackground;
+}
+
+QColor KPlotWidget::foregroundColor() const
+{
+    return d->cForeground;
+}
+
+QColor KPlotWidget::gridColor() const
+{
+    return d->cGrid;
+}
+
 void KPlotWidget::setBackgroundColor( const QColor &bg ) {
-	cBackground = bg;
+    d->cBackground = bg;
 	update();
+}
+
+void KPlotWidget::setForegroundColor( const QColor &fg )
+{
+    d->cForeground = fg;
+    update();
+}
+
+void KPlotWidget::setGridColor( const QColor &gc )
+{
+    d->cGrid = gc;
+    update();
+}
+
+bool KPlotWidget::isGridShown() const
+{
+    return d->showGrid;
+}
+
+bool KPlotWidget::areObjectToolTipsShown() const
+{
+    return d->showObjectToolTips;
+}
+
+bool KPlotWidget::antialias() const
+{
+    return d->useAntialias;
+}
+
+void KPlotWidget::setAntialias( bool b )
+{
+    d->useAntialias = b;
+    update();
 }
 
 void KPlotWidget::setShowGrid( bool show ) {
-	ShowGrid = show;
+    d->showGrid = show;
 	update();
 }
 
-void KPlotWidget::setShowObjectToolTips( bool show ) {
-	ShowObjectToolTips = show;
+void KPlotWidget::setShowObjectToolTips( bool show )
+{
+    d->showObjectToolTips = show;
 }
 
 
@@ -225,7 +289,7 @@ QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 
 bool KPlotWidget::event( QEvent* e ) {
 	if ( e->type() == QEvent::ToolTip ) {
-		if ( ShowObjectToolTips )
+		if ( d->showObjectToolTips )
 		{
 			QHelpEvent *he = static_cast<QHelpEvent*>( e );
 			QList<KPlotPoint*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
@@ -390,7 +454,7 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 	QPainter p;
 
 	p.begin( this );
-	p.setRenderHint( QPainter::Antialiasing, UseAntialias );
+	p.setRenderHint( QPainter::Antialiasing, d->useAntialias );
 	p.fillRect( rect(), backgroundColor() );
 	p.translate( leftPadding(), topPadding() );
 
@@ -426,7 +490,7 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 }
 
 void KPlotWidget::drawAxes( QPainter *p ) {
-	if ( ShowGrid ) {
+	if ( d->showGrid ) {
 		p->setPen( gridColor() );
 
 		//Grid lines are placed at locations of primary axes' major tickmarks
