@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qwidget.h>
 
-#include "config.h"
 #include <qglobal.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
