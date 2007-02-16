@@ -85,8 +85,11 @@ class KFontChooser::Private
 public:
     Private()
         { m_palette.setColor(QPalette::Active, QPalette::Text, Qt::black);
-          m_palette.setColor(QPalette::Active, QPalette::Base, Qt::white); }
+          m_palette.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        signalsAllowed = true;
+     }
     QPalette m_palette;
+    bool signalsAllowed;
 };
 
 
@@ -507,6 +510,7 @@ void KFontChooser::toggled_checkbox()
 void KFontChooser::family_chosen_slot(const QString& family)
 {
     QFontDatabase dbase;
+    d->signalsAllowed = false;
     QStringList styles = QStringList(dbase.styles(family));
     styleListBox->clear();
     currentStyles.clear();
@@ -518,9 +522,9 @@ void KFontChooser::family_chosen_slot(const QString& family)
         if(pos >=0) style = style.replace(pos,6,i18n("Regular"));
         pos = style.indexOf("Oblique");
         if(pos >=0) style = style.replace(pos,7,i18n("Italic"));
-        
+
         QList<QListWidgetItem*> styleList = styleListBox->findItems(style,Qt::MatchContains);
-        if(!styleList.isEmpty()) {
+        if(styleList.isEmpty()) {
             styleListBox->addItem(i18n(style.toUtf8()));
             currentStyles.insert(i18n(style.toUtf8()), *it);
         }
@@ -530,21 +534,19 @@ void KFontChooser::family_chosen_slot(const QString& family)
         currentStyles.insert(i18n("Regular"), "Normal");
     }
 
-    styleListBox->blockSignals(true);
-
     QList<QListWidgetItem*> selectedStyleList = styleListBox->findItems(selectedStyle,Qt::MatchContains);
     if (!selectedStyleList.isEmpty())
        styleListBox->setCurrentItem(selectedStyleList.first());
     else
-       styleListBox->setCurrentItem(0);
-    styleListBox->blockSignals(false);
-
-    style_chosen_slot(QString());
+        styleListBox->setCurrentRow(0);
+    d->signalsAllowed = true;
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){
-
+    if(! d->signalsAllowed)
+        return;
   selectedSize=size.toInt();
+    Q_ASSERT(selectedSize);
   sizeOfFont->setValue(selectedSize);
   selFont.setPointSize(selectedSize);
   emit fontSelected(selFont);
@@ -557,6 +559,9 @@ void KFontChooser::size_value_slot(int val) {
 
 void KFontChooser::style_chosen_slot(const QString& style)
 {
+    if(! d->signalsAllowed)
+        return;
+    d->signalsAllowed = false;
     QString currentStyle;
     if (style.isEmpty())
        currentStyle = styleListBox->currentItem()->text();
@@ -583,13 +588,11 @@ void KFontChooser::style_chosen_slot(const QString& style)
         } else // there are times Qt does not provide the list..
             fillSizeList();
     }
-    sizeListBox->blockSignals(true);
-    
+
     QList<QListWidgetItem*> selectedSizeList = sizeListBox->findItems(QString::number(selectedSize),Qt::MatchContains);
     if ( !selectedSizeList.isEmpty() )
         sizeListBox->setCurrentItem(selectedSizeList.first());
 
-    sizeListBox->blockSignals(false);
     //TODO - KDE4 : sizeListBox->scrollTo(sizeListBox->currentItem());
 
     //kDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
@@ -597,6 +600,7 @@ void KFontChooser::style_chosen_slot(const QString& style)
     emit fontSelected(selFont);
     if (!style.isEmpty())
         selectedStyle = style;
+    d->signalsAllowed = true;
 }
 
 void KFontChooser::displaySample(const QFont& font)

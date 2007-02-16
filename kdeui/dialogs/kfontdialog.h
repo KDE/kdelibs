@@ -73,7 +73,7 @@ public:
    * <p>Consider the following code snippet;
    * \code
    *    QStringList list;
-   *    KFontChooser::getFontList(list,SmoothScalableFonts);
+   *    KFontChooser::getFontList(list, KFontChooser::SmoothScalableFonts);
    *    KFontChooser *chooseFont = new KFontChooser(0, false, list);
    * \endcode
    * <p>
