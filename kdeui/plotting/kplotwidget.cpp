@@ -273,12 +273,14 @@ void KPlotWidget::setShowObjectToolTips( bool show )
 
 
 KPlotAxis* KPlotWidget::axis( Axis a ) {
-	return mAxes.contains( a ) ? mAxes[a] : 0;
+    QHash<Axis, KPlotAxis*>::Iterator it = mAxes.find( a );
+    return it != mAxes.end() ? it.value() : 0;
 }
 
 const KPlotAxis* KPlotWidget::axis( Axis a ) const
 {
-    return mAxes.contains( a ) ? mAxes[a] : 0;
+    QHash<Axis, KPlotAxis*>::ConstIterator it = mAxes.find( a );
+    return it != mAxes.end() ? it.value() : 0;
 }
 
 QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
