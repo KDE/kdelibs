@@ -37,14 +37,32 @@ namespace Kross {
     {
             Q_OBJECT
         public:
+
+            /**
+            * Constructor.
+            * \param action The \a Action instance this editor should
+            * operate on.
+            * \param parent The parent widget this widget is child of.
+            */
             ScriptManagerPropertiesEditor(Action* action, QWidget* parent);
+
+            /**
+            * Destructor.
+            */
             virtual ~ScriptManagerPropertiesEditor();
 
+            /**
+            * This method got called if the changes done in the editor
+            * should be saved aka committed to the \a Action instance.
+            */
             void commit();
 
         private Q_SLOTS:
+            /// This slot got called if the selection changed.
             void slotSelectionChanged();
+            /// This slot got called if a new property should be added.
             void slotAdd();
+            /// This slot got called if the selected property should be removed.
             void slotRemove();
 
         private:
@@ -61,10 +79,33 @@ namespace Kross {
     class ScriptManagerEditor : public QWidget
     {
         public:
+
+            /**
+            * Constructor.
+            * \param action The \a Action instance this editor should
+            * operate on.
+            * \param parent The parent widget this widget is child of.
+            */
             ScriptManagerEditor(Action* action, QWidget* parent);
+
+            /**
+            * Constructor.
+            * \param collection The \a ActionCollection instance this
+            * editor should operate on.
+            * \param parent The parent widget this widget is child of.
+            */
             ScriptManagerEditor(ActionCollection* collection, QWidget* parent);
+
+            /**
+            * Destructor.
+            */
             virtual ~ScriptManagerEditor();
 
+            /**
+            * This method got called if the changes done in the editor
+            * should be saved aka committed to the \a Action or
+            * \a ActionCollection instance.
+            */
             void commit();
 
         private:
@@ -73,6 +114,7 @@ namespace Kross {
             /// \internal d-pointer instance.
             Private* const d;
 
+            /// Initialize the GUI.
             void initGui();
     };
 

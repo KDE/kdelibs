@@ -52,6 +52,7 @@ namespace Kross {
 
             QString text;
             QString description;
+            QString iconname;
             bool enabled;
 
             Private(ActionCollection* const p) : parent(p) {}
@@ -84,6 +85,10 @@ void ActionCollection::setText(const QString& text) { d->text = text; emit updat
 
 QString ActionCollection::description() const { return d->description; }
 void ActionCollection::setDescription(const QString& description) { d->description = description; emit updated(); }
+
+QString ActionCollection::iconName() const { return d->iconname; }
+void ActionCollection::setIconName(const QString& iconname) { d->iconname = iconname; }
+QIcon ActionCollection::icon() const { return KIcon(d->iconname); }
 
 bool ActionCollection::isEnabled() const { return d->enabled; }
 void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; emit updated(); }
@@ -199,12 +204,14 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
             const QString name = elem.attribute("name");
             const QString text = elem.attribute("text");
             const QString description = elem.attribute("comment");
+            const QString iconname = elem.attribute("icon");
             bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
             ActionCollection* c = d->collections.contains(name) ? d->collections[name] : 0;
             if( ! c )
                 c = new ActionCollection(name, this);
             c->setText( text.isEmpty() ? name : text );
             c->setDescription( description.isEmpty() ? c->text() : description );
+            c->setIconName( iconname );
 
             if( ! enabled )
                 c->setEnabled(false);
@@ -229,7 +236,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                 connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
             }
-            a->readDomElement(elem);
+            a->fromDomElement(elem);
         }
         //else if( ! fromXml(elem) ) ok = false;
     }
@@ -306,6 +313,10 @@ QDomElement ActionCollection::writeXml()
         element.setAttribute("text", text());
     if( ! d->description.isNull() )
         element.setAttribute("comment", d->description);
+    if( ! d->description.isNull() )
+        element.setAttribute("comment", d->description);
+    if( ! d->iconname.isNull() )
+        element.setAttribute("icon", d->iconname);
 
     foreach(QString name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
@@ -317,20 +328,10 @@ QDomElement ActionCollection::writeXml()
 
     foreach(Action* a, actions()) {
         Q_ASSERT(a);
-
         #ifdef KROSS_ACTIONCOLLECTION_DEBUG
             krossdebug( QString("  ActionCollection::writeXml action.objectName=\"%1\" action.file=\"%2\"").arg(a->objectName()).arg(a->file()) );
         #endif
-
-        QDomElement e = document.createElement("script");
-        e.setAttribute("name", a->objectName());
-        e.setAttribute("text", a->text());
-        e.setAttribute("comment", a->description());
-        //FIXME hmmm... kde4's KIcon / Qt4's QIcon does not allow to reproduce the iconname?
-        //e.setAttribute("icon", a->iconName());
-        e.setAttribute("interpreter", a->interpreter());
-        e.setAttribute("file", a->file());
-        element.appendChild(e);
+        element.appendChild( a->toDomElement() );
     }
 
     return element;
@@ -342,96 +343,5 @@ bool ActionCollection::writeXml(QIODevice* device, int indent)
     document.documentElement().appendChild( writeXml() );
     return device->write( document.toByteArray(indent) ) != -1;
 }
-
-#if 0
-bool Manager::readConfig()
-{
-    KConfig* config = KApplication::kApplication()->sessionConfig();
-    krossdebug( QString("Manager::readConfig hasGroup=%1 isReadOnly=%2 isImmutable=%3 ConfigState=%4").arg(config->hasGroup("scripts")).arg(config->isReadOnly()).arg(config->isImmutable()).arg(config->getConfigState()) );
-    if(! config->hasGroup("scripts"))
-        return false;
-
-    // we need to remember the current names, to be able to remove "expired" actions later.
-    QStringList actionnames;
-    foreach(Action* a, d->actioncollection->actions())
-        actionnames.append( a->objectName() );
-
-    // iterate now through the items in the [scripts]-section
-    config->setGroup("scripts");
-    foreach(QString name, config->readEntry("names", QStringList())) {
-        bool needsupdate = actionnames.contains( name );
-        if( needsupdate )
-            actionnames.removeAll( name );
-
-        QString text = config->readEntry(QString("%1_text").arg(name).toLatin1());
-        QString description = config->readEntry(QString("%1_description").arg(name).toLatin1());
-        QString icon = config->readEntry(QString("%1_icon").arg(name).toLatin1());
-        QString file = config->readEntry(QString("%1_file").arg(name).toLatin1());
-        QString interpreter = config->readEntry(QString("%1_interpreter").arg(name).toLatin1());
-
-        if( text.isEmpty() )
-            text = file;
-        if( description.isEmpty() )
-            description = text.isEmpty() ? name : text;
-        if( icon.isEmpty() )
-            icon = KMimeType::iconNameForUrl( KUrl(file) );
-
-        Action* action = needsupdate
-            ? dynamic_cast< Action* >( d->actioncollection->action(name) )
-            : new Action(d->actioncollection, name);
-        Q_ASSERT(action);
-
-        action->setText(text);
-        action->setDescription(description);
-        if( ! icon.isNull() )
-            action->setIcon(KIcon(icon));
-        if( ! interpreter.isNull() )
-            action->setInterpreter(interpreter);
-        action->setFile(file);
-
-        connect(action, SIGNAL( started(Kross::Action*) ), this, SIGNAL( started(Kross::Action*)) );
-        connect(action, SIGNAL( finished(Kross::Action*) ), this, SIGNAL( finished(Kross::Action*) ));
-    }
-
-    // remove actions that are not valid anymore
-    foreach(QString n, actionnames) {
-        Action* a = d->actioncollection->action(n);
-        Q_ASSERT(a);
-        d->actioncollection->remove(a);
-        delete a;
-    }
-
-    return true;
-}
-
-bool Manager::writeConfig()
-{
-    KConfig* config = KApplication::kApplication()->sessionConfig();
-    krossdebug( QString("Manager::writeConfig hasGroup=%1 isReadOnly=%2 isImmutable=%3 ConfigState=%4").arg(config->hasGroup("scripts")).arg(config->isReadOnly()).arg(config->isImmutable()).arg(config->getConfigState()) );
-    if(config->isReadOnly())
-        return false;
-
-    config->deleteGroup("scripts"); // remove old entries
-    config->setGroup("scripts"); // according to the documentation it's needed to re-set the group after delete.
-
-    QStringList names;
-    foreach(Action* action, d->actioncollection->actions(QString())) {
-        const QString name = action->objectName();
-        names << name;
-        config->writeEntry(QString("%1_text").arg(name).toLatin1(), action->text());
-        config->writeEntry(QString("%1_description").arg(name).toLatin1(), action->description());
-
-        //TODO hmmm... kde4's KIcon / Qt4's QIcon does not allow to reproduce the iconname?
-        //config->writeEntry(QString("%1_icon").arg(name).toLatin1(), action->icon());
-
-        config->writeEntry(QString("%1_file").arg(name).toLatin1(), action->file());
-        config->writeEntry(QString("%1_interpreter").arg(name).toLatin1(), action->interpreter());
-    }
-
-    config->writeEntry("names", names);
-    //config->sync();
-    return true;
-}
-#endif
 
 #include "actioncollection.moc"

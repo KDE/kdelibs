@@ -159,7 +159,8 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                 switch( role ) {
                     case Qt::DecorationRole: {
                         if( d->mode & Icons )
-                            return item->action->icon();
+                            if( ! item->action->iconName().isEmpty() )
+                                return item->action->icon();
                     } break;
                     case Qt::DisplayRole:
                         return item->action->text().replace("&","");
@@ -181,6 +182,11 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
             } break;
             case ActionCollectionModelItem::CollectionType: {
                 switch( role ) {
+                    case Qt::DecorationRole: {
+                        if( d->mode & Icons )
+                            if( ! item->collection->iconName().isEmpty() )
+                                return item->collection->icon();
+                    } break;
                     case Qt::DisplayRole:
                         return item->collection->text();
                     case Qt::ToolTipRole: // fall through

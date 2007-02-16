@@ -84,7 +84,14 @@ namespace Kross {
              * contains details about e.g. the displayed text, the file to
              * execute or the used interpreter.
              */
-            void readDomElement(const QDomElement& element);
+            void fromDomElement(const QDomElement& element);
+
+            /**
+             * \return a QDomElement that contains the settings like e.g. the
+             * displayed text, the file to execute or the used interpreter
+             * of this \a Action instance.
+             */
+            QDomElement toDomElement() const;
 
             /**
              * \return a map of options this \a Action defines.

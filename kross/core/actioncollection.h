@@ -85,6 +85,21 @@ namespace Kross {
             void setDescription(const QString& description);
 
             /**
+             * \return the name of the icon.
+             */
+            QString iconName() const;
+
+            /**
+             * Set the name of the icon to \p iconname .
+             */
+            void setIconName(const QString& iconname);
+
+            /**
+             * \return the icon defined with \p setIconName() .
+             */
+            QIcon icon() const;
+
+            /**
              * Return the enable this ActionCollection has.
              */
             bool isEnabled() const;

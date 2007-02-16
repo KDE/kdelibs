@@ -33,11 +33,15 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
-//#include <QLabel>
+#include <QTreeView>
+
+#include <QLabel>
 //#include <QLineEdit>
 //#include <QComboBox>
 //#include <QCheckBox>
-#include <QTreeView>
+#include <QRadioButton>
+
+
 
 #include <kapplication.h>
 //#include <kdeversion.h>
@@ -50,6 +54,7 @@
 #include <kfiledialog.h>
 #include <kmenu.h>
 #include <kpagedialog.h>
+#include <kassistantdialog.h>
 
 #include <ktar.h>
 #include <kio/netaccess.h>
@@ -270,9 +275,74 @@ void ScriptManagerCollection::slotEdit()
     }
 }
 
+
+
+
+/* testcases ******************************/
+class AddType : public QWidget {
+    public:
+        AddType(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
+            QVBoxLayout* layout = new QVBoxLayout(this);
+            //layout->setSpacing(0);
+            //layout->setMargin(0);
+            setLayout(layout);
+            layout->addWidget( new QLabel(i18n("<qt>This wizard will guide you through the proccess of adding a new item to your scripts.</qt>"), this) );
+
+            QRadioButton* radiobtn2 = new QRadioButton(i18n("Add script file"), this);
+            radiobtn2->setChecked(true);
+            layout->addWidget(radiobtn2);
+
+            QRadioButton* radiobtn1 = new QRadioButton(i18n("Add collection folder"), this);
+            layout->addWidget(radiobtn1);
+
+            QRadioButton* radiobtn3 = new QRadioButton(i18n("Install script package file"), this);
+            radiobtn3->setEnabled(false);
+            layout->addWidget(radiobtn3);
+
+            QRadioButton* radiobtn4 = new QRadioButton(i18n("Install online script package"), this);
+            radiobtn4->setEnabled(false);
+            layout->addWidget(radiobtn4);
+
+            layout->addStretch(1);
+        }
+};
+class AddScriptWidget : public QWidget {
+    public:
+        AddScriptWidget(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
+            QVBoxLayout* layout = new QVBoxLayout(this);
+            setLayout(layout);
+            Action* action = new Action(0, "");
+            ScriptManagerEditor* editor = new ScriptManagerEditor(action, this);
+            layout->addWidget(editor);
+        }
+};
+class AddCollectionWidget : public QWidget {
+    public:
+        AddCollectionWidget(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
+            QVBoxLayout* layout = new QVBoxLayout(this);
+            setLayout(layout);
+            ActionCollection* collection = new ActionCollection("");
+            ScriptManagerEditor* editor = new ScriptManagerEditor(collection, this);
+            layout->addWidget(editor);
+        }
+};
+
 void ScriptManagerCollection::slotAdd()
 {
-    KMessageBox::sorry(0, "TODO");
+    //TODO
+
+    KAssistantDialog* dialog = new KAssistantDialog(this);
+    dialog->setCaption( i18n("Add") );
+
+    KPageWidgetItem* item = dialog->addPage(new AddType(this, dialog), i18n("Add"));
+    KPageWidgetItem* item2 = dialog->addPage(new AddScriptWidget(this, dialog), i18n("Script"));
+    KPageWidgetItem* item3 = dialog->addPage(new AddCollectionWidget(this, dialog), i18n("Collection"));
+
+    dialog->resize( QSize(600, 400).expandedTo( dialog->minimumSizeHint() ) );
+    int result = dialog->exec();
+    Q_UNUSED(result);
+
+    dialog->delayedDestruct();
 }
 
 void ScriptManagerCollection::slotRemove()
@@ -281,8 +351,7 @@ void ScriptManagerCollection::slotRemove()
 }
 
 #if 0
-bool ScriptManagerCollection::slotInstall()
-{
+bool ScriptManagerCollection::slotInstall() {
     KFileDialog* filedialog = new KFileDialog(
         KUrl("kfiledialog:///KrossInstallPackage"), // startdir
         "*.tar.gz *.tgz *.bz2", // filter
@@ -292,17 +361,13 @@ bool ScriptManagerCollection::slotInstall()
     filedialog->setCaption(i18n("Install Script Package"));
     return filedialog->exec() ? module()->installPackage(filedialog->selectedUrl().path()) : false;
 }
-
-void ScriptManagerView::slotUninstall()
-{
+void ScriptManagerView::slotUninstall() {
     foreach(QModelIndex index, d->selectionmodel->selectedIndexes())
         if(index.isValid())
             if(! uninstallPackage( static_cast< Action* >(index.internalPointer()) ))
                 break;
 }
-
-void ScriptManagerView::slotNewScripts()
-{
+void ScriptManagerView::slotNewScripts() {
     const QString appname = KApplication::kApplication()->objectName();
     const QString type = QString("%1/script").arg(appname);
     krossdebug( QString("ScriptManagerView::slotNewScripts %1").arg(type) );
@@ -318,9 +383,7 @@ void ScriptManagerView::slotNewScripts()
     p->load(type, QString("http://download.kde.org/khotnewstuff/%1scripts-providers.xml").arg(appname));
     d->exec();
 }
-
-void ScriptManagerView::slotNewScriptsInstallFinished()
-{
+void ScriptManagerView::slotNewScriptsInstallFinished() {
     // Delete KNewStuff's configuration entries. These entries reflect what has
     // already been installed. As we cannot yet keep them in sync after uninstalling
     // scripts, we deactivate the check marks entirely.
@@ -405,7 +468,7 @@ bool ScriptManagerModule::installPackage(const QString& scriptpackagefile)
         QDomElement element = nodelist.item(i).toElement();
         const QString name = element.attribute("name");
         Action* action = new Action(Manager::self().actionCollection(), name, packagepath);
-        action->readDomElement(element);
+        action->fromDomElement(element);
         //connect(action, SIGNAL( failed(const QString&, const QString&) ), this, SLOT( executionFailed(const QString&, const QString&) ));
         //connect(action, SIGNAL( success() ), this, SLOT( executionSuccessful() ));
         //connect(action, SIGNAL( activated(Kross::Action*) ), SIGNAL( executionStarted(Kross::Action*)));
@@ -419,25 +482,19 @@ bool ScriptManagerModule::installPackage(const QString& scriptpackagefile)
 bool ScriptManagerModule::uninstallPackage(Action* action)
 {
     const QString name = action->objectName();
-
     QString file = action->file();
     QFileInfo fi(file);
-
     if(file.isNull() || ! fi.exists()) {
         KMessageBox::sorry(0, i18n("Could not uninstall the script package \"%1\" since the script is not installed.",action->objectName()));
         return false;
     }
-
     const QString scriptpackagepath = fi.absolutePath();
     krossdebug( QString("Uninstall script-package with destination directory: %1").arg(scriptpackagepath) );
-
     if(! KIO::NetAccess::del(scriptpackagepath, 0) ) {
         KMessageBox::sorry(0, i18n("Could not uninstall the script package \"%1\". You may not have sufficient permissions to delete the folder \"%1\".",action->objectName()).arg(scriptpackagepath));
         return false;
     }
-
     delete action; action = 0; // removes the action from d->actions as well
-
     d->modified = true;
     return true;
 }

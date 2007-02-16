@@ -45,23 +45,63 @@ namespace Kross {
     {
             Q_OBJECT
         public:
+
+            /**
+            * Constructor.
+            * \param module The \a ScriptManagerModule that was used
+            * to create this \a ScriptManagerCollection instance.
+            * \param parent The parent widget this widget is child of.
+            */
             ScriptManagerCollection(ScriptManagerModule* module, QWidget* parent);
+
+            /**
+            * Destructor.
+            */
             virtual ~ScriptManagerCollection();
+
+            /**
+            * \return the \a ScriptManagerModule that was used to
+            * create this \a ScriptManagerCollection instance.
+            */
             ScriptManagerModule* module() const;
+
+            /**
+            * \return true if the collection was modified.
+            */
             bool isModified() const;
 
         public Q_SLOTS:
+
+            /**
+            * Run the selected script.
+            */
             void slotRun();
+
+            /**
+            * Stop the selected script if running.
+            */
             void slotStop();
+
+            /**
+            * Edit the select item.
+            */
             void slotEdit();
+
+            /**
+            * Add a new item.
+            */
             void slotAdd();
+
+            /**
+            * Remove the selected item.
+            */
             void slotRemove();
-            //void slotNewScripts();
 
         private Q_SLOTS:
+            /// The selected item changed.
             void slotSelectionChanged();
+            /// The data changed.
             void slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-            //void slotNewScriptsInstallFinished();
 
         private:
             /// \internal d-pointer class.

@@ -144,7 +144,7 @@ Action::~Action()
     delete d;
 }
 
-void Action::readDomElement(const QDomElement& element)
+void Action::fromDomElement(const QDomElement& element)
 {
     if( element.isNull() )
         return;
@@ -190,6 +190,19 @@ void Action::readDomElement(const QDomElement& element)
 
     bool enabled = QVariant( element.attribute("enabled","true") ).toBool();
     setEnabled(enabled);
+}
+
+QDomElement Action::toDomElement() const
+{
+    QDomDocument doc;
+    QDomElement e = doc.createElement("script");
+    e.setAttribute("name", objectName());
+    e.setAttribute("text", text());
+    e.setAttribute("comment", description());
+    e.setAttribute("icon", iconName());
+    e.setAttribute("interpreter", interpreter());
+    e.setAttribute("file", file());
+    return e;
 }
 
 QString Action::name() const
@@ -352,6 +365,8 @@ void Action::setProperty(const QString& name, const QString& value, bool persist
         config->setGroup( QString("Script %1").arg(objectName()) );
         config->writeEntry(name, value);
     }
+
+    emit updated();
 }
 
 void Action::removeProperty(const QString& name)
@@ -360,6 +375,15 @@ void Action::removeProperty(const QString& name)
         return;
     d->propertynames.removeAll(name);
     d->propertyvalues.remove(name);
+
+    KConfig* config = KApplication::kApplication()->sessionConfig();
+    const QString groupname = QString("Script %1").arg(objectName());
+    if( config->hasGroup(groupname) ) {
+        config->setGroup(groupname);
+        config->deleteEntry(name);
+    }
+
+    emit updated();
 }
 
 QStringList Action::functionNames()

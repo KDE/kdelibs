@@ -24,25 +24,19 @@
 #include "../core/manager.h"
 #include "../core/action.h"
 #include "../core/actioncollection.h"
-//#include "../core/guiclient.h"
 #include "../core/interpreter.h"
-//#include "../core/model.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-//#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QTreeView>
-#include <QStandardItemModel>
-
+#include <QHeaderView>
+#include <QTableWidget>
 //#include <kdeversion.h>
 #include <kconfig.h>
 #include <klocale.h>
-//#include <kicon.h>
-//#include <kmessagebox.h>
 #include <kpushbutton.h>
 #include <kfiledialog.h>
 #include <kurlrequester.h>
@@ -56,15 +50,29 @@ using namespace Kross;
  */
 
 namespace Kross {
+
     /// \internal d-pointer class.
     class ScriptManagerPropertiesEditor::Private
     {
         public:
             Action* action;
-            QTreeView* view;
+            QTableWidget* table;
             KPushButton* rmbtn;
+
             Private(Action* a) : action(a) { Q_ASSERT(a); }
+
+            void addItem(const QString& name, const QString& value)
+            {
+                const int rows = table->rowCount();
+                table->insertRow(rows);
+                QTableWidgetItem* nameitem = new QTableWidgetItem( name );
+                table->setItem(rows, 0, nameitem);
+                QTableWidgetItem* valueitem = new QTableWidgetItem( value );
+                table->setItem(rows, 1, valueitem);
+            }
+
     };
+
 }
 
 ScriptManagerPropertiesEditor::ScriptManagerPropertiesEditor(Action* action, QWidget* parent)
@@ -75,27 +83,18 @@ ScriptManagerPropertiesEditor::ScriptManagerPropertiesEditor(Action* action, QWi
     //layout->setMargin(0);
     setLayout(layout);
 
-    QStandardItemModel* model = new QStandardItemModel(this);
-    model->setHorizontalHeaderLabels( QStringList() << i18n("Name") << i18n("Value") );
-
-    d->view = new QTreeView(this);
-    d->view->setModel(model);
-    d->view->setRootIsDecorated(false);
-    d->view->setAlternatingRowColors(true);
-    d->view->setSortingEnabled(true);
-    d->view->setItemsExpandable(false);
-    d->view->setEditTriggers(QAbstractItemView::AllEditTriggers);
-    d->view->setAllColumnsShowFocus(false);
-    layout->addWidget(d->view);
-    foreach(QString propname, d->action->propertyNames()) {
-        QStandardItem* nameitem = new QStandardItem( propname );
-        //nameitem->setCheckable(true);
-        //nameitem->setEditable(false);
-        //nameitem->setCheckState( enabled ? Qt::Checked : Qt::Unchecked );
-        QStandardItem* valueitem = new QStandardItem( d->action->property(propname) );
-        model->appendRow( QList< QStandardItem* >() << nameitem << valueitem );
-    }
-    d->view->resizeColumnToContents(0);
+    d->table = new QTableWidget(this);
+    d->table->setColumnCount(2);
+    d->table->setHorizontalHeaderLabels( QStringList() << i18n("Name") << i18n("Value") );
+    d->table->verticalHeader()->hide();
+    //d->table->setAlternatingRowColors(true);
+    foreach(QString propname, d->action->propertyNames())
+        d->addItem( propname, d->action->property(propname) );
+    d->table->horizontalHeader()->resizeSections( QHeaderView::ResizeToContents );
+    d->table->horizontalHeader()->setStretchLastSection(true);
+    d->table->setEditTriggers( QAbstractItemView::AllEditTriggers );
+    d->table->setSortingEnabled(true);
+    layout->addWidget(d->table);
 
     QWidget* btnwidget = new QWidget(this);
     QVBoxLayout* btnlayout = new QVBoxLayout();
@@ -105,24 +104,18 @@ ScriptManagerPropertiesEditor::ScriptManagerPropertiesEditor(Action* action, QWi
 
     KPushButton* addbtn = new KPushButton(KIcon("add"), i18n("Add"), btnwidget);
     addbtn->setToolTip( i18n("Add new property") );
-    //addbtn->setEnabled(false);
     btnlayout->addWidget(addbtn);
     connect(addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
 
     d->rmbtn = new KPushButton(KIcon("remove"), i18n("Remove"), btnwidget);
     d->rmbtn->setToolTip( i18n("Remove selected property") );
-    d->rmbtn->setEnabled(false);
     btnlayout->addWidget(d->rmbtn);
     connect(d->rmbtn, SIGNAL(clicked()), this, SLOT(slotRemove()) );
 
     btnlayout->addStretch(1);
 
-    QItemSelectionModel* selectionmodel = new QItemSelectionModel(model, this);
-    d->view->setSelectionModel(selectionmodel);
-    connect(d->view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-            this, SLOT(slotSelectionChanged()));
-    //connect(d->view->model(), SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
-    //        this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
+    connect(d->table, SIGNAL(itemSelectionChanged()), this, SLOT(slotSelectionChanged()));
+    slotSelectionChanged();
 }
 
 ScriptManagerPropertiesEditor::~ScriptManagerPropertiesEditor()
@@ -132,31 +125,40 @@ ScriptManagerPropertiesEditor::~ScriptManagerPropertiesEditor()
 
 void ScriptManagerPropertiesEditor::slotSelectionChanged()
 {
-    d->rmbtn->setEnabled( d->view->selectionModel()->hasSelection() );
+    d->rmbtn->setEnabled( d->table->currentRow() >= 0 );
 }
 
 void ScriptManagerPropertiesEditor::slotAdd()
 {
-    QStandardItemModel* model = static_cast< QStandardItemModel* >( d->view->model() );
-    QStandardItem* nameitem = new QStandardItem("");
-    QStandardItem* valueitem = new QStandardItem("");
-    model->appendRow( QList< QStandardItem* >() << nameitem << valueitem );
-    d->view->selectionModel()->setCurrentIndex( model->indexFromItem(nameitem), QItemSelectionModel::ClearAndSelect );
+    d->table->setSortingEnabled(false);
+    const int rows = d->table->rowCount();
+    d->addItem("", "");
+    d->table->selectRow(rows);
+    d->table->setSortingEnabled(true);
 }
 
 void ScriptManagerPropertiesEditor::slotRemove()
 {
-    QStandardItemModel* model = static_cast< QStandardItemModel* >( d->view->model() );
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        if( ! index.isValid() ) continue;
-        model->takeRow( index.row() );
-        break;
-    }
+    d->table->removeRow( d->table->currentRow() );
+    slotSelectionChanged();
 }
 
 void ScriptManagerPropertiesEditor::commit()
 {
-    //TODO
+    QStringList oldpropnames = d->action->propertyNames();
+
+    const int count = d->table->rowCount();
+    for(int i = 0; i < count; ++i) {
+        const QString name = d->table->item(i, 0)->text();
+        const QString value = d->table->item(i, 1)->text();
+
+        if( d->action->hasProperty(name) )
+            oldpropnames.removeAll(name);
+        d->action->setProperty(name, value, true/*persistent*/);
+    }
+
+    foreach(QString oldpropname, oldpropnames)
+        d->action->removeProperty(oldpropname);
 }
 
 /******************************************************************************
@@ -164,6 +166,7 @@ void ScriptManagerPropertiesEditor::commit()
  */
 
 namespace Kross {
+
     /// \internal d-pointer class.
     class ScriptManagerEditor::Private
     {
@@ -185,8 +188,7 @@ namespace Kross {
                 return type == ActionType ? action->description() : collection->description();
             }
             QString iconName() const {
-                //FIXME add iconName() support to ActionCollection
-                return type == ActionType ? action->iconName() : QString("");
+                return type == ActionType ? action->iconName() : collection->iconName();
             }
             bool isEnabled() const {
                 return type == ActionType ? action->isEnabled() : collection->isEnabled();
@@ -202,6 +204,7 @@ namespace Kross {
             explicit Private(Action* a) : type(ActionType), action(a) { Q_ASSERT(a); }
             explicit Private(ActionCollection* c) : type(CollectionType), collection(c) { Q_ASSERT(c); }
     };
+
 }
 
 ScriptManagerEditor::ScriptManagerEditor(Action* action, QWidget* parent)
@@ -336,7 +339,7 @@ void ScriptManagerEditor::commit()
         case Private::CollectionType: {
             d->collection->setText( d->textedit->text() );
             d->collection->setDescription( d->commentedit->text() );
-            //d->collection->setIconName( d->iconedit->text() );
+            d->collection->setIconName( d->iconedit->text() );
             d->collection->setEnabled( d->enabledcheckbox->isChecked() );
         } break;
         default: break;
