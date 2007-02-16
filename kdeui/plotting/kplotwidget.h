@@ -414,23 +414,9 @@ protected:
 	QList<KPlotPoint*> pointsUnderPoint( const QPoint& p ) const;
 
 	/**
-	 * @return a value indicating how well the given rectangle is 
-	 * avoiding masked regions in the plot.  A higher returned value 
-	 * indicates that the rectangle is intersecting a larger portion 
-	 * of the masked region, or a portion of the masked region which 
-	 * is weighted higher.
-	 * @param r The rectangle to be tested
-	 */
-	float rectCost( const QRectF &r );
-
-	/**
 	 * Limits of the plot area in pixel units
 	 */
 	QRect PixRect;
-
-	//Grid of bools to mask "used" regions of the plot
-	float PlotMask[100][100];
-	double px[100], py[100];
 };
 
 #endif

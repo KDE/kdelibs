@@ -68,6 +68,16 @@ class KPlotWidget::Private
 
         KPlotWidget *q;
 
+        /**
+         * @return a value indicating how well the given rectangle is 
+         * avoiding masked regions in the plot.  A higher returned value 
+         * indicates that the rectangle is intersecting a larger portion 
+         * of the masked region, or a portion of the masked region which 
+         * is weighted higher.
+         * @param r The rectangle to be tested
+         */
+        float rectCost( const QRectF &r ) const;
+
         //Colors
         QColor cBackground, cForeground, cGrid;
         //draw options
@@ -80,6 +90,9 @@ class KPlotWidget::Private
         QList<KPlotObject*> objectList;
         // Limits of the plot area in data units
         QRectF dataRect, secondDataRect;
+        // Grid of bools to mask "used" regions of the plot
+        float plotMask[100][100];
+        double px[100], py[100];
 };
 
 KPlotWidget::KPlotWidget( QWidget * parent )
@@ -222,7 +235,7 @@ void KPlotWidget::removeAllPlotObjects()
 void KPlotWidget::resetPlotMask() {
 	for (int ix=0; ix<100; ++ix ) 
 		for ( int iy=0; iy<100; ++iy ) 
-			PlotMask[ix][iy] = 0.0;
+			d->plotMask[ix][iy] = 0.0;
 }
 		
 void KPlotWidget::resetPlot() {
@@ -362,8 +375,8 @@ void KPlotWidget::setPixRect() {
 	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
 	PixRect = QRect( 0, 0, newWidth, newHeight );
 	for ( int i=0; i<100; ++i ) {
-		px[i] = double(i*PixRect.width())/100.0 + double(PixRect.x());
-		py[i] = double(i*PixRect.height())/100.0 + double(PixRect.y());
+		d->px[i] = double(i*PixRect.width())/100.0 + double(PixRect.x());
+		d->py[i] = double(i*PixRect.height())/100.0 + double(PixRect.y());
 	}
 }
 
@@ -386,7 +399,7 @@ void KPlotWidget::maskRect( const QRectF& r, float value ) {
 
 	for ( int ix=ix1; ix<ix2; ++ix ) 
 		for ( int iy=iy1; iy<iy2; ++iy ) 
-			PlotMask[ix][iy] += value;
+			d->plotMask[ix][iy] += value;
 }
 
 void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float value ) {
@@ -408,7 +421,7 @@ void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float val
 		int iy = int( 100.0*( y - PixRect.y() )/PixRect.height() );
 
 		if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 )
-  		PlotMask[ix][iy] += value;
+  		d->plotMask[ix][iy] += value;
 
 	}
 }
@@ -426,12 +439,12 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 	for ( int ix=ix0-20; ix<ix0+20; ix++ ) {
 		for ( int iy=iy0-20; iy<iy0+20; iy++ ) {
 			if ( ( ix >= 0 && ix < 100 ) && ( iy >= 0 && iy < 100 ) ) {
-				QRectF labelRect = painter->boundingRect( QRectF( px[ix], py[iy], 1, 1 ), textFlags, pp->label() );
+				QRectF labelRect = painter->boundingRect( QRectF( d->px[ix], d->py[iy], 1, 1 ), textFlags, pp->label() );
 				//Add some padding to labelRect
 				labelRect.adjust( -2, -2, 2, 2 );
 
 				float r = sqrt( (ix-ix0)*(ix-ix0) + (iy-iy0)*(iy-iy0) );
-				float cost = rectCost( labelRect ) + 0.1*r;
+				float cost = d->rectCost( labelRect ) + 0.1*r;
 
 				if ( cost < bestCost ) {
 					bestRect = labelRect;
@@ -476,17 +489,18 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 	}
 }
 
-float KPlotWidget::rectCost ( const QRectF &r ) {
-	int ix1= int( 100.0*( r.x() - PixRect.x() )/PixRect.width() );
-	int ix2= int( 100.0*( r.right() - PixRect.x() )/PixRect.width() );
-	int iy1= int( 100.0*( r.y() - PixRect.y() )/PixRect.height() );
-	int iy2= int( 100.0*( r.bottom() - PixRect.y() )/PixRect.height() );
+float KPlotWidget::Private::rectCost( const QRectF &r ) const
+{
+    int ix1 = int( 100.0 * ( r.x() - q->PixRect.x() ) / q->PixRect.width() );
+    int ix2 = int( 100.0 * ( r.right() - q->PixRect.x() ) / q->PixRect.width() );
+    int iy1 = int( 100.0 * ( r.y() - q->PixRect.y() ) / q->PixRect.height() );
+    int iy2 = int( 100.0 * ( r.bottom() - q->PixRect.y() ) / q->PixRect.height() );
 	float cost = 0.0;
 
 	for ( int ix=ix1; ix<ix2; ++ix ) {
 		for ( int iy=iy1; iy<iy2; ++iy ) {
 			if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 ) {
-				cost += PlotMask[ix][iy];
+				cost += plotMask[ix][iy];
 			} else {
 				cost += 100.;
 			}
