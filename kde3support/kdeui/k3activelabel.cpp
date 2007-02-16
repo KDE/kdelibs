@@ -17,10 +17,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// remove when Q3SimpleRichText is ported
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include <Q3SimpleRichText>
 #include <QFocusEvent>
 
