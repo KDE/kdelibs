@@ -349,11 +349,11 @@ bool KPlotWidget::event( QEvent* e ) {
 		return true;
 	}
 	else
-		return QWidget::event( e );
+		return QFrame::event( e );
 }
 
-void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
-	update();
+void KPlotWidget::resizeEvent( QResizeEvent* e ) {
+    QFrame::resizeEvent( e );
 }
 
 void KPlotWidget::setPixRect() {
