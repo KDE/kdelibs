@@ -141,37 +141,14 @@ public:
 	 */
 	virtual void clearSecondaryLimits();
 
-	/**
-	 * @return the minimum X value in data units
-	 */
-	virtual double x() const { return DataRect.x(); }
+        /**
+         * Return the rect in natural limits representing the shown data.
+         * @warning the coordinate system of QRectF and the human one are not the same!
+         * Though, the height of the rect is really the height of the data rect.
+         */
+        QRectF dataRect() const;
 
-	/**
-	 * @return the maximum X value in data units
-	 */
-	virtual double x2() const { return DataRect.x() + DataRect.width(); }
-
-	/**
-	 * @return the minimum Y value in data units
-	 */
-	virtual double y() const { return DataRect.y(); }
-
-	/**
-	 * @return the maximum Y value in data units
-	 */
-	virtual double y2() const { return DataRect.y() + DataRect.height(); }
-
-	/**
-	 * @return the width in data units
-	 */
-	virtual double dataWidth() const { return DataRect.width(); }
-
-	/**
-	 * @return the height in data units
-	 */
-	virtual double dataHeight() const { return DataRect.height(); }
-
-	const QRectF& secondaryDataRect() const { return SecondDataRect; }
+        QRectF secondaryDataRect() const;
 
         /**
          * Add an item to the list of KPlotObjects to be plotted.
@@ -450,10 +427,6 @@ protected:
 	 * Limits of the plot area in pixel units
 	 */
 	QRect PixRect;
-	/**
-	 * Limits of the plot area in data units
-	 */
-	QRectF DataRect, SecondDataRect;
 
 	//Grid of bools to mask "used" regions of the plot
 	float PlotMask[100][100];

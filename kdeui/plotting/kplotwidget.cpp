@@ -78,6 +78,8 @@ class KPlotWidget::Private
         QHash<Axis, KPlotAxis*> axes;
         // List of KPlotObjects
         QList<KPlotObject*> objectList;
+        // Limits of the plot area in data units
+        QRectF dataRect, secondDataRect;
 };
 
 KPlotWidget::KPlotWidget( QWidget * parent )
@@ -87,7 +89,7 @@ KPlotWidget::KPlotWidget( QWidget * parent )
 
     // sets the default limits
     setLimits( 0.0, 1.0, 0.0, 1.0 );
-    SecondDataRect = QRect(); //default: no secondary data rect
+    d->secondDataRect = QRect(); //default: no secondary data rect
 
     setDefaultPaddings();
 
@@ -122,14 +124,14 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 			i18n("y1 and y2 cannot be equal.  Setting y2 = y1 + 1.0") << endl;
 		YA2 = YA1 + 1.0;
 	}
-	DataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
+	d->dataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
 
-	axis(LeftAxis)->setTickMarks( y(), dataHeight() );
-	axis(BottomAxis)->setTickMarks( x(), dataWidth() );
+	axis(LeftAxis)->setTickMarks( d->dataRect.y(), d->dataRect.height() );
+	axis(BottomAxis)->setTickMarks( d->dataRect.x(), d->dataRect.width() );
 
 	if ( secondaryDataRect().isNull() ) {
-		axis(RightAxis)->setTickMarks( y(), dataHeight() );
-		axis(TopAxis)->setTickMarks( x(), dataWidth() );
+		axis(RightAxis)->setTickMarks( d->dataRect.y(), d->dataRect.height() );
+		axis(TopAxis)->setTickMarks( d->dataRect.x(), d->dataRect.width() );
 	}
 
 	update();
@@ -152,20 +154,30 @@ void KPlotWidget::setSecondaryLimits( double x1, double x2, double y1, double y2
 			i18n("y1 and y2 cannot be equal.  Setting y2 = y1 + 1.0") << endl;
 		YA2 = YA1 + 1.0;
 	}
-	SecondDataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
+	d->secondDataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
 
-	axis(RightAxis)->setTickMarks( SecondDataRect.y(), SecondDataRect.height() );
-	axis(TopAxis)->setTickMarks( SecondDataRect.x(), SecondDataRect.width() );
+	axis(RightAxis)->setTickMarks( d->secondDataRect.y(), d->secondDataRect.height() );
+	axis(TopAxis)->setTickMarks( d->secondDataRect.x(), d->secondDataRect.width() );
 
 	update();
 }
 
 void KPlotWidget::clearSecondaryLimits() {
-	SecondDataRect = QRectF();
-	axis(RightAxis)->setTickMarks( DataRect.y(), DataRect.height() );
-	axis(TopAxis)->setTickMarks( DataRect.x(), DataRect.width() );
+	d->secondDataRect = QRectF();
+	axis(RightAxis)->setTickMarks( d->dataRect.y(), d->dataRect.height() );
+	axis(TopAxis)->setTickMarks( d->dataRect.x(), d->dataRect.width() );
 
 	update();
+}
+
+QRectF KPlotWidget::dataRect() const
+{
+    return d->dataRect;
+}
+
+QRectF KPlotWidget::secondaryDataRect() const
+{
+    return d->secondDataRect;
 }
 
 void KPlotWidget::addPlotObject( KPlotObject *object )
@@ -356,8 +368,8 @@ void KPlotWidget::setPixRect() {
 }
 
 QPointF KPlotWidget::toScreen( const QPointF& p ) const {
-	float px = PixRect.left() + PixRect.width()*( p.x() -  DataRect.x() )/DataRect.width();
-	float py = PixRect.top() + PixRect.height()*( DataRect.y() + DataRect.height() - p.y() )/DataRect.height();
+	float px = PixRect.left() + PixRect.width()*( p.x() -  d->dataRect.x() )/d->dataRect.width();
+	float py = PixRect.top() + PixRect.height()*( d->dataRect.y() + d->dataRect.height() - p.y() )/d->dataRect.height();
 	return QPointF( px, py );
 }
 
@@ -532,12 +544,12 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		//Grid lines are placed at locations of primary axes' major tickmarks
 		//vertical grid lines
 		foreach ( double xx, axis(BottomAxis)->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - x()) / dataWidth();
+			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
 			p->drawLine( QPointF( px, 0.0 ), QPointF( px, double(PixRect.height()) ) );
 		}
 		//horizontal grid lines
 		foreach( double yy, axis(LeftAxis)->majorTickMarks() ) {
-			double py = PixRect.height() * (yy - y()) / dataHeight();
+			double py = PixRect.height() * (yy - d->dataRect.y()) / d->dataRect.height();
 			p->drawLine( QPointF( 0.0, py ), QPointF( double(PixRect.width()), py ) );
 		}
 	}
@@ -559,7 +571,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw major tickmarks
 		foreach( double xx, a->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - x()) / dataWidth();
+			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
 			if ( px > 0 && px < PixRect.width() ) {
 				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
 						QPointF( px, double(PixRect.height() - BIGTICKSIZE - TICKOFFSET)) );
@@ -574,7 +586,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double xx, a->minorTickMarks() ) {
-			double px = PixRect.width() * (xx - x()) / dataWidth();
+			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
 			if ( px > 0 && px < PixRect.width() ) {
 				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
 						QPointF( px, double(PixRect.height() - SMALLTICKSIZE -TICKOFFSET)) );
@@ -596,7 +608,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw major tickmarks
 		foreach( double yy, a->majorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
+			double py = PixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
 			if ( py > 0 && py < PixRect.height() ) {
 				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + BIGTICKSIZE), py ) );
 
@@ -610,7 +622,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double yy, a->minorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y()) / dataHeight() );
+			double py = PixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
 			if ( py > 0 && py < PixRect.height() ) {
 				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + SMALLTICKSIZE), py ) );
 			}
@@ -633,10 +645,10 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	}  //End of LeftAxis
 
 	//Prepare for top and right axes; we may need the secondary data rect
-	double x0 = x();
-	double y0 = y();
-	double dw = dataWidth();
-	double dh = dataHeight();
+	double x0 = d->dataRect.x();
+	double y0 = d->dataRect.y();
+	double dw = d->dataRect.width();
+	double dh = d->dataRect.height();
 	if ( secondaryDataRect().isValid() ) {
 		x0 = secondaryDataRect().x();
 		y0 = secondaryDataRect().y();
