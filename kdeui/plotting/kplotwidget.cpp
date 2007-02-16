@@ -62,6 +62,7 @@ class KPlotWidget::Private
 
         Private()
         {
+            qDeleteAll( objectList );
             qDeleteAll( axes );
         }
 
@@ -75,6 +76,8 @@ class KPlotWidget::Private
         int leftPadding, rightPadding, topPadding, bottomPadding;
         // hashmap with the axes we have
         QHash<Axis, KPlotAxis*> axes;
+        // List of KPlotObjects
+        QList<KPlotObject*> objectList;
 };
 
 KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
@@ -109,9 +112,6 @@ KPlotWidget::KPlotWidget( QWidget * parent )
 
 KPlotWidget::~KPlotWidget()
 {
-	qDeleteAll( ObjectList );
-	ObjectList.clear();
-
     delete d;
 }
 
@@ -183,17 +183,41 @@ void KPlotWidget::clearSecondaryLimits() {
 	update();
 }
 
-void KPlotWidget::addObject( KPlotObject *o ) {
+void KPlotWidget::addPlotObject( KPlotObject *o ) {
 	// skip null pointers
 	if ( !o ) return;
-	ObjectList.append( o );
+    d->objectList.append( o );
 	update();
 }
 
-void KPlotWidget::clearObjectList() {
-	qDeleteAll( ObjectList );
-	ObjectList.clear();
-	update();
+void KPlotWidget::addPlotObjects( const QList< KPlotObject* >& objects )
+{
+    bool addedsome = false;
+    foreach ( KPlotObject *o, objects )
+    {
+        if ( !o )
+            continue;
+
+        d->objectList.append( o );
+        addedsome = true;
+    }
+    if ( addedsome )
+        update();
+}
+
+QList< KPlotObject* > KPlotWidget::plotObjects() const
+{
+    return d->objectList;
+}
+
+void KPlotWidget::removeAllPlotObjects()
+{
+    if ( d->objectList.isEmpty() )
+        return;
+
+    qDeleteAll( d->objectList );
+    d->objectList.clear();
+    update();
 }
 
 void KPlotWidget::resetPlotMask() {
@@ -203,7 +227,8 @@ void KPlotWidget::resetPlotMask() {
 }
 		
 void KPlotWidget::resetPlot() {
-	clearObjectList();
+    qDeleteAll( d->objectList );
+    d->objectList.clear();
 	clearSecondaryLimits();
 	setLimits(0.0, 1.0, 0.0, 1.0);
 	axis(KPlotWidget::RightAxis)->setShowTickLabels( false );
@@ -215,20 +240,11 @@ void KPlotWidget::resetPlot() {
 	resetPlotMask();
 }
 
-void KPlotWidget::replaceObject( int i, KPlotObject *o ) {
+void KPlotWidget::replacePlotObject( int i, KPlotObject *o ) {
 	// skip null pointers
 	if ( !o ) return;
-	ObjectList.replace( i, o );
+    d->objectList.replace( i, o );
 	update();
-}
-
-
-KPlotObject *KPlotWidget::object( int i ) {
-	if ( i < 0 || i >= ObjectList.count() ) {
-		kWarning() << "KPlotWidget::object(): index " << i << " out of range!" << endl;
-		return 0;
-	}
-	return ObjectList.at(i);
 }
 
 QColor KPlotWidget::backgroundColor() const
@@ -308,7 +324,7 @@ const KPlotAxis* KPlotWidget::axis( Axis a ) const
 
 QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 	QList<KPlotPoint*> pts;
-	foreach ( KPlotObject *po, ObjectList ) {
+	foreach ( KPlotObject *po, d->objectList ) {
 		foreach ( KPlotPoint *pp, po->points() ) {
 			if ( ( p - toScreen( pp->position() ).toPoint() ).manhattanLength() <= 4 )
 				pts << pp;
@@ -496,7 +512,7 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 
 	resetPlotMask();
 
-	foreach( KPlotObject *po, ObjectList ) 
+	foreach( KPlotObject *po, d->objectList )
 		po->draw( &p, this );
 
 	//DEBUG_MASK

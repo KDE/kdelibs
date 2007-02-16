@@ -66,8 +66,8 @@ void TestPlot::slotSelectPlot( int n ) {
 				po2->addPoint( x, 50.0 - 5.0*x );
 			}
 			
-			plot->addObject( po1 );
-			plot->addObject( po2 );
+			plot->addPlotObject( po1 );
+			plot->addPlotObject( po2 );
 			
 			plot->update();
 			break;
@@ -89,8 +89,8 @@ void TestPlot::slotSelectPlot( int n ) {
 				po2->addPoint( t, cos(t) );
 			}
 
-			plot->addObject( po1 );
-			plot->addObject( po2 );
+			plot->addPlotObject( po1 );
+			plot->addPlotObject( po2 );
 
 			plot->update();
 			break;
@@ -107,7 +107,7 @@ void TestPlot::slotSelectPlot( int n ) {
 				po1->addPoint( x, 100*exp( -0.5*x*x ), "", 0.5 );
 			}
 
-			plot->addObject( po1 );
+			plot->addPlotObject( po1 );
 
 			plot->update();
 			break;
@@ -129,7 +129,7 @@ void TestPlot::slotSelectPlot( int n ) {
 			po1->addPoint( -0.8,  0.0, i18n("West") );
 			po1->addPoint( -0.57,  0.57, i18n("Northwest") );
 
-			plot->addObject( po1 );
+			plot->addPlotObject( po1 );
 
 			plot->update();
 			break;
@@ -156,7 +156,7 @@ void TestPlot::slotSelectPlot( int n ) {
 			po1->addPoint(  1.25, 1.5  );
 			po1->addPoint(  1.75, 1.75 );
 
-			plot->addObject( po1 );
+			plot->addPlotObject( po1 );
 
 			update();
 			break;
@@ -183,7 +183,7 @@ void TestPlot::slotSelectPlot( int n ) {
 			po1->addPoint(  1.25, 1.5, "G" );
 			po1->addPoint(  1.75, 1.75, "H" );
 
-			plot->addObject( po1 );
+			plot->addPlotObject( po1 );
 
 			update();
 			break;

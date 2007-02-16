@@ -175,12 +175,23 @@ public:
 	 * Add an item to the list of KPlotObjects to be plotted.
 	 * @param o pointer to the KPlotObject to be added
 	 */
-	void addObject( KPlotObject *o );
+        void addPlotObject( KPlotObject *o );
+
+        /**
+         * Add more than one KPlotObject at one time.
+         * @param objects the KPlotObject's to be added
+         */
+        void addPlotObjects( const QList< KPlotObject* >& objects );
+
+        /**
+         * @return the list of the current objects
+         */
+        QList< KPlotObject* > plotObjects() const;
 
 	/**
 	 * Remove and delete all items from the list of KPlotObjects
 	 */
-	void clearObjectList();
+	void removeAllPlotObjects();
 
 	/**
 	 * Reset the PlotMask so that all regions are empty
@@ -197,18 +208,7 @@ public:
 	 * @param i the index of th item to be replaced
 	 * @param o pointer to the replacement KPlotObject
 	 */
-	void replaceObject( int i, KPlotObject *o );
-
-	/**
-	 * @return the number of KPlotObjects in the list
-	 */
-	int objectCount() const { return ObjectList.size(); }
-
-	/**
-	 * @return a pointer to a specific KPlotObject in the list
-	 * @param i the index of the desired KPlotObject
-	 */
-	KPlotObject *object( int i );
+        void replacePlotObject( int i, KPlotObject *o );
 
 	/**
 	 * @return the background color of the plot
@@ -439,10 +439,6 @@ protected:
 	 * Limits of the plot area in data units
 	 */
 	QRectF DataRect, SecondDataRect;
-	/**
-	 * List of KPlotObjects
-	 */
-	QList<KPlotObject*> ObjectList;
 
 	//Grid of bools to mask "used" regions of the plot
 	float PlotMask[100][100];
