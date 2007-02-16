@@ -134,7 +134,7 @@ KDE_EXPORT void kimgio_xv_write( QImageIO *imageio )
 		image.convertDepth( 8 );
 	}
 
-	uchar buffer[ 128 ];
+	uchar* buffer = new uchar[ w ];
 
 	for ( int py = 0; py < h; py++ )
 	{
@@ -162,6 +162,7 @@ KDE_EXPORT void kimgio_xv_write( QImageIO *imageio )
 		}
 		f.writeBlock( (const char*)buffer, w );
 	}
+        delete[] buffer;
 
 	imageio->setStatus( 0 );
 }
