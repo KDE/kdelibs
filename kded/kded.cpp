@@ -178,7 +178,9 @@ void Kded::initModules()
      m_dontLoad.clear();
      KSharedConfig::Ptr config = KGlobal::config();
      bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
-
+    // not the same user like the one running the session (most likely we're run via sudo or something)
+    if( getenv( "KDE_SESSION_UID" ) != NULL && uid_t( atoi( getenv( "KDE_SESSION_UID" ))) != getuid())
+        kde_running = false;
      // Preload kded modules.
      KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
