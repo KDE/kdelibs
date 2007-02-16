@@ -80,21 +80,6 @@ class KPlotWidget::Private
         QList<KPlotObject*> objectList;
 };
 
-KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
-    : QFrame( parent ), d( new Private( this ) )
-{
-	setAttribute( Qt::WA_NoBackground, true );
-
-	//set DataRect
-	setLimits( x1, x2, y1, y2 );
-	SecondDataRect = QRect(); //default: no secondary data rect
-
-	setDefaultPaddings();
-
-	setMinimumSize( 150, 150 );
-    resize( minimumSizeHint() );
-}
-
 KPlotWidget::KPlotWidget( QWidget * parent )
     : QFrame( parent ), d( new Private( this ) )
 {

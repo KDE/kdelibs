@@ -85,11 +85,6 @@ class KDEEDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_PROPERTY(bool grid READ isGridShown WRITE setShowGrid)
 	Q_PROPERTY(bool objectToolTip READ isObjectToolTipShown WRITE setObjectToolTipShown)
 public:
-	/**
-	 * @deprecated use the normal constructor and setLimits()
-	 */
-	KDE_DEPRECATED KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 );
-
         /**
          * Constructor.
          * @param parent the parent widget
