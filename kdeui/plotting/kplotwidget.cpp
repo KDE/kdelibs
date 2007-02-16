@@ -46,6 +46,22 @@ class KPlotWidget::Private
             cBackground( Qt::white ), cForeground( Qt::white ), cGrid( Qt::gray ),
             showGrid( false ), showObjectToolTips( true ), useAntialias( false )
         {
+            // create the axes and setting their default properties
+            KPlotAxis *leftAxis = new KPlotAxis();
+            leftAxis->setShowTickLabels( true );
+            axes.insert( LeftAxis, leftAxis );
+            KPlotAxis *bottomAxis = new KPlotAxis();
+            bottomAxis->setShowTickLabels( true );
+            axes.insert( BottomAxis, bottomAxis );
+            KPlotAxis *rightAxis = new KPlotAxis();
+            axes.insert( RightAxis, rightAxis );
+            KPlotAxis *topAxis = new KPlotAxis();
+            axes.insert( TopAxis, topAxis );
+        }
+
+        Private()
+        {
+            qDeleteAll( axes );
         }
 
         KPlotWidget *q;
@@ -56,6 +72,8 @@ class KPlotWidget::Private
         bool showGrid, showObjectToolTips, useAntialias;
         //padding
         int leftPadding, rightPadding, topPadding, bottomPadding;
+        // hashmap with the axes we have
+        QHash<Axis, KPlotAxis*> axes;
 };
 
 KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
@@ -63,19 +81,9 @@ KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, doub
 {
 	setAttribute( Qt::WA_NoBackground, true );
 
-	// create the axes
-	mAxes[LeftAxis] = new KPlotAxis();
-	mAxes[BottomAxis] = new KPlotAxis();
-	mAxes[RightAxis] = new KPlotAxis();
-	mAxes[TopAxis] = new KPlotAxis();
-
 	//set DataRect
 	setLimits( x1, x2, y1, y2 );
 	SecondDataRect = QRect(); //default: no secondary data rect
-
-	//By default, the left and bottom axes have tickmark labels
-	axis(LeftAxis)->setShowTickLabels( true );
-	axis(BottomAxis)->setShowTickLabels( true );
 
 	setDefaultPaddings();
 
@@ -86,8 +94,6 @@ KPlotWidget::~KPlotWidget()
 {
 	qDeleteAll( ObjectList );
 	ObjectList.clear();
-	qDeleteAll( mAxes );
-	mAxes.clear();
 
     delete d;
 }
@@ -273,14 +279,14 @@ void KPlotWidget::setShowObjectToolTips( bool show )
 
 
 KPlotAxis* KPlotWidget::axis( Axis a ) {
-    QHash<Axis, KPlotAxis*>::Iterator it = mAxes.find( a );
-    return it != mAxes.end() ? it.value() : 0;
+    QHash<Axis, KPlotAxis*>::Iterator it = d->axes.find( a );
+    return it != d->axes.end() ? it.value() : 0;
 }
 
 const KPlotAxis* KPlotWidget::axis( Axis a ) const
 {
-    QHash<Axis, KPlotAxis*>::ConstIterator it = mAxes.find( a );
-    return it != mAxes.end() ? it.value() : 0;
+    QHash<Axis, KPlotAxis*>::ConstIterator it = d->axes.find( a );
+    return it != d->axes.end() ? it.value() : 0;
 }
 
 QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {

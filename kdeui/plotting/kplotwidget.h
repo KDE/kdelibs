@@ -445,11 +445,6 @@ protected:
 	 */
 	QList<KPlotObject*> ObjectList;
 
-	/**
-	 * Hashmap with the axes we have
-	 */
-	QHash<Axis, KPlotAxis*> mAxes;
-
 	//Grid of bools to mask "used" regions of the plot
 	float PlotMask[100][100];
 	double px[100], py[100];
