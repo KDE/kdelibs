@@ -19,12 +19,10 @@
 #define KPLOTWIDGET_H
 
 #include <QFrame>
-#include <QHash>
 #include <QList>
 
 #include <libkdeedu_plot_export.h>
 
-class QPixmap;
 class KPlotAxis;
 class KPlotObject;
 class KPlotPoint;

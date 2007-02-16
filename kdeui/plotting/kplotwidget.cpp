@@ -19,6 +19,7 @@
 #include <kdebug.h>
 
 #include <qevent.h>
+#include <QHash>
 #include <QPainter>
 #include <QPixmap>
 #include <QPolygon>
