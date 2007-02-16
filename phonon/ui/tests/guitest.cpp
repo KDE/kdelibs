@@ -98,10 +98,32 @@ PathWidget::PathWidget( QWidget *parent )
 	setFrameShadow( QFrame::Raised );
 
     QVBoxLayout *layout = new QVBoxLayout(this);
+
+    m_effectComboBox = new QComboBox(this);
+    layout->addWidget(m_effectComboBox);
+    QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
+    m_effectComboBox->setModel(new AudioEffectDescriptionModel(effectList, m_effectComboBox));
+
+    QPushButton *addButton = new QPushButton(this);
+    layout->addWidget(addButton);
+    addButton->setText("add effect");
+    connect(addButton, SIGNAL(clicked()), SLOT(addEffect()));
+
     QPushButton *button = new QPushButton(this);
     layout->addWidget(button);
     button->setText("add VolumeFader");
     connect(button, SIGNAL(clicked()), SLOT(addVolumeFader()));
+}
+
+void PathWidget::addEffect()
+{
+    int current = m_effectComboBox->currentIndex();
+    QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
+    if (current < effectList.size()) {
+        AudioEffect *effect = new AudioEffect(effectList[current], m_path);
+        layout()->addWidget(new EffectWidget(effect, this));
+        m_path->insertEffect(effect);
+    }
 }
 
 void PathWidget::addVolumeFader()

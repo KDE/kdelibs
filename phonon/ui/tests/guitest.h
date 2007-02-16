@@ -31,6 +31,7 @@ class QLabel;
 class QString;
 class QAbstractButton;
 class QFrame;
+class QComboBox;
 namespace Phonon
 {
 	class MediaObject;
@@ -85,9 +86,11 @@ class PathWidget : public QFrame
 
     private Q_SLOTS:
         void addVolumeFader();
+        void addEffect();
 
 	private:
 		AudioPath *m_path;
+        QComboBox *m_effectComboBox;
 };
 
 class OutputWidget : public QFrame
