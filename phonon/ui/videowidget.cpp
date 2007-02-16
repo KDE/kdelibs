@@ -101,6 +101,23 @@ PHONON_SETTER( setAspectRatio, aspectRatio, Phonon::VideoWidget::AspectRatio )
 PHONON_GETTER(Phonon::VideoWidget::ScaleMode, scaleMode, d->scaleMode)
 PHONON_SETTER(setScaleMode, scaleMode, Phonon::VideoWidget::ScaleMode)
 
+PHONON_GETTER(Phonon::VideoWidget::OverlayTypes, overlayCapabilities, OverlayNone)
+
+bool VideoWidget::createOverlay(QWidget *widget, VideoWidget::OverlayType type)
+{
+	K_D( VideoWidget );
+
+	if( !d->backendObject )
+		return false;
+
+	bool result;
+
+	if (BACKEND_GET2(bool, result, "createOverlay", QWidget *, widget, Phonon::VideoWidget::OverlayType, type))
+		return result;
+
+	return false;
+}
+
 void VideoWidget::setFullScreen( bool newFullScreen )
 {
 	kDebug( 602 ) << k_funcinfo << newFullScreen << endl;

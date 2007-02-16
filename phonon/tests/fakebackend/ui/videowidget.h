@@ -47,12 +47,15 @@ namespace Fake
 
 		public slots:
 			QWidget *widget() { return this; }
+			Phonon::VideoWidget::OverlayTypes overlayCapabilities() const;
+			bool createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayType type);
 
 		protected:
 			virtual void paintEvent( QPaintEvent* ev );
 			virtual void resizeEvent( QResizeEvent* ev );
 
 		private:
+			QWidget *overlay;
 			bool m_fullscreen;
 			QPixmap m_pixmap;
 			QSize m_videoSize;

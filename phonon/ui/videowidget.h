@@ -47,7 +47,7 @@ class AbstractVideoOutput;
 	{
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
-        Q_ENUMS(AspectRatio ScaleMode)
+        Q_ENUMS(AspectRatio ScaleMode OverlayType)
 		/**
 		 * This property holds whether the video is shown using the complete
 		 * screen.
@@ -121,12 +121,51 @@ class AbstractVideoOutput;
             };
 
 			/**
+			 * Defines the different overlay types.
+			 */
+			enum OverlayType
+			{
+				/**
+				 * No overlay.
+				 */
+				OverlayNone = 0,
+				/**
+				 * Scaled overlay (with semi-transparency).
+				 */
+				OverlayScaled = 1,
+				/**
+				 * Unscaled overlay (without semi-transparency).
+				 */
+				OverlayOpaque = 2,
+				/**
+				 * Unscaled overlay (with semi-transparency).
+				 */
+				OverlayFull = 4
+			};
+
+			Q_DECLARE_FLAGS( OverlayTypes, OverlayType )
+
+			/**
 			 * Constructs a new video widget with a \p parent.
 			 */
 			VideoWidget( QWidget* parent = 0 );
 
 			AspectRatio aspectRatio() const;
             ScaleMode scaleMode() const;
+
+			/**
+			 * Query the overlay capabilities of the videowidget.
+			 */
+			OverlayTypes overlayCapabilities() const;
+
+			/**
+			 * Creates an overlay (takes ownership of the widget).
+			 * Note that you can only have one overlay per video widget;
+			 * the exception is that you can have one overlay of the type
+			 * OverlayScaled and one of OverlayOpaque at the same time.
+			 * @return whether the creation was successful
+			 */
+			bool createOverlay(QWidget *widget, OverlayType type);
 
 		public Q_SLOTS:
 			void setFullScreen( bool fullscreen );
@@ -163,6 +202,8 @@ class AbstractVideoOutput;
 		private:
             Q_PRIVATE_SLOT(k_func(), void _k_cursorTimeout())
 	};
+
+	Q_DECLARE_OPERATORS_FOR_FLAGS( VideoWidget::OverlayTypes )
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

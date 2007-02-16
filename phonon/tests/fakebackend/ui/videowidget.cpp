@@ -21,6 +21,7 @@
 #include <QPalette>
 #include <QImage>
 #include <QPainter>
+#include <QVBoxLayout>
 #include <kdebug.h>
 
 namespace Phonon
@@ -29,7 +30,7 @@ namespace Fake
 {
 
 VideoWidget::VideoWidget( QWidget* parent )
-	: QWidget( parent )
+	: QWidget( parent ), overlay(0)
 {
 	QPalette p = palette();
 	p.setColor( QPalette::Window, Qt::blue );
@@ -99,6 +100,28 @@ void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 		default:
 			kError( 604 ) << "video frame format not implemented" << endl;
 	}
+}
+
+Phonon::VideoWidget::OverlayTypes VideoWidget::overlayCapabilities() const
+{
+	return Phonon::VideoWidget::OverlayFull;
+}
+
+bool VideoWidget::createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayType type)
+{
+	if ((overlay != 0) || (type != Phonon::VideoWidget::OverlayFull))
+		return false;
+
+	if (layout() == 0) {
+		QLayout *layout = new QVBoxLayout(this);
+		layout->setMargin(0);
+		setLayout(layout);
+	}
+
+	layout()->addWidget(widget);
+	overlay = widget;
+
+	return true;
 }
 
 void VideoWidget::paintEvent( QPaintEvent* ev )
