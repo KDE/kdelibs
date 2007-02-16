@@ -84,14 +84,15 @@ class KDEEDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_PROPERTY(bool objectToolTip READ areObjectToolTipsShown WRITE setShowObjectToolTips)
 public:
 	/**
-	 * @short Constructor. Sets the primary x and y limits in data units.
-	 * @param parent the parent widget
-	 * @param x1 the minimum X value in data units
-	 * @param x2 the maximum X value in data units
-	 * @param y1 the minimum Y value in data units
-	 * @param y2 the maximum Y value in data units
+	 * @deprecated use the normal constructor and setLimits()
 	 */
-	KPlotWidget( QWidget *parent=0, double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0 );
+	KDE_DEPRECATED KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 );
+
+        /**
+         * Constructor.
+         * @param parent the parent widget
+         */
+        explicit KPlotWidget( QWidget * parent = 0 );
 
 	/**
 	 * Destructor.

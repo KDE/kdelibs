@@ -91,6 +91,20 @@ KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, doub
 	setMinimumSize( 150, 150 );
 }
 
+KPlotWidget::KPlotWidget( QWidget * parent )
+    : QFrame( parent ), d( new Private( this ) )
+{
+    setAttribute( Qt::WA_NoBackground, true );
+
+    // sets the default limits
+    setLimits( 0.0, 1.0, 0.0, 1.0 );
+    SecondDataRect = QRect(); //default: no secondary data rect
+
+    setDefaultPaddings();
+
+    setMinimumSize( 150, 150 );
+}
+
 KPlotWidget::~KPlotWidget()
 {
 	qDeleteAll( ObjectList );
