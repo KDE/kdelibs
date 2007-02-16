@@ -145,7 +145,7 @@ bool XVHandler::write(const QImage &image)
         image.convertToFormat( QImage::Format_Indexed8, Qt::AutoColor );
     }
 
-    uchar buffer[ 128 ];
+    uchar* buffer = new uchar[ w ];
 
     for ( int py = 0; py < h; py++ )
     {
@@ -173,6 +173,7 @@ bool XVHandler::write(const QImage &image)
         }
         f.write( (const char*)buffer, w );
     }
+    delete[] buffer;
 
     return true;
 }
