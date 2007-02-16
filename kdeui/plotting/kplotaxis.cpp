@@ -81,11 +81,11 @@ QString KPlotAxis::label() const
     return d->m_label;
 }
 
-void KPlotAxis::setTickLabelFormat( char fmt, int fieldWidth, int prec )
+void KPlotAxis::setTickLabelFormat( char format, int fieldWidth, int precision )
 {
     d->m_labelFieldWidth = fieldWidth;
-    d->m_labelFmt = fmt;
-    d->m_labelPrec = prec;
+    d->m_labelFmt = format;
+    d->m_labelPrec = precision;
 }
 
 int KPlotAxis::tickLabelWidth() const
@@ -93,12 +93,12 @@ int KPlotAxis::tickLabelWidth() const
     return d->m_labelFieldWidth;
 }
 
-char KPlotAxis::tickLabelFmt() const
+char KPlotAxis::tickLabelFormat() const
 {
     return d->m_labelFmt;
 }
 
-int KPlotAxis::tickLabelPrec() const
+int KPlotAxis::tickLabelPrecision() const
 {
     return d->m_labelPrec;
 }
@@ -169,7 +169,7 @@ void KPlotAxis::setTickMarks( double x0, double length ) {
 }
 
 QString KPlotAxis::tickLabel( double val ) const {
-	if ( tickLabelFmt() == 't' ) {
+	if ( d->m_labelFmt == 't' ) {
 		while ( val <   0.0 ) val += 24.0;
 		while ( val >= 24.0 ) val -= 24.0;
 
@@ -178,15 +178,15 @@ QString KPlotAxis::tickLabel( double val ) const {
 		return QString( "%1:%2" ).arg( h, 2, 10, QLatin1Char('0') ).arg( m, 2, 10, QLatin1Char('0') );
 	}
 
-	return QString( "%1" ).arg( val, tickLabelWidth(), tickLabelFmt(), tickLabelPrec() );
+	return QString( "%1" ).arg( val, d->m_labelFieldWidth, d->m_labelFmt, d->m_labelPrec );
 }
 
-QList<double>& KPlotAxis::majorTickMarks() const
+QList< double > KPlotAxis::majorTickMarks() const
 {
     return d->m_MajorTickMarks;
 }
 
-QList<double>& KPlotAxis::minorTickMarks() const
+QList< double > KPlotAxis::minorTickMarks() const
 {
     return d->m_MinorTickMarks;
 }

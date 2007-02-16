@@ -97,13 +97,13 @@ public:
 	 * Note that when the format character is 't', the fieldWidth and prec
 	 * values are ignored.
 	 *
-	 * @param fmt the format specification character 
+	 * @param format the format specification character 
 	 * @param fieldWidth the number of characters in the output string.
 	 * If set to 0, the string will be as wide as it needs to be to fully 
 	 * render the value.
-	 * @param prec the number of characters following the decimal point.
+	 * @param precison the number of characters following the decimal point.
 	 */
-        void setTickLabelFormat( char fmt = 'g', int fieldWidth = 0, int prec = -1 );
+        void setTickLabelFormat( char format = 'g', int fieldWidth = 0, int precision = -1 );
 
 	/**
 	 * @return the field width of the tick labels
@@ -113,12 +113,12 @@ public:
 	/**
 	 * @return the number format of the tick labels
 	 */
-        char tickLabelFmt() const;
+        char tickLabelFormat() const;
 
 	/**
 	 * @return the number precision of the tick labels
 	 */
-        int tickLabelPrec() const;
+        int tickLabelPrecision() const;
 
 	/**
 	 * Determine the positions of major and minor tickmarks for this axis.
@@ -129,9 +129,15 @@ public:
 	 */
 	void setTickMarks( double x0, double length );
 
-        QList<double>& majorTickMarks() const;
+        /**
+         * @return the list with the major tickmarks
+         */
+        QList< double > majorTickMarks() const;
 
-        QList<double>& minorTickMarks() const;
+        /**
+         * @return the list with the minor tickmarks
+         */
+        QList< double > minorTickMarks() const;
 
 private:
         class Private;
