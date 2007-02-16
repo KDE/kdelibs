@@ -54,6 +54,8 @@ class KPlotWidget::Private
         QColor cBackground, cForeground, cGrid;
         //draw options
         bool showGrid, showObjectToolTips, useAntialias;
+        //padding
+        int leftPadding, rightPadding, topPadding, bottomPadding;
 };
 
 KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, double y2 )
@@ -272,6 +274,11 @@ void KPlotWidget::setShowObjectToolTips( bool show )
 
 KPlotAxis* KPlotWidget::axis( Axis a ) {
 	return mAxes.contains( a ) ? mAxes[a] : 0;
+}
+
+const KPlotAxis* KPlotWidget::axis( Axis a ) const
+{
+    return mAxes.contains( a ) ? mAxes[a] : 0;
 }
 
 QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
@@ -690,8 +697,9 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	}  //End of RightAxis
 }
 
-int KPlotWidget::leftPadding() {
-	if ( LeftPadding >= 0 ) return LeftPadding;
+int KPlotWidget::leftPadding() const
+{
+	if ( d->leftPadding >= 0 ) return d->leftPadding;
 	if ( axis(LeftAxis)->isVisible() && axis(LeftAxis)->showTickLabels() ) {
 		if ( ! axis(LeftAxis)->label().isEmpty() ) return 3*XPADDING;
 		else return 2*XPADDING;
@@ -699,8 +707,9 @@ int KPlotWidget::leftPadding() {
 	return XPADDING;
 }
 
-int KPlotWidget::rightPadding() {
-	if ( RightPadding >= 0 ) return RightPadding;
+int KPlotWidget::rightPadding() const
+{
+	if ( d->rightPadding >= 0 ) return d->rightPadding;
 	if ( axis(RightAxis)->isVisible() && axis(RightAxis)->showTickLabels() ) {
 		if ( ! axis(RightAxis)->label().isEmpty() ) return 3*XPADDING;
 		else return 2*XPADDING;
@@ -708,8 +717,9 @@ int KPlotWidget::rightPadding() {
 	return XPADDING;
 }
 
-int KPlotWidget::topPadding() {
-	if ( TopPadding >= 0 ) return TopPadding;
+int KPlotWidget::topPadding() const
+{
+	if ( d->topPadding >= 0 ) return d->topPadding;
 	if ( axis(TopAxis)->isVisible() && axis(TopAxis)->showTickLabels() ) {
 		if ( ! axis(TopAxis)->label().isEmpty() ) return 3*YPADDING;
 		else return 2*YPADDING;
@@ -717,11 +727,41 @@ int KPlotWidget::topPadding() {
 	return YPADDING;
 }
 
-int KPlotWidget::bottomPadding() {
-	if ( BottomPadding >= 0 ) return BottomPadding;
+int KPlotWidget::bottomPadding() const
+{
+	if ( d->bottomPadding >= 0 ) return d->bottomPadding;
 	if ( axis(BottomAxis)->isVisible() && axis(BottomAxis)->showTickLabels() ) {
 		if ( ! axis(BottomAxis)->label().isEmpty() ) return 3*YPADDING;
 		else return 2*YPADDING;
 	}
 	return YPADDING;
 }
+
+void KPlotWidget::setLeftPadding( int padding )
+{
+    d->leftPadding = padding;
+}
+
+void KPlotWidget::setRightPadding( int padding )
+{
+    d->rightPadding = padding;
+}
+
+void KPlotWidget::setTopPadding( int padding )
+{
+    d->topPadding = padding;
+}
+
+void KPlotWidget::setBottomPadding( int padding )
+{
+    d->bottomPadding = padding;
+}
+
+void KPlotWidget::setDefaultPaddings()
+{
+   d->leftPadding = -1;
+   d->rightPadding = -1;
+   d->topPadding = -1;
+   d->bottomPadding = -1;
+}
+

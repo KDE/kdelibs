@@ -264,51 +264,51 @@ public:
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int leftPadding();
+	virtual int leftPadding() const;
 	/**
 	 * @return the number of pixels to the right of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int rightPadding();
+	virtual int rightPadding() const;
 	/**
 	 * @return the number of pixels above the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int topPadding();
+	virtual int topPadding() const;
 	/**
 	 * @return the number of pixels below the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int bottomPadding();
+	virtual int bottomPadding() const;
 
 	/**
 	 * Set the number of pixels to the left of the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-	virtual void setLeftPadding( int pad )   { LeftPadding = pad; }
+        virtual void setLeftPadding( int padding );
 	/**
 	 * Set the number of pixels to the right of the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-	virtual void setRightPadding( int pad )  { RightPadding = pad; }
+        virtual void setRightPadding( int padding );
 	/**
 	 * Set the number of pixels above the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-	virtual void setTopPadding( int pad )    { TopPadding = pad; }
+        virtual void setTopPadding( int padding );
 	/**
 	 * Set the number of pixels below the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-	virtual void setBottomPadding( int pad ) { BottomPadding = pad; }
+        virtual void setBottomPadding( int padding );
 
 	/**
 	 * Revert all four padding values to be automatically determined.
 	 */
-	void setDefaultPaddings() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
+        void setDefaultPaddings();
 
 	/**
 	 * Map a coordinate @p p from the data rect to the physical pixel rect.
@@ -363,6 +363,8 @@ public:
 	 * @return a pointer to the axis @p a , or 0 if not found
 	 */
 	KPlotAxis* axis( Axis a );
+
+        const KPlotAxis* axis( Axis a ) const;
 
 	inline QRect& pixRect() { return PixRect; }
 
@@ -447,9 +449,6 @@ protected:
 	 * Hashmap with the axes we have
 	 */
 	QHash<Axis, KPlotAxis*> mAxes;
-
-	//padding
-	int LeftPadding, RightPadding, TopPadding, BottomPadding;
 
 	//Grid of bools to mask "used" regions of the plot
 	float PlotMask[100][100];
