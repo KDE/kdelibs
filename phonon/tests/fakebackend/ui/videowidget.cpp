@@ -18,6 +18,7 @@
 */
 
 #include "videowidget.h"
+#include <QChildEvent>
 #include <QPalette>
 #include <QImage>
 #include <QPainter>
@@ -122,6 +123,13 @@ bool VideoWidget::createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayTyp
 	overlay = widget;
 
 	return true;
+}
+
+void VideoWidget::childEvent(QChildEvent *event)
+{
+	if (event->removed() && (event->child() == overlay))
+		overlay = 0;
+	QWidget::childEvent(event);
 }
 
 void VideoWidget::paintEvent( QPaintEvent* ev )

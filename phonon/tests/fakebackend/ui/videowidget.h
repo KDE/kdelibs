@@ -51,6 +51,7 @@ namespace Fake
 			bool createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayType type);
 
 		protected:
+			virtual void childEvent(QChildEvent *event);
 			virtual void paintEvent( QPaintEvent* ev );
 			virtual void resizeEvent( QResizeEvent* ev );
 

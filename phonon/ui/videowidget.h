@@ -163,6 +163,8 @@ class AbstractVideoOutput;
 			 * Note that you can only have one overlay per video widget;
 			 * the exception is that you can have one overlay of the type
 			 * OverlayScaled and one of OverlayOpaque at the same time.
+			 * You can remove the overlay either by deleting or by reparenting
+			 * the widget.
 			 * @return whether the creation was successful
 			 */
 			bool createOverlay(QWidget *widget, OverlayType type);
