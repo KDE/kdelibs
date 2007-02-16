@@ -44,7 +44,7 @@ class KPlotWidget::Private
     public:
         Private( KPlotWidget *qq )
           : q( qq ),
-            cBackground( Qt::white ), cForeground( Qt::white ), cGrid( Qt::gray ),
+            cBackground( Qt::black ), cForeground( Qt::white ), cGrid( Qt::gray ),
             showGrid( false ), showObjectToolTips( true ), useAntialias( false )
         {
             // create the axes and setting their default properties
@@ -89,6 +89,7 @@ KPlotWidget::KPlotWidget( QWidget *parent, double x1, double x2, double y1, doub
 	setDefaultPaddings();
 
 	setMinimumSize( 150, 150 );
+    resize( minimumSizeHint() );
 }
 
 KPlotWidget::KPlotWidget( QWidget * parent )
@@ -103,6 +104,7 @@ KPlotWidget::KPlotWidget( QWidget * parent )
     setDefaultPaddings();
 
     setMinimumSize( 150, 150 );
+    resize( minimumSizeHint() );
 }
 
 KPlotWidget::~KPlotWidget()
