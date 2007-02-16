@@ -20,19 +20,92 @@
 
 #include "kplotaxis.h"
 
-KPlotAxis::KPlotAxis() : m_visible(true), m_showTickLabels(false), m_label(QString()),
-	m_labelFieldWidth(0), m_labelFmt('g'), m_labelPrec(-1)
+class KPlotAxis::Private
 {
+    public:
+        Private( KPlotAxis *qq )
+            : q( qq ), m_visible( true ), m_showTickLabels( false ),
+              m_labelFieldWidth( 0 ), m_labelFmt( 'g' ), m_labelPrec( -1 )
+        {
+        }
+
+        KPlotAxis *q;
+
+        bool m_visible; // Property "visible" defines if Axis is drawn or not.
+        bool m_showTickLabels;
+        QString m_label; // The label of the axis.
+        int m_labelFieldWidth; // Field width for number labels, see QString::arg()
+        char m_labelFmt; // Number format for number labels, see QString::arg()
+        int m_labelPrec; // Number precision for number labels, see QString::arg()
+        QList<double> m_MajorTickMarks, m_MinorTickMarks;
+};
+
+KPlotAxis::KPlotAxis( const QString &label )
+    : d( new Private( this ) )
+{
+    d->m_label = label;
 }
 
-KPlotAxis::KPlotAxis(const QString& label) : m_visible(true), m_label(label), 
-	m_labelFieldWidth(0), m_labelFmt('g'), m_labelPrec(-1)
+KPlotAxis::~KPlotAxis()
 {
+    delete d;
+}
+
+bool KPlotAxis::isVisible() const
+{
+    return d->m_visible;
+}
+
+void KPlotAxis::setVisible( bool visible )
+{
+    d->m_visible = visible;
+}
+
+bool KPlotAxis::showTickLabels() const
+{
+    return d->m_showTickLabels;
+}
+
+void KPlotAxis::setShowTickLabels( bool b )
+{
+    d->m_showTickLabels = b;
+}
+
+void KPlotAxis::setLabel( const QString& label )
+{
+    d->m_label = label;
+}
+
+QString KPlotAxis::label() const
+{
+    return d->m_label;
+}
+
+void KPlotAxis::setTickLabelFormat( char fmt, int fieldWidth, int prec )
+{
+    d->m_labelFieldWidth = fieldWidth;
+    d->m_labelFmt = fmt;
+    d->m_labelPrec = prec;
+}
+
+int KPlotAxis::tickLabelWidth() const
+{
+    return d->m_labelFieldWidth;
+}
+
+char KPlotAxis::tickLabelFmt() const
+{
+    return d->m_labelFmt;
+}
+
+int KPlotAxis::tickLabelPrec() const
+{
+    return d->m_labelPrec;
 }
 
 void KPlotAxis::setTickMarks( double x0, double length ) {
-	m_MajorTickMarks.clear();
-	m_MinorTickMarks.clear();
+	d->m_MajorTickMarks.clear();
+	d->m_MinorTickMarks.clear();
 
 	//s is the power-of-ten factor of length:
 	//length = t * s; s = 10^(pwr).  e.g., length=350.0 then t=3.5, s = 100.0; pwr = 2.0
@@ -84,13 +157,13 @@ void KPlotAxis::setTickMarks( double x0, double length ) {
 	for ( int i=0; i<NumMajorTicks+1; i++ ) {
 		double xmaj = Tick0 + i*TickDistance;
 		if ( xmaj >= x0 && xmaj <= x0 + length ) {
-			m_MajorTickMarks.append( xmaj );
+			d->m_MajorTickMarks.append( xmaj );
 		}
 
 		for ( int j=1; j<NumMinorTicks; j++ ) {
 			double xmin = xmaj + TickDistance*j/NumMinorTicks;
 			if ( xmin >= x0 && xmin <= x0 + length ) 
-				m_MinorTickMarks.append( xmin );
+				d->m_MinorTickMarks.append( xmin );
 		}
 	}
 }
@@ -107,3 +180,14 @@ QString KPlotAxis::tickLabel( double val ) const {
 
 	return QString( "%1" ).arg( val, tickLabelWidth(), tickLabelFmt(), tickLabelPrec() );
 }
+
+QList<double>& KPlotAxis::majorTickMarks() const
+{
+    return d->m_MajorTickMarks;
+}
+
+QList<double>& KPlotAxis::minorTickMarks() const
+{
+    return d->m_MinorTickMarks;
+}
+

@@ -35,50 +35,46 @@ class KDEEDUPLOT_EXPORT KPlotAxis {
 public:
 
 	/**
-	 * Default constructor, creates a default axis.
-	 */
-	KPlotAxis();
-	/**
 	 * Constructor, constructs an axis with the label @p label.
 	 */
-	KPlotAxis(const QString& label);
+        explicit KPlotAxis( const QString& label = QString() );
 
 	/**
 	 * Destructor.
 	 */
-	~KPlotAxis() {}
+        ~KPlotAxis();
 
 	/**
 	 * @return whether the axis is visible or not
 	 */
-	inline bool isVisible() const { return m_visible; }
+        bool isVisible() const;
 
 	/**
 	 * Sets the "visible" property of the axis.
 	 */
-	inline void setVisible(bool visible) { m_visible = visible; }
+        void setVisible( bool visible );
 
 	/**
 	 * @return whether tick labels will be drawn for this axis
 	 */
-	inline bool showTickLabels() const { return m_showTickLabels; }
+        bool showTickLabels() const;
 
 	/**
 	 * Determine whether tick labels will be drawn for this axis.
 	 */
-	inline void setShowTickLabels( bool b ) { m_showTickLabels = b; }
+        void setShowTickLabels( bool b );
 
 	/**
 	 * Sets the axis label.
 	 * Set the label to an empty string to omit the axis label.
 	 * @param label a string describing the data plotted on the axis.
 	 */
-	inline void setLabel( const QString& label ) { m_label = label; }
+        void setLabel( const QString& label );
 
 	/**
 	 * @return the axis label
 	 */
-	inline QString label() const { return m_label; }
+        QString label() const;
 
 	/**
 	 * @return the ticklabel string for the given value, rendered according
@@ -107,23 +103,22 @@ public:
 	 * render the value.
 	 * @param prec the number of characters following the decimal point.
 	 */
-	inline void setTickLabelFormat( char fmt = 'g', int fieldWidth = 0, int prec=-1) {
-		m_labelFieldWidth = fieldWidth; m_labelFmt = fmt; m_labelPrec = prec; }
+        void setTickLabelFormat( char fmt = 'g', int fieldWidth = 0, int prec = -1 );
 
 	/**
 	 * @return the field width of the tick labels
 	 */
-	inline int tickLabelWidth() const { return m_labelFieldWidth; }
+        int tickLabelWidth() const;
 
 	/**
 	 * @return the number format of the tick labels
 	 */
-	inline char tickLabelFmt() const { return m_labelFmt; }
+        char tickLabelFmt() const;
 
 	/**
 	 * @return the number precision of the tick labels
 	 */
-	inline int tickLabelPrec() const { return m_labelPrec; }
+        int tickLabelPrec() const;
 
 	/**
 	 * Determine the positions of major and minor tickmarks for this axis.
@@ -134,18 +129,15 @@ public:
 	 */
 	void setTickMarks( double x0, double length );
 
-	inline QList<double>& majorTickMarks() { return m_MajorTickMarks; }
-	inline QList<double>& minorTickMarks() { return m_MinorTickMarks; }
+        QList<double>& majorTickMarks() const;
+
+        QList<double>& minorTickMarks() const;
 
 private:
-	bool		m_visible;			///< Property "visible" defines if Axis is drawn or not.
-	bool		m_showTickLabels;
-	QString		m_label;			///< The label of the axis.
-	int 		m_labelFieldWidth;	///< Field width for number labels, see QString::arg().
-	char 		m_labelFmt;			///< Number format for number labels, see QString::arg().
-	int 		m_labelPrec;		///< Number precision for number labels, see QString::arg().
-	QList<double> m_MajorTickMarks, m_MinorTickMarks;
+        class Private;
+        Private * const d;
 
+        Q_DISABLE_COPY( KPlotAxis )
 };
 
 #endif // KPLOTAXIS_H
