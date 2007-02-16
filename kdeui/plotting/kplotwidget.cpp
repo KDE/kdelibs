@@ -701,42 +701,50 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 int KPlotWidget::leftPadding() const
 {
-	if ( d->leftPadding >= 0 ) return d->leftPadding;
-	if ( axis(LeftAxis)->isVisible() && axis(LeftAxis)->showTickLabels() ) {
-		if ( ! axis(LeftAxis)->label().isEmpty() ) return 3*XPADDING;
-		else return 2*XPADDING;
-	}
-	return XPADDING;
+    if ( d->leftPadding >= 0 )
+        return d->leftPadding;
+    const KPlotAxis *a = axis( LeftAxis );
+    if ( a && a->isVisible() && a->showTickLabels() )
+    {
+        return !a->label().isEmpty() ? 3 * XPADDING : 2 * XPADDING;
+    }
+    return XPADDING;
 }
 
 int KPlotWidget::rightPadding() const
 {
-	if ( d->rightPadding >= 0 ) return d->rightPadding;
-	if ( axis(RightAxis)->isVisible() && axis(RightAxis)->showTickLabels() ) {
-		if ( ! axis(RightAxis)->label().isEmpty() ) return 3*XPADDING;
-		else return 2*XPADDING;
-	}
-	return XPADDING;
+    if ( d->rightPadding >= 0 )
+        return d->rightPadding;
+    const KPlotAxis *a = axis( RightAxis );
+    if ( a && a->isVisible() && a->showTickLabels() )
+    {
+        return !a->label().isEmpty() ? 3 * XPADDING : 2 * XPADDING;
+    }
+    return XPADDING;
 }
 
 int KPlotWidget::topPadding() const
 {
-	if ( d->topPadding >= 0 ) return d->topPadding;
-	if ( axis(TopAxis)->isVisible() && axis(TopAxis)->showTickLabels() ) {
-		if ( ! axis(TopAxis)->label().isEmpty() ) return 3*YPADDING;
-		else return 2*YPADDING;
-	}
-	return YPADDING;
+    if ( d->topPadding >= 0 )
+        return d->topPadding;
+    const KPlotAxis *a = axis( TopAxis );
+    if ( a && a->isVisible() && a->showTickLabels() )
+    {
+        return !a->label().isEmpty() ? 3 * YPADDING : 2 * YPADDING;
+    }
+    return YPADDING;
 }
 
 int KPlotWidget::bottomPadding() const
 {
-	if ( d->bottomPadding >= 0 ) return d->bottomPadding;
-	if ( axis(BottomAxis)->isVisible() && axis(BottomAxis)->showTickLabels() ) {
-		if ( ! axis(BottomAxis)->label().isEmpty() ) return 3*YPADDING;
-		else return 2*YPADDING;
-	}
-	return YPADDING;
+    if ( d->bottomPadding >= 0 )
+        return d->bottomPadding;
+    const KPlotAxis *a = axis( BottomAxis );
+    if ( a && a->isVisible() && a->showTickLabels() )
+    {
+        return !a->label().isEmpty() ? 3 * YPADDING : 2 * YPADDING;
+    }
+    return YPADDING;
 }
 
 void KPlotWidget::setLeftPadding( int padding )
