@@ -74,7 +74,7 @@ public:
    * \code
    *    QStringList list;
    *    KFontChooser::getFontList(list,SmoothScalableFonts);
-   *    KFontChooser chooseFont = new KFontChooser(0, "FontList", false, list);
+   *    KFontChooser *chooseFont = new KFontChooser(0, false, list);
    * \endcode
    * <p>
    * The above creates a font chooser dialog with only SmoothScaleble fonts.
@@ -98,7 +98,6 @@ public:
    *        *sizeIsRelativeState, user choice may be retrieved by
    *        calling sizeIsRelative().
    */
-    /// KDE4: copy to KDE3SUPPORT
   explicit KFontChooser(QWidget *parent = 0L,
                         bool onlyFixed = false,
                         const QStringList &fontList = QStringList(),
