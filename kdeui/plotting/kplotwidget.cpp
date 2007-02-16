@@ -45,7 +45,7 @@ class KPlotWidget::Private
         Private( KPlotWidget *qq )
           : q( qq ),
             cBackground( Qt::black ), cForeground( Qt::white ), cGrid( Qt::gray ),
-            showGrid( false ), showObjectToolTips( true ), useAntialias( false )
+            showGrid( false ), showObjectToolTip( true ), useAntialias( false )
         {
             // create the axes and setting their default properties
             KPlotAxis *leftAxis = new KPlotAxis();
@@ -71,7 +71,7 @@ class KPlotWidget::Private
         //Colors
         QColor cBackground, cForeground, cGrid;
         //draw options
-        bool showGrid, showObjectToolTips, useAntialias;
+        bool showGrid, showObjectToolTip, useAntialias;
         //padding
         int leftPadding, rightPadding, topPadding, bottomPadding;
         // hashmap with the axes we have
@@ -284,9 +284,9 @@ bool KPlotWidget::isGridShown() const
     return d->showGrid;
 }
 
-bool KPlotWidget::areObjectToolTipsShown() const
+bool KPlotWidget::isObjectToolTipShown() const
 {
-    return d->showObjectToolTips;
+    return d->showObjectToolTip;
 }
 
 bool KPlotWidget::antialias() const
@@ -305,9 +305,9 @@ void KPlotWidget::setShowGrid( bool show ) {
 	update();
 }
 
-void KPlotWidget::setShowObjectToolTips( bool show )
+void KPlotWidget::setObjectToolTipShown( bool show )
 {
-    d->showObjectToolTips = show;
+    d->showObjectToolTip = show;
 }
 
 
@@ -337,7 +337,7 @@ QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 
 bool KPlotWidget::event( QEvent* e ) {
 	if ( e->type() == QEvent::ToolTip ) {
-		if ( d->showObjectToolTips )
+		if ( d->showObjectToolTip )
 		{
 			QHelpEvent *he = static_cast<QHelpEvent*>( e );
 			QList<KPlotPoint*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );

@@ -81,7 +81,7 @@ class KDEEDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor)
 	Q_PROPERTY(QColor gridColor READ gridColor WRITE setGridColor)
 	Q_PROPERTY(bool grid READ isGridShown WRITE setShowGrid)
-	Q_PROPERTY(bool objectToolTip READ areObjectToolTipsShown WRITE setShowObjectToolTips)
+	Q_PROPERTY(bool objectToolTip READ isObjectToolTipShown WRITE setObjectToolTipShown)
 public:
 	/**
 	 * @deprecated use the normal constructor and setLimits()
@@ -252,7 +252,7 @@ public:
 	/**
 	 * @return whether the tooltip for the point objects are shown
 	 */
-        bool areObjectToolTipsShown() const;
+        bool isObjectToolTipShown() const;
 
         bool antialias() const;
 
@@ -263,46 +263,46 @@ public:
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int leftPadding() const;
+        int leftPadding() const;
 	/**
 	 * @return the number of pixels to the right of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int rightPadding() const;
+        int rightPadding() const;
 	/**
 	 * @return the number of pixels above the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int topPadding() const;
+        int topPadding() const;
 	/**
 	 * @return the number of pixels below the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int bottomPadding() const;
+        int bottomPadding() const;
 
 	/**
 	 * Set the number of pixels to the left of the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-        virtual void setLeftPadding( int padding );
+        void setLeftPadding( int padding );
 	/**
 	 * Set the number of pixels to the right of the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-        virtual void setRightPadding( int padding );
+        void setRightPadding( int padding );
 	/**
 	 * Set the number of pixels above the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-        virtual void setTopPadding( int padding );
+        void setTopPadding( int padding );
 	/**
 	 * Set the number of pixels below the plot area.
 	 * Set this to -1 to revert to automatic determination of padding values.
 	 */
-        virtual void setBottomPadding( int padding );
+        void setBottomPadding( int padding );
 
 	/**
 	 * Revert all four padding values to be automatically determined.
@@ -378,7 +378,7 @@ public slots:
 	 * Toggle whether the tooltip for point objects are shown.
 	 * @param show if true, the tooltips will be shown.
 	 */
-	void setShowObjectToolTips( bool show );
+	void setObjectToolTipShown( bool show );
 
     private:
         class Private;
