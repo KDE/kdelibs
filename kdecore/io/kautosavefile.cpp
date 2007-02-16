@@ -30,10 +30,10 @@
 class KAutoSaveFilePrivate
 {
 public:
-    KAutoSaveFilePrivate() :
-            managedFile(),
-            lock(),
-            managedFileNameChanged(false)
+    KAutoSaveFilePrivate()
+            : managedFile()
+            , lock()
+            , managedFileNameChanged(false)
     {}
 
     QString tempFileName();
@@ -50,37 +50,37 @@ QString KAutoSaveFilePrivate::tempFileName()
     static const int maxNameLength = FILENAME_MAX;
 
     // Note: we drop any query string and user/pass info
-    QString protocol( managedFile.protocol() );
-    QString path( managedFile.directory() );
-    QString name( managedFile.fileName() );
+    QString protocol(managedFile.protocol());
+    QString path(managedFile.directory());
+    QString name(managedFile.fileName());
 
     // Remove any part of the path to the right if it is longer than the max file size and
     // ensure that the max filesize takes into account the other parts of the tempFileName
     // Subtract 1 for the _ char, 3 for the padding sepperator, 5 is for the .lock
-    path = path.left( maxNameLength - padding - name.size() - protocol.size() - 9 );
+    path = path.left(maxNameLength - padding - name.size() - protocol.size() - 9);
 
-    QString junk = KRandom::randomString( padding );
+    QString junk = KRandom::randomString(padding);
     // tempName = fileName + junk.trunicated + protocol + _ + path.trunicated + junk
     // This is done so that the separation between the filename and path can be determined
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
-    return QString::fromLatin1( QUrl::toPercentEncoding(name) );
+    return QString::fromLatin1(QUrl::toPercentEncoding(name));
 }
 
-KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent) :
-        QFile(parent),
-        d(new KAutoSaveFilePrivate)
+KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
+        : QFile(parent)
+        , d(new KAutoSaveFilePrivate)
 {
     setManagedFile(filename);
-    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::KAutoSaveFile(QObject *parent) :
         QFile(parent),
         d(new KAutoSaveFilePrivate)
 {
-    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::~KAutoSaveFile()
@@ -96,7 +96,7 @@ KUrl KAutoSaveFile::managedFile() const
 void KAutoSaveFile::setManagedFile(const KUrl &filename)
 {
     d->managedFile = filename;
-    d->managedFileNameChanged=true;
+    d->managedFileNameChanged = true;
 }
 
 void KAutoSaveFile::releaseLock()
@@ -107,45 +107,42 @@ void KAutoSaveFile::releaseLock()
 
 bool KAutoSaveFile::open(OpenMode openmode)
 {
-    if ( d->managedFile == KUrl() )
+    if (d->managedFile == KUrl()) {
         return false;
+    }
 
     QString tempFile;
-    if (d->managedFileNameChanged)
-    {
-        tempFile =  KStandardDirs::locateLocal( "stale",
-                                                QCoreApplication::instance()->applicationName()
-                                                + QChar::fromLatin1('/')
-                                                + d->tempFileName()
+    if (d->managedFileNameChanged) {
+        tempFile =  KStandardDirs::locateLocal("stale",
+                                               QCoreApplication::instance()->applicationName()
+                                               + QChar::fromLatin1('/')
+                                               + d->tempFileName()
                                               );
-    }
-    else
-    {
+    } else {
         tempFile = fileName();
     }
 
-    d->managedFileNameChanged=false;
+    d->managedFileNameChanged = false;
 
     setFileName(tempFile);
-    if ( !QFile::open(openmode) )
-    {
+    if (!QFile::open(openmode)) {
         return false;
     }
 
     close();
 
-    if ( QFile::open(openmode) )
-    {
+    if (QFile::open(openmode)) {
 
-        d->lock = new KLockFile( tempFile + QString::fromLatin1(".lock") )
-                  ;
-        if ( d->lock->isLocked() )
+        d->lock = new KLockFile(tempFile + QString::fromLatin1(".lock"));
+        if (d->lock->isLocked()) {
             return false;
+        }
 
-        d->lock ->setStaleTime(3600); // HARDCODE
+        d->lock->setStaleTime(3600); // HARDCODE
 
-        if ( d->lock->lock(KLockFile::ForceFlag) == KLockFile::LockOK )
+        if (d->lock->lock(KLockFile::ForceFlag) == KLockFile::LockOK) {
             return true;
+        }
     }
 
     return false;
@@ -153,7 +150,7 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
 QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
 {
-    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 
     QString url;
 
@@ -161,21 +158,22 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
 
     // get stale files
     QStringList files;
-    if ( !url.isEmpty() )
-        files = KGlobal::dirs()->findAllResources( "stale", url+QChar::fromLatin1('*'),
-                                                   KStandardDirs::Recursive);
+    if (!url.isEmpty()) {
+        files = KGlobal::dirs()->findAllResources("stale",
+                                                  url + QChar::fromLatin1('*'),
+                                                  KStandardDirs::Recursive);
+    }
 
     QList<KAutoSaveFile *> list;
     KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(const QString &file, files)
-    {
+    foreach(const QString &file, files) {
         // sets managedFile
         asFile = new KAutoSaveFile(filename);
         asFile->setFileName(file);
         // flags the name, so it isn't regenerated
-        asFile->d->managedFileNameChanged=false;
+        asFile->d->managedFileNameChanged = false;
         list.append(asFile);
     }
 
@@ -184,14 +182,15 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
 
 QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale",QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
-    if ( appName.isEmpty() )
+    if (appName.isEmpty()) {
         appName = QCoreApplication::instance()->applicationName();
+    }
 
     // get stale files
-    QStringList files = KGlobal::dirs()->findAllResources( "stale", appName+QLatin1String("/*") );
+    QStringList files = KGlobal::dirs()->findAllResources("stale", appName + QLatin1String("/*"));
 
     QList<KAutoSaveFile *> list;
     QString file, sep;
@@ -199,22 +198,21 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(file, files)
-    {
+    foreach(file, files) {
         sep = file.right(3);
         file.chop(KAutoSaveFilePrivate::padding);
 
         int sepPos = file.indexOf(sep);
-        int pathPos = file.indexOf( QChar::fromLatin1('_'), sepPos);
-        name.setProtocol( file.mid( sepPos+3, pathPos - sep.size() - 3 ) );
-        name.setPath( QUrl::fromPercentEncoding(file.right(pathPos-1).toLatin1()) );
-        name.addPath( QUrl::fromPercentEncoding(file.left(sepPos).toLatin1()) );
+        int pathPos = file.indexOf(QChar::fromLatin1('_'), sepPos);
+        name.setProtocol(file.mid(sepPos + 3, pathPos - sep.size() - 3));
+        name.setPath(QUrl::fromPercentEncoding(file.right(pathPos - 1).toLatin1()));
+        name.addPath(QUrl::fromPercentEncoding(file.left(sepPos).toLatin1()));
 
         // sets managedFile
         asFile = new KAutoSaveFile(name);
         asFile->setFileName(file);
         // flags the name, so it isn't regenerated
-        asFile->d->managedFileNameChanged=false;
+        asFile->d->managedFileNameChanged = false;
         list.append(asFile);
     }
 

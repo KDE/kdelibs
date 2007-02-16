@@ -85,8 +85,8 @@ class KAutoSaveFilePrivate;
  * @code
  *   foreach (KAutoSaveFile *stale, staleFiles) {
  *       if (!stale->open(QIODevice::ReadWrite)) {
- *           // show an error message; we could not steal the lockfile 
- *           // maybe another application got to the file before us? 
+ *           // show an error message; we could not steal the lockfile
+ *           // maybe another application got to the file before us?
  *           delete stale;
  *           continue;
  *       }
