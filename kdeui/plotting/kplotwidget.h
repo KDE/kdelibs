@@ -53,19 +53,21 @@ class KPlotPoint;
  *Example of usage:
  *
  * @code
- *  KPlotWidget *kpw = new KPlotWidget( this, 0.0, 1.0, 0.0, 1.0 );
- *  KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
- *
- *  //Add points to kpo:
- *  for ( float x=0.0; x<=1.0; x+=0.1 )
- *    kpo->addPoint( x, x*x );
- *    
- *  kpw->addObject( kpo );
- *  update();
+KPlotWidget *kpw = new KPlotWidget( parent );
+// setting our limits for the plot
+kpw->setLimits( 1.0, 5.0, 1.0, 25.0 );
+
+// creating a red polygon ...
+KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
+// ... adding some points to it ...
+for ( float x = 1.0; x <= 5.0; x += 0.1 )
+    kpo->addPoint( x, x*x );
+// ... and adding the object to the plot widget
+kpw->addPlotObject( kpo );
  * @endcode
  *
  *@note KPlotWidget will take care of the objects added to it, so when
- *clearing the objects list (eg with clearObjectList()) any previous 
+ *clearing the objects list (eg with removeAllPlotObjects()) any previous 
  *reference to a KPlotObject already added to a KPlotWidget will be invalid.
  *
  *@author Jason Harris
@@ -99,19 +101,24 @@ public:
 	 */
 	virtual ~KPlotWidget();
 
-	/**
-	 *@enum Axis The kinds of axes we have
-	 */
-	enum Axis { LeftAxis = 0, BottomAxis, RightAxis, TopAxis };
+        /**
+         * The kinds of axes we have
+         */
+        enum Axis
+        {
+            LeftAxis = 0,  ///< the left axis
+            BottomAxis,    ///< the bottom axis
+            RightAxis,     ///< the right axis
+            TopAxis        ///< the top axis
+        };
 
 	/**
 	 *@return suggested size for widget
-	 *@note Currently just returns QSize(150,150)
 	 */
 	virtual QSize minimumSizeHint() const;
 
 	/**
-	 * Reset the data limits.
+	 * Set new data limits for the plot.
 	 * @param x1 the minimum X value in data units
 	 * @param x2 the maximum X value in data units
 	 * @param y1 the minimum Y value in data units
@@ -171,11 +178,13 @@ public:
 
 	const QRectF& secondaryDataRect() const { return SecondDataRect; }
 
-	/**
-	 * Add an item to the list of KPlotObjects to be plotted.
-	 * @param o pointer to the KPlotObject to be added
-	 */
-        void addPlotObject( KPlotObject *o );
+        /**
+         * Add an item to the list of KPlotObjects to be plotted.
+         * @note do not use this multiple time if many objects have to be added,
+           addPlotObjects() is strongly suggested in this case
+         * @param object the KPlotObject to be added
+         */
+        void addPlotObject( KPlotObject *object );
 
         /**
          * Add more than one KPlotObject at one time.
@@ -210,20 +219,26 @@ public:
 	 */
         void replacePlotObject( int i, KPlotObject *o );
 
-	/**
-	 * @return the background color of the plot
-	 */
+        /**
+         * Return the background color of the plot.
+         *
+         * The default color is black.
+         */
         QColor backgroundColor() const;
 
-	/**
-	 * @return the foreground color, used for the axes, tickmarks
-	 * and associated labels.
-	 */
+        /**
+         * Return the foreground color, used for axes, tickmarks and associated
+         * labels.
+         *
+         * The default color is white.
+         */
         QColor foregroundColor() const;
 
-	/**
-	 * @return the grid color
-	 */
+        /**
+         * Return the grid color.
+         *
+         * The default color is gray.
+         */
         QColor gridColor() const;
 
 	/**
@@ -249,9 +264,11 @@ public:
 	 */
         bool isGridShown() const;
 
-	/**
-	 * @return whether the tooltip for the point objects are shown
-	 */
+        /**
+         * Return whether the tooltip for the point objects is shown.
+         *
+         * It's enabled by default.
+         */
         bool isObjectToolTipShown() const;
 
         bool antialias() const;
@@ -356,14 +373,17 @@ public:
 	 */
 	void placeLabel( QPainter *painter, KPlotPoint *pp );
 
-	/**
-	 * Retrieve the pointer to the axis of type @p a.
-	 * @sa Axis
-	 * @return a pointer to the axis @p a , or 0 if not found
-	 */
-	KPlotAxis* axis( Axis a );
+        /**
+         * Get the axis of the specified @p type, or 0 if no axis has been set.
+         * @sa Axis
+         */
+        KPlotAxis* axis( Axis type );
 
-        const KPlotAxis* axis( Axis a ) const;
+        /**
+         * Get the axis of the specified @p type, or 0 if no axis has been set.
+         * @sa Axis
+         */
+        const KPlotAxis* axis( Axis type ) const;
 
 	inline QRect& pixRect() { return PixRect; }
 
@@ -374,11 +394,11 @@ public slots:
 	 */
 	void setShowGrid( bool show );
 
-	/**
-	 * Toggle whether the tooltip for point objects are shown.
-	 * @param show if true, the tooltips will be shown.
-	 */
-	void setObjectToolTipShown( bool show );
+        /**
+         * Toggle the display of a tooltip for point objects.
+         * @param show whether show the tooltip.
+         */
+        void setObjectToolTipShown( bool show );
 
     private:
         class Private;

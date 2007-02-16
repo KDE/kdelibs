@@ -183,11 +183,13 @@ void KPlotWidget::clearSecondaryLimits() {
 	update();
 }
 
-void KPlotWidget::addPlotObject( KPlotObject *o ) {
-	// skip null pointers
-	if ( !o ) return;
-    d->objectList.append( o );
-	update();
+void KPlotWidget::addPlotObject( KPlotObject *object )
+{
+    // skip null pointers
+    if ( !object )
+        return;
+    d->objectList.append( object );
+    update();
 }
 
 void KPlotWidget::addPlotObjects( const QList< KPlotObject* >& objects )
@@ -311,14 +313,15 @@ void KPlotWidget::setObjectToolTipShown( bool show )
 }
 
 
-KPlotAxis* KPlotWidget::axis( Axis a ) {
-    QHash<Axis, KPlotAxis*>::Iterator it = d->axes.find( a );
+KPlotAxis* KPlotWidget::axis( Axis type )
+{
+    QHash<Axis, KPlotAxis*>::Iterator it = d->axes.find( type );
     return it != d->axes.end() ? it.value() : 0;
 }
 
-const KPlotAxis* KPlotWidget::axis( Axis a ) const
+const KPlotAxis* KPlotWidget::axis( Axis type ) const
 {
-    QHash<Axis, KPlotAxis*>::ConstIterator it = d->axes.find( a );
+    QHash<Axis, KPlotAxis*>::ConstIterator it = d->axes.find( type );
     return it != d->axes.end() ? it.value() : 0;
 }
 
