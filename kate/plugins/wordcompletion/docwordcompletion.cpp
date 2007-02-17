@@ -131,7 +131,8 @@ struct DocWordCompletionPluginViewPrivate
   QString lastIns;      // latest applied completion
   QRegExp re;           // hrm
   KToggleAction *autopopup; // for accessing state
-  uint treshold;         // the required length of a word before popping up the completion list automatically
+  uint treshold;        // the required length of a word before popping up the completion list automatically
+  int directionalPos;   // be able to insert "" at the correct time
 };
 
 DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool autopopup, KTextEditor::View *view, const char *name )
@@ -264,7 +265,10 @@ void DocWordCompletionPluginView::complete( bool fw )
   uint cline, ccol;
   viewCursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
   QString wrd = word();
-  if ( wrd.isEmpty() ) return;
+  if ( wrd.isEmpty() )
+    return;
+
+  int inc = fw ? 1 : -1;
 
   /* IF the current line is equal to the previous line
      AND the position - the length of the last inserted string
@@ -277,27 +281,46 @@ void DocWordCompletionPluginView::complete( bool fw )
           wrd.endsWith( d->lastIns ) )
   {
     // this is a repeted activation
+
+    // if we are back to where we started, reset.
+    if ( ( fw && d->directionalPos == -1 ) ||
+         ( !fw && d->directionalPos == 1 ) )
+    {
+      if ( d->lilen )
+        ei->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
+
+      d->lastIns.clear();
+      d->lilen = 0;
+      d->line = d->cline;
+      d->col = d->ccol;
+      d->directionalPos = 0;
+
+      return;
+    }
+
+    if ( fw )
+      d->col += d->lilen;
+
     ccol = d->ccol;
     wrd = d->last;
+
+    d->directionalPos += inc;
   }
   else
   {
     d->cline = cline;
     d->ccol = ccol;
     d->last = wrd;
-    d->lastIns = QString::null;
-    d->line = d->cline;
-    d->col = d->ccol - wrd.length();
+    d->lastIns.clear();
+    d->line = cline;
+    d->col = ccol - wrd.length();
     d->lilen = 0;
+    d->directionalPos = inc;
   }
 
   d->re.setPattern( "\\b" + wrd + "(\\w+)" );
-  int inc = fw ? 1 : -1;
   int pos ( 0 );
   QString ln = ei->textLine( d->line );
-
-  if ( ! fw )
-    ln = ln.mid( 0, d->col );
 
   while ( true )
   {
@@ -310,50 +333,58 @@ void DocWordCompletionPluginView::complete( bool fw )
       QString m = d->re.cap( 1 );
       if ( m != d->lastIns )
       {
-        d->col = pos; // for next try
-
-        if ( fw )
-          d->col += m.length();
-
-        // if this is a constructed word at cursor pos, retry.
-        if ( pos + wrd.length() == ccol )
-        {
-          d->col = pos + inc;
-          continue;
-        }
-
         // we got good a match! replace text and return.
         if ( d->lilen )
           ei->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
         ei->insertText( d->cline, d->ccol, m );
 
-        d->lilen = m.length();
         d->lastIns = m;
+        d->lilen = m.length();
+        d->col = pos; // for next try
 
         return;
       }
 
       // equal to last one, continue
       else
-        d->col = pos + inc; // for next try
+      {
+        d->col = pos; // for next try
+
+        if ( fw )
+          d->col += d->re.matchedLength();
+
+        else
+        {
+          if ( pos == 0 )
+          {
+            if ( d->line > 0 )
+            {
+              d->line += inc;
+              ln = ei->textLine( d->line );
+              d->col = ln.length();
+            }
+            else
+            {
+              KNotifyClient::beep();
+              return;
+            }
+          }
+
+          else
+            d->col--;
+        }
+      }
     }
 
     else  // no match
     {
-      if ( ! fw && d->line == 0)
-      {
-        KNotifyClient::beep();
-        return;
-      }
-      else if ( fw && d->line >= ei->numLines() )
+      if ( (! fw && d->line == 0 ) || ( fw && d->line >= (uint)ei->numLines() ) )
       {
         KNotifyClient::beep();
         return;
       }
 
       d->line += inc;
-      if ( fw )
-        d->col++;
 
       ln = ei->textLine( d->line );
       d->col = fw ? 0 : ln.length();
