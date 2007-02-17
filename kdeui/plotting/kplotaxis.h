@@ -57,12 +57,12 @@ public:
 	/**
 	 * @return whether tick labels will be drawn for this axis
 	 */
-        bool showTickLabels() const;
+        bool areTickLabelsShown() const;
 
 	/**
 	 * Determine whether tick labels will be drawn for this axis.
 	 */
-        void setShowTickLabels( bool b );
+        void setTickLabelsShown( bool b );
 
 	/**
 	 * Sets the axis label.

@@ -155,6 +155,7 @@ public:
             Lines = 2,        ///< each KPlotPoint is connected with a line
             Bars = 4          ///< each KPlotPoint is shown as a vertical bar
         };
+        Q_DECLARE_FLAGS( PlotTypes, PlotType )
 
         /**
          * The possible kind of points.
@@ -202,18 +203,10 @@ public:
 	 */
         void setLabel( int i, const QString &n );
 
-	/**
-	 * @return true if points will be drawn for this object
-	 */
-        bool showPoints() const;
-	/**
-	 * @return true if lines will be drawn for this object
-	 */
-        bool showLines() const;
-	/**
-	 * @return true if bars will be drawn for this object
-	 */
-        bool showBars() const;
+        /**
+         * @return the plot flags of the object
+         */
+        PlotTypes plotTypes() const;
 
 	/**
 	 * Set whether points will be drawn for this object
@@ -372,5 +365,6 @@ private:
 
         Q_DISABLE_COPY( KPlotObject );
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS( KPlotObject::PlotTypes );
 
 #endif

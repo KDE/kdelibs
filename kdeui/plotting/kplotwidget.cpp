@@ -47,10 +47,10 @@ class KPlotWidget::Private
         {
             // create the axes and setting their default properties
             KPlotAxis *leftAxis = new KPlotAxis();
-            leftAxis->setShowTickLabels( true );
+            leftAxis->setTickLabelsShown( true );
             axes.insert( LeftAxis, leftAxis );
             KPlotAxis *bottomAxis = new KPlotAxis();
-            bottomAxis->setShowTickLabels( true );
+            bottomAxis->setTickLabelsShown( true );
             axes.insert( BottomAxis, bottomAxis );
             KPlotAxis *rightAxis = new KPlotAxis();
             axes.insert( RightAxis, rightAxis );
@@ -248,10 +248,10 @@ void KPlotWidget::resetPlot() {
     d->calcDataRectLimits( 0.0, 1.0, 0.0, 1.0 );
     KPlotAxis *a = axis( RightAxis );
     a->setLabel( QString() );
-    a->setShowTickLabels( false );
+    a->setTickLabelsShown( false );
     a = axis( TopAxis );
     a->setLabel( QString() );
-    a->setShowTickLabels( false );
+    a->setTickLabelsShown( false );
 	axis(KPlotWidget::LeftAxis)->setLabel( QString() );
 	axis(KPlotWidget::BottomAxis)->setLabel( QString() );
 	resetPlotMask();
@@ -349,7 +349,7 @@ QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 	QList<KPlotPoint*> pts;
 	foreach ( KPlotObject *po, d->objectList ) {
 		foreach ( KPlotPoint *pp, po->points() ) {
-			if ( ( p - toScreen( pp->position() ).toPoint() ).manhattanLength() <= 4 )
+			if ( ( p - mapToWidget( pp->position() ).toPoint() ).manhattanLength() <= 4 )
 				pts << pp;
 		}
 	}
@@ -390,7 +390,7 @@ void KPlotWidget::setPixRect() {
 	}
 }
 
-QPointF KPlotWidget::toScreen( const QPointF& p ) const
+QPointF KPlotWidget::mapToWidget( const QPointF& p ) const
 {
     float px = d->pixRect.left() + d->pixRect.width() * ( p.x() - d->dataRect.x() ) / d->dataRect.width();
     float py = d->pixRect.top() + d->pixRect.height() * ( d->dataRect.y() + d->dataRect.height() - p.y() ) / d->dataRect.height();
@@ -442,7 +442,7 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 
 	float rbest = 100;
 	float bestCost = 1.0e7;
-	QPointF pos = toScreen( pp->position() );
+	QPointF pos = mapToWidget( pp->position() );
 	QRectF bestRect;
 	int ix0 = int( 100.0*( pos.x() - d->pixRect.x() )/d->pixRect.width() );
 	int iy0 = int( 100.0*( pos.y() - d->pixRect.y() )/d->pixRect.height() );
@@ -602,7 +602,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 						QPointF( px, double(d->pixRect.height() - BIGTICKSIZE - TICKOFFSET)) );
 
 				//Draw ticklabel
-				if ( a->showTickLabels() ) {
+				if ( a->areTickLabelsShown() ) {
 					QRect r( int(px) - BIGTICKSIZE, d->pixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 					p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, a->tickLabel( xx ) );
 				}
@@ -638,7 +638,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
-				if ( a->showTickLabels() ) {
+				if ( a->areTickLabelsShown() ) {
 					QRect r( -2*BIGTICKSIZE-SMALLTICKSIZE, int(py)-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
 					p->drawText( r, Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, a->tickLabel( yy ) );
 				}
@@ -694,7 +694,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(BIGTICKSIZE + TICKOFFSET)) );
 
 				//Draw ticklabel
-				if ( a->showTickLabels() ) {
+				if ( a->areTickLabelsShown() ) {
 					QRect r( int(px) - BIGTICKSIZE, (int)-1.5*BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 					p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, a->tickLabel( xx ) );
 				}
@@ -730,7 +730,7 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 						QPointF( double(d->pixRect.width() - TICKOFFSET - BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
-				if ( a->showTickLabels() ) {
+				if ( a->areTickLabelsShown() ) {
 					QRect r( d->pixRect.width() + SMALLTICKSIZE, int(py)-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
 					p->drawText( r, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, a->tickLabel( yy ) );
 				}
@@ -768,7 +768,7 @@ int KPlotWidget::leftPadding() const
     if ( d->leftPadding >= 0 )
         return d->leftPadding;
     const KPlotAxis *a = axis( LeftAxis );
-    if ( a && a->isVisible() && a->showTickLabels() )
+    if ( a && a->isVisible() && a->areTickLabelsShown() )
     {
         return !a->label().isEmpty() ? 3 * XPADDING : 2 * XPADDING;
     }
@@ -780,7 +780,7 @@ int KPlotWidget::rightPadding() const
     if ( d->rightPadding >= 0 )
         return d->rightPadding;
     const KPlotAxis *a = axis( RightAxis );
-    if ( a && a->isVisible() && a->showTickLabels() )
+    if ( a && a->isVisible() && a->areTickLabelsShown() )
     {
         return !a->label().isEmpty() ? 3 * XPADDING : 2 * XPADDING;
     }
@@ -792,7 +792,7 @@ int KPlotWidget::topPadding() const
     if ( d->topPadding >= 0 )
         return d->topPadding;
     const KPlotAxis *a = axis( TopAxis );
-    if ( a && a->isVisible() && a->showTickLabels() )
+    if ( a && a->isVisible() && a->areTickLabelsShown() )
     {
         return !a->label().isEmpty() ? 3 * YPADDING : 2 * YPADDING;
     }
@@ -804,7 +804,7 @@ int KPlotWidget::bottomPadding() const
     if ( d->bottomPadding >= 0 )
         return d->bottomPadding;
     const KPlotAxis *a = axis( BottomAxis );
-    if ( a && a->isVisible() && a->showTickLabels() )
+    if ( a && a->isVisible() && a->areTickLabelsShown() )
     {
         return !a->label().isEmpty() ? 3 * YPADDING : 2 * YPADDING;
     }

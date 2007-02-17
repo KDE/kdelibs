@@ -77,7 +77,7 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -0.1, 6.38, -1.1, 1.1 );
 			plot->setSecondaryLimits( -5.73, 365.55, -1.1, 1.1 );
-			plot->axis(KPlotWidget::TopAxis)->setShowTickLabels( true );
+			plot->axis(KPlotWidget::TopAxis)->setTickLabelsShown( true );
 			plot->axis(KPlotWidget::BottomAxis)->setLabel("Angle [radians]");
 			plot->axis(KPlotWidget::TopAxis)->setLabel("Angle [degrees]");
 

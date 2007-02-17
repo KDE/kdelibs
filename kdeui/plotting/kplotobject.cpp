@@ -55,7 +55,7 @@ class KPlotObject::Private
         KPlotObject *q;
 
         QList<KPlotPoint*> pList;
-        int type;
+        PlotTypes type;
         PointStyle pointStyle;
         double size;
         QPen pen, linePen, barPen, labelPen;
@@ -145,7 +145,7 @@ KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PointStyle p
 	setBarPen( pen() );
 	setLabelPen( pen() );
 
-	d->type = t;
+	d->type |= t;
 	setSize( size );
 	setPointStyle( ps );
 }
@@ -171,30 +171,20 @@ void KPlotObject::setLabel( int i, const QString &n )
     d->pList.at(i)->setLabel( n );
 }
 
-bool KPlotObject::showPoints() const
+KPlotObject::PlotTypes KPlotObject::plotTypes() const
 {
-    return d->type & KPlotObject::Points;
-}
-
-bool KPlotObject::showLines() const
-{
-    return d->type & KPlotObject::Lines;
-}
-
-bool KPlotObject::showBars() const
-{
-    return d->type & KPlotObject::Bars;
+    return d->type;
 }
 
 void KPlotObject::setShowPoints( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::Points;
+        d->type |= KPlotObject::Points;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::Points;
+        d->type &= ~KPlotObject::Points;
     }
 }
 
@@ -202,11 +192,11 @@ void KPlotObject::setShowLines( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::Lines;
+        d->type |= KPlotObject::Lines;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::Lines;
+        d->type &= ~KPlotObject::Lines;
     }
 }
 
@@ -214,11 +204,11 @@ void KPlotObject::setShowBars( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::Bars;
+        d->type |= KPlotObject::Bars;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::Bars;
+        d->type &= ~KPlotObject::Bars;
     }
 }
 
@@ -345,7 +335,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	//Order of drawing determines z-distance: Bars in the back, then lines, 
 	//then points, then labels.
 
-	if ( showBars() ) {
+	if ( d->type & Bars ) {
 		painter->setPen( barPen() );
 		painter->setBrush( barBrush() );
 
@@ -363,8 +353,8 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 			QPointF pp = d->pList[i]->position();
 			QPointF p1( pp.x() - 0.5*w, 0.0 );
 			QPointF p2( pp.x() + 0.5*w, pp.y() );
-			QPointF sp1 = pw->toScreen( p1 );
-			QPointF sp2 = pw->toScreen( p2 );
+			QPointF sp1 = pw->mapToWidget( p1 );
+			QPointF sp2 = pw->mapToWidget( p2 );
 
 			QRectF barRect = QRectF( sp1.x(), sp1.y(), sp2.x()-sp1.x(), sp2.y()-sp1.y() ).normalized();
 			painter->drawRect( barRect );
@@ -373,14 +363,14 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	}
 	
 	//Draw lines:
-	if ( showLines() ) {
+	if ( d->type & Lines ) {
 		painter->setPen( linePen() );
 
 		QPointF Previous = QPointF();  //Initialize to null
 
 		foreach ( KPlotPoint *pp, d->pList ) {
 			//q is the position of the point in screen pixel coordinates
-			QPointF q = pw->toScreen( pp->position() );
+			QPointF q = pw->mapToWidget( pp->position() );
 
 			if ( ! Previous.isNull() ) {
 				painter->drawLine( Previous, q );
@@ -392,11 +382,11 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	}
 
 	//Draw points:
-	if ( showPoints() ) {
+	if ( d->type & Points ) {
 
 		foreach( KPlotPoint *pp, d->pList ) {
 			//q is the position of the point in screen pixel coordinates
-			QPointF q = pw->toScreen( pp->position() );
+			QPointF q = pw->mapToWidget( pp->position() );
 			if ( pw->pixRect().contains( q.toPoint(), false ) ) {
 				double x1 = q.x() - size();
 				double y1 = q.y() - size();
@@ -493,7 +483,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	painter->setPen( labelPen() );
 
 	foreach ( KPlotPoint *pp, d->pList ) {
-		QPoint q = pw->toScreen( pp->position() ).toPoint();
+		QPoint q = pw->mapToWidget( pp->position() ).toPoint();
 		if ( pw->pixRect().contains(q, false) && ! pp->label().isEmpty() ) {
 			pw->placeLabel( painter, pp );
 		}

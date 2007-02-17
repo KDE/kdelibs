@@ -61,12 +61,12 @@ void KPlotAxis::setVisible( bool visible )
     d->m_visible = visible;
 }
 
-bool KPlotAxis::showTickLabels() const
+bool KPlotAxis::areTickLabelsShown() const
 {
     return d->m_showTickLabels;
 }
 
-void KPlotAxis::setShowTickLabels( bool b )
+void KPlotAxis::setTickLabelsShown( bool b )
 {
     d->m_showTickLabels = b;
 }

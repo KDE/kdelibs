@@ -303,7 +303,7 @@ public:
 	 * Used mainly when drawing.
 	 * @return the coordinate in the pixel coordinate system
 	 */
-	QPointF toScreen( const QPointF& p ) const;
+        QPointF mapToWidget( const QPointF& p ) const;
 
 	/**
 	 * Indicate that object labels should not occupy the given 
