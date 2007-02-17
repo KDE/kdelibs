@@ -58,7 +58,7 @@ class KPlotWidget::Private
             axes.insert( TopAxis, topAxis );
         }
 
-        Private()
+        ~Private()
         {
             qDeleteAll( objectList );
             qDeleteAll( axes );
