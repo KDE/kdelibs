@@ -101,7 +101,7 @@ public:
 	 * @param fieldWidth the number of characters in the output string.
 	 * If set to 0, the string will be as wide as it needs to be to fully 
 	 * render the value.
-	 * @param precison the number of characters following the decimal point.
+	 * @param precision the number of characters following the decimal point.
 	 */
         void setTickLabelFormat( char format = 'g', int fieldWidth = 0, int precision = -1 );
 
