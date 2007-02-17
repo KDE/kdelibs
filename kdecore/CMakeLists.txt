@@ -5,10 +5,10 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
 # Configure checks for network/ but also for netsupp.*
 include(network/ConfigureChecks.cmake)
-configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
+configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
-
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 
