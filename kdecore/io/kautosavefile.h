@@ -48,7 +48,8 @@ class KAutoSaveFilePrivate;
  *
  * KAutoSaveFile holds a lock on the autosave file, so it's safe to
  * delete the file and recreate it later. Because of that, disposing
- * of stale autosave files should be done with releaseLock().
+ * of stale autosave files should be done with releaseLock(). No lock is
+ * held on the managed file.
  *
  * Examples:
  * Opening a new file:
@@ -166,6 +167,7 @@ public:
     /**
      * Sets the URL of the file managed by KAutoSaveFile. This should
      * be the name of the real file being edited by the application.
+     * If the file was previously set, this function calls releaseLock().
      *
      * @param filename the filename that this KAutoSaveFile refers to
      */
@@ -208,12 +210,18 @@ public:
      * wants to see the recovered data, and then allowing the user to
      * save if he wants to.
      *
+     * If not given, the application name is obtained from
+     * QCoreApplication, so be sure to have set it correctly before
+     * calling this function.
+     *
      * This function returns a list of unopened KAutoSaveFile
      * objects. By calling open() on them, the application will steal
      * the lock. Subsequent releaseLock() or deleting of the object will
      * then erase the stale autosave file.
      */
-    static QList<KAutoSaveFile *> staleFiles(const KUrl &filename);
+    static QList<KAutoSaveFile *> staleFiles(const KUrl &filename,
+                                             const QString &applicationName =
+                                             QString());
 
     /**
      * Returns all stale autosave files left behind by crashed or

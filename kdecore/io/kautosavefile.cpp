@@ -31,9 +31,8 @@ class KAutoSaveFilePrivate
 {
 public:
     KAutoSaveFilePrivate()
-            : managedFile()
-            , lock()
-            , managedFileNameChanged(false)
+            : lock(0),
+              managedFileNameChanged(false)
     {}
 
     QString tempFileName();
@@ -69,22 +68,23 @@ QString KAutoSaveFilePrivate::tempFileName()
 }
 
 KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
-        : QFile(parent)
-        , d(new KAutoSaveFilePrivate)
+        : QFile(parent),
+          d(new KAutoSaveFilePrivate)
 {
     setManagedFile(filename);
     KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 }
 
-KAutoSaveFile::KAutoSaveFile(QObject *parent) :
-        QFile(parent),
-        d(new KAutoSaveFilePrivate)
+KAutoSaveFile::KAutoSaveFile(QObject *parent)
+        : QFile(parent),
+          d(new KAutoSaveFilePrivate)
 {
     KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::~KAutoSaveFile()
 {
+    releaseLock();
     delete d;
 }
 
@@ -95,14 +95,20 @@ KUrl KAutoSaveFile::managedFile() const
 
 void KAutoSaveFile::setManagedFile(const KUrl &filename)
 {
+    releaseLock();
+
     d->managedFile = filename;
     d->managedFileNameChanged = true;
 }
 
 void KAutoSaveFile::releaseLock()
 {
-    d->lock.clear();
-    remove();
+    if (d->lock && d->lock->isLocked()) {
+        d->lock.clear();
+    }
+    if (!fileName().isEmpty()) {
+        remove();
+    }
 }
 
 bool KAutoSaveFile::open(OpenMode openmode)
@@ -125,44 +131,47 @@ bool KAutoSaveFile::open(OpenMode openmode)
     d->managedFileNameChanged = false;
 
     setFileName(tempFile);
-    if (!QFile::open(openmode)) {
-        return false;
-    }
-
-    close();
 
     if (QFile::open(openmode)) {
 
         d->lock = new KLockFile(tempFile + QString::fromLatin1(".lock"));
         if (d->lock->isLocked()) {
+            close();
             return false;
         }
 
-        d->lock->setStaleTime(3600); // HARDCODE
+        d->lock->setStaleTime(60); // HARDCODE, 1 minute
 
-        if (d->lock->lock(KLockFile::ForceFlag) == KLockFile::LockOK) {
+        if (d->lock->lock(KLockFile::ForceFlag|KLockFile::NoBlockFlag) == KLockFile::LockOK) {
             return true;
+        } else {
+            close();
         }
     }
 
     return false;
 }
 
-QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename)
+QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QString &applicationName)
 {
     KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
 
-    QString url;
+    QString appName(applicationName);
+    if (appName.isEmpty()) {
+        appName = QCoreApplication::instance()->applicationName();
+    }
 
-    url = filename.fileName();
+    QString url = filename.fileName();
+
+    if (url.isEmpty()) {
+        return QList<KAutoSaveFile *>();
+    }
 
     // get stale files
-    QStringList files;
-    if (!url.isEmpty()) {
-        files = KGlobal::dirs()->findAllResources("stale",
+    QStringList files = KGlobal::dirs()->findAllResources("stale",
+                                                  appName + QChar::fromLatin1('/') +
                                                   url + QChar::fromLatin1('*'),
                                                   KStandardDirs::Recursive);
-    }
 
     QList<KAutoSaveFile *> list;
     KAutoSaveFile * asFile;

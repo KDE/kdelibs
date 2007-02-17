@@ -28,48 +28,27 @@
 
 QTEST_KDEMAIN( KAutoSaveFileTest, NoGUI )
 
-void KAutoSaveFileTest::test_fileStaleFiles()
-{ 
-qDebug() << "test_fileStaleFiles";
-QVERIFY(1 == 1); }
-
-void KAutoSaveFileTest::test_applicationStaleFiles()
-{
-qDebug() << "test_applicationStaleFiles";
-
- QVERIFY(1 == 1); }
-
-void KAutoSaveFileTest::test_locking()
-{
-qDebug() << "test_lcok";
-
- QVERIFY(1 == 1); }
-
 void KAutoSaveFileTest::cleanupTestCase()
 {
-    foreach ( const QString &fileToRemove, filesToRemove )
-    {
-        QFile::remove
-            (fileToRemove);
+    foreach (const QString &fileToRemove, filesToRemove) {
+        QFile::remove(fileToRemove);
     }
 }
 
 void KAutoSaveFileTest::test_readWrite()
 {
     KTemporaryFile file;
-    file.setPrefix("test");
+    file.setPrefix("test1");
 
     QVERIFY( file.open() );
 
-    KUrl normalFile( file.fileName() );
-
+    KUrl normalFile( QFileInfo(file).absoluteFilePath() );
 
     //Test basic functionality
     KAutoSaveFile saveFile(normalFile);
 
     QVERIFY( !QFile::exists(saveFile.fileName()) );
     QVERIFY( saveFile.open(QIODevice::ReadWrite) );
-    QVERIFY( QFile::exists(saveFile.fileName()) );
 
     QString inText = "This is test data one.\n";
 
@@ -92,7 +71,39 @@ void KAutoSaveFileTest::test_readWrite()
     }
 
 
-    filesToRemove << file.fileName() << saveFile.fileName();
+    filesToRemove << file.fileName();
+}
+
+void KAutoSaveFileTest::test_fileStaleFiles()
+{
+    QVERIFY(1 == 1);
+}
+
+void KAutoSaveFileTest::test_applicationStaleFiles()
+{
+    QVERIFY(1 == 1);
+}
+
+void KAutoSaveFileTest::test_locking()
+{
+    KUrl normalFile( "fish://user@example.com/home/remote/test.txt" );
+
+    KAutoSaveFile saveFile(normalFile);
+
+    QVERIFY( !QFile::exists(saveFile.fileName()) );
+    QVERIFY( saveFile.open(QIODevice::ReadWrite) );
+
+    KAutoSaveFile* saveFile2 = KAutoSaveFile::staleFiles(normalFile).at(0);
+
+    QVERIFY( QFile::exists(saveFile2->fileName()) );
+    QVERIFY( !saveFile2->open(QIODevice::ReadWrite) );
+    
+    saveFile.releaseLock();
+    
+    QVERIFY( saveFile2->open(QIODevice::ReadWrite) );
+
+    delete saveFile2;
+
 }
 
 #include "kautosavefiletest.moc"
