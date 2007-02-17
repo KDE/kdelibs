@@ -235,6 +235,8 @@ public:
     virtual bool contentEditable() const;
     void setContentEditable(bool enabled);
 
+    void scrollIntoView(bool alignToTop);
+
     /** Returns the opening tag and properties.
      *  Examples:  '<b', '<img alt="hello" src="image.png"
      *
