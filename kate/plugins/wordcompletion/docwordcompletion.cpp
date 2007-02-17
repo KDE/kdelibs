@@ -289,7 +289,7 @@ void DocWordCompletionPluginView::complete( bool fw )
       if ( d->lilen )
         ei->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
 
-      d->lastIns.clear();
+      d->lastIns = "";
       d->lilen = 0;
       d->line = d->cline;
       d->col = d->ccol;
@@ -311,7 +311,7 @@ void DocWordCompletionPluginView::complete( bool fw )
     d->cline = cline;
     d->ccol = ccol;
     d->last = wrd;
-    d->lastIns.clear();
+    d->lastIns = "";
     d->line = cline;
     d->col = ccol - wrd.length();
     d->lilen = 0;
