@@ -112,6 +112,7 @@ void EffectWidgetPrivate::autogenerateUi()
 				sb->setRange( para.minimumValue().toDouble(),
 						para.maximumValue().toDouble() );
 				sb->setValue( para.value().toDouble() );
+                sb->setSingleStep((para.maximumValue().toDouble() - para.minimumValue().toDouble()) / 20);
                 QObject::connect(sb, SIGNAL(valueChanged(double)), q,
                         SLOT(_k_setDoubleParameter(double)));
 			}
