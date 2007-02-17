@@ -155,22 +155,6 @@ KPlotObject::~KPlotObject()
     delete d;
 }
 
-QString KPlotObject::label( int i ) const
-{
-    if ( i < 0 || i >= d->pList.count() )
-        return QString();
-
-    return d->pList.at( i )->label();
-}
-
-void KPlotObject::setLabel( int i, const QString &n )
-{
-    if ( i < 0 || i >= d->pList.count() )
-        return;
-
-    d->pList.at(i)->setLabel( n );
-}
-
 KPlotObject::PlotTypes KPlotObject::plotTypes() const
 {
     return d->type;

@@ -190,19 +190,6 @@ public:
 	 */
 	~KPlotObject();
 
-	/**
-	 * @return the label of point i
-	 * @param i the index of the point
-	 */
-        QString label( int i ) const;
-
-	/**
-	 * Set the label text for point i
-	 * @param i the index of the point
-	 * @param n the new name
-	 */
-        void setLabel( int i, const QString &n );
-
         /**
          * @return the plot flags of the object
          */
