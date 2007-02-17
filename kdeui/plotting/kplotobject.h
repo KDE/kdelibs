@@ -167,12 +167,6 @@ public:
 	enum PStyle { NOPOINTS=0, CIRCLE=1, LETTER=2, TRIANGLE=3, SQUARE=4, PENTAGON=5, HEXAGON=6, ASTERISK=7, STAR=8, UNKNOWN_POINT };
 
 	/**
-	 * Default constructor.  Create a POINTS-type object with an 
-	 * empty list of points.
-	 */
-	KPlotObject();
-
-	/**
 	 * Constructor. Create a KPlotObject according to the arguments.
 	 * @param color The color for plotting this object.  By default this sets 
 	 * the color for POINTS, LINES and BARS, but there are functins to 
@@ -181,7 +175,7 @@ public:
 	 * @param size the size to use for the drawn points, in pixels
 	 * @param ps The PStyle describing the shape for the drawn points
 	 */
-	KPlotObject( const QColor &color, PlotType otype, double size=2, PStyle ps=CIRCLE );
+        explicit KPlotObject( const QColor &color = Qt::white, PlotType otype = POINTS, double size = 2, PStyle ps = CIRCLE );
 
 	/**
 	 * Destructor.
@@ -192,143 +186,134 @@ public:
 	 * @return the label of point i
 	 * @param i the index of the point
 	 */
-	inline QString label( int i ) const { if (pList.size() > i) return pList.at(i)->label(); }
+        QString label( int i ) const;
 
 	/**
 	 * Set the label text for point i
 	 * @param i the index of the point
 	 * @param n the new name
 	 */
-	inline void setLabel( int i, const QString &n ) { if (pList.size() > i) pList.at(i)->setLabel(n); }
+        void setLabel( int i, const QString &n );
 
 	/**
 	 * @return true if points will be drawn for this object
 	 */
-	bool showPoints() const { return Type & KPlotObject::POINTS; }
+        bool showPoints() const;
 	/**
 	 * @return true if lines will be drawn for this object
 	 */
-	bool showLines() const { return Type & KPlotObject::LINES; }
+        bool showLines() const;
 	/**
 	 * @return true if bars will be drawn for this object
 	 */
-	bool showBars() const { return Type & KPlotObject::BARS; }
+        bool showBars() const;
 
 	/**
 	 * Set whether points will be drawn for this object
 	 * @param b if true, points will be drawn
 	 */
-	void setShowPoints( bool b ) { 
-		if ( b ) { Type = Type | KPlotObject::POINTS; }
-		else     { Type = Type & ~KPlotObject::POINTS; }
-	}
+        void setShowPoints( bool b );
 
 	/**
 	 * Set whether lines will be drawn for this object
 	 * @param b if true, lines will be drawn
 	 */
-	void setShowLines( bool b ) { 
-		if ( b ) { Type = Type | KPlotObject::LINES; }
-		else     { Type = Type & ~KPlotObject::LINES; }
-	}
+        void setShowLines( bool b );
 
 	/**
 	 * Set whether bars will be drawn for this object
 	 * @param b if true, bars will be drawn
 	 */
-	void setShowBars( bool b ) { 
-		if ( b ) { Type = Type | KPlotObject::BARS; }
-		else     { Type = Type & ~KPlotObject::BARS; }
-	}
+        void setShowBars( bool b );
 
 	/**
 	 * @return the KPlotObject's Size
 	*/
-	double size() const { return Size; }
+        double size() const;
 
 	/**
 	 * Set the KPlotObject's Size
 	 * @param s the new size
 	 */
-	void setSize( double s ) { Size = s; }
+        void setSize( double s );
 
 	/**
 	 * @return the KPlotObject's PointStyle value
 	 */
-	unsigned int pointStyle() const { return PointStyle; }
+        unsigned int pointStyle() const;
 
 	/**
 	 * Set the KPlotObject's type-specific Parameter
 	 * @param p the new parameter
 	 */
-	void setPointStyle( PStyle p ) { PointStyle = p; }
+        void setPointStyle( PStyle p );
 
 	/**
 	 * @return the default pen for this Object.
 	 * If no other pens are set, this pen will be used for 
 	 * points, lines, bars and labels (this pen is always used for points).
 	 */
-	const QPen& pen() const { return Pen; }
+        const QPen& pen() const;
 	/**
 	 * Set the default pen for this object
 	 * @p The pen to use
 	 */
-	void setPen( const QPen &p ) { Pen = p; }
+        void setPen( const QPen &p );
 	
 	/**
 	 * @return the pen to use for drawing lines for this Object.
 	 */
-	const QPen& linePen() const { return LinePen; }
+        const QPen& linePen() const;
 	/**
 	 * Set the pen to use for drawing lines for this object
 	 * @p The pen to use
 	 */
-	void setLinePen( const QPen &p ) { LinePen = p; }
+        void setLinePen( const QPen &p );
 	
 	/**
 	 * @return the pen to use for drawing bars for this Object.
 	 */
-	const QPen& barPen() const { return BarPen; }
+        const QPen& barPen() const;
 	/**
 	 * Set the pen to use for drawing bars for this object
 	 * @p The pen to use
 	 */
-	void setBarPen( const QPen &p ) { BarPen = p; }
+        void setBarPen( const QPen &p );
 	
 	/**
 	 * @return the pen to use for drawing labels for this Object.
 	 */
-	const QPen& labelPen() const { return LabelPen; }
+        const QPen& labelPen() const;
 	/**
 	 * Set the pen to use for labels for this object
 	 * @p The pen to use
 	 */
-	void setLabelPen( const QPen &p ) { LabelPen = p; }
+        void setLabelPen( const QPen &p );
 	
 	/**
 	 * @return the default Brush to use for this Object.
 	 */
-	const QBrush brush() const { return Brush; }
+        const QBrush brush() const;
 	/**
 	 * Set the default brush for this object
 	 * @b The brush to use
 	 */
-	void setBrush( const QBrush &b ) { Brush = b; }
+        void setBrush( const QBrush &b );
 
 	/**
 	 * @return the brush to use for filling bars for this Object.
 	 */
-	const QBrush barBrush() const { return BarBrush; }
+        const QBrush barBrush() const;
 	/**
 	 * Set the brush to use for drawing bars for this object
 	 * @b The brush to use
 	 */
-	void setBarBrush( const QBrush &b ) { BarBrush = b; }
+        void setBarBrush( const QBrush &b );
 
 	/**
 	 * @return the list of KPlotPoints that make up this object
 	 */
-	QList<KPlotPoint*> points() { return pList; }
+        QList< KPlotPoint* > points() const;
 
 	/**
 	 * Add a point to the object's list.
@@ -336,19 +321,14 @@ public:
 	 * @param label the optional text label
 	 * @param barWidth the width of the bar, if this object is drawn as bars
 	 */
-	void addPoint( const QPointF &p, const QString &label="", double barWidth=0.0 ) { 
-		Q_UNUSED( barWidth )
-		addPoint( new KPlotPoint( p.x(), p.y(), label ) ); 
-	}
+        void addPoint( const QPointF &p, const QString &label = QString(), double barWidth = 0.0 );
 
 	/**
 	 * Add a point to the object's list.
 	 * @overload
 	 * @param p pointer to the KPlotPoint to add.
 	 */
-	void addPoint( KPlotPoint *p ) {
-		pList.append( p );
-	}
+        void addPoint( KPlotPoint *p );
 
 	/**
 	 * Add a point to the object's list.
@@ -358,10 +338,7 @@ public:
 	 * @param label the optional text label
 	 * @param barWidth the width of the bar, if this object is drawn as bars
 	 */
-	void addPoint( double x, double y, const QString &label="", double barWidth=0.0 ) {
-		Q_UNUSED( barWidth )
-		addPoint( new KPlotPoint( x, y, label ) ); 
-	}
+        void addPoint( double x, double y, const QString &label = QString(), double barWidth = 0.0 );
 
 	/**
 	 * Remove the QPointF at position index from the list of points
@@ -373,12 +350,12 @@ public:
 	 * @return a pointer to the KPlotPoint at the given position in the list
 	 * @param index the index of the point in the list
 	 */
-	KPlotPoint* point( int index ) { return pList[index]; }
+        KPlotPoint* point( int index );
 
 	/**
 	 * @return the number of QPoints currently in the list
 	 */
-	int count() const { return pList.count(); }
+        int count() const;
 
 	/**
 	 * Clear the Object's points list
@@ -394,12 +371,10 @@ public:
 	void draw( QPainter *p, KPlotWidget *pw );
 
 private:
-	QList<KPlotPoint*> pList;
-	int Type;
-	PStyle PointStyle;
-	double Size;
-	QPen Pen, LinePen, BarPen, LabelPen;
-	QBrush Brush, BarBrush;
+        class Private;
+        Private * const d;
+
+        Q_DISABLE_COPY( KPlotObject );
 };
 
 #endif

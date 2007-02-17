@@ -23,6 +23,30 @@
 #include "kplotobject.h"
 #include "kplotwidget.h"
 
+class KPlotObject::Private
+{
+    public:
+        Private( KPlotObject * qq )
+            : q( qq )
+        {
+        }
+
+        ~Private()
+        {
+            qDeleteAll( pList );
+        }
+
+        KPlotObject *q;
+
+        QList<KPlotPoint*> pList;
+        int type;
+        PStyle pointStyle;
+        double size;
+        QPen pen, linePen, barPen, labelPen;
+        QBrush brush, barBrush;
+};
+
+
 KPlotPoint::KPlotPoint()
  : X(0), Y(0), Label(QString()), BarWidth(0.0)
 {
@@ -42,11 +66,9 @@ KPlotPoint::~KPlotPoint()
 {
 }
 
-KPlotObject::KPlotObject() {
-	KPlotObject( Qt::white, POINTS );
-}
-
-KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PStyle ps ) {
+KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PStyle ps )
+    : d( new Private( this ) )
+{
 	//By default, all pens and brushes are set to the given color
 	setBrush( c );
 	setBarBrush( c );
@@ -55,29 +77,210 @@ KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PStyle ps ) 
 	setBarPen( pen() );
 	setLabelPen( pen() );
 
-	Type = t;
+	d->type = t;
 	setSize( size );
 	setPointStyle( ps );
 }
 
 KPlotObject::~KPlotObject()
 {
-	qDeleteAll( pList );
-	pList.clear();
+    delete d;
+}
+
+QString KPlotObject::label( int i ) const
+{
+    if ( i < 0 || i >= d->pList.count() )
+        return QString();
+
+    return d->pList.at( i )->label();
+}
+
+void KPlotObject::setLabel( int i, const QString &n )
+{
+    if ( i < 0 || i >= d->pList.count() )
+        return;
+
+    d->pList.at(i)->setLabel( n );
+}
+
+bool KPlotObject::showPoints() const
+{
+    return d->type & KPlotObject::POINTS;
+}
+
+bool KPlotObject::showLines() const
+{
+    return d->type & KPlotObject::LINES;
+}
+
+bool KPlotObject::showBars() const
+{
+    return d->type & KPlotObject::BARS;
+}
+
+void KPlotObject::setShowPoints( bool b )
+{
+    if ( b )
+    {
+        d->type = d->type | KPlotObject::POINTS;
+    }
+    else
+    {
+        d->type = d->type & ~KPlotObject::POINTS;
+    }
+}
+
+void KPlotObject::setShowLines( bool b )
+{
+    if ( b )
+    {
+        d->type = d->type | KPlotObject::LINES;
+    }
+    else
+    {
+        d->type = d->type & ~KPlotObject::LINES;
+    }
+}
+
+void KPlotObject::setShowBars( bool b )
+{
+    if ( b )
+    {
+        d->type = d->type | KPlotObject::BARS;
+    }
+    else
+    {
+        d->type = d->type & ~KPlotObject::BARS;
+    }
+}
+
+double KPlotObject::size() const
+{
+    return d->size;
+}
+
+void KPlotObject::setSize( double s )
+{
+    d->size = s;
+}
+
+unsigned int KPlotObject::pointStyle() const
+{
+    return d->pointStyle;
+}
+
+void KPlotObject::setPointStyle( PStyle p )
+{
+    d->pointStyle = p;
+}
+
+const QPen& KPlotObject::pen() const
+{
+    return d->pen;
+}
+
+void KPlotObject::setPen( const QPen &p )
+{
+    d->pen = p;
+}
+
+const QPen& KPlotObject::linePen() const
+{
+    return d->linePen;
+}
+
+void KPlotObject::setLinePen( const QPen &p )
+{
+    d->linePen = p;
+}
+
+const QPen& KPlotObject::barPen() const
+{
+    return d->barPen;
+}
+
+void KPlotObject::setBarPen( const QPen &p )
+{
+    d->barPen = p;
+}
+
+const QPen& KPlotObject::labelPen() const
+{
+    return d->labelPen;
+}
+
+void KPlotObject::setLabelPen( const QPen &p )
+{
+    d->labelPen = p;
+}
+
+const QBrush KPlotObject::brush() const
+{
+    return d->brush;
+}
+
+void KPlotObject::setBrush( const QBrush &b )
+{
+    d->brush = b;
+}
+
+const QBrush KPlotObject::barBrush() const
+{
+    return d->barBrush;
+}
+
+void KPlotObject::setBarBrush( const QBrush &b )
+{
+    d->barBrush = b;
+}
+
+QList< KPlotPoint* > KPlotObject::points() const
+{
+    return d->pList;
+}
+
+void KPlotObject::addPoint( const QPointF &p, const QString &label, double barWidth )
+{
+    Q_UNUSED( barWidth )
+    addPoint( new KPlotPoint( p.x(), p.y(), label ) );
+}
+
+void KPlotObject::addPoint( KPlotPoint *p )
+{
+    if ( !p )
+        return;
+    d->pList.append( p );
+}
+
+void KPlotObject::addPoint( double x, double y, const QString &label, double barWidth )
+{
+    Q_UNUSED( barWidth )
+    addPoint( new KPlotPoint( x, y, label ) );
 }
 
 void KPlotObject::removePoint( int index ) {
-	if ( ( index < 0 ) || ( index >= pList.count() ) ) {
+	if ( ( index < 0 ) || ( index >= d->pList.count() ) ) {
 		kWarning() << "KPlotObject::removePoint(): index " << index << " out of range!" << endl;
 		return;
 	}
 
-	pList.removeAt( index );
+	d->pList.removeAt( index );
 }
 
-void KPlotObject::clearPoints() {
-	qDeleteAll( pList );
-	pList.clear();
+KPlotPoint* KPlotObject::point( int index )
+{
+    return d->pList[index];
+}
+
+int KPlotObject::count() const
+{
+    return d->pList.count();
+}
+
+void KPlotObject::clearPoints()
+{
+    qDeleteAll( d->pList );
+    d->pList.clear();
 }
 
 void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
@@ -88,18 +291,18 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 		painter->setPen( barPen() );
 		painter->setBrush( barBrush() );
 
-		for ( int i=0; i<pList.size(); ++i ) {
+		for ( int i=0; i<d->pList.size(); ++i ) {
 			double w = 0;
-			if ( pList[i]->barWidth() == 0.0 ) {
-				if ( i<pList.size()-1 ) 
-					w = pList[i+1]->x() - pList[i]->x();
+			if ( d->pList[i]->barWidth() == 0.0 ) {
+				if ( i<d->pList.size()-1 ) 
+					w = d->pList[i+1]->x() - d->pList[i]->x();
 				//For the last bin, we'll just keep the previous width
 
 			} else {
-				w = pList[i]->barWidth();
+				w = d->pList[i]->barWidth();
 			}
 
-			QPointF pp = pList[i]->position();
+			QPointF pp = d->pList[i]->position();
 			QPointF p1( pp.x() - 0.5*w, 0.0 );
 			QPointF p2( pp.x() + 0.5*w, pp.y() );
 			QPointF sp1 = pw->toScreen( p1 );
@@ -117,7 +320,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 
 		QPointF Previous = QPointF();  //Initialize to null
 
-		foreach ( KPlotPoint *pp, pList ) {
+		foreach ( KPlotPoint *pp, d->pList ) {
 			//q is the position of the point in screen pixel coordinates
 			QPointF q = pw->toScreen( pp->position() );
 
@@ -133,7 +336,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	//Draw points:
 	if ( showPoints() ) {
 
-		foreach( KPlotPoint *pp, pList ) {
+		foreach( KPlotPoint *pp, d->pList ) {
 			//q is the position of the point in screen pixel coordinates
 			QPointF q = pw->toScreen( pp->position() );
 			if ( pw->pixRect().contains( q.toPoint(), false ) ) {
@@ -231,7 +434,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 	//Draw labels
 	painter->setPen( labelPen() );
 
-	foreach ( KPlotPoint *pp, pList ) {
+	foreach ( KPlotPoint *pp, d->pList ) {
 		QPoint q = pw->toScreen( pp->position() ).toPoint();
 		if ( pw->pixRect().contains(q, false) && ! pp->label().isEmpty() ) {
 			pw->placeLabel( painter, pp );
