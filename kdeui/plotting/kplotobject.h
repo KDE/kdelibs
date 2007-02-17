@@ -44,7 +44,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	/** 
 	 *Default constructor.
 	 */
-	KPlotPoint();
+        explicit KPlotPoint();
 	/**
 	 * Constructor.  Sets the KPlotPoint according to the given arguments
 	 * @param x the X-position for the point, in Data units
@@ -54,7 +54,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param width the BarWidth to use for this point (only used for 
 	 * plots of type KPlotObject::BARS)
 	 */
-	KPlotPoint( double x, double y, const QString &label="", double width=0.0 );
+        KPlotPoint( double x, double y, const QString &label = QString(), double width = 0.0 );
 	/**
 	 * Constructor.  Sets the KPlotPoint according to the given arguments
 	 * @param p the position for the point, in Data units
@@ -63,7 +63,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param width the BarWidth to use for this point (only used for 
 	 * plots of type KPlotObject::BARS)
 	 */
-	KPlotPoint( const QPointF &p, const QString &label="", double width=0.0 );
+        explicit KPlotPoint( const QPointF &p, const QString &label = QString(), double width = 0.0 );
 	/**
 	 * Destructor
 	 */
@@ -72,51 +72,52 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	/**
 	 * @return the position of the point, in data units
 	 */
-	QPointF position() const { return QPointF( X, Y ); }
+        QPointF position() const;
 	/**
 	 * Set the position of the point, in data units
 	 * @param pos the new position for the point.
 	 */
-	void setPosition( const QPointF &pos ) { X = pos.x(); Y = pos.y(); }
+        void setPosition( const QPointF &pos );
 	/**
 	 * @return the X-position of the point, in data units
 	 */
-	double x() const { return X; }
+        double x() const;
 	/**
 	 * Set the X-position of the point, in Data units
 	 */
-	void setX( double x ) { X = x; }
+        void setX( double x );
 	/**
 	 * @return the Y-position of the point, in data units
 	 */
-	double y() const { return Y; }
+        double y() const;
 	/**
 	 * Set the Y-position of the point, in Data units
 	 */
-	void setY( double y ) { Y = y; }
+        void setY( double y );
 
 	/**
 	 * @return the label for the point
 	 */
-	const QString& label() const { return Label; }
+        QString label() const;
 	/**
 	 * Set the label for the point
 	 */
-	void setLabel( const QString &label ) { Label = label; }
+        void setLabel( const QString &label );
 
 	/**
 	 * @return the bar-width for the point
 	 */
-	double barWidth() const { return BarWidth; }
+        double barWidth() const;
 	/**
 	 * Set the bar-width for the point
 	 */
-	void setBarWidth( double w ) { BarWidth = w; }
+        void setBarWidth( double w );
 
  private:
-	double X, Y;
-	QString Label;
-  double BarWidth;
+        class Private;
+        Private * const d;
+
+        Q_DISABLE_COPY( KPlotPoint )
 };
 
 /**

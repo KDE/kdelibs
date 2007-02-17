@@ -23,6 +23,22 @@
 #include "kplotobject.h"
 #include "kplotwidget.h"
 
+class KPlotPoint::Private
+{
+    public:
+        Private( KPlotPoint * qq, const QPointF &p, const QString &l, double bw )
+            : q( qq ), point( p ), label( l ), barWidth( bw )
+        {
+        }
+
+        KPlotPoint *q;
+
+        QPointF point;
+        QString label;
+        double barWidth;
+};
+
+
 class KPlotObject::Private
 {
     public:
@@ -48,23 +64,75 @@ class KPlotObject::Private
 
 
 KPlotPoint::KPlotPoint()
- : X(0), Y(0), Label(QString()), BarWidth(0.0)
+    : d( new Private( this, QPointF(), QString(), 0.0 ) )
 {
 }
 
-KPlotPoint::KPlotPoint( double x, double y, const QString &label, double barWidth ) 
-	: X( x ), Y( y ), Label( label ), BarWidth( barWidth )
+KPlotPoint::KPlotPoint( double x, double y, const QString &label, double barWidth )
+    : d( new Private( this, QPointF( x, y ), label, barWidth ) )
 {
 }
 
 KPlotPoint::KPlotPoint( const QPointF &p, const QString &label, double barWidth )
-	:	X( p.x() ), Y( p.y() ), Label( label ), BarWidth( barWidth )
+    : d( new Private( this, p, label, barWidth ) )
 {
 }
 
-KPlotPoint::~KPlotPoint() 
+KPlotPoint::~KPlotPoint()
 {
+    delete d;
 }
+
+QPointF KPlotPoint::position() const
+{
+    return d->point;
+}
+
+void KPlotPoint::setPosition( const QPointF &pos )
+{
+    d->point = pos;
+}
+
+double KPlotPoint::x() const
+{
+    return d->point.x();
+}
+
+void KPlotPoint::setX( double x )
+{
+    d->point.setX( x );
+}
+
+double KPlotPoint::y() const
+{
+    return d->point.y();
+}
+
+void KPlotPoint::setY( double y )
+{
+    d->point.setY( y );
+}
+
+QString KPlotPoint::label() const
+{
+    return d->label;
+}
+
+void KPlotPoint::setLabel( const QString &label )
+{
+    d->label = label;
+}
+
+double KPlotPoint::barWidth() const
+{
+    return d->barWidth;
+}
+
+void KPlotPoint::setBarWidth( double w )
+{
+    d->barWidth = w;
+}
+
 
 KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PointStyle ps )
     : d( new Private( this ) )
