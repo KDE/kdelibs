@@ -357,7 +357,7 @@ public:
          */
         const KPlotAxis* axis( Axis type ) const;
 
-	inline QRect& pixRect() { return PixRect; }
+        QRect pixRect() const;
 
 public slots:
 	/**
@@ -412,11 +412,6 @@ protected:
 	 * @param p The screen position from which to check for plot points.
 	 */
 	QList<KPlotPoint*> pointsUnderPoint( const QPoint& p ) const;
-
-	/**
-	 * Limits of the plot area in pixel units
-	 */
-	QRect PixRect;
 };
 
 #endif

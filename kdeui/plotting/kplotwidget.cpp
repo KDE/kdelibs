@@ -88,6 +88,8 @@ class KPlotWidget::Private
         QList<KPlotObject*> objectList;
         // Limits of the plot area in data units
         QRectF dataRect, secondDataRect;
+        // Limits of the plot area in pixel units
+        QRect pixRect;
         // Grid of bools to mask "used" regions of the plot
         float plotMask[100][100];
         double px[100], py[100];
@@ -329,6 +331,11 @@ const KPlotAxis* KPlotWidget::axis( Axis type ) const
     return it != d->axes.end() ? it.value() : 0;
 }
 
+QRect KPlotWidget::pixRect() const
+{
+    return d->pixRect;
+}
+
 QList<KPlotPoint*> KPlotWidget::pointsUnderPoint( const QPoint& p ) const {
 	QList<KPlotPoint*> pts;
 	foreach ( KPlotObject *po, d->objectList ) {
@@ -367,27 +374,28 @@ void KPlotWidget::setPixRect() {
 	int newWidth = contentsRect().width() - leftPadding() - rightPadding();
 	int newHeight = contentsRect().height() - topPadding() - bottomPadding();
 	// PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
-	PixRect = QRect( 0, 0, newWidth, newHeight );
+	d->pixRect = QRect( 0, 0, newWidth, newHeight );
 	for ( int i=0; i<100; ++i ) {
-		d->px[i] = double(i*PixRect.width())/100.0 + double(PixRect.x());
-		d->py[i] = double(i*PixRect.height())/100.0 + double(PixRect.y());
+		d->px[i] = double(i*d->pixRect.width())/100.0 + double(d->pixRect.x());
+		d->py[i] = double(i*d->pixRect.height())/100.0 + double(d->pixRect.y());
 	}
 }
 
-QPointF KPlotWidget::toScreen( const QPointF& p ) const {
-	float px = PixRect.left() + PixRect.width()*( p.x() -  d->dataRect.x() )/d->dataRect.width();
-	float py = PixRect.top() + PixRect.height()*( d->dataRect.y() + d->dataRect.height() - p.y() )/d->dataRect.height();
-	return QPointF( px, py );
+QPointF KPlotWidget::toScreen( const QPointF& p ) const
+{
+    float px = d->pixRect.left() + d->pixRect.width() * ( p.x() - d->dataRect.x() ) / d->dataRect.width();
+    float py = d->pixRect.top() + d->pixRect.height() * ( d->dataRect.y() + d->dataRect.height() - p.y() ) / d->dataRect.height();
+    return QPointF( px, py );
 }
 
 void KPlotWidget::maskRect( const QRectF& r, float value ) {
 	//Loop over Mask grid points that are near the target rectangle.
-	int ix1 = int( 100.0*(r.x() - PixRect.x())/PixRect.width() );
-	int iy1 = int( 100.0*(r.y() - PixRect.y())/PixRect.height() );
+	int ix1 = int( 100.0*(r.x() - d->pixRect.x())/d->pixRect.width() );
+	int iy1 = int( 100.0*(r.y() - d->pixRect.y())/d->pixRect.height() );
 	if ( ix1 < 0 ) ix1 = 0;
 	if ( iy1 < 0 ) iy1 = 0;
-	int ix2 = int( 100.0*(r.right() - PixRect.x())/PixRect.width() ) + 2;
-	int iy2 = int( 100.0*(r.bottom() - PixRect.y())/PixRect.height() ) + 2;
+	int ix2 = int( 100.0*(r.right() - d->pixRect.x())/d->pixRect.width() ) + 2;
+	int iy2 = int( 100.0*(r.bottom() - d->pixRect.y())/d->pixRect.height() ) + 2;
 	if ( ix1 > 99 ) ix1 = 99;
 	if ( iy1 > 99 ) iy1 = 99;
 
@@ -411,8 +419,8 @@ void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float val
 	}
 	for ( double x=x1; x<x2; x+=0.01*(x2-x1) ) {
 		double y = y0 + m*x;
-		int ix = int( 100.0*( x - PixRect.x() )/PixRect.width() );
-		int iy = int( 100.0*( y - PixRect.y() )/PixRect.height() );
+		int ix = int( 100.0*( x - d->pixRect.x() )/d->pixRect.width() );
+		int iy = int( 100.0*( y - d->pixRect.y() )/d->pixRect.height() );
 
 		if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 )
   		d->plotMask[ix][iy] += value;
@@ -427,8 +435,8 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 	float bestCost = 1.0e7;
 	QPointF pos = toScreen( pp->position() );
 	QRectF bestRect;
-	int ix0 = int( 100.0*( pos.x() - PixRect.x() )/PixRect.width() );
-	int iy0 = int( 100.0*( pos.y() - PixRect.y() )/PixRect.height() );
+	int ix0 = int( 100.0*( pos.x() - d->pixRect.x() )/d->pixRect.width() );
+	int iy0 = int( 100.0*( pos.y() - d->pixRect.y() )/d->pixRect.height() );
 
 	for ( int ix=ix0-20; ix<ix0+20; ix++ ) {
 		for ( int iy=iy0-20; iy<iy0+20; iy++ ) {
@@ -485,10 +493,10 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 
 float KPlotWidget::Private::rectCost( const QRectF &r ) const
 {
-    int ix1 = int( 100.0 * ( r.x() - q->PixRect.x() ) / q->PixRect.width() );
-    int ix2 = int( 100.0 * ( r.right() - q->PixRect.x() ) / q->PixRect.width() );
-    int iy1 = int( 100.0 * ( r.y() - q->PixRect.y() ) / q->PixRect.height() );
-    int iy2 = int( 100.0 * ( r.bottom() - q->PixRect.y() ) / q->PixRect.height() );
+    int ix1 = int( 100.0 * ( r.x() - pixRect.x() ) / pixRect.width() );
+    int ix2 = int( 100.0 * ( r.right() - pixRect.x() ) / pixRect.width() );
+    int iy1 = int( 100.0 * ( r.y() - pixRect.y() ) / pixRect.height() );
+    int iy2 = int( 100.0 * ( r.bottom() - pixRect.y() ) / pixRect.height() );
 	float cost = 0.0;
 
 	for ( int ix=ix1; ix<ix2; ++ix ) {
@@ -515,7 +523,7 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 	p.translate( leftPadding(), topPadding() );
 
 	setPixRect();
-	p.setClipRect( PixRect );
+	p.setClipRect( d->pixRect );
 	p.setClipping( true );
 
 	resetPlotMask();
@@ -530,8 +538,8 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
 	for ( int ix=0; ix<100; ++ix ) {
 		for ( int iy=0; iy<100; ++iy ) {
 			if ( PlotMask[ix][iy] > 0.0 ) {
-				double x = PixRect.x() + double(ix*PixRect.width())/100.;
-				double y = PixRect.y() + double(iy*PixRect.height())/100.;
+				double x = d->pixRect.x() + double(ix*d->pixRect.width())/100.;
+				double y = d->pixRect.y() + double(iy*d->pixRect.height())/100.;
 
 				p.drawRect( QRectF(x-1, y-1, 2, 2 ) );
 			}
@@ -552,13 +560,13 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 		//Grid lines are placed at locations of primary axes' major tickmarks
 		//vertical grid lines
 		foreach ( double xx, axis(BottomAxis)->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
-			p->drawLine( QPointF( px, 0.0 ), QPointF( px, double(PixRect.height()) ) );
+			double px = d->pixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
+			p->drawLine( QPointF( px, 0.0 ), QPointF( px, double(d->pixRect.height()) ) );
 		}
 		//horizontal grid lines
 		foreach( double yy, axis(LeftAxis)->majorTickMarks() ) {
-			double py = PixRect.height() * (yy - d->dataRect.y()) / d->dataRect.height();
-			p->drawLine( QPointF( 0.0, py ), QPointF( double(PixRect.width()), py ) );
+			double py = d->pixRect.height() * (yy - d->dataRect.y()) / d->dataRect.height();
+			p->drawLine( QPointF( 0.0, py ), QPointF( double(d->pixRect.width()), py ) );
 		}
 	}
 
@@ -575,18 +583,18 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	KPlotAxis *a = axis(BottomAxis);
 	if (a->isVisible()) {
 		//Draw axis line
-		p->drawLine( 0, PixRect.height(), PixRect.width(), PixRect.height() );
+		p->drawLine( 0, d->pixRect.height(), d->pixRect.width(), d->pixRect.height() );
 
 		// Draw major tickmarks
 		foreach( double xx, a->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
-			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
-						QPointF( px, double(PixRect.height() - BIGTICKSIZE - TICKOFFSET)) );
+			double px = d->pixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
+			if ( px > 0 && px < d->pixRect.width() ) {
+				p->drawLine( QPointF( px, double(d->pixRect.height() - TICKOFFSET)), 
+						QPointF( px, double(d->pixRect.height() - BIGTICKSIZE - TICKOFFSET)) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
-					QRect r( int(px) - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
+					QRect r( int(px) - BIGTICKSIZE, d->pixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 					p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, a->tickLabel( xx ) );
 				}
 			}
@@ -594,16 +602,16 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double xx, a->minorTickMarks() ) {
-			double px = PixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
-			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( QPointF( px, double(PixRect.height() - TICKOFFSET)), 
-						QPointF( px, double(PixRect.height() - SMALLTICKSIZE -TICKOFFSET)) );
+			double px = d->pixRect.width() * (xx - d->dataRect.x()) / d->dataRect.width();
+			if ( px > 0 && px < d->pixRect.width() ) {
+				p->drawLine( QPointF( px, double(d->pixRect.height() - TICKOFFSET)), 
+						QPointF( px, double(d->pixRect.height() - SMALLTICKSIZE -TICKOFFSET)) );
 			}
 		}
 
 		// Draw BottomAxis Label
 		if ( ! a->label().isEmpty() ) {
-			QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
+			QRect r( 0, d->pixRect.height() + 2*YPADDING, d->pixRect.width(), YPADDING );
 			p->drawText( r, Qt::AlignCenter, a->label() );
 		}
 	}  //End of BottomAxis
@@ -612,12 +620,12 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	a = axis(LeftAxis);
 	if (a->isVisible()) {
 		//Draw axis line
-		p->drawLine( 0, 0, 0, PixRect.height() );
+		p->drawLine( 0, 0, 0, d->pixRect.height() );
 
 		// Draw major tickmarks
 		foreach( double yy, a->majorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
-			if ( py > 0 && py < PixRect.height() ) {
+			double py = d->pixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
+			if ( py > 0 && py < d->pixRect.height() ) {
 				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
@@ -630,8 +638,8 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double yy, a->minorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
-			if ( py > 0 && py < PixRect.height() ) {
+			double py = d->pixRect.height() * ( 1.0 - (yy - d->dataRect.y()) / d->dataRect.height() );
+			if ( py > 0 && py < d->pixRect.height() ) {
 				p->drawLine( QPointF( TICKOFFSET, py ), QPointF( double(TICKOFFSET + SMALLTICKSIZE), py ) );
 			}
 		}
@@ -642,10 +650,10 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 			p->save();
 	
 			//translate coord sys to left corner of axis label rectangle, then rotate 90 degrees.
-			p->translate( -3*XPADDING, PixRect.height() );
+			p->translate( -3*XPADDING, d->pixRect.height() );
 			p->rotate( -90.0 );
 	
-			QRect r( 0, 0, PixRect.height(), XPADDING );
+			QRect r( 0, 0, d->pixRect.height(), XPADDING );
 			p->drawText( r, Qt::AlignCenter, a->label() ); //draw the label, now that we are sideways
 	
 			p->restore();  //restore translation/rotation state
@@ -668,12 +676,12 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	a = axis(TopAxis);
 	if (a->isVisible()) {
 		//Draw axis line
-		p->drawLine( 0, 0, PixRect.width(), 0 );
+		p->drawLine( 0, 0, d->pixRect.width(), 0 );
 
 		// Draw major tickmarks
 		foreach( double xx, a->majorTickMarks() ) {
-			double px = PixRect.width() * (xx - x0) / dw;
-			if ( px > 0 && px < PixRect.width() ) {
+			double px = d->pixRect.width() * (xx - x0) / dw;
+			if ( px > 0 && px < d->pixRect.width() ) {
 				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(BIGTICKSIZE + TICKOFFSET)) );
 
 				//Draw ticklabel
@@ -686,15 +694,15 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double xx, a->minorTickMarks() ) {
-			double px = PixRect.width() * (xx - x0) / dw;
-			if ( px > 0 && px < PixRect.width() ) {
+			double px = d->pixRect.width() * (xx - x0) / dw;
+			if ( px > 0 && px < d->pixRect.width() ) {
 				p->drawLine( QPointF( px, TICKOFFSET ), QPointF( px, double(SMALLTICKSIZE + TICKOFFSET)) );
 			}
 		}
 
 		// Draw TopAxis Label
 		if ( ! a->label().isEmpty() ) {
-			QRect r( 0, 0 - 3*YPADDING, PixRect.width(), YPADDING );
+			QRect r( 0, 0 - 3*YPADDING, d->pixRect.width(), YPADDING );
 			p->drawText( r, Qt::AlignCenter, a->label() );
 		}
 	}  //End of TopAxis
@@ -703,18 +711,18 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 	a = axis(RightAxis);
 	if (a->isVisible()) {
 		//Draw axis line
-		p->drawLine( PixRect.width(), 0, PixRect.width(), PixRect.height() );
+		p->drawLine( d->pixRect.width(), 0, d->pixRect.width(), d->pixRect.height() );
 
 		// Draw major tickmarks
 		foreach( double yy, a->majorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y0) / dh );
-			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( double(PixRect.width() - TICKOFFSET), py ), 
-						QPointF( double(PixRect.width() - TICKOFFSET - BIGTICKSIZE), py ) );
+			double py = d->pixRect.height() * ( 1.0 - (yy - y0) / dh );
+			if ( py > 0 && py < d->pixRect.height() ) {
+				p->drawLine( QPointF( double(d->pixRect.width() - TICKOFFSET), py ), 
+						QPointF( double(d->pixRect.width() - TICKOFFSET - BIGTICKSIZE), py ) );
 
 				//Draw ticklabel
 				if ( a->showTickLabels() ) {
-					QRect r( PixRect.width() + SMALLTICKSIZE, int(py)-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
+					QRect r( d->pixRect.width() + SMALLTICKSIZE, int(py)-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
 					p->drawText( r, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, a->tickLabel( yy ) );
 				}
 			}
@@ -722,10 +730,10 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 
 		// Draw minor tickmarks
 		foreach ( double yy, a->minorTickMarks() ) {
-			double py = PixRect.height() * ( 1.0 - (yy - y0) / dh );
-			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( QPointF( double(PixRect.width() - 0.0), py ), 
-						QPointF( double(PixRect.width() - 0.0 - SMALLTICKSIZE), py ) );
+			double py = d->pixRect.height() * ( 1.0 - (yy - y0) / dh );
+			if ( py > 0 && py < d->pixRect.height() ) {
+				p->drawLine( QPointF( double(d->pixRect.width() - 0.0), py ), 
+						QPointF( double(d->pixRect.width() - 0.0 - SMALLTICKSIZE), py ) );
 			}
 		}
 
@@ -735,10 +743,10 @@ void KPlotWidget::drawAxes( QPainter *p ) {
 			p->save();
 	
 			//translate coord sys to left corner of axis label rectangle, then rotate 90 degrees.
-			p->translate( PixRect.width() + 2*XPADDING, PixRect.height() );
+			p->translate( d->pixRect.width() + 2*XPADDING, d->pixRect.height() );
 			p->rotate( -90.0 );
 	
-			QRect r( 0, 0, PixRect.height(), XPADDING );
+			QRect r( 0, 0, d->pixRect.height(), XPADDING );
 			p->drawText( r, Qt::AlignCenter, a->label() ); //draw the label, now that we are sideways
 	
 			p->restore();  //restore translation/rotation state
