@@ -366,7 +366,7 @@ public:
 
         QRect pixRect() const;
 
-public slots:
+    public Q_SLOTS:
 	/**
 	 * Toggle whether grid lines are drawn at major tickmarks.
 	 * @param show if true, grid lines will be drawn.
