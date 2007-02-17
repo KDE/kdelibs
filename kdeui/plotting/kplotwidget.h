@@ -119,7 +119,7 @@ public:
 	 * @param y1 the minimum Y value in data units
 	 * @param y2 the maximum Y value in data units
 	 */
-	virtual void setLimits( double x1, double x2, double y1, double y2 );
+        void setLimits( double x1, double x2, double y1, double y2 );
 
 	/**
 	 * Reset the secondary data limits, which control the top and right axes.
@@ -132,14 +132,14 @@ public:
 	 * @param y2 the maximum Y value in secondary data units
 	 * @sa setLimits()
 	 */
-	virtual void setSecondaryLimits( double x1, double x2, double y1, double y2 );
+        void setSecondaryLimits( double x1, double x2, double y1, double y2 );
 
 	/**
 	 * Unset the secondary limits, so the top and right axes 
 	 * show the same tickmarks as the bottom and left axes (no tickmark
 	 * labels will be drawn for the top and right axes in this case)
 	 */
-	virtual void clearSecondaryLimits();
+        void clearSecondaryLimits();
 
         /**
          * Return the rect in natural limits representing the shown data.
