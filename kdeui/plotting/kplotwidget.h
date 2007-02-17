@@ -372,10 +372,6 @@ public slots:
          */
         void setObjectToolTipShown( bool show );
 
-    private:
-        class Private;
-        Private * const d;
-
 protected:
 	/**
 	 * Generic event handler.
@@ -412,6 +408,12 @@ protected:
 	 * @param p The screen position from which to check for plot points.
 	 */
 	QList<KPlotPoint*> pointsUnderPoint( const QPoint& p ) const;
+
+    private:
+        class Private;
+        Private * const d;
+
+        Q_DISABLE_COPY( KPlotWidget )
 };
 
 #endif
