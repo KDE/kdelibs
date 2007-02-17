@@ -51,7 +51,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param y the Y-position for the point, in Data units
 	 * @param label the label string for the point.  If the string 
 	 * is defined, the point will be labeled in the plot.
-	 * @param width the BarWidth to use for this point (only used for 
+	 * @param width the bar width to use for this point (only used for
 	 * plots of type KPlotObject::Bars)
 	 */
         KPlotPoint( double x, double y, const QString &label = QString(), double width = 0.0 );
@@ -60,7 +60,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param p the position for the point, in Data units
 	 * @param label the label string for the point.  If the string 
 	 * is defined, the point will be labeled in the plot.
-	 * @param width the BarWidth to use for this point (only used for 
+	 * @param width the bar width to use for this point (only used for
 	 * plots of type KPlotObject::Bars)
 	 */
         explicit KPlotPoint( const QPointF &p, const QString &label = QString(), double width = 0.0 );
@@ -342,7 +342,7 @@ public:
 	 * Draw this KPlotObject on the given QPainter
 	 * @param p The QPainter to draw on
 	 * @param pw the KPlotWidget to draw on (this is needed 
-	 * for the KPlotWidget::toScreen() function)
+	 * for the KPlotWidget::mapToWidget() function)
 	 */
 	void draw( QPainter *p, KPlotWidget *pw );
 

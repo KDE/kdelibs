@@ -243,8 +243,14 @@ public:
          */
         bool isObjectToolTipShown() const;
 
+        /**
+         * @return whether the antialiasing is active
+         */
         bool antialiasing() const;
 
+        /**
+         * Toggle the antialiasing when drawing.
+         */
         void setAntialiasing( bool b );
 
 	/**
