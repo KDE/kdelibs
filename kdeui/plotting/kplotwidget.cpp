@@ -447,10 +447,16 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 	int ix0 = int( 100.0*( pos.x() - d->pixRect.x() )/d->pixRect.width() );
 	int iy0 = int( 100.0*( pos.y() - d->pixRect.y() )/d->pixRect.height() );
 
-	for ( int ix=ix0-20; ix<ix0+20; ix++ ) {
-		for ( int iy=iy0-20; iy<iy0+20; iy++ ) {
-			if ( ( ix >= 0 && ix < 100 ) && ( iy >= 0 && iy < 100 ) ) {
-				QRectF labelRect = painter->boundingRect( QRectF( d->px[ix], d->py[iy], 1, 1 ), textFlags, pp->label() );
+    QFontMetricsF fm( painter->font(), painter->device() );
+    int xmin = qMax( ix0 - 20, 0 );
+    int xmax = qMin( ix0 + 20, 100 );
+    int ymin = qMax( iy0 - 20, 0 );
+    int ymax = qMin( iy0 + 20, 100 );
+    for ( int ix = xmin; ix < xmax; ++ix )
+    {
+        for ( int iy = ymin; iy < ymax; ++iy )
+        {
+            QRectF labelRect = fm.boundingRect( QRectF( d->px[ix], d->py[iy], 1, 1 ), textFlags, pp->label() );
 				//Add some padding to labelRect
 				labelRect.adjust( -2, -2, 2, 2 );
 
@@ -462,9 +468,8 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 					bestCost = cost;
 					rbest = r;
 				}
-			}
-		}
-	}
+        }
+    }
 
 	if ( ! bestRect.isNull() ) {
 		painter->drawText( bestRect, textFlags, pp->label() );
