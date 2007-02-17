@@ -111,6 +111,7 @@ public:
 	 *@return suggested size for widget
 	 */
 	virtual QSize minimumSizeHint() const;
+        virtual QSize sizeHint() const;
 
 	/**
 	 * Set new data limits for the plot.

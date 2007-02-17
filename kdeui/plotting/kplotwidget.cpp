@@ -122,6 +122,11 @@ QSize KPlotWidget::minimumSizeHint() const
 	return QSize( 150, 150 );
 }
 
+QSize KPlotWidget::sizeHint() const
+{
+    return size();
+}
+
 void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 )
 {
     d->calcDataRectLimits( x1, x2, y1, y2 );
