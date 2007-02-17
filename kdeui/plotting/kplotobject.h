@@ -111,7 +111,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	/**
 	 * Set the bar-width for the point
 	 */
-	void stBarWidth( double w ) { BarWidth = w; }
+	void setBarWidth( double w ) { BarWidth = w; }
 
  private:
 	double X, Y;
