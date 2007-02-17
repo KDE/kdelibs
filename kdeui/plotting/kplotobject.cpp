@@ -40,7 +40,7 @@ class KPlotObject::Private
 
         QList<KPlotPoint*> pList;
         int type;
-        PStyle pointStyle;
+        PointStyle pointStyle;
         double size;
         QPen pen, linePen, barPen, labelPen;
         QBrush brush, barBrush;
@@ -66,7 +66,7 @@ KPlotPoint::~KPlotPoint()
 {
 }
 
-KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PStyle ps )
+KPlotObject::KPlotObject( const QColor &c, PlotType t, double size, PointStyle ps )
     : d( new Private( this ) )
 {
 	//By default, all pens and brushes are set to the given color
@@ -105,28 +105,28 @@ void KPlotObject::setLabel( int i, const QString &n )
 
 bool KPlotObject::showPoints() const
 {
-    return d->type & KPlotObject::POINTS;
+    return d->type & KPlotObject::Points;
 }
 
 bool KPlotObject::showLines() const
 {
-    return d->type & KPlotObject::LINES;
+    return d->type & KPlotObject::Lines;
 }
 
 bool KPlotObject::showBars() const
 {
-    return d->type & KPlotObject::BARS;
+    return d->type & KPlotObject::Bars;
 }
 
 void KPlotObject::setShowPoints( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::POINTS;
+        d->type = d->type | KPlotObject::Points;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::POINTS;
+        d->type = d->type & ~KPlotObject::Points;
     }
 }
 
@@ -134,11 +134,11 @@ void KPlotObject::setShowLines( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::LINES;
+        d->type = d->type | KPlotObject::Lines;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::LINES;
+        d->type = d->type & ~KPlotObject::Lines;
     }
 }
 
@@ -146,11 +146,11 @@ void KPlotObject::setShowBars( bool b )
 {
     if ( b )
     {
-        d->type = d->type | KPlotObject::BARS;
+        d->type = d->type | KPlotObject::Bars;
     }
     else
     {
-        d->type = d->type & ~KPlotObject::BARS;
+        d->type = d->type & ~KPlotObject::Bars;
     }
 }
 
@@ -164,12 +164,12 @@ void KPlotObject::setSize( double s )
     d->size = s;
 }
 
-unsigned int KPlotObject::pointStyle() const
+KPlotObject::PointStyle KPlotObject::pointStyle() const
 {
     return d->pointStyle;
 }
 
-void KPlotObject::setPointStyle( PStyle p )
+void KPlotObject::setPointStyle( PointStyle p )
 {
     d->pointStyle = p;
 }
@@ -267,16 +267,6 @@ void KPlotObject::removePoint( int index ) {
 	d->pList.removeAt( index );
 }
 
-KPlotPoint* KPlotObject::point( int index )
-{
-    return d->pList[index];
-}
-
-int KPlotObject::count() const
-{
-    return d->pList.count();
-}
-
 void KPlotObject::clearPoints()
 {
     qDeleteAll( d->pList );
@@ -351,15 +341,15 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 				painter->setBrush( brush() );
 	
 				switch ( pointStyle() ) {
-				case CIRCLE:
+				case Circle:
 					painter->drawEllipse( qr );
 					break;
 	
-				case LETTER:
+				case Letter:
 					painter->drawText( qr, Qt::AlignCenter, pp->label().left(1) );
 					break;
 	
-				case TRIANGLE:
+				case Triangle:
 					{
 						QPolygonF tri;
 						tri << QPointF( q.x() - size(), q.y() + size() ) 
@@ -369,11 +359,11 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 						break;
 					}
 	
-				case SQUARE:
+				case Square:
 					painter->drawRect( qr );
 					break;
 	
-				case PENTAGON:
+				case Pentagon:
 					{
 						QPolygonF pent;
 						pent << QPointF( q.x(), q.y() - size() ) 
@@ -385,7 +375,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 						break;
 					}
 	
-				case HEXAGON:
+				case Hexagon:
 					{
 						QPolygonF hex;
 						hex << QPointF( q.x(), q.y() + size() ) 
@@ -398,7 +388,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 						break;
 					}
 	
-				case ASTERISK:
+				case Asterisk:
 					painter->drawLine( q, QPointF( q.x(), q.y() + size() ) );
 					painter->drawLine( q, QPointF( q.x() + size(), q.y() + 0.5*size() ) );
 					painter->drawLine( q, QPointF( q.x() + size(), q.y() - 0.5*size() ) );
@@ -407,7 +397,7 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
 					painter->drawLine( q, QPointF( q.x() - size(), q.y() - 0.5*size() ) );
 					break;
 	
-				case STAR:
+				case Star:
 					{
 						QPolygonF star;
 						star << QPointF( q.x(), q.y() - size() ) 

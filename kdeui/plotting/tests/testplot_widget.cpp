@@ -58,8 +58,8 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -6.0, 11.0, -10.0, 110.0 );
 			
-			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 4, KPlotObject::ASTERISK );
-			po2 = new KPlotObject( Qt::green, KPlotObject::POINTS, 4, KPlotObject::TRIANGLE );
+			po1 = new KPlotObject( Qt::white, KPlotObject::Points, 4, KPlotObject::Asterisk );
+			po2 = new KPlotObject( Qt::green, KPlotObject::Points, 4, KPlotObject::Triangle );
 
 			for ( float x=-5.0; x<=10.0; x+=1.0 ) {
 				po1->addPoint( x, x*x );
@@ -81,8 +81,8 @@ void TestPlot::slotSelectPlot( int n ) {
 			plot->axis(KPlotWidget::BottomAxis)->setLabel("Angle [radians]");
 			plot->axis(KPlotWidget::TopAxis)->setLabel("Angle [degrees]");
 
-			po1 = new KPlotObject( Qt::red,  KPlotObject::LINES, 2 );
-			po2 = new KPlotObject( Qt::cyan, KPlotObject::LINES, 2 );
+			po1 = new KPlotObject( Qt::red,  KPlotObject::Lines, 2 );
+			po2 = new KPlotObject( Qt::cyan, KPlotObject::Lines, 2 );
 
 			for ( float t=0.0; t<=6.28; t+=0.04 ) {
 				po1->addPoint( t, sin(t) );
@@ -100,7 +100,7 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -7.0, 7.0, -5.0, 105.0 );
 
-			po1 = new KPlotObject( Qt::white, KPlotObject::BARS, 2 );
+			po1 = new KPlotObject( Qt::white, KPlotObject::Bars, 2 );
 			po1->setBarBrush( QBrush(Qt::green, Qt::Dense4Pattern) );
 
 			for ( float x=-6.5; x<=6.5; x+=0.5 ) {
@@ -117,7 +117,7 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -1.1, 1.1, -1.1, 1.1 );
 
-			po1 = new KPlotObject( Qt::yellow, KPlotObject::POINTS, 10, KPlotObject::STAR );
+			po1 = new KPlotObject( Qt::yellow, KPlotObject::Points, 10, KPlotObject::Star );
 			po1->setLabelPen( QPen(Qt::green) );
 
 			po1->addPoint(  0.0,  0.8, "North" );
@@ -139,7 +139,7 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -2.1, 2.1, -0.1, 4.1 );
 
-			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 10, KPlotObject::PENTAGON );
+			po1 = new KPlotObject( Qt::white, KPlotObject::Points, 10, KPlotObject::Pentagon );
 
 			po1->setShowLines( true );
 			po1->setShowBars( true );
@@ -166,7 +166,7 @@ void TestPlot::slotSelectPlot( int n ) {
 		{
 			plot->setLimits( -2.1, 2.1, -0.1, 4.1 );
 
-			po1 = new KPlotObject( Qt::white, KPlotObject::POINTS, 10, KPlotObject::PENTAGON );
+			po1 = new KPlotObject( Qt::white, KPlotObject::Points, 10, KPlotObject::Pentagon );
 
 			po1->setShowLines( true );
 			po1->setShowBars( true );

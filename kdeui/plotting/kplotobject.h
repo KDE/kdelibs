@@ -150,7 +150,13 @@ public:
 	 * These are bitmask values that can be OR'd together, so that a set 
 	 * of points can be represented in the plot in multiple ways.
 	 */
-	enum PlotType { POINTS=1, LINES=2, BARS=4, UNKNOWN_TYPE };
+        enum PlotType
+        {
+            UnknownType = 0,
+            Points = 1,
+            Lines = 2,
+            Bars = 4
+        };
 
 	/**
 	 * @enum PStyle
@@ -164,7 +170,19 @@ public:
 	 * @li ASTERISK
 	 * @li STAR
 	 */
-	enum PStyle { NOPOINTS=0, CIRCLE=1, LETTER=2, TRIANGLE=3, SQUARE=4, PENTAGON=5, HEXAGON=6, ASTERISK=7, STAR=8, UNKNOWN_POINT };
+        enum PointStyle
+        {
+            NoPoints = 0,
+            Circle = 1,
+            Letter = 2,
+            Triangle = 3,
+            Square = 4,
+            Pentagon = 5,
+            Hexagon = 6,
+            Asterisk = 7,
+            Star = 8,
+            UnknwonPoint
+        };
 
 	/**
 	 * Constructor. Create a KPlotObject according to the arguments.
@@ -175,7 +193,7 @@ public:
 	 * @param size the size to use for the drawn points, in pixels
 	 * @param ps The PStyle describing the shape for the drawn points
 	 */
-        explicit KPlotObject( const QColor &color = Qt::white, PlotType otype = POINTS, double size = 2, PStyle ps = CIRCLE );
+        explicit KPlotObject( const QColor &color = Qt::white, PlotType otype = Points, double size = 2, PointStyle ps = Circle );
 
 	/**
 	 * Destructor.
@@ -240,13 +258,13 @@ public:
 	/**
 	 * @return the KPlotObject's PointStyle value
 	 */
-        unsigned int pointStyle() const;
+        PointStyle pointStyle() const;
 
 	/**
 	 * Set the KPlotObject's type-specific Parameter
 	 * @param p the new parameter
 	 */
-        void setPointStyle( PStyle p );
+        void setPointStyle( PointStyle p );
 
 	/**
 	 * @return the default pen for this Object.
@@ -345,17 +363,6 @@ public:
 	 * @param index the index of the point to be removed.
 	 */
 	void removePoint( int index );
-
-	/**
-	 * @return a pointer to the KPlotPoint at the given position in the list
-	 * @param index the index of the point in the list
-	 */
-        KPlotPoint* point( int index );
-
-	/**
-	 * @return the number of QPoints currently in the list
-	 */
-        int count() const;
 
 	/**
 	 * Clear the Object's points list
