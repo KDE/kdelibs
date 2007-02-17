@@ -171,7 +171,7 @@ public:
    * On MS Windows, if @p item points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesful dialog displaying (can be false on win32).
+   * @return true on successful dialog displaying (can be false on win32).
    */
   static bool showDialog(KFileItem* item, QWidget* parent = 0,
                          bool modal = true);
@@ -182,7 +182,7 @@ public:
    * On MS Windows, if @p _url points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesful dialog displaying (can be false on win32).
+   * @return true on successful dialog displaying (can be false on win32).
    */
   static bool showDialog(const KUrl& _url, QWidget* parent = 0,
                          bool modal = true);
@@ -194,7 +194,7 @@ public:
    * to a local file, native (non modal) property dialog is displayed
    * (@p parent and @p modal are ignored in this case).
    *
-   * @return true on succesful dialog displaying (can be false on win32).
+   * @return true on successful dialog displaying (can be false on win32).
    */
   static bool showDialog(const KFileItemList& _items, QWidget* parent = 0,
                          bool modal = true);
