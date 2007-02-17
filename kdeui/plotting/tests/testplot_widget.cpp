@@ -18,7 +18,6 @@
 #include <math.h>
 #include <QComboBox>
 #include <QVBoxLayout>
-#include <klocale.h>
 #include <kdebug.h>
 
 #include "../kplotwidget.h"
@@ -31,12 +30,12 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 	vlay = new QVBoxLayout(w);
 
 	PlotSelector = new QComboBox( w );
-	PlotSelector->addItem( i18n("Points plot") );
-	PlotSelector->addItem( i18n("Lines plot") );
-	PlotSelector->addItem( i18n("Bars plot") );
-	PlotSelector->addItem( i18n("Points plot with labels") );
-	PlotSelector->addItem( i18n("Points, lines and bars") );
-	PlotSelector->addItem( i18n("Points, lines and bars with labels") );
+	PlotSelector->addItem( "Points plot" );
+	PlotSelector->addItem( "Lines plot" );
+	PlotSelector->addItem( "Bars plot" );
+	PlotSelector->addItem( "Points plot with labels" );
+	PlotSelector->addItem( "Points, lines and bars" );
+	PlotSelector->addItem( "Points, lines and bars with labels" );
 
 	plot = new KPlotWidget( w );
 	plot->setMinimumSize( 400,400 );
@@ -48,6 +47,7 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 
 	connect( PlotSelector, SIGNAL( activated( int ) ), this, SLOT( slotSelectPlot( int ) ) );
 
+	slotSelectPlot( PlotSelector->currentIndex() );
 }
 
 void TestPlot::slotSelectPlot( int n ) {
@@ -78,8 +78,8 @@ void TestPlot::slotSelectPlot( int n ) {
 			plot->setLimits( -0.1, 6.38, -1.1, 1.1 );
 			plot->setSecondaryLimits( -5.73, 365.55, -1.1, 1.1 );
 			plot->axis(KPlotWidget::TopAxis)->setShowTickLabels( true );
-			plot->axis(KPlotWidget::BottomAxis)->setLabel(i18n("Angle [radians]"));
-			plot->axis(KPlotWidget::TopAxis)->setLabel(i18n("Angle [degrees]"));
+			plot->axis(KPlotWidget::BottomAxis)->setLabel("Angle [radians]");
+			plot->axis(KPlotWidget::TopAxis)->setLabel("Angle [degrees]");
 
 			po1 = new KPlotObject( Qt::red,  KPlotObject::LINES, 2 );
 			po2 = new KPlotObject( Qt::cyan, KPlotObject::LINES, 2 );
@@ -120,14 +120,14 @@ void TestPlot::slotSelectPlot( int n ) {
 			po1 = new KPlotObject( Qt::yellow, KPlotObject::POINTS, 10, KPlotObject::STAR );
 			po1->setLabelPen( QPen(Qt::green) );
 
-			po1->addPoint(  0.0,  0.8, i18n("North") );
-			po1->addPoint(  0.57,  0.57, i18n("Northeast") );
-			po1->addPoint(  0.8,  0.0, i18n("East") );
-			po1->addPoint(  0.57, -0.57, i18n("Southeast") );
-			po1->addPoint(  0.0, -0.8, i18n("South") );
-			po1->addPoint( -0.57, -0.57, i18n("Southwest") );
-			po1->addPoint( -0.8,  0.0, i18n("West") );
-			po1->addPoint( -0.57,  0.57, i18n("Northwest") );
+			po1->addPoint(  0.0,  0.8, "North" );
+			po1->addPoint(  0.57,  0.57, "Northeast" );
+			po1->addPoint(  0.8,  0.0, "East" );
+			po1->addPoint(  0.57, -0.57, "Southeast" );
+			po1->addPoint(  0.0, -0.8, "South" );
+			po1->addPoint( -0.57, -0.57, "Southwest" );
+			po1->addPoint( -0.8,  0.0, "West" );
+			po1->addPoint( -0.57,  0.57, "Northwest" );
 
 			plot->addPlotObject( po1 );
 
