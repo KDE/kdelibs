@@ -684,6 +684,12 @@ bool ElementImpl::childTypeAllowed( unsigned short type )
     }
 }
 
+void ElementImpl::scrollIntoView(bool /*alignToTop*/)
+{
+    // ###
+    kdWarning() << "non-standard scrollIntoView() not implemented" << endl;
+}
+
 void ElementImpl::createDecl( )
 {
     m_styleDecls = new CSSStyleDeclarationImpl(0);

@@ -2334,9 +2334,10 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
   }
 
   if (id == HTMLElement::ElementScrollIntoView) {
-    // ### implement
-    kdWarning() << "non-standard HTMLElement::scrollIntoView() not implemented"
-		<< endl;
+    bool alignToTop = true;
+    if (args.size() > 0)
+      alignToTop = args[0].toBoolean(exec);
+    static_cast<HTMLElementImpl*>(element.handle())->scrollIntoView(alignToTop);
     return Undefined();
   }
 
