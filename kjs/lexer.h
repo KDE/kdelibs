@@ -129,6 +129,7 @@ namespace KJS {
   private:
 
     void record8(unsigned short c);
+    void record16(int c);
     void record16(UChar c);
 
     KJS::Identifier *makeIdentifier(UChar *buffer, unsigned int pos);
@@ -141,8 +142,8 @@ namespace KJS {
     int bol;     // begin of line
 #endif
 
-    // current and following unicode characters
-    unsigned short current, next1, next2, next3;
+    // current and following unicode characters (int to allow for -1 for end-of-file marker)
+    int current, next1, next2, next3;
 
     UString **strings;
     unsigned int numStrings;

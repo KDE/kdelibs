@@ -120,10 +120,10 @@ void Lexer::setCode(const UChar *c, unsigned int len)
 #endif
 
   // read first characters
-  current = (length > 0) ? code[0].uc : 0;
-  next1 = (length > 1) ? code[1].uc : 0;
-  next2 = (length > 2) ? code[2].uc : 0;
-  next3 = (length > 3) ? code[3].uc : 0;
+  current = (length > 0) ? code[0].uc : -1;
+  next1 = (length > 1) ? code[1].uc : -1;
+  next2 = (length > 2) ? code[2].uc : -1;
+  next3 = (length > 3) ? code[3].uc : -1;
 }
 
 void Lexer::shift(unsigned int p)
@@ -133,7 +133,7 @@ void Lexer::shift(unsigned int p)
     current = next1;
     next1 = next2;
     next2 = next3;
-    next3 = (pos + 3 < length) ? code[pos+3].uc : 0;
+    next3 = (pos + 3 < length) ? code[pos+3].uc : -1;
   }
 }
 
@@ -201,7 +201,7 @@ int Lexer::lex()
       } else if (current == '/' && next1 == '*') {
         shift(1);
         state = InMultiLineComment;
-      } else if (current == 0) {
+      } else if (current == -1) {
         if (!terminator && !delimited) {
           // automatic semicolon insertion if program incomplete
           token = ';';
@@ -258,7 +258,7 @@ int Lexer::lex()
       if (current == stringType) {
         shift(1);
         setDone(String);
-      } else if (current == 0 || isLineTerminator) {
+      } else if (current == -1 || isLineTerminator) {
         setDone(Bad);
       } else if (current == '\\') {
         state = InEscapeSequence;
@@ -333,12 +333,12 @@ int Lexer::lex()
           setDone(Other);
         } else
           state = Start;
-      } else if (current == 0) {
+      } else if (current == -1) {
         setDone(Eof);
       }
       break;
     case InMultiLineComment:
-      if (current == 0) {
+      if (current == -1) {
         setDone(Bad);
       } else if (isLineTerminator) {
         nextLine();
@@ -817,6 +817,13 @@ void Lexer::record8(unsigned short c)
   buffer8[pos8++] = (char) c;
 }
 
+void Lexer::record16(int c)
+{
+  assert(c >= 0);
+  //assert(c <= USHRT_MAX);
+  record16(UChar(static_cast<unsigned short>(c)));
+}
+
 void Lexer::record16(UChar c)
 {
   // enlarge buffer if full
@@ -838,7 +845,7 @@ bool Lexer::scanRegExp()
   bool inBrackets = false;
 
   while (1) {
-    if (current == '\r' || current == '\n' || current == 0)
+    if (current == '\r' || current == '\n' || current == -1)
       return false;
     else if (current != '/' || lastWasEscape == true || inBrackets == true)
     {
