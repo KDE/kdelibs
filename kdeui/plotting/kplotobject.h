@@ -34,16 +34,16 @@ class KPlotWidget;
  * @short Encapsulates a point in the plot.
  * A KPlotPoint consists of X and Y coordinates (in Data units),
  * an optional label string, and an optional bar-width,
- * The bar-width is only used for plots of type KPlotObject::BARS, 
+ * The bar-width is only used for plots of type KPlotObject::Bars,
  * and it allows the width of each bar to be set manually.  If 
  * bar-widths are omitted, then the widths will be set automatically, 
  * based on the halfway-mark between adjacent points.
  */
 class KDEEDUPLOT_EXPORT KPlotPoint {
  public:
-	/** 
-	 *Default constructor.
-	 */
+        /**
+         * Default constructor.
+         */
         explicit KPlotPoint();
 	/**
 	 * Constructor.  Sets the KPlotPoint according to the given arguments
@@ -52,7 +52,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param label the label string for the point.  If the string 
 	 * is defined, the point will be labeled in the plot.
 	 * @param width the BarWidth to use for this point (only used for 
-	 * plots of type KPlotObject::BARS)
+	 * plots of type KPlotObject::Bars)
 	 */
         KPlotPoint( double x, double y, const QString &label = QString(), double width = 0.0 );
 	/**
@@ -61,7 +61,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
 	 * @param label the label string for the point.  If the string 
 	 * is defined, the point will be labeled in the plot.
 	 * @param width the BarWidth to use for this point (only used for 
-	 * plots of type KPlotObject::BARS)
+	 * plots of type KPlotObject::Bars)
 	 */
         explicit KPlotPoint( const QPointF &p, const QString &label = QString(), double width = 0.0 );
 	/**
@@ -126,12 +126,12 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
  *
  * Think of a KPlotObject as a set of data displayed as a group in the plot.
  * Each KPlotObject consists of a list of KPlotPoints, a "type" controlling 
- * how the data points are displayed (some combination of POINTS, LINES, or 
- * BARS), a color, and a size.  There is also a parameter which controls the 
+ * how the data points are displayed (some combination of Points, Lines, or
+ * Bars), a color, and a size. There is also a parameter which controls the
  * shape of the points used to display the KPlotObject.
  *
  * @note KPlotObject will take care of the points added to it, so when clearing
- * the points list (eg with clearPoints()) any previous reference to a QPointF
+ * the points list (eg with clearPoints()) any previous reference to a KPlotPoint
  * already added to a KPlotObject will be invalid.
  *
  * @author Jason Harris
@@ -139,38 +139,26 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
  */
 class KDEEDUPLOT_EXPORT KPlotObject{
 public:
-	/**
-	 * @enum PlotType
-	 * The Type classification of the KPlotObject.  The possible values are:
-	 * @li POINTS: each KPlotPoint is represented with a drawn point
-	 * @li LINES: each KPlotPoint is connected with a line
-	 * @li BARS: each KPlotPoint is shown as a vertical bar.  Note that 
-	 * points should be added in order of increasing x-coordinate when 
-	 * using BARS.
-	 *
-	 * These are bitmask values that can be OR'd together, so that a set 
-	 * of points can be represented in the plot in multiple ways.
-	 */
+        /**
+         * The type classification of the KPlotObject.
+         *
+         * These are bitmask values that can be OR'd together, so that a set
+         * of points can be represented in the plot in multiple ways.
+         *
+         * @note points should be added in order of increasing x-coordinate
+         * when using Bars.
+         */
         enum PlotType
         {
             UnknownType = 0,
-            Points = 1,
-            Lines = 2,
-            Bars = 4
+            Points = 1,       ///< each KPlotPoint is represented with a drawn point
+            Lines = 2,        ///< each KPlotPoint is connected with a line
+            Bars = 4          ///< each KPlotPoint is shown as a vertical bar
         };
 
-	/**
-	 * @enum PStyle
-	 * Parameter specifying the kind of points.  The possible values are:
-	 * @li CIRCLE
-	 * @li LETTER
-	 * @li TRIANGLE
-	 * @li SQUARE
-	 * @li PENTAGON
-	 * @li HEXAON
-	 * @li ASTERISK
-	 * @li STAR
-	 */
+        /**
+         * The possible kind of points.
+         */
         enum PointStyle
         {
             NoPoints = 0,
@@ -185,15 +173,15 @@ public:
             UnknwonPoint
         };
 
-	/**
-	 * Constructor. Create a KPlotObject according to the arguments.
-	 * @param color The color for plotting this object.  By default this sets 
-	 * the color for POINTS, LINES and BARS, but there are functins to 
-	 * override any of these.
-	 * @param otype the PlotType for this object
-	 * @param size the size to use for the drawn points, in pixels
-	 * @param ps The PStyle describing the shape for the drawn points
-	 */
+        /**
+         * Constructor.
+         * @param color The color for plotting this object. By default this sets
+         * the color for Points, Lines and Bars, but there are functions to
+         * override any of these.
+         * @param otype the PlotType for this object
+         * @param size the size to use for the points, in pixels
+         * @param ps The PointStyle describing the shape for the points
+         */
         explicit KPlotObject( const QColor &color = Qt::white, PlotType otype = Points, double size = 2, PointStyle ps = Circle );
 
 	/**
@@ -245,26 +233,26 @@ public:
 	 */
         void setShowBars( bool b );
 
-	/**
-	 * @return the KPlotObject's Size
-	*/
+        /**
+         * @return the size of the object
+         */
         double size() const;
 
-	/**
-	 * Set the KPlotObject's Size
-	 * @param s the new size
-	 */
+        /**
+         * Set the new size for the object
+         * @param s the new size
+         */
         void setSize( double s );
 
-	/**
-	 * @return the KPlotObject's PointStyle value
-	 */
+        /**
+         * @return the style used for drawing the points of the object
+         */
         PointStyle pointStyle() const;
 
-	/**
-	 * Set the KPlotObject's type-specific Parameter
-	 * @param p the new parameter
-	 */
+        /**
+         * Set a new style for drawing the points
+         * @param p the new style
+         */
         void setPointStyle( PointStyle p );
 
 	/**
@@ -365,9 +353,9 @@ public:
 	 */
 	void removePoint( int index );
 
-	/**
-	 * Clear the Object's points list
-	 */
+        /**
+         * Remove and destroy the points of this object
+         */
 	void clearPoints();
 
 	/**
