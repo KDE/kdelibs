@@ -40,7 +40,7 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 
 	plot = new KPlotWidget( w );
 	plot->setMinimumSize( 400,400 );
-	plot->setAntialias( true );
+	plot->setAntialiasing( true );
 	vlay->addWidget( PlotSelector );
 	vlay->addWidget( plot );
 

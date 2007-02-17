@@ -297,12 +297,12 @@ bool KPlotWidget::isObjectToolTipShown() const
     return d->showObjectToolTip;
 }
 
-bool KPlotWidget::antialias() const
+bool KPlotWidget::antialiasing() const
 {
     return d->useAntialias;
 }
 
-void KPlotWidget::setAntialias( bool b )
+void KPlotWidget::setAntialiasing( bool b )
 {
     d->useAntialias = b;
     update();

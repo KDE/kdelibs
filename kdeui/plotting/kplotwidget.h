@@ -243,9 +243,9 @@ public:
          */
         bool isObjectToolTipShown() const;
 
-        bool antialias() const;
+        bool antialiasing() const;
 
-        void setAntialias( bool b );
+        void setAntialiasing( bool b );
 
 	/**
 	 * @return the number of pixels to the left of the plot area.
