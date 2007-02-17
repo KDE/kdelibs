@@ -66,6 +66,7 @@ class KPlotWidget::Private
 
         KPlotWidget *q;
 
+        void calcDataRectLimits( double x1, double x2, double y1, double y2 );
         /**
          * @return a value indicating how well the given rectangle is 
          * avoiding masked regions in the plot.  A higher returned value 
@@ -100,9 +101,9 @@ KPlotWidget::KPlotWidget( QWidget * parent )
 {
     setAttribute( Qt::WA_NoBackground, true );
 
+    d->secondDataRect = QRectF(); //default: no secondary data rect
     // sets the default limits
-    setLimits( 0.0, 1.0, 0.0, 1.0 );
-    d->secondDataRect = QRect(); //default: no secondary data rect
+    d->calcDataRectLimits( 0.0, 1.0, 0.0, 1.0 );
 
     setDefaultPaddings();
 
@@ -120,7 +121,14 @@ QSize KPlotWidget::minimumSizeHint() const
 	return QSize( 150, 150 );
 }
 
-void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
+void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 )
+{
+    d->calcDataRectLimits( x1, x2, y1, y2 );
+    update();
+}
+
+void KPlotWidget::Private::calcDataRectLimits( double x1, double x2, double y1, double y2 )
+{
 	double XA1, XA2, YA1, YA2;
 	if (x2<x1) { XA1=x2; XA2=x1; }
 	else { XA1=x1; XA2=x2; }
@@ -135,17 +143,16 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 		kWarning() << k_funcinfo << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0" << endl;
 		YA2 = YA1 + 1.0;
 	}
-	d->dataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
+    dataRect = QRectF( XA1, YA1, XA2 - XA1, YA2 - YA1 );
 
-	axis(LeftAxis)->setTickMarks( d->dataRect.y(), d->dataRect.height() );
-	axis(BottomAxis)->setTickMarks( d->dataRect.x(), d->dataRect.width() );
+    q->axis( LeftAxis )->setTickMarks( dataRect.y(), dataRect.height() );
+    q->axis( BottomAxis )->setTickMarks( dataRect.x(), dataRect.width() );
 
-	if ( secondaryDataRect().isNull() ) {
-		axis(RightAxis)->setTickMarks( d->dataRect.y(), d->dataRect.height() );
-		axis(TopAxis)->setTickMarks( d->dataRect.x(), d->dataRect.width() );
-	}
-
-	update();
+    if ( secondDataRect.isNull() )
+    {
+        q->axis( RightAxis )->setTickMarks( dataRect.y(), dataRect.height() );
+        q->axis( TopAxis )->setTickMarks( dataRect.x(), dataRect.width() );
+    }
 }
 
 void KPlotWidget::setSecondaryLimits( double x1, double x2, double y1, double y2 ) {
@@ -238,13 +245,15 @@ void KPlotWidget::resetPlot() {
     qDeleteAll( d->objectList );
     d->objectList.clear();
 	clearSecondaryLimits();
-	setLimits(0.0, 1.0, 0.0, 1.0);
-	axis(KPlotWidget::RightAxis)->setShowTickLabels( false );
-	axis(KPlotWidget::TopAxis)->setShowTickLabels( false );
+    d->calcDataRectLimits( 0.0, 1.0, 0.0, 1.0 );
+    KPlotAxis *a = axis( RightAxis );
+    a->setLabel( QString() );
+    a->setShowTickLabels( false );
+    a = axis( TopAxis );
+    a->setLabel( QString() );
+    a->setShowTickLabels( false );
 	axis(KPlotWidget::LeftAxis)->setLabel( QString() );
 	axis(KPlotWidget::BottomAxis)->setLabel( QString() );
-	axis(KPlotWidget::RightAxis)->setLabel( QString() );
-	axis(KPlotWidget::TopAxis)->setLabel( QString() );
 	resetPlotMask();
 }
 
