@@ -99,7 +99,8 @@ class KPlotWidget::Private
 KPlotWidget::KPlotWidget( QWidget * parent )
     : QFrame( parent ), d( new Private( this ) )
 {
-    setAttribute( Qt::WA_NoBackground, true );
+    setAttribute( Qt::WA_OpaquePaintEvent );
+    setAttribute( Qt::WA_NoSystemBackground );
 
     d->secondDataRect = QRectF(); //default: no secondary data rect
     // sets the default limits
