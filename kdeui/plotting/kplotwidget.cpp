@@ -22,10 +22,8 @@
 #include <QHash>
 #include <QPainter>
 #include <QPixmap>
-#include <QPolygon>
 #include <QToolTip>
 #include <QtAlgorithms>
-#include <klocale.h>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
@@ -128,13 +126,11 @@ void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
 	else { YA1=y1; YA2=y2; }
 
 	if ( XA2 == XA1 ) {
-		kWarning() << k_funcinfo << ": " <<
-			i18n("x1 and x2 cannot be equal.  Setting x2 = x1 + 1.0") << endl;
+		kWarning() << k_funcinfo << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0" << endl;
 		XA2 = XA1 + 1.0;
 	}
 	if ( YA2 == YA1 ) {
-		kWarning() << k_funcinfo << ": " << 
-			i18n("y1 and y2 cannot be equal.  Setting y2 = y1 + 1.0") << endl;
+		kWarning() << k_funcinfo << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0" << endl;
 		YA2 = YA1 + 1.0;
 	}
 	d->dataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
@@ -158,13 +154,11 @@ void KPlotWidget::setSecondaryLimits( double x1, double x2, double y1, double y2
 	else { YA1=y1; YA2=y2; }
 
 	if ( XA2 == XA1 ) {
-		kWarning() << k_funcinfo << ": " <<
-			i18n("x1 and x2 cannot be equal.  Setting x2 = x1 + 1.0") << endl;
+		kWarning() << k_funcinfo << "x1 and x2 cannot be equal. Setting x2 = x1 + 1.0" << endl;
 		XA2 = XA1 + 1.0;
 	}
 	if ( YA2 == YA1 ) {
-		kWarning() << k_funcinfo << ": " << 
-			i18n("y1 and y2 cannot be equal.  Setting y2 = y1 + 1.0") << endl;
+		kWarning() << k_funcinfo << "y1 and y2 cannot be equal. Setting y2 = y1 + 1.0" << endl;
 		YA2 = YA1 + 1.0;
 	}
 	d->secondDataRect = QRectF( XA1, YA1, XA2-XA1, YA2-YA1 );
