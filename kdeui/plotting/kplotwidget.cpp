@@ -263,11 +263,13 @@ void KPlotWidget::resetPlot() {
 	resetPlotMask();
 }
 
-void KPlotWidget::replacePlotObject( int i, KPlotObject *o ) {
-	// skip null pointers
-	if ( !o ) return;
+void KPlotWidget::replacePlotObject( int i, KPlotObject *o )
+{
+    // skip null pointers and invalid indexes
+    if ( !o || i < 0 || i >= d->objectList.count() )
+        return;
     d->objectList.replace( i, o );
-	update();
+    update();
 }
 
 QColor KPlotWidget::backgroundColor() const
