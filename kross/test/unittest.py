@@ -53,6 +53,9 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qstring_qstring(" ") == " " )
 		self.assert_( self.object1.func_qstring_qstring(" Another \n\r Test!   $%&\" ") == " Another \n\r Test!   $%&\" " )
 
+		self.assert_( self.object1.func_qstring_qstring(unicode("abcdef")) == "abcdef" )
+		self.assert_( self.object1.func_qstring_qstring("дцья") == "дцья" )
+
 	def testStringList(self):
 		self.assert_( self.object1.func_qstringlist_qstringlist( [] ) == [] )
 		self.assert_( self.object1.func_qstringlist_qstringlist( ["string1"] ) == ["string1"] )
