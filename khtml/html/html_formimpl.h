@@ -270,7 +270,7 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
 
-    bool checked() const { return m_checked; }
+    bool checked() const { return m_useDefaultChecked ? m_defaultChecked : m_checked; }
     void setChecked(bool);
     bool indeterminate() const { return m_indeterminate; }
     void setIndeterminate(bool);
@@ -332,6 +332,8 @@ protected:
     typeEnum m_type : 4;
     bool m_clicked : 1 ;
     bool m_checked : 1;
+    bool m_defaultChecked : 1; // could do without by checking ATTR_CHECKED
+    bool m_useDefaultChecked : 1;
     bool m_indeterminate : 1;
     bool m_haveType : 1;
     bool m_activeSubmit : 1;

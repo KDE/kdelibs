@@ -1,3 +1,8 @@
+2007-02-18  Harri Porten  <porten@kde.org>
+
+	* html/html_formimpl.cpp: fixed bug #120582 ("cloneNode does not
+	clone `checked' attribute in form inputs")
+
 2007-02-11  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp (executeOpenWindow): fixed location href
