@@ -184,15 +184,21 @@ void KateSuperCursor::editTextRemoved(uint line, uint col, uint len)
 
 void KateSuperCursor::editLineWrapped(uint line, uint col, bool newLine)
 {
-  if (newLine && (m_line > int(line)))
+  if (newLine)
   {
-    m_line++;
+    if (m_line > int(line) || (m_line == int(line) && m_col >= int(col)))
+    {
+      if(m_line == int(line))
+         m_col -= col;
+      m_line++;
 
-    emit positionChanged();
-    return;
+      emit positionChanged();
+      return;
+    }
   }
   else if ( (m_line == int(line)) && (m_col > int(col)) || (m_moveOnInsert && (m_col == int(col))) )
   {
+    kdDebug() << "__________________________________%%%%%%%%%%%%%%%%%%%%%%%" << endl;
     m_line++;
     m_col -= col;
 
