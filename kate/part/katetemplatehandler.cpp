@@ -305,7 +305,7 @@ bool KateTemplateHandler::operator() ( KKey key )
   }
   else m_doc->activeView()->setSelection( m_currentRange->end(), m_currentRange->end() );
 
-  m_doc->activeView() ->setCursorPosition( m_currentRange->end().line(), m_currentRange->end().col() );
+  m_doc->activeView() ->setCursorPositionReal( m_currentRange->end().line(), m_currentRange->end().col() );
   m_doc->activeView() ->tagLine( m_currentRange->end() );
 
   return true;
