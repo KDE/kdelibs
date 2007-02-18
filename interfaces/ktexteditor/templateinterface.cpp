@@ -20,6 +20,7 @@
 #include "document.h"
 #include <stdaddressbook.h>
 #include <addressee.h>
+#include <addresseedialog.h>
 #include <qstring.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -56,9 +57,15 @@ void TemplateInterface::setTemplateInterfaceDCOPSuffix ( const QCString &suffix 
     addrBook=KABC::StdAddressBook::self(); \
     userAddress=addrBook->whoAmI(); \
     if (userAddress.isEmpty()) { \
-      /*instead of sorry add he posibility to launch kaddressbook here*/ \
-      KMessageBox::sorry(parentWindow,i18n("The template needs information about you, please set your identity in your addressbook"));\
-      return false; \
+      if ( KMessageBox::questionYesNo(0, \
+           "This template uses personal data that is stored in the KDE addressbook, but you have not selected a personal entry. You can still use the template without one, but you will have to type personal data. Would you like to select one now?", \
+           "Personal data requested", \
+           KStdGuiItem::yes(), KStdGuiItem::no(), "select personal data entry") == KMessageBox::Yes ) { \
+        userAddress = KABC::AddresseeDialog::getAddressee(); \
+        if ( ! userAddress.isEmpty() ) \
+          KABC::StdAddressBook::self()->setWhoAmI( userAddress ) \
+      }\
+      /*return false;//no, why??*/ \
     } \
   } \
 } while(false)
@@ -83,22 +90,26 @@ bool TemplateInterface::expandMacros( QMap<QString, QString> &map, QWidget *pare
       else if ( placeholder == "firstname" )
       {
         INITKABC;
-        map[ placeholder ] = userAddress.givenName();
+        if ( !userAddress.isEmpty() )
+          map[ placeholder ] = userAddress.givenName();
       }
       else if ( placeholder == "lastname" )
       {
         INITKABC;
-        map[ placeholder ] = userAddress.familyName();
+        if ( !userAddress.isEmpty() )
+          map[ placeholder ] = userAddress.familyName();
       }
       else if ( placeholder == "fullname" )
       {
         INITKABC;
-        map[ placeholder ] = userAddress.assembledName();
+        if ( !userAddress.isEmpty() )
+          map[ placeholder ] = userAddress.assembledName();
       }
       else if ( placeholder == "email" )
       {
         INITKABC;
-        map[ placeholder ] = userAddress.preferredEmail();
+        if ( !userAddress.isEmpty() )
+          map[ placeholder ] = userAddress.preferredEmail();
       }
       else if ( placeholder == "date" )
       {
