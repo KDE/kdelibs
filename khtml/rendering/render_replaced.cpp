@@ -541,11 +541,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QVector<QWidget*> cw;
     QVector<QRect> cr;
     QPoint thePoint(tx, ty);
-    QMatrix m = p->matrix();
+    QMatrix m = p->worldMatrix();
     thePoint = thePoint * m;
-
-    if (!buffered && !m.isIdentity()) 
-        buffered = !qobject_cast<KHTMLView*>(widget);
 
     if (!widget->children().isEmpty()) {
         // build region
@@ -568,14 +565,16 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         if (!widget->size().isValid())
             return;
         QPixmap* pm = PaintBuffer::grab(widget->size());
-        pm->fill(QColor(0,0,0,0));
+        QPainter pp(pm);
+        pp.setCompositionMode(QPainter::CompositionMode_Clear);
+        pp.eraseRect(r);
         d = pm;
     }
     QPainter::setRedirected(widget, d, buffered ? QPoint(0,0) : -thePoint);
     QPaintEvent e( r );
     QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
-    p->setMatrix( m );
+    p->setWorldMatrix( m );
 
     if (buffered) {
         // transfer results
@@ -597,10 +596,12 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
+    bool buffered = p->combinedMatrix().m22() != 1.0 && !qobject_cast<KHTMLView*>(widget);
+
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
-    copyWidget(r, p, widget, tx, ty);
+    copyWidget(r, p, widget, tx, ty, buffered);
 
     allowWidgetPaintEvents = false;
 }

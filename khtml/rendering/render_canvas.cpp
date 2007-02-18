@@ -495,8 +495,8 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     int oldStartPos = m_selectionStartPos;
     RenderObject *oldEnd = m_selectionEnd;
     int oldEndPos = m_selectionEndPos;
-    Q3PtrList<RenderObject> oldSelectedInside;
-    Q3PtrList<RenderObject> newSelectedInside;
+    QList<RenderObject*> oldSelectedInside;
+    QList<RenderObject*> newSelectedInside;
     RenderObject *os = oldStart;
 
     while (os && os != oldEnd)
@@ -512,7 +512,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
                     no = no->nextSibling();
             }
         }
-        if (os->selectionState() == SelectionInside && !oldSelectedInside.containsRef(os))
+        if (os->selectionState() == SelectionInside && !oldSelectedInside.contains(os))
             oldSelectedInside.append(os);
 
         os = no;
@@ -570,7 +570,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
                 if (no)
                     no = no->nextSibling();
             }
-        if (o->selectionState() == SelectionInside && !newSelectedInside.containsRef(o))
+        if (o->selectionState() == SelectionInside && !newSelectedInside.contains(o))
             newSelectedInside.append(o);
 
         o=no;
@@ -582,8 +582,11 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     if (!m_view)
         return;
 
-    newSelectedInside.removeRef(s);
-    newSelectedInside.removeRef(e);
+    int i;
+    i = newSelectedInside.indexOf(s);
+    if (i != -1) newSelectedInside.removeAt(i);
+    i = newSelectedInside.indexOf(e);
+    if (i != -1) newSelectedInside.removeAt(i);
 
     QRect updateRect;
 
@@ -598,16 +601,17 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     // If so we have to draw them.
     // Could be faster by building list of non-intersecting rectangles rather
     // than unioning rectangles.
-    Q3PtrListIterator<RenderObject> oldIterator(oldSelectedInside);
+    QListIterator<RenderObject*> oldIterator(oldSelectedInside);
     bool firstRect = true;
-    for (; oldIterator.current(); ++oldIterator){
-        if (!newSelectedInside.containsRef(oldIterator.current())){
+    while (oldIterator.hasNext()) {
+        o = oldIterator.next();
+        if (!newSelectedInside.contains(o)){
             if (firstRect){
-                updateRect = enclosingPositionedRect(oldIterator.current());
+                updateRect = enclosingPositionedRect(o);
                 firstRect = false;
             }
             else
-                updateRect = updateRect.unite(enclosingPositionedRect(oldIterator.current()));
+                updateRect = updateRect.unite(enclosingPositionedRect(o));
         }
     }
     if (!firstRect){
@@ -618,16 +622,17 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     // If so we have to draw them.
     // Could be faster by building list of non-intersecting rectangles rather
     // than unioning rectangles.
-    Q3PtrListIterator<RenderObject> newIterator(newSelectedInside);
+    QListIterator<RenderObject*> newIterator(newSelectedInside);
     firstRect = true;
-    for (; newIterator.current(); ++newIterator){
-        if (!oldSelectedInside.containsRef(newIterator.current())){
-            if (firstRect){
-                updateRect = enclosingPositionedRect(newIterator.current());
+    while (newIterator.hasNext()) {
+        o = newIterator.next();
+        if (!oldSelectedInside.contains(o)) {
+            if (firstRect) {
+                updateRect = enclosingPositionedRect(o);
                 firstRect = false;
             }
             else
-                updateRect = updateRect.unite(enclosingPositionedRect(newIterator.current()));
+                updateRect = updateRect.unite(enclosingPositionedRect(o));
         }
     }
     if (!firstRect) {

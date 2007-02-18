@@ -2242,6 +2242,8 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
 {
   _col = -1;
   _row = -1;
+  cSpan = 1;
+  rSpan = 1;
   updateFromElement();
   setShouldPaintBackgroundOrBorder(true);
   _topExtra = 0;
@@ -2935,7 +2937,7 @@ void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty
         if (hasLayer && tableElt->collapseBorders()) {
             pI.p->save();
             QRect clipRect(cellx + borderLeft(), celly + borderTop(), cellw - borderLeft() - borderRight(), cellh - borderTop() - borderBottom());
-            clipRect = pI.p->xForm(clipRect);
+            clipRect = pI.p->combinedMatrix().mapRect(clipRect);
             QRegion creg(clipRect);
             QRegion old = pI.p->clipRegion();
             if (!old.isEmpty())

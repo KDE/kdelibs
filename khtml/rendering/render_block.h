@@ -26,7 +26,7 @@
 #ifndef RENDER_BLOCK_H
 #define RENDER_BLOCK_H
 
-#include <q3ptrlist.h>
+#include <QList>
 
 #include "render_flow.h"
 
@@ -355,8 +355,8 @@ protected:
     int m_overflowLeft;
 
 private:
-    Q3PtrList<FloatingObject>* m_floatingObjects;
-    Q3PtrList<RenderObject>* m_positionedObjects;
+    QList<FloatingObject*>* m_floatingObjects;
+    QList<RenderObject*>*   m_positionedObjects;
 
     bool m_childrenInline : 1;
     bool m_firstLine      : 1; // used in inline layouting

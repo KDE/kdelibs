@@ -1295,15 +1295,6 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     // reversing is only done up to the lowest odd level
     if( !(levelLow%2) ) levelLow++;
 
-#if BIDI_DEBUG > 0
-    kDebug(6041) << "lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
-    kDebug(6041) << "logical order is:" << endl;
-    Q3PtrListIterator<BidiRun> it2(runs);
-    BidiRun *r2;
-    for ( ; (r2 = it2.current()); ++it2 )
-        kDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
-#endif
-
     int count = sBidiRunCount - 1;
 
     // do not reverse for visually ordered web sites
