@@ -498,7 +498,7 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
 {
     bool block = signalsBlocked();
     blockSignals( true );
-    insertItems( items , index );
+    KListWidget::insertItems( index, items );
     blockSignals( block );
     d->down_workaround = true;
 }
