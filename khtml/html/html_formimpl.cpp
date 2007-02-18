@@ -1660,7 +1660,16 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 void HTMLInputElementImpl::reset()
 {
-    setValue(getAttribute(ATTR_VALUE));
+    if (m_type == FILE) {
+	// set directly to bypass security check. emptying the value
+	// should mean no risk.
+	if (!m_value.isEmpty()) {
+	    m_value = DOMString();
+	    setChanged();
+	}
+    } else {
+	setValue(getAttribute(ATTR_VALUE));
+    }
     m_useDefaultChecked = true; 
     m_checked = m_defaultChecked; 
     setIndeterminate(true);
