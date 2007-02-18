@@ -10,33 +10,54 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testBool
-		assert_raises(TypeError) { TestObject1.func_bool_bool(nil) }
+		assert_raises(TypeError) { TestObject1.func_bool_bool(17) }
+		assert_raises(TypeError) { TestObject1.func_bool_bool("string") }
+		assert_raises(TypeError) { TestObject1.func_bool_bool([]) }
+
+		assert( TestObject1.func_bool_bool(nil) == false )
 		assert( TestObject1.func_bool_bool(true) == true )
 		assert( TestObject1.func_bool_bool(false) == false )
 	end
 
 	def testInt
-		assert_raises(TypeError) { TestObject1.func_int_int(nil) }
+		assert_raises(TypeError) { TestObject1.func_int_int(false) }
+		assert_raises(TypeError) { TestObject1.func_int_int("string") }
+		assert_raises(TypeError) { TestObject1.func_bool_bool([]) }
+
+		assert( TestObject1.func_int_int(nil) == 0 )
 		assert( TestObject1.func_int_int(0) == 0 )
 		assert( TestObject1.func_int_int(177321) == 177321 )
 		assert( TestObject1.func_int_int(-98765) == -98765 )
 	end
 
 	def testUInt
-		assert_raises(TypeError) { TestObject1.func_uint_uint(nil) }
+		assert_raises(TypeError) { TestObject1.func_uint_uint(true) }
+		assert_raises(TypeError) { TestObject1.func_uint_uint("string") }
+		assert_raises(TypeError) { TestObject1.func_uint_uint([]) }
+
+		assert( TestObject1.func_uint_uint(nil) == 0 )
 		assert( TestObject1.func_uint_uint(0) == 0 )
 		assert( TestObject1.func_uint_uint(177321) == 177321 )
 	end
 
 	def testDouble
-		assert_raises(TypeError) { TestObject1.func_double_double(nil) }
+		assert_raises(TypeError) { TestObject1.func_double_double(true) }
+		assert_raises(TypeError) { TestObject1.func_double_double("string") }
+		assert_raises(TypeError) { TestObject1.func_double_double([]) }
+		#assert_raises(TypeError) { TestObject1.func_double_double(83) }
+
+		assert( TestObject1.func_double_double(nil) == 0.0 )
 		assert( TestObject1.func_double_double(0.0) == 0.0 )
 		assert( TestObject1.func_double_double(1773.2177) == 1773.2177 )
 		assert( TestObject1.func_double_double(-548993.271993) == -548993.271993 )
 	end
 
 	def testLongLong
-		assert_raises(TypeError) { TestObject1.func_qlonglong_qlonglong(nil) }
+		assert_raises(TypeError) { TestObject1.func_qlonglong_qlonglong(true) }
+		assert_raises(TypeError) { TestObject1.func_qlonglong_qlonglong("string") }
+		assert_raises(TypeError) { TestObject1.func_qlonglong_qlonglong([]) }
+
+		assert( TestObject1.func_qlonglong_qlonglong(nil) == 0 )
 		assert( TestObject1.func_qlonglong_qlonglong(0) == 0 )
 		assert( TestObject1.func_qlonglong_qlonglong(7379) == 7379 )
 		assert( TestObject1.func_qlonglong_qlonglong(-6384673) == -6384673 )
@@ -44,37 +65,62 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testULongLong
-		assert_raises(TypeError) { TestObject1.func_qulonglong_qulonglong(nil) }
+		assert_raises(TypeError) { TestObject1.func_qulonglong_qulonglong(true) }
+		assert_raises(TypeError) { TestObject1.func_qulonglong_qulonglong("string") }
+		assert_raises(TypeError) { TestObject1.func_qulonglong_qulonglong([]) }
+
+		assert( TestObject1.func_qulonglong_qulonglong(nil) == 0 )
 		assert( TestObject1.func_qulonglong_qulonglong(0) == 0 )
 		assert( TestObject1.func_qulonglong_qulonglong(378972) == 378972 )
 		#assert( TestObject1.func_qulonglong_qulonglong(-8540276823902375665225676321823) == -8540276823902375665225676321823 )
 	end
 
 	def testByteArray
-		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(nil) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(false) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(true) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(532) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(-2) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray(8572.45) }
+		assert_raises(TypeError) { TestObject1.func_qbytearray_qbytearray([]) }
+
+		#assert( TestObject1.func_qbytearray_qbytearray(nil) == "" )
 		assert( TestObject1.func_qbytearray_qbytearray("") == "" )
 		assert( TestObject1.func_qbytearray_qbytearray("  Some String as ByteArray  ") == "  Some String as ByteArray  " )
 		assert( TestObject1.func_qbytearray_qbytearray(" \0\n\r\t\s\0 test ") == " \0\n\r\t\s\0 test " )
 	end
 
 	def testString
-		assert_raises(TypeError) { TestObject1.func_qstring_qstring(nil) }
+		assert_raises(TypeError) { TestObject1.func_qstring_qstring(false) }
+		assert_raises(TypeError) { TestObject1.func_qstring_qstring(true) }
+		assert_raises(TypeError) { TestObject1.func_qstring_qstring(927) }
+		assert_raises(TypeError) { TestObject1.func_qstring_qstring(19.32) }
+		assert_raises(TypeError) { TestObject1.func_qstring_qstring([]) }
+
+		#assert( TestObject1.func_qstring_qstring(nil) == "" )
 		assert( TestObject1.func_qstring_qstring("") == "" )
 		assert( TestObject1.func_qstring_qstring(" ") == " " )
 		assert( TestObject1.func_qstring_qstring(" Another \n\r Test!   $%&\" ") == " Another \n\r Test!   $%&\" " )
 	end
 
 	def testSize
-		assert_raises(TypeError) { TestObject1.func_qsize_qsize(nil) }
-		#assert_raises(TypeError) { TestObject1.func_qsize_qsize([0]) }
-		#assert_raises(TypeError) { TestObject1.func_qsize_qsize([0,0,0]) }
+		assert_raises(TypeError) { TestObject1.func_qsize_qsize("") }
+		assert_raises(TypeError) { TestObject1.func_qsize_qsize(123) }
+		assert_raises(TypeError) { TestObject1.func_qsize_qsize(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qsize_qsize([]) }
+
+		#assert( TestObject1.func_qsize_qsize( nil ) == [0,0] )
 		#assert( TestObject1.func_qsize_qsize( [0,0] ) == [0,0] )
 		assert( TestObject1.func_qsize_qsize( [12,-94] ) == [12,-94] )
 		assert( TestObject1.func_qsize_qsize( [-7264,6224] ) == [-7264,6224] )
 	end
 
 	def testSizeF
-		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef(nil) }
+		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef("") }
+		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef(123) }
+		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qsizef_qsizef([]) }
+
+		#assert_raises(TypeError) { TestObject1.func_qsizef_qsizef(nil) }
 		#assert_raises(TypeError) { TestObject1.func_qsizef_qsizef([0.0]) }
 		#assert_raises(TypeError) { TestObject1.func_qsizef_qsizef([0.0,0.0,0.0]) }
 		#assert( TestObject1.func_qsizef_qsizef( [0.0,0.0] ) == [0.0,0.0] )
@@ -85,7 +131,12 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testPoint
-		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint(nil) }
+		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint("") }
+		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint(123) }
+		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qpoint_qpoint([]) }
+
+		#assert_raises(TypeError) { TestObject1.func_qpoint_qpoint(nil) }
 		#assert_raises(TypeError) { TestObject1.func_qpoint_qpoint([0]) }
 		#assert_raises(TypeError) { TestObject1.func_qpoint_qpoint([0,0,0]) }
 		#assert( TestObject1.func_qpoint_qpoint( [0,0] ) == [0,0] )
@@ -94,7 +145,12 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testPointF
-		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf(nil) }
+		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf("") }
+		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf(123) }
+		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qpointf_qpointf([]) }
+
+		#assert_raises(TypeError) { TestObject1.func_qpointf_qpointf(nil) }
 		#assert_raises(TypeError) { TestObject1.func_qpointf_qpointf([0.0]) }
 		#assert_raises(TypeError) { TestObject1.func_qpointf_qpointf([0.0,0.0,0.0]) }
 		#assert( TestObject1.func_qpointf_qpointf( [0.0,0.0] ) == [0.0,0.0] )
@@ -105,7 +161,12 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testRect
-		assert_raises(TypeError) { TestObject1.func_qrect_qrect(nil) }
+		assert_raises(TypeError) { TestObject1.func_qrect_qrect("") }
+		assert_raises(TypeError) { TestObject1.func_qrect_qrect(123) }
+		assert_raises(TypeError) { TestObject1.func_qrect_qrect(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qrect_qrect([]) }
+
+		#assert_raises(TypeError) { TestObject1.func_qrect_qrect(nil) }
 		#assert_raises(TypeError) { TestObject1.func_qrect_qrect([0,0,0]) }
 		#assert_raises(TypeError) { TestObject1.func_qrect_qrect([0,0,0,0,0]) }
 		#assert( TestObject1.func_qrect_qrect( [0,0,0,0] ) == [0,0,0,0] )
@@ -117,7 +178,12 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testRectF
-		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf(nil) }
+		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf("") }
+		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf(123) }
+		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf(456.789) }
+		assert_raises(TypeError) { TestObject1.func_qrectf_qrectf([]) }
+
+		#assert_raises(TypeError) { TestObject1.func_qrectf_qrectf(nil) }
 		#assert_raises(TypeError) { TestObject1.func_qrectf_qrectf([0.0,0.0,0.0]) }
 		#assert_raises(TypeError) { TestObject1.func_qrectf_qrectf([0.0,0.0,0.0,0.0,0.0]) }
 		#assert( TestObject1.func_qrectf_qrectf( [0.0,0.0,0.0,0.0] ) == [0.0,0.0,0.0,0.0] )
@@ -126,21 +192,33 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testStringList
-		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(nil) }
+		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist("") }
+		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(0) }
+		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(true) }
+		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(false) }
+		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(-32.85) }
+
+		assert( TestObject1.func_qstringlist_qstringlist( nil ) == [] )
 		assert( TestObject1.func_qstringlist_qstringlist( [] ) == [] )
 		assert( TestObject1.func_qstringlist_qstringlist( ["string1"] ) == ["string1"] )
 		assert( TestObject1.func_qstringlist_qstringlist( [" string1","string2 "] ) == [" string1","string2 "] )
 	end
 
 	def testVariantList
-		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(nil) }
+		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist("") }
+		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(0) }
+		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(true) }
+		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(false) }
+		assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(-32.85) }
+
+		#assert_raises(TypeError) { TestObject1.func_qvariantlist_qvariantlist(nil) }
 		assert( TestObject1.func_qvariantlist_qvariantlist( [] ) == [] )
 		assert( TestObject1.func_qvariantlist_qvariantlist( [[[[]],[]]] ) == [[[[]],[]]] )
 		assert( TestObject1.func_qvariantlist_qvariantlist( ["A string",[17539,-8591],[5.32,-842.775]] ) == ["A string",[17539,-8591],[5.32,-842.775]] )
 	end
  
 	def testVariantMap
-		assert_raises(TypeError) { TestObject1.func_qvariantmap_qvariantmap(nil) }
+		#assert_raises(TypeError) { TestObject1.func_qvariantmap_qvariantmap(nil) }
 		#assert( {} )
 		#assert( {"1":73682,"2":285} )
 		#assert( {"a":-6892.957,"b":692.66} )
