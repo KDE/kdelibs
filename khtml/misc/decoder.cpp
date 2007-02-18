@@ -4,6 +4,7 @@
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
     Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
     Copyright (C) 2003 Apple Computer, Inc.
+    Copyright (C) 2007 Nick Shaforostoff (shafff@ukr.net)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -627,38 +628,118 @@ QByteArray Decoder::automaticDetectionForCentralEuropean(const unsigned char* pt
 
 QByteArray Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutoDetectLanguage _language )
 {
-    QByteArray charset = QByteArray();
-    for ( int i = 0; i < size; ++i ) {
-        if ( ptr[ i ] >= 0x80 && ptr[ i ] <= 0x9F ) {
-            if ( ptr[ i ] == 0x98 ) {
-                if ( _language == Russian )
-                    return "koi8-r";
-                else if ( _language == Ukrainian )
-                    return "koi8-u";
-            }
+//     if (ptr[0]==0xef && ptr[1]==0xbb && ptr[2]==0xbf)
+//         return "utf8";
 
-            if ( i + 1 > size )
-                return "cp1251";
-            else { // maybe koi8-r or koi8-u ?
-                charset = "cp1251";
-                continue;
-            }
+    int koi_st=0;
+    int cp1251_st=0;
+
+//     int koi_na=0;
+//     int cp1251_na=0;
+
+    int koi_o_capital=0;
+    int koi_o=0;
+    int cp1251_o_capital=0;
+    int cp1251_o=0;
+
+    int koi_a_capital=0;
+    int koi_a=0;
+    int cp1251_a_capital=0;
+    int cp1251_a=0;
+
+    int koi_i_capital=0;
+    int koi_i=0;
+    int cp1251_i_capital=0;
+    int cp1251_i=0;
+
+    int cp1251_small_range=0;
+    int koi_small_range=0;
+    int ibm866_small_range=0;
+
+    int i;
+    for (i=1; (i<size) && (cp1251_small_range+koi_small_range<1000) ;++i)
+    {
+        if (ptr[i]>0xdf)
+        {
+            ++cp1251_small_range;
+
+            if (ptr[i]==0xee)//small o
+                ++cp1251_o;
+            else if (ptr[i]==0xe0)//small a
+                ++cp1251_a;
+            else if (ptr[i]==0xe8)//small i
+                ++cp1251_i;
+            else if (ptr[i]==0xf2 && ptr[i-1]==0xf1)//small st
+                ++cp1251_st;
+
+            else if (ptr[i]==0xef)
+                ++koi_o_capital;
+            else if (ptr[i]==0xe1)
+                ++koi_a_capital;
+            else if (ptr[i]==0xe9)
+                ++koi_i_capital;
+
         }
-        else {
-            if ( i + 1 > size )
-                return "iso-8859-5";
-            else {  // maybe koi8-r (koi8-u) or cp1251 ?
-                if ( charset.isNull() )
-                    charset = "iso-8859-5";
-                continue;
-            }
+        else if (ptr[i]>0xbf)
+        {
+            ++koi_small_range;
+
+            if (ptr[i]==0xcf)//small o
+                ++koi_o;
+            else if (ptr[i]==0xc1)//small a
+                ++koi_a;
+            else if (ptr[i]==0xc9)//small i
+                ++koi_i;
+            else if (ptr[i]==0xd4 && ptr[i-1]==0xd3)//small st
+                ++koi_st;
+
+            else if (ptr[i]==0xce)
+                ++cp1251_o_capital;
+            else if (ptr[i]==0xc0)
+                ++cp1251_a_capital;
+            else if (ptr[i]==0xc8)
+                ++cp1251_i_capital;
         }
+        else if (ptr[i]>0x9f && ptr[i]<0xb0) //first 16 letterz is 60%
+            ++ibm866_small_range;
+
     }
 
-    if ( charset.isNull() )
-        charset = "iso-8859-5";
+    if (ibm866_small_range>cp1251_small_range+koi_small_range)
+        return "ibm866"; //hehe this is a rare case :)
 
-    return charset.data();
+    QByteArray koi_string = "koi8-u";
+    QByteArray cp1251_string = "cp1251";
+
+    if (cp1251_st==0 && koi_st>1)
+        return koi_string;
+    if (koi_st==0 && cp1251_st>1)
+        return cp1251_string;
+
+    if (cp1251_st>0 && koi_st>0)
+    {
+        if (cp1251_st/koi_st>2)
+            return cp1251_string;
+        else if (koi_st/cp1251_st>2)
+            return koi_string;
+    }
+
+    if (cp1251_a>koi_a && cp1251_o>koi_o && cp1251_i>koi_i)
+        return cp1251_string;
+    if (koi_a>cp1251_a && koi_o>cp1251_o && koi_i>cp1251_i)
+        return koi_string;
+
+    if (cp1251_a_capital>koi_a_capital && cp1251_o_capital>koi_o_capital && cp1251_i_capital>koi_i_capital)
+        return cp1251_string;
+    if (koi_a_capital>cp1251_a_capital && koi_o_capital>cp1251_o_capital && koi_i_capital>cp1251_i_capital)
+        return koi_string;
+
+    //fallback...
+    if (cp1251_small_range>koi_small_range)
+        return cp1251_string;
+    else
+        return koi_string;
+
 }
 
 QByteArray Decoder::automaticDetectionForGreek( const unsigned char* ptr, int size )
