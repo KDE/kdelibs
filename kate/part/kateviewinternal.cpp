@@ -2126,13 +2126,12 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
 {
   if ( !force && (cursor == newCursor) )
   {
-    if ( !m_madeVisible )
+    if ( !m_madeVisible && m_view == m_doc->activeView() )
     {
       // unfold if required
       m_doc->foldingTree()->ensureVisible( newCursor.line() );
 
-//      if (m_view->isActive())
-        makeVisible ( displayCursor, displayCursor.col(), false, center, calledExternally );
+      makeVisible ( displayCursor, displayCursor.col(), false, center, calledExternally );
     }
 
     return;
@@ -2147,7 +2146,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
   displayCursor.setPos (m_doc->getVirtualLine(cursor.line()), cursor.col());
 
   cXPos = m_view->renderer()->textWidth( cursor );
-//  if (m_view->isActive())
+  if (m_view == m_doc->activeView())
     makeVisible ( displayCursor, displayCursor.col(), false, center, calledExternally );
 
   updateBracketMarks();
@@ -3230,7 +3229,7 @@ void KateViewInternal::editEnd(int editTagLineStart, int editTagLineEnd, bool ta
     m_madeVisible = false;
     updateCursor ( cursor, true );
   }
-  else if ( m_view->isActive() )
+  else if ( m_view == m_doc->activeView() )
   {
     makeVisible(displayCursor, displayCursor.col());
   }
