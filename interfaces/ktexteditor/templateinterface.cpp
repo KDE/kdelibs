@@ -57,7 +57,7 @@ void TemplateInterface::setTemplateInterfaceDCOPSuffix ( const QCString &suffix 
     addrBook=KABC::StdAddressBook::self(); \
     userAddress=addrBook->whoAmI(); \
     if (userAddress.isEmpty()) { \
-      if ( KMessageBox::questionYesNo(0, \
+      if ( KMessageBox::questionYesNo(parentWindow, \
            "This template uses personal data that is stored in the KDE addressbook, but you have not selected a personal entry. You can still use the template without one, but you will have to type personal data. Would you like to select one now?", \
            "Personal data requested", \
            KStdGuiItem::yes(), KStdGuiItem::no(), "select personal data entry") == KMessageBox::Yes ) { \
