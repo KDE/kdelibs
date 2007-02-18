@@ -1250,6 +1250,8 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
     m_size = 20;
     m_clicked = false;
     m_checked = false;
+    m_defaultChecked = false;
+    m_useDefaultChecked = true;
     m_indeterminate = false;
 
     m_haveType = false;
@@ -1355,7 +1357,7 @@ QString HTMLInputElementImpl::state( )
         return QLatin1String("."); // empty string, avoid restoring
     case CHECKBOX:
     case RADIO:
-        return QLatin1String(m_checked ? "on" : "off");
+        return QLatin1String(checked() ? "on" : "off");
     case TEXT:
         if (autoComplete() && value() != getAttribute(ATTR_VALUE) && getDocument()->view())
             getDocument()->view()->addFormCompletionItem(name().string(), value().string());
@@ -1418,7 +1420,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         }
         break;
     case ATTR_CHECKED:
-        // WebCore has m_defaultChecked and m_useDefaultChecked code here....
+	m_defaultChecked = attr->val();
+ 	if (m_useDefaultChecked) // We only need to setChanged if the form is looking
+	    setChanged();        // at the default checked state right now.
         break;
     case ATTR_MAXLENGTH:
     {
@@ -1490,7 +1494,7 @@ void HTMLInputElementImpl::attach()
                     nvalue += value[i];
             m_value = nvalue;
         }
-        m_checked = (getAttribute(ATTR_CHECKED) != 0);
+        m_defaultChecked = (getAttribute(ATTR_CHECKED) != 0);
         if ( m_type == IMAGE )
             addHTMLAlignment( getAttribute( ATTR_ALIGN ) );
         m_inited = true;
@@ -1685,7 +1689,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 void HTMLInputElementImpl::reset()
 {
     setValue(getAttribute(ATTR_VALUE));
-    setChecked(getAttribute(ATTR_CHECKED) != 0);
+    m_useDefaultChecked = true;
+    m_checked = m_defaultChecked;
     setIndeterminate(true);
 }
 
@@ -1694,7 +1699,8 @@ void HTMLInputElementImpl::setChecked(bool _checked)
     if (m_form && m_type == RADIO && _checked && !name().isEmpty())
         m_form->radioClicked(this);
 
-    if (m_checked == _checked) return;
+    if (checked() == _checked) return;
+    m_useDefaultChecked = false;
     m_checked = _checked;
 
 //     setIndeterminate(false);
