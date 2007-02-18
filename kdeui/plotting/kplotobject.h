@@ -350,8 +350,8 @@ private:
         class Private;
         Private * const d;
 
-        Q_DISABLE_COPY( KPlotObject );
+        Q_DISABLE_COPY( KPlotObject )
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS( KPlotObject::PlotTypes );
+Q_DECLARE_OPERATORS_FOR_FLAGS( KPlotObject::PlotTypes )
 
 #endif
