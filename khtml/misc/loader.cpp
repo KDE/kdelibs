@@ -454,7 +454,6 @@ void CachedImage::deref( CachedObjectClient *c )
 
 QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 {
-    QColor color = newc;
 
     // no error indication for background images
     if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
@@ -472,6 +471,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     QSize s(pixmap_size());
     int w = xWidth;
     int h = xHeight;
+
     if (w == -1) xWidth = w = s.width();
     if (h == -1) xHeight = h = s.height();
 
@@ -484,14 +484,9 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     if (bg)
         return *bg;
 
-    bool haveBgColor = newc.isValid();
-
-    if (!haveBgColor)
-        color = Qt::transparent;
-
     const QPixmap* src; //source for pretiling, if any
 
-    const QPixmap &r = pixmap();
+    const QPixmap &r = pixmap(); //this is expensive
     if (r.isNull()) return r;
 
     //See whether we should scale
@@ -504,11 +499,14 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     bgSize = QSize(xWidth, xHeight);
 
     //See whether we can - and should - pre-blend
-    if (haveBgColor && (r.hasAlpha() || r.hasAlphaChannel())) {
+    // ### this needs serious investigations. Not likely to help with transparent bgColor,
+    // won't work with CSS3 multiple backgrounds. Does it help at all in Qt4? (ref: #114938)
+    if (newc.isValid() && (r.hasAlpha() || r.hasAlphaChannel())) {
         bg = new QPixmap(xWidth, xHeight);
         bg->fill(newc);
-        bitBlt(bg, 0, 0, src);
-        bgColor = newc.rgb();
+        QPainter p(bg);
+        p.drawPixmap(0, 0, *src);
+        bgColor = newc.rgba();
         src     = bg;
     } else {
         bgColor = bgTransparent;
@@ -525,23 +523,32 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     
     if ( w != xWidth  || h != xHeight )
     {
-//         kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
+        // kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
         QPixmap* oldbg = bg;
         bg = new QPixmap(w, h);
-        bg->fill(bgColor);
-
-        //Tile horizontally on the first stripe
-        for (int x = 0; x < w; x += xWidth)
-            bitBlt(bg, x, 0, src, 0, 0, xWidth, xHeight);
-
-        //Copy first stripe down
-        for (int y = xHeight; y < h; y += xHeight)
-            bitBlt(bg, 0, y, bg, 0, 0, w, xHeight);
+        if (src->hasAlpha() || src->hasAlphaChannel()) {
+            if (newc.isValid() && (bgColor != bgTransparent))
+                bg->fill( bgColor );
+            else
+                bg->fill( Qt::transparent );
+        }
+        
+        QPainter p(bg);
+        p.drawTiledPixmap(0, 0, w, h, *src);
+        p.end();
 
         if ( src == oldbg )
             delete oldbg;
-    } else if (src && !bg)
+    } else if (src && !bg) {
+        // we were asked for the entire pixmap. Cache it.
+        // ### goes against imload stuff, but it's far too expensive
+        //     to recreate the full pixmap each time it's requested as
+        //     we don't know what portion of it will be used eventually 
+        //     (by e.g. paintBackgroundExtended). It could be a few pixels of
+        //     a huge image. See #140248/#1 for an obvious example.
+        //     Imload probably needs to handle all painting in paintBackgroundExtended.
         bg = new QPixmap(*src);
+    }
 
     if (bg)
         return *bg;
@@ -566,9 +573,10 @@ QPixmap CachedImage::scaled_pixmap( int xWidth, int xHeight )
     }
 
     //### this is quite awful performance-wise
-    QImage im(i->size().width(), i->size().height(), QImage::Format_ARGB32_Premultiplied);
+    QImage im(xWidth, xHeight, QImage::Format_ARGB32_Premultiplied);
 
     QPainter paint(&im);
+    paint.setCompositionMode(QPainter::CompositionMode_Source);
     ImagePainter pi(i, QSize(xWidth, xHeight));
     pi.paint(0, 0, &paint);
     paint.end();
@@ -591,6 +599,7 @@ QPixmap CachedImage::pixmap( ) const
     QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
 
     QPainter paint(&im);
+    paint.setCompositionMode(QPainter::CompositionMode_Source);
     ImagePainter pi(i);
     pi.paint(0, 0, &paint);
     paint.end();
@@ -607,7 +616,7 @@ QSize CachedImage::pixmap_size() const
 }
 
 
-void CachedImage::imageHasGeometry(khtmlImLoad::Image* img, int width, int height)
+void CachedImage::imageHasGeometry(khtmlImLoad::Image* /*img*/, int width, int height)
 {
 #ifdef LOADER_DEBUG
     kDebug(6060) << this << " got geometry "<< width << "x" << height << endl;
@@ -615,7 +624,7 @@ void CachedImage::imageHasGeometry(khtmlImLoad::Image* img, int width, int heigh
     do_notify(QRect(0, 0, width, height));
 }
 
-void CachedImage::imageChange     (khtmlImLoad::Image* img, QRect region)
+void CachedImage::imageChange     (khtmlImLoad::Image* /*img*/, QRect region)
 {
 #ifdef LOADER_DEBUG
     kDebug(6060) << "Image " << this << " change " <<
@@ -637,13 +646,13 @@ void CachedImage::doNotifyFinished()
     }
 }
 
-void CachedImage::imageError(khtmlImLoad::Image* img)
+void CachedImage::imageError(khtmlImLoad::Image* /*img*/)
 {
     error(0, 0);
 }
 
 
-void CachedImage::imageDone(khtmlImLoad::Image* img)
+void CachedImage::imageDone(khtmlImLoad::Image* /*img*/)
 {
 #ifdef LOADER_DEBUG
     kDebug(6060)<<"Image is done:" << this << endl;
@@ -770,6 +779,7 @@ void CachedImage::movieStatus(int status)
 
 void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
+    (void) showAnimations;
 #if 0
     m_showAnimations = showAnimations;
     if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
@@ -1588,6 +1598,7 @@ void Cache::statistics()
     int images = 0;
     int scripts = 0;
     int stylesheets = 0;
+    int sound = 0;
     Q3DictIterator<CachedObject> it(*cache);
     for(it.toFirst(); it.current(); ++it)
     {
@@ -1595,7 +1606,7 @@ void Cache::statistics()
         switch(o->type()) {
         case CachedObject::Image:
         {
-            CachedImage *im = static_cast<CachedImage *>(o);
+            //CachedImage *im = static_cast<CachedImage *>(o);
             images++;
             /*if(im->m != 0)
             {
@@ -1610,6 +1621,9 @@ void Cache::statistics()
         case CachedObject::Script:
             scripts++;
             break;
+        case CachedObject::Sound:
+            sound++;
+            break;
         }
         size += o->size();
     }
@@ -1621,6 +1635,7 @@ void Cache::statistics()
     kDebug( 6060 ) << "Number of cached movies: " << movie << endl;
     kDebug( 6060 ) << "Number of cached scripts: " << scripts << endl;
     kDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets << endl;
+    kDebug( 6060 ) << "Number of cached sounds: " << sound << endl;
     kDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
     kDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
     kDebug( 6060 ) << "--------------------------------------------------------------------" << endl;

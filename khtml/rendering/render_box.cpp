@@ -491,7 +491,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     QColor bgColor = c;
 
     // Paint the color first underneath all images.
-    if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgb()) > 0)
+    if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgba()) > 0)
         p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
 
     // no progressive loading of the background image
