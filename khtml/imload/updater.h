@@ -51,6 +51,9 @@ public:
      amount of time has passed.
      */
     void haveUpdates(Image* frame);
+
+    void unregisterImage(Image* frame);
+
 private Q_SLOTS:
     void pushUpdates();
 private:

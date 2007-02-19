@@ -52,6 +52,7 @@ Image::Image(ImageOwner* _owner)
 
 Image::~Image()
 {
+    ImageManager::updater()->unregisterImage(this);
     delete   loader;
     delete   original;
     assert(scaled.isEmpty());

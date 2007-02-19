@@ -53,6 +53,17 @@ void Updater::haveUpdates(Image* frame)
     frames[schedulePortion].append(frame);
 }
 
+void Updater::unregisterImage(Image* frame)
+{
+    QVector<Image*>::const_iterator iter;
+    for (int i = 0; i < 10; ++i)
+    {
+        int pos = frames[i].indexOf(frame);
+        if (pos != -1)
+          frames[i].remove(pos);
+    }
+}
+
 void Updater::pushUpdates()
 {
     timePortion++;
