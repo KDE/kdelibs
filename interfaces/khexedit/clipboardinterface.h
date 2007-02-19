@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sat Sep 13 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
-    email                : Friedrich.W.H@Kossebau.de
+    email                : kossebau@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -41,7 +41,7 @@ namespace KHE
  * }
  * \endcode
  *
- * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), clipboardInterface()
  */
 class KHEXEDIT_EXPORT ClipboardInterface
@@ -73,7 +73,7 @@ class KHEXEDIT_EXPORT ClipboardInterface
 
 /** tries to get the clipboard interface of t
   * @return a pointer to the interface, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
 */
 template<class T>
 ClipboardInterface *clipboardInterface( T *t )

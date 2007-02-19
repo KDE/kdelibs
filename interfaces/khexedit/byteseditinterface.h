@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
-    email                : Friedrich.W.H@Kossebau.de
+    email                : kossebau@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -67,7 +67,7 @@ namespace KHE
  * \endcode
  * </ul>
  *
- * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), bytesEditInterface()
  */
 class KHEXEDIT_EXPORT BytesEditInterface
@@ -147,7 +147,7 @@ class KHEXEDIT_EXPORT BytesEditInterface
 
 /** tries to get the bytesedit interface of t
   * @return a pointer to the interface, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
 */
 template<class T>
 inline BytesEditInterface *bytesEditInterface( T *t )
@@ -206,7 +206,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   *
   * @param Parent  parent widget
   * @return a pointer to the widget, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
   * @see BytesEditInterface, ValueColumnInterface, CharColumnInterface, ZoomInterface, ClipboardInterface
   */
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0 )

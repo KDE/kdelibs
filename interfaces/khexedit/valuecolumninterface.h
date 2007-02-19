@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
-    email                : Friedrich.W.H@Kossebau.de
+    email                : kossebau@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,7 +26,7 @@ namespace KHE
 /**
  *  Interface for the value displaying column of a hexedit widget
  *
- * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), valueColumnInterface()
  */
 
@@ -157,7 +157,7 @@ class KHEXEDIT_EXPORT ValueColumnInterface
 
 /** tries to get the valuecolumn interface of t
   * @return a pointer to the interface, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
 */
 template<class T>
 ValueColumnInterface *valueColumnInterface( T *t )

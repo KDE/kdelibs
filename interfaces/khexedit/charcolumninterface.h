@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
-    email                : Friedrich.W.H@Kossebau.de
+    email                : kossebau@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,7 +26,7 @@ namespace KHE
 /**
  * @short A simple interface for the access to the char column of a hex edit widget
  *
- * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), charColumnInterface()
  */
 class KHEXEDIT_EXPORT CharColumnInterface
@@ -90,7 +90,7 @@ class KHEXEDIT_EXPORT CharColumnInterface
 
 /** tries to get the charcolumn interface of t
   * @return a pointer to the interface, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
   */
 template<class T>
 CharColumnInterface *charColumnInterface( T *t )

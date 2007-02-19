@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
-    email                : Friedrich.W.H@Kossebau.de
+    email                : kossebau@kde.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +29,7 @@ namespace KHE
  * This interface enables abstract linear zooming.
  * It operates in sizes of font point size.
  *
- * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), zoomInterface()
  */
 class KHEXEDIT_EXPORT ZoomInterface
@@ -65,7 +65,7 @@ class KHEXEDIT_EXPORT ZoomInterface
 
 /** tries to get the zoom interface of t
   * @return a pointer to the interface, otherwise 0
-  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
 */
 template<class T>
 ZoomInterface *zoomInterface( T *t )
