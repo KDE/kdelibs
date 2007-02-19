@@ -28,6 +28,8 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_int_int(0) == 0 )
 		assert( TestObject1.func_int_int(177321) == 177321 )
 		assert( TestObject1.func_int_int(-98765) == -98765 )
+		assert( TestObject1.func_int_int(17.111) == 17 )
+		assert( TestObject1.func_int_int(42.999) == 42 )
 	end
 
 	def testUInt
@@ -38,6 +40,8 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_uint_uint(nil) == 0 )
 		assert( TestObject1.func_uint_uint(0) == 0 )
 		assert( TestObject1.func_uint_uint(177321) == 177321 )
+		assert( TestObject1.func_uint_uint(17.111) == 17 )
+		assert( TestObject1.func_uint_uint(42.999) == 42 )
 	end
 
 	def testDouble
@@ -50,6 +54,8 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_double_double(0.0) == 0.0 )
 		assert( TestObject1.func_double_double(1773.2177) == 1773.2177 )
 		assert( TestObject1.func_double_double(-548993.271993) == -548993.271993 )
+		assert( TestObject1.func_double_double(123) == 123.0 )
+		assert( TestObject1.func_double_double(-456) == -456.0 )
 	end
 
 	def testLongLong
