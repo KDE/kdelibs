@@ -115,7 +115,7 @@ namespace KIO {
         /**
          * Reimplemented for internal reasons
          */
-        virtual void suspend();
+        virtual bool doSuspend();
 
     Q_SIGNALS:
 

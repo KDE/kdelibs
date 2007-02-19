@@ -86,25 +86,19 @@ namespace KIO {
          */
         virtual bool doKill();
 
-public Q_SLOTS:
         /**
          * Suspend this job
          * @see resume
          */
-        virtual void suspend();
+        virtual bool doSuspend();
 
         /**
          * Resume this job
          * @see suspend
          */
-        virtual void resume();
+        virtual bool doResume();
 
 public:
-        /**
-         * @return true if this job was suspended by suspend()
-         */
-        bool isSuspended() const;
-
         /**
          * Converts an error code and a non-i18n error message into an
          * error message in the current language. The low level (non-i18n)
@@ -353,13 +347,13 @@ public:
          * Suspend this job
          * @see resume
          */
-        virtual void suspend();
+        virtual bool doSuspend();
 
         /**
          * Resume this job
          * @see suspend
          */
-        virtual void resume();
+        virtual bool doResume();
 
         /**
 	 * Returns the SimpleJob's URL

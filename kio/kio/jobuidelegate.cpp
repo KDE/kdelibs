@@ -127,7 +127,7 @@ void KIO::JobUiDelegate::showErrorMessage()
     }
 }
 
-void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )
+void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*jobId*/ )
 {
     // If we are displaying a progress dialog, remove it first.
     if ( job()->progressId() ) // Did we get an ID from the observer ?

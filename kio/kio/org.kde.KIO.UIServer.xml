@@ -2,10 +2,6 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.kde.KIO.UIServer">
-    <signal name="actionPerformed">
-      <arg name="actionId" type="i" direction="out"/>
-      <arg name="jobId" type="i" direction="out"/>
-    </signal>
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
       <arg name="capabilities" type="i" direction="in"/>

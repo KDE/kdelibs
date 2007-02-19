@@ -32,6 +32,7 @@
 #include "kio/renamedialog.h"
 
 class OrgKdeKIOUIServerInterface;
+class ObserverAdaptor;
 class KUrl;
 
 namespace KIO {
@@ -147,37 +148,14 @@ public:
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
 
 
-// FIXME: Are these slots necessary now that we have slotActionPerformed ?
-//        I don't think so (ereslibre)
-
 public Q_SLOTS:
     /**
-      * Called by the UI Server (using DBus) if the user presses cancel
+      * Called by the kuiserver when an action was performed
       *
-      * @param progressId the progress ID of the job, as returned by newJob()
+      * @param actionId the action identification number
+      * @param jobId the job to which the action belongs to
       */
-    Q_SCRIPTABLE void killJob(int progressId);
-
-    /**
-      * Called by the UI Server (using DBus) if the user presses "pause"
-      *
-      * @param progressId the progress ID of the job, as returned by newJob()
-      */
-    Q_SCRIPTABLE void suspend(int progressId);
-
-    /**
-      * Called by the UI Server (using DBus) if the user presses "pause"
-      *
-      * @param progressId the progress ID of the job, as returned by newJob()
-      */
-    Q_SCRIPTABLE void resume(int progressId);
-
-    /**
-      * Called by the UI Server (using DBus) to get all the metadata of the job
-      *
-      * @param progressId the progress ID of the job, as returned by newJob()
-      */
-    Q_SCRIPTABLE QVariantMap metadata(int progressId);
+    void slotActionPerformed(int actionId, int jobId);
 
 protected:
     static Observer *s_pObserver;
@@ -215,11 +193,11 @@ public:
     void mounting(KJob *job, const QString &dev, const QString &point);
     void unmounting(KJob *job, const QString &point);
 
-private Q_SLOTS:
-    void slotActionPerformed(int actionId, int jobId);
-
 Q_SIGNALS:
     void actionPerformed(KJob *job, int actionId);
+
+private:
+    ObserverAdaptor *observerAdaptor;
 };
 
 #endif

@@ -118,7 +118,7 @@ void KJobUiDelegate::connectJob( KJob *job )
              this, SLOT( slotWarning( KJob*, const QString& ) ) );
 }
 
-void KJobUiDelegate::slotFinished( KJob * /*job*/, int /*id*/ )
+void KJobUiDelegate::slotFinished( KJob * /*job*/, int /*jobId*/ )
 {
     if ( d->job->error() && d->autoErrorHandling )
         showErrorMessage();

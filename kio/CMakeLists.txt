@@ -109,6 +109,7 @@ set(kiocore_STAT_SRCS
   kio/statusbarprogress.cpp
   kio/kdirnotify.cpp
   kio/observer.cpp
+  kio/observeradaptor.cpp
   kio/kemailsettings.cpp
   kio/renamedialog.cpp
   kio/renamedialogplugin.cpp
@@ -246,7 +247,7 @@ kde4_automoc(${kio_LIB_PRIVATE_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio  ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} )
+target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} )
 
 if (UNIX)
    target_link_libraries(kio kdesu)
@@ -410,4 +411,4 @@ install( FILES
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
 install(FILES kio/org.kde.KIO.UIServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
-
+install(FILES kio/org.kde.KIO.Observer.xml DESTINATION ${DBUS_INTERFACES_DIR})

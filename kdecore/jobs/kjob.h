@@ -70,7 +70,7 @@ class KDECORE_EXPORT KJob : public QObject
 public:
     enum Capability { NoCapabilities = 0x0000,
                       Killable       = 0x0001,
-                      Pausable       = 0x0002 };
+                      Suspendable    = 0x0002 };
 
     Q_DECLARE_FLAGS( Capabilities, Capability )
 
@@ -113,6 +113,14 @@ public:
     Capabilities capabilities() const;
 
     /**
+     * Returns if the job was suspended with the suspend() call.
+     *
+     * @return if the job was suspended
+     * @see suspend() resume()
+     */
+    bool isSuspended() const;
+
+    /**
      * Starts the job asynchronously. When the job is finished,
      * result() is emitted.
      */
@@ -134,6 +142,21 @@ public Q_SLOTS:
      */
     bool kill( KillVerbosity verbosity = Quietly );
 
+    /**
+     * Suspends this job.
+     * The job should be kept in a state in which it is possible to resume it.
+     *
+     * @return true if the operation is supported and succeeded, false otherwise
+     */
+    bool suspend();
+
+    /**
+     * Resumes this job.
+     *
+     * @return true if the operation is supported and succeeded, false otherwise
+     */
+    bool resume();
+
 protected:
     /**
      * Aborts this job quietly.
@@ -142,6 +165,20 @@ protected:
      * @return true if the operation is supported and succeeded, false otherwise
      */
     virtual bool doKill() { return false; }
+
+    /**
+     * Suspends this job.
+     *
+     * @return true if the operation is supported and succeeded, false otherwise
+     */
+    virtual bool doSuspend() { return false; }
+
+    /**
+     * Resumes this job.
+     *
+     * @return true if the operation is supported and succeeded, false otherwise
+     */
+    virtual bool doResume() { return false; }
 
     /**
      * Sets the capabilities for this job.
@@ -248,10 +285,26 @@ Q_SIGNALS:
      * observers that the job is terminated and that progress can be hidden.
      *
      * @param job the job that emitted this signal
-     * @param jobId the progress id for this job as returned by uiserver
+     * @param jobId the job identification number that emitted this signal
      * @internal
      */
     void finished( KJob *job, int jobId );
+
+    /**
+     * Emitted when the job is suspended.
+     *
+     * @param job the job that emitted this signal
+     * @param jobId the job identification number that emitted this signal
+     */
+    void suspended( KJob *job, int jobId );
+
+    /**
+     * Emitted when the job is resumed.
+     *
+     * @param job the job that emitted this signal
+     * @param jobId the job identification number that emitted this signal
+     */
+    void resumed( KJob *job, int jobId );
 
     /**
      * Emitted when the job is finished, in any case (completed, canceled,

@@ -30,7 +30,8 @@ class KJob::Private
 {
 public:
     Private() : uiDelegate( 0 ), progressId( 0 ), error( KJob::NoError ),
-                processedSize( 0 ), totalSize( 0 ), percentage( 0 ), capabilities( KJob::NoCapabilities ) {}
+                processedSize( 0 ), totalSize( 0 ), percentage( 0 ),
+                suspended( false ), capabilities( KJob::NoCapabilities ) {}
 
     KJobUiDelegate *uiDelegate;
     int progressId;
@@ -39,6 +40,7 @@ public:
     qulonglong processedSize;
     qulonglong totalSize;
     unsigned long percentage;
+    bool suspended;
     KJob::Capabilities capabilities;
 };
 
@@ -81,6 +83,11 @@ KJob::Capabilities KJob::capabilities() const
     return d->capabilities;
 }
 
+bool KJob::isSuspended() const
+{
+    return d->suspended;
+}
+
 bool KJob::kill( KillVerbosity verbosity )
 {
     if ( doKill() )
@@ -108,6 +115,34 @@ bool KJob::kill( KillVerbosity verbosity )
     {
         return false;
     }
+}
+
+bool KJob::suspend()
+{
+    if ( !d->suspended && doSuspend() )
+    {
+        d->suspended = true;
+
+        emit suspended( this, d->progressId );
+
+        return true;
+    }
+
+    return false;
+}
+
+bool KJob::resume()
+{
+    if ( d->suspended && doResume() )
+    {
+        d->suspended = false;
+
+        emit resumed( this, d->progressId );
+
+        return true;
+    }
+
+    return false;
 }
 
 void KJob::setCapabilities( KJob::Capabilities capabilities )
@@ -217,7 +252,7 @@ void KJob::emitResult()
     // If we are displaying a progress dialog, remove it first.
     if ( d->progressId )
     {
-        emit finished( this, d->progressId );
+        emit finished( this, progressId() );
     }
 
     emit result( this );

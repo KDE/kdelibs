@@ -85,10 +85,9 @@ using namespace KIO;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_suspended( false ), m_parentJob( 0L ), m_extraFlags(0)
+    JobPrivate() : m_parentJob( 0L ), m_extraFlags(0)
                    {}
 
-    bool m_suspended;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
@@ -97,7 +96,7 @@ public:
 
 Job::Job(bool showProgressInfo) : KCompositeJob(0), m_speedTimer(0), d( new JobPrivate )
 {
-    setCapabilities( KJob::Killable | KJob::Pausable );
+    setCapabilities( KJob::Killable | KJob::Suspendable );
     setUiDelegate( new JobUiDelegate( showProgressInfo ) );
 }
 
@@ -178,33 +177,30 @@ bool Job::doKill()
   return true;
 }
 
-void Job::suspend()
+bool Job::doSuspend()
 {
-    if ( !d->m_suspended )
+    QList<KJob *>::const_iterator it = subjobs().begin();
+    const QList<KJob *>::const_iterator end = subjobs().end();
+    for ( ; it != end ; ++it )
     {
-        d->m_suspended = true;
-        QList<KJob *>::const_iterator it = subjobs().begin();
-        const QList<KJob *>::const_iterator end = subjobs().end();
-        for ( ; it != end ; ++it )
-            static_cast<KIO::Job*>( *it )->suspend();
+        if (!(*it)->suspend())
+            return false;
     }
+
+    return true;
 }
 
-void Job::resume()
+bool Job::doResume()
 {
-    if ( d->m_suspended )
+    QList<KJob *>::const_iterator it = subjobs().begin();
+    const QList<KJob *>::const_iterator end = subjobs().end();
+    for ( ; it != end ; ++it )
     {
-        d->m_suspended = false;
-        QList<KJob *>::const_iterator it = subjobs().begin();
-        const QList<KJob *>::const_iterator end = subjobs().end();
-        for ( ; it != end ; ++it )
-            static_cast<KIO::Job*>( *it )->resume();
+        if (!(*it)->resume())
+            return false;
     }
-}
 
-bool Job::isSuspended() const
-{
-  return d->m_suspended;
+    return true;
 }
 
 void Job::slotSpeed( KJob*, unsigned long speed )
@@ -335,20 +331,20 @@ bool SimpleJob::doKill()
     return true;
 }
 
-void SimpleJob::suspend()
+bool SimpleJob::doSuspend()
 {
     Q_ASSERT( m_slave );
     if ( m_slave )
         m_slave->suspend();
-    Job::suspend();
+    return Job::suspend();
 }
 
-void SimpleJob::resume()
+bool SimpleJob::doResume()
 {
     Q_ASSERT( m_slave );
     if ( m_slave )
         m_slave->resume();
-    Job::resume();
+    return Job::resume();
 }
 
 void SimpleJob::putOnHold()

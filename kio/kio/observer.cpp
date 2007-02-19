@@ -34,7 +34,7 @@
 #include "jobclasses.h"
 #include "jobuidelegate.h"
 #include "observer.h"
-
+#include "observeradaptor_p.h"
 #include "uiserveriface.h"
 
 #include "slavebase.h"
@@ -72,10 +72,10 @@ Observer::Observer()
     else
         kDebug(KDEBUG_OBSERVER) << "kuiserver registered" << endl;
 
-    m_uiserver = new org::kde::KIO::UIServer("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
+    observerAdaptor = new ObserverAdaptor(this);
+    QDBusConnection::sessionBus().registerObject(QLatin1String("/Observer"), this);
 
-    connect(m_uiserver, SIGNAL(actionPerformed(int,int)), this,
-            SLOT(slotActionPerformed(int,int)));
+    m_uiserver = new org::kde::KIO::UIServer("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
 }
 
 int Observer::newJob(KJob *job, JobVisibility visibility, const QString &icon)
@@ -117,56 +117,13 @@ void Observer::jobFinished(int progressId)
     m_dctJobs.remove(progressId);
 }
 
-void Observer::killJob(int progressId)
-{
-    KJob *job = m_dctJobs.value(progressId);
-
-    if (job)
-        job->kill(KJob::EmitResult /* not quietly */ );
-}
-
-void Observer::suspend(int progressId)
-{
-    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
-
-    if (job)
-        job->suspend();
-}
-
-void Observer::resume(int progressId)
-{
-    KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
-
-    if (job)
-        job->resume();
-}
-
-QVariantMap Observer::metadata(int progressId)
-{
-    QVariantMap map;
-
-    if (m_dctJobs.contains(progressId))
-    {
-        KIO::Job *job = static_cast<KIO::Job*>(m_dctJobs.value(progressId));
-
-        if (job)
-        {
-            MetaData data = job->metaData();
-            for (MetaData::ConstIterator it = data.constBegin(); it != data.constEnd(); ++it)
-                map.insert(it.key(), it.value());
-        }
-    }
-
-    return map;
-}
-
 void Observer::slotActionPerformed(int actionId, int jobId)
 {
     QByteArray slotName;
 
     switch (actionId)
     {
-        case KJob::Pausable:
+        case KJob::Suspendable:
                 slotName = SLOT(suspend());
             break;
         case KJob::Killable:

@@ -128,7 +128,7 @@ protected:
      virtual void connectJob( KJob *job );
 
 protected Q_SLOTS:
-    void slotFinished( KJob *job, int id );
+    void slotFinished( KJob *job, int jobId );
     void slotWarning( KJob *job, const QString &errorText );
 
 private:

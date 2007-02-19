@@ -49,7 +49,7 @@ void KJobDelegateTest::connectJob(KJob *job)
     connect(job, SIGNAL(processedSize(KJob*,qulonglong)),
             Observer::self(), SLOT(slotProcessedSize(KJob*,qulonglong)));
 
-    connect(job, SIGNAL(finished(KJob*,int)),
+    connect(job, SIGNAL(result(KJob*)),
             this, SLOT(slotFinished(KJob*)));
 
     connect(job, SIGNAL(warning(KJob*,const QString&) ),
@@ -92,7 +92,7 @@ void KJobTest::timerTimeout()
 {
     clockTimer->stop();
 
-    emit finished(this, progressId());
+    emitResult();
 }
 
 void KJobTest::updateMessage()
