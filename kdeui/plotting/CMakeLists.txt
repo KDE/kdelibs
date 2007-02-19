@@ -49,7 +49,7 @@ else (COMPILE_WITH_QT4_ONLY)
 	target_link_libraries(kdeeduplot  ${KDE4_KDEUI_LIBS} )
 	
 	# set the properties for the build
-	set_target_properties(kdeeduplot PROPERTIES VERSION 1.2.0 SOVERSION 1 )
+	set_target_properties(kdeeduplot PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 	
 	# install the binary library file into the KDE library directory
 	install(TARGETS kdeeduplot  DESTINATION ${LIB_INSTALL_DIR} )
