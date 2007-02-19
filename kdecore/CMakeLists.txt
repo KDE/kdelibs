@@ -80,7 +80,7 @@ add_subdirectory( network/tests )
 if (UNIX)
 
    kde4_add_library(kdefakes SHARED fakes.c)
-   set_target_properties(kdefakes PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+   set_target_properties(kdefakes PROPERTIES VERSION 5.0.0 SOVERSION 5 )
    install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
 
    #no ttyname on windows
