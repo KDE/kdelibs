@@ -22,7 +22,6 @@
 #include "kjobuidelegate.h"
 #include "kjob.h"
 #include <kglobal.h>
-#include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 

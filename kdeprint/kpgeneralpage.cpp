@@ -30,7 +30,6 @@
 #include <qlayout.h>
 #include <qradiobutton.h>
 
-#include <kbuttongroup.h>
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kdialog.h>

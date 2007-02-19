@@ -32,7 +32,6 @@
 #include <qfile.h>
 #include <kdebug.h>
 #include <kseparator.h>
-#include <qlabel.h>
 #include <kpushbutton.h>
 #include <kstandardguiitem.h>
 

@@ -42,7 +42,6 @@
 #include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
-#include "html/html_objectimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
@@ -119,7 +118,6 @@ using namespace DOM;
 #include "kpassivepopup.h"
 #include "kmenu.h"
 #include "rendering/render_form.h"
-#include "misc/loader.h"
 #include <kwin.h>
 #include <kconfiggroup.h>
 

@@ -24,7 +24,6 @@
 #include <kservice.h>
 #include <ktoolinvocation.h>
 #include <kcmdlineargs.h>
-#include <ktoolinvocation.h>
 
 int main(int argc, char *argv[])
 {

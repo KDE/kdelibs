@@ -27,7 +27,6 @@
 #include <stdarg.h>
 #include <klibloader.h>
 #include <kcharsets.h>
-#include <klibloader.h>
 
 
 #if !defined( SIMPLE_XSLT )

@@ -23,7 +23,6 @@
 #include "kmenu.h"
 #include "kaction.h"
 #include "kactioncollection.h"
-#include "kactioncollection.h"
 #include "kshortcutdialog.h"
 #include <klocale.h>
 

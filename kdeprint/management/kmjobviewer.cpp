@@ -58,7 +58,6 @@
 #include <QMenuItem>
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
-#include <kactioncollection.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()

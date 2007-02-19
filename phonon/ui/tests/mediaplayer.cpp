@@ -18,7 +18,6 @@
 */
 
 #include "mediaplayer.h"
-#include <QVBoxLayout>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kaboutdata.h>

@@ -44,7 +44,6 @@
 #include <qclipboard.h>
 #include <QMimeData>
 #include <qtextstream.h>
-#include <QMimeData>
 
 static KUrl getNewFileName( const KUrl &u, const QString& text )
 {

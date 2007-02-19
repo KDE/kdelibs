@@ -33,7 +33,6 @@
 #include <qfileinfo.h>
 #include <qeventloop.h>
 #include <qdir.h>
-#include <qfileinfo.h>
 #include <qhash.h>
 #include <qvariant.h>
 

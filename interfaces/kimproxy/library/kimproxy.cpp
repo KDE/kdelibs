@@ -37,7 +37,6 @@
 
 #include "kimiface.h"
 
-#include "kimproxy.h"
 #include <kservicetype.h>
 
 static KStaticDeleter<KIMProxy> _staticDeleter;

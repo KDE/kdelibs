@@ -50,7 +50,6 @@
 #include <kmessagebox.h>
 //#include <kio/netaccess.h>
 //#include <klocale.h>
-//#include <kicon.h>
 //#include <kmimetype.h>
 //#include <kstandarddirs.h>
 

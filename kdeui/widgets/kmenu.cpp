@@ -26,7 +26,6 @@
 #include <QPointer>
 #include <QMenuItem>
 #include <QApplication>
-#include <QPointer>
 #include <QWidgetAction>
 #include <QLabel>
 #include <QStyle>

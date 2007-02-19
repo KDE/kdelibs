@@ -26,7 +26,6 @@
 #include <klistwidget.h>
 #include <kpushbutton.h>
 #include <qcheckbox.h>
-#include <kcursor.h>
 #include <qapplication.h>
 #include <kmessagebox.h>
 #include <qlayout.h>

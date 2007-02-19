@@ -41,7 +41,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
-#include <qlabel.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <ktextedit.h>

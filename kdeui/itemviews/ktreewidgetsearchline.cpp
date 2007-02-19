@@ -181,7 +181,6 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible( QTreeWidget *tr
   }
 }
 
-#include <kdebug.h>
 #include <kvbox.h>
 
 /** Check whether \p item, its siblings and their descendents should be shown. Show or hide the items as necessary.

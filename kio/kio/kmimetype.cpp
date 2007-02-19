@@ -23,7 +23,6 @@
 #include "kmimetypefactory.h"
 #include "kmimemagic.h"
 #include "kprotocolmanager.h"
-#include "kmimetypefactory.h"
 #include <kde_file.h>
 
 #include <kconfiggroup.h>

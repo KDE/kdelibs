@@ -24,7 +24,6 @@
 
 #include "ecma/kjs_dom.h"
 #include "dom/dom2_events.h"
-#include "xml/dom2_eventsimpl.h"
 #include "dom/dom_misc.h"
 #include "xml/dom2_eventsimpl.h"
 

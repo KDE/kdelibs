@@ -6,7 +6,6 @@
 #include "ksocketdevice.h"
 #include "ksocketaddress.h"
 #include "kresolver.h"
-#include "ksocketaddress.h"
 
 #include <iostream>
 using namespace std;

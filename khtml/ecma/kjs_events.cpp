@@ -29,7 +29,6 @@
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
 #include "rendering/render_canvas.h"
-#include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 
 #include <kdebug.h>

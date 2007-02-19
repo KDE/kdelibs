@@ -36,7 +36,6 @@
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
-#include <unistd.h>
 #include <stdio.h>
 
 #include "css/cssstyleselector.h"
@@ -233,7 +232,6 @@ public:
 #include <qfileinfo.h>
 #include <qtimer.h>
 #include <kstatusbar.h>
-#include <qfileinfo.h>
 
 #include "misc/decoder.h"
 #include "dom/dom2_range.h"
@@ -253,7 +251,6 @@ public:
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
 #include "ecma/kjs_window.h"
-#include "ecma/kjs_binding.h"
 #include "ecma/kjs_proxy.h"
 
 using namespace khtml;

@@ -40,7 +40,6 @@
 #include <kmenu.h>
 #include <kstandarddirs.h>
 #include <kmimetype.h>
-#include <kmenu.h>
 
 extern "C"
 {
