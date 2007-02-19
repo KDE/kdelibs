@@ -1,8 +1,7 @@
 /***************************************************************************
- * scriptmanager.h
+ * scriptmanagereditor.h
  * This file is part of the KDE project
- * copyright (c) 2005-2006 Cyrille Berger <cberger@cberger.net>
- * copyright (C) 2006 Sebastian Sauer <mail@dipe.org>
+ * copyright (C) 2006-2007 Sebastian Sauer <mail@dipe.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -194,6 +193,7 @@ namespace Kross {
                 return type == ActionType ? action->isEnabled() : collection->isEnabled();
             }
 
+            QLineEdit* nameedit;
             QLineEdit* textedit;
             QLineEdit* commentedit;
             QLineEdit* iconedit;
@@ -238,11 +238,11 @@ void ScriptManagerEditor::initGui()
 
     QLabel* namelabel = new QLabel(i18n("Name:"), w);
     gridlayout->addWidget(namelabel, 0, 0);
-    QLineEdit* namedit = new QLineEdit(w);
-    namelabel->setBuddy(namedit);
-    namedit->setText( d->name() );
-    namedit->setEnabled(false);
-    gridlayout->addWidget(namedit, 0, 1);
+    d->nameedit = new QLineEdit(w);
+    namelabel->setBuddy(d->nameedit);
+    d->nameedit->setText( d->name() );
+    d->nameedit->setEnabled(false);
+    gridlayout->addWidget(d->nameedit, 0, 1);
 
     QLabel* textlabel = new QLabel(i18n("Text:"), w);
     gridlayout->addWidget(textlabel, 1, 0);
@@ -323,6 +323,12 @@ void ScriptManagerEditor::initGui()
     mainlayout->addWidget(d->enabledcheckbox);
 
     mainlayout->addStretch(1);
+}
+
+bool ScriptManagerEditor::isValid()
+{
+    //TODO check also if such a name already exist.
+    return ! d->nameedit->text().isEmpty();
 }
 
 void ScriptManagerEditor::commit()

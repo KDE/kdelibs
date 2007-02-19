@@ -2,7 +2,7 @@
  * scriptmanager.h
  * This file is part of the KDE project
  * copyright (c) 2005-2006 Cyrille Berger <cberger@cberger.net>
- * copyright (C) 2006 Sebastian Sauer <mail@dipe.org>
+ * copyright (C) 2006-2007 Sebastian Sauer <mail@dipe.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 
 #include "scriptmanager.h"
 #include "scriptmanagereditor.h"
+#include "scriptmanageradd.h"
 
 #include "../core/manager.h"
 #include "../core/action.h"
@@ -35,14 +36,6 @@
 #include <QHeaderView>
 #include <QTreeView>
 
-#include <QLabel>
-//#include <QLineEdit>
-//#include <QComboBox>
-//#include <QCheckBox>
-#include <QRadioButton>
-
-
-
 #include <kapplication.h>
 //#include <kdeversion.h>
 #include <kconfig.h>
@@ -54,7 +47,6 @@
 #include <kfiledialog.h>
 #include <kmenu.h>
 #include <kpagedialog.h>
-#include <kassistantdialog.h>
 
 #include <ktar.h>
 #include <kio/netaccess.h>
@@ -99,11 +91,10 @@ namespace Kross {
     {
         public:
             ScriptManagerModule* module;
-            //ScriptManagerNewStuff* newstuff;
             bool modified;
             QTreeView* view;
-            KPushButton *runbtn, *stopbtn, *editbtn, *addbtn, *removebtn, *newstuffbtn;
-            Private(ScriptManagerModule* m) : module(m), /*newstuff(0),*/ modified(false) {}
+            KPushButton *runbtn, *stopbtn, *editbtn, *addbtn, *removebtn;
+            Private(ScriptManagerModule* m) : module(m), modified(false) {}
     };
 
 }
@@ -172,7 +163,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     d->addbtn = new KPushButton(KIcon("add"), i18n("Add..."), btnwidget);
     d->addbtn->setToolTip( i18n("Add a new script.") );
     btnlayout->addWidget(d->addbtn);
-    d->addbtn->setEnabled(false);
+    //d->addbtn->setEnabled(false);
     connect(d->addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
 
     d->removebtn = new KPushButton(KIcon("remove"), i18n("Remove"), btnwidget);
@@ -181,6 +172,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     d->removebtn->setEnabled(false);
     connect(d->removebtn, SIGNAL(clicked()), this, SLOT(slotRemove()) );
 
+    /*
     QFrame* hr2 = new QFrame(btnwidget);
     hr2->setFrameStyle(QFrame::HLine | QFrame::Sunken);
     btnlayout->addWidget(hr2, 0);
@@ -190,6 +182,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     btnlayout->addWidget(d->newstuffbtn);
     d->newstuffbtn->setEnabled(false);
     //TODO connect(d->newstuffbtn, SIGNAL(clicked()), this, SLOT(slotNewScripts()) );
+    */
 
     //i18n("About"), i18n("Configure")
 
@@ -275,74 +268,11 @@ void ScriptManagerCollection::slotEdit()
     }
 }
 
-
-
-
-/* testcases ******************************/
-class AddType : public QWidget {
-    public:
-        AddType(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
-            QVBoxLayout* layout = new QVBoxLayout(this);
-            //layout->setSpacing(0);
-            //layout->setMargin(0);
-            setLayout(layout);
-            layout->addWidget( new QLabel(i18n("<qt>This wizard will guide you through the proccess of adding a new item to your scripts.</qt>"), this) );
-
-            QRadioButton* radiobtn2 = new QRadioButton(i18n("Add script file"), this);
-            radiobtn2->setChecked(true);
-            layout->addWidget(radiobtn2);
-
-            QRadioButton* radiobtn1 = new QRadioButton(i18n("Add collection folder"), this);
-            layout->addWidget(radiobtn1);
-
-            QRadioButton* radiobtn3 = new QRadioButton(i18n("Install script package file"), this);
-            radiobtn3->setEnabled(false);
-            layout->addWidget(radiobtn3);
-
-            QRadioButton* radiobtn4 = new QRadioButton(i18n("Install online script package"), this);
-            radiobtn4->setEnabled(false);
-            layout->addWidget(radiobtn4);
-
-            layout->addStretch(1);
-        }
-};
-class AddScriptWidget : public QWidget {
-    public:
-        AddScriptWidget(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
-            QVBoxLayout* layout = new QVBoxLayout(this);
-            setLayout(layout);
-            Action* action = new Action(0, "");
-            ScriptManagerEditor* editor = new ScriptManagerEditor(action, this);
-            layout->addWidget(editor);
-        }
-};
-class AddCollectionWidget : public QWidget {
-    public:
-        AddCollectionWidget(ScriptManagerCollection*, QWidget* parent) : QWidget(parent) {
-            QVBoxLayout* layout = new QVBoxLayout(this);
-            setLayout(layout);
-            ActionCollection* collection = new ActionCollection("");
-            ScriptManagerEditor* editor = new ScriptManagerEditor(collection, this);
-            layout->addWidget(editor);
-        }
-};
-
 void ScriptManagerCollection::slotAdd()
 {
-    //TODO
-
-    KAssistantDialog* dialog = new KAssistantDialog(this);
-    dialog->setCaption( i18n("Add") );
-
-    KPageWidgetItem* item = dialog->addPage(new AddType(this, dialog), i18n("Add"));
-    KPageWidgetItem* item2 = dialog->addPage(new AddScriptWidget(this, dialog), i18n("Script"));
-    KPageWidgetItem* item3 = dialog->addPage(new AddCollectionWidget(this, dialog), i18n("Collection"));
-
-    dialog->resize( QSize(600, 400).expandedTo( dialog->minimumSizeHint() ) );
-    int result = dialog->exec();
+    ScriptManagerAddWizard wizard(this);
+    int result = wizard.execWizard();
     Q_UNUSED(result);
-
-    dialog->delayedDestruct();
 }
 
 void ScriptManagerCollection::slotRemove()
@@ -416,6 +346,7 @@ ScriptManagerModule::~ScriptManagerModule()
     delete d;
 }
 
+#if 0
 bool ScriptManagerModule::installPackage(const QString& scriptpackagefile)
 {
     KTar archive( scriptpackagefile );
@@ -478,7 +409,6 @@ bool ScriptManagerModule::installPackage(const QString& scriptpackagefile)
     return true;
 }
 
-#if 0
 bool ScriptManagerModule::uninstallPackage(Action* action)
 {
     const QString name = action->objectName();

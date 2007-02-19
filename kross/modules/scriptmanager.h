@@ -2,7 +2,7 @@
  * scriptmanager.h
  * This file is part of the KDE project
  * copyright (c) 2005-2006 Cyrille Berger <cberger@cberger.net>
- * copyright (C) 2006 Sebastian Sauer <mail@dipe.org>
+ * copyright (C) 2006-2007 Sebastian Sauer <mail@dipe.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,15 +31,13 @@
 
 namespace Kross {
 
-    //class Action;
-    //class ActionCollection;
     class GUIClient;
     class ScriptManagerModule;
 
     /**
     * The ScriptManagerCollection class shows a QListView where the content of a
-    * \a ActionCollection is displayed and some buttons to run, stop, install,
-    * uninstall and to get new scripts.
+    * \a ActionCollection is displayed and some buttons to run, stop, add, edit
+    * and remove scripts.
     */
     class ScriptManagerCollection : public QWidget
     {
@@ -123,6 +121,7 @@ namespace Kross {
 
         public Q_SLOTS:
 
+#if 0
             /**
             * Install the scriptpackage \p file . The scriptpackage should be a
             * tar.gz or tar.bzip archivefile.
@@ -133,7 +132,6 @@ namespace Kross {
             */
             bool installPackage(const QString& scriptpackagefile);
 
-#if 0
             /**
             * Uninstalls the scriptpackage \p action and removes all to the package
             * belonging files.
@@ -147,7 +145,7 @@ namespace Kross {
             void showEditorDialog(QObject* object, QWidget* parent = 0);
 
             /**
-            * Display the "Script Manager" KDialog.
+            * Display the modal "Script Manager" dialog.
             */
             void showManagerDialog();
 
