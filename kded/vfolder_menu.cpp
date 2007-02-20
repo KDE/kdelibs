@@ -1035,7 +1035,7 @@ VFolderMenu::processKDELegacyDirs()
 kDebug(7021) << "processKDELegacyDirs()" << endl;
 
    QHash<QString,KService::Ptr> items;
-   QString prefix = "kde-";
+   QString prefix = "kde4-";
 
    QStringList relFiles;
 

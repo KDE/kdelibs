@@ -576,8 +576,8 @@ KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
     KService::Ptr s = KServiceFactory::self()->findServiceByDesktopName( _name.toLower() );
-    if (!s && !_name.startsWith("kde-"))
-        s = KServiceFactory::self()->findServiceByDesktopName( "kde-"+_name.toLower() );
+    if (!s && !_name.startsWith("kde4-"))
+        s = KServiceFactory::self()->findServiceByDesktopName( "kde4-"+_name.toLower() );
     return s;
 }
 
@@ -720,7 +720,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 {
     QString base = suggestedName;
     if (!showInMenu)
-        base.prepend("kde-");
+        base.prepend("kde4-");
 
     QString result;
     for(int i = 1; true; i++)
@@ -745,7 +745,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
         }
         else
         {
-            QString file = result.mid(4); // Strip "kde-"
+            QString file = result.mid(5); // Strip "kde4-"
             if (!KStandardDirs::locate("apps", ".hidden/"+file).isEmpty())
                 continue;
         }
@@ -760,7 +760,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
         return KStandardDirs::locateLocal("xdgdata-apps", result);
     }
 
-    QString file = result.mid(4); // Strip "kde-"
+    QString file = result.mid(5); // Strip "kde4-"
     return KStandardDirs::locateLocal("apps", ".hidden/"+file);
 }
 
