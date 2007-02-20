@@ -32,6 +32,7 @@ class QSlider;
 class QValidator;
 
 class KIntSpinBox;
+class KNumInputPrivate;
 
 /**
  * You need to inherit from this class if you want to implement K*NumInput
@@ -85,7 +86,7 @@ public:
     /**
      * @return if the num input has a slider.
      */
-    bool showSlider() const { return m_slider; }
+    bool showSlider() const;
 
     /**
      * Sets the spacing of tickmarks for the slider.
@@ -126,21 +127,11 @@ protected:
      */
     virtual void doLayout() = 0;
 
-    KNumInput* m_prev, *m_next;
-    int m_colw1, m_colw2;
-
-    QLabel*  m_label;
-    QSlider* m_slider;
-    QSize    m_sizeSlider, m_sizeLabel;
-
-    Qt::Alignment m_alignment;
-
 private:
-    void init();
-
-private:
-    class KNumInputPrivate;
+    friend class KNumInputPrivate;
     KNumInputPrivate *d;
+    
+    Q_DISABLE_COPY(KNumInput)
 };
 
 /* ------------------------------------------------------------------------ */
@@ -363,15 +354,15 @@ protected:
     virtual void doLayout();
     void resizeEvent ( QResizeEvent * );
 
-    KIntSpinBox* m_spin;
-    QSize        m_sizeSpin;
-
 private:
     void init(int value, int _base);
 
 private:
     class KIntNumInputPrivate;
+    friend class KIntNumInputPrivate;
     KIntNumInputPrivate *d;
+    
+    Q_DISABLE_COPY(KIntNumInput)
 };
 
 
@@ -495,7 +486,7 @@ public:
      * @return the string displayed for a special value.
      * @see setSpecialValueText()
      */
-    QString specialValueText() const { return m_specialvalue; }
+    QString specialValueText() const;
 
      /**
      * @param min  minimum value
@@ -604,22 +595,19 @@ protected:
     virtual void doLayout();
     void resizeEvent ( QResizeEvent * );
 
-
-    QSize    m_sizeEdit;
-
     friend class KDoubleLine;
 private:
     void init(double value, double lower, double upper,
     double step, int precision);
     double mapSliderToSpin(int) const;
     void updateLegacyMembers();
-    // ### no longer used, remove when BIC allowed:
-    QString  m_specialvalue;
-    // ### end remove when BIC allowed
 
 private:
     class KDoubleNumInputPrivate;
+    friend class KDoubleNumInputPrivate;
     KDoubleNumInputPrivate *d;
+    
+    Q_DISABLE_COPY(KDoubleNumInput)
 };
 
 
@@ -699,10 +687,11 @@ protected:
     virtual int valueFromText(const QString &text) const;
 
 private:
-    int val_base;
-private:
     class KIntSpinBoxPrivate;
-    KIntSpinBoxPrivate *d;
+    friend class KIntSpinBoxPrivate;
+    KIntSpinBoxPrivate *const d;
+    
+    Q_DISABLE_COPY(KIntSpinBox)
 };
 
 
