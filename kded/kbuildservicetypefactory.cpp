@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure   <faure@kde.org>
  *
@@ -31,10 +30,10 @@
 #include <qhash.h>
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
-  KServiceTypeFactory()
+    KServiceTypeFactory()
 {
-   m_resourceList = new KSycocaResourceList;
-   m_resourceList->add("servicetypes", "*.desktop");
+    m_resourceList = new KSycocaResourceList;
+    m_resourceList->add("servicetypes", "*.desktop");
 }
 
 // return all service types for this factory
@@ -46,115 +45,108 @@ QStringList KBuildServiceTypeFactory::resourceTypes()
 
 KBuildServiceTypeFactory::~KBuildServiceTypeFactory()
 {
-   delete m_resourceList;
+    delete m_resourceList;
 }
 
 KServiceType::Ptr KBuildServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
-   assert (KSycoca::self()->isBuilding());
-   // We're building a database - the service type must be in memory
-   KSycocaEntry::Ptr servType = m_entryDict->value( _name );
-   return KServiceType::Ptr::staticCast( servType );
+    assert (KSycoca::self()->isBuilding());
+    // We're building a database - the service type must be in memory
+    KSycocaEntry::Ptr servType = m_entryDict->value( _name );
+    return KServiceType::Ptr::staticCast( servType );
 }
 
 
-KSycocaEntry *
-KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
+KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 {
-  QString name = file;
-  int pos = name.lastIndexOf('/');
-  if (pos != -1)
-  {
-     name = name.mid(pos+1);
-  }
+    QString name = file;
+    int pos = name.lastIndexOf('/');
+    if (pos != -1) {
+        name = name.mid(pos+1);
+    }
 
-  if (name.isEmpty())
-     return 0;
+    if (name.isEmpty())
+        return 0;
 
-  KDesktopFile desktopFile(resource, file);
-  const KConfigGroup desktopGroup = desktopFile.desktopGroup();
+    KDesktopFile desktopFile(resource, file);
+    const KConfigGroup desktopGroup = desktopFile.desktopGroup();
 
-  if ( desktopGroup.readEntry( "Hidden", false ) == true )
-      return 0;
+    if ( desktopGroup.readEntry( "Hidden", false ) == true )
+        return 0;
 
-  const QString type = desktopGroup.readEntry( "Type" );
-  if ( type != QLatin1String( "ServiceType" ) )
-  {
-     kWarning(7012) << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType" << endl;
-    return 0;
-  }
+    const QString type = desktopGroup.readEntry( "Type" );
+    if ( type != QLatin1String( "ServiceType" ) ) {
+        kWarning(7012) << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType" << endl;
+        return 0;
+    }
 
-  const QString serviceType = desktopGroup.readEntry( "X-KDE-ServiceType" );
+    const QString serviceType = desktopGroup.readEntry( "X-KDE-ServiceType" );
 
-  if ( serviceType.isEmpty() )
-  {
-     kWarning(7012) << "The service type config file " << desktopFile.fileName() << " does not contain a ServiceType=... entry" << endl;
-    return 0;
-  }
+    if ( serviceType.isEmpty() ) {
+        kWarning(7012) << "The service type config file " << desktopFile.fileName() << " does not contain a ServiceType=... entry" << endl;
+        return 0;
+    }
 
-  KServiceType* e = new KServiceType( &desktopFile );
+    KServiceType* e = new KServiceType( &desktopFile );
 
-  if (e->isDeleted())
-  {
-    delete e;
-    return 0;
-  }
+    if (e->isDeleted()) {
+        delete e;
+        return 0;
+    }
 
-  if ( !(e->isValid()) )
-  {
-    kWarning(7012) << "Invalid ServiceType : " << file << endl;
-    delete e;
-    return 0;
-  }
+    if ( !(e->isValid()) ) {
+        kWarning(7012) << "Invalid ServiceType : " << file << endl;
+        delete e;
+        return 0;
+    }
 
-  return e;
+    return e;
 }
 
 void
 KBuildServiceTypeFactory::saveHeader(QDataStream &str)
 {
-   KSycocaFactory::saveHeader(str);
-   str << (qint32) m_propertyTypeDict.count();
-   for (QMap<QString, int>::ConstIterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
-   {
-     str << it.key() << (qint32)it.value();
-   }
+    KSycocaFactory::saveHeader(str);
+    str << (qint32) m_propertyTypeDict.count();
+    for (QMap<QString, int>::ConstIterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it) {
+        str << it.key() << (qint32)it.value();
+    }
 }
 
 void
 KBuildServiceTypeFactory::save(QDataStream &str)
 {
-   KSycocaFactory::save(str);
+    KSycocaFactory::save(str);
 #if 0 // not needed since don't have any additional index anymore
-   int endOfFactoryData = str.device()->pos();
+    int endOfFactoryData = str.device()->pos();
 
-   // Update header (pass #3)
-   saveHeader(str);
+    // Update header (pass #3)
+    saveHeader(str);
 
-   // Seek to end.
-   str.device()->seek(endOfFactoryData);
+    // Seek to end.
+    str.device()->seek(endOfFactoryData);
 #endif
 }
 
 void
 KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-   KServiceType::Ptr serviceType = KServiceType::Ptr::staticCast( newEntry );
-   if ( m_entryDict->value( newEntry->name() ) )
-   {
-     // Already exists -> replace
-     KSycocaFactory::removeEntry(newEntry->name());
-   }
-   KSycocaFactory::addEntry(newEntry);
+    KServiceType::Ptr serviceType = KServiceType::Ptr::staticCast( newEntry );
+    if ( m_entryDict->value( newEntry->name() ) ) {
+        // Already exists -> replace
+        KSycocaFactory::removeEntry(newEntry->name());
+    }
+    KSycocaFactory::addEntry(newEntry);
 
-   const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
-   QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
-   for( ; pit != pd.end(); ++pit )
-   {
-     if (!m_propertyTypeDict.contains(pit.key()))
-       m_propertyTypeDict.insert(pit.key(), pit.value());
-     else if (m_propertyTypeDict.value(pit.key()) != static_cast<int>(pit.value()))
-       kWarning(7021) << "Property '"<< pit.key() << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
-   }
+    const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
+    QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
+    for( ; pit != pd.end(); ++pit ) {
+        const QString property = pit.key();
+        QMap<QString, int>::iterator dictit = m_propertyTypeDict.find(property);
+        if (dictit == m_propertyTypeDict.end())
+            m_propertyTypeDict.insert(property, pit.value());
+        else if (*dictit != static_cast<int>(pit.value()))
+            kWarning(7021) << "Property '"<< property << "' is defined multiple times ("<< serviceType->name() <<")" <<endl;
+    }
 }
 
