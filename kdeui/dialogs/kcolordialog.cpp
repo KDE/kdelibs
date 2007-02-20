@@ -316,7 +316,7 @@ void KColorCells::setColor( int column, const QColor &color )
 	}
 }*/
 
-void KColorCells::resizeEvent( QResizeEvent* event )
+void KColorCells::resizeEvent( QResizeEvent* )
 {
     // iterate over each column and each row and resize them to fit their contents.
     // resizeColumnsToContents() and resizeRowsToContents() are not used because
