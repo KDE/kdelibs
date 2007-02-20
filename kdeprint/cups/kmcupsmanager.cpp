@@ -60,7 +60,7 @@ using namespace KNetwork;
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).toUtf8())
 
-static void extractMaticData(QString& buf, const QString& filename);
+//static void extractMaticData(QString& buf, const QString& filename);
 static QString printerURI(KMPrinter *p, bool useExistingURI);
 static QString downloadDriver(KMPrinter *p);
 
@@ -975,6 +975,7 @@ void KMCupsManager::hostPingFailedSlot() {
 
 //*****************************************************************************************************
 
+#if 0 // currently unused
 static void extractMaticData(QString& buf, const QString& filename)
 {
 	QFile	f(filename);
@@ -990,6 +991,7 @@ static void extractMaticData(QString& buf, const QString& filename)
 		}
 	}
 }
+#endif
 
 static QString printerURI(KMPrinter *p, bool use)
 {
