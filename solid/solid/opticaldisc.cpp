@@ -22,14 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/opticaldisc.h>
 
+namespace Solid
+{
+    class OpticalDisc::Private
+    {
+    public:
+    };
+}
 
 Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
-    : Volume( backendObject )
+    : Volume(backendObject), d(new Private)
 {
 }
 
 Solid::OpticalDisc::~OpticalDisc()
 {
+    delete d;
 }
 
 Solid::OpticalDisc::ContentTypes Solid::OpticalDisc::availableContent() const

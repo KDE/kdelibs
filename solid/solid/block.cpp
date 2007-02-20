@@ -22,13 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/block.h>
 
+namespace Solid
+{
+    class Block::Private
+    {
+    public:
+    };
+}
+
 Solid::Block::Block( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::Block::~Block()
 {
+    delete d;
 }
 
 int Solid::Block::deviceMajor() const

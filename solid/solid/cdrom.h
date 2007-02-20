@@ -57,8 +57,8 @@ namespace Solid
          * - Dvdplusrw : A ReWritable Digital Versatile Disc (DVD+RW)
          * - Dvdplusdl : A Dual Layer Digital Versatile Disc (DVD+R DL)
          */
-        enum MediumType { Cdr=0x001, Cdrw=0x002, Dvd=0x004, Dvdr=0x008, 
-                          Dvdrw=0x010, Dvdram=0x020, Dvdplusr=0x040, 
+        enum MediumType { Cdr=0x001, Cdrw=0x002, Dvd=0x004, Dvdr=0x008,
+                          Dvdrw=0x010, Dvdram=0x020, Dvdplusr=0x040,
                           Dvdplusrw=0x080, Dvdplusdl=0x100 };
 
         /**
@@ -130,6 +130,10 @@ namespace Solid
          * Please note that some (broken) drives doesn't report this event.
          */
         void ejectPressed();
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

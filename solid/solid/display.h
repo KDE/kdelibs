@@ -91,6 +91,10 @@ namespace Solid
          * @return the brightness level in percent. If displayType is different from lcd, return 100.
          */
         int lcdBrightness() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

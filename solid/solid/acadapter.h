@@ -73,6 +73,10 @@ namespace Solid
          * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
         void plugStateChanged( bool newState );
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

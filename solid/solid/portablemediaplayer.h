@@ -111,6 +111,10 @@ namespace Solid
          * @return a MIME-type list of the supported playlist formats
          */
         QStringList playlistFormats() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

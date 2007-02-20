@@ -22,9 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/button.h>
 
+namespace Solid
+{
+    class Button::Private
+    {
+    public:
+    };
+}
 
 Solid::Button::Button( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
     connect( backendObject, SIGNAL( pressed( int ) ),
              this, SIGNAL( pressed( int ) ) );
@@ -32,6 +39,7 @@ Solid::Button::Button( QObject *backendObject )
 
 Solid::Button::~Button()
 {
+    delete d;
 }
 
 Solid::Button::ButtonType Solid::Button::type() const

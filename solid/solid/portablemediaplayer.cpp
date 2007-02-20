@@ -22,14 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
+namespace Solid
+{
+    class PortableMediaPlayer::Private
+    {
+    public:
+    };
+}
 
 Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::PortableMediaPlayer::~PortableMediaPlayer()
 {
+    delete d;
 }
 
 Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const

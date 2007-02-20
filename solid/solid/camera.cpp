@@ -22,14 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/camera.h>
 
+namespace Solid
+{
+    class Camera::Private
+    {
+    public:
+    };
+}
 
 Solid::Camera::Camera( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::Camera::~Camera()
 {
+    delete d;
 }
 
 

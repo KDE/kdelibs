@@ -129,6 +129,9 @@ namespace Solid
         void activationStateChanged( bool activated );
 
     private:
+        class Private;
+        Private * const d;
+
         friend class NetworkInterface;
     //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
     };

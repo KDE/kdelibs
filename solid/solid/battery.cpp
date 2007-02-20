@@ -22,8 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/battery.h>
 
+namespace Solid
+{
+    class Battery::Private
+    {
+    public:
+    };
+}
+
 Solid::Battery::Battery( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
     connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
              this, SIGNAL( chargePercentChanged( int ) ) );
@@ -35,6 +43,7 @@ Solid::Battery::Battery( QObject *backendObject )
 
 Solid::Battery::~Battery()
 {
+    delete d;
 }
 
 bool Solid::Battery::isPlugged() const

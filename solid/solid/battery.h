@@ -206,6 +206,10 @@ namespace Solid
          * @see Solid::Battery::ChargeState
          */
         void chargeStateChanged( int newState );
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

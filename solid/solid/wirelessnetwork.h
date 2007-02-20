@@ -188,7 +188,11 @@ namespace Solid
          * to be able to connect. Respond to this by calling setAuthentication().
          */
         void authenticationNeeded();
-};
+
+    private:
+        class Private;
+        Private * const d;
+    };
 
 } //Solid
 

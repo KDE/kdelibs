@@ -100,6 +100,9 @@ namespace Solid
         static Type stringToType(const QString &type);
 
     private:
+        class Private;
+        Private * const d;
+
         friend class Device;
     };
 }

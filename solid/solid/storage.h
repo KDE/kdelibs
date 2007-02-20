@@ -166,6 +166,10 @@ namespace Solid
          * @return the product name
          */
         QString product() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

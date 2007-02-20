@@ -133,7 +133,7 @@ namespace Solid
 
     private:
         class Private;
-        Private * d;
+        Private * const d;
 };
 
 } // Solid

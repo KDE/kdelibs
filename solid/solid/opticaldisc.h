@@ -149,6 +149,10 @@ namespace Solid
          * @return the capacity of the disc in bytes
          */
         qulonglong capacity() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

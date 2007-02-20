@@ -93,6 +93,10 @@ namespace Solid
          * @return the MAC address
          */
         qulonglong macAddress() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

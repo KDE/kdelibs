@@ -22,8 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/volume.h>
 
+namespace Solid
+{
+    class Volume::Private
+    {
+    public:
+    };
+}
+
 Solid::Volume::Volume( QObject *backendObject )
-    : Block( backendObject )
+    : Block(backendObject), d(new Private)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
@@ -31,6 +39,7 @@ Solid::Volume::Volume( QObject *backendObject )
 
 Solid::Volume::~Volume()
 {
+    delete d;
 }
 
 bool Solid::Volume::isIgnored() const

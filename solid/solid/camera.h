@@ -95,6 +95,10 @@ namespace Solid
          * @return true if the camera is supported by libgphoto2, false otherwise.
          */
         bool isGphotoSupported() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

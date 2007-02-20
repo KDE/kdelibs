@@ -310,7 +310,7 @@ QString Solid::Predicate::toString() const
         if (d->compOperator!=Equals) str_operator = "&";
 
 
-        return capability+'.'+d->property+" "+str_operator+" "+value;
+        return capability+'.'+d->property+' '+str_operator+' '+value;
     }
 }
 

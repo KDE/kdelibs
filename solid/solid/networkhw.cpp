@@ -22,14 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/networkhw.h>
 
+namespace Solid
+{
+    class NetworkHw::Private
+    {
+    public:
+    };
+}
 
 Solid::NetworkHw::NetworkHw( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::NetworkHw::~NetworkHw()
 {
+    delete d;
 }
 
 QString Solid::NetworkHw::ifaceName() const

@@ -22,13 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/storage.h>
 
+namespace Solid
+{
+    class Storage::Private
+    {
+    public:
+    };
+}
+
 Solid::Storage::Storage( QObject *backendObject )
-    : Block( backendObject )
+    : Block(backendObject), d(new Private)
 {
 }
 
 Solid::Storage::~Storage()
 {
+    delete d;
 }
 
 Solid::Storage::Bus Solid::Storage::bus() const

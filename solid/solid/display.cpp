@@ -22,13 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/display.h>
 
+namespace Solid
+{
+    class Display::Private
+    {
+    public:
+    };
+}
+
 Solid::Display::Display( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::Display::~Display()
 {
+    delete d;
 }
 
 Solid::Display::DisplayType Solid::Display::type() const

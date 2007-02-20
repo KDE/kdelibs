@@ -23,14 +23,23 @@
 
 #include <QMetaEnum>
 
+namespace Solid
+{
+    class Capability::Private
+    {
+    public:
+    };
+}
+
 Solid::Capability::Capability( QObject *backendObject )
-    : FrontendObject()
+    : FrontendObject(), d(new Private)
 {
     setBackendObject( backendObject );
 }
 
 Solid::Capability::~Capability()
 {
+    delete d;
 }
 
 QString Solid::Capability::typeToString(Type type)

@@ -328,7 +328,7 @@ namespace Solid
         void unregisterBackendObject();
 
         class Private;
-        Private *d;
+        Private * const d;
     };
 
     typedef QList<Device> DeviceList;

@@ -22,8 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/cdrom.h>
 
+namespace Solid
+{
+    class Cdrom::Private
+    {
+    public:
+    };
+}
+
 Solid::Cdrom::Cdrom( QObject *backendObject )
-    : Storage( backendObject )
+    : Storage(backendObject), d(new Private)
 {
     connect( backendObject, SIGNAL( ejectPressed() ),
              this, SIGNAL( ejectPressed() ) );
@@ -31,6 +39,7 @@ Solid::Cdrom::Cdrom( QObject *backendObject )
 
 Solid::Cdrom::~Cdrom()
 {
+    delete d;
 }
 
 Solid::Cdrom::MediumTypes Solid::Cdrom::supportedMedia() const

@@ -73,6 +73,10 @@ namespace Solid
          * the device
          */
         QString device() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

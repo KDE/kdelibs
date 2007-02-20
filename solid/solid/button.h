@@ -113,6 +113,10 @@ namespace Solid
          * @see Solid::Button::ButtonType
          */
         void pressed( int type );
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

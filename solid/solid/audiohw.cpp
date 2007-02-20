@@ -26,23 +26,21 @@
 
 namespace Solid
 {
-    class AudioHwPrivate
+    class AudioHw::Private
     {
-        public:
-            QStringList driverHandles;
+    public:
+        QStringList driverHandles;
     };
-} // namespace Solid
+}
 
 Solid::AudioHw::AudioHw( QObject *backendObject )
-    : Capability( backendObject ),
-    d( new AudioHwPrivate )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::AudioHw::~AudioHw()
 {
     delete d;
-    d = 0;
 }
 
 

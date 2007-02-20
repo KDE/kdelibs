@@ -255,7 +255,7 @@ namespace Solid
         Network *findRegisteredNetwork( const QString &uni ) const;
 
         class Private;
-        Private * d;
+        Private * const d;
 };
 
 } //Solid

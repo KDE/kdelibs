@@ -22,8 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/acadapter.h>
 
+namespace Solid
+{
+    class AcAdapter::Private
+    {
+    public:
+    };
+}
+
 Solid::AcAdapter::AcAdapter( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
     connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
              this, SIGNAL( plugStateChanged( bool ) ) );
@@ -31,6 +39,7 @@ Solid::AcAdapter::AcAdapter( QObject *backendObject )
 
 Solid::AcAdapter::~AcAdapter()
 {
+    delete d;
 }
 
 bool Solid::AcAdapter::isPlugged() const

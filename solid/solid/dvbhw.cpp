@@ -22,13 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/dvbhw.h>
 
+namespace Solid
+{
+    class DvbHw::Private
+    {
+    public:
+    };
+}
+
 Solid::DvbHw::DvbHw( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::DvbHw::~DvbHw()
 {
+    delete d;
 }
 
 QString Solid::DvbHw::device() const

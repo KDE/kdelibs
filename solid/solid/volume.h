@@ -186,6 +186,10 @@ namespace Solid
          * @param newState true if the volume is mounted, false otherwise
          */
         void mountStateChanged( bool newState );
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

@@ -84,6 +84,10 @@ namespace Solid
          * @return true if the processor can throttle, false otherwise
          */
         bool canThrottle() const;
+
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

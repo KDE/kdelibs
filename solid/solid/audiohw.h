@@ -26,8 +26,6 @@
 
 namespace Solid
 {
-    class AudioHwPrivate;
-
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
@@ -199,7 +197,8 @@ namespace Solid
         SoundcardType soundcardType();
 
     private:
-        AudioHwPrivate *d;
+        class Private;
+        Private * const d;
     };
 }
 

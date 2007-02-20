@@ -22,9 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/network.h>
 
+namespace Solid
+{
+    class Network::Private
+    {
+    public:
+    };
+}
 
 Solid::Network::Network( QObject *backendObject )
-    : FrontendObject()
+    : FrontendObject(), d(new Private)
 {
     setBackendObject( backendObject );
 
@@ -39,6 +46,7 @@ Solid::Network::Network( QObject *backendObject )
 
 Solid::Network::~Network()
 {
+    delete d;
 }
 
 QList<KNetwork::KIpAddress> Solid::Network::ipV4Addresses() const

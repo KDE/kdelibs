@@ -22,13 +22,22 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/processor.h>
 
+namespace Solid
+{
+    class Processor::Private
+    {
+    public:
+    };
+}
+
 Solid::Processor::Processor( QObject *backendObject )
-    : Capability( backendObject )
+    : Capability(backendObject), d(new Private)
 {
 }
 
 Solid::Processor::~Processor()
 {
+    delete d;
 }
 
 int Solid::Processor::number() const

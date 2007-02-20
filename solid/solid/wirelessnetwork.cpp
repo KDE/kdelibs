@@ -22,8 +22,16 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/wirelessnetwork.h>
 
+namespace Solid
+{
+    class WirelessNetwork::Private
+    {
+    public:
+    };
+}
+
 Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
-    : Network( backendObject )
+    : Network(backendObject), d(new Private)
 {
     if ( backendObject )
     {
@@ -40,6 +48,7 @@ Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
 
 Solid::WirelessNetwork::~WirelessNetwork()
 {
+    delete d;
 }
 
 bool Solid::WirelessNetwork::isSameAs( const WirelessNetwork & other) const
