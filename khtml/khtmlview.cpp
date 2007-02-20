@@ -472,6 +472,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
     m_medium = "screen";
 
     m_part = part;
+
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
     connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
@@ -498,6 +499,7 @@ KHTMLView::~KHTMLView()
 
 void KHTMLView::init()
 {
+    setFrameStyle(QFrame::NoFrame);
     setFocusPolicy(Qt::StrongFocus);
     viewport()->setFocusProxy(this);
 
