@@ -33,7 +33,7 @@ class KConfigBase;
 class KSharedConfigPtr;
 
 /**
- * A KConfigBase derived class for one specific group in a KConfig object.
+ * A class for one specific group in a KConfig object.
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigFlags
 {
@@ -93,6 +93,11 @@ public:
     virtual KEntry lookupData(const KEntryKey &_key) const;
     virtual void sync();
 
+    /**
+      * Changes the group of the object. This is a convenience function and should
+      * not be overused. Prefer another object for another group to avoid mixture of
+      * groups.
+    */
     void changeGroup( const char *group );
     void changeGroup( const QString &group ) { changeGroup(group.toLatin1()); }
     void changeGroup( const QByteArray &group) { changeGroup(group.data()); }
