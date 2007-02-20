@@ -7852,6 +7852,7 @@ Name[zu]=Isi-Romania
 [rom]
 Name=Romany
 Name[be]=Раманская
+Name[bg]=Ромски
 Name[br]=Jipsianek
 Name[bs]=Romanski
 Name[ca]=Caló
@@ -8873,6 +8874,7 @@ Name[zu]=Isi-Serbian
 [sr@Latn]
 Name=Serbian Latin
 Name[be]=Сербская (лацініца)
+Name[bg]=Сръбски латински
 Name[br]=Serbeg latin
 Name[bs]=Srpski latinica
 Name[ca]=Serbi llatí
@@ -10861,6 +10863,7 @@ Name[zh_TW]=簡體中文
 [zh_HK]
 Name=Chinese (Hong Kong)
 Name[be]=Кітайская (Гонг-Конг)
+Name[bg]=Китайски (Хонг Конг)
 Name[br]=Sinaeg (Hong Kong)
 Name[bs]=Kineski (Hong Kong)
 Name[ca]=Xinès (Hong Kong)
