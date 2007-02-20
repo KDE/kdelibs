@@ -247,16 +247,16 @@ protected:
     virtual bool checkPassword();
 
 
-private Q_SLOTS:
-    void actuallyAccept();
-    void activated( const QString& userName );
+private:
+    Q_PRIVATE_SLOT(d, void actuallyAccept())
+    Q_PRIVATE_SLOT(d, void activated( const QString& userName ))
 
 private:
-    void init( const KPasswordDialogFlags& flags );
-
-private:
-    struct KPasswordDialogPrivate;
+    class KPasswordDialogPrivate;
+    friend class KPasswordDialogPrivate;
     KPasswordDialogPrivate* const d;
+    
+    Q_DISABLE_COPY(KPasswordDialog)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KPasswordDialog::KPasswordDialogFlags)
