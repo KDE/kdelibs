@@ -29,6 +29,7 @@
 
 class QLabel;
 class QSlider;
+class QSpinBox;
 class QValidator;
 
 class KIntSpinBox;
@@ -57,6 +58,10 @@ public:
      * @param parent parent widget
      */
     KNumInput(QWidget *parent, KNumInput* below);
+    
+    /**
+     * Destructor
+     */
     ~KNumInput();
 
     /**
@@ -110,6 +115,12 @@ public:
     virtual QSize sizeHint() const;
 
 protected:
+    /**
+     * @return the slider widget.
+     * @internal
+     */
+    QSlider *slider() const;
+      
     /**
      * Call this function whenever you change something in the geometry
      * of your KNumInput child.
@@ -290,7 +301,7 @@ public:
      * @return the minimum size necessary to show the control
      */
     virtual QSize minimumSizeHint() const;
-
+    
 public Q_SLOTS:
     /**
      * Sets the value of the control.
@@ -351,6 +362,12 @@ private Q_SLOTS:
     void slotEmitRelativeValueChanged(int);
 
 protected:
+    /**
+     * @return the spin box widget.
+     * @internal
+     */
+    QSpinBox *spinBox() const;
+      
     virtual void doLayout();
     void resizeEvent ( QResizeEvent * );
 

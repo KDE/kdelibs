@@ -113,6 +113,11 @@ KNumInput::~KNumInput()
     delete d;
 }
 
+QSlider *KNumInput::slider() const
+{
+  return d->m_slider;
+}
+
 bool KNumInput::showSlider() const
 {
     return d->m_slider;
@@ -319,7 +324,11 @@ KIntNumInput::KIntNumInput(int val, QWidget *parent,int _base)
     : KNumInput(parent)
 {
     init(val, _base);
+}
 
+QSpinBox *KIntNumInput::spinBox() const
+{
+    return d->m_spin;
 }
 
 void KIntNumInput::init(int val, int _base)
