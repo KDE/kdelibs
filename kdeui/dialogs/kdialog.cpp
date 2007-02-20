@@ -1037,7 +1037,7 @@ class KDialogQueue::Private
     QList< QPointer<QDialog> > queue;
     bool busy;
     
-    static KDialogQueue *Private::_self;
+    static KDialogQueue *_self;
 };
 
 static KStaticDeleter<KDialogQueue> ksdkdq;
