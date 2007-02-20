@@ -619,7 +619,7 @@ void KUrlBar::writeConfig( KConfigGroup &itemGroup )
             {
                 if ( !urlBarItem->applicationLocal() )
                 {
-                    writeItem( urlBarItem, numGlobals, config, true );
+                    writeItem( urlBarItem, numGlobals, gl, true );
                     numGlobals++;
                 }
             }
