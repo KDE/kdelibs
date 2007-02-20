@@ -41,46 +41,6 @@ class KListWidget;
 class KPalette;
 class KColorCells;
 
-
-/**
- * A color class that preserves both RGB and HSV values.
- *
- * This is
- * unlike QColor which only preserves RGB values and recalculates HSV
- * values. The QColor behavior leads to an accumulation of rounding
- * errors when working in the HSV color space.
- *
- * @author Waldo Bastian <bastian@kde.org>
- **/
-class KDEUI_EXPORT KColor : public QColor
-{
-public:
-  KColor();
-  KColor( const KColor &col);
-  KColor( const QColor &col);
-
-  KColor& operator=( const KColor& col);
-
-  bool operator==( const KColor& col) const;
-
-  void setHsv(int _h, int _s, int _v);
-  void setRgb(int _r, int _g, int _b);
-
-  void rgb(int *_r, int *_g, int *_b) const;
-  void hsv(int *_h, int *_s, int *_v) const;
-protected:
-  int h;
-  int s;
-  int v;
-  int r;
-  int g;
-  int b;
-
-private:
-  class KColorPrivate;
-  KColorPrivate *d;
-};
-
 /**
  * A color palette in table form.
  *
@@ -92,41 +52,37 @@ class KDEUI_EXPORT KPaletteTable : public QWidget
 public:
   KPaletteTable( QWidget *parent, int minWidth=210, int cols = 16);
   ~KPaletteTable();
+  
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
+  
   QString palette() const;
+  
 public Q_SLOTS:
   void setPalette(const QString &paletteName);
+
 Q_SIGNALS:
   void colorSelected( const QColor &, const QString & );
   void colorDoubleClicked( const QColor &, const QString & );
 
-protected Q_SLOTS:
-  void slotColorCellSelected( int index , const QColor& );
-  void slotColorCellDoubleClicked( int index , const QColor& );
-  void slotColorTextSelected( const QString &colorText );
-  void slotSetPalette( const QString &_paletteName );
-  void slotShowNamedColorReadError( void );
+private:
+  Q_PRIVATE_SLOT(d, void slotColorCellSelected( int index , const QColor& ))
+  Q_PRIVATE_SLOT(d, void slotColorCellDoubleClicked( int index , const QColor& ))
+  Q_PRIVATE_SLOT(d, void slotColorTextSelected( const QString &colorText ))
+  Q_PRIVATE_SLOT(d, void slotSetPalette( const QString &_paletteName ))
+  Q_PRIVATE_SLOT(d, void slotShowNamedColorReadError( void ))
 
-protected:
   void readNamedColor( void );
 
-protected:
-  QString i18n_namedColors;
-  QComboBox *combo;
-  KColorCells *cells;
-  QScrollArea *sv;
-  KListWidget *mNamedColorList;
-  KPalette *mPalette;
-  int mMinWidth;
-  int mCols;
-
 private:
-
   virtual void setPalette(const QPalette& p) { QWidget::setPalette(p); }
+  
 private:
   class KPaletteTablePrivate;
-  KPaletteTablePrivate *d;
+  friend class KPaletteTablePrivate;
+  KPaletteTablePrivate *const d;
+  
+  Q_DISABLE_COPY(KPaletteTable)
 };
 
 
@@ -190,7 +146,10 @@ protected:
 
 private:
   class KColorCellsPrivate;
-  KColorCellsPrivate *d;
+  friend class KColorCellsPrivate;
+  KColorCellsPrivate *const d;
+  
+  Q_DISABLE_COPY(KColorCells)
 };
 
 /**
@@ -220,12 +179,11 @@ protected:
   virtual void dropEvent( QDropEvent *);
 
 private:
-  QColor color;
-  uint pixel;
-
-private:
   class KColorPatchPrivate;
-  KColorPatchPrivate *d;
+  friend class KColorCellsPrivate;
+  KColorPatchPrivate *const d;
+  
+  Q_DISABLE_COPY(KColorPatch)
 };
 
 /**
@@ -339,34 +297,28 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      */
     void colorSelected( const QColor &col );
 
-  private Q_SLOTS:
-    void slotRGBChanged( void );
-    void slotHSVChanged( void );
-    void slotHtmlChanged( void );
-    void slotHSChanged( int, int );
-    void slotVChanged( int );
-    void slotColorSelected( const QColor &col );
-    void slotColorSelected( const QColor &col, const QString &name );
-    void slotColorDoubleClicked( const QColor &col, const QString &name );
-    void slotColorPicker();
-    void slotAddToCustomColors();
-    void slotDefaultColorClicked();
+  private:
+    Q_PRIVATE_SLOT(d, void slotRGBChanged( void ))
+    Q_PRIVATE_SLOT(d, void slotHSVChanged( void ))
+    Q_PRIVATE_SLOT(d, void slotHtmlChanged( void ))
+    Q_PRIVATE_SLOT(d, void slotHSChanged( int, int ))
+    Q_PRIVATE_SLOT(d, void slotVChanged( int ))
+    Q_PRIVATE_SLOT(d, void slotColorSelected( const QColor &col ))
+    Q_PRIVATE_SLOT(d, void slotColorSelected( const QColor &col, const QString &name ))
+    Q_PRIVATE_SLOT(d, void slotColorDoubleClicked( const QColor &col, const QString &name ))
+    Q_PRIVATE_SLOT(d, void slotColorPicker())
+    Q_PRIVATE_SLOT(d, void slotAddToCustomColors())
+    Q_PRIVATE_SLOT(d, void slotDefaultColorClicked())
     /**
      * Write the settings of the dialog to config file.
      **/
-    void slotWriteSettings();
+    Q_PRIVATE_SLOT(d, void slotWriteSettings())
 
   private:
     /**
      * Read the settings for the dialog from config file.
      **/
     void readSettings();
-
-    void setRgbEdit( const KColor &col );
-    void setHsvEdit( const KColor &col );
-    void setHtmlEdit( const KColor &col );
-    void _setColor( const KColor &col, const QString &name=QString() );
-    void showColor( const KColor &color, const QString &name );
 
   protected:
     virtual void mouseMoveEvent( QMouseEvent * );
@@ -376,7 +328,10 @@ class KDEUI_EXPORT KColorDialog : public KDialog
 
   private:
     class KColorDialogPrivate;
-    KColorDialogPrivate *d;
+    friend class KColorPatchPrivate;
+    KColorDialogPrivate *const d;
+    
+    Q_DISABLE_COPY(KColorDialog)
 };
 
 #endif		// !Q_WS_QWS
