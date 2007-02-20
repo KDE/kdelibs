@@ -60,8 +60,8 @@ class KFileItemDelegate::Private
         inline bool wordWrapText(const QStyleOptionViewItem &options) const;
         inline Qt::Alignment alignment(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QString replaceNewlines(const QString &string) const;
-        inline KFileItem *fileItem(const QModelIndex &index) const;
-        inline QFont font(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem *item) const;
+        inline KFileItem fileItem(const QModelIndex &index) const;
+        inline QFont font(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
         QString elideText(QTextLayout &layout, const QStyleOptionViewItem &option,
                           const QString &text, const QSize maxSize) const;
         QString elidedWordWrappedText(QTextLayout &layout, const QString &text, const QSize &maxSize) const;
@@ -69,7 +69,7 @@ class KFileItemDelegate::Private
                          const QString &text, const QSize &constraints) const;
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
         inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &options,
-                                     const QModelIndex &index, const KFileItem *item) const;
+                                     const QModelIndex &index, const KFileItem &item) const;
         inline bool verticalLayout(const QStyleOptionViewItem &option) const;
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
         inline QPixmap selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
@@ -88,8 +88,8 @@ class KFileItemDelegate::Private
         inline QRect subtractMargin(const QRect &rect, MarginType type) const;
         inline QSize addMargin(const QSize &size, MarginType type) const;
         inline QSize subtractMargin(const QSize &size, MarginType type) const;
-        QString itemSize(const QModelIndex &index, const KFileItem *item) const;
-        QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem *item) const;
+        QString itemSize(const QModelIndex &index, const KFileItem &item) const;
+        QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
@@ -195,11 +195,11 @@ QString KFileItemDelegate::Private::elideText(QTextLayout &layout, const QStyleO
 
 
 // Returns the size of a file, or the number of items in a directory, as a QString
-QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFileItem *item) const
+QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFileItem &item) const
 {
     // Return a formatted string containing the file size, if the item is a file
-    if (item->isFile())
-        return KGlobal::locale()->formatByteSize(item->size());
+    if (item.isFile())
+        return KGlobal::locale()->formatByteSize(item.size());
 
     // Return the number of items in the directory
     const QVariant value = index.model()->data(index, KDirModel::ChildCountRole);
@@ -214,9 +214,9 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
 
 // Returns the additional information string, if one should be shown, or an empty string otherwise
 QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &option, const QModelIndex &index,
-                                                const KFileItem *item) const
+                                                const KFileItem &item) const
 {
-    if (additionalInformation == KFileItemDelegate::NoInformation || !item || !verticalLayout(option))
+    if (additionalInformation == KFileItemDelegate::NoInformation || item.isNull() || !verticalLayout(option))
         return QString();
 
     switch (additionalInformation)
@@ -225,31 +225,31 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
             return itemSize(index, item);
 
         case KFileItemDelegate::Permissions:
-            return item->permissionsString();
+            return item.permissionsString();
 
         case KFileItemDelegate::OctalPermissions:
-            return QString('0') + QString::number(item->permissions(), 8);
+            return QString('0') + QString::number(item.permissions(), 8);
 
         case KFileItemDelegate::Owner:
-            return item->user();
+            return item.user();
 
         case KFileItemDelegate::OwnerAndGroup:
-            return item->user() + ':' + item->group();
+            return item.user() + ':' + item.group();
 
         case KFileItemDelegate::CreationTime:
-            return item->timeString(KIO::UDS_CREATION_TIME);
+            return item.timeString(KIO::UDS_CREATION_TIME);
 
         case KFileItemDelegate::ModificationTime:
-            return item->timeString(KIO::UDS_MODIFICATION_TIME);
+            return item.timeString(KIO::UDS_MODIFICATION_TIME);
 
         case KFileItemDelegate::AccessTime:
-            return item->timeString(KIO::UDS_ACCESS_TIME);
+            return item.timeString(KIO::UDS_ACCESS_TIME);
 
         case KFileItemDelegate::MimeType:
-            return item->isMimeTypeKnown() ? item->mimetype() : i18n("Unknown");
+            return item.isMimeTypeKnown() ? item.mimetype() : i18n("Unknown");
 
         case KFileItemDelegate::FriendlyMimeType:
-            return item->isMimeTypeKnown() ? item->mimeComment() : i18n("Unknown");
+            return item.isMimeTypeKnown() ? item.mimeComment() : i18n("Unknown");
 
         default:
             return QString();
@@ -258,16 +258,16 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
 
 
 // Returns the KFileItem for the index
-KFileItem *KFileItemDelegate::Private::fileItem(const QModelIndex &index) const
+KFileItem KFileItemDelegate::Private::fileItem(const QModelIndex &index) const
 {
     const QVariant value = index.model()->data(index, KDirModel::FileItemRole);
-    return qvariant_cast<KFileItem*>(value);
+    return qvariant_cast<KFileItem>(value);
 }
 
 
 // Returns the font that should be used to render the display role.
 QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const QModelIndex &index,
-                                       const KFileItem *item) const
+                                       const KFileItem &item) const
 {
     QFont font = option.font;
 
@@ -277,7 +277,7 @@ QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const
         font = qvariant_cast<QFont>(value).resolve(option.font);
 
     // Use an italic font for symlinks
-    if (item && item->isLink())
+    if (item.isLink())
         font.setItalic(true);
 
     return font;
@@ -398,7 +398,7 @@ Qt::Alignment KFileItemDelegate::Private::alignment(const QStyleOptionViewItem &
 
 
 void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItem &option,
-                                                  const QModelIndex &index, const KFileItem *item) const
+                                                  const QModelIndex &index, const KFileItem &item) const
 {
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
@@ -417,7 +417,7 @@ QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItem &op
     const int maxWidth = verticalLayout(option) && wordWrapText(option) ?
             option.decorationSize.width() + 10 : 32757;
 
-    KFileItem *item = fileItem(index);
+    KFileItem item = fileItem(index);
 
     // To compute the nominal size for the label + info, we'll just append
     // the information string to the label
@@ -774,7 +774,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     const QString label  = display(index);
     const QPixmap pixmap = decoration(option, index);
-    KFileItem *item      = d->fileItem(index);
+    KFileItem item      = d->fileItem(index);
     const QString info   = d->information(option, index, item);
     bool showInformation = false;
 
