@@ -292,10 +292,10 @@ void CopyJob::slotResultStating( KJob *job )
     }
 }
 
-void CopyJob::suspend()
+bool CopyJob::doSuspend()
 {
     slotReport();
-    Job::suspend();
+    return Job::suspend();
 }
 
 void CopyJob::slotReport()
