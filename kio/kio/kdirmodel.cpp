@@ -408,7 +408,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             }
             break;
         case FileItemRole:
-            return QVariant::fromValue(item);
+            return QVariant::fromValue(*item);
         case ChildCountRole:
             if (!item->isDir())
                 return ChildCountUnknown;

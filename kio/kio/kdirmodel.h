@@ -103,7 +103,7 @@ public:
     enum AdditionalRoles {
         // Note: use   printf "0x%08X\n" $(($RANDOM*$RANDOM))
         // to define additional roles.
-        FileItemRole = 0x07A263FF,  ///< returns the KFileItem* for a given index
+        FileItemRole = 0x07A263FF,  ///< returns the KFileItem for a given index
         ChildCountRole = 0x2C4D0A40 ///< returns the number of items in a directory, or ChildCountUnknown
     };
 
@@ -169,7 +169,7 @@ private:
     KDirModelPrivate *const d;
 };
 
-Q_DECLARE_METATYPE(KFileItem*)
+Q_DECLARE_METATYPE(KFileItem)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDirModel::DropsAllowed)
 
 #endif /* KDIRMODEL_H */
