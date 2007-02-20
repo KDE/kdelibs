@@ -146,6 +146,7 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|Function	0
   toLocaleLowerCase	StringProtoFuncImp::ToLocaleLowerCase DontEnum|Function	0
   toLocaleUpperCase     StringProtoFuncImp::ToLocaleUpperCase DontEnum|Function	0
+  localeCompare         StringProtoFuncImp::LocaleCompare  DontEnum|Function       1
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
@@ -195,6 +196,13 @@ StringProtoFuncImp::StringProtoFuncImp(ExecState *exec, int i, int len)
 bool StringProtoFuncImp::implementsCall() const
 {
   return true;
+}
+
+// ### use as fallback only. implement locale aware version.
+static inline int localeCompare(const UString &a, const UString &b)
+{
+  // ### other browsers have more detailed return values than -1, 0 and 1
+  return compare(a, b);
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20
@@ -340,7 +348,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         u3 = a1.toString(exec); // 2nd arg is the replacement string
 
       UString out;
-      
+
       // This is either a loop (if global is set) or a one-way (if not).
       reg->prepareMatch(s);
       do {
@@ -349,7 +357,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         regExpObj->setSubPatterns(reg->subPatterns());
         if (pos == -1)
           break;
-          
+
         len = mstr.size();
 
         UString rstr;
@@ -395,7 +403,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
         // Append the replacement..
         out += rstr;
-        
+
         lastIndex = pos + len; // Skip over the matched stuff...
       } while (global);
 
@@ -555,6 +563,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       s[i] = s[i].toUpper();
     result = String(s);
     break;
+  case LocaleCompare:
+    return Number(localeCompare(s, a0.toString(exec)));
 #ifndef KJS_PURE_ECMA
   case Big:
     result = String("<big>" + s + "</big>");
