@@ -38,86 +38,88 @@ class KSycocaDict;
  */
 class KDECORE_EXPORT KServiceFactory : public KSycocaFactory
 {
-  K_SYCOCAFACTORY( KST_KServiceFactory )
+    K_SYCOCAFACTORY( KST_KServiceFactory )
 public:
-  /**
-   * Create factory
-   */
-  KServiceFactory();
-  virtual ~KServiceFactory();
+    /**
+     * Create factory
+     */
+    KServiceFactory();
+    virtual ~KServiceFactory();
 
-  /**
-   * Construct a KService from a config file.
-   */
-  virtual KSycocaEntry *createEntry(const QString &, const char *)
+    /**
+     * Construct a KService from a config file.
+     */
+    virtual KSycocaEntry *createEntry(const QString &, const char *)
     { assert(0); return 0; }
 
-  /**
-   * Find a service (by translated name, e.g. "Terminal")
-   */
-  KService::Ptr findServiceByName( const QString &_name );
+    /**
+     * Find a service (by translated name, e.g. "Terminal")
+     */
+    KService::Ptr findServiceByName( const QString &_name );
 
-  /**
-   * Find a service (by desktop file name, e.g. "konsole")
-   */
-  KService::Ptr findServiceByDesktopName( const QString &_name );
+    /**
+     * Find a service (by desktop file name, e.g. "konsole")
+     */
+    KService::Ptr findServiceByDesktopName( const QString &_name );
 
-  /**
-   * Find a service ( by desktop path, e.g. "System/konsole.desktop")
-   */
-  KService::Ptr findServiceByDesktopPath( const QString &_name );
+    /**
+     * Find a service ( by desktop path, e.g. "System/konsole.desktop")
+     */
+    KService::Ptr findServiceByDesktopPath( const QString &_name );
 
-  /**
-   * Find a service ( by menu id, e.g. "kde-konsole.desktop")
-   */
-  KService::Ptr findServiceByMenuId( const QString &_menuId );
+    /**
+     * Find a service ( by menu id, e.g. "kde-konsole.desktop")
+     */
+    KService::Ptr findServiceByMenuId( const QString &_menuId );
 
-  /**
-   * @return the services supporting the given service type
-   * The @p serviceOffersOffset allows to jump to the right entries directly.
-   */
-  KServiceOfferList offers( int serviceTypeOffset, int serviceOffersOffset );
+    /**
+     * @return the services supporting the given service type
+     * The @p serviceOffersOffset allows to jump to the right entries directly.
+     */
+    KServiceOfferList offers( int serviceTypeOffset, int serviceOffersOffset );
 
-  /**
-   * @return the services supporting the given service type; without information about initialPreference
-   * The @p serviceOffersOffset allows to jump to the right entries directly.
-   */
-  KService::List serviceOffers( int serviceTypeOffset, int serviceOffersOffset );
+    /**
+     * @return the services supporting the given service type; without information about initialPreference
+     * The @p serviceOffersOffset allows to jump to the right entries directly.
+     */
+    KService::List serviceOffers( int serviceTypeOffset, int serviceOffersOffset );
 
-  /**
-   * Test if a specific service is associated with a specific servicetype
-   * @param serviceTypeOffset the offset of the service type being tested
-   * @param serviceOffersOffset allows to jump to the right entries for the service type directly.
-   * @param testedServiceOffset the offset of the service being tested
-   */
-  bool hasOffer( int serviceTypeOffset, int serviceOffersOffset, int testedServiceOffset );
+    /**
+     * Test if a specific service is associated with a specific servicetype
+     * @param serviceTypeOffset the offset of the service type being tested
+     * @param serviceOffersOffset allows to jump to the right entries for the service type directly.
+     * @param testedServiceOffset the offset of the service being tested
+     */
+    bool hasOffer( int serviceTypeOffset, int serviceOffersOffset, int testedServiceOffset );
 
-  /**
-   * @return all services. Very memory consuming, avoid using.
-   */
-  KService::List allServices();
+    /**
+     * @return all services. Very memory consuming, avoid using.
+     */
+    KService::List allServices();
 
-  /**
-   * @return the unique service factory, creating it if necessary
-   */
-  static KServiceFactory * self();
+    /**
+     * @return the unique service factory, creating it if necessary
+     */
+    static KServiceFactory * self();
 
 protected:
-  virtual KService * createEntry(int offset);
-  int m_offerListOffset;
-  KSycocaDict *m_nameDict;
-  int m_nameDictOffset;
-  KSycocaDict *m_relNameDict;
-  int m_relNameDictOffset;
-  KSycocaDict *m_menuIdDict;
-  int m_menuIdDictOffset;
+    virtual KService * createEntry(int offset);
+
+    // All those variables are used by KBuildServiceFactory too
+    int m_offerListOffset;
+    KSycocaDict *m_nameDict;
+    int m_nameDictOffset;
+    KSycocaDict *m_relNameDict;
+    int m_relNameDictOffset;
+    KSycocaDict *m_menuIdDict;
+    int m_menuIdDictOffset;
 
 private:
-  static KServiceFactory *_self;
+    static KServiceFactory *_self;
 protected:
-  virtual void virtual_hook( int id, void* data );
+    virtual void virtual_hook( int id, void* data );
 private:
-  class KServiceFactoryPrivate* d;
+    class KServiceFactoryPrivate* d;
 };
 
 #endif
