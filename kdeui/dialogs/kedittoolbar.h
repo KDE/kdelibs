@@ -33,13 +33,7 @@ class QTreeWidgetItem;
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
 class KEditToolbarWidgetPrivate;
-#if 0
-namespace
-{
-  class ToolbarItem;
-  class ToolbarListView;
-}
-#endif
+
 /**
  * @short A dialog used to customize or configure toolbars.
  *
@@ -379,41 +373,26 @@ Q_SIGNALS:
    */
   void enableOk(bool);
 
-protected Q_SLOTS:
-  void slotToolbarSelected(const QString& text);
-
-  void slotInactiveSelectionChanged();
-  void slotActiveSelectionChanged();
-
-  void slotInsertButton();
-  void slotRemoveButton();
-  void slotUpButton();
-  void slotDownButton();
-
-  void slotChangeIcon();
-
-private Q_SLOTS:
-  void slotProcessExited( KProcess* );
-
 private:
-  void setupLayout();
+  Q_PRIVATE_SLOT(d, void slotToolbarSelected(const QString& text))
 
-  void initNonKPart(KActionCollection *collection, const QString& file, bool global);
-  void initKPart(KXMLGUIFactory* factory);
-  void loadToolbarCombo(const QString& defaultToolbar = QString());
-  void loadActionList(QDomElement& elem);
+  Q_PRIVATE_SLOT(d, void slotInactiveSelectionChanged())
+  Q_PRIVATE_SLOT(d, void slotActiveSelectionChanged())
 
-private:
-  QComboBox *m_toolbarCombo;
+  Q_PRIVATE_SLOT(d, void slotInsertButton())
+  Q_PRIVATE_SLOT(d, void slotRemoveButton())
+  Q_PRIVATE_SLOT(d, void slotUpButton())
+  Q_PRIVATE_SLOT(d, void slotDownButton())
 
-  QToolButton *m_upAction;
-  QToolButton *m_removeAction;
-  QToolButton *m_insertAction;
-  QToolButton *m_downAction;
+  Q_PRIVATE_SLOT(d, void slotChangeIcon())
+
+  Q_PRIVATE_SLOT(d, void slotProcessExited( KProcess* ))
 
 private:
   friend class KEditToolbarWidgetPrivate;
-  KEditToolbarWidgetPrivate *d;
+  KEditToolbarWidgetPrivate *const d;
+  
+  Q_DISABLE_COPY(KEditToolbarWidget)
 };
 
 #endif // _KEDITTOOLBAR_H
