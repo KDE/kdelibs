@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002,2003 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
+    Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,10 +24,8 @@
 
 #include "kdialog.h"
 
-class QStackedWidget;
-
-class KPushButton;
 class KShortcut;
+class KShortcutDialogPrivate;
 
 /**
  * @short Dialog for configuring a shortcut.
@@ -41,33 +40,30 @@ class KDEUI_EXPORT KShortcutDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	explicit KShortcutDialog( const KShortcut& shortcut, QWidget* parent = 0 );
+	explicit KShortcutDialog(const KShortcut &shortcut, QWidget *parent = 0);
 	~KShortcutDialog();
 
-	void setShortcut( const KShortcut & shortcut );
+	void setShortcut(const KShortcut &shortcut);
 	const KShortcut& shortcut() const;
 
-private:
-	void updateShortcutDisplay();
-	void keyPressed( int key );
-	void updateDetails();
-	void setRecording(bool recording);
-
-	virtual void keyPressEvent( QKeyEvent * e );
-	virtual void keyReleaseEvent( QKeyEvent * event );
-
-protected Q_SLOTS:
-	void slotButtonClicked(KDialog::ButtonCode code);
-	void slotSelectPrimary();
-	void slotSelectAlternate();
-	void slotClearShortcut();
-	void slotClearPrimary();
-	void slotClearAlternate();
-	void slotMultiKeyMode( bool bOn );
+protected:
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
-	class KShortcutDialogPrivate* const d;
-	static bool s_showMore;
+	Q_PRIVATE_SLOT(d, void slotButtonClicked(KDialog::ButtonCode code))
+	Q_PRIVATE_SLOT(d, void slotSelectPrimary())
+	Q_PRIVATE_SLOT(d, void slotSelectAlternate())
+	Q_PRIVATE_SLOT(d, void slotClearShortcut())
+	Q_PRIVATE_SLOT(d, void slotClearPrimary())
+	Q_PRIVATE_SLOT(d, void slotClearAlternate())
+	Q_PRIVATE_SLOT(d, void slotMultiKeyMode(bool bOn))
+
+private:
+	friend class KShortcutDialogPrivate;
+	KShortcutDialogPrivate* const d;
+        
+        Q_DISABLE_COPY(KShortcutDialog)
 };
 
 #endif // _KSHORTCUTDIALOG_H_

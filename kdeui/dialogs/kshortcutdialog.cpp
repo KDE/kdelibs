@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002,2003 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
+    Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,11 +46,26 @@
 #include "kkeyserver.h"
 #include <kconfiggroup.h>
 
-bool KShortcutDialog::s_showMore = false;
-
 class KShortcutDialogPrivate
 {
 public:
+	KShortcutDialogPrivate(KShortcutDialog *q): q(q) {}
+
+	void updateShortcutDisplay();
+	void updateDetails();
+	void setRecording(bool recording);
+        
+	static QKeySequence appendToSequence(const QKeySequence& seq, int keyQt);
+
+	void slotButtonClicked(KDialog::ButtonCode code);
+	void slotSelectPrimary();
+	void slotSelectAlternate();
+	void slotClearShortcut();
+	void slotClearPrimary();
+	void slotClearAlternate();
+	void slotMultiKeyMode( bool bOn );
+          
+	KShortcutDialog *q;
 	KShortcut shortcut;
 	bool bGrab;
 	KPushButton* ptxtCurrent;
@@ -59,17 +75,21 @@ public:
 	uint mod;
 	QWidget* simpleBase;
 	QWidget* advBase;
-	Ui::KShortcutDialogSimple *simple;
-	Ui::KShortcutDialogAdvanced *adv;
+	Ui::KShortcutDialogSimple simple;
+	Ui::KShortcutDialogAdvanced adv;
 	QStackedWidget *stack;
+        
+	static bool s_showMore;
 };
+
+bool KShortcutDialogPrivate::s_showMore = false;
 
 KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 	: KDialog( parent )
-	, d(new KShortcutDialogPrivate)
+	, d(new KShortcutDialogPrivate(this))
 {
-  setCaption( i18n("Configure Shortcut") );
-  setButtons( KDialog::Details|KDialog::Ok|KDialog::Cancel );
+	setCaption( i18n("Configure Shortcut") );
+	setButtons( KDialog::Details|KDialog::Ok|KDialog::Cancel );
 	showButtonSeparator( true );
 	setModal(true);
 
@@ -79,13 +99,11 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 	setMainWidget(d->stack);
 
 	d->simpleBase = new QWidget(d->stack);
-	d->simple = new Ui::KShortcutDialogSimple();
-	d->simple->setupUi(d->simpleBase);
+	d->simple.setupUi(d->simpleBase);
 	d->stack->addWidget(d->simpleBase);
 
 	d->advBase = new QWidget(d->stack);
-	d->adv = new Ui::KShortcutDialogAdvanced();
-	d->adv->setupUi(d->advBase);
+	d->adv.setupUi(d->advBase);
 	d->stack->addWidget(d->advBase);
 
 	d->stack->setCurrentWidget(d->simpleBase);
@@ -97,23 +115,23 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 	d->bRecording = false;
 	d->mod = 0;
 
-	d->simple->m_btnClearShortcut->setIcon( SmallIcon( "locationbar_erase" ) );
-	d->adv->m_btnClearPrimary->setIcon( SmallIcon( "locationbar_erase" ) );
-	d->adv->m_btnClearAlternate->setIcon( SmallIcon( "locationbar_erase" ) );
-	connect(d->simple->m_btnClearShortcut, SIGNAL(clicked()),
+	d->simple.m_btnClearShortcut->setIcon( SmallIcon( "locationbar_erase" ) );
+	d->adv.m_btnClearPrimary->setIcon( SmallIcon( "locationbar_erase" ) );
+	d->adv.m_btnClearAlternate->setIcon( SmallIcon( "locationbar_erase" ) );
+	connect(d->simple.m_btnClearShortcut, SIGNAL(clicked()),
 	        this, SLOT(slotClearShortcut()));
-	connect(d->adv->m_btnClearPrimary, SIGNAL(clicked()),
+	connect(d->adv.m_btnClearPrimary, SIGNAL(clicked()),
 	        this, SLOT(slotClearPrimary()));
-	connect(d->adv->m_btnClearAlternate, SIGNAL(clicked()),
+	connect(d->adv.m_btnClearAlternate, SIGNAL(clicked()),
 	        this, SLOT(slotClearAlternate()));
 
-	connect(d->adv->m_txtPrimary, SIGNAL(clicked()),
-		d->adv->m_btnPrimary, SLOT(animateClick()));
-	connect(d->adv->m_txtAlternate, SIGNAL(clicked()),
-		d->adv->m_btnAlternate, SLOT(animateClick()));
-	connect(d->adv->m_btnPrimary, SIGNAL(clicked()),
+	connect(d->adv.m_txtPrimary, SIGNAL(clicked()),
+		d->adv.m_btnPrimary, SLOT(animateClick()));
+	connect(d->adv.m_txtAlternate, SIGNAL(clicked()),
+		d->adv.m_btnAlternate, SLOT(animateClick()));
+	connect(d->adv.m_btnPrimary, SIGNAL(clicked()),
 		this, SLOT(slotSelectPrimary()));
-	connect(d->adv->m_btnAlternate, SIGNAL(clicked()),
+	connect(d->adv.m_btnAlternate, SIGNAL(clicked()),
 		this, SLOT(slotSelectAlternate()));
 
 	connect(this, SIGNAL(buttonClicked(KDialog::ButtonCode)), SLOT(slotButtonClicked(KDialog::ButtonCode)));
@@ -129,16 +147,17 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 	setShortcut( shortcut );
 	resize( 0, 0 );
 
-	s_showMore = KConfigGroup(KGlobal::config(), "General").readEntry("ShowAlternativeShortcutConfig", s_showMore);
-	updateDetails();
+        KShortcutDialogPrivate::s_showMore = KConfigGroup(KGlobal::config(), "General")
+              .readEntry("ShowAlternativeShortcutConfig", KShortcutDialogPrivate::s_showMore);
+	d->updateDetails();
 }
 
 KShortcutDialog::~KShortcutDialog()
 {
-	setRecording(false);
+	d->setRecording(false);
 
 	KConfigGroup group(KGlobal::config(), "General");
-	group.writeEntry("ShowAlternativeShortcutConfig", s_showMore);
+	group.writeEntry("ShowAlternativeShortcutConfig", KShortcutDialogPrivate::s_showMore);
 	
 	delete d;
 }
@@ -146,156 +165,156 @@ KShortcutDialog::~KShortcutDialog()
 void KShortcutDialog::setShortcut( const KShortcut & shortcut )
 {
 	d->shortcut = shortcut;
-	updateShortcutDisplay();
+	d->updateShortcutDisplay();
 }
 
-void KShortcutDialog::updateShortcutDisplay()
+void KShortcutDialogPrivate::updateShortcutDisplay()
 {
 	QString s[2];
-	s[0] = d->shortcut.primary().toString();
-	s[1] = d->shortcut.alternate().toString();
+	s[0] = shortcut.primary().toString();
+	s[1] = shortcut.alternate().toString();
 
-	if( d->bRecording ) {
-		d->ptxtCurrent->setDefault( true );
-		d->ptxtCurrent->setFocus();
+	if( bRecording ) {
+		ptxtCurrent->setDefault( true );
+		ptxtCurrent->setFocus();
 
 		// Display modifiers for the first key in the QKeySequence
-		if( d->iKey == 0 ) {
-			if( d->mod ) {
+		if( iKey == 0 ) {
+			if( mod ) {
 				QString keyModStr;
 #if defined(Q_WS_MAC)
-				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
-				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
+				if( mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
+				if( mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if( mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if( mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #elif defined(Q_WS_X11)
-				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
-				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
+				if( mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
+				if( mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if( mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if( mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #endif
-				s[d->iSeq] = keyModStr;
+				s[iSeq] = keyModStr;
 			}
 		}
 		// When in the middle of entering multi-key shortcuts,
 		//  add a "," to the end of the displayed shortcut.
 		else
-			s[d->iSeq] += ',';
+			s[iSeq] += ',';
 	}
 	else {
-		d->adv->m_txtPrimary->setDefault( false );
-		d->adv->m_txtAlternate->setDefault( false );
-		this->setFocus();
+		adv.m_txtPrimary->setDefault( false );
+		adv.m_txtAlternate->setDefault( false );
+		q->setFocus();
 	}
 
 	s[0].replace('&', QLatin1String("&&"));
 	s[1].replace('&', QLatin1String("&&"));
 
-	d->simple->m_txtShortcut->setText( s[0] );
-	d->adv->m_txtPrimary->setText( s[0] );
-	d->adv->m_txtAlternate->setText( s[1] );
+	simple.m_txtShortcut->setText( s[0] );
+	adv.m_txtPrimary->setText( s[0] );
+	adv.m_txtAlternate->setText( s[1] );
 
 	// Determine the enable state of the 'Less' button
 	bool btnLessEn;
 	// If there is no shortcut defined,
-	if( d->shortcut.isEmpty() )
+	if( shortcut.isEmpty() )
 		btnLessEn = true;
 	// If there is a single shortcut defined, and it is not a multi-key shortcut,
-	else if( d->shortcut.alternate().isEmpty() && d->shortcut.primary().count() <= 1 )
+	else if( shortcut.alternate().isEmpty() && shortcut.primary().count() <= 1 )
 		btnLessEn = true;
 	// Otherwise, we have an alternate shortcut or multi-key shortcut(s).
 	else
 		btnLessEn = false;
-	enableButton(Details, btnLessEn);
+	q->enableButton(KDialog::Details, btnLessEn);
 }
 
-void KShortcutDialog::slotButtonClicked(KDialog::ButtonCode code)
+void KShortcutDialogPrivate::slotButtonClicked(KDialog::ButtonCode code)
 {
 	if (code == KDialog::Details) {
-		s_showMore = (d->stack->currentWidget() != d->advBase);
+		KShortcutDialogPrivate::s_showMore = (stack->currentWidget() != advBase);
 		updateDetails();
 	}
 }
 
-void KShortcutDialog::updateDetails()
+void KShortcutDialogPrivate::updateDetails()
 {
-	bool showAdvanced = s_showMore || (!d->shortcut.alternate().isEmpty());
-	setDetailsWidgetVisible(showAdvanced);
+	bool showAdvanced = s_showMore || (!shortcut.alternate().isEmpty());
+	q->setDetailsWidgetVisible(showAdvanced);
 	setRecording(false);
-	d->iSeq = 0;
-	d->iKey = 0;
+	iSeq = 0;
+	iKey = 0;
 
 	if (showAdvanced)
 	{
-		d->stack->setCurrentWidget(d->advBase);
-		d->adv->m_btnPrimary->setChecked( true );
+		stack->setCurrentWidget(advBase);
+		adv.m_btnPrimary->setChecked( true );
 		slotSelectPrimary();
 	}
 	else
 	{
-		d->stack->setCurrentWidget(d->simpleBase);
-		d->ptxtCurrent = d->simple->m_txtShortcut;
-		d->simple->m_txtShortcut->setDefault( true );
-		d->simple->m_txtShortcut->setFocus();
-		d->adv->m_btnMultiKey->setChecked( false );
+		stack->setCurrentWidget(simpleBase);
+		ptxtCurrent = simple.m_txtShortcut;
+		simple.m_txtShortcut->setDefault( true );
+		simple.m_txtShortcut->setFocus();
+		adv.m_btnMultiKey->setChecked( false );
 	}
 	qApp->processEvents();
-	adjustSize();
+	q->adjustSize();
 }
 
-void KShortcutDialog::slotSelectPrimary()
+void KShortcutDialogPrivate::slotSelectPrimary()
 {
 	setRecording(false);
-	d->iSeq = 0;
-	d->iKey = 0;
-	d->ptxtCurrent = d->adv->m_txtPrimary;
-	d->ptxtCurrent->setDefault(true);
-	d->ptxtCurrent->setFocus();
+	iSeq = 0;
+	iKey = 0;
+	ptxtCurrent = adv.m_txtPrimary;
+	ptxtCurrent->setDefault(true);
+	ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
 
-void KShortcutDialog::slotSelectAlternate()
+void KShortcutDialogPrivate::slotSelectAlternate()
 {
 	setRecording(false);
-	d->iSeq = 1;
-	d->iKey = 0;
-	d->ptxtCurrent = d->adv->m_txtAlternate;
-	d->ptxtCurrent->setDefault(true);
-	d->ptxtCurrent->setFocus();
+	iSeq = 1;
+	iKey = 0;
+	ptxtCurrent = adv.m_txtAlternate;
+	ptxtCurrent->setDefault(true);
+	ptxtCurrent->setFocus();
 	updateShortcutDisplay();
 }
 
-void KShortcutDialog::slotClearShortcut()
+void KShortcutDialogPrivate::slotClearShortcut()
 {
-	d->shortcut.clear();
+	shortcut.clear();
 	updateShortcutDisplay();
 }
 
-void KShortcutDialog::slotClearPrimary()
+void KShortcutDialogPrivate::slotClearPrimary()
 {
-	d->shortcut.setPrimary(QKeySequence());
-	d->adv->m_btnPrimary->setChecked( true );
+	shortcut.setPrimary(QKeySequence());
+	adv.m_btnPrimary->setChecked( true );
 	slotSelectPrimary();
 }
 
-void KShortcutDialog::slotClearAlternate()
+void KShortcutDialogPrivate::slotClearAlternate()
 {
-	d->shortcut.setAlternate(QKeySequence());
-	d->adv->m_btnAlternate->setChecked( true );
+	shortcut.setAlternate(QKeySequence());
+	adv.m_btnAlternate->setChecked( true );
 	slotSelectAlternate();
 }
 
-void KShortcutDialog::slotMultiKeyMode( bool bOn )
+void KShortcutDialogPrivate::slotMultiKeyMode( bool bOn )
 {
 	// If turning off multi-key mode during a recording,
-	if( !bOn && d->bRecording ) {
+	if( !bOn && bRecording ) {
 		setRecording(false);
-	d->iKey = 0;
+		iKey = 0;
 		updateShortcutDisplay();
 	}
 }
 
-QKeySequence appendToSequence(const QKeySequence& seq, int keyQt)
+QKeySequence KShortcutDialogPrivate::appendToSequence(const QKeySequence& seq, int keyQt)
 {
 	switch (seq.count()) {
 		case 0:
@@ -323,19 +342,19 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	switch( keyQt ) {
 		case Qt::Key_Shift:
 			d->mod |= Qt::SHIFT;
-			setRecording(true);
+			d->setRecording(true);
 			break;
 		case Qt::Key_Control:
 			d->mod |= Qt::CTRL;
-			setRecording(true);
+			d->setRecording(true);
 			break;
 		case Qt::Key_Alt:
 			d->mod |= Qt::ALT;
-			setRecording(true);
+			d->setRecording(true);
 			break;
 		case Qt::Key_Meta:
 			d->mod |= Qt::META;
-			setRecording(true);
+			d->setRecording(true);
 			break;
 		case Qt::Key_Menu: //unused
 			break;
@@ -351,21 +370,21 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 					keyQtMod |= d->mod;
 
 				if (d->iSeq == 0) {
-					QKeySequence seq = appendToSequence(d->shortcut.primary(), keyQtMod);
+					QKeySequence seq = KShortcutDialogPrivate::appendToSequence(d->shortcut.primary(), keyQtMod);
 					d->shortcut.setPrimary(seq);
 				} else if (d->iSeq == 1) {
-					QKeySequence seq = appendToSequence(d->shortcut.alternate(), keyQtMod);
+					QKeySequence seq = KShortcutDialogPrivate::appendToSequence(d->shortcut.alternate(), keyQtMod);
 					d->shortcut.setAlternate(seq);
 				}
 
-				if(d->adv->m_btnMultiKey->isChecked())
+				if(d->adv.m_btnMultiKey->isChecked())
 					d->iKey++;
 
-				setRecording(true);
+				d->setRecording(true);
 
-				updateShortcutDisplay();
+				d->updateShortcutDisplay();
 
-				if( !d->adv->m_btnMultiKey->isChecked() )
+				if( !d->adv.m_btnMultiKey->isChecked() )
 					QTimer::singleShot(500, this, SLOT(accept()));
 			}
 			return;
@@ -374,7 +393,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	// If we are editing the first key in the sequence,
 	//  display modifier keys which are held down
 	if( d->iKey == 0 ) {
-		updateShortcutDisplay();
+		d->updateShortcutDisplay();
 	}
 }
 
@@ -405,22 +424,22 @@ void KShortcutDialog::keyReleaseEvent( QKeyEvent * e )
 	}
 	
 	if (change)
-		updateShortcutDisplay();
+		d->updateShortcutDisplay();
 }
 
 const KShortcut & KShortcutDialog::shortcut( ) const
 {
-  return d->shortcut;
+	return d->shortcut;
 }
 
-void KShortcutDialog::setRecording( bool recording )
+void KShortcutDialogPrivate::setRecording( bool recording )
 {
-	if (d->bRecording != recording) {
-		d->bRecording = recording;
-		if (d->bRecording) {
-			grabKeyboard();
+	if (bRecording != recording) {
+		bRecording = recording;
+		if (bRecording) {
+			q->grabKeyboard();
 		} else {
-			releaseKeyboard();
+			q->releaseKeyboard();
 		}
 	}
 }
