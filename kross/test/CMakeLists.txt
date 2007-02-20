@@ -1,12 +1,6 @@
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${KDE4_KDECORE_INCLUDES}
-    ${KDE4_KDEUI_INCLUDES}
-    ${KDE4_KIO_INCLUDES}
-)
-
-########### next target ###############
+include_directories(${KDE4_KIO_INCLUDES})
 
 set(krosstest_SRCS 
    testobject.cpp 
@@ -17,5 +11,5 @@ kde4_automoc(${krosstest_SRCS})
 
 kde4_add_executable(krosstest ${krosstest_SRCS})
 
-target_link_libraries(krosstest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} krosscore )
+target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore )
 
