@@ -39,14 +39,15 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
     return KMimeType::iconName( _url );
 
   KDesktopFile cfg( _url.path() );
-  QString icon = cfg.readEntry( "Icon" );
-  QString type = cfg.readEntry( "Type" );
+  KConfigGroup group = cfg.desktopGroup();
+  QString icon = group.readEntry( "Icon" );
+  QString type = group.readEntry( "Type" );
 
   if ( type == "FSDevice" || type == "FSDev") // need to provide FSDev for
                                               // backwards compatibility
   {
-    QString unmount_icon = cfg.readEntry( "UnmountIcon" );
-    QString dev = cfg.readEntry( "Dev" );
+    QString unmount_icon = group.readEntry( "UnmountIcon" );
+    QString dev = group.readEntry( "Dev" );
     if ( !icon.isEmpty() && !unmount_icon.isEmpty() && !dev.isEmpty() )
     {
       QString mp = KIO::findDeviceMountPoint( dev );
@@ -55,9 +56,9 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
         return unmount_icon;
     }
   } else if ( type == "Link" ) {
-      const QString emptyIcon = cfg.readEntry( "EmptyIcon" );
+      const QString emptyIcon = group.readEntry( "EmptyIcon" );
       if ( !emptyIcon.isEmpty() ) {
-          const QString u = cfg.readPathEntry( "URL" );
+          const QString u = group.readPathEntry( "URL" );
           const KUrl url( u );
           if ( url.protocol() == "trash" ) {
               // We need to find if the trash is empty, preferrably without using a KIO job.
@@ -184,7 +185,7 @@ static pid_t runApplication( const KUrl& , const QString & _serviceFile )
 
 static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
 {
-  QString u = cfg.readPathEntry( "URL" );
+  QString u = cfg.readUrl();
   if ( u.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.prettyUrl() );
@@ -198,7 +199,7 @@ static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
   // X-KDE-LastOpenedWith holds the service desktop entry name that
   // was should be preferred for opening this URL if possible.
   // This is used by the Recent Documents menu for instance.
-  QString lastOpenedWidth = cfg.readEntry( "X-KDE-LastOpenedWith" );
+  QString lastOpenedWidth = cfg.desktopGroup().readEntry( "X-KDE-LastOpenedWith" );
   if ( !lastOpenedWidth.isEmpty() )
       run->setPreferredService( lastOpenedWidth );
 
@@ -233,14 +234,15 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KU
     return result;
 
   KDesktopFile cfg( _url.path() );
-  QString type = cfg.desktopGroup().readEntry( "Type" );
+  KConfigGroup group = cfg.desktopGroup();
+  QString type = group.readEntry( "Type" );
 
   if ( type.isEmpty() )
     return result;
 
   if ( type == "FSDevice" )
   {
-    QString dev = cfg.readEntry( "Dev" );
+    QString dev = group.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.path() );
@@ -394,7 +396,8 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
     //kDebug(7009) << "MOUNT&UNMOUNT" << endl;
 
     KDesktopFile cfg( path );
-    QString dev = cfg.readEntry( "Dev" );
+    const KConfigGroup group = cfg.desktopGroup();
+    QString dev = group.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  path );
@@ -412,11 +415,11 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
         return;
       }
 
-      bool ro = cfg.readEntry("ReadOnly", false);
-      QString fstype = cfg.readEntry( "FSType" );
+      bool ro = group.readEntry("ReadOnly", false);
+      QString fstype = group.readEntry( "FSType" );
       if ( fstype == "Default" ) // KDE-1 thing
           fstype.clear();
-      QString point = cfg.readEntry( "MountPoint" );
+      QString point = group.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
       (void)new KAutoMount( ro, fstype.toLatin1(), dev, point, path, false );
 #endif
