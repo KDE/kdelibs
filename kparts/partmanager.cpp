@@ -328,6 +328,11 @@ Part * PartManager::findPartFromWidget( QWidget * widget )
 
 void PartManager::addPart( Part *part, bool setActive )
 {
+    if( !part )
+    {
+        kFatal(1000) << k_funcinfo << QString("Can't add part, its a 0-pointer.") << endl;
+        return;
+    }
     // don't add parts more than once :)
     if ( d->m_parts.contains( part ) ) {
     #ifdef DEBUG_PARTMANAGER
