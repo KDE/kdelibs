@@ -180,13 +180,16 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          */
         virtual void show();
 
-    protected Q_SLOTS:
-        void slotAutoShow();
-        void slotAutoActions(int percentage);
+    protected:
+        Q_PRIVATE_SLOT(d, void slotAutoShow())
+        Q_PRIVATE_SLOT(d, void slotAutoActions(int percentage))
 
     private:
-        struct KProgressDialogPrivate;
-        KProgressDialogPrivate *d;
+        class KProgressDialogPrivate;
+        friend class KProgressDialogPrivate;
+        KProgressDialogPrivate *const d;
+        
+        Q_DISABLE_COPY(KProgressDialog)
 };
 
 #endif

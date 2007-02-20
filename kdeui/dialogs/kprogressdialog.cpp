@@ -30,10 +30,12 @@
 #include <kguiitem.h>
 #include <kpushbutton.h>
 
-struct KProgressDialog::KProgressDialogPrivate
+class KProgressDialog::KProgressDialogPrivate
 {
-    KProgressDialogPrivate()
-        : cancelButtonShown(true),
+public:
+    KProgressDialogPrivate(KProgressDialog *q)
+        : q(q),
+          cancelButtonShown(true),
           mAutoClose(true),
           mAutoReset(false),
           mCancelled(false),
@@ -42,6 +44,11 @@ struct KProgressDialog::KProgressDialogPrivate
           mMinDuration(2000)
     {
     }
+
+    void slotAutoShow();
+    void slotAutoActions(int percentage);
+
+    KProgressDialog *q;
     bool          cancelButtonShown;
     bool          mAutoClose;
     bool          mAutoReset;
@@ -58,7 +65,7 @@ struct KProgressDialog::KProgressDialogPrivate
 KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
                                  const QString& text, bool modal)
   : KDialog(parent),
-    d(new KProgressDialogPrivate)
+    d(new KProgressDialogPrivate(this))
 {
     setCaption( caption );
     setButtons( KDialog::Cancel );
@@ -92,14 +99,14 @@ KProgressDialog::~KProgressDialog()
     delete d;
 }
 
-void KProgressDialog::slotAutoShow()
+void KProgressDialog::KProgressDialogPrivate::slotAutoShow()
 {
-    if (d->mShown || d->mCancelled)
+    if (mShown || mCancelled)
     {
         return;
     }
 
-    show();
+    q->show();
 }
 
 void KProgressDialog::show()
@@ -211,40 +218,40 @@ QString KProgressDialog::buttonText() const
     return d->mCancelText;
 }
 
-void KProgressDialog::slotAutoActions(int percentage)
+void KProgressDialog::KProgressDialogPrivate::slotAutoActions(int percentage)
 {
-    if (percentage < d->mProgressBar->maximum())
+    if (percentage < mProgressBar->maximum())
     {
-        if (!d->cancelButtonShown)
+        if (!cancelButtonShown)
         {
-            setButtonGuiItem(Cancel, KGuiItem(d->mCancelText));
-            d->cancelButtonShown = true;
+            q->setButtonGuiItem(KDialog::Cancel, KGuiItem(mCancelText));
+            cancelButtonShown = true;
         }
         return;
     }
 
-    d->mShowTimer->stop();
+    mShowTimer->stop();
 
-    if (d->mAutoReset)
+    if (mAutoReset)
     {
-        d->mProgressBar->setValue(0);
+        mProgressBar->setValue(0);
     }
     else
     {
-        setAllowCancel(true);
-        setButtonGuiItem(Cancel, KStandardGuiItem::close());
-        d->cancelButtonShown = false;
+        q->setAllowCancel(true);
+        q->setButtonGuiItem(Cancel, KStandardGuiItem::close());
+        cancelButtonShown = false;
     }
 
-    if (d->mAutoClose)
+    if (mAutoClose)
     {
-        if (d->mShown)
+        if (mShown)
         {
-            hide();
+            q->hide();
         }
         else
         {
-            emit finished();
+            emit q->finished();
         }
     }
 }
