@@ -43,6 +43,7 @@ class KBugReportPrivate;
 class KDEUI_EXPORT KBugReport : public KDialog
 {
   Q_OBJECT
+  
 public:
   /**
    * Creates a bug-report dialog.
@@ -50,35 +51,50 @@ public:
    * since KHelpMenu takes care of the menu item
    * for "Report Bug..." and of creating a KBugReport dialog.
    */
-  explicit KBugReport( QWidget * parent = 0L, bool modal=true, const KAboutData *aboutData = 0L );
+  explicit KBugReport(QWidget *parent = 0L, bool modal=true, const KAboutData *aboutData = 0L);
+  
   /**
    * Destructor
    */
   virtual ~KBugReport();
 
-protected Q_SLOTS:
+  /**
+   * The message body of the bug report
+   * @return The message body of the bug report.
+   */
+  QString messageBody() const;
+  
+  /**
+   * Sets the message body of the bug report.
+   */
+  void setMessageBody(const QString &messageBody);
+
+  /**
+    * OK has been clicked
+   */
+  virtual void accept();
+  
+private:
   /**
    * "Configure email" has been clicked - this calls kcmshell System/email
    */
-  virtual void slotConfigureEmail();
+  Q_PRIVATE_SLOT(d, void slotConfigureEmail())
+  
   /**
    * Sets the "From" field from the e-mail configuration
    * Called at creation time, but also after "Configure email" is closed.
    */
-  virtual void slotSetFrom();
-  /**
-   * OK has been clicked
-   */
-  virtual void accept( );
+  Q_PRIVATE_SLOT(d, void slotSetFrom())
 
   /**
    * Application combo selection changed (and was activated)
    */
-  void appChanged(int);
+  Q_PRIVATE_SLOT(d, void appChanged(int))
+  
   /**
    * Update the url to match the current os, compiler, selected app, etc
    */
-  void updateUrl();
+  Q_PRIVATE_SLOT(d, void updateUrl())
 
 protected:
   /**
@@ -86,27 +102,20 @@ protected:
    * @return QString copy of the bug report.
    */
   QString text() const;
+  
   /**
    * Attempt to e-mail the bug report.
    * @return true on success
    */
   bool sendBugReport();
 
-  QProcess * m_process;
-  const KAboutData * m_aboutData;
-
-  QTextEdit * m_lineedit;
-  QLineEdit * m_subject;
-  QLabel * m_from;
-  QLabel * m_version;
-  QString m_strVersion;
-  QGroupBox * m_bgSeverity;
-  QPushButton * m_configureEmail;
-
-protected:
-  virtual void closeEvent( QCloseEvent * e);
+  virtual void closeEvent(QCloseEvent *e);
+  
 private:
-  KBugReportPrivate *d;
+  friend class KBugReportPrivate;
+  KBugReportPrivate *const d;
+  
+  Q_DISABLE_COPY(KBugReport)
 };
 
 #endif
