@@ -160,8 +160,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList dirs = cfg.readPathListEntry("Directories");
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
-        KConfigGroup cg = cfg;
-        cg.changeGroup(*it);
+        KConfigGroup cg(d->sharedConfig, *it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
 	{
 	    if (KStandardDirs::exists(*itDir + *it + '/'))

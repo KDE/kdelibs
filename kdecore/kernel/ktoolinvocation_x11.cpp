@@ -232,12 +232,12 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         return;
 
     KConfig config("emaildefaults");
-    KConfigGroup cg(&config, "Defaults");
+    KConfigGroup defaultsGrp(&config, "Defaults");
 
-    QString group = cg.readEntry("Profile","Default");
+    QString group = defaultsGrp.readEntry("Profile","Default");
 
-    cg.changeGroup( QString("PROFILE_%1").arg(group) );
-    QString command = cg.readPathEntry("EmailClient");
+    KConfigGroup profileGrp(&config, QString("PROFILE_%1").arg(group) );
+    QString command = profileGrp.readPathEntry("EmailClient");
 
     QString to, cc, bcc;
     if (command.isEmpty() || command == QLatin1String("kmail")
@@ -265,7 +265,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
             command += " %u";
     }
 
-    if (cg.readEntry("TerminalClient", false))
+    if (profileGrp.readEntry("TerminalClient", false))
     {
         KConfigGroup confGroup( KGlobal::config(), "General" );
         QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", "konsole");

@@ -99,23 +99,20 @@ QString KConfigBase::locale() const
 
 void KConfigBase::setGroup( const QString& _group )
 {
-  if ( _group.isEmpty() )
-    mGroup.changeGroup("<default>");
-  else
-    mGroup.changeGroup(_group);
+  setGroup( _group.toUtf8() );
 }
 
 void KConfigBase::setGroup( const char *pGroup )
 {
-  mGroup.changeGroup(QByteArray(pGroup));
+   setGroup(QByteArray(pGroup));
 }
 
 void KConfigBase::setGroup( const QByteArray &_group )
 {
   if ( _group.isEmpty() )
-    mGroup.changeGroup("<default>");
+    mGroup = KConfigGroup(this, "<default>");
   else
-    mGroup.changeGroup(_group);
+    mGroup = KConfigGroup(this, _group);
 }
 
 QString KConfigBase::group() const {

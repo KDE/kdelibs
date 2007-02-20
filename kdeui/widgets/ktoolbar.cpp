@@ -660,10 +660,11 @@ QString KToolBar::settingsGroup() const
   return configGroup;
 }
 
-void KToolBar::saveSettings( KConfigGroup &cg )
+void KToolBar::saveSettings( KConfigGroup &_cg )
 {
+  KConfigGroup cg = _cg;
     if ( cg.group().isEmpty() )
-        cg.changeGroup( settingsGroup() );
+        cg = KConfigGroup(cg.config(), settingsGroup() );
 
   QString position;
   Qt::ToolButtonStyle ToolButtonStyle;
@@ -903,7 +904,7 @@ void KToolBar::applySettings( const KConfigGroup &_cg, bool force )
 {
     KConfigGroup cg = _cg;
     if ( cg.group().isEmpty() )
-        cg.changeGroup( settingsGroup() );
+        cg = KConfigGroup(cg.config(), settingsGroup() );
 
   /*
     Let's explain this a bit more in details.
@@ -950,10 +951,11 @@ void KToolBar::applySettings( const KConfigGroup &_cg, bool force )
   }
 }
 
-void KToolBar::applyAppearanceSettings( KConfigGroup &cg, bool forceGlobal )
+void KToolBar::applyAppearanceSettings( KConfigGroup &_cg, bool forceGlobal )
 {
+    KConfigGroup cg = _cg;
     if ( cg.group().isEmpty() )
-        cg.changeGroup( settingsGroup() );
+        cg = KConfigGroup(cg.config(), settingsGroup() ); 
 
   // If we have application-specific settings in the XML file,
   // and nothing in the application's config file, then

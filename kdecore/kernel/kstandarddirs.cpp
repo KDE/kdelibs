@@ -1643,10 +1643,10 @@ static QStringList lookupProfiles(const QString &mapFile, const KComponentData &
         return profiles;
     }
 
-    mapCfg.changeGroup("General");
-    QStringList groups = mapCfg.readEntry("groups", QStringList());
+    const KConfigGroup generalGrp(&mapCfgFile, "General");
+    QStringList groups = generalGrp.readEntry("groups", QStringList());
 
-    mapCfg.changeGroup("Groups");
+    const KConfigGroup groupsGrp(&mapCfgFile, "Groups");
 
     for( QStringList::ConstIterator it = groups.begin();
          it != groups.end(); ++it )
@@ -1659,7 +1659,7 @@ static QStringList lookupProfiles(const QString &mapFile, const KComponentData &
         if (pw->pw_gid == gid)
         {
             // User is in this group --> add profiles
-            profiles += mapCfg.readEntry(*it, QStringList());
+            profiles += groupsGrp.readEntry(*it, QStringList());
         }
         else
         {
@@ -1668,7 +1668,7 @@ static QStringList lookupProfiles(const QString &mapFile, const KComponentData &
                 if (sup_gids[i] == gid)
                 {
                     // User is in this group --> add profiles
-                    profiles += mapCfg.readEntry(*it, QStringList());
+                    profiles += groupsGrp.readEntry(*it, QStringList());
                     break;
                 }
             }

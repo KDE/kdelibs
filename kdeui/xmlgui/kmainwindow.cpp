@@ -699,7 +699,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     saveMainWindowSettings(cg); // Menubar, statusbar and Toolbar settings.
 
     s.setNum(number);
-    cg.changeGroup(s);
+    cg = KConfigGroup(config, s);
     saveProperties(cg);
 
     d->autoSaveWindowSize = oldASWS;
@@ -750,8 +750,8 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        cg.changeGroup(group);
-        toolbar->saveSettings(cg);
+        KConfigGroup groupGrp(cg.config(), group);
+        toolbar->saveSettings(groupGrp);
         n++;
     }
 }
@@ -811,8 +811,8 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     applyMainWindowSettings(cg); // Menubar, statusbar and toolbar settings.
 
     s.setNum(number);
-    cg.changeGroup(s);
-    readProperties(cg);
+    KConfigGroup grp(cg.config(), s);
+    readProperties(grp);
     return true;
 }
 

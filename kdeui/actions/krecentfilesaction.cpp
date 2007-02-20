@@ -211,7 +211,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 
     KConfigGroup cg = _config;
     if ( cg.group().isEmpty())
-        cg.changeGroup("RecentFiles");
+        cg = KConfigGroup(cg.config(), "RecentFiles");
 
     bool thereAreEntries=false;
     // read file list
@@ -253,7 +253,7 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
 
     KConfigGroup cg = _cg;
     if (cg.group().isEmpty())
-        cg.changeGroup("RecentFiles");
+        cg = KConfigGroup(cg.config(), "RecentFiles");
 
     cg.deleteGroup();
 

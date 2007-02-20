@@ -163,7 +163,6 @@ struct kDebugPrivate
     QByteArray aAreaName;
     unsigned int oldarea;
     KConfig *config;
-    KConfigGroup *configgroup;
     KDebugDBusIface *kDebugDBusIface;
     QHash<unsigned int, QByteArray> cache;
     QMutex mutex;
@@ -211,7 +210,6 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         kDebug_data->mutex.lock();
         if (!kDebug_data->config && KGlobal::hasMainComponent()) {
             kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
-            kDebug_data->configgroup = new KConfigGroup(kDebug_data->config, QLatin1String("0"));
 
             //AB: this is necessary here, otherwise all output with area 0 won't be
             //prefixed with anything, unless something with area != 0 is called before
@@ -219,7 +217,6 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         }
 
         if (kDebug_data->config && kDebug_data->oldarea != nArea) {
-            kDebug_data->configgroup->changeGroup(QString::number(nArea));
             kDebug_data->oldarea = nArea;
             if (KGlobal::hasMainComponent()) {
                 if (nArea > 0) {
@@ -230,7 +227,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                 }
             }
         }
-        nOutput = kDebug_data->config ? kDebug_data->configgroup->readEntry(key, 2) : 2;
+        KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));	
+        nOutput = kDebug_data->config ? cg.readEntry(key, 2) : 2;
         if (nOutput == 4 && nLevel != KDEBUG_FATAL) {
             kDebug_data->mutex.unlock();
             return;
@@ -277,7 +275,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
           break;
       }
       // if nOutput != 2 then kDebug_data is still valid
-      QFile aOutputFile( kDebug_data->configgroup->readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
+      KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
+      QFile aOutputFile( cg.readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
       aOutputFile.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered );
       aOutputFile.write( buf, strlen( buf ) );
       aOutputFile.close();
@@ -306,8 +305,10 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   // check if we should abort
   if ((nLevel == KDEBUG_FATAL) && (kDebug_data.isDestroyed()
-              || !kDebug_data->configgroup || kDebug_data->configgroup->readEntry("AbortFatal", true))) {
-        abort();
+              || !kDebug_data->config)) {
+	KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
+        if ( cg.readEntry("AbortFatal", true) )
+            abort();
   }
   if (!kDebug_data.isDestroyed()) {
       kDebug_data->mutex.unlock();
@@ -558,8 +559,6 @@ void kClearDebugConfig()
     if (!kDebug_data) return;
     delete kDebug_data->config;
     kDebug_data->config = 0;
-    delete kDebug_data->configgroup;
-    kDebug_data->configgroup = 0;
 
 }
 

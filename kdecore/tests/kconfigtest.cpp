@@ -64,7 +64,7 @@ void KConfigTest::initTestCase()
                 KConfigBase::Persistent|KConfigBase::Global);
   cg.deleteEntry("stringEntry2", KConfigBase::Global);
 
-  cg.changeGroup("Hello");
+  cg = KConfigGroup(&sc, "Hello");
   cg.writeEntry( "boolEntry1", BOOLENTRY1 );
   cg.writeEntry( "boolEntry2", BOOLENTRY2 );
 
@@ -87,7 +87,7 @@ void KConfigTest::initTestCase()
 
   sc.deleteGroup("deleteMe");
 
-  cg.changeGroup("ComplexTypes");
+  cg = KConfigGroup(&sc, "ComplexTypes");
   cg.writeEntry( "rectEntry", RECTENTRY );
   cg.writeEntry( "pointEntry", POINTENTRY );
   cg.writeEntry( "sizeEntry", SIZEENTRY );
@@ -99,13 +99,13 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
   cg.writeEntry( "fontEntry", FONTENTRY );
 
-  cg.changeGroup( "ListTypes" );
+  cg = KConfigGroup(&sc, "ListTypes" );
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
   cg.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
-  cg.changeGroup( "EnumTypes" );
+  cg = KConfigGroup(&sc, "EnumTypes" );
   cg.writeEntry( "enum-10", KConfigTest::Tens );
 
 #ifndef Q_CC_MSVC
@@ -178,7 +178,6 @@ void KConfigTest::testSimple()
   QVERIFY( !bImmutable );
   //qDebug("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
-  sc3.changeGroup("AAA");
   QVERIFY( sc3.hasKey( "stringEntry1" ) );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
   QCOMPARE( sc3.entryIsImmutable("stringEntry1"), bImmutable );
@@ -187,7 +186,7 @@ void KConfigTest::testSimple()
 
   QVERIFY( !sc3.hasDefault( "stringEntry1" ) );
 
-  sc3.changeGroup("Hello");
+  sc3 = KConfigGroup(&sc2, "Hello");
   QCOMPARE( sc3.readEntry( "Test", QByteArray() ), QByteArray( UTF8BITENTRY ) );
   QCOMPARE( sc3.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
   QCOMPARE( sc3.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );

@@ -384,14 +384,14 @@ void KBugReportPrivate::slotSetFrom()
   profile += cg.readEntry( QString::fromLatin1("Profile"),
                            QString::fromLatin1("Default") );
 
-  cg.changeGroup( profile );
-  QString fromaddr = cg.readEntry( "EmailAddress" );
+  KConfigGroup profileGrp(&emailConf, profile );
+  QString fromaddr = profileGrp.readEntry( "EmailAddress" );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
      p = getpwuid(getuid());
      fromaddr = QString::fromLatin1(p->pw_name);
   } else {
-     QString name = cg.readEntry( "FullName" );
+     QString name = profileGrp.readEntry( "FullName" );
      if (!name.isEmpty())
         fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
   }
