@@ -240,7 +240,7 @@ int main(int argc, char **argv)
     type = args->getOption("userpath");
     if (!type.isEmpty())
     {
-        //code duplicated with KGlibalSettings::initPath()
+        //code duplicated with KGlobalSettings::initPath()
         if ( type == "desktop" )
         {
             KConfigGroup g( KGlobal::config(), "Paths" );
