@@ -34,8 +34,12 @@
 class KInputDialogPrivate
 {
   public:
-    KInputDialogPrivate();
+    KInputDialogPrivate(KInputDialog *q);
 
+    void slotEditTextChanged( const QString& );
+    void slotUpdateButtons( const QString& );
+
+    KInputDialog *q;
     QLabel *m_label;
     KLineEdit *m_lineEdit;
     KIntSpinBox *m_intSpinBox;
@@ -45,8 +49,8 @@ class KInputDialogPrivate
     KTextEdit *m_textEdit;
 };
 
-KInputDialogPrivate::KInputDialogPrivate()
-    : m_label( 0L ), m_lineEdit( 0L ), m_intSpinBox( 0L ),
+KInputDialogPrivate::KInputDialogPrivate(KInputDialog *q)
+    : q(q), m_label( 0L ), m_lineEdit( 0L ), m_intSpinBox( 0L ),
       m_doubleSpinBox( 0L ), m_comboBox( 0L )
 {
 }
@@ -55,7 +59,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent,
     QValidator *validator, const QString &mask )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
@@ -89,14 +93,14 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotEditTextChanged( const QString & ) ) );
 
   setMainWidget(frame);
-  slotEditTextChanged( value );
+  d->slotEditTextChanged( value );
   setMinimumWidth( 350 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
@@ -128,7 +132,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base,
     QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
@@ -157,7 +161,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
     QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
@@ -185,7 +189,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, int current, bool editable, QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
@@ -212,7 +216,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
     connect( d->m_comboBox, SIGNAL( editTextChanged( const QString & ) ),
       SLOT( slotUpdateButtons( const QString & ) ) );
-    slotUpdateButtons( d->m_comboBox->currentText() );
+    d->slotUpdateButtons( d->m_comboBox->currentText() );
     d->m_comboBox->setFocus();
   } else {
     d->m_listBox = new KListWidget( frame );
@@ -236,7 +240,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, const QStringList &select, bool multiple,
     QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate() )
+    d( new KInputDialogPrivate(this) )
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
@@ -444,24 +448,24 @@ QStringList KInputDialog::getItemList( const QString &caption,
   return result;
 }
 
-void KInputDialog::slotEditTextChanged( const QString &text )
+void KInputDialogPrivate::slotEditTextChanged( const QString &text )
 {
   bool on;
-  if ( lineEdit()->validator() ) {
-    QString str = lineEdit()->text();
-    int index = lineEdit()->cursorPosition();
-    on = ( lineEdit()->validator()->validate( str, index )
+  if ( m_lineEdit->validator() ) {
+    QString str = m_lineEdit->text();
+    int index = m_lineEdit->cursorPosition();
+    on = ( m_lineEdit->validator()->validate( str, index )
       == QValidator::Acceptable );
   } else {
     on = !text.trimmed().isEmpty();
   }
 
-  enableButton( Ok, on );
+  q->enableButton( KDialog::Ok, on );
 }
 
-void KInputDialog::slotUpdateButtons( const QString &text )
+void KInputDialogPrivate::slotUpdateButtons( const QString &text )
 {
-  enableButton( Ok, !text.isEmpty() );
+  q->enableButton( KDialog::Ok, !text.isEmpty() );
 }
 
 KLineEdit *KInputDialog::lineEdit() const

@@ -80,11 +80,6 @@ class KDEUI_EXPORT KInputDialog : public KDialog
     KListWidget *listBox() const;
     KTextEdit *textEdit() const;
 
-  private Q_SLOTS:
-
-    void slotEditTextChanged( const QString& );
-    void slotUpdateButtons( const QString& );
-
   public:
 
     /**
@@ -258,9 +253,14 @@ class KDEUI_EXPORT KInputDialog : public KDialog
         bool *ok=0, QWidget *parent=0 );
 
   private:
+    Q_PRIVATE_SLOT(d, void slotEditTextChanged( const QString& ))
+    Q_PRIVATE_SLOT(d, void slotUpdateButtons( const QString& ))
 
+  private:
     KInputDialogPrivate* const d;
     friend class KInputDialogPrivate;
+    
+    Q_DISABLE_COPY(KInputDialog)
 };
 
 #endif // KINPUTDIALOG_H
