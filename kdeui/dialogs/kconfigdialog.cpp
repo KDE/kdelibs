@@ -33,19 +33,25 @@
 #include <qlayout.h>
 #include <qmap.h>
 
-QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;
-
 // This class is here purely so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
-  KConfigDialogPrivate()
-  : shown(false), manager(0) { }
+  KConfigDialogPrivate(KConfigDialog *q)
+    : q(q), shown(false), manager(0) { }
 
+  KConfigDialog *q;
   bool shown;
   KConfigDialogManager *manager;
   QMap<QWidget *, KConfigDialogManager *> managerForPage;
+  
+  /**
+    * The list of existing dialogs.
+   */
+  static QHash<QString,KConfigDialog *> openDialogs;
 };
+
+QHash<QString,KConfigDialog *> KConfigDialog::KConfigDialogPrivate::openDialogs;
 
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config,
@@ -54,7 +60,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           ButtonCode defaultButton,
           bool modal ) :
     KPageDialog( parent, Qt::MSWindowsFixedSizeDialogHint ),
-    d(new KConfigDialogPrivate)
+    d(new KConfigDialogPrivate(this))
 {
   setCaption( i18n("Configure") );
   setFaceType( faceType );
@@ -64,11 +70,11 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
   setModal( modal );
 
   if ( !name.isEmpty() ) {
-    openDialogs.insert(name, this);
+    KConfigDialogPrivate::openDialogs.insert(name, this);
   } else {
     QString genericName;
     genericName.sprintf("SettingsDialog-%p", static_cast<void*>(this));
-    openDialogs.insert(genericName, this);
+    KConfigDialogPrivate::openDialogs.insert(genericName, this);
     setObjectName(genericName);
   }
 
@@ -86,7 +92,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
 
 KConfigDialog::~KConfigDialog()
 {
-  openDialogs.remove(objectName());
+  KConfigDialogPrivate::openDialogs.remove(objectName());
   delete d;
 }
 
@@ -151,8 +157,8 @@ void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
 
 KConfigDialog* KConfigDialog::exists(const QString& name)
 {
-  QHash<QString,KConfigDialog *>::const_iterator it = openDialogs.find( name );
-  if ( it != openDialogs.end() )
+  QHash<QString,KConfigDialog *>::const_iterator it = KConfigDialogPrivate::openDialogs.find( name );
+  if ( it != KConfigDialogPrivate::openDialogs.end() )
       return *it;
   return 0;
 }

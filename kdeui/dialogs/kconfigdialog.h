@@ -256,16 +256,14 @@ private:
   void setupManagerConnections(KConfigDialogManager *manager);
 
 private:
-  /**
-   * The list of existing dialogs.
-   */
-  static QHash<QString,KConfigDialog *> openDialogs;
-
   class KConfigDialogPrivate;
+  friend class KConfigDialogPrivate;
   /**
    * Private class.
    */
   KConfigDialogPrivate *const d;
+  
+  Q_DISABLE_COPY(KConfigDialog)
 };
 
 #endif //KCONFIGDIALOG_H
