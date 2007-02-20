@@ -268,10 +268,10 @@ QString whatstr;
   grid->setMargin( KDialog::marginHint() );
   grid->setSpacing( KDialog::spacingHint() );
   // no need to parse kdeglobals.
-  config = new KConfig("cryptodefaults", false, false);
-  policies = new KSimpleConfig("ksslpolicies", false);
-  pcerts = new KSimpleConfig("ksslcertificates", false);
-  authcfg = new KSimpleConfig("ksslauthmap", false);
+  config = new KConfig("cryptodefaults", KConfig::NoGlobals);
+  policies = new KConfig("ksslpolicies", KConfig::OnlyLocal);
+  pcerts = new KConfig("ksslcertificates", KConfig::OnlyLocal);
+  authcfg = new KConfig("ksslauthmap", KConfig::OnlyLocal);
 
 #ifdef KSSL_HAVE_SSL
   SSLv3Box = new Q3ListView(tabSSL, "v3ciphers");
@@ -887,13 +887,13 @@ void KCryptoConfig::load()
   otherSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>" || *i == "General") continue;
-    policies->setGroup(*i);
-    KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString()).toLocal8Bit());
+    KConfigGroup cg(policies, *i);
+    KSSLCertificate *cert = KSSLCertificate::fromString(cg.readEntry("Certificate", QString()).toLocal8Bit());
     if (cert) {
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
-                        policies->readEntry("Permanent", true),
-                        policies->readEntry("Policy", 3),
-                        policies->readEntry("Expires", QDateTime()), this );
+                        cg.readEntry("Permanent", true),
+                        cg.readEntry("Policy", 3),
+                        cg.readEntry("Expires", QDateTime()), this );
       delete cert;
     }
   }
@@ -903,10 +903,10 @@ void KCryptoConfig::load()
   yourSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
-    pcerts->setGroup(*i);
+    KConfigGroup cg(pcerts, *i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
-                     pcerts->readEntry("PKCS12Base64"),
-                     pcerts->readEntry("Password"),
+                     cg.readEntry("PKCS12Base64"),
+                     cg.readEntry("Password"),
                      *i, this );
     j->setPassCache(QString());
   }
@@ -951,7 +951,7 @@ void KCryptoConfig::load()
   }
 
   groups = _signers->list();
-  KConfig sigcfg("ksslcalist", true, false);
+  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
   caList->clear();
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
@@ -1621,7 +1621,7 @@ QString iss;
          dlg.setCaption(pcaption);
          if(!dlg.exec())
             return;
-	      
+
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), dlg.password());
          pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
@@ -1967,7 +1967,7 @@ void KCryptoConfig::slotCARestore() {
 
 
   QStringList groups = _signers->list();
-  KConfig sigcfg("ksslcalist", true, false);
+  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
 
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();

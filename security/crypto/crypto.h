@@ -33,7 +33,7 @@
 #include <QLabel>
 #include <QListWidget>
 #include <kcmodule.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 class QGridLayout;
 class Q3VButtonGroup;
@@ -349,7 +349,7 @@ private:
   QLabel *cHash;
 
   KConfig *config;
-  KSimpleConfig *policies, *pcerts, *authcfg;
+  KConfig *policies, *pcerts, *authcfg;
   KConfig *cacfg;
 
   bool ___lehack;       // to hack around a lineedit problem
