@@ -30,9 +30,9 @@ class QToolButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 
-class KEditToolbarWidget;
-class KEditToolbarPrivate;
-class KEditToolbarWidgetPrivate;
+class KEditToolBarWidget;
+class KEditToolBarPrivate;
+class KEditToolBarWidgetPrivate;
 
 /**
  * @short A dialog used to customize or configure toolbars.
@@ -42,12 +42,12 @@ class KEditToolbarWidgetPrivate;
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
  *
- * Typically, you would include the KStdAction::configureToolbars()
+ * Typically, you would include the KStdAction::configureToolBars()
  * standard action in your application.  In your slot to this action,
  * you would have something like so:
  *
  * \code
- * KEditToolbar dlg(actionCollection());
+ * KEditToolBar dlg(actionCollection());
  * if (dlg.exec())
  * {
  *   createGUI();
@@ -60,15 +60,15 @@ class KEditToolbarWidgetPrivate;
  * If you are using KMainWindow's settings methods (either save/apply manually
  * or autoSaveSettings), you should write something like:
  * \code
- * void MyClass::slotConfigureToolbars()
+ * void MyClass::slotConfigureToolBars()
  * {
  *   saveMainWindowSettings( KGlobal::config(), "MainWindow" );
- *   KEditToolbar dlg(actionCollection());
- *   connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
+ *   KEditToolBar dlg(actionCollection());
+ *   connect(&dlg,SIGNAL(newToolBarConfig()),this,SLOT(slotNewToolBarConfig()));
  *   dlg.exec();
  * }
  *
- * void MyClass::slotNewToolbarConfig() // This is called when OK, Apply or Defaults is clicked
+ * void MyClass::slotNewToolBarConfig() // This is called when OK, Apply or Defaults is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
  *    createGUI();
@@ -88,11 +88,11 @@ class KEditToolbarWidgetPrivate;
  *
  * \code
  * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
- * KEditToolbar dlg(factory());
- * connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
+ * KEditToolBar dlg(factory());
+ * connect(&dlg,SIGNAL(newToolBarConfig()),this,SLOT(slotNewToolBarConfig()));
  * dlg.exec();
  *
- * void MyClass::slotNewToolbarConfig() // This is called when OK, Apply or Defaults is clicked
+ * void MyClass::slotNewToolBarConfig() // This is called when OK, Apply or Defaults is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
  *    // Do NOT call createGUI()!
@@ -102,7 +102,7 @@ class KEditToolbarWidgetPrivate;
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KEditToolbar : public KDialog
+class KDEUI_EXPORT KEditToolBar : public KDialog
 {
     Q_OBJECT
 public:
@@ -135,14 +135,14 @@ public:
    *               be parsed.
    * @param parent The parent of the dialog.
    */
-  explicit KEditToolbar(KActionCollection *collection,
+  explicit KEditToolBar(KActionCollection *collection,
                         const QString& xmlfile = QString(), bool global = true,
                         QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /* Constructor for apps that do not use components, which has an extra argument
    * specifying the toolbar to be shown.
-   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param defaultToolBar The toolbar with this name will appear for editing.
    * @param collection The collection of actions to work on.
    * @param xmlfile The application's local resource file.
    * @param global If @p true, then the global resource file will also
@@ -150,7 +150,7 @@ public:
    * @param parent The parent of the dialog.
    * @param name An internal name.
    */
-  KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
+  KEditToolBar(const QString& defaultToolBar, KActionCollection *collection,
                const QString& xmlfile = QString(), bool global = true,
                QWidget* parent = 0);
   /**
@@ -163,7 +163,7 @@ public:
    *
    * Use this like so:
    * \code
-   * KEditToolbar edit(factory());
+   * KEditToolBar edit(factory());
    * if ( edit.exec() )
    * ...
    * \endcode
@@ -171,28 +171,31 @@ public:
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
    */
-  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0);
+  KEditToolBar(KXMLGUIFactory* factory, QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /** Constructor for KParts based apps, which has an extra argument
    * specifying the toolbar to be shown.
    *
-   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param defaultToolBar The toolbar with this name will appear for editing.
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
    */
-  KEditToolbar(const QString& defaultToolbar, KXMLGUIFactory* factory,
+  KEditToolBar(const QString& defaultToolBar, KXMLGUIFactory* factory,
                QWidget* parent = 0);
 
   /// destructor
-  ~KEditToolbar();
+  ~KEditToolBar();
 
   /** Sets the default toolbar, which will be auto-selected when the constructor without the
-  *    defaultToolbar argument is used.
-  *   @param  toolbarName  the name of the toolbar
-  */
-  static void setDefaultToolbar(const char *toolbarName);
+    *    defaultToolBar argument is used.
+    *   @param  toolbarName  the name of the toolbar
+    */
+  static void setDefaultToolBar(const char *toolbarName);
 
+  KDE_DEPRECATED static void setDefaultToolbar(const char *toolbarName)
+  { setDefaultToolBar(toolbarName); }
+  
 protected Q_SLOTS:
   /**
    * Overridden in order to save any changes made to the toolbars
@@ -219,7 +222,9 @@ Q_SIGNALS:
    * Connect to it, to plug action lists and to call applyMainWindowSettings
    * (see sample code in this class's documentation)
    */
-  void newToolbarConfig();
+  void newToolBarConfig();
+
+  QT_MOC_COMPAT void newToolbarConfig();
 
 protected:
   virtual void showEvent(QShowEvent* event);
@@ -227,19 +232,19 @@ protected:
 
 private:
   void init();
-  KEditToolbarWidget *m_widget;
+  
 private:
-  KEditToolbarPrivate *d;
-
-  static const char *s_defaultToolbar;
+  friend class KEditToolBarPrivate;
+  KEditToolBarPrivate *const d;
+  
+  Q_DISABLE_COPY(KEditToolBar)
 };
-
 
 /**
  * @short A widget used to customize or configure toolbars
  *
  * This is the widget that does all of the work for the
- * KEditToolbar dialog.  In most cases, you will want to use the
+ * KEditToolBar dialog.  In most cases, you will want to use the
  * dialog instead of this widget directly.
  *
  * Typically, you would use this widget only if you wanted to embed
@@ -253,7 +258,7 @@ private:
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KEditToolbarWidget : public QWidget, virtual public KXMLGUIClient
+class KDEUI_EXPORT KEditToolBarWidget : public QWidget, virtual public KXMLGUIClient
 {
   Q_OBJECT
 public:
@@ -286,21 +291,21 @@ public:
    *               be parsed
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(KActionCollection *collection,
+  KEditToolBarWidget(KActionCollection *collection,
                      const QString& xmlfile = QString(),
                      bool global = true, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
    *
-   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param defaultToolBar The toolbar with this name will appear for editing.
    * @param collection The collection of actions to work on
    * @param xmlfile The application's local resource file
    * @param global If true, then the global resource file will also
    *               be parsed
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(const QString& defaultToolbar,
+  KEditToolBarWidget(const QString& defaultToolBar,
                      KActionCollection *collection,
                      const QString& file = QString(),
                      bool global = true,
@@ -318,7 +323,7 @@ public:
    *
    * Use this like so:
    * \code
-   * KEditToolbar edit(factory());
+   * KEditToolBar edit(factory());
    * if ( edit.exec() )
    * ...
    * \endcode
@@ -326,17 +331,17 @@ public:
    * @param factory Your application's factory object
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
+  KEditToolBarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
    *
    *
-   * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param defaultToolBar The toolbar with this name will appear for editing.
    * @param factory Your application's factory object
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(const QString& defaultToolbar,
+  KEditToolBarWidget(const QString& defaultToolBar,
                      KXMLGUIFactory* factory,
                      QWidget *parent = 0L);
 
@@ -345,7 +350,7 @@ public:
    * @p NOT be saved in the destructor.  You @p must call save()
    * to do that.
    */
-  virtual ~KEditToolbarWidget();
+  virtual ~KEditToolBarWidget();
 
   /**
    * @internal Reimplemented for internal purposes.
@@ -374,7 +379,7 @@ Q_SIGNALS:
   void enableOk(bool);
 
 private:
-  Q_PRIVATE_SLOT(d, void slotToolbarSelected(const QString& text))
+  Q_PRIVATE_SLOT(d, void slotToolBarSelected(const QString& text))
 
   Q_PRIVATE_SLOT(d, void slotInactiveSelectionChanged())
   Q_PRIVATE_SLOT(d, void slotActiveSelectionChanged())
@@ -389,10 +394,89 @@ private:
   Q_PRIVATE_SLOT(d, void slotProcessExited( KProcess* ))
 
 private:
+  friend class KEditToolBarWidgetPrivate;
+  KEditToolBarWidgetPrivate *const d;
+  
+  Q_DISABLE_COPY(KEditToolBarWidget)
+};
+
+
+/**
+* @short A dialog used to customize or configure toolbars.
+ *
+ * This dialog only works if your application uses the XML UI
+ * framework for creating menus and toolbars.  It depends on the XML
+ * files to describe the toolbar layouts and it requires the actions
+ * to determine which buttons are active.
+ *
+ * @deprecated use KEditToolBar
+ */
+class KDEUI_EXPORT_DEPRECATED KEditToolbar : public KEditToolBar
+{
+  Q_OBJECT
+  
+public:
+  KEditToolbar(KActionCollection *collection,
+               const QString& xmlfile = QString(), bool global = true,
+               QWidget* parent = 0);
+  
+  KEditToolbar(const QString& defaultToolBar, KActionCollection *collection,
+               const QString& xmlfile = QString(), bool global = true,
+               QWidget* parent = 0);
+  
+  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0);
+  
+  KEditToolbar(const QString& defaultToolBar, KXMLGUIFactory* factory,
+               QWidget* parent = 0);
+  
+  ~KEditToolbar();
+  
+private:
+  class KEditToolbarPrivate;
+  friend class KEditToolbarPrivate;
+  KEditToolBarPrivate *const d;
+  
+  Q_DISABLE_COPY(KEditToolbar)
+};
+
+/**
+ * @short A widget used to customize or configure toolbars
+ *
+ * This is the widget that does all of the work for the
+ * KEditToolBar dialog.  In most cases, you will want to use the
+ * dialog instead of this widget directly.
+ *
+ * @deprecated use KEditToolBarWidget
+ */
+class KDEUI_EXPORT_DEPRECATED KEditToolbarWidget : public KEditToolBarWidget
+{
+  Q_OBJECT
+  
+public:
+  KEditToolbarWidget(KActionCollection *collection,
+                     const QString& xmlfile = QString(),
+                     bool global = true, QWidget *parent = 0L);
+  
+  KEditToolbarWidget(const QString& defaultToolBar,
+                     KActionCollection *collection,
+                     const QString& file = QString(),
+                     bool global = true,
+                     QWidget *parent = 0L);
+  
+  KEditToolbarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
+  
+  KEditToolbarWidget(const QString& defaultToolBar,
+                     KXMLGUIFactory* factory,
+                     QWidget *parent = 0L);
+  
+  ~KEditToolbarWidget();
+  
+private:
+  class KEditToolbarWidgetPrivate;
   friend class KEditToolbarWidgetPrivate;
   KEditToolbarWidgetPrivate *const d;
   
   Q_DISABLE_COPY(KEditToolbarWidget)
 };
-
+    
 #endif // _KEDITTOOLBAR_H

@@ -43,7 +43,7 @@ class KXMLGUIBuilder;
  */
 class KDEUI_EXPORT KXMLGUIClient
 {
-    friend class KEditToolbarWidget; // for setXMLFile(3 args)
+    friend class KEditToolBarWidget; // for setXMLFile(3 args)
 public:
   /**
    * Constructs a KXMLGUIClient which can be used with a

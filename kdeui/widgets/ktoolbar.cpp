@@ -478,7 +478,7 @@ void KToolBar::Private::slotContextAboutToShow()
   if ( configureAction )
     context->addAction( configureAction );
 
-  KEditToolbar::setDefaultToolbar( parent->QObject::objectName().toLatin1().constData() );
+  KEditToolbar::setDefaultToolBar( parent->QObject::objectName().toLatin1().constData() );
 
   // Check the actions that should be checked
   switch ( parent->toolButtonStyle() ) {
