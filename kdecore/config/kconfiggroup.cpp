@@ -113,6 +113,11 @@ void KConfigGroup::deleteGroup(KConfigBase::WriteConfigFlags pFlags)
   d->mMaster->deleteGroup(d->mGroup, pFlags);
 }
 
+void KConfigGroup::changeGroup(char const* group)
+{
+   d->mGroup = group;
+}
+
 QString KConfigGroup::group() const
 {
   return d->mGroup;
