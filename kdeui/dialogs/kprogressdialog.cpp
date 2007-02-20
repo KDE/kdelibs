@@ -109,10 +109,10 @@ void KProgressDialog::KProgressDialogPrivate::slotAutoShow()
     q->show();
 }
 
-void KProgressDialog::show()
+void KProgressDialog::showEvent(QShowEvent *event)
 {
-    KDialog::show();
     d->mShown = true;
+    KDialog::showEvent(event);
 }
 
 void KProgressDialog::reject()
