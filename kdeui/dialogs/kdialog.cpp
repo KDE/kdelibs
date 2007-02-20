@@ -55,8 +55,9 @@
 #include <netwm.h>
 #endif
 
-struct KDialog::Private
+class KDialog::Private
 {
+public:
   Private( KDialog *parent )
     : mParent( parent ), mDetailsVisible( false ), mSettingDetails( false ), mDetailsWidget( 0 ),
       mTopLayout( 0 ), mMainWidget( 0 ), mUrlHelp( 0 ), mActionSeparator( 0 ),
@@ -1028,24 +1029,31 @@ void KDialog::saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlag
 class KDialogQueue::Private
 {
   public:
+    Private(KDialogQueue *q): q(q) {}
+  
+    void slotShowQueuedDialog(); 
+
+    KDialogQueue *q;
     QList< QPointer<QDialog> > queue;
     bool busy;
+    
+    static KDialogQueue *Private::_self;
 };
 
 static KStaticDeleter<KDialogQueue> ksdkdq;
 
-KDialogQueue *KDialogQueue::_self = 0;
+KDialogQueue *KDialogQueue::Private::_self = 0;
 
 KDialogQueue* KDialogQueue::self()
 {
-  if ( !_self )
-    _self = ksdkdq.setObject( _self, new KDialogQueue );
+  if ( !Private::_self )
+    Private::_self = ksdkdq.setObject( Private::_self, new KDialogQueue );
 
-  return _self;
+  return Private::_self;
 }
 
 KDialogQueue::KDialogQueue()
-  : d( new Private )
+  : d( new Private(this) )
 {
   d->busy = false;
 }
@@ -1053,7 +1061,7 @@ KDialogQueue::KDialogQueue()
 KDialogQueue::~KDialogQueue()
 {
   delete d;
-  _self = 0;
+  Private::_self = 0;
 }
 
 // static
@@ -1065,26 +1073,26 @@ void KDialogQueue::queueDialog( QDialog *dialog )
   QTimer::singleShot( 0, _this, SLOT( slotShowQueuedDialog() ) );
 }
 
-void KDialogQueue::slotShowQueuedDialog()
+void KDialogQueue::Private::slotShowQueuedDialog()
 {
-  if ( d->busy )
+  if ( busy )
     return;
 
   QDialog *dialog;
   do {
-    if ( d->queue.isEmpty() )
+    if ( queue.isEmpty() )
       return;
-    dialog = d->queue.first();
-    d->queue.pop_front();
+    dialog = queue.first();
+    queue.pop_front();
   } while( !dialog );
 
-  d->busy = true;
+  busy = true;
   dialog->exec();
-  d->busy = false;
+  busy = false;
   delete dialog;
 
-  if ( !d->queue.isEmpty() )
-    QTimer::singleShot( 20, this, SLOT( slotShowQueuedDialog() ) );
+  if ( !queue.isEmpty() )
+    QTimer::singleShot( 20, q, SLOT( slotShowQueuedDialog() ) );
   else
     ksdkdq.destructObject(); // Suicide.
 }

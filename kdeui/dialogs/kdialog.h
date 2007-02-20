@@ -776,8 +776,11 @@ class KDEUI_EXPORT KDialog : public QDialog
     void updateGeometry();
 
   private:
-    struct Private;
+    class Private;
+    friend class Private;
     Private* const d;
+    
+    Q_DISABLE_COPY(KDialog)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
@@ -811,14 +814,15 @@ class KDEUI_EXPORT KDialogQueue : public QObject
     KDialogQueue();
     static KDialogQueue *self();
 
-  private Q_SLOTS:
-    void slotShowQueuedDialog();
+  private:
+    Q_PRIVATE_SLOT(d, void slotShowQueuedDialog())
 
-  protected:
+  private:
     class Private;
+    friend class Private;  
     Private* const d;
-
-    static KDialogQueue *_self;
+    
+    Q_DISABLE_COPY(KDialogQueue)
 };
 
 #endif // KDIALOG_H
