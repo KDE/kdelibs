@@ -54,7 +54,7 @@ public:
     QIcon preview() const { return m_preview; }
     void addPreview( const QPixmap& pix ) { m_preview.addPixmap(pix); }
     void setPreview( const QIcon& icn ) { m_preview = icn; }
-
+    
 private:
     KFileItem* m_item;
     KDirModelDirNode* const m_parent;
@@ -68,7 +68,8 @@ public:
     KDirModelDirNode( KDirModelDirNode* parent, KFileItem* item )
         : KDirModelNode( parent, item),
           m_childNodes(),
-          m_childCount(KDirModel::ChildCountUnknown)
+          m_childCount(KDirModel::ChildCountUnknown),
+	  m_populated(false)
     {}
     ~KDirModelDirNode() {
         qDeleteAll(m_childNodes);
@@ -78,9 +79,12 @@ public:
     // If we listed the directory, the child count is known. Otherwise it can be set via setChildCount.
     int childCount() const { return m_childNodes.isEmpty() ? m_childCount : m_childNodes.count(); }
     void setChildCount(int count) { m_childCount = count; }
+    bool isPopulated() const { return m_populated; }
+    void setPopulated( bool populated ) { m_populated = populated; }
 
 private:
     int m_childCount;
+    bool m_populated;
 };
 
 int KDirModelNode::rowNumber() const
@@ -614,7 +618,7 @@ bool KDirModel::canFetchMore( const QModelIndex & parent ) const
 
     KDirModelNode* node = static_cast<KDirModelNode*>(parent.internalPointer());
     KFileItem* item = node->item();
-    return item->isDir() /*&& !node->m_populated*/
+    return item->isDir() && !static_cast<KDirModelDirNode *>(node)->isPopulated()
         && static_cast<KDirModelDirNode *>(node)->m_childNodes.isEmpty();
 }
 
@@ -627,7 +631,17 @@ void KDirModel::fetchMore( const QModelIndex & parent )
     //kDebug() << k_funcinfo << url << endl;
 
     KDirModelNode* parentNode = static_cast<KDirModelNode*>(parent.internalPointer());
-    //parentNode->m_populated = true;
+    KDirModelDirNode* dirNode = 0;
+
+    if( parentNode->item()->isDir() )
+        dirNode = static_cast<KDirModelDirNode *>(parentNode);
+    if( dirNode )
+    {
+        if( dirNode->isPopulated() )
+            return;
+        dirNode->setPopulated( true );
+    }
+
     KFileItem* parentItem = parentNode->item();
     Q_ASSERT(parentItem->isDir());
 
