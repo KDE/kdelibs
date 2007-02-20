@@ -53,7 +53,7 @@ public:
         if(!pushedChar.isNull())
             pushedChar=0;
         else if(l > 0 ) {
-            if (*s == '\n')
+            if (*s == QLatin1Char('\n'))
                 lines++;
 	    s++, l--;
         }
@@ -142,7 +142,7 @@ public:
             m_pushedChar1 = m_pushedChar2;
             m_pushedChar2 = 0;
         } else if (m_currentString.m_current) {
-            m_lines += *m_currentString.m_current++ == '\n';
+            m_lines += *m_currentString.m_current++ == QLatin1Char('\n');
             if (--m_currentString.m_length == 0)
                 advanceSubstring();
         }

@@ -168,13 +168,13 @@ public:
      * @return address of parent
      */
     static QString parentAddress( const QString & address )
-    { return address.left( address.lastIndexOf('/') ); }
+    { return address.left( address.lastIndexOf(QLatin1Char('/')) ); }
 
     /**
      * @return position in parent (e.g. /4/5/2 -> 2)
      */
     static uint positionInParent( const QString & address )
-    { return address.mid( address.lastIndexOf('/') + 1 ).toInt(); }
+    { return address.mid( address.lastIndexOf(QLatin1Char('/')) + 1 ).toInt(); }
 
     /**
      * @return address of previous sibling (e.g. /4/5/2 -> /4/5/1)
@@ -183,7 +183,7 @@ public:
     static QString previousAddress( const QString & address )
     {
         uint pp = positionInParent(address);
-        return pp>0 ? parentAddress(address) + '/' + QString::number(pp-1) : QString();
+        return pp>0 ? parentAddress(address) + QLatin1Char('/') + QString::number(pp-1) : QString();
     }
 
     /**
@@ -191,7 +191,7 @@ public:
      * This doesn't check whether it actually exists
      */
     static QString nextAddress( const QString & address )
-    { return parentAddress(address) + '/' + QString::number(positionInParent(address)+1); }
+    { return parentAddress(address) + QLatin1Char('/') + QString::number(positionInParent(address)+1); }
 
     /**
      * @return the common parent of both addresses which

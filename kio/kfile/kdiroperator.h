@@ -245,7 +245,7 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * @returns true if we are displaying the root directory of the current url
      */
-    bool isRoot() const { return url().path() == QString(QChar('/')); }
+    bool isRoot() const { return url().path() == QString(QLatin1Char('/')); }
 
     /**
      * @returns the object listing the directory

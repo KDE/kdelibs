@@ -131,7 +131,7 @@ loadPredefined(Iter begin, Iter end, QMap<QChar,bool>& keys)
 {
     for (Iter i = begin; i != end; ++i) {
         QString item = Deref::deref(i);
-        int user_ampersand = item.indexOf(QChar('&'));
+        int user_ampersand = item.indexOf(QLatin1Char('&'));
         if( user_ampersand >= 0 ) {
             // Sanity check.  Note that we don't try to find an
             // accelerator if the user shoots him/herself in the foot
@@ -178,8 +178,8 @@ generate(Iter begin, Iter end, QStringList& target)
 
         // Attempt to find a good accelerator, but only if the user
         // has not manually hardcoded one.
-        int user_ampersand = item.indexOf(QChar('&'));
-        if( user_ampersand < 0 || item[user_ampersand+1] == '&') {
+        int user_ampersand = item.indexOf(QLatin1Char('&'));
+        if( user_ampersand < 0 || item[user_ampersand+1] == QLatin1Char('&')) {
             bool found = false;
             int found_idx;
             int j;
@@ -211,7 +211,7 @@ generate(Iter begin, Iter end, QStringList& target)
                 // Both upper and lower case marked as used
                 used_accels.insert(item[j].toUpper(),true);
                 used_accels.insert(item[j].toLower(),true);
-                item.insert(j,QChar('&'));
+                item.insert(j,QLatin1Char('&'));
             }
         }
 

@@ -366,7 +366,7 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
     uint i;
     DOMStringImpl *qname = qualifiedName.implementation();
     for (i = 0 ; i < qname->l ; i++) {
-        if ((*qname)[i] == ':') {
+        if ((*qname)[i] == QLatin1Char(':')) {
             colonpos = i;
             break;
         }
@@ -375,7 +375,7 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
     if ((!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName)) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
         (qualifiedName.isNull() && !namespaceURI.isNull()) ||
-        (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
+        (colonpos == 3 && qualifiedName[0] == QLatin1Char('x') && qualifiedName[1] == QLatin1Char('m') && qualifiedName[2] == QLatin1Char('l') &&
          namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
         if (pExceptioncode)
             *pExceptioncode = DOMException::NAMESPACE_ERR;
@@ -390,7 +390,7 @@ inline void splitPrefixLocalName(DOMStringImpl *qualifiedName, DOMString &prefix
 {
     if (colonPos == -2)
         for (uint i = 0 ; i < qualifiedName->l ; ++i)
-            if (qualifiedName->s[i] == ':') {
+            if (qualifiedName->s[i] == QLatin1Char(':')) {
                 colonPos = i;
                 break;
             }
