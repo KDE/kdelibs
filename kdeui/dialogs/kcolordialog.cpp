@@ -1464,7 +1464,7 @@ KColorDialog::KColorDialogPrivate::slotColorPicker()
 {
     bColorPicking = true;
 #ifdef Q_WS_X11
-    filter = new KCDPickerFilter(this);
+    filter = new KCDPickerFilter(q);
     kapp->installX11EventFilter(filter);
 #endif
     q->grabMouse( Qt::CrossCursor );
