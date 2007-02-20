@@ -45,4 +45,19 @@ QString Solid::DvbHw::device() const
     return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), QString(), device() );
 }
 
+int Solid::DvbHw::deviceAdapter() const
+{
+    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), -1, deviceAdapter() );
+}
+
+Solid::DvbHw::DeviceType Solid::DvbHw::deviceType() const
+{
+    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), DvbUnknown, deviceType() );
+}
+
+int Solid::DvbHw::deviceIndex() const
+{
+    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), -1, deviceIndex() );
+}
+
 #include "dvbhw.moc"

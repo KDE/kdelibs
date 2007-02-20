@@ -35,4 +35,40 @@ QString FakeDvbHw::device() const
     return fakeDevice()->property("device").toString();
 }
 
+int FakeDvbHw::deviceAdapter() const
+{
+    return fakeDevice()->property("deviceAdapter").toInt();
+}
+
+Solid::DvbHw::DeviceType FakeDvbHw::deviceType() const
+{
+    QString string = fakeDevice()->property("deviceType").toString();
+
+    if (string == "audio")
+        return Solid::DvbHw::DvbAudio;
+    if (string == "ca")
+        return Solid::DvbHw::DvbCa;
+    if (string == "demux")
+        return Solid::DvbHw::DvbDemux;
+    if (string == "dvr")
+        return Solid::DvbHw::DvbDvr;
+    if (string == "frontend")
+        return Solid::DvbHw::DvbFrontend;
+    if (string == "net")
+        return Solid::DvbHw::DvbNet;
+    if (string == "osd")
+        return Solid::DvbHw::DvbOsd;
+    if (string == "sec")
+        return Solid::DvbHw::DvbSec;
+    if (string == "video")
+        return Solid::DvbHw::DvbVideo;
+
+    return Solid::DvbHw::DvbUnknown;
+}
+
+int FakeDvbHw::deviceIndex() const
+{
+    return fakeDevice()->property("deviceIndex").toInt();
+}
+
 #include "fakedvbhw.moc"

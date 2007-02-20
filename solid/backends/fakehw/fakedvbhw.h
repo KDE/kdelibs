@@ -34,6 +34,9 @@ public:
 
 public Q_SLOTS:
     virtual QString device() const;
+    virtual int deviceAdapter() const;
+    virtual Solid::DvbHw::DeviceType deviceType() const;
+    virtual int deviceIndex() const;
 };
 
 #endif

@@ -24,6 +24,8 @@
 
 #include <solid/ifaces/capability.h>
 
+#include <solid/dvbhw.h>
+
 namespace Solid
 {
 namespace Ifaces
@@ -52,6 +54,33 @@ namespace Ifaces
          * the device
          */
         virtual QString device() const = 0;
+
+        /**
+         * Retrieves the adapter number of this dvb device.
+         * Note that -1 is returned in the case the adapter couldn't be
+         * determined.
+         *
+         * @return the adapter number of this dvb device or -1
+         */
+        virtual int deviceAdapter() const = 0;
+
+        /**
+         * Retrieves the type of this dvb device.
+         *
+         * @return the device type of this dvb device
+         * @see Solid::DvbHw::DeviceType
+         */
+        virtual Solid::DvbHw::DeviceType deviceType() const = 0;
+
+        /**
+         * Retrieves the index of this dvb device.
+         * Note that -1 is returned in the case the device couldn't be
+         * identified (deviceType() == DvbUnknown).
+         *
+         * @return the index of this dvb device or -1
+         * @see Solid::Ifaces::DvbHw::deviceType
+         */
+        virtual int deviceIndex() const = 0;
     };
 }
 }

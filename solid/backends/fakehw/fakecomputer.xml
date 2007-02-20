@@ -558,12 +558,15 @@
                 <property key="vendor">DigitalVid Ltd</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_2448</property>
             </device>
-                <!-- Ethernet network interface -->
+                <!-- Digital video broadcasting interface -->
                 <device udi="/org/kde/solid/fakehw/pci_8843_6a11_dvb1">
                     <property key="name">DVB Interface</property>
                     <property key="capability">DvbHw</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_8843_6a11</property>
                     <property key="device">/dev/broadcast0/demux</property>
+                    <property key="deviceAdapter">2</property>
+                    <property key="deviceType">demux</property>
+                    <property key="deviceIndex">1</property>
                 </device>
 
 

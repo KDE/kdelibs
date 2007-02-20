@@ -37,9 +37,31 @@ namespace Solid
     class SOLID_EXPORT DvbHw : public Capability
     {
         Q_OBJECT
+        Q_ENUMS( DeviceType )
         Q_PROPERTY( QString device READ device )
+        Q_PROPERTY( int deviceAdapter READ deviceAdapter )
+        Q_PROPERTY( DeviceType deviceType READ deviceType )
+        Q_PROPERTY( int deviceIndex READ deviceIndex )
 
     public:
+        /**
+         * This enum type defines the type of a dvb device.
+         *
+         * - DvbAudio : An audio device.
+         * - DvbCa : A common access device.
+         * - DvbDemux : A demultiplexer device.
+         * - DvbDvr : A dvr device.
+         * - DvbFrontend : A frontend device.
+         * - DvbNet : A network device.
+         * - DvbOsd : An osd device.
+         * - DvbSec : A sec device.
+         * - DvbVideo : A video device.
+         * - DvbUnknown : An unidentified device.
+         */
+        enum DeviceType { DvbUnknown, DvbAudio, DvbCa, DvbDemux, DvbDvr,
+                          DvbFrontend, DvbNet, DvbOsd, DvbSec, DvbVideo };
+
+
         /**
          * Creates a new DvbHw object.
          * You generally won't need this. It's created when necessary using
@@ -73,6 +95,36 @@ namespace Solid
          * the device
          */
         QString device() const;
+
+
+         /**
+          * Retrieves the adapter number of this dvb device.
+          * Note that -1 is returned in the case the adapter couldn't be
+          * determined.
+          *
+          * @return the adapter number of this dvb device or -1
+          */
+         int deviceAdapter() const;
+
+
+         /**
+          * Retrieves the type of this dvb device.
+          *
+          * @return the device type of this dvb device
+          * @see Solid::DvbHw::DeviceType
+          */
+         DeviceType deviceType() const;
+
+
+         /**
+          * Retrieves the index of this dvb device.
+          * Note that -1 is returned in the case the device couldn't be
+          * identified (deviceType() == DvbUnknown).
+          *
+          * @return the index of this dvb device or -1
+          * @see Solid::DvbHw::deviceType
+          */
+         int deviceIndex() const;
 
     private:
         class Private;
