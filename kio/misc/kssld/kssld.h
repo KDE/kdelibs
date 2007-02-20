@@ -31,7 +31,7 @@
 #include <qmap.h>
 #include <QVector>
 
-class KSimpleConfig;
+class KConfig;
 class KSSLCNode;
 class KOpenSSLProxy;
 
@@ -150,7 +150,7 @@ private:
   void cacheLoadDefaultPolicies();
 
   // for the cache portion:
-  KSimpleConfig *cfg;
+  KConfig *cfg;
   QList<KSSLCNode*> certList;
 
   // Our pointer to OpenSSL

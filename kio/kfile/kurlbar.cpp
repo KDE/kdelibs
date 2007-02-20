@@ -62,18 +62,18 @@ public:
 ///////////////////////////////////////////////////////////////////
 
 template <> inline
-K3Icon::Group KConfigBase::readEntry( const char *pKey,
+K3Icon::Group KConfigGroup::readEntry( const char *pKey,
                                      const K3Icon::Group& aDefault ) const
 {
-  return static_cast<K3Icon::Group>(readEntry(pKey,int(aDefault)));
+    return static_cast<K3Icon::Group>(readEntry(pKey,int(aDefault)));
 }
 
 template <> inline
-void KConfigBase::writeEntry( const char *pKey,
+void KConfigGroup::writeEntry( const char *pKey,
                               const K3Icon::Group& aValue,
                               KConfigBase::WriteConfigFlags flags)
 {
-  writeEntry(pKey, int(aValue), flags);
+    writeEntry(pKey, int(aValue), flags);
 }
 
 class KUrlBarItem::KUrlBarItemPrivate
@@ -537,49 +537,47 @@ KUrl KUrlBar::currentUrl() const
     return item ? item->url() : KUrl();
 }
 
-void KUrlBar::readConfig( KConfig *appConfig, const QString& itemGroup )
+void KUrlBar::readConfig( const KConfigGroup& appGroup )
 {
-    m_isImmutable = appConfig->groupIsImmutable( itemGroup );
-    KConfigGroup appGroup( appConfig, itemGroup );
+    m_isImmutable = appGroup.isImmutable();
     d->defaultIconSize = m_iconSize;
     m_iconSize = appGroup.readEntry( "Speedbar IconSize", m_iconSize );
 
     if ( m_useGlobal ) { // read global items
-        KConfigGroup globalGroup( KGlobal::config(), (QString)(itemGroup +" (Global)"));
+        KConfigGroup globalGroup( KGlobal::config(), appGroup.group() +" (Global)");
         int num = globalGroup.readEntry( "Number of Entries",0 );
         for ( int i = 0; i < num; i++ ) {
-            readItem( i, &globalGroup, false );
+            readItem( i, globalGroup, false );
         }
     }
 
     // read application local items
     int num = appGroup.readEntry( "Number of Entries",0 );
     for ( int i = 0; i < num; i++ ) {
-        readItem( i, &appGroup, true );
+        readItem( i, appGroup, true );
     }
 }
 
-void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
+void KUrlBar::readItem( int i, const KConfigGroup &config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KUrl url( config->readPathEntry( QString(QLatin1String("URL_") + number).toUtf8().constData() ));
+    KUrl url( config.readPathEntry( QString(QLatin1String("URL_") + number).toUtf8().constData() ));
     if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
     insertItem( url,
-                config->readEntry( QString("Description_") + number, QString() ),
+                config.readEntry( QString("Description_") + number, QString() ),
                 applicationLocal,
-                config->readEntry( QString("Icon_") + number, QString() ),
-                config->readEntry( QString("IconGroup_") + number, K3Icon::Group() ) );
+                config.readEntry( QString("Icon_") + number, QString() ),
+                config.readEntry( QString("IconGroup_") + number, K3Icon::Group() ) );
 }
 
-void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
+void KUrlBar::writeConfig( KConfigGroup &itemGroup )
 {
-    KConfigGroup cg( config, itemGroup );
-    if(!cg.hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
-        cg.revertToDefault("Speedbar IconSize");
+    if(!itemGroup.hasDefault("Speedbar IconSize") && m_iconSize == d->defaultIconSize )
+        itemGroup.revertToDefault("Speedbar IconSize");
     else
-        cg.writeEntry( "Speedbar IconSize", m_iconSize );
+        itemGroup.writeEntry( "Speedbar IconSize", m_iconSize );
 
     if ( !m_isModified )
         return;
@@ -595,20 +593,21 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
         {
             if ( item->applicationLocal() )
             {
-                writeItem( item, numLocal, &cg, false );
+                writeItem( item, numLocal, itemGroup, false );
                 numLocal++;
             }
 
             i++;
         }
     }
-    cg.writeEntry("Number of Entries", numLocal);
+    itemGroup.writeEntry("Number of Entries", numLocal);
 
 
     // write the global entries to kdeglobals, if any
     bool haveGlobalEntries = (i > numLocal);
     if ( m_useGlobal && haveGlobalEntries ) {
-        config->setGroup( itemGroup + " (Global)" );
+        KConfigGroup gl = itemGroup;
+        gl.changeGroup( itemGroup.group() + " (Global)" );
 
         int numGlobals = 0;
 
@@ -626,14 +625,14 @@ void KUrlBar::writeConfig( KConfig *config, const QString& itemGroup )
             }
 
         }
-        config->writeEntry("Number of Entries", numGlobals,
+        gl.writeEntry("Number of Entries", numGlobals,
                            KConfigBase::Normal|KConfigBase::Global);
     }
 
     m_isModified = false;
 }
 
-void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfigBase *config,
+void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfigGroup &config,
                          bool global )
 {
     if ( !item->isPersistent() )
@@ -648,10 +647,10 @@ void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfigBase *config,
     KConfigBase::WriteConfigFlags flags = KConfigBase::Normal;
     if ( global )
         flags |= KConfigBase::Global;
-    config->writePathEntry( QString(URL + number).toUtf8().constData(), item->url().prettyUrl(), flags );
-    config->writeEntry( QString(Description + number).toUtf8(), item->description(), flags );
-    config->writeEntry( QString(Icon + number).toUtf8(), item->icon(), flags );
-    config->writeEntry( QString(IconGroup + number).toUtf8().data(), item->iconGroup(), flags );
+    config.writePathEntry( QString(URL + number).toUtf8().constData(), item->url().prettyUrl(), flags );
+    config.writeEntry( QString(Description + number).toUtf8(), item->description(), flags );
+    config.writeEntry( QString(Icon + number).toUtf8(), item->icon(), flags );
+    config.writeEntry( QString(IconGroup + number).toUtf8().data(), item->iconGroup(), flags );
 }
 
 

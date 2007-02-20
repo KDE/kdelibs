@@ -398,17 +398,16 @@ void KActionCollection::setConfigGlobal( bool global )
   d->configIsGlobal = global;
 }
 
-void KActionCollection::readSettings( KConfigBase* config )
+void KActionCollection::readSettings( KConfigGroup* config )
 {
   kDebug(125) << k_funcinfo << " ( \"" << configGroup() << "\", " << config << " ) start" << endl;
+  KConfigGroup cg( KGlobal::config(), configGroup() );
   if( !config )
-    config = KGlobal::config().data();
+      config = &cg;
 
   kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )" << endl;
-  if( !config->hasGroup( configGroup() ) )
+  if( !config->exists())
     return;
-
-  KConfigGroup cg( config, configGroup() );
 
   for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
        it != end; ++it) {
@@ -419,7 +418,7 @@ void KActionCollection::readSettings( KConfigBase* config )
           continue;
 
       if( kaction->isShortcutConfigurable() ) {
-          QString entry = cg.readEntry(actionName, QString());
+          QString entry = config->readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
               if( entry == "none" )
                   kaction->setShortcut( KShortcut(), KAction::ActiveShortcut );
@@ -436,7 +435,7 @@ void KActionCollection::readSettings( KConfigBase* config )
   kDebug(125) << k_funcinfo << " done" << endl;
 }
 
-void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QAction* oneAction ) const
+void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
 {
   kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )" << endl;
 
@@ -488,10 +487,9 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
     return;
   }
 
-  if( !config )
-      config = KGlobal::config().data();
-
-  KConfigGroup cg( config, configGroup() );
+  KConfigGroup cg(KGlobal::config() , configGroup() );
+  if (!config)
+      config = &cg;
 
   QList<QAction*> writeActions;
   if (oneAction)
@@ -505,7 +503,7 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
       QString actionName = it.key();
 
       if( kaction!=0 && kaction->isShortcutConfigurable() ) {
-          bool bConfigHasAction = !cg.readEntry( actionName, QString() ).isEmpty();
+          bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
           bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
@@ -517,13 +515,13 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, QActi
               if( s.isEmpty() )
                   s = "none";
               kDebug(125) << "\twriting " << actionName << " = " << s << endl;
-              cg.writeEntry( actionName, s, flags );
+              config->writeEntry( actionName, s, flags );
           }
           // Otherwise, this key is the same as default
           //  but exists in config file.  Remove it.
           else if( bConfigHasAction ) {
               kDebug(125) << "\tremoving " << actionName << " because == default" << endl;
-              cg.deleteEntry( actionName, flags );
+              config->deleteEntry( actionName, flags );
           }
       }
   }

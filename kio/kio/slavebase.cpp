@@ -123,6 +123,7 @@ public:
     bool exit_loop:1;
     MetaData configData;
     SlaveBaseConfig *config;
+    KConfigGroup* configGroup;
     KUrl onHoldUrl;
 
     struct timeval last_tv;
@@ -222,6 +223,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->resume = false;
     d->needSendCanResume = false;
     d->config = new SlaveBaseConfig(this);
+    d->configGroup = new KConfigGroup(d->config, QString());
     d->onHold = false;
     d->wasKilled=false;
     d->last_tv.tv_sec = 0;
@@ -238,6 +240,8 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
 
 SlaveBase::~SlaveBase()
 {
+    delete d->configGroup;
+    delete d->config;
     delete d;
     s_protocol = "";
 }
@@ -367,9 +371,9 @@ bool SlaveBase::hasMetaData(const QString &key) const
    return false;
 }
 
-KConfigBase *SlaveBase::config()
+KConfigGroup *SlaveBase::config()
 {
-   return d->config;
+   return d->configGroup;
 }
 
 void SlaveBase::sendMetaData()
@@ -1010,13 +1014,15 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         reparseConfiguration();
         break;
     case CMD_CONFIG:
+    {
         stream >> d->configData;
 #ifdef Q_OS_UNIX //TODO: not yet available on WIN32
-        KSocks::setConfig(d->config);
+        KSocks::setConfig(d->configGroup);
 #endif
 	delete d->remotefile;
 	d->remotefile = 0;
         break;
+    }
     case CMD_GET:
     {
         stream >> url;

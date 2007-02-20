@@ -260,10 +260,9 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	if ( !isPS )
 		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
 
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("General");
+	KConfigGroup conf = KMFactory::self()->printConfig("General");
 	KLibFactory	*factory(0);
-	bool	externalPreview = conf->readEntry("ExternalPreview", false);
+	bool	externalPreview = conf.readEntry("ExternalPreview", false);
 	QWidget	*parentW = QWidget::find(parentId);
 	QString	exe;
 	if (!externalPreview && isPS && (factory = componentFactory()) != 0)
@@ -287,7 +286,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	KPreviewProc	proc;
 	if (externalPreview && isPS )
 	{
-		exe = conf->readPathEntry("PreviewCommand", "gv");
+		exe = conf.readPathEntry("PreviewCommand", "gv");
 		if (KStandardDirs::findExe(exe).isEmpty())
 		{
 			QString	msg = i18n("The preview program %1 cannot be found. "

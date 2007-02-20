@@ -65,9 +65,9 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 
   d->directoryEntryPath = cfg;
 
-  KConfig config( cfg, true, false, "apps" );
+  const KDesktopFile desktopFile( cfg );
 
-  config.setDesktopGroup();
+  const KConfigGroup config = desktopFile.desktopGroup();
 
   m_strCaption = config.readEntry( "Name" );
   m_strIcon = config.readEntry( "Icon" );

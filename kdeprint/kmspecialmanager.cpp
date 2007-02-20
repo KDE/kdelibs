@@ -27,7 +27,7 @@
 #include <qfile.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <klocale.h>
 #include <kdebug.h>
 
@@ -60,13 +60,12 @@ bool KMSpecialManager::savePrinters()
 	else
 		confname = KStandardDirs::locateLocal("data","kdeprint/specials.desktop");
 
-	KSimpleConfig	conf(confname);
-
+	KConfig	_conf(confname, KConfig::OnlyLocal);
+	KConfigGroup conf( &_conf, "General" );
 	// first clear existing groups
-	conf.setGroup("General");
 	int	n = conf.readEntry("Number", 0);
 	for (int i=0;i<n;i++)
-		conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i));
+		_conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i));
 
 	// then add printers
 	n = 0;
@@ -75,7 +74,7 @@ bool KMSpecialManager::savePrinters()
 	{
     KMPrinter *printer(it.next());
 		if (!printer->isSpecial() || printer->isVirtual()) continue;
-		conf.setGroup(QString::fromLatin1("Printer %1").arg(n));
+		conf.changeGroup(QString::fromLatin1("Printer %1").arg(n));
 		conf.writeEntry("Name",printer->name());
 		conf.writeEntry("Description",printer->description());
 		conf.writeEntry("Comment",printer->location());
@@ -87,7 +86,7 @@ bool KMSpecialManager::savePrinters()
 		conf.writeEntry("Require",printer->option("kde-special-require"));
 		n++;
 	}
-	conf.setGroup("General");
+	conf.changeGroup("General");
 	conf.writeEntry("Number",n);
 
 	// set read access for anybody in case of global location
@@ -135,14 +134,14 @@ bool KMSpecialManager::loadPrinters()
 
 bool KMSpecialManager::loadDesktopFile(const QString& filename)
 {
-	KSimpleConfig	conf(filename);
-	conf.setGroup("General");
+	KConfig	_conf(filename, KConfig::OnlyLocal);
+	KConfigGroup conf( &_conf, "General");
 	int	n = conf.readEntry("Number", 0);
 	for (int i=0;i<n;i++)
 	{
 		QString	grpname = QString::fromLatin1("Printer %1").arg(i);
-		if (!conf.hasGroup(grpname)) continue;
-		conf.setGroup(grpname);
+		conf.changeGroup( grpname );
+		if (!conf.exists() ) continue;
 		KMPrinter	*printer = new KMPrinter;
 		printer->setName(conf.readEntry("Name"));
 		printer->setPrinterName(printer->name());
@@ -155,7 +154,7 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 		printer->setOption("kde-special-require",conf.readEntry("Require"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
 		printer->setType(KMPrinter::Special);
-		if ( !KdeprintChecker::check( &conf ) ||
+		if ( !KdeprintChecker::check( conf ) ||
 				!KXmlCommandManager::self()->checkCommand( printer->option( "kde-special-command" ),
 					KXmlCommandManager::None, KXmlCommandManager::None, 0 ) )
 			printer->addType(KMPrinter::Invalid);

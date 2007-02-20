@@ -30,7 +30,6 @@
 #include <ksycocatype.h>
 #include <kservicetype.h>
 
-class KSimpleConfig;
 /**
  * Represent a mime type, like "text/plain", and the data that is associated
  * with it.

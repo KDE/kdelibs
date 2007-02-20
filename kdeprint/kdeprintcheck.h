@@ -22,13 +22,13 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kurl.h>
 
 class KDEPRINT_EXPORT KdeprintChecker
 {
 public:
-	static bool check(KConfig *conf, const QString& group = QString());
+	static bool check(const KConfigGroup &conf);
 	static bool check(const QStringList& uris);
 
 private:

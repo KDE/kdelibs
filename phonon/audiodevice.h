@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 #include <solid/audiohw.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 class QString;
 class QStringList;
 class KConfigGroup;

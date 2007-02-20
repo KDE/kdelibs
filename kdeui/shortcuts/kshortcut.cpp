@@ -29,7 +29,6 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "klocale.h"
-#include "ksimpleconfig.h"
 
 
 KShortcut::KShortcut()

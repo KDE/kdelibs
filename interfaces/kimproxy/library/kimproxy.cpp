@@ -30,7 +30,7 @@
 #include <kdbusservicestarter.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kiconloader.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
@@ -169,7 +169,7 @@ OrgKdeKIMInterface * findInterface( const QString & app )
         return new OrgKdeKIMInterface( app, "/KIMIface", QDBusConnection::sessionBus() );
 }
 
-KIMProxy * KIMProxy::instance() 
+KIMProxy * KIMProxy::instance()
 {
 	if ( !s_instance )
 		_staticDeleter.setObject( s_instance, new KIMProxy );
@@ -633,9 +633,9 @@ OrgKdeKIMInterface * KIMProxy::stubForProtocol( const QString &protocol)
 
 QString KIMProxy::preferredApp()
 {
-	KConfig *store = new KSimpleConfig( IM_CLIENT_PREFERENCES_FILE );
-	store->setGroup( IM_CLIENT_PREFERENCES_SECTION );
-	QString preferredApp = store->readEntry( IM_CLIENT_PREFERENCES_ENTRY );
+	KConfig cfg( IM_CLIENT_PREFERENCES_FILE, KConfig::OnlyLocal );
+	KConfigGroup cg(&cfg, IM_CLIENT_PREFERENCES_SECTION );
+	QString preferredApp = cg.readEntry( IM_CLIENT_PREFERENCES_ENTRY );
 	//kDebug( 790 ) << k_funcinfo << "found preferred app: " << preferredApp << endl;
 	return preferredApp;
 }

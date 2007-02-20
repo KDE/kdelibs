@@ -30,7 +30,7 @@
 #include <QWidget>
 
 #include <kglobal.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kcursor.h>
 #include "kcursor_p.h"
 #include <kconfiggroup.h>

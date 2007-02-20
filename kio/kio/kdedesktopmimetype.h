@@ -22,6 +22,8 @@
 
 #include "kmimetype.h"
 
+class KDesktopFile;
+
 /**
  * Mime type for desktop files.
  * Handles mount/umount icon, and user-defined properties.
@@ -80,18 +82,12 @@ public:
    */
   static QList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
 
-  /**
-   * Overload of userDefinedServices for speed purposes: it takes a KConfig* so that
-   * the caller can check things in the file without having it parsed twice.
-   */
-  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
-
-  /**
-   * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
-   * This allows for the menu to be changed depending on the exact files via
-   * the X-KDE-GetActionMenu extension.
-   */
-  static QList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KUrl::List & file_list);
+    /**
+     * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
+     * This allows for the menu to be changed depending on the exact files via
+     * the X-KDE-GetActionMenu extension.
+     */
+    static QList<Service> userDefinedServices( const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const KUrl::List & file_list = KUrl::List());
 
   /**
    * Execute @p service on the list of @p urls.
@@ -113,11 +109,6 @@ public:
    */
   static pid_t run( const KUrl& _url, bool _is_local );
 
-protected:
-  static pid_t runFSDevice( const KUrl& _url, const KSimpleConfig &cfg );
-  static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
-  static pid_t runLink( const KUrl& _url, const KSimpleConfig &cfg );
-  static pid_t runMimeType( const KUrl& _url, const KSimpleConfig &cfg );
 protected:
   virtual void virtual_hook( int id, void* data );
 };

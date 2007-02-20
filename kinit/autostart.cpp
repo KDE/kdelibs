@@ -79,18 +79,17 @@ static bool startCondition(const QString &condition)
      return true;
 
   QStringList list = condition.split(':');
-  if (list.count() < 4) 
+  if (list.count() < 4)
      return true;
-  if (list[0].isEmpty() || list[2].isEmpty()) 
+  if (list[0].isEmpty() || list[2].isEmpty())
      return true;
 
-  KConfig config(list[0], true, false);
-  if (!list[1].isEmpty())
-     config.setGroup(list[1]);
+  KConfig config(list[0], KConfig::NoGlobals);
+  KConfigGroup cg(&config, list[1]);
 
   bool defaultValue = (list[3].toLower() == "true");
 
-  return config.readEntry(list[2], defaultValue);
+  return cg.readEntry(list[2], defaultValue);
 }
 
 void
@@ -102,35 +101,36 @@ AutoStart::loadAutoStartList()
        it != files.end();
        ++it)
    {
-       KDesktopFile config(*it, true);
-       if (!startCondition(config.readEntry("X-KDE-autostart-condition")))
+       KDesktopFile config(*it);
+       const KConfigGroup grp = config.desktopGroup();
+       if (!startCondition(grp.readEntry("X-KDE-autostart-condition")))
           continue;
        if (!config.tryExec())
           continue;
-       if (config.readEntry("Hidden", false))
+       if (grp.readEntry("Hidden", false))
           continue;
 
-       if (config.hasKey("OnlyShowIn"))
+       if (grp.hasKey("OnlyShowIn"))
        {
-          if (!config.readEntry("OnlyShowIn",QStringList(), ';').contains("KDE"))
+          if (!grp.readEntry("OnlyShowIn",QStringList(), ';').contains("KDE"))
               continue;
        }
-       if (config.hasKey("NotShowIn"))
+       if (grp.hasKey("NotShowIn"))
        {
-           if (config.readEntry("NotShowIn", QStringList(),';').contains("KDE"))
+           if (grp.readEntry("NotShowIn", QStringList(),';').contains("KDE"))
                continue;
        }
-       
+
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
        item->service = *it;
-       item->startAfter = config.readEntry("X-KDE-autostart-after");
-       item->phase = config.readEntry("X-KDE-autostart-phase", 2);
+       item->startAfter = grp.readEntry("X-KDE-autostart-after");
+       item->phase = grp.readEntry("X-KDE-autostart-phase", 2);
        if (item->phase < 0)
           item->phase = 0;
        m_startList->append(item);
    }
-} 
+}
 
 QString
 AutoStart::startService()
@@ -144,7 +144,7 @@ AutoStart::startService()
      // Check for items that depend on previously started items
      QString lastItem = m_started[0];
      QMutableListIterator<AutoStartItem *> it(*m_startList);
-     while (it.hasNext()) 
+     while (it.hasNext())
      {
         AutoStartItem *item = it.next();
         if (item->phase == m_phase
@@ -159,7 +159,7 @@ AutoStart::startService()
      }
      m_started.removeFirst();
    }
-   
+
    // Check for items that don't depend on anything
    AutoStartItem *item;
    QMutableListIterator<AutoStartItem *> it(*m_startList);
@@ -178,7 +178,7 @@ AutoStart::startService()
    }
 
    // Just start something in this phase
-   it = *m_startList; 
+   it = *m_startList;
    while (it.hasNext())
    {
       item = it.next();

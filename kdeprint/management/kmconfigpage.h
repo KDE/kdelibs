@@ -25,6 +25,7 @@
 #include <kdelibs_export.h>
 
 class KConfig;
+class KConfigGroup;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMConfigPage : public QWidget
 {
@@ -32,8 +33,8 @@ class KDEPRINT_MANAGEMENT_EXPORT KMConfigPage : public QWidget
 public:
 	KMConfigPage(QWidget *parent = 0);
 
-	virtual void loadConfig(KConfig*);
-	virtual void saveConfig(KConfig*);
+	virtual void loadConfig(const KConfigGroup &conf);
+	virtual void saveConfig(KConfigGroup &conf);
 
 	QString pageName() const 	{ return m_name; }
 	QString pageHeader() const 	{ return m_header; }

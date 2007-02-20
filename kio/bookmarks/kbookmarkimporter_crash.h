@@ -24,7 +24,7 @@
 #include <qdom.h>
 #include <qstringlist.h>
 #include <qmap.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kdemacros.h>
 
 #include "kbookmarkimporter.h"

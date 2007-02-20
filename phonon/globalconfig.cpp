@@ -24,13 +24,14 @@
 #include "objectdescription.h"
 #include "phonondefs_p.h"
 #include "backendinterface.h"
+#include "ksharedconfig.h"
 #include <kconfiggroup.h>
 
 namespace Phonon
 {
 GlobalConfig::GlobalConfig( QObject *parent )
 	: QObject( parent )
-	, m_config( KSharedConfig::openConfig( "phononrc", false, false ) )
+	, m_config( KSharedConfig::openConfig( "phononrc", KConfig::NoGlobals ) )
 {
 }
 

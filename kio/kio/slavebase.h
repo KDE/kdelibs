@@ -25,7 +25,7 @@
 
 #include <qbytearray.h>
 
-class KConfigBase;
+class KConfigGroup;
 class KRemoteEncoding;
 class KUrl;
 
@@ -312,7 +312,7 @@ public:
      * The application provides the slave with all configuration information
      * relevant for the current protocol and host.
      */
-    KConfigBase* config();
+    KConfigGroup* config();
 
     /**
      * Returns an object that can translate remote filenames into proper

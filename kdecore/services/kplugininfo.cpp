@@ -18,7 +18,7 @@
 */
 
 #include "kplugininfo.h"
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kservicetypetrader.h>
 #include <kdebug.h>
 #include <kconfigbase.h>
@@ -72,27 +72,27 @@ class KPluginInfo::KPluginInfoPrivate
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
 : d( new KPluginInfoPrivate )
 {
-    KDesktopFile file( filename, true, resource );
+    KDesktopFile file( resource, filename );
 
     d->specfile = filename;
 
-    file.setDesktopGroup();
-    d->hidden = file.readEntry("Hidden", false);
+    KConfigGroup cg = file.desktopGroup();
+    d->hidden = cg.readEntry("Hidden", false);
     if( d->hidden )
         return;
 
     d->name = file.readName();
     d->comment = file.readComment();
-    d->icon = file.readEntry( "Icon" );
-    d->author = file.readEntry( "X-KDE-PluginInfo-Author" );
-    d->email = file.readEntry( "X-KDE-PluginInfo-Email" );
-    d->pluginName = file.readEntry( "X-KDE-PluginInfo-Name" );
-    d->version = file.readEntry( "X-KDE-PluginInfo-Version" );
-    d->website = file.readEntry( "X-KDE-PluginInfo-Website" );
-    d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
-    d->license = file.readEntry( "X-KDE-PluginInfo-License" );
-    d->dependencies = file.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
-    d->enabledbydefault = file.readEntry(
+    d->icon = cg.readEntry( "Icon" );
+    d->author = cg.readEntry( "X-KDE-PluginInfo-Author" );
+    d->email = cg.readEntry( "X-KDE-PluginInfo-Email" );
+    d->pluginName = cg.readEntry( "X-KDE-PluginInfo-Name" );
+    d->version = cg.readEntry( "X-KDE-PluginInfo-Version" );
+    d->website = cg.readEntry( "X-KDE-PluginInfo-Website" );
+    d->category = cg.readEntry( "X-KDE-PluginInfo-Category" );
+    d->license = cg.readEntry( "X-KDE-PluginInfo-License" );
+    d->dependencies = cg.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
+    d->enabledbydefault = cg.readEntry(
             "X-KDE-PluginInfo-EnabledByDefault", false);
 }
 
@@ -311,8 +311,8 @@ void KPluginInfo::save( KConfigGroup * config )
             kWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
             return;
         }
-        d->config->setGroup( d->configgroup );
-        d->config->writeEntry( d->pluginName + "Enabled", isPluginEnabled() );
+        KConfigGroup cg(d->config, d->configgroup );
+        cg.writeEntry( d->pluginName + "Enabled", isPluginEnabled() );
     }
     else
         config->writeEntry( d->pluginName + "Enabled", isPluginEnabled() );
@@ -328,8 +328,8 @@ void KPluginInfo::load( KConfigGroup * config )
             kWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
             return;
         }
-        d->config->setGroup( d->configgroup );
-        setPluginEnabled( d->config->readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
+        KConfigGroup cg( d->config, d->configgroup );
+        setPluginEnabled( cg.readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
     }
     else
         setPluginEnabled( config->readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );

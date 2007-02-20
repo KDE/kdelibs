@@ -117,31 +117,31 @@ void KMConfigGeneral::setEnabledPreviewButton(bool b)
     m_preview->setEnabled(!m_testpage->url().isEmpty() && b);
 }
 
-void KMConfigGeneral::loadConfig(KConfig *conf)
+void KMConfigGeneral::loadConfig(KConfig *_conf)
 {
-	conf->setGroup("General");
-	m_timer->setValue(conf->readEntry("TimerDelay", 5));
-	QString	tpage = conf->readPathEntry("TestPage");
+	KConfigGroup conf( _conf, "General");
+	m_timer->setValue(conf.readEntry("TimerDelay", 5));
+	QString	tpage = conf.readPathEntry("TestPage");
 	if (!tpage.isEmpty())
 	{
 		m_defaulttestpage->setChecked(true);
 		m_testpage->setUrl(KUrl(tpage));
 	}
-	m_statusmsg->setChecked(conf->readEntry("ShowStatusMsg", true));
-	m_uselast->setChecked(conf->readEntry("UseLast", true));
+	m_statusmsg->setChecked(conf.readEntry("ShowStatusMsg", true));
+	m_uselast->setChecked(conf.readEntry("UseLast", true));
 }
 
-void KMConfigGeneral::saveConfig(KConfig *conf)
+void KMConfigGeneral::saveConfig(KConfig *_conf)
 {
-	conf->setGroup("General");
-	conf->writeEntry("TimerDelay",m_timer->value());
-	conf->writePathEntry("TestPage",(m_defaulttestpage->isChecked() ? m_testpage->url().url() : QString()));
+	KConfigGroup conf( _conf, "General");
+	conf.writeEntry("TimerDelay",m_timer->value());
+	conf.writePathEntry("TestPage",(m_defaulttestpage->isChecked() ? m_testpage->url().url() : QString()));
 	if (m_defaulttestpage->isChecked() &&
 		KMimeType::findByFileContent(m_testpage->url().path())->name() != "application/postscript")
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
-	conf->writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
-	conf->writeEntry("UseLast", m_uselast->isChecked());
+	conf.writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
+	conf.writeEntry("UseLast", m_uselast->isChecked());
 }
 
 void KMConfigGeneral::slotTestPagePreview()

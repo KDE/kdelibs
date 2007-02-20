@@ -345,9 +345,9 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @note the group must be set before calling
      *
-     * @param config The object to read from. That may be a KConfigGroup
+     * @param config The config group to read from.
      */
-    void restoreDialogSize( KConfigBase* config ) ;
+    void restoreDialogSize( const KConfigGroup& config ) ;
 
     /**
      * Saves the dialogs size dependant on the screen dimension either to the
@@ -355,10 +355,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @note the group must be set before calling
      *
-     * @param config The object to read from. That is recommended to use a KConfigGroup
+     * @param config The config group to read from.
      * @param options passed to KConfigBase::writeEntry
      */
-    void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options = 0 ) const;
+    void saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlags options = 0 ) const;
 
     /**
      * Returns the help link text.

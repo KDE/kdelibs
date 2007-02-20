@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kuser.h>
 
 KFileShare::Authorization KFileShare::s_authorization = NotInitialized;
@@ -86,7 +86,7 @@ void KFileShare::readConfig() // static
 {
     // Create KFileSharePrivate instance
     KFileSharePrivate::self();
-    KSimpleConfig config(QLatin1String(FILESHARECONF),true);
+    KConfig config(QLatin1String(FILESHARECONF));
 
     s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
     s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
@@ -285,6 +285,6 @@ bool KFileShare::setShared( const QString& path, bool shared )
     return ok;
 }
 
-#include "kfileshare.moc"
+//#include "kfileshare.moc"
 #include "kfileshare_p.moc"
 

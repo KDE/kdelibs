@@ -31,90 +31,139 @@
 
 #include "kconfig.h"
 #include "kconfigbackend.h"
+#include "kconfigini.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kstaticdeleter.h"
 #include "ktoolinvocation.h"
 #include "kcomponentdata.h"
 
+#include <qdir.h>
 #include <qtimer.h>
 #include <qfileinfo.h>
 
-KConfig::KConfig(const KComponentData &componentData, const QString &fileName,
-                 bool readOnly, bool bUseKderc, const char *resType)
+KConfig::KConfig(const KComponentData &componentData,
+                 const QString &_fileName,
+                 OpenFlags flags,
+                 const char *resType)
     : KConfigBase(componentData),
+      bGroupImmutable(false),
+      bFileImmutable(false),
+      bForceGlobal(false)
+{
+    QString fileName = _fileName;
+    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+        fileName = componentData.dirs()->saveLocation(resType)+fileName;
+
+    // for right now we will hardcode that we are using the INI
+    // back end driver.  In the future this should be converted over to
+    // a object factory of some sorts.
+    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
+                                                         fileName,
+                                                         resType,
+                                                         flags & IncludeGlobals );
+
+    // set the object's back end pointer to this new backend
+    backEnd = aBackEnd;
+
+    // read initial information off disk
+    reparseConfiguration();
+
+    // we let KStandardDirs add custom user config files. It will do
+    // this only once. So only the first call ever to this constructor
+    // will anything else than return here We have to reparse here as
+    // configuration files may appear after customized directories have
+    // been added. and the info they contain needs to be inserted into the
+    // config object.
+    // Since this makes only sense for config directories, addCustomized
+    // returns true only if new config directories appeared.
+    if (componentData.dirs()->addCustomized(this)) {
+        reparseConfiguration();
+    }
+}
+
+KConfig::KConfig( const QString& _fileName,
+                  OpenFlags flags )
+  : KConfigBase(),
     bGroupImmutable(false),
     bFileImmutable(false),
     bForceGlobal(false)
 {
-  // set the object's read-only status.
-  setReadOnly(readOnly);
+    QString fileName = _fileName;
+    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+        fileName = componentData().dirs()->saveLocation("config")+fileName;
 
-  // for right now we will hardcode that we are using the INI
-  // back end driver.  In the future this should be converted over to
-  // a object factory of some sorts.
-  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
-						      fileName,
-                                                      resType,
-						      bUseKderc);
+    // for right now we will hardcode that we are using the INI
+    // back end driver.  In the future this should be converted over to
+    // a object factory of some sorts.
+    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
+                                                         fileName,
+                                                         "config",
+                                                         flags & IncludeGlobals );
 
-  // set the object's back end pointer to this new backend
-  backEnd = aBackEnd;
+    // set the object's back end pointer to this new backend
+    backEnd = aBackEnd;
 
-  // read initial information off disk
-  reparseConfiguration();
+    // read initial information off disk
+    reparseConfiguration();
 
-  // we let KStandardDirs add custom user config files. It will do
-  // this only once. So only the first call ever to this constructor
-  // will anything else than return here We have to reparse here as
-  // configuration files may appear after customized directories have
-  // been added. and the info they contain needs to be inserted into the
-  // config object.
-  // Since this makes only sense for config directories, addCustomized
-  // returns true only if new config directories appeared.
-  if (componentData.dirs()->addCustomized(this))
-      reparseConfiguration();
+    // we let KStandardDirs add custom user config files. It will do
+    // this only once. So only the first call ever to this constructor
+    // will anything else than return here We have to reparse here as
+    // configuration files may appear after customized directories have
+    // been added. and the info they contain needs to be inserted into the
+    // config object.
+    // Since this makes only sense for config directories, addCustomized
+    // returns true only if new config directories appeared.
+    if (componentData().dirs()->addCustomized(this)) {
+        reparseConfiguration();
+    }
 }
 
-KConfig::KConfig( const QString& fileName,
-                 bool readOnly, bool bUseKderc, const char *resType )
-  : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
+KConfig::KConfig( const char* resType,
+                  const QString& _fileName,
+                  OpenFlags flags )
+  : KConfigBase(),
+    bGroupImmutable(false),
+    bFileImmutable(false),
     bForceGlobal(false)
 {
-  // set the object's read-only status.
-  setReadOnly(readOnly);
+    QString fileName = _fileName;
+    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+        fileName = componentData().dirs()->saveLocation(resType)+fileName;
 
-  // for right now we will hardcode that we are using the INI
-  // back end driver.  In the future this should be converted over to
-  // a object factory of some sorts.
-  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
-						      fileName,
-                                                      resType,
-						      bUseKderc);
+    // for right now we will hardcode that we are using the INI
+    // back end driver.  In the future this should be converted over to
+    // a object factory of some sorts.
+    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
+                                                         fileName,
+                                                         resType,
+                                                         flags & IncludeGlobals );
 
-  // set the object's back end pointer to this new backend
-  backEnd = aBackEnd;
+    // set the object's back end pointer to this new backend
+    backEnd = aBackEnd;
 
-  // read initial information off disk
-  reparseConfiguration();
+    // read initial information off disk
+    reparseConfiguration();
 
-  // we let KStandardDirs add custom user config files. It will do
-  // this only once. So only the first call ever to this constructor
-  // will anything else than return here We have to reparse here as
-  // configuration files may appear after customized directories have
-  // been added. and the info they contain needs to be inserted into the
-  // config object.
-  // Since this makes only sense for config directories, addCustomized
-  // returns true only if new config directories appeared.
-  if (componentData().dirs()->addCustomized(this))
-      reparseConfiguration();
+    // we let KStandardDirs add custom user config files. It will do
+    // this only once. So only the first call ever to this constructor
+    // will anything else than return here We have to reparse here as
+    // configuration files may appear after customized directories have
+    // been added. and the info they contain needs to be inserted into the
+    // config object.
+    // Since this makes only sense for config directories, addCustomized
+    // returns true only if new config directories appeared.
+    if (componentData().dirs()->addCustomized(this)) {
+        reparseConfiguration();
+    }
 }
 
-KConfig::KConfig(KConfigBackEnd *aBackEnd, bool readOnly)
-    : bGroupImmutable(false), bFileImmutable(false),
-    bForceGlobal(false)
+KConfig::KConfig(KConfigBackEnd *aBackEnd)
+    : bGroupImmutable(false),
+      bFileImmutable(false),
+      bForceGlobal(false)
 {
-  setReadOnly(readOnly);
   backEnd = aBackEnd;
   reparseConfiguration();
 }
@@ -137,302 +186,250 @@ void KConfig::removeAllExtraConfigFiles()
 
 void KConfig::rollback(bool bDeep)
 {
-  KConfigBase::rollback(bDeep);
+    KConfigBase::rollback(bDeep);
 
-  if (!bDeep)
-    return; // object's bDeep flag is set in KConfigBase method
+    if (!bDeep)
+        return; // object's bDeep flag is set in KConfigBase method
 
-  // clear any dirty flags that entries might have set
-  for (KEntryMapIterator aIt = aEntryMap.begin();
-       aIt != aEntryMap.end(); ++aIt)
-    (*aIt).bDirty = false;
+    // clear any dirty flags that entries might have set
+    for (KEntryMapIterator aIt = aEntryMap.begin();
+         aIt != aEntryMap.end(); ++aIt)
+        (*aIt).bDirty = false;
 }
 
 QStringList KConfig::groupList() const
 {
-  QStringList retList;
+    QStringList retList;
 
-  KEntryMapConstIterator aIt = aEntryMap.begin();
-  KEntryMapConstIterator aEnd = aEntryMap.end();
-  for (; aIt != aEnd; ++aIt)
-  {
-    while(aIt.key().mKey.isEmpty())
+    KEntryMapConstIterator aIt = aEntryMap.begin();
+    KEntryMapConstIterator aEnd = aEntryMap.end();
+    for (; aIt != aEnd; ++aIt)
     {
-      QByteArray _group = aIt.key().mGroup;
-      ++aIt;
-      while (true)
-      {
-         if (aIt == aEnd)
-            return retList; // done
+        while(aIt.key().mKey.isEmpty())
+        {
+            QByteArray _group = aIt.key().mGroup;
+            ++aIt;
+            while (true)
+            {
+                if (aIt == aEnd)
+                    return retList; // done
 
-         if (aIt.key().mKey.isEmpty())
-            break; // Group is empty, next group
+                if (aIt.key().mKey.isEmpty())
+                    break; // Group is empty, next group
 
-         if (!aIt.key().bDefault && !(*aIt).bDeleted)
-         {
-            if (_group != "$Version") // Special case!
-               retList.append(QString::fromUtf8(_group));
-            break; // Group is non-empty, added, next group
-         }
-         ++aIt;
-      }
+                if (!aIt.key().bDefault && !(*aIt).bDeleted)
+                {
+                    if (_group != "$Version") // Special case!
+                        retList.append(QString::fromUtf8(_group));
+                    break; // Group is non-empty, added, next group
+                }
+                ++aIt;
+            }
+        }
     }
-  }
 
-  return retList;
+    return retList;
 }
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
-  QByteArray pGroup_utf = pGroup.toUtf8();
-  KEntryKey groupKey( pGroup_utf, 0 );
-  QMap<QString, QString> tmpMap;
+    QByteArray pGroup_utf = pGroup.toUtf8();
+    KEntryKey groupKey( pGroup_utf, 0 );
+    QMap<QString, QString> tmpMap;
 
-  KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
-  if (aIt == aEntryMap.end())
-     return tmpMap;
-  ++aIt; // advance past special group entry marker
-  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
-  {
-    // Leave the default values out && leave deleted entries out
-    if (!aIt.key().bDefault && !(*aIt).bDeleted)
-      tmpMap.insert(QString::fromUtf8(aIt.key().mKey), QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length()));
-  }
+    KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
+    if (aIt == aEntryMap.end())
+        return tmpMap;
+    ++aIt; // advance past special group entry marker
+    for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
+    {
+        // Leave the default values out && leave deleted entries out
+        if (!aIt.key().bDefault && !(*aIt).bDeleted)
+            tmpMap.insert(QString::fromUtf8(aIt.key().mKey),
+                          QString::fromUtf8((*aIt).mValue.data(),
+                                            (*aIt).mValue.length()));
+    }
 
-  return tmpMap;
+    return tmpMap;
 }
 
 void KConfig::reparseConfiguration()
 {
-  // Don't lose pending changes
-  if (!isReadOnly() && backEnd && bDirty)
-    backEnd->sync();
+    // Don't lose pending changes
+    if ( backEnd && bDirty ) {
+        backEnd->sync();
+    }
 
-  aEntryMap.clear();
+    aEntryMap.clear();
 
-  // add the "default group" marker to the map
-  KEntryKey groupKey("<default>", 0);
-  aEntryMap.insert(groupKey, KEntry());
+    // add the "default group" marker to the map
+    KEntryKey groupKey("<default>", 0);
+    aEntryMap.insert(groupKey, KEntry());
 
-  bFileImmutable = false;
-  parseConfigFiles();
-  bFileImmutable = bReadOnly;
+    bFileImmutable = false;
+    parseConfigFiles();
+
+    //TODO: when backends can tell us if they are isWritable(), port this line
+    //bFileImmutable = bReadOnly;
 }
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
-  QByteArray pGroup_utf = pGroup.toUtf8();
-  KEntry aEntry;
-  KEntryMapConstIterator aIt;
-  KEntryKey aKey(pGroup_utf, 0);
-  KEntryMap tmpEntryMap;
+    QByteArray pGroup_utf = pGroup.toUtf8();
+    KEntry aEntry;
+    KEntryMapConstIterator aIt;
+    KEntryKey aKey(pGroup_utf, 0);
+    KEntryMap tmpEntryMap;
 
-  aIt = aEntryMap.find(aKey);
-  //Copy any matching nodes.
-  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
-  {
-    tmpEntryMap.insert(aIt.key(), *aIt);
-  }
+    aIt = aEntryMap.find(aKey);
+    //Copy any matching nodes.
+    for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
+    {
+        tmpEntryMap.insert(aIt.key(), *aIt);
+    }
 
-  return tmpEntryMap;
+    return tmpEntryMap;
 }
 
 void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
 {
-  if (bFileImmutable && !_key.bDefault)
-    return;
+    if (bFileImmutable && !_key.bDefault)
+        return;
 
-  // check to see if the special group key is present,
-  // and if not, put it in.
-  if (_checkGroup)
-  {
-    KEntryKey groupKey( _key.mGroup, 0);
-    KEntry &entry = aEntryMap[groupKey];
-    bGroupImmutable = entry.bImmutable;
-  }
-  if (bGroupImmutable && !_key.bDefault)
-    return;
+    // check to see if the special group key is present,
+    // and if not, put it in.
+    if (_checkGroup)
+    {
+        KEntryKey groupKey( _key.mGroup, 0);
+        KEntry &entry = aEntryMap[groupKey];
+        bGroupImmutable = entry.bImmutable;
+    }
+    if (bGroupImmutable && !_key.bDefault)
+        return;
 
-  // now either add or replace the data
-  KEntry &entry = aEntryMap[_key];
-  bool immutable = entry.bImmutable;
-  if (immutable && !_key.bDefault)
-    return;
+    // now either add or replace the data
+    KEntry &entry = aEntryMap[_key];
+    bool immutable = entry.bImmutable;
+    if (immutable && !_key.bDefault)
+        return;
 
-  entry = _data;
-  entry.bImmutable |= immutable;
-  entry.bGlobal |= bForceGlobal; // force to kdeglobals
+    entry = _data;
+    entry.bImmutable |= immutable;
+    entry.bGlobal |= bForceGlobal; // force to kdeglobals
 
-  if (_key.bDefault)
-  {
-     // We have added the data as default value,
-     // add it as normal value as well.
-     KEntryKey key(_key);
-     key.bDefault = false;
-     aEntryMap[key] = _data;
-  }
+    if (_key.bDefault)
+    {
+        // We have added the data as default value,
+        // add it as normal value as well.
+        KEntryKey key(_key);
+        key.bDefault = false;
+        aEntryMap[key] = _data;
+    }
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  KEntryMapConstIterator aIt = aEntryMap.find(_key);
-  if (aIt != aEntryMap.end())
-  {
-    if (!aIt->bDeleted)
-       return *aIt;
-  }
+    KEntryMapConstIterator aIt = aEntryMap.find(_key);
+    if (aIt != aEntryMap.end())
+    {
+        if (!aIt->bDeleted)
+            return *aIt;
+    }
 
-  return KEntry();
+    return KEntry();
 }
 
 bool KConfig::internalHasGroup(const QByteArray &_group) const
 {
-  KEntryKey groupKey( _group, 0);
+    KEntryKey groupKey( _group, 0);
 
-  KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
-  KEntryMapConstIterator aEnd = aEntryMap.end();
+    KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
+    KEntryMapConstIterator aEnd = aEntryMap.end();
 
-  if (aIt == aEnd)
-     return false;
-  ++aIt;
-  for(; (aIt != aEnd); ++aIt)
-  {
-     if (aIt.key().mKey.isEmpty())
-        break;
+    if (aIt == aEnd)
+        return false;
+    ++aIt;
+    for(; (aIt != aEnd); ++aIt)
+    {
+        if (aIt.key().mKey.isEmpty())
+            break;
 
-     if (!aIt.key().bDefault && !(*aIt).bDeleted)
-        return true;
-  }
-  return false;
+        if (!aIt.key().bDefault && !(*aIt).bDeleted)
+            return true;
+    }
+    return false;
 }
 
 void KConfig::setFileWriteMode(int mode)
 {
-  backEnd->setFileWriteMode(mode);
+    backEnd->setFileWriteMode(mode);
 }
 
 KLockFile::Ptr KConfig::lockFile(bool bGlobal)
 {
-  KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
-  if (!aBackEnd) return KLockFile::Ptr();
-  return aBackEnd->lockFile(bGlobal);
+    KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
+    if (!aBackEnd) return KLockFile::Ptr();
+    return aBackEnd->lockFile(bGlobal);
 }
 
 void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
-  QString oldGroup = group();
-  setGroup("$Version");
-  QString cfg_id = updateFile+':'+id;
-  QStringList ids = readEntry("update_info", QStringList());
-  if (!ids.contains(cfg_id))
-  {
-     QStringList args;
-     args << "--check" << updateFile;
-     KToolInvocation::kdeinitExecWait("kconf_update", args);
-     reparseConfiguration();
-  }
-  setGroup(oldGroup);
+    KConfigGroup cg(this, "$Version");
+    QString cfg_id = updateFile+':'+id;
+    QStringList ids = cg.readEntry("update_info", QStringList());
+    if (!ids.contains(cfg_id))
+    {
+        QStringList args;
+        args << "--check" << updateFile;
+        KToolInvocation::kdeinitExecWait("kconf_update", args);
+        reparseConfiguration();
+    }
 }
 
 KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
-  if (!config)
-     config = new KConfig(QString(), false, false);
-  config->backEnd->changeFileName(file, "config", false);
-  config->setReadOnly(false);
-  config->bFileImmutable = false;
-  config->backEnd->mConfigState = ReadWrite;
+    if (!config) {
+        config = new KConfig(QString(), KConfig::NoGlobals);
+    }
+    config->backEnd->changeFileName(file, "config", false);
+    config->bFileImmutable = false;
+    config->backEnd->mConfigState = ReadWrite;
 
-  QStringList groups = groupList();
-  for(QStringList::ConstIterator it = groups.begin();
-      it != groups.end(); ++it)
-  {
-     QMap<QString, QString> map = entryMap(*it);
-     config->setGroup(*it);
-     for (QMap<QString,QString>::Iterator it2  = map.begin();
-          it2 != map.end(); ++it2)
-     {
-        config->writeEntry(it2.key(), it2.value());
-     }
+    QStringList groups = groupList();
+    for(QStringList::ConstIterator it = groups.begin();
+        it != groups.end(); ++it)
+    {
+        QMap<QString, QString> map = entryMap(*it);
+        KConfigGroup cg(config, *it);
+        for (QMap<QString,QString>::Iterator it2  = map.begin();
+             it2 != map.end(); ++it2)
+        {
+            cg.writeEntry(it2.key(), it2.value());
+        }
 
-  }
-  return config;
+    }
+    return config;
+}
+
+KConfigGroup KConfig::group( const char *arr)
+{
+    return KConfigGroup( this, arr);
+}
+
+KConfigGroup KConfig::group( const QByteArray &arr)
+{
+    return KConfigGroup( this, arr);
+}
+
+KConfigGroup KConfig::group( const QString &arr)
+{
+    return KConfigGroup( this, arr);
+}
+
+const KConfigGroup KConfig::group( const QByteArray &arr) const
+{
+    return KConfigGroup(const_cast<KConfig*>(this), arr);
 }
 
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
-
-K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
-
-KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName, bool bReadOnly,
-        bool bUseKDEGlobals, const char *resType)
-{
-    return openConfig(KGlobal::mainComponent(), fileName, bReadOnly, bUseKDEGlobals, resType);
-}
-
-KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
-        const QString& fileName, bool bReadOnly, bool useKDEGlobals, const char *resType)
-{
-    QList<KSharedConfig*> *list = globalSharedConfigList;
-    if (list) {
-        for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
-            if (
-                    (*it)->backEnd->fileName() == fileName &&
-                    (*it)->bReadOnly == bReadOnly &&
-                    (*it)->backEnd->useKDEGlobals == useKDEGlobals &&
-                    (*it)->backEnd->resType == resType &&
-                    (*it)->componentData() == componentData
-               ) {
-                return KSharedConfigPtr(*it);
-            }
-        }
-    }
-    return KSharedConfigPtr(new KSharedConfig(fileName, bReadOnly, useKDEGlobals, resType, componentData));
-}
-
-
-KSharedConfig::KSharedConfig(const QString &fileName, bool readonly, bool usekdeglobals,
-        const char *resType, const KComponentData &componentData)
-    : KConfig(componentData, fileName, readonly, usekdeglobals, resType)
-{
-    globalSharedConfigList->append(this);
-}
-
-KSharedConfig::~KSharedConfig()
-{
-    if (!globalSharedConfigList.isDestroyed()) {
-        globalSharedConfigList->removeAll(this);
-    }
-}
-
-KSharedConfigPtr::~KSharedConfigPtr()
-{
-    if (d) {
-        if (!d->ref.deref()) {
-            delete d;
-        } else if (d->ref == 1 && d->componentData().isValid()) {
-            // it might be KComponentData holding the last ref
-            const_cast<KComponentData&>(d->componentData())._checkConfig();
-        }
-        d = 0;
-    }
-}
-
-void KSharedConfigPtr::attach(KSharedConfig *p)
-{
-    if (d != p) {
-        KSharedConfig *x = p;
-        if (x) {
-            x->ref.ref();
-        }
-        x = qAtomicSetPtr(&d, x);
-        if (x) {
-            if (!x->ref.deref()) {
-                delete x;
-            } else if (x->ref == 1 && d->componentData().isValid()) {
-                // it might be KComponentData holding the last ref
-                const_cast<KComponentData&>(x->componentData())._checkConfig();
-            }
-        }
-    }
-}

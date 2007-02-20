@@ -34,12 +34,8 @@ int main( int argc, char *argv[] )
 
 	KApplication a;
 
-	KConfig aConfig;
-	aConfig.setGroup( "KColorDialog-test" );
-
-	QColor color = aConfig.readEntry( "Chosen", QColor() );
+	QColor color;
 	int nRet = KColorDialog::getColor( color, Qt::red /*testing default color*/ );
-	aConfig.writeEntry( "Chosen", color );
 
 	return nRet;
 }

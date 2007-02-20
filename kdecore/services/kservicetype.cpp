@@ -26,6 +26,7 @@
 #include <assert.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
+#include <kconfiggroup.h>
 
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
@@ -81,20 +82,21 @@ KServiceType::KServiceType( KDesktopFile *config )
 void
 KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
 {
+    KConfigGroup desktopGroup = config->desktopGroup();
     // Is it a mimetype ? ### KDE4: remove
-    m_strName = config->readEntry( "MimeType" );
+    m_strName = desktopGroup.readEntry( "MimeType" );
 
     // Or is it a servicetype ?
     if ( m_strName.isEmpty() ) {
-        m_strName = config->readEntry( "X-KDE-ServiceType" );
+        m_strName = desktopGroup.readEntry( "X-KDE-ServiceType" );
     }
 
-    m_strComment = config->readComment();
-    q->m_bDeleted = config->readEntry("Hidden", false);
+    m_strComment = desktopGroup.readEntry("Comment");
+    q->m_bDeleted = desktopGroup.readEntry("Hidden", false);
 
     // We store this as property to preserve BC, we can't change that
     // because KSycoca needs to remain BC between KDE 2.x and KDE 3.x
-    QString sDerived = config->readEntry( "X-KDE-Derived" );
+    QString sDerived = desktopGroup.readEntry( "X-KDE-Derived" );
     m_bDerived = !sDerived.isEmpty();
     if ( m_bDerived )
         q->m_mapProps.insert( "X-KDE-Derived", sDerived );
@@ -104,9 +106,9 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
 
     for( ; gIt != tmpList.end(); ++gIt ) {
         if ( (*gIt).startsWith( "Property::" ) ) {
-            config->setGroup( *gIt );
-            QVariant v = QVariant::nameToType( config->readEntry( "Type" ).toLatin1().constData() );
-            v = config->readEntry( "Value", v );
+            KConfigGroup cg(config, *gIt );
+            QVariant v = QVariant::nameToType( cg.readEntry( "Type" ).toLatin1().constData() );
+            v = cg.readEntry( "Value", v );
 
             if ( v.isValid() )
                 q->m_mapProps.insert( (*gIt).mid( 10 ), v );
@@ -116,9 +118,9 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
     gIt = tmpList.begin();
     for( ; gIt != tmpList.end(); ++gIt ) {
         if( (*gIt).startsWith( "PropertyDef::" ) ) {
-            config->setGroup( *gIt );
+            KConfigGroup cg(config, *gIt);
             m_mapPropDefs.insert( (*gIt).mid( 13 ),
-                                  QVariant::nameToType( config->readEntry( "Type" ).toLatin1().constData() ) );
+                                  QVariant::nameToType( cg.readEntry( "Type" ).toLatin1().constData() ) );
         }
     }
 

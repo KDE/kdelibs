@@ -25,9 +25,9 @@
 #include "kdebug.h"
 #include "kstringhandler.h"
 
-void KConfigSkeletonItem::readImmutability( KConfig *config )
+void KConfigSkeletonItem::readImmutability( const KConfigGroup &group )
 {
-  mIsImmutable = config->entryIsImmutable( mKey );
+  mIsImmutable = group.entryIsImmutable( mKey );
 }
 
 
@@ -44,41 +44,40 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
 {
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
-    config->setGroup( mGroup );
+    KConfigGroup cg(config, mGroup );
     if ((mDefault == mReference) && !config->hasDefault( mKey))
-      config->revertToDefault( mKey );
+      cg.revertToDefault( mKey );
     else if ( mType == Path )
-      config->writePathEntry( mKey, mReference );
+      cg.writePathEntry( mKey, mReference );
     else if ( mType == Password )
-      config->writeEntry( mKey, KStringHandler::obscure( mReference ) );
+      cg.writeEntry( mKey, KStringHandler::obscure( mReference ) );
     else
-      config->writeEntry( mKey, mReference );
+      cg.writeEntry( mKey, mReference );
   }
 }
 
 
 void KConfigSkeleton::ItemString::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
+  KConfigGroup cg(config, mGroup );
 
   if ( mType == Path )
   {
-    mReference = config->readPathEntry( mKey, mDefault );
+    mReference = cg.readPathEntry( mKey, mDefault );
   }
   else if ( mType == Password )
   {
-    QString val = config->readEntry( mKey,
-                                       KStringHandler::obscure( mDefault ) );
+    QString val = cg.readEntry( mKey, KStringHandler::obscure( mDefault ) );
     mReference = KStringHandler::obscure( val );
   }
   else
   {
-    mReference = config->readEntry( mKey, mDefault );
+    mReference = cg.readEntry( mKey, mDefault );
   }
 
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemString::setProperty(const QVariant & p)
@@ -115,11 +114,11 @@ KConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
 
 void KConfigSkeleton::ItemProperty::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemProperty::setProperty(const QVariant & p)
@@ -140,11 +139,11 @@ KConfigSkeleton::ItemBool::ItemBool( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemBool::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemBool::setProperty(const QVariant & p)
@@ -167,15 +166,15 @@ KConfigSkeleton::ItemInt::ItemInt( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemInt::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   if (mHasMin)
     mReference = qMax(mReference, mMin);
   if (mHasMax)
     mReference = qMin(mReference, mMax);
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemInt::setProperty(const QVariant & p)
@@ -224,15 +223,15 @@ KConfigSkeleton::ItemLongLong::ItemLongLong( const QString &_group, const QStrin
 
 void KConfigSkeleton::ItemLongLong::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   if (mHasMin)
     mReference = qMax(mReference, mMin);
   if (mHasMax)
     mReference = qMin(mReference, mMax);
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemLongLong::setProperty(const QVariant & p)
@@ -281,8 +280,8 @@ KConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  if (!config->hasKey(mKey))
+  KConfigGroup cg(config, mGroup );
+  if (!cg.hasKey(mKey))
   {
     mReference = mDefault;
   }
@@ -290,7 +289,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
   {
     int i = 0;
     mReference = -1;
-    QString tmp = config->readEntry( mKey, QString() ).toLower();
+    QString tmp = cg.readEntry( mKey, QString() ).toLower();
     for(QList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
@@ -301,24 +300,24 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
       }
     }
     if (mReference == -1)
-       mReference = config->readEntry( mKey, mDefault );
+       mReference = cg.readEntry( mKey, mDefault );
   }
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
 {
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
-    config->setGroup( mGroup );
-    if ((mDefault == mReference) && !config->hasDefault( mKey))
-      config->revertToDefault( mKey );
+    KConfigGroup cg(config, mGroup );
+    if ((mDefault == mReference) && !cg.hasDefault( mKey))
+      cg.revertToDefault( mKey );
     else if ((mReference >= 0) && (mReference < (int) mChoices.count()))
-      config->writeEntry( mKey, mChoices[mReference].name );
+      cg.writeEntry( mKey, mChoices[mReference].name );
     else
-      config->writeEntry( mKey, mReference );
+      cg.writeEntry( mKey, mReference );
   }
 }
 
@@ -338,15 +337,15 @@ KConfigSkeleton::ItemUInt::ItemUInt( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemUInt::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   if (mHasMin)
     mReference = qMax(mReference, mMin);
   if (mHasMax)
     mReference = qMin(mReference, mMax);
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemUInt::setProperty(const QVariant & p)
@@ -395,15 +394,15 @@ KConfigSkeleton::ItemULongLong::ItemULongLong( const QString &_group, const QStr
 
 void KConfigSkeleton::ItemULongLong::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   if (mHasMin)
     mReference = qMax(mReference, mMin);
   if (mHasMax)
     mReference = qMin(mReference, mMax);
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemULongLong::setProperty(const QVariant & p)
@@ -451,15 +450,15 @@ KConfigSkeleton::ItemDouble::ItemDouble( const QString &_group, const QString &_
 
 void KConfigSkeleton::ItemDouble::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   if (mHasMin)
     mReference = qMax(mReference, mMin);
   if (mHasMax)
     mReference = qMin(mReference, mMax);
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemDouble::setProperty(const QVariant & p)
@@ -508,11 +507,11 @@ KConfigSkeleton::ItemColor::ItemColor( const QString &_group, const QString &_ke
 
 void KConfigSkeleton::ItemColor::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemColor::setProperty(const QVariant & p)
@@ -535,11 +534,11 @@ KConfigSkeleton::ItemFont::ItemFont( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemFont::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemFont::setProperty(const QVariant & p)
@@ -562,11 +561,11 @@ KConfigSkeleton::ItemRect::ItemRect( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemRect::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemRect::setProperty(const QVariant & p)
@@ -589,11 +588,11 @@ KConfigSkeleton::ItemPoint::ItemPoint( const QString &_group, const QString &_ke
 
 void KConfigSkeleton::ItemPoint::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemPoint::setProperty(const QVariant & p)
@@ -616,11 +615,11 @@ KConfigSkeleton::ItemSize::ItemSize( const QString &_group, const QString &_key,
 
 void KConfigSkeleton::ItemSize::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemSize::setProperty(const QVariant & p)
@@ -643,11 +642,11 @@ KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &_group, const QStrin
 
 void KConfigSkeleton::ItemDateTime::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  mReference = config->readEntry( mKey, mDefault );
+  KConfigGroup cg(config, mGroup );
+  mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemDateTime::setProperty(const QVariant & p)
@@ -670,14 +669,14 @@ KConfigSkeleton::ItemStringList::ItemStringList( const QString &_group, const QS
 
 void KConfigSkeleton::ItemStringList::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  if ( !config->hasKey( mKey ) )
+  KConfigGroup cg(config, mGroup );
+  if ( !cg.hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readEntry( mKey, mDefault );
+    mReference = cg.readEntry( mKey, mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemStringList::setProperty(const QVariant & p)
@@ -700,26 +699,26 @@ KConfigSkeleton::ItemPathList::ItemPathList( const QString &_group, const QStrin
 
 void KConfigSkeleton::ItemPathList::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  if ( !config->hasKey( mKey ) )
+  KConfigGroup cg(config, mGroup );
+  if ( !cg.hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readPathListEntry( mKey );
+    mReference = cg.readPathListEntry( mKey );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 {
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
-    config->setGroup( mGroup );
-    if ((mDefault == mReference) && !config->hasDefault( mKey))
-      config->revertToDefault( mKey );
+    KConfigGroup cg(config, mGroup );
+    if ((mDefault == mReference) && !cg.hasDefault( mKey))
+      cg.revertToDefault( mKey );
     else {
       QStringList sl = mReference;
-      config->writePathEntry( mKey, sl );
+      cg.writePathEntry( mKey, sl );
     }
   }
 }
@@ -734,14 +733,14 @@ KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString 
 
 void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
 {
-  config->setGroup( mGroup );
-  if ( !config->hasKey( mKey ) )
+  KConfigGroup cg(config, mGroup );
+  if ( !cg.hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = config->readEntry( mKey , mDefault );
+    mReference = cg.readEntry( mKey , mDefault );
   mLoadedValue = mReference;
 
-  readImmutability( config );
+  readImmutability( cg );
 }
 
 void KConfigSkeleton::ItemIntList::setProperty(const QVariant &)
@@ -854,22 +853,16 @@ void KConfigSkeleton::usrSetDefaults()
 
 void KConfigSkeleton::usrReadConfig()
 {
-  QString origGroup = mConfig->group();
-
   mConfig->reparseConfiguration();
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
     (*it)->readConfig( mConfig.data() );
   }
-
-  mConfig->setGroup(origGroup);
 }
 
 void KConfigSkeleton::usrWriteConfig()
 {
-  QString origGroup = mConfig->group();
-
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
@@ -879,8 +872,6 @@ void KConfigSkeleton::usrWriteConfig()
   mConfig->sync();
 
   readConfig();
-
-  mConfig->setGroup(origGroup);
 
   emit configChanged();
 }

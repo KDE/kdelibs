@@ -1,4 +1,4 @@
-#define KDE3_SUPPORT 
+#define KDE3_SUPPORT
 
 #include "kdockwidgetdemo.h"
 
@@ -89,14 +89,13 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 {
   setObjectName(name);
   setModal(true);
-  KSharedConfig::Ptr config = KGlobal::config();
-  config->setGroup( QLatin1String("SFileDialogData:") + name );
+  KConfigGroup config( KGlobal::config(), QLatin1String("SFileDialogData:") + name );
   if ( initially.isNull() ){
-    initially = config->readPathEntry( "InitiallyDir", QDir::currentPath() );
+    initially = config.readPathEntry( "InitiallyDir", QDir::currentPath() );
   }
 
   QStringList bookmark;
-  bookmark = config->readEntry( "Bookmarks",QStringList() );
+  bookmark = config.readEntry( "Bookmarks",QStringList() );
 
   dockManager = new K3DockManager(this);
 
@@ -174,9 +173,8 @@ void SFileDialog::dockChange()
 
 SFileDialog::~SFileDialog()
 {
-  KSharedConfig::Ptr config = KGlobal::config();
-  config->setGroup( QString("SFileDialogData:") + objectName() );
-  config->writeEntry( "Bookmarks", fd->getBookmark() );
+  KConfigGroup config(KGlobal::config(), QString("SFileDialogData:") + objectName() );
+  config.writeEntry( "Bookmarks", fd->getBookmark() );
 
   qDebug("write config");
   dockManager->writeConfig( 0L , objectName() );
@@ -196,9 +194,8 @@ void SFileDialog::setDockDefaultPos( K3DockWidget* d )
 void SFileDialog::changeDir( const QString& f )
 {
   if ( !f.isEmpty() ){
-    KSharedConfig::Ptr config = KGlobal::config();
-    config->setGroup( QString("SFileDialogData:") + objectName() );
-    config->writePathEntry( "InitiallyDir", f );
+    KConfigGroup config( KGlobal::config(), QString("SFileDialogData:") + objectName() );
+    config.writePathEntry( "InitiallyDir", f );
   }
 }
 
@@ -278,7 +275,7 @@ void Preview::showPreview( const QString &str )
 	    raiseWidget( normalText );
 	    return;
 	}
-	
+
 	QPixmap pix( path );
 	if ( pix.isNull() ) {
 	    if ( fi.isFile() ) {
@@ -289,11 +286,11 @@ void Preview::showPreview( const QString &str )
 		    f.close();
 		    if ( fi.suffix().toLower().contains( "htm" ) ) {
 			QString url = html->mimeSourceFactory()->makeAbsolute( path, html->context() );
-			html->setText( text, url ); 	
+			html->setText( text, url );
 			raiseWidget( html );
 			return;
 		    } else {
-			normalText->setText( text ); 	
+			normalText->setText( text );
 			raiseWidget( normalText );
 			return;
 		    }
@@ -787,8 +784,8 @@ int main(int argc, char* argv[]) {
 #endif
 
 #if 1
-  QStringList s = SFileDialog::getOpenFileNames( QString(), 
-          QStringList(QLatin1String("All (*)")), 
+  QStringList s = SFileDialog::getOpenFileNames( QString(),
+          QStringList(QLatin1String("All (*)")),
           QLatin1String("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();
   for ( ; it != s.end(); ++it ){

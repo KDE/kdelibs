@@ -31,7 +31,8 @@
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <kdelibs_export.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
 
   /**
    * @short Class for storing a preferences setting
@@ -210,7 +211,7 @@
      * sets mIsImmutable to true if mKey in config is immutable
      * @param config KConfig to check if mKey is immutable in
      */
-    void readImmutability(KConfig *config);
+    void readImmutability(const KConfigGroup &group);
 
     QString mGroup; ///< The group name for this item
     QString mKey; ///< The config key for this item
@@ -283,11 +284,11 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
     {
       if ( mReference != mLoadedValue ) // Is this needed?
       {
-        config->setGroup(mGroup);
-        if ((mDefault == mReference) && !config->hasDefault( mKey))
-          config->revertToDefault( mKey );
+        KConfigGroup cg(config, mGroup);
+        if ((mDefault == mReference) && !cg.hasDefault( mKey))
+          cg.revertToDefault( mKey );
         else
-          config->writeEntry(mKey, mReference);
+          cg.writeEntry(mKey, mReference);
       }
     }
 

@@ -31,7 +31,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
-#include <ksimpleconfig.h>
 #include <ksvgrenderer.h>
 
 #include <kicontheme.h>

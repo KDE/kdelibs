@@ -23,9 +23,9 @@
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kdebug.h>
-#include <ksimpleconfig.h>
 #include <kconfig.h>
 #include <kstringhandler.h>
+#include <kconfiggroup.h>
 
 class KProtocolInfo::KProtocolInfoPrivate
 {
@@ -51,8 +51,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 {
   QString fullPath = KStandardDirs::locate("services", path);
 
-  KSimpleConfig config( fullPath, true );
-  config.setGroup( "Protocol" );
+  KConfig sconfig( fullPath );
+  KConfigGroup config(&sconfig, "Protocol" );
 
   m_name = config.readEntry( "protocol" );
   m_exec = config.readPathEntry( "exec" );

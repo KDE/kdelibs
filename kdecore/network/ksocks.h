@@ -27,6 +27,7 @@
 
 #ifdef Q_OS_UNIX
 
+class KConfigGroup;
 class KSocksTable;
 class KSocksPrivate;
 class KLibrary;
@@ -187,10 +188,10 @@ public:
     *  Set this before the first call to KSocks::self() and it will use
     *  @p config to read its configuration from.
     */
-   static void setConfig(KConfigBase *config);
+   static void setConfig(const KConfigGroup *config);
 
 private:
-   explicit KSocks(KConfigBase *config);
+   explicit KSocks(const KConfigGroup *config);
    ~KSocks();
 
    void stopSocks();

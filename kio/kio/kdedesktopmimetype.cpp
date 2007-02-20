@@ -29,6 +29,7 @@
 #include <ktoolinvocation.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <kdesktopfile.h>
 #include <klocale.h>
 #include "kservice.h"
 
@@ -37,8 +38,7 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
   if ( _url.isEmpty() || !_url.isLocalFile() )
     return KMimeType::iconName( _url );
 
-  KSimpleConfig cfg( _url.path(), true );
-  cfg.setDesktopGroup();
+  KDesktopFile cfg( _url.path() );
   QString icon = cfg.readEntry( "Icon" );
   QString type = cfg.readEntry( "Type" );
 
@@ -62,9 +62,8 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
           if ( url.protocol() == "trash" ) {
               // We need to find if the trash is empty, preferrably without using a KIO job.
               // So instead kio_trash leaves an entry in its config file for us.
-              KSimpleConfig trashConfig( "trashrc", true );
-              trashConfig.setGroup( "Status" );
-              if ( trashConfig.readEntry( "Empty", true ) ) {
+              KConfig trashConfig( "trashrc", KConfig::OnlyLocal );
+              if ( trashConfig.group("Status").readEntry( "Empty", true ) ) {
                   return emptyIcon;
               }
           }
@@ -82,14 +81,18 @@ QString KDEDesktopMimeType::comment( const KUrl& _url ) const
   if ( _url.isEmpty() || !_url.isLocalFile() )
     return KMimeType::comment( _url );
 
-  KSimpleConfig cfg( _url.path(), true );
-  cfg.setDesktopGroup();
-  QString comment = cfg.readEntry( "Comment" );
+  KDesktopFile cfg( _url.path() );
+  QString comment = cfg.desktopGroup().readEntry( "Comment" );
   if ( comment.isEmpty() )
     return KMimeType::comment( _url );
 
   return comment;
 }
+
+static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
+static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
+static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg );
+static pid_t runMimeType( const KUrl& _url, const KDesktopFile &cfg );
 
 pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
 {
@@ -98,9 +101,8 @@ pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
   if ( !_is_local )
     return 0;
 
-  KSimpleConfig cfg( u.path(), true );
-  cfg.setDesktopGroup();
-  QString type = cfg.readEntry( "Type" );
+  KDesktopFile cfg( u.path() );
+  QString type = cfg.desktopGroup().readEntry( "Type" );
   if ( type.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file %1 "
@@ -130,11 +132,12 @@ pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
   return 0;
 }
 
-pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cfg )
+static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
 {
   pid_t retval = 0;
 
-  QString dev = cfg.readEntry( "Dev" );
+  KConfigGroup cg = cfg.desktopGroup();
+  QString dev = cg.readEntry( "Dev" );
 
   if ( dev.isEmpty() )
   {
@@ -154,11 +157,11 @@ pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cf
   }
   else
   {
-    bool ro = cfg.readEntry("ReadOnly", false);
-    QString fstype = cfg.readEntry( "FSType" );
+    bool ro = cg.readEntry("ReadOnly", false);
+    QString fstype = cg.readEntry( "FSType" );
     if ( fstype == "Default" ) // KDE-1 thing
       fstype.clear();
-    QString point = cfg.readEntry( "MountPoint" );
+    QString point = cg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
     (void) new KAutoMount( ro, fstype.toLatin1(), dev, point, _url.path() );
 #endif
@@ -168,7 +171,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cf
   return retval;
 }
 
-pid_t KDEDesktopMimeType::runApplication( const KUrl& , const QString & _serviceFile )
+static pid_t runApplication( const KUrl& , const QString & _serviceFile )
 {
   KService s( _serviceFile );
   if ( !s.isValid() )
@@ -179,7 +182,7 @@ pid_t KDEDesktopMimeType::runApplication( const KUrl& , const QString & _service
   return KRun::run( s, lst, 0 /*TODO - window*/ );
 }
 
-pid_t KDEDesktopMimeType::runLink( const KUrl& _url, const KSimpleConfig &cfg )
+static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
 {
   QString u = cfg.readPathEntry( "URL" );
   if ( u.isEmpty() )
@@ -202,7 +205,8 @@ pid_t KDEDesktopMimeType::runLink( const KUrl& _url, const KSimpleConfig &cfg )
   return -1; // we don't want to return 0, but we don't want to return a pid
 }
 
-pid_t KDEDesktopMimeType::runMimeType( const KUrl& url , const KSimpleConfig & )
+// KDE3 mimetype desktop file. We won't miss this code if it goes away...
+static pid_t runMimeType( const KUrl& url , const KDesktopFile& )
 {
   // Hmm, can't really use keditfiletype since we might be looking
   // at the global file, or at a file not in share/mimelnk...
@@ -228,9 +232,8 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KU
   if ( !_url.isLocalFile() )
     return result;
 
-  KSimpleConfig cfg( _url.path(), true );
-  cfg.setDesktopGroup();
-  QString type = cfg.readEntry( "Type" );
+  KDesktopFile cfg( _url.path() );
+  QString type = cfg.desktopGroup().readEntry( "Type" );
 
   if ( type.isEmpty() )
     return result;
@@ -276,27 +279,22 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KU
 
 QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
-  KSimpleConfig cfg( path, true );
+  KDesktopFile cfg( path );
   return userDefinedServices( path, cfg, bLocalFiles );
 }
 
-QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
-{
- return userDefinedServices( path, cfg, bLocalFiles, KUrl::List() );
-}
-
-QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles, const KUrl::List & file_list )
+QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, const KDesktopFile& cfg, bool bLocalFiles, const KUrl::List & file_list )
 {
   QList<Service> result;
 
-  cfg.setDesktopGroup();
+  KConfigGroup cg = cfg.desktopGroup();
 
-  if ( !cfg.hasKey( "Actions" ) && !cfg.hasKey( "X-KDE-GetActionMenu") )
+  if ( !cg.hasKey( "Actions" ) && !cg.hasKey( "X-KDE-GetActionMenu") )
     return result;
 
-  if ( cfg.hasKey( "TryExec" ) )
+  if ( cg.hasKey( "TryExec" ) )
   {
-      QString tryexec = cfg.readPathEntry( "TryExec" );
+      QString tryexec = cg.readPathEntry( "TryExec" );
       QString exe =  KStandardDirs::findExe( tryexec );
       if (exe.isEmpty()) {
           return result;
@@ -305,8 +303,8 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
 
   QStringList keys;
 
-  if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
-    QStringList dbuscall = cfg.readEntry( "X-KDE-GetActionMenu" ).split( QLatin1Char( ' ' ) );
+  if( cg.hasKey( "X-KDE-GetActionMenu" )) {
+    QStringList dbuscall = cg.readEntry( "X-KDE-GetActionMenu" ).split( QLatin1Char( ' ' ) );
     const QString& app       = dbuscall.at( 0 );
     const QString& object    = dbuscall.at( 1 );
     const QString& interface = dbuscall.at( 2 );
@@ -318,7 +316,7 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
     keys = reply;               // ensures that the reply was a QStringList
   }
 
-  keys += cfg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
+  keys += cg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
 
   if ( keys.count() == 0 )
     return result;
@@ -344,21 +342,21 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
 
     if ( cfg.hasGroup( group ) )
     {
-      cfg.setGroup( group );
+      cg.changeGroup( group );
 
-      if ( !cfg.hasKey( "Name" ) || !cfg.hasKey( "Exec" ) )
+      if ( !cg.hasKey( "Name" ) || !cg.hasKey( "Exec" ) )
         bInvalidMenu = true;
       else
       {
-        QString exec = cfg.readPathEntry( "Exec" );
+        QString exec = cg.readPathEntry( "Exec" );
         if ( bLocalFiles || exec.contains("%U") || exec.contains("%u") )
         {
           Service s;
-          s.m_strName = cfg.readEntry( "Name" );
-          s.m_strIcon = cfg.readEntry( "Icon" );
+          s.m_strName = cg.readEntry( "Name" );
+          s.m_strIcon = cg.readEntry( "Icon" );
           s.m_strExec = exec;
           s.m_type = ST_USER_DEFINED;
-          s.m_display = !cfg.readEntry( "NoDisplay" , false );
+          s.m_display = !cg.readEntry( "NoDisplay" , false );
           result.append( s );
         }
       }
@@ -395,8 +393,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
     QString path = urls.first().path();
     //kDebug(7009) << "MOUNT&UNMOUNT" << endl;
 
-    KSimpleConfig cfg( path, true );
-    cfg.setDesktopGroup();
+    KDesktopFile cfg( path );
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {

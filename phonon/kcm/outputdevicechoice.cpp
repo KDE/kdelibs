@@ -23,7 +23,7 @@
 #include <phonon/phononnamespace.h>
 #include <klocale.h>
 #include <QHeaderView>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <phonon/audiodeviceenumerator.h>
 #include <phonon/audiodevice.h>
 #include <QList>
@@ -125,7 +125,7 @@ void OutputDeviceChoice::updateDeviceList()
 
 void OutputDeviceChoice::load()
 {
-    KSimpleConfig phononrc("phononrc", true);
+    KConfig phononrc("phononrc", KConfig::OnlyLocal);
     KConfigGroup outputDeviceGroup(&phononrc, QLatin1String("AudioOutputDevice"));
     KConfigGroup captureDeviceGroup(&phononrc, QLatin1String("AudioCaptureDevice"));
 
@@ -172,7 +172,7 @@ void OutputDeviceChoice::load()
 void OutputDeviceChoice::save()
 {
     kDebug() << k_funcinfo << endl;
-    KSimpleConfig config("phononrc");
+    KConfig config("phononrc", KConfig::OnlyLocal);
     {
         KConfigGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
         for (int i = 0; i <= Phonon::LastCategory; ++i) {

@@ -219,17 +219,16 @@ void ProviderLoader::load( const QString &category, const QString &providersList
   mProviders.clear();
   mJobData = "";
 
-  KSharedConfig::Ptr cfg = KGlobal::config();
-  cfg->setGroup("KNewStuff");
+  KConfigGroup cfg( KGlobal::config(), "KNewStuff");
 
   QString providersUrl = providersList;
   if( providersUrl.isEmpty() )
-  	providersUrl = cfg->readEntry( "ProvidersUrl" );
+  	providersUrl = cfg.readEntry( "ProvidersUrl" );
 
   if ( providersUrl.isEmpty() ) {
     // TODO: Replace the default by the real one.
-    QString server = cfg->readEntry( "MasterServer",
-                                     "http://korganizer.kde.org" );
+    QString server = cfg.readEntry( "MasterServer",
+                                    "http://korganizer.kde.org" );
 
     providersUrl = server + "/knewstuff/" + category + "/providers.xml";
   }

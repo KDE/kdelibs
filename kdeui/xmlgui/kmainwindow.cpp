@@ -458,7 +458,8 @@ KXMLGUIFactory *KMainWindow::guiFactory()
 
 void KMainWindow::configureToolbars()
 {
-    saveMainWindowSettings(KGlobal::config().data());
+    KConfigGroup cg(KGlobal::config(), QString());
+    saveMainWindowSettings(cg);
     if (!d->toolBarEditor) {
       d->toolBarEditor = new KEditToolbar(actionCollection(), xmlFile(), true, this);
       connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
@@ -469,7 +470,8 @@ void KMainWindow::configureToolbars()
 void KMainWindow::saveNewToolbarConfig()
 {
     createGUI(xmlFile());
-    applyMainWindowSettings(KGlobal::config().data());
+    KConfigGroup cg(KGlobal::config(), QString());
+    applyMainWindowSettings(cg);
 }
 
 void KMainWindow::setupGUI( StandardWindowOptions options, const QString & xmlfile ) {
@@ -687,57 +689,54 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     QString s;
     s.setNum(number);
     s.prepend(QLatin1String("WindowProperties"));
-    config->setGroup(s);
+    KConfigGroup cg(config, s);
 
     // store objectName, className, Width and Height  for later restoring
     // (Only useful for session management)
-    config->writeEntry(QLatin1String("ObjectName"), objectName());
-    config->writeEntry(QLatin1String("ClassName"), metaObject()->className());
+    cg.writeEntry(QLatin1String("ObjectName"), objectName());
+    cg.writeEntry(QLatin1String("ClassName"), metaObject()->className());
 
-    saveMainWindowSettings(config); // Menubar, statusbar and Toolbar settings.
+    saveMainWindowSettings(cg); // Menubar, statusbar and Toolbar settings.
 
     s.setNum(number);
-    config->setGroup(s);
-    saveProperties(config);
+    cg.changeGroup(s);
+    saveProperties(cg);
 
     d->autoSaveWindowSize = oldASWS;
 }
 
-void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
+void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 {
-    kDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
-    QString oldGroup;
-
-    if (!configGroup.isEmpty())
-    {
-       oldGroup = config->group();
-       config->setGroup(configGroup);
-    }
+    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.group() << endl;
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
-        saveWindowSize( config );
+        saveWindowSize( _cg );
+
+    KConfigGroup cg(_cg); // for saving
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
-       if(!config->hasDefault("StatusBar") && !sb->isHidden() )
-           config->revertToDefault("StatusBar");
+       if(!cg.hasDefault("StatusBar") && !sb->isHidden() )
+           cg.revertToDefault("StatusBar");
        else
-           config->writeEntry("StatusBar", sb->isHidden() ? "Disabled" : "Enabled");
+           cg.writeEntry("StatusBar", sb->isHidden() ? "Disabled" : "Enabled");
     }
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
        QString MenuBar = QLatin1String("MenuBar");
-       if(!config->hasDefault("MenuBar") && !mb->isHidden() )
-           config->revertToDefault("MenuBar");
+       if(!cg.hasDefault("MenuBar") && !mb->isHidden() )
+           cg.revertToDefault("MenuBar");
        else
-           config->writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
+           cg.writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
+
+    QString configGroup = cg.group();
 
     // Utilise the QMainWindow::saveState() functionality
     QByteArray state = saveState();
-    config->writeEntry("State", state.toBase64());
+    cg.writeEntry("State", state.toBase64());
     // One day will need to save the version number, but for now, assume 0
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -751,11 +750,10 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        toolbar->saveSettings(config, group);
+        cg.changeGroup(group);
+        toolbar->saveSettings(cg);
         n++;
     }
-    if (!configGroup.isEmpty())
-       config->setGroup(oldGroup);
 }
 
 void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
@@ -804,27 +802,25 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     s.setNum(number);
     s.prepend(QLatin1String("WindowProperties"));
 
-    config->setGroup(s);
+    KConfigGroup cg(config, s);
 
     // restore the object name (window role)
-    if ( config->hasKey(QLatin1String("ObjectName" )) )
-        setObjectName( config->readEntry("ObjectName").toLatin1()); // latin1 is right here
+    if ( cg.hasKey(QLatin1String("ObjectName" )) )
+        setObjectName( cg.readEntry("ObjectName").toLatin1()); // latin1 is right here
 
-    applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
+    applyMainWindowSettings(cg); // Menubar, statusbar and toolbar settings.
 
     s.setNum(number);
-    config->setGroup(s);
-    readProperties(config);
+    cg.changeGroup(s);
+    readProperties(cg);
     return true;
 }
 
-void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup,bool force)
+void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 {
     kDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
 
-    KConfigGroup cg( config, configGroup.isEmpty() ? config->group() : configGroup );
-
-    restoreWindowSize(&cg);
+    restoreWindowSize(cg);
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
@@ -855,6 +851,8 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         restoreState(state);
     }
 
+    QString configGroup = cg.group();
+
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {
         QString group;
@@ -866,7 +864,9 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        toolbar->applySettings(config, group, force);
+        KConfigGroup configGroup = cg;
+        configGroup.changeGroup(group);
+        toolbar->applySettings(configGroup, force);
         n++;
     }
 
@@ -891,7 +891,7 @@ void KMainWindow::finalizeGUI( bool /*force*/ )
     d->settingsDirty = false;
 }
 
-void KMainWindow::saveWindowSize( KConfig * config ) const
+void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 {
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
@@ -916,22 +916,24 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   }
   //TODO: add "Maximized" property instead "+1" hack
 #endif
+  KConfigGroup cg(_cg);
+
   QRect size( desk.width(), w, desk.height(), h );
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
-  if (!config->hasDefault(widthString) && defaultSize)
-     config->revertToDefault(widthString);
+  if (!cg.hasDefault(widthString) && defaultSize)
+     cg.revertToDefault(widthString);
   else
-     config->writeEntry(widthString, w );
+     cg.writeEntry(widthString, w );
 
-  if (!config->hasDefault(heightString) && defaultSize)
-     config->revertToDefault(heightString);
+  if (!cg.hasDefault(heightString) && defaultSize)
+     cg.revertToDefault(heightString);
   else
-     config->writeEntry(heightString, h );
+     cg.writeEntry(heightString, h );
 }
 
-void KMainWindow::restoreWindowSize( KConfigBase * config )
+void KMainWindow::restoreWindowSize( const KConfigGroup & config )
 {
     if (d->care_about_geometry) {
         parseGeometry(true);
@@ -946,17 +948,18 @@ void KMainWindow::restoreWindowSize( KConfigBase * config )
 
         if ( d->defaultWindowSize.isNull() ) // only once
           d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
-        QSize size( config->readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
-                    config->readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
+        QSize size( config.readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
+                    config.readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
 
         if (size.isEmpty()) {
             // try the KDE 2.0 way
-            size = QSize( config->readEntry( QLatin1String("Width"), 0 ),
-                          config->readEntry( QLatin1String("Height"), 0 ) );
+            size = QSize( config.readEntry( QLatin1String("Width"), 0 ),
+                          config.readEntry( QLatin1String("Height"), 0 ) );
             if (!size.isEmpty()) {
+                KConfigGroup cgw = config;
                 // make sure the other resolutions don't get old settings
-                config->writeEntry( QLatin1String("Width"), 0 );
-                config->writeEntry( QLatin1String("Height"), 0 );
+                cgw.writeEntry( QLatin1String("Width"), 0 );
+                cgw.writeEntry( QLatin1String("Height"), 0 );
             }
         }
         if ( !size.isEmpty() ) {
@@ -1023,8 +1026,9 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
 
+    KConfigGroup cg(KGlobal::config(), groupName);
     // Now read the previously saved settings
-    applyMainWindowSettings(KGlobal::config().data(), groupName);
+    applyMainWindowSettings(cg);
 }
 
 void KMainWindow::resetAutoSaveSettings()
@@ -1048,7 +1052,8 @@ void KMainWindow::saveAutoSaveSettings()
 {
     Q_ASSERT( d->autoSaveSettings );
     //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
-    saveMainWindowSettings(KGlobal::config().data(), d->autoSaveGroup);
+    KConfigGroup cg(KGlobal::config(), d->autoSaveGroup);
+    saveMainWindowSettings(cg);
     KGlobal::config()->sync();
     d->settingsDirty = false;
     if ( d->settingsTimer )

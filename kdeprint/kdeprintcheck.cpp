@@ -53,11 +53,9 @@ static const char* const config_stddirs[] = {
 	0
 };
 
-bool KdeprintChecker::check(KConfig *conf, const QString& group)
+bool KdeprintChecker::check(const KConfigGroup &conf)
 {
-	if (!group.isEmpty())
-		conf->setGroup(group);
-	QStringList	uris = conf->readEntry("Require", QStringList());
+	QStringList	uris = conf.readEntry("Require", QStringList());
 	return check(uris);
 }
 

@@ -340,16 +340,14 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                    "WarnOnLeaveSSLMode" );
 
            // Move this setting into KSSL instead
-          KConfig *config = new KConfig("kioslaverc");
-          config->setGroup("Notification Messages");
+          KConfigGroup config = KSharedConfig::openConfig("kioslaverc")->group("Notification Messages");
 
-          if (!config->readEntry("WarnOnLeaveSSLMode", true)) {
-              config->deleteEntry("WarnOnLeaveSSLMode");
-              config->sync();
+          if (!config.readEntry("WarnOnLeaveSSLMode", true)) {
+              config.deleteEntry("WarnOnLeaveSSLMode");
+              config.sync();
               kss.setWarnOnLeave(false);
               kss.save();
           }
-          delete config;
 
           if ( result == KMessageBox::Cancel ) {
              d->userAborted = true;
@@ -1043,21 +1041,19 @@ int TCPSlaveBase::verifyCertificate()
                                                    i18n("C&onnect"),
                                                    "WarnOnEnterSSLMode" );
       // Move this setting into KSSL instead
-      KConfig *config = new KConfig("kioslaverc");
-      config->setGroup("Notification Messages");
+      KConfigGroup config = KSharedConfig::openConfig("kioslaverc")->group("Notification Messages");
 
       bool dialogBoxStatus = false;
-      if( config->hasKey("WarnOnEnterSSLMode"))
+      if( config.hasKey("WarnOnEnterSSLMode"))
         dialogBoxStatus = true;
-      bool keyStatus = config->readEntry("WarnOnEnterSSLMode", true);
+      bool keyStatus = config.readEntry("WarnOnEnterSSLMode", true);
       dialogBoxStatus = dialogBoxStatus && keyStatus;
       if (!keyStatus) {
-          config->deleteEntry("WarnOnEnterSSLMode");
-          config->sync();
+          config.deleteEntry("WarnOnEnterSSLMode");
+          config.sync();
           d->kssl->settings()->setWarnOnEnter(false);
           d->kssl->settings()->save();
       }
-      delete config;
 
       if ( result == KMessageBox::Yes )
       {

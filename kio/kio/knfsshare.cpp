@@ -25,6 +25,7 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 
 #include "knfsshare.h"
 
@@ -32,19 +33,19 @@ class KNFSSharePrivate
 {
 public:
   KNFSSharePrivate();
-  
+
   bool readExportsFile();
   bool findExportsFile();
-  
+
   QSet<QString> sharedPaths;
   QString exportsFile;
 };
 
-KNFSSharePrivate::KNFSSharePrivate() 
+KNFSSharePrivate::KNFSSharePrivate()
 {
   if (findExportsFile())
       readExportsFile();
-}  
+}
 
 /**
  * Try to find the nfs config file path
@@ -53,8 +54,8 @@ KNFSSharePrivate::KNFSSharePrivate()
  * @return wether an 'exports' file was found.
  **/
 bool KNFSSharePrivate::findExportsFile() {
-  KConfig config("knfsshare");
-  config.setGroup("General");
+  KConfig knfsshare("knfsshare");
+  KConfigGroup config(&knfsshare, "General");
   exportsFile = config.readPathEntry("exportsFile");
 
   if ( QFile::exists(exportsFile) )
@@ -66,7 +67,7 @@ bool KNFSSharePrivate::findExportsFile() {
     kDebug(7000) << "KNFSShare: Could not found exports file!" << endl;
     return false;
   }
-      
+
   config.writeEntry("exportsFile",exportsFile);
   return true;
 }
@@ -198,7 +199,7 @@ void KNFSShare::slotFileChange( const QString & path ) {
   emit changed();
 }
 
-KNFSShare* KNFSShare::_instance = 0L; 
+KNFSShare* KNFSShare::_instance = 0L;
 static KStaticDeleter<KNFSShare> ksdNFSShare;
 
 KNFSShare* KNFSShare::instance() {

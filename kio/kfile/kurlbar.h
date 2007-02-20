@@ -326,27 +326,27 @@ public:
      * inside the group @p itemGroup. All items in there will be restored.
      * The reading of every item is delegated to the readItem() method.
      */
-    virtual void readConfig(  KConfig *config, const QString& itemGroup );
+    virtual void readConfig(  const KConfigGroup &config );
     /**
      * Call this method to save the current configuration into @p config,
      * inside the group @p iconGroup. The writeItem() method is used
      * to save each item.
      */
-    virtual void writeConfig( KConfig *config, const QString& itemGroup );
+    virtual void writeConfig( KConfigGroup &config );
 
     /**
      * Called from readConfig() to read the i'th from @p config.
      * After reading a KUrlBarItem is created and initialized with the read
      * values (as well as the given @p applicationLocal).
      */
-    virtual void readItem( int i, KConfigBase *config, bool applicationLocal );
+    virtual void readItem( int i, const KConfigGroup &config, bool applicationLocal );
     /**
      * Called from writeConfig() to save the KUrlBarItem @p item as the
      * i'th entry in the config-object.
      * @p global tell whether it should be saved in the global configuration
      * or not (using KConfig::writeEntry( key, value, true, global ) ).
      */
-    virtual void writeItem( KUrlBarItem *item, int i, KConfigBase *, bool global );
+    virtual void writeItem( KUrlBarItem *item, int i, KConfigGroup&, bool global );
 
     /**
      * @returns the current KUrlBarItem, or 0L if none.

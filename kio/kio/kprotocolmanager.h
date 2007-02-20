@@ -26,6 +26,7 @@
 #include <kio/global.h>
 #include "kprotocolinfo.h"
 
+#include <kconfiggroup.h>
 class KConfig;
 
 /**
@@ -594,6 +595,6 @@ public:
    */
   static KConfig *config();
 private:
-  static KConfig *http_config();
+  static KConfigGroup http_config();
 };
 #endif

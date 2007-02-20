@@ -124,8 +124,10 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
-    if ( autoSaveSettings() )
-        applyMainWindowSettings(KGlobal::config().data(), autoSaveGroup());
+    if ( autoSaveSettings() ) {
+        KConfigGroup cg(KGlobal::config(), autoSaveGroup());
+        applyMainWindowSettings(cg);
+    }
   }
 
   //setUpdatesEnabled( true );
@@ -174,7 +176,8 @@ void MainWindow::createShellGUI( bool create )
 void KParts::MainWindow::saveNewToolbarConfig()
 {
     createGUI( d->m_activePart );
-    applyMainWindowSettings(KGlobal::config().data());
+    KConfigGroup
+    applyMainWindowSettings(KConfigGroup(KGlobal::config(), QByteArray()));
 }
 
 #include "mainwindow.moc"

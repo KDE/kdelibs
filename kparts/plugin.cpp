@@ -18,7 +18,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
 #include <kparts/plugin.h>
 #include <kparts/part.h>
 #include <kparts/componentfactory.h>
@@ -35,8 +34,7 @@
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 #include <klocale.h>
-#include <kconfig.h>
-#include <ksimpleconfig.h>
+#include <kdesktopfile.h>
 #include <kconfiggroup.h>
 
 using namespace KParts;
@@ -256,8 +254,8 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
             if( !desktopfile.isEmpty() )
             {
                 //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile << endl;
-                KSimpleConfig desktop( desktopfile, true );
-                desktop.setDesktopGroup();
+                KDesktopFile _desktop( desktopfile );
+                const KConfigGroup desktop = _desktop.desktopGroup();
                 pluginEnabled = desktop.readEntry( "X-KDE-PluginInfo-EnabledByDefault",
                                                    enableNewPluginsByDefault );
                 if ( interfaceVersionRequired != 0 )

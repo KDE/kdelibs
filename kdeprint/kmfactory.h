@@ -27,6 +27,7 @@
 #include <qobject.h>
 #include <qpair.h>
 
+#include <kconfiggroup.h>
 #include <kdelibs_export.h>
 
 class KMManager;
@@ -69,7 +70,7 @@ public:
 	KMSpecialManager* specialManager();
 	KXmlCommandManager* commandManager();
 	KPrinterImpl* printerImplementation();
-	KConfig* printConfig(const QString& group = QString());
+	KConfigGroup printConfig(const QString& group = QString());
 	QString printSystem();
 	QList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);

@@ -27,6 +27,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
+#include <kconfiggroup.h>
 
 #include <qhash.h>
 #include <QtAlgorithms>
@@ -89,12 +90,12 @@ void KServiceTypeProfile::initStatic()
         // See writeServiceTypeProfile for a description of the file format.
         // ### Since this new format names groups after servicetypes maybe we can even
         // avoid doing any init upfront, and just look up the group when asked...
-        KConfig config( "servicetype_profilerc", true, false );
-        const QStringList tmpList = config.groupList();
+        KConfig configFile( "servicetype_profilerc", KConfig::NoGlobals );
+        const QStringList tmpList = configFile.groupList();
         for (QStringList::const_iterator aIt = tmpList.begin();
              aIt != tmpList.end(); ++aIt) {
             const QString type = *aIt;
-            config.setGroup( type );
+            KConfigGroup config(&configFile, type);
             const int count = config.readEntry( "NumberOfEntries", 0 );
             for ( int i = 0; i < count; ++i ) {
                 const QString num = QString::number(i);
@@ -113,15 +114,15 @@ void KServiceTypeProfile::initStatic()
         }
     }
 
-    KConfig config( "profilerc", true, false );
+    KConfig profilerc( "profilerc", KConfig::NoGlobals );
 
-    const QStringList tmpList = config.groupList();
+    const QStringList tmpList = profilerc.groupList();
     for (QStringList::const_iterator aIt = tmpList.begin();
          aIt != tmpList.end(); ++aIt) {
         if ( *aIt == "<default>" )
             continue;
 
-        config.setGroup( *aIt );
+        KConfigGroup config(&profilerc, *aIt );
 
         QString appId = config.readEntry( "Application" );
 
@@ -301,10 +302,10 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
      * Entry2_Preference=0
      */
 
-    KSimpleConfig config( "servicetype_profilerc" );
-    config.deleteGroup( serviceType );
+    KConfig configFile( "servicetype_profilerc", KConfig::OnlyLocal);
+    configFile.deleteGroup( serviceType );
 
-    config.setGroup( serviceType );
+    KConfigGroup config(&configFile, serviceType );
     const int count = services.count();
     config.writeEntry( "NumberOfEntries", count + disabledServices.count() );
     KService::List::ConstIterator servit = services.begin();
@@ -320,7 +321,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
         config.writeEntry( "Entry" + num + "_Service", (*servit)->storageId() );
         config.writeEntry( "Entry" + num + "_Preference", 0 );
     }
-    config.sync();
+    configFile.sync();
 
     // Drop the whole cache...
     clear();
@@ -328,7 +329,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
 
 void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
 {
-    KSimpleConfig config( "servicetype_profilerc" );
+    KConfig config( "servicetype_profilerc", KConfig::OnlyLocal );
     config.deleteGroup( serviceType );
     config.sync();
 

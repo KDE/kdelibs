@@ -808,7 +808,7 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     KUrl u;
     QString text;
 #ifdef Q_WS_WIN
-    foreach( const QFileInfo &drive,QFSFileEngine::drives() ) 
+    foreach( const QFileInfo &drive,QFSFileEngine::drives() )
     {
         u.setPath( drive.filePath() );
         text = i18n("Drive: %1",  u.toLocalFile() );
@@ -1699,16 +1699,16 @@ void KFileDialog::readConfig( KConfigGroup *configGroup)
     if (w1 < w2)
         setMinimumWidth(w2);
 
-    restoreDialogSize( configGroup );
+    restoreDialogSize( *configGroup );
 }
 
-void KFileDialog::writeConfig( KConfigGroup *configGroup)
+void KFileDialog::writeConfig( KConfigGroup *configGroup) // TODO should take a ref, not a pointer
 {
     if ( !configGroup )
         return;
 
     configGroup->writePathEntry( RecentURLs, d->pathCombo->urls() );
-    saveDialogSize( configGroup, KConfigBase::Persistent | KConfigBase::Global );
+    saveDialogSize( *configGroup, KConfigBase::Persistent | KConfigBase::Global );
     configGroup->writeEntry( PathComboCompletionMode, static_cast<int>(d->pathCombo->completionMode()) );
     configGroup->writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
     configGroup->writeEntry( ShowSpeedbar, d->urlBar && !d->urlBar->isHidden() );
@@ -1721,27 +1721,20 @@ void KFileDialog::writeConfig( KConfigGroup *configGroup)
 
 void KFileDialog::readRecentFiles( KConfig *kc )
 {
-    QString oldGroup = kc->group();
-    kc->setGroup( ConfigGroup );
+    KConfigGroup cg( kc, ConfigGroup );
 
-    locationEdit->setMaxItems( kc->readEntry( RecentFilesNumber,
-                                              DefaultRecentURLsNumber ) );
-    locationEdit->setUrls( kc->readPathListEntry( RecentFiles ),
+    locationEdit->setMaxItems( cg.readEntry( RecentFilesNumber,
+                                             DefaultRecentURLsNumber ) );
+    locationEdit->setUrls( cg.readPathListEntry( RecentFiles ),
                            KUrlComboBox::RemoveBottom );
     locationEdit->insertItem(0, QString()); // dummy item without pixmap
     locationEdit->setCurrentIndex( 0 );
-
-    kc->setGroup( oldGroup );
 }
 
 void KFileDialog::saveRecentFiles( KConfig *kc )
 {
-    QString oldGroup = kc->group();
-    kc->setGroup( ConfigGroup );
-
-    kc->writePathEntry( RecentFiles, locationEdit->urls() );
-
-    kc->setGroup( oldGroup );
+    KConfigGroup cg(kc, ConfigGroup );
+    cg.writePathEntry( RecentFiles, locationEdit->urls() );
 }
 
 KPushButton * KFileDialog::okButton() const

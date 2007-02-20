@@ -73,11 +73,11 @@ static void clearConfig()
    QString file = KStandardDirs::locateLocal("config", "kcookiejar-testconfig");
    QFile::remove(file);
    config = new KConfig(file);
-   config->setGroup("Cookie Policy");
-   config->writeEntry("RejectCrossDomainCookies", false);
-   config->writeEntry("AcceptSessionCookies", false);
-   config->writeEntry("IgnoreExpirationDate", false);
-   config->writeEntry("CookieGlobalAdvice", "Ask");
+   KConfigGroup cg(config, "Cookie Policy");
+   cg.writeEntry("RejectCrossDomainCookies", false);
+   cg.writeEntry("AcceptSessionCookies", false);
+   cg.writeEntry("IgnoreExpirationDate", false);
+   cg.writeEntry("CookieGlobalAdvice", "Ask");
    jar->loadConfig(config, false);
 }
 
@@ -169,8 +169,8 @@ static void processConfig(QString &line)
    if (key.isEmpty())
       FAIL(QString("Missing Key"));
 
-   config->setGroup("Cookie Policy");
-   config->writeEntry(key, line);
+   KConfigGroup cg(config, "Cookie Policy");
+   cg.writeEntry(key, line);
    jar->loadConfig(config, false);
 }
 

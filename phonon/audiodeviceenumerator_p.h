@@ -23,7 +23,7 @@
 #include "audiodeviceenumerator.h"
 #include <QList>
 #include "audiodevice.h"
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 namespace Phonon
 {

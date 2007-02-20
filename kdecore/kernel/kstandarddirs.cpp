@@ -50,10 +50,10 @@
 
 #include "kstandarddirs.h"
 #include "kconfig.h"
+#include "kconfiggroup.h"
 #include "kdebug.h"
 #include "kcomponentdata.h"
 #include "kshell.h"
-#include "ksimpleconfig.h"
 #include "kuser.h"
 #include "kstaticdeleter.h"
 #include "kde_file.h"
@@ -1305,8 +1305,7 @@ QString KStandardDirs::saveLocation(const char *type,
           if (dirs.isEmpty()) {
              qFatal("KStandardDirs: The resource type %s is not registered", type);
           }
-
-          path = realPath( dirs.last() );
+          path = realPath(dirs.last());
        }
 
        d->savelocations.insert(type, path);
@@ -1636,18 +1635,18 @@ static QStringList lookupProfiles(const QString &mapFile, const KComponentData &
     gid_t sup_gids[512];
     int sup_gids_nr = getgroups(512, sup_gids);
 
-    KSimpleConfig mapCfg(mapFile, true, componentData);
-    mapCfg.setGroup("Users");
+    KConfig mapCfgFile(componentData, mapFile );
+    KConfigGroup mapCfg(&mapCfgFile, "Users");
     if (mapCfg.hasKey(user.data()))
     {
         profiles = mapCfg.readEntry(user.data(), QStringList());
         return profiles;
     }
 
-    mapCfg.setGroup("General");
+    mapCfg.changeGroup("General");
     QStringList groups = mapCfg.readEntry("groups", QStringList());
 
-    mapCfg.setGroup("Groups");
+    mapCfg.changeGroup("Groups");
 
     for( QStringList::ConstIterator it = groups.begin();
          it != groups.end(); ++it )
@@ -1692,9 +1691,6 @@ bool KStandardDirs::addCustomized(KConfig *config)
     // we will return true to give KConfig a chance to reparse
     int configdirs = resourceDirs("config").count();
 
-    // Remember original group
-    QString oldGroup = config->group();
-
     if (!d->addedCustoms)
     {
         // We only add custom entries once
@@ -1702,9 +1698,9 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         // reading the prefixes in
         QString group = QLatin1String("Directories");
-        config->setGroup(group);
+        KConfigGroup cg(config, group);
 
-        QString kioskAdmin = config->readEntry("kioskAdmin");
+        QString kioskAdmin = cg.readEntry("kioskAdmin");
         if (!kioskAdmin.isEmpty() && !kde_kiosk_admin)
         {
             int i = kioskAdmin.indexOf(':');
@@ -1729,8 +1725,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
         if (kde_kiosk_admin && !QByteArray(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
             readProfiles = false;
 
-        QString userMapFile = config->readEntry("userProfileMapFile");
-        QString profileDirsPrefix = config->readEntry("profileDirsPrefix");
+        QString userMapFile = cg.readEntry("userProfileMapFile");
+        QString profileDirsPrefix = cg.readEntry("profileDirsPrefix");
         if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith("/"))
             profileDirsPrefix.append("/");
 
@@ -1742,8 +1738,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
         bool priority = false;
         while(true)
         {
-            config->setGroup(group);
-            QStringList list = config->readEntry("prefixes", QStringList());
+            KConfigGroup cg(config, group);
+            QStringList list = cg.readEntry("prefixes", QStringList());
             for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it)
             {
                 addPrefix(*it, priority);
@@ -1790,13 +1786,13 @@ bool KStandardDirs::addCustomized(KConfig *config)
     // Process KIOSK restrictions.
     if (!kde_kiosk_admin || QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
     {
-        config->setGroup("KDE Resource Restrictions");
-        QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");
+        KConfigGroup cg(config, "KDE Resource Restrictions");
+        QMap<QString, QString> entries = cg.entryMap();
         for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
             it2 != entries.end(); it2++)
         {
             QString key = it2.key();
-            if (!config->readEntry(key, true))
+            if (!cg.readEntry(key, true))
             {
                 d->restrictionsActive = true;
                 d->restrictions.insert(key.toLatin1(), true);
@@ -1804,8 +1800,6 @@ bool KStandardDirs::addCustomized(KConfig *config)
             }
         }
     }
-
-    config->setGroup(oldGroup);
 
     // check if the number of config dirs changed
     bool configDirsChanged = (resourceDirs("config").count() != configdirs);

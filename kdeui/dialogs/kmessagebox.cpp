@@ -959,18 +959,15 @@ KMessageBox::enableAllMessages()
    if (!config->hasGroup("Notification Messages"))
       return;
 
-   QString oldgroup = config->group();
-   config->setGroup( "Notification Messages" );
+   KConfigGroup cg(config, "Notification Messages" );
 
    typedef QMap<QString, QString> configMap;
 
-   configMap map = config->entryMap("Notification Messages");
+   configMap map = cg.entryMap();
 
    configMap::Iterator it;
    for (it = map.begin(); it != map.end(); ++it)
-      config->deleteEntry( it.key() );
-   config->sync();
-   config->setGroup( oldgroup );
+      cg.deleteEntry( it.key() );
 }
 
 void

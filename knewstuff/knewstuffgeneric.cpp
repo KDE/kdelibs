@@ -52,9 +52,9 @@ bool KNewStuffGeneric::install( const QString &fileName )
   kDebug() << "KNewStuffGeneric::install(): " << fileName << endl;
   QStringList list, list2;
 
-  mConfig->setGroup("KNewStuff");
+  KConfigGroup cg(mConfig, "KNewStuff");
 
-  QString uncompress = mConfig->readEntry( "Uncompress" );
+  QString uncompress = cg.readEntry( "Uncompress" );
   if ( !uncompress.isEmpty() ) {
     kDebug() << "Uncompression method: " << uncompress << endl;
     KTar tar(fileName, uncompress);
@@ -65,7 +65,7 @@ bool KNewStuffGeneric::install( const QString &fileName )
     QFile::remove(fileName);
   }
 
-  QString cmd = mConfig->readEntry( "InstallationCommand" );
+  QString cmd = cg.readEntry( "InstallationCommand" );
   if ( !cmd.isEmpty() ) {
     kDebug() << "InstallationCommand: " << cmd << endl;
     // XXX use KMacroExpander && KShell
@@ -89,7 +89,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
 {
   QString path, file, target, ext;
 
-  mConfig->setGroup("KNewStuff");
+  KConfigGroup cg(mConfig, "KNewStuff");
 
   if ( entry )
   {
@@ -99,10 +99,10 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
     target = entry->fullName() + ext;
   }
   else target = "/";
-  QString res = mConfig->readEntry( "StandardResource" );
+  QString res = cg.readEntry( "StandardResource" );
   if ( res.isEmpty() )
   {
-    target = mConfig->readEntry("TargetDir");
+    target = cg.readEntry("TargetDir");
     if ( !target.isEmpty())
     {
       res = "data";
@@ -112,7 +112,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
   }
   if ( res.isEmpty() )
   {
-    path = mConfig->readEntry( "InstallPath" );
+    path = cg.readEntry( "InstallPath" );
   }
   if ( res.isEmpty() && path.isEmpty() )
   {

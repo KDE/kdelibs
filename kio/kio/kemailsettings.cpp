@@ -46,78 +46,78 @@ QString KEMailSettings::defaultProfileName() const
 
 QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 {
-	p->m_pConfig->setGroup(QString("PROFILE_")+p->m_sCurrentProfile);
+        KConfigGroup cg( p->m_pConfig, QString("PROFILE_")+p->m_sCurrentProfile);
 	switch (s) {
 		case ClientProgram: {
-			return p->m_pConfig->readEntry("EmailClient");
+			return cg.readEntry("EmailClient");
 			break;
 		}
 		case ClientTerminal: {
-			return p->m_pConfig->readEntry("TerminalClient", QVariant(false)).toString();
+			return cg.readEntry("TerminalClient", QVariant(false)).toString();
 			break;
 		}
 		case RealName: {
-			return p->m_pConfig->readEntry("FullName");
+			return cg.readEntry("FullName");
 			break;
 		}
 		case EmailAddress: {
-			return p->m_pConfig->readEntry("EmailAddress");
+			return cg.readEntry("EmailAddress");
 			break;
 		}
 		case ReplyToAddress: {
-			return p->m_pConfig->readEntry("ReplyAddr");
+			return cg.readEntry("ReplyAddr");
 			break;
 		}
 		case Organization: {
-			return p->m_pConfig->readEntry("Organization");
+			return cg.readEntry("Organization");
 			break;
 		}
 		case OutServer: {
-			return p->m_pConfig->readEntry("OutgoingServer");
+			return cg.readEntry("OutgoingServer");
 			break;
 		}
 		case OutServerLogin: {
-			return p->m_pConfig->readEntry("OutgoingUserName");
+			return cg.readEntry("OutgoingUserName");
 			break;
 		}
 		case OutServerPass: {
-			return p->m_pConfig->readEntry("OutgoingPassword");
+			return cg.readEntry("OutgoingPassword");
 			break;
 		}
 		case OutServerType: {
-			return p->m_pConfig->readEntry("OutgoingServerType");
+			return cg.readEntry("OutgoingServerType");
 			break;
 		}
 		case OutServerCommand: {
-			return p->m_pConfig->readEntry("OutgoingCommand");
+			return cg.readEntry("OutgoingCommand");
 			break;
 		}
 		case OutServerTLS: {
-			return p->m_pConfig->readEntry("OutgoingServerTLS", QVariant(false)).toString();
+			return cg.readEntry("OutgoingServerTLS", QVariant(false)).toString();
 			break;
 		}
 		case InServer: {
-			return p->m_pConfig->readEntry("IncomingServer");
+			return cg.readEntry("IncomingServer");
 			break;
 		}
 		case InServerLogin: {
-			return p->m_pConfig->readEntry("IncomingUserName");
+			return cg.readEntry("IncomingUserName");
 			break;
 		}
 		case InServerPass: {
-			return p->m_pConfig->readEntry("IncomingPassword");
+			return cg.readEntry("IncomingPassword");
 			break;
 		}
 		case InServerType: {
-			return p->m_pConfig->readEntry("IncomingServerType");
+			return cg.readEntry("IncomingServerType");
 			break;
 		}
 		case InServerMBXType: {
-			return p->m_pConfig->readEntry("IncomingServerMBXType");
+			return cg.readEntry("IncomingServerMBXType");
 			break;
 		}
 		case InServerTLS: {
-			return p->m_pConfig->readEntry("IncomingServerTLS", QVariant(false)).toString();
+			return cg.readEntry("IncomingServerTLS", QVariant(false)).toString();
 			break;
 		}
 	};
@@ -125,88 +125,87 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s)
 }
 void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 {
-	p->m_pConfig->setGroup(QString("PROFILE_")+p->m_sCurrentProfile);
+        KConfigGroup cg( p->m_pConfig, QString("PROFILE_")+p->m_sCurrentProfile);
 	switch (s) {
 		case ClientProgram: {
-			p->m_pConfig->writePathEntry("EmailClient", v);
+			cg.writePathEntry("EmailClient", v);
 			break;
 		}
 		case ClientTerminal: {
-			p->m_pConfig->writeEntry("TerminalClient", (v == "true") );
+			cg.writeEntry("TerminalClient", (v == "true") );
 			break;
 		}
 		case RealName: {
-			p->m_pConfig->writeEntry("FullName", v);
+			cg.writeEntry("FullName", v);
 			break;
 		}
 		case EmailAddress: {
-			p->m_pConfig->writeEntry("EmailAddress", v);
+			cg.writeEntry("EmailAddress", v);
 			break;
 		}
 		case ReplyToAddress: {
-			p->m_pConfig->writeEntry("ReplyAddr", v);
+			cg.writeEntry("ReplyAddr", v);
 			break;
 		}
 		case Organization: {
-			p->m_pConfig->writeEntry("Organization", v);
+			cg.writeEntry("Organization", v);
 			break;
 		}
 		case OutServer: {
-			p->m_pConfig->writeEntry("OutgoingServer", v);
+			cg.writeEntry("OutgoingServer", v);
 			break;
 		}
 		case OutServerLogin: {
-			p->m_pConfig->writeEntry("OutgoingUserName", v);
+			cg.writeEntry("OutgoingUserName", v);
 			break;
 		}
 		case OutServerPass: {
-			p->m_pConfig->writeEntry("OutgoingPassword", v);
+			cg.writeEntry("OutgoingPassword", v);
 			break;
 		}
 		case OutServerType: {
-			p->m_pConfig->writeEntry("OutgoingServerType", v);
+			cg.writeEntry("OutgoingServerType", v);
 			break;
 		}
 		case OutServerCommand: {
-			p->m_pConfig->writeEntry("OutgoingCommand", v);
+			cg.writeEntry("OutgoingCommand", v);
 			break;
 		}
 		case OutServerTLS: {
-			p->m_pConfig->writeEntry("OutgoingServerTLS", (v == "true") );
+			cg.writeEntry("OutgoingServerTLS", (v == "true") );
 			break;
 		}
 		case InServer: {
-			p->m_pConfig->writeEntry("IncomingServer", v);
+			cg.writeEntry("IncomingServer", v);
 			break;
 		}
 		case InServerLogin: {
-			p->m_pConfig->writeEntry("IncomingUserName", v);
+			cg.writeEntry("IncomingUserName", v);
 			break;
 		}
 		case InServerPass: {
-			p->m_pConfig->writeEntry("IncomingPassword", v);
+			cg.writeEntry("IncomingPassword", v);
 			break;
 		}
 		case InServerType: {
-			p->m_pConfig->writeEntry("IncomingServerType", v);
+			cg.writeEntry("IncomingServerType", v);
 			break;
 		}
 		case InServerMBXType: {
-			p->m_pConfig->writeEntry("IncomingServerMBXType", v);
+			cg.writeEntry("IncomingServerMBXType", v);
 			break;
 		}
 		case InServerTLS: {
-			p->m_pConfig->writeEntry("IncomingServerTLS", (v == "true") );
+			cg.writeEntry("IncomingServerTLS", (v == "true") );
 			break;
 		}
 	};
-	p->m_pConfig->sync();
+	cg.sync();
 }
 
 void KEMailSettings::setDefault(const QString &s)
 {
-	p->m_pConfig->setGroup("Defaults");
-	p->m_pConfig->writeEntry("Profile", s);
+	p->m_pConfig->group("Defaults").writeEntry("Profile", s);
 	p->m_pConfig->sync();
 	p->m_sDefaultProfile=s;
 
@@ -218,10 +217,9 @@ void KEMailSettings::setProfile (const QString &s)
 	groupname.append(s);
 	p->m_sCurrentProfile=s;
 	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
-		p->m_pConfig->setGroup(groupname);
-		p->m_pConfig->writeEntry("ServerType", QString());
-		p->m_pConfig->sync();
-		p->profiles+=s;
+            KConfigGroup cg(p->m_pConfig, groupname);
+            cg.writeEntry("ServerType", QString());
+            p->profiles+=s;
 	}
 }
 
@@ -248,8 +246,8 @@ KEMailSettings::KEMailSettings()
 			p->profiles+= (*it).mid(8, (*it).length());
 	}
 
-	p->m_pConfig->setGroup("Defaults");
-	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", i18n("Default"));
+        KConfigGroup cg( p->m_pConfig, "Defaults");
+	p->m_sDefaultProfile = cg.readEntry("Profile", i18n("Default"));
 	if (!p->m_sDefaultProfile.isNull()) {
 		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
 			setDefault(i18n("Default"));

@@ -24,6 +24,7 @@
 
 #include <klockfile.h>
 #include <kconfigbase.h>
+#include <kconfiggroup.h>
 #include <kconfigdata.h>
 #include <kglobal.h>
 
@@ -33,12 +34,17 @@
 * This class implements KDE's default configuration system.
 *
 * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
-* @see KGlobal::config(), KConfigBase, KSimpleConfig
+* @see KGlobal::config(), KConfigBase, KConfigGroup
 * @short KDE Configuration Management class
 */
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
 public:
+    enum OpenFlags {
+        NoGlobals = 0x01,
+        OnlyLocal = 0x02,
+        IncludeGlobals= 0x04
+    };
 
   /**
    * Constructs a KConfig object.
@@ -47,14 +53,28 @@ public:
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
    *        @p bUseKDEGlobals).
-   * @param bReadOnly Set the config object's read-only status. Note that the
-   *        object will automatically become read-only if either the user does not have
-   *        write permission to @p fileName or if no file was specified.
-   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
-   * @param resType the place to look in (config, data, etc) See KStandardDirs.
+   * @param flags determines how the configuration file is created and accessed. Passing in
+   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
+   *        merged settings
    */
-  explicit KConfig(const QString& fileName = QString(),
-                   bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
+  explicit KConfig( const QString& fileName = QString(),
+                    OpenFlags flags = IncludeGlobals );
+
+  /**
+   * Constructs a KConfig object.
+   *
+   * @param resType the place to look in (config, data, etc) See KStandardDirs.
+   * @param fileName A file to parse in addition to the
+   *        system-wide file(s).  If it is not provided, only global
+   *        KDE configuration data will be read (depending on the value of
+   *        @p bUseKDEGlobals).
+   * @param flags determines how the configuration file is created and accessed. Passing in
+   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
+   *        merged settings
+   */
+  explicit KConfig( const char *resType,
+                    const QString& fileName,
+                    OpenFlags flags = IncludeGlobals );
 
   /**
    * Constructs a KConfig object.
@@ -65,16 +85,15 @@ public:
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
    *        @p bUseKDEGlobals).
-   * @param bReadOnly Set the config object's read-only status. Note that the
-   *        object will automatically become read-only if either the user does not have
-   *        write permission to @p fileName or if no file was specified.
-   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
+   * @param flags determines howt he configuration file is created and accessed. Passing in
+   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
+   *        merged settings
    * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
   explicit KConfig(const KComponentData &componentData, const QString &fileName = QString(),
-                   bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
+                   OpenFlags flags = IncludeGlobals, const char *resType="config");
 
-  explicit KConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
+  explicit KConfig(KConfigBackEnd *backEnd);
 
   /**
    * Destructs the KConfig object.
@@ -206,6 +225,12 @@ public:
    */
   KLockFile::Ptr lockFile( bool bGlobal=false );
 
+  KDE_DEPRECATED QString group() const;
+  KConfigGroup group( const char* s );
+  KConfigGroup group( const QByteArray &b);
+  KConfigGroup group( const QString &str);
+  const KConfigGroup group( const QByteArray &arr) const;
+
 protected:
 
   /**
@@ -271,11 +296,14 @@ protected:
   KEntryMap aEntryMap;
 
 private:
+  KConfig( const QString& fileName, bool fal);
+
   /**
    * @internal
    * copy-construction and assignment are not allowed
    */
   KConfig( const KConfig& );
+
   /**
    * @internal
    * copy-construction and assignment are not allowed
@@ -294,84 +322,6 @@ protected:
 private:
   class Private;
   Private* d;
-};
-
-class KSharedConfigPtr;
-/**
- * KConfig variant using shared memory
- *
- * KSharedConfig provides a reference counted, shared memory variant
- * of KConfig.
- */
-class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData
-{
-public:
-  typedef KSharedConfigPtr Ptr;
-
-public:
-  /**
-   * Constructs a KConfig object.
-   *
-   * @param fileName A file to parse in addition to the
-   *        system-wide file(s).  If it is not provided, only global
-   *        KDE configuration data will be read (depending on the value of
-   *        @p bUseKDEGlobals).
-   * @param bReadOnly Set the config object's read-only status. Note that the
-   *        object will automatically become read-only if either the user does not have
-   *        write permission to @p fileName or if no file was specified.
-   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
-   * @param resType the place to look in (config, data, etc) See KStandardDirs.
-   */
-   static KSharedConfig::Ptr openConfig(const QString& fileName = QString(),
-        bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType = "config");
-
-   static KSharedConfig::Ptr openConfig(const KComponentData &componentData,
-           const QString &fileName = QString(), bool bReadOnly = false, bool bUseKDEGlobals = true,
-           const char *resType = "config");
-
-  ~KSharedConfig();
-
-private:
-   KSharedConfig(const QString& fileName, bool bReadOnly, bool useKDEGlobals ,
-        const char *resType, const KComponentData &componentData);
-};
-
-class KDECORE_EXPORT KSharedConfigPtr : public KSharedPtr<KSharedConfig>
-{
-public:
-    /**
-     * Creates a null pointer.
-     */
-    inline KSharedConfigPtr()
-        : KSharedPtr<KSharedConfig>()
-    {}
-
-    /**
-     * Creates a new pointer.
-     * @param p the pointer
-     */
-    inline explicit KSharedConfigPtr(KSharedConfig *p)
-        : KSharedPtr<KSharedConfig>(p)
-    {}
-
-    /**
-     * Copies a pointer.
-     * @param o the pointer to copy
-     */
-    inline KSharedConfigPtr(const KSharedConfigPtr& o)
-        : KSharedPtr<KSharedConfig>(o)
-    {}
-
-    /**
-     * Unreferences the object that this pointer points to. If it was
-     * the last reference, the object will be deleted.
-     */
-    ~KSharedConfigPtr();
-
-    inline KSharedConfigPtr &operator= ( const KSharedConfigPtr& o ) { attach(o.d); return *this; }
-    inline KSharedConfigPtr &operator= ( KSharedConfig *p ) { attach(p); return *this; }
-
-    void attach(KSharedConfig *p);
 };
 
 #endif

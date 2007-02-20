@@ -42,6 +42,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
@@ -187,8 +188,8 @@ void Kded::initModules()
      {
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
-         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readEntry("autoload", autoload);
+         KConfigGroup cg(config, QString("Module-%1").arg(service->desktopEntryName()));
+         autoload = cg.readEntry("autoload", autoload);
          // see ksmserver's README for description of the phases
          QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
          int phase = phasev.isValid() ? phasev.toInt() : 2;
@@ -230,8 +231,8 @@ void Kded::loadSecondPhase()
      {
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
-         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = config->readEntry("autoload", autoload);
+         KConfigGroup cg(config, QString("Module-%1").arg(service->desktopEntryName()));
+         autoload = cg.readEntry("autoload", autoload);
          QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
          int phase = phasev.isValid() ? phasev.toInt() : 2;
          if( phase == 2 && autoload )
@@ -833,12 +834,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KComponentData componentData(&aboutData);
      KSharedConfig::Ptr config = componentData.config(); // Enable translations.
 
+     KConfigGroup cg(config, "General");
      if (args->isSet("check"))
      {
         // KUniqueApplication not wanted here.
         KApplication app;
-        config->setGroup("General");
-        checkStamps = config->readEntry("CheckFileStamps", true);
+        checkStamps = cg.readEntry("CheckFileStamps", true);
         runBuildSycoca();
         runKonfUpdate();
         exit(0);
@@ -853,13 +854,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // Thiago: reenable if such a thing exists in QtDBus in the future
      //KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
-     config->setGroup("General");
-     int HostnamePollInterval = config->readEntry("HostnamePollInterval", 5000);
-     bool bCheckSycoca = config->readEntry("CheckSycoca", true);
-     bool bCheckUpdates = config->readEntry("CheckUpdates", true);
-     bool bCheckHostname = config->readEntry("CheckHostname", true);
-     checkStamps = config->readEntry("CheckFileStamps", true);
-     delayedCheck = config->readEntry("DelayedCheck", false);
+     int HostnamePollInterval = cg.readEntry("HostnamePollInterval", 5000);
+     bool bCheckSycoca = cg.readEntry("CheckSycoca", true);
+     bool bCheckUpdates = cg.readEntry("CheckUpdates", true);
+     bool bCheckHostname = cg.readEntry("CheckHostname", true);
+     checkStamps = cg.readEntry("CheckFileStamps", true);
+     delayedCheck = cg.readEntry("DelayedCheck", false);
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 

@@ -432,13 +432,15 @@ void KToolBar::Private::slotReadConfig()
    * but a well behaved application will call applyMainWindowSettings
    * anyway, right ?)
    */
-  parent->applyAppearanceSettings(KGlobal::config().data(), QString());
+  KConfigGroup cg( KGlobal::config(), QString());
+  parent->applyAppearanceSettings( cg);
 }
 
 void KToolBar::Private::slotAppearanceChanged()
 {
   // Read appearance settings from global file.
-  parent->applyAppearanceSettings(KGlobal::config().data(), QString(), true /* lose local settings */);
+  KConfigGroup cg(KGlobal::config(), QString());
+  parent->applyAppearanceSettings( cg , true /* lose local settings */);
 
   // And remember to save the new look later
   KMainWindow *kmw = qobject_cast<KMainWindow *>( parent->mainWindow() );
@@ -658,19 +660,15 @@ QString KToolBar::settingsGroup() const
   return configGroup;
 }
 
-void KToolBar::saveSettings( KConfig *config, const QString &_configGroup )
+void KToolBar::saveSettings( KConfigGroup &cg )
 {
-  QString configGroup = _configGroup;
-
-  if ( configGroup.isEmpty() )
-    configGroup = settingsGroup();
+    if ( cg.group().isEmpty() )
+        cg.changeGroup( settingsGroup() );
 
   QString position;
   Qt::ToolButtonStyle ToolButtonStyle;
   int index;
   d->getAttributes( position, ToolButtonStyle, index );
-
-  KConfigGroup cg( config, configGroup );
 
   if ( !cg.hasDefault( "Position" ) && position == d->PositionDefault )
     cg.revertToDefault( "Position" );
@@ -901,9 +899,11 @@ void KToolBar::saveState( QDomElement &current ) const
   current.setAttribute( "toolButtonStyleDefault", d->toolButtonStyleToString( d->ToolButtonStyleDefault ) );
 }
 
-void KToolBar::applySettings( KConfig *config, const QString &_configGroup, bool force )
+void KToolBar::applySettings( const KConfigGroup &_cg, bool force )
 {
-  QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
+    KConfigGroup cg = _cg;
+    if ( cg.group().isEmpty() )
+        cg.changeGroup( settingsGroup() );
 
   /*
     Let's explain this a bit more in details.
@@ -920,12 +920,10 @@ void KToolBar::applySettings( KConfig *config, const QString &_configGroup, bool
   */
 
   // First the appearance stuff - the one which has a global config
-  applyAppearanceSettings( config, configGroup );
+  applyAppearanceSettings( cg );
 
   // ...and now the position stuff
-  if ( config->hasGroup( configGroup ) || force ) {
-    KConfigGroup cg(config, configGroup);
-
+  if ( cg.exists() || force ) {
     QString position = cg.readEntry( "Position", d->PositionDefault );
     int index = cg.readEntry( "Index", int(-1) );
     int offset = cg.readEntry( "Offset", int(d->OffsetDefault) );
@@ -952,9 +950,10 @@ void KToolBar::applySettings( KConfig *config, const QString &_configGroup, bool
   }
 }
 
-void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configGroup, bool forceGlobal )
+void KToolBar::applyAppearanceSettings( KConfigGroup &cg, bool forceGlobal )
 {
-  QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
+    if ( cg.group().isEmpty() )
+        cg.changeGroup( settingsGroup() );
 
   // If we have application-specific settings in the XML file,
   // and nothing in the application's config file, then
@@ -993,18 +992,17 @@ void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configG
     iconSize = d->IconSizeDefault;
     ToolButtonStyle = d->ToolButtonStyleDefault;
 
-    if ( !forceGlobal && config->hasGroup( configGroup ) ) {
-      config->setGroup( configGroup );
+    if ( !forceGlobal && cg.exists()) {
 
       // read in the ToolButtonStyle property
-      if ( config->hasKey( "ToolButtonStyle" ) ) {
-          ToolButtonStyle = d->toolButtonStyleFromString( config->readEntry( "ToolButtonStyle", QString() ) );
+      if ( cg.hasKey( "ToolButtonStyle" ) ) {
+          ToolButtonStyle = d->toolButtonStyleFromString( cg.readEntry( "ToolButtonStyle", QString() ) );
         applyToolButtonStyle = true;
       }
 
       // now get the size
-      if ( config->hasKey( "IconSize" ) ) {
-          iconSize = config->readEntry( "IconSize", 0 );
+      if ( cg.hasKey( "IconSize" ) ) {
+          iconSize = cg.readEntry( "IconSize", 0 );
           applyIconSize = true;
       }
     }

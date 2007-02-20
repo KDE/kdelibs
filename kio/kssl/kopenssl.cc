@@ -25,6 +25,7 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kstaticdeleter.h>
 #include <qregexp.h>
 
@@ -260,22 +261,20 @@ static QString findMostRecentLib(QString dir, QString name)
 #endif
 
 
-KOpenSSLProxy::KOpenSSLProxy() {
-KLibLoader *ll = KLibLoader::self();
-_ok = false;
-QStringList libpaths, libnamesc, libnamess;
-KConfig *cfg;
+KOpenSSLProxy::KOpenSSLProxy()
+{
+    KLibLoader *ll = KLibLoader::self();
+    _ok = false;
+    QStringList libpaths, libnamesc, libnamess;
 
    _cryptoLib = 0L;
    _sslLib = 0L;
 
-   cfg = new KConfig("cryptodefaults", false, false);
-   cfg->setGroup("OpenSSL");
-   QString upath = cfg->readPathEntry("Path");
+   KConfig cfg("cryptodefaults", KConfig::NoGlobals );
+   KConfigGroup cg(&cfg, "OpenSSL");
+   QString upath = cg.readPathEntry("Path");
    if (!upath.isEmpty())
       libpaths << upath;
-
-   delete cfg;
 
 #ifdef __OpenBSD__
    {

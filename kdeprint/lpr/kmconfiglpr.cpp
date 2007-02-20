@@ -26,6 +26,7 @@
 #include <QGroupBox>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 
 KMConfigLpr::KMConfigLpr(QWidget *parent)
     : KMConfigPage(parent)
@@ -40,7 +41,7 @@ KMConfigLpr::KMConfigLpr(QWidget *parent)
 	m_mode = new QComboBox(m_modebox);
 	m_mode->addItem("LPR (BSD compatible)");
 	m_mode->addItem("LPRng");
-	
+
 	layout->addWidget( m_mode );
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
@@ -66,6 +67,6 @@ void KMConfigLpr::saveConfig(KConfig *conf)
 		case 0: modestr = "LPR"; break;
 		case 1: modestr = "LPRng"; break;
 	}
-	conf->setGroup("LPR");
-	conf->writeEntry("Mode", modestr);
+	KConfigGroup cg( conf, "LPR");
+	cg.writeEntry("Mode", modestr);
 }

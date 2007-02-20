@@ -35,7 +35,7 @@ K_GLOBAL_STATIC(AudioDeviceEnumeratorPrivate, audioDeviceEnumeratorPrivate)
 AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
 {
     q.d = this;
-    config = KSharedConfig::openConfig("phonondevicesrc", false, false);
+    config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
     findDevices();
     QObject::connect(&Solid::DeviceManager::self(), SIGNAL(deviceAdded(const QString &)), &q, SLOT(_k_deviceAdded(const QString &)));
     QObject::connect(&Solid::DeviceManager::self(), SIGNAL(deviceRemoved(const QString &)), &q, SLOT(_k_deviceRemoved(const QString &)));

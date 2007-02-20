@@ -83,19 +83,20 @@ KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
   if (name.isEmpty())
      return 0;
 
-  KDesktopFile desktopFile(file, true, resource);
+  KDesktopFile desktopFile(resource, file);
+  const KConfigGroup desktopGroup = desktopFile.desktopGroup();
 
-  if ( desktopFile.readEntry( "Hidden", false ) == true )
+  if ( desktopGroup.readEntry( "Hidden", false ) == true )
     return 0;
 
-  const QString type = desktopFile.readEntry( "Type" );
+  const QString type = desktopGroup.readEntry( "Type" );
   if ( type != QLatin1String( "MimeType" ) )
   {
      kWarning(7012) << "The mime type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=MimeType" << endl;
     return 0;
   }
 
-  const QString mime = desktopFile.readEntry( "MimeType" );
+  const QString mime = desktopGroup.readEntry( "MimeType" );
 
   if ( mime.isEmpty() )
   {

@@ -22,6 +22,7 @@
 
 #include "kmconfigpage.h"
 
+class KConfigGroup;
 class KIntNumInput;
 
 class KMConfigJobs : public KMConfigPage
@@ -30,8 +31,8 @@ class KMConfigJobs : public KMConfigPage
 public:
 	KMConfigJobs(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+	void loadConfig(const KConfigGroup &);
+	void saveConfig(KConfigGroup &);
 
 private:
 	KIntNumInput	*m_limit;

@@ -108,15 +108,14 @@ const char* CupsInfos::getPasswordCB()
 
 void CupsInfos::load()
 {
-	KConfig	*conf_ = KMFactory::self()->printConfig();
-	conf_->setGroup("CUPS");
-	host_ = conf_->readEntry("Host",cupsServer());
-	port_ = conf_->readEntry("Port",ippPort());
-	login_ = conf_->readEntry("Login",cupsUser());
-	savepwd_ = conf_->readEntry( "SavePassword",false );
+	KConfigGroup conf_ = KMFactory::self()->printConfig("CUPS");
+	host_ = conf_.readEntry("Host",cupsServer());
+	port_ = conf_.readEntry("Port",ippPort());
+	login_ = conf_.readEntry("Login",cupsUser());
+	savepwd_ = conf_.readEntry( "SavePassword",false );
 	if ( savepwd_ )
 	{
-		password_ = KStringHandler::obscure( conf_->readEntry( "Password" ) );
+		password_ = KStringHandler::obscure( conf_.readEntry( "Password" ) );
 		KMFactory::self()->initPassword( login_, password_, host_, port_ );
 	}
 	else
@@ -132,17 +131,16 @@ void CupsInfos::load()
 
 void CupsInfos::save()
 {
-	KConfig	*conf_ = KMFactory::self()->printConfig();
-	conf_->setGroup("CUPS");
-	conf_->writeEntry("Host",host_);
-	conf_->writeEntry("Port",port_);
-	conf_->writeEntry("Login",login_);
-	conf_->writeEntry( "SavePassword", savepwd_ );
+	KConfigGroup conf_ = KMFactory::self()->printConfig("CUPS");
+	conf_.writeEntry("Host",host_);
+	conf_.writeEntry("Port",port_);
+	conf_.writeEntry("Login",login_);
+	conf_.writeEntry( "SavePassword", savepwd_ );
 	if ( savepwd_ )
-		conf_->writeEntry( "Password", KStringHandler::obscure( password_ ) );
+		conf_.writeEntry( "Password", KStringHandler::obscure( password_ ) );
 	else
-		conf_->deleteEntry( "Password" );
-	conf_->sync();
+		conf_.deleteEntry( "Password" );
+	conf_.sync();
 }
 
 void CupsInfos::reload()

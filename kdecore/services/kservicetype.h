@@ -28,7 +28,7 @@
 #include <qmap.h>
 #include <qvariant.h>
 
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 class KDesktopFile;
 class KServiceTypePrivate;

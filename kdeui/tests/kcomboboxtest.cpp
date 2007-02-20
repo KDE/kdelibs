@@ -6,10 +6,11 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 #include <qpushbutton.h>
 #include <qlayout.h>
@@ -150,11 +151,11 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_hc->completionObject()->setItems( list );
 
   // Setup konq's combobox
-  KSimpleConfig historyConfig( "konq_history" );
-  historyConfig.setGroup( "Location Bar" );
+  KConfig historyConfig( "konq_history", KConfig::OnlyLocal );
+  KConfigGroup cg(&historyConfig, "Location Bar" );
   KCompletion * s_pCompletion = new KCompletion;
   s_pCompletion->setOrder( KCompletion::Weighted );
-  s_pCompletion->setItems( historyConfig.readEntry( "ComboContents", QStringList() ) );
+  s_pCompletion->setItems( cg.readEntry( "ComboContents", QStringList() ) );
   s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
   m_konqc->setCompletionObject( s_pCompletion );
 

@@ -210,14 +210,13 @@ public:
   void setConfigGlobal( bool global );
 
   /**
-    * Read all key associations from @p config, or (if @p config
-    * is zero) from the application's configuration file
-    * KGlobal::config().
+    * Read all key associations from @p config.
     *
-    * The group in which the configuration is stored can be
-    * set with setConfigGroup().
+    * If @p config is zero, read all key associations from the
+    * application's configuration file KGlobal::config(),
+    * in the group set by setConfigGroup().
     */
-  void readSettings( KConfigBase* config = 0 );
+  void readSettings( KConfigGroup* config = 0 );
 
   /**
     * Write the current configurable key associations to @p config,
@@ -229,7 +228,7 @@ public:
     * \param oneAction pass an action here if you just want to save the values for one action, eg.
     *                  if you know that action is the only one which has changed.
     */
-  void writeSettings( KConfigBase* config = 0, bool writeDefaults = false, QAction* oneAction = 0L ) const;
+  void writeSettings( KConfigGroup* config = 0, bool writeDefaults = false, QAction* oneAction = 0L ) const;
 
   /**
    * Doc/View model.  This lets you add the action collection of a document

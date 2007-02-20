@@ -28,7 +28,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 class KService;
 namespace KSpell2

@@ -22,7 +22,7 @@
 #include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 class QCheckBox;
 class QComboBox;

@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <kdelibs_export.h>
 #include <klocalizedstring.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 class QStringList;
 class QTextCodec;

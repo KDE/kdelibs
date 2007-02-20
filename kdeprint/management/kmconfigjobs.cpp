@@ -54,16 +54,16 @@ KMConfigJobs::KMConfigJobs(QWidget *parent)
 	l1->addWidget(m_limit);
 }
 
-void KMConfigJobs::loadConfig(KConfig *conf)
+void KMConfigJobs::loadConfig(const KConfigGroup &cg)
 {
-	conf->setGroup("Jobs");
-	m_limit->setValue(conf->readEntry("Limit", 0));
+	Q_ASSERT( cg.group() == "Jobs" );
+	m_limit->setValue(cg.readEntry("Limit", 0));
 }
 
-void KMConfigJobs::saveConfig(KConfig *conf)
+void KMConfigJobs::saveConfig(KConfigGroup &cg)
 {
-	conf->setGroup("Jobs");
-	conf->writeEntry("Limit", m_limit->value());
+	Q_ASSERT( cg.group() == "Jobs" );
+	cg.writeEntry("Limit", m_limit->value());
 }
 
 #include "kmconfigjobs.moc"

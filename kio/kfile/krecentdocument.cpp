@@ -26,7 +26,7 @@
  *
  */
 #include <krecentdocument.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kurl.h>
@@ -62,7 +62,7 @@ QStringList KRecentDocument::recentDocuments()
 
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
        QString pathDesktop = d.absoluteFilePath( *it );
-       KDesktopFile tmpDesktopFile( pathDesktop, false);
+       KDesktopFile tmpDesktopFile( pathDesktop );
        KUrl urlDesktopFile(tmpDesktopFile.readUrl());
        if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())
            d.remove(pathDesktop);
@@ -88,13 +88,10 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
     kDebug(250) << "KRecentDocument::add for " << openStr << endl;
-    KSharedConfig::Ptr config = KGlobal::config();
-    QString oldGrp = config->group();
-    config->setGroup(QLatin1String("RecentDocuments"));
-    bool useRecent = config->readEntry(QLatin1String("UseRecent"), true);
-    int maxEntries = config->readEntry(QLatin1String("MaxEntries"), 10);
+    KConfigGroup config = KGlobal::config()->group(QByteArray("RecentDocuments"));
+    bool useRecent = config.readEntry(QLatin1String("UseRecent"), true);
+    int maxEntries = config.readEntry(QLatin1String("MaxEntries"), 10);
 
-    config->setGroup(oldGrp);
     if(!useRecent)
         return;
 
@@ -108,8 +105,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     // check for duplicates
     while(QFile::exists(ddesktop)){
         // see if it points to the same file and application
-        KSimpleConfig tmp(ddesktop);
-        tmp.setDesktopGroup();
+        KDesktopFile tmp(ddesktop);
         if(tmp.readEntry("X-KDE-LastOpenedWith")
 	   == desktopEntryName)
 	{
@@ -137,8 +133,8 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     }
 
     // create the applnk
-    KSimpleConfig conf(ddesktop);
-    conf.setDesktopGroup();
+    KDesktopFile configFile(ddesktop);
+    KConfigGroup conf = configFile.desktopGroup();
     conf.writeEntry( "Type", QString::fromLatin1("Link") );
     conf.writePathEntry( "URL", openStr );
     // If you change the line below, change the test in the above loop

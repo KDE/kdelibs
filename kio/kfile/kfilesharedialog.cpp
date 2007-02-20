@@ -37,7 +37,7 @@
 #include <kseparator.h>
 #include <qpushbutton.h>
 #include <kapplication.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kmessagebox.h>
 
 class KFileSharePropsPlugin::Private

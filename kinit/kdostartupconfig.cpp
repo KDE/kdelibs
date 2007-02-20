@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 
 QString get_entry( QString* ll )
@@ -102,7 +103,8 @@ int main()
             { // whole config group
             KConfig cfg( file );
             group = group.mid( 1, group.length() - 2 );
-            QMap< QString, QString > entries = cfg.entryMap( group );
+            KConfigGroup cg(&cfg, group);
+            QMap< QString, QString > entries = cg.entryMap( );
             startupconfig << "# " << line << "\n";
             for( QMap< QString, QString >::ConstIterator it = entries.begin();
                  it != entries.end();
@@ -121,8 +123,8 @@ int main()
             if( key.isEmpty())
                 return 7;
             KConfig cfg( file );
-            cfg.setGroup( group );
-            QString value = cfg.readEntry( key, def );
+            KConfigGroup cg(&cfg, group );
+            QString value = cg.readEntry( key, def );
             startupconfig << "# " << line << "\n";
             startupconfig << file.replace( ' ', '_' ).toLower()
                 << "_" << group.replace( ' ', '_' ).toLower()

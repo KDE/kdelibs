@@ -29,6 +29,7 @@
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kglobal.h>
@@ -294,8 +295,8 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 		setupDialog( wiz, wId, appid, modal );
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
-			KConfig cfg("kwalletrc");
-			cfg.setGroup("Wallet");
+			KConfig kwalletrc("kwalletrc");
+			KConfigGroup cfg(&kwalletrc, "Wallet");
 			cfg.writeEntry("First Use", false);
 			cfg.writeEntry("Enabled", wiz->_useWallet->isChecked());
 			cfg.writeEntry("Close When Idle", wiz->_closeIdle->isChecked());
@@ -323,11 +324,10 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 			return -1;
 		}
 	} else if (_firstUse) {
-		KConfig cfg("kwalletrc");
+		KConfig kwalletrc("kwalletrc");
+		KConfigGroup cfg(&kwalletrc, "Wallet");
 		_firstUse = false;
-		cfg.setGroup("Wallet");
 		cfg.writeEntry("First Use", false);
-		cfg.sync();
 	}
 
 	int rc = internalOpen(appid, wallet, false, WId(wId), modal);
@@ -402,7 +402,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 		} else {
 			KNewPasswordDialog *kpd = new KNewPasswordDialog();
 			if (wallet == KWallet::Wallet::LocalWallet() ||
-						 wallet == KWallet::Wallet::NetworkWallet()) 
+						 wallet == KWallet::Wallet::NetworkWallet())
 			{
 				// Auto create these wallets.
 				if (appid.isEmpty()) {
@@ -418,7 +418,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 				}
 			}
 			brandNew = true;
-			kpd->setCaption(i18n("KDE Wallet Service"));			
+			kpd->setCaption(i18n("KDE Wallet Service"));
 			kpd->setButtonGuiItem(KDialog::Ok,KGuiItem(i18n("C&reate"),"filenew"));
 			while (!b->isOpen()) {
 				setupDialog( kpd, w, appid, modal );
@@ -493,8 +493,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 	}
 
 	if (!implicitAllow(wallet, thisApp)) {
-		KConfig cfg("kwalletrc");
-		cfg.setGroup("Auto Allow");
+		KConfigGroup cfg = KSharedConfig::openConfig("kwalletrc")->group("Auto Allow");
 		if (!cfg.entryIsImmutable(wallet)) {
 		    KBetterThanKDialog *dialog = new KBetterThanKDialog;
 		    if (appid.isEmpty()) {
@@ -510,8 +509,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 
 	if (response == 0 || response == 1) {
 		if (response == 1) {
-			KConfig cfg("kwalletrc");
-			cfg.setGroup("Auto Allow");
+			KConfigGroup cfg = KSharedConfig::openConfig("kwalletrc")->group("Auto Allow");
 			QStringList apps = cfg.readEntry(wallet, QStringList());
 			if (!apps.contains(thisApp)) {
 				if (cfg.entryIsImmutable(wallet)) {
@@ -524,8 +522,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 			}
 		}
 	} else if (response == 3) {
-		KConfig cfg("kwalletrc");
-		cfg.setGroup("Auto Deny");
+		KConfigGroup cfg = KSharedConfig::openConfig("kwalletrc")->group("Auto Deny");
 		QStringList apps = cfg.readEntry(wallet, QStringList());
 		if (!apps.contains(thisApp)) {
 			apps += thisApp;
@@ -1201,20 +1198,20 @@ void KWalletD::emitWalletListDirty() {
 
 void KWalletD::reconfigure() {
 	KConfig cfg("kwalletrc");
-	cfg.setGroup("Wallet");
-	_firstUse = cfg.readEntry("First Use", true);
-	_enabled = cfg.readEntry("Enabled", true);
-	_launchManager = cfg.readEntry("Launch Manager", true);
-	_leaveOpen = cfg.readEntry("Leave Open", false);
+	KConfigGroup walletGroup(&cfg, "Wallet");
+	_firstUse = walletGroup.readEntry("First Use", true);
+	_enabled = walletGroup.readEntry("Enabled", true);
+	_launchManager = walletGroup.readEntry("Launch Manager", true);
+	_leaveOpen = walletGroup.readEntry("Leave Open", false);
 	bool idleSave = _closeIdle;
-	_closeIdle = cfg.readEntry("Close When Idle", false);
-	_openPrompt = cfg.readEntry("Prompt on Open", true);
+	_closeIdle = walletGroup.readEntry("Close When Idle", false);
+	_openPrompt = walletGroup.readEntry("Prompt on Open", true);
 	int timeSave = _idleTime;
 	// in minutes!
-	_idleTime = cfg.readEntry("Idle Timeout", 10) * 60 * 1000;
+	_idleTime = walletGroup.readEntry("Idle Timeout", 10) * 60 * 1000;
 #ifdef Q_WS_X11
 	if ( kdesktop->isValid() ) {
-		if (cfg.readEntry("Close on Screensaver", false)) {
+		if (walletGroup.readEntry("Close on Screensaver", false)) {
 			connect(kdesktop, SIGNAL(screenSaverStarted()), SLOT(closeAllWallets()));
 		} else {
 			kdesktop->disconnect(SIGNAL(screenSaverStarted()), this, SLOT(closeAllWallets()));
@@ -1242,18 +1239,18 @@ void KWalletD::reconfigure() {
 
 	// Update the implicit allow stuff
 	_implicitAllowMap.clear();
-	cfg.setGroup("Auto Allow");
-	QStringList entries = cfg.entryMap("Auto Allow").keys();
+	const KConfigGroup autoAllowGroup(&cfg, "Auto Allow");
+	QStringList entries = autoAllowGroup.entryMap().keys();
 	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
-		_implicitAllowMap[*i] = cfg.readEntry(*i, QStringList());
+		_implicitAllowMap[*i] = autoAllowGroup.readEntry(*i, QStringList());
 	}
 
 	// Update the implicit allow stuff
 	_implicitDenyMap.clear();
-	cfg.setGroup("Auto Deny");
-	entries = cfg.entryMap("Auto Deny").keys();
+	const KConfigGroup autoDenyGroup(&cfg, "Auto Deny");
+	entries = autoDenyGroup.entryMap().keys();
 	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
-		_implicitDenyMap[*i] = cfg.readEntry(*i, QStringList());
+		_implicitDenyMap[*i] = autoDenyGroup.readEntry(*i, QStringList());
 	}
 
 	// Update if wallet was enabled/disabled

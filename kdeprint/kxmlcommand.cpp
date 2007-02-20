@@ -34,7 +34,7 @@
 
 #include <kstandarddirs.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kdialog.h>
 #include <kdebug.h>
 #include <kprocess.h>
@@ -221,8 +221,8 @@ void KXmlCommand::check(bool use_xml)
 
 void KXmlCommand::loadDesktop()
 {
-	KSimpleConfig	conf(KStandardDirs::locate("data", "kdeprint/filters/"+name()+".desktop"));
-	conf.setGroup("KDE Print Filter Entry");
+	KConfig	_conf(KStandardDirs::locate("data", "kdeprint/filters/"+name()+".desktop"));
+	KConfigGroup conf( &_conf, "KDE Print Filter Entry");
 	d->m_description = conf.readEntry("Comment");
 	d->m_outputMime = conf.readEntry("MimeTypeOut");
 	d->m_inputMime = conf.readEntry("MimeTypeIn", QStringList());
@@ -232,8 +232,8 @@ void KXmlCommand::loadDesktop()
 
 void KXmlCommand::saveDesktop()
 {
-	KSimpleConfig	conf(KStandardDirs::locateLocal("data", "kdeprint/filters/"+name()+".desktop"));
-	conf.setGroup("KDE Print Filter Entry");
+	KConfig _conf(KStandardDirs::locateLocal("data", "kdeprint/filters/"+name()+".desktop"));
+	KConfigGroup conf( &_conf, "KDE Print Filter Entry");
 	conf.writeEntry("Comment", d->m_description);
 	conf.writeEntry("MimeTypeIn", d->m_inputMime);
 	conf.writeEntry("MimeTypeOut", d->m_outputMime);

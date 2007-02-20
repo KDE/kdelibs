@@ -21,7 +21,7 @@
 #ifndef KNOTIFYCONFIG_H
 #define KNOTIFYCONFIG_H
 
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 #include <QPair>
 #include <QPixmap>

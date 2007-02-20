@@ -171,10 +171,9 @@ QColor khtml::colorForCSSValue( int css_value )
 	else if ( css_value == CSS_VAL_INFOTEXT )
 	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Foreground );
 	else if ( css_value == CSS_VAL_BACKGROUND ) {
-	    KConfig bckgrConfig("kdesktoprc", true, false); // No multi-screen support
-	    bckgrConfig.setGroup("Desktop0");
+	    KConfig bckgrConfig("kdesktoprc", KConfig::NoGlobals);
 	    // Desktop background.
-	    return bckgrConfig.readEntry("Color1", qApp->palette().color( QPalette::Disabled, QPalette::Background ) );
+	    return bckgrConfig.group( "Desktop0" ).readEntry("Color1", qApp->palette().color( QPalette::Disabled, QPalette::Background ) );
 	}
 	return QColor();
     }
@@ -185,8 +184,7 @@ QColor khtml::colorForCSSValue( int css_value )
 #ifndef APPLE_CHANGES
     if ( uicol->configEntry ) {
 	KSharedConfig::Ptr globalConfig = KGlobal::config();
-	globalConfig->setGroup( uicol->configGroup );
-	c = globalConfig->readEntry( uicol->configEntry, c );
+	c = globalConfig->group( uicol->configGroup ).readEntry( uicol->configEntry, c );
     }
 #endif
 

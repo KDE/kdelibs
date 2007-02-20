@@ -270,9 +270,9 @@ void KHTMLPartBrowserExtension::searchProvider()
 
     if( !KUriFilter::self()->filterUri(data, list) )
     {
-        KDesktopFile file("searchproviders/google.desktop", true, "services");
+        KDesktopFile file("searchproviders/google.desktop", "services");
         QString encodedSearchTerm = QUrl::toPercentEncoding(m_part->selectedText());
-	data.setData(file.readEntry("Query").replace("\\{@}", encodedSearchTerm));
+        data.setData(file.readEntry("Query").replace("\\{@}", encodedSearchTerm));
     }
 
     KParts::URLArgs args;
@@ -434,9 +434,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       // Fill search provider entries
       KConfig config("kuriikwsfilterrc");
-      config.setGroup("General");
-      const QString defaultEngine = config.readEntry("DefaultSearchEngine", "google");
-      const char keywordDelimiter = config.readEntry("KeywordDelimiter", static_cast<int>(':'));
+      KConfigGroup cg = config.group("General");
+      const QString defaultEngine = cg.readEntry("DefaultSearchEngine", "google");
+      const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
 
       // search text
       QString selectedText = khtml->selectedText();
@@ -480,7 +480,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       // favorite search providers
       QStringList favoriteEngines;
       favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
-      favoriteEngines = config.readEntry("FavoriteSearchEngines", favoriteEngines);
+      favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
         KActionMenu* providerList = new KActionMenu( i18n( "Search for '%1' with" ,  selectedText ), this );
@@ -925,8 +925,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
           bool downloadViaKIO = true;
           if ( !url.isLocalFile() )
           {
-            KConfig cfg("konquerorrc", false, false);
-            cfg.setGroup("HTML Settings");
+            KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::NoGlobals)->group("HTML Settings");
             QString downloadManger = cfg.readPathEntry("DownloadManager");
             if (!downloadManger.isEmpty())
             {

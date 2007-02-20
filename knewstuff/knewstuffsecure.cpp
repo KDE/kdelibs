@@ -17,6 +17,7 @@
 
 //kde includes
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kio/netaccess.h>
@@ -145,10 +146,10 @@ void KNewStuffSecure::slotValidated(int result)
   {
     KSharedConfig::Ptr cfg = KGlobal::config();
     cfg->deleteGroup("KNewStuffStatus");
-    cfg->setGroup("KNewStuffStatus");
+    KConfigGroup cg(cfg, "KNewStuffStatus");
     for (QMap<QString, QString>::ConstIterator it = m_installedResources.constBegin(); it != m_installedResources.constEnd(); ++it)
     {
-      cfg->writeEntry(it.key(), it.value());
+      cg.writeEntry(it.key(), it.value());
     }
     cfg->sync();
   }

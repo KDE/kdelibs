@@ -29,8 +29,8 @@
 #include <kicon.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
+#include <ksharedconfig.h>
 #include <kconfig.h>
-#include <ksimpleconfig.h>
 #include <kcomponentdata.h>
 
 #include "kicontheme.h"
@@ -52,7 +52,7 @@ public:
 class KIconThemeDir
 {
 public:
-    KIconThemeDir(const QString& dir, const KConfigBase *config);
+    KIconThemeDir(const QString& dir, const KConfigGroup &config);
 
     bool isValid() const { return mbValid; }
     QString iconPath(const QString& name) const;
@@ -138,11 +138,9 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
     // Use KSharedConfig to avoid parsing the file many times, from each kinstance.
     // Need to keep a ref to it to make this useful
-    d->sharedConfig = KSharedConfig::openConfig( fileName, true /*readonly*/, false /*useKDEGlobals*/ );
-    KConfig& cfg = *d->sharedConfig;
-    //was: KSimpleConfig cfg(fileName);
+    d->sharedConfig = KSharedConfig::openConfig( fileName );
 
-    cfg.setGroup(mainSection);
+    KConfigGroup cfg(d->sharedConfig, mainSection);
     mName = cfg.readEntry("Name");
     mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readEntry("DisplayDepth", 32);
@@ -162,12 +160,13 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList dirs = cfg.readPathListEntry("Directories");
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
-	cfg.setGroup(*it);
+        KConfigGroup cg = cfg;
+        cg.changeGroup(*it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
 	{
 	    if (KStandardDirs::exists(*itDir + *it + '/'))
 	    {
-	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
+	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, cg);
 	        if (!dir->isValid())
 	        {
 	            kDebug(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
@@ -201,11 +200,11 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Small";
     groups += "Panel";
     const int defDefSizes[] = { 32, 22, 22, 16, 32 };
-    cfg.setGroup(mainSection);
+    KConfigGroup cg(d->sharedConfig, mainSection);
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
-        mDefSize[i] = cfg.readEntry(*it + "Default", defDefSizes[i]);
-        QList<int> exp, lst = cfg.readEntry(*it + "Sizes", QList<int>());
+        mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
+        QList<int> exp, lst = cg.readEntry(*it + "Sizes", QList<int>());
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
@@ -539,11 +538,11 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
 
 /*** KIconThemeDir ***/
 
-KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
+KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigGroup &config)
 {
     mbValid = false;
     mDir = dir;
-    mSize = config->readEntry("Size", 0);
+    mSize = config.readEntry("Size", 0);
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
     mType = K3Icon::Fixed;
@@ -551,7 +550,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     if (mSize == 0)
         return;
 
-    QString tmp = config->readEntry("Context");
+    QString tmp = config.readEntry("Context");
     if (tmp == "Devices")
         mContext = K3Icon::Device;
     else if (tmp == "MimeTypes")
@@ -580,7 +579,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
         kDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
         return;
     }
-    tmp = config->readEntry("Type");
+    tmp = config.readEntry("Type");
     if (tmp == "Fixed")
         mType = K3Icon::Fixed;
     else if (tmp == "Scalable")
@@ -593,10 +592,10 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
     }
     if (mType == K3Icon::Scalable)
     {
-        mMinSize = config->readEntry("MinSize", mSize);
-        mMaxSize = config->readEntry("MaxSize", mSize);
+        mMinSize = config.readEntry("MinSize", mSize);
+        mMaxSize = config.readEntry("MaxSize", mSize);
     } else if (mType == K3Icon::Threshold)
-	mThreshold = config->readEntry("Threshold", 2);
+	mThreshold = config.readEntry("Threshold", 2);
     mbValid = true;
 }
 

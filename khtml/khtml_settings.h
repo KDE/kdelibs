@@ -21,6 +21,7 @@
 #define __konq_htmlsettings_h__
 
 class KConfig;
+class KConfigGroup;
 #include <qcolor.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -200,7 +201,7 @@ public:
       * @param pd_settings will be initialised with the computed (inherited)
       *		settings.
       */
-    void readDomainSettings(KConfig *config, bool reset,
+    void readDomainSettings(const KConfigGroup &config, bool reset,
 			bool global, KPerDomainSettings &pd_settings);
 
     QString settingsToCSS() const;

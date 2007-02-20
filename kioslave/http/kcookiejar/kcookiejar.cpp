@@ -247,7 +247,7 @@ KCookieJar::KCookieJar()
     m_configChanged = false;
     m_cookiesChanged = false;
 
-    KConfig cfg("khtml/domain_info", true, false, "data");
+    KConfig cfg("data", "khtml/domain_info", KConfig::NoGlobals);
     QStringList countries = cfg.readEntry("twoLevelTLD", QStringList());
     for(QStringList::ConstIterator it = countries.begin();
         it != countries.end(); ++it)
@@ -1468,11 +1468,11 @@ void KCookieJar::saveConfig(KConfig *_config)
     if (!m_configChanged)
         return;
 
-    _config->setGroup("Cookie Dialog");
-    _config->writeEntry("PreferredPolicy", m_preferredPolicy);
-    _config->writeEntry("ShowCookieDetails", m_showCookieDetails );
-    _config->setGroup("Cookie Policy");
-    _config->writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
+    KConfigGroup cg(_config, "Cookie Dialog");
+    cg.writeEntry("PreferredPolicy", m_preferredPolicy);
+    cg.writeEntry("ShowCookieDetails", m_showCookieDetails );
+    cg.changeGroup("Cookie Policy");
+    cg.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
 
     QStringList domainSettings;
     for ( QStringList::Iterator it=m_domainList.begin();
@@ -1489,8 +1489,8 @@ void KCookieJar::saveConfig(KConfig *_config)
              domainSettings.append(value);
          }
     }
-    _config->writeEntry("CookieDomainAdvice", domainSettings);
-    _config->sync();
+    cg.writeEntry("CookieDomainAdvice", domainSettings);
+    cg.sync();
     m_configChanged = false;
 }
 
@@ -1504,16 +1504,16 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     if ( reparse )
         _config->reparseConfiguration();
 
-    _config->setGroup("Cookie Dialog");
-    m_showCookieDetails = _config->readEntry( "ShowCookieDetails" , false );
-    m_preferredPolicy = _config->readEntry( "PreferredPolicy", 0 );
+    KConfigGroup cg(_config, "Cookie Dialog");
+    m_showCookieDetails = cg.readEntry( "ShowCookieDetails" , false );
+    m_preferredPolicy = cg.readEntry( "PreferredPolicy", 0 );
 
-    _config->setGroup("Cookie Policy");
-    QStringList domainSettings = _config->readEntry("CookieDomainAdvice", QStringList());
-    m_rejectCrossDomainCookies = _config->readEntry("RejectCrossDomainCookies", true);
-    m_autoAcceptSessionCookies = _config->readEntry("AcceptSessionCookies", true);
-    m_ignoreCookieExpirationDate = _config->readEntry("IgnoreExpirationDate", false);
-    QString value = _config->readEntry("CookieGlobalAdvice", L1("Ask"));
+    cg.changeGroup("Cookie Policy");
+    QStringList domainSettings = cg.readEntry("CookieDomainAdvice", QStringList());
+    m_rejectCrossDomainCookies = cg.readEntry("RejectCrossDomainCookies", true);
+    m_autoAcceptSessionCookies = cg.readEntry("AcceptSessionCookies", true);
+    m_ignoreCookieExpirationDate = cg.readEntry("IgnoreExpirationDate", false);
+    QString value = cg.readEntry("CookieGlobalAdvice", L1("Ask"));
     m_globalAdvice = strToAdvice(value);
 
     // Reset current domain settings first.

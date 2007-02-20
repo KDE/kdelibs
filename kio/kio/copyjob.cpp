@@ -23,7 +23,7 @@
 #include "deletejob.h"
 
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kdesktopfile.h>
 #include <kdebug.h>
 #include <kde_file.h>
 
@@ -1170,8 +1170,8 @@ void CopyJob::copyNextFile()
                     if ( f.open( QIODevice::ReadWrite ) )
                     {
                         f.close();
-                        KSimpleConfig config( path );
-                        config.setDesktopGroup();
+                        KDesktopFile desktopFile( path );
+                        KConfigGroup config = desktopFile.desktopGroup();
                         KUrl url = (*it).uSource;
                         url.setPass( "" );
                         config.writePathEntry( "URL", url.url() );

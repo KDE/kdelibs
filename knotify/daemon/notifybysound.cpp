@@ -38,6 +38,7 @@
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
+#include <kconfiggroup.h>
 #include <kurl.h>
 #include <config.h>
 #include <kcomponentdata.h>
@@ -88,9 +89,9 @@ void NotifyBySound::loadConfig()
 {
     // load external player settings
 	KSharedConfig::Ptr kc = KGlobal::config();
-	kc->setGroup("Misc");
-	d->useExternal = kc->readEntry( "Use external player", false );
-	d->externalPlayer = kc->readPathEntry("External player");
+	KConfigGroup cg(kc, "Misc");
+	d->useExternal = cg.readEntry( "Use external player", false );
+	d->externalPlayer = cg.readPathEntry("External player");
 
 	// try to locate a suitable player if none is configured
 	if ( d->useExternal && d->externalPlayer.isEmpty() ) {
@@ -103,7 +104,7 @@ void NotifyBySound::loadConfig()
 		}
 	}
 	// load default volume
-	setVolume( kc->readEntry( "Volume", 100 ) );
+	setVolume( cg.readEntry( "Volume", 100 ) );
 }
 
 
@@ -117,7 +118,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		finish( eventId );
 		return;
 	}
-	
+
 	QString soundFile = config->readEntry( "sound" , true );
 
 	if (soundFile.isEmpty())

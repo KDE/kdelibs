@@ -450,7 +450,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 
 		t << endl << comments_["browseshortnames"] << endl;
 		if (browsing_) t << "BrowseShortNames " << (useshortnames_ ? "Yes" : "No") << endl;
-		
+
 		t << endl << "# Unknown" << endl;
 		for (QList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
 			t << (*it).first << " " << (*it).second << endl;
@@ -611,8 +611,7 @@ bool CupsdConf::parseOption(const QString& line)
 
 bool CupsdConf::loadAvailableResources()
 {
-	KConfig	conf("kdeprintrc");
-	conf.setGroup("CUPS");
+	KConfigGroup	conf = KSharedConfig::openConfig("kdeprintrc")->group( "CUPS" );
 	QString	host = conf.readEntry("Host",cupsServer());
 	int 	port = conf.readEntry("Port",ippPort());
 	http_t	*http_ = httpConnect(host.toLocal8Bit(),port);

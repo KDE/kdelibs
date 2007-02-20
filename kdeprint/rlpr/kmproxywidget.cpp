@@ -32,7 +32,7 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 	: QGroupBox(i18n("Proxy Settings"), parent, name)
 {
 	setLayout( new QVBoxLayout );
-	
+
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);
 	m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);
@@ -42,7 +42,7 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 	m_proxyport->setValidator(new QIntValidator(m_proxyport));
 	m_hostlabel->setBuddy(m_proxyhost);
 	m_portlabel->setBuddy(m_proxyport);
-	
+
 	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyhost,SLOT(setEnabled(bool)));
 	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyport,SLOT(setEnabled(bool)));
 	m_proxyhost->setEnabled(false);
@@ -61,15 +61,15 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 
 void KMProxyWidget::loadConfig(KConfig *conf)
 {
-	conf->setGroup("RLPR");
-	m_proxyhost->setText(conf->readEntry("ProxyHost",QString()));
-	m_proxyport->setText(conf->readEntry("ProxyPort",QString()));
+	KConfigGroup cg( conf, "RLPR");
+	m_proxyhost->setText(cg.readEntry("ProxyHost"));
+	m_proxyport->setText(cg.readEntry("ProxyPort"));
 	m_useproxy->setChecked(!m_proxyhost->text().isEmpty());
 }
 
 void KMProxyWidget::saveConfig(KConfig *conf)
 {
-	conf->setGroup("RLPR");
-	conf->writeEntry("ProxyHost",(m_useproxy->isChecked() ? m_proxyhost->text() : QString()));
-	conf->writeEntry("ProxyPort",(m_useproxy->isChecked() ? m_proxyport->text() : QString()));
+	KConfigGroup cg( conf, "RLPR");
+	cg.writeEntry("ProxyHost",(m_useproxy->isChecked() ? m_proxyhost->text() : QString()));
+	cg.writeEntry("ProxyPort",(m_useproxy->isChecked() ? m_proxyport->text() : QString()));
 }

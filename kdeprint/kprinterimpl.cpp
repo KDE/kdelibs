@@ -201,9 +201,8 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 {
 	kDebug(500) << "kdeprint: status message: " << msg << endl;
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("General");
-	if (!conf->readEntry("ShowStatusMsg", true))
+	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	if (!conf.readEntry("ShowStatusMsg", true))
 		return;
 
 	QString	message(msg);
@@ -552,9 +551,8 @@ void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
 
 void KPrinterImpl::loadAppOptions()
 {
-	KSharedConfig::Ptr conf = KGlobal::config();
-	conf->setGroup("KPrinter Settings");
-	QStringList	opts = conf->readEntry("ApplicationOptions", QStringList());
+	KConfigGroup conf( KGlobal::config(), "KPrinter Settings");
+	QStringList	opts = conf.readEntry("ApplicationOptions", QStringList());
 	for (int i=0; i<opts.count(); i+=2)
 		if (opts[i].startsWith("app-"))
 			m_options[opts[i]] = opts[i+1];
@@ -567,9 +565,8 @@ void KPrinterImpl::saveAppOptions()
 		if (it.key().startsWith("app-"))
 			optlist << it.key() << it.value();
 
-	KSharedConfig::Ptr conf = KGlobal::config();
-	conf->setGroup("KPrinter Settings");
-	conf->writeEntry("ApplicationOptions", optlist);
+	KConfigGroup cg( KGlobal::config(), "KPrinter Settings");
+	cg.writeEntry("ApplicationOptions", optlist);
 }
 
 #include "kprinterimpl.moc"

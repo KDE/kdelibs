@@ -794,7 +794,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
 
      QEventLoop eventLoop;
-     QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceAcquired(QString)),
+     QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceRegistered(QString)),
                       &eventLoop, SLOT(quit()));
      eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
    }

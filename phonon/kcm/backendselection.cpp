@@ -21,7 +21,7 @@
 
 #include <kservicetypeprofile.h>
 #include <kservicetypetrader.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <QStringList>
 #include <QListWidgetItem>
 #include <kapplication.h>

@@ -18,7 +18,7 @@
 */
 
 #include <QObject>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include "phononnamespace.h"
 
 #ifndef PHONON_GLOBALCONFIG_H

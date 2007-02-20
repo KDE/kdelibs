@@ -29,7 +29,7 @@
 #include <kplugininfo.h>
 #include "ksettings/dispatcher.h"
 #include "ksettings/componentsdialog.h"
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kiconloader.h>
@@ -507,20 +507,20 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 
 void Dialog::parseGroupFile( const QString & filename )
 {
-	KSimpleConfig file( filename );
+	KConfig file( filename, KConfig::OnlyLocal );
 	QStringList groups = file.groupList();
 	for( QStringList::ConstIterator it = groups.begin(); it != groups.end();
 			++it )
 	{
 		GroupInfo group;
 		QString id = *it;
-		file.setGroup( id.toUtf8() );
+                KConfigGroup conf(&file, id.toUtf8() );
 		group.id = id;
-		group.name = file.readEntry( "Name" );
-		group.comment = file.readEntry( "Comment" );
-		group.weight = file.readEntry( "Weight", 100 );
-		group.parentid = file.readEntry( "Parent" );
-		group.icon = file.readEntry( "Icon" );
+		group.name = conf.readEntry( "Name" );
+		group.comment = conf.readEntry( "Comment" );
+		group.weight = conf.readEntry( "Weight", 100 );
+		group.parentid = conf.readEntry( "Parent" );
+		group.icon = conf.readEntry( "Icon" );
 		d->pagetree.insert( group );
 	}
 }

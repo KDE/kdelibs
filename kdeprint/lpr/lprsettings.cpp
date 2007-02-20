@@ -22,6 +22,7 @@
 #include "kmfactory.h"
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
@@ -54,9 +55,8 @@ LprSettings* LprSettings::self()
 void LprSettings::init()
 {
 	// LPR/LPRng mode
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("LPR");
-	QString	modestr = conf->readEntry("Mode");
+	KConfigGroup conf = KMFactory::self()->printConfig( "LPR" );
+	QString	modestr = conf.readEntry("Mode");
 	if (modestr == "LPRng")
 		m_mode = LPRng;
 	else if (modestr == "LPR")
@@ -132,7 +132,7 @@ QString LprSettings::defaultRemoteHost()
 					m_defaultremotehost = hostname;
 				}
 			}
-		}		
+		}
 	}
 	return m_defaultremotehost;
 }

@@ -38,7 +38,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstaticdeleter.h>
 #include <kio/authinfo.h>
 
@@ -230,30 +230,27 @@ void KMFactory::loadFactory(const QString& syst)
 	}
 }
 
-KConfig* KMFactory::printConfig(const QString& group)
+KConfigGroup KMFactory::printConfig(const QString& group)
 {
 	if (!m_printconfig)
 	{
 		m_printconfig = new KConfig("kdeprintrc");
 		Q_CHECK_PTR(m_printconfig);
 	}
-	if (!group.isEmpty())
-		m_printconfig->setGroup(group);
-	return m_printconfig;
+	return KConfigGroup( m_printconfig, group);
 }
 
 QString KMFactory::printSystem()
 {
-	KConfig	*conf = printConfig();
-	conf->setGroup("General");
-	QString	sys = conf->readEntry("PrintSystem");
+	KConfigGroup conf = printConfig("General");
+	QString	sys = conf.readEntry("PrintSystem");
 	if (sys.isEmpty())
 	{
 		// perform auto-detection (will at least return "lpdunix")
 		sys = autoDetect();
 		// save the result
-		conf->writeEntry("PrintSystem", sys);
-		conf->sync();
+		conf.writeEntry("PrintSystem", sys);
+		conf.sync();
 	}
 	else if ( sys.length()==1 && sys[0].isDigit() ) // discard old-style settings
         	sys = "lpdunix";
@@ -282,10 +279,9 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 	unload();
 	if (saveSyst)
 	{
-		KConfig	*conf = printConfig();
-		conf->setGroup("General");
-		conf->writeEntry("PrintSystem", syst);
-		conf->sync();
+		KConfigGroup conf = printConfig("General");
+		conf.writeEntry("PrintSystem", syst);
+		conf.sync();
 
 		// notify all other apps using DCOP signal
 		emit pluginChanged(getpid());
@@ -319,10 +315,10 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 	QString	path(name);
 	if (path[0] != '/')
 		path = KStandardDirs::locate("data", QString::fromLatin1("kdeprint/plugins/%1.print").arg(name));
-	KSimpleConfig	conf(path);
+	KConfig	_conf(path, KConfig::OnlyLocal);
 	PluginInfo	info;
 
-	conf.setGroup("KDE Print Entry");
+	KConfigGroup conf( &_conf, "KDE Print Entry");
 	info.name = conf.readEntry("PrintSystem");
 	info.comment = conf.readEntry("Comment");
 	if (info.comment.isEmpty())
@@ -379,7 +375,7 @@ void KMFactory::slot_pluginChanged(int pid)
 	if (pid != getpid())
 	{
 		// Unload config object (avoid saving it)
-		printConfig()->rollback();
+		m_printconfig->rollback();
 		UNLOAD_OBJECT(m_printconfig);
 		// Then reload everything and notified registered objects.
 		// Do NOT re-save the new print system.
@@ -394,7 +390,7 @@ void KMFactory::slot_configChanged()
 	// unload/reload config object (make it non dirty to
 	// avoid saving it and overwriting the newly saved options
 	// in the other application)
-	printConfig()->rollback();
+	m_printconfig->rollback();
 	UNLOAD_OBJECT(m_printconfig);
 	printConfig();
 
@@ -410,8 +406,8 @@ void KMFactory::slot_configChanged()
 
 void KMFactory::saveConfig()
 {
-	KConfig	*conf = printConfig();
-	conf->sync();
+	KConfigGroup conf = printConfig();
+	conf.sync();
 	kDebug(500) << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()" << endl;
 	emit configChanged();
 	// normally, the self application should also receive the signal,

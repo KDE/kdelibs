@@ -31,6 +31,7 @@
 
 class QDomElement;
 
+class KConfigGroup;
 class KConfig;
 class KMainWindow;
 class KMenu;
@@ -128,13 +129,13 @@ class KDEUI_EXPORT KToolBar : public QToolBar
     /**
      * Save the toolbar settings to group @p configGroup in @p config.
      */
-    void saveSettings( KConfig *config, const QString &configGroup );
+    void saveSettings( KConfigGroup &cg );
 
     /**
      * Read the toolbar settings from group @p configGroup in @p config
      * and apply them. Even default settings are re-applied if @p force is set.
      */
-    void applySettings( KConfig *config, const QString &configGroup, bool force = false );
+    void applySettings( const KConfigGroup &cg, bool force = false );
 
     /**
      * Sets the XML gui client.
@@ -190,7 +191,7 @@ class KDEUI_EXPORT KToolBar : public QToolBar
   protected:
     virtual void contextMenuEvent( QContextMenuEvent* );
     virtual void actionEvent( QActionEvent* );
-    void applyAppearanceSettings( KConfig*, const QString&, bool forceGlobal = false );
+    void applyAppearanceSettings( KConfigGroup &cg, bool forceGlobal = false );
     QString settingsGroup() const;
 
     // Draggable toolbar configuration

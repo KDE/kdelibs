@@ -76,7 +76,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kcomponentdata.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <ktemporaryfile.h>
 #include <klocale.h>
 #include <qfile.h>

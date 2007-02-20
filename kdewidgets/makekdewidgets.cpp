@@ -5,6 +5,7 @@
 #include <kconfig.h>
 #include <kmacroexpander.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 #include <QtCore>
 
@@ -125,16 +126,16 @@ int main( int argc, char **argv ) {
 }
 
 void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath ) {
-    KConfig input( fileName, true, false );
-    input.setGroup( "Global" );
+    KConfig input( fileName, KConfig::NoGlobals );
+    KConfigGroup cg(&input, "Global" );
     QHash<QString, QString> MainMap;
-    MainMap.insert( "PluginName", input.readEntry( "PluginName", pluginName ) );
-    MainMap.insert( "PluginNameLower", input.readEntry( "PluginName", pluginName ).toLower() );
-    MainMap.insert( "Init", input.readEntry( "Init", "" ) );
-    MainMap.insert( "Destroy", input.readEntry( "Destroy", "" ) );
+    MainMap.insert( "PluginName", cg.readEntry( "PluginName", pluginName ) );
+    MainMap.insert( "PluginNameLower", cg.readEntry( "PluginName", pluginName ).toLower() );
+    MainMap.insert( "Init", cg.readEntry( "Init", "" ) );
+    MainMap.insert( "Destroy", cg.readEntry( "Destroy", "" ) );
     ts << classHeader << endl;
 
-    QStringList includes = input.readEntry( "Includes", QStringList(), ',' );
+    QStringList includes = cg.readEntry( "Includes", QStringList(), ',' );
     QStringList classes = input.groupList();
     classes.removeAll( "Global" );
 
@@ -160,8 +161,8 @@ QString denamespace ( const QString &str ) {
     return denamespaced;
 }
 
-QString buildCollClass( KConfig &input, const QStringList& classes ) {
-    input.setGroup( "Global" );
+QString buildCollClass( KConfig &_input, const QStringList& classes ) {
+    KConfigGroup input(&_input, "Global");
     QHash<QString, QString> defMap;
     defMap.insert( "CollName", input.readEntry( "PluginName" ) );
     QString genCode;
@@ -178,8 +179,8 @@ QString buildCollClass( KConfig &input, const QStringList& classes ) {
     return str;
 }
 
-QString buildWidgetClass( const QString &name, KConfig &input, const QString &group ) {
-    input.setGroup( name );
+QString buildWidgetClass( const QString &name, KConfig &_input, const QString &group ) {
+    KConfigGroup input(&_input, name);
     QHash<QString, QString> defMap;
 
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
@@ -205,7 +206,7 @@ QString buildWidgetClass( const QString &name, KConfig &input, const QString &gr
     return KMacroExpander::expandMacros( classDef, defMap );
 }
 
-QString buildWidgetInclude( const QString &name, KConfig &input ) {
-    input.setGroup( name );
+QString buildWidgetInclude( const QString &name, KConfig &_input ) {
+    KConfigGroup input(&_input, name);
     return input.readEntry( "IncludeFile", name.toLower() + ".h" );
 }

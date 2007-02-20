@@ -499,12 +499,10 @@ void KApplication::init()
   qDBusBindToApplication();
   QDBusConnectionInterface *bus = 0;
   if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
-      kFatal(101) << "Session bus not found" << endl;
-      ::exit(125);
   }
 
   extern bool s_kuniqueapplication_startCalled;
-  if ( !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
+  if ( bus && !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
   {
       QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
       QString reversedDomain;
@@ -599,7 +597,7 @@ void KApplication::init()
 KConfig* KApplication::sessionConfig()
 {
     if (!pSessionConfig) // create an instance specific config object
-        pSessionConfig = new KConfig( sessionConfigName(), false, false);
+        pSessionConfig = new KConfig( sessionConfigName(), KConfig::NoGlobals );
     return pSessionConfig;
 }
 

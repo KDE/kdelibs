@@ -26,11 +26,11 @@ KMConfigPage::KMConfigPage(QWidget *parent)
 	m_header = "Header";
 }
 
-void KMConfigPage::loadConfig(KConfig*)
+void KMConfigPage::loadConfig(const KConfigGroup &)
 {
 }
 
-void KMConfigPage::saveConfig(KConfig*)
+void KMConfigPage::saveConfig(KConfigGroup&)
 {
 }
 #include "kmconfigpage.moc"

@@ -21,6 +21,7 @@
 #include "kmfactory.h"
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 
 KMTimer* KMTimer::m_self = 0;
 
@@ -87,9 +88,8 @@ void KMTimer::startTimer(int t)
 {
 	if (t == -1)
 	{
-		KConfig	*conf = KMFactory::self()->printConfig();
-		conf->setGroup("General");
-		t = conf->readEntry("TimerDelay", 5) * 1000;
+		KConfigGroup cg = KMFactory::self()->printConfig("General");
+		t = cg.readEntry("TimerDelay", 5) * 1000;
 	}
   setSingleShot( true );
 	start(t);

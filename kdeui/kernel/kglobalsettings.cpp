@@ -20,7 +20,6 @@
 #include "kglobalsettings.h"
 
 #include <kconfig.h>
-#include <ksimpleconfig.h>
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -900,10 +899,10 @@ void KGlobalSettings::applyGUIStyle()
 QPalette KGlobalSettings::createApplicationPalette()
 {
     KConfigGroup cg( KGlobal::config(), "General" );
-    return createApplicationPalette( &cg, KGlobalSettings::contrast() );
+    return createApplicationPalette( cg, KGlobalSettings::contrast() );
 }
 
-QPalette KGlobalSettings::createApplicationPalette( KConfigBase *config, int contrast_ )
+QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup &config, int contrast_ )
 {
     QColor kde34Background( 239, 239, 239 );
     QColor kde34Blue( 103,141,178 );
@@ -917,16 +916,16 @@ QPalette KGlobalSettings::createApplicationPalette( KConfigBase *config, int con
     QColor kde34Link( 0, 0, 238 );
     QColor kde34VisitedLink( 82, 24, 139 );
 
-    QColor background = config->readEntry( "background", kde34Background );
-    QColor foreground = config->readEntry( "foreground", Qt::black );
-    QColor button = config->readEntry( "buttonBackground", kde34Button );
-    QColor buttonText = config->readEntry( "buttonForeground", Qt::black );
-    QColor highlight = config->readEntry( "selectBackground", kde34Blue );
-    QColor highlightedText = config->readEntry( "selectForeground", Qt::white );
-    QColor base = config->readEntry( "windowBackground", Qt::white );
-    QColor baseText = config->readEntry( "windowForeground", Qt::black );
-    QColor link = config->readEntry( "linkColor", kde34Link );
-    QColor visitedLink = config->readEntry( "visitedLinkColor", kde34VisitedLink );
+    QColor background = config.readEntry( "background", kde34Background );
+    QColor foreground = config.readEntry( "foreground", Qt::black );
+    QColor button = config.readEntry( "buttonBackground", kde34Button );
+    QColor buttonText = config.readEntry( "buttonForeground", Qt::black );
+    QColor highlight = config.readEntry( "selectBackground", kde34Blue );
+    QColor highlightedText = config.readEntry( "selectForeground", Qt::white );
+    QColor base = config.readEntry( "windowBackground", Qt::white );
+    QColor baseText = config.readEntry( "windowForeground", Qt::black );
+    QColor link = config.readEntry( "linkColor", kde34Link );
+    QColor visitedLink = config.readEntry( "visitedLinkColor", kde34VisitedLink );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;

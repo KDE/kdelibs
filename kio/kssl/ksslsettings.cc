@@ -36,6 +36,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
@@ -98,7 +99,7 @@ class KSSLSettingsPrivate {
 KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
-	m_cfg = new KConfig("cryptodefaults", false, false);
+        m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
 
 	if (!KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl")) {
 		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
@@ -142,14 +143,16 @@ QString KSSLSettings::getCipherList() {
                 if (!sc)
                         break;
 
+                KConfigGroup cg(m_cfg, QString());
+
                 if(!strcmp("SSLv2", d->kossl->SSL_CIPHER_get_version(sc)))
-                        m_cfg->setGroup("SSLv2");
+                        cg.changeGroup("SSLv2");
                 else
-                        m_cfg->setGroup("SSLv3");
+                        cg.changeGroup("SSLv3");
 
                 tcipher.sprintf("cipher_%s", sc->name);
                 int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
-                if (m_cfg->readEntry(tcipher, bits >= 56)) {
+                if (cg.readEntry(tcipher, bits >= 56)) {
                         CipherNode *xx = new CipherNode(sc->name,bits);
                         if (!cipherList.contains(xx))
                                 cipherList.prepend(xx);
@@ -191,25 +194,25 @@ QString KSSLSettings::getCipherList() {
 void KSSLSettings::load() {
 	m_cfg->reparseConfiguration();
 
-	m_cfg->setGroup("Warnings");
-	m_bWarnOnEnter = m_cfg->readEntry("OnEnter", false);
-	m_bWarnOnLeave = m_cfg->readEntry("OnLeave", true);
-	m_bWarnOnUnencrypted = m_cfg->readEntry("OnUnencrypted", true);
-	m_bWarnOnMixed = m_cfg->readEntry("OnMixed", true);
+        KConfigGroup cfg(m_cfg, "Warnings");
+	m_bWarnOnEnter = cfg.readEntry("OnEnter", false);
+	m_bWarnOnLeave = cfg.readEntry("OnLeave", true);
+	m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", true);
+	m_bWarnOnMixed = cfg.readEntry("OnMixed", true);
 
-	m_cfg->setGroup("Validation");
-	m_bWarnSelfSigned = m_cfg->readEntry("WarnSelfSigned", true);
-	m_bWarnExpired = m_cfg->readEntry("WarnExpired", true);
-	m_bWarnRevoked = m_cfg->readEntry("WarnRevoked", true);
+	cfg.changeGroup("Validation");
+	m_bWarnSelfSigned = cfg.readEntry("WarnSelfSigned", true);
+	m_bWarnExpired = cfg.readEntry("WarnExpired", true);
+	m_bWarnRevoked = cfg.readEntry("WarnRevoked", true);
 
-	m_cfg->setGroup("EGD");
-	d->m_bUseEGD = m_cfg->readEntry("UseEGD", false);
-	d->m_bUseEFile = m_cfg->readEntry("UseEFile", false);
-	d->m_EGDPath = m_cfg->readPathEntry("EGDPath");
+	cfg.changeGroup("EGD");
+	d->m_bUseEGD = cfg.readEntry("UseEGD", false);
+	d->m_bUseEFile = cfg.readEntry("UseEFile", false);
+	d->m_EGDPath = cfg.readPathEntry("EGDPath");
 
-	m_cfg->setGroup("Auth");
-	d->m_bSendX509 = ("send" == m_cfg->readEntry("AuthMethod", ""));
-	d->m_bPromptX509 = ("prompt" == m_cfg->readEntry("AuthMethod", ""));
+	cfg.changeGroup("Auth");
+	d->m_bSendX509 = ("send" == cfg.readEntry("AuthMethod", ""));
+	d->m_bPromptX509 = ("prompt" == cfg.readEntry("AuthMethod", ""));
 
 #ifdef KSSL_HAVE_SSL
 
@@ -234,37 +237,36 @@ void KSSLSettings::defaults() {
 
 
 void KSSLSettings::save() {
-	m_cfg->setGroup("Warnings");
-	m_cfg->writeEntry("OnEnter", m_bWarnOnEnter);
-	m_cfg->writeEntry("OnLeave", m_bWarnOnLeave);
-	m_cfg->writeEntry("OnUnencrypted", m_bWarnOnUnencrypted);
-	m_cfg->writeEntry("OnMixed", m_bWarnOnMixed);
+        KConfigGroup cfg(m_cfg, "Warnings");
+	cfg.writeEntry("OnEnter", m_bWarnOnEnter);
+	cfg.writeEntry("OnLeave", m_bWarnOnLeave);
+	cfg.writeEntry("OnUnencrypted", m_bWarnOnUnencrypted);
+	cfg.writeEntry("OnMixed", m_bWarnOnMixed);
 
-	m_cfg->setGroup("Validation");
-	m_cfg->writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
-	m_cfg->writeEntry("WarnExpired", m_bWarnExpired);
-	m_cfg->writeEntry("WarnRevoked", m_bWarnRevoked);
+	cfg.changeGroup("Validation");
+	cfg.writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
+	cfg.writeEntry("WarnExpired", m_bWarnExpired);
+	cfg.writeEntry("WarnRevoked", m_bWarnRevoked);
 
-	m_cfg->setGroup("EGD");
-	m_cfg->writeEntry("UseEGD", d->m_bUseEGD);
-	m_cfg->writeEntry("UseEFile", d->m_bUseEFile);
-	m_cfg->writePathEntry("EGDPath", d->m_EGDPath);
+	cfg.changeGroup("EGD");
+	cfg.writeEntry("UseEGD", d->m_bUseEGD);
+	cfg.writeEntry("UseEFile", d->m_bUseEFile);
+	cfg.writePathEntry("EGDPath", d->m_EGDPath);
 
 	m_cfg->sync();
 	// FIXME - ciphers
 #if 0
 #ifdef KSSL_HAVE_SSL
-	m_cfg->setGroup("SSLv3");
+	cfg.setGroup("SSLv3");
 	for (unsigned int i = 0; i < v3ciphers.count(); i++) {
 		QString ciphername;
 		ciphername.sprintf("cipher_%s", v3ciphers[i].ascii());
 		if (v3selectedciphers.contains(v3ciphers[i])) {
-			m_cfg->writeEntry(ciphername, true);
-		} else m_cfg->writeEntry(ciphername, false);
+			cfg.writeEntry(ciphername, true);
+		} else cfg.writeEntry(ciphername, false);
 	}
+        m_cfg->sync();
 #endif
-
-	m_cfg->sync();
 
 	// insure proper permissions -- contains sensitive data
 	QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));

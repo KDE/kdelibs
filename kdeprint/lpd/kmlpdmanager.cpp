@@ -276,12 +276,12 @@ void KMLpdManager::listPrinters()
 QString KMLpdManager::programName(int f)
 {
 	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("LPD");
+	const KConfigGroup configGroup( conf, "LPD" );
 	switch (f)
 	{
-		case 0: return conf->readPathEntry("LpdCommand","/usr/sbin/lpc");
-		case 1: return conf->readPathEntry("LpdQueue","lpq");
-		case 2: return conf->readPathEntry("LpdRemove","lprm");
+		case 0: return configGroup.readPathEntry("LpdCommand","/usr/sbin/lpc");
+		case 1: return configGroup.readPathEntry("LpdQueue","lpq");
+		case 2: return configGroup.readPathEntry("LpdRemove","lprm");
 	}
 	return QString();
 }

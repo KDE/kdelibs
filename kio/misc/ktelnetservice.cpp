@@ -26,7 +26,7 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 static const KCmdLineOptions options[] =
 {
@@ -44,13 +44,13 @@ int main(int argc, char **argv)
 	KApplication app;
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-	
+
 	if (args->count() != 1)
 		return 1;
-	
-	KConfig *config = new KConfig("kdeglobals", true);
-	config->setGroup("General");
-	QString terminal = config->readPathEntry("TerminalApplication", "konsole");
+
+	KConfig config("kdeglobals");
+        KConfigGroup cg(&config, "General");
+	QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
 
 	KUrl url(args->arg(0));
 	QStringList cmd;
@@ -68,14 +68,14 @@ int main(int argc, char **argv)
             kError() << "Invalid protocol " << url.protocol() << endl;
             return 2;
         }
-        
+
         if (!KAuthorized::authorize("shell_access"))
         {
-            KMessageBox::sorry(0, 
+            KMessageBox::sorry(0,
             	i18n("You do not have permission to access the %1 protocol.", url.protocol()));
             return 3;
         }
-        
+
 	if (!url.user().isEmpty())
 	{
 		cmd << "-l";

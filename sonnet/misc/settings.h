@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <kdelibs_export.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 namespace KSpell2
 {

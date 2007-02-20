@@ -154,15 +154,15 @@ void KMCupsConfigWidget::save(bool sync)
 
 void KMCupsConfigWidget::saveConfig(KConfig *conf)
 {
-	conf->setGroup("CUPS");
-	conf->writeEntry("Host",m_host->text());
-	conf->writeEntry("Port",m_port->text().toInt());
-	conf->writeEntry("Login",(m_anonymous->isChecked() ? QString() : m_login->text()));
-	conf->writeEntry( "SavePassword", ( m_anonymous->isChecked() ? false : m_savepwd->isChecked() ) );
+	KConfigGroup cg( conf, "CUPS");
+	cg.writeEntry("Host",m_host->text());
+	cg.writeEntry("Port",m_port->text().toInt());
+	cg.writeEntry("Login",(m_anonymous->isChecked() ? QString() : m_login->text()));
+	cg.writeEntry( "SavePassword", ( m_anonymous->isChecked() ? false : m_savepwd->isChecked() ) );
 	if ( m_savepwd->isChecked() && !m_anonymous->isChecked() )
-		conf->writeEntry( "Password", ( m_anonymous->isChecked() ? QString() : KStringHandler::obscure( m_password->text() ) ) );
+		cg.writeEntry( "Password", ( m_anonymous->isChecked() ? QString() : KStringHandler::obscure( m_password->text() ) ) );
 	else
-		conf->deleteEntry( "Password" );
+		cg.deleteEntry( "Password" );
 	// synchronize CupsInfos object
 	save(false);
 }

@@ -27,7 +27,7 @@
 #include <QtGui/QTextDocument>
 #include <QtGui/QWheelEvent>
 
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kiconloader.h>
 #include <kstringhandler.h>
 

@@ -36,7 +36,7 @@
 #include "kcatalog.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
-#include "ksimpleconfig.h"
+#include "kconfig.h"
 #include "kcomponentdata.h"
 #include "kconfig.h"
 #include "kdebug.h"
@@ -332,10 +332,10 @@ void KLocalePrivate::initFormat(KLocale *parent)
 
   KConfigGroup cg(config, "Locale");
 
-  KSimpleConfig entry(KStandardDirs::locate("locale",
+  KConfig entryFile(KStandardDirs::locate("locale",
                                            QString::fromLatin1("l10n/%1/entry.desktop")
-                                           .arg(country)), true);
-  entry.setGroup("KCM Locale");
+                                           .arg(country)));
+  KConfigGroup entry(&entryFile, "KCM Locale");
 
   // Numeric
 #define readConfigEntry(key, default, save) \
@@ -388,10 +388,10 @@ void KLocalePrivate::initFormat(KLocale *parent)
 
   //Grammatical
   //Precedence here is l10n / i18n / config file
-  KSimpleConfig lang(KStandardDirs::locate("locale",
-                                           QString::fromLatin1("%1/entry.desktop")
-                                           .arg(language)), true);
-  lang.setGroup("KCM Locale");
+  KConfig langCfg(KStandardDirs::locate("locale",
+                                        QString::fromLatin1("%1/entry.desktop")
+                                        .arg(language)));
+  KConfigGroup lang(&langCfg,"KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
   save = entry.readEntry(key, default); \
   save = lang.readEntry(key, save); \
@@ -2091,8 +2091,8 @@ QStringList KLocale::languagesTwoAlpha() const
 
   QStringList result;
 
-  KConfig config(QString::fromLatin1("language.codes"), true, false);
-  config.setGroup("TwoLetterCodes");
+  KConfig lang_codes(QString::fromLatin1("language.codes"), KConfig::NoGlobals);
+  KConfigGroup config(&lang_codes, "TwoLetterCodes");
 
   for ( QStringList::ConstIterator it = origList.begin();
 	it != origList.end();
@@ -2125,7 +2125,7 @@ QStringList KLocale::languagesTwoAlpha() const
 QStringList KLocale::allLanguagesTwoAlpha() const
 {
   if (!d->languages)
-    d->languages = new KConfig("all_languages", true, false, "locale");
+    d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
 
   return d->languages->groupList();
 }
@@ -2133,15 +2133,15 @@ QStringList KLocale::allLanguagesTwoAlpha() const
 QString KLocale::twoAlphaToLanguageName(const QString &code) const
 {
   if (!d->languages)
-    d->languages = new KConfig("all_languages", true, false, "locale");
+    d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
 
   QString groupName = code;
   int i = groupName.indexOf('_');
   if (i < 0) i = groupName.size();
   groupName.replace(0, i, groupName.left(i).toLower());
 
-  d->languages->setGroup(groupName);
-  return d->languages->readEntry("Name");
+  KConfigGroup cg(d->languages, groupName);
+  return cg.readEntry("Name");
 }
 
 QStringList KLocale::allCountriesTwoAlpha() const
@@ -2160,9 +2160,9 @@ QStringList KLocale::allCountriesTwoAlpha() const
 
 QString KLocale::twoAlphaToCountryName(const QString &code) const
 {
-  KConfig cfg("l10n/"+code.toLower()+"/entry.desktop", true, false, "locale");
-  cfg.setGroup("KCM Locale");
-  return cfg.readEntry("Name");
+  KConfig cfg(KStandardDirs::locate("locale", "l10n/"+code.toLower()+"/entry.desktop"));
+  KConfigGroup cg(&cfg, "KCM Locale");
+  return cg.readEntry("Name");
 }
 
 void KLocale::setCalendar(const QString & calType)

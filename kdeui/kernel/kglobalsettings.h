@@ -36,7 +36,7 @@
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
-class KConfigBase;
+class KConfigGroup;
 class KUrl;
 
 class QColor;
@@ -512,7 +512,7 @@ public:
      * Raw access for use by KDM.
      * note: expects config to be in the correct group already.
      */
-    static QPalette createApplicationPalette( KConfigBase *config, int contrast );
+    static QPalette createApplicationPalette( const KConfigGroup &config, int contrast );
 
     /**
      * An identifier for change signals.

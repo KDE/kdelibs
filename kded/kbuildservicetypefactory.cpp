@@ -71,19 +71,20 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   if (name.isEmpty())
      return 0;
 
-  KDesktopFile desktopFile(file, true, resource);
+  KDesktopFile desktopFile(resource, file);
+  const KConfigGroup desktopGroup = desktopFile.desktopGroup();
 
-  if ( desktopFile.readEntry( "Hidden", false ) == true )
+  if ( desktopGroup.readEntry( "Hidden", false ) == true )
       return 0;
 
-  const QString type = desktopFile.readEntry( "Type" );
+  const QString type = desktopGroup.readEntry( "Type" );
   if ( type != QLatin1String( "ServiceType" ) )
   {
      kWarning(7012) << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType" << endl;
     return 0;
   }
 
-  const QString serviceType = desktopFile.readEntry( "X-KDE-ServiceType" );
+  const QString serviceType = desktopGroup.readEntry( "X-KDE-ServiceType" );
 
   if ( serviceType.isEmpty() )
   {

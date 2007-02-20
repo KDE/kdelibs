@@ -315,10 +315,10 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
                     continue;
             }
             // read configuration
-            KConfig kc( KStandardDirs::locate ("data", pluginsinfo.toString()) );
+            KConfigGroup kc = KSharedConfig::openConfig( KStandardDirs::locate ("data", pluginsinfo.toString()) )->group( "0" );
             const int num = kc.readEntry("number", 0);
             for ( int n = 0; n < num; n++ ) {
-                kc.setGroup( QString::number(n) );
+                kc.changeGroup( QString::number(n) );
                 PluginInfo *plugin = new PluginInfo;
 
                 plugin->name = kc.readEntry("name");
@@ -548,7 +548,7 @@ ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, con
   KJS::MimeTypes* base = static_cast<KJS::MimeTypes *>(thisObj);
 
   if (!base->pluginsEnabled()) return jsUndefined();
-  
+
   switch( id ) {
   case MimeTypes_Item:
   {

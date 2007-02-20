@@ -500,7 +500,7 @@ bool KCertPart::openFile() {
 				dlg.setPrompt(i18n("Certificate Password"));
 				if( !dlg.exec() )
 					break;
-				
+
 				_p12 = KSSLPKCS12::loadCertFile(m_file, dlg.password());
 
 				if (!_p12) {
@@ -733,7 +733,7 @@ void KCertPart::slotChain(int c) {
 
 void KCertPart::slotImport() {
 	if (_p12) {
-		KSimpleConfig cfg("ksslcertificates", false);
+		KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
 
 		if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
 			QString msg = _curName + '\n' + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
@@ -743,14 +743,14 @@ void KCertPart::slotImport() {
 			}
 		}
 
-		cfg.setGroup(_p12->getCertificate()->getSubject());
-		cfg.writeEntry("PKCS12Base64", _p12->toString());
-		cfg.writeEntry("Password", "");
-		cfg.sync();
+                KConfigGroup cg(&cfg, _p12->getCertificate()->getSubject());
+		cg.writeEntry("PKCS12Base64", _p12->toString());
+		cg.writeEntry("Password", "");
+		cg.sync();
 		if (!_silentImport)
 			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 	} else if (_ca) {
-		KConfig cfg("ksslcalist", true, false);
+		KConfig cfg("ksslcalist", KConfig::NoGlobals);
 		if (cfg.hasGroup(_ca->getSubject())) {
 			QString msg = _curName + '\n' + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
 			int rc= KMessageBox::warningContinueCancel(_frame, msg, i18n("Certificate Import"),KGuiItem(i18n("Replace")));

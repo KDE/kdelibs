@@ -38,17 +38,26 @@
 class KDesktopFile::Private {
 };
 
-KDesktopFile::KDesktopFile(const QString &fileName, bool bReadOnly,
-			   const char * resType)
-  : KConfig(QString(), bReadOnly, false), d(0)
+KDesktopFile::KDesktopFile( const char * resType, const QString &fileName)
+  : KConfig(QString(), KConfig::NoGlobals), d(0)
 {
   // KConfigBackEnd will try to locate the filename that is provided
   // based on the resource type specified, _only_ if the filename
   // is not an absolute path.
   backEnd->changeFileName(fileName, resType, false);
-  setReadOnly(bReadOnly);
   reparseConfiguration();
-  setDesktopGroup();
+  setGroup("Desktop Entry");
+}
+
+KDesktopFile::KDesktopFile( const QString &fileName)
+  : KConfig(QString(), KConfig::NoGlobals), d(0)
+{
+  // KConfigBackEnd will try to locate the filename that is provided
+  // based on the resource type specified, _only_ if the filename
+  // is not an absolute path.
+  backEnd->changeFileName(fileName, "apps", false);
+  reparseConfiguration();
+  setGroup("Desktop Entry");
 }
 
 KDesktopFile::~KDesktopFile()
@@ -215,6 +224,12 @@ void KDesktopFile::setActionGroup(const QString &group)
     setGroup(QLatin1String("Desktop Action ") + group);
 }
 
+KConfigGroup KDesktopFile::actionGroup(const QString &groupName) const
+{
+    return KConfigGroup(const_cast<KDesktopFile*>(this),
+                        QLatin1String("Desktop Action ") + groupName);
+}
+
 bool KDesktopFile::hasActionGroup(const QString &group) const
 {
   return hasGroup(QLatin1String("Desktop Action ") + group);
@@ -328,8 +343,18 @@ QString KDesktopFile::readDocPath() const
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const
 {
-  KDesktopFile *config = new KDesktopFile(QString(), false);
+  KDesktopFile *config = new KDesktopFile(QString());
   KConfig::copyTo(file, config);
-  config->setDesktopGroup();
+  config->setGroup("Desktop Entry");
   return config;
+}
+
+KConfigGroup KDesktopFile::desktopGroup()
+{
+   return KConfigGroup(this, "Desktop Entry");
+}
+
+const KConfigGroup KDesktopFile::desktopGroup() const
+{
+   return KConfigGroup(const_cast<KDesktopFile*>(this), "Desktop Entry");
 }

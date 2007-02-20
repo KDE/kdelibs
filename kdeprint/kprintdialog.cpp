@@ -257,7 +257,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_printer = 0;
 	setCaption(i18n("Print"));
 	setButtons( KDialog::None );
-	
+
 	QWidget *main = new QWidget();
 
 	// widget creation
@@ -453,17 +453,16 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	}
 	else
 	{
-		KSharedConfig::Ptr config = KGlobal::config();
-		config->setGroup("KPrinter Settings");
-		expandDialog(!config->readEntry("DialogReduced", QVariant(KMFactory::self()->settings()->application != KPrinter::StandAlone)).toBool());
+		KConfigGroup config( KGlobal::config(), "KPrinter Settings");
+		expandDialog(!config.readEntry("DialogReduced",
+									   QVariant(KMFactory::self()->settings()->application != KPrinter::StandAlone)).toBool());
 	}
 }
 
 KPrintDialog::~KPrintDialog()
 {
-	KSharedConfig::Ptr config = KGlobal::config();
-	config->setGroup("KPrinter Settings");
-	config->writeEntry("DialogReduced", d->m_reduced);
+	KConfigGroup cg( KGlobal::config(), "KPrinter Settings");
+	cg.writeEntry("DialogReduced", d->m_reduced);
 
 	delete d;
 }
@@ -472,7 +471,7 @@ void KPrintDialog::setFlags(int f)
 {
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties) && d->b_propertiesEnabled)
 	d->m_default->hide();
-	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General")->readEntry("UseLast", true)))
+	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General").readEntry("UseLast", true)))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)
@@ -908,7 +907,7 @@ void KPrintDialog::expandDialog(bool on)
 		d->m_extbtn->setText(i18n("&Options >>"));
 		d->m_reduced = true;
 	}
-	
+
 	layout()->invalidate();
 	layout()->activate();
 	resize( width(), layout()->minimumSize().height() );

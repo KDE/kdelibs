@@ -57,7 +57,7 @@ class KPrinterWrapper : public QPrinter
 public:
 	KPrinterWrapper(PrinterMode mode = ScreenResolution)
 	: QPrinter(mode) {};
-	
+
 	int metric(PaintDeviceMetric m) const { return QPrinter::metric(m); }
 	void setMargins( uint top, uint left, uint bottom, uint right );
 	void getMargins(uint *top, uint *left, uint *bottom, uint *right) const;
@@ -71,7 +71,7 @@ void KPrinterWrapper::setMargins( uint top, uint left, uint bottom, uint right )
 	// just ignore this value.
 	// QPainter::pageRect() is actually taken from e.g. CUPs or whether a full
 	// page is being used.
-	
+
 	QRect pageRect = paperRect().adjusted( left, top, 0U-right, 0U-bottom );
 	printEngine()->setProperty( QPrintEngine::PPK_PageRect, pageRect );
 }
@@ -139,9 +139,9 @@ class KPrinterEngine : public QPaintEngine
 public:
 	KPrinterEngine(KPrinter * kPrinter, QPaintEngine::PaintEngineFeatures features);
 	~KPrinterEngine();
-	
+
 	QPaintEngine * paintEngine() const { return m_kPrinter->d->m_printer->paintEngine(); }
-	
+
     bool begin(QPaintDevice *pdev);
     bool end();
 
@@ -179,7 +179,7 @@ public:
 
     Type type() const { return paintEngine()->type(); }
 
-	
+
 private:
 	KPrinter * m_kPrinter;
 };
@@ -188,7 +188,7 @@ KPrinterEngine::KPrinterEngine(KPrinter * kPrinter, QPaintEngine::PaintEngineFea
 	: QPaintEngine(features)
 {
 	m_kPrinter = kPrinter;
-	
+
 	setPaintDevice(m_kPrinter);
 }
 
@@ -202,10 +202,10 @@ bool KPrinterEngine::begin(QPaintDevice *pdev)
 	m_kPrinter->d->m_pagenumber = 1;
 	m_kPrinter->preparePrinting();
 	m_kPrinter->d->m_impl->statusMessage(i18n("Generating print data: page %1", m_kPrinter->d->m_pagenumber), m_kPrinter);
-	
+
 	bool value = paintEngine()->begin(pdev);
 	active = paintEngine()->isActive();
-	
+
 	return value;
 }
 
@@ -214,12 +214,12 @@ bool KPrinterEngine::end()
 {
 	bool value = paintEngine()->end();
 	active = paintEngine()->isActive();
-	
+
 	// this call should take care of everything (preview, output-to-file, filtering, ...)
 	value = value && m_kPrinter->printFiles(QStringList(m_kPrinter->d->m_printer->outputFileName()),true);
 	// reset "ready" state
 	m_kPrinter->finishPrinting();
-	
+
 	return value;
 }
 
@@ -260,17 +260,17 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 
 	// initialize QPrinter wrapper
 	d->m_printer = new KPrinterWrapper(m);
-	
+
 	// get paint engine features
 	QPaintEngine::PaintEngineFeatures features = 0;
 	for ( uint i=0; i<32; ++i )
 	{
 		QPaintEngine::PaintEngineFeature feature = (QPaintEngine::PaintEngineFeature)(1<<i);
-		
+
 		if ( d->m_printer->paintEngine()->hasFeature( feature ) )
 			features |= feature;
 	}
-	
+
 	d->m_engine = new KPrinterEngine(this, features);
 
 	// other initialization
@@ -294,20 +294,18 @@ void KPrinter::loadSettings()
 	setSearchName(option("kde-searchname"));
 	d->m_options.remove("kde-searchname");
 
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfig *pconf = KMFactory::self()->printConfig();
-	conf->setGroup("KPrinter Settings");
-	pconf->setGroup("General");
+    KConfigGroup conf = KConfigGroup( KGlobal::config(), "KPrinter Settings");
+    KConfigGroup pconf = KMFactory::self()->printConfig("General");
 
 	// load latest used printer from config file, if required in the options
-	if (searchName().isEmpty() && pconf->readEntry("UseLast", true))
-		setSearchName(conf->readEntry("Printer"));
+	if (searchName().isEmpty() && pconf.readEntry("UseLast", true))
+		setSearchName(conf.readEntry("Printer"));
 
 	// latest used print command
-	setOption("kde-printcommand",conf->readPathEntry("PrintCommand"));
+	setOption("kde-printcommand",conf.readPathEntry("PrintCommand"));
 
 	// latest used document directory
-	setDocDirectory( conf->readPathEntry( "DocDirectory" ) );
+	setDocDirectory( conf.readPathEntry( "DocDirectory" ) );
 	setDocFileName( "print" );
 }
 
@@ -320,21 +318,20 @@ void KPrinter::saveSettings()
 	}
 
 	// save latest used printer to config file
-	KSharedConfig::Ptr conf = KGlobal::config();
-	conf->setGroup("KPrinter Settings");
-	conf->writeEntry("Printer",searchName());
+	KConfigGroup conf( KGlobal::config(), "KPrinter Settings");
+	conf.writeEntry("Printer",searchName());
 	// latest used print command
-	conf->writePathEntry("PrintCommand",option("kde-printcommand"));
+	conf.writePathEntry("PrintCommand",option("kde-printcommand"));
 
 	// latest used document directory
 	if ( d->m_docdirectory.isEmpty() )
 	{
 		KUrl url( outputFileName() );
 		if ( url.isValid() )
-			conf->writePathEntry( "DocDirectory", url.directory() );
+			conf.writePathEntry( "DocDirectory", url.directory() );
 	}
 	else
-		conf->writePathEntry( "DocDirectory", d->m_docdirectory );
+		conf.writePathEntry( "DocDirectory", d->m_docdirectory );
 }
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
@@ -443,7 +440,7 @@ void KPrinter::translateQtOptions()
 			// But that doesn't mean it looks good. Apps which use setFullPage(false) assume that
 			// KPrinter will give them reasonable margins, so let's qMax with defaults from Qt in that case.
 			// Keep this in sync with KPMarginPage::initPageSize
-			
+
 			unsigned int it, il, ib, ir;
 			d->m_printer->getMargins( &it, &il, &ib, &ir );
 			top = qMax( top, (int)it );

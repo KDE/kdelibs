@@ -770,8 +770,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     filename = nameFromFileName( filename );
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
-        KDesktopFile config( url.path(), true /* readonly */ );
-        if ( config.hasKey( "Name" ) ) {
+        KDesktopFile config( url.path() );
+        if ( config.desktopGroup().hasKey( "Name" ) ) {
             filename = config.readName();
         }
     }
@@ -845,9 +845,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QString iconStr = KMimeType::findByUrl( url, mode )->iconName( url );
     if ( bDesktopFile && isLocal )
     {
-      KDesktopFile config( url.path(), true );
-      config.setDesktopGroup();
-      iconStr = config.readEntry( "Icon" );
+      KDesktopFile config( url.path() );
+      KConfigGroup group = config.desktopGroup();
+      iconStr = group.readEntry( "Icon" );
       if ( config.hasDeviceType() )
 	iconButton->setIconType( K3Icon::Desktop, K3Icon::Device );
       else
@@ -1363,9 +1363,10 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
       // Renamed? Update Name field
       if ( d->oldFileName != properties->kurl().fileName() || m_bFromTemplate ) {
           KDesktopFile config( properties->kurl().path() );
+          KConfigGroup cg = config.desktopGroup();
           QString nameStr = nameFromFileName(properties->kurl().fileName());
-          config.writeEntry( "Name", nameStr );
-          config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS);
+          cg.writeEntry( "Name", nameStr );
+          cg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS);
       }
   }
 }
@@ -1417,7 +1418,7 @@ void KFilePropsPlugin::applyIconChanges()
         KDesktopFile cfg(path);
         kDebug(250) << "sIcon = " << (sIcon) << endl;
         kDebug(250) << "str = " << (str) << endl;
-        cfg.writeEntry( "Icon", sIcon );
+        cfg.desktopGroup().writeEntry( "Icon", sIcon );
         cfg.sync();
     }
   }
@@ -2529,9 +2530,9 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
     return;
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
-  URLStr = config.readPathEntry( "URL" );
+  KDesktopFile config( path );
+  const KConfigGroup dg = config.desktopGroup();
+  URLStr = dg.readPathEntry( "URL" );
 
   if ( !URLStr.isEmpty() )
     URLEdit->setUrl( KUrl(URLStr) );
@@ -2562,7 +2563,7 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
     return false;
 
   // open file and check type
-  KDesktopFile config( item->url().path(), true /* readonly */ );
+  KDesktopFile config( item->url().path() );
   return config.hasLinkType();
 }
 
@@ -2578,17 +2579,17 @@ void KUrlPropsPlugin::applyChanges()
   }
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
-  config.writeEntry( "Type", QString::fromLatin1("Link"));
-  config.writePathEntry( "URL", URLEdit->url().url() );
+  KDesktopFile config( path );
+  KConfigGroup dg = config.desktopGroup();
+  dg.writeEntry( "Type", QString::fromLatin1("Link"));
+  dg.writePathEntry( "URL", URLEdit->url().url() );
   // Users can't create a Link .desktop file with a Name field,
   // but distributions can. Update the Name field in that case.
-  if ( config.hasKey("Name") )
+  if ( dg.hasKey("Name") )
   {
     QString nameStr = nameFromFileName(properties->kurl().fileName());
-    config.writeEntry( "Name", nameStr );
-    config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
+    dg.writeEntry( "Name", nameStr );
+    dg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
 
   }
 }
@@ -2675,8 +2676,8 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropert
     return;
   f.close();
 
-  KSimpleConfig config( _props->kurl().path() );
-  config.setDesktopGroup();
+  const KDesktopFile _config( _props->kurl().path() );
+  const KConfigGroup config = _config.desktopGroup();
   QString patternStr = config.readEntry( "Patterns" );
   QString iconStr = config.readEntry( "Icon" );
   QString commentStr = config.readEntry( "Comment" );
@@ -2724,7 +2725,7 @@ bool KBindingPropsPlugin::supports( const KFileItemList& _items )
     return false;
 
   // open file and check type
-  KDesktopFile config( item->url().path(), true /* readonly */ );
+  KDesktopFile config( item->url().path() );
   return config.hasMimeTypeType();
 }
 
@@ -2741,20 +2742,20 @@ void KBindingPropsPlugin::applyChanges()
   }
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
-  config.writeEntry( "Type", QString::fromLatin1("MimeType") );
+  KDesktopFile config( path );
+  KConfigGroup dg = config.desktopGroup();
+  dg.writeEntry( "Type", QString::fromLatin1("MimeType") );
 
-  config.writeEntry( "Patterns",  patternEdit->text() );
-  config.writeEntry( "Comment", commentEdit->text() );
-  config.writeEntry( "Comment",
+  dg.writeEntry( "Patterns",  patternEdit->text() );
+  dg.writeEntry( "Comment", commentEdit->text() );
+  dg.writeEntry( "Comment",
 		     commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
-  config.writeEntry( "MimeType", mimeEdit->text() );
+  dg.writeEntry( "MimeType", mimeEdit->text() );
   if ( cbAutoEmbed->checkState() == Qt::PartiallyChecked )
-      config.deleteEntry( "X-KDE-AutoEmbed" );
+      dg.deleteEntry( "X-KDE-AutoEmbed" );
   else
-      config.writeEntry( "X-KDE-AutoEmbed", cbAutoEmbed->isChecked() );
-  config.sync();
+      dg.writeEntry( "X-KDE-AutoEmbed", cbAutoEmbed->isChecked() );
+  dg.sync();
 }
 
 /* ----------------------------------------------------
@@ -2887,8 +2888,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
     return;
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
+  const KDesktopFile _config( path );
+  const KConfigGroup config = _config.desktopGroup();
   QString deviceStr = config.readEntry( "Dev" );
   QString mountPointStr = config.readEntry( "MountPoint" );
   bool ro = config.readEntry( "ReadOnly", false );
@@ -3013,7 +3014,7 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
-  KDesktopFile config( item->url().path(), true /* readonly */ );
+  KDesktopFile config( item->url().path() );
   return config.hasDeviceType();
 }
 
@@ -3029,8 +3030,8 @@ void KDevicePropsPlugin::applyChanges()
   }
   f.close();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
+  KDesktopFile _config( path );
+  KConfigGroup config = _config.desktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("FSDevice") );
 
   config.writeEntry( "Dev", device->currentText() );
@@ -3091,10 +3092,11 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     return;
   f.close();
 
-  KDesktopFile  config( path );
-  QString nameStr = config.readName();
-  QString genNameStr = config.readGenericName();
-  QString commentStr = config.readComment();
+  KDesktopFile  _config( path );
+  KConfigGroup config = _config.desktopGroup();
+  QString nameStr = _config.readName();
+  QString genNameStr = _config.readGenericName();
+  QString commentStr = _config.readComment();
   QString commandStr = config.readPathEntry( "Exec" );
   if (commandStr.startsWith(QLatin1String("ksystraycmd ")))
   {
@@ -3241,8 +3243,8 @@ void KDesktopPropsPlugin::applyChanges()
   // coupled to the command.
   checkCommandChanged();
 
-  KSimpleConfig config( path );
-  config.setDesktopGroup();
+  KDesktopFile _config( path );
+  KConfigGroup config = _config.desktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Application"));
   config.writeEntry( "Comment", w->commentEdit->text() );
   config.writeEntry( "Comment", w->commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
@@ -3440,7 +3442,7 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
-  KDesktopFile config( item->url().path(), true /* readonly */ );
+  KDesktopFile config( item->url().path() );
   return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
 

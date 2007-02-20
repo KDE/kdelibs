@@ -26,45 +26,44 @@
  *
  */
 #include <krecentdirs.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
 
 #define MAX_DIR_HISTORY 3
 
-static KSharedConfig::Ptr recentdirs_readList(QString &key, QStringList &result, bool readOnly)
+static KConfigGroup recentdirs_readList(QString &key, QStringList &result)
 {
-    KSharedConfig::Ptr config;
+   KConfigGroup cg(KGlobal::config(), QLatin1String("Recent Dirs"));
    if ((key.length() < 2) || (key[0] != ':'))
      key = ":default";
-   if (key[1] == ':') 
+   if (key[1] == ':')
    {
       key = key.mid(2);
-      config = KSharedConfig::openConfig(QLatin1String("krecentdirsrc"), readOnly);
+      cg = KConfigGroup(KSharedConfig::openConfig(QLatin1String("krecentdirsrc")), QString());
    }
    else
    {
       key = key.mid(1);
-      config = KGlobal::config();
-      config->setGroup(QLatin1String("Recent Dirs"));
    }
 
-   result=config->readPathListEntry(key);
+   result=cg.readPathListEntry(key);
    if (result.isEmpty())
    {
       result.append(KGlobalSettings::documentPath());
    }
-   return config;
+   return cg;
 }
 
 QStringList KRecentDirs::list(const QString &fileClass)
 {
    QString key = fileClass;
    QStringList result;
-   recentdirs_readList(key, result, true)->sync();
+   recentdirs_readList(key, result).sync();
    return result;
 }
-    
+
 QString KRecentDirs::dir(const QString &fileClass)
 {
    QStringList result = list(fileClass);
@@ -75,13 +74,13 @@ void KRecentDirs::add(const QString &fileClass, const QString &directory)
 {
    QString key = fileClass;
    QStringList result;
-   KSharedConfig::Ptr config = recentdirs_readList(key, result, false);
+   KConfigGroup config = recentdirs_readList(key, result);
    // make sure the dir is first in history
    result.removeAll(directory);
    result.prepend(directory);
    while(result.count() > MAX_DIR_HISTORY)
       result.removeLast();
-   config->writePathEntry(key, result);
-   config->sync();
+   config.writePathEntry(key, result);
+   config.sync();
 }
 

@@ -29,7 +29,7 @@
 
 #include <kselectaction.h>
 
-class KConfig;
+class KConfigGroup;
 class KUrl;
 
 /**
@@ -121,22 +121,20 @@ public:
   void setMaxItems( int maxItems );
 
   /**
-   *  Loads the recent files entries from a given KConfig object.
+   *  Loads the recent files entries from a given KConfigGroup object.
    *  You can provide the name of the group used to load the entries.
    *  If the groupname is empty, entries are load from a group called 'RecentFiles'
    *
-   *  This method does not effect the active group of KConfig.
    */
-  void loadEntries( KConfig* config, const QString &groupname=QString() );
+  void loadEntries( const KConfigGroup &config );
 
   /**
-   *  Saves the current recent files entries to a given KConfig object.
+   *  Saves the current recent files entries to a given KConfigGroup object.
    *  You can provide the name of the group used to load the entries.
    *  If the groupname is empty, entries are saved to a group called 'RecentFiles'
    *
-   *  This method does not effect the active group of KConfig.
    */
-  void saveEntries( KConfig* config, const QString &groupname=QString() );
+  void saveEntries( const KConfigGroup &config );
 
   /**
    *  Add URL to recent files list.

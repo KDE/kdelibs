@@ -28,7 +28,7 @@
 #include <QString>
 #include <QCoreApplication>
 #include <kglobal.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kprotocolinfo.h>
 #include <kstandarddirs.h>
 #include <stdlib.h> // getenv(), srand(), rand()

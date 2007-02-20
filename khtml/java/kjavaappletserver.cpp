@@ -27,6 +27,7 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 #include <kparts/browserextension.h>
 #include <kapplication.h>
@@ -194,11 +195,11 @@ void KJavaAppletServer::freeJavaServer()
         //instead of immediately quitting here, set a timer to kill us
         //if there are still no servers- give us one minute
         //this is to prevent repeated loading and unloading of the jvm
-        KConfig config( "konquerorrc", true );
-        config.setGroup( "Java/JavaScript Settings" );
-        if( config.readEntry( "ShutdownAppletServer", true )  )
+        KConfig config( "konquerorrc" );
+        KConfigGroup group = config.group( "Java/JavaScript Settings" );
+        if( group.readEntry( "ShutdownAppletServer", true )  )
         {
-            const int value = config.readEntry( "AppletServerTimeout", 60 );
+            const int value = group.readEntry( "AppletServerTimeout", 60 );
             QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
         }
     }
@@ -215,8 +216,8 @@ void KJavaAppletServer::checkShutdown()
 
 void KJavaAppletServer::setupJava( KJavaProcess *p )
 {
-    KConfig config ( "konquerorrc", true );
-    config.setGroup( "Java/JavaScript Settings" );
+    KConfig configFile ( "konquerorrc" );
+    KConfigGroup config(&configFile, "Java/JavaScript Settings" );
 
     QString jvm_path = "java";
 

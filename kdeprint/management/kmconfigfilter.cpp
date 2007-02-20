@@ -30,6 +30,7 @@
 #include <qapplication.h>
 
 #include <klocale.h>
+#include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <klistwidget.h>
@@ -100,8 +101,8 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 
 void KMConfigFilter::loadConfig(KConfig *conf)
 {
-	conf->setGroup("Filter");
-	QStringList	m_plist = conf->readEntry("Printers", QStringList());
+	KConfigGroup cg( conf, "Filter");
+	QStringList	m_plist = cg.readEntry("Printers", QStringList());
 	QListIterator<KMPrinter*>	it(KMManager::self()->printerListComplete(false));
 	while (it.hasNext())
 	{
@@ -118,17 +119,17 @@ void KMConfigFilter::loadConfig(KConfig *conf)
 	}
 	m_list1->model()->sort(0);
 	m_list2->model()->sort(0);
-	m_locationre->setText(conf->readEntry("LocationRe"));
+	m_locationre->setText(cg.readEntry("LocationRe"));
 }
 
 void KMConfigFilter::saveConfig(KConfig *conf)
 {
-	conf->setGroup("Filter");
+	KConfigGroup cg( conf, "Filter");
 	QStringList	plist;
 	for (int i=0; i<m_list2->count(); i++)
 		plist << m_list2->item(i)->text();
-	conf->writeEntry("Printers", plist);
-	conf->writeEntry("LocationRe", m_locationre->text());
+	cg.writeEntry("Printers", plist);
+	cg.writeEntry("LocationRe", m_locationre->text());
 }
 
 void KMConfigFilter::transfer(KListWidget *from, KListWidget *to)

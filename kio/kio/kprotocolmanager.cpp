@@ -26,6 +26,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kstringhandler.h>
@@ -92,54 +93,50 @@ KConfig *KProtocolManager::config()
 
   if (!d->config)
   {
-     d->config = new KConfig("kioslaverc", true, false);
+     d->config = new KConfig("kioslaverc", KConfig::NoGlobals);
   }
   return d->config;
 }
 
-KConfig *KProtocolManager::http_config()
+KConfigGroup KProtocolManager::http_config()
 {
   if (!d)
      d = new KProtocolManagerPrivate;
 
   if (!d->http_config)
   {
-     d->http_config = new KConfig("kio_httprc", false, false);
+     d->http_config = new KConfig("kio_httprc", KConfig::NoGlobals);
   }
-  return d->http_config;
+  return KConfigGroup(d->http_config, QString());
 }
 
 /*=============================== TIMEOUT SETTINGS ==========================*/
 
 int KProtocolManager::readTimeout()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
+  KConfigGroup cg( config(), QString() );
+  int val = cg.readEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT );
   return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::connectTimeout()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
+  KConfigGroup cg( config(), QString() );
+  int val = cg.readEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
   return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::proxyConnectTimeout()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
+  KConfigGroup cg( config(), QString() );
+  int val = cg.readEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
   return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
 int KProtocolManager::responseTimeout()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  int val = cfg->readEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
+  KConfigGroup cg( config(), QString() );
+  int val = cg.readEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
   return qMax(MIN_TIMEOUT_VALUE, val);
 }
 
@@ -152,37 +149,32 @@ bool KProtocolManager::useProxy()
 
 bool KProtocolManager::useReverseProxy()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry("ReversedException", false);
+  KConfigGroup cg(config(), "Proxy Settings" );
+  return cg.readEntry("ReversedException", false);
 }
 
 KProtocolManager::ProxyType KProtocolManager::proxyType()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyType>(cfg->readEntry( "ProxyType" , 0));
+  KConfigGroup cg(config(), "Proxy Settings" );
+  return static_cast<ProxyType>(cg.readEntry( "ProxyType" , 0));
 }
 
 KProtocolManager::ProxyAuthMode KProtocolManager::proxyAuthMode()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return static_cast<ProxyAuthMode>(cfg->readEntry( "AuthMode" , 0));
+  KConfigGroup cg(config(), "Proxy Settings" );
+  return static_cast<ProxyAuthMode>(cg.readEntry( "AuthMode" , 0));
 }
 
 /*========================== CACHING =====================================*/
 
 bool KProtocolManager::useCache()
 {
-  KConfig *cfg = http_config();
-  return cfg->readEntry( "UseCache", true );
+  return http_config().readEntry( "UseCache", true );
 }
 
 KIO::CacheControl KProtocolManager::cacheControl()
 {
-  KConfig *cfg = http_config();
-  QString tmp = cfg->readEntry("cache");
+  QString tmp = http_config().readEntry("cache");
   if (tmp.isEmpty())
     return DEFAULT_CACHE_CONTROL;
   return KIO::parseCacheControl(tmp);
@@ -190,30 +182,24 @@ KIO::CacheControl KProtocolManager::cacheControl()
 
 QString KProtocolManager::cacheDir()
 {
-  KConfig *cfg = http_config();
-  return cfg->readPathEntry("CacheDir", KGlobal::dirs()->saveLocation("cache","http"));
+  return http_config().readPathEntry("CacheDir", KGlobal::dirs()->saveLocation("cache","http"));
 }
 
 int KProtocolManager::maxCacheAge()
 {
-  KConfig *cfg = http_config();
-  return cfg->readEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
+  return http_config().readEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
 }
 
 int KProtocolManager::maxCacheSize()
 {
-  KConfig *cfg = http_config();
-  return cfg->readEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
+  return http_config().readEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
 }
 
 QString KProtocolManager::noProxyFor()
 {
   KProtocolManager::ProxyType type = proxyType();
 
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-
-  QString noProxy = cfg->readEntry( "NoProxyFor" );
+  QString noProxy = config()->group("Proxy Settings").readEntry( "NoProxyFor" );
   if (type == EnvVarProxy)
     noProxy = QString::fromLocal8Bit(getenv(noProxy.toLocal8Bit()));
 
@@ -229,9 +215,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   else if (scheme == "webdavs")
     scheme = "https";
 
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( scheme + "Proxy", QString() );
+  return config()->group("Proxy Settings" ).readEntry( scheme + "Proxy", QString() );
 }
 
 QString KProtocolManager::proxyForUrl( const KUrl &url )
@@ -498,45 +482,33 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
 bool KProtocolManager::markPartial()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  return cfg->readEntry( "MarkPartial", true );
+  return config()->group(QByteArray()).readEntry( "MarkPartial", true );
 }
 
 int KProtocolManager::minimumKeepSize()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  return cfg->readEntry( "MinimumKeepSize",
-                            DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
+    return config()->group(QByteArray()).readEntry( "MinimumKeepSize",
+                                                DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
 }
 
 bool KProtocolManager::autoResume()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  return cfg->readEntry( "AutoResume", false );
+  return config()->group(QByteArray()).readEntry( "AutoResume", false );
 }
 
 bool KProtocolManager::persistentConnections()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  return cfg->readEntry( "PersistentConnections", true );
+  return config()->group(QByteArray()).readEntry( "PersistentConnections", true );
 }
 
 bool KProtocolManager::persistentProxyConnection()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( QString() );
-  return cfg->readEntry( "PersistentProxyConnection", false );
+  return config()->group(QByteArray()).readEntry( "PersistentProxyConnection", false );
 }
 
 QString KProtocolManager::proxyConfigScript()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( "Proxy Config Script" );
+  return config()->group("Proxy Settings").readEntry( "Proxy Config Script" );
 }
 
 /* =========================== PROTOCOL CAPABILITIES ============== */

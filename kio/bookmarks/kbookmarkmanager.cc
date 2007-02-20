@@ -31,8 +31,10 @@
 #include <qprocess.h>
 #include <klocale.h>
 #include <kapplication.h>
+#include <kconfiggroup.h>
 #include <qdatetime.h>
 #include <qfile.h>
+#include <kconfiggroup.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <QtDBus/QtDBus>
@@ -663,15 +665,15 @@ KBookmarkSettings* KBookmarkSettings::s_self = 0;
 
 void KBookmarkSettings::readSettings()
 {
-   KConfig config("kbookmarkrc", false, false);
-   config.setGroup("Bookmarks");
+   KConfig config("kbookmarkrc", KConfig::NoGlobals);
+   KConfigGroup cg(&config, "Bookmarks");
 
    // add bookmark dialog usage - no reparse
-   s_self->m_advancedaddbookmark = config.readEntry("AdvancedAddBookmarkDialog", false);
+   s_self->m_advancedaddbookmark = cg.readEntry("AdvancedAddBookmarkDialog", false);
 
    // these three alter the menu, therefore all need a reparse
-   s_self->m_contextmenu = config.readEntry("ContextMenuActions", true);
-   s_self->m_filteredtoolbar = config.readEntry("FilteredToolbar", false);
+   s_self->m_contextmenu = cg.readEntry("ContextMenuActions", true);
+   s_self->m_filteredtoolbar = cg.readEntry("FilteredToolbar", false);
 }
 
 KBookmarkSettings *KBookmarkSettings::self()

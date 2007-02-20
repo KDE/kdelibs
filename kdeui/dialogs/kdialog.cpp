@@ -37,7 +37,7 @@
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kcomponentdata.h>
@@ -544,11 +544,11 @@ void KDialog::resizeLayout( QLayout *layout, int margin, int spacing ) //static
 static QRect screenRect( QWidget *widget, int screen )
 {
   QDesktopWidget *desktop = QApplication::desktop();
-  KConfig gc( "kdeglobals", false, false );
-  gc.setGroup( "Windows" );
+  KConfig gc( "kdeglobals", KConfig::NoGlobals );
+  KConfigGroup cg(&gc, "Windows" );
   if ( desktop->isVirtualDesktop() &&
-       gc.readEntry( "XineramaEnabled", true ) &&
-       gc.readEntry( "XineramaPlacementEnabled", true ) ) {
+       cg.readEntry( "XineramaEnabled", true ) &&
+       cg.readEntry( "XineramaPlacementEnabled", true ) ) {
 
     if ( screen < 0 || screen >= desktop->numScreens() ) {
       if ( screen == -1 )
@@ -998,7 +998,7 @@ void KDialog::closeEvent( QCloseEvent *event )
     QDialog::closeEvent( event );
 }
 
-void KDialog::restoreDialogSize( KConfigBase *cfg )
+void KDialog::restoreDialogSize( const KConfigGroup& cfg )
 {
   int width, height;
   int scnum = QApplication::desktop()->screenNumber( parentWidget() );
@@ -1007,21 +1007,21 @@ void KDialog::restoreDialogSize( KConfigBase *cfg )
   width = sizeHint().width();
   height = sizeHint().height();
 
-  width = cfg->readEntry( QString::fromLatin1( "Width %1" ).arg( desk.width() ), width );
-  height = cfg->readEntry( QString::fromLatin1( "Height %1" ).arg( desk.height() ), height );
+  width = cfg.readEntry( QString::fromLatin1( "Width %1" ).arg( desk.width() ), width );
+  height = cfg.readEntry( QString::fromLatin1( "Height %1" ).arg( desk.height() ), height );
 
   resize( width, height );
 }
 
-void KDialog::saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options ) const
+void KDialog::saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlags options ) const
 {
    int scnum = QApplication::desktop()->screenNumber( parentWidget() );
    QRect desk = QApplication::desktop()->screenGeometry( scnum );
 
    QSize sizeToSave = size();
 
-   config->writeEntry( QString::fromLatin1("Width %1").arg( desk.width() ), sizeToSave.width(), options );
-   config->writeEntry( QString::fromLatin1("Height %1").arg( desk.height() ), sizeToSave.height(), options );
+   config.writeEntry( QString::fromLatin1("Width %1").arg( desk.width() ), sizeToSave.width(), options );
+   config.writeEntry( QString::fromLatin1("Height %1").arg( desk.height() ), sizeToSave.height(), options );
 }
 
 

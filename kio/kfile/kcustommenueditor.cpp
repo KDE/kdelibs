@@ -29,6 +29,7 @@
 #include <kiconloader.h>
 #include <k3listview.h>
 #include <kservice.h>
+#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 #include <kconfigbase.h>
 #include <kopenwithdialog.h>
@@ -124,12 +125,12 @@ void KCustomMenuEditor::refreshButton()
 void
 KCustomMenuEditor::load(KConfigBase *cfg)
 {
-   cfg->setGroup(QString());
-   int count = cfg->readEntry("NrOfItems", 0);
+   KConfigGroup cg(cfg, QString());
+   int count = cg.readEntry("NrOfItems", 0);
    Q3ListViewItem *last = 0;
    for(int i = 0; i < count; i++)
    {
-      QString entry = cfg->readPathEntry(QString("Item%1").arg(i+1));
+      QString entry = cg.readPathEntry(QString("Item%1").arg(i+1));
       if (entry.isEmpty())
          continue;
 
@@ -160,7 +161,7 @@ KCustomMenuEditor::save(KConfigBase *cfg)
       cfg->deleteGroup(*it);
    }
 
-   cfg->setGroup(QString());
+   KConfigGroup cg(cfg, QString());
    Item * item = (Item *) m_listView->firstChild();
    int i = 0;
    while(item)
@@ -169,10 +170,10 @@ KCustomMenuEditor::save(KConfigBase *cfg)
       QString path = item->s->desktopEntryPath();
       if (QDir::isRelativePath(path) || QDir::isRelativePath(KGlobal::dirs()->relativeLocation("xdgdata-apps", path)))
          path = item->s->desktopEntryName();
-      cfg->writePathEntry(QString("Item%1").arg(i), path);
+      cg.writePathEntry(QString("Item%1").arg(i), path);
       item = (Item *) item->nextSibling();
    }
-   cfg->writeEntry("NrOfItems", i);
+   cg.writeEntry("NrOfItems", i);
 }
 
 void

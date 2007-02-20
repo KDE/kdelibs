@@ -9,20 +9,6 @@ add_definitions( -DKDESRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\" )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
-
-
-########### next target ###############
-
-set(kconfigtestgui_SRCS kconfigtestgui.cpp )
-
-kde4_automoc(${kconfigtestgui_SRCS})
-
-kde4_add_executable(kconfigtestgui NOGUI RUN_UNINSTALLED ${kconfigtestgui_SRCS})
-
-target_link_libraries(kconfigtestgui  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-# add_test(kdecore-kconfigtestgui ${EXECUTABLE_OUTPUT_PATH}/kconfigtestgui)
-
 ########### next target ###############
 
 set(klocaletest_SRCS klocaletest.cpp )
@@ -58,18 +44,6 @@ kde4_add_executable(kprocesstest NOGUI RUN_UNINSTALLED ${kprocesstest_SRCS})
 target_link_libraries(kprocesstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kprocesstest ${EXECUTABLE_OUTPUT_PATH}/kprocesstest)
-
-########### next target ###############
-
-set(ksimpleconfigtest_SRCS ksimpleconfigtest.cpp )
-
-kde4_automoc(${ksimpleconfigtest_SRCS})
-
-kde4_add_executable(ksimpleconfigtest NOGUI RUN_UNINSTALLED ${ksimpleconfigtest_SRCS})
-
-target_link_libraries(ksimpleconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-# add_test(kdecore-ksimpleconfigtest ${EXECUTABLE_OUTPUT_PATH}/ksimpleconfigtest)
 
 ########### next target ###############
 

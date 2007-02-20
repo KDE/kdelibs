@@ -32,6 +32,7 @@
 #include "kconfig.h"
 #include "kglobal.h"
 #include "klocale.h"
+#include "kconfiggroup.h"
 #include "kstandarddirs.h"
 #include <QtDebug>
 
@@ -175,11 +176,9 @@ const KSharedConfig::Ptr &KComponentData::config() const
             d->sharedConfig = KSharedConfig::openConfig(*this, d->configName);
 
             // Check whether custom config files are allowed.
-            d->sharedConfig->setGroup("KDE Action Restrictions");
-            QString kioskException = d->sharedConfig->readEntry("kiosk_exception");
-            if (d->sharedConfig->readEntry("custom_config", true)) {
-               d->sharedConfig->setGroup(QString());
-            } else {
+            KConfigGroup cg(d->sharedConfig, "KDE Action Restrictions");
+            QString kioskException = cg.readEntry("kiosk_exception");
+            if (!cg.readEntry("custom_config", true)) {
                d->sharedConfig = 0;
             }
         }

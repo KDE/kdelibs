@@ -79,7 +79,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   if (!name.endsWith(".desktop"))
       return 0;
 
-  KDesktopFile desktopFile(file, true, resource);
+  KDesktopFile desktopFile(resource, file);
 
   KService * serv = new KService( &desktopFile );
 

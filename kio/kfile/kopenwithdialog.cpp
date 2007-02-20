@@ -48,7 +48,7 @@
 #include <kconfiggroup.h>
 
 template <> inline
-void KConfigBase::writeEntry( const char *pKey,
+void KConfigGroup::writeEntry( const char *pKey,
                               const KGlobalSettings::Completion& aValue,
                               KConfigBase::WriteConfigFlags flags)
 {
@@ -707,48 +707,49 @@ void KOpenWithDialog::slotOK()
   KDesktopFile *desktop = 0;
   if (!oldPath.isEmpty() && (oldPath != newPath))
   {
-     KDesktopFile orig(oldPath, true);
-     desktop = orig.copyTo(newPath);
+     KDesktopFile orig( oldPath );
+     desktop = orig.copyTo( newPath );
   }
   else
   {
      desktop = new KDesktopFile(newPath);
   }
-  desktop->writeEntry("Type", QString::fromLatin1("Application"));
-  desktop->writeEntry("Name", initialServiceName);
-  desktop->writePathEntry("Exec", fullExec);
+  KConfigGroup cg = desktop->desktopGroup();
+  cg.writeEntry("Type", QString::fromLatin1("Application"));
+  cg.writeEntry("Name", initialServiceName);
+  cg.writePathEntry("Exec", fullExec);
   if (terminal->isChecked())
   {
-    desktop->writeEntry("Terminal", true);
+    cg.writeEntry("Terminal", true);
     // only add --noclose when we are sure it is konsole we're using
     if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
-      desktop->writeEntry("TerminalOptions", "--noclose");
+      cg.writeEntry("TerminalOptions", "--noclose");
   }
   else
   {
-    desktop->writeEntry("Terminal", false);
+    cg.writeEntry("Terminal", false);
   }
-  desktop->writeEntry("InitialPreference", maxPreference + 1);
+  cg.writeEntry("InitialPreference", maxPreference + 1);
 
 
   if (bRemember || d->saveNewApps)
   {
-    QStringList mimeList = desktop->readEntry("MimeType", QStringList(), ';');
+    QStringList mimeList = cg.readEntry("MimeType", QStringList(), ';');
     if (!qMimeType.isEmpty() && !mimeList.contains(qMimeType))
       mimeList.append(qMimeType);
-    desktop->writeEntry("MimeType", mimeList, ';');
+    cg.writeEntry("MimeType", mimeList, ';');
 
     if ( !qMimeType.isEmpty() )
     {
       // Also make sure the "auto embed" setting for this mimetype is off
       KDesktopFile mimeDesktop( KStandardDirs::locateLocal( "mime", qMimeType + ".desktop" ) );
-      mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
+      mimeDesktop.desktopGroup().writeEntry( "X-KDE-AutoEmbed", false );
       mimeDesktop.sync();
     }
   }
 
   // write it all out to the file
-  desktop->sync();
+  cg.sync();
   delete desktop;
 
   KBuildSycocaProgressDialog::rebuildKSycoca(this);

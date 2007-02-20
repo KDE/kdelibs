@@ -67,7 +67,7 @@ KAutostart::KAutostart(const QString& entryName,
         d->name.append(".desktop");
     }
 
-    d->df = new KDesktopFile(d->name, false, "autostart");
+    d->df = new KDesktopFile( "autostart", d->name);
 }
 
 KAutostart::~KAutostart()

@@ -44,7 +44,8 @@
 #include <qglobal.h>
 #include <qfile.h>
 
-#include <kconfig.h>
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 
@@ -53,10 +54,10 @@
 #include "kcookie.h"
 
 /*
-** Wait for @p ms miliseconds 
+** Wait for @p ms miliseconds
 ** @param fd file descriptor
 ** @param ms time to wait in miliseconds
-** @return 
+** @return
 */
 int PtyProcess::waitMS(int fd,int ms)
 {
@@ -77,14 +78,14 @@ int PtyProcess::waitMS(int fd,int ms)
 bool PtyProcess::checkPid(pid_t pid)
 {
     KSharedConfig::Ptr config = KGlobal::config();
-	config->setGroup("super-user-command");
-	QString superUserCommand = config->readEntry("super-user-command", "sudo");
-	//sudo does not accept signals from user so we except it
-	if (superUserCommand == "sudo") {
-		return true;
-	} else {
+    KConfigGroup cg(config, "super-user-command");
+    QString superUserCommand = cg.readEntry("super-user-command", "sudo");
+    //sudo does not accept signals from user so we except it
+    if (superUserCommand == "sudo") {
+        return true;
+    } else {
 	return kill(pid,0) == 0;
-	}
+    }
 }
 
 /*
@@ -209,7 +210,7 @@ QByteArray PtyProcess::readLine(bool block)
 
     if ((flags != oflags) && (fcntl(m_Fd, F_SETFL, flags) < 0))
     {
-       // We get an error here when the child process has closed 
+       // We get an error here when the child process has closed
        // the file descriptor already.
        return ret;
     }

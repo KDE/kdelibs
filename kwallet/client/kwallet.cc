@@ -31,6 +31,7 @@
 #include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
+#include <kconfiggroup.h>
 
 using namespace KWallet;
 
@@ -66,8 +67,8 @@ static void registerTypes()
 }
 
 const QString Wallet::LocalWallet() {
-    KConfig cfg("kwalletrc", true);
-    cfg.setGroup("Wallet");
+    KConfig kwalletrc("kwalletrc");
+    KConfigGroup cfg(&kwalletrc, "Wallet");
     if (!cfg.readEntry("Use One Wallet", true)) {
         QString tmp = cfg.readEntry("Local Wallet", "localwallet");
         if (tmp.isEmpty()) {
@@ -84,8 +85,8 @@ const QString Wallet::LocalWallet() {
 }
 
 const QString Wallet::NetworkWallet() {
-    KConfig cfg("kwalletrc", true);
-    cfg.setGroup("Wallet");
+    KConfig kwalletrc("kwalletrc");
+    KConfigGroup cfg(&kwalletrc, "Wallet");
 
     QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
     if (tmp.isEmpty()) {

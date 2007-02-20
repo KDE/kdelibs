@@ -32,7 +32,7 @@
 #include <kdesktopfile.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <ksycoca.h>
@@ -430,9 +430,9 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d(new Pri
 
 void KMimeType::init( KDesktopFile * config )
 {
-  config->setDesktopGroup();
+  const KConfigGroup group = config->desktopGroup();
   d->m_strIcon = config->readIcon();
-  d->m_lstPatterns = config->readEntry( "Patterns", QStringList(), ';' );
+  d->m_lstPatterns = group.readEntry( "Patterns", QStringList(), ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
@@ -445,7 +445,7 @@ void KMimeType::init( KDesktopFile * config )
 
   QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) ) {
-    QString inherits = config->readEntry( XKDEIsAlso, QString() );
+    QString inherits = group.readEntry( XKDEIsAlso, QString() );
     if ( inherits != name() )
         m_mapProps.insert( XKDEIsAlso, inherits );
     else
@@ -453,8 +453,8 @@ void KMimeType::init( KDesktopFile * config )
   }
 
   QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
-  if ( config->hasKey( XKDEPatternsAccuracy ) )
-    m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy, QString() ) );
+  if ( group.hasKey( XKDEPatternsAccuracy ) )
+    m_mapProps.insert( XKDEPatternsAccuracy, group.readEntry( XKDEPatternsAccuracy, QString() ) );
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset ), d(new Private)
@@ -606,8 +606,7 @@ QString KFolderType::icon( const KUrl& _url ) const
   // a file instead of a directory
   if ( KStandardDirs::exists( u.path() ) )
   {
-    KSimpleConfig cfg( u.path(), true );
-    cfg.setDesktopGroup();
+    KDesktopFile cfg( u.path() );
     icon = cfg.readEntry( "Icon" );
     QString empty_icon = cfg.readEntry( "EmptyIcon" );
 
@@ -676,7 +675,7 @@ QString KFolderType::comment( const KUrl& _url ) const
   KUrl u( _url );
   u.addPath( ".directory" );
 
-  KDesktopFile cfg( u.path(), true );
+  KDesktopFile cfg( u.path() );
   QString comment = cfg.readComment();
   if ( comment.isEmpty() )
     return KMimeType::comment( _url );

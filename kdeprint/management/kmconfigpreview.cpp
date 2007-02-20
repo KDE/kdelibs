@@ -67,14 +67,14 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 
 void KMConfigPreview::loadConfig(KConfig *conf)
 {
-	conf->setGroup("General");
-	m_useext->setChecked(conf->readEntry("ExternalPreview", false));
-	m_program->setUrl(KUrl(conf->readPathEntry("PreviewCommand", "gv")));
+	KConfigGroup cg( conf, "General");
+	m_useext->setChecked(cg.readEntry("ExternalPreview", false));
+	m_program->setUrl(KUrl(cg.readPathEntry("PreviewCommand", "gv")));
 }
 
 void KMConfigPreview::saveConfig(KConfig *conf)
 {
-	conf->setGroup("General");
-	conf->writeEntry("ExternalPreview", m_useext->isChecked());
-	conf->writePathEntry("PreviewCommand", m_program->url().url());
+	KConfigGroup cg( conf, "General");
+	cg.writeEntry("ExternalPreview", m_useext->isChecked());
+	cg.writePathEntry("PreviewCommand", m_program->url().url());
 }

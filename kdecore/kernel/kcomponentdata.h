@@ -20,7 +20,7 @@
 #define KCOMPONENTDATA_H
 
 #include "kdelibs_export.h"
-#include <kconfig.h>
+#include "ksharedconfig.h"
 
 class QByteArray;
 class QString;

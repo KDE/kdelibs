@@ -23,7 +23,7 @@
 
 #include <qdom.h>
 #include <qstringlist.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 /**
  * A class for importing the previous bookmarks (desktop files)
@@ -40,7 +40,7 @@ public:
 private:
     void scanIntern( QDomElement & parentElem, const QString & _path );
     void parseBookmark( QDomElement & parentElem, const QByteArray& _text,
-                        KSimpleConfig& _cfg, const QString &_group );
+                        const KConfigGroup &cfg );
     QDomDocument * m_pDoc;
     QStringList m_lstParsedDirs;
 };

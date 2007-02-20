@@ -424,7 +424,6 @@ install( FILES
   KShellProcess
   KShortcut
   KShortcutDialog
-  KSimpleConfig
   KSimpleFileFilter
   KSocks
   KSortableItem

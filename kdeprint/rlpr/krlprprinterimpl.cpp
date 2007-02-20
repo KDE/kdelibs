@@ -57,9 +57,8 @@ bool KRlprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 		cmd = QString::fromLatin1("%1 -H %2 -P %3 -\\#%4").arg(exestr).arg(quote(host)).arg(quote(queue)).arg(printer->numCopies());
 
 		// proxy settings
-		KConfig	*conf = KMFactory::self()->printConfig();
-		conf->setGroup("RLPR");
-		QString	host = conf->readEntry("ProxyHost",QString()), port = conf->readEntry("ProxyPort",QString());
+		KConfigGroup conf = KMFactory::self()->printConfig("RLPR");
+		QString	host = conf.readEntry("ProxyHost",QString()), port = conf.readEntry("ProxyPort",QString());
 		if (!host.isEmpty())
 		{
 			cmd.append(" -X ").append(quote(host));

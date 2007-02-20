@@ -23,6 +23,7 @@
 #include <kmenu.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kactioncollection.h>
@@ -175,8 +176,8 @@ QAction* KonqBookmarkMenu::actionForBookmark(KBookmark bm)
 
 KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
-  KConfig config("kbookmarkrc", false, false);
-  config.setGroup("Bookmarks");
+  KConfig bookmarkrc("kbookmarkrc", KConfig::NoGlobals);
+  KConfigGroup config(&bookmarkrc, "Bookmarks");
 
   DynMenuInfo info;
   info.show = false;
@@ -193,8 +194,8 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
 
   } else {
     // have new version config
-    if (config.hasGroup("DynamicMenu-" + id)) {
-      config.setGroup("DynamicMenu-" + id);
+    if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
+      config.changeGroup("DynamicMenu-" + id);
       info.show = config.readEntry("Show", false);
       info.location = config.readPathEntry("Location");
       info.type = config.readEntry("Type");
@@ -207,8 +208,7 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
 
 QStringList KonqBookmarkMenu::dynamicBookmarksList()
 {
-  KConfig config("kbookmarkrc", false, false);
-  config.setGroup("Bookmarks");
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group("Bookmarks");
 
   QStringList mlist;
   if (config.hasKey("DynamicMenus"))
@@ -221,10 +221,9 @@ QStringList KonqBookmarkMenu::dynamicBookmarksList()
 
 void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu)
 {
-  KConfig config("kbookmarkrc", false, false);
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group(QString("DynamicMenu-" + id));
 
   // add group unconditionally
-  config.setGroup("DynamicMenu-" + id);
   config.writeEntry("Show", newMenu.show);
   config.writePathEntry("Location", newMenu.location);
   config.writeEntry("Type", newMenu.type);
@@ -232,12 +231,12 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
 
   QStringList elist;
 
-  config.setGroup("Bookmarks");
+  config.changeGroup("Bookmarks");
   if (!config.hasKey("DynamicMenus")) {
     if (newMenu.type != "netscape") {
       // update from old xbel method to new rc method
       // though only if not writing the netscape setting
-      config.setGroup("DynamicMenu-" "netscape");
+      config.changeGroup("DynamicMenu-" "netscape");
       DynMenuInfo xbelSetting;
       xbelSetting = showDynamicBookmarks("netscape");
       config.writeEntry("Show", xbelSetting.show);
@@ -250,7 +249,7 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
   }
 
   // make sure list includes type
-  config.setGroup("Bookmarks");
+  config.changeGroup("Bookmarks");
   if (!elist.contains(id)) {
     elist << id;
     config.writeEntry("DynamicMenus", elist);

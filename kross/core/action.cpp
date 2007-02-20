@@ -30,6 +30,7 @@
 #include <kmimetype.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <kconfiggroup.h>
 
 using namespace Kross;
 
@@ -346,12 +347,8 @@ QString Action::property(const QString& name, const QString& defaultvalue)
 
     KConfig* config = KApplication::kApplication()->sessionConfig();
     const QString groupname = QString("Script %1").arg(objectName());
-    if( config->hasGroup(groupname) ) {
-        config->setGroup(groupname);
-        return config->readEntry(name, defaultvalue);
-    }
-
-    return defaultvalue;
+    KConfigGroup cg(config, groupname);
+    return cg.readEntry(name, defaultvalue);
 }
 
 void Action::setProperty(const QString& name, const QString& value, bool persistent)
@@ -362,8 +359,8 @@ void Action::setProperty(const QString& name, const QString& value, bool persist
 
     if( persistent ) {
         KConfig* config = KApplication::kApplication()->sessionConfig();
-        config->setGroup( QString("Script %1").arg(objectName()) );
-        config->writeEntry(name, value);
+        KConfigGroup cg(config, QString("Script %1").arg(objectName()) );
+        cg.writeEntry(name, value);
     }
 
     emit updated();

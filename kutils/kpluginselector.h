@@ -26,7 +26,7 @@
 #include <QList>
 
 #include <kdelibs_export.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 class KComponentData;
 class KPluginInfo;
@@ -94,7 +94,7 @@ public:
       *                     always pass a KConfig object if you use
       *                     KSettings::PluginPage since you never know from where the
       *                     page will be called (think global config app).
-      *                     For example KViewCanvas passes KSimpleConfig(
+      *                     For example KViewCanvas passes KConfig(
       *                     "kviewcanvas" )
       */
     void addPlugins(const QString &componentName,
@@ -132,7 +132,7 @@ public:
       *                       always pass a KConfig object if you use
       *                       KSettings::PluginPage since you never know from where the
       *                       page will be called (think global config app).
-      *                       For example KViewCanvas passes KSimpleConfig(
+      *                       For example KViewCanvas passes KConfig(
       *                       "kviewcanvas" )
       */
     void addPlugins(const QList<KPluginInfo*> &pluginInfoList,

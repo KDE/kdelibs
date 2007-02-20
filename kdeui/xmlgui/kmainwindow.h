@@ -37,6 +37,7 @@
 class KMenu;
 class KXMLGUIFactory;
 class KConfig;
+class KConfigGroup;
 class KConfigBase;
 class KHelpMenu;
 class KStatusBar;
@@ -376,7 +377,7 @@ public:
      * Call this to enable "auto-save" of toolbar/menubar/statusbar settings
      * (and optionally window size).
      * If the *bars were moved around/shown/hidden when the window is closed,
-     * saveMainWindowSettings( KGlobal::config(), groupName ) will be called.
+     * saveMainWindowSettings( KConfigGroup(KGlobal::config(), groupName) ) will be called.
      *
      * @param groupName a name that identifies this "type of window".
      * You can have several types of window in the same application.
@@ -430,22 +431,18 @@ public:
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
-     * @param config Config file to read the settings from.
-     * @param groupName Group name to use. If not specified, the last used
-     * group name is used.
+     * @param config Config group to read the settings from.
      * @param force if set, even default settings are re-applied
      */
-    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString(), bool force = false);
+    void applyMainWindowSettings( const KConfigGroup &config, bool force = false);
 
     /**
      * Save settings for statusbar, menubar and toolbar to their respective
-     * groups in the config file @p config.
+     * groups in the config group @p config.
      *
-     * @param config Config file to save the settings to.
-     * @param groupName Group name to use. If not specified, the last used
-     * group name is used
+     * @param config Config group to save the settings to.
      */
-    void saveMainWindowSettings(KConfig *config, const QString &groupName = QString());
+    void saveMainWindowSettings(const KConfigGroup &config);
 
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
@@ -778,20 +775,18 @@ protected:
      * invoked when the session manager requests your application
      * to save its state.
      *
-     * You @em must @em not change the group of the @p kconfig object, since
-     * KMainWindow uses one group for each window.  Please
-     * reimplement these function in childclasses.
+     * Please reimplement these function in childclasses.
      *
      * Note: No user interaction is allowed
      * in this function!
      *
      */
-    virtual void saveProperties( KConfig* ) {}
+    virtual void saveProperties( KConfigGroup & ) {}
 
    /**
     * Read your instance-specific properties.
     */
-    virtual void readProperties( KConfig* ) {}
+    virtual void readProperties( const KConfigGroup & ) {}
 
    /**
      * Save your application-wide properties. The function is
@@ -826,15 +821,13 @@ protected:
     bool settingsDirty() const;
     /**
      * For inherited classes
-     * Note that the group must be set before calling
      */
-    void saveWindowSize( KConfig * config ) const;
+    void saveWindowSize( const KConfigGroup &config ) const;
     /**
      * For inherited classes
-     * Note that the group must be set before calling, and that
-     * a -geometry on the command line has priority.
+     * Note that a -geometry on the command line has priority.
      */
-    void restoreWindowSize( KConfigBase * config );
+    void restoreWindowSize( const KConfigGroup & config );
 
     /// parse the geometry from the geometry command line argument
     void parseGeometry(bool parsewidth);

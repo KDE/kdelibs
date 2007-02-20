@@ -103,8 +103,9 @@ set(kdecore_LIB_SRCS
    config/kconfiggroup.cpp
    config/kconfigskeleton.cpp
    config/kconfigbackend.cpp
+   config/kconfigini.cpp
    config/kdesktopfile.cpp
-   config/ksimpleconfig.cpp
+   config/ksharedconfig.cpp
    date/kcalendarsystem.cpp
    date/kcalendarsystemfactory.cpp
    date/kcalendarsystemgregorian.cpp
@@ -256,10 +257,12 @@ install( FILES
    config/kconfigbase.h
    config/kconfiggroup.h
    config/kconfigbackend.h
+   config/kconfigini.h
    config/kconfigskeleton.h
    config/kconfigdata.h
    config/kdesktopfile.h
-   config/ksimpleconfig.h
+   config/ksharedconfig.h
+   config/kconfigflags.h
    date/kcalendarsystem.h
    date/kcalendarsystemfactory.h
    date/kdatetime.h

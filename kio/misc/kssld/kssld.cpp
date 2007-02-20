@@ -28,8 +28,8 @@
 #include <Q3CString>
 
 #include "kssld.h"
+#include <ksharedconfig.h>
 #include <kconfig.h>
-#include <ksimpleconfig.h>
 #include <ksslcertchain.h>
 #include <ksslcertificate.h>
 #include <ksslcertificatehome.h>
@@ -45,6 +45,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 #include <qdatetime.h>
 
 #include <kcodecs.h>
@@ -61,11 +62,11 @@ extern "C" {
 }
 
 template <> inline
-void KConfigBase::writeEntry( const char *pKey,
-							  const KSSLCertificateCache::KSSLCertificatePolicy& aValue,
-							  KConfigBase::WriteConfigFlags flags)
+void KConfigGroup::writeEntry( const char *pKey,
+                               const KSSLCertificateCache::KSSLCertificatePolicy& aValue,
+                               KConfigBase::WriteConfigFlags flags)
 {
-  writeEntry(pKey, int(aValue), flags);
+    writeEntry(pKey, int(aValue), flags);
 }
 
 static void updatePoliciesConfig(KConfig *cfg) {
@@ -76,16 +77,16 @@ static void updatePoliciesConfig(KConfig *cfg) {
 			continue;
 		}
 
-		cfg->setGroup(*i);
+                KConfigGroup cg(cfg, *i);
 
 		// remove it if it has expired
-		if (!cfg->readEntry("Permanent", false) &&
-					 cfg->readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
+		if (!cg.readEntry("Permanent", false) &&
+					 cg.readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
 		}
 
-		QString encodedCertStr = cfg->readEntry("Certificate");
+		QString encodedCertStr = cg.readEntry("Certificate");
 		QByteArray encodedCert = encodedCertStr.toLocal8Bit();
 			KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
@@ -93,42 +94,42 @@ static void updatePoliciesConfig(KConfig *cfg) {
 			continue;
 		}
 
-		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", 0);
-		bool permanent = cfg->readEntry("Permanent", false);
-		QDateTime expires = cfg->readEntry("Expires", QDateTime());
-		QStringList hosts = cfg->readEntry("Hosts", QStringList());
-		QStringList chain = cfg->readEntry("Chain", QStringList());
+		KSSLCertificateCache::KSSLCertificatePolicy policy = (KSSLCertificateCache::KSSLCertificatePolicy) cg.readEntry("Policy", 0);
+		bool permanent = cg.readEntry("Permanent", false);
+		QDateTime expires = cg.readEntry("Expires", QDateTime());
+		QStringList hosts = cg.readEntry("Hosts", QStringList());
+		QStringList chain = cg.readEntry("Chain", QStringList());
 		cfg->deleteGroup(*i);
 
-		cfg->setGroup(newCert->getMD5Digest());
-		cfg->writeEntry("Certificate", encodedCertStr);
-		cfg->writeEntry("Policy", policy);
-		cfg->writeEntry("Permanent", permanent);
-		cfg->writeEntry("Expires", expires);
-		cfg->writeEntry("Hosts", hosts);
-		cfg->writeEntry("Chain", chain);
+		cg.changeGroup(newCert->getMD5Digest());
+		cg.writeEntry("Certificate", encodedCertStr);
+		cg.writeEntry("Policy", policy);
+		cg.writeEntry("Permanent", permanent);
+		cg.writeEntry("Expires", expires);
+		cg.writeEntry("Hosts", hosts);
+		cg.writeEntry("Chain", chain);
 		delete newCert;
 	}
 
-	cfg->setGroup("General");
-	cfg->writeEntry("policies version", 2);
+	KConfigGroup cg(cfg, "General");
+	cg.writeEntry("policies version", 2);
 
-	cfg->sync();
+	cg.sync();
 }
 
 
 KSSLD::KSSLD() : KDEDModule()
 {
 // ----------------------- FOR THE CACHE ------------------------------------
-	cfg = new KSimpleConfig("ksslpolicies", false);
-	cfg->setGroup("General");
-	if (2 != cfg->readEntry("policies version", 0)) {
-		::updatePoliciesConfig(cfg);
-	}
-	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
-	caVerifyUpdate();
-	cacheLoadDefaultPolicies();
-	kossl = KOSSL::self();
+    cfg = new KConfig("ksslpolicies", KConfig::OnlyLocal);
+    KConfigGroup cg(cfg, "General");
+    if (2 != cg.readEntry("policies version", 0)) {
+        ::updatePoliciesConfig(cfg);
+    }
+    KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
+    caVerifyUpdate();
+    cacheLoadDefaultPolicies();
+    kossl = KOSSL::self();
 
 // ----------------------- FOR THE HOME -------------------------------------
 }
@@ -164,23 +165,23 @@ class KSSLCNode {
 
 
 void KSSLD::cacheSaveToDisk() {
-KSSLCNode *node;
+    KSSLCNode *node;
 
-	cfg->setGroup("General");
-	cfg->writeEntry("policies version", 2);
+        KConfigGroup cg(cfg, "General");
+	cg.writeEntry("policies version", 2);
 
 	Q_FOREACH( node , certList ) {
 		if (node->permanent ||
 			node->expires > QDateTime::currentDateTime()) {
 			// First convert to a binary format and then write the
 			// kconfig entry write the (CN, policy, cert) to
-			// KSimpleConfig
-			cfg->setGroup(node->cert->getMD5Digest());
-			cfg->writeEntry("Certificate", node->cert->toString());
-			cfg->writeEntry("Policy", node->policy);
-			cfg->writeEntry("Expires", node->expires);
-			cfg->writeEntry("Permanent", node->permanent);
-			cfg->writeEntry("Hosts", node->hosts);
+			// KConfig
+			cg.changeGroup(node->cert->getMD5Digest());
+			cg.writeEntry("Certificate", node->cert->toString());
+			cg.writeEntry("Policy", node->policy);
+			cg.writeEntry("Expires", node->expires);
+			cg.writeEntry("Permanent", node->permanent);
+			cg.writeEntry("Hosts", node->hosts);
 
 			// Also write the chain
 			QStringList qsl;
@@ -195,7 +196,7 @@ KSSLCNode *node;
 			}
 
 			cl.setAutoDelete(true);
-			cfg->writeEntry("Chain", qsl);
+			cg.writeEntry("Chain", qsl);
 		}
 	}
 
@@ -213,7 +214,7 @@ KSSLCNode *node;
 void KSSLD::cacheReload() {
 	cacheClearList();
 	delete cfg;
-	cfg = new KSimpleConfig("ksslpolicies", false);
+	cfg = new KConfig("ksslpolicies", KConfig::OnlyLocal);
 	cacheLoadDefaultPolicies();
 }
 
@@ -232,20 +233,20 @@ KSSLCNode *node;
 
 
 void KSSLD::cacheLoadDefaultPolicies() {
-QStringList groups = cfg->groupList();
+	const QStringList groups = cfg->groupList();
 
-	for (QStringList::Iterator i = groups.begin();
+	for (QStringList::const_iterator i = groups.begin();
 				i != groups.end();
 				++i) {
 		if ((*i).isEmpty() || *i == "General") {
 			continue;
 		}
 
-		cfg->setGroup(*i);
+                KConfigGroup cg(cfg, *i);
 
 		// remove it if it has expired
-		if (!cfg->readEntry("Permanent", false) &&
-			cfg->readEntry("Expires", QDateTime()) <
+		if (!cg.readEntry("Permanent", false) &&
+			cg.readEntry("Expires", QDateTime()) <
 				QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
@@ -254,7 +255,7 @@ QStringList groups = cfg->groupList();
 		QByteArray encodedCert;
 		KSSLCertificate *newCert;
 
-		encodedCert = cfg->readEntry("Certificate").toLocal8Bit();
+		encodedCert = cg.readEntry("Certificate").toLocal8Bit();
 			newCert = KSSLCertificate::fromString(encodedCert);
 
 		if (!newCert) {
@@ -263,11 +264,11 @@ QStringList groups = cfg->groupList();
 
 		KSSLCNode *n = new KSSLCNode;
 		n->cert = newCert;
-		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cfg->readEntry("Policy", 0);
-		n->permanent = cfg->readEntry("Permanent", false);
-		n->expires = cfg->readEntry("Expires", QDateTime());
-		n->hosts = cfg->readEntry("Hosts", QStringList());
-		newCert->chain().setCertChain(cfg->readEntry("Chain", QStringList()));
+		n->policy = (KSSLCertificateCache::KSSLCertificatePolicy) cg.readEntry("Policy", 0);
+		n->permanent = cg.readEntry("Permanent", false);
+		n->expires = cg.readEntry("Expires", QDateTime());
+		n->hosts = cg.readEntry("Hosts", QStringList());
+		newCert->chain().setCertChain(cg.readEntry("Chain", QStringList()));
 		certList.append(n);
 		searchAddCert(newCert);
 	}
@@ -683,15 +684,15 @@ void KSSLD::caVerifyUpdate() {
 	if (!QFile::exists(path))
 		return;
 
-	cfg->setGroup(QString());
+        KConfigGroup cg(cfg, QString());
 	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist",
                                                              KStandardDirs::Recursive);
-	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", 0);
+	quint32 oldStamp = cg.readEntry("ksslcalistStamp", 0);
 	if (oldStamp != newStamp)
 	{
 		caRegenerate();
-		cfg->writeEntry("ksslcalistStamp", newStamp);
-		cfg->sync();
+		cg.writeEntry("ksslcalistStamp", newStamp);
+		cg.sync();
 	}
 }
 
@@ -703,20 +704,20 @@ QFile out(path);
 	if (!out.open(QIODevice::WriteOnly))
 		return false;
 
-KConfig cfg("ksslcalist", true, false);
+        KConfig cfg("ksslcalist", KConfig::NoGlobals);
 
-QStringList x = cfg.groupList();
+        const QStringList x = cfg.groupList();
 
-	for (QStringList::Iterator i = x.begin();
+	for (QStringList::const_iterator i = x.begin();
 				   i != x.end();
 				   ++i) {
 		if ((*i).isEmpty() || *i == "<default>") continue;
 
-		cfg.setGroup(*i);
+                KConfigGroup cg(&cfg, *i);
 
-		if (!cfg.readEntry("site", false)) continue;
+		if (!cg.readEntry("site", false)) continue;
 
-		QString cert = cfg.readEntry("x509", "");
+		QString cert = cg.readEntry("x509", "");
 		if (cert.length() <= 0) continue;
 
 		unsigned int xx = cert.length() - 1;
@@ -735,22 +736,22 @@ return true;
 
 
 bool KSSLD::caAdd(QString certificate, bool ssl, bool email, bool code) {
-KSSLCertificate *x = KSSLCertificate::fromString(certificate.toLocal8Bit());
+        KSSLCertificate *x = KSSLCertificate::fromString(certificate.toLocal8Bit());
 
 	if (!x) return false;
 
-KConfig cfg("ksslcalist", false, false);
+        KConfig cfgFile("ksslcalist", KConfig::NoGlobals);
 
-	cfg.setGroup(x->getSubject());
+        KConfigGroup cfg(&cfgFile, x->getSubject());
 	cfg.writeEntry("x509", certificate);
 	cfg.writeEntry("site", ssl);
 	cfg.writeEntry("email", email);
 	cfg.writeEntry("code", code);
 
-	cfg.sync();
+	cfgFile.sync();
 	delete x;
 
-return true;
+        return true;
 }
 
 
@@ -829,7 +830,7 @@ bool KSSLD::caRemoveFromFile(QString filename) {
 
 QStringList KSSLD::caList() {
 QStringList x;
-KConfig cfg("ksslcalist", true, false);
+KConfig cfg("ksslcalist", KConfig::NoGlobals);
 
 	x = cfg.groupList();
 	x.removeAll("<default>");
@@ -839,76 +840,60 @@ return x;
 
 
 bool KSSLD::caUseForSSL(QString subject) {
-KConfig cfg("ksslcalist", true, false);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	if (!cfg.hasGroup(subject))
-		return false;
-
-	cfg.setGroup(subject);
-return cfg.readEntry("site", false);
+    return cg.readEntry("site", false);
 }
 
 
 
 bool KSSLD::caUseForEmail(QString subject) {
-KConfig cfg("ksslcalist", true, false);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	if (!cfg.hasGroup(subject))
-		return false;
-
-	cfg.setGroup(subject);
-return cfg.readEntry("email", false);
+    return cg.readEntry("email", false);
 }
 
 
 
 bool KSSLD::caUseForCode(QString subject) {
-KConfig cfg("ksslcalist", true, false);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	if (!cfg.hasGroup(subject))
-		return false;
-
-	cfg.setGroup(subject);
-return cfg.readEntry("code", false);
+    return cg.readEntry("code", false);
 }
 
 
 bool KSSLD::caRemove(QString subject) {
-KConfig cfg("ksslcalist", false, false);
-	if (!cfg.hasGroup(subject))
-		return false;
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	cfg.deleteGroup(subject);
-	cfg.sync();
+    if (!cg.exists())
+        return false;
 
-return true;
+    cg.deleteGroup();
+    cg.sync();
+
+    return true;
 }
 
 
 QString KSSLD::caGetCert(QString subject) {
-KConfig cfg("ksslcalist", true, false);
-	if (!cfg.hasGroup(subject))
-		return QString();
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	cfg.setGroup(subject);
-
-return cfg.readEntry("x509", QString());
+    return cg.readEntry("x509", QString());
 }
 
 
 bool KSSLD::caSetUse(QString subject, bool ssl, bool email, bool code) {
-KConfig cfg("ksslcalist", false, false);
-	if (!cfg.hasGroup(subject))
-		return false;
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
-	cfg.setGroup(subject);
+    if (!cg.exists())
+        return false;
 
-	cfg.writeEntry("site", ssl);
-	cfg.writeEntry("email", email);
-	cfg.writeEntry("code", code);
-	cfg.sync();
+    cg.writeEntry("site", ssl);
+    cg.writeEntry("email", email);
+    cg.writeEntry("code", code);
+    cg.sync();
 
-return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////

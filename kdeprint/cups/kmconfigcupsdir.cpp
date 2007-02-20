@@ -60,14 +60,12 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 
 void KMConfigCupsDir::loadConfig(KConfig *conf)
 {
-	conf->setGroup("CUPS");
-	QString	dir = conf->readPathEntry("InstallDir");
+	QString	dir = conf->group( "CUPS" ).readPathEntry("InstallDir");
 	m_stddir->setChecked(dir.isEmpty());
 	m_installdir->setUrl(KUrl::fromPath(dir));
 }
 
 void KMConfigCupsDir::saveConfig(KConfig *conf)
 {
-	conf->setGroup("CUPS");
-	conf->writePathEntry("InstallDir",(m_stddir->isChecked() ? QString() : m_installdir->url().url()));
+	conf->group( "CUPS" ).writePathEntry("InstallDir",(m_stddir->isChecked() ? QString() : m_installdir->url().url()));
 }

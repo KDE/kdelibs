@@ -289,7 +289,7 @@ KRunMX2::subst( int option, const KUrl &url, QStringList &ret )
       break;
    case 'v':
       if (url.isLocalFile() && QFile::exists( url.path() ) )
-          ret << KDesktopFile( url.path(), true ).readEntry( "Dev" );
+          ret << KDesktopFile( url.path() ).desktopGroup().readEntry( "Dev" );
       break;
    }
    return;

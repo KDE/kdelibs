@@ -26,7 +26,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kdebug.h>
 
 #include <qmap.h>

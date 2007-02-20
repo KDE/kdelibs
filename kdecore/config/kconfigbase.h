@@ -26,12 +26,14 @@
 #include <qcolor.h>
 #include <qvariant.h>
 #include <kdelibs_export.h>
+#include <kconfiggroup.h>
+#include <kconfigflags.h>
 #include <kdebug.h>
 
 // This include fixes linker errors under msvc:
 // In qdbusmessage.h QList<QVariant> is instantiated because
-// it is a base class of an exported class. This must be 
-// known here to avoid an additional instantiation. 
+// it is a base class of an exported class. This must be
+// known here to avoid an additional instantiation.
 #ifdef Q_CC_MSVC
 #include <QtDBus/qdbusmessage.h>
 #endif
@@ -43,11 +45,7 @@ class Q3StrList;
 #endif
 
 class KConfigBackEnd;
-class KConfigGroup;
 class KComponentData;
-struct KEntry;
-struct KEntryKey;
-typedef QMap<KEntryKey, KEntry> KEntryMap;
 
 /**
  * @short KDE Configuration Management abstract base class
@@ -55,8 +53,7 @@ typedef QMap<KEntryKey, KEntry> KEntryMap;
  * This class forms the base for all %KDE configuration. It is an
  * abstract base class, meaning that you cannot directly instantiate
  * objects of this class. Either use KConfig (for usual %KDE
- * configuration) or KSimpleConfig (for special needs as in ksamba), or
- * even KSharedConfig (stores values in shared memory).
+ * configuration) or even KSharedConfig (stores values in shared memory).
  *
  * All configuration entries are key, value pairs.  Each entry also
  * belongs to a specific group of related entries.  All configuration
@@ -74,43 +71,15 @@ typedef QMap<KEntryKey, KEntry> KEntryMap;
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @see KGlobal#config()
  * @see KConfig
- * @see KSimpleConfig
  * @see KSharedConfig
  */
-class KDECORE_EXPORT KConfigBase
+class KDECORE_EXPORT KConfigBase : public KConfigFlags
 {
   friend class KConfigBackEnd;
   friend class KConfigINIBackEnd;
   friend class KConfigGroup;
 
 public:
-  /**
-   * Flags to control write entry
-   */
-  enum WriteConfigFlag
-  {
-    Persistent = 0x01,
-    /**<
-     * Save this entry when saving the config object.
-     */
-    Global = 0x02,
-    /**<
-     * Save the entry to the global %KDE config file instead of the
-     * application specific config file.
-     */
-    Localized = 0x04,
-    NLS = Localized,
-    /**<
-     * Add the locale tag to the key when writing it.
-     */
-    Normal=Persistent
-    /**<
-     * Save the entry to the application specific config file without
-     * a locale tag. This is the default.
-     */
-
-  };
-  Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
 
   /**
    * Construct a KConfigBase object.
@@ -139,13 +108,7 @@ public:
    * Switch back to the default group by passing a null string.
    * @param group The name of the new group.
    */
-  void setGroup( const QString& group );
-
-  /**
-   * Sets the group to the "Desktop Entry" group used for
-   * desktop configuration files for applications, mime types, etc.
-   */
-  void setDesktopGroup();
+  KDE_DEPRECATED void setGroup( const QString& group );
 
   /**
    * Returns the name of the group in which we are
@@ -153,7 +116,7 @@ public:
    *
    * @return The current group.
    */
-  QString group() const;
+  KDE_DEPRECATED QString group() const;
 
   /**
    * Returns true if the specified group is known about.
@@ -179,39 +142,12 @@ public:
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
-   * If you want to read a path, please use readPathEntry().
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key. Can be QString() if aDefault is null.
    */
-   QString readEntry(const char *pKey,
-                     const QString& aDefault ) const;
-
-  /**
-   * Reads the value of an entry specified by @p pKey in the current group.
-   *
-   * @param pKey The key to search for.
-   * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString() if aDefault is null.
-   */
-   QString readEntry(const char *pKey, const char *aDefault = 0 ) const;
-
-  /**
-   * Reads the value of an entry specified by @p pKey in the current group.
-   * The value is treated as if it is of the type of the given default value.
-   *
-   * @note Only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, LongLong, ULongLong, DateTime and Date.
-   *
-   * @param pKey The key to search for.
-   * @param aDefault A default value returned if the key was not found or
-   * if the read value cannot be converted to the QVariant::Type.
-   * @return The value for the key or the default value if the key was not
-   *         found.
-   */
-  QVariant readEntry( const char *pKey, const QVariant &aDefault) const;
+   KDE_DEPRECATED QString readEntry(const char *pKey, const char *aDefault = 0 ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -221,35 +157,37 @@ public:
    * @return The value for this key, or @p aDefault.
    */
   template <typename T>
-  inline T readEntry( const char* pKey, const T& aDefault) const;
+      KDE_DEPRECATED inline T readEntry( const char* pKey, const T& aDefault) const
+  {
+      return mGroup.readEntry(pKey,aDefault);
+  }
+
+  template <typename T>
+      inline T readEntry_int( const char* pKey, const T& aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
    * @copydoc readEntry(const char*, const T&) const
    */
   template <typename T>
-  T readEntry( const QString& pKey, const T& aDefault) const
-    { return readEntry(pKey.toUtf8().constData(), aDefault); }
+      KDE_DEPRECATED T readEntry( const QString& pKey, const T& aDefault) const
+    { return mGroup.readEntry(pKey.toUtf8().constData(), aDefault); }
 
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
    *
    */
-  QColor readEntry(const char* pKey, Qt::GlobalColor aDefault) const
-    { return readEntry(pKey, QColor(aDefault)); }
+  KDE_DEPRECATED QColor readEntry(const char* pKey, Qt::GlobalColor aDefault) const;
 
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
    *
    */
-  QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const
-    { return readEntry(pKey, QColor(aDefault)); }
+  QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const;
 
   // these two are here temporarily for porting, remove before KDE4
-  KDE_DEPRECATED QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const
-    { return readEntry(pKey, aDefault); }
-  KDE_DEPRECATED QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const
-    { return readEntry(pKey, aDefault); }
+  KDE_DEPRECATED QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const;
+  KDE_DEPRECATED QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const;
 
 #ifdef KDE3_SUPPORT
   /**
@@ -286,8 +224,7 @@ public:
    * @return The list. Empty if the entry does not exist.
    * @deprecated use readEntry( const QString&, const QStringList&, char) const instead.
    */
-  KDE_DEPRECATED QStringList readListEntry( const QString& pKey, char sep = ',' ) const
-    { return readEntry(pKey, QStringList(), sep); }
+  KDE_DEPRECATED QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
    * Reads a list of strings.
@@ -297,8 +234,7 @@ public:
    * @return The list. Empty if the entry does not exist.
    * @deprecated use readEntry(const char*, const QStringList&, char) const instead.
    */
-  KDE_DEPRECATED QStringList readListEntry( const char *pKey, char sep = ',' ) const
-    { return readEntry(pKey, QStringList(), sep); }
+  KDE_DEPRECATED QStringList readListEntry( const char *pKey, char sep = ',' ) const;
 
   /**
    * Reads a list of strings, but returns a default if the key
@@ -311,32 +247,7 @@ public:
    */
   KDE_DEPRECATED QStringList readListEntry( const char* pKey,
                                             const QStringList& aDefault,
-                                            char sep = ',' ) const
-    { return readEntry(pKey, aDefault, sep); }
-
-  /**
-   * Reads a list from the config object.
-   *
-   * @note This function only works for those types that QVariant can convert
-   * from QString.
-   * @param pKey The key to search for.
-   * @param aDefault The default value to use if the key does not exist.
-   * @return The list.
-   */
-  template <typename T>
-  inline QList<T> readEntry( const char* pKey, const QList<T>& aDefault ) const;
-
-  /**
-   * Reads a list from the config object.
-   *
-   * @copydoc readEntry(const char*, const QList<T>&) const
-   *
-   * @warning This function doesn't convert the items returned
-   *          to any type. It's actually a list of QVariant::String's. If you
-   *          want the items converted to a specific type use
-   *          readEntry(const char*, const QList<T>&) const
-   */
-  QVariantList readEntry( const char* pKey, const QVariantList& aDefault ) const;
+                                            char sep = ',' ) const;
 
   /**
    * Reads a list of strings from the config object.
@@ -345,7 +256,7 @@ public:
    * @param sep The list separator.
    * @return The list. Contains @p aDefault if @p pKey does not exist.
    */
-  QStringList readEntry(const char* pKey, const QStringList& aDefault,
+  KDE_DEPRECATED QStringList readEntry(const char* pKey, const QStringList& aDefault,
                         char sep=',') const;
 
   /**
@@ -354,9 +265,8 @@ public:
    *
    * @copydoc readEntry(const char*, const QStringList&, char) const
    */
-  QStringList readEntry(const QString& pKey, const QStringList& aDefault,
-                        char sep=',') const
-    { return readEntry(pKey.toUtf8().constData(), aDefault, sep); }
+  KDE_DEPRECATED QStringList readEntry(const QString& pKey, const QStringList& aDefault,
+                                       char sep=',') const;
 
   /**
    * Reads a list of Integers.
@@ -365,8 +275,7 @@ public:
    * @return The list. Empty if the entry does not exist.
    * @deprecated use readEntry(const QString&, const QList<T>&) const instead.
    */
-  KDE_DEPRECATED QList<int> readIntListEntry( const QString& pKey ) const
-    { return readEntry( pKey, QList<int>() ); }
+  KDE_DEPRECATED QList<int> readIntListEntry( const QString& pKey ) const;
 
   /**
    * Reads a list of Integers.
@@ -375,8 +284,7 @@ public:
    * @return The list. Empty if the entry does not exist.
    * @deprecated use readEntry(const char*, const QList<T>&) const instead.
    */
-  KDE_DEPRECATED QList<int> readIntListEntry( const char *pKey ) const
-    { return readEntry( pKey, QList<int>() ); }
+  KDE_DEPRECATED QList<int> readIntListEntry( const char *pKey ) const;
 
   /**
    * Reads a path.
@@ -389,7 +297,7 @@ public:
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key. Can be QString() if aDefault is null.
    */
-  QString readPathEntry( const QString& pKey, const QString & aDefault = QString() ) const;
+  KDE_DEPRECATED QString readPathEntry( const QString& pKey, const QString & aDefault = QString() ) const;
 
   /**
    * Reads a path.
@@ -402,7 +310,7 @@ public:
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key. Can be QString() if aDefault is null.
    */
-  QString readPathEntry( const char *pKey, const QString & aDefault = QString() ) const;
+  KDE_DEPRECATED QString readPathEntry( const char *pKey, const QString & aDefault = QString() ) const;
 
   /**
    * Reads a list of string paths.
@@ -415,7 +323,7 @@ public:
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
    */
-  QStringList readPathListEntry( const QString& pKey, char sep = ',' ) const;
+  KDE_DEPRECATED QStringList readPathListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
    * Reads a list of string paths.
@@ -428,7 +336,7 @@ public:
    * @param sep  The list separator (default is ",").
    * @return The list. Empty if the entry does not exist.
    */
-  QStringList readPathListEntry( const char *pKey, char sep = ',' ) const;
+  KDE_DEPRECATED QStringList readPathListEntry( const char *pKey, char sep = ',' ) const;
 
 
   /**
@@ -443,8 +351,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED int readNumEntry( const QString& pKey, int nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
 
   /**
    * Reads a numerical value.
@@ -458,8 +365,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED int readNumEntry( const char *pKey, int nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED int readNumEntry( const char *pKey, int nDefault = 0 ) const;
 
   /**
    * Reads an unsigned numerical value.
@@ -473,8 +379,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const QString& pKey, unsigned int nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const QString& pKey, unsigned int nDefault = 0 ) const;
 
   /**
    * Reads an unsigned numerical value.
@@ -488,8 +393,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED unsigned int readUnsignedNumEntry( const char *pKey, unsigned int nDefault = 0 ) const;
 
   /**
    * Reads a numerical value.
@@ -503,8 +407,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const
-    { return readEntry(pKey, static_cast<int>(nDefault)); }
+  KDE_DEPRECATED long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
 
   /**
    * Reads a numerical value.
@@ -518,8 +421,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED long readLongNumEntry( const char *pKey, long nDefault = 0 ) const
-    { return readEntry(pKey, static_cast<int>(nDefault)); }
+  KDE_DEPRECATED long readLongNumEntry( const char *pKey, long nDefault = 0 ) const;
 
   /**
    * Read an unsigned numerical value.
@@ -533,8 +435,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED unsigned long readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault = 0 ) const
-    { return readEntry(pKey, static_cast<unsigned int>(nDefault)); }
+  KDE_DEPRECATED unsigned long readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault = 0 ) const;
 
   /**
    * Read an unsigned numerical value.
@@ -548,8 +449,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const
-    { return readEntry(pKey, static_cast<unsigned int>(nDefault)); }
+  KDE_DEPRECATED unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const;
 
   /**
    * Reads a 64-bit numerical value.
@@ -563,8 +463,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED qint64 readNum64Entry( const QString& pKey, qint64 nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED qint64 readNum64Entry( const QString& pKey, qint64 nDefault = 0 ) const;
 
   /**
    * Reads a 64-bit numerical value.
@@ -578,8 +477,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED qint64 readNum64Entry( const char *pKey, qint64 nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED qint64 readNum64Entry( const char *pKey, qint64 nDefault = 0 ) const;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -593,8 +491,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED quint64 readUnsignedNum64Entry( const QString& pKey, quint64 nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED quint64 readUnsignedNum64Entry( const QString& pKey, quint64 nDefault = 0 ) const;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -608,8 +505,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED quint64 readUnsignedNum64Entry( const char *pKey, quint64 nDefault = 0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED quint64 readUnsignedNum64Entry( const char *pKey, quint64 nDefault = 0 ) const;
 
   /**
    * Reads a floating point value.
@@ -623,8 +519,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
 
   /**
    * Reads a floating point value.
@@ -638,8 +533,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const
-    { return readEntry( pKey, nDefault ); }
+  KDE_DEPRECATED double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
 
   /**
    * Reads a QFont value.
@@ -681,8 +575,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED bool readBoolEntry( const QString& pKey, bool bDefault = false ) const
-    { return readEntry( pKey, bDefault ); }
+  KDE_DEPRECATED bool readBoolEntry( const QString& pKey, bool bDefault = false ) const;
 
   /**
    * Reads a boolean entry.
@@ -696,8 +589,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED bool readBoolEntry( const char *pKey, bool bDefault = false ) const
-    { return readEntry( pKey, bDefault ); }
+  KDE_DEPRECATED bool readBoolEntry( const char *pKey, bool bDefault = false ) const;
 
   /**
    * Reads a QRect entry.
@@ -796,8 +688,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const
-    { return readEntry(pKey, (pDefault? *pDefault: QColor())); }
+  KDE_DEPRECATED QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const;
 
   /**
    * Reads a QColor entry.
@@ -811,8 +702,7 @@ public:
    * @return The value for this key.
    * @deprecated
    */
-  KDE_DEPRECATED QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const
-    { return readEntry(pKey, (pDefault? *pDefault: QColor())); }
+  KDE_DEPRECATED QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
 
   /**
    * Reads a QDateTime entry.
@@ -852,7 +742,7 @@ public:
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key.
    */
-   QString readEntryUntranslated( const QString& pKey,
+  KDE_DEPRECATED QString readEntryUntranslated( const QString& pKey,
                      const QString& aDefault = QString() ) const;
 
   /**
@@ -863,50 +753,24 @@ public:
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key.
    */
-   QString readEntryUntranslated( const char *pKey,
+  KDE_DEPRECATED QString readEntryUntranslated( const char *pKey,
                      const QString& aDefault = QString() ) const;
 
   /**
-   * Writes a key/value pair.
-   *
-   * This is stored in the most specific config file when destroying the
-   * config object or when calling sync().
-   *
-   * If you want to write a path, please use writePathEntry().
-   *
-   * @param pKey         The key to write.
-   * @param value       The value to write.
-   * @param pFlags       The flags to use when writing this entry.
-   */
-  void writeEntry( const char *pKey, const QString& value,
-                   WriteConfigFlags pFlags = Normal );
-
-  /**
-   * writeEntry() Overridden to accept a property.
-   *
-   * @param pKey The key to write
-   * @param value The property to write
-   * @param pFlags       The flags to use when writing this entry.
-   *
-   * @see  writeEntry()
-   */
-  void writeEntry( const char *pKey, const QVariant& value,
-                   WriteConfigFlags pFlags = Normal );
-
-  /**
    * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
    */
   template <typename T>
-  void writeEntry( const char* pKey, const T& value,
-                   WriteConfigFlags pFlags = Normal );
-
-  /**
-   * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
-   */
-  template <typename T>
-  void writeEntry( const QString& pKey, const T& value,
+      KDE_DEPRECATED void writeEntry( const char* pKey, const T& value,
                    WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey.toUtf8().constData(), value, pFlags ); }
+  { mGroup.writeEntry(pKey, value, pFlags); }
+
+  /**
+   * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
+   */
+  template <typename T>
+      KDE_DEPRECATED void writeEntry( const QString & pKey, const T& value,
+                   WriteConfigFlags pFlags = Normal )
+  { mGroup.writeEntry(pKey, value, pFlags); }
 
 #ifdef KDE3_SUPPORT
   /**
@@ -961,7 +825,7 @@ public:
    *
    * @see  writeEntry()
    */
-  void writeEntry( const QString& pKey, const QStringList &value,
+  KDE_DEPRECATED  void writeEntry( const QString& pKey, const QStringList &value,
 		   char sep = ',',
                    WriteConfigFlags pFlags = Normal )
     { writeEntry( pKey.toUtf8().constData(), value, sep, pFlags ); }
@@ -981,58 +845,6 @@ public:
                    WriteConfigFlags pFlags = Normal );
 
   /**
-   * writeEntry() overridden to accept a list.
-   *
-   * @param pKey The key to write
-   * @param value The list to write.
-   * @param pFlags       The flags to use when writing this entry.
-   *
-   * @see  writeEntry()
-   */
-  template <typename T>
-  void writeEntry( const char* pKey, const QList<T>& value,
-                   WriteConfigFlags pFlags = Normal );
-
-  /**
-   * writeEntry() overridden to accept a list of variants.
-   * @copydoc writeEntry(const char*, const QList<T>&, WriteConfigFlags)
-   */
-  void writeEntry( const char* pKey, const QVariantList& value,
-                   WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey, QVariant(value), pFlags ); }
-
-  /**
-   * Write a (key/value) pair where the value is a const char*.
-   *
-   * This is stored to the most specific config file when destroying the
-   * config object or when calling sync().
-   *
-   *  @param pKey               The key to write.
-   *  @param value     The value to write; assumed to be in latin1 encoding.
-   *  @param pFlags       The flags to use when writing this entry.
-   */
-  void writeEntry( const char *pKey, const char *value,
-                   WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(value), pFlags); }
-
-  /**
-   * Write a (key/value) pair where the value is a QByteArray.
-   *
-   * This is stored to the most specific config file when destroying the
-   * config object or when calling sync().
-   *
-   *  @param pKey               The key to write.
-   *  @param value     The value to write; assumed to be in latin1 encoding.
-   *                    If it contains the null character between 0 and size()-1,
-   *                    the string will be truncated at the null character.
-   *
-   * @param pFlags       The flags to use when writing this entry.
-   */
-  void writeEntry( const char *pKey, const QByteArray& value,
-                   WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(value, value.size()), pFlags); }
-
-  /**
    * Writes a file path.
    *
    * It is checked whether the path is located under $HOME. If so the
@@ -1043,7 +855,7 @@ public:
    * @param path The path to write.
    * @param pFlags       The flags to use when writing this entry.
    */
-  void writePathEntry( const QString& pKey, const QString & path,
+  KDE_DEPRECATED void writePathEntry( const QString& pKey, const QString & path,
                        WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1057,7 +869,7 @@ public:
    * @param path The path to write.
    * @param pFlags       The flags to use when writing this entry.
    */
-  void writePathEntry( const char *pKey, const QString & path,
+  KDE_DEPRECATED void writePathEntry( const char *pKey, const QString & path,
                        WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1075,7 +887,7 @@ public:
    * @see  writePathEntry()
    * @see  readPathListEntry()
    */
-  void writePathEntry( const QString& pKey, const QStringList &value,
+  KDE_DEPRECATED void writePathEntry( const QString& pKey, const QStringList &value,
                        char sep = ',', WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1093,7 +905,7 @@ public:
    * @see  writePathEntry()
    * @see  readPathListEntry()
    */
-  void writePathEntry( const char *pKey, const QStringList &value,
+  KDE_DEPRECATED void writePathEntry( const char *pKey, const QStringList &value,
 		   char sep = ',', WriteConfigFlags pFlags = Normal );
 
   /**
@@ -1102,7 +914,7 @@ public:
    * @param pKey The key to delete.
    * @param pFlags       The flags to use when deleting this entry.
    */
-   void deleteEntry( const QString& pKey, WriteConfigFlags pFlags = Normal );
+  KDE_DEPRECATED void deleteEntry( const QString& pKey, WriteConfigFlags pFlags = Normal );
 
   /**
    * Deletes the entry specified by @p pKey in the current group.
@@ -1110,8 +922,9 @@ public:
    * @param pKey The key to delete.
    * @param pFlags       The flags to use when deleting this entry.
    */
-   void deleteEntry( const char *pKey, WriteConfigFlags pFlags = Normal );
+  KDE_DEPRECATED void deleteEntry( const char *pKey, WriteConfigFlags pFlags = Normal );
 
+public:
   /**
    * Deletes a configuration entry group
    *
@@ -1169,7 +982,7 @@ public:
    *
    * You should call this from your destructor in derivative classes.
    *
-   * @see rollback(), #isReadOnly()
+   * @see rollback()
    */
   virtual void sync();
 
@@ -1178,22 +991,6 @@ public:
    * @return true if the config file has any dirty (modified) entries.
    */
   bool isDirty() const { return bDirty; }
-
-  /**
-   * Sets the config object's read-only status.
-   *
-   * @param _ro If true, the config object will not write out any
-   *        changes to disk even if it is destroyed or sync() is called.
-   *
-   */
-  virtual void setReadOnly(bool _ro) { bReadOnly = _ro; }
-
-   /**
-    * Returns the read-only status of the config object.
-    *
-    * @return The read-only status.
-    */
-  bool isReadOnly() const { return bReadOnly; }
 
   /**
    * Checks whether the key has an entry in the currently active group.
@@ -1218,6 +1015,7 @@ public:
    */
   virtual QMap<QString, QString> entryMap(const QString &group) const = 0;
 
+public:
   /**
    * Reparses all configuration files. This is useful for programs
    * that use stand alone graphical configuration tools. The base
@@ -1426,22 +1224,17 @@ protected:
    * A back end for loading/saving to disk in a particular format.
    */
   KConfigBackEnd *backEnd;
+
 public:
   /**
    * Overloaded public methods:
    */
-  void setGroup( const QByteArray &pGroup );
-  void setGroup( const char *pGroup );
-  bool hasGroup(const QByteArray &_pGroup) const;
-  bool hasGroup(const char *_pGroup) const;
+  KDE_DEPRECATED void setGroup( const QByteArray &pGroup );
+  KDE_DEPRECATED void setGroup( const char *pGroup );
   bool hasKey( const char *pKey ) const;
 
-protected:
-  QByteArray readEntryUtf8( const char *pKey) const;
-
-  /**
-   * The currently selected group. */
-  QByteArray mGroup;
+  bool hasGroup(const QByteArray &_pGroup) const;
+  bool hasGroup(const char *_pGroup) const;
 
   /**
    * The locale to retrieve keys under if possible, i.e en_US or fr.  */
@@ -1453,9 +1246,12 @@ protected:
   bool bDirty;
 
   bool bLocaleInitialized;
-  bool bReadOnly;           // currently only used by KSimpleConfig
   mutable bool bExpand;     // whether dollar expansion is used
   KComponentData *mComponentData;
+
+  /**
+   * The currently selected group. */
+  KConfigGroup mGroup;
 
 protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining
@@ -1468,193 +1264,5 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )
-
-#define KCONFIG_DECLARE_ENUM_QOBJECT(Class, Enum)                         \
-template <>                                                               \
-inline Class::Enum KConfigBase::readEntry(const char* pKey, const Class::Enum& value) const\
-{                                                                         \
-const QMetaObject* Mobj = &Class::staticMetaObject;                       \
-const QMetaEnum Menum = Mobj->enumerator(Mobj->indexOfEnumerator(#Enum)); \
-int tmp = value;                                                          \
-if (Menum.isFlag()) {                                                     \
-  const QString str = readEntry(pKey, Menum.valueToKeys(tmp));            \
-  tmp = Menum.keysToValue(str.toLatin1().constData());                    \
-} else {                                                                  \
-  const QString str = readEntry(pKey, Menum.valueToKey(tmp));             \
-  tmp = Menum.keyToValue(str.toLatin1().constData());                     \
-}                                                                         \
-return static_cast<Class::Enum>(tmp);                                     \
-}                                                                         \
-template <>                                                               \
-void KConfigBase::writeEntry(const char* pKey, const Class::Enum& value, WriteConfigFlags flags)\
-{                                                                         \
-const QMetaObject* Mobj = &Class::staticMetaObject;                       \
-const QMetaEnum Menum = Mobj->enumerator(Mobj->indexOfEnumerator(#Enum)); \
-if (Menum.isFlag()) writeEntry(pKey, Menum.valueToKeys(value), flags);    \
-else writeEntry(pKey, Menum.valueToKey(value), flags);                    \
-}
-
-#define KCONFIG_QVARIANT_CHECK 1
-#if KCONFIG_QVARIANT_CHECK
-#include <conversion_check.h>
-#endif
-
-/*
- * just output error, or any wrong config file will
- * let the app exit, which is IMHO bad
- */
-#define kcbError kWarning
-
-template <typename T>
-inline QList<T> KConfigBase::readEntry( const char* pKey, const QList<T>& aDefault) const
-{
-  QVariant::Type wanted = QVariant(T()).type();
-#if KCONFIG_QVARIANT_CHECK
-  ConversionCheck::to_QVariant<T>();
-  ConversionCheck::to_QString<T>();
-#else
-  kcbError(!QVariant(QVariant::String).canConvert(wanted))
-    << "QString cannot convert to \"" << QVariant::typeToName(wanted)
-    << "\" information will be lost" << endl;
-#endif
-
-  if (!hasKey(pKey))
-    return aDefault;
-
-  QList<QVariant> vList;
-
-  if (!aDefault.isEmpty()) {
-    foreach (const T &aValue, aDefault)
-      vList.append( aValue );
-  }
-  vList = readEntry( pKey, vList );
-
-  QList<T> list;
-  if (!vList.isEmpty()) {
-    foreach (QVariant aValue, vList) {
-      kcbError(!aValue.convert(wanted)) << "conversion to "
-        << QVariant::typeToName(wanted) << " information has been lost" << endl;
-      list.append( qvariant_cast<T>(aValue) );
-    }
-  }
-
-  return list;
-}
-
-template <typename T>
-inline T KConfigBase::readEntry( const char* pKey, const T& aDefault) const
-{
-#if KCONFIG_QVARIANT_CHECK
-  ConversionCheck::to_QVariant<T>();
-#endif
-  return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault)));
-}
-
-template <typename T>
-void KConfigBase::writeEntry( const char* pKey, const QList<T>& value,
-                              WriteConfigFlags pFlags )
-{
-#if KCONFIG_QVARIANT_CHECK
-  ConversionCheck::to_QVariant<T>();
-  ConversionCheck::to_QString<T>();
-#else
-  QVariant dummy QVariant(T());
-  kcbError(!dummy.canConvert(QVariant::String))
-    << QVariant::typeToName(dummy.type())
-    << " cannot convert to QString information will be lost" << endl;
-#endif
-
-  QVariantList vList;
-  foreach(const T &aValue, value)
-    vList.append(aValue);
-
-  writeEntry( pKey, QVariant(vList), pFlags );
-}
-
-template <typename T>
-inline void KConfigBase::writeEntry( const char* pKey, const T& value,
-                              WriteConfigFlags pFlags )
-{
-#if KCONFIG_QVARIANT_CHECK
-  ConversionCheck::to_QVariant<T>();
-#endif
-  writeEntry( pKey, QVariant(value), pFlags );
-}
-
-#ifdef KDE3_SUPPORT
-/**
-  * Helper class to facilitate working with KConfig / KSimpleConfig
-  * groups.
-  *
-  * Careful programmers always set the group of a
-  * KConfig KSimpleConfig object to the group they want to read from
-  * and set it back to the old one of afterwards. This is usually
-  * written as:
-  * \code
-  *
-  * QString oldgroup config->group();
-  * config->setGroup( "TheGroupThatIWant" );
-  * ...
-  * config->writeEntry( "Blah", "Blubb" );
-  *
-  * config->setGroup( oldgroup );
-  * \endcode
-  *
-  * In order to facilitate this task, you can use
-  * KConfigGroupSaver. Simply construct such an object ON THE STACK
-  * when you want to switch to a new group. Then, when the object goes
-  * out of scope, the group will automatically be restored. If you
-  * want to use several different groups within a function or method,
-  * you can still use KConfigGroupSaver: Simply enclose all work with
-  * one group (including the creation of the KConfigGroupSaver object)
-  * in one block.
-  *
-  * @deprecated This class is deprecated and will be removed in KDE 4.
-  * KConfigGroup provides similar functionality in a more object oriented
-  * way.
-  *
-  * @author Matthias Kalle Dalheimer <kalle@kde.org>
-  * @see KConfigBase, KConfig, KSimpleConfig, KConfigGroup
-  * @short Helper class for easier use of KConfig/KSimpleConfig groups
-  */
-class KDECORE_EXPORT KConfigGroupSaver // KDE4 remove
-{
-public:
-  /**
-   * Constructor. You pass a pointer to the KConfigBase-derived
-   * object you want to work with and a string indicating the _new_
-   * group.
-   *
-   * @param pConfig The KConfigBase-derived object this
-   *               KConfigGroupSaver works on.
-   * @param group  The new group that the config object should switch to.
-   */
-  KConfigGroupSaver( KConfigBase* pConfig, const QString &group )
-      : _config(pConfig), _oldgroup(pConfig->group())
-        { _config->setGroup( group ); }
-
-  KConfigGroupSaver( KConfigBase* pConfig, const char *group )
-      : _config(pConfig), _oldgroup(pConfig->group())
-        { _config->setGroup( group ); }
-
-  KConfigGroupSaver( KConfigBase* pConfig, const QByteArray &group )
-      : _config(pConfig), _oldgroup(pConfig->group())
-        { _config->setGroup( group ); }
-
-  ~KConfigGroupSaver() { _config->setGroup( _oldgroup ); }
-
-    KConfigBase* config() { return _config; };
-
-private:
-  KConfigBase* _config;
-  QString _oldgroup;
-
-  KConfigGroupSaver(const KConfigGroupSaver&);
-  KConfigGroupSaver& operator=(const KConfigGroupSaver&);
-
-  class Private;
-  Private *d;
-};
-#endif
 
 #endif

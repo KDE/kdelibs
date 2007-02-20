@@ -218,7 +218,7 @@ public:
 #include "khtml_factory.h"
 #include <kio/job.h>
 #include <kmainwindow.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kglobalsettings.h>
 
 #include <qcolor.h>
@@ -678,7 +678,7 @@ int main(int argc, char *argv[])
     KApplication a;
 //    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
-    KSimpleConfig sc1( "cryptodefaults" );
+    KConfig sc1( "cryptodefaults", KConfig::OnlyLocal );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
     KSharedConfigPtr config = KGlobal::mainComponent().config();
@@ -717,7 +717,7 @@ int main(int argc, char *argv[])
     int rv = 1;
 
     if ( args->isSet( "debug" ) ) {
-        KSimpleConfig dc( "kdebugrc" );
+        KConfig dc( "kdebugrc", KConfig::OnlyLocal );
         static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
                                6031, 6035, 6036, 6040, 6041, 6045,
                                6050, 6060, 6061, 7000, 7006, 170,

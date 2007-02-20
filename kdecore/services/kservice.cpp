@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
+#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 
 #include "kservicefactory.h"
@@ -78,12 +79,14 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     const QString entryPath = q->entryPath();
     bool absPath = !QDir::isRelativePath(entryPath);
 
-    QMap<QString, QString> entryMap = config->entryMap(config->group());
+    // TODO: it makes sense to have a KConstConfigGroup I guess
+    KConfigGroup desktopGroup = const_cast<KDesktopFile*>(config)->desktopGroup();
+    QMap<QString, QString> entryMap = desktopGroup.entryMap();
 
     entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
     entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
 
-    q->m_bDeleted = config->readEntry("Hidden", false);
+    q->m_bDeleted = desktopGroup.readEntry("Hidden", false);
     entryMap.remove("Hidden");
     if (q->m_bDeleted)
     {
@@ -95,7 +98,7 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Name");
     if ( m_strName.isEmpty() )
     {
-        if (config->readEntry( "Exec" ).isEmpty())
+        if (desktopGroup.readEntry( "Exec" ).isEmpty())
         {
             m_bValid = false;
             return;
@@ -109,7 +112,7 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
             m_strName = m_strName.left(i);
     }
 
-    m_strType = config->readEntry( "Type" );
+    m_strType = desktopGroup.readEntry( "Type" );
     entryMap.remove("Type");
     if ( m_strType.isEmpty() )
     {
@@ -169,7 +172,7 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     if (pos != -1)
         _name = _name.left(pos);
 
-    m_strExec = config->readPathEntry( "Exec" );
+    m_strExec = desktopGroup.readPathEntry( "Exec" );
     entryMap.remove("Exec");
     if (m_strType == "Application" && m_strExec.isEmpty())
     {
@@ -177,42 +180,42 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
                        << " has Type=" << m_strType << " but has no Exec field." << endl;
     }
 
-    m_strIcon = config->readEntry( "Icon" );
+    m_strIcon = desktopGroup.readEntry( "Icon" );
     entryMap.remove("Icon");
-    m_bTerminal = config->readEntry( "Terminal", false); // should be a property IMHO
+    m_bTerminal = desktopGroup.readEntry( "Terminal", false); // should be a property IMHO
     entryMap.remove("Terminal");
-    m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
+    m_strTerminalOptions = desktopGroup.readEntry( "TerminalOptions" ); // should be a property IMHO
     entryMap.remove("TerminalOptions");
-    m_strPath = config->readPathEntry( "Path" );
+    m_strPath = desktopGroup.readPathEntry( "Path" );
     entryMap.remove("Path");
     m_strComment = config->readComment();
     entryMap.remove("Comment");
     m_strGenName = config->readGenericName();
     entryMap.remove("GenericName");
-    QString _untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
+    QString _untranslatedGenericName = desktopGroup.readEntryUntranslated( "GenericName" );
     entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
 
-    m_lstKeywords = config->readEntry("Keywords", QStringList());
+    m_lstKeywords = desktopGroup.readEntry("Keywords", QStringList());
     entryMap.remove("Keywords");
-    categories = config->readEntry("Categories", QStringList(), ';');
+    categories = desktopGroup.readEntry("Categories", QStringList(), ';');
     entryMap.remove("Categories");
-    m_strLibrary = config->readEntry( "X-KDE-Library" );
+    m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
 
-    m_lstServiceTypes = config->readEntry( "ServiceTypes", QStringList() );
+    m_lstServiceTypes = desktopGroup.readEntry( "ServiceTypes", QStringList() );
     entryMap.remove("ServiceTypes");
-    m_lstServiceTypes += config->readEntry( "MimeType", QStringList(), ';' ); // freedesktop.org standard
+    m_lstServiceTypes += desktopGroup.readEntry( "MimeType", QStringList(), ';' ); // freedesktop.org standard
     entryMap.remove("MimeType");
 
     if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
         // Applications implement the service type "Application" ;-)
         m_lstServiceTypes += "Application";
 
-    QString dbusStartupType = config->readEntry("X-DBUS-StartupType").toLower();
+    QString dbusStartupType = desktopGroup.readEntry("X-DBUS-StartupType").toLower();
     //Compatibility
-    if( dbusStartupType.isEmpty() && config->hasKey("X-DCOP-ServiceType"))
+    if( dbusStartupType.isEmpty() && desktopGroup.hasKey("X-DCOP-ServiceType"))
     {
-        dbusStartupType = config->readEntry("X-DCOP-ServiceType").toLower();
+        dbusStartupType = desktopGroup.readEntry("X-DCOP-ServiceType").toLower();
         entryMap.remove("X-DCOP-ServiceType");
     }
     entryMap.remove("X-DBUS-StartupType");
@@ -227,10 +230,10 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
 
     m_strDesktopEntryName = _name.toLower();
 
-    m_bAllowAsDefault = config->readEntry("AllowDefault", true);
+    m_bAllowAsDefault = desktopGroup.readEntry("AllowDefault", true);
     entryMap.remove("AllowDefault");
 
-    m_initialPreference = config->readEntry( "InitialPreference", 1 );
+    m_initialPreference = desktopGroup.readEntry( "InitialPreference", 1 );
     entryMap.remove("InitialPreference");
 
     // Store all additional entries in the property map.

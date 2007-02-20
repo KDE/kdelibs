@@ -28,7 +28,7 @@
 #include <klocale.h>
 #include <kservicetypetrader.h>
 
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 

@@ -26,8 +26,8 @@
 #include <QtGui/QFont>
 #include <kconfiggroup.h>
 
-KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
-KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
+KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
+KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
 
 QTEST_KDEMAIN( KConfigTest, NoGUI )
 
@@ -59,76 +59,76 @@ void KConfigTest::initTestCase()
 {
   KConfig sc( "kconfigtest" );
 
-  sc.setGroup("AAA");
-  sc.writeEntry("stringEntry1", STRINGENTRY1,
+  KConfigGroup cg(&sc, "AAA");
+  cg.writeEntry("stringEntry1", STRINGENTRY1,
                 KConfigBase::Persistent|KConfigBase::Global);
-  sc.deleteEntry("stringEntry2", KConfigBase::Global);
+  cg.deleteEntry("stringEntry2", KConfigBase::Global);
 
-  sc.setGroup("Hello");
-  sc.writeEntry( "boolEntry1", BOOLENTRY1 );
-  sc.writeEntry( "boolEntry2", BOOLENTRY2 );
+  cg.changeGroup("Hello");
+  cg.writeEntry( "boolEntry1", BOOLENTRY1 );
+  cg.writeEntry( "boolEntry2", BOOLENTRY2 );
 
   QByteArray data( UTF8BITENTRY );
   QCOMPARE( data.size(), 12 ); // the source file is in utf8
-  sc.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
-  sc.writeEntry( "Test2", "");
-  sc.writeEntry( "stringEntry1", STRINGENTRY1 );
-  sc.writeEntry( "stringEntry2", STRINGENTRY2 );
-  sc.writeEntry( "stringEntry3", STRINGENTRY3 );
-  sc.writeEntry( "stringEntry4", STRINGENTRY4 );
-  sc.writeEntry( "stringEntry5", STRINGENTRY5 );
-//  sc.writeEntry( "stringEntry6", STRINGENTRY6 );
-  sc.writeEntry( "keywith=equalsign", STRINGENTRY1 );
-  sc.deleteEntry( "stringEntry5" );
-  sc.deleteEntry( "stringEntry6" );
-  sc.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
+  cg.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
+  cg.writeEntry( "Test2", "");
+  cg.writeEntry( "stringEntry1", STRINGENTRY1 );
+  cg.writeEntry( "stringEntry2", STRINGENTRY2 );
+  cg.writeEntry( "stringEntry3", STRINGENTRY3 );
+  cg.writeEntry( "stringEntry4", STRINGENTRY4 );
+  cg.writeEntry( "stringEntry5", STRINGENTRY5 );
+//  cg.writeEntry( "stringEntry6", STRINGENTRY6 );
+  cg.writeEntry( "keywith=equalsign", STRINGENTRY1 );
+  cg.deleteEntry( "stringEntry5" );
+  cg.deleteEntry( "stringEntry6" );
+  cg.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
                  KConfigBase::Global|KConfigBase::Persistent );
-  sc.writeEntry( "doubleEntry1", DOUBLEENTRY );
+  cg.writeEntry( "doubleEntry1", DOUBLEENTRY );
 
   sc.deleteGroup("deleteMe");
 
-  sc.setGroup("ComplexTypes");
-  sc.writeEntry( "rectEntry", RECTENTRY );
-  sc.writeEntry( "pointEntry", POINTENTRY );
-  sc.writeEntry( "sizeEntry", SIZEENTRY );
-  sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
-  sc.writeEntry( "dateEntry", DATETIMEENTRY.date() );
-  sc.writeEntry( "colorEntry1", COLORENTRY1 );
-  sc.writeEntry( "colorEntry2", COLORENTRY2 );
-  sc.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
-  sc.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
-  sc.writeEntry( "fontEntry", FONTENTRY );
+  cg.changeGroup("ComplexTypes");
+  cg.writeEntry( "rectEntry", RECTENTRY );
+  cg.writeEntry( "pointEntry", POINTENTRY );
+  cg.writeEntry( "sizeEntry", SIZEENTRY );
+  cg.writeEntry( "dateTimeEntry", DATETIMEENTRY );
+  cg.writeEntry( "dateEntry", DATETIMEENTRY.date() );
+  cg.writeEntry( "colorEntry1", COLORENTRY1 );
+  cg.writeEntry( "colorEntry2", COLORENTRY2 );
+  cg.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
+  cg.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
+  cg.writeEntry( "fontEntry", FONTENTRY );
 
-  sc.setGroup( "ListTypes" );
-  sc.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
-  sc.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
-  sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
-  sc.writeEntry( "variantListEntry", VARIANTLISTENTRY );
+  cg.changeGroup( "ListTypes" );
+  cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
+  cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
+  cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
+  cg.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
-  sc.setGroup( "EnumTypes" );
-  sc.writeEntry( "enum-10", KConfigTest::Tens );
+  cg.changeGroup( "EnumTypes" );
+  cg.writeEntry( "enum-10", KConfigTest::Tens );
 
 #ifndef Q_CC_MSVC
-  sc.writeEntry( "enum-100", KConfigTest::Hundreds );
+  cg.writeEntry( "enum-100", KConfigTest::Hundreds );
 #else
-  sc.writeEntry( "enum-100", KConfigTest::Hundreds, KConfigBase::Normal );
+  cg.writeEntry( "enum-100", KConfigTest::Hundreds, KConfigBase::Normal );
 #endif
 
-  sc.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
+  cg.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
 
 #ifndef Q_CC_MSVC
-  sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
+  cg.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
 #else
-  sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1), KConfigBase::Normal );
+  cg.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1), KConfigBase::Normal );
 #endif
 
   sc.sync();
 
   KConfig sc1("kdebugrc");
-  sc1.setGroup("0");
-  sc1.writeEntry("AbortFatal", false);
-  sc1.writeEntry("WarnOutput", 0);
-  sc1.writeEntry("FatalOutput", 0);
+  KConfigGroup sg0(&sc1, "0");
+  sg0.writeEntry("AbortFatal", false);
+  sg0.writeEntry("WarnOutput", 0);
+  sg0.writeEntry("FatalOutput", 0);
   sc1.sync();
 }
 
@@ -152,17 +152,17 @@ void KConfigTest::revertEntries()
 //  qDebug("Reverting entries");
   KConfig sc( "kconfigtest" );
 
-  sc.setGroup("Hello");
-  sc.revertToDefault( "boolEntry1" );
-  sc.revertToDefault( "boolEntry2" );
+  KConfigGroup cg(&sc, "Hello");
+  cg.revertToDefault( "boolEntry1" );
+  cg.revertToDefault( "boolEntry2" );
 
-  sc.revertToDefault( "Test" );
-  sc.revertToDefault( "Test2" );
-  sc.revertToDefault( "stringEntry1" );
-  sc.revertToDefault( "stringEntry2" );
-  sc.revertToDefault( "stringEntry3" );
-  sc.revertToDefault( "stringEntry4" );
-  sc.revertToDefault( "stringEntry5" );
+  cg.revertToDefault( "Test" );
+  cg.revertToDefault( "Test2" );
+  cg.revertToDefault( "stringEntry1" );
+  cg.revertToDefault( "stringEntry2" );
+  cg.revertToDefault( "stringEntry3" );
+  cg.revertToDefault( "stringEntry4" );
+  cg.revertToDefault( "stringEntry5" );
   sc.sync();
 }
 
@@ -178,33 +178,33 @@ void KConfigTest::testSimple()
   QVERIFY( !bImmutable );
   //qDebug("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
-  sc2.setGroup("AAA");
-  QVERIFY( sc2.hasKey( "stringEntry1" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  QCOMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
-  QVERIFY( !sc2.hasKey( "stringEntry2" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry2", QString("bla") ), QString( "bla" ) );
+  sc3.changeGroup("AAA");
+  QVERIFY( sc3.hasKey( "stringEntry1" ) );
+  QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  QCOMPARE( sc3.entryIsImmutable("stringEntry1"), bImmutable );
+  QVERIFY( !sc3.hasKey( "stringEntry2" ) );
+  QCOMPARE( sc3.readEntry( "stringEntry2", QString("bla") ), QString( "bla" ) );
 
-  QVERIFY( !sc2.hasDefault( "stringEntry1" ) );
+  QVERIFY( !sc3.hasDefault( "stringEntry1" ) );
 
-  sc2.setGroup("Hello");
-  QCOMPARE( sc2.readEntry( "Test", QByteArray() ), QByteArray( UTF8BITENTRY ) );
-  QCOMPARE( sc2.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
-  QCOMPARE( sc2.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
-  QCOMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  QCOMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
-  QCOMPARE( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
-  QCOMPARE( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
-  QVERIFY( !sc2.hasKey( "stringEntry5" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry5", QString("test") ), QString( "test" ) );
-  QVERIFY( !sc2.hasKey( "stringEntry6" ) );
-  QCOMPARE( sc2.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
-  QCOMPARE( sc2.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
-  QCOMPARE( sc2.readEntry( "boolEntry2", false ), BOOLENTRY2 );
+  sc3.changeGroup("Hello");
+  QCOMPARE( sc3.readEntry( "Test", QByteArray() ), QByteArray( UTF8BITENTRY ) );
+  QCOMPARE( sc3.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
+  QCOMPARE( sc3.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
+  QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  QCOMPARE( sc3.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
+  QCOMPARE( sc3.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
+  QCOMPARE( sc3.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
+  QVERIFY( !sc3.hasKey( "stringEntry5" ) );
+  QCOMPARE( sc3.readEntry( "stringEntry5", QString("test") ), QString( "test" ) );
+  QVERIFY( !sc3.hasKey( "stringEntry6" ) );
+  QCOMPARE( sc3.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
+  QCOMPARE( sc3.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
+  QCOMPARE( sc3.readEntry( "boolEntry2", false ), BOOLENTRY2 );
 
 #if 0
   QString s;
-  s = sc2.readEntry( "keywith=equalsign" );
+  s = sc3.readEntry( "keywith=equalsign" );
   fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.toLatin1().constData());
   if (s == STRINGENTRY1)
     fprintf(stderr, "OK\n");
@@ -214,66 +214,65 @@ void KConfigTest::testSimple()
   }
 #endif
 
-  QCOMPARE( sc2.readEntry( "byteArrayEntry1", QByteArray() ),
+  QCOMPARE( sc3.readEntry( "byteArrayEntry1", QByteArray() ),
             QByteArray( STRINGENTRY1 ) );
-  QCOMPARE( sc2.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
+  QCOMPARE( sc3.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
 }
 
 void KConfigTest::testLists()
 {
   KConfig sc2( "kconfigtest" );
-  sc2.setGroup("ListTypes");
+  KConfigGroup sc3(&sc2, "ListTypes");
 
-  QCOMPARE( sc2.readEntry( QString("stringListEntry"), QStringList()),
+  QCOMPARE( sc3.readEntry( QString("stringListEntry"), QStringList()),
             STRINGLISTENTRY );
 
-  QCOMPARE( sc2.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
+  QCOMPARE( sc3.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
   QList<int> expectedIntList = INTLISTENTRY1;
-  QVERIFY( sc2.readEntry( "listOfIntsEntry1", QList<int>() ) == expectedIntList );
+  QVERIFY( sc3.readEntry( "listOfIntsEntry1", QList<int>() ) == expectedIntList );
 
-  QCOMPARE( QVariant(sc2.readEntry( "variantListEntry", VARIANTLISTENTRY )).toStringList(),
+  QCOMPARE( QVariant(sc3.readEntry( "variantListEntry", VARIANTLISTENTRY )).toStringList(),
             QVariant(VARIANTLISTENTRY).toStringList() );
 
-  QCOMPARE( sc2.readEntry( "listOfByteArraysEntry1", QList<QByteArray>()), BYTEARRAYLISTENTRY1 );
+  QCOMPARE( sc3.readEntry( "listOfByteArraysEntry1", QList<QByteArray>()), BYTEARRAYLISTENTRY1 );
 }
 
 void KConfigTest::testComplex()
 {
   KConfig sc2( "kconfigtest" );
-  sc2.setGroup("ComplexTypes");
+  KConfigGroup sc3(&sc2, "ComplexTypes");
 
-  QCOMPARE( sc2.readEntry( "pointEntry", QPoint() ), POINTENTRY );
-  QCOMPARE( sc2.readEntry( "sizeEntry", SIZEENTRY ), SIZEENTRY);
-  QCOMPARE( sc2.readEntry( "rectEntry", QRect(1,2,3,4) ), RECTENTRY );
-  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDateTime() ).toString(Qt::ISODate),
+  QCOMPARE( sc3.readEntry( "pointEntry", QPoint() ), POINTENTRY );
+  QCOMPARE( sc3.readEntry( "sizeEntry", SIZEENTRY ), SIZEENTRY);
+  QCOMPARE( sc3.readEntry( "rectEntry", QRect(1,2,3,4) ), RECTENTRY );
+  QCOMPARE( sc3.readEntry( "dateTimeEntry", QDateTime() ).toString(Qt::ISODate),
             DATETIMEENTRY.toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
+  QCOMPARE( sc3.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
-  QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ), DATETIMEENTRY.date() );
-  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", Qt::black )).toString(),
+  QCOMPARE( sc3.readEntry( "dateTimeEntry", QDate() ), DATETIMEENTRY.date() );
+  QCOMPARE( QVariant(sc3.readEntry( "colorEntry1", Qt::black )).toString(),
             QVariant(COLORENTRY1).toString() );
-  QCOMPARE( sc2.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
-  QCOMPARE( sc2.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
-  QCOMPARE( sc2.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
-  QCOMPARE( sc2.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
-  QCOMPARE( sc2.readEntry( "fontEntry", QFont() ), FONTENTRY );
+  QCOMPARE( sc3.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
+  QCOMPARE( sc3.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
+  QCOMPARE( sc3.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
+  QCOMPARE( sc3.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
+  QCOMPARE( sc3.readEntry( "fontEntry", QFont() ), FONTENTRY );
 }
 
 void KConfigTest::testEnums()
 {
   KConfig sc("kconfigtest");
+  KConfigGroup sc3(&sc, "EnumTypes" );
 
-  sc.setGroup( "EnumTypes" );
+  QCOMPARE( sc3.readEntry( "enum-10" ), QString("Tens"));
+  QVERIFY( sc3.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Ones);
+  QVERIFY( sc3.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Tens);
 
-  QCOMPARE( sc.readEntry( "enum-10" ), QString("Tens"));
-  QVERIFY( sc.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Ones);
-  QVERIFY( sc.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Tens);
+  QCOMPARE( sc3.readEntry( "flags-bit0" ), QString("bit0"));
+  QVERIFY( sc3.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
 
-  QCOMPARE( sc.readEntry( "flags-bit0" ), QString("bit0"));
-  QVERIFY( sc.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
-
-  QCOMPARE( sc.readEntry( "flags-bit0-bit1" ), QString("bit1|bit0") );
-  QVERIFY( sc.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
+  QCOMPARE( sc3.readEntry( "flags-bit0-bit1" ), QString("bit1|bit0") );
+  QVERIFY( sc3.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
            (KConfigTest::bit0|KConfigTest::bit1) );
 }
 
@@ -282,91 +281,91 @@ void KConfigTest::testInvalid()
   KConfig sc( "kconfigtest" );
 
   // all of these should print a message to the kdebug.dbg file
-  sc.setGroup( "InvalidTypes" );
-  sc.writeEntry( "badList", VARIANTLISTENTRY2 );
+  KConfigGroup sc3(&sc, "InvalidTypes" );
+  sc3.writeEntry( "badList", VARIANTLISTENTRY2 );
 
   QList<int> list;
 
   // 1 element list
   list << 1;
-  sc.writeEntry( QString("badList"), list);
+  sc3.writeEntry( QString("badList"), list);
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
-  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
-  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
-  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
-  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
 
   // 2 element list
   list << 2;
-  sc.writeEntry( "badList", list);
+  sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
-  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
-  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
 
   // 3 element list
   list << 303;
-  sc.writeEntry( "badList", list);
+  sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
-  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
-  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
-  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() ); // out of bounds
-  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
+  QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() ); // out of bounds
+  QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
 
   // 4 element list
   list << 4;
-  sc.writeEntry( "badList", list );
+  sc3.writeEntry( "badList", list );
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
-  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
-  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
-  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
+  QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
 
   list[2] = -3;
-  sc.writeEntry( "badList", list ); sc.sync();
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
+  sc3.writeEntry( "badList", list ); sc.sync();
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   // 5 element list
   list[2] = 3;
   list << 5;
-  sc.writeEntry( "badList", list);
+  sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
-  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
-  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
-  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
-  QVERIFY( sc.readEntry( "badList", QDate() ) == QDate() );
-  QVERIFY( sc.readEntry( "badList", QDateTime() ) == QDateTime() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
+  QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
 
   // 6 element list
   list << 6;
-  sc.writeEntry( "badList", list);
+  sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc.readEntry( "badList", QColor() ) == QColor() );
-  QVERIFY( sc.readEntry( "badList", QPoint() ) == QPoint() );
-  QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
-  QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
+  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
+  QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
+  QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
+  QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
 }
 
 void KConfigTest::testDelete()
 {
   KConfig sc( "kconfigtest" );
-  sc.setGroup("Hello");
+  KConfigGroup sc3(&sc, "Hello");
 
-  sc.deleteEntry("Test");
-  QCOMPARE( sc.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
+  sc3.deleteEntry("Test");
+  QCOMPARE( sc3.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
 
   sc.deleteGroup("ComplexTypes");
 

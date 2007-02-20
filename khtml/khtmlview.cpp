@@ -69,13 +69,13 @@
 #include <kapplication.h>
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kglobalsettings.h> 
+#include <kglobalsettings.h>
 #include <kdialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <knotification.h>
 #include <kprinter.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kstandardshortcut.h>
 #include <kstringhandler.h>
@@ -332,7 +332,7 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
-    KSimpleConfig *formCompletions;
+    KConfig *formCompletions;
 
     bool paged;
 
@@ -585,7 +585,7 @@ int KHTMLView::contentsHeight() const
 
 void KHTMLView::resizeContents(int w, int h)
 {
-    if (!widget()) 
+    if (!widget())
         return;
     widget()->resize(w, h);
 }
@@ -640,8 +640,8 @@ QPoint KHTMLView::viewportToContents(const QPoint& p) const
     return QPoint(p.x()+contentsX(), p.y()+contentsY());
 }
 
-void KHTMLView::viewportToContents(int x, int y, int& cx, int& cy) const 
-{ 
+void KHTMLView::viewportToContents(int x, int y, int& cx, int& cy) const
+{
     QPoint p(x,y);
     p = viewportToContents(p);
     cx = p.x();
@@ -705,7 +705,7 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
     int dummy = 0;
     revertTransforms(x, y, dummy, dummy);
 }
-   
+
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     int dw = e->oldSize().width() - e->size().width();
@@ -748,7 +748,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     r = r.intersect(v);
     if (!r.isValid() || r.isEmpty()) return;
-    
+
     if (d->haveZoom()) {
         p.scale( d->zoomLevel/100., d->zoomLevel/100.);
 
@@ -758,7 +758,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
         r.setHeight(r.height()*100/d->zoomLevel);
     }
     p.setClipRect(r);
-  
+
     int ex = r.x();
     int ey = r.y();
     int ew = r.width();
@@ -1184,7 +1184,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     // a widget may be the real target of this event (e.g. if a scrollbar's slider is being moved)
     if (d->m_mouseEventsTarget && fn && fn->renderer() && fn->renderer()->isWidget())
        target = fn;
-                    
+
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,target,mev.innerNonSharedNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -1925,7 +1925,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 
     QWidget *view = widget();
     if (o == view) {
-        if (widgetEvent(e)) 
+        if (widgetEvent(e))
             return true;
     } else if (o->isWidgetType()) {
 	QWidget *v = static_cast<QWidget *>(o);
@@ -1944,7 +1944,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                 // implicitly call qt_syncBackingStore(w)
                 static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(e);
                 block = true;
-                break;	    
+                break;
             }
             case QEvent::UpdateLater:
                 isUpdate = true;
@@ -1960,8 +1960,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                         x += v->x();
                         y += v->y();
                         v = v->parentWidget();
-                    }                                                                                                                                    
-		    
+                    }
+
                     QPoint ap = k->m_kwp->absolutePos();
 		    x += ap.x();
 		    y += ap.y();
@@ -1997,7 +1997,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-	        
+
 		if (0 && w->parentWidget() == view && !qobject_cast<QScrollBar*>(w) && !::qobject_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = w->mapTo( view, me->pos());
@@ -2062,7 +2062,7 @@ bool KHTMLView::widgetEvent(QEvent* e)
       case QEvent::DragLeave:
       case QEvent::Drop:
         return QFrame::event(e);
-      case QEvent::ChildInserted: {      
+      case QEvent::ChildInserted: {
         // we need to install an event filter on all children of the widget() to
         // be able to get correct stacking of children within the document.
         QObject *c = static_cast<QChildEvent *>(e)->child();
@@ -2155,7 +2155,7 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 	scrollY = contentsHeight() - visibleHeight() - contentsY();
 
     horizontalScrollBar()->setValue( horizontalScrollBar()->value()+scrollX );
-    verticalScrollBar()->setValue( verticalScrollBar()->value()+scrollY ); 
+    verticalScrollBar()->setValue( verticalScrollBar()->value()+scrollY );
 
     d->scrollingSelf = false;
 
@@ -3126,7 +3126,7 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
     if (!m_part->settings()->isFormCompletionEnabled())
         return QStringList();
     if (!d->formCompletions)
-        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     return d->formCompletions->readEntry(name, QStringList());
 }
 
@@ -3134,7 +3134,7 @@ void KHTMLView::clearCompletionHistory(const QString& name)
 {
     if (!d->formCompletions)
     {
-        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
     d->formCompletions->writeEntry(name, "");
     d->formCompletions->sync();
@@ -3170,26 +3170,22 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
 void KHTMLView::addNonPasswordStorableSite(const QString& host)
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
 
-    d->formCompletions->setGroup("NonPasswordStorableSites");
-    QStringList sites = d->formCompletions->readEntry("Sites", QStringList());
+    KConfigGroup cg( d->formCompletions, "NonPasswordStorableSites");
+    QStringList sites = cg.readEntry("Sites", QStringList());
     sites.append(host);
-    d->formCompletions->writeEntry("Sites", sites);
-    d->formCompletions->sync();
-    d->formCompletions->setGroup(QString());//reset
+    cg.writeEntry("Sites", sites);
+    cg.sync();
 }
 
 bool KHTMLView::nonPasswordStorableSite(const QString& host) const
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
-    d->formCompletions->setGroup("NonPasswordStorableSites");
-    QStringList sites =  d->formCompletions->readEntry("Sites", QStringList());
-    d->formCompletions->setGroup(QString());//reset
-
+    QStringList sites =  d->formCompletions->group( "NonPasswordStorableSites" ).readEntry("Sites", QStringList());
     return (sites.indexOf(host) != -1);
 }
 
@@ -3214,7 +3210,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     d->underMouseNonShared = targetNodeNonShared;
     if (d->underMouseNonShared)
 	d->underMouseNonShared->ref();
-	
+
     bool isWheelEvent = (mouseEventType == DOM::NodeImpl::MouseWheel);
 
     int exceptioncode = 0;
@@ -3293,13 +3289,13 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
 						detail,screenX,screenY,clientX,clientY,pageX, pageY,
 						ctrlKey,altKey,shiftKey,metaKey,
-						button,0, isWheelEvent ? 0 : _mouse, dblclick, 
+						button,0, isWheelEvent ? 0 : _mouse, dblclick,
 						isWheelEvent ? static_cast<MouseEventImpl::Orientation>(orient) : MouseEventImpl::ONone );
         me->ref();
         if ( !d->m_mouseEventsTarget && RenderLayer::gScrollBar && eventId == EventImpl::MOUSEDOWN_EVENT )
             // button is pressed inside a layer scrollbar, so make it the target for future mousemove events until released
             d->m_mouseEventsTarget = RenderLayer::gScrollBar;
-        if ( d->m_mouseEventsTarget && qobject_cast<QScrollBar*>(d->m_mouseEventsTarget) && 
+        if ( d->m_mouseEventsTarget && qobject_cast<QScrollBar*>(d->m_mouseEventsTarget) &&
              dynamic_cast<KHTMLWidget*>(static_cast<QWidget*>(d->m_mouseEventsTarget)) ) {
             // we have a sticky mouse event target and it is a layer's scrollbar. Forward events manually.
             // ### should use the dom
@@ -3310,7 +3306,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
             if (_mouse->type() == QMouseEvent::MouseButtonPress && _mouse->button() == Qt::RightButton) {
                 QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
                 static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(d->m_mouseEventsTarget))->sendEvent(&cme);
-            }                       
+            }
             swallowEvent = true;
         } else {
             targetNode->dispatchEvent(me,exceptioncode,true);
@@ -3376,11 +3372,11 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     {
         DOM::NodeImpl::MouseEvent mev( e->buttons(), DOM::NodeImpl::MouseWheel );
         m_part->xmlDocImpl()->prepareMouseEvent( false, e->x(), e->y(), &mev );
-        
+
         MouseEventImpl::Orientation o = MouseEventImpl::OVertical;
         if (e->orientation() == Qt::Horizontal)
             o = MouseEventImpl::OHorizontal;
-        
+
         QMouseEvent _mouse(QEvent::MouseMove, e->pos(), Qt::NoButton, e->buttons(), e->modifiers());
         bool swallow = dispatchMouseEvent(EventImpl::KHTML_MOUSEWHEEL_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),
                                                true,-e->delta()/40,&_mouse,true,DOM::NodeImpl::MouseWheel,o);
@@ -3496,7 +3492,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
     QScrollArea::focusOutEvent( e );
 }
 
-void KHTMLView::scrollContentsBy( int dx, int dy ) 
+void KHTMLView::scrollContentsBy( int dx, int dy )
 {
     if ( !d->firstRelayout && !d->complete && m_part->xmlDocImpl() &&
           d->layoutSchedulingEnabled) {
@@ -3517,7 +3513,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
-    d->contentsX = QApplication::isRightToLeft() ? 
+    d->contentsX = QApplication::isRightToLeft() ?
                      horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
     d->contentsY = verticalScrollBar()->value();
 
@@ -3530,12 +3526,12 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
 void KHTMLView::addChild(QWidget * child, int x, int y)
 {
-    if (!child) 
+    if (!child)
         return;
 
     if (child->parent() != widget())
         child->setParent( widget() );
-    
+
     // ### handle pseudo-zooming of non-redirected widgets (e.g. just resize'em)
 
     if (!d->staticWidget)
@@ -3776,7 +3772,7 @@ void KHTMLView::complete( bool pendingAction )
 void KHTMLView::slotMouseScrollTimer()
 {
      horizontalScrollBar()->setValue( horizontalScrollBar()->value() +d->m_mouseScroll_byX );
-     verticalScrollBar()->setValue( verticalScrollBar()->value() +d->m_mouseScroll_byY); 
+     verticalScrollBar()->setValue( verticalScrollBar()->value() +d->m_mouseScroll_byY);
 }
 
 #ifndef KHTML_NO_CARET

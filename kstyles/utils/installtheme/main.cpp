@@ -30,7 +30,7 @@
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 
 //static const char desc[] = I18N_NOOP("KDE Tool to build a cache list of all pixmap themes installed");
@@ -49,13 +49,13 @@ int main(int argc, char **argv)
     for (QStringList::iterator i = themercs.begin(); i!=themercs.end(); ++i)
     {
         QString file=*i;
-        KSimpleConfig config(file, true);
+        KConfig config(file);
         QString name = QFileInfo(file).baseName(); //This is nice and static...
         //So we don't have to worry about our key changing when the language does.
 
-        config.setGroup( "KDE" );
+        KConfigGroup cg(&config, "KDE" );
 
-        if (config.readEntry( "widgetStyle" ) == "basicstyle.la")
+        if (cg.readEntry( "widgetStyle" ) == "basicstyle.la")
         {
             //OK, emit a style entry...
             if (!themes.contains(name)) //Only add first occurrence, i.e. user local one.
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         }
     }
 
-    KSimpleConfig cache( KGlobal::dirs()->saveLocation("config")+"kthemestylerc");
+    KConfig cache( KGlobal::dirs()->saveLocation("config")+"kthemestylerc");
 
 #if 0
 //Doesn't seem to work with present Qt..
@@ -79,13 +79,12 @@ int main(int argc, char **argv)
 
     for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); ++i)
     {
-        cache.setGroup(i.key().toLower());
-        cache.writePathEntry("file",QFileInfo(i.value()).fileName());
+        KConfigGroup cg(&cache, i.key().toLower());
+        cg.writePathEntry("file",QFileInfo(i.value()).fileName());
         themeNames.push_back(i.key());
     }
 
-    cache.setGroup("General");
-    cache.writeEntry("themes", themeNames.join("^e")+"^e");
+    cache.group("General").writeEntry("themes", themeNames.join("^e")+"^e");
 
     return 0;
 }

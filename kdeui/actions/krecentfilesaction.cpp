@@ -31,9 +31,11 @@
 #include <QtCore/QPointer>
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
+#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
 
@@ -195,7 +197,7 @@ void KRecentFilesAction::clear()
     KSelectAction::addAction(d->m_noEntriesAction);
 }
 
-void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
+void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 {
     clear();
 
@@ -204,23 +206,19 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     QString     nameKey;
     QString     nameValue;
     QString      title;
-    QString     oldGroup;
     QStringList lst;
     KUrl        url;
 
-    oldGroup = config->group();
-
-    if (groupname.isEmpty())
-      config->setGroup("RecentFiles");
-    else
-      config->setGroup( groupname );
+    KConfigGroup cg = _config;
+    if ( cg.group().isEmpty())
+        cg.changeGroup("RecentFiles");
 
     bool thereAreEntries=false;
     // read file list
     for( int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        value = config->readPathEntry( key );
+        value = cg.readPathEntry( key );
 	if (value.isEmpty()) continue;
         url = KUrl( value );
 
@@ -233,7 +231,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
           continue;
 
         nameKey = QString( "Name%1" ).arg( i );
-        nameValue = config->readPathEntry( nameKey, url.fileName() );
+        nameValue = cg.readPathEntry( nameKey, url.fileName() );
         title = nameValue + " [" + value + ']';
         if (!value.isNull())
         {
@@ -245,39 +243,34 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     {
 	if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
     }
-    config->setGroup( oldGroup );
 }
 
-void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname )
+void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
 {
     QString     key;
     QString     value;
-    QString     oldGroup;
     QStringList lst = items();
 
-    oldGroup = config->group();
+    KConfigGroup cg = _cg;
+    if (cg.group().isEmpty())
+        cg.changeGroup("RecentFiles");
 
-    QString group = groupname;
-    if (groupname.isEmpty())
-      group = "RecentFiles";
-    config->deleteGroup( group );
-    config->setGroup( group );
+    cg.deleteGroup();
 
     // write file list
     if ( (selectableActionGroup()->actions().count()>1) ||
 	( (selectableActionGroup()->actions().count()==1) && (selectableActionGroup()->actions()[0]!=d->m_noEntriesAction) ) )
     for ( int i = 1 ; i <= selectableActionGroup()->actions().count() ; i++ )
-    {	
+    {
         key = QString( "File%1" ).arg( i );
         // i - 1 because we started from 1
         value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrUrl();
-        config->writePathEntry( key, value );
+        cg.writePathEntry( key, value );
         key = QString( "Name%1" ).arg( i );
         value = d->m_shortNames[ selectableActionGroup()->actions()[ i - 1 ] ];
-        config->writePathEntry( key, value );
+        cg.writePathEntry( key, value );
     }
 
-    config->setGroup( oldGroup );
 }
 
 /* vim: et sw=2 ts=2

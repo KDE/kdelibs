@@ -47,7 +47,7 @@ extern "C" {
 #include <kauthorized.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kde_file.h>
 
@@ -1198,22 +1198,23 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, bool s
             break;
         }
 
-    if( _error )
+    if ( _error )
     {
-	static bool override_loaded = false;
-	static QList< int >* overriden_ports = NULL;
-	if( !override_loaded )
-	{
-	    KConfig cfg( "kio_httprc", true );
-	    overriden_ports = new QList< int >;
-	    *overriden_ports = cfg.readEntry( "OverriddenPorts", QList<int>() );
-	    override_loaded = true;
-	}
-	for( QList< int >::ConstIterator it = overriden_ports->begin();
-	     it != overriden_ports->end();
-	     ++it )
-	    if( overriden_ports->contains( url.port()))
-		_error = 0;
+        static bool override_loaded = false;
+        static QList< int >* overriden_ports = NULL;
+        if( !override_loaded ) {
+            KConfig cfg( "kio_httprc" );
+            overriden_ports = new QList< int >;
+            *overriden_ports = cfg.group(QString()).readEntry( "OverriddenPorts", QList<int>() );
+            override_loaded = true;
+        }
+        for( QList< int >::ConstIterator it = overriden_ports->begin();
+                it != overriden_ports->end();
+                ++it ) {
+            if( overriden_ports->contains( url.port())) {
+                _error = 0;
+            }
+        }
     }
 
     // filter out non https? protocols

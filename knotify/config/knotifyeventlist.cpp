@@ -42,12 +42,12 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 	QString prstring=displayData.toString();
 
 	QItemDelegate::paint(painter, option, index);
-	
+
 	kDebug(300) << k_funcinfo << prstring << endl;
-	
+
 	QRect rect=option.rect;
-	
-	
+
+
 	int mc_x=0;
 	foreach(QString key , prstring.split ("|"))
 	{
@@ -62,12 +62,12 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 			icon = SmallIcon("kicker");
 		else if(key == "Logfile" )
 			icon = SmallIcon("log");
-		else 
+		else
 			continue;
-		
+
 		painter->drawPixmap( rect.left() + mc_x +4, rect.top() + (rect.height() - icon.height())/2, icon );
 		mc_x += icon.width()+4;
-	} 
+	}
 
 }
 
@@ -81,7 +81,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
   setHeaderLabels( headerLabels );
 
   setItemDelegate(new KNotifyEventListDelegate);
-  
+
   connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
 }
 
@@ -98,8 +98,8 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	clear();
 	delete config;
 	delete loconf;
-	config= new KConfig(appname + '/' + appname + ".notifyrc" , true, false, "data"),
-	loconf= new KConfig(appname + ".notifyrc" , false , false );
+	config= new KConfig("data", appname + '/' + appname + ".notifyrc" , KConfig::NoGlobals),
+	loconf= new KConfig(appname + ".notifyrc" , KConfig::NoGlobals);
 
 	QStringList conflist = config->groupList();
 	QRegExp rx("^Event/([^/]*)$");
@@ -107,20 +107,20 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 
 	foreach (QString group , conflist )
 	{
-		config->setGroup(group);
+                KConfigGroup cg(config, group);
 		rx.indexIn(group);
 		QString id=rx.cap(1);
 
 		if(!context_name.isEmpty())
 		{
-			QStringList contexts = config->readEntry("Contexts", QStringList());
+			QStringList contexts = cg.readEntry("Contexts", QStringList());
 			if(!contexts.contains(context_name))
 				continue;
 
 			id=id+'/'+context_name+'/'+context_value;
 		}
-		QString name = config->readEntry("Name");
-		QString description = config->readEntry("Comment");
+		QString name = cg.readEntry("Name");
+		QString description = cg.readEntry("Comment");
 
 		m_elements << new KNotifyEventListItem(this, id, name, description, loconf , config );
 	}

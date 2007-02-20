@@ -50,13 +50,14 @@
 #include <kmenu.h>
 #include <klibloader.h>
 #include <kdialog.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 #include <kactionmenu.h>
+#include <kdesktopfile.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
@@ -153,31 +154,29 @@ void KMMainView::loadParameters()
 
 void KMMainView::restoreSettings()
 {
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("General");
-	setViewType((KMPrinterView::ViewType)conf->readEntry("ViewType", int(KMPrinterView::Icons)));
-	setOrientation(conf->readEntry("Orientation", 1));
-	bool 	view = conf->readEntry("ViewToolBar", false);
+	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	setViewType((KMPrinterView::ViewType)conf.readEntry("ViewType", int(KMPrinterView::Icons)));
+	setOrientation(conf.readEntry("Orientation", 1));
+	bool 	view = conf.readEntry("ViewToolBar", false);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
-	view = conf->readEntry("ViewMenuBar", true);
+	view = conf.readEntry("ViewMenuBar", true);
 	slotToggleMenuBar( view );
 	static_cast<KToggleAction*>( m_actions->action( "view_menubar" ) )->setChecked( view );
-	view = conf->readEntry("ViewPrinterInfos", true);
+	view = conf.readEntry("ViewPrinterInfos", true);
 	slotShowPrinterInfos(view);
 	((KToggleAction*)m_actions->action("view_printerinfos"))->setChecked(view);
 }
 
 void KMMainView::saveSettings()
 {
-	KConfig	*conf = KMFactory::self()->printConfig();
-	conf->setGroup("General");
-	conf->writeEntry("ViewType",(int)m_printerview->viewType());
-	conf->writeEntry("Orientation",orientation() == Qt::Horizontal ? 1 : 0);
-	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
-	conf->writeEntry("ViewMenuBar",static_cast<KToggleAction*>( m_actions->action("view_menubar") )->isChecked());
-	conf->writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());
-	conf->sync();
+	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	conf.writeEntry("ViewType",(int)m_printerview->viewType());
+	conf.writeEntry("Orientation",orientation() == Qt::Horizontal ? 1 : 0);
+	conf.writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
+	conf.writeEntry("ViewMenuBar",static_cast<KToggleAction*>( m_actions->action("view_menubar") )->isChecked());
+	conf.writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());
+	conf.sync();
 }
 
 void KMMainView::initActions()
@@ -323,11 +322,11 @@ void KMMainView::initActions()
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
-		KSimpleConfig	conf(*it);
-		conf.setGroup("Desktop Entry");
-		QAction *action = mact->menu()->addAction(conf.readEntry("Name", "Unnamed"));
+		const KDesktopFile conf(*it);
+		const KConfigGroup cg = conf.desktopGroup();
+		QAction *action = mact->menu()->addAction(cg.readEntry("Name", "Unnamed"));
 		action->setData(mact->menu()->actions().count());
-		m_toollist << conf.readEntry("X-KDE-Library");
+		m_toollist << cg.readEntry("X-KDE-Library");
 	}
 
 	// add actions to the toolbar

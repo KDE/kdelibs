@@ -23,6 +23,8 @@
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kdesktopfile.h>
+#include <kconfiggroup.h>
 #include <kcharsets.h>
 #include <qtextcodec.h>
 
@@ -88,27 +90,26 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
             }
             else if ( res->name() == "application/x-desktop" )
             {
-                KSimpleConfig cfg( file.path(), true );
-                cfg.setDesktopGroup();
-                QString type = cfg.readEntry( "Type" );
+                KDesktopFile cfg( file.path() );
+                QString type = cfg.readType();
                 // Is it really a bookmark file ?
                 if ( type == "Link" )
-                    parseBookmark( parentElem, ep->d_name, cfg, 0 /* desktop group */ );
+                    parseBookmark( parentElem, ep->d_name, cfg.desktopGroup() );
                 else
                     kWarning(7043) << "  Not a link ? Type=" << type << endl;
             }
             else if ( res->name() == "text/plain")
             {
                 // maybe its an IE Favourite..
-                KSimpleConfig cfg( file.path(), true );
+                KConfig cfg( file.path(), KConfig::OnlyLocal );
                 QStringList grp = cfg.groupList().filter( "internetshortcut", Qt::CaseInsensitive );
                 if ( grp.count() == 0 )
                     continue;
-                cfg.setGroup( *grp.begin() );
+                KConfigGroup cg = cfg.group(grp.first());
 
-                QString url = cfg.readPathEntry("URL");
+                QString url = cg.readPathEntry("URL");
                 if (!url.isEmpty() )
-                    parseBookmark( parentElem, ep->d_name, cfg, *grp.begin() );
+                    parseBookmark( parentElem, ep->d_name, cg );
             } else
                 kWarning(7043) << "Invalid bookmark : found mimetype='" << res->name() << "' for file='" << file.path() << "'!" << endl;
         }
@@ -118,13 +119,8 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
 }
 
 void KBookmarkImporter::parseBookmark( QDomElement & parentElem, const QByteArray& _text,
-                                       KSimpleConfig& _cfg, const QString &_group )
+                                       const KConfigGroup &_cfg )
 {
-    if ( !_group.isEmpty() )
-        _cfg.setGroup( _group );
-    else
-        _cfg.setDesktopGroup();
-
     QString url = _cfg.readPathEntry( "URL" );
     QString icon = _cfg.readEntry( "Icon" );
     if (icon.endsWith( ".xpm" ) ) // prevent warnings

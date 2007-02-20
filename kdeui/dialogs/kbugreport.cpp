@@ -32,7 +32,7 @@
 #include <kaboutdata.h>
 #include "ktoolinvocation.h"
 #include <qapplication.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -350,20 +350,20 @@ void KBugReport::slotSetFrom()
   // ### KDE4: why oh why is KEmailSettings in kio?
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
 
+  KConfigGroup cg(&emailConf, "Defaults");
   // find out the default profile
-  emailConf.setGroup( QString::fromLatin1("Defaults") );
   QString profile = QString::fromLatin1("PROFILE_");
-  profile += emailConf.readEntry( QString::fromLatin1("Profile"),
-                                  QString::fromLatin1("Default") );
+  profile += cg.readEntry( QString::fromLatin1("Profile"),
+                           QString::fromLatin1("Default") );
 
-  emailConf.setGroup( profile );
-  QString fromaddr = emailConf.readEntry( "EmailAddress" );
+  cg.changeGroup( profile );
+  QString fromaddr = cg.readEntry( "EmailAddress" );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
      p = getpwuid(getuid());
      fromaddr = QString::fromLatin1(p->pw_name);
   } else {
-     QString name = emailConf.readEntry( "FullName" );
+     QString name = cg.readEntry( "FullName" );
      if (!name.isEmpty())
         fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
   }

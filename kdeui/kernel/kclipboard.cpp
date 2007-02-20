@@ -17,7 +17,7 @@
 */
 
 #include "kclipboard.h"
-#include "kconfig.h"
+#include "ksharedconfig.h"
 #include "kglobal.h"
 #include "kglobalsettings.h"
 #include "kstaticdeleter.h"

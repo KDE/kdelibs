@@ -24,7 +24,7 @@
 #include <kdirwatch.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 
 #include "ksambashare.h"
 
@@ -63,7 +63,7 @@ bool KSambaSharePrivate::load() {
  * @return wether a smb.conf was found.
  **/
 bool KSambaSharePrivate::findSmbConf() {
-  KSimpleConfig config(QLatin1String(FILESHARECONF),true);
+  KConfig config(QLatin1String(FILESHARECONF));
   smbConf = config.readEntry("SMBCONF");
 
   if ( QFile::exists(smbConf) )

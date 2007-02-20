@@ -223,7 +223,7 @@ KSocks *KSocks::self() {
   return _me;
 }
 
-void KSocks::setConfig(KConfigBase *config)
+void KSocks::setConfig(const KConfigGroup *config)
 {
   // We can change the config from disabled to enabled
   // but not the other way around.
@@ -241,7 +241,7 @@ bool KSocks::activated() { return (_me != 0L); }
 // Function for the KControl module to test if the socks support works.
 KDECORE_EXPORT bool kdeHasSocks() { return KSocks::self()->hasSocks(); }
 
-KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
+KSocks::KSocks(const KConfigGroup *config) : _socksLib(0L), _st(0L) {
    _hasSocks = false;
    _useSocks = false;
 

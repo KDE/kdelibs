@@ -28,7 +28,7 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
-#include <ksimpleconfig.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kde_file.h>
@@ -538,18 +538,18 @@ public:
             QString globalConf = confDirs.last() + "kmimemagicrc";
             if ( QFile::exists( globalConf ) )
             {
-                KSimpleConfig cfg( globalConf );
-                cfg.setGroup( "Settings" );
-                tmpDirs = cfg.readEntry( "atimeDirs", QStringList() );
+                tmpDirs = KConfig( globalConf ).
+                          group( "Settings" ).
+                          readEntry( "atimeDirs", QStringList() );
             }
             if ( confDirs.count() > 1 )
             {
                 QString localConf = confDirs.first() + "kmimemagicrc";
                 if ( QFile::exists( localConf ) )
                 {
-                    KSimpleConfig cfg( localConf );
-                    cfg.setGroup( "Settings" );
-                    tmpDirs += cfg.readEntry( "atimeDirs", QStringList() );
+                    tmpDirs += KConfig( localConf ).
+                               group( "Settings" ).
+                               readEntry( "atimeDirs", QStringList() );
                 }
             }
             for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )
