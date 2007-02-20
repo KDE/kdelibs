@@ -58,6 +58,22 @@ void KServiceTest::testByName()
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
 }
 
+
+void KServiceTest::testProperty()
+{
+    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kdeprintd.desktop");
+    QVERIFY(kdeprintd);
+    QCOMPARE(kdeprintd->desktopEntryPath(), QString("kded/kdeprintd.desktop"));
+
+    QCOMPARE(kdeprintd->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
+    QCOMPARE(kdeprintd->property("X-KDE-Kded-autoload").toBool(), false);
+    QCOMPARE(kdeprintd->property("X-KDE-Kded-load-on-demand").toBool(), true);
+
+    KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
+    QVERIFY(kjavaappletviewer);
+    QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
+}
+
 void KServiceTest::testAllServiceTypes()
 {
     if ( !KSycoca::isAvailable() )
@@ -177,6 +193,16 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+}
+
+void KServiceTest::testTraderConstraints()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'ktexteditor_isearch'");
+    QCOMPARE(offers.count(), 1);
+    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
 }
 
 void KServiceTest::testHasServiceType1() // with services constructed with a full path (rare)

@@ -26,9 +26,11 @@ class KServiceTest : public QObject
 private Q_SLOTS:
     void initTestCase();
     void testByName();
+    void testProperty();
     void testAllServiceTypes();
     void testAllServices();
     void testServiceTypeTraderForReadOnlyPart();
+    void testTraderConstraints();
     void testHasServiceType1();
     void testHasServiceType2();
     void testWriteServiceTypeProfile();
