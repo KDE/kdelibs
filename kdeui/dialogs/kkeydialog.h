@@ -2,6 +2,7 @@
     Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 2001,2001 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
+    Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,6 +35,7 @@ class KConfigBase;
 class KGlobalAccel;
 class KShortcut;
 class KKeyChooserItem;
+class KKeyChooserPrivate;
 class KAction;
 
 /**
@@ -165,55 +167,31 @@ public Q_SLOTS:
 	 **/
 	void allDefault();
 
-// KDE4 a lot of stuff in this class should be probably private:
 protected:
 	virtual void showEvent(QShowEvent* event);
  
-	enum { NoKey = 1, DefaultKey, CustomKey };
-
-	void initGUI( ActionTypes type, LetterShortcuts allowLetterShortcuts );
-	void buildListView( uint iList, const QString &title = QString() );
-
-	void updateButtons();
-	void setLocalShortcut( const KShortcut& cut );
-	void setGlobalShortcut( const KShortcut& cut );
-	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
-
-protected Q_SLOTS:
-	void slotLocalNoKey();
-	void slotLocalDefaultKey();
-	void slotLocalCustomKey();
-	void slotLocalCapturedShortcut( const KShortcut& cut );
+private:
+	Q_PRIVATE_SLOT(d, void slotLocalNoKey())
+	Q_PRIVATE_SLOT(d, void slotLocalDefaultKey())
+	Q_PRIVATE_SLOT(d, void slotLocalCustomKey())
+	Q_PRIVATE_SLOT(d, void slotLocalCapturedShortcut( const KShortcut& cut ))
 	
-	void slotGlobalNoKey();
-	void slotGlobalDefaultKey();
-	void slotGlobalCustomKey();
-	void slotGlobalCapturedShortcut( const KShortcut& cut );
+	Q_PRIVATE_SLOT(d, void slotGlobalNoKey())
+	Q_PRIVATE_SLOT(d, void slotGlobalDefaultKey())
+	Q_PRIVATE_SLOT(d, void slotGlobalCustomKey())
+	Q_PRIVATE_SLOT(d, void slotGlobalCapturedShortcut( const KShortcut& cut ))
 
-	void slotListItemSelected( QTreeWidgetItem *item );
-	void slotSettingsChanged( int );
-
-private:
-	bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser );
-	static bool promptForReassign( const QKeySequence& cut, const QString& sAction, ActionType action, QWidget* parent );
-	// Remove the key sequences contained in cut from the standard shortcut @p name
-	// which currently has @p origCut as shortcut.
-	static void removeStandardShortcut( const QString& name, KKeyChooser* chooser, const KShortcut &cut );
-	// Remove the key sequences contained in cut from the global shortcut @p name
-	// which currently has @p origCut as shortcut.
-	static void removeGlobalShortcut( KAction* action, KKeyChooser* chooser, const KShortcut &cut );
-	static void readGlobalKeys( QMap< QString, KShortcut >& map );
-	static bool checkGlobalShortcutsConflictInternal( const KShortcut& cut, bool bWarnUser, QWidget* parent, const QString& ignoreAction = QString() );
-	// Remove the key sequences contained in cut from this item
-	bool removeShortcut( const QString& name, const KShortcut &cut );
-
-private Q_SLOTS:
-	void captureCurrentItem();
-
+	Q_PRIVATE_SLOT(d, void slotListItemSelected( QTreeWidgetItem *item ))
+	Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ))
+        
+	Q_PRIVATE_SLOT(d, void captureCurrentItem())
 
 private:
-	class KKeyChooserPrivate* const d;
 	friend class KKeyDialog;
+	friend class KKeyChooserPrivate;
+	KKeyChooserPrivate* const d;
+        
+        Q_DISABLE_COPY(KKeyChooser)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KKeyChooser::ActionTypes)
@@ -293,8 +271,11 @@ public:
 	static int configure( KActionCollection* coll, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true );
 
 private:
-	class KKeyDialogPrivate* d;
-	KKeyChooser* m_keyChooser;
+	class KKeyDialogPrivate;
+	friend class KKeyDialogPrivate;
+	class KKeyDialogPrivate* const d;
+
+	Q_DISABLE_COPY(KKeyDialog)          
 };
 
 #endif // KKEYDIALOG_H
