@@ -631,19 +631,13 @@ void KDirModel::fetchMore( const QModelIndex & parent )
     //kDebug() << k_funcinfo << url << endl;
 
     KDirModelNode* parentNode = static_cast<KDirModelNode*>(parent.internalPointer());
-    KDirModelDirNode* dirNode = 0;
-
-    if( parentNode->item()->isDir() )
-        dirNode = static_cast<KDirModelDirNode *>(parentNode);
-    if( dirNode )
-    {
-        if( dirNode->isPopulated() )
-            return;
-        dirNode->setPopulated( true );
-    }
 
     KFileItem* parentItem = parentNode->item();
     Q_ASSERT(parentItem->isDir());
+    KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(parentNode);
+    if( dirNode->isPopulated() )
+        return;
+    dirNode->setPopulated( true );
 
     const KUrl url = parentItem->url();
     d->m_dirLister->openUrl(url, true, true);
