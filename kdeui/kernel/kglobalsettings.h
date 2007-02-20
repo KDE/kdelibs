@@ -229,19 +229,19 @@ public:
      * The path to the desktop directory of the current user.
      * @return the user's desktop directory
      */
-    static QString desktopPath() { initPaths(); return *s_desktopPath; }
+    static QString desktopPath();
 
     /**
      * The path to the autostart directory of the current user.
      * @return the path of the autostart directory
      */
-    static QString autostartPath() { initPaths(); return *s_autostartPath; }
+    static QString autostartPath();
 
     /**
      * The path where documents are stored of the current user.
      * @return the path of the document directory
      */
-    static QString documentPath() { initPaths(); return *s_documentPath; }
+    static QString documentPath();
 
 
     /**

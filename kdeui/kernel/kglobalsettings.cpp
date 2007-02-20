@@ -560,15 +560,17 @@ void KGlobalSettings::initPaths()
     *s_desktopPath = QDir::homePath() + "/Desktop/";
     *s_desktopPath = g.readPathEntry( "Desktop", *s_desktopPath);
     *s_desktopPath = QDir::cleanPath( *s_desktopPath );
-    if ( !s_desktopPath->endsWith("/") )
-      s_desktopPath->append(QLatin1Char('/'));
+    if ( !s_desktopPath->endsWith("/") ) {
+        s_desktopPath->append( QLatin1Char( '/' ) );
+    }
 
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = g.readPathEntry( "Autostart" , *s_autostartPath);
     *s_autostartPath = QDir::cleanPath( *s_autostartPath );
-    if ( !s_autostartPath->endsWith("/") )
-      s_autostartPath->append(QLatin1Char('/'));
+    if ( !s_autostartPath->endsWith("/") ) {
+        s_autostartPath->append( QLatin1Char( '/' ) );
+    }
 
     // Document Path
     *s_documentPath = g.readPathEntry( "Documents",
@@ -579,8 +581,9 @@ void KGlobalSettings::initPaths()
 #endif
     );
     *s_documentPath = QDir::cleanPath( *s_documentPath );
-    if ( !s_documentPath->endsWith("/"))
-      s_documentPath->append(QLatin1Char('/'));
+    if ( !s_documentPath->endsWith("/")) {
+        s_documentPath->append( QLatin1Char( '/' ) );
+    }
 }
 
 void KGlobalSettings::initColors()
@@ -678,6 +681,24 @@ void KGlobalSettings::rereadMouseSettings()
     delete s_mouseSettings;
     s_mouseSettings = 0L;
 #endif
+}
+
+QString KGlobalSettings::desktopPath()
+{
+    initPaths();
+    return *s_desktopPath;
+}
+
+QString KGlobalSettings::autostartPath()
+{
+    initPaths();
+    return *s_autostartPath;
+}
+
+QString KGlobalSettings::documentPath()
+{
+    initPaths();
+    return *s_documentPath;
 }
 
 bool KGlobalSettings::isMultiHead()
