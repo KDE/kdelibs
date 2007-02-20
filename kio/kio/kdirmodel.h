@@ -21,9 +21,8 @@
 
 #include <QAbstractItemModel>
 #include <kdelibs_export.h>
+#include <kfileitem.h>
 
-class KFileItemList;
-class KFileItem;
 class KDirLister;
 class KDirModelPrivate;
 
