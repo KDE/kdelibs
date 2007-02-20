@@ -218,26 +218,17 @@ protected:
    * Initializes the property maps
    */
   static void initMaps();
-
-
-protected:
-  /**
-   * KConfigSkeleton object used to store settings
-   */
-  KConfigSkeleton *m_conf;
-
-  /**
-   * Dialog being managed
-   */
-  QWidget *m_dialog;
-
   
 private:
   class Private;
+  friend class Private;
+  
   /**
    * KConfigDialogManager Private class.
    */
-  Private *d;
+  Private *const d;
+  
+  Q_DISABLE_COPY(KConfigDialogManager)
 };
 
 #endif // KCONFIGDIALOGMANAGER_H

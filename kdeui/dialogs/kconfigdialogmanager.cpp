@@ -46,9 +46,21 @@ static KStaticDeleter< QHash<QString, QByteArray> > s_changedMapDeleter;
 class KConfigDialogManager::Private {
 
 public:
-  Private() : insideGroupBox(false) { }
+  Private(KConfigDialogManager *q) : q(q), insideGroupBox(false) { }
 
 public:
+  KConfigDialogManager *q;
+  
+  /**
+  * KConfigSkeleton object used to store settings
+   */
+  KConfigSkeleton *m_conf;
+  
+  /**
+  * Dialog being managed
+   */
+  QWidget *m_dialog;
+  
   QHash<QString, QWidget *> knownWidget;
   QHash<QString, QWidget *> buddyWidget;
   bool insideGroupBox;
@@ -56,10 +68,10 @@ public:
 };
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf)
- : QObject(parent), m_conf(conf), m_dialog(parent)
+ : QObject(parent), d(new Private(this))
 {
-  d = new Private();
-
+  d->m_conf = conf;
+  d->m_dialog = parent;
   init(true);
 }
 
@@ -149,7 +161,7 @@ void KConfigDialogManager::init(bool trackChanges)
   d->trackChanges = trackChanges;
 
   // Go through all of the children of the widgets and find all known widgets
-  (void) parseChildren(m_dialog, trackChanges);
+  (void) parseChildren(d->m_dialog, trackChanges);
 }
 
 void KConfigDialogManager::addWidget(QWidget *widget)
@@ -210,7 +222,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     {
       // This is one of our widgets!
       QString configId = widgetName.mid(5);
-      KConfigSkeletonItem *item = m_conf->findItem(configId);
+      KConfigSkeletonItem *item = d->m_conf->findItem(configId);
       if (item)
       {
         d->knownWidget.insert(configId, childWidget);
@@ -308,7 +320,7 @@ void KConfigDialogManager::updateWidgets()
      it.next();
      widget = it.value();
 
-     KConfigSkeletonItem *item = m_conf->findItem(it.key());
+     KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
      if (!item)
      {
         kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
@@ -340,9 +352,9 @@ void KConfigDialogManager::updateWidgets()
 
 void KConfigDialogManager::updateWidgetsDefault()
 {
-  bool bUseDefaults = m_conf->useDefaults(true);
+  bool bUseDefaults = d->m_conf->useDefaults(true);
   updateWidgets();
-  m_conf->useDefaults(bUseDefaults);
+  d->m_conf->useDefaults(bUseDefaults);
 }
 
 void KConfigDialogManager::updateSettings()
@@ -355,7 +367,7 @@ void KConfigDialogManager::updateSettings()
      it.next();
      widget = it.value();
 
-     KConfigSkeletonItem *item = m_conf->findItem(it.key());
+     KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
      if (!item)
      {
         kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
@@ -371,7 +383,7 @@ void KConfigDialogManager::updateSettings()
   }
   if (changed)
   {
-     m_conf->writeConfig();
+     d->m_conf->writeConfig();
      emit settingsChanged();
   }
 }
@@ -458,7 +470,7 @@ bool KConfigDialogManager::hasChanged()
      it.next();
      widget = it.value();
 
-     KConfigSkeletonItem *item = m_conf->findItem(it.key());
+     KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
      if (!item)
      {
         kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
@@ -477,9 +489,9 @@ bool KConfigDialogManager::hasChanged()
 
 bool KConfigDialogManager::isDefault()
 {
-  bool bUseDefaults = m_conf->useDefaults(true);
+  bool bUseDefaults = d->m_conf->useDefaults(true);
   bool result = !hasChanged();
-  m_conf->useDefaults(bUseDefaults);
+  d->m_conf->useDefaults(bUseDefaults);
   return result;
 }
 
