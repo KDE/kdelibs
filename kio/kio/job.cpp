@@ -667,7 +667,7 @@ SimpleJob *KIO::mount( bool ro, const QByteArray& fstype, const QString& dev, co
              << QString::fromLatin1(fstype) << dev << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
-         Observer::self()->mounting( job, dev, point );
+         job->ui()->mounting( dev, point );
     return job;
 }
 
@@ -676,7 +676,7 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
     KIO_ARGS << int(2) << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
-         Observer::self()->unmounting( job, point );
+         job->ui()->unmounting( point );
     return job;
 }
 
@@ -769,7 +769,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, bool s
     job->setSide( sideIsSource );
     job->setDetails( details );
     if ( showProgressInfo )
-      Observer::self()->stating( job, url );
+      job->ui()->stating( url );
     return job;
 }
 
@@ -794,8 +794,8 @@ TransferJob::TransferJob( const KUrl& url, int command,
     m_internalSuspended = false;
     m_errorPage = false;
     m_subJob = 0L;
-    if ( showProgressInfo )
-        Observer::self()->slotTransferring( this, url );
+    if ( ui() )
+        ui()->transferring( url );
 }
 
 // Slave sends data
@@ -1396,7 +1396,7 @@ MimetypeJob *KIO::mimetype(const KUrl& url, bool showProgressInfo )
     KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
     if ( showProgressInfo )
-      Observer::self()->stating( job, url );
+      job->ui()->stating( url );
     return job;
 }
 
@@ -1444,10 +1444,10 @@ FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
       m_totalSize(0),d(new FileCopyJobPrivate)
 {
-   if (showProgressInfo && !move)
-      Observer::self()->slotCopying( this, src, dest );
-   else if (showProgressInfo && move)
-      Observer::self()->slotMoving( this, src, dest );
+   if (ui() && !move)
+      ui()->copying( src, dest );
+   else if (ui() && move)
+      ui()->moving( src, dest );
 
     //kDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;

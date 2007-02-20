@@ -18,54 +18,17 @@
   */
 
 #include "kioobservertest.h"
-#include <kio/observer.h>
+#include <kio/jobuidelegate.h>
 #include <QTimer>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 
-KJobDelegateTest::KJobDelegateTest()
-    : KJobUiDelegate()
-{
-}
-
-KJobDelegateTest::~KJobDelegateTest()
-{
-}
-
-void KJobDelegateTest::connectJob(KJob *job)
-{
-    job->setProgressId(Observer::self()->newJob(job, Observer::JobShown));
-
-    connect(job, SIGNAL(percent(KJob*,unsigned long)),
-            Observer::self(), SLOT(slotPercent(KJob*,unsigned long)));
-
-    connect(job, SIGNAL(infoMessage(KJob*,const QString&,const QString&)),
-            Observer::self(), SLOT(slotInfoMessage(KJob*,const QString&)));
-
-    connect(job, SIGNAL(totalSize(KJob*,qulonglong)),
-            Observer::self(), SLOT(slotTotalSize(KJob*,qulonglong)));
-
-    connect(job, SIGNAL(processedSize(KJob*,qulonglong)),
-            Observer::self(), SLOT(slotProcessedSize(KJob*,qulonglong)));
-
-    connect(job, SIGNAL(result(KJob*)),
-            this, SLOT(slotFinished(KJob*)));
-
-    connect(job, SIGNAL(warning(KJob*,const QString&) ),
-            this, SLOT(slotWarning(KJob*,const QString&)));
-}
-
-void KJobDelegateTest::slotFinished(KJob *job)
-{
-    Observer::self()->jobFinished(job->progressId());
-}
-
 KJobTest::KJobTest(int numberOfSeconds)
-    : KJob(), timer(new QTimer(this)), clockTimer(new QTimer(this)), seconds(numberOfSeconds)
+    : KJob(), timer(new QTimer(this)), clockTimer(new QTimer(this)),
+      seconds(numberOfSeconds), total(numberOfSeconds)
 {
     setCapabilities(KJob::NoCapabilities);
-    setUiDelegate(new KJobDelegateTest());
 }
 
 KJobTest::~KJobTest()
@@ -93,11 +56,14 @@ void KJobTest::timerTimeout()
     clockTimer->stop();
 
     emitResult();
+
+    QTimer::singleShot(0, QCoreApplication::instance(), SLOT(quit()));
 }
 
 void KJobTest::updateMessage()
 {
     emit infoMessage(this, i18n("Testing kuiserver (%1 seconds remaining)", seconds), i18n("Testing kuiserver (%1 seconds remaining)", seconds));
+    emitPercent(total-seconds, total);
 
     seconds--;
 }
@@ -111,6 +77,7 @@ int main(int argc, char **argv)
     KApplication app;
 
     KJobTest *myJob = new KJobTest(10 /* 10 seconds before it gets removed */);
+    myJob->setUiDelegate(new KIO::JobUiDelegate(true));
     myJob->start();
 
     return app.exec();

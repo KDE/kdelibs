@@ -25,22 +25,6 @@
 
 class QTimer;
 
-class KJobDelegateTest
-    : public KJobUiDelegate
-{
-    Q_OBJECT
-
-public:
-    KJobDelegateTest();
-    ~KJobDelegateTest();
-
-protected:
-    void connectJob(KJob *job);
-
-private Q_SLOTS:
-    void slotFinished(KJob *job);
-};
-
 class KJobTest
     : public KJob
 {
@@ -58,7 +42,7 @@ private Q_SLOTS:
 
 private:
     QTimer *timer, *clockTimer;
-    int seconds;
+    int seconds, total;
 };
 
 #endif // __KJOBTEST_H__

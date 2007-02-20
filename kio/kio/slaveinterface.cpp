@@ -27,7 +27,13 @@
 #include <unistd.h>
 #include <signal.h>
 #include <kio/observer.h>
+#include <klocale.h>
 #include <kapplication.h>
+#include <Q3CString>
+#include <ksslinfodialog.h>
+#include <ksslcertificate.h>
+#include <ksslcertchain.h>
+#include <kmessagebox.h>
 #include <time.h>
 #include <qtimer.h>
 #include <QtDBus/QtDBus>
@@ -100,6 +106,10 @@ public:
   KIO::filesize_t filesize, offset;
 
   QTimer speed_timer;
+
+    static int messageBox(int progressId, int type, const QString &text, const QString &caption,
+                          const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
+
 };
 
 //////////////
@@ -432,7 +442,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
     QPointer<SlaveInterface> me = this;
     if (m_pConnection) m_pConnection->suspend();
-    int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
+    int result = SlaveInterfacePrivate::messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
     {
         m_pConnection->resume();
@@ -440,6 +450,97 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
         stream << result;
         m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }
+}
+
+int SlaveInterfacePrivate::messageBox(int progressId, int type, const QString &text,
+                                      const QString &caption, const QString &buttonYes,
+                                      const QString &buttonNo, const QString &dontAskAgainName)
+{
+    kDebug() << "Observer::messageBox " << type << " " << text << " - " << caption << endl;
+    int result = -1;
+    KConfig *config = new KConfig("kioslaverc");
+    KMessageBox::setDontShowAskAgainConfig(config);
+
+    switch (type) {
+        case KIO::SlaveBase::QuestionYesNo:
+            result = KMessageBox::questionYesNo(0L, // parent ?
+                                               text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
+            break;
+        case KIO::SlaveBase::WarningYesNo:
+            result = KMessageBox::warningYesNo(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
+            break;
+        case KIO::SlaveBase::WarningContinueCancel:
+            result = KMessageBox::warningContinueCancel(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), dontAskAgainName);
+            break;
+        case KIO::SlaveBase::WarningYesNoCancel:
+            result = KMessageBox::warningYesNoCancel(0L, // parent ?
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
+            break;
+        case KIO::SlaveBase::Information:
+            KMessageBox::information(0L, // parent ?
+                                      text, caption, dontAskAgainName);
+            result = 1; // whatever
+            break;
+        case KIO::SlaveBase::SSLMessageBox:
+        {
+#ifdef __GNUC__
+# warning FIXME This will never work
+#endif
+            QString observerAppId = caption; // hack, see slaveinterface.cpp
+            // Contact the object "KIO::Observer" in the application <appId>
+            // Yes, this could be the same application we are, but not necessarily.
+            QDBusInterface observer(observerAppId, "/KIO/Observer", "org.kde.KIO.Observer");
+
+            QDBusReply<QVariantMap> reply =
+                observer.call(QDBus::BlockWithGui, "metadata", progressId);
+            const QVariantMap &meta = reply;
+            KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());
+            if (x) {
+               // Set the chain back onto the certificate
+               QStringList cl = meta["ssl_peer_chain"].toString().split('\n', QString::SkipEmptyParts);
+               Q3PtrList<KSSLCertificate> ncl;
+
+               ncl.setAutoDelete(true);
+               for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
+                  KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
+                  if (y) ncl.append(y);
+               }
+
+               if (ncl.count() > 0)
+                  x->chain().setChain(ncl);
+
+               kid->setup(x,
+                           meta["ssl_peer_ip"].toString(),
+                           text, // the URL
+                           meta["ssl_cipher"].toString(),
+                           meta["ssl_cipher_desc"].toString(),
+                           meta["ssl_cipher_version"].toString(),
+                           meta["ssl_cipher_used_bits"].toInt(),
+                           meta["ssl_cipher_bits"].toInt(),
+                           KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
+               kDebug(7024) << "Showing SSL Info dialog" << endl;
+               kid->exec();
+               delete x;
+               kDebug(7024) << "SSL Info dialog closed" << endl;
+            } else {
+               KMessageBox::information(0L, // parent ?
+                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL"));
+            }
+            // This doesn't have to get deleted.  It deletes on it's own.
+            result = 1; // whatever
+            break;
+        }
+        default:
+            kWarning() << "Observer::messageBox: unknown type " << type << endl;
+            result = 0;
+            break;
+    }
+    KMessageBox::setDontShowAskAgainConfig(0);
+    delete config;
+    return result;
 }
 
 #include "slaveinterface.moc"

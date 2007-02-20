@@ -124,6 +124,29 @@ public:
                                       bool multi,
                                       const QString & error_text);
 
+    void processedFiles(unsigned long files);
+    void processedDirs(unsigned long dirs);
+    void totalFiles(unsigned long files);
+    void totalDirs(unsigned long dirs);
+
+    void moving(const KUrl &src, const KUrl &dest);
+    void copying(const KUrl &src, const KUrl &dest);
+    void creatingDir(const KUrl &dir);
+    void deleting(const KUrl &url);
+    void stating(const KUrl &url);
+    void transferring(const KUrl &url);
+    void mounting(const QString &dev, const QString &point);
+    void unmounting(const QString &point);
+
+private Q_SLOTS:
+    void slotPercent( KJob *job, unsigned long percent );
+    void slotInfoMessage( KJob *job, const QString &msg );
+    void slotTotalSize( KJob *job, qulonglong totalSize );
+    void slotProcessedSize( KJob *job, qulonglong size );
+    void slotSpeed( KJob *job, unsigned long speed );
+    void slotTotalFiles(KJob *job, unsigned long files);
+    void slotTotalDirs(KJob *job, unsigned long dirs);
+
 protected:
      virtual void connectJob( KJob *job );
 

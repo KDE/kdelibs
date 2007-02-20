@@ -25,7 +25,7 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
-#include "kio/observer.h"
+#include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
 
 #include <kauthorized.h>
@@ -48,13 +48,7 @@ DeleteJob::DeleteJob( const KUrl::List& src, bool showProgressInfo )
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
 {
-  if ( showProgressInfo ) {
-
-     connect( this, SIGNAL( totalFiles( KJob*, unsigned long ) ),
-              Observer::self(), SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
-
-     connect( this, SIGNAL( totalDirs( KJob*, unsigned long ) ),
-              Observer::self(), SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
+  if ( ui() ) {
 
      // See slotReport
      /*connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
@@ -88,10 +82,10 @@ void DeleteJob::slotReport()
    if (progressId()==0)
       return;
 
-   Observer * observer = Observer::self();
+   JobUiDelegate * delegate = ui();
 
    emit deleting( this, m_currentURL );
-   observer->slotDeleting(this,m_currentURL);
+   delegate->deleting(m_currentURL);
 
    switch( state ) {
         case STATE_STATING:
@@ -102,11 +96,11 @@ void DeleteJob::slotReport()
             break;
         case STATE_DELETING_DIRS:
             emit processedDirs( this, m_processedDirs );
-            observer->slotProcessedDirs(this,m_processedDirs);
+            delegate->processedDirs(m_processedDirs);
             emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             break;
         case STATE_DELETING_FILES:
-            observer->slotProcessedFiles(this,m_processedFiles);
+            delegate->processedFiles(m_processedFiles);
             emit processedFiles( this, m_processedFiles );
             emitPercent( m_processedFiles, m_totalFilesDirs );
             break;

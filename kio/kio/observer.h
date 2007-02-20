@@ -115,39 +115,6 @@ public:
       */
     void jobFinished(int progressId);
 
-    /**
-      * Popup a message box. See KIO::SlaveBase
-      * This doesn't use DBus anymore, it shows the dialog in the application's process
-      * Otherwise, other apps would block when trying to communicate with UIServer
-      *
-      * @param progressId   the progress ID of the job, as returned by newJob()
-      * @param type         the type of the message box
-      * @param text         the text to show
-      * @param caption      the window caption
-      * @param buttonYes    the text of the "Yes" button
-      * @param buttonNo     the text of the "No button
-      */
-    static int messageBox(int progressId, int type, const QString &text, const QString &caption,
-                           const QString &buttonYes, const QString &buttonNo);
-
-    /**
-      * Popup a message box. See KIO::SlaveBase
-      * This doesn't use DBus anymore, it shows the dialog in the application's process
-      * Otherwise, other apps would block when trying to communicate with UIServer
-      *
-      * @param progressId       the progress ID of the job, as returned by newJob()
-      * @param type             the type of the message box
-      * @param text             the text to show
-      * @param caption          the window caption
-      * @param buttonYes        the text of the "Yes" button
-      * @param buttonNo         the text of the "No button
-      * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
-      *                         The string is used to lookup and store the setting in kioslaverc.
-      */
-    static int messageBox(int progressId, int type, const QString &text, const QString &caption,
-                           const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
-
-
 public Q_SLOTS:
     /**
       * Called by the kuiserver when an action was performed
@@ -166,32 +133,6 @@ protected:
 
     QMap<int, KJob*> m_dctJobs;
 
-public Q_SLOTS:
-    // TODO: Maybe it is more cute having all these methods called setFoo, instead of slotFoo.
-    //       Anyway this doesn't seem a trivial change on kdelibs and kdebase, so I will go on it
-    //       when have more time. Well, if you wanna try, tell me :) (ereslibre)
-
-    void slotTotalSize(KJob *job, qulonglong size);
-    void slotTotalFiles(KJob *job, unsigned long files);
-    void slotTotalDirs(KJob *job, unsigned long dirs);
-    void slotProcessedSize(KJob *job, qulonglong size);
-    void slotProcessedFiles(KJob *job, unsigned long files);
-    void slotProcessedDirs(KJob *job, unsigned long dirs);
-    void slotSpeed(KJob *job, unsigned long speed);
-    void slotPercent(KJob *job, unsigned long percent);
-    void slotInfoMessage(KJob *job, const QString &msg);
-    void slotProgressMessage(KJob *job, const QString &msg);
-
-    void slotCopying(KJob *job, const KUrl &src, const KUrl &dest);
-    void slotMoving(KJob *job, const KUrl &src, const KUrl &dest);
-    void slotDeleting(KJob *job, const KUrl &url);
-    void slotTransferring(KJob *job, const KUrl &url);
-    void slotCreatingDir(KJob *job, const KUrl &dir);
-
-public:
-    void stating(KJob *job, const KUrl &url);
-    void mounting(KJob *job, const QString &dev, const QString &point);
-    void unmounting(KJob *job, const QString &point);
 
 Q_SIGNALS:
     void actionPerformed(KJob *job, int actionId);

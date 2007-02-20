@@ -39,9 +39,14 @@
 class KIO::JobUiDelegate::Private
 {
 public:
+    Private() : uiserver("org.kde.kuiserver",
+                         "/UIServer",
+                         QDBusConnection::sessionBus()) { }
+
     bool showProgressInfo;
     QPointer<QWidget> errorParentWidget;
     unsigned long userTimestamp;
+    org::kde::KIO::UIServer uiserver;
 };
 
 KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
@@ -93,23 +98,28 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
     // Notify the UI Server and get a progress id
     if ( d->showProgressInfo )
     {
-        KIO::Job* kioJob = static_cast<KIO::Job*>( job );
-        const int progressId = Observer::self()->newJob( kioJob, Observer::JobShown );
+        KIO::Job* kioJob = dynamic_cast<KIO::Job*>( job );
+        const int progressId = Observer::self()->newJob( job, Observer::JobShown );
         job->setProgressId( progressId );
-        kioJob->addMetaData("progress-id", QString::number(progressId));
+        if (kioJob)
+            kioJob->addMetaData("progress-id", QString::number(progressId));
 
         //kDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
         connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
-                 Observer::self(), SLOT( slotPercent( KJob*, unsigned long ) ) );
+                 this, SLOT( slotPercent( KJob*, unsigned long ) ) );
         connect( job, SIGNAL( infoMessage( KJob*, const QString &, const QString & ) ),
-                 Observer::self(), SLOT( slotInfoMessage( KJob*, const QString & ) ) );
+                 this, SLOT( slotInfoMessage( KJob*, const QString & ) ) );
         connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
-                 Observer::self(), SLOT( slotTotalSize( KJob*, qulonglong ) ) );
+                 this, SLOT( slotTotalSize( KJob*, qulonglong ) ) );
         connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
-                 Observer::self(), SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
+                 this, SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
         connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
-                 Observer::self(), SLOT( slotSpeed( KJob*, unsigned long ) ) );
+                 this, SLOT( slotSpeed( KJob*, unsigned long ) ) );
+        connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
+                 this, SLOT( totalFiles( KJob*, unsigned long ) ) );
+        connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
+                 this, SLOT( totalDirs( KJob*, unsigned long ) ) );
 
         connect( job, SIGNAL( finished( KJob*, int ) ),
                  this, SLOT( slotFinished( KJob*, int ) ) );
@@ -164,14 +174,12 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            time_t mtimeSrc,
                                                            time_t mtimeDest)
 {
-    org::kde::KIO::UIServer uiserver("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
-
     kDebug() << "Observer::open_RenameDialog job=" << job << endl;
     if (job)
         kDebug() << "                        progressId=" << job->progressId() << endl;
     // Hide existing dialog box if any
     if (job && job->progressId())
-        uiserver.setJobVisible(job->progressId(), false);
+        d->uiserver.setJobVisible(job->progressId(), false);
     // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
     // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
     RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
@@ -179,7 +187,7 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
     if (job && job->progressId())
-        uiserver.setJobVisible(job->progressId(), true);
+        d->uiserver.setJobVisible(job->progressId(), true);
     return res;
 }
 
@@ -187,16 +195,112 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
                                               bool multi,
                                               const QString & error_text)
 {
-    org::kde::KIO::UIServer uiserver("org.kde.kuiserver", "/UIServer", QDBusConnection::sessionBus());
-
     // Hide existing dialog box if any
     if (job && job->progressId())
-        uiserver.setJobVisible(job->progressId(), false);
+        d->uiserver.setJobVisible(job->progressId(), false);
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
     SkipDialog_Result res = KIO::open_SkipDialog(multi, error_text);
     if (job && job->progressId())
-        uiserver.setJobVisible(job->progressId(), true);
+        d->uiserver.setJobVisible(job->progressId(), true);
     return res;
+}
+
+void KIO::JobUiDelegate::processedFiles(unsigned long files)
+{
+    d->uiserver.processedFiles(job()->progressId(), files);
+}
+
+void KIO::JobUiDelegate::processedDirs(unsigned long dirs)
+{
+    d->uiserver.processedDirs(job()->progressId(), dirs);
+}
+
+void KIO::JobUiDelegate::totalFiles(unsigned long files)
+{
+    d->uiserver.totalFiles(job()->progressId(), files);
+}
+
+void KIO::JobUiDelegate::totalDirs(unsigned long dirs)
+{
+    d->uiserver.totalDirs(job()->progressId(), dirs);
+}
+
+void KIO::JobUiDelegate::moving(const KUrl &src, const KUrl &dest)
+{
+    d->uiserver.moving(job()->progressId(), src.url(), dest.url());
+}
+
+void KIO::JobUiDelegate::copying(const KUrl &src, const KUrl &dest)
+{
+    d->uiserver.copying(job()->progressId(), src.url(), dest.url());
+}
+
+void KIO::JobUiDelegate::creatingDir(const KUrl &dir)
+{
+    d->uiserver.creatingDir(job()->progressId(), dir.url());
+}
+
+void KIO::JobUiDelegate::deleting(const KUrl &url)
+{
+    d->uiserver.deleting(job()->progressId(), url.url());
+}
+
+void KIO::JobUiDelegate::stating(const KUrl &url)
+{
+    d->uiserver.stating(job()->progressId(), url.url());
+}
+
+void KIO::JobUiDelegate::transferring(const KUrl &url)
+{
+    d->uiserver.transferring(job()->progressId(), url.url());
+}
+
+void KIO::JobUiDelegate::mounting(const QString &dev, const QString &point)
+{
+    d->uiserver.mounting(job()->progressId(), dev, point);
+}
+
+void KIO::JobUiDelegate::unmounting(const QString &point)
+{
+    d->uiserver.unmounting(job()->progressId(), point);
+}
+
+void KIO::JobUiDelegate::slotPercent( KJob */*job*/, unsigned long percent )
+{
+    d->uiserver.percent(job()->progressId(), percent);
+}
+
+void KIO::JobUiDelegate::slotInfoMessage( KJob */*job*/, const QString &msg )
+{
+    d->uiserver.infoMessage(job()->progressId(), msg);
+}
+
+void KIO::JobUiDelegate::slotTotalSize( KJob */*job*/, qulonglong totalSize )
+{
+    d->uiserver.totalSize(job()->progressId(), totalSize);
+}
+
+void KIO::JobUiDelegate::slotProcessedSize( KJob */*job*/, qulonglong size )
+{
+    d->uiserver.processedSize(job()->progressId(), size);
+}
+
+void KIO::JobUiDelegate::slotSpeed( KJob */*job*/, unsigned long speed )
+{
+    if (speed)
+        d->uiserver.speed(job()->progressId(), KIO::convertSize(speed) + QString("/s"));
+    else
+        d->uiserver.speed(job()->progressId(), QString());
+}
+
+void KIO::JobUiDelegate::slotTotalFiles(KJob */*job*/, unsigned long files)
+{
+    totalFiles(files);
+}
+
+void KIO::JobUiDelegate::slotTotalDirs(KJob */*job*/, unsigned long dirs)
+{
+    totalDirs(dirs);
 }
 
 #include "jobuidelegate.moc"
