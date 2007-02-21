@@ -299,8 +299,6 @@ install( FILES
    network/khttpproxysocketdevice.h
    network/kidna.h
    network/kiobuffer.h
-   network/kmulticastsocket.h
-   network/kmulticastsocketdevice.h
    network/kresolver.h
    network/kreverseresolver.h
    network/kserversocket.h
