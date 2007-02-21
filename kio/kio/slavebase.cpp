@@ -48,7 +48,6 @@
 #include <kconfigdata.h>
 #include <kdesu/client.h>
 #include <klocale.h>
-#include <ksocks.h>
 #include <kstreamsocket.h>
 
 #include "kremoteencoding.h"
@@ -57,6 +56,9 @@
 #include "kio/connection.h"
 #include "kio/ioslave_defaults.h"
 #include "kio/slaveinterface.h"
+
+#define I_KNOW_KSOCKS_ISNT_PUBLIC
+#include <ksocks.h>
 
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE

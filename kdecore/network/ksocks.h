@@ -18,6 +18,10 @@
 #ifndef _KSOCKS_H_
 #define _KSOCKS_H_
 
+#if !defined(I_KNOW_KSOCKS_ISNT_PUBLIC) && defined(__GCC__)
+# warning "ksocks.h is not public API"
+#endif
+
 #include <qstringlist.h>
 #include <sys/types.h>
 #include <sys/time.h>

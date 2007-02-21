@@ -44,7 +44,6 @@
 
 #include <kurl.h>
 #include <kidna.h>
-#include <ksocks.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -65,6 +64,9 @@
 
 #include "httpfilter.h"
 #include "http.h"
+
+#define I_KNOW_KSOCKS_ISNT_PUBLIC
+#include <ksocks.h>
 
 #ifdef HAVE_LIBGSSAPI
 #ifdef GSSAPI_MIT
