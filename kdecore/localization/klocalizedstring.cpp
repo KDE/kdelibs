@@ -248,7 +248,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         // too little arguments
         {
             // put back the placeholder
-            final.append("%" + QString::number(plords.at(i) + 1));
+            final.append('%' + QString::number(plords.at(i) + 1));
             #ifndef NDEBUG
             // spoof the message
             final.append("(I18N_ARGUMENT_MISSING)");
