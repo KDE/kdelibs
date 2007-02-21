@@ -23,6 +23,8 @@
 
 #include "knewstuff.h"
 #include <kconfig.h>
+#include <ksharedconfig.h>
+
 
 /**
  * @short Basic KNewStuff class with predefined actions.

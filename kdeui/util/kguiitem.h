@@ -22,7 +22,7 @@
 #ifndef kguiitem_h
 #define kguiitem_h
 
-#include <qstring.h>
+#include <QtCore/qstring.h>
 
 #include <kicontheme.h>
 #include <kicon.h>

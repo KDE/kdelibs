@@ -20,6 +20,9 @@
 
 #include <kdelibs_export.h>
 
+#include <QtCore/QChar>
+#include <QtCore/QObject>
+
 namespace KHE
 {
 

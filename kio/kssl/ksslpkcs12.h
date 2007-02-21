@@ -36,6 +36,8 @@ class X509;
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 
+#include <QtCore/QLatin1String>
+
 #ifndef STACK_OF
 #define STACK_OF(x) void
 #endif

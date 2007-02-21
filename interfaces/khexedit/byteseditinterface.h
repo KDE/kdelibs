@@ -212,7 +212,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0 )
 {
   return KServiceTypeTrader::createInstanceFromQuery<QWidget>
-      ( QLatin1String("KHexEdit/KBytesEdit"), QString(), Parent );
+      ( QString::fromLatin1("KHexEdit/KBytesEdit"), QString(), Parent );
 }
 
 }

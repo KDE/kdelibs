@@ -418,6 +418,11 @@ public:
 
    KEntry lookupData(const KEntryKey &) const
    { KEntry entry; entry.mValue = value; return entry; }
+
+   template <typename T>
+      T readEntry( const QString& pKey, const T& aDefault) const
+   { return mGroup.readEntry(pKey.toUtf8().constData(), aDefault); }
+
 protected:
    QString key;
    QByteArray value;

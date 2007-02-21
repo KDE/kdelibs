@@ -27,6 +27,7 @@
 #include <Qt3Support/Q3MimeSourceFactory>
 
 class K3MimeSourceFactoryPrivate;
+class KIconLoader;
 /**
  * An extension to QMimeSourceFactory that uses KIconLoader to
  * find images.
