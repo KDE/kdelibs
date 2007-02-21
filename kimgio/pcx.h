@@ -33,28 +33,30 @@ public:
 class RGB
 {
   public:
-    RGB() { }
-
-    RGB( const QRgb color )
-    {
-      r = qRed( color );
-      g = qGreen( color );
-      b = qBlue( color );
-    }
-
     quint8 r;
     quint8 g;
     quint8 b;
+    
+    static RGB from( const QRgb &color)
+    {
+      RGB c;
+      c.r = qRed( color );
+      c.g = qGreen( color );
+      c.b = qBlue( color );
+      return c;
+    }
+
 } KDE_PACKED;
 
 class Palette
 {
   public:
-    Palette() { }
-
     void setColor( int i, const QRgb color )
     {
-      rgb[ i ] = RGB( color );
+      RGB &c = rgb[ i ];
+      c.r = qRed( color );
+      c.g = qGreen( color );
+      c.b = qBlue( color );
     }
 
     QRgb color( int i ) const

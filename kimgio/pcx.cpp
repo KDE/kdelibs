@@ -15,7 +15,12 @@
 
 static QDataStream &operator>>( QDataStream &s, RGB &rgb )
 {
-  s >> rgb.r >> rgb.g >> rgb.b;
+  quint8 r, g, b;
+  
+  s >> r >> g >> b;
+  rgb.r = r;
+  rgb.g = g;
+  rgb.b = b;
 
   return s;
 }
@@ -30,10 +35,12 @@ static QDataStream &operator>>( QDataStream &s, Palette &pal )
 
 static QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
 {
-  s >> ph.Manufacturer;
-  s >> ph.Version;
-  s >> ph.Encoding;
-  s >> ph.Bpp;
+  quint8 m, ver, enc, bpp;
+  s >> m >> ver >> enc >> bpp;
+  ph.Manufacturer = m;
+  ph.Version = ver;
+  ph.Encoding = enc;
+  ph.Bpp = bpp;
   quint16 xmin, ymin, xmax, ymax;
   s >> xmin >> ymin >> xmax >> ymax;
   ph.XMin = xmin;
@@ -44,9 +51,12 @@ static QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
   s >> hdpi >> ydpi;
   ph.HDpi = hdpi;
   ph.YDpi = ydpi;
-  s >> ph.ColorMap;
-  s >> ph.Reserved;
-  s >> ph.NPlanes;
+  Palette colorMap;
+  quint8 res, np;
+  s >> colorMap >> res >> np;
+  ph.ColorMap = colorMap;
+  ph.Reserved = res;
+  ph.NPlanes = np;
   quint16 bytesperline;
   s >> bytesperline; ph.BytesPerLine = bytesperline;
   quint16 paletteinfo;
@@ -387,7 +397,7 @@ static void writeImage8( QImage &img, QDataStream &s, PCXHEADER &header )
 
   // Write palette
   for ( int i=0; i<256; ++i )
-    s << RGB( img.color( i ) );
+    s << RGB::from( img.color( i ) );
 }
 
 static void writeImage24( QImage &img, QDataStream &s, PCXHEADER &header )
