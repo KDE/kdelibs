@@ -25,6 +25,7 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <limits.h>
 
 #include "dtoa.h"
 #include "interpreter.h"

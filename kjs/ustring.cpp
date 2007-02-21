@@ -34,6 +34,7 @@
 #if HAVE(STRINGS_H)
 #include <strings.h>
 #endif
+#include <limits.h>
 
 #include "operations.h"
 #include "identifier.h"
