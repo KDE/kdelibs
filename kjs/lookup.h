@@ -24,7 +24,6 @@
 #define _KJSLOOKUP_H_
 
 #include "interpreter.h"
-#include "internal.h"
 #include "identifier.h"
 #include "function_object.h"
 #include "object.h"
@@ -171,7 +170,7 @@ namespace KJS {
    * @param thisObj "this"
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline bool getStaticPropertySlot(ExecState *exec, const HashTable* table, 
+  inline bool getStaticPropertySlot(ExecState *exec, const HashTable* table,
                                     ThisImp* thisObj, const Identifier& propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -181,7 +180,7 @@ namespace KJS {
 
     if (entry->attr & Function)
       slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
-    else 
+    else
       slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
 
     return true;
@@ -189,11 +188,11 @@ namespace KJS {
 
   /**
    * Simplified version of getStaticPropertySlot in case there are only functions.
-   * Using this instead of getStaticPropertySlot allows 'this' to avoid implementing 
+   * Using this instead of getStaticPropertySlot allows 'this' to avoid implementing
    * a dummy getValueProperty.
    */
   template <class FuncImp, class ParentImp>
-  inline bool getStaticFunctionSlot(ExecState *exec, const HashTable *table, 
+  inline bool getStaticFunctionSlot(ExecState *exec, const HashTable *table,
                                     JSObject* thisObj, const Identifier& propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -212,7 +211,7 @@ namespace KJS {
    * Using this instead of getStaticPropertySlot removes the need for a FuncImp class.
    */
   template <class ThisImp, class ParentImp>
-  inline bool getStaticValueSlot(ExecState *exec, const HashTable* table, 
+  inline bool getStaticValueSlot(ExecState *exec, const HashTable* table,
                                  ThisImp* thisObj, const Identifier &propertyName, PropertySlot& slot)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -253,7 +252,7 @@ namespace KJS {
 
     return true;
   }
-  
+
   /**
    * This one is for "put".
    * It calls lookupPut<ThisImp>() to set the value.  If that call
@@ -271,11 +270,11 @@ namespace KJS {
 } // namespace
 
 /*
- * The template method below can't be in the KJS namespace because it's used in 
+ * The template method below can't be in the KJS namespace because it's used in
  * KJS_DEFINE_PROPERTY which can be used outside of the KJS namespace. It can be moved back
  * when a gcc with http://gcc.gnu.org/bugzilla/show_bug.cgi?id=8355 is mainstream enough.
  */
- 
+
 /**
  * This template method retrieves or create an object that is unique
  * (for a given interpreter) The first time this is called (for a given
@@ -313,13 +312,13 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
  * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
  * then the first line will use KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE, with DOMNodeProto as the second argument.
  */
- 
-// Work around a bug in GCC 4.1 
+
+// Work around a bug in GCC 4.1
 #if !COMPILER(GCC)
-#define KJS_GCC_ROOT_NS_HACK :: 
-#else 
-#define KJS_GCC_ROOT_NS_HACK 
-#endif 
+#define KJS_GCC_ROOT_NS_HACK ::
+#else
+#define KJS_GCC_ROOT_NS_HACK
+#endif
 
 // These macros assume that a prototype's only properties are functions
 #define KJS_DEFINE_PROTOTYPE(ClassProto) \
@@ -337,7 +336,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     static Identifier* s_name; \
     static Identifier* name(); \
   };
-  
+
 #define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
     class ClassProto : public KJS::JSObject { \
         friend KJS::JSObject* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState* exec, const KJS::Identifier& propertyName); \
@@ -370,7 +369,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     { \
       if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
       return s_name; \
-    } 
+    }
 
 
 #define KJS_IMPLEMENT_PROTOFUNC(ClassFunc) \

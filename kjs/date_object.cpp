@@ -22,6 +22,7 @@
 #include "config.h"
 #include "date_object.h"
 #include "date_object.lut.h"
+#include "internal.h"
 
 #if HAVE(ERRNO_H)
 #include <errno.h>
@@ -571,7 +572,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
         return jsNaN();
     }
   }
-  
+
   if (id == SetTime) {
     double milli = roundValue(exec, args[0]);
     result = jsNumber(milli);
