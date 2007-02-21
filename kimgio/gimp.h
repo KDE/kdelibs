@@ -178,7 +178,7 @@ inline int INT_BLEND ( int a, int b, int alpha )
  * \param green the green component (modified in place).
  * \param blue the blue component (modified in place).
  */
-void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
+static void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
 {
   int r, g, b;
   double h, s, v;
@@ -235,7 +235,7 @@ void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
  * \param saturation the saturation component (modified in place).
  * \param value the value component (modified in place).
  */
-void HSVTORGB ( uchar& hue, uchar& saturation, uchar& value )
+static void HSVTORGB ( uchar& hue, uchar& saturation, uchar& value )
 {
   if ( saturation == 0 ) {
     hue        = value;
@@ -295,7 +295,7 @@ void HSVTORGB ( uchar& hue, uchar& saturation, uchar& value )
  * \param green the green component (modified in place).
  * \param blue the blue component (modified in place).
  */
-void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
+static void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
 {
   int r = red;
   int g = green;
@@ -355,7 +355,7 @@ void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
  * \param hue hue "angle".
  * \return HLS value.
  */
-int HLSVALUE ( double n1, double n2, double hue )
+static int HLSVALUE ( double n1, double n2, double hue )
 {
   double value;
 
@@ -382,7 +382,7 @@ int HLSVALUE ( double n1, double n2, double hue )
  * \param lightness the lightness component (modified in place).
  * \param saturation the saturation component (modified in place).
  */
-void HLSTORGB ( uchar& hue, uchar& lightness, uchar& saturation )
+static void HLSTORGB ( uchar& hue, uchar& lightness, uchar& saturation )
 {
   double h = hue;
   double l = lightness;
