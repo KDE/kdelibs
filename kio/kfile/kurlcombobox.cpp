@@ -217,7 +217,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
     if ( url.isEmpty() )
         return;
 
-    blockSignals( true );
+    bool blocked = blockSignals( true );
 
     // check for duplicates
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
@@ -229,7 +229,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
             if ( myMode == Directories )
                 updateItem( mit.value(), mit.key(), opendirIcon );
 
-            blockSignals( false );
+            blockSignals( blocked );
             return;
         }
         ++mit;
@@ -275,7 +275,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
 
     setCurrentIndex( id );
     urlAdded = true;
-    blockSignals( false );
+    blockSignals( blocked );
 }
 
 
@@ -336,13 +336,13 @@ void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
         ++mit;
     }
 
-    blockSignals( true );
+    bool blocked = blockSignals( true );
     setDefaults();
     QListIterator<const KUrlComboItem*> it( itemList );
     while ( it.hasNext() ) {
         insertUrlItem( it.next() );
     }
-    blockSignals( false );
+    blockSignals( blocked );
 }
 
 

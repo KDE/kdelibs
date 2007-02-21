@@ -1377,10 +1377,10 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
             }
             if ( matchedItem )
             {
-                d->completionBox->blockSignals( true );
+                bool blocked = d->completionBox->blockSignals( true );
                 d->completionBox->setCurrentItem( matchedItem );
                 matchedItem->setSelected(wasSelected);
-                d->completionBox->blockSignals( false );
+                d->completionBox->blockSignals( blocked );
             }
         }
         else // completion box not visible yet -> show it

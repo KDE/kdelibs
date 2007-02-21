@@ -518,9 +518,9 @@ void KMenu::hideEvent(QHideEvent *e)
         // (deep within QWidget::hide) the activated(int) signal is the
         // last signal to be emitted, even after things like aboutToHide()
         // AJS
-        blockSignals(true);
+        bool blocked = blockSignals(true);
         d->ctxMenu->hide();
-        blockSignals(false);
+        blockSignals(blocked);
     }
     QMenu::hideEvent(e);
 }

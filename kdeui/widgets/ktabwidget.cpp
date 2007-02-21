@@ -423,7 +423,7 @@ void KTabWidget::moveTab( int from, int to )
   bool current = ( from == currentIndex() );
   bool enabled = isTabEnabled( from );
 
-  blockSignals( true );
+  bool blocked = blockSignals( true );
   removeTab( from );
 
   // Work-around kmdi brain damage which calls showPage() in insertTab()
@@ -442,7 +442,7 @@ void KTabWidget::moveTab( int from, int to )
   if ( current )
     setCurrentIndex( to );
   setTabEnabled( to, enabled );
-  blockSignals( false );
+  blockSignals( blocked );
 
   emit ( movedTab( from, to ) );
 }

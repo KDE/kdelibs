@@ -37,7 +37,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 
 void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config )
 {
-	blockSignals(true); //to block the changed() signal
+	bool blocked = blockSignals(true); //to block the changed() signal
 	QString prstring=config->readEntry( "Action" );
 	QStringList actions=prstring.split ("|");
 
@@ -50,7 +50,7 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "sound" , true ) ) );
 	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "logfile" , true ) ) );
 	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "execute"  ) ) );
-	blockSignals(false);
+	blockSignals(blocked);
 }
 
 void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )

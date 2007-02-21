@@ -103,18 +103,18 @@ void KDateWidget::setDate( const QDate &date )
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  d->m_day->blockSignals(true);
-  d->m_month->blockSignals(true);
-  d->m_year->blockSignals(true);
+  bool dayBlocked = d->m_day->blockSignals(true);
+  bool monthBlocked = d->m_month->blockSignals(true);
+  bool yearBlocked = d->m_year->blockSignals(true);
 
   d->m_day->setMaximum(calendar->daysInMonth(date));
   d->m_day->setValue(calendar->day(date));
   d->m_month->setCurrentIndex(calendar->month(date)-1);
   d->m_year->setValue(calendar->year(date));
 
-  d->m_day->blockSignals(false);
-  d->m_month->blockSignals(false);
-  d->m_year->blockSignals(false);
+  d->m_day->blockSignals(dayBlocked);
+  d->m_month->blockSignals(monthBlocked);
+  d->m_year->blockSignals(yearBlocked);
 
   d->m_dat = date;
   emit changed(d->m_dat);

@@ -1150,12 +1150,12 @@ void KFileDialog::urlEntered(const KUrl& url)
         d->pathCombo->setUrl( url );
     }
 
-    locationEdit->blockSignals( true );
+    bool blocked = locationEdit->blockSignals( true );
     locationEdit->setCurrentIndex( 0 );
     if ( d->keepLocation )
         locationEdit->setEditText( filename );
 
-    locationEdit->blockSignals( false );
+    locationEdit->blockSignals( blocked );
 
     QString dir = url.url(KUrl::AddTrailingSlash);
     static_cast<KUrlCompletion*>( d->pathCombo->completionObject() )->setDir( dir );

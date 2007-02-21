@@ -603,14 +603,14 @@ void RenderLineEdit::updateFromElement()
     }
 
     if (element()->value().string() != widget()->text()) {
-        widget()->blockSignals(true);
+        bool blocked = widget()->blockSignals(true);
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
 
         widget()->setModified( false );
 
         widget()->setCursorPosition(pos);
-        widget()->blockSignals(false);
+        widget()->blockSignals(blocked);
     }
     widget()->setReadOnly(element()->readOnly());
 
@@ -869,10 +869,10 @@ void RenderFileButton::handleFocusOut()
 void RenderFileButton::updateFromElement()
 {
     KLineEdit* edit = widget()->lineEdit();
-    edit->blockSignals(true);
+    bool blocked = edit->blockSignals(true);
     edit->setText(element()->value().string());
     edit->blockSignals(false);
-    edit->setModified( false );
+    edit->setModified(blocked );
 
     RenderFormElement::updateFromElement();
 }
@@ -929,15 +929,15 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 void ComboBoxWidget::showPopup()
 {
     QPoint p = pos();
-    blockSignals(true);
+    bool blocked = blockSignals(true);
     move( m_kwp->absolutePos() );
-    blockSignals(false);
+    blockSignals(blocked);
 
     KComboBox::showPopup();
 
-    blockSignals(true);
+    blocked = blockSignals(true);
     move( p );
-    blockSignals(false);
+    blockSignals(blocked);
 }
 
 void ComboBoxWidget::hidePopup()
@@ -1663,9 +1663,9 @@ void RenderTextArea::setStyle(RenderStyle* _style)
 
     RenderFormElement::setStyle(_style);
 
-    widget()->blockSignals(true);
+    bool blocked = widget()->blockSignals(true);
     widget()->setAlignment(textAlignment());
-    widget()->blockSignals(false);
+    widget()->blockSignals(blocked);
 
     scrollbarsStyled = false;
 
@@ -1694,7 +1694,7 @@ void RenderTextArea::updateFromElement()
     QString elementText = element()->value().string();
     if ( elementText != text() )
     {
-        w->blockSignals(true);
+        bool blocked = w->blockSignals(true);
         QTextCursor tc = w->textCursor();
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
@@ -1702,7 +1702,7 @@ void RenderTextArea::updateFromElement()
         w->setTextCursor(tc);
         w->horizontalScrollBar()->setValue( cx );
         w->verticalScrollBar()->setValue( cy );
-        w->blockSignals(false);
+        w->blockSignals(blocked);
     }
     element()->m_dirtyvalue = false;
 

@@ -527,9 +527,9 @@ void K3PopupMenu::hideEvent(QHideEvent *e)
         // (deep within QWidget::hide) the activated(int) signal is the
         // last signal to be emitted, even after things like aboutToHide()
         // AJS
-        blockSignals(true);
+        bool blocked = blockSignals(true);
         d->m_ctxMenu->hide();
-        blockSignals(false);
+        blockSignals(blocked);
     }
     Q3PopupMenu::hideEvent(e);
 }

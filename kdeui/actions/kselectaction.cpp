@@ -459,9 +459,9 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
     //kDebug (129) << "\t\tuser typed new item '" << newItemText << "'" << endl;
 
     // Only 1 combobox contains this and it's not a proper action.
-    triggeringCombo->blockSignals (true);
+    bool blocked = triggeringCombo->blockSignals (true);
     triggeringCombo->removeItem (index);
-    triggeringCombo->blockSignals (false);
+    triggeringCombo->blockSignals (blocked);
 
     KAction *newAction = addAction (newItemText);
 
@@ -621,7 +621,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
   }
 
 
-  comboBox->blockSignals (true);
+  bool blocked = comboBox->blockSignals (true);
 
   if (event->type () == QEvent::ActionAdded)
   {
@@ -691,7 +691,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     comboBox->setCurrentIndex (newItem);
   }
 
-  comboBox->blockSignals (false);
+  comboBox->blockSignals (blocked);
 
   return false/*propagate event*/;
 }
