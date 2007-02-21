@@ -21,9 +21,7 @@
 #define KTEMPDIR_H
 
 #include "kdelibs_export.h"
-
-class QString;
-class QDir;
+#include <qstring.h>
 
 /**
  * @brief Create a unique directory for temporary use.
@@ -131,7 +129,7 @@ public:
     * especially as it has user feedback for long operations.
     *
     * @param path Path of the directory to delete
-    * @return true if successful, otherwise false 
+    * @return true if successful, otherwise false
     * (Use errno for more details about the error.)
     * @todo decide how and where this function should be defined in KDE4
     */

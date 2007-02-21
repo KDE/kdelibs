@@ -24,8 +24,7 @@
 
 #include <kdelibs_export.h>
 #include <qmap.h>
-
-class QByteArray;
+#include <qbytearray.h>
 
 /**
  * map/dict/list config node entry.
@@ -35,7 +34,7 @@ struct KDECORE_EXPORT KEntry
 {
   /** Constructor. @internal @todo Constructor in a struct? */
   KEntry()
-    : mValue(), bDirty(false), bNLS(false), 
+    : mValue(), bDirty(false), bNLS(false),
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
   /** @internal */
   QByteArray mValue;
@@ -45,15 +44,15 @@ struct KDECORE_EXPORT KEntry
   bool    bDirty :1;
   /**
    * Entry should be written with locale tag
-   */ 
+   */
   bool    bNLS   :1;
   /**
    * Entry should be written to the global config file
-   */ 
+   */
   bool    bGlobal:1;
   /**
    * Entry can not be modified.
-   */ 
+   */
   bool    bImmutable:1;
   /**
    * Entry has been deleted.
@@ -61,7 +60,7 @@ struct KDECORE_EXPORT KEntry
   bool    bDeleted:1;
   /**
    * Whether to apply dollar expansion or not.
-   */ 
+   */
   bool    bExpand:1;
 };
 
@@ -79,21 +78,21 @@ struct KDECORE_EXPORT KEntryKey
         c_key(_key.data()) {}
   /**
    * The "group" to which this EntryKey belongs
-   */ 
+   */
   QByteArray mGroup;
   /**
    * The _actual_ key of the entry in question
-   */ 
+   */
   QByteArray mKey;
   /**
    * Entry is localised or not
-   */ 
+   */
   bool    bLocal  :1;
   /**
    * Entry indicates if this is a default value.
-   */ 
+   */
   bool    bDefault:1;
- 
+
   const char *c_key;
 };
 
@@ -106,7 +105,7 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
    //saves one strcmp on each call
    int result=qstrcmp(k1.mGroup.data(),k2.mGroup.data());
    if (result!=0)
-      return (result<0);     
+      return (result<0);
 
   if (!k1.c_key && k2.c_key)
     return true;

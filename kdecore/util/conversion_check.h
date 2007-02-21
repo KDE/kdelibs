@@ -22,6 +22,16 @@
 #ifndef CONVERSION_CHECK_H
 #define CONVERSION_CHECK_H
 
+#include <qstring.h>
+#include <qcolor.h>
+#include <qfont.h>
+#include <qdatetime.h>
+#include <qpoint.h>
+#include <qpoint.h>
+#include <qsize.h>
+#include <qrect.h>
+#include <qvariant.h>
+
 namespace ConversionCheck {
 
 // used to distinguish between supported/unsupported types

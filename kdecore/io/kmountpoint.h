@@ -20,6 +20,7 @@
 #ifndef KMOUNTPOINT_H
 #define KMOUNTPOINT_H
 
+#include <kdelibs_export.h>
 #include <qstringlist.h>
 #include <ksharedptr.h>
 
