@@ -1,0 +1,1 @@
+#include "../kdefx/kimageeffect.h"

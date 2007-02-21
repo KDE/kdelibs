@@ -1,0 +1,1 @@
+#include "../knewstuff/provider.h"

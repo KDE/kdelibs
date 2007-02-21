@@ -1,0 +1,1 @@
+#include "../kutils/kpluginselector.h"

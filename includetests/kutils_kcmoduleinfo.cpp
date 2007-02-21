@@ -1,0 +1,1 @@
+#include "../kutils/kcmoduleinfo.h"

@@ -19,12 +19,28 @@ for i in $list ; do
   if grep -q ^$filename blacklist.txt; then
      continue
   fi
+  if ! grep -q EXPORT $i; then
+     continue
+  fi
+  basename=`basename $i`
+  if ! grep -q "/$basename" "$1"; then
+     continue
+  fi
   echo "#include \"$i\"" > $filename
-  echo "$filename" >> CMakeLists.txt
+  echo "    $filename" >> CMakeLists.txt
 done
 
 cat >> CMakeLists.txt << EOF
 )
 kde4_add_executable(includetest NOGUI \${includetest_SRCS})
 endif(KDE4_BUILD_TESTS)
+
+ADD_CUSTOM_TARGET(update DEPENDS \${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+add_custom_command(OUTPUT \${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
+                   COMMAND \${CMAKE_CURRENT_SOURCE_DIR}/update.sh ARGS \${CMAKE_BINARY_DIR}/install_manifest.txt
+                   DEPENDS \${CMAKE_CURRENT_SOURCE_DIR}/update.sh
+                           \${CMAKE_BINARY_DIR}/install_manifest.txt  
+                           \${CMAKE_CURRENT_SOURCE_DIR}/blacklist.txt
+                   WORKING_DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR})
+
 EOF

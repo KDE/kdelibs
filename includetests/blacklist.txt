@@ -23,7 +23,6 @@ knotify_daemon_notifybysound.cpp
 knotify_daemon_notifybyexecute.cpp
 knotify_daemon_notifybypopup.cpp
 knotify_daemon_notifybylogfile.cpp
-kparts_part.cpp
 kparts_plugin.cpp
 kparts_browserrun.cpp
 kparts_browserextension.cpp

@@ -1,0 +1,1 @@
+#include "../phonon/ui/effectwidget.h"
