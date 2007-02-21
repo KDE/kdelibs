@@ -783,6 +783,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KGlobal::locale();
    KGlobal::dirs()->addResourceType("app-reg", "share/application-registry" );
 
+    if (!QDBusConnection::sessionBus().isConnected())
+    {
+        kError() << "kbuildsycoca: Cannot find the D-Bus session server" << endl;
+        return 255;
+    }
+
    while(true)
    {
      // kapp registered already, but with the PID in the name.
