@@ -150,7 +150,6 @@ add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( includes )
-add_subdirectory( includetests )
 
 
 ########### install files ###############
