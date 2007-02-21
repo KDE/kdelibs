@@ -263,6 +263,44 @@ does not support this encoding.</li>
 <li>Removed filename(), use fileName()</li>
 </ul>
 
+<h4>KSimpleConfig</h4>
+<ul>
+<li>This class was removed. It was a very thin wrapper around KConfig and should
+be replaced.</li>
+<li>If you use an absolute path, just change KSimpleConfig with KConfig - there was
+no difference between uses of them for KDE3 either.</li>
+<li>If you want just the local file to open replace KSimpleConfig("file") with
+KConfig("file", KConfig::OnlyLocal);</li>
+</ul>
+
+<h4>KConfig</h4>
+<ul>
+<li>setGroup is deprecated as it creates state. Used group(QString) to receive
+ a KConfigGroup object or create a KConfigGroup object yourself:
+<pre>
+KConfig *config = KGlobal::config();
+config->setGroup("Group");
+config->writeEntry("Key", 0);
+</pre>
+should be rewritten as
+<pre>
+KConfigGroup config = KGlobal::config()->group("Group");
+config.writeEntry("Key", 0);
+</pre>
+</li>
+<li>setDesktopGroup is gone. Use KDesktopFile if you want to read .desktop files - or
+use group("Desktop Entry") instead</li>
+<li>It's no longer necessary to specify a KConfig object is read-only - they are always
+unless you use change it</li>
+<li>The KConfig constructors were changed to receive flags instead of boolean values, i.e.
+  <ul>
+    <li><tt>KConfig("file", false /* read-write */, false /* no globals */);</tt> becomes
+            <tt>KConfig("file", KConfig::NoGlobals)<;</tt> (note the read-write flag is gone)</li>
+     <li><tt>KConfig("file", true);</tt>becomes <tt>KConfig("file");</tt></li>
+  </ul>
+</li>
+</ul>
+
 <h4>KConfigBase</h4>
 <ul>
 <li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>.
@@ -293,7 +331,7 @@ writeEntry("someKey", int(timeVal)); // ok
 
 <h4>KConfigGroupSaver</h4>
 <p>
-The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
+The class KConfigGroupSaver has been removed, instead use KConfigGroup. The
 difference is a KConfigGroupSaver object directly affects the config object it
 is acting on, while a KConfigGroup object only ensures the entries read or
 written through it are in the correct group.</p>
@@ -306,8 +344,7 @@ config-&gt;readXXX("entry name");
 </pre>
 should be rewritten as:
 <pre>
-KSharedConfig::Ptr config = KGlobal::config();
-KConfigGroup cg(config, "group name");
+KConfigGroup cg = KGlobal::config()->group("group name");
   ...
 cg.readXXX("entry name");
 </pre>
