@@ -176,8 +176,8 @@ void MainWindow::createShellGUI( bool create )
 void KParts::MainWindow::saveNewToolbarConfig()
 {
     createGUI( d->m_activePart );
-    KConfigGroup
-    applyMainWindowSettings(KConfigGroup(KGlobal::config(), QByteArray()));
+    KConfigGroup *
+    applyMainWindowSettings = new KConfigGroup(KGlobal::config(), QByteArray());
 }
 
 #include "mainwindow.moc"
