@@ -45,7 +45,7 @@ class RGB
     quint8 r;
     quint8 g;
     quint8 b;
-};
+} KDE_PACKED;
 
 class Palette
 {
@@ -63,7 +63,7 @@ class Palette
     }
 
     class RGB rgb[ 16 ];
-};
+} KDE_PACKED;
 
 class PCXHEADER
 {

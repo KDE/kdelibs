@@ -34,15 +34,26 @@ static QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
   s >> ph.Version;
   s >> ph.Encoding;
   s >> ph.Bpp;
-  s >> ph.XMin >> ph.YMin >> ph.XMax >> ph.YMax;
-  s >> ph.HDpi >> ph.YDpi;
+  quint16 xmin, ymin, xmax, ymax;
+  s >> xmin >> ymin >> xmax >> ymax;
+  ph.XMin = xmin;
+  ph.YMin = ymin;
+  ph.XMax = xmax;
+  ph.YMax = ymax;
+  quint16 hdpi, ydpi;
+  s >> hdpi >> ydpi;
+  ph.HDpi = hdpi;
+  ph.YDpi = ydpi;
   s >> ph.ColorMap;
   s >> ph.Reserved;
   s >> ph.NPlanes;
-  s >> ph.BytesPerLine;
-  s >> ph.PaletteInfo;
-  s >> ph.HScreenSize;
-  s >> ph.VScreenSize;
+  quint16 bytesperline;
+  s >> bytesperline; ph.BytesPerLine = bytesperline;
+  quint16 paletteinfo;
+  s >> paletteinfo; ph.PaletteInfo = paletteinfo;
+  quint16 hscreensize, vscreensize;
+  s >> hscreensize; ph.HScreenSize = hscreensize;
+  s >> vscreensize; ph.VScreenSize = vscreensize;
 
   // Skip the rest of the header
   quint8 byte;
