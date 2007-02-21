@@ -70,7 +70,7 @@ namespace Kross {
                 m_error = errormessage;
                 m_trace = tracemessage;
                 m_lineno = lineno;
-                krosswarning( QLatin1String("Error error=%1 lineno=%2 trace=\n%3").arg(m_error).arg(m_lineno).arg(m_trace) );
+                krosswarning( QString::fromLatin1("Error error=%1 lineno=%2 trace=\n%3").arg(m_error).arg(m_lineno).arg(m_trace) );
             }
 
             /**
