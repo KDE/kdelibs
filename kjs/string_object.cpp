@@ -125,6 +125,7 @@ const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &strin
   toUpperCase		StringProtoFunc::ToUpperCase	DontEnum|Function	0
   toLocaleLowerCase	StringProtoFunc::ToLocaleLowerCase DontEnum|Function	0
   toLocaleUpperCase     StringProtoFunc::ToLocaleUpperCase DontEnum|Function	0
+  localeCompare         StringProtoFunc::LocaleCompare  DontEnum|Function       1
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
@@ -208,7 +209,7 @@ static inline void expandReplacements(UString * & array, int& count, int& capaci
   for (int i = 0; i < count; i++) {
     newArray[i] = array[i];
   }
-  
+
   delete [] array;
 
   capacity = newCapacity;
@@ -277,6 +278,13 @@ static inline UString substituteBackreferences(const UString &replacement, const
   return substitutedReplacement;
 }
 
+// ### use as fallback only. implement locale aware version.
+static inline int localeCompare(const UString &a, const UString &b)
+{
+  // ### other browsers have more detailed return values than -1, 0 and 1
+  return compare(a, b);
+}
+
 static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern, JSValue *replacement)
 {
   JSObject *replacementFunction = 0;
@@ -320,21 +328,21 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
           List args;
 
           args.append(jsString(matchString));
-          
+
           for (unsigned i = 0; i < reg->subPatterns(); i++) {
               int matchStart = ovector[(i + 1) * 2];
               int matchLen = ovector[(i + 1) * 2 + 1] - matchStart;
-              
+
               args.append(jsString(source.substr(matchStart, matchLen)));
           }
-          
+
           args.append(jsNumber(completeMatchStart));
           args.append(jsString(source));
 
-          replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(), 
+          replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
                                                         args)->toString(exec);
       }
-      
+
       UString substitutedReplacement = substituteBackreferences(replacementString, source, ovector, reg);
       pushReplacement(replacements, replacementCount, replacementCapacity, substitutedReplacement);
 
@@ -348,7 +356,7 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
           break;
       }
     } while (global);
-    
+
     reg->doneMatch();
 
     if (lastIndex < source.size())
@@ -361,7 +369,7 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
 
     return jsString(result);
   }
-  
+
   // First arg is a string
   UString patternString = pattern->toString(exec);
   int matchPos = source.find(patternString);
@@ -369,15 +377,15 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
   // Do the replacement
   if (matchPos == -1)
     return jsString(source);
-  
+
   if (replacementFunction) {
       List args;
-      
+
       args.append(jsString(source.substr(matchPos, matchLen)));
       args.append(jsNumber(matchPos));
       args.append(jsString(source));
-      
-      replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(), 
+
+      replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
                                                     args)->toString(exec);
   }
 
@@ -476,7 +484,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     RegExpImp *imp = 0;
     if (a0->isObject() && static_cast<JSObject *>(a0)->inherits(&RegExpImp::info)) {
       reg = static_cast<RegExpImp *>(a0)->regExp();
-    } else { 
+    } else {
       /*
        *  ECMA 15.5.4.12 String.prototype.search (regexp)
        *  If regexp is not an object whose [[Class]] property is "RegExp", it is
@@ -517,7 +525,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 	  // if there are no matches at all, it's important to return
 	  // Null instead of an empty array, because this matches
 	  // other browsers and because Null is a false value.
-	  result = jsNull(); 
+	  result = jsNull();
 	} else {
 	  result = exec->lexicalInterpreter()->builtinArray()->construct(exec, list);
 	}
@@ -682,6 +690,8 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     free(destIfNeeded);
     break;
   }
+  case LocaleCompare:
+    return Number(localeCompare(s, a0->toString(exec)));
 #ifndef KJS_PURE_ECMA
   case Big:
     result = jsString("<big>" + s + "</big>");
