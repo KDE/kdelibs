@@ -25,7 +25,6 @@
 
 #include "interpreter.h"
 #include "identifier.h"
-#include "function_object.h"
 #include "object.h"
 #include <stdio.h>
 
