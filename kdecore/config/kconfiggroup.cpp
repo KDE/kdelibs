@@ -92,8 +92,7 @@ void KConfigGroup::init(KConfigBase *master)
 
 KConfigGroup &KConfigGroup::operator=(const KConfigGroup &rhs)
 {
-  d->mMaster = rhs.d->mMaster;
-  d->mMasterShared = rhs.d->mMasterShared;
+  *d = *rhs.d;
   return *this;
 }
 
