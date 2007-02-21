@@ -95,6 +95,7 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
 }
 
 bool globalEnums;
+bool useEnumTypes;
 bool itemAccessors;
 bool dpointer;
 QStringList allNames;
@@ -124,16 +125,36 @@ class CfgEntry
       QString label;
       QString whatsThis;
     };
+    class Choices
+    {
+      public:
+        Choices() {}
+        Choices( const QList<Choice> &d, const QString &n, const QString &p )
+             : prefix(p), choices(d), mName(n)
+        {
+          int i = n.indexOf("::");
+          if (i >= 0)
+            mExternalQual = n.left(i + 2);
+        }
+	QString prefix;
+        QList<Choice> choices;
+	const QString& name() const  { return mName; }
+	const QString& externalQualifier() const  { return mExternalQual; }
+	bool external() const  { return !mExternalQual.isEmpty(); }
+      private:
+        QString mName;
+        QString mExternalQual;
+    };
 
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label,
               const QString &whatsThis, const QString &code,
-              const QString &defaultValue, const QList<Choice> &choices, const QList<Signal> signalList,
+              const QString &defaultValue, const Choices &choices, const QList<Signal> signalList,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
         mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
-        mDefaultValue( defaultValue ), mChoices(choices),
-	mSignalList(signalList), mHidden( hidden )
+        mDefaultValue( defaultValue ), mChoices( choices ),
+        mSignalList(signalList), mHidden( hidden )
     {
     }
 
@@ -176,8 +197,8 @@ class CfgEntry
     void setParamType( const QString &d ) { mParamType = d; }
     QString paramType() const { return mParamType; }
 
-    void setChoices( const QList<Choice> &d ) { mChoices = d; }
-    QList<Choice> choices() const { return mChoices; }
+    void setChoices( const QList<Choice> &d, const QString &n, const QString &p ) { mChoices = Choices( d, n, p ); }
+    Choices choices() const { return mChoices; }
 
     void setParamValues( const QStringList &d ) { mParamValues = d; }
     QStringList paramValues() const { return mParamValues; }
@@ -230,7 +251,7 @@ class CfgEntry
     QString mParam;
     QString mParamName;
     QString mParamType;
-    QList<Choice> mChoices;
+    Choices mChoices;
     QList<Signal> mSignalList;
     QStringList mParamValues;
     QStringList mParamDefaultValues;
@@ -277,8 +298,45 @@ static QString varPath(const QString &n)
 
 static QString enumName(const QString &n)
 {
-  QString result = "Enum"+n;
+  QString result = "Enum" + n;
   result[4] = result[4].toUpper();
+  return result;
+}
+
+static QString enumName(const QString &n, const CfgEntry::Choices &c)
+{
+  QString result = c.name();
+  if ( result.isEmpty() )
+  {
+    result = "Enum" + n;
+    result[4] = result[4].toUpper();
+  }
+  return result;
+}
+
+static QString enumType(const CfgEntry *e)
+{
+  QString result = e->choices().name();
+  if ( result.isEmpty() )
+  {
+    result = "Enum" + e->name() + "::type";
+    result[4] = result[4].toUpper();
+  }
+  return result;
+}
+
+static QString enumTypeQualifier(const QString &n, const CfgEntry::Choices &c)
+{
+  QString result = c.name();
+  if ( result.isEmpty() )
+  {
+    result = "Enum" + n + "::";
+    result[4] = result[4].toUpper();
+  }
+  else if ( c.external() )
+    result = c.externalQualifier();
+  else
+    result.clear();
   return result;
 }
 
@@ -363,7 +421,7 @@ static QString signalEnumName(const QString &signalName)
 
 static void preProcessDefault( QString &defaultValue, const QString &name,
                                const QString &type,
-                               const QList<CfgEntry::Choice> &choices,
+                               const CfgEntry::Choices &choices,
                                QString &code )
 {
     if ( type == "String" && !defaultValue.isEmpty() ) {
@@ -398,13 +456,14 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       }
 
     } else if ( type == "Enum" ) {
-      if ( !globalEnums ) {
-        QList<CfgEntry::Choice>::ConstIterator it;
-        for( it = choices.begin(); it != choices.end(); ++it ) {
-          if ( (*it).name == defaultValue ) {
-            defaultValue.prepend( enumName(name) + "::");
-            break;
-          }
+      QList<CfgEntry::Choice>::ConstIterator it;
+      for( it = choices.choices.begin(); it != choices.choices.end(); ++it ) {
+        if ( (*it).name == defaultValue ) {
+          if ( globalEnums && choices.name().isEmpty() )
+            defaultValue.prepend( choices.prefix );
+          else
+            defaultValue.prepend( enumTypeQualifier(name, choices) + choices.prefix );
+          break;
         }
       }
 
@@ -442,7 +501,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString param;
   QString paramName;
   QString paramType;
-  QList<CfgEntry::Choice> choices;
+  CfgEntry::Choices choices;
   QList<Signal> signalList;
   QStringList paramValues;
   QStringList paramDefaultValues;
@@ -519,6 +578,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       }
     }
     else if ( tag == "choices" ) {
+      QString name = e.attribute( "name" );
+      QString prefix = e.attribute( "prefix" );
+      QList<CfgEntry::Choice> chlist;
       for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() == "choice" ) {
           CfgEntry::Choice choice;
@@ -530,9 +592,10 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
             if ( e3.tagName() == "label" ) choice.label = e3.text();
             if ( e3.tagName() == "whatsthis" ) choice.whatsThis = e3.text();
           }
-          choices.append( choice );
+          chlist.append( choice );
         }
       }
+      choices = CfgEntry::Choices( chlist, name, prefix );
     }
    else if ( tag == "emit" ) {
     QDomNode signalNode;
@@ -916,9 +979,16 @@ QString memberAccessorBody( CfgEntry *e )
     QTextStream out(&result, QIODevice::WriteOnly);
     QString n = e->name();
     QString t = e->type();
+    bool useEnumType = useEnumTypes && t == "Enum";
 
-    out << "return " << This << varPath(n);
-    if (!e->param().isEmpty()) out << "[i]";
+    out << "return ";
+    if (useEnumType)
+      out << "static_cast<" << enumType(e) << ">(";
+    out << This << varPath(n);
+    if (!e->param().isEmpty())
+      out << "[i]";
+    if (useEnumType)
+      out << ")";
     out << ";" << endl;
 
     return result;
@@ -1076,6 +1146,7 @@ int main( int argc, char **argv )
   bool setUserTexts = codegenConfig.value("SetUserTexts", false).toBool();
 
   globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
+  useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
 
   dpointer = (memberVariables == "dpointer");
 
@@ -1146,30 +1217,30 @@ int main( int argc, char **argv )
       }
     }
     else if ( tag == "signal" ) {
-     QString signalName = e.attribute( "name" );
-     if ( signalName.isEmpty() ) {
-       std::cerr << "Signal without name." << std::endl;
-       return 1;
-     }
-     Signal theSignal;
-     theSignal.name = signalName;
-
-     for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
-       if ( e2.tagName() == "argument") {
-         SignalArguments argument;
-         argument.type = e2.attribute("type");
-         if ( argument.type.isEmpty() ) {
-           std::cerr << "Signal argument without type." << std::endl;
-           return 1;
+      QString signalName = e.attribute( "name" );
+      if ( signalName.isEmpty() ) {
+        std::cerr << "Signal without name." << std::endl;
+        return 1;
+      }
+      Signal theSignal;
+      theSignal.name = signalName;
+ 
+      for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
+        if ( e2.tagName() == "argument") {
+          SignalArguments argument;
+          argument.type = e2.attribute("type");
+          if ( argument.type.isEmpty() ) {
+            std::cerr << "Signal argument without type." << std::endl;
+            return 1;
+          }
+          argument.variableName = e2.text();
+          theSignal.arguments.append(argument);
         }
-       argument.variableName = e2.text();
-       theSignal.arguments.append(argument);
+        else if( e2.tagName() == "label") {
+          theSignal.label = e2.text();
+        }
       }
-      else if( e2.tagName() == "label") {
-        theSignal.label = e2.text();
-      }
-     }
-     signalList.append(theSignal);
+      signalList.append(theSignal);
     }
   }
 
@@ -1262,21 +1333,28 @@ int main( int argc, char **argv )
   // enums
   QList<CfgEntry*>::ConstIterator itEntry;
   for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
-    QList<CfgEntry::Choice> choices = (*itEntry)->choices();
-    if ( !choices.isEmpty() ) {
+    const CfgEntry::Choices &choices = (*itEntry)->choices();
+    QList<CfgEntry::Choice> chlist = choices.choices;
+    if ( !chlist.isEmpty() ) {
       QStringList values;
       QList<CfgEntry::Choice>::ConstIterator itChoice;
-      for( itChoice = choices.begin(); itChoice != choices.end(); ++itChoice ) {
-        values.append( (*itChoice).name );
+      for( itChoice = chlist.begin(); itChoice != chlist.end(); ++itChoice ) {
+        values.append( choices.prefix + (*itChoice).name );
       }
-      if ( globalEnums ) {
-        h << "    enum { " << values.join( ", " ) << " };" << endl;
-      } else {
-        h << "    class " << enumName( (*itEntry)->name() ) << endl;
-        h << "    {" << endl;
-        h << "      public:" << endl;
-        h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
-        h << "    };" << endl;
+      if ( choices.name().isEmpty() ) {
+        if ( globalEnums ) {
+          h << "    enum { " << values.join( ", " ) << " };" << endl;
+        } else {
+          // Create an automatically named enum
+          h << "    class " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << endl;
+          h << "    {" << endl;
+          h << "      public:" << endl;
+          h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
+          h << "    };" << endl;
+        }
+      } else if ( !choices.external() ) {
+        // Create a named enum
+        h << "    enum " << enumName( (*itEntry)->name(), (*itEntry)->choices() ) << " { " << values.join( ", " ) << " };" << endl;
       }
     }
     QStringList values = (*itEntry)->paramValues();
@@ -1302,7 +1380,7 @@ int main( int argc, char **argv )
     }
   }
   if ( hasSignals ) {
-   h << "    enum { ";
+   h << "\n    enum { ";
    QList<Signal>::ConstIterator it, itEnd = signalList.constEnd();
    for ( it = signalList.constBegin(); it != itEnd; ) {
      Signal signal = *it;
@@ -1358,7 +1436,11 @@ int main( int argc, char **argv )
       h << "    void " << setFunction(n) << "( ";
       if (!(*itEntry)->param().isEmpty())
         h << cppType((*itEntry)->paramType()) << " i, ";
-      h << param( t ) << " v )";
+      if (useEnumTypes && t == "Enum")
+        h << enumType(*itEntry);
+      else
+        h << param( t );
+      h << " v )";
       // function body inline only if not using dpointer
       // for BC mode
       if ( !dpointer )
@@ -1379,7 +1461,12 @@ int main( int argc, char **argv )
     h << "    */" << endl;
     if (staticAccessors)
       h << "    static" << endl;
-    h << "    " << cppType(t) << " " << getFunction(n) << "(";
+    h << "    ";
+    if (useEnumTypes && t == "Enum")
+      h << enumType(*itEntry);
+    else
+      h << cppType(t);
+    h << " " << getFunction(n) << "(";
     if (!(*itEntry)->param().isEmpty())
       h << " " << cppType((*itEntry)->paramType()) <<" i ";
     h << ")" << Const;
@@ -1448,7 +1535,16 @@ int main( int argc, char **argv )
       QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
       for ( it = signal.arguments.constBegin(); it != itEnd; ) {
         SignalArguments argument = *it;
-        h << param(argument.type) << " " << argument.variableName;
+        QString type = param(argument.type);
+        if ( useEnumTypes && argument.type == "Enum" ) {
+          for ( int i = 0, end = entries.count(); i < end; ++i ) {
+            if ( entries[i]->name() == argument.variableName ) {
+              type = enumType(entries[i]);
+              break;
+            }
+          }
+        }
+        h << type << " " << argument.variableName;
         if ( ++it != itEnd ) {
          h << ", ";
         }
@@ -1689,7 +1785,7 @@ int main( int argc, char **argv )
     if ( (*itEntry)->type() == "Enum" ) {
       cpp << "  QList<KConfigSkeleton::ItemEnum::Choice> values"
           << (*itEntry)->name() << ";" << endl;
-      QList<CfgEntry::Choice> choices = (*itEntry)->choices();
+      QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.begin(); it != choices.end(); ++it ) {
         cpp << "  {" << endl;
@@ -1780,7 +1876,11 @@ int main( int argc, char **argv )
         cpp << "void " << setFunction(n, className) << "( ";
         if ( !(*itEntry)->param().isEmpty() )
           cpp << cppType( (*itEntry)->paramType() ) << " i, ";
-        cpp << param( t ) << " v )" << endl;
+        if (useEnumTypes && t == "Enum")
+          cpp << enumType(*itEntry);
+        else
+          cpp << param( t );
+        cpp << " v )";
         // function body inline only if not using dpointer
         // for BC mode
         cpp << "{" << endl;
@@ -1789,7 +1889,11 @@ int main( int argc, char **argv )
       }
 
       // Accessor
-      cpp << cppType(t) << " " << getFunction(n, className) << "(";
+      if (useEnumTypes && t == "Enum")
+        cpp << enumType(*itEntry);
+      else
+        cpp << cppType(t);
+      cpp << " " << getFunction(n, className) << "(";
       if ( !(*itEntry)->param().isEmpty() )
         cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
       cpp << ")" << Const << endl;
@@ -1838,7 +1942,19 @@ int main( int argc, char **argv )
       QList<SignalArguments>::ConstIterator it, itEnd = signal.arguments.constEnd();
       for ( it = signal.arguments.constBegin(); it != itEnd; ) {
         SignalArguments argument = *it;
+        bool cast = false;
+        if ( useEnumTypes && argument.type == "Enum" ) {
+          for ( int i = 0, end = entries.count(); i < end; ++i ) {
+            if ( entries[i]->name() == argument.variableName ) {
+              cpp << "static_cast<" << enumType(entries[i]) << ">(";
+              cast = true;
+              break;
+            }
+          }
+        }
         cpp << varPath(argument.variableName);
+        if ( cast )
+          cpp << ")";
         if ( ++it != itEnd )
           cpp << ", ";
       }
