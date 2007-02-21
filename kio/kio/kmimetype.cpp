@@ -436,15 +436,15 @@ void KMimeType::init( KDesktopFile * config )
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
-  if ( config->hasKey( XKDEAutoEmbed ) )
-    m_mapProps.insert( XKDEAutoEmbed, config->readEntry( XKDEAutoEmbed, false ) );
+  if ( group.hasKey( XKDEAutoEmbed ) )
+    m_mapProps.insert( XKDEAutoEmbed, group.readEntry( XKDEAutoEmbed, false ) );
 
   QString XKDEText = QLatin1String("X-KDE-text");
-  if ( config->hasKey( XKDEText ) )
-    m_mapProps.insert( XKDEText, config->readEntry( XKDEText, false ) );
+  if ( group.hasKey( XKDEText ) )
+    m_mapProps.insert( XKDEText, group.readEntry( XKDEText, false ) );
 
   QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
-  if ( config->hasKey( XKDEIsAlso ) ) {
+  if ( group.hasKey( XKDEIsAlso ) ) {
     QString inherits = group.readEntry( XKDEIsAlso, QString() );
     if ( inherits != name() )
         m_mapProps.insert( XKDEIsAlso, inherits );
