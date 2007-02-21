@@ -317,7 +317,6 @@ install( FILES
    services/kservicetypeprofile.h
    services/kservicetypetrader.h
    services/kserviceoffer.h
-   services/ktrader.h
    services/kplugininfo.h
    localization/kcatalog.h
    localization/kcharsets.h

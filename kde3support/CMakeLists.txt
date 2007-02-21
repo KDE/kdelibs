@@ -71,6 +71,7 @@ install( FILES
   kdecore/k3tempfile.h
   kdecore/k3mimesourcefactory.h
   kdecore/ksimpleconfig.h
+  kdecore/ktrader.h
   kdeui/k3aboutapplication.h
   kdeui/k3aboutdialog.h
   kdeui/k3activelabel.h
