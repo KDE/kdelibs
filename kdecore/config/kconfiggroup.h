@@ -646,14 +646,14 @@ inline QList<T> KConfigGroup::readEntry( const char* pKey, const QList<T>& aDefa
   QList<QVariant> vList;
 
   if (!aDefault.isEmpty()) {
-    foreach (const T &aValue, aDefault)
+    Q_FOREACH (const T &aValue, aDefault)
       vList.append( aValue );
   }
   vList = readEntry( pKey, vList );
 
   QList<T> list;
   if (!vList.isEmpty()) {
-    foreach (QVariant aValue, vList) {
+    Q_FOREACH (QVariant aValue, vList) {
       kcbError(!aValue.convert(wanted)) << "conversion to "
         << QVariant::typeToName(wanted) << " information has been lost" << endl;
       list.append( qvariant_cast<T>(aValue) );
@@ -687,7 +687,7 @@ void KConfigGroup::writeEntry( const char* pKey, const QList<T>& value,
 #endif
 
   QVariantList vList;
-  foreach(const T &aValue, value)
+  Q_FOREACH(const T &aValue, value)
     vList.append(aValue);
 
   writeEntry( pKey, QVariant(vList), pFlags );
