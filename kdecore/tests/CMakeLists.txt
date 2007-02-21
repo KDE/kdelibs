@@ -431,6 +431,18 @@ add_test(kdecore-kautosavefiletest ${EXECUTABLE_OUTPUT_PATH}/kautosavefiletest)
 
 ########### next target ###############
 
+set(kdesktopfiletest_SRCS kdesktopfiletest.cpp )
+
+kde4_automoc(${kdesktopfiletest_SRCS})
+
+kde4_add_executable(kdesktopfiletest NOGUI RUN_UNINSTALLED ${kdesktopfiletest_SRCS})
+
+target_link_libraries(kdesktopfiletest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kdesktopfiletest ${EXECUTABLE_OUTPUT_PATH}/kdesktopfiletest)
+
+########### next target ###############
+
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
 kde4_automoc(${klibloadertestmodule_PART_SRCS})
