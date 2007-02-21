@@ -11,6 +11,7 @@
 #define PCX_H
 
 
+#include <kdemacros.h>
 #include <QImageIOHandler>
 #include <QDataStream>
 #include <QColor>
