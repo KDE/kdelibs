@@ -21,7 +21,7 @@
 // kde specific
 #include <kservicetypetrader.h>
 
-class QWidget;
+#include <QtGui/QWidget>
 
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related

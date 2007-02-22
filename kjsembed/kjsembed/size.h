@@ -20,8 +20,8 @@
 #ifndef SIZE_H
 #define SIZE_H
 
-#include <variant_binding.h>
-#include <static_binding.h>
+#include <kjsembed/variant_binding.h>
+#include <kjsembed/static_binding.h>
 
 class QSize;
 

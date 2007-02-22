@@ -19,6 +19,8 @@
  *
  */
 
+#include <kxmlcore/Platform.h>
+
 #ifndef ALWAYS_INLINE
 #if COMPILER(GCC)
 #define ALWAYS_INLINE inline __attribute__ ((__always_inline__))

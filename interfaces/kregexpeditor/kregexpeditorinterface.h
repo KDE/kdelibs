@@ -1,7 +1,8 @@
 #ifndef __kregexpeditorinterface_h__
 #define __kregexpeditorinterface_h__
 
-#include <qstring.h>
+#include <QtCore/QString>
+#include <QtCore/QObject>
 
 /**
  *  A graphical editor for regular expressions.

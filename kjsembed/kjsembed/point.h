@@ -22,8 +22,8 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <variant_binding.h>
-#include <static_binding.h>
+#include <kjsembed/variant_binding.h>
+#include <kjsembed/static_binding.h>
 
 class QPoint;
 
