@@ -264,8 +264,8 @@ void setSound(int SoundEvent, const QString &v) function.
 - Enums
 
 By default, if <b>GlobalEnums</b> is set to false, a separate named enum will be generated
-for each Enum entry. This allows the same Enum value names to be used in different enums,
-since each enum is defined in a little enclosing class of its own. For example, the
+for each Enum entry. Since each enum is defined in a little enclosing class of its own,
+this allows the same Enum value names to be used in different enums. For example, the
 .kcfg entry
 
 \verbatim
@@ -290,7 +290,7 @@ will generate this public class containing the enum definition, inside the gener
 Alternatively, if <b>GlobalEnums</b> is set to true, all Enum items are defined as
 unnamed enums in the global scope of the generated class. In this case, all Enum values
 must have different names to avoid clashes. However, you can use a 'prefix' argument
-in \<choices\> to prevent duplicate enum member names clashing. Using it, the Enum value
+in \<choices\> to prevent duplicate enum member names clashing. Using this, the Enum value
 names are prefixed in code with the string you specify. For example, if <b>GlobalEnums</b>
 is set to true, the .kcfg entry
 
@@ -310,11 +310,11 @@ will be declared
     enum { Keep_Do, Keep_Dont };
 \endverbatim
 
-It is also possible to specify your own name for a generated enum, by including a
+It is possible to specify your own name for a generated enum, by including a
 'name' parameter in \<choices\>. Just like unnamed enums, this enum will be defined in
-the global scope of the generated class. Therefore the names of Enum values must be
-unique across both unnamed enums (if <b>GlobalEnums</b> is set to true) and all
-specifically named enums.
+the global scope of the generated class (without any enclosing class of its own).
+Therefore the names of Enum values must be unique across both unnamed enums (if
+<b>GlobalEnums</b> is set to true) and all specifically named enums.
 
 An example of a specifically named enum:
 
@@ -395,7 +395,7 @@ for a signal, the signal name will suffice.
 </entry>
 \endverbatim
 
-You can also use the generic configChanged() signal from KConfigSkelton to notify your application
+You can also use the generic configChanged() signal from KConfigSkeleton to notify your application
 about configuration changes.
 
 If you have questions or comments please contact Cornelius Schumacher
