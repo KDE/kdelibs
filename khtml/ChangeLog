@@ -1,3 +1,9 @@
+2007-02-21  Harri Porten  <porten@kde.org>
+
+	* html/html_formimpl.cpp: mimmick .value behavior of other
+	browsers if no value attribute was set for an input element of
+	type radio and checkbox.
+
 2007-02-18  Harri Porten  <porten@kde.org>
 
 	* html/html_formimpl.cpp: fixed bug #120582 ("cloneNode does not

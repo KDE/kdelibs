@@ -1714,14 +1714,11 @@ DOMString HTMLInputElementImpl::value() const
 {
     if (m_type == CHECKBOX || m_type == RADIO) {
         const DOMString val = getAttribute(ATTR_VALUE);
-        // If no attribute exists, then just use "on" or "" based off the checked() state
-        // of the control.
-        if (val.isNull()) {
-            if (checked())
-                return DOMString("on");
-            else
-                return DOMString("");
-        }
+        // If no attribute exists, then we'll just return "on" as
+        // other browsers strangely seem to do without respecting the
+        // checked() state of the control.
+        if (val.isNull())
+	    return DOMString("on");
         return val;
     }
 
