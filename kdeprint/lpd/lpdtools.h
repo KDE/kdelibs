@@ -19,7 +19,7 @@
 #ifndef LPDTOOLS_H
 #define LPDTOOLS_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qmap.h>
 #include <qlist.h>
 #include <qtextstream.h>

@@ -21,6 +21,8 @@
 #include <Qt3Support/q3sqlpropertymap.h>
 #endif
 
+#include <kdelibs_export.h>
+
 /**
  * Install a Qt SQL property map with entries for all KDE widgets
  * Call this in any application using KDE widgets in Q3SqlForm or Q3DataView.
@@ -46,26 +48,26 @@ static inline KDE_DEPRECATED void kInstallKDEPropertyMap()
   installed = true;
   // QSqlPropertyMap takes ownership of the new default map.
   Q3SqlPropertyMap *kdeMap = new Q3SqlPropertyMap;
-  kdeMap->insert( "KColorButton", "color" );
-  kdeMap->insert( "KComboBox", "currentIndex" );
-  kdeMap->insert( "KDatePicker", "date" );
-  kdeMap->insert( "KDateWidget", "date" );
-  kdeMap->insert( "KDateTimeWidget", "dateTime" );
-  kdeMap->insert( "KEditListBox", "items" );
-  kdeMap->insert( "KFontCombo", "family" );
-  kdeMap->insert( "KFontRequester", "font" );
-  kdeMap->insert( "KFontChooser", "font" );
-  kdeMap->insert( "KHistoryCombo", "currentItem" );
-  kdeMap->insert( "KListWidget", "currentItem" );
-  kdeMap->insert( "KLineEdit", "text" );
-  kdeMap->insert( "KRestrictedLine", "text" );
-  kdeMap->insert( "KTextBrowser", "source" );
-  kdeMap->insert( "KTextEdit", "text" );
-  kdeMap->insert( "KUrlRequester", "url" );
-  kdeMap->insert( "KPasswordEdit", "password" );
-  kdeMap->insert( "KIntNumInput", "value" );
-  kdeMap->insert( "KIntSpinBox", "value" );
-  kdeMap->insert( "KDoubleNumInput", "value" );
+  kdeMap->insert( QLatin1String("KColorButton"), QLatin1String("color") );
+  kdeMap->insert( QLatin1String("KComboBox"), QLatin1String("currentIndex") );
+  kdeMap->insert( QLatin1String("KDatePicker"), QLatin1String("date") );
+  kdeMap->insert( QLatin1String("KDateWidget"), QLatin1String("date") );
+  kdeMap->insert( QLatin1String("KDateTimeWidget"), QLatin1String("dateTime") );
+  kdeMap->insert( QLatin1String("KEditListBox"), QLatin1String("items") );
+  kdeMap->insert( QLatin1String("KFontCombo"), QLatin1String("family") );
+  kdeMap->insert( QLatin1String("KFontRequester"), QLatin1String("font") );
+  kdeMap->insert( QLatin1String("KFontChooser"), QLatin1String("font") );
+  kdeMap->insert( QLatin1String("KHistoryCombo"), QLatin1String("currentItem") );
+  kdeMap->insert( QLatin1String("KListWidget"), QLatin1String("currentItem") );
+  kdeMap->insert( QLatin1String("KLineEdit"), QLatin1String("text") );
+  kdeMap->insert( QLatin1String("KRestrictedLine"), QLatin1String("text") );
+  kdeMap->insert( QLatin1String("KTextBrowser"), QLatin1String("source") );
+  kdeMap->insert( QLatin1String("KTextEdit"), QLatin1String("text") );
+  kdeMap->insert( QLatin1String("KUrlRequester"), QLatin1String("url") );
+  kdeMap->insert( QLatin1String("KPasswordEdit"), QLatin1String("password") );
+  kdeMap->insert( QLatin1String("KIntNumInput"), QLatin1String("value") );
+  kdeMap->insert( QLatin1String("KIntSpinBox"), QLatin1String("value") );
+  kdeMap->insert( QLatin1String("KDoubleNumInput"), QLatin1String("value") );
   Q3SqlPropertyMap::installDefaultMap( kdeMap );
 #endif
 }

@@ -25,8 +25,8 @@
 
 #include <kdedmodule.h>
 #include <q3intdict.h>
-#include <qstring.h>
-#include <qwidget.h>
+#include <QtCore/QString>
+#include <QtGui/QImage>
 #include <qhash.h>
 #include "kwalletbackend.h"
 #include <Q3PtrList>

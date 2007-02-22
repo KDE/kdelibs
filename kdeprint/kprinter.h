@@ -24,8 +24,8 @@
 #include <qpaintdevice.h>
 #include <qprinter.h>
 #include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include <kdemacros.h>
 #include <kdelibs_export.h>

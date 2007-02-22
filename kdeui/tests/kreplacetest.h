@@ -20,8 +20,8 @@
 #ifndef KREPLACETEST_H
 #define KREPLACETEST_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class KReplace;
 

@@ -30,8 +30,8 @@
 #include <kparts/factory.h>
 #include <kdialog.h>
 #include <kurl.h>
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include <qpointer.h>
 
 #include "kjavaappletwidget.h"

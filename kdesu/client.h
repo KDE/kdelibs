@@ -14,6 +14,7 @@
 #define __KDE_su_Client_h_Included__
 
 #include <qglobal.h>
+#include <QtCore/QList>
 #include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX

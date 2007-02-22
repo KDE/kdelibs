@@ -19,7 +19,7 @@
 #ifndef KDATETIMETEST_H
 #define KDATETIMETEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KDateTimeTest : public QObject
 {

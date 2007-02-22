@@ -21,7 +21,7 @@
 #define __k_build_service_type_factory_h__
 
 #include <kservicetypefactory.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 /**
  * Service-type factory for building ksycoca

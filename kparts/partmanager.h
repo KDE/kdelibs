@@ -21,8 +21,8 @@
 #ifndef __kpartmanager_h__
 #define __kpartmanager_h__
 
-#include <qobject.h>
-#include <qwidget.h>
+#include <QtCore/QObject>
+#include <QtGui/QWidget>
 
 #include <kdelibs_export.h>
 

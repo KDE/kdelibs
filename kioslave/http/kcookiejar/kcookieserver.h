@@ -24,7 +24,7 @@
 #ifndef KCOOKIESERVER_H
 #define KCOOKIESERVER_H
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kdedmodule.h>
 #include <QtDBus/QtDBus>
 

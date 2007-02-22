@@ -22,8 +22,8 @@
 #ifndef _KSSLKEYGEN_H
 #define _KSSLKEYGEN_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include "k3wizard.h"
 
 

@@ -23,7 +23,7 @@
 #define KJAVADOWNLOADER_H
 
 #include <kdelibs_export.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 /**
  * @short A class for handling downloads from KIO

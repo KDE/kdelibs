@@ -20,8 +20,8 @@
 #ifndef KFINDTEST_H
 #define KFINDTEST_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class KFind;
 

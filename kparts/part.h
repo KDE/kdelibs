@@ -20,7 +20,7 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qdom.h>
 #include <qpointer.h>
 #include <kurl.h>

@@ -1,7 +1,7 @@
 #ifndef _KLINEEDITTEST_H
 #define _KLINEEDITTEST_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qpointer.h>
 
 class QString;

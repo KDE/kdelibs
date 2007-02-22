@@ -31,9 +31,9 @@
 #include <iostream>
 using namespace std;
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qhash.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 
@@ -201,8 +201,8 @@ namespace KUnitTest
          */
         TesterAutoregister(const char *name, Tester *test)
         {
-            if ( test->objectName() == 0 )
-                test->setObjectName(name);
+            if ( test->objectName().isNull())
+                test->setObjectName(QLatin1String(name));
             Runner::registerTester(name, test);
         }
     };

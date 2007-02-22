@@ -21,8 +21,8 @@
 #ifndef KPRINTERIMPL_H
 #define KPRINTERIMPL_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include <qmap.h>
 
 #include <kdelibs_export.h>

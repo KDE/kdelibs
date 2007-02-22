@@ -23,7 +23,7 @@
 #ifndef NOTIFYBYSOUND_H
 #define NOTIFYBYSOUND_H
 
-#include <knotifyplugin.h>
+#include "knotifyplugin.h"
 
 class KProcess;
 

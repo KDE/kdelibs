@@ -19,7 +19,7 @@
 #ifndef KLIBLOADERTEST_MODULE_H
 #define KLIBLOADERTEST_MODULE_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 class KLibLoaderTestObject : public QObject
 {
 public:

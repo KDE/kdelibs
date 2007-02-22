@@ -12,7 +12,7 @@
 
 #include <kmainwindow.h>
 #include <q3textbrowser.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qmap.h>
 #include <qdir.h>
 

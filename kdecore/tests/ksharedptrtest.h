@@ -24,7 +24,7 @@
 #ifndef KSHAREDPTRTEST_H
 #define KSHAREDPTRTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KSharedPtrTest : public QObject
 {

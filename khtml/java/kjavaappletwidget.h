@@ -25,7 +25,7 @@
 #define KJAVAAPPLETWIDGET_H
 
 #include <kdelibs_export.h>
-#include <qwidget.h>
+#include <QtGui/QImage>
 
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"

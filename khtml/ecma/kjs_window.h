@@ -22,7 +22,7 @@
 #ifndef _KJS_WINDOW_H_
 #define _KJS_WINDOW_H_
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qpointer.h>
 #include <qmap.h>
 #include <QList>

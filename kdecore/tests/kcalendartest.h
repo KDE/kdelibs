@@ -1,7 +1,7 @@
 #ifndef KCALENDARTEST_H
 #define KCALENDARTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KCalendarTest : public QObject
 {

@@ -25,7 +25,7 @@
 
 #include <khtml_part.h>
 #include <kurl.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>

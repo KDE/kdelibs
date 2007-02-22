@@ -5,8 +5,8 @@
 
 #include <qdialog.h>
 #include <q3listview.h>
-#include <qstring.h>
-#include <qfile.h>
+#include <QtCore/QString>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qtimer.h>
 #include <q3scrollview.h>

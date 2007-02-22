@@ -1,4 +1,5 @@
-#ifndef KDE3_SUPPORT_KIO_SKIP_DLG_H
-#define KDE3_SUPPORT_KIO_SKIP_DLG_H
+#ifdef KDE_NO_COMPAT
 #error "skipdlg.h needs to be renamed to skipdialog.h"
+#else
+#include <kio/skipdialog.h>
 #endif

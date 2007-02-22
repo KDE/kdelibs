@@ -20,7 +20,7 @@
 #ifndef KASCIITEST_H
 #define KASCIITEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KAsciiTest : public QObject
 {

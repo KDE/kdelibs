@@ -21,10 +21,10 @@
 #ifndef KMFACTORY_H
 #define KMFACTORY_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qlist.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qpair.h>
 
 #include <kconfiggroup.h>

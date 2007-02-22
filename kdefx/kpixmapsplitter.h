@@ -23,7 +23,7 @@
 #include <qpixmap.h>
 #include <qrect.h>
 #include <qsize.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

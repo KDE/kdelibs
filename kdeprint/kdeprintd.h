@@ -22,7 +22,7 @@
 
 #include <kdedmodule.h>
 #include <qlist.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qpointer.h>
 #include <qhash.h>
 #include <QtDBus/QtDBus>

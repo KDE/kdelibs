@@ -21,8 +21,8 @@
 #define PPDLOADER_H
 
 #include <QStack>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qvariant.h>
 #include <qhash.h>
 

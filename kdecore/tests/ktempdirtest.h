@@ -19,7 +19,7 @@
 #ifndef KTEMPDIRTEST_H
 #define KTEMPDIRTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KTempDirTest : public QObject
 {

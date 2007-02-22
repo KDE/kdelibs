@@ -21,7 +21,7 @@
 #define __k_build_mime_type_factory_h__
 
 #include <kmimetypefactory.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 /**
  * Mime-type factory for building ksycoca

@@ -23,7 +23,7 @@
 #include "kprintdialogpage.h"
 
 #include <qhash.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class QTreeWidget;
 class KXmlCommand;

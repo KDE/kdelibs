@@ -21,8 +21,8 @@
 #define KNEWSTUFF_PROVIDER_H
 
 #include <qdom.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include <kurl.h>
 #include <kdelibs_export.h>

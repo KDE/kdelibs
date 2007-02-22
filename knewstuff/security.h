@@ -19,7 +19,7 @@
 
 //qt includes
 #include <qmap.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KProcIO;
 class KProcess;

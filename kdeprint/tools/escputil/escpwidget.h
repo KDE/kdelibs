@@ -20,7 +20,7 @@
 #ifndef ESCPWIDGET_H
 #define ESCPWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <kprocess.h>
 #include <kurl.h>
 

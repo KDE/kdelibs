@@ -23,7 +23,7 @@
 #define __pixmaploader_h__
 
 #include <qcache.h>
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <QStyleOptionTab>
 
 class QPixmap;

@@ -20,9 +20,9 @@
 #ifndef PRINTERFILTER_H
 #define PRINTERFILTER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qregexp.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class KMPrinter;
 

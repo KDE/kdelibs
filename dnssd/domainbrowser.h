@@ -21,7 +21,7 @@
 #ifndef DNSSDDOMAINBROWSER_H
 #define DNSSDDOMAINBROWSER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <dnssd/remoteservice.h>
 
 class QStringList;

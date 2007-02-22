@@ -21,11 +21,11 @@
 #ifndef __k_build_service_factory_h__
 #define __k_build_service_factory_h__
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 #include <kservicefactory.h>
 // We export the services to the service group factory!
-#include <kbuildservicegroupfactory.h>
+#include "kbuildservicegroupfactory.h"
 #include <QSet>
 #include <kserviceoffer.h>
 class KBuildMimeTypeFactory;

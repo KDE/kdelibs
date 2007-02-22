@@ -20,7 +20,7 @@
 #ifndef KPIPEPROCESS_H
 #define KPIPEPROCESS_H
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <stdio.h>
 
 #include <kdelibs_export.h>

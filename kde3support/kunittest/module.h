@@ -26,7 +26,7 @@
 #ifndef KUNITTEST_MODULE_H
 #define KUNITTEST_MODULE_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <klibloader.h>
 #include <kunittest/runner.h>

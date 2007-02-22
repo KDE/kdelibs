@@ -23,11 +23,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qsocketnotifier.h>
 #include <qtimer.h>
 #include <qlist.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kurl.h>
 #include <kstreamsocket.h>

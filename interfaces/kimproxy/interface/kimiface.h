@@ -24,7 +24,7 @@
 
 #include <qpixmap.h>
 #include <dcopobject.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kurl.h>
 
 /**

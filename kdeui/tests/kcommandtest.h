@@ -1,7 +1,7 @@
 #ifndef KCOMMANDTEST_H
 #define KCOMMANDTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 class KCommand;
 
 class KCommandTest : public QObject

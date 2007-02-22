@@ -29,6 +29,8 @@ class Q3DragObject;
 class KConfig;
 class KLineEdit;
 class KConfigGroup;
+class QColorGroup;
+
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, AutoSelection and

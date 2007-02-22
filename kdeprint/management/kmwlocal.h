@@ -22,7 +22,7 @@
 
 #include "kmwizardpage.h"
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class QLineEdit;
 class K3ListView;

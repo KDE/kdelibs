@@ -1,7 +1,7 @@
 #ifndef __browserinterface_h__
 #define __browserinterface_h__
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qvariant.h>
 
 #include <kdelibs_export.h>

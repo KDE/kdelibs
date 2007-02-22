@@ -22,7 +22,7 @@
 #define KPRINTPREVIEW_H
 
 #include <kdialog.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kprocess.h>
 
 class KLibFactory;

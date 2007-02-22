@@ -23,8 +23,8 @@
 #include <qdatetime.h>
 #include <qdom.h>
 #include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include <kurl.h>
 #include <kdelibs_export.h>

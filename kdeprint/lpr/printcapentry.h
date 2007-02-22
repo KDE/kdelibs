@@ -20,9 +20,8 @@
 #ifndef PRINTCAPENTRY_H
 #define PRINTCAPENTRY_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <qstring.h>
 #include <qmap.h>
@@ -78,4 +77,5 @@ public:
 	void addField(const QString& name, Field::Type type = Field::Boolean, const QString& value = QString());
 };
 
+#endif
 #endif

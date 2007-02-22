@@ -24,7 +24,7 @@
 #include <qgroupbox.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 
 class KVisibleButtonGroup : public QGroupBox, public QButtonGroup

@@ -20,7 +20,7 @@
 #ifndef LPCHELPER_H
 #define LPCHELPER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 #include <qtextstream.h>
 #include "kmprinter.h"

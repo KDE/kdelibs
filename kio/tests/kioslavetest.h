@@ -12,12 +12,12 @@
 #ifndef _KIOSLAVETEST_H
 #define _KIOSLAVETEST_H
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qbuttongroup.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include <kmainwindow.h>
 

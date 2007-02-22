@@ -21,7 +21,7 @@
 #ifndef _KSSLSETTINGS_H
 #define _KSSLSETTINGS_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kconfig.h>
 

@@ -20,8 +20,8 @@
 #ifndef IMAGEPREVIEW_H
 #define IMAGEPREVIEW_H
 
-#include <qwidget.h>
-#include <qimage.h>
+#include <QtGui/QWidget>
+#include <QtGui/QImage>
 
 class ImagePreview : public QWidget
 {

@@ -1,4 +1,5 @@
-#ifndef KDE3_SUPPORT_KIO_PASS_DLG_H
-#define KDE3_SUPPORT_KIO_PASS_DLG_H
-#error "passdlg.h needs to be renamed to passwordidialog.h"
+#ifdef KDE_NO_COMPAT
+#error "passdlg.h needs to be replaced by kio/passworddialog.h"
+#else
+#include <kio/passworddialog.h>
 #endif

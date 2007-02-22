@@ -20,9 +20,9 @@
 #ifndef KMDRIVERDB_H
 #define KMDRIVERDB_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qhash.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include "kmdbentry.h"
 

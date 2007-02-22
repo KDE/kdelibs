@@ -20,9 +20,7 @@
 #ifndef LPRHANDLER_H
 #define LPRHANDLER_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
 
 #include <qstring.h>
 
@@ -85,4 +83,5 @@ inline QString LprHandler::cachedDriverDir() const
 inline void LprHandler::setCachedDriverDir(const QString& s)
 { m_cacheddriverdir = s; }
 
+#endif
 #endif

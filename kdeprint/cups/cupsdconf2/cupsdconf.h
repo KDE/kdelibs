@@ -20,8 +20,8 @@
 #ifndef	CUPSDCONF_H
 #define	CUPSDCONF_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qtextstream.h>
 #include <qpair.h>
 #include <QList>

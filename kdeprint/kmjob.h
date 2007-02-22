@@ -21,9 +21,7 @@
 #ifndef KMJOB_H
 #define KMJOB_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
 
 #include <qstring.h>
 #include <QVector>
@@ -127,4 +125,5 @@ protected:
 	QVector<QString>	m_attributes;
 };
 
+#endif
 #endif

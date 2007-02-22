@@ -1,7 +1,7 @@
 #ifndef BUG_MAILER_H
 #define BUG_MAILER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class SMTP;
 

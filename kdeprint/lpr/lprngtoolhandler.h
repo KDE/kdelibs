@@ -22,7 +22,7 @@
 
 #include "lprhandler.h"
 #include <qmap.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qpair.h>
 
 class LPRngToolHandler : public LprHandler

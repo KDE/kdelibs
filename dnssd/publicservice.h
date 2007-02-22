@@ -21,7 +21,7 @@
 #ifndef DNSSDPUBLICSERVICE_H
 #define DNSSDPUBLICSERVICE_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <dnssd/servicebase.h>
 #include <QEvent>
 

@@ -21,7 +21,7 @@
 #ifndef KPAC_SCRIPT_H
 #define KPAC_SCRIPT_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kjs/interpreter.h>
 

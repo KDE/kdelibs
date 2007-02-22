@@ -13,8 +13,8 @@
 #ifndef KICONTHEME_H
 #define KICONTHEME_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringlist.h>
 #include <QtCore/QList>
 #include "kdelibs_export.h"
 

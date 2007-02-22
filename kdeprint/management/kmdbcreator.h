@@ -20,8 +20,8 @@
 #ifndef KMDBCREATOR_H
 #define KMDBCREATOR_H
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 #include <qdatetime.h>
 #include <kprocess.h>
 

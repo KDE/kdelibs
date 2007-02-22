@@ -23,7 +23,7 @@
 #define _KJS_PROXY_H_
 
 #include <qvariant.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <sys/time.h>
 
 class KHTMLPart;

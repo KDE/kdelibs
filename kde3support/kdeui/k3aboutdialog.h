@@ -122,7 +122,7 @@ class KDE3SUPPORT_EXPORT K3AboutContributor : public QFrame
     class Private;
     Private* const d;
 
-    virtual void setName(const char *_name) { QObject::setObjectName(_name); }
+    virtual void setName(const char *_name) { QObject::setObjectName(QLatin1String(_name)); }
 };
 
 /**

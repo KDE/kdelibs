@@ -20,7 +20,7 @@
 #ifndef KMCUPSCONFIGWIDGET_H
 #define KMCUPSCONFIGWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QLineEdit;
 class QCheckBox;

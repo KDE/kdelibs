@@ -21,8 +21,8 @@
 #ifndef KCMODULEPROXY_H
 #define KCMODULEPROXY_H
 
-#include <qwidget.h>
-#include <qstringlist.h>
+#include <QtGui/QImage>
+#include <QtCore/QStringList>
 
 #include <kcmodule.h>
 #include <kservice.h>

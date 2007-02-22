@@ -24,7 +24,7 @@
 
 class KSSLCertificate;
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
 

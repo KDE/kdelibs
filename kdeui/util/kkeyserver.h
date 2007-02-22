@@ -23,6 +23,8 @@
 #ifndef _KKEYSERVER_H
 #define _KKEYSERVER_H
 
+#include <kdelibs_export.h>
+
 #if defined Q_WS_X11 /*or defined Q_WS_WIN*/
 #include "kkeyserver_x11.h"
 #elif defined Q_WS_MACX

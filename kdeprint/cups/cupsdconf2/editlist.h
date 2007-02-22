@@ -20,7 +20,7 @@
 #ifndef EDITLIST_H
 #define EDITLIST_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qpixmap.h>
 
 class KListWidget;

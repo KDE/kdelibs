@@ -22,8 +22,8 @@
 #define _INCLUDE_KSSLCCACHE_H
 
 class KSSLCertificate;
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qdatetime.h>
 
 #include <kdelibs_export.h>

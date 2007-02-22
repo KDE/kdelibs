@@ -22,7 +22,7 @@
 
 
 #include <qsettings.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kstandarddirs.h>
 
 /**

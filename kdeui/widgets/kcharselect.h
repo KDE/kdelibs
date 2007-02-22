@@ -79,8 +79,8 @@ protected:
     //virtual void paintCell( class QPainter *p, int row, int col );
 
     virtual void mousePressEvent( QMouseEvent *e ) {  mouseMoveEvent( e ); QTableView::mousePressEvent(e);}
-    virtual void mouseDoubleClickEvent ( QMouseEvent *e ){  mouseMoveEvent( e ); emit doubleClicked();}
-    virtual void mouseReleaseEvent( QMouseEvent *e ) { mouseMoveEvent( e ); emit activated( chr() ); emit activated(); }
+    virtual void mouseDoubleClickEvent ( QMouseEvent *e ){  mouseMoveEvent( e ); doubleClicked();}
+    virtual void mouseReleaseEvent( QMouseEvent *e ) { mouseMoveEvent( e ); activated( chr() ); activated(); }
     virtual void mouseMoveEvent( QMouseEvent *e );
 
     virtual void keyPressEvent( QKeyEvent *e );

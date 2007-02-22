@@ -20,7 +20,7 @@
 #define __k_build_service_group_factory_h__
 
 #include <kservicegroupfactory.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 /**
  * Service group factory for building ksycoca

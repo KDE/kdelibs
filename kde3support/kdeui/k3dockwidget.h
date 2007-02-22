@@ -363,7 +363,7 @@ public:
    * Constructs this. It just calls the method of the base class.
    */
   K3DockTabGroup( QWidget *parent = 0, const char *name = 0 )
-  :QTabWidget( parent ){ setObjectName( name ); }
+  :QTabWidget( parent ){ setObjectName( QLatin1String(name) ); }
 
   /**
    * Destructs a K3DockTabGroup.
@@ -1298,7 +1298,7 @@ public:
    * @param name internal object name
    * @param f Qt::WidgetFlags widget flags
    */
-  K3DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
+  K3DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::Window);
 
   /**
    * Destructs a dockmainwindow.

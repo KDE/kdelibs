@@ -21,7 +21,7 @@
 #ifndef DNSSDQUERY_H
 #define DNSSDQUERY_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <dnssd/remoteservice.h>
 
 

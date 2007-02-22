@@ -1,7 +1,7 @@
 #ifndef KRFCDATETEST_H
 #define KRFCDATETEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KRFCDateTest : public QObject
 {

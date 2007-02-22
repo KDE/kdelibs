@@ -7,8 +7,8 @@
 #ifndef KBLEND_TEST_H
 #define KBLEND_TEST_H
 
-#include <qwidget.h>
-#include <qimage.h>
+#include <QtGui/QWidget>
+#include <QtGui/QImage>
 
 class KBlendWidget : public QWidget
 {

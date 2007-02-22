@@ -21,6 +21,7 @@
 #define KNEWSTUFF_UPLOADDIALOG_H
 
 #include <kdialog.h>
+#include <kurl.h>
 
 class QLineEdit;
 class QSpinBox;

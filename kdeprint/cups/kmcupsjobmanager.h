@@ -22,7 +22,7 @@
 
 #include "kmjobmanager.h"
 #include "ipprequest.h"
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class KMPrinter;
 

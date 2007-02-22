@@ -19,7 +19,7 @@
 #ifndef kurltest_h
 #define kurltest_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KUrlTest : public QObject
 {

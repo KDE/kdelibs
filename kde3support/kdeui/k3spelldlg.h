@@ -78,7 +78,7 @@ public:
   void init( const QString& _word, QStringList* _sugg,
              const QString& context );
 
-  void standby() { emit ready( false ); }
+  void standby() { ready( false ); }
 
   public Q_SLOTS:
   /**

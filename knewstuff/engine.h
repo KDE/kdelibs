@@ -21,8 +21,8 @@
 #define KNEWSTUFF_ENGINE_H
 
 #include <qmap.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include "entry.h"
 #include "provider.h"

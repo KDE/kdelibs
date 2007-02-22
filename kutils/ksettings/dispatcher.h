@@ -20,7 +20,7 @@
 #ifndef KSETTINGS_DISPATCHER_H
 #define KSETTINGS_DISPATCHER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 #include <kdelibs_export.h>
 #include <kcomponentdata.h>

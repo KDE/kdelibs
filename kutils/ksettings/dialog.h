@@ -20,7 +20,7 @@
 #ifndef KSETTINGS_DIALOG_H
 #define KSETTINGS_DIALOG_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kservice.h>
 #include <QList>
 

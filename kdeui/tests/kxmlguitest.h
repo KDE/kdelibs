@@ -2,7 +2,7 @@
 #define KXMLGUITEST_H
 
 #include <kxmlguiclient.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class Client : public QObject, public KXMLGUIClient
 {

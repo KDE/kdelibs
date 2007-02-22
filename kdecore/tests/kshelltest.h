@@ -19,7 +19,7 @@
 #ifndef KSHELLTEST_H
 #define KSHELLTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KShellTest : public QObject
 {

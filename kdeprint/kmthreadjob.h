@@ -21,7 +21,7 @@
 #define KMTHREADJOB_H
 
 #include <QMultiHash>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KMJob;
 class KMJobManager;

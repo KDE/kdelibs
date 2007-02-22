@@ -1,9 +1,9 @@
 #ifndef FORM1_H
 #define FORM1_H
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qvariant.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout;

@@ -16,7 +16,8 @@
 #ifndef __PTY_h_Included__
 #define __PTY_h_Included__
 
-#include <qbytearray.h>
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

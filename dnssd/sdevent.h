@@ -22,7 +22,7 @@
 #define DNSSDSDEVENT_H
 
 #include <qevent.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qmap.h>
 
 namespace DNSSD

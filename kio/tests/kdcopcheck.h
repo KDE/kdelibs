@@ -2,8 +2,8 @@
 #define _BLA_H_
 
 #include <kprocess.h>
-#include <qstring.h>
-#include <qobject.h>
+#include <QtCore/QString>
+#include <QtCore/QObject>
 
 class TestService : public QObject
 {

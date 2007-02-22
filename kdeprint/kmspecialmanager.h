@@ -20,7 +20,7 @@
 #ifndef KMSPECIALMANAGER_H
 #define KMSPECIALMANAGER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 
 class KMPrinter;

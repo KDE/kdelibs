@@ -1,7 +1,7 @@
 #ifndef KPASSIVEPOPUPTEST_H
 #define KPASSIVEPOPUPTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class Test : public QObject
 {

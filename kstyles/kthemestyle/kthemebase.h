@@ -31,7 +31,7 @@ Copyright (C) 1998, 1999, 2000 KDE Team
 #include <qdatetime.h>
 #include <kpixmap.h>
 #include <q3intcache.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kstyle.h>
 #include <qsettings.h>
 #include <qpalette.h> // for QColorGroup

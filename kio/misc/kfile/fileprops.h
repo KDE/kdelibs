@@ -19,7 +19,7 @@
 #ifndef KFILEPROPS_H
 #define KFILEPROPS_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kfilemetainfo.h>
 

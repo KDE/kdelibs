@@ -21,7 +21,7 @@
 #ifndef DNSSDSERVICEBROWSER_H
 #define DNSSDSERVICEBROWSER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <dnssd/remoteservice.h>
 

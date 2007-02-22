@@ -22,7 +22,7 @@
 
 #include <qdom.h>
 #include <qmap.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kdelibs_export.h>
 

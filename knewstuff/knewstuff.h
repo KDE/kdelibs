@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF_H
 #define KNEWSTUFF_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

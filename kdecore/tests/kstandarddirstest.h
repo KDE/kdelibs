@@ -19,7 +19,7 @@
 #ifndef kstandarddirstest_h
 #define kstandarddirstest_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KStandarddirsTest : public QObject
 {

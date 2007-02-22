@@ -21,7 +21,7 @@
 
 #include <krun.h>
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class testKRun : public KRun
 {

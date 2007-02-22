@@ -20,9 +20,8 @@
 #ifndef KMPRINTER_H
 #define KMPRINTER_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -232,4 +231,5 @@ public:
 	void inSort( KMPrinter* printer );
 };
 
+#endif
 #endif

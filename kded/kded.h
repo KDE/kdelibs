@@ -20,8 +20,8 @@
 #ifndef __kded_h__
 #define __kded_h__
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 #include <qtimer.h>
 #include <qhash.h>
 #include <qset.h>

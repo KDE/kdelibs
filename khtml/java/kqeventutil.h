@@ -23,7 +23,7 @@
 #ifndef KQEVENTUTIL_H
 #define KQEVENTUTIL_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kdelibs_export.h>
 
 class QEvent;

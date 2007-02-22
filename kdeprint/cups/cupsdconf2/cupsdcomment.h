@@ -20,7 +20,7 @@
 #ifndef CUPSDCOMMENT_H
 #define	CUPSDCOMMENT_H
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <QHash>
 
 class QFile;

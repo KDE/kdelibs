@@ -21,7 +21,7 @@
 #ifndef _KSSLX509V3_H
 #define _KSSLX509V3_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

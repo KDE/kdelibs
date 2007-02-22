@@ -21,7 +21,7 @@
 #define KMWBANNERS_H
 
 #include "kmwizardpage.h"
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class QComboBox;
 

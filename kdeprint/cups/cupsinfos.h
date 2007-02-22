@@ -20,7 +20,7 @@
 #ifndef CUPSINFOS_H
 #define CUPSINFOS_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include "kpreloadobject.h"
 
 class CupsInfos : public KPReloadObject

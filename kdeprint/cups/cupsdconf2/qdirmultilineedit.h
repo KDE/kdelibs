@@ -20,7 +20,7 @@
 #ifndef QDIRMULTILINEEDIT_H
 #define QDIRMULTILINEEDIT_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QListWidget;
 class QPushButton;

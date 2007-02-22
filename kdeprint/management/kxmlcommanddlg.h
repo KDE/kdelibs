@@ -20,9 +20,9 @@
 #ifndef KXMLCOMMANDDLG_H
 #define KXMLCOMMANDDLG_H
 
-#include <qwidget.h>
+#include <QtGui/QImage>
 #include <qmap.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kdialog.h>
 
 class K3ListView;

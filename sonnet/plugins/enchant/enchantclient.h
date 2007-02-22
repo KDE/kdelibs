@@ -23,7 +23,7 @@
 #include "speller.h"
 #include "client.h"
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qset.h>
 #include <enchant/enchant.h>
 

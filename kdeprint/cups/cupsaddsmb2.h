@@ -20,8 +20,8 @@
 #ifndef CUPSADDSMB_H
 #define CUPSADDSMB_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include <kprocess.h>
 #include <kdialog.h>
 

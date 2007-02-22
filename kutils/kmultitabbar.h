@@ -25,8 +25,8 @@
 #ifndef _KMultitabbar_h_
 #define _KMultitabbar_h_
 
-#include <qlayout.h>
-#include <qstring.h>
+#include <QtGui/QLayout>
+#include <QtCore/QString>
 #include <qlist.h>
 #include <qpushbutton.h>
 

@@ -19,7 +19,7 @@
 #ifndef kglobalsettingstest_h
 #define kglobalsettingstest_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KGlobalSettingsTest : public QObject
 {

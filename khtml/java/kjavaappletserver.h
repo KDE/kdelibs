@@ -26,7 +26,7 @@
 
 #include <kdelibs_export.h>
 #include "kjavaprocess.h"
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 #include <QSize>
 

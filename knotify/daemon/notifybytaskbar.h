@@ -23,7 +23,7 @@
 #ifndef NOTIFYBYTASKBAR_H
 #define NOTIFYBYTASKBAR_H
 
-#include <knotifyplugin.h>
+#include "knotifyplugin.h"
 
 
 class NotifyByTaskbar : public KNotifyPlugin

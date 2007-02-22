@@ -22,6 +22,8 @@
 
 #include <kdelibs_export.h>
 
+#include <QtCore/QObject>
+
 namespace Phonon
 {
 class PHONONCORE_EXPORT ByteStreamInterface

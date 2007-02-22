@@ -20,4 +20,9 @@
  * This file exists to see that ktrader needs to be ported at compile time rather than at link time,
  * and to avoid interferences from installed ktrader.h files
  */
+#ifdef KDE_NO_COMPAT
 #error ktrader.h does not exist anymore, please use kservicetypetrader or kmimetypetrader
+#else
+#include <kservicetypetrader.h>
+#include <kmimetypetrader.h>
+#endif

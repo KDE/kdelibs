@@ -24,7 +24,7 @@
 #include "dialog.h"
 #include "loader.h"
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class TestDialog : public QObject
 {

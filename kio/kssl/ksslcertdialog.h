@@ -21,7 +21,7 @@
 #ifndef _KSSLCERTDIALOG_H
 #define _KSSLCERTDIALOG_H
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kdialog.h>
 
 class QWidget;

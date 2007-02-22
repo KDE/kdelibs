@@ -279,7 +279,7 @@ namespace KIO {
         static void checkSlaveOnHold(bool b) { self()->_checkSlaveOnHold(b); }
 
         static void emitReparseSlaveConfiguration() {
-            emit self()->reparseSlaveConfiguration( QString() );
+            self()->reparseSlaveConfiguration( QString() );
         }
 
         void debug_info();

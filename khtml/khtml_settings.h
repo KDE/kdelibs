@@ -23,8 +23,8 @@
 class KConfig;
 class KConfigGroup;
 #include <qcolor.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qfont.h>
 #include <qmap.h>
 #include <qpair.h>

@@ -21,7 +21,7 @@
 #define PLUGIN_H
 
 #include <qdom.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kaction.h>
 #include <kxmlguiclient.h>
 

@@ -21,7 +21,7 @@
 #define UTIL_H
 
 #include "kprinter.h"
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kurl.h>
 #include <klocale.h>
 

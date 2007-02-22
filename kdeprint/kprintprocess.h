@@ -21,7 +21,7 @@
 #define KPRINTPROCESS_H
 
 #include <kprocess.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 class KPrintProcess : public KShellProcess
 {

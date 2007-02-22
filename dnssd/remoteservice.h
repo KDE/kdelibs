@@ -21,7 +21,7 @@
 #ifndef DNSSDREMOTESERVICE_H
 #define DNSSDREMOTESERVICE_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <dnssd/servicebase.h>
 #include <QEvent>
 

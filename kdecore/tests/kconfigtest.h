@@ -19,7 +19,7 @@
 #ifndef KCONFIGTEST_H
 #define KCONFIGTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KConfigTest : public QObject
 {

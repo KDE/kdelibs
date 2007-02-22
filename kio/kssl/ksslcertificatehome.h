@@ -23,8 +23,8 @@
 
 class KSSLCertificate;
 class KSSLPKCS12;
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
 

@@ -5,7 +5,7 @@
 #ifndef KGRADIENT_TEST_H
 #define KGRADIENT_TEST_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qpixmap.h>
 
 class KGradientWidget : public QWidget

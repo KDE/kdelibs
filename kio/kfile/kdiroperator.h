@@ -733,7 +733,7 @@ protected Q_SLOTS:
     /**
      * Emits fileHighlighted( i )
      */
-    void highlightFile(const KFileItem* i) { emit fileHighlighted( i ); }
+    void highlightFile(const KFileItem* i) { fileHighlighted( i ); }
 
     /**
      * Called upon right-click to activate the popupmenu.

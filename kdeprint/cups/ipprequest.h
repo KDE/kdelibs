@@ -20,8 +20,8 @@
 #ifndef IPPREQUEST_H
 #define IPPREQUEST_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qtextstream.h>
 #include <QList>
 #include <qmap.h>

@@ -19,7 +19,7 @@
 #ifndef KMACROEXPANDERTEST_H
 #define KMACROEXPANDERTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KMacroExpanderTest : public QObject
 {

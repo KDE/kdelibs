@@ -25,8 +25,8 @@
 #include <kdedmodule.h>
 #include <ksslcertificate.h>
 #include <ksslcertificatecache.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include <qmap.h>
 #include <QVector>

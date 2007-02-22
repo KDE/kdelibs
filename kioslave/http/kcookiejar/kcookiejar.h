@@ -24,8 +24,8 @@
 #ifndef KCOOKIEJAR_H
 #define KCOOKIEJAR_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qhash.h>
 #include <q3ptrlist.h>
 

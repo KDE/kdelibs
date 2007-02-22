@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include "kdirwatch.h"
 #include "kapplication.h"

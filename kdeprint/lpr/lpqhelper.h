@@ -21,7 +21,7 @@
 #define LPQHELPER_H
 
 #include <qlist.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KMJob;
 

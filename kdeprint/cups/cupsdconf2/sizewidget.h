@@ -20,7 +20,7 @@
 #ifndef SIZEWIDGET_H
 #define SIZEWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QSpinBox;
 class QComboBox;

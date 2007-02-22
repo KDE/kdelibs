@@ -21,7 +21,7 @@
 #ifndef DNSSDRESPONDER_H
 #define DNSSDRESPONDER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qsocketnotifier.h>
 #include <config-dnssd.h>
 #ifdef HAVE_DNSSD

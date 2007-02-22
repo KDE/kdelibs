@@ -21,7 +21,7 @@
 #ifndef _KSSLSESSION_H
 #define _KSSLSESSION_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

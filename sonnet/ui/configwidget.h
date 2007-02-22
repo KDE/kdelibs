@@ -21,7 +21,7 @@
 #ifndef KSPELL_CONFIGWIDGET_H
 #define KSPELL_CONFIGWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <kdelibs_export.h>
 #include "loader.h"
 

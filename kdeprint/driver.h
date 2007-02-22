@@ -21,9 +21,8 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <qstring.h>
 #include <qmap.h>
@@ -380,4 +379,5 @@ protected:
 	float m_width, m_height, m_left, m_bottom, m_right, m_top;
 };
 
+#endif
 #endif

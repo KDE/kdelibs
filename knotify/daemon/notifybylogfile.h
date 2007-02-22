@@ -23,7 +23,7 @@
 #ifndef NOTIFYBYLOGFILE_H
 #define NOTIFYBYLOGFILE_H
 
-#include <knotifyplugin.h>
+#include "knotifyplugin.h"
 
 
 class NotifyByLogfile : public KNotifyPlugin

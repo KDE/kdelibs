@@ -20,9 +20,9 @@
 #ifndef GSCHECKER_H
 #define GSCHECKER_H
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qobject.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QObject>
 
 class GsChecker : public QObject
 {

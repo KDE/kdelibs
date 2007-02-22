@@ -18,7 +18,7 @@
 #include <k3dockwidget.h>
 #include <k3dockwidget_p.h>
 #include <qtabwidget.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 class QPushButton;
 
 class DockApplication : public K3DockMainWindow

@@ -23,7 +23,7 @@
 #define _KTIMEOUT_H_
 
 #include <QHash>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 // @internal
 class KTimeout : public QObject {

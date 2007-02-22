@@ -20,8 +20,8 @@
 #ifndef KDEPRINTCHECK_H
 #define KDEPRINTCHECK_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <kconfiggroup.h>
 #include <kurl.h>
 

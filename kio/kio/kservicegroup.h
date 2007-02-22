@@ -315,7 +315,7 @@ public:
   bool isValid() const { return true; }
 
   // Dummy
-  virtual QString name() const { return "separator"; }
+  virtual QString name() const { return QLatin1String("separator"); }
   // Dummy
   virtual void load( QDataStream& ) { };
   // Dummy

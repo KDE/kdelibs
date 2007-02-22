@@ -24,7 +24,7 @@
 #include <kdelibs_export.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 class KHTML_EXPORT KXEventUtil {
     public:

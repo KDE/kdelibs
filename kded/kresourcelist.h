@@ -19,7 +19,7 @@
 #define __kresourcelist_h__
 
 #include <qlinkedlist.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qregexp.h>
 
 class QDataStream;

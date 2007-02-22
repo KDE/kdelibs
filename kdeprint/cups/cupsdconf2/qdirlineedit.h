@@ -20,8 +20,8 @@
 #ifndef QDIRLINEEDIT_H
 #define	QDIRLINEEDIT_H
 
-#include <qwidget.h>
-#include <qstring.h>
+#include <QtGui/QWidget>
+#include <QtCore/QString>
 
 class QLineEdit;
 class QPushButton;

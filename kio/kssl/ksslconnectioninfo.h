@@ -21,7 +21,7 @@
 #ifndef _KSSLCONNECTIONINFO_H
 #define _KSSLCONNECTIONINFO_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

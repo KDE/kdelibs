@@ -20,9 +20,8 @@
 #ifndef KMTIMER_H
 #define KMTIMER_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE ) || defined(Q_MOC_RUN)
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <qtimer.h>
 #include <kdelibs_export.h>
@@ -59,4 +58,5 @@ private:
 	void startTimer(int delay = -1);
 };
 
+#endif
 #endif

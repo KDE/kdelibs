@@ -20,7 +20,7 @@
 #ifndef KHISTORYPROVIDER_H
 #define KHISTORYPROVIDER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kdelibs_export.h>
 

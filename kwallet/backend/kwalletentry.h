@@ -22,7 +22,7 @@
 #ifndef _KWALLETENTRY_H
 #define _KWALLETENTRY_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qdatastream.h>
 
 #include "kwallet.h"

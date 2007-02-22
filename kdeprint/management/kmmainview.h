@@ -20,9 +20,8 @@
 #ifndef KMMAINVIEW_H
 #define KMMAINVIEW_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE ) || defined(Q_MOC_RUN)
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <kdeprint/kpreloadobject.h>
 #include <kmainwindow.h>
@@ -128,4 +127,5 @@ private:
 
 KDEPRINT_MANAGEMENT_EXPORT int kdeprint_management_add_printer_wizard( QWidget* parent );
 
+#endif
 #endif

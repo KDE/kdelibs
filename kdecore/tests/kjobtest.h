@@ -20,7 +20,7 @@
 #ifndef KJOBTEST_H
 #define KJOBTEST_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include "kjob.h"
 #include "kjobuidelegate.h"
 

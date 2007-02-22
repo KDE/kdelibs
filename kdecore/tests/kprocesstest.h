@@ -11,7 +11,7 @@
 #define DUMMY_H
 
 #include <stdio.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include "kprocess.h"
 
 class Dummy : public QObject

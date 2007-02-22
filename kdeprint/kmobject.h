@@ -21,9 +21,8 @@
 #ifndef KMOBJECT_H
 #define KMOBJECT_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
+/* internal header, do not use except if you are a KDEPrint developer */
 
 /**
  * @internal
@@ -53,4 +52,5 @@ inline bool KMObject::isDiscarded() const
 inline void KMObject::setDiscarded(bool on)
 { m_discarded = on; }
 
+#endif
 #endif

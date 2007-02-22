@@ -20,9 +20,9 @@
 #ifndef _VFOLDER_MENU_H_
 #define _VFOLDER_MENU_H_
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qdom.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <QHash>
 #include <QStack>
 

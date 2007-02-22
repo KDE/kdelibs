@@ -20,9 +20,8 @@
 #ifndef KMJOBMANAGER_H
 #define KMJOBMANAGER_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE ) || defined(Q_MOC_RUN)
+/* internal header, do not use except if you are a KDEPrint developer */
 
 #include <QHash>
 #include <QList>
@@ -106,4 +105,5 @@ inline void KMJobManager::clearFilter()
 inline KMThreadJob* KMJobManager::threadJob()
 { return m_threadjob; }
 
+#endif
 #endif

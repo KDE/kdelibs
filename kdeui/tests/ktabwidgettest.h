@@ -2,9 +2,9 @@
 #define KTABWIDGETTEST_H
 
 #include <kiconloader.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <ktabwidget.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qpushbutton.h>
 #include <stdlib.h>
 #include <kvbox.h>

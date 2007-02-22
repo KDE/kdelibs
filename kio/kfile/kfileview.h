@@ -45,26 +45,26 @@ public:
       **/
     void activate( const KFileItem *item ) {
         if ( item->isDir() )
-            emit dirActivated( item );
+            dirActivated( item );
         else
-            emit fileSelected( item );
+            fileSelected( item );
     }
     /**
      * emits the highlighted signal for item. Call this in your view class
      * whenever the selection changes.
      */
-    void highlightFile(const KFileItem *i) { emit fileHighlighted(i); }
+    void highlightFile(const KFileItem *i) { fileHighlighted(i); }
 
     void activateMenu( const KFileItem *i, const QPoint& pos ) {
-        emit activatedMenu( i, pos );
+        activatedMenu( i, pos );
     }
 
     void changeSorting( QDir::SortFlags sorting ) {
-        emit sortingChanged( sorting );
+        sortingChanged( sorting );
     }
 
     void dropURLs(const KFileItem *i, QDropEvent*e, const KUrl::List&urls) {
-        emit dropped(i, e, urls);
+        dropped(i, e, urls);
     }
 
 Q_SIGNALS:

@@ -29,7 +29,7 @@
 #include <dom/dom_node.h>
 #include <qvariant.h>
 #include <qhash.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kurl.h>
 #include <kjs/lookup.h>
 #include <kjs/function.h>

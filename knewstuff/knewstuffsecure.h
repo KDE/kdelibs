@@ -17,7 +17,7 @@
 #define KNEWSTUFFSECURE_H
 
 //qt includes
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 
 //kde includes

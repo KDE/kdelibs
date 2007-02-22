@@ -20,7 +20,7 @@
 #ifndef CUPSDPAGE_H
 #define	CUPSDPAGE_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 struct CupsdConf;
 

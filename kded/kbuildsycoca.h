@@ -20,8 +20,8 @@
 
 #include <sys/stat.h>
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include <kservice.h>
 #include <ksycoca.h>

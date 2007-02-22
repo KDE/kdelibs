@@ -20,9 +20,8 @@
 #ifndef KMPRINTERPAGE_H
 #define KMPRINTERPAGE_H
 
-#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
-#warning internal header, do not use except if you are a KDEPrint developer
-#endif
+#if defined( _KDEPRINT_COMPILE )
+/* internal header, do not use except if you are a KDEPrint developer */
 
 class KMPrinter;
 
@@ -40,4 +39,5 @@ public:
 	virtual void setPrinter(KMPrinter*) = 0;
 };
 
+#endif
 #endif

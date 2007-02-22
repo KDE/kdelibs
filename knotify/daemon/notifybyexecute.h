@@ -23,7 +23,7 @@
 #ifndef NOTIFYBYEXECUTE_H
 #define NOTIFYBYEXECUTE_H
 
-#include <knotifyplugin.h>
+#include "knotifyplugin.h"
 
 
 class NotifyByExecute : public KNotifyPlugin

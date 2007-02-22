@@ -20,7 +20,7 @@
 #ifndef PRINTCAPREADER_H
 #define PRINTCAPREADER_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qtextstream.h>
 
 class QFile;

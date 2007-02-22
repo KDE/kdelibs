@@ -22,7 +22,7 @@
 #define KSPELL_ASPELLCLIENT_H
 
 #include "client.h"
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include "aspell.h"
 

@@ -320,8 +320,8 @@ SampleTest - 1 test passed, 1 test failed
 #include <iostream>
 using namespace std;
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include <qhash.h>
 #include <qtextstream.h>
 
@@ -441,7 +441,7 @@ namespace KUnitTest
             m_xpassList.clear();
             m_skipList.clear();
             m_successList.clear();
-            m_debug = "";
+            m_debug = QLatin1String("");
             m_tests = 0;
         }
 
@@ -519,7 +519,7 @@ namespace KUnitTest
         Tester(const char *name = 0L)
         : QObject(0L), m_results(new TestResults()), m_exceptionState(false)
         {
-          setObjectName( name );
+          setObjectName( QLatin1String(name) );
         }
 
         virtual ~Tester() { delete m_results; }

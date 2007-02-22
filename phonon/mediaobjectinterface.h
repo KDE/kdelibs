@@ -22,6 +22,9 @@
 
 #include <kdelibs_export.h>
 
+#include <QtCore/QObject>
+#include <kurl.h>
+
 namespace Phonon
 {
 class PHONONCORE_EXPORT MediaObjectInterface

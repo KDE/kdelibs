@@ -22,7 +22,7 @@
 #define _KSSLX509MAP_H
 
 #include <qmap.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

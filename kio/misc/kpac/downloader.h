@@ -21,7 +21,7 @@
 #ifndef KPAC_DOWNLOADER_H
 #define KPAC_DOWNLOADER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kurl.h>
 

@@ -20,7 +20,7 @@
 #ifndef MATICHELPER_H
 #define MATICHELPER_H
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 class PrintcapEntry;
 

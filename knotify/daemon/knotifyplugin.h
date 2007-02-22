@@ -23,7 +23,7 @@
 #ifndef KNOTIFYPLUGIN_H
 #define KNOTIFYPLUGIN_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KNotifyConfig;
 

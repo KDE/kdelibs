@@ -1,7 +1,7 @@
 #ifndef SMTP_H
 #define SMTP_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qtimer.h>
 #include <kbufferedsocket.h>
 

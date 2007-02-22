@@ -24,7 +24,7 @@
 class KSSL;
 
 #include <qglobal.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <ksslcertificate.h>
 
 class KSSLPeerInfoPrivate;

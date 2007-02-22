@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 
 #include <kio/global.h>

@@ -20,8 +20,8 @@
 #ifndef	IMAGEPOSITION_H
 #define	IMAGEPOSITION_H
 
-#include <qwidget.h>
-#include <qstring.h>
+#include <QtGui/QWidget>
+#include <QtCore/QString>
 #include <qpixmap.h>
 
 class ImagePosition : public QWidget

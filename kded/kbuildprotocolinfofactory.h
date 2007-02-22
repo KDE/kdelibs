@@ -21,7 +21,7 @@
 
 #include <kprotocolinfofactory.h>
 #include <assert.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 /**
  * Protocol Info factory for building ksycoca

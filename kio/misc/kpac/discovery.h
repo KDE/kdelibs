@@ -21,7 +21,7 @@
 #ifndef KPAC_DISCOVERY_H
 #define KPAC_DISCOVERY_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include "downloader.h"
 

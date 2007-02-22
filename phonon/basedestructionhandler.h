@@ -28,19 +28,22 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
+
+class Base;
+
 class BaseDestructionHandler
 {
-	friend class Base;
+    friend class Base;
 
-	public:
-		virtual ~BaseDestructionHandler() {}
-	protected:
-		/**
-		 * \internal
-		 * called from Base::~Base if this object was registered
-		 * using BasePrivate::addDestructionHandler().
-		 */
-		virtual void phononObjectDestroyed( Base* ) = 0;
+public:
+    virtual ~BaseDestructionHandler() {}
+protected:
+    /**
+     * \internal
+     * called from Base::~Base if this object was registered
+     * using BasePrivate::addDestructionHandler().
+     */
+    virtual void phononObjectDestroyed( Base* ) = 0;
 };
 }
 

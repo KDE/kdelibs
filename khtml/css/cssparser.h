@@ -22,7 +22,7 @@
 #ifndef _CSS_cssparser_h_
 #define _CSS_cssparser_h_
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qcolor.h>
 #include <QVector>
 #include <dom/dom_string.h>

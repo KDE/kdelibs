@@ -14,8 +14,8 @@
 #include <sys/types.h>
 
 #include <qbytearray.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QList>
 
 #include <kdelibs_export.h>

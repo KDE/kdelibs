@@ -1,8 +1,8 @@
 #ifndef KCOLORTEST_H
 #define KCOLORTEST_H
 
-#include <qwidget.h>
-#include <qimage.h>
+#include <QtGui/QWidget>
+#include <QtGui/QImage>
 #include <qpixmap.h>
 
 class KColorWidget : public QWidget

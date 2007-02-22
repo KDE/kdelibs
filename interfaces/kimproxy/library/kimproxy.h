@@ -26,7 +26,7 @@
 
 #include <qhash.h>
 #include <qmap.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qpixmap.h>
 
 #include "kdelibs_export.h"

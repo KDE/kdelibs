@@ -23,7 +23,7 @@
 #define BUILTINS_h
 
 #include <kjs/object.h>
-#include <object_binding.h>
+#include <kjsembed/object_binding.h>
 
 namespace KJSEmbed
 {

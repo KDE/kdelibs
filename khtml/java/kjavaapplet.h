@@ -27,8 +27,8 @@
 #include <kdelibs_export.h>
 #include <kurl.h>
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include <qmap.h>
 
 /**

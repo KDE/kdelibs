@@ -24,8 +24,8 @@
 
 #include <kcodecs.h>
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qmap.h>
 #include "kwalletentry.h"
 
