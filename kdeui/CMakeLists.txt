@@ -366,7 +366,6 @@ install( FILES
  windowmanagement/kwinmodule.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h
- windowmanagement/netwm_p.h
  xmlgui/kmainwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
