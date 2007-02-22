@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QObject>
 #include <QDir>
-#include <QDomElement>
+#include <QtXml/QDomElement>
 #include <QAction>
 
 #include <kurl.h>
