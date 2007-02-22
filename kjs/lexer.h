@@ -46,7 +46,9 @@ namespace KJS {
     bool prevTerminator() const { return terminator; }
 
     enum State { Start,
+                 IdentifierOrKeyword,
                  Identifier,
+                 InIdentifierOrKeyword,
                  InIdentifier,
                  InIdentifierUnicodeEscapeStart,
                  InIdentifierUnicodeEscape,

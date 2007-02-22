@@ -221,7 +221,7 @@ int Lexer::lex()
         stringType = current;
       } else if (isIdentLetter(current)) {
         record16(current);
-        state = InIdentifier;
+        state = InIdentifierOrKeyword;
       } else if (current == '\\') {
         state = InIdentifierUnicodeEscapeStart;
       } else if (current == '0') {
@@ -347,13 +347,14 @@ int Lexer::lex()
         shift(1);
       }
       break;
+    case InIdentifierOrKeyword:
     case InIdentifier:
       if (isIdentLetter(current) || isDecimalDigit(current))
         record16(current);
       else if (current == '\\')
         state = InIdentifierUnicodeEscapeStart;
       else
-        setDone(Identifier);
+        setDone(state == InIdentifierOrKeyword ? IdentifierOrKeyword : Identifier);
       break;
     case InNum0:
       if (current == 'x' || current == 'X') {
@@ -508,6 +509,7 @@ int Lexer::lex()
     printf("(Other)\n");
     break;
   case Identifier:
+  case IdentifierOrKeyword:
     printf("(Identifier)/(Keyword)\n");
     break;
   case String:
@@ -538,8 +540,9 @@ int Lexer::lex()
       delimited = true;
     }
     break;
-  case Identifier:
+  case IdentifierOrKeyword:
     if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {
+  case Identifier:
       // Lookup for keyword failed, means this is an identifier
       // Apply anonymous-function hack below (eat the identifier)
       if (convertNextIdentifier) {
