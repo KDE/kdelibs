@@ -204,7 +204,7 @@ class KWalletD : public KDEDModule {
 		Q3PtrList<KWalletTransaction> _transactions;
 		QPointer< QWidget > activeDialog;
 #ifdef Q_WS_X11		
-		QDBusInterface *kdesktop;
+		QDBusInterface *screensaver;
 #endif		
 };
 
