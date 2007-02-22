@@ -37,7 +37,6 @@ with		WITH
 debugger	DEBUGGER
 
 # reserved for future use
-class           RESERVED
 enum            RESERVED
 export          RESERVED
 extends         RESERVED
@@ -49,6 +48,7 @@ super           RESERVED
 # boolean       RESERVED
 # byte          RESERVED
 # char          RESERVED
+# class         RESERVED
 # double        RESERVED
 # final         RESERVED
 # float         RESERVED
