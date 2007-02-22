@@ -21,8 +21,8 @@
 #include "lprsettings.h"
 
 #include <qcombobox.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <QGroupBox>
 #include <klocale.h>
 #include <kconfig.h>

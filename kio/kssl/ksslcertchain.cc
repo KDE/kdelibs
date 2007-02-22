@@ -40,7 +40,7 @@
 
 #include <kopenssl.h>
 #include <kdebug.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <Q3CString>
 
 #ifdef KSSL_HAVE_SSL

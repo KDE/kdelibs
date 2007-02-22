@@ -20,7 +20,7 @@
 #include "gschecker.h"
 #include "kpipeprocess.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 
 GsChecker::GsChecker(QObject *parent, const char *name)

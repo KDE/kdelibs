@@ -21,7 +21,7 @@
 #include "driver.h"
 #include "kmprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <klocale.h>
 
 static const char *pt_pagesize[] = {

@@ -17,9 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qpixmap.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qtabwidget.h>
 #include <qtooltip.h>
 

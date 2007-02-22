@@ -22,8 +22,8 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QHeaderView>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qregexp.h>
 
 #include <klocale.h>

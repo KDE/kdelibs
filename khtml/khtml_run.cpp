@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include "khtml_ext.h"
-#include <qwidget.h>
+#include <QtGui/QImage>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
                     const KParts::URLArgs &args, bool hideErrorDialog )

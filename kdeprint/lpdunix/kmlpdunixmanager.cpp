@@ -21,7 +21,7 @@
 #include "kmfactory.h"
 #include "kmprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>

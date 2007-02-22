@@ -25,9 +25,9 @@
 #include "kmmanager.h"
 #include "kmdriverdialog.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kapplication.h>
 #include <krandom.h>

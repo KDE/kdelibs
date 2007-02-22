@@ -24,7 +24,7 @@
 #include <kfilterdev.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <math.h>
 
 void kdeprint_ppdscanner_init( QIODevice* );

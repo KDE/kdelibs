@@ -20,7 +20,7 @@
 #include "klpdunixprinterimpl.h"
 #include "kprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qhash.h>
 #include <kstandarddirs.h>
 #include <klocale.h>

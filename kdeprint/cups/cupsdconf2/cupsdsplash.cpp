@@ -19,9 +19,9 @@
 
 #include "cupsdsplash.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qpixmap.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kstandarddirs.h>
 

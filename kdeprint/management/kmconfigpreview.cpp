@@ -20,9 +20,9 @@
 #include "kmconfigpreview.h"
 
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <QGroupBox>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include <klocale.h>
 #include <kurlrequester.h>

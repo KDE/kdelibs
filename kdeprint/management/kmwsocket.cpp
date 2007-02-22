@@ -25,9 +25,9 @@
 #include <k3listview.h>
 #include <q3header.h>
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kmessagebox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kseparator.h>

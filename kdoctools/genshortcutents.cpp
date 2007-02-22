@@ -29,7 +29,7 @@
 #include "kstandardshortcut.h"
 
 #include <qdatetime.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <QCoreApplication>
 #include <QTextStream>
 #include <QStringList>

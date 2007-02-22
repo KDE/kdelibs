@@ -36,7 +36,9 @@
 
 #include <unistd.h>
 
+#define I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "ksocks.h"
+#undef I_KNOW_KSOCKS_ISNT_PUBLIC
 #include <kconfiggroup.h>
 
 // DO NOT RE-ORDER THESE.

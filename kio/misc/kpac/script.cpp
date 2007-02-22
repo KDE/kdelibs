@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 #include <qregexp.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kbufferedsocket.h>
 #include <ksocketaddress.h>

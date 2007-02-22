@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <kvisiblebuttongroup.h>
+#include "kvisiblebuttongroup.h"
 #include <kseparator.h>
 #include <kdialog.h>
 #include <kcursor.h>
@@ -25,7 +25,7 @@
 #include <qgroupbox.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 KVisibleButtonGroup::KVisibleButtonGroup(QWidget *parent)
     : QGroupBox(parent), QButtonGroup(parent)

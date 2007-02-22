@@ -22,7 +22,7 @@
 #include "kmwizard.h"
 #include "kmprinter.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qregexp.h>
 
 #include <klocale.h>

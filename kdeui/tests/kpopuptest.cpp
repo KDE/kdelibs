@@ -1,6 +1,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qcursor.h>
 #include <QMouseEvent>
 #include <QPaintEvent>

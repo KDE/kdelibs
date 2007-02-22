@@ -22,9 +22,9 @@
 #include "networkscanner.h"
 
 #include <qprogressbar.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qtimer.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qregexp.h>

@@ -24,7 +24,7 @@
 #include "kmfactory.h"
 #include <kdebug.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qfileinfo.h>
 #include <kstandarddirs.h>

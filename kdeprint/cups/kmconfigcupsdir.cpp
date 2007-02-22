@@ -25,7 +25,7 @@
 #include <kdialog.h>
 #include <kconfig.h>
 #include <QGroupBox>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <kcursor.h>
 
 KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)

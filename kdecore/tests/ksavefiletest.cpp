@@ -31,7 +31,7 @@
 #include <ksavefile.h>
 
 #include <qtest_kde.h>
-#include <ksavefiletest.h>
+#include "ksavefiletest.h"
 
 QTEST_KDEMAIN( KSaveFileTest, NoGUI )
 

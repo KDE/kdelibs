@@ -23,7 +23,7 @@
 #include "kmdriverdbwidget.h"
 #include "kmdriverdb.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 
 KMWDriver::KMWDriver(QWidget *parent)

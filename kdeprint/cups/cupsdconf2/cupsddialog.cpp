@@ -39,7 +39,7 @@
 #include <kvbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qicon.h>
 #include <qpixmap.h>
@@ -48,7 +48,7 @@
 #include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <kpagewidgetmodel.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kpassworddialog.h>
 #include <kguiitem.h>
 #include <qprocess.h>

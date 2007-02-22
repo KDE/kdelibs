@@ -2,7 +2,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <stdio.h>
 #include <unistd.h>
 

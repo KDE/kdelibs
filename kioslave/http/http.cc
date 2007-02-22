@@ -37,7 +37,7 @@
 #include <unistd.h> // must be explicitly included for MacOSX
 
 #include <qdom.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <qdatetime.h>
 #include <QtDBus/QtDBus>

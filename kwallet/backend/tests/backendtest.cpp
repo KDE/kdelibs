@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include <kapplication.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include "kwalletbackend.h"
 

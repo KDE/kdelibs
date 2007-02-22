@@ -30,7 +30,7 @@
 #include <kde_file.h>
 
 #include <qmap.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qregexp.h>
 

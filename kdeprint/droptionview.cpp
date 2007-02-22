@@ -24,12 +24,12 @@
 #include <math.h>
 #include <qlineedit.h>
 #include <qslider.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <klistwidget.h>
 #include <kbuttongroup.h>
 #include <qradiobutton.h>
 #include <QStackedWidget>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qapplication.h>
 
 #include <kcursor.h>

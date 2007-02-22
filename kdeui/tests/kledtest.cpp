@@ -1,7 +1,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qtimer.h>
 #include <stdlib.h>
 #include "kled.h"

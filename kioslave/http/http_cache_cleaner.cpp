@@ -28,7 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 
 #include <qdir.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <QtDBus/QtDBus>
 
 #include <kcomponentdata.h>

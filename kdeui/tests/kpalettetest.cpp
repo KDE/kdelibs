@@ -2,14 +2,14 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qtimer.h>
 #include <stdlib.h>
 #include "kpalette.h"
 #include "kledtest.h"
 #include <stdio.h>
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 
 int main( int argc, char **argv )

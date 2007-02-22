@@ -20,7 +20,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kcmdlineargs.h>
 
 int main(int argc, char **argv)

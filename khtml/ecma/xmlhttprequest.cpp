@@ -36,7 +36,7 @@
 
 #include <kio/scheduler.h>
 #include <kio/job.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kdebug.h>
 
 #ifdef APPLE_CHANGES

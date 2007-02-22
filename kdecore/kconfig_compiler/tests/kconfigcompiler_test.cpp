@@ -13,8 +13,8 @@
     *************************************************************************
 */
 
-#include <qfile.h>
-#include <qstring.h>
+#include <QtCore/QFile>
+#include <QtCore/QString>
 #include <kdebug.h>
 #include <qtest_kde.h>
 #include "kconfigcompiler_test.h"

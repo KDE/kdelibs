@@ -21,9 +21,9 @@
 #include "kmjob.h"
 #include "kmjobmanager.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <kstandarddirs.h>
 
 #include <errno.h>

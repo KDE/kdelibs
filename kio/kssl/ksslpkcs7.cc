@@ -24,8 +24,8 @@
 
 #include <kopenssl.h>
 
-#include <qstring.h>
-#include <qfile.h>
+#include <QtCore/QString>
+#include <QtCore/QFile>
 #include <q3cstring.h>
 
 #include <ksslall.h>

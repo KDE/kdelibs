@@ -31,7 +31,7 @@
 #include <kmessagebox.h>
 #include <kcursor.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <cstdlib>
 

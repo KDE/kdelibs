@@ -24,9 +24,9 @@
 #include "kmprinter.h"
 
 #include <qspinbox.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcombobox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 
 #ifdef HAVE_LIMITS_H

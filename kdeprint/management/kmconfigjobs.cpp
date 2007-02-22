@@ -21,7 +21,7 @@
 
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <knuminput.h>
 #include <klocale.h>

@@ -23,8 +23,8 @@
 #include "kmmanager.h"
 #include "kmprinter.h"
 
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qtoolbutton.h>
 #include <klistwidget.h>
 #include <klocale.h>

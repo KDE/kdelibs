@@ -26,9 +26,9 @@
 #include <kguiitem.h>
 #include <klocale.h>
 #include <kpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 KMWSmb::KMWSmb(QWidget *parent)
     : KMWizardPage(parent)

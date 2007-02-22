@@ -18,7 +18,7 @@
  **/
 
 #include "util.h"
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 KUrl smbToUrl(const QString& work, const QString& server, const QString& printer)
 {

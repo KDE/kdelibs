@@ -28,7 +28,7 @@
 #include "kmmanager.h"
 #include "driver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qpaintengine.h>
 #include <qpointer.h>

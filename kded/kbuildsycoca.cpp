@@ -28,15 +28,15 @@
 
 #include <kservice.h>
 #include <kmimetype.h>
-#include <kbuildservicetypefactory.h>
-#include <kbuildmimetypefactory.h>
-#include <kbuildservicefactory.h>
-#include <kbuildservicegroupfactory.h>
-#include <kbuildprotocolinfofactory.h>
-#include <kctimefactory.h>
+#include "kbuildservicetypefactory.h"
+#include "kbuildmimetypefactory.h"
+#include "kbuildservicefactory.h"
+#include "kbuildservicegroupfactory.h"
+#include "kbuildprotocolinfofactory.h"
+#include "kctimefactory.h"
 #include <ktemporaryfile.h>
 #include <qdatastream.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtimer.h>
 #include <QtDBus/QtDBus>
 #include <errno.h>

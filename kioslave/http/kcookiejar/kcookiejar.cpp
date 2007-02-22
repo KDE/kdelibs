@@ -54,8 +54,8 @@
 //#include <netinet/in.h>
 //#include <arpa/inet.h>
 
-#include <qstring.h>
-#include <qfile.h>
+#include <QtCore/QString>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qregexp.h>
 

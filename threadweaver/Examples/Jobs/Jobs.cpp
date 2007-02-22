@@ -24,7 +24,7 @@ extern "C" {
 #include <QProgressBar>
 #include <QApplication>
 
-#include <Jobs.h>
+#include "Jobs.h"
 #include <Thread.h>
 #include <JobCollection.h>
 #include <DebuggingAids.h>

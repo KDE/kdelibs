@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include "domainbrowser.h"
 #include "settings.h"
 #include "remoteservice.h"

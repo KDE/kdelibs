@@ -20,9 +20,9 @@
 #include "kmproxywidget.h"
 
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qvalidator.h>
 #include <klocale.h>
 #include <kconfig.h>

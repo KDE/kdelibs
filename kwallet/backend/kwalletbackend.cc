@@ -29,7 +29,7 @@
 #include <ksavefile.h>
 #include <kstandarddirs.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qregexp.h>
 

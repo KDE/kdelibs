@@ -20,10 +20,10 @@
 */
 #include <iostream>
 
-#include <qlayout.h>
-#include <qfile.h>
+#include <QtGui/QLayout>
+#include <QtCore/QFile>
 #include <qtextstream.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

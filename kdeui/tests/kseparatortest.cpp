@@ -19,8 +19,8 @@
 
 
 #include <qapplication.h>
-#include <qlayout.h>
-#include <qwidget.h>
+#include <QtGui/QLayout>
+#include <QtGui/QWidget>
 #include <QBoxLayout>
 
 #include "kseparator.h"

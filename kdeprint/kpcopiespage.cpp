@@ -23,13 +23,13 @@
 #include "kprinter.h"
 #include "kxmlcommand.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qradiobutton.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <kapplication.h>
 #include <kauthorized.h>

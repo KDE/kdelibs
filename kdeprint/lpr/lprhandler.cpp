@@ -24,7 +24,7 @@
 #include "lprsettings.h"
 #include "driver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <QStack>
 #include <klocale.h>

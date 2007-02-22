@@ -22,9 +22,9 @@
 #include "kxmlcommand.h"
 #include <QStackedWidget>
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <q3header.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <QGroupBox>

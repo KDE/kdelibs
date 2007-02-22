@@ -18,7 +18,7 @@
 
 #include <kio/global.h>
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <iostream>
 using namespace std;

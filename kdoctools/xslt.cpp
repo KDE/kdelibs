@@ -14,7 +14,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qregexp.h>
-#include <xslt.h>
+#include "xslt.h"
 #include <kcomponentdata.h>
 #include "kio_help.h"
 #include <klocale.h>

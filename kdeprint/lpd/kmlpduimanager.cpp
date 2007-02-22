@@ -26,7 +26,7 @@
 #include "kmpropbackend.h"
 #include "kmpropdriver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <klocale.h>
 
 KMLpdUiManager::KMLpdUiManager(QObject *parent, const char *name)

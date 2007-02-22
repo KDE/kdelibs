@@ -21,7 +21,7 @@
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qglobal.h>
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>

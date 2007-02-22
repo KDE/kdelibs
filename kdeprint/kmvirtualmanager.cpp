@@ -24,7 +24,7 @@
 #include "kprinter.h"
 
 #include <stdlib.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qdir.h>
 #include <qfileinfo.h>

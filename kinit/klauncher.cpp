@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <kconfig.h>
 #include <kdebug.h>

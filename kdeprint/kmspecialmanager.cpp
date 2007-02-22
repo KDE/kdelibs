@@ -24,7 +24,7 @@
 #include "kxmlcommand.h"
 #include "driver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>

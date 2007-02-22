@@ -41,7 +41,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kbufferedsocket.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <unistd.h>
 
 static const char* const config_stddirs[] = {

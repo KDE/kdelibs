@@ -21,7 +21,7 @@
 #include "kmwizard.h"
 #include "kmprinter.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
 #include <klocale.h>
 #include <qvalidator.h>

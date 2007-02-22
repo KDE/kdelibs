@@ -2,7 +2,7 @@
 #include "browserinterface.h"
 
 #include <qmetaobject.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 #include <config.h>
 

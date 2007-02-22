@@ -20,7 +20,7 @@
 
 
 #include <q3ptrlist.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kdebug.h>
 
 #include "kopenssl.h"

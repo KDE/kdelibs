@@ -23,10 +23,10 @@
 #include "portdialog.h"
 #include "sizewidget.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 #include <knuminput.h>

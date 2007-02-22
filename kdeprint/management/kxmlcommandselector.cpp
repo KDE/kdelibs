@@ -24,9 +24,9 @@
 
 #include <qcombobox.h>
 #include <kpushbutton.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qtooltip.h>
 #include <qlineedit.h>
 #include <kinputdialog.h>

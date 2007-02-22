@@ -20,20 +20,20 @@
 #include "kdeprintd.h"
 #include "kprintprocess.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <klocale.h>
 #include <knotification.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kpassworddialog.h>
 #include <kio/authinfo.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kpushbutton.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kwin.h>
 #include <krandom.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qtimer.h>
 #include <qregexp.h>
 #include <QtDBus/QtDBus>

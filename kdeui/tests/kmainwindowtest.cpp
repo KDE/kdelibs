@@ -1,5 +1,5 @@
 #include <qtimer.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

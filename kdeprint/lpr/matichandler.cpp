@@ -35,7 +35,7 @@
 #include <kdebug.h>
 #include <kprocess.h>
 #include <qprocess.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qregexp.h>
 

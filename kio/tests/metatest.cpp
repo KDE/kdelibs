@@ -1,10 +1,10 @@
 #include <kapplication.h>
 #include <kfilemetainfo.h>
 #include <kcmdlineargs.h>
-#include <qstringlist.h>
-#include <qimage.h>
+#include <QtCore/QStringList>
+#include <QtGui/QImage>
 #include <kdebug.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qvalidator.h>
 #include <qpixmap.h>
 

@@ -25,7 +25,7 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "klocalizedstring.h"
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include "klocalizedstringtest.moc"
 

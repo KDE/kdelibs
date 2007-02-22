@@ -20,8 +20,8 @@
 #include "kpfileselectpage.h"
 #include "kfilelist.h"
 
-#include <qlayout.h>
-#include <qstringlist.h>
+#include <QtGui/QLayout>
+#include <QtCore/QStringList>
 #include <qregexp.h>
 #include <klocale.h>
 #include <kiconloader.h>

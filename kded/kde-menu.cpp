@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <QtDBus/QtDBus>
 
 #include "kaboutdata.h"

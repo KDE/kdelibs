@@ -21,7 +21,7 @@
 
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qregexp.h>
 #include <klocale.h>
 

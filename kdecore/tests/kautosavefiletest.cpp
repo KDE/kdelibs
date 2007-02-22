@@ -24,7 +24,7 @@
 #include <kautosavefile.h>
 
 #include <qtest_kde.h>
-#include <kautosavefiletest.h>
+#include "kautosavefiletest.h"
 
 QTEST_KDEMAIN( KAutoSaveFileTest, NoGUI )
 

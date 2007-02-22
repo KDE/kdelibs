@@ -21,7 +21,7 @@
 
 #include "ksslutils.h"
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kglobal.h>
 #include <klocale.h>
 #include <qdatetime.h>

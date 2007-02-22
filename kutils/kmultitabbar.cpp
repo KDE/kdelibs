@@ -28,7 +28,7 @@
 #include "kmultitabbar_p.moc"
 
 #include <qevent.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qpainter.h>
 #include <qfontmetrics.h>
 #include <qstyle.h>

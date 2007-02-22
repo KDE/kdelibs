@@ -9,7 +9,7 @@
   LGPL version 2.
  */
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <kdebug.h>
 #include <kcmdlineargs.h>

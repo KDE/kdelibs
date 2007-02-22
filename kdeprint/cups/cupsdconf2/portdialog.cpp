@@ -24,8 +24,8 @@
 #include <qspinbox.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 

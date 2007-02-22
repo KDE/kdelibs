@@ -21,9 +21,9 @@
 #include "cupsdconf.h"
 #include "sizewidget.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qcombobox.h>
 
 #include <klocale.h>

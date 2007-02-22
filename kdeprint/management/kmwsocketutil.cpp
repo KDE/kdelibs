@@ -24,11 +24,11 @@
 
 #include <qprogressbar.h>
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qregexp.h>
 #include <knumvalidator.h>
 

@@ -1,6 +1,6 @@
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qpushbutton.h>
 
 #include <kapplication.h>

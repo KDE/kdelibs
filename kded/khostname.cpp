@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qprocess.h>

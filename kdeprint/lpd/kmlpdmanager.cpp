@@ -26,7 +26,7 @@
 #include "gschecker.h"
 #include "kpipeprocess.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qmap.h>

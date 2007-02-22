@@ -19,7 +19,7 @@
  */
 
 #include <qpair.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <q3ptrlist.h>
 
 #include <kdebug.h>

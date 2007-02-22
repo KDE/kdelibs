@@ -24,10 +24,10 @@
 #include "kmuimanager.h"
 
 #include <kpushbutton.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <QStackedWidget>
 #include <kmessagebox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kseparator.h>

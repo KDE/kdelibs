@@ -20,7 +20,7 @@
 #include "foomatic2loader.h"
 #include "driver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <qbuffer.h>
 #include <QStringList>

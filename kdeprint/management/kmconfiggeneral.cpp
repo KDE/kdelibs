@@ -19,11 +19,11 @@
 
 #include "kmconfiggeneral.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <qcheckbox.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include <kpushbutton.h>
 #include <klocale.h>

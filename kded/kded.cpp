@@ -22,7 +22,7 @@
 #include "kded.h"
 #include "kdedmodule.h"
 
-#include <kresourcelist.h>
+#include "kresourcelist.h"
 #include <kcrash.h>
 
 #include <unistd.h>
@@ -30,7 +30,7 @@
 #include <signal.h>
 #include <time.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtimer.h>
 
 #include <QtDBus/QtDBus>

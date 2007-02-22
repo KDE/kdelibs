@@ -26,9 +26,9 @@
 #include <qframe.h>
 #include <q3scrollview.h>
 #include <qdatetime.h>
-#include <qfile.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtCore/QFile>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qprocess.h>
 
 #include <kapplication.h>

@@ -22,7 +22,7 @@
 #include "kfilterbase.h"
 #include <unistd.h>
 #include <limits.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <kdebug.h>
 #include "kfiltertest.h"

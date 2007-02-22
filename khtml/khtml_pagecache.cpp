@@ -27,7 +27,7 @@
 #include <q3intdict.h>
 #include <Q3PtrList>
 #include <qtimer.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>

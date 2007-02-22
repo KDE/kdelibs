@@ -19,7 +19,7 @@
 
 #include "cupsddialog.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>

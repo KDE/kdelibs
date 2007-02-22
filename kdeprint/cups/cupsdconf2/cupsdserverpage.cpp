@@ -21,10 +21,10 @@
 #include "cupsdconf.h"
 
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 

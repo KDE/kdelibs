@@ -25,8 +25,8 @@
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qlineedit.h>
 #include <kpushbutton.h>
 #include <klocale.h>

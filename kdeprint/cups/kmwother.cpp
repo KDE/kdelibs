@@ -23,8 +23,8 @@
 #include "kmmanager.h"
 #include "cupsinfos.h"
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qlineedit.h>
 #include <q3header.h>
 #include <QHash>

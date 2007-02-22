@@ -52,7 +52,7 @@
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <QTextDocument>
 #include <kstringhandler.h>
 

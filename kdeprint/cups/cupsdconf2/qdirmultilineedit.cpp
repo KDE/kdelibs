@@ -19,7 +19,7 @@
 
 #include "qdirmultilineedit.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <QListWidget>
 #include <qpushbutton.h>
 #include <klocale.h>

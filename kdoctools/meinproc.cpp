@@ -19,11 +19,11 @@ extern int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
-#include <xslt.h>
-#include <qfile.h>
+#include "xslt.h"
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>

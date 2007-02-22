@@ -19,7 +19,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include "kwordwrap.h"
 
 int main(int argc, char *argv[])

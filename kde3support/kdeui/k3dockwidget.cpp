@@ -103,11 +103,12 @@ static const char* const not_close_xpm[]={
  * @author Max Judin.
 */
 K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WFlags f)
-:KMainWindow( parent, name, f )
+    : KMainWindow( parent, name, f )
 {
-  QString new_name = QString(name) + QString("_DockManager");
-  dockManager = new K3DockManager( this, new_name.toLatin1().constData() );
-  mainDockWidget = 0L;
+    QString new_name = QString(name) + QString("_DockManager");
+    dockManager = new K3DockManager( this, new_name.toLatin1().constData() );
+    mainDockWidget = 0L;
+    setAttribute( Qt::WA_DeleteOnClose );
 }
 
 K3DockMainWindow::~K3DockMainWindow()
@@ -438,12 +439,12 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 #ifndef NO_KDE2
 void K3DockWidgetHeader::saveConfig( KConfig* c )
 {
-  c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isChecked()) );
+  //c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isChecked()) );
 }
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )
 {
-  setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(false) ).toBool() );
+ // setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(false) ).toBool() );
 }
 #endif
 

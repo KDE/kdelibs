@@ -16,7 +16,7 @@
 #include <kstatusbar.h>
 #include <qtoolbutton.h>
 #include <qicon.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <q3stylesheet.h>
 #include <qmessagebox.h>
@@ -25,7 +25,7 @@
 #include <qcombobox.h>
 #include <qevent.h>
 #include <qlineedit.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qfileinfo.h>
 #include <qdatastream.h>
 #include <kprinter.h>

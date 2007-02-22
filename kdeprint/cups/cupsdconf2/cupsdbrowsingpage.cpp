@@ -22,8 +22,8 @@
 #include "editlist.h"
 #include "browsedialog.h"
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 

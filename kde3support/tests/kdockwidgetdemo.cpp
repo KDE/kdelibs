@@ -7,9 +7,9 @@
 #include <qtooltip.h>
 #include <q3textview.h>
 #include <qfileinfo.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <q3multilineedit.h>
 #include <qevent.h>
 #include <q3popupmenu.h>

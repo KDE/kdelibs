@@ -20,9 +20,9 @@
 #include "kmconfigcommand.h"
 #include "kxmlcommandselector.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <QGroupBox>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 #include <kdialog.h>

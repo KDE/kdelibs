@@ -23,7 +23,7 @@
 #include "kdeprintcheck.h"
 #include "driverview.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <qdir.h>
 #include <qinputdialog.h>

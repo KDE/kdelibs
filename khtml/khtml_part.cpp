@@ -108,7 +108,7 @@ using namespace DOM;
 #include <kurllabel.h>
 
 #include <qclipboard.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qmetaobject.h>
 #include <QTextDocument>
 #include <Q3CString>

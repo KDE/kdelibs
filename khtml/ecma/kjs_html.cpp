@@ -37,7 +37,6 @@
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_formimpl.h"
-#include "html/html_imageimpl.h"
 #include "html/html_miscimpl.h"
 #include "xml/dom2_eventsimpl.h"
 

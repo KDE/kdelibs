@@ -39,7 +39,7 @@
 
 #include "kthemebase.h"
 #include <kpixmapeffect.h>
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <stdlib.h>

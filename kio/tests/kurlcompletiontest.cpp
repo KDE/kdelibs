@@ -21,7 +21,7 @@
 #include <kdebug.h>
 #include <qdir.h>
 #include <assert.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <ktempdir.h>
 #include <kcmdlineargs.h>
 #include <unistd.h>

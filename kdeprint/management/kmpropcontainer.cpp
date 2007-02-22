@@ -21,7 +21,7 @@
 #include "kmpropwidget.h"
 
 #include <kpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kseparator.h>
 #include <kguiitem.h>

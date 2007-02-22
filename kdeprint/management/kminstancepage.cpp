@@ -26,7 +26,7 @@
 #include "kprinter.h"
 #include "kmtimer.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qregexp.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>

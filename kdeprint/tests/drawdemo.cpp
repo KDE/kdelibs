@@ -7,8 +7,8 @@
 **
 *****************************************************************************/
 
-#include <qlayout.h>
-#include <qwidget.h>
+#include <QtGui/QLayout>
+#include <QtGui/QImage>
 #include <qpainter.h>
 #include <kprinter.h>
 #include <qpushbutton.h>

@@ -21,7 +21,7 @@
 #include "factory.h"
 #include "part.h"
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include <klocale.h>
 #include <kglobal.h>

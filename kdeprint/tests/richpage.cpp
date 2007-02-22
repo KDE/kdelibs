@@ -1,10 +1,10 @@
 #include "richpage.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qspinbox.h>
 #include <qcombobox.h>
 #include <qfontdatabase.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 RichPage::RichPage(QWidget *parent)
 : KPrintDialogPage(parent)

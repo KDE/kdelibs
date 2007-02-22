@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <assert.h>
 
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <stdlib.h>
 #include <iostream>
 #include <qcolor.h>

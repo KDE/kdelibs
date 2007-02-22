@@ -26,7 +26,7 @@
 #include "marginwidget.h"
 
 #include <QGroupBox>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qprinter.h>
 
 #include <kiconloader.h>

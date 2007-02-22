@@ -24,7 +24,7 @@
 #include "ipprequest.h"
 
 #include <klistwidget.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kiconloader.h>

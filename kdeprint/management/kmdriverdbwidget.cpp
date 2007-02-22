@@ -28,8 +28,8 @@
 #include <qcheckbox.h>
 #include <qapplication.h>
 #include <kmessagebox.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 
 #include <klocale.h>
 #include <kcursor.h>

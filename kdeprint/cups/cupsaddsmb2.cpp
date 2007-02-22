@@ -23,13 +23,13 @@
 
 #include <qtimer.h>
 #include <qprogressbar.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qmessagebox.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kdebug.h>
 #include <kseparator.h>
 #include <kpushbutton.h>

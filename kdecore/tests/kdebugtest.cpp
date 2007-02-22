@@ -1,5 +1,5 @@
 #include "kdebug.h"
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <kcomponentdata.h>
 #include <iostream>
 #include <QApplication>

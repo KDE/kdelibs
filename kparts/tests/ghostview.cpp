@@ -9,9 +9,9 @@
 #include <kcmdlineargs.h>
 #include <klibloader.h>
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <kparts/componentfactory.h>
 

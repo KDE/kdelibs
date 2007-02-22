@@ -21,7 +21,7 @@
 
 #include "klocale.h"
 #include "kglobal.h"
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qdatetime.h>
 
 #include "klocaletest.moc"

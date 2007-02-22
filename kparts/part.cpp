@@ -27,7 +27,7 @@
 #include "browserextension.h"
 
 #include <qapplication.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qpainter.h>
 #include <qpoint.h>

@@ -21,7 +21,7 @@
 
 #include <klistwidget.h>
 #include <kpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kguiitem.h>

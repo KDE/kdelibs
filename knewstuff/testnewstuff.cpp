@@ -20,8 +20,8 @@
 
 #include <iostream>
 
-#include <qlayout.h>
-#include <qfile.h>
+#include <QtGui/QLayout>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qprocess.h>
 

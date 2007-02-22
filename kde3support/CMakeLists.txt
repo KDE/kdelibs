@@ -89,8 +89,6 @@ install( FILES
   kio/k3bookmarkdrag.h
   kio/kio/skipdlg.h
   kio/kio/passdlg.h
-  kio/kio/kmimemagic.h
-  kio/kio/renamedlg.h
   kio/kfile/kurlrequesterdlg.h
   kio/kfile/kfilesharedlg.h
   kio/kfile/kpropsdlg.h
@@ -102,3 +100,7 @@ install( FILES
   kdeui/kstdaction.h
   kdeui/kstdguiitem.h
 DESTINATION  ${INCLUDE_INSTALL_DIR} )
+
+install( FILES
+    kio/kio/renamedlg.h
+DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )

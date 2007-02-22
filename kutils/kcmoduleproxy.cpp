@@ -23,12 +23,12 @@
 #include <qevent.h>
 #include <qfileinfo.h>
 #include <qframe.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qpoint.h>
 #include <qtextstream.h>
 
-#include <qwidget.h>
+#include <QtGui/QImage>
 
 #include <QtDBus/QtDBus>
 

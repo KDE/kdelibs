@@ -20,8 +20,8 @@
 #include "escpwidget.h"
 
 #include <qpushbutton.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
 #include <q3accel.h>
 #include <qbytearray.h>

@@ -20,7 +20,7 @@
 #include <config.h>
 #include "cupsdconf.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <klocale.h>
 #include <kdebug.h>

@@ -25,7 +25,7 @@
 #include <klocale.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <ktemporaryfile.h>
 #include <kmessagebox.h>
 #include <kparts/componentfactory.h>

@@ -21,8 +21,8 @@
 #include "kprintpreview.h"
 #include "kmfactory.h"
 
-#include <qfile.h>
-#include <qlayout.h>
+#include <QtCore/QFile>
+#include <QtGui/QLayout>
 
 #include <kparts/part.h>
 #include <kaction.h>

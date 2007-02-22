@@ -23,8 +23,8 @@
 #include "ipprequest.h"
 #include "cupsinfos.h"
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <klistwidget.h>
 #include <klocale.h>
 #include <kiconloader.h>

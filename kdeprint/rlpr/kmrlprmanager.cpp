@@ -20,7 +20,7 @@
 #include "kmrlprmanager.h"
 #include "kmprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qmap.h>

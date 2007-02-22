@@ -19,9 +19,9 @@
 
 #include "kmwinfobase.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 KMWInfoBase::KMWInfoBase(int n, QWidget *parent)
     : KMWizardPage(parent)

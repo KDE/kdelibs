@@ -22,7 +22,7 @@
 #include "kmlprmanager.h"
 
 #include <kstandarddirs.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <stdlib.h>
 
 KLprPrinterImpl::KLprPrinterImpl(QObject *parent, const QStringList & /*args*/)

@@ -4,8 +4,8 @@
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 
-#include <qwidget.h>
-#include <qstring.h>
+#include <QtGui/QImage>
+#include <QtCore/QString>
 
 DockTest::DockTest( QWidget* parent )
   : K3DockArea( parent )

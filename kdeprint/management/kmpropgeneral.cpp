@@ -23,8 +23,8 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <klocale.h>
 
 KMPropGeneral::KMPropGeneral(QWidget *parent)

@@ -44,7 +44,7 @@ Port version 0.9.7
 
 #include <qbitmap.h>
 #include <qcheckbox.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
 #include <qpopupmenu.h>
@@ -61,12 +61,12 @@ Port version 0.9.7
 #include <q3rangecontrol.h>
 #include <qslider.h>
 #include <qtooltip.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qradiobutton.h>
 #include <qstatusbar.h>
 #include "kstyledirs.h"
 
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <q3pointarray.h>
 
 #include <limits.h>

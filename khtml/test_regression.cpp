@@ -33,8 +33,8 @@
 #include <kapplication.h>
 #include <kacceleratormanager.h>
 #include <kstandarddirs.h>
-#include <qimage.h>
-#include <qfile.h>
+#include <QtGui/QImage>
+#include <QtCore/QFile>
 #include "test_regression.h"
 #include <stdio.h>
 
@@ -224,11 +224,11 @@ public:
 #include <qcolor.h>
 #include <qcursor.h>
 #include <qdir.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qpushbutton.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qtextstream.h>
-#include <qwidget.h>
+#include <QtGui/QImage>
 #include <qfileinfo.h>
 #include <qtimer.h>
 #include <kstatusbar.h>
@@ -888,7 +888,6 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     curr = this;
 }
 
-#include <qobject.h>
 
 static QStringList readListFile( const QString &filename )
 {

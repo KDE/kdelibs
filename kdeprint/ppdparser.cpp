@@ -125,7 +125,7 @@
 #define YYDEBUG 1
 #define YYERROR_VERBOSE 1
 #include <stdlib.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 #include "ppdloader.h"
 

@@ -19,7 +19,7 @@
  This file is part of the KDE libraries
 */
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kstandarddirs.h>
 #include "kstyledirs.h"
 

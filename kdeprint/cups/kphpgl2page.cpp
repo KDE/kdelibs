@@ -21,7 +21,7 @@
 
 #include <qcheckbox.h>
 #include <QGroupBox>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <knuminput.h>
 

@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <math.h>
 
 void

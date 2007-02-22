@@ -31,7 +31,7 @@
 
 #include <kpagewidgetmodel.h>
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kicon.h>

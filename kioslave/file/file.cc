@@ -79,7 +79,7 @@
 #include <kconfig.h>
 #include <ktemporaryfile.h>
 #include <klocale.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include "file.h"
 #include <limits.h>
 #include <kprocess.h>
@@ -91,7 +91,6 @@
 #include <sys/mnttab.h>
 #endif
 
-#include <kstandarddirs.h>
 #include <kio/connection.h>
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>

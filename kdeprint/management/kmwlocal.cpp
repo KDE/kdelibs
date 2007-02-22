@@ -24,9 +24,9 @@
 #include "kmmanager.h"
 
 #include <klocale.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <q3header.h>
 #include <k3listview.h>
 #include <kmessagebox.h>

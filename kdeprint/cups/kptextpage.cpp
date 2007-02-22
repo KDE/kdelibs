@@ -23,8 +23,8 @@
 #include "kprinter.h"
 
 #include <QGroupBox>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qradiobutton.h>
 #include <kbuttongroup.h>
 #include <knuminput.h>

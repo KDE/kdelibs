@@ -1,8 +1,8 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
-#include <qwidget.h>
-#include <qstring.h>
+#include <QtGui/QWidget>
+#include <QtCore/QString>
 #include <qmessagebox.h>
 #include <qtextedit.h>
 #include <qnamespace.h>

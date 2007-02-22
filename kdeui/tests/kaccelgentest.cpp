@@ -1,6 +1,6 @@
 #include "kaccelgen.h"
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 #include <iostream>
 

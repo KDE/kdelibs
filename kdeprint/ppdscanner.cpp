@@ -599,7 +599,7 @@ char *kdeprint_ppdtext;
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qiodevice.h>
 #if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty

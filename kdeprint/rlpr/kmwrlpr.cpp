@@ -22,10 +22,10 @@
 #include "kmwizard.h"
 
 #include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qlineedit.h>
 #include <q3header.h>
 #include <k3listview.h>

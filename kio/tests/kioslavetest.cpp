@@ -9,7 +9,7 @@
   LGPL version 2.
  */
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qmessagebox.h>
 #include <qdir.h>
 #include <qgroupbox.h>

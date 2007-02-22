@@ -10,7 +10,7 @@
 #include <kdebug.h>
 #include <klistwidget.h>
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qvalidator.h>
 #include <kcmdlineargs.h>
 

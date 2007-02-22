@@ -20,8 +20,8 @@
 #include "driver.h"
 #include "driveritem.h"
 
-#include <qfile.h>
-#include <qstringlist.h>
+#include <QtCore/QFile>
+#include <QtCore/QStringList>
 #include <kdebug.h>
 #include <klocale.h>
 #include <stdlib.h>

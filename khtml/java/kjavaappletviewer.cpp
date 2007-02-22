@@ -27,7 +27,7 @@
 #include <qpair.h>
 #include <qtimer.h>
 #include <qpointer.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <QtDBus/QtDBus>
 
 #include <kauthorized.h>

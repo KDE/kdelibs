@@ -28,7 +28,7 @@
 #include <kdebug.h>
 #include <qmap.h>
 #include <qpointer.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qregexp.h>
 
 // This file was using 6002, but kdebug.areas didn't know about that number

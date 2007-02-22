@@ -1,4 +1,4 @@
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <X11/Xlib.h>
 #include <iostream>
 using namespace std;

@@ -19,7 +19,7 @@
  */
 
 #include "ksslx509map.h"
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qregexp.h>
 
 KSSLX509Map::KSSLX509Map(const QString& name) {

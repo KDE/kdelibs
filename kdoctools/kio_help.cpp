@@ -17,7 +17,7 @@
 #endif
 
 #include <qfileinfo.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qtextcodec.h>

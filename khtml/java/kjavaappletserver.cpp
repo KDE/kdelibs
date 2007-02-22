@@ -45,10 +45,10 @@
 #include <qdir.h>
 #include <qeventloop.h>
 #include <qapplication.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qdialog.h>
 #include <qpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qregexp.h>
 #include <Q3CString>
 

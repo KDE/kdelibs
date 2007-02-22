@@ -34,7 +34,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <setproctitle.h>
+#include "setproctitle.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +43,8 @@
 #include <locale.h>
 
 #include <QLibrary>
-#include <qstring.h>
-#include <qfile.h>
+#include <QtCore/QString>
+#include <QtCore/QFile>
 #include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>

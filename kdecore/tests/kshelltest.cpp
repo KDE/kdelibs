@@ -21,8 +21,8 @@
 
 #include "kshell.h"
 #include "kuser.h"
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <qdir.h>
 
 #include "kshelltest.moc"

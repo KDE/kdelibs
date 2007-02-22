@@ -42,7 +42,7 @@
 #endif
 
 #include <qglobal.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>

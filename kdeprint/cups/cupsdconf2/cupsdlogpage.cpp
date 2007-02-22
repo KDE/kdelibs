@@ -22,9 +22,9 @@
 #include "qdirlineedit.h"
 #include "sizewidget.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcombobox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 #include <kfiledialog.h>

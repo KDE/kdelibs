@@ -13,9 +13,9 @@
 #include <kconfig.h>
 
 #include <qpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qpixmap.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <khbox.h>
 #include <qtimer.h>
 #include <QVBoxLayout>

@@ -28,9 +28,9 @@
 #include <QGroupBox>
 #include <qpushbutton.h>
 #include <qapplication.h>
-#include <qimage.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QImage>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <klocale.h>
 #include <knuminput.h>
 #include <kseparator.h>

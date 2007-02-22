@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <QLibrary>
 #include <QFile>
 #ifdef Q_WS_WIN

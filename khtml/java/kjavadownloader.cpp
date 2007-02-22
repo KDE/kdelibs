@@ -26,7 +26,7 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kdebug.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 static const int DATA = 0;
 static const int FINISHED = 1;

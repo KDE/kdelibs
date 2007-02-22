@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qtimer.h>
 #include <q3ptrlist.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <QtDBus/QtDBus>
 

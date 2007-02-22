@@ -28,7 +28,7 @@
 #include "kxmlcommand.h"
 
 #include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qsettings.h>
 
 #include <klibloader.h>
@@ -38,7 +38,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <kconfig.h>
 #include <kstaticdeleter.h>
 #include <kio/authinfo.h>
 

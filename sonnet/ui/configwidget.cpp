@@ -29,7 +29,7 @@
 #include <klocale.h>
 
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 using namespace KSpell2;
 

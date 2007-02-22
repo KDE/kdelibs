@@ -29,7 +29,7 @@
 #include "kmprinter.h"
 #include "driver.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <QtDBus/QtDBus>
 #include <kinputdialog.h>

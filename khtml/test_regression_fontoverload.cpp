@@ -28,7 +28,7 @@
 #include <qfontdatabase.h>
 #include <qfont.h>
 #include "khtml_settings.h"
-#include <qwidget.h>
+#include <QtGui/QImage>
 #include <assert.h>
 #include <QX11Info>
 #include <QPainter>

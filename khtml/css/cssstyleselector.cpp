@@ -59,9 +59,9 @@ using namespace DOM;
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <q3valuelist.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qtooltip.h>
 #include <kdebug.h>
 #include <kurl.h>

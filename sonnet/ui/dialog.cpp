@@ -36,7 +36,7 @@
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qtimer.h>
 
 namespace KSpell2

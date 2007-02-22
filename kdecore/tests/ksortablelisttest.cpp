@@ -1,4 +1,4 @@
-#include <qstring.h>
+#include <QtCore/QString>
 #include <ksortablelist.h>
 
 int main( int argc, char **argv )

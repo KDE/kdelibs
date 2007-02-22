@@ -23,7 +23,7 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 
 #define LPDCONF "/etc/lpd.conf"

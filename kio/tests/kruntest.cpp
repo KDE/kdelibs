@@ -28,7 +28,7 @@
 #include <kde_file.h>
 #include <kcmdlineargs.h>
 #include <qpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qdir.h>
 
 #include <stdlib.h>

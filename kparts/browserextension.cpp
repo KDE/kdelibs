@@ -22,7 +22,7 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qtimer.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <qmap.h>
 #include <qmetaobject.h>
 #include <qregexp.h>

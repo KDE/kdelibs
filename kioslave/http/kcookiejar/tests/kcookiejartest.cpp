@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include <qdatetime.h>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include <kapplication.h>
 #include <kaboutdata.h>

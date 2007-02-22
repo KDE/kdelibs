@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <q3ptrlist.h>
 
 #include <kaboutdata.h>

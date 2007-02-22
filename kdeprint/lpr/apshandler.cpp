@@ -26,7 +26,7 @@
 #include "util.h"
 #include "kprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qtextstream.h>
 #include <QStack>

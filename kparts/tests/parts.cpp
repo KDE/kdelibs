@@ -4,7 +4,7 @@
 #include "parts.h"
 
 #include <qcheckbox.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qdir.h>
 #include <qtextstream.h>
 #include <QTextEdit>

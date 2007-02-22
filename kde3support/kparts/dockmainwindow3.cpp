@@ -58,10 +58,11 @@ public:
 }
 
 DockMainWindow3::DockMainWindow3( QWidget* parent, const char *name, Qt::WFlags f )
-  : K3DockMainWindow( parent, name, f )
+    : K3DockMainWindow( parent, name, f )
 {
-  d = new DockMainWindow3Private();
-  PartBase::setPartObject( this );
+    d = new DockMainWindow3Private();
+    PartBase::setPartObject( this );
+    setAttribute( Qt::WA_DeleteOnClose );
 }
 
 DockMainWindow3::~DockMainWindow3()

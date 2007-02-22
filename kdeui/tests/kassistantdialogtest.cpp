@@ -18,8 +18,8 @@
  *
  */
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 //Added by qt3to4:
 #include <QHBoxLayout>
 #include <kcmdlineargs.h>

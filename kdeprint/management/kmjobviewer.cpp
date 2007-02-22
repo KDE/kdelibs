@@ -48,7 +48,7 @@
 #include <kwin.h>
 #include <kio/netaccess.h>
 #include <qtimer.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <stdlib.h>
 #include <qlineedit.h>
 #include <kdialog.h>

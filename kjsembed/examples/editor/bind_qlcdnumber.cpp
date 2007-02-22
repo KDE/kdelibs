@@ -23,7 +23,7 @@
 #include <kjsembed/variant_binding.h>
 #include <kjs/object.h>
 
-#include <bind_qlcdnumber.h>
+#include "bind_qlcdnumber.h"
 
 using namespace KJSEmbed;
 

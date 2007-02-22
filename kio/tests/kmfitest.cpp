@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kcomponentdata.h>
 #include <kurl.h>
 #include <kfilemetainfo.h>

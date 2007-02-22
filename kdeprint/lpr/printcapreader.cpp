@@ -20,7 +20,7 @@
 #include "printcapreader.h"
 #include "printcapentry.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kdebug.h>
 
 void PrintcapReader::setPrintcapFile(QFile *f)

@@ -19,7 +19,7 @@
 
 #include "cupsdcomment.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 #include <klocale.h>
 #include <kstandarddirs.h>

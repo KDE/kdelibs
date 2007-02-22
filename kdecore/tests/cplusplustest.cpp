@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qstring.h>
+#include <QtCore/QString>
 #include <qhash.h>
 #include <stdio.h>
 

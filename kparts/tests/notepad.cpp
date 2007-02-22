@@ -4,7 +4,7 @@
 #include <kparts/mainwindow.h>
 
 #include <qsplitter.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <QTextEdit>
 

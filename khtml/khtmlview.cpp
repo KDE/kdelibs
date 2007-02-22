@@ -82,13 +82,13 @@
 #include <kconfiggroup.h>
 
 #include <qbitmap.h>
-#include <qlabel.h>
-#include <qobject.h>
+#include <QtGui/QLabel>
+#include <QtCore/QObject>
 #include <q3paintdevicemetrics.h>
 #include <qpainter.h>
 #include <q3ptrdict.h>
 #include <qtooltip.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <QTextDocument>
 #include <qtimer.h>
 #include <QAbstractEventDispatcher>

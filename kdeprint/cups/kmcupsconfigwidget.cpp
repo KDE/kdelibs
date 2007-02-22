@@ -20,11 +20,11 @@
 #include "kmcupsconfigwidget.h"
 #include "cupsinfos.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <QGroupBox>
 #include <qlineedit.h>
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qpushbutton.h>
 #include <qvalidator.h>
 

@@ -24,7 +24,7 @@
 #include <kjs/object.h>
 #include <QAction>
 
-#include <bind_qwidget.h>
+#include "bind_qwidget.h"
 
 using namespace KJSEmbed;
 

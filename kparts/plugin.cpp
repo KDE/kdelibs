@@ -24,8 +24,8 @@
 
 #include <assert.h>
 
-#include <qfile.h>
-#include <qobject.h>
+#include <QtCore/QFile>
+#include <QtCore/QObject>
 #include <qfileinfo.h>
 
 #include <klibloader.h>

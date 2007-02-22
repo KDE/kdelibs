@@ -38,9 +38,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 
 #include <QButtonGroup>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QImage>
+#include <QtGui/QLayout>
 #include <qgroupbox.h>
 #include <qdatetime.h>
 #include <qmessagebox.h>

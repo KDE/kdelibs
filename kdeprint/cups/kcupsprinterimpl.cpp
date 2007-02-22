@@ -24,7 +24,7 @@
 #include "kmmanager.h"
 #include "cupsinfos.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <cups/cups.h>
 #include <stdlib.h>
 #include <kprocess.h>

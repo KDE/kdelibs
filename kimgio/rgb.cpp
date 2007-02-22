@@ -24,7 +24,7 @@
 
 
 #include "rgb.h"
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <kdebug.h>
 
 

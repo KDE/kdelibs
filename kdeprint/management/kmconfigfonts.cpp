@@ -22,9 +22,9 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <kpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <q3header.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <qcheckbox.h>
 #include <qsettings.h>
 

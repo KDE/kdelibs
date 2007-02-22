@@ -30,7 +30,7 @@
 #include <pwd.h>
 #include <unistd.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <q3sortedlist.h>
 
 #include <kglobal.h>

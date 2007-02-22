@@ -19,7 +19,7 @@
 
 #include "psd.h"
 
-#include <qimage.h>
+#include <QtGui/QImage>
 #include <qdatastream.h>
 
 #include <kdebug.h>

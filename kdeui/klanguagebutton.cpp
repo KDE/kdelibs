@@ -23,7 +23,7 @@
 
 #define INCLUDE_MENUITEM_DEF
 #include <QMenu>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <qpushbutton.h>
 #include <QMenuItem>
 

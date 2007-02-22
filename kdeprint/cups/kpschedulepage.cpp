@@ -19,8 +19,8 @@
 
 #include "kpschedulepage.h"
 
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qcombobox.h>
 #include <qregexp.h>
 #include <QDateTimeEdit>

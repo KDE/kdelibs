@@ -38,8 +38,8 @@
 #include <kmenubar.h>
 #include <qtimer.h>
 #include <qcombobox.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kicon.h>
@@ -50,7 +50,6 @@
 #include <kmenu.h>
 #include <klibloader.h>
 #include <kdialog.h>
-#include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>

@@ -21,8 +21,8 @@
 
 #include "dds.h"
 
-#include <qstringlist.h>
-#include <qimage.h>
+#include <QtCore/QStringList>
+#include <QtGui/QImage>
 #include <qdatastream.h>
 
 #include <kglobal.h>

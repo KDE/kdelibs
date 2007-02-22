@@ -21,8 +21,8 @@
 #include "kmprinter.h"
 
 #include <qpixmap.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>

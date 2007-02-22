@@ -20,7 +20,7 @@
 #include "klpdprinterimpl.h"
 #include "kprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kstandarddirs.h>
 #include <klocale.h>
 

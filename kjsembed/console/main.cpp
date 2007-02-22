@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 #include <QApplication>
-#include <console.h>
+#include "console.h"
 
 int main ( int argc, char **argv )
 {

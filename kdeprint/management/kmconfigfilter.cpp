@@ -25,8 +25,8 @@
 #include <QVBoxLayout>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qapplication.h>
 
 #include <klocale.h>

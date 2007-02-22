@@ -20,8 +20,8 @@
 #include "kfilelist.h"
 
 #include <qtoolbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <QDragEnterEvent>
 #include <QTreeWidget>
 

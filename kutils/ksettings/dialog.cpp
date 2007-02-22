@@ -34,7 +34,7 @@
 #include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <kvbox.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <QList>
 #include "kcmoduleinfo.h"
 

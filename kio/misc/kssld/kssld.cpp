@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>

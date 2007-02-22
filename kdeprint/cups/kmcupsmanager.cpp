@@ -33,7 +33,7 @@
 #include "foomatic2loader.h"
 #include "ppdloader.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qtimer.h>

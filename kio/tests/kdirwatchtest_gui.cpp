@@ -26,8 +26,8 @@
 #include <qdatetime.h>
 #include <qdialog.h>
 #include <qdir.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 

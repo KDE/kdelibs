@@ -35,7 +35,9 @@
 
 #include <QCoreApplication>
 
+#define I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "ksocks.h"
+#undef I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "ksocketaddress.h"
 #include "kresolver.h"
 #include "ksockssocketdevice.h"

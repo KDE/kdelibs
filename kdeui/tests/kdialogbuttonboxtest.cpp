@@ -20,8 +20,8 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kdialogbuttonbox.h"
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include <qdialog.h>
 #include <qpushbutton.h>
 #include <QVBoxLayout>

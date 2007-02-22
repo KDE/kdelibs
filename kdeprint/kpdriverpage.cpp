@@ -21,7 +21,7 @@
 #include "driverview.h"
 #include "driver.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <klocale.h>
 
 KPDriverPage::KPDriverPage(KMPrinter *p, DrMain *d, QWidget *parent)

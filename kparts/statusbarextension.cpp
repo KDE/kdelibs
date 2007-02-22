@@ -20,7 +20,7 @@
 
 #include "statusbarextension.h"
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kstatusbar.h>
 #include <kmainwindow.h>

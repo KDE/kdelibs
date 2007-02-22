@@ -19,8 +19,8 @@
  */
 
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtDBus/QtDBus>
 #include "ksslcertificate.h"
 #include "ksslsigners.h"

@@ -17,7 +17,7 @@
 */
 
 #include <QList>
-#include <qstring.h>
+#include <QtCore/QString>
 
 #include "krandomsequence.h"
 #include "krandom.h"

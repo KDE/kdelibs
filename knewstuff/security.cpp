@@ -14,9 +14,9 @@
  ***************************************************************************/
 
  //qt includes
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qfileinfo.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <qtextstream.h>
 #include <qtimer.h>
 

@@ -25,9 +25,9 @@
 
 
 #include <unistd.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qfile.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QFile>
 
 #include "kssldefs.h"
 #include "ksslcertificate.h"

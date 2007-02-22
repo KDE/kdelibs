@@ -24,7 +24,7 @@
 
 #include <kurl.h>
 #include <klocale.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kdebug.h>
 #include <qlineedit.h>
 #include <kmessagebox.h>

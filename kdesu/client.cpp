@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include <qglobal.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qregexp.h>
 
 #include <kdebug.h>

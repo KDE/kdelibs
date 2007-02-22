@@ -1,7 +1,7 @@
 #include <knotificationrestrictions.h>
 
 #include <qapplication.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 int main(int argc, char* argv[])
 {

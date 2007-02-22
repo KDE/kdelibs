@@ -18,13 +18,13 @@ extern int xmlLoadExtDtdDefaultValue;
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <qstring.h>
+#include <QtCore/QString>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <stdlib.h>
 #include "kio_help.h"
-#include <xslt.h>
+#include "xslt.h"
 
 extern "C"
 {

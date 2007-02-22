@@ -26,7 +26,7 @@
 #include "kmmanager.h"
 #include "kprinter.h"
 
-#include <qfile.h>
+#include <QtCore/QFile>
 #include <qtextstream.h>
 #include <klocale.h>
 #include <kdebug.h>

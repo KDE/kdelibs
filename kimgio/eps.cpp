@@ -1,8 +1,8 @@
 // This library is distributed under the conditions of the GNU LGPL.
 #include <unistd.h>
 #include <stdio.h>
-#include <qimage.h>
-#include <qfile.h>
+#include <QtGui/QImage>
+#include <QtCore/QFile>
 #include <qpainter.h>
 #include <qprinter.h>
 #include <QTextStream>

@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define QT3_SUPPORT
 #include <qcheckbox.h>
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <khbox.h>
 #include <qsettings.h>
 #include <qcolor.h>
