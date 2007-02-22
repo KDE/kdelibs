@@ -29,33 +29,33 @@
 class KWALLETBACKEND_EXPORT SHA1 {
 	public:
 		SHA1();
-		virtual ~SHA1();
+		~SHA1();
 
 		/*
 		 *  The number of bits in the hash generated.
 		 */
-		virtual int size() const;
+		int size() const;
 
 		/*
 		 *  True if all settings are good and we are ready to hash.
 		 */
-		virtual bool readyToGo() const;
+		bool readyToGo() const;
 
 		/*
 		 *  Process a block of data for the hash function.
 		 */
-		virtual int process(const void *block, int len);
+		int process(const void *block, int len);
 
 		/*
 		 *  Return the digest as a 20 byte array reference.
 		 *  Calling this makes readyToGo() == false.
 		 */
-		virtual const unsigned char *hash();
+		const unsigned char *hash();
 
 		/*
 		 *  Reset the digest so a new one can be calculated.
 		 */
-		virtual int reset();
+		int reset();
 
 	protected:
 		int _hashlen;
