@@ -444,7 +444,7 @@ void K3DockWidgetHeader::saveConfig( KConfig* c )
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )
 {
-    setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(false) ).toBool() );
+    setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
 }
 #endif
 
