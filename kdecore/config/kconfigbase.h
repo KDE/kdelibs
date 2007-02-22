@@ -169,11 +169,9 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * @copydoc readEntry(const char*, const T&) const
    */
-#if 0
   template <typename T>
       KDE_DEPRECATED T readEntry( const QString& pKey, const T& aDefault) const
     { return mGroup.readEntry(pKey.toUtf8().constData(), aDefault); }
-#endif
 
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
