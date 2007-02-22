@@ -923,19 +923,25 @@ public:
     virtual ~ KConfigSkeleton();
 
   /**
-    Set all registered items to their default values.
-  */
+   * Set all registered items to their default values.
+   * This method is implemented by usrSetDefaults(), which can be overridden
+   * in derived classes if you have special requirements.
+   */
   void setDefaults();
 
   /**
    * Read preferences from config file. All registered items are set to the
    * values read from disk.
+   * This method is implemented by usrReadConfig(), which can be overridden
+   * in derived classes if you have special requirements.
    */
   void readConfig();
 
   /**
    * Write preferences to config file. The values of all registered items are
    * written to disk.
+   * This method is implemented by usrWriteConfig(), which can be overridden
+   * in derived classes if you have special requirements.
    */
   void writeConfig();
 
@@ -1281,9 +1287,12 @@ public:
   KConfigSkeletonItem * findItem(const QString & name);
 
   /**
-   * Indicate whether this object should reflect the actual
-   * values or the default values.
-   * @param b If true this object reflects the default values.
+   * Specify whether this object should reflect the actual values or the
+   * default values.
+   * This method is implemented by usrUseDefaults(), which can be overridden
+   * in derived classes if you have special requirements.
+   * @param b true to make this object reflect the default values,
+   *          false to make it reflect the actual values.
    * @return The state prior to this call
    */
   bool useDefaults(bool b);
@@ -1297,23 +1306,31 @@ Q_SIGNALS:
 protected:
   /**
    * Implemented by subclasses that use special defaults.
-   * It should replace the default values with the actual
-   * values and vice versa.  Called from @ref useDefaults()
-   * @param b If true this object reflects the default values.
+   * It replaces the default values with the actual values and
+   * vice versa.  Called from @ref useDefaults()
+   * @param b true to make this object reflect the default values,
+   *          false to make it reflect the actual values.
    * @return The state prior to this call
    */
   virtual bool usrUseDefaults(bool b);
 
+  /**
+   * Perform the actual setting of default values.
+   * Override in derived classes to set special default values.
+   * Called from @ref setDefaults()
+   */
   virtual void usrSetDefaults();
 
   /**
-   * Implemented by subclasses that read special config values.
+   * Perform the actual reading of the configuration file.
+   * Override in derived classes to read special config values.
    * Called from @ref readConfig()
    */
   virtual void usrReadConfig();
 
   /**
-   * Implemented by subclasses that write special config values.
+   * Perform the actual writing of the configuration file.
+   * Override in derived classes to write special config values.
    * Called from @ref writeConfig()
    */
   virtual void usrWriteConfig();
