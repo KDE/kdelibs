@@ -874,10 +874,10 @@ void KCryptoConfig::load()
   oPath->setUrl(config->readPathEntry("Path"));
 #endif
 
-  config->setGroup("SSLv3");
+  KConfigGroup sslV3(config, "SSLv3");
   CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
-      item->setOn(config->readEntry(item->configName(),
+      item->setOn(sslV3.readEntry(item->configName(),
 					item->bits() >= 56));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
@@ -913,8 +913,8 @@ void KCryptoConfig::load()
 
   setAuthCertLists();
 
-  config->setGroup("Auth");
-  QString whichAuth = config->readEntry("AuthMethod", "none");
+  KConfigGroup auth(config, "Auth");
+  QString whichAuth = auth.readEntry("AuthMethod", "none");
   if (whichAuth == "send")
     defCertBG->setButton(defCertBG->id(defSend));
   else if (whichAuth == "prompt")
@@ -922,7 +922,7 @@ void KCryptoConfig::load()
   else
     defCertBG->setButton(defCertBG->id(defDont));
 
-  QString whichCert = config->readEntry("DefaultCert");
+  QString whichCert = auth.readEntry("DefaultCert");
   defCertBox->setCurrentIndex(0);
   for (int i = 0; i < defCertBox->count(); i++) {
      if (defCertBox->itemText(i) == whichCert) {
