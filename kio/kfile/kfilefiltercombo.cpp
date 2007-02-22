@@ -163,6 +163,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
             insertItem(0, i18n("All Supported Files"));
             d->hasAllSupportedFiles = true;
         }
+        setCurrentIndex( 0 );
 
         m_filters.prepend( allTypes );
     }
