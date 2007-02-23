@@ -42,7 +42,6 @@ public:
 
     ~KComponentDataPrivate()
     {
-        kDebug(180) << k_funcinfo << endl;
         if (ownAboutdata) {
             delete aboutData;
             aboutData = 0;
