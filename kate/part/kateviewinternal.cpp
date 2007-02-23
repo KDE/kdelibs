@@ -2050,7 +2050,6 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
       {
         case Word:
         {
-          bool same = ( newCursor.line() == selStartCached.line() );
           int c;
           if ( newCursor > selEndCached )
           {
