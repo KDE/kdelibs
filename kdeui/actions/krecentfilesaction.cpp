@@ -87,6 +87,7 @@ KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, Q
 
 void KRecentFilesAction::init()
 {
+  delete menu();
   setMenu(new KMenu());
   setToolBarMode(MenuMode);
   d->m_noEntriesAction=new QAction(i18n("No entries"),selectableActionGroup());
