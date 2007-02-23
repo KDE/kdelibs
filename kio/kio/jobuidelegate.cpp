@@ -28,6 +28,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include "kio/observer.h"
+#include "kio/copyjob.h"
 #include "kio/scheduler.h"
 #include "uiserveriface.h"
 
@@ -116,11 +117,12 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  this, SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
         connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
                  this, SLOT( slotSpeed( KJob*, unsigned long ) ) );
-        connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
+	if (dynamic_cast<KIO::CopyJob*>(job)) {
+            connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
                  this, SLOT( totalFiles( KJob*, unsigned long ) ) );
-        connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
+            connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
                  this, SLOT( totalDirs( KJob*, unsigned long ) ) );
-
+	}
         connect( job, SIGNAL( finished( KJob*, int ) ),
                  this, SLOT( slotFinished( KJob*, int ) ) );
     }

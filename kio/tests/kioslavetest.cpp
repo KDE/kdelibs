@@ -127,7 +127,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   progressButtons = new QButtonGroup( main_widget );
   box = new QGroupBox( "Progress dialog mode", main_widget );
   topLayout->addWidget( box, 10 );
-  connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
+  connect( progressButtons, SIGNAL(buttonClicked(QAbstractButton*)), SLOT(changeProgressMode(QAbstractButton*)) );
 
   hbLayout = new QHBoxLayout( box );
 
