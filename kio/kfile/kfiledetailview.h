@@ -21,6 +21,7 @@
 #ifndef KFILEDETAILVIEW_H
 #define KFILEDETAILVIEW_H
 
+class QColorGroup;
 class KFileItem;
 class QWidget;
 class QKeyEvent;

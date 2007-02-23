@@ -21,6 +21,8 @@
 #ifndef __KSMIMECRYPTO_H
 #define __KSMIMECRYPTO_H
 
+class QColorGroup;
+
 #include <q3ptrlist.h>
 #include "ksslpkcs12.h"
 #include "ksslcertificate.h"
