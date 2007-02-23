@@ -2842,6 +2842,12 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 
       return;
     }
+    else if (dragInfo.state == diDragging)
+    {
+      // Don't do anything after a canceled drag until the user lets go of
+      // the mouse button!
+      return;
+    }
 
     mouseX = e->x();
     mouseY = e->y();
@@ -3095,7 +3101,7 @@ void KateViewInternal::dropEvent( QDropEvent* event )
 
   // finally finish drag and drop mode
   dragInfo.state = diNone;
-  // important, because the eventFilter`s DragLeave does not occure
+  // important, because the eventFilter`s DragLeave does not occur
   stopDragScroll();
 }
 //END EVENT HANDLING STUFF
