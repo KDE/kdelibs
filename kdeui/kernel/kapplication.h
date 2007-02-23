@@ -411,7 +411,7 @@ private:
   KConfig* pSessionConfig; //instance specific application config object
   bool bSessionManagement;
 
-  void init();
+  void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
   void read_app_startup_id();
 

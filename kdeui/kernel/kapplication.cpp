@@ -330,7 +330,7 @@ KApplication::KApplication(bool GUIenabled)
     setApplicationName(QLatin1String(d->componentData.componentName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
-    init();
+    init(GUIenabled);
 }
 
 #ifdef Q_WS_X11
@@ -438,7 +438,7 @@ public:
   }
 };
 
-void KApplication::init()
+void KApplication::init(bool GUIenabled)
 {
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
@@ -461,7 +461,8 @@ void KApplication::init()
 
   parseCommandLine();
 
-  (void) KClipboardSynchronizer::self();
+  if(GUIenabled)
+    (void) KClipboardSynchronizer::self();
 
   extern KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface;
   kde_kdebug_enable_dbus_interface = true;
