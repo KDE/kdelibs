@@ -33,6 +33,7 @@
 #include <QX11EmbedContainer>
 #else
 #define QX11EmbedContainer QWidget
+#include <QWidget>
 #endif
 #include <kwinmodule.h>
 
