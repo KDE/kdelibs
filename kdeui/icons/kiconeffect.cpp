@@ -468,7 +468,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
 	  for (y=0; y<height; y++)
 	  {
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 	    uchar *line = (uchar*) img.scanLine(y);
 #else
 	    uchar *line = (uchar*) img.scanLine(y) + 3;

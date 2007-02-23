@@ -1276,7 +1276,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         int rcol, gcol, bcol;
         clr.getRgb(&rcol, &gcol, &bcol);
 
-#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN // ARGB (skip alpha)
         register unsigned char *data = (unsigned char *)dst.bits() + 1;
 #else                    // BGRA
         register unsigned char *data = (unsigned char *)dst.bits();
@@ -1284,7 +1284,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
         for (register int i=0; i<pixels; i++)
         {
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
             *data += (unsigned char)((rcol - *data) * opacity);
             data++;
             *data += (unsigned char)((gcol - *data) * opacity);
@@ -1502,7 +1502,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 #endif // USE_MMX_INLINE_ASM
 
     {
-#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN  // ARGB (skip alpha)
         register unsigned char *data1 = (unsigned char *)dst.bits() + 1;
         register unsigned char *data2 = (unsigned char *)src.bits() + 1;
 #else                    // BGRA
@@ -1512,7 +1512,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 
         for (register int i=0; i<pixels; i++)
         {
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
             *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
             data1++;
             *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
@@ -2556,7 +2556,7 @@ bool KImageEffect::blendOnLower(
     --b; --i;
     do
     {
-#ifndef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER != Q_BIG_ENDIAN
       while ( !(a=*i) && k>0 )
 #else
       while ( !(a=*(i-3)) && k>0 )
@@ -2565,7 +2565,7 @@ bool KImageEffect::blendOnLower(
         i-=4; b-=4; k--;
       };
 
-#ifndef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER != Q_BIG_ENDIAN
       --i; --b;
       *b += ( ((*i - *b) * a) >> 8 );
       --i; --b;

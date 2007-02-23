@@ -1135,13 +1135,13 @@ mconvert(union VALUETYPE *p, struct magic *m)
 			/* Null terminate */
 			p->s[sizeof(p->s) - 1] = '\0';
 			return 1;
-#ifndef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
 		case SHORT:
 #endif
 		case BESHORT:
 			p->h = (short) ((p->hs[0] << 8) | (p->hs[1]));
 			return 1;
-#ifndef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
 		case LONG:
 		case DATE:
 #endif
@@ -1150,13 +1150,13 @@ mconvert(union VALUETYPE *p, struct magic *m)
 			p->l = (long)
 			    ((p->hl[0] << 24) | (p->hl[1] << 16) | (p->hl[2] << 8) | (p->hl[3]));
 			return 1;
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 		case SHORT:
 #endif
 		case LESHORT:
 			p->h = (short) ((p->hs[1] << 8) | (p->hs[0]));
 			return 1;
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 		case LONG:
 		case DATE:
 #endif

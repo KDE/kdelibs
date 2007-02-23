@@ -100,7 +100,7 @@ void SHA1::transform(void *data) {
 	d = _h3;
 	e = _h4;
 
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 	memcpy(x, _data, 64);
 #else
 	int i;
@@ -315,7 +315,7 @@ const unsigned char *SHA1::hash() {
 
 	p = _buf;
 
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 #define X(a) do { *(uint32_t *)p = _h##a; p += 4; } while (0)
 #else
 #define X(a) do { *p++ = _h##a >> 24;  *p++ = _h##a >> 16;             \

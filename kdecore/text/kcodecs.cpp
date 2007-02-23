@@ -1022,9 +1022,8 @@ void KMD5::II ( quint32& a, quint32 b, quint32 c, quint32 d,
 
 void KMD5::encode ( unsigned char* output, quint32 *in, quint32 len )
 {
-#if !defined(WORDS_BIGENDIAN)
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     memcpy(output, in, len);
-
 #else
     quint32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
@@ -1041,7 +1040,7 @@ void KMD5::encode ( unsigned char* output, quint32 *in, quint32 len )
 // multiple of 4.
 void KMD5::decode (quint32 *output, const unsigned char* in, quint32 len)
 {
-#if !defined(WORDS_BIGENDIAN)
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     memcpy(output, in, len);
 
 #else
@@ -1333,7 +1332,7 @@ inline void KMD4::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
 
 void KMD4::byteReverse( unsigned char *buf, quint32 len )
 {
-#ifdef WORDS_BIGENDIAN
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
   quint32 *b = (quint32*) buf;
   while ( len > 0 ) {
     *b = ((((*b) & 0xff000000) >> 24) | (((*b) & 0x00ff0000) >>  8) |
