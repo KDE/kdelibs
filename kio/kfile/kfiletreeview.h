@@ -26,6 +26,8 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
+class QColorGroup;
+
 #include <k3listview.h>
 #include <kdirnotify.h>
 #include <kio/job.h>
