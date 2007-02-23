@@ -103,8 +103,9 @@ static const char* const not_close_xpm[]={
  * @author Max Judin.
 */
 K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WFlags f)
-    : KMainWindow( parent, name, f )
+    : KMainWindow( parent, f )
 {
+    setObjectName( name );
     QString new_name = QString(name) + QString("_DockManager");
     dockManager = new K3DockManager( this, new_name.toLatin1().constData() );
     mainDockWidget = 0L;
