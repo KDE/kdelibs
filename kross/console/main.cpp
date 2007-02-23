@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 // for std namespace
-#include <string>
 #include <iostream>
 
 // Qt
@@ -26,11 +25,9 @@
 #include <QFile>
 
 // KDE
-#include <kcomponentdata.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-#include <ksharedptr.h>
 #include <kurl.h>
 
 // Kross
