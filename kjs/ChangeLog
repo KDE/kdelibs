@@ -1,3 +1,10 @@
+2007-02-24  Harri Porten  <porten@kde.org>
+
+	* regexp.cpp: gracefully handle incomplete \u sequences in regular
+	expressions the IE way. Fixes the syntax error reported in bug
+	#141731 although the page might be relying on the equally
+	undefined FF way.
+
 2007-02-23  Harri Porten  <porten@kde.org>
 
 	* number_object.cpp: applied patch by Justin that fixes
