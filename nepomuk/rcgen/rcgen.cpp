@@ -21,10 +21,10 @@ static int usage()
 {
   QTextStream( stderr, QIODevice::WriteOnly )
     << "Usage:" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] << "--writeall <sourcefolder> <ontologyfile>" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] << "--listincludes <ontologyfile>" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] << "--listheaders [--prefix <listprefix>] <ontologyfile>" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] << "--listsources [--prefix <listprefix>] <ontologyfile>" << endl;
+    << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall <sourcefolder> <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--prefix <listprefix>] <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--prefix <listprefix>] <ontologyfile>" << endl;
   return 1;
 }
 

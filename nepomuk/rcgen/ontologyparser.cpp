@@ -29,15 +29,26 @@ public:
   QMap<QString, QString> comments;
   Soprano::Parser* rdfParser;
 
+  QHash<QString, QString> namespaceAbbr;
+
+  QString ensureNS( const QString& uri ) {
+    // check if we have a NS abbrev
+    QString ns = uri.left( uri.indexOf( ":" ) );
+    if( namespaceAbbr.contains( ns ) )
+      return namespaceAbbr[ns] + uri.mid( ns.length()+1 );
+    else
+      return uri;
+  }
+
   ResourceClass& getResource( const QString& uri ) {
-    ResourceClass& r = resources[uri];
-    r.uri = uri;
+    ResourceClass& r = resources[ensureNS(uri)];
+    r.uri = ensureNS(uri);
     return r;
   }
 
   Property& getProperty( const QString& uri ) {
-    Property& p = properties[uri];
-    p.uri = uri;
+    Property& p = properties[ensureNS(uri)];
+    p.uri = ensureNS(uri);
     return p;
   }
 };
@@ -61,6 +72,18 @@ OntologyParser::~OntologyParser()
 bool OntologyParser::parse( const QString& filename )
 {
   qDebug() << "(OntologyParser) Parsing " << filename << endl;
+
+  // get the namespaces the hacky way
+  QFile f( filename );
+  if( f.open( QIODevice::ReadOnly ) ) {
+    QString s = QTextStream( &f ).readAll();
+    QRegExp nsr( "xmlns:(\\S*)=\"(\\S*\\#)\"" );
+    int pos = 0;
+    while( ( pos = s.indexOf( nsr, pos+1 ) ) > 0 ) {
+      qDebug() << "Found namespace abbrevation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
+      d->namespaceAbbr.insert( nsr.cap(1), nsr.cap(2) );
+    }
+  }
 
   Soprano::Model* model = d->rdfParser->parse( filename );
   bool success = true;
@@ -87,14 +110,14 @@ bool OntologyParser::parse( const QString& filename )
       rc.properties.append( &p );
     }
     else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
-      d->properties[s.subject().uri().toString()].type = s.object().uri().toString();
+      d->getProperty(s.subject().uri().toString()).type = d->ensureNS(s.object().uri().toString());
     }
     else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ||
 	     s.predicate().uri().toString().endsWith( "#cardinality" ) ) {
-      d->properties[s.subject().uri().toString()].list = ( s.object().literal().toInt() > 1 );
+      d->getProperty(s.subject().uri().toString()).list = ( s.object().literal().toInt() > 1 );
     }
     else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
-      d->comments[s.subject().uri().toString()] = s.object().literal();
+      d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal();
     }
   }
 
@@ -121,17 +144,16 @@ bool OntologyParser::parse( const QString& filename )
   }
 
   // testing stuff
-//   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
-//        it != d->resources.constEnd(); ++it ) {
-//     qDebug() << "Resource: " << (*it).name() << " (->" << (*it).parent->name() << ")" << endl;
+  for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
+       it != d->resources.constEnd(); ++it ) {
+    qDebug() << "Resource: " << (*it).name() << "[" << (*it).uri << "]" << " (->" << (*it).parent->name() << ")" << endl;
 
-//     QMapIterator<QString, Property*> propIt( (*it).properties );
-//     while( propIt.hasNext() ) {
-//       propIt.next();
-//       const Property* p = propIt.value();
-//       qDebug() << "          " << p->uri << " (->" << p->type << ")" << ( p->list ? QString("+") : QString("1") ) << endl;
-//     }
-//   }
+    QListIterator<const Property*> propIt( (*it).properties );
+    while( propIt.hasNext() ) {
+      const Property* p = propIt.next();
+      qDebug() << "          " << p->uri << " (->" << p->type << ")" << ( p->list ? QString("+") : QString("1") ) << endl;
+    }
+  }
 
   return success;
 }
