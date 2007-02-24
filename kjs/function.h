@@ -137,6 +137,7 @@ namespace KJS {
     ScopeChain _scope;
 
     static JSValue *argumentsGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
+    static JSValue *callerGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
     static JSValue *lengthGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
 
     void processParameters(ExecState *exec, const List &);

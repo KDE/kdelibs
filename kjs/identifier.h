@@ -141,6 +141,7 @@ namespace KJS {
     #define KJS_IDENTIFIER_EACH_PROPERTY_NAME_GLOBAL(macro) \
         macro(arguments) \
         macro(callee) \
+        macro(caller) \
         macro(constructor) \
         macro(fromCharCode) \
         macro(length) \

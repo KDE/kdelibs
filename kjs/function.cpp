@@ -225,6 +225,20 @@ JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifi
   return jsNull();
 }
 
+JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
+{
+    FunctionImp* thisObj = static_cast<FunctionImp* >(slot.slotBase());
+    Context* context = exec->m_context;
+    while (context) {
+        if (context->function() == thisObj)
+            return (context->callingContext()->function()) ? context->callingContext()->function() : jsNull();
+
+        context = context->callingContext();
+    }
+
+    return jsNull();
+}
+
 JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
@@ -244,13 +258,18 @@ bool FunctionImp::getOwnPropertySlot(ExecState *exec, const Identifier& property
         slot.setCustom(this, argumentsGetter);
         return true;
     }
-    
+
     // Compute length of parameters.
     if (propertyName == lengthPropertyName) {
         slot.setCustom(this, lengthGetter);
         return true;
     }
-    
+
+    if (propertyName == callerPropertyName) {
+        slot.setCustom(this, callerGetter);
+        return true;
+    }
+
     return InternalFunctionImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
@@ -279,24 +298,24 @@ Identifier FunctionImp::getParameterName(int index)
 {
   int i = 0;
   Parameter *p = param.get();
-  
+
   if(!p)
     return Identifier::null();
-  
+
   // skip to the parameter we want
   while (i++ < index && (p = p->next.get()))
     ;
-  
+
   if (!p)
     return Identifier::null();
-  
+
   Identifier name = p->name;
 
   // Are there any subsequent parameters with the same name?
   while ((p = p->next.get()))
     if (p->name == name)
       return Identifier::null();
-  
+
   return name;
 }
 
@@ -353,10 +372,10 @@ void DeclaredFunctionImp::processVarDecls(ExecState *exec)
 
 // ------------------------------ IndexToNameMap ---------------------------------
 
-// We map indexes in the arguments array to their corresponding argument names. 
-// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x"). 
+// We map indexes in the arguments array to their corresponding argument names.
+// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x").
 
-// Once we have an argument name, we can get and set the argument's value in the 
+// Once we have an argument name, we can get and set the argument's value in the
 // activation object.
 
 // We use Identifier::null to indicate that a given argument's value
@@ -366,9 +385,9 @@ IndexToNameMap::IndexToNameMap(FunctionImp *func, const List &args)
 {
   _map = new Identifier[args.size()];
   this->size = args.size();
-  
+
   int i = 0;
-  ListIterator iterator = args.begin(); 
+  ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++)
     _map[i] = func->getParameterName(i); // null if there is no corresponding parameter
 }
@@ -381,16 +400,16 @@ bool IndexToNameMap::isMapped(const Identifier &index) const
 {
   bool indexIsNumber;
   int indexAsNumber = index.toUInt32(&indexIsNumber);
-  
+
   if (!indexIsNumber)
     return false;
-  
+
   if (indexAsNumber >= size)
     return false;
 
   if (_map[indexAsNumber].isNull())
     return false;
-  
+
   return true;
 }
 
@@ -400,7 +419,7 @@ void IndexToNameMap::unMap(const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-  
+
   _map[indexAsNumber] = Identifier::null();
 }
 
@@ -415,7 +434,7 @@ Identifier& IndexToNameMap::operator[](const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-  
+
   return (*this)[indexAsNumber];
 }
 
@@ -425,15 +444,15 @@ const ClassInfo Arguments::info = {"Arguments", 0, 0, 0};
 
 // ECMA 10.1.8
 Arguments::Arguments(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act)
-: JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), 
+: JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
 _activationObject(act),
 indexToNameMap(func, args)
 {
   putDirect(calleePropertyName, func, DontEnum);
   putDirect(lengthPropertyName, args.size(), DontEnum);
-  
+
   int i = 0;
-  ListIterator iterator = args.begin(); 
+  ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++) {
     if (!indexToNameMap.isMapped(Identifier::from(i))) {
       JSObject::put(exec, Identifier::from(i), *iterator, DontEnum);
@@ -441,7 +460,7 @@ indexToNameMap(func, args)
   }
 }
 
-void Arguments::mark() 
+void Arguments::mark()
 {
   JSObject::mark();
   if (_activationObject && !_activationObject->marked())
@@ -473,7 +492,7 @@ void Arguments::put(ExecState *exec, const Identifier &propertyName, JSValue *va
   }
 }
 
-bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName) 
+bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
   if (indexToNameMap.isMapped(propertyName)) {
     indexToNameMap.unMap(propertyName);
@@ -502,7 +521,7 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
   // default: return builtin arguments array
   if (!thisObj->_argumentsObject)
     thisObj->createArgumentsObject(exec);
-  
+
   return thisObj->_argumentsObject;
 }
 
@@ -548,7 +567,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
 
 void ActivationImp::mark()
 {
-    if (_function && !_function->marked()) 
+    if (_function && !_function->marked())
         _function->mark();
     _arguments.mark();
     if (_argumentsObject && !_argumentsObject->marked())
@@ -793,7 +812,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         return x;
       else {
         UString s = x->toString(exec);
-        
+
         int sid;
         int errLine;
         UString errMsg;
@@ -818,11 +837,11 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
                        progNode.get(),
                        EvalCode,
                        exec->context());
-        
+
         ExecState newExec(exec->dynamicInterpreter(), &ctx);
         if (exec->hadException())
             newExec.setException(exec->exception());
-        
+
         // execute the code
         progNode->processVarDecls(&newExec);
         Completion c = progNode->execute(&newExec);
