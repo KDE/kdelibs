@@ -69,12 +69,30 @@ RegExp::RegExp(const UString &p, int f)
           if (Lexer::isHexDigit(c0) && Lexer::isHexDigit(c1) &&
               Lexer::isHexDigit(c2) && Lexer::isHexDigit(c3)) {
             c = Lexer::convertUnicode(c0, c1, c2, c3);
-            if (c.unicode() == 0) {
-                // Make sure to encode 0, to avoid terminating the string
-                intern += UString(nil);
-            } else {
-                intern += UString(&c, 1);
-            }
+            switch (c.unicode()) {
+            case 0:
+	      // Make sure to encode 0, to avoid terminating the string
+	      fprintf(stderr, "NULL escape\n");
+	      intern += UString(nil);
+	      break;
+            case '^':
+            case '$':
+            case '\\':
+            case '.':
+            case '*':
+            case '+':
+            case '?':
+            case '(': case ')':
+            case '{': case '}':
+            case '[': case ']':
+            case '|':
+	      // escape pattern characters have to remain escaped
+	      intern.append(UString('\\'));
+	      // intentional fallthrough
+            default:
+	      intern += UString(&c, 1);
+	      break;
+	    }
             i += 4;
             continue;
           }
