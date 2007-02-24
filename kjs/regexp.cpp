@@ -36,24 +36,15 @@ namespace KJS {
 
 RegExp::UTF8SupportState RegExp::utf8Support = RegExp::Unknown;
 
-RegExp::RegExp(const UString &p, char flags)
-  : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
+// JS regexps can contain Unicode escape sequences (\uxxxx) which
+// are rather uncommon elsewhere. As our regexp libs don't understand
+// them we do the unescaping ourselves internally.
+// Also make sure to expand out any nulls as pcre_compile
+// expects null termination..
+static UString sanitizePattern(const UString &p)
 {
-  // Determine whether libpcre has unicode support if need be..
-#ifdef PCRE_CONFIG_UTF8
-  if (utf8Support == Unknown) {
-    int supported;
-    pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
-    utf8Support = supported ? Supported : Unsupported;
-  }
-#endif
+  UString newPattern;
 
-  // JS regexps can contain Unicode escape sequences (\uxxxx) which
-  // are rather uncommon elsewhere. As our regexp libs don't understand
-  // them we do the unescaping ourselves internally.
-  // Also make sure to expand out any nulls as pcre_compile 
-  // expects null termination..
-  UString intern;
   const char* const nil = "\\x00";
   if (p.find("\\u") >= 0 || p.find(KJS::UChar('\0')) >= 0) {
     bool escape = false;
@@ -72,28 +63,44 @@ RegExp::RegExp(const UString &p, char flags)
             c = Lexer::convertUnicode(c0, c1, c2, c3);
             if (c.unicode() == 0) {
                 // Make sure to encode 0, to avoid terminating the string
-                intern += UString(nil);
+                newPattern += UString(nil);
             } else {
-                intern += UString(&c, 1);
+                newPattern += UString(&c, 1);
             }
             i += 4;
             continue;
           }
         }
-        intern += UString('\\');
-        intern += UString(&c, 1);
+        newPattern += UString('\\');
+        newPattern += UString(&c, 1);
       } else {
         if (c == '\\')
           escape = true;
         else if (c == '\0')
-          intern += UString(nil);
+          newPattern += UString(nil);
         else
-          intern += UString(&c, 1);
+          newPattern += UString(&c, 1);
       }
     }
+    return newPattern;
   } else {
-    intern = p;
+    return p;
   }
+}
+
+RegExp::RegExp(const UString &p, char flags)
+  : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
+{
+  // Determine whether libpcre has unicode support if need be..
+#ifdef PCRE_CONFIG_UTF8
+  if (utf8Support == Unknown) {
+    int supported;
+    pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
+    utf8Support = supported ? Supported : Unsupported;
+  }
+#endif
+
+  UString intern = sanitizePattern(p);
 
 #ifdef HAVE_PCREPOSIX
 
@@ -111,7 +118,7 @@ RegExp::RegExp(const UString &p, char flags)
   const char *errorMessage;
   int errorOffset;
 
-  // Fill our buffer with an encoded version, whether utf-8, or, 
+  // Fill our buffer with an encoded version, whether utf-8, or,
   // if PCRE is incapable, truncated.
   prepareMatch(intern);
   _regex = pcre_compile(_buffer, options, &errorMessage, &errorOffset, NULL);
@@ -179,7 +186,7 @@ void RegExp::prepareUtf8(const UString& s)
   _originalPos = new int[length * 3 + 2];
 
   // Convert to runs of 8-bit characters, and generate indeces
-  // Note that we do NOT combine surrogate pairs here, as 
+  // Note that we do NOT combine surrogate pairs here, as
   // regexps operate on them as separate characters
   char *p      = _buffer;
   int  *posOut = _originalPos;
@@ -223,8 +230,8 @@ void RegExp::prepareASCII (const UString& s)
   _originalPos = 0;
 
   // Best-effort attempt to get something done
-  // when we don't have utf 8 available -- use 
-  // truncated version, and pray for the best 
+  // when we don't have utf 8 available -- use
+  // truncated version, and pray for the best
   CString truncated = s.cstring();
   _buffer = new char[truncated.size() + 1];
   memcpy(_buffer, truncated.c_str(), truncated.size());
@@ -246,7 +253,7 @@ void RegExp::prepareMatch(const UString &s)
 #endif
 }
 
-void RegExp::doneMatch() 
+void RegExp::doneMatch()
 {
   delete[] _originalPos; _originalPos = 0;
   delete[] _buffer;      _buffer      = 0;
