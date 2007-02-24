@@ -279,8 +279,8 @@ void RegExp::prepareMatch(const UString &s)
 #ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported)
     prepareUtf8(s);
-#endif
   else
+#endif
     prepareASCII(s);
 
 #ifndef NDEBUG
