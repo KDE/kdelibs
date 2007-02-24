@@ -308,7 +308,7 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
             QVariant pluginsinfo = (**it).property( "X-KDE-BrowserView-PluginsInfo" );
             if ( !pluginsinfo.isValid() ) {
                 // <backwards compatible>
-                if ((**it).library() == QString("libnsplugin"))
+                if ((**it).library() == QLatin1String("libnsplugin"))
                     pluginsinfo = QVariant("nsplugins/pluginsinfo");
                 else
                 // </backwards compatible>

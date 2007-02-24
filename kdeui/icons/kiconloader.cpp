@@ -397,7 +397,7 @@ void KIconLoader::addExtraDesktopThemes()
     {
 	if ( d->mThemesInTree.contains(*it) )
 		continue;
-	if ( *it == QString("default.kde") ) continue;
+	if ( *it == QLatin1String("default.kde") ) continue;
 
 	KIconTheme *def = new KIconTheme( *it, "" );
 	KIconThemeNode* node = new KIconThemeNode(def);

@@ -696,7 +696,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   bool bDesktopFile = isDesktopFile(item);
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
-  bool hasRoot = url.path() == QString::fromLatin1("/");
+  bool hasRoot = url.path() == QLatin1String("/");
   QString iconStr = KMimeType::iconNameForUrl(url, mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
@@ -810,7 +810,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
               magicMimeComment.clear();
       }
 
-      if ( isLocal && url.path() == QString::fromLatin1("/") )
+      if ( isLocal && url.path() == QLatin1String("/") )
         hasRoot = true;
       if ( (*kit)->isDir() && !(*kit)->isLink() )
       {

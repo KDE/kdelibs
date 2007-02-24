@@ -44,7 +44,7 @@ public:
 	MyWExpander() : KWordMacroExpander(), exp("expanded") { }
 protected:
 	bool expandMacro(const QString& str, QStringList& ret) {
-		if (str == QString("macro")) {
+		if (str == QLatin1String("macro")) {
 			ret = QStringList(exp);
 			return true;
 		}
