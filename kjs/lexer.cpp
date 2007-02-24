@@ -523,7 +523,8 @@ int Lexer::lex()
   }
 #endif
 
-  if (state != Identifier && convertNextIdentifier)
+  if (state != Identifier && state != IdentifierOrKeyword &&
+      convertNextIdentifier)
     convertNextIdentifier = false;
 
   restrKeyword = false;
@@ -544,7 +545,7 @@ int Lexer::lex()
     if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {
   case Identifier:
       // Lookup for keyword failed, means this is an identifier
-      // Apply anonymous-function hack below (eat the identifier)
+      // Apply anonymous-function hack below (convert the identifier)
       if (convertNextIdentifier) {
         convertNextIdentifier = false;
 #ifdef KJS_VERBOSE
