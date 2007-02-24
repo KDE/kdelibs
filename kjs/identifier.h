@@ -139,6 +139,7 @@ namespace KJS {
 
     KJS_EXPORT extern const Identifier argumentsPropertyName;
     KJS_EXPORT extern const Identifier calleePropertyName;
+    KJS_EXPORT extern const Identifier callerPropertyName;
     KJS_EXPORT extern const Identifier constructorPropertyName;
     KJS_EXPORT extern const Identifier lengthPropertyName;
     KJS_EXPORT extern const Identifier messagePropertyName;

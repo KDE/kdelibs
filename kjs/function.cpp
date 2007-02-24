@@ -511,6 +511,21 @@ Value FunctionImp::get(ExecState *exec, const Identifier &propertyName) const
         return Number(count);
     }
 
+    if (propertyName == callerPropertyName) {
+        ContextImp *context = exec->context().imp();
+        while (context) {
+	    if (context->function() == this) {
+		FunctionImp *f = context->callingContext()->function();
+		if (f)
+		    return Value(f);
+		else
+		    return Null();
+	    }
+	    context = context->callingContext();
+        }
+        return Null();
+    }
+
     return InternalFunctionImp::get(exec, propertyName);
 }
 

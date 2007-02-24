@@ -49,6 +49,7 @@ IdentifierStatisticsExitLogger::~IdentifierStatisticsExitLogger()
 
 extern const Identifier argumentsPropertyName("arguments");
 extern const Identifier calleePropertyName("callee");
+extern const Identifier callerPropertyName("caller");
 extern const Identifier constructorPropertyName("constructor");
 extern const Identifier lengthPropertyName("length");
 extern const Identifier messagePropertyName("message");
