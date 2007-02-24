@@ -61,10 +61,26 @@ static UString sanitizePattern(const UString &p)
           if (Lexer::isHexDigit(c0) && Lexer::isHexDigit(c1) &&
               Lexer::isHexDigit(c2) && Lexer::isHexDigit(c3)) {
             c = Lexer::convertUnicode(c0, c1, c2, c3);
-            if (c.unicode() == 0) {
+            switch (c.unicode()) {
+            case 0:
                 // Make sure to encode 0, to avoid terminating the string
                 newPattern += UString(nil);
-            } else {
+                break;
+            case '^':
+            case '$':
+            case '\\':
+            case '.':
+            case '*':
+            case '+':
+            case '?':
+            case '(': case ')':
+            case '{': case '}':
+            case '[': case ']':
+            case '|':
+                // escape pattern characters have to remain escaped
+                newPattern.append('\\');
+                // intentional fallthrough
+            default:
                 newPattern += UString(&c, 1);
             }
             i += 4;
