@@ -1659,11 +1659,11 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
       if (pass == 0)
       {
          buildApplicationIndex(false);
-      }
+      } else
       if (pass == 1)
       {
          buildApplicationIndex(true);
-      }
+      } else
       if (pass == 2)
       {
          QStringList defaultLayout;
