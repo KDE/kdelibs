@@ -23,6 +23,7 @@
 #include "driver.h"
 
 #include <qlistview.h>
+#include <qsplitter.h>
 #include <qheader.h>
 #include <qlayout.h>
 #include <qwhatsthis.h>
@@ -93,14 +94,16 @@ DriverView::DriverView(QWidget *parent, const char *name)
 
 	m_driver = 0;
 
-	m_view = new DrListView(this);
-	  QWhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
-	m_optview = new DrOptionView(this);
-	  QWhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
+	QSplitter	*splitter = new QSplitter(this);
+	splitter->setOrientation(QSplitter::Vertical);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
-	main_->addWidget(m_view,1);
-	main_->addWidget(m_optview,0);
+	QVBoxLayout     *vbox = new QVBoxLayout(this, 0, 10);
+	vbox->addWidget(splitter);
+
+	m_view = new DrListView(splitter);
+	  QWhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
+	m_optview = new DrOptionView(splitter);
+	  QWhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
 
 	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),m_optview,SLOT(slotItemSelected(QListViewItem*)));
 	connect(m_optview,SIGNAL(changed()),SLOT(slotChanged()));
