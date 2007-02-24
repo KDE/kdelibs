@@ -40,7 +40,7 @@ class QImage;
  *
  * \code
  * if ( !m_scanDialog ) {
- *     m_scanDialog = KScanDialog::getScanDialog( this, "scandialog" );
+ *     m_scanDialog = KScanDialog::getScanDialog( this );
  *     if ( !m_scanDialog ) // no scanning support installed?
  *         return;
  *
