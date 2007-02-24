@@ -34,7 +34,9 @@ using KXMLCore::Vector;
 
 namespace KJS {
 
+#ifdef PCRE_CONFIG_UTF8
 RegExp::UTF8SupportState RegExp::utf8Support = RegExp::Unknown;
+#endif
 
 // JS regexps can contain Unicode escape sequences (\uxxxx) which
 // are rather uncommon elsewhere. As our regexp libs don't understand
@@ -274,8 +276,10 @@ void RegExp::prepareMatch(const UString &s)
 {
   delete[] _originalPos; // Just to be sure..
   delete[] _buffer;
+#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported)
     prepareUtf8(s);
+#endif
   else
     prepareASCII(s);
 
