@@ -52,20 +52,35 @@ static UString sanitizePattern(const UString &p)
       UChar c = p[i];
       if (escape) {
         escape = false;
-        // we only care about \uxxxx
-        if (c == 'u' && i + 4 < p.size()) {
-          int c0 = p[i+1].unicode();
-          int c1 = p[i+2].unicode();
-          int c2 = p[i+3].unicode();
-          int c3 = p[i+4].unicode();
-          if (Lexer::isHexDigit(c0) && Lexer::isHexDigit(c1) &&
-              Lexer::isHexDigit(c2) && Lexer::isHexDigit(c3)) {
-            c = Lexer::convertUnicode(c0, c1, c2, c3);
-            switch (c.unicode()) {
+        // we only care about \u
+        if (c == 'u') {
+	  // standard unicode escape sequence looks like \uxxxx but
+	  // other browsers also accept less then 4 hex digits
+	  unsigned short u = 0;
+	  int j = 0;
+	  for (j = 0; j < 4; ++j) {
+	    if (i + 1 < p.size() && Lexer::isHexDigit(p[i + 1].unicode())) {
+	      u = (u << 4) + Lexer::convertHex(p[i + 1].unicode());
+	      ++i;
+	    } else {
+	      // sequence incomplete. restore index.
+	      // TODO: cleaner way to propagate warning
+	      fprintf(stderr, "KJS: saw %d digit \\u sequence.\n", j);
+	      i -= j;
+	      break;
+	    }
+	  }
+	  if (j < 4) {
+	    // sequence was incomplete. treat \u as u which IE always
+	    // and FF sometimes does.
+	     newPattern.append(UString('u'));
+	  } else {
+            c = UChar(u);
+            switch (u) {
             case 0:
-                // Make sure to encode 0, to avoid terminating the string
-                newPattern += UString(nil);
-                break;
+	      // Make sure to encode 0, to avoid terminating the string
+	       newPattern += UString(nil);
+	      break;
             case '^':
             case '$':
             case '\\':
@@ -77,15 +92,15 @@ static UString sanitizePattern(const UString &p)
             case '{': case '}':
             case '[': case ']':
             case '|':
-                // escape pattern characters have to remain escaped
-                newPattern.append('\\');
-                // intentional fallthrough
+	      // escape pattern characters have to remain escaped
+	       newPattern.append(UString('\\'));
+	      // intentional fallthrough
             default:
-                newPattern += UString(&c, 1);
-            }
-            i += 4;
-            continue;
+	      newPattern += UString(&c, 1);
+	      break;
+	    }
           }
+          continue;
         }
         newPattern += UString('\\');
         newPattern += UString(&c, 1);
