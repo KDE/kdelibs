@@ -38,7 +38,7 @@
  * you would define a KMyApp/Plugin servicetype, and then you can query
  * the trader for it:
  * \code
- * KServiceOfferList offers = KServiceTypeTrader::self()->query("KMyApp/Plugin");
+ * KService::List offers = KServiceTypeTrader::self()->query("KMyApp/Plugin");
  * \endcode
  *
  * You can add a constraint in the "trader query language". For instance:

@@ -29,7 +29,7 @@
     usleep, initgroups, 
     random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
     mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
-    mkstemp, mkstemps (this is for KTempFile itself, prefer using KTempFile everywhere else)
+    mkstemp, mkstemps (prefer to use QTemporaryfile instead)
    
 */
 
