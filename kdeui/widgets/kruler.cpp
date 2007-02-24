@@ -313,6 +313,13 @@ KRuler::showPointer() const
   return d->showpointer;
 }
 
+void
+KRuler::setFrameStyle(int)
+{
+#ifdef __GNUC__
+	#warning implement me (jowenn)
+#endif
+}
 
 void
 KRuler::setShowEndLabel(bool show)

@@ -254,12 +254,7 @@ public:
   bool showPointer() const;
 
 
-  void setFrameStyle(int) {
-#ifdef __GNUC__
-	#warning implement me (jowenn)
-#endif
-  }
-
+  void setFrameStyle(int);
 
   /**
    * Show/hide number values of the little marks.
