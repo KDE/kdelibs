@@ -31,7 +31,9 @@
 
 using namespace KJS;
 
+#ifdef PCRE_CONFIG_UTF8
 RegExp::UTF8SupportState RegExp::utf8Support = RegExp::Unknown;
+#endif
 
 RegExp::RegExp(const UString &p, int f)
   : pat(p), flgs(f), m_notEmpty(false), valid(true), buffer(0), originalPos(0)
@@ -269,9 +271,11 @@ void RegExp::prepareMatch(const UString &s)
 {
   delete[] originalPos; // Just to be sure..
   delete[] buffer;
+#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported)
     prepareUtf8(s);
   else
+#endif
     prepareASCII(s);
 
 #ifndef NDEBUG
