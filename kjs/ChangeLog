@@ -1,5 +1,8 @@
 2007-02-23  Harri Porten  <porten@kde.org>
 
+	* number_object.cpp: applied patch by Justin that fixes
+	toExponential() calls on negative numbers. Bug #141979.
+
 	* function.cpp: implemented caller property as requested by
 	bug report #132039 from Edward Rudd.
 
