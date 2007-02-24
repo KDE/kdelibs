@@ -49,6 +49,7 @@ using namespace KJS;
 using namespace KXMLCore;
 
 static void testIsInteger();
+static void testUString();
 static char* createStringWithContentsOfFile(const char* fileName);
 
 class StopWatch
@@ -57,7 +58,7 @@ public:
     void start();
     void stop();
     long getElapsedMS(); // call stop() first
-    
+
 private:
 #ifndef HAVE_GETTIMEOFDAY
     DWORD m_startTime;
@@ -94,7 +95,7 @@ long StopWatch::getElapsedMS()
 #else
     timeval elapsedTime;
     timersub(&m_stopTime, &m_startTime, &elapsedTime);
-    
+
     return elapsedTime.tv_sec * 1000 + lroundf(elapsedTime.tv_usec / 1000.0);
 #endif
 }
@@ -154,7 +155,7 @@ JSValue* TestFunctionImp::callAsFunction(ExecState* exec, JSObject*, const List 
 
       free(script);
       free(fileName);
-      
+
       return jsNumber(stopWatch.getElapsedMS());
     }
     case Quit:
@@ -223,23 +224,23 @@ bool doIt(int argc, char** argv)
   global->put(interp->globalExec(), "quit", new TestFunctionImp(TestFunctionImp::Quit, 0));
   // add "gc" for compatibility with the mozilla js shell
   global->put(interp->globalExec(), "gc", new TestFunctionImp(TestFunctionImp::GC, 0));
-  // add "version" for compatibility with the mozilla js shell 
+  // add "version" for compatibility with the mozilla js shell
   global->put(interp->globalExec(), "version", new TestFunctionImp(TestFunctionImp::Version, 1));
   global->put(interp->globalExec(), "run", new TestFunctionImp(TestFunctionImp::Run, 1));
-  
+
   Interpreter::setShouldPrintExceptions(true);
-  
+
   for (int i = 1; i < argc; i++) {
     const char* fileName = argv[i];
     if (strcmp(fileName, "-f") == 0) // mozilla test driver script uses "-f" prefix for files
       continue;
-    
+
     char* script = createStringWithContentsOfFile(fileName);
     if (!script) {
       success = false;
       break; // fail early so we can catch missing files
     }
-    
+
     Completion completion = interp->evaluate(fileName, 0, script);
     success = success && completion.complType() != Throw;
     free(script);
@@ -257,6 +258,7 @@ int kjsmain(int argc, char** argv)
   }
 
   testIsInteger();
+  testUString();
 
   JSLock lock;
 
@@ -268,7 +270,7 @@ int kjsmain(int argc, char** argv)
 
   if (success)
     fprintf(stderr, "OK.\n");
-  
+
 #ifdef KJS_DEBUG_MEM
   Interpreter::finalCheck();
 #endif
@@ -301,20 +303,31 @@ static void testIsInteger()
   assert(!IsInteger<GlobalImp>::value);
 }
 
+// not a good place either
+void testUString()
+{
+  // bug #141720
+  UString s1 = "abc";
+  UString s2 = s1;
+  s1.append("xxx");
+  s2.append((unsigned short)0x64);
+  assert(s2.size() == 4);
+}
+
 static char* createStringWithContentsOfFile(const char* fileName)
 {
   char* buffer;
-  
+
   int buffer_size = 0;
   int buffer_capacity = 1024;
   buffer = (char*)malloc(buffer_capacity);
-  
+
   FILE* f = fopen(fileName, "r");
   if (!f) {
     fprintf(stderr, "Could not open file: %s\n", fileName);
     return 0;
   }
-  
+
   while (!feof(f) && !ferror(f)) {
     buffer_size += fread(buffer + buffer_size, 1, buffer_capacity - buffer_size, f);
     if (buffer_size == buffer_capacity) { // guarantees space for trailing '\0'
@@ -322,11 +335,11 @@ static char* createStringWithContentsOfFile(const char* fileName)
       buffer = (char*)realloc(buffer, buffer_capacity);
       assert(buffer);
     }
-    
+
     assert(buffer_size < buffer_capacity);
   }
   fclose(f);
   buffer[buffer_size] = '\0';
-  
+
   return buffer;
 }

@@ -288,7 +288,7 @@ unsigned UString::Rep::computeHash(const char *s)
   uint32_t hash = PHI;
   uint32_t tmp;
   unsigned l = strlen(s);
-  
+
   int rem = l & 1;
   l >>= 1;
 
@@ -314,7 +314,7 @@ unsigned UString::Rep::computeHash(const char *s)
   hash ^= hash << 2;
   hash += hash >> 15;
   hash ^= hash << 10;
-  
+
   // this avoids ever returning a hash code of 0, since that is used to
   // signal "hash not computed yet", using a value that is likely to be
   // effectively the same as 0 when the low bits are masked
@@ -402,7 +402,7 @@ UString::UString(const char *c)
 
 UString::UString(const UChar *c, int length)
 {
-  if (length == 0) 
+  if (length == 0)
     m_rep = &Rep::empty;
   else
     m_rep = Rep::createCopying(c, length);
@@ -427,7 +427,7 @@ UString::UString(const UString &a, const UString &b)
   int length = aSize + bSize;
 
   // possible cases:
- 
+
   if (aSize == 0) {
     // a is empty
     m_rep = b.m_rep;
@@ -474,7 +474,7 @@ UString UString::from(int i)
   UChar buf[1 + sizeof(i) * 3];
   UChar *end = buf + sizeof(buf) / sizeof(UChar);
   UChar *p = end;
-  
+
   if (i == 0) {
     *--p = '0';
   } else if (i == INT_MIN) {
@@ -495,7 +495,7 @@ UString UString::from(int i)
       *--p = '-';
     }
   }
-  
+
   return UString(p, end - p);
 }
 
@@ -504,7 +504,7 @@ UString UString::from(unsigned int u)
   UChar buf[sizeof(u) * 3];
   UChar *end = buf + sizeof(buf) / sizeof(UChar);
   UChar *p = end;
-  
+
   if (u == 0) {
     *--p = '0';
   } else {
@@ -513,7 +513,7 @@ UString UString::from(unsigned int u)
       u /= 10;
     }
   }
-  
+
   return UString(p, end - p);
 }
 
@@ -522,7 +522,7 @@ UString UString::from(long l)
   UChar buf[1 + sizeof(l) * 3];
   UChar *end = buf + sizeof(buf) / sizeof(UChar);
   UChar *p = end;
-  
+
   if (l == 0) {
     *--p = '0';
   } else if (l == LONG_MIN) {
@@ -543,7 +543,7 @@ UString UString::from(long l)
       *--p = '-';
     }
   }
-  
+
   return UString(p, end - p);
 }
 
@@ -556,15 +556,15 @@ UString UString::from(double d)
   char buf[80];
   int decimalPoint;
   int sign;
-  
+
   char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
   int length = strlen(result);
-  
+
   int i = 0;
   if (sign) {
     buf[i++] = '-';
   }
-  
+
   if (decimalPoint <= 0 && decimalPoint > -6) {
     buf[i++] = '0';
     buf[i++] = '.';
@@ -595,7 +595,7 @@ UString UString::from(double d)
       strcpy(buf + i, result + 1);
       i += length - 1;
     }
-    
+
     buf[i++] = 'e';
     buf[i++] = (decimalPoint >= 0) ? '+' : '-';
     // decimalPoint can't be more than 3 digits decimal given the
@@ -613,9 +613,9 @@ UString UString::from(double d)
     buf[i++] = '0' + exponential % 10;
     buf[i++] = '\0';
   }
-  
+
   kjs_freedtoa(result);
-  
+
   return UString(buf);
 }
 
@@ -736,7 +736,7 @@ UString &UString::append(unsigned short c)
 
   // possible cases:
   if (length == 0) {
-    // this is empty - must make a new m_rep because we don't want to pollute the shared empty one 
+    // this is empty - must make a new m_rep because we don't want to pollute the shared empty one
     int newCapacity = expandedSize(1, 0);
     UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * newCapacity));
     d[0] = c;
@@ -761,7 +761,7 @@ UString &UString::append(unsigned short c)
     UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * newCapacity));
     memcpy(d, data(), length * sizeof(UChar));
     d[length] = c;
-    m_rep = Rep::create(d, length);
+    m_rep = Rep::create(d, length + 1);
     m_rep->capacity = newCapacity;
   }
 
@@ -787,7 +787,7 @@ char *UString::ascii() const
     statBuffer = new char [neededSize];
     statBufferSize = neededSize;
   }
-  
+
   const UChar *p = data();
   char *q = statBuffer;
   const UChar *limit = p + length;
@@ -976,7 +976,7 @@ uint32_t UString::toStrictUInt32(bool *ok) const
       *ok = true;
     return 0;
   }
-  
+
   // Convert to UInt32, checking for overflow.
   uint32_t i = 0;
   while (1) {
@@ -984,25 +984,25 @@ uint32_t UString::toStrictUInt32(bool *ok) const
     if (c < '0' || c > '9')
       return 0;
     const unsigned d = c - '0';
-    
+
     // Multiply by 10, checking for overflow out of 32 bits.
     if (i > 0xFFFFFFFFU / 10)
       return 0;
     i *= 10;
-    
+
     // Add in the digit, checking for overflow out of 32 bits.
     const unsigned max = 0xFFFFFFFFU - d;
     if (i > max)
         return 0;
     i += d;
-    
+
     // Handle end of string.
     if (--len == 0) {
       if (ok)
         *ok = true;
       return i;
     }
-    
+
     // Get next character.
     c = (++p)->unicode();
   }
