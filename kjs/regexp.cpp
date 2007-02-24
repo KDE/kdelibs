@@ -139,7 +139,7 @@ RegExp::RegExp(const UString &p, int f)
     pcreflags |= PCRE_MULTILINE;
 
   if (utf8Support == Supported)
-    pcreflags |= PCRE_UTF8;
+    pcreflags |= (PCRE_UTF8 | PCRE_NO_UTF8_CHECK);
 
   // Fill our buffer with an encoded version, whether utf-8, or, 
   // if PCRE is incapable, truncated.
@@ -329,8 +329,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     nextPos  = i + 1;
   }
 
+  int baseFlags = utf8Support == Supported ? PCRE_NO_UTF8_CHECK : 0;
   if (pcre_exec(pcregex, NULL, buffer, bufferSize, startPos,
-                m_notEmpty ? (PCRE_NOTEMPTY | PCRE_ANCHORED) : 0, // see man pcretest
+                m_notEmpty ? (PCRE_NOTEMPTY | PCRE_ANCHORED | baseFlags) : baseFlags, // see man pcretest
                 ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
   {
     // Failed to match.
@@ -343,7 +344,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
       fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
 #endif
       m_notEmpty = 0;
-      if (pcre_exec(pcregex, NULL, buffer, bufferSize, nextPos, 0,
+      if (pcre_exec(pcregex, NULL, buffer, bufferSize, nextPos, baseFlags,
                     ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
         return UString::null;
     }
