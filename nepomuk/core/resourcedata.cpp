@@ -388,7 +388,7 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
 {
   PropertiesMap::iterator oldProp = m_properties.find( name );
   if( oldProp == m_properties.end() ) {
-    m_properties.insert( name, qMakePair<Variant, int>( val, 0 ) );
+    m_properties.insert( name, qMakePair<Variant, int>( val, Loaded ) );
   }
   else if( val.type() != oldProp.value().first.simpleType() ) {
     ResourceManager::instance()->notifyError( m_uri, ERROR_INVALID_TYPE );
@@ -435,8 +435,10 @@ void Nepomuk::KMetaData::ResourceData::endSync( bool updateFlags )
     if( it.value().second & Syncing ) {
       it.value().second &= ~Syncing;
       // FIXME: should we actually delete properties marked as Removed here?
-      if( updateFlags )
+      if( updateFlags ) {
 	it.value().second &= ~Modified;
+	it.value().second &= Loaded;
+      }
     }
   }
 
@@ -456,63 +458,52 @@ bool Nepomuk::KMetaData::ResourceData::save()
   // ==========================
   if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
     rr.createRepository( KMetaData::defaultGraph() );
-//     if( rr.createRepository( KMetaData::defaultGraph() ) ) {
-//       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-//       m_modificationMutex.unlock();
-//       return false;
-//     }
+    if( !rr.success() ) {
+      ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+      m_modificationMutex.unlock();
+      return false;
+    }
   }
+
+
+  // remove everything about this resource from the store
+  // ====================================================
+  rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) );
+  if( !rr.success() ) {
+    kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
+    ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+    m_modificationMutex.unlock();
+    return false;
+  }
+
 
   // if the resource has been deleted locally we are done after removing it
   // ======================================================================
   if( m_flags & (Removed|Deleted) ) {
-
-    // remove everything about this resource from the store
-    // ====================================================
-    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) );
-//     if( rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ) {
-//       kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
-//       ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-//       m_modificationMutex.unlock();
-//       return false;
-//     }
-
     // FIXME: allow revive even after a sync
     m_properties.clear();
     m_flags = Deleted;
+    return rr.success();
   }
   else {
-
-    // remove all the deleted properties from the store
-    // ================================================
-    QList<Statement> sl = allStatementsToRemove();
-    if( !sl.isEmpty() ) {
-      rr.removeStatements( KMetaData::defaultGraph(), sl );
-//       if( rr.removeStatements( KMetaData::defaultGraph(), sl ) ) {
-// 	kDebug(300004) << "(ResourceData) removing statements for resource " << m_uri << " failed." << endl;
-// 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-// 	m_modificationMutex.unlock();
-// 	return false;
-//       }
-    }
-
     // save all statements into the store
     // ==================================
-    sl = allStatementsToAdd();
+    QList<Statement> sl = allStatementsToAdd();
     if( !sl.isEmpty() ) {
       rr.addStatements( KMetaData::defaultGraph(), sl );
-//       if( rr.addStatements( KMetaData::defaultGraph(), sl ) ) {
-// 	kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
-// 	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
-// 	m_modificationMutex.unlock();
-// 	return false;
-//       }
+      if( !rr.success() ) {
+	kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
+	ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+	m_modificationMutex.unlock();
+	return false;
+      }
     }
 
     for( PropertiesMap::iterator it = m_properties.begin();
 	 it != m_properties.end(); ++it ) {
       // whatever gets saved is not Modified anymore
       it.value().second &= ~Modified;
+      it.value().second &= Loaded;
     }
   }
 
@@ -572,7 +563,7 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 
 QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
 {
-  QList<Statement> statements = allStatements( Modified );
+  QList<Statement> statements = allStatements( Modified|Loaded );
 
   // always save the type
   // ====================
@@ -582,6 +573,9 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
 }
 
 
+// FIXME: the result from this method is wrong:
+//        if a value is changed we locally loose the information of which statements to remove
+//        Solution: remember the original value from the last load()
 QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
 {
   return allStatements( Removed|Deleted );
@@ -728,6 +722,8 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
 
 Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const QString& uriOrId, const QString& type )
 {
+  Q_ASSERT( !uriOrId.isEmpty() );
+
   QHash<QString, ResourceData*>::iterator it = s_data.find( uriOrId );
 
   bool resFound = ( it != s_data.end() );
@@ -744,6 +740,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
   // The uriOrId has no local representation yet -> create one
   //
   if( !resFound ) {
+    kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId << endl;
     //
     // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
     //

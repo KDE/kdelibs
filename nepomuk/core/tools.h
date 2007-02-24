@@ -65,7 +65,7 @@ namespace Nepomuk {
       QList<T> rl;
       for( QList<Resource>::const_iterator it = l.constBegin();
 	   it != l.constEnd(); ++it )
-	rl.append( T( (*it).uri() ) );
+	rl.append( T( *it ) );
       return rl;
     }
 

@@ -51,10 +51,11 @@ namespace Nepomuk {
 	}
 
 	enum Flags {
+	  Loaded = 0x1,   /*< The property has been loaded from the store and not been modified yet */
 	  Modified = 0x2, /*< The resource or property has locally been modified */
-	  Deleted = 0x4, /*< The resource has actually been deleted in a sync operation */
-	  Removed = 0x8, /*< The resource or property has been scheduled for removal */
-	  Syncing = 0x10 /*< The resource is currently being synced */
+	  Deleted = 0x4,  /*< The resource has actually been deleted in a sync operation */
+	  Removed = 0x8,  /*< The resource or property has been scheduled for removal */
+	  Syncing = 0x10  /*< The resource is currently being synced */
 	};
 
 	/**

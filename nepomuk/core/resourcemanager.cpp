@@ -173,30 +173,26 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
     it.value()->determineUri();
 
   QList<Statement> statementsToAdd;
-  QList<Statement> statementsToRemove;
   QList<ResourceData*> syncedResources;
   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
        it != ResourceData::s_data.end(); ++it ) {
-
-    // if the resource has been removed we have to remove it individually and that
-    // is best done by the resourcedata itself
-    if( it.value()->removed() ) {
-      it.value()->save();
-    }
-    else if( it.value()->modified() ) {
-      syncedResources.append( it.value() );
-      it.value()->startSync();
-      it.value()->determinePropertyUris();
-      statementsToAdd += it.value()->allStatementsToAdd();
-      statementsToRemove += it.value()->allStatementsToRemove();
-    }
+    syncedResources.append( it.value() );
+    it.value()->startSync();
+    it.value()->determinePropertyUris();
+    statementsToAdd += it.value()->allStatementsToAdd();
   }
 
-  bool success = true; /*( rr.addStatements( KMetaData::defaultGraph(), statementsToAdd ) == 0 &&
-			 rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove ) );*/
+  // remove everything about everyone from the store
+  // this is the stupid way but ATM the only working one
+  // ===================================================
+  for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
+       it != ResourceData::s_data.end(); ++it ) {
+    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
+  }
 
   rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
-  rr.removeStatements( KMetaData::defaultGraph(), statementsToRemove );
+
+  bool success = rr.success();
 
   //
   // Release all the resource datas.
