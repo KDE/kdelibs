@@ -336,7 +336,7 @@ bool SimpleJob::doSuspend()
     Q_ASSERT( m_slave );
     if ( m_slave )
         m_slave->suspend();
-    return Job::suspend();
+    return Job::doSuspend();
 }
 
 bool SimpleJob::doResume()
@@ -344,7 +344,7 @@ bool SimpleJob::doResume()
     Q_ASSERT( m_slave );
     if ( m_slave )
         m_slave->resume();
-    return Job::resume();
+    return Job::doResume();
 }
 
 void SimpleJob::putOnHold()
