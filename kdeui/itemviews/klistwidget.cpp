@@ -29,7 +29,7 @@
 KListWidget::KListWidget( QWidget *parent )
     : QListWidget(parent), d(0)
 {
-    connect( this, SIGNAL( onViewport() ),
+    connect( this, SIGNAL( viewportEntered() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( itemEntered( QListWidgetItem * ) ),
 	     this, SLOT( slotItemEntered( QListWidgetItem * ) ) );
