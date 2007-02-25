@@ -967,7 +967,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   protocol	KJS::HTMLElement::AnchorProtocol	DontDelete|ReadOnly
   rel		KJS::HTMLElement::AnchorRel		DontDelete
   rev		KJS::HTMLElement::AnchorRev		DontDelete
-  search	KJS::HTMLElement::AnchorSearch		DontDelete|ReadOnly
+  search	KJS::HTMLElement::AnchorSearch		DontDelete
   shape		KJS::HTMLElement::AnchorShape		DontDelete
   tabIndex	KJS::HTMLElement::AnchorTabIndex	DontDelete
   target	KJS::HTMLElement::AnchorTarget		DontDelete
@@ -2509,6 +2509,17 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       case TextAreaSelectionStart:  { textarea.setSelectionStart(value->toInteger(exec)); return; }
       case TextAreaSelectionEnd:    { textarea.setSelectionEnd  (value->toInteger(exec)); return; }
       }
+    }
+    break;
+    case ID_A: {
+        DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
+        switch (token) {
+        case AnchorSearch:         { QString href = getURLArg(ATTR_HREF);
+                                     KUrl u(href);
+                                     u.setQuery(str.string());
+                                     anchor.setAttribute(ATTR_HREF, u.url());
+                                     return; }
+        }
     }
     break;
     case ID_IMG: {
