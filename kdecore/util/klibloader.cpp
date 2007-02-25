@@ -195,7 +195,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n( "The library %1 does not offer an %2 function.", libname, QLatin1String("init_") + libname );
-        kWarning(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
 
@@ -206,7 +206,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if( !factory )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE compatible factory." , libname);
-        kWarning(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
     factories.insert( symname, factory );
@@ -224,7 +224,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if ( !sym )
     {
 //        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
-//        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+//        kDebug(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -236,7 +236,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if( !factory )
     {
 //        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
-//        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+//        kDebug(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
     factories.insert( symname, factory );
@@ -266,7 +266,7 @@ void* KLibrary::resolve( const char* symname ) const
     if ( !d->handle->isLoaded() || !sym )
     {
         kLibLoaderPrivate->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
-        kWarning(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
 
