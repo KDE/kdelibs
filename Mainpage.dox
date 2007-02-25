@@ -2,11 +2,9 @@
 	* @mainpage The KDE API Reference
 	*
 	* This section contains the KDE online class reference for the current
-	* development version of KDE. You can also 
-	* download the complete API documentation from
-        * <a href="http://api.kde.org/">api.kde.org</a>.  Additionally, you 
-        * can subscribe or read the mailing lists for any additions and/or 
-        * modifications to the API.
+	* development version of KDE.
+        * Please subscribe to or read the mailing lists for any
+        * additions and/or modifications to the API.
 	*
 	* - <a href="kdecore/html/index.html"><b>kdecore</b></a>
         *   (<a href="kdecore/html/classes.html">classes</a>)\n
