@@ -671,6 +671,7 @@ public:
     dirSizeJob = 0L;
     dirSizeUpdateTimer = 0L;
     m_lined = 0;
+    m_freeSpaceLabel = 0;
   }
   ~KFilePropsPluginPrivate()
   {
@@ -1256,6 +1257,22 @@ void KFilePropsPlugin::slotSizeDetermine()
            SLOT( slotDirSizeFinished( KIO::Job * ) ) );
   m_sizeStopButton->setEnabled(true);
   m_sizeDetermineButton->setEnabled(false);
+
+  // also update the "Free disk space" display
+  if ( d->m_freeSpaceLabel )
+  {
+    bool isLocal;
+    KFileItem * item = properties->item();
+    KURL url = item->mostLocalURL( isLocal );
+    QString mountPoint = KIO::findPathMountPoint( url.path() );
+
+    KDiskFreeSp * job = new KDiskFreeSp;
+    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+             const unsigned long&, const QString& ) ),
+             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+          const unsigned long&, const QString& ) ) );
+    job->readDF( mountPoint );
+  }
 }
 
 void KFilePropsPlugin::slotSizeStop()
