@@ -133,6 +133,8 @@
 
 #cmakedefine TIME_WITH_SYS_TIME 1
 
+#cmakedefine WORDS_BIGENDIAN
+
 /********* structs ******************/
 
 #cmakedefine HAVE_STRUCT_UCRED 1
@@ -197,3 +199,4 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 #cmakedefine HAVE_DIRENT_D_TYPE 1
 
 #include "kdecore/kdefakes.h"
+
