@@ -146,7 +146,7 @@ RegExp::RegExp(const UString &p, char flags)
     options |= PCRE_MULTILINE;
 
   if (utf8Support == Supported)
-    options |= PCRE_UTF8;
+    options |= (PCRE_UTF8 | PCRE_NO_UTF8_CHECK);
 
   const char *errorMessage;
   int errorOffset;
@@ -339,7 +339,8 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     startPos = i;
   }
 
-  const int numMatches = pcre_exec(_regex, NULL, _buffer, _bufferSize, startPos, 0, offsetVector, offsetVectorSize);
+  int baseFlags = utf8Support == Supported ? PCRE_NO_UTF8_CHECK : 0;
+  const int numMatches = pcre_exec(_regex, NULL, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
 
   //Now go through and patch up the offsetVector
   for (int c = 0; c < 2 * numMatches; ++c)
