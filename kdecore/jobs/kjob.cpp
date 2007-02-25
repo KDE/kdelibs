@@ -119,9 +119,10 @@ bool KJob::kill( KillVerbosity verbosity )
 
 bool KJob::suspend()
 {
-    if ( !d->suspended && doSuspend() )
+    if ( !d->suspended )
     {
         d->suspended = true;
+        doSuspend();
 
         emit suspended( this, d->progressId );
 
@@ -133,9 +134,10 @@ bool KJob::suspend()
 
 bool KJob::resume()
 {
-    if ( d->suspended && doResume() )
+    if ( d->suspended )
     {
         d->suspended = false;
+        doResume();
 
         emit resumed( this, d->progressId );
 
