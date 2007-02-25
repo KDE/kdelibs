@@ -71,28 +71,18 @@ void KListWidget::slotSettingsChanged(int category)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
 
-    disconnect( this, SIGNAL( mouseButtonClicked( int, QListWidgetItem *,
-						  const QPoint & ) ),
-		this, SLOT( slotMouseButtonClicked( int, QListWidgetItem *,
-						    const QPoint & ) ) );
-//         disconnect( this, SIGNAL( doubleClicked( QListBoxItem *,
-// 						 const QPoint & ) ),
-// 		    this, SLOT( slotExecute( QListBoxItem *,
-// 					     const QPoint & ) ) );
+    disconnect( this, SIGNAL( itemClicked( QListWidgetItem *)));
+    disconnect( this, SIGNAL( itemDoubleClicked( QListWidgetItem *)));
 
     if( m_bUseSingle )
     {
-      connect( this, SIGNAL( mouseButtonClicked( int, QListWidgetItem *,
-						 const QPoint & ) ),
-	       this, SLOT( slotMouseButtonClicked( int, QListWidgetItem *,
-						   const QPoint & ) ) );
+        connect( this, SIGNAL(itemClicked(QListWidgetItem *)),
+                 SIGNAL( executed(QListWidgetItem *)));
     }
     else
     {
-//         connect( this, SIGNAL( doubleClicked( QListBoxItem *,
-// 					      const QPoint & ) ),
-//                  this, SLOT( slotExecute( QListBoxItem *,
-// 					  const QPoint & ) ) );
+        connect( this, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
+                 SIGNAL( executed(QListWidgetItem *)));
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
@@ -133,10 +123,10 @@ void KListWidget::slotAutoSelect()
 
       bool down = row( previousItem ) < row( m_pCurrentItem );
       QListWidgetItem* it = down ? previousItem : m_pCurrentItem;
-      
+
       for (int i = row(it) ; i < count() ; i++ ) {
 	    if ( down && item(i) == m_pCurrentItem ) {
-	        m_pCurrentItem->setSelected(select); 
+	        m_pCurrentItem->setSelected(select);
 	        break;
 	    }
 
