@@ -54,10 +54,13 @@ KNotificationManager::KNotificationManager()
 {
     d->knotify =
         new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"), QDBusConnection::sessionBus(), this);
-    QObject::connect(d->knotify, SIGNAL(notificationClosed(int)),
-                     this, SLOT(notificationClosed(int)));
-    QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),
-                     this, SLOT(notificationActivated(int,int)));
+    if (d->knotify->isValid())
+    {
+        QObject::connect(d->knotify, SIGNAL(notificationClosed(int)),
+                         this, SLOT(notificationClosed(int)));
+        QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),
+                         this, SLOT(notificationActivated(int,int)));
+    }
 }
 
 
@@ -81,7 +84,7 @@ void KNotificationManager::notificationActivated( int id, int action )
 
 void KNotificationManager::notificationClosed( int id )
 {
-	kDebug( 299 ) << k_funcinfo << id  << endl;
+    kDebug( 299 ) << k_funcinfo << id  << endl;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -96,7 +99,7 @@ void KNotificationManager::close( int id )
     QDBusReply<void> reply = d->knotify->call("closeNotification", id);
     if (!reply.isValid())
     {
-        kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
+        kWarning(299) << "error while contacting knotify server" << endl;
     }
 }
 
@@ -108,7 +111,7 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
     QByteArray pixmapData;
-    
+
     {
         QDataStream arg(&pixmapData, QIODevice::WriteOnly);
         arg << pix;
@@ -122,14 +125,14 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
         vl << ctx.first << ctx.second;
         contextList << vl;
     }
-    
+
     QDBusReply<int> reply =
         d->knotify->call("event", n->eventId(),
                          (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname),
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (!reply.isValid())
     {
-        kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
+        kWarning(299) << "error while contacting knotify server" << endl;
     }
     else
     {
@@ -149,7 +152,7 @@ void KNotificationManager::update(KNotification * n, int id)
 {
 	if(id <= 0)
 		return;
-	
+
 	QByteArray pixmapData;
 	QDataStream arg(&pixmapData, QIODevice::WriteOnly);
 	arg << n->pixmap();
@@ -168,7 +171,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 		vl << ctx.first << ctx.second;
 		contextList << vl;
 	}
-    
+
 	d->knotify->call(/*QDBus::NoWaitForReply,*/"reemit", id, contextList);
 }
 
