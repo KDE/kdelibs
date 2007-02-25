@@ -76,7 +76,10 @@ QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) c
 
 int GlobalConfig::audioOutputDeviceFor( Phonon::Category category ) const
 {
-	return audioOutputDeviceListFor( category ).first();
+	QList<int> ret = audioOutputDeviceListFor( category );
+	if (ret.isEmpty())
+		return -1;
+	return ret.first();
 }
 
 QList<int> GlobalConfig::audioCaptureDeviceList() const
