@@ -1766,6 +1766,10 @@ void HTMLInputElementImpl::setValue(DOMString val)
     if (m_type == FILE) return;
 
     m_value = (val.isNull() ? DOMString("") : val);
+    // ### set attribute for other types, too. no need for m_value
+    // ### in those cases.
+    if (m_type == RADIO || m_type == CHECKBOX)
+	setAttribute(ATTR_VALUE, m_value);
     if (m_type == TEXT && m_render)
         m_render->updateFromElement();
     setChanged();
