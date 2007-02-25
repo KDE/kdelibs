@@ -890,7 +890,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   protocol	KJS::HTMLElement::AnchorProtocol	DontDelete|ReadOnly
   rel		KJS::HTMLElement::AnchorRel		DontDelete
   rev		KJS::HTMLElement::AnchorRev		DontDelete
-  search	KJS::HTMLElement::AnchorSearch		DontDelete|ReadOnly
+  search	KJS::HTMLElement::AnchorSearch		DontDelete
   shape		KJS::HTMLElement::AnchorShape		DontDelete
   tabIndex	KJS::HTMLElement::AnchorTabIndex	DontDelete
   target	KJS::HTMLElement::AnchorTarget		DontDelete
@@ -2808,6 +2808,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AnchorCoords:          { anchor.setCoords(str); return; }
       case AnchorHref:            { anchor.setHref(str); return; }
       case AnchorHrefLang:        { anchor.setHreflang(str); return; }
+      case AnchorSearch:          { KURL href(anchor.href().string());
+                                    href.setQuery(str.string());
+                                    anchor.setHref(href.url()); return; }
       case AnchorName:            { anchor.setName(str); return; }
       case AnchorRel:             { anchor.setRel(str); return; }
       case AnchorRev:             { anchor.setRev(str); return; }
