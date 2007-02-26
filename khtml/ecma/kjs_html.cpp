@@ -1804,7 +1804,11 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorPathName:        return String(KUrl(href).path());
     case AnchorPort:            return String(QString::number(KUrl(href).port()));
     case AnchorProtocol:        return String(KUrl(href).protocol()+":");
-    case AnchorSearch:          return String(KUrl(href).query());
+    case AnchorSearch:          { KUrl u(href);
+                                  QString q = u.query();
+                                  if (q.length() == 1)
+                                    return String("");
+                                  return String(q); }
     // Not specified in http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/a.asp
     // Mozilla returns the inner text.
     case AnchorText:            return String(anchor.innerText());
