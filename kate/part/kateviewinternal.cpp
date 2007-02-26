@@ -2374,7 +2374,7 @@ bool KateViewInternal::isTargetSelected( const QPoint& p )
   if( !l )
     return false;
 
-  int col = m_view->renderer()->textPos( l, p.x() - thisRange.xOffset(), thisRange.startCol, false );
+  int col = m_view->renderer()->textPos( l, startX() + p.x() - thisRange.xOffset(), thisRange.startCol, false );
 
   return m_view->lineColSelected( thisRange.line, col );
 }
