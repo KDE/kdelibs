@@ -131,13 +131,6 @@ public:
     inline int count() const { return d ? static_cast<int>(d->ref) : 0; } // for debugging purposes
 
     /**
-     * Detach the pointer by attaching a new copy of the pointer.
-     * The new copy is created only if the pointer is shared by other pointers
-     * and is not null.
-     */
-    void detach();
-
-    /**
      * Test if the shared pointer is null.
      * @return true if the pointer is null, false otherwise.
      * @see opertor (bool)
@@ -215,14 +208,6 @@ template <class T>
 Q_INLINE_TEMPLATE void KSharedPtr<T>::clear()
 {
     attach(static_cast<T*>(0));
-}
-
-template <class T>
-Q_INLINE_TEMPLATE void KSharedPtr<T>::detach()
-{
-    if (d && d->ref>1) {
-        attach(new T(*d));
-    }
 }
 
 #endif

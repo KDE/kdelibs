@@ -65,15 +65,6 @@ void KSharedPtrTest::testWithStrings()
 	QVERIFY( !w.isUnique() );
 	QCOMPARE( v.count(), 3 );
 
-	w.detach();
-	QVERIFY( !u.isUnique() );
-	QCOMPARE( *u, s );
-	QVERIFY( !u.isUnique() );
-	QCOMPARE( *v, s );
-	QVERIFY( !v.isUnique() );
-	QCOMPARE( *w, s );
-	QVERIFY( w.isUnique() );
-
 //	v->clear();
 	v = 0;
 	QVERIFY( u );
@@ -98,17 +89,6 @@ void KSharedPtrTest::testWithStrings()
 	QVERIFY( !v.isUnique() );
 //	QCOMPARE( *w, s2 );
 //	QVERIFY( !w.isUnique() );
-
-#if 0
-	w.detach();
-	*w = s3;
-	QCOMPARE( *u, s2 );
-	QVERIFY( !u.isUnique() );
-	QCOMPARE( *v, s2 );
-	QVERIFY( !v.isUnique() );
-	QCOMPARE( *w, s3 );
-	QVERIFY( w.isUnique() );
-#endif
 }
 
 static int dtor_called = 0;
