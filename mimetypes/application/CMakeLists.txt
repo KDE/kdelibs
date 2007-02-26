@@ -7,6 +7,7 @@ install( FILES
 	java.desktop
 	mathml+xml.desktop
 	mbox.desktop  
+	metalink.desktop
 	msexcel.desktop
 	mspowerpoint.desktop
 	msword.desktop
