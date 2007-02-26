@@ -48,17 +48,17 @@ Solid::PortableMediaPlayer::AccessType FakePortableMediaPlayer::accessMethod() c
 
 QStringList FakePortableMediaPlayer::outputFormats() const
 {
-    return fakeDevice()->property("outputFormats").toStringList();
+    return fakeDevice()->property("outputFormats").toString().simplified().split(',');
 }
 
 QStringList FakePortableMediaPlayer::inputFormats() const
 {
-    return fakeDevice()->property("inputFormats").toStringList();
+    return fakeDevice()->property("inputFormats").toString().simplified().split(',');
 }
 
 QStringList FakePortableMediaPlayer::playlistFormats() const
 {
-    return fakeDevice()->property("playlistFormats").toStringList();
+    return fakeDevice()->property("playlistFormats").toString().simplified().split(',');
 }
 
 #include "fakeportablemediaplayer.moc"

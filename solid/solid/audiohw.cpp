@@ -44,12 +44,12 @@ Solid::AudioHw::~AudioHw()
 }
 
 
-Solid::AudioHw::AudioDriver Solid::AudioHw::driver()
+Solid::AudioHw::AudioDriver Solid::AudioHw::driver() const
 {
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioDriver, driver() );
 }
 
-QStringList Solid::AudioHw::driverHandles()
+QStringList Solid::AudioHw::driverHandles() const
 {
     if ( !d->driverHandles.isEmpty() )
     {
@@ -129,17 +129,17 @@ QStringList Solid::AudioHw::driverHandles()
     return QStringList();
 }
 
-QString Solid::AudioHw::name()
+QString Solid::AudioHw::name() const
 {
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), QString(), name() );
 }
 
-Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType()
+Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType() const
 {
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioHwType, deviceType() );
 }
 
-Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType()
+Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType() const
 {
     return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), InternalSoundcard, soundcardType() );
 }

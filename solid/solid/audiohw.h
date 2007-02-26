@@ -155,7 +155,7 @@ namespace Solid
          * @return the driver needed to access the device
          * @see Solid::AudioHw::AudioDriver
          */
-        AudioDriver driver();
+        AudioDriver driver() const;
 
         /**
          * Retrieves a driver specific string allowing to access the device.
@@ -165,7 +165,7 @@ namespace Solid
          *
          * @return the driver specific string to handle this device
          */
-        QStringList driverHandles();
+        QStringList driverHandles() const;
 
 
 
@@ -178,7 +178,7 @@ namespace Solid
          *
          * @return the name of the audio interface if available, QString() otherwise
          */
-        QString name();
+        QString name() const;
 
         /**
          * Retrieves the type of this audio interface (in/out/control).
@@ -186,7 +186,7 @@ namespace Solid
          * @return the type of this audio interface
          * @see Solid::AudioHw::AudioHwTypes
          */
-        AudioHwTypes deviceType();
+        AudioHwTypes deviceType() const;
 
         /**
          * Retrieves the type of soundcard (internal/headset/...).
@@ -194,7 +194,7 @@ namespace Solid
          * @return the type of soundcard
          * @see Solid::AudioHw::SoundcardType
          */
-        SoundcardType soundcardType();
+        SoundcardType soundcardType() const;
 
     private:
         class Private;

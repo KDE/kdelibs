@@ -34,7 +34,7 @@ FakeAudioHw::~FakeAudioHw()
 }
 
 
-Solid::AudioHw::AudioDriver FakeAudioHw::driver()
+Solid::AudioHw::AudioDriver FakeAudioHw::driver() const
 {
     QString driver = fakeDevice()->property( "driver" ).toString();
 
@@ -52,17 +52,17 @@ Solid::AudioHw::AudioDriver FakeAudioHw::driver()
     }
 }
 
-QString FakeAudioHw::driverHandler()
+QString FakeAudioHw::driverHandler() const
 {
     return fakeDevice()->property( "driverHandler" ).toString();
 }
 
-QString FakeAudioHw::name()
+QString FakeAudioHw::name() const
 {
     return fakeDevice()->property( "name" ).toString();
 }
 
-Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType()
+Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType() const
 {
     Solid::AudioHw::AudioHwTypes result;
 
@@ -87,7 +87,7 @@ Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType()
     return result;
 }
 
-Solid::AudioHw::SoundcardType FakeAudioHw::soundcardType()
+Solid::AudioHw::SoundcardType FakeAudioHw::soundcardType() const
 {
     QString type_str = fakeDevice()->property( "soundcardType" ).toString();
 

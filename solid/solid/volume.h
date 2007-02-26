@@ -133,7 +133,7 @@ namespace Solid
         /**
          * Retrieves this volume label.
          *
-         * @return the volume lavel if available, QString() otherwise
+         * @return the volume label if available, QString() otherwise
          */
         QString label() const;
 

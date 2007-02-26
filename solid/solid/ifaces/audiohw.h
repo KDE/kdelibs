@@ -48,7 +48,7 @@ namespace Ifaces
          * @return the driver needed to access the device
          * @see Solid::AudioHw::AudioDriver
          */
-        virtual Solid::AudioHw::AudioDriver driver() = 0;
+        virtual Solid::AudioHw::AudioDriver driver() const = 0;
 
         /**
          * Retrieves a driver specific string allowing to access the device.
@@ -58,7 +58,7 @@ namespace Ifaces
          *
          * @return the driver specific string to handle this device
          */
-        virtual QString driverHandler() = 0;
+        virtual QString driverHandler() const = 0;
 
 
 
@@ -67,7 +67,7 @@ namespace Ifaces
          *
          * @return the name of the audio interface if available, QString() otherwise
          */
-        virtual QString name() = 0;
+        virtual QString name() const = 0;
 
         /**
          * Retrieves the type of this audio interface.
@@ -75,7 +75,7 @@ namespace Ifaces
          * @return the type of this audio interface
          * @see Solid::AudioHw::AudioHwTypes
          */
-        virtual Solid::AudioHw::AudioHwTypes deviceType() = 0;
+        virtual Solid::AudioHw::AudioHwTypes deviceType() const = 0;
 
         /**
          * Retrieves the type of soundcard (internal/headset/...).
@@ -83,7 +83,7 @@ namespace Ifaces
          * @return the type of soundcard
          * @see Solid::AudioHw::SoundcardType
          */
-        virtual Solid::AudioHw::SoundcardType soundcardType() = 0;
+        virtual Solid::AudioHw::SoundcardType soundcardType() const = 0;
     };
 }
 }

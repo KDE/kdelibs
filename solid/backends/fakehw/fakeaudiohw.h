@@ -33,12 +33,12 @@ public:
     virtual ~FakeAudioHw();
 
 public Q_SLOTS:
-    virtual Solid::AudioHw::AudioDriver driver();
-    virtual QString driverHandler();
+    virtual Solid::AudioHw::AudioDriver driver() const;
+    virtual QString driverHandler() const;
 
-    virtual QString name();
-    virtual Solid::AudioHw::AudioHwTypes deviceType();
-    virtual Solid::AudioHw::SoundcardType soundcardType();
+    virtual QString name() const;
+    virtual Solid::AudioHw::AudioHwTypes deviceType() const;
+    virtual Solid::AudioHw::SoundcardType soundcardType() const;
 };
 
 #endif
