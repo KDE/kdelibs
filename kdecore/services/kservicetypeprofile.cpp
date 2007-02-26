@@ -58,7 +58,7 @@ static KServiceTypeProfiles* s_serviceTypeProfiles = 0;
 static KStaticDeleter< KServiceTypeProfiles > serviceTypeProfilesDeleter;
 static KMimeTypeProfiles* s_mimeTypeProfiles = 0;
 static KStaticDeleter< KMimeTypeProfiles > mimeTypeProfilesDeleter;
-bool KServiceTypeProfile::s_configurationMode = false;
+static bool s_configurationMode = false;
 
 static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, const QString& genservicetype )
 {
@@ -74,7 +74,7 @@ static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, cons
     return 0;
 }
 
-void KServiceTypeProfile::initStatic()
+static void initStatic()
 {
     if ( s_serviceTypeProfiles && s_mimeTypeProfiles )
         return;
@@ -166,6 +166,17 @@ void KMimeTypeProfileEntry::addService( const QString& _service,
     flags.m_bAllowAsDefault = _allow_as_default;
 }
 
+/**
+ * Returns the offers in the profile for the requested service type.
+ * @param list list of offers (including initialPreference)
+ * @param servicetype the service type
+ * @return the weighted and sorted offer list
+ * @internal used by KServiceTypeTrader
+ */
+namespace KServiceTypeProfile {
+    KServiceOfferList sortServiceTypeOffers( const KServiceOfferList& list, const QString& servicetype );
+}
+
 KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOfferList& list, const QString& serviceType )
 {
     initStatic();
@@ -214,6 +225,24 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
 
     //kDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
     return offers;
+}
+
+/**
+ * Sort the offers for the requested mime type according to the profile (if any),
+ * and filter for genericServiceType. This method is really internal to KMimeTypeTrader
+ * and might go away at any time.
+ *
+ * @param list list of offers (key=service, value=initialPreference)
+ * @param mimeType the mime type
+ * @param genericServiceType the generic service type (e.g. "Application"
+ *                           or "KParts/ReadOnlyPart"). Can be QString(),
+ *                           then the "Application" generic type will be used
+ * @return the weighted and sorted offer list
+ * @internal used by KMimeTypeTrader
+ */
+namespace KServiceTypeProfile {
+    // TODO remove export once KMimeTypeTrader is in kdecore
+    KDECORE_EXPORT KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
 }
 
 KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString& genericServiceType )
@@ -283,7 +312,7 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferLi
 
 bool KServiceTypeProfile::hasProfile( const QString& serviceType )
 {
-    KServiceTypeProfile::initStatic();
+    initStatic();
     return s_serviceTypeProfiles->find( serviceType ) != s_serviceTypeProfiles->end();
 }
 
@@ -335,4 +364,14 @@ void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
 
     if (s_serviceTypeProfiles)
         s_serviceTypeProfiles->remove( serviceType );
+}
+
+void KServiceTypeProfile::setConfigurationMode()
+{
+     s_configurationMode = true;
+}
+
+bool KServiceTypeProfile::configurationMode()
+{
+    return s_configurationMode;
 }

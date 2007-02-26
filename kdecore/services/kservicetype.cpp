@@ -52,14 +52,14 @@ public:
 
 };
 
-KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
+KServiceType::KServiceType( const QString & _fullpath, const QString& _name,
                             const QString& _comment )
     : KSycocaEntry(_fullpath),
       d(new KServiceTypePrivate)
 {
-    d->m_strName = _type;
+    d->m_strName = _name;
     d->m_strComment = _comment;
-    d->m_bValid = !_type.isEmpty();
+    d->m_bValid = !_name.isEmpty();
 }
 
 #if 0

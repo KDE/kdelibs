@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "ktraderparsetree.h"
+#include "ktraderparsetree_p.h"
 
 namespace KTraderParse {
 

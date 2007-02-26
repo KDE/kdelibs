@@ -1,7 +1,7 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
-#include "ktraderparse.h"
+#include "ktraderparse_p.h"
 
 void yyerror(const char *s);
 int yylex();

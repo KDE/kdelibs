@@ -19,7 +19,6 @@
 
 #include "kmimetypetrader.h"
 
-#include "ktraderparsetree.h"
 #include "kservicetypeprofile.h"
 #include "kservicetype.h"
 #include "kservicetypetrader.h"
@@ -121,6 +120,11 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     }
 
     return lst;
+}
+
+// Defined in kdecore
+namespace KServiceTypeProfile {
+    KDECORE_EXPORT KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
 }
 
 KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,

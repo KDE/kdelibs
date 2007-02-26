@@ -25,12 +25,12 @@
 
 extern "C"
 {
-#include "ktraderparse.h"
+#include "ktraderparse_p.h"
 
 void KTraderParse_mainParse( const char *_code );
 }
 
-#include "ktraderparsetree.h"
+#include "ktraderparsetree_p.h"
 
 using namespace KTraderParse;
 
