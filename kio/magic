@@ -731,8 +731,8 @@
 >16	string		EPS		image/x-eps
 
 # Acrobat
-# (due to clamen@cs.cmu.edu)
 0	string		%PDF-		application/pdf
+0	string		\n%PDF-		application/pdf
 
 #------------------------------------------------------------------------------
 # sc:  file(1) magic for "sc" spreadsheet
