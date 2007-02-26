@@ -26,7 +26,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
-#include <kio/observer.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <Q3CString>

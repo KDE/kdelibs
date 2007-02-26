@@ -30,6 +30,7 @@ class KJob;
 namespace KIO
 {
 class Job;
+class JobUiDelegatePrivate;
 
 /**
  * A UI delegate tuned to be used with KIO Jobs.
@@ -155,8 +156,7 @@ protected Q_SLOTS:
     void slotWarning( KJob *job, const QString &errorText );
 
 private:
-    class Private;
-    Private * const d;
+    JobUiDelegatePrivate * const d;
 };
 }
 

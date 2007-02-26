@@ -28,7 +28,6 @@
 #include "kio/copyjob.h"
 #include "kio/global.h"
 #include "kio/netaccess.h"
-#include "kio/observer.h"
 #include "kio/renamedialog.h"
 #include "kio/kprotocolmanager.h"
 

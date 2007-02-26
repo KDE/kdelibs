@@ -32,7 +32,6 @@
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
 
-#include "kio/observer.h"
 #include "kio/jobuidelegate.h"
 
 #include <kdirnotify.h>

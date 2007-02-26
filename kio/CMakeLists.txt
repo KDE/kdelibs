@@ -108,7 +108,6 @@ set(kiocore_STAT_SRCS
   kio/defaultprogress.cpp
   kio/statusbarprogress.cpp
   kio/kdirnotify.cpp
-  kio/observer.cpp
   kio/observeradaptor.cpp
   kio/kemailsettings.cpp
   kio/renamedialog.cpp
@@ -311,7 +310,6 @@ install(  FILES
   kio/statusbarprogress.h
   kio/tcpslavebase.h
   kio/forwardingslavebase.h
-  kio/observer.h
   kio/chmodjob.h
   kio/authinfo.h
   kio/ioslave_defaults.h

@@ -63,8 +63,6 @@ extern "C" {
 #include "kprotocolmanager.h"
 #include "filejob.h"
 
-#include "kio/observer.h"
-
 #include "kssl/ksslcsessioncache.h"
 
 #include <kdirnotify.h>
