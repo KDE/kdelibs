@@ -334,7 +334,7 @@ static bool cleanHomeDirPath( QString &path, const QString &homeDir )
         return false;
 }
 
-static QString translatePath( QString path )
+static QString translatePath( QString path ) // krazy:exclude=passbyvalue
 {
    if (path.isEmpty())
        return path;

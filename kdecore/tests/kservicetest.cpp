@@ -56,6 +56,9 @@ void KServiceTest::testByName()
     KServiceType::Ptr s0 = KServiceType::serviceType("KParts/ReadOnlyPart");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
+
+    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kdeprintd.desktop");
+    QCOMPARE( kdeprintd->name(), QString::fromLatin1("KDE Print Daemon"));
 }
 
 
