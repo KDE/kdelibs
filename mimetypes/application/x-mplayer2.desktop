@@ -7,6 +7,7 @@ Patterns=*.avi;*.AVI;*.asf;*.wmv;*.ASF;*.WMV;*.asx;*.ASX;*.wma;*.WMA;*.wmx;*.WMX
 Icon=multimedia
 X-KDE-AutoEmbed=true
 Comment=Microsoft Media Format
+Comment[bg]=Формат за Microsoft Media
 Comment[ca]=Format Microsoft Media
 Comment[cs]=Microsoft Media formát
 Comment[da]=Microsoft medieformat
