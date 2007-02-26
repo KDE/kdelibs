@@ -2520,7 +2520,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
         switch (token) {
         case AnchorSearch:         { QString href = getURLArg(ATTR_HREF);
                                      KUrl u(href);
-                                     u.setQuery(str.string());
+                                     QString q = str.isEmpty() ? QString() : str.string();
+                                     u.setQuery(q);
                                      anchor.setAttribute(ATTR_HREF, u.url());
                                      return; }
         }
