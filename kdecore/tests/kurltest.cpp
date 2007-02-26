@@ -99,9 +99,9 @@ void KUrlTest::testSetQuery()
   url1.setQuery( "?kde=rocks&a=b" );
   QCOMPARE( url1.query(), QString("?kde=rocks&a=b") );
   url1.setQuery( "?" );
-  QCOMPARE( url1.query(), QString() ); // KDE3 difference: I expected QString("?"), but QUrl::setEncodedQuery translates empty to no query. Is that a problem though?
+  QCOMPARE( url1.query(), QString("?") );
   url1.setQuery( "" );
-  QCOMPARE( url1.query(), QString() ); // idem
+  QCOMPARE( url1.query(), QString("?") );
   url1.setQuery( QString() );
   QCOMPARE( url1.query(), QString() );
 }

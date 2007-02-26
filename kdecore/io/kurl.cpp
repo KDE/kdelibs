@@ -1259,7 +1259,13 @@ void KUrl::setQuery( const QString &_txt )
 
 void KUrl::_setQuery( const QString& query )
 {
-  setEncodedQuery( query.isNull() ? QByteArray() : query.toLatin1() ); // ### TODO encoding ok?
+    if ( query.isNull() ) {
+        setEncodedQuery( QByteArray() );
+    } else if ( query.isEmpty() ) {
+        setEncodedQuery( "" );
+    } else {
+        setEncodedQuery( query.toLatin1() ); // ### TODO encoding ok?
+    }
 }
 
 QString KUrl::query() const
