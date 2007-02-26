@@ -2813,7 +2813,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case AnchorHref:            { anchor.setHref(str); return; }
       case AnchorHrefLang:        { anchor.setHreflang(str); return; }
       case AnchorSearch:          { KURL href(anchor.href().string());
-                                    href.setQuery(str.string());
+                                    QString q = str.isEmpty() ? QString() : str.string();
+                                    href.setQuery(q);
                                     anchor.setHref(href.url()); return; }
       case AnchorName:            { anchor.setName(str); return; }
       case AnchorRel:             { anchor.setRel(str); return; }
