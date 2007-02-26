@@ -45,16 +45,6 @@ namespace KIO {
     class KIO_EXPORT Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
-
-    protected:
-	/**
-	 * Use this constructor if you derive your own class from Slave
-	 * @p derived must be true in any case
-	 * @internal
-	 */
-	Slave(bool derived, KNetwork::KServerSocket *unixdomain, const QString &protocol,
-		const QString &socketname);	// TODO(BIC): Remove in KDE 4
-
     public:
 	Slave(KNetwork::KServerSocket *unixdomain,
 	      const QString &protocol, const QString &socketname);

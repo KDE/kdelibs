@@ -464,12 +464,6 @@ public:
          */
         virtual void slotError( int , const QString & );
 
-    protected Q_SLOTS:
-        /**
-         * @internal
-         */
-        void slotNeedProgressId();
-
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;

@@ -107,8 +107,11 @@ public:
 
   QTimer speed_timer;
 
-    static int messageBox(int progressId, int type, const QString &text, const QString &caption,
-                          const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
+    // We keep a copy; Job does too but we need it here for the SSL code.
+    MetaData m_incomingMetaData;
+
+  int messageBox(int type, const QString &text, const QString &caption,
+                 const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
 
 };
 
@@ -118,7 +121,6 @@ SlaveInterface::SlaveInterface( Connection * connection )
 	:d(new SlaveInterfacePrivate)
 {
     m_pConnection = connection;
-    m_progressId = 0;
 
     connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
 }
@@ -363,6 +365,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_META_DATA: {
         MetaData meta_data;
         stream >> meta_data;
+        d->m_incomingMetaData += meta_data;
         metaData(meta_data);
         break;
     }
@@ -424,25 +427,16 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     messageBox( type, text, _caption, buttonYes, buttonNo, QString() );
 }
 
-void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
+void SlaveInterface::messageBox( int type, const QString &text, const QString &caption,
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
-    kDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << " " << dontAskAgainName << endl;
+    kDebug(7007) << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
-    QString caption( _caption );
-    if ( type == KIO::SlaveBase::SSLMessageBox )
-#ifdef __GNUC__
-# warning FIXME This will never work
-#endif
-        caption = QDBusConnection::sessionBus().baseService(); // hack, see observer.cpp
-
-    emit needProgressId();
-    kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
     QPointer<SlaveInterface> me = this;
     if (m_pConnection) m_pConnection->suspend();
-    int result = SlaveInterfacePrivate::messageBox( m_progressId, type, text, caption, buttonYes, buttonNo, dontAskAgainName );
+    int result = d->messageBox( type, text, caption, buttonYes, buttonNo, dontAskAgainName );
     if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
     {
         m_pConnection->resume();
@@ -452,7 +446,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     }
 }
 
-int SlaveInterfacePrivate::messageBox(int progressId, int type, const QString &text,
+int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                       const QString &caption, const QString &buttonYes,
                                       const QString &buttonNo, const QString &dontAskAgainName)
 {
@@ -485,26 +479,16 @@ int SlaveInterfacePrivate::messageBox(int progressId, int type, const QString &t
             break;
         case KIO::SlaveBase::SSLMessageBox:
         {
-#ifdef __GNUC__
-# warning FIXME This will never work
-#endif
-            QString observerAppId = caption; // hack, see slaveinterface.cpp
-            // Contact the object "KIO::Observer" in the application <appId>
-            // Yes, this could be the same application we are, but not necessarily.
-            QDBusInterface observer(observerAppId, "/KIO/Observer", "org.kde.KIO.Observer");
-
-            QDBusReply<QVariantMap> reply =
-                observer.call(QDBus::BlockWithGui, "metadata", progressId);
-            const QVariantMap &meta = reply;
-            KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
-            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());
+            KIO::MetaData meta = m_incomingMetaData;
+            KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate
-               QStringList cl = meta["ssl_peer_chain"].toString().split('\n', QString::SkipEmptyParts);
+               const QStringList cl = meta["ssl_peer_chain"].split('\n', QString::SkipEmptyParts);
                Q3PtrList<KSSLCertificate> ncl;
 
                ncl.setAutoDelete(true);
-               for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
+               for (QStringList::const_iterator it = cl.begin(); it != cl.end(); ++it) {
                   KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
                   if (y) ncl.append(y);
                }
@@ -513,11 +497,11 @@ int SlaveInterfacePrivate::messageBox(int progressId, int type, const QString &t
                   x->chain().setChain(ncl);
 
                kid->setup(x,
-                           meta["ssl_peer_ip"].toString(),
+                           meta["ssl_peer_ip"],
                            text, // the URL
-                           meta["ssl_cipher"].toString(),
-                           meta["ssl_cipher_desc"].toString(),
-                           meta["ssl_cipher_version"].toString(),
+                           meta["ssl_cipher"],
+                           meta["ssl_cipher_desc"],
+                           meta["ssl_cipher_version"],
                            meta["ssl_cipher_used_bits"].toInt(),
                            meta["ssl_cipher_bits"].toInt(),
                            KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));

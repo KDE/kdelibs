@@ -513,13 +513,6 @@ void SimpleJob::slotConnected()
     emit connected( this );
 }
 
-void SimpleJob::slotNeedProgressId()
-{
-    if ( !progressId() )
-        setProgressId( Observer::self()->newJob( this, Observer::JobHidden ) );
-    m_slave->setProgressId( progressId() );
-}
-
 void SimpleJob::slotTotalSize( KIO::filesize_t size )
 {
     if (size > m_totalSize)

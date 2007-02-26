@@ -103,9 +103,6 @@ public:
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
 
-    void setProgressId( int id ) { m_progressId = id; }
-    int progressId() const { return m_progressId; }
-
     // Send our answer to the MSG_RESUME (canResume) request
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
@@ -127,7 +124,6 @@ Q_SIGNALS:
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
     void needSubUrlData();
-    void needProgressId();
 
     void canResume( KIO::filesize_t );
 
@@ -174,8 +170,6 @@ protected Q_SLOTS:
 protected:
     Connection * m_pConnection;
 
-private:
-    int m_progressId;
 private:
     SlaveInterfacePrivate* const d;
 };
