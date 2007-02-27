@@ -136,10 +136,10 @@ const KConfigGroup KSharedConfig::group(const QString& groupName) const
 
 QString KConfig::group() const
 {
-    return KConfigBase::group();
+    return KConfigBase::mGroup.group();
 }
 
 QString KSharedConfig::group() const
 {
-    return KConfigBase::group();
+    return KConfigBase::mGroup.group();
 }
