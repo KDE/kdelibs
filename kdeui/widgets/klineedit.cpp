@@ -1495,7 +1495,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
 {
     QLineEdit::paintEvent( ev );
 
-    if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() ) {
+    if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty() ) {
         QPainter p( this );
         QPen tmp = p.pen();
         p.setPen( palette().color( QPalette::Disabled, QPalette::Text ) );
