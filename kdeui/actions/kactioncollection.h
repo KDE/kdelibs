@@ -282,7 +282,8 @@ public:
   /**
    * Set the \a componentData associated with this action collection.
    *
-   * \param componentData the KComponentData which is to be associated with this action collection, or to null to indicate the default KComponentData.
+   * \param componentData the KComponentData which is to be associated with this action collection,
+   * or an invalid KComponentData instance to indicate the default KComponentData.
    */
   void setComponentData(const KComponentData &componentData);
 
