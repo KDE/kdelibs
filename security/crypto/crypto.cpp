@@ -838,40 +838,41 @@ void KCryptoConfig::configChanged()
 
 void KCryptoConfig::load()
 {
+  KConfigGroup cg(config, QByteArray(""));
 #ifdef KSSL_HAVE_SSL
   otherCertDelList.clear();
   yourCertDelList.clear();
   authDelList.clear();
   caDelList.clear();
-  config->setGroup("Warnings");
-  mWarnOnEnter->setChecked(config->readEntry("OnEnter", false));
-  mWarnOnLeave->setChecked(config->readEntry("OnLeave", true));
-  mWarnOnUnencrypted->setChecked(config->readEntry("OnUnencrypted", true));
+  cg.changeGroup("Warnings");
+  mWarnOnEnter->setChecked(cg.readEntry("OnEnter", false));
+  mWarnOnLeave->setChecked(cg.readEntry("OnLeave", true));
+  mWarnOnUnencrypted->setChecked(cg.readEntry("OnUnencrypted", true));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
-  mWarnOnMixed->setChecked(config->readEntry("OnMixed", true));
+  mWarnOnMixed->setChecked(cg.readEntry("OnMixed", true));
 
-  config->setGroup("Validation");
-  mWarnSelfSigned->setChecked(config->readEntry("WarnSelfSigned", true));
-  mWarnExpired->setChecked(config->readEntry("WarnExpired", true));
-  mWarnRevoked->setChecked(config->readEntry("WarnRevoked", true));
+  cg.changeGroup("Validation");
+  mWarnSelfSigned->setChecked(cg.readEntry("WarnSelfSigned", true));
+  mWarnExpired->setChecked(cg.readEntry("WarnExpired", true));
+  mWarnRevoked->setChecked(cg.readEntry("WarnRevoked", true));
 #endif
 
-  config->setGroup("EGD");
+  cg.changeGroup("EGD");
   slotUseEGD();  // set the defaults
-  if (config->readEntry("UseEGD", false)) {
+  if (cg.readEntry("UseEGD", false)) {
     mUseEGD->setChecked(true);
     slotUseEGD();
-  } else if (config->readEntry("UseEFile", false)) {
+  } else if (cg.readEntry("UseEFile", false)) {
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setPath(config->readPathEntry("EGDPath"));
+  mEGDPath->setPath(cg.readPathEntry("EGDPath"));
 
 
 #ifdef KSSL_HAVE_SSL
-  config->setGroup("OpenSSL");
-  oPath->setUrl(config->readPathEntry("Path"));
+  cg.changeGroup("OpenSSL");
+  oPath->setUrl(cg.readPathEntry("Path"));
 #endif
 
   KConfigGroup sslV3(config, "SSLv3");
@@ -887,13 +888,13 @@ void KCryptoConfig::load()
   otherSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>" || *i == "General") continue;
-    KConfigGroup cg(policies, *i);
-    KSSLCertificate *cert = KSSLCertificate::fromString(cg.readEntry("Certificate", QString()).toLocal8Bit());
+    KConfigGroup _cg(policies, *i);
+    KSSLCertificate *cert = KSSLCertificate::fromString(_cg.readEntry("Certificate", QString()).toLocal8Bit());
     if (cert) {
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
-                        cg.readEntry("Permanent", true),
-                        cg.readEntry("Policy", 3),
-                        cg.readEntry("Expires", QDateTime()), this );
+                        _cg.readEntry("Permanent", true),
+                        _cg.readEntry("Policy", 3),
+                        _cg.readEntry("Expires", QDateTime()), this );
       delete cert;
     }
   }
@@ -903,10 +904,10 @@ void KCryptoConfig::load()
   yourSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
-    KConfigGroup cg(pcerts, *i);
+    KConfigGroup _cg(pcerts, *i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
-                     cg.readEntry("PKCS12Base64"),
-                     cg.readEntry("Password"),
+                     _cg.readEntry("PKCS12Base64"),
+                     _cg.readEntry("Password"),
                      *i, this );
     j->setPassCache(QString());
   }
@@ -936,15 +937,15 @@ void KCryptoConfig::load()
                              i != groups.end();
                              ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
-    authcfg->setGroup(*i);
+    KConfigGroup _cg(authcfg, *i);
     KSSLCertificateHome::KSSLAuthAction aa = KSSLCertificateHome::AuthDont;
-    if (authcfg->readEntry("send", false) == true)
+    if (_cg.readEntry("send", false) == true)
        aa = KSSLCertificateHome::AuthSend;
-    else if (authcfg->readEntry("prompt", false) == true)
+    else if (_cg.readEntry("prompt", false) == true)
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
                                        KResolver::domainToAscii(*i),
-                                       authcfg->readEntry("certificate"),
+                                       _cg.readEntry("certificate"),
                                        this );
     j->setAction(aa);
     j->setOriginalName(*i);
@@ -958,14 +959,14 @@ void KCryptoConfig::load()
                              ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
     if (!sigcfg.hasGroup(*i)) continue;
-    sigcfg.setGroup(*i);
-    if (!sigcfg.hasKey("x509")) continue;
+    KConfigGroup _cg(&sigcfg, *i);
+    if (!_cg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     sigcfg.readEntry("x509"),
-                     sigcfg.readEntry("site", false),
-                     sigcfg.readEntry("email", false),
-                     sigcfg.readEntry("code", false),
+                     _cg.readEntry("x509"),
+                     _cg.readEntry("site", false),
+                     _cg.readEntry("email", false),
+                     _cg.readEntry("code", false),
                      this );
   }
 
@@ -979,39 +980,40 @@ void KCryptoConfig::load()
 
 void KCryptoConfig::save()
 {
+  KConfigGroup cg(config, QByteArray(""));
 #ifdef KSSL_HAVE_SSL
-  config->setGroup("Warnings");
-  config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
-  config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
-  config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
+  cg.changeGroup("Warnings");
+  cg.writeEntry("OnEnter", mWarnOnEnter->isChecked());
+  cg.writeEntry("OnLeave", mWarnOnLeave->isChecked());
+  cg.writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
 
-  config->setGroup("EGD");
-  config->writeEntry("UseEGD", mUseEGD->isChecked());
-  config->writeEntry("UseEFile", mUseEFile->isChecked());
-  config->writePathEntry("EGDPath", mEGDPath->url().path());
+  cg.changeGroup("EGD");
+  cg.writeEntry("UseEGD", mUseEGD->isChecked());
+  cg.writeEntry("UseEFile", mUseEFile->isChecked());
+  cg.writePathEntry("EGDPath", mEGDPath->url().path());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
-  config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
+  cg.writeEntry("OnMixed", mWarnOnMixed->isChecked());
 
-  config->setGroup("Validation");
-  config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
-  config->writeEntry("WarnExpired", mWarnExpired->isChecked());
-  config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
+  cg.setGroup("Validation");
+  cg.writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
+  cg.writeEntry("WarnExpired", mWarnExpired->isChecked());
+  cg.writeEntry("WarnRevoked", mWarnRevoked->isChecked());
 #endif
 
 #ifdef KSSL_HAVE_SSL
-  config->setGroup("OpenSSL");
-  config->writePathEntry("Path", oPath->url().path());
+  cg.changeGroup("OpenSSL");
+  cg.writePathEntry("Path", oPath->url().path());
 #endif
 
   int ciphercount = 0;
-  config->setGroup("SSLv3");
+  cg.changeGroup("SSLv3");
   CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
     if (item->isOn()) {
-      config->writeEntry(item->configName(), true);
+      cg.writeEntry(item->configName(), true);
       ciphercount++;
-    } else config->writeEntry(item->configName(), false);
+    } else cg.writeEntry(item->configName(), false);
 
     item = static_cast<CipherItem *>(item->nextSibling());
   }
@@ -1050,9 +1052,9 @@ void KCryptoConfig::save()
         static_cast<YourCertItem *>(yourSSLBox->firstChild());
                                                             x;
              x = static_cast<YourCertItem *>(x->nextSibling())) {
-     pcerts->setGroup(x->configName());
-     pcerts->writeEntry("PKCS12Base64", x->getPKCS());
-     pcerts->writeEntry("Password", x->getPass());
+     KConfigGroup _cg(pcerts, x->configName());
+     _cg.writeEntry("PKCS12Base64", x->getPKCS());
+     _cg.writeEntry("Password", x->getPass());
   }
 
   bool doGen = false;
@@ -1087,18 +1089,18 @@ void KCryptoConfig::save()
   if (doGen) genCAList();
 
 
-  config->setGroup("Auth");
-  QString whichAuth = config->readEntry("AuthMethod", "none");
+  cg.changeGroup("Auth");
+  QString whichAuth = cg.readEntry("AuthMethod", "none");
   if (defCertBG->selected() == defSend)
-    config->writeEntry("AuthMethod", "send");
+    cg.writeEntry("AuthMethod", "send");
   else if (defCertBG->selected() == defPrompt)
-    config->writeEntry("AuthMethod", "prompt");
+    cg.writeEntry("AuthMethod", "prompt");
   else
-    config->writeEntry("AuthMethod", "none");
+    cg.writeEntry("AuthMethod", "none");
 
   if (defCertBox->currentIndex() == 0)
-     config->writeEntry("DefaultCert", QString());
-  else config->writeEntry("DefaultCert", defCertBox->currentText());
+     cg.writeEntry("DefaultCert", QString());
+  else cg.writeEntry("DefaultCert", defCertBox->currentText());
 
   for (HostAuthItem *x = authDelList.first(); x != 0; x = authDelList.next()) {
      authcfg->deleteGroup(x->configName());
@@ -1117,15 +1119,15 @@ void KCryptoConfig::save()
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     authcfg->setGroup(KResolver::domainToAscii(x->configName()));
-     authcfg->writeEntry("certificate", x->getCertName());
-     authcfg->writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
-     authcfg->writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
+     KConfigGroup _cg(authcfg, KResolver::domainToAscii(x->configName()));
+     _cg.writeEntry("certificate", x->getCertName());
+     _cg.writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
+     _cg.writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
   }
 
 #endif
 
-  config->sync();
+  cg.sync();
   policies->sync();
   pcerts->sync();
   authcfg->sync();
@@ -1232,8 +1234,8 @@ void KCryptoConfig::cwAll() {
 void KCryptoConfig::slotExportCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
    if (x) {
-     policies->setGroup(x->getMD5());
-     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString()).toLocal8Bit());
+     KConfigGroup cg(policies, x->getMD5());
+     KSSLCertificate *cert = KSSLCertificate::fromString(cg.readEntry("Certificate", QString()).toLocal8Bit());
      if (cert) {
         KCertExport kce;
         kce.setCertificate(cert);
@@ -1265,15 +1267,15 @@ void KCryptoConfig::slotVerifyCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
   if (!x) return;
 
-  policies->setGroup(x->getMD5());
-  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString()).toLocal8Bit());
+  KConfigGroup cg(policies, x->getMD5());
+  KSSLCertificate *cert = KSSLCertificate::fromString(cg.readEntry("Certificate", QString()).toLocal8Bit());
 
   if (!cert) {
     KMessageBox::error(this, i18n("Error obtaining the certificate."), i18n("SSL"));
     return;
   }
 
-  cert->chain().setCertChain(policies->readEntry("Chain", QStringList()));
+  cert->chain().setCertChain(cg.readEntry("Chain", QStringList()));
 
   KSSLCertificate::KSSLValidation v = cert->revalidate(KSSLCertificate::SSLServer);
 
@@ -1374,9 +1376,9 @@ QString iss = QString();
       cacheGroup->setEnabled(true);
       cachePerm->setEnabled(true);
       cacheUntil->setEnabled(true);
-      policies->setGroup(x->getMD5());
+      KConfigGroup cg(policies, x->getMD5());
 
-      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString()).toLocal8Bit());
+      KSSLCertificate *cert = KSSLCertificate::fromString(cg.readEntry("Certificate", QString()).toLocal8Bit());
 
       if (cert) {
          QPalette cspl;
@@ -1974,14 +1976,14 @@ void KCryptoConfig::slotCARestore() {
                              ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
     if (!sigcfg.hasGroup(*i)) continue;
-    sigcfg.setGroup(*i);
-    if (!sigcfg.hasKey("x509")) continue;
+    KConfigGroup _cg(&sigcfg, *i);
+    if (!_cg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     sigcfg.readEntry("x509", QString()),
-                     sigcfg.readEntry("site", false),
-                     sigcfg.readEntry("email", false),
-                     sigcfg.readEntry("code", false),
+                     _cg.readEntry("x509", QString()),
+                     _cg.readEntry("site", false),
+                     _cg.readEntry("email", false),
+                     _cg.readEntry("code", false),
                      this );
   }
 
