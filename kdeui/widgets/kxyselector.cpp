@@ -40,8 +40,8 @@ public:
     xPos(0),
     yPos(0),
     minX(0),
-    minY(0),
     maxX(100),
+    minY(0),
     maxY(100),
     m_markerColor(Qt::white)
   {}
