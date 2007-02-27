@@ -2096,10 +2096,9 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
         break;
         default:
         {
-          if ( selStartCached.line() < 0 ) // invalid
+          if ( selectAnchor.line() < 0 ) // invalid
             break;
 
-          selectAnchor = selStartCached;
           doSelect = true;
         }
 //         break;
@@ -2670,12 +2669,13 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
 
         if ( e->state() & Qt::ShiftButton )
         {
-          selStartCached = m_view->selectStart;
-          selEndCached = m_view->selectEnd;
-          updateCursor( selEndCached );
+          if (selectAnchor.line() < 0)
+            selectAnchor = cursor;
         }
         else
+        {
           selStartCached.setLine( -1 ); // invalidate
+        }
 
         if( isTargetSelected( e->pos() ) )
         {
@@ -2686,7 +2686,35 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
         {
           dragInfo.state = diNone;
 
-          placeCursor( e->pos(), e->state() & ShiftButton );
+          if ( e->state() & Qt::ShiftButton )
+          {
+            placeCursor( e->pos(), true, false );
+            if ( selStartCached.line() >= 0 )
+            {
+              if ( cursor > selEndCached )
+              {
+                m_view->setSelection( selStartCached, cursor );
+                selectAnchor = selStartCached;
+              }
+              else if ( cursor < selStartCached )
+              {
+                m_view->setSelection( cursor, selEndCached );
+                selectAnchor = selEndCached;
+              }
+              else
+              {
+                m_view->setSelection( selStartCached, cursor );
+              }
+            }
+            else
+            {
+              m_view->setSelection( selectAnchor, cursor );
+            }
+          }
+          else
+          {
+            placeCursor( e->pos() );
+          }
 
           scrollX = 0;
           scrollY = 0;
@@ -2712,6 +2740,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
 
       if ( e->state() & Qt::ShiftButton )
       {
+        // FIXME this is totally broken right now
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
         updateSelection( cursor, true );
@@ -2731,8 +2760,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         m_view->selectWord( cursor );
         if (m_view->hasSelection())
         {
-          selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
-          selStartCached = m_view->selectStart;
+          selectAnchor = selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
           updateCursor( selEndCached );
         }
@@ -3256,8 +3284,7 @@ void KateViewInternal::viewSelectionChanged ()
   if (!m_view->hasSelection())
   {
     selectAnchor.setPos (-1, -1);
-    selEndCached = selectAnchor;
-    selStartCached = cursor;
+    selStartCached.setPos (-1, -1);
   }
 }
 
