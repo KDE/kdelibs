@@ -98,9 +98,7 @@ void KMInstancePage::initActions()
 
 void KMInstancePage::setPrinter(KMPrinter *p)
 {
-    Q_ASSERT( m_view->currentItem() );
-
-	QString	oldText = m_view->currentItem()->text();
+	QString	oldText = m_view->currentItem() ? m_view->currentItem()->text() : QString();
 
 	m_view->clear();
 	m_printer = p;
