@@ -2084,7 +2084,10 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
           if ( newCursor.line() > selStartCached.line() )
           {
             selectAnchor = selStartCached;
-            newCursor.setCol( m_doc->textLine( newCursor.line() ).length() );
+            if ( newCursor.line()+1 >= m_doc->numLines() )
+              newCursor.setCol( m_doc->textLine( newCursor.line() ).length() );
+            else
+              newCursor.setPos( newCursor.line() + 1, 0 );
           }
           else if ( newCursor.line() < selStartCached.line() )
           {
