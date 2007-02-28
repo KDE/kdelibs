@@ -838,7 +838,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
       newUrl.setPath( path() + QLatin1Char('/') );
       return QString::fromLatin1( newUrl.toEncoded() );
   }
-  return QString::fromLatin1( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
+  return QString::fromLatin1( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) );
 }
 
 #if 0
@@ -1264,7 +1264,7 @@ void KUrl::_setQuery( const QString& query )
     } else if ( query.isEmpty() ) {
         setEncodedQuery( "" );
     } else {
-        setEncodedQuery( query.toLatin1() ); // ### TODO encoding ok?
+        setEncodedQuery( query.toLatin1() ); // already percent-escaped, so toLatin1 is ok
     }
 }
 
