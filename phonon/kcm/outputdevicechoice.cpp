@@ -64,15 +64,18 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     deviceList->setAlternatingRowColors(true);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
+    outputItem->setEditable(false);
     outputItem->setSelectable(false);
     parentItem->appendRow(outputItem);
     m_captureItem = new QStandardItem(i18n("Audio Capture"));
+    m_captureItem->setEditable(false);
     parentItem->appendRow(m_captureItem);
 
     parentItem = outputItem;
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
         m_outputModel[i] = new Phonon::AudioOutputDeviceModel;
         QStandardItem *item = new CategoryItem(static_cast<Phonon::Category>(i));
+        item->setEditable(false);
         parentItem->appendRow(item);
     }
     parentItem = m_captureItem;

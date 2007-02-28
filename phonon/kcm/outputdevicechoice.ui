@@ -27,6 +27,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="toolTip" >
+      <string>Various categories of outputs.  For each category you may choose what device you wish to output to.</string>
+     </property>
+     <property name="whatsThis" >
+      <string>Various categories of outputs.  For each category you may choose what device you wish to output to.</string>
+     </property>
      <property name="alternatingRowColors" >
       <bool>true</bool>
      </property>
@@ -58,6 +64,9 @@
      </item>
      <item row="0" column="0" colspan="4" >
       <widget class="QListView" name="deviceList" >
+       <property name="toolTip" >
+        <string>Audio Outputs found on your system.  Choose the device that you wish sound to come out of.</string>
+       </property>
        <property name="whatsThis" >
         <string>The order determines the preference of the output devices. If for some reason the first device cannot be used Phonon will try to use the second, and
 so on.</string>

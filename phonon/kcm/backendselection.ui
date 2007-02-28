@@ -35,6 +35,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip" >
+        <string>A list of Phonon Backends found on your system.  The order here determines the order Phonon will use them in.</string>
+       </property>
+       <property name="whatsThis" >
+        <string>A list of Phonon Backends found on your system.  The order here determines the order Phonon will use them in.</string>
+       </property>
        <property name="dragEnabled" >
         <bool>true</bool>
        </property>
