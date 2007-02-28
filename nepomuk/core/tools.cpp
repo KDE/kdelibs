@@ -17,6 +17,59 @@
 #include "resourcemanager.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
+
+
+static const QString s_xmlSchemaNs = "http://www.w3.org/2001/XMLSchema#";
+static QHash<QString, int> s_xmlSchemaTypes;
+static QHash<int, QString> s_variantSchemaTypeHash;
+
+static void initXmlSchemaTypes()
+{
+  // FIXME: add proper support for short and byte
+  // FIXME: fail if an ontology uses on of the crappy types like integer or negativeInteger
+  if( s_xmlSchemaTypes.isEmpty() ) {
+    s_xmlSchemaTypes.insert( "int", QVariant::Int );
+    s_xmlSchemaTypes.insert( "integer", QVariant::Int );
+    s_xmlSchemaTypes.insert( "negativeInteger", QVariant::Int );
+    s_xmlSchemaTypes.insert( "decimal", QVariant::Int );
+    s_xmlSchemaTypes.insert( "short", QVariant::Int );
+    s_xmlSchemaTypes.insert( "long", QVariant::LongLong );
+    s_xmlSchemaTypes.insert( "unsignedInt", QVariant::UInt );
+    s_xmlSchemaTypes.insert( "unsignedShort", QVariant::UInt );
+    s_xmlSchemaTypes.insert( "unsignedLong", QVariant::ULongLong );
+    s_xmlSchemaTypes.insert( "boolean", QVariant::Bool );
+    s_xmlSchemaTypes.insert( "double", QVariant::Double );
+    s_xmlSchemaTypes.insert( "string", QVariant::String );
+    s_xmlSchemaTypes.insert( "date", QVariant::Date );
+    s_xmlSchemaTypes.insert( "time", QVariant::Time );
+    s_xmlSchemaTypes.insert( "dateTime", QVariant::DateTime );
+    //    s_xmlSchemaTypes.insert( "", QVariant::Url );
+  }
+
+  if( s_variantSchemaTypeHash.isEmpty() ) {
+    s_variantSchemaTypeHash.insert( QVariant::Int, "int" );
+    s_variantSchemaTypeHash.insert( QVariant::LongLong, "long" );
+    s_variantSchemaTypeHash.insert( QVariant::UInt, "unsignedInt" );
+    s_variantSchemaTypeHash.insert( QVariant::ULongLong, "unsignedLong" );
+    s_variantSchemaTypeHash.insert( QVariant::Bool, "boolean" );
+    s_variantSchemaTypeHash.insert( QVariant::Double, "double" );
+    s_variantSchemaTypeHash.insert( QVariant::String, "string" );
+    s_variantSchemaTypeHash.insert( QVariant::Date, "date" );
+    s_variantSchemaTypeHash.insert( QVariant::Time, "time" );
+    s_variantSchemaTypeHash.insert( QVariant::DateTime, "dateTime" );
+  }
+}
+
+
+static QString getLocaleLang()
+{
+  if( KGlobal::locale() )
+    return KGlobal::locale()->language();
+  else
+    return QLocale::system().name(); // FIXME: does this make sense?
+}
 
 
 QString Nepomuk::KMetaData::defaultGraph()
@@ -33,53 +86,57 @@ QString Nepomuk::KMetaData::typePredicate()
 }
 
 
-QString Nepomuk::KMetaData::valueToRDFLiteral( const Variant& v )
+Nepomuk::RDF::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData::Variant& v )
 {
-  // FIXME: replace this with the real thing
-  return v.toString();
+  Nepomuk::RDF::Node node;
+  node.type = Nepomuk::RDF::NodeLiteral;
+  node.language = getLocaleLang();
+  node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
+  node.value = v.toString();
+  return node;
 }
 
 
-template<typename T> QStringList convertList( const QList<T>& vl )
+QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaData::Variant& v )
 {
-  QStringList l;
-  QListIterator<T> it( vl );
-  while( it.hasNext() )
-    l.append( Nepomuk::KMetaData::valueToRDFLiteral( Nepomuk::KMetaData::Variant( it.next() ) ) );
-  return l;
-}
+  QList<Nepomuk::RDF::Node> nl;
 
-
-QStringList Nepomuk::KMetaData::valuesToRDFLiterals( const Variant& v )
-{
-  if( v.simpleType() == qMetaTypeId<int>() )
-    return convertList( v.toIntList() );
-  else if( v.simpleType() == qMetaTypeId<double>() )
-    return convertList( v.toDoubleList() );
-  else if( v.simpleType() == qMetaTypeId<bool>() )
-    return convertList( v.toBoolList() );
-  else if( v.simpleType() == qMetaTypeId<QDate>() )
-    return convertList( v.toDateList() );
-  else if( v.simpleType() == qMetaTypeId<QTime>() )
-    return convertList( v.toTimeList() );
-  else if( v.simpleType() == qMetaTypeId<QDateTime>() )
-    return convertList( v.toDateTimeList() );
-  else if( v.simpleType() == qMetaTypeId<QUrl>() )
-    return convertList( v.toUrlList() );
-  else if( v.simpleType() == QVariant::String )
-    return v.toStringList();
-  else {
-    kDebug(300004) << "(Ontology) ERROR: unknown list type: " << v.simpleType() << endl;
-    return QStringList();
+  if( v.isList() ) {
+    QStringList vl = v.toStringList();
+    for( QStringList::const_iterator it = vl.begin(); it != vl.end(); ++it ) {
+      Nepomuk::RDF::Node node;
+      node.type = Nepomuk::RDF::NodeLiteral;
+      node.language = getLocaleLang();
+      node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
+      node.value = *it;
+      nl.append( node );
+    }
   }
+  else {
+    nl.append( valueToRDFNode( v ) );
+  }
+
+  return nl;
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const QString& s )
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Nepomuk::RDF::Node& node )
 {
-  // FIXME: replace this with the real thing
-  return Variant( s );
+  initXmlSchemaTypes();
+
+  QString dataType = node.dataTypeUri.mid( node.dataTypeUri.indexOf(QRegExp("[\\#\\:]")) + 1 );
+  int variantType = QVariant::String;
+
+  if( s_xmlSchemaTypes.contains( dataType ) )
+    variantType = s_xmlSchemaTypes[dataType];
+  else
+    kDebug(300004) << "Unknown literal data type: " << dataType
+		   << " (URI: " << node.dataTypeUri << ")" << endl;
+
+  return Variant::fromString( node.value, variantType );
 }
+
+
 
 
 QString Nepomuk::KMetaData::ensureNamespace( const QString& uri )

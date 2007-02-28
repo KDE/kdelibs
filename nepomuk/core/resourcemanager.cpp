@@ -63,7 +63,7 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
   d->registry = new Backbone::Registry( this );
 
   connect( &d->syncTimer, SIGNAL(timeout()),
-	   this, SLOT(triggerSync()) );
+	   this, SLOT(slotStartAutoSync()) );
 
   setAutoSync( true );
 }
@@ -82,12 +82,14 @@ Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 
 KStaticDeleter<Nepomuk::KMetaData::ResourceManager> s_resourceManagerDeleter;
 
+// FIXME: make the singleton deletion thread-safe so autosyncing will be forced when shutting
+//        down the application
 Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instance()
 {
   static ResourceManager* s_instance = 0;
   if( !s_instance )
-    //    s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
     s_instance = new ResourceManager();
+  //  s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
   return s_instance;
 }
 
@@ -137,15 +139,16 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::ResourceManager::createResource
 }
 
 
+void Nepomuk::KMetaData::ResourceManager::slotStartAutoSync()
+{
+  if( d->autoSync )
+    triggerSync();
+}
+
+
 void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
 {
   d->autoSync = enabled;
-
-  // sync every 5 seconds (FIXME: make this better)
-  if( enabled )
-    d->syncTimer.start( 5000 );
-  else
-    d->syncTimer.stop();
 }
 
 
@@ -170,7 +173,7 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
   // =====================
   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_kickoffData.begin();
        it != ResourceData::s_kickoffData.end(); ++it )
-    it.value()->determineUri();
+    it.value()->init();
 
   QList<Statement> statementsToAdd;
   QList<ResourceData*> syncedResources;
@@ -188,9 +191,16 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
        it != ResourceData::s_data.end(); ++it ) {
     rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
+    if( !rr.success() )
+      kDebug(300004) << "(ResourceManager) failed to remove all statements for resource " << it.value()->uri()
+		     << " (" << rr.lastErrorName() << ")" << endl;
   }
 
   rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
+
+  if( !rr.success() )
+    kDebug(300004) << "(ResourceManager) failed to add statements"
+		   << " (" << rr.lastErrorName() << ")" << endl;
 
   bool success = rr.success();
 
@@ -283,8 +293,7 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
       n.type = RDF::NodeResource;
     }
     else {
-      n.type = RDF::NodeLiteral;
-      n.value = KMetaData::valueToRDFLiteral( v );
+      n = KMetaData::valueToRDFNode( v );
     }
     
     StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(), 

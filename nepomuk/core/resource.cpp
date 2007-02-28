@@ -194,7 +194,14 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
   if( this == &other )
     return true;
 
-  return( *m_data == *other.m_data );
+  if( this->m_data == other.m_data )
+    return true;
+
+  m_data->determineUri();
+  other.m_data->determineUri();
+  return uri() == other.uri();
+
+  //    return( *m_data == *other.m_data );
 }
 
 

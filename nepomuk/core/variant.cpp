@@ -709,14 +709,15 @@ QString Nepomuk::KMetaData::Variant::toString() const
     return QString::number( toUnsignedInt64() );
   else if( isBool() )
     return ( toBool() ? QString("true") : QString("false" ) );
-  else if( isDouble() )
-    return QString::number( toDouble() );
+  else if( isDouble() ) // FIXME: decide on a proper double encoding or check if there is one in xml schema
+    return QString::number( toDouble(), 'e', 10 );
+  // FIXME: use the correct data and time encoding of XML Schema
   else if( isDate() )
-    return toDate().toString();
+    return toDate().toString( Qt::ISODate );
   else if( isTime() )
-    return toTime().toString();
+    return toTime().toString( Qt::ISODate );
   else if( isDateTime() )
-    return toDateTime().toString();
+    return toDateTime().toString( Qt::ISODate );
   else if( isUrl() )
     return toUrl().toString();
   else if( isResource() ) {
@@ -926,6 +927,43 @@ int Nepomuk::KMetaData::Variant::simpleType() const
     return qMetaTypeId<Resource>();
   else
     return QVariant::userType();
+}
+
+
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Variant::fromString( const QString& value, int type )
+{
+  switch( type ) {
+  case QVariant::Int:
+    return Variant( value.toInt() );
+  case QVariant::LongLong:
+    return Variant( value.toLongLong() );
+  case QVariant::UInt:
+    return Variant( value.toUInt() );
+  case QVariant::ULongLong:
+    return Variant( value.toULongLong() );    
+  case QVariant::Bool:
+    return Variant( ( value.toLower() == "true" || value.toLower() == "yes" || value.toInt() != 0 ) );
+  case QVariant::Double:
+    return Variant( value.toDouble() );
+  case QVariant::String:
+    return Variant( value );
+  case QVariant::Date:
+    return Variant( QDate::fromString( value, Qt::ISODate /*, FIXME:proper time format */ ) );
+  case QVariant::Time:
+    return Variant( QTime::fromString( value, Qt::ISODate /*, FIXME:proper time format */ ) );
+  case QVariant::DateTime:
+    return Variant( QDateTime::fromString( value, Qt::ISODate /*, FIXME: proper datetime format */ ) );
+  case QVariant::Url:
+    return Variant( QUrl( value ) );    
+  default:
+    if( type == qMetaTypeId<Resource>() ) {
+      return Variant( Resource( value ) );
+    }
+    else {
+      kDebug(300004) << "(Variant) unknown type: " << type << endl;
+      return Variant( value );
+    }
+  }
 }
 
 

@@ -39,7 +39,8 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QS
     m_type( type_ ),
     m_flags(0),
     m_ref(0),
-    m_initialized( false )
+    m_initialized( false ),
+    m_proxyData(0)
 {
   if( m_type.isEmpty() && !uriOrId.isEmpty() )
     m_type = ResourceManager::instance()->ontology()->defaultType();
@@ -48,39 +49,57 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QS
 
 Nepomuk::KMetaData::ResourceData::~ResourceData()
 {
+  if( m_proxyData )
+    m_proxyData->deref();
 }
 
 
 const QString& Nepomuk::KMetaData::ResourceData::kickoffUriOrId() const
 {
+  if( m_proxyData )
+    return m_proxyData->kickoffUriOrId();
   return m_kickoffUriOrId;
 }
 
 
 const QString& Nepomuk::KMetaData::ResourceData::uri() const
 {
+  if( m_proxyData )
+    return m_proxyData->uri();
   return m_uri;
 }
 
 
 const QString& Nepomuk::KMetaData::ResourceData::type() const
 {
+  if( m_proxyData )
+    return m_proxyData->type();
   return m_type;
 }
 
 
 void Nepomuk::KMetaData::ResourceData::deleteData()
 {
+  if( m_proxyData )
+    if( m_proxyData->deref() )
+      m_proxyData->deleteData();
+
+  m_proxyData = 0;
+
   if( !m_uri.isEmpty() )
     s_data.remove( m_uri );
   if( !m_kickoffUriOrId.isEmpty() )
     s_kickoffData.remove( m_kickoffUriOrId );
+
   delete this;
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::init()
 {
+  if( m_proxyData )
+    return m_proxyData->init();
+
   if( !m_initialized )
     m_initialized = merge();//load();
   return m_initialized;
@@ -89,6 +108,9 @@ bool Nepomuk::KMetaData::ResourceData::init()
 
 QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::ResourceData::allProperties() const
 {
+  if( m_proxyData )
+    return m_proxyData->allProperties();
+
   QHash<QString, Variant> l;
   for( PropertiesMap::const_iterator it = m_properties.constBegin();
        it != m_properties.constEnd(); ++it )
@@ -99,12 +121,18 @@ QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::ResourceData::al
 
 bool Nepomuk::KMetaData::ResourceData::hasProperty( const QString& uri ) const
 {
+  if( m_proxyData )
+    return m_proxyData->hasProperty( uri );
+
   return m_properties.contains( uri );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const QString& uri ) const
 {
+  if( m_proxyData )
+    return m_proxyData->getProperty( uri );
+
   PropertiesMap::const_iterator it = m_properties.constFind( uri );
   if( it != m_properties.end() )
     if( !( it.value().second & ResourceData::Removed ) )
@@ -116,6 +144,9 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const
 
 void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
+  if( m_proxyData )
+    return m_proxyData->setProperty( uri, value );
+
   m_modificationMutex.lock();
 
   // reset the deleted flag
@@ -130,6 +161,9 @@ void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Ne
 
 void Nepomuk::KMetaData::ResourceData::removeProperty( const QString& uri )
 {
+  if( m_proxyData )
+    return m_proxyData->removeProperty( uri );
+
   m_modificationMutex.lock();
 
   ResourceData::PropertiesMap::iterator it = m_properties.find( uri );
@@ -142,6 +176,9 @@ void Nepomuk::KMetaData::ResourceData::removeProperty( const QString& uri )
 
 void Nepomuk::KMetaData::ResourceData::remove()
 {
+  if( m_proxyData )
+    return m_proxyData->remove();
+
   m_modificationMutex.lock();
 
   m_flags |= Removed;
@@ -152,6 +189,9 @@ void Nepomuk::KMetaData::ResourceData::remove()
 
 void Nepomuk::KMetaData::ResourceData::revive()
 {
+  if( m_proxyData )
+    return m_proxyData->revive();
+
   m_modificationMutex.lock();
 
   m_flags = 0;
@@ -162,6 +202,9 @@ void Nepomuk::KMetaData::ResourceData::revive()
 
 bool Nepomuk::KMetaData::ResourceData::modified() const
 {
+  if( m_proxyData )
+    return m_proxyData->modified();
+
   // If the resource is Removed it has not been synced yet and thus is modified
   // If it is only marked as Deleted it has been synced and thus is not modified
   if( m_flags & Removed )
@@ -178,12 +221,18 @@ bool Nepomuk::KMetaData::ResourceData::modified() const
 
 bool Nepomuk::KMetaData::ResourceData::removed() const
 {
+  if( m_proxyData )
+    return m_proxyData->removed();
+
   return (m_flags & Removed|Deleted);
 }
 
 
 bool Nepomuk::KMetaData::ResourceData::exists() const
 {
+  if( m_proxyData )
+    return m_proxyData->exists();
+
   if( isValid() ) {
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
@@ -212,6 +261,9 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
 
 bool Nepomuk::KMetaData::ResourceData::isValid() const
 {
+  if( m_proxyData )
+    return m_proxyData->isValid();
+
   // FIXME: check namespaces and stuff
   return( !m_type.isEmpty() );
 }
@@ -219,6 +271,9 @@ bool Nepomuk::KMetaData::ResourceData::isValid() const
 
 bool Nepomuk::KMetaData::ResourceData::inSync()
 {
+  if( m_proxyData )
+    return m_proxyData->inSync();
+
   if( !init() )
     return false;
 
@@ -233,7 +288,12 @@ bool Nepomuk::KMetaData::ResourceData::inSync()
 
 bool Nepomuk::KMetaData::ResourceData::determineUri()
 {
+  if( m_proxyData )
+    return m_proxyData->determineUri();
+
   if( m_uri.isEmpty() ) {
+    Q_ASSERT( !m_kickoffUriOrId.isEmpty() );
+
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
     if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
@@ -287,7 +347,14 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
     // Move us to the final data hash now that the URI is known
     //
     if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
-      s_data.insert( uri(), this );
+      if( !s_data.contains( uri() ) )
+	s_data.insert( uri(), this );
+      else {
+	m_proxyData = s_data[uri()];
+	m_proxyData->ref();
+	// merge our local changes
+	m_proxyData->mergeIn( this );	
+      }
     }
 
     return !uri().isEmpty();
@@ -299,6 +366,9 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
 
 bool Nepomuk::KMetaData::ResourceData::determinePropertyUris()
 {
+  if( m_proxyData )
+    return m_proxyData->determinePropertyUris();
+
   for( PropertiesMap::const_iterator it = m_properties.constBegin();
        it != m_properties.constEnd(); ++it ) {
 
@@ -329,6 +399,9 @@ bool Nepomuk::KMetaData::ResourceData::determinePropertyUris()
 
 bool Nepomuk::KMetaData::ResourceData::load()
 {
+  if( m_proxyData )
+    return m_proxyData->load();
+
   kDebug(300004) << k_funcinfo << " with URI " << uri() << " and kickoffUriOrId " << kickoffUriOrId() << " (object " << this << ")" << endl;
 
   if( uri().isEmpty() ) {
@@ -404,6 +477,9 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
 
 void Nepomuk::KMetaData::ResourceData::startSync()
 {
+  if( m_proxyData )
+    return m_proxyData->startSync();
+
   m_syncingMutex.lock();
   m_modificationMutex.lock();
 
@@ -423,6 +499,9 @@ void Nepomuk::KMetaData::ResourceData::startSync()
 
 void Nepomuk::KMetaData::ResourceData::endSync( bool updateFlags )
 {
+  if( m_proxyData )
+    return m_proxyData->endSync( updateFlags );
+
   m_modificationMutex.lock();
 
   //
@@ -450,6 +529,9 @@ void Nepomuk::KMetaData::ResourceData::endSync( bool updateFlags )
 
 bool Nepomuk::KMetaData::ResourceData::save()
 {
+  if( m_proxyData )
+    return m_proxyData->save();
+
   RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
   m_modificationMutex.lock();
@@ -483,6 +565,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
     // FIXME: allow revive even after a sync
     m_properties.clear();
     m_flags = Deleted;
+    m_modificationMutex.unlock();
     return rr.success();
   }
   else {
@@ -515,6 +598,11 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
 QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( int flags ) const
 {
+  if( m_proxyData )
+    return m_proxyData->allStatements( flags );
+
+  kDebug(300004) << "(ResourceData::allStatements) for resource " << uri() << endl;
+
   QList<Statement> statements;
 
   // save the properties
@@ -523,6 +611,8 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
        it != m_properties.constEnd(); ++it ) {
 
     if( it.value().second & flags ) {
+
+      kDebug(300004) << "(ResourceData::allStatements) selecting property " << it.key() << endl;
 
       QString predicate = it.key();
       const Variant& val = it.value().first;
@@ -542,9 +632,9 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 
       // one-to-many literals
       else if( val.isList() ) {
-	QStringList l = KMetaData::valuesToRDFLiterals( val );
-	for( QStringList::const_iterator valIt = l.constBegin(); valIt != l.constEnd(); ++valIt ) {
-	  statements.append( Statement( m_uri, predicate, Node( *valIt, NodeLiteral ) ) );
+	QList<Node> nl = KMetaData::valuesToRDFNodes( val );
+	for( QList<Node>::const_iterator nIt = nl.constBegin(); nIt != nl.constEnd(); ++nIt ) {
+	  statements.append( Statement( m_uri, predicate, *nIt ) );
 	}
       }
 
@@ -552,8 +642,11 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
       else {
 	statements.append( Statement( m_uri, 
 				      predicate, 
-				      Node( KMetaData::valueToRDFLiteral( val ), NodeLiteral ) ) );
+				      KMetaData::valueToRDFNode( val ) ) );
       }
+    }
+    else {
+      kDebug(300004) << "(ResourceData::allStatements) property " << it.key() << " not selected." << endl;
     }
   }
 
@@ -563,6 +656,9 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 
 QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
 {
+  if( m_proxyData )
+    return m_proxyData->allStatementsToAdd();
+
   QList<Statement> statements = allStatements( Modified|Loaded );
 
   // always save the type
@@ -578,6 +674,9 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
 //        Solution: remember the original value from the last load()
 QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
 {
+  if( m_proxyData )
+    return m_proxyData->allStatementsToRemove();
+
   return allStatements( Removed|Deleted );
 }
 
@@ -587,6 +686,9 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
  */
 bool Nepomuk::KMetaData::ResourceData::merge()
 {
+  if( m_proxyData )
+    return m_proxyData->merge();
+
   if( !determineUri() )
     return false;
 
@@ -598,59 +700,7 @@ bool Nepomuk::KMetaData::ResourceData::merge()
   if( currentData->load() ) {
     m_modificationMutex.lock();
 
-    // merge in possible remote changes
-    for( PropertiesMap::const_iterator it = currentData->m_properties.constBegin();
-	 it != currentData->m_properties.constEnd(); ++it ) {
-
-      // 1. the value exists here and has not been changed
-
-      // 1.1 the value is the same
-      //     -> do nothing
-
-      // 1.2 the value differs
-      //     -> load the new value from currentData
-
-      // 2. the value exists here and has been changed (Problem: since we did not remember the
-      //    original value we don't know if it was changed remotely in the meantime. Is that 
-      //    really a problem? If so could we use timestamps?)
-      //    -> keep our value
-
-      // 3. the value does not exist here
-      //    -> copy it over
-
-      PropertiesMap::iterator it2 = this->m_properties.find( it.key() );
-
-      if( it2 != this->m_properties.constEnd() ) {
-	if( !(it2.value().second & Modified) ) {
-	  it2.value().first = it.value().first;
-	}
-      }
-      else {
-	this->m_properties.insert( it.key(), it.value() );
-      }
-    }
-
-    PropertiesMap::iterator it = this->m_properties.begin();
-    while( it != this->m_properties.end() ) {
-
-      // 4. a value that exists here does not exist there (second for-loop?)
-
-      // 4.1 it has been modified here
-      //     -> keep it
-
-      // 4.2 it has not been modified here
-      //     -> remove it since it has been deleted in the meantime
-
-      PropertiesMap::const_iterator it2 = currentData->m_properties.constFind( it.key() );
-      if( it2 == currentData->m_properties.constEnd() &&
-	  !(it.value().second & Modified) ) {
-	kDebug(300004) << "(ResourceData) removing local property: " << it.key() << endl;
-	it = this->m_properties.erase( it );
-      }
-      else {
-	++it;
-      }
-    }
+    mergeIn( currentData );
 
     delete currentData;
 
@@ -664,35 +714,97 @@ bool Nepomuk::KMetaData::ResourceData::merge()
 }
 
 
+void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
+{
+  // merge in possible remote changes
+  for( PropertiesMap::const_iterator it = other->m_properties.constBegin();
+       it != other->m_properties.constEnd(); ++it ) {
+
+    // 1. the value exists here and has not been changed
+
+    // 1.1 the value is the same
+    //     -> do nothing
+
+    // 1.2 the value differs
+    //     -> load the new value from other
+
+    // 2. the value exists here and has been changed (Problem: since we did not remember the
+    //    original value we don't know if it was changed remotely in the meantime. Is that 
+    //    really a problem? If so could we use timestamps?)
+    //    -> keep our value
+
+    // 3. the value does not exist here
+    //    -> copy it over
+
+    PropertiesMap::iterator it2 = this->m_properties.find( it.key() );
+
+    if( it2 != this->m_properties.constEnd() ) {
+      if( !(it2.value().second & Modified) ) {
+	it2.value().first = it.value().first;
+      }
+    }
+    else {
+      this->m_properties.insert( it.key(), it.value() );
+    }
+  }
+
+  PropertiesMap::iterator it = this->m_properties.begin();
+  while( it != this->m_properties.end() ) {
+
+    // 4. a value that exists here does not exist there (second for-loop?)
+
+    // 4.1 it has been modified here
+    //     -> keep it
+
+    // 4.2 it has not been modified here
+    //     -> remove it since it has been deleted in the meantime
+
+    PropertiesMap::const_iterator it2 = other->m_properties.constFind( it.key() );
+    if( it2 == other->m_properties.constEnd() &&
+	!(it.value().second & Modified) ) {
+      kDebug(300004) << "(ResourceData) removing local property: " << it.key() << endl;
+      it = this->m_properties.erase( it );
+    }
+    else {
+      ++it;
+    }
+  }
+}
+
+
 /**
  * Compares the properties of two ResourceData objects taking into account the Removed flag
  */
 bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) const
 {
-  if( this == &other )
+  const ResourceData* that = this;
+  if( m_proxyData )
+    that = m_proxyData;
+
+  if( that == &other )
     return true;
 
-  if( this->m_uri != other.m_uri ||
-      this->m_type != other.m_type ) {
+  if( that->m_uri != other.m_uri ||
+      that->m_type != other.m_type ) {
     kDebug(300004) << k_funcinfo << "different uri or type" << endl;
     return false;
   }
 
   // Evil is among us!
-  const_cast<ResourceData*>(this)->init();
+  const_cast<ResourceData*>(that)->init();
   const_cast<ResourceData*>(&other)->init();
 
-  if( exists() && m_flags != other.m_flags ) {
+  if( exists() && that->m_flags != other.m_flags ) {
     kDebug(300004) << k_funcinfo << "different flags" << endl;
     return false;
   }
 
   for( PropertiesMap::const_iterator it = other.m_properties.constBegin();
        it != other.m_properties.constEnd(); ++it ) {
-    PropertiesMap::const_iterator it2 = this->m_properties.constFind( it.key() );
+    PropertiesMap::const_iterator it2 = that->m_properties.constFind( it.key() );
 
     // 1. the property does not exist here
-    if( it2 == this->m_properties.constEnd() ) {
+   if( it2 == that->m_properties.constEnd() ) {
       kDebug(300004) << k_funcinfo << "property " << it.key() << " not in other" << endl;
       return false;
     }
@@ -706,10 +818,10 @@ bool Nepomuk::KMetaData::ResourceData::operator==( const ResourceData& other ) c
     }
   }
 
-  for( PropertiesMap::const_iterator it = this->m_properties.constBegin();
-       it != this->m_properties.constEnd(); ++it ) {
+  for( PropertiesMap::const_iterator it = that->m_properties.constBegin();
+       it != that->m_properties.constEnd(); ++it ) {
     // 3. the property does not exist there
-    if( other.m_properties.constFind( it.key() ) == this->m_properties.constEnd() ) {
+    if( other.m_properties.constFind( it.key() ) == that->m_properties.constEnd() ) {
       kDebug(300004) << k_funcinfo << "property " << it.key() << " does only exist in other" << endl;
       return false;
     }

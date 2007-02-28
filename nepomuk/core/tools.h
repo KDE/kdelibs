@@ -17,8 +17,9 @@
 
 #include <QtCore>
 #include <kmetadata/variant.h>
-
 #include <kmetadata/kmetadata_export.h>
+
+#include <knep/rdf/node.h>
 
 namespace Nepomuk {
   namespace KMetaData {
@@ -39,20 +40,16 @@ namespace Nepomuk {
     /**
      * Used internally by Resource.
      * Converts a Variant into a literal value to be used in the RDF store.
+     * Uses the language set in the current KDE session.
      */
-    KMETADATA_EXPORT QString valueToRDFLiteral( const Variant& );
-
-    /**
-     * Used internally by Resource.
-     * Converts a list Variant into a literal value to be used in the RDF store.
-     */
-    KMETADATA_EXPORT QStringList valuesToRDFLiterals( const Variant& );
+    KMETADATA_EXPORT QList<RDF::Node> valuesToRDFNodes( const Variant& );
+    KMETADATA_EXPORT RDF::Node valueToRDFNode( const Variant& );
 
     /**
      * Used internally by Resource.
      * Converts a literal value from the RDF store into a Variant.
      */
-    KMETADATA_EXPORT Variant RDFLiteralToValue( const QString& );
+    KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
 
     /**
      * If \a uri does not have a namespace, append the default one.

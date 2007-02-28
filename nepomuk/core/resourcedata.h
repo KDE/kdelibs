@@ -158,6 +158,11 @@ namespace Nepomuk {
 	bool merge();
 
 	/**
+	 * Merge in the differences between this and \a other.
+	 */
+	void mergeIn( const ResourceData* other );
+
+	/**
 	 * Start a thread-safe sync operation.
 	 * Use this method to mark the state of the resource data to be the one being
 	 * synced back.
@@ -263,6 +268,14 @@ namespace Nepomuk {
 	static QHash<QString, ResourceData*> s_kickoffData;
 
 	static QString s_defaultType;
+
+	/**
+	 * Used to virtually merge two data objects representing the same
+	 * resource. This happens if the resource was once created using its
+	 * actual URI and once via its ID. To prevent early loading we allow
+	 * this scenario.
+	 */
+	ResourceData* m_proxyData;
 
 	friend class ResourceManager;
       };

@@ -182,6 +182,9 @@ namespace Nepomuk {
 	 */
 	void triggerSync();
 
+      private Q_SLOTS:
+	void slotStartAutoSync();
+
       private:
 	ResourceManager();
 

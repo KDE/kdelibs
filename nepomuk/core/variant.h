@@ -250,6 +250,13 @@ namespace Nepomuk {
 	  else
 	    return value<QList<T> >();
 	}
+
+	/**
+	 * Create a Variant object by parsing string \a value based on \a type.
+	 * If \a type is unknown a simple string Variant object is returned
+	 * containing the plain string \a value.
+	 */
+	static Variant fromString( const QString& value, int type );
       };
   }
 }
