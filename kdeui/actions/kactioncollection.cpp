@@ -238,8 +238,8 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
         index_name = index_name.sprintf("unnamed-%p", (void*)action);
 
     // look if we already have THIS action under THIS name ;)
-    QMap<QString, QAction*>::const_iterator it = d->actionByName.find (index_name);
-    while (it != d->actionByName.end() && it.key() == index_name)
+    QMap<QString, QAction*>::const_iterator it = d->actionByName.find(index_name);
+    while (it != d->actionByName.constEnd() && it.key() == index_name)
     {
         if ( it.value() == action )
             return action;
@@ -409,13 +409,13 @@ void KActionCollection::readSettings( KConfigGroup* config )
   if( !config->exists())
     return;
 
-  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
-       it != end; ++it) {
+  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
+       it != d->actionByName.constEnd(); ++it) {
       KAction *kaction = qobject_cast<KAction*>(it.value());
-      QString actionName = it.key();
-
-      if (kaction==0)
+      if (!kaction)
           continue;
+
+      QString actionName = it.key();
 
       if( kaction->isShortcutConfigurable() ) {
           QString entry = config->readEntry(actionName, QString());
@@ -455,13 +455,13 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
 
     // now, iterate through our actions
-    for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
-        it != end; ++it) {
+    for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
+         it != d->actionByName.constEnd(); ++it) {
       KAction *kaction = qobject_cast<KAction*>(it.value());
-      QString actionName = it.key();
-
-      if (kaction==0)
+      if (!kaction)
         continue;
+
+      QString actionName = it.key();
 
       bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
       //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
@@ -497,12 +497,15 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
   else
     writeActions = actions();
 
-  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.begin(), end = d->actionByName.end();
-       it != end; ++it) {
+  for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
+       it != d->actionByName.constEnd(); ++it) {
       KAction *kaction = qobject_cast<KAction*>(it.value());
+      if (!kaction)
+          continue;
+
       QString actionName = it.key();
 
-      if( kaction!=0 && kaction->isShortcutConfigurable() ) {
+      if( kaction->isShortcutConfigurable() ) {
           bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
           bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
