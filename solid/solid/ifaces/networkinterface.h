@@ -162,8 +162,8 @@ namespace Ifaces
         void signalStrengthChanged( int strength );
 
         /**
-         * This signal is emitted when the device's link status changed. For example, if there
-         * is no carrier anymore.
+         * This signal is emitted when the device's connection state changed.
+         * For example, if the device was disconnected and started to activate
          *
          * @param state the new state of the connection
          * @see Solid::NetworkInterface::ConnectionState
