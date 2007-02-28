@@ -41,9 +41,9 @@ namespace Solid
     public:
         enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
         // corresponding to 802.11 capabilities defined in NetworkManager.h
-        enum Capability { Wep = 0x1, Wpa = 0x2, Wpa2 = 0x4, Psk = 0x8,
-                          Ieee8021x = 0x10, Wep40 = 0x20, Wep104 = 0x40, Wep192 = 0x80, Wep256 = 0x100,
-                          WepOther = 0x200, Tkip = 0x400, Ccmp = 0x800 };
+        enum Capability { Unencrypted = 0x1, Wep = 0x2, Wpa = 0x4, Wpa2 = 0x8, Psk = 0x10,
+                          Ieee8021x = 0x20, Wep40 = 0x40, Wep104 = 0x80, Wep192 = 0x100, Wep256 = 0x200,
+                          WepOther = 0x400, Tkip = 0x800, Ccmp = 0x1000 };
         Q_DECLARE_FLAGS( Capabilities, Capability )
 
 
