@@ -2083,16 +2083,26 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
         case Line:
           if ( newCursor.line() > selStartCached.line() )
           {
-            selectAnchor = selStartCached;
             if ( newCursor.line()+1 >= m_doc->numLines() )
               newCursor.setCol( m_doc->textLine( newCursor.line() ).length() );
             else
               newCursor.setPos( newCursor.line() + 1, 0 );
+            // Grow to include entire line
+            selectAnchor = selStartCached;
+            selectAnchor.setCol( 0 );
           }
           else if ( newCursor.line() < selStartCached.line() )
           {
-            selectAnchor = selEndCached;
             newCursor.setCol( 0 );
+            // Grow to include entire line
+            selectAnchor = selEndCached;
+            if ( selectAnchor.col() > 0 )
+            {
+              if ( selectAnchor.line()+1 >= m_doc->numLines() )
+                selectAnchor.setCol( m_doc->textLine( selectAnchor.line() ).length() );
+              else
+                selectAnchor.setPos( selectAnchor.line() + 1, 0 );
+            }
           }
           else // same line, ignore
             doSelect = false;
@@ -2744,10 +2754,10 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       if ( e->state() & Qt::ShiftButton )
       {
         // FIXME this is totally broken right now
-        selStartCached = m_view->selectStart;
-        selEndCached = m_view->selectEnd;
-        updateSelection( cursor, true );
-        updateCursor( selEndCached );
+//         selStartCached = m_view->selectStart;
+//         selEndCached = m_view->selectEnd;
+//         updateSelection( cursor, true );
+//         updateCursor( selEndCached );
       }
       else
       {
@@ -2819,7 +2829,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
         QApplication::clipboard()->setSelectionMode( false );
         // Set cursor to edge of selection... which edge depends on what
         // "direction" the selection was made in
-        if ( m_view->selectStart < selStartCached )
+        if ( m_view->selectStart < selectAnchor )
           updateCursor( m_view->selectStart );
         else
           updateCursor( m_view->selectEnd );
