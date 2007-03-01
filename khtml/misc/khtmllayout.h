@@ -101,7 +101,7 @@ namespace khtml
             struct {
                 signed int value : 28;
                 unsigned type : 3;
-                bool quirk : 1;
+                unsigned quirk : 1;
             } l;
             quint32 _length;
         };

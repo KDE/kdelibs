@@ -863,7 +863,7 @@ protected:
                 EEmptyCell _empty_cells : 1 ;
                 ECaptionSide _caption_side : 2;
                 EListStyleType _list_style_type : 6;
-                EListStylePosition _list_style_position :1;
+                EListStylePosition _list_style_position : 1;
 
                 EVisibility _visibility : 2;
                 ETextAlign _text_align : 4;
@@ -872,14 +872,14 @@ protected:
                 ECursor _cursor_style : 5;
 
                 EDirection _direction : 1;
-                bool _border_collapse : 1 ;
+                unsigned _border_collapse : 1 ;
                 EWhiteSpace _white_space : 3;
                 // non CSS2 inherited
-                bool _visuallyOrdered : 1;
-                bool _htmlHacks :1;
+                unsigned _visuallyOrdered : 1;
+                unsigned _htmlHacks : 1;
                 EUserInput _user_input : 2;
 
-                bool _page_break_inside : 1; // AUTO/AVOID
+                unsigned _page_break_inside : 1; // AUTO/AVOID
 
                 unsigned int unused : 27;
             } f;
@@ -906,20 +906,20 @@ protected:
                 EPosition _position : 2;
                 EFloat _floating : 3;
                 ETableLayout _table_layout : 1;
-                bool _flowAroundFloats :1;
+                unsigned _flowAroundFloats : 1;
 
                 EPageBreak _page_break_before : 3;
                 EPageBreak _page_break_after : 3;
 
                 PseudoId _styleType : 4;
-                bool _hasClip : 1;
+                unsigned _hasClip : 1;
                 unsigned _pseudoBits : 8;
                 EUnicodeBidi _unicodeBidi : 2;
 
                 // non CSS2 non-inherited
-                bool _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
+                unsigned _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
 
-                bool _inherited_noninherited : 1;
+                unsigned _inherited_noninherited : 1;
 
                 unsigned int unused : 10;
             } f;
