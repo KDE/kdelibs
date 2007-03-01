@@ -15,8 +15,6 @@
  * - kdesu_stub      Header              "ok" | "stop"
  * - display         X11 display         string
  * - display_auth    X11 authentication  "type cookie" pair
- * - dcopserver      KDE dcopserver      csl of netids
- * - dcop_auth       DCOP authentication csl of "type cookie" pairs for DCOP
  * - ice_auth        ICE authentication  csl of "type cookie" pairs for ICE
  * - command         Command to run      string
  * - path            PATH env. var       string
@@ -68,8 +66,6 @@ struct param_struct params[] =
     { "kdesu_stub", 0L },
     { "display", 0L },
     { "display_auth", 0L },
-    { "dcopserver", 0L },
-    { "dcop_auth", 0L },
     { "ice_auth", 0L },
     { "command", 0L },
     { "path", 0L },
