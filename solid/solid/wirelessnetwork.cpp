@@ -74,9 +74,9 @@ int Solid::WirelessNetwork::signalStrength() const
     return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), 0, signalStrength() );
 }
 
-int Solid::WirelessNetwork::bitRate() const
+int Solid::WirelessNetwork::bitrate() const
 {
-    return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), 0, bitRate() );
+    return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), 0, bitrate() );
 }
 
 int Solid::WirelessNetwork::frequency() const

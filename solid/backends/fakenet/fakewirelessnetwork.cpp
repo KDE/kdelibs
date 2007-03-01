@@ -37,7 +37,7 @@ int FakeWirelessNetwork::signalStrength() const
     return mPropertyMap[ "signalstrength" ].toInt();
 }
 
-int FakeWirelessNetwork::bitRate() const
+int FakeWirelessNetwork::bitrate() const
 {
     return mPropertyMap[ "bitrate" ].toInt();
 }

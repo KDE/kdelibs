@@ -47,7 +47,7 @@ public:
     // PHY stuff
     int signalStrength() const;
 
-    int bitRate() const;
+    int bitrate() const;
 
     int frequency() const;
 

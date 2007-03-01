@@ -60,7 +60,7 @@ namespace Ifaces
          *
          * @return the bitrate in bit/s
          */
-        virtual int bitRate() const = 0;
+        virtual int bitrate() const = 0;
 
         /**
          * Retrieves the frequency of this wifi network.

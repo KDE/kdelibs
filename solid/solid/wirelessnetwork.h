@@ -80,7 +80,7 @@ namespace Solid
          *
          * @return the bitrate in bit/s
          */
-        int bitRate() const;
+        int bitrate() const;
 
         /**
          * Retrieves the frequency of this wifi network.
