@@ -62,9 +62,7 @@ class KFileItemDelegate::Private
         QString replaceNewlines(const QString &string) const;
         inline KFileItem fileItem(const QModelIndex &index) const;
         inline QFont font(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
-        QString elideText(QTextLayout &layout, const QStyleOptionViewItem &option,
-                          const QString &text, const QSize maxSize) const;
-        QString elidedWordWrappedText(QTextLayout &layout, const QString &text, const QSize &maxSize) const;
+        QString elidedText(QTextLayout &layout, const QStyleOptionViewItem &option, const QSize &maxSize) const;
         QSize layoutText(QTextLayout &layout, const QStyleOptionViewItem &option,
                          const QString &text, const QSize &constraints) const;
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
@@ -178,22 +176,6 @@ bool KFileItemDelegate::Private::wordWrapText(const QStyleOptionViewItem &option
 }
 
 
-QString KFileItemDelegate::Private::elideText(QTextLayout &layout, const QStyleOptionViewItem &option,
-                                               const QString &text, const QSize maxSize) const
-{
-    if (wordWrapText(option))
-        return elidedWordWrappedText(layout, text, maxSize);
-
-    // If the string contains a single line
-    if (text.indexOf(QChar::LineSeparator) == -1)
-        return QFontMetrics(layout.font()).elidedText(text, option.textElideMode, maxSize.width());
-
-    // ### Handle text with line separators
-
-    return QString();
-}
-
-
 // Returns the size of a file, or the number of items in a directory, as a QString
 QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFileItem &item) const
 {
@@ -303,9 +285,10 @@ QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QStyleOp
                                              const QString &text, const QSize &constraints) const
 {
     const QSize size = layoutText(layout, text, constraints.width());
+
     if (size.width() > constraints.width() || size.height() > constraints.height())
     {
-        const QString elided = elideText(layout, option, text, constraints);
+        const QString elided = elidedText(layout, option, constraints);
         return layoutText(layout, elided, constraints.width());
     }
 
@@ -339,47 +322,53 @@ QSize KFileItemDelegate::Private::layoutText(QTextLayout &layout, const QString 
 }
 
 
-// Elides word wrapped text, by laying out as many lines as will fit in the size constraints,
-// and adding an ellipses at the end of the last line. The only elide mode supported is currently
-// Qt::ElideRight.
-QString KFileItemDelegate::Private::elidedWordWrappedText(QTextLayout &layout, const QString &text,
-                                                          const QSize &size) const
+// Elides the text in the layout, by iterating over each line in the layout, eliding
+// or word breaking the line if it's wider than the max width, and finally adding an
+// ellipses at the end of the last line, if there are more lines than will fit within
+// the vertical size constraints.
+QString KFileItemDelegate::Private::elidedText(QTextLayout &layout, const QStyleOptionViewItem &option,
+                                               const QSize &size) const
 {
     QFontMetrics metrics(layout.font());
-    int elideStart = 0;
-    int elideAfter = 0;
-    int maxWidth   = size.width();
-    int maxHeight  = size.height();
-    int height     = 0;
-    QTextLine line;
+    const QString text = layout.text();
+    int maxWidth       = size.width();
+    int maxHeight      = size.height();
+    qreal height       = 0;
 
-    layout.setText(text);
+    // If the string contains a single line of text that shouldn't be word wrapped
+    if (!wordWrapText(option) && text.indexOf(QChar::LineSeparator) == -1)
+        return metrics.elidedText(text, option.textElideMode, maxWidth);
 
-    // Keep laying out lines until we run out of horizontal or vertical
-    // space, and mark the position in the string where that line begins.
-    // We'll elide all the text from that position, using size.width().
-    layout.beginLayout();
-    while ((line = layout.createLine()).isValid())
+    // Elide each line that has already been layed out in the layout.
+    QString elided;
+    elided.reserve(text.length());
+
+    for (int i = 0; i < layout.lineCount(); i++)
     {
-        line.setLineWidth(maxWidth);
-        height += metrics.leading() + int(line.height());
+        QTextLine line = layout.lineAt(i);
+        int start  = line.textStart();
+        int length = line.textLength();
 
-        if (height + metrics.lineSpacing() > maxHeight ||
-            line.naturalTextWidth() > maxWidth)
+        height += metrics.leading();
+        if (height + line.height() + metrics.lineSpacing() > maxHeight)
         {
-            elideStart = line.textStart();
+            // Unfortunately, if the line ends because of a line separator, elidedText() will be too
+            // clever and keep adding lines until it finds one that's too wide.
+            if (line.naturalTextWidth() < maxWidth && text[start + length - 1] == QChar::LineSeparator)
+                elided += text.mid(start, length - 1);
+            else
+                elided += metrics.elidedText(text.mid(start), option.textElideMode, maxWidth);
             break;
         }
+        else if (line.naturalTextWidth() > maxWidth)
+            elided += metrics.elidedText(text.mid(start, length), option.textElideMode, maxWidth);
+        else
+            elided += text.mid(start, length);
 
-        elideAfter = line.textStart() + line.textLength();
+        height += line.height();
     }
-    layout.endLayout();
 
-    if (elideAfter > 0)
-        return text.left(elideAfter) +
-                metrics.elidedText(text.mid(elideStart), Qt::ElideRight, maxWidth);
-
-    return metrics.elidedText(text, Qt::ElideRight, maxWidth);
+    return elided;
 }
 
 
