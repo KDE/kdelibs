@@ -19,17 +19,11 @@
 
 #include "formfile.h"
 
-//#include <QByteArray>
-//#include <QBuffer>
-//#include <QRegExp>
 #include <QFile>
-//#include <QMetaObject>
 #include <QMetaEnum>
-//#include <QKeyEvent>
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-//#include <QStackedLayout>
 #include <QSizePolicy>
 #include <QApplication>
 
@@ -41,7 +35,6 @@
 #include <kshell.h>
 #include <kicon.h>
 #include <kurlbar.h>
-//#include <kaction.h>
 #include <kactioncollection.h>
 //#include <kmessagebox.h>
 

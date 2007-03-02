@@ -40,11 +40,54 @@ namespace Kross {
      * to by the matching @a Kross::Interpreter created @a Kross::Script
      * instance.
      *
+     * The \a Manager takes care of handling the Action instances
+     * application width.
+     *
      * Once you've such a Action instance you're able to perform actions
      * with it like to execute scripting code.
      *
-     * The \a Manager takes care of handling the Action instances
-     * application width.
+     * Following sample shows "Hello World." executed with the python
+     * interpreter;
+     * \code
+     * # Create a new Kross::Action instance.
+     * Kross::Action* action = new Kross::Action(0,"MyFirstScript");
+     * # Set the interpreter we like to use. This could be e.g. "python", "ruby" or "kjs".
+     * action->setInterpreter("python");
+     * # Set the scripting code.
+     * action->setCode("print \"Hello World.\"");
+     * # Execute the scripting code.
+     * action->trigger();
+     * \endcode
+     *
+     * Following sample demonstrates how to execute an external python script
+     * file. The script file itself is named "mytest.py" and contains;
+     * \code
+     * # this function got called from within C++
+     * def myfunction(args):
+     *     print "Arguments are: %s" % args
+     * # Import the published QObject's
+     * import MyFirstQObject, MySecondQObject
+     * # Call a slot MyFirstQObject provides.
+     * MyFirstQObject.someSlot("Some string")
+     * # Set a property MySecondQObject provides.
+     * MySecondQObject.someProperty = "Other string"
+     * \endcode
+     * Then you are able to load the script file, publish QObject instances
+     * and let the script do whatever it likes to do;
+     * \code
+     * # Publish a QObject instance for all Kross::Action instances.
+     * Kross::Manager::self().addChild(myqobject1, "MyFirstQObject")
+     * # Create a new Kross::Action instance.
+     * Kross::Action* action = new Kross::Action(0,"MySecondScript");
+     * # Publish a QObject instance only for the Kross::Action instance.
+     * action->addChild(myqobject2, "MySecondQObject");
+     * # Set the script file we like to execute.
+     * action->setFile("/home/myuser/mytest.py");
+     * # Execute the script file.
+     * action->trigger();
+     * # Call the "myfunction" defined in the "mytest.py" python script.
+     * QVariant result = action->callFunction("myfunction", QVariantList()<<"Arg");
+     * \endcode
      */
     class KROSSCORE_EXPORT Action : public QAction, public ChildrenInterface, public ErrorInterface
     {

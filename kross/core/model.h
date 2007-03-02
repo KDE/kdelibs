@@ -21,7 +21,6 @@
 #define KROSS_MODEL_H
 
 #include "krossconfig.h"
-//#include "../core/action.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -71,9 +70,17 @@ namespace Kross {
 
             virtual Qt::DropActions supportedDropActions() const;
 
+            /**
+            * \return the \a Action instance the as argument passed QModelIndex
+            * represents or NULL if the QModelIndex is not a \a Action .
+            */
             static Action* action(const QModelIndex& index);
-            static ActionCollection* collection(const QModelIndex& index);
 
+            /**
+            * \return the \a ActionCollection instance the as argument passed QModelIndex
+            * represents or NULL if the QModelIndex is not a \a ActionCollection .
+            */
+            static ActionCollection* collection(const QModelIndex& index);
 
         private:
             /// \internal d-pointer class.
@@ -93,7 +100,9 @@ namespace Kross {
             virtual ~ActionCollectionProxyModel();
 
         private:
+            /// Set the \a ActionCollectionModel source model we are proxy for.
             virtual void setSourceModel(QAbstractItemModel* sourceModel);
+            /// Implements a filter for the QModelIndex instances.
             virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
     };
 

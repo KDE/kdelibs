@@ -114,6 +114,7 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
 QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex& parent) const
 {
     ActionCollectionModelItem* item = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
+    Q_ASSERT( item && item->type == ActionCollectionModelItem::CollectionType );
     const int count = item->collection->actions().count();
     if( row < count ) {
         Action* action = dynamic_cast< Action* >( item->collection->actions().value(row) );
@@ -142,7 +143,7 @@ Qt::ItemFlags ActionCollectionModel::flags(const QModelIndex &index) const
     if( ! index.isValid() )
         return Qt::ItemIsDropEnabled /*| Qt::ItemIsEnabled*/ | flags;
 
-    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled; //FIXME: CRASHES
+    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     //flags |= Qt::ItemIsEditable;
 
     if( (index.column() == 0) && (d->mode & UserCheckable) )
@@ -237,6 +238,20 @@ bool ActionCollectionModel::setData(const QModelIndex &index, const QVariant &va
 bool ActionCollectionModel::insertRows(int row, int count, const QModelIndex& parent)
 {
     krossdebug( QString("ActionCollectionModel::insertRows: row=%1 count=%2").arg(row).arg(count) );
+    if( ! parent.isValid() )
+        return false;
+
+    ActionCollectionModelItem* parentitem = static_cast<ActionCollectionModelItem*>(parent.internalPointer());
+    switch( parentitem->type ) {
+        case ActionCollectionModelItem::ActionType: {
+            krossdebug( QString("ActionCollectionModel::insertRows: parentindex is Action with name=%1").arg(parentitem->action->name()) );
+        } break;
+        case ActionCollectionModelItem::CollectionType: {
+            krossdebug( QString("ActionCollectionModel::insertRows: parentindex is ActionCollection with name=%1").arg(parentitem->collection->name()) );
+        } break;
+        default: break;
+    }
+
     return QAbstractItemModel::insertRows(row, count, parent);
 }
 
@@ -269,14 +284,14 @@ QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
     //krossdebug( QString("ActionCollectionModel::mimeData") );
     QMimeData* mimeData = new QMimeData();
     QByteArray encodedData;
-    /*
+
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     foreach(QModelIndex index, indexes) {
         if( ! index.isValid() ) continue;
         QString text = data(index, Qt::DisplayRole).toString();
         stream << text;
     }
-    */
+
     mimeData->setData("application/vnd.text.list", encodedData);
     return mimeData;
 }
@@ -289,8 +304,47 @@ bool ActionCollectionModel::dropMimeData(const QMimeData* data, Qt::DropAction a
     if( column > 0 ) return false;
 
     //FIXME: return false for now since insertRows/removeRows need to be implemented before!
+    //return false;
+
+    /*
+    int beginRow;
+    if( row != -1 )
+        beginRow = row;
+    else if( parent.isValid() )
+        beginRow = parent.row();
+    else
+        beginRow = rowCount( QModelIndex() );
+    */
+
+    if( parent.isValid() ) {
+        ActionCollectionModelItem* parentitem = static_cast<ActionCollectionModelItem*>(parent.internalPointer());
+        switch( parentitem->type ) {
+            case ActionCollectionModelItem::ActionType: {
+                krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is Action with name=%1").arg(parentitem->action->name()) );
+            } break;
+            case ActionCollectionModelItem::CollectionType: {
+                krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is ActionCollection with name=%1").arg(parentitem->collection->name()) );
+            } break;
+            default: break;
+        }
+    }
+    else
+        krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is Invalid") );
+
+    krossdebug( QString("ActionCollectionModel::dropMimeData: ENCODED DATA:") );
+    QByteArray encodedData = data->data("application/vnd.text.list");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QStringList newItems;
+    int rows = 0;
+    while( ! stream.atEnd() ) {
+        QString text;
+        stream >> text;
+        newItems << text;
+        krossdebug( QString("  %1 \"%2\"").arg(rows).arg(text) );
+        ++rows;
+    }
+
     return false;
-    //return true;
     //return QAbstractItemModel::dropMimeData(data, action, row, column, parent);
 }
 
@@ -322,6 +376,7 @@ ActionCollectionProxyModel::~ActionCollectionProxyModel()
 
 void ActionCollectionProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 {
+    Q_ASSERT( dynamic_cast< ActionCollectionModel* >(sourceModel) );
     QSortFilterProxyModel::setSourceModel(sourceModel);
 }
 

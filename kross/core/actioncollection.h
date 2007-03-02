@@ -136,6 +136,7 @@ namespace Kross {
 
             QList<Action*> actions() const;
             Action* action(const QString& name) const;
+            void addAction(Action* action);
             void addAction(const QString& name, Action* action);
             void removeAction(const QString& name);
             void removeAction(Action* action);

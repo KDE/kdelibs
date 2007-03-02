@@ -270,8 +270,25 @@ void ScriptManagerCollection::slotEdit()
 
 void ScriptManagerCollection::slotAdd()
 {
-    ScriptManagerAddWizard wizard(this);
-    int result = wizard.execWizard();
+    ActionCollection* collection = 0;
+    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
+        if( ! index.isValid() ) continue;
+        if( ActionCollectionModel::action(index) ) {
+            //TODO propably add the item right after the current selected one?
+            QModelIndex parent = index;
+            while( parent.isValid() && ! collection ) {
+                parent = d->view->model()->parent(parent);
+                collection = ActionCollectionModel::collection(parent);
+            }
+            if( collection ) break; // job done
+        }
+        else if( ActionCollection* c = ActionCollectionModel::collection(index) ) {
+            collection = c;
+            break; // job done
+        }
+    }
+    ScriptManagerAddWizard wizard(this, collection);
+    int result = wizard.exec();
     Q_UNUSED(result);
 }
 

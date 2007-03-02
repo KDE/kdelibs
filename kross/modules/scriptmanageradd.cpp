@@ -27,18 +27,16 @@
 #include "../core/action.h"
 #include "../core/actioncollection.h"
 
+#include <QFileInfo>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-//#include <QLineEdit>
-//#include <QComboBox>
-//#include <QCheckBox>
 #include <QRadioButton>
-//#include <kdeversion.h>
-//#include <kconfig.h>
 
+//#include <kdeversion.h>
 #include <klocale.h>
-#include <kassistantdialog.h>
+#include <kurl.h>
+#include <kmimetype.h>
 
 using namespace Kross;
 
@@ -46,12 +44,15 @@ using namespace Kross;
  * ScriptManagerAddTypeWidget
  */
 
-ScriptManagerAddTypeWidget::ScriptManagerAddTypeWidget(ScriptManagerAddWizard* wizard, QWidget* parent)
-    : QWidget(parent), m_wizard(wizard)
+ScriptManagerAddTypeWidget::ScriptManagerAddTypeWidget(ScriptManagerAddWizard* wizard)
+    : QWidget(wizard), m_wizard(wizard)
 {
+    setObjectName("ScriptManagerAddTypeWidget");
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
-    layout->addWidget( new QLabel(i18n("<qt>This wizard will guide you through the proccess of adding a new item to your scripts.</qt>"), this) );
+    QLabel* label = new QLabel(i18n("<qt>This wizard will guide you through the proccess of adding a new resource to your scripts.</qt>"), this);
+    label->setWordWrap(true);
+    layout->addWidget(label);
     layout->addSpacing(10);
 
     m_scriptCheckbox = new QRadioButton(i18n("Add script file"), this);
@@ -73,11 +74,15 @@ ScriptManagerAddTypeWidget::ScriptManagerAddTypeWidget(ScriptManagerAddWizard* w
     layout->addStretch(1);
 }
 
+ScriptManagerAddTypeWidget::~ScriptManagerAddTypeWidget()
+{
+}
+
 void ScriptManagerAddTypeWidget::slotUpdate()
 {
-    m_wizard->m_dialog->setAppropriate(m_wizard->m_fileItem, m_scriptCheckbox->isChecked());
-    m_wizard->m_dialog->setAppropriate(m_wizard->m_scriptItem, m_scriptCheckbox->isChecked());
-    m_wizard->m_dialog->setAppropriate(m_wizard->m_collectionItem, m_collectionCheckbox->isChecked());
+    m_wizard->setAppropriate(m_wizard->m_fileItem, m_scriptCheckbox->isChecked());
+    m_wizard->setAppropriate(m_wizard->m_scriptItem, m_scriptCheckbox->isChecked());
+    m_wizard->setAppropriate(m_wizard->m_collectionItem, m_collectionCheckbox->isChecked());
     //m_installCheckBox->isChecked()
     //m_onlineCheckbox->isChecked()
 }
@@ -86,13 +91,25 @@ void ScriptManagerAddTypeWidget::slotUpdate()
  * ScriptManagerAddFileWidget
  */
 
-ScriptManagerAddFileWidget::ScriptManagerAddFileWidget(ScriptManagerAddWizard* wizard, QWidget* parent, const QString& startDirOrVariable)
-    : QWidget(parent), m_wizard(wizard)
+namespace Kross {
+    /// \internal d-pointer class.
+    class ScriptManagerAddFileWidget::Private
+    {
+        public:
+            ScriptManagerAddWizard* const wizard;
+            FormFileWidget* filewidget;
+            explicit Private(ScriptManagerAddWizard* const w): wizard(w), filewidget(0) {}
+    };
+}
+
+ScriptManagerAddFileWidget::ScriptManagerAddFileWidget(ScriptManagerAddWizard* wizard, const QString& startDirOrVariable)
+    : QWidget(wizard), d(new Private(wizard))
 {
+    setObjectName("ScriptManagerAddFileWidget");
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
     setLayout(layout);
-    m_filewidget = new FormFileWidget(this, startDirOrVariable);
+    d->filewidget = new FormFileWidget(this, startDirOrVariable);
 
     QStringList mimetypes;
     foreach(QString interpretername, Manager::self().interpreters()) {
@@ -100,44 +117,110 @@ ScriptManagerAddFileWidget::ScriptManagerAddFileWidget(ScriptManagerAddWizard* w
         Q_ASSERT( info );
         mimetypes.append( info->mimeTypes().join(" ").trimmed() );
     }
-    m_filewidget->setMimeFilter(mimetypes /*, defaultmime*/);
+    d->filewidget->setMimeFilter(mimetypes /*, defaultmime*/);
 
-    layout->addWidget( m_filewidget );
-    connect(m_filewidget, SIGNAL(fileHighlighted(const QString&)), this, SLOT(slotUpdate()));
-    connect(m_filewidget, SIGNAL(fileSelected(const QString&)), this, SLOT(slotUpdate()));
+    layout->addWidget( d->filewidget );
+    connect(d->filewidget, SIGNAL(fileHighlighted(const QString&)), this, SLOT(slotUpdate()));
+    connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SLOT(slotUpdate()));
+}
+
+ScriptManagerAddFileWidget::~ScriptManagerAddFileWidget()
+{
+    delete d;
+}
+
+QString ScriptManagerAddFileWidget::selectedFile() const
+{
+    return d->filewidget->selectedFile();
 }
 
 void ScriptManagerAddFileWidget::slotUpdate()
 {
-    m_wizard->m_dialog->setValid(m_wizard->m_fileItem, ! m_filewidget->selectedFile().isEmpty());
+    d->wizard->setValid(d->wizard->m_fileItem, ! d->filewidget->selectedFile().isEmpty());
 }
 
 /********************************************************************
  * ScriptManagerAddScriptWidget
  */
 
-ScriptManagerAddScriptWidget::ScriptManagerAddScriptWidget(ScriptManagerAddWizard* wizard, QWidget* parent)
-    : QWidget(parent), m_wizard(wizard)
+namespace Kross {
+    /// \internal d-pointer class.
+    class ScriptManagerAddScriptWidget::Private
+    {
+        public:
+            ScriptManagerAddWizard* const wizard;
+            ScriptManagerEditor* editor;
+            explicit Private(ScriptManagerAddWizard* const w): wizard(w), editor(0) {}
+    };
+}
+
+ScriptManagerAddScriptWidget::ScriptManagerAddScriptWidget(ScriptManagerAddWizard* wizard)
+    : QWidget(wizard), d(new Private(wizard))
 {
+    setObjectName("ScriptManagerAddScriptWidget");
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
-    Action* action = new Action(0, "");
-    m_editor = new ScriptManagerEditor(action, this);
-    layout->addWidget(m_editor);
+}
+
+ScriptManagerAddScriptWidget::~ScriptManagerAddScriptWidget()
+{
+    delete d;
 }
 
 void ScriptManagerAddScriptWidget::slotUpdate()
 {
-    m_wizard->m_dialog->setValid(m_wizard->m_scriptItem, m_editor->isValid());
+    d->wizard->setValid(d->wizard->m_scriptItem, d->editor && d->editor->isValid());
+}
+
+void ScriptManagerAddScriptWidget::showEvent(QShowEvent* event)
+{
+    Action* action = 0;
+    if( d->editor ) {
+        action = d->editor->action();
+        delete d->editor;
+    }
+    if( ! action )
+        action = new Action(0, "");
+
+    const QString file = d->wizard->m_filewidget->selectedFile();
+    QFileInfo fi( file );
+    action->setObjectName( file );
+    action->setText( fi.baseName() );
+    //action->setDescription();
+    if( fi.isFile() ) {
+        action->setIconName( KMimeType::iconNameForUrl(KUrl(file)) );
+        action->setEnabled( fi.exists() );
+    }
+    action->setFile( file );
+
+    d->editor = new ScriptManagerEditor(action, this);
+    layout()->addWidget(d->editor);
+
+    QWidget::showEvent(event);
+    slotUpdate();
+}
+
+bool ScriptManagerAddScriptWidget::accept()
+{
+    kDebug()<<"ScriptManagerAddScriptWidget::accept()"<<endl;
+    Q_ASSERT( d->editor );
+    Q_ASSERT( d->editor->action() );
+    Q_ASSERT( d->wizard );
+    Q_ASSERT( d->wizard->m_collection );
+    d->editor->commit(); // take over changes done in the editor into the action
+    d->wizard->m_collection->addAction( d->editor->action() ); // add the action to the collection
+    //TODO select new item
+    return true;
 }
 
 /********************************************************************
  * ScriptManagerAddCollectionWidget
  */
 
-ScriptManagerAddCollectionWidget::ScriptManagerAddCollectionWidget(ScriptManagerAddWizard* wizard, QWidget* parent)
-    : QWidget(parent), m_wizard(wizard)
+ScriptManagerAddCollectionWidget::ScriptManagerAddCollectionWidget(ScriptManagerAddWizard* wizard)
+    : QWidget(wizard), m_wizard(wizard)
 {
+    setObjectName("ScriptManagerAddCollectionWidget");
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
     ActionCollection* collection = new ActionCollection("");
@@ -145,52 +228,85 @@ ScriptManagerAddCollectionWidget::ScriptManagerAddCollectionWidget(ScriptManager
     layout->addWidget(m_editor);
 }
 
+ScriptManagerAddCollectionWidget::~ScriptManagerAddCollectionWidget()
+{
+}
+
 void ScriptManagerAddCollectionWidget::slotUpdate()
 {
-    m_wizard->m_dialog->setValid(m_wizard->m_collectionItem, m_editor->isValid());
+    m_wizard->setValid(m_wizard->m_collectionItem, m_editor->isValid());
 }
 
 /********************************************************************
  * ScriptManagerAddWizard
  */
 
-ScriptManagerAddWizard::ScriptManagerAddWizard(QWidget* parent)
-    : QObject()
+ScriptManagerAddWizard::ScriptManagerAddWizard(QWidget* parent, ActionCollection* collection)
+    : KAssistantDialog(parent), m_collection(collection ? collection : Manager::self().actionCollection())
 {
-    m_dialog = new KAssistantDialog(parent);
-    m_dialog->setCaption( i18n("Add") );
+    Q_ASSERT(m_collection);
+    setObjectName("ScriptManagerAddWizard");
+    setCaption( i18n("Add") );
 
-    ScriptManagerAddTypeWidget* typewidget = new ScriptManagerAddTypeWidget(this, m_dialog);
-    m_typeItem = m_dialog->addPage(typewidget, i18n("Add"));
+    m_typewidget = new ScriptManagerAddTypeWidget(this);
+    m_typeItem = addPage(m_typewidget, i18n("Add"));
 
     const QString startDirOrVariable = "kfiledialog:///scriptmanageraddfile";
-    ScriptManagerAddFileWidget* filewidget = new ScriptManagerAddFileWidget(this, m_dialog, startDirOrVariable);
-    m_fileItem = m_dialog->addPage(filewidget, i18n("Script File"));
+    m_filewidget = new ScriptManagerAddFileWidget(this, startDirOrVariable);
+    m_fileItem = addPage(m_filewidget, i18n("Script File"));
 
-    ScriptManagerAddScriptWidget* scriptwidget = new ScriptManagerAddScriptWidget(this, m_dialog);
-    m_scriptItem = m_dialog->addPage(scriptwidget, i18n("Script"));
+    m_scriptwidget = new ScriptManagerAddScriptWidget(this);
+    m_scriptItem = addPage(m_scriptwidget, i18n("Script"));
 
-    ScriptManagerAddCollectionWidget* collectionwidget = new ScriptManagerAddCollectionWidget(this, m_dialog);
-    m_collectionItem = m_dialog->addPage(collectionwidget, i18n("Collection"));
+    m_collectionwidget = new ScriptManagerAddCollectionWidget(this);
+    m_collectionItem = addPage(m_collectionwidget, i18n("Collection"));
 
-    m_dialog->resize( QSize(620, 460).expandedTo( m_dialog->minimumSizeHint() ) );
+    resize( QSize(620, 460).expandedTo( minimumSizeHint() ) );
 
-    //connect(m_dialog, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), this, SLOT(slotUpdate()));
-    typewidget->slotUpdate();
-    filewidget->slotUpdate();
-    scriptwidget->slotUpdate();
-    collectionwidget->slotUpdate();
+    //connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), this, SLOT(slotUpdate()));
+    m_typewidget->slotUpdate();
+    m_filewidget->slotUpdate();
+    m_scriptwidget->slotUpdate();
+    m_collectionwidget->slotUpdate();
 }
 
 ScriptManagerAddWizard::~ScriptManagerAddWizard()
 {
-    delete m_dialog;
-    m_dialog = 0;
 }
 
-int ScriptManagerAddWizard::execWizard()
+int ScriptManagerAddWizard::exec()
 {
-    return m_dialog->exec();
+    return KAssistantDialog::exec();
+}
+
+bool ScriptManagerAddWizard::invokeWidgetMethod(const char* member)
+{
+    KPageWidget* pagewidget = pageWidget();
+    Q_ASSERT( pagewidget );
+    KPageWidgetItem* item = pagewidget->currentPage();
+    Q_ASSERT( item );
+    bool ok = true;
+    QMetaObject::invokeMethod(item->widget(), member, Q_RETURN_ARG(bool,ok));
+    kDebug()<<"ScriptManagerAddWizard::invokeWidgetMethod object="<<item->widget()->objectName()<<" member="<<member<<" ok="<<ok<<endl;
+    return ok;
+}
+
+void ScriptManagerAddWizard::back()
+{
+    if( invokeWidgetMethod("back") )
+        KAssistantDialog::back();
+}
+
+void ScriptManagerAddWizard::next()
+{
+    if( invokeWidgetMethod("next") )
+        KAssistantDialog::next();
+}
+
+void ScriptManagerAddWizard::accept()
+{
+    if( invokeWidgetMethod("accept") )
+        KAssistantDialog::accept();
 }
 
 #include "scriptmanageradd.moc"

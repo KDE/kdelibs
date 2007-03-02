@@ -101,6 +101,18 @@ namespace Kross {
             virtual ~ScriptManagerEditor();
 
             /**
+            * \return the \a Action instance this editor operates on or
+            * NULL if this editor does not operate on a \a Action instance.
+            */
+            Action* action() const;
+
+            /**
+            * \return the \a ActionCollection instance this editor operates on or
+            * NULL if this editor does not operate on a \a ActionCollection instance.
+            */
+            ActionCollection* collection() const;
+
+            /**
             * \return true if the values within the editor fields are valid.
             */
             bool isValid();

@@ -4,7 +4,6 @@ Always valid:
 * more performance
 * more documentations, tutorials, examples, ...
 * more unittests
-* add Kross-support to other KOffice-applications.
 
 Core:
 * refactor Action::functionNames and Action::callFunction to offer the
@@ -13,11 +12,10 @@ Core:
   each slot represents a function.
 
 Modules:
-* add KConfig-module to provide persistent configurations where all
-  scripts are able to operate on.
 * add KStandardDirs-module to be able to reuse e.g. the resource-stuff
   from within all scripts without much pain.
 * add KPart module to optional load KPart's.
+* make ScriptManager more configurable + reusable
 * extend forms, e.g. with a wizard?!
 
 Ruby:
@@ -25,12 +23,10 @@ Ruby:
   used to wrap a QObject instance should provide access to the child
   QObject instances the wrapped QObject has.
 * support access to the Kross::Manager (global) and Kross::Action (self/this)
-  instances if not done already.
+  instances if not done already?!
 * reimplement connect signal<=>slot support
 * add better dynamic Korundum integration (e.g. trade QObject-instances
-  around between QtRuby and Kross). Korundum misses SIP-like functionality
-  here but since at the end everything is a pointer, it's just a matter
-  of dirty code to get that support done.
+  around between QtRuby and Kross).
 
 Python:
 * uncomment dynamic PyQt-support + regressiontest just every case

@@ -23,24 +23,52 @@
 #include <QObject>
 #include <QWidget>
 
+#include <kassistantdialog.h>
+
 class QRadioButton;
-class KAssistantDialog;
 class KPageWidgetItem;
 
 namespace Kross {
 
     //class Action;
-    //class ActionCollection;
+    class ActionCollection;
     class ScriptManagerCollection;
     class ScriptManagerAddWizard;
     class ScriptManagerEditor;
     class FormFileWidget;
 
+    /**
+    * The ScriptManagerAddTypeWidget widget is the first page within
+    * the \a ScriptManagerAddWizard dialog that displays the different
+    * ways to add resources.
+    *
+    * There exist 4 ways to add resources:
+    *     \li Add script file.
+    *         The next widget will be a \a ScriptManagerAddFileWidget
+    *         widget to choose a script file and then the
+    *         \a ScriptManagerAddScriptWidget widget is displayed to
+    *         tweak the settings for the new \a Action instance before
+    *         it's added.
+    *     \li Add collection folder.
+    *         The next widget will be a \a ScriptManagerAddCollectionWidget
+    *         widget to define the settings for the new \a ActionCollection
+    *         instance before it's added.
+    *     \li Install script package file.
+    *         Not done yet. The idea is to allow to add script packages which
+    *         are simple tarballs + a scripts.rc file that contains the
+    *         settings for the new \a Action and/or \a ActionCollection
+    *         instances that should be added.
+    *     \li Install online script package.
+    *         Not done yet. Same as the "Install script package file" above
+    *         except that GetHotNewStuff is used to fetch the script package
+    *         from an online address.
+    */
     class ScriptManagerAddTypeWidget : public QWidget
     {
             Q_OBJECT
         public:
-            ScriptManagerAddTypeWidget(ScriptManagerAddWizard* wizard, QWidget* parent);
+            explicit ScriptManagerAddTypeWidget(ScriptManagerAddWizard* wizard);
+            virtual ~ScriptManagerAddTypeWidget();
         public Q_SLOTS:
             void slotUpdate();
         private:
@@ -48,35 +76,57 @@ namespace Kross {
             QRadioButton *m_scriptCheckbox, *m_collectionCheckbox, *m_installCheckBox, *m_onlineCheckbox;
     };
 
+    /**
+    * The ScriptManagerAddFileWidget widget displays a simple embedded
+    * KFileDialog to choose a script file (*.py, *.rb, *.js, etc.).
+    */
     class ScriptManagerAddFileWidget : public QWidget
     {
             Q_OBJECT
         public:
-            ScriptManagerAddFileWidget(ScriptManagerAddWizard* wizard, QWidget* parent, const QString& startDirOrVariable);
+            explicit ScriptManagerAddFileWidget(ScriptManagerAddWizard* wizard, const QString& startDirOrVariable = QString());
+            virtual ~ScriptManagerAddFileWidget();
+            /// \return the currently selected file.
+            QString selectedFile() const;
         public Q_SLOTS:
             void slotUpdate();
         private:
-            ScriptManagerAddWizard* m_wizard;
-            FormFileWidget* m_filewidget;
+            class Private;
+            Private* const d;
     };
 
+    /**
+    * The ScriptManagerAddScriptWidget widget displays a \a ScriptManagerEditor
+    * widget to configure the settings of the new \a Action instance.
+    */
     class ScriptManagerAddScriptWidget : public QWidget
     {
             Q_OBJECT
         public:
-            ScriptManagerAddScriptWidget(ScriptManagerAddWizard* wizard, QWidget* parent);
+            explicit ScriptManagerAddScriptWidget(ScriptManagerAddWizard* wizard);
+            virtual ~ScriptManagerAddScriptWidget();
         public Q_SLOTS:
             void slotUpdate();
+            //bool back();
+            //bool next();
+            bool accept();
         private:
-            ScriptManagerAddWizard* m_wizard;
-            ScriptManagerEditor* m_editor;
+            virtual void showEvent(QShowEvent* event);
+        private:
+            class Private;
+            Private* const d;
     };
 
+    /**
+    * The ScriptManagerAddScriptWidget widget displays a \a ScriptManagerEditor
+    * widget to configure the settings of the new \a ActionCollection instance.
+    */
     class ScriptManagerAddCollectionWidget : public QWidget
     {
             Q_OBJECT
         public:
-            ScriptManagerAddCollectionWidget(ScriptManagerAddWizard* wizard, QWidget* parent);
+            explicit ScriptManagerAddCollectionWidget(ScriptManagerAddWizard* wizard);
+            virtual ~ScriptManagerAddCollectionWidget();
         public Q_SLOTS:
             void slotUpdate();
         private:
@@ -84,7 +134,13 @@ namespace Kross {
             ScriptManagerEditor* m_editor;
     };
 
-    class ScriptManagerAddWizard : public QObject
+    /**
+    * The ScriptManagerAddWizard dialog implements a wizard that
+    * guides the user through the process of adding a new resource
+    * like a new \a Action or \a ActionCollection instance to
+    * the scripts-collection.
+    */
+    class ScriptManagerAddWizard : public KAssistantDialog
     {
             Q_OBJECT
             friend class ScriptManagerAddTypeWidget;
@@ -92,13 +148,26 @@ namespace Kross {
             friend class ScriptManagerAddScriptWidget;
             friend class ScriptManagerAddCollectionWidget;
         public:
-            explicit ScriptManagerAddWizard(QWidget* parent);
+            explicit ScriptManagerAddWizard(QWidget* parent, ActionCollection* collection = 0);
             virtual ~ScriptManagerAddWizard();
         public Q_SLOTS:
-            int execWizard();
+            /// Show the modal wizard dialog.
+            virtual int exec();
+            /// Called when the user clicks the Back button.
+            virtual void back();
+            /// Called when the user clicks the Next button.
+            virtual void next();
+            /// Called when the user clicks the Finish button.
+            virtual void accept();
         private:
-            KAssistantDialog* m_dialog;
+            bool invokeWidgetMethod(const char* member);
+        private:
+            ActionCollection* m_collection;
             KPageWidgetItem *m_typeItem, *m_fileItem, *m_scriptItem, *m_collectionItem;
+            ScriptManagerAddTypeWidget *m_typewidget;
+            ScriptManagerAddFileWidget *m_filewidget;
+            ScriptManagerAddScriptWidget *m_scriptwidget;
+            ScriptManagerAddCollectionWidget *m_collectionwidget;
     };
 }
 

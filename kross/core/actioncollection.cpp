@@ -29,7 +29,6 @@
 #include <QFileInfo>
 #include <QDomElement>
 
-//#include <kapplication.h>
 //#include <klocale.h>
 #include <kicon.h>
 #include <kmimetype.h>
@@ -145,14 +144,21 @@ Action* ActionCollection::action(const QString& name) const
     return d->actionMap.contains(name) ? d->actionMap[name] : 0;
 }
 
+void ActionCollection::addAction(Action* action)
+{
+    Q_ASSERT( action && ! action->objectName().isEmpty() );
+    addAction(action->objectName(), action);
+}
+
 void ActionCollection::addAction(const QString& name, Action* action)
 {
+    Q_ASSERT( action && ! name.isEmpty() );
     if( d->actionMap.contains(name) )
         d->actionList.removeAll( d->actionMap[name] );
     d->actionMap.insert(name, action);
     d->actionList.append(action);
     connect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    //emit updated();
+    emit updated();
 }
 
 void ActionCollection::removeAction(const QString& name)
@@ -163,19 +169,19 @@ void ActionCollection::removeAction(const QString& name)
     d->actionList.removeAll(action);
     d->actionMap.remove(name);
     disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    //emit updated();
+    emit updated();
 }
 
 void ActionCollection::removeAction(Action* action)
 {
-    Q_ASSERT(action);
+    Q_ASSERT( action && ! action->objectName().isEmpty() );
     const QString name = action->objectName();
     if( ! d->actionMap.contains(name) )
         return;
     d->actionList.removeAll(action);
     d->actionMap.remove(name);
     disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    //emit updated();
+    emit updated();
 }
 
 /*********************************************************************

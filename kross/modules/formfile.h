@@ -23,7 +23,6 @@
 #include <QString>
 #include <QWidget>
 
-//#include <kpagedialog.h>
 #include <kfiledialog.h>
 
 namespace Kross {

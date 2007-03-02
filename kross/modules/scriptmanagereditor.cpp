@@ -224,6 +224,16 @@ ScriptManagerEditor::~ScriptManagerEditor()
     delete d;
 }
 
+Action* ScriptManagerEditor::action() const
+{
+    return d->type == Private::ActionType ? d->action : 0;
+}
+
+ActionCollection* ScriptManagerEditor::collection() const
+{
+    return d->type == Private::CollectionType ? d->collection : 0;
+}
+
 void ScriptManagerEditor::initGui()
 {
     QVBoxLayout* mainlayout = new QVBoxLayout();

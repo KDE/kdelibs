@@ -253,12 +253,14 @@ QObject* Manager::module(const QString& modulename)
     }
 
     QByteArray libraryname = QString("krossmodule%1").arg(modulename).toLower().toLatin1();
-
     KLibLoader* loader = KLibLoader::self();
     KLibrary* lib = loader->globalLibrary( libraryname );
-    if( ! lib ) {
-        krosswarning( QString("Failed to load module '%1': %2").arg(modulename).arg(loader->lastErrorMessage()) );
-        return 0;
+    if( ! lib ) { //FIXME this fallback-code should be in KLibLoader imho.
+        lib = loader->globalLibrary( QString("lib%1").arg(libraryname.constData()).toLatin1() );
+        if( ! lib ) {
+            krosswarning( QString("Failed to load module '%1': %2").arg(modulename).arg(loader->lastErrorMessage()) );
+            return 0;
+        }
     }
 
     def_module_func func;
