@@ -560,6 +560,8 @@ bool KConfigBase::checkConfigFilesWritable(bool warnUser)
 
 QColor KConfigBase::readEntry(const char* pKey, Qt::GlobalColor aDefault) const
 { return mGroup.readEntry(pKey, QColor(aDefault)); }
+QColor KConfigBase::readEntry(const QString &pKey, Qt::GlobalColor aDefault) const
+{ return mGroup.readEntry(pKey.toLatin1().data(), QColor(aDefault)); }
 QVariant KConfigBase::readPropertyEntry( const QString& pKey, const QVariant& aDefault) const
 { return mGroup.readEntry(pKey, aDefault); }
 QVariant KConfigBase::readPropertyEntry( const char *pKey, const QVariant& aDefault) const
