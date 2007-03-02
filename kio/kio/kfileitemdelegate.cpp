@@ -72,7 +72,6 @@ class KFileItemDelegate::Private
                                      const QModelIndex &index, const KFileItem &item) const;
         inline bool verticalLayout(const QStyleOptionViewItem &option) const;
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
-        inline QPixmap selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QColor &color) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const;
         inline QBrush brush(const QVariant &value) const;
@@ -457,15 +456,6 @@ QPainterPath KFileItemDelegate::Private::roundedRectangle(const QRectF &rect, qr
 }
 
 
-QPixmap KFileItemDelegate::Private::selected(const QStyleOptionViewItem &option, const QPixmap &pixmap) const
-{
-    QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
-            QPalette::Normal : QPalette::Disabled;
-
-    return KPixmapEffect::selectedPixmap(pixmap, option.palette.color(group, QPalette::Highlight));
-}
-
-
 // Extracts the correct pixmap from a QIcon with respect to option
 QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const
 {
@@ -694,7 +684,13 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
         // If the item is selected, and the selection rectangle only covers the
         // text label, blend the pixmap with the highlight color.
         if (!option.showDecorationSelected && option.state & QStyle::State_Selected)
-            pixmap = d->selected(option, pixmap);
+        {
+            QPalette::ColorGroup group = option.state & QStyle::State_Enabled ? 
+                    QPalette::Normal : QPalette::Disabled;
+
+            pixmap = KPixmapEffect::selectedPixmap(pixmap,
+                                option.palette.color(group, QPalette::Highlight));
+        }
 
         // Apply the configured hover effect
         if (option.state & QStyle::State_MouseOver)
