@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE project
 
-   Copyright (C) 2006 Fredrik Höglund <fredrik@kde.org>
+   Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,6 +30,8 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <kiconloader.h>
+#include <kiconeffect.h>
 #include <kpixmapeffect.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
@@ -524,19 +526,36 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
     const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
             QPalette::Normal : QPalette::Disabled;
 
+    QBrush bg(Qt::NoBrush);
+
     // Always use the highlight color for selected items
     if (option.state & QStyle::State_Selected)
-        return option.palette.brush(group, QPalette::Highlight);
+        bg = option.palette.brush(group, QPalette::Highlight);
+    else
+    {
+        // If the item isn't selected, check if model provides its own background
+        // color/brush for this item
+        const QVariant value = index.model()->data(index, Qt::BackgroundRole);
+        if (value.isValid())
+            bg = brush(value);
+    }
 
-    // If the model provides its own background color/brush for this item
-    const QVariant value = index.model()->data(index, Qt::BackgroundRole);
-    if (value.isValid())
-        return brush(value);
+    // If we don't already have a background brush, check if the background color
+    // should be alternated for this item.
+    if (bg.style() == Qt::NoBrush && alternateBackground(option, index))
+        bg = option.palette.brush(group, QPalette::AlternateBase);
 
-    if (alternateBackground(option, index))
-        return option.palette.brush(group, QPalette::AlternateBase);
+    // Lighten the background color on hover, if we have one, and use a lighter version
+    // of the highlight color otherwise.
+    if (option.state & QStyle::State_MouseOver)
+    {
+        if (bg.style() == Qt::SolidPattern)
+            bg = QBrush(bg.color().light());
+        else
+            bg = option.palette.color(group, QPalette::Highlight).light();
+    }
 
-    return QBrush(Qt::NoBrush);
+    return bg;
 }
 
 
@@ -670,10 +689,25 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
             pixmap = QPixmap();
     }
 
-    // If the item is selected, and the selection rectangle only covers the
-    // text label, blend the pixmap with the the highlight color.
-    if (!pixmap.isNull() && (option.state & QStyle::State_Selected) && !option.showDecorationSelected)
-        return d->selected(option, pixmap);
+    if (!pixmap.isNull())
+    {
+        // If the item is selected, and the selection rectangle only covers the
+        // text label, blend the pixmap with the highlight color.
+        if (!option.showDecorationSelected && option.state & QStyle::State_Selected)
+            pixmap = d->selected(option, pixmap);
+
+        // Apply the configured hover effect
+        if (option.state & QStyle::State_MouseOver)
+        {
+            KIconEffect *effect = KIconLoader::global()->iconEffect();
+
+            // Note that in KIconLoader terminology, active = hover.
+            // ### We're assuming that the icon group is desktop/filemanager, since this
+            //     is KFileItemDelegate.
+            if (effect->hasEffect(K3Icon::Desktop, K3Icon::ActiveState))
+                pixmap = effect->apply(pixmap, K3Icon::Desktop, K3Icon::ActiveState);
+        }
+    }
 
     return pixmap;
 }
