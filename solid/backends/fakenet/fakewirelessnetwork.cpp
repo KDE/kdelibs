@@ -42,7 +42,7 @@ int FakeWirelessNetwork::bitrate() const
     return mPropertyMap[ "bitrate" ].toInt();
 }
 
-int FakeWirelessNetwork::frequency() const
+double FakeWirelessNetwork::frequency() const
 {
     return mPropertyMap[ "frequency" ].toInt();
 }

@@ -49,7 +49,7 @@ public:
 
     int bitrate() const;
 
-    int frequency() const;
+    double frequency() const;
 
     Solid::WirelessNetwork::Capabilities capabilities() const;
 
