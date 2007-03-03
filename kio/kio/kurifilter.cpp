@@ -56,6 +56,25 @@ public:
     QString typedString;
 };
 
+KUriFilterData::KUriFilterData()
+    : d( 0 )
+{
+    init();
+}
+
+KUriFilterData::KUriFilterData( const KUrl& url )
+    : d( 0 )
+{
+    init( url );
+}
+
+KUriFilterData::KUriFilterData( const QString& url )
+    : d( 0 )
+{
+    init( url );
+}
+
+
 KUriFilterData::KUriFilterData( const KUriFilterData& data )
 {
     m_iType = data.m_iType;
@@ -84,25 +103,51 @@ void KUriFilterData::init( const KUrl& url )
     m_strIconName.clear();
     m_bCheckForExecutables = true;
     m_bChanged = true;
+    delete d;
     d = new KUriFilterDataPrivate;
     d->typedString = url.url();
 }
 
 void KUriFilterData::init( const QString& url )
 {
-    m_iType = KUriFilterData::UNKNOWN;
-    m_pURI = url; // QString -> KUrl
-    m_strErrMsg.clear();
-    m_strIconName.clear();
-    m_bCheckForExecutables = true;
-    m_bChanged = true;
-    d = new KUriFilterDataPrivate;
-    d->typedString = url;
+    init( KUrl( url ) );
+}
+
+KUrl KUriFilterData::uri() const
+{
+    return m_pURI;
+}
+
+bool KUriFilterData::checkForExecutables() const
+{
+    return m_bCheckForExecutables;
+}
+
+QString KUriFilterData::errorMsg() const
+{
+    return m_strErrMsg;
+}
+
+KUriFilterData::UriTypes KUriFilterData::uriType() const
+{
+    return m_iType;
 }
 
 QString KUriFilterData::typedString() const
 {
     return d->typedString;
+}
+
+KUriFilterData& KUriFilterData::operator=( const KUrl& url )
+{
+    init( url );
+    return *this;
+}
+
+KUriFilterData& KUriFilterData::operator=( const QString& url )
+{
+    init( url );
+    return *this;
 }
 
 void KUriFilterData::setCheckForExecutables( bool check )
@@ -118,6 +163,16 @@ bool KUriFilterData::hasArgsAndOptions() const
 bool KUriFilterData::hasAbsolutePath() const
 {
     return !d->abs_path.isEmpty();
+}
+
+void KUriFilterData::setData( const QString& url )
+{
+    init( url );
+}
+
+void KUriFilterData::setData( const KUrl& url )
+{
+    init( url );
 }
 
 bool KUriFilterData::setAbsolutePath( const QString& absPath )

@@ -102,21 +102,21 @@ public:
      *
      * Creates a UriFilterData object.
      */
-    KUriFilterData() { init(); }
+    KUriFilterData();
 
     /**
      * Creates a UriFilterData object from the given URL.
      *
      * @param url is the URL to be filtered.
      */
-    KUriFilterData( const KUrl& url ) { init( url); }
+    KUriFilterData( const KUrl& url );
 
     /**
      * Creates a UriFilterData object from the given string.
      *
      * @param url is the string to be filtered.
      */
-    KUriFilterData( const QString& url ) { init( url ); }
+    KUriFilterData( const QString& url );
 
     /**
      * Copy constructor.
@@ -126,7 +126,7 @@ public:
      *
      * @param data the uri filter data to be copied.
      */
-    KUriFilterData( const KUriFilterData& data);
+    KUriFilterData( const KUriFilterData& data );
 
     /**
      * Destructor.
@@ -144,7 +144,7 @@ public:
      *
      * @return the filtered or original url.
      */
-    KUrl uri() const { return m_pURI; }
+    KUrl uri() const;
 
     /**
      * Returns an error message.
@@ -156,7 +156,7 @@ public:
      *
      * @return the error message or a NULL when there is none.
      */
-    QString errorMsg() const { return m_strErrMsg; }
+    QString errorMsg() const;
 
     /**
      * Returns the URI type.
@@ -165,7 +165,7 @@ public:
      * if the given URL was not filtered.
      * @return the type of the URI
      */
-    UriTypes uriType() const { return m_iType; }
+    UriTypes uriType() const;
 
     /**
      * Sets the URL to be filtered.
@@ -176,7 +176,7 @@ public:
      *
      * @param url the string to be filtered.
      */
-    void setData( const QString& url ) { init( url ); }
+    void setData( const QString& url );
 
     /**
      * Same as above except the argument is a URL.
@@ -187,7 +187,7 @@ public:
      *
      * @param url the URL to be filtered.
      */
-    void setData( const KUrl& url ) { init( url ); }
+    void setData( const KUrl& url );
 
     /**
      * Sets the absolute path to be used whenever the supplied
@@ -261,7 +261,7 @@ public:
      * @return true if the filters should attempt to check whether the
      * supplied uri is an executable. False otherwise.
      */
-    bool checkForExecutables() const { return m_bCheckForExecutables; }
+    bool checkForExecutables() const;
 
     /**
      * @return the string as typed by the user, before any URL processing is done
@@ -276,7 +276,7 @@ public:
      *
      * @return an instance of a KUriFilterData object.
      */
-    KUriFilterData& operator=( const KUrl& url ) { init( url ); return *this; }
+    KUriFilterData& operator=( const KUrl& url );
 
     /**
      * Overloaded assigenment operator.
@@ -286,7 +286,7 @@ public:
      *
      * @return an instance of a KUriFilterData object.
      */
-    KUriFilterData& operator=( const QString& url ) { init( url ); return *this; }
+    KUriFilterData& operator=( const QString& url );
 
 protected:
 
@@ -297,7 +297,7 @@ protected:
     void init( const KUrl& url);
 
     /**
-     * Initializes the KUriFilterData on construction.
+      Initializes the KUriFilterData on construction.
      * @param url the URL to initialize the object with
      */
     void init( const QString& url = QString() );
