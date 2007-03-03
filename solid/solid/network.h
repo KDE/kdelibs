@@ -44,6 +44,13 @@ namespace Solid
         Network( QObject *backendObject = 0 );
 
         /**
+         * Constructs a copy of a network.
+         *
+         * @param network the network to copy
+         */
+        Network( const Network &network );
+
+        /**
          * Destroys a Network object.
          */
         virtual ~Network();
@@ -128,6 +135,8 @@ namespace Solid
          */
         void activationStateChanged( bool activated );
 
+    protected:
+        void registerBackendObject( QObject * );
     private:
         class Private;
         Private * const d;

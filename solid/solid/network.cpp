@@ -33,15 +33,13 @@ namespace Solid
 Solid::Network::Network( QObject *backendObject )
     : FrontendObject(), d(new Private)
 {
-    setBackendObject( backendObject );
+    registerBackendObject( backendObject );
+}
 
-    if ( backendObject )
-    {
-        connect( backendObject, SIGNAL( ipDetailsChanged() ),
-                 this, SIGNAL( ipDetailsChanged() ) );
-        connect( backendObject, SIGNAL( activationStateChanged( bool ) ),
-                 this, SIGNAL( activationStateChanged( bool ) ) );
-    }
+Solid::Network::Network( const Network &network )
+    : FrontendObject(), d( new Private )
+{
+    registerBackendObject( network.backendObject() );
 }
 
 Solid::Network::~Network()
@@ -92,6 +90,19 @@ bool Solid::Network::isActive() const
 QString Solid::Network::uni() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );
+}
+
+void Solid::Network::registerBackendObject( QObject *backendObject )
+{
+    setBackendObject( backendObject );
+
+    if ( backendObject )
+    {
+        connect( backendObject, SIGNAL( ipDetailsChanged() ),
+                 this, SIGNAL( ipDetailsChanged() ) );
+        connect( backendObject, SIGNAL( activationStateChanged( bool ) ),
+                 this, SIGNAL( activationStateChanged( bool ) ) );
+    }
 }
 
 #include "network.moc"
