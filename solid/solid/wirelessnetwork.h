@@ -87,7 +87,7 @@ namespace Solid
          *
          * @return the frequency
          */
-        int frequency() const;
+        double frequency() const;
 
         /**
          * Retrieves the capabilities of this wifi network.

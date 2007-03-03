@@ -79,7 +79,7 @@ int Solid::WirelessNetwork::bitrate() const
     return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), 0, bitrate() );
 }
 
-int Solid::WirelessNetwork::frequency() const
+double Solid::WirelessNetwork::frequency() const
 {
     return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), 0, frequency() );
 }

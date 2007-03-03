@@ -67,7 +67,7 @@ namespace Ifaces
          *
          * @return the frequency
          */
-        virtual int frequency() const = 0;
+        virtual double frequency() const = 0;
 
         /**
          * Retrieves the capabilities of this wifi network.
