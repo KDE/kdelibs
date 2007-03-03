@@ -297,7 +297,7 @@ protected:
     void init( const KUrl& url);
 
     /**
-      Initializes the KUriFilterData on construction.
+     * Initializes the KUriFilterData on construction.
      * @param url the URL to initialize the object with
      */
     void init( const QString& url = QString() );
