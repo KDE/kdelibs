@@ -56,6 +56,11 @@ namespace Solid
         explicit WirelessNetwork( QObject *backendObject );
 
         /**
+         * Creates a new WirelessNetwork object as a copy of another instance.
+         */
+        WirelessNetwork( const WirelessNetwork & );
+
+        /**
          * Destroys a WirelessNetwork object
          */
         virtual ~WirelessNetwork();
@@ -188,7 +193,8 @@ namespace Solid
          * to be able to connect. Respond to this by calling setAuthentication().
          */
         void authenticationNeeded();
-
+    protected:
+        void registerBackendObject( QObject * backendObject );
     private:
         class Private;
         Private * const d;

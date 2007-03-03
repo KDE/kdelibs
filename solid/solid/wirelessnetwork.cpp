@@ -33,6 +33,17 @@ namespace Solid
 Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
     : Network(backendObject), d(new Private)
 {
+    registerBackendObject( backendObject );
+}
+
+Solid::WirelessNetwork::WirelessNetwork( const WirelessNetwork & network )
+    : Network(network), d(new Private)
+{
+    registerBackendObject( network.backendObject() );
+}
+
+void Solid::WirelessNetwork::registerBackendObject( QObject * backendObject )
+{
     if ( backendObject )
     {
         connect( backendObject, SIGNAL( signalStrengthChanged( int ) ),
