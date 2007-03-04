@@ -75,7 +75,7 @@ static UString integer_part_noexp(double d)
     int decimalPoint;
     int signDummy;
     char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &signDummy, NULL);
-    int length = strlen(result);
+    size_t length = strlen(result);
 
     // sign for non-zero, negative numbers
     UString str = d < 0 ? "-" : "";
@@ -86,7 +86,7 @@ static UString integer_part_noexp(double d)
     } else {
         Vector<char, 1024> buf(decimalPoint + 1);
 
-        if (length <= decimalPoint) {
+        if (static_cast<int>(length) <= decimalPoint) {
             strcpy(buf, result);
             memset(buf + length, '0', decimalPoint - length);
         } else
@@ -136,9 +136,8 @@ static double intPow10(int e)
   }
 
   if (negative)
-    return 1.0 / result;
-  else
-    return result;
+    return static_cast<double>(1.0 / result);
+  return static_cast<double>(result);
 }
 
 // ECMA 15.7.4.2 - 15.7.4.7
@@ -282,7 +281,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
           return jsString("NaN");
 
       char *result = kjs_dtoa(x, 0, 0, &decimalPoint, &sign, NULL);
-      int length = strlen(result);
+      size_t length = strlen(result);
       decimalPoint += decimalAdjust;
 
       int i = 0;
@@ -296,18 +295,18 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
           buf[i++] = result[0];
 
           if (fractionDigits->isUndefined())
-              f = length-1;
+              f = static_cast<int>(length) - 1;
 
           if (length > 1 && f > 0) {
               buf[i++] = '.';
-              int haveFDigits = length-1;
+              int haveFDigits = static_cast<int>(length) - 1;
               if (f < haveFDigits) {
                   strncpy(buf+i,result+1, f);
                   i += f;
               }
               else {
                   strcpy(buf+i,result+1);
-                  i += length-1;
+                  i += static_cast<int>(length) - 1;
                   for (int j = 0; j < f-haveFDigits; j++)
                       buf[i++] = '0';
               }
@@ -322,12 +321,12 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
               exponential = exponential * -1;
           }
           if (exponential >= 100) {
-              buf[i++] = '0' + exponential / 100;
+              buf[i++] = static_cast<char>('0' + exponential / 100);
           }
           if (exponential >= 10) {
-              buf[i++] = '0' + (exponential % 100) / 10;
+              buf[i++] = static_cast<char>('0' + (exponential % 100) / 10);
           }
-          buf[i++] = '0' + exponential % 10;
+          buf[i++] = static_cast<char>('0' + exponential % 10);
           buf[i++] = '\0';
       }
 
@@ -483,7 +482,7 @@ JSObject *NumberObjectImp::construct(ExecState *exec, const List &args)
 }
 
 // ECMA 15.7.2
-JSValue *NumberObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue *NumberObjectImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, const List &args)
 {
   if (args.isEmpty())
     return jsNumber(0);
