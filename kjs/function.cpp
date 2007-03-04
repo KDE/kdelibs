@@ -946,7 +946,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
   return res;
 }
 
-UString escapeStringForPrettyPrinting(const UString& s)
+UString KJS::escapeStringForPrettyPrinting(const UString& s)
 {
     UString escapedString;
     
