@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include "nodes.h"
+#include "function.h"
 
 namespace KJS {
   /**
@@ -51,7 +52,8 @@ using namespace KJS;
 
 SourceStream& SourceStream::operator<<(char c)
 {
-  str += UString(c);
+  UChar ch(c);
+  str += UString(&ch, 1);
   return *this;
 }
 
@@ -116,7 +118,7 @@ void NumberNode::streamTo(SourceStream &s) const { s << UString::from(value); }
 
 void StringNode::streamTo(SourceStream &s) const
 {
-  s << '"' << value << '"';
+    s << '"' << escapeStringForPrettyPrinting(value) << '"';
 }
 
 void RegExpNode::streamTo(SourceStream &s) const
@@ -139,7 +141,7 @@ void ElementNode::streamTo(SourceStream &s) const
     for (int i = 0; i < n->elision; i++)
       s << ",";
     s << n->node;
-    if ( n->list )
+    if (n->next)
         s << ",";
   }
 }
@@ -193,7 +195,7 @@ void PropertyNameNode::streamTo(SourceStream &s) const
   if (str.isNull())
     s << UString::from(numeric);
   else
-    s << str;
+    s << '"' << escapeStringForPrettyPrinting(str.ustring()) << '"';
 }
 
 void BracketAccessorNode::streamTo(SourceStream &s) const

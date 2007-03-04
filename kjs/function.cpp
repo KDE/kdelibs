@@ -42,6 +42,9 @@
 
 #include <kxmlcore/unicode/Unicode.h>
 
+using namespace KXMLCore;
+using namespace Unicode;
+
 namespace KJS {
 
 // ----------------------------- FunctionImp ----------------------------------
@@ -55,7 +58,7 @@ const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 
     OwnPtr<Parameter> next;
   };
 
-FunctionImp::FunctionImp(ExecState *exec, const Identifier &n, FunctionBodyNode* b)
+FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
                         (exec->lexicalInterpreter()->builtinFunctionPrototype()), n)
   , body(b)
@@ -72,9 +75,9 @@ FunctionImp::~FunctionImp()
 {
 }
 
-JSValue *FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
+JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
-  JSObject *globalObj = exec->dynamicInterpreter()->globalObject();
+  JSObject* globalObj = exec->dynamicInterpreter()->globalObject();
 
   // enter a new execution context
   Context ctx(globalObj, exec->dynamicInterpreter(), thisObj, body.get(),
@@ -88,7 +91,7 @@ JSValue *FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // add variable declarations (initialized to undefined)
   processVarDecls(&newExec);
 
-  Debugger *dbg = exec->dynamicInterpreter()->debugger();
+  Debugger* dbg = exec->dynamicInterpreter()->debugger();
   int sid = -1;
   int lineno = -1;
   if (dbg) {
@@ -148,7 +151,7 @@ JSValue *FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     return jsUndefined();
 }
 
-void FunctionImp::addParameter(const Identifier &n)
+void FunctionImp::addParameter(const Identifier& n)
 {
   OwnPtr<Parameter> *p = &param;
   while (*p)
@@ -173,7 +176,7 @@ UString FunctionImp::parameterString() const
 
 
 // ECMA 10.1.3q
-void FunctionImp::processParameters(ExecState *exec, const List &args)
+void FunctionImp::processParameters(ExecState* exec, const List& args)
 {
   JSObject* variable = exec->context()->variableObject();
 
@@ -251,7 +254,7 @@ JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, con
   return jsNumber(count);
 }
 
-bool FunctionImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
     // Find the arguments from the closest context.
     if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier()) {
@@ -536,7 +539,7 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
     // we don't call JSObject because we won't have getter/setter properties
     // and we don't want to support __proto__
 
-    if (JSValue **location = getDirectLocation(propertyName)) {
+    if (JSValue** location = getDirectLocation(propertyName)) {
         slot.setValueSlot(this, location);
         return true;
     }
@@ -577,7 +580,7 @@ void ActivationImp::mark()
 
 void ActivationImp::createArgumentsObject(ExecState *exec) const
 {
-  _argumentsObject = new Arguments(exec, _function, _arguments, const_cast<ActivationImp *>(this));
+  _argumentsObject = new Arguments(exec, _function, _arguments, const_cast<ActivationImp*>(this));
 }
 
 // ------------------------------ GlobalFunc -----------------------------------
@@ -692,7 +695,7 @@ static bool isStrWhiteSpace(unsigned short c)
         case 0x2029:
             return true;
         default:
-            return KXMLCore::Unicode::isSeparatorSpace(c);
+            return isSeparatorSpace(c);
     }
 }
 
@@ -887,7 +890,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
   case Escape:
     {
       UString r = "", s, str = args[0]->toString(exec);
-      const UChar *c = str.data();
+      const UChar* c = str.data();
       for (int k = 0; k < str.size(); k++, c++) {
         int u = c->uc;
         if (u > 255) {
@@ -911,7 +914,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
       UString s = "", str = args[0]->toString(exec);
       int k = 0, len = str.size();
       while (k < len) {
-        const UChar *c = str.data() + k;
+        const UChar* c = str.data() + k;
         UChar u;
         if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
           if (Lexer::isHexDigit((c+2)->uc) && Lexer::isHexDigit((c+3)->uc) &&
@@ -941,6 +944,47 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
   }
 
   return res;
+}
+
+UString escapeStringForPrettyPrinting(const UString& s)
+{
+    UString escapedString;
+    
+    for (int i = 0; i < s.size(); i++) {
+        unsigned short c = s.data()[i].unicode();
+        
+        switch (c) {
+        case '\"':
+            escapedString += "\\\"";
+            break;
+        case '\n':
+            escapedString += "\\n";
+            break;
+        case '\r':
+            escapedString += "\\r";
+            break;
+        case '\t':
+            escapedString += "\\t";
+            break;
+        case '\\':
+            escapedString += "\\\\";
+            break;
+        default:
+            if (c < 128 && isprint(c))
+                escapedString.append(c);
+            else {
+                char hexValue[7];
+#if PLATFORM(WIN_OS)
+                _snprintf(hexValue, 7, "\\u%04x", c);
+#else
+                snprintf(hexValue, 7, "\\u%04x", c);
+#endif
+                escapedString += hexValue;
+            }
+        }
+    }
+    
+    return escapedString;    
 }
 
 } // namespace
