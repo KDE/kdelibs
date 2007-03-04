@@ -90,7 +90,7 @@ KWalletD::KWalletD()
 	// register another name
 	QDBusConnection::sessionBus().registerService("org.kde.kwalletd");
 #ifdef Q_WS_X11
-	screensaver = new QDBusInterface("org.kde.screensaver", "/ScreenSaver", "org.kde.ScreenSaver");
+	screensaver = new QDBusInterface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver");
 #endif
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
@@ -1212,9 +1212,9 @@ void KWalletD::reconfigure() {
 #ifdef Q_WS_X11
 	if ( screensaver->isValid() ) {
 		if (walletGroup.readEntry("Close on Screensaver", false)) {
-			connect(screensaver, SIGNAL(screenSaverStarted()), SLOT(closeAllWallets()));
+			connect(screensaver, SIGNAL(ActiveChanged(bool)), SLOT(screenSaverChanged(bool)));
 		} else {
-			screensaver->disconnect(SIGNAL(screenSaverStarted()), this, SLOT(closeAllWallets()));
+			screensaver->disconnect(SIGNAL(ActiveChanged(bool)), this, SLOT(screenSaverChanged(bool)));
 		}
 	}
 #endif
@@ -1357,6 +1357,11 @@ QString KWalletD::localWallet() {
 	return KWallet::Wallet::LocalWallet();
 }
 
+void KWalletD::screenSaverChanged(bool s)
+{
+	if (s)
+		closeAllWallets();
+}
 
 #include "kwalletd.moc"
 #include "kwalletdadaptor.moc"

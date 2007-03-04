@@ -146,6 +146,8 @@ class KWalletD : public KDEDModule {
 
 		QString localWallet();
 
+		void screenSaverChanged(bool);
+
 	Q_SIGNALS:
 		void walletListDirty();
 		void walletCreated(const QString& wallet);
