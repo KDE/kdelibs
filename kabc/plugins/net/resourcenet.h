@@ -90,6 +90,7 @@ class KABC_EXPORT ResourceNet : public Resource
   private slots:
     void downloadFinished( KIO::Job* );
     void uploadFinished( KIO::Job* );
+    void signalError();
 
   private:
     bool clearAndLoad( QFile *file );

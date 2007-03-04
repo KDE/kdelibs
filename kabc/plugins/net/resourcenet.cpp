@@ -45,6 +45,8 @@ class ResourceNet::ResourceNetPrivate
 
     KIO::Job *mSaveJob;
     bool mIsSaving;
+
+    QString mLastErrorString;
 };
 
 ResourceNet::ResourceNet( const KConfig *config )
@@ -346,7 +348,8 @@ void ResourceNet::downloadFinished( KIO::Job* )
   d->mIsLoading = false;
 
   if ( !hasTempFile() || mTempFile->status() != 0 ) {
-    emit loadingError( this, i18n( "Download failed in some way!" ) );
+    d->mLastErrorString = i18n( "Download failed in some way!" );
+    QTimer::singleShot( 0, this, SLOT( signalError() ) );
     return;
   }
 
@@ -376,6 +379,12 @@ void ResourceNet::uploadFinished( KIO::Job *job )
     emit savingFinished( this );
 
   deleteLocalTempFile();
+}
+
+void ResourceNet::signalError()
+{
+  emit loadingError( this, d->mLastErrorString );
+  d->mLastErrorString.truncate( 0 );
 }
 
 #include "resourcenet.moc"
