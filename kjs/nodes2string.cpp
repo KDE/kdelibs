@@ -119,7 +119,10 @@ void StringNode::streamTo(SourceStream &s) const
   s << '"' << value << '"';
 }
 
-void RegExpNode::streamTo(SourceStream &s) const { s <<  pattern; }
+void RegExpNode::streamTo(SourceStream &s) const
+{
+    s <<  "/" << pattern << "/" << flags;
+}
 
 void ThisNode::streamTo(SourceStream &s) const { s << "this"; }
 
@@ -136,6 +139,8 @@ void ElementNode::streamTo(SourceStream &s) const
     for (int i = 0; i < n->elision; i++)
       s << ",";
     s << n->node;
+    if ( n->list )
+        s << ",";
   }
 }
 
