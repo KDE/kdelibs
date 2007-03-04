@@ -57,6 +57,7 @@ using namespace KJS;
     setExceptionDetailsIfNeeded(exec); \
     JSValue *ex = exec->exception(); \
     exec->clearException(); \
+    debugExceptionIfNeeded(exec, ex); \
     return Completion(Throw, ex); \
   } \
   if (Collector::isOutOfMemory()) \
@@ -65,6 +66,7 @@ using namespace KJS;
 #define KJS_CHECKEXCEPTIONVALUE \
   if (exec->hadException()) { \
     setExceptionDetailsIfNeeded(exec); \
+    debugExceptionIfNeeded(exec, exec->exception());	\
     return jsUndefined(); \
   } \
   if (Collector::isOutOfMemory()) \
@@ -73,6 +75,7 @@ using namespace KJS;
 #define KJS_CHECKEXCEPTIONLIST \
   if (exec->hadException()) { \
     setExceptionDetailsIfNeeded(exec); \
+    debugExceptionIfNeeded(exec, exec->exception()); \
     return List(); \
   } \
   if (Collector::isOutOfMemory()) \
@@ -83,11 +86,15 @@ using namespace KJS;
 
 #ifndef NDEBUG
 struct NodeCounter {
-    static int count;
-    ~NodeCounter() { if (count != 0) fprintf(stderr, "LEAK: %d KJS::Node\n", count); }
+    static unsigned count;
+    ~NodeCounter()
+    {
+        if (count)
+            fprintf(stderr, "LEAK: %d KJS::Node\n", count);
+    }
 };
-int NodeCounter::count = 0;
-static NodeCounter nodeImplCounter;
+unsigned NodeCounter::count = 0;
+static NodeCounter nodeCounter;
 #endif
 
 static HashSet<Node*>* newNodes;
@@ -266,6 +273,16 @@ void Node::setExceptionDetailsIfNeeded(ExecState *exec)
             exception->put(exec, "line", jsNumber(m_line));
             exception->put(exec, "sourceURL", jsString(currentSourceURL(exec)));
         }
+    }
+}
+
+void Node::debugExceptionIfNeeded(ExecState* exec, JSValue* exceptionValue)
+{
+    Debugger* dbg = exec->dynamicInterpreter()->debugger();
+    if (dbg && !dbg->hasHandledException(exec, exceptionValue)) {
+        bool cont = dbg->exception(exec, currentSourceId(exec), m_line, exceptionValue);
+        if (!cont)
+            dbg->imp()->abort();
     }
 }
 
@@ -1219,15 +1236,12 @@ JSValue *RelationalNode::evaluate(ExecState *exec)
                            "Value %s (result of expression %s) is not an object. Cannot be used with instanceof operator.", v2, expr2.get());
 
     JSObject *o2(static_cast<JSObject*>(v2));
-    if (!o2->implementsHasInstance()) {
+    if (!o2->implementsHasInstance())
       // According to the spec, only some types of objects "implement" the [[HasInstance]] property.
       // But we are supposed to throw an exception where the object does not "have" the [[HasInstance]]
       // property. It seems that all object have the property, but not all implement it, so in this
       // case we return false (consistent with mozilla)
       return jsBoolean(false);
-      //      return throwError(exec, TypeError,
-      //			"Object does not implement the [[HasInstance]] method." );
-    }
     return jsBoolean(o2->hasInstance(exec, v1));
   }
 
@@ -2268,6 +2282,8 @@ Completion ThrowNode::execute(ExecState *exec)
 
   JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
+
+  debugExceptionIfNeeded(exec, v);
 
   return Completion(Throw, v);
 }
