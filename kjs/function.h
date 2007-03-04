@@ -233,7 +233,7 @@ namespace KJS {
     int id;
   };
 
-UString escapeStringForPrettyPrinting(const UString& s);
+KJS_EXPORT UString escapeStringForPrettyPrinting(const UString& s);
 
 } // namespace
 
