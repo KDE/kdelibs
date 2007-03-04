@@ -31,16 +31,19 @@ using namespace KABC;
 static QString backslash( "\\\\" );
 static QString comma( "\\," );
 static QString newline( "\\n" );
+static QString cr( "\\r" );
 
 static void addEscapes( QString &str )
 {
   str.replace( '\\', backslash );
   str.replace( ',', comma );
+  str.replace( '\r', cr );
   str.replace( '\n', newline );
 }
 
 static void removeEscapes( QString &str )
 {
+  str.replace( cr, "\\r" );
   str.replace( newline, "\n" );
   str.replace( comma, "," );
   str.replace( backslash, "\\" );
