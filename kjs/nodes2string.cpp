@@ -71,7 +71,7 @@ SourceStream& SourceStream::operator<<(const UString &s)
 
 SourceStream& SourceStream::operator<<(const Identifier &s)
 {
-  str += s.ustring();
+  str += escapeStringForPrettyPrinting(s.ustring());
   return *this;
 }
 

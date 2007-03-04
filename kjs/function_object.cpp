@@ -81,8 +81,11 @@ JSValue *FunctionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, c
     }
     if (thisObj->inherits(&DeclaredFunctionImp::info)) {
         DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>(thisObj);
-        return jsString("function " + fi->functionName().ustring() + "(" +
-                        fi->parameterString() + ") " + fi->body->toString());
+        Identifier ident = fi->functionName();
+        UString prettyIdent = escapeStringForPrettyPrinting(ident.ustring());
+        return jsString("function " + prettyIdent +
+                        "(" + fi->parameterString() + ") " +
+                        fi->body->toString());
      } else if (thisObj->inherits(&InternalFunctionImp::info) &&
                 !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
        result = jsString("\nfunction " + static_cast<InternalFunctionImp*>(thisObj)->functionName().ustring() + "() {\n"
