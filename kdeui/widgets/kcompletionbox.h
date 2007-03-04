@@ -194,6 +194,13 @@ Q_SIGNALS:
     void activated( const QString& );
 
     /**
+     * Emitted when an new item was made the current one , contains the text of
+     * the selected item.
+     */
+    void highlighted( const QString& );
+
+
+    /**
      * Emitted whenever the user chooses to ignore the available
      * selections and close the this box.
      */
