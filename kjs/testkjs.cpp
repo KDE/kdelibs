@@ -213,7 +213,9 @@ int main(int argc, char** argv)
 bool doIt(int argc, char** argv)
 {
   bool success = true;
+#if 0
   bool prettyPrint = false;
+#endif
   GlobalImp* global = new GlobalImp();
 
   // create interpreter
@@ -236,10 +238,12 @@ bool doIt(int argc, char** argv)
     const char* fileName = argv[i];
     if (strcmp(fileName, "-f") == 0) // mozilla test driver script uses "-f" prefix for files
       continue;
+#if 0
     if (strcmp(fileName, "-p") == 0) {
       prettyPrint = true;
       continue;
     }
+#endif
 
     char* script = createStringWithContentsOfFile(fileName);
     if (!script) {
@@ -247,6 +251,7 @@ bool doIt(int argc, char** argv)
       break; // fail early so we can catch missing files
     }
 
+#if 0
     if (prettyPrint) {
       int errLine = 0;
       UString errMsg;
@@ -258,8 +263,9 @@ bool doIt(int argc, char** argv)
       }
 
       printf("%s\n", s.UTF8String().c_str());
-      
-    } else {
+    } else
+#endif
+    {
       Completion completion = interp->evaluate(fileName, 0, script);
       success = success && completion.complType() != Throw;
     }
