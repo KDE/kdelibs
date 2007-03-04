@@ -104,21 +104,18 @@ namespace KJS {
 
     bool isWhiteSpace() const;
     bool isLineTerminator();
-    static bool isOctalDigit(unsigned short c);
+    static bool isOctalDigit(int c);
 
-    int matchPunctuator(unsigned short c1, unsigned short c2,
-                        unsigned short c3, unsigned short c4);
+    int matchPunctuator(int c1, int c2, int c3, int c4);
     static unsigned short singleEscape(unsigned short c);
-    static unsigned short convertOctal(unsigned short c1, unsigned short c2,
-                                       unsigned short c3);
+    static unsigned short convertOctal(int c1, int c2, int c3);
   public:
-    static unsigned char convertHex(unsigned short c1);
-    static unsigned char convertHex(unsigned short c1, unsigned short c2);
-    static UChar convertUnicode(unsigned short c1, unsigned short c2,
-                                unsigned short c3, unsigned short c4);
-    static bool isIdentStart(unsigned short c);
-    static bool isIdentPart(unsigned short c);
-    static bool isHexDigit(unsigned short c);
+    static unsigned char convertHex(int c1);
+    static unsigned char convertHex(int c1, int c2);
+    static UChar convertUnicode(int c1, int c2, int c3, int c4);
+    static bool isIdentStart(int c);
+    static bool isIdentPart(int c);
+    static bool isHexDigit(int c);
 
 #ifdef KJS_DEBUG_MEM
     /**
@@ -132,7 +129,7 @@ namespace KJS {
 
   private:
 
-    void record8(unsigned short c);
+    void record8(int c);
     void record16(int c);
     void record16(UChar c);
 
