@@ -104,13 +104,13 @@ namespace KJS {
 
     bool isWhiteSpace() const;
     bool isLineTerminator();
-    bool isOctalDigit(unsigned short c) const;
+    static bool isOctalDigit(unsigned short c);
 
     int matchPunctuator(unsigned short c1, unsigned short c2,
                         unsigned short c3, unsigned short c4);
-    unsigned short singleEscape(unsigned short c) const;
-    unsigned short convertOctal(unsigned short c1, unsigned short c2,
-                                unsigned short c3) const;
+    static unsigned short singleEscape(unsigned short c);
+    static unsigned short convertOctal(unsigned short c1, unsigned short c2,
+                                       unsigned short c3);
   public:
     static unsigned char convertHex(unsigned short c1);
     static unsigned char convertHex(unsigned short c1, unsigned short c2);

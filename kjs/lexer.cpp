@@ -614,7 +614,7 @@ bool Lexer::isHexDigit(unsigned short c)
           c >= 'A' && c <= 'F');
 }
 
-bool Lexer::isOctalDigit(unsigned short c) const
+bool Lexer::isOctalDigit(unsigned short c)
 {
   return (c >= '0' && c <= '7');
 }
@@ -734,7 +734,7 @@ int Lexer::matchPunctuator(unsigned short c1, unsigned short c2,
   }
 }
 
-unsigned short Lexer::singleEscape(unsigned short c) const
+unsigned short Lexer::singleEscape(unsigned short c)
 {
   switch(c) {
   case 'b':
@@ -761,7 +761,7 @@ unsigned short Lexer::singleEscape(unsigned short c) const
 }
 
 unsigned short Lexer::convertOctal(unsigned short c1, unsigned short c2,
-                                      unsigned short c3) const
+                                      unsigned short c3)
 {
   return ((c1 - '0') * 64 + (c2 - '0') * 8 + c3 - '0');
 }
