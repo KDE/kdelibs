@@ -413,6 +413,7 @@ void KCompletionBox::down()
         setCurrentRow( 0 );
         item(0)->setSelected(true);
         emit currentTextChanged( currentItem()->text() );
+        emit highlighted(currentItem()->text());
     }
 
     else if ( i < (int) count() - 1 )
