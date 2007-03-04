@@ -2429,8 +2429,6 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
 
 // ------------------------------ SourceElementsNode ---------------------------
 
-int SourceElementsNode::count = 0;
-
 SourceElementsNode::SourceElementsNode(StatementNode *s1)
   : node(s1), next(this)
 {

@@ -1014,7 +1014,6 @@ namespace KJS {
   // A linked list of source element nodes
   class SourceElementsNode : public StatementNode {
   public:
-    static int count;
     // list pointer is tail of a circular list, cracked in the BlockNode (or subclass) ctor
     SourceElementsNode(StatementNode*);
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
