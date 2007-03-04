@@ -1229,7 +1229,7 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
     d->completionBox = box;
     if ( handleSignals() )
     {
-        connect( d->completionBox, SIGNAL(highlighted( const QString& )),
+        connect( d->completionBox, SIGNAL(currentTextChanged( const QString& )),
                  SLOT(setTextWorkaround( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(userCancelled( const QString& )) );

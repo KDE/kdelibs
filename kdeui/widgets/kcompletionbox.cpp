@@ -413,7 +413,6 @@ void KCompletionBox::down()
         setCurrentRow( 0 );
         item(0)->setSelected(true);
         emit currentTextChanged( currentItem()->text() );
-        emit highlighted(currentItem()->text());
     }
 
     else if ( i < (int) count() - 1 )
@@ -565,7 +564,8 @@ void KCompletionBox::setItems( const QStringList& items )
 
 void KCompletionBox::slotCurrentChanged()
 {
-    emit highlighted( currentItem()->text() );
+    if (currentItem())
+      emit currentTextChanged(currentItem()->text());
     d->down_workaround = false;
 }
 
