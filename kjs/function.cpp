@@ -946,13 +946,13 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
   return res;
 }
 
-UString KJS::escapeStringForPrettyPrinting(const UString& s)
+UString escapeStringForPrettyPrinting(const UString& s)
 {
     UString escapedString;
-    
+
     for (int i = 0; i < s.size(); i++) {
         unsigned short c = s.data()[i].unicode();
-        
+
         switch (c) {
         case '\"':
             escapedString += "\\\"";
@@ -983,8 +983,8 @@ UString KJS::escapeStringForPrettyPrinting(const UString& s)
             }
         }
     }
-    
-    return escapedString;    
+
+    return escapedString;
 }
 
 } // namespace
