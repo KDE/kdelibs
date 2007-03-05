@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 #include "device.h"
 #include "devicemanager.h"
 
+#include "frontendobject_p.h"
 #include "soliddefs_p.h"
 
 #include <solid/ifaces/device.h>
@@ -57,42 +58,42 @@
 
 namespace Solid
 {
-    class Device::Private
+    class DevicePrivate : public FrontendObjectPrivate
     {
     public:
-        QMap<Capability::Type,Capability*> ifaces;
+        mutable QMap<Capability::Type,Capability*> ifaces;
     };
 }
 
 Solid::Device::Device()
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new DevicePrivate)
 {
 }
 
 Solid::Device::Device( const QString &udi )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new DevicePrivate)
 {
     const Device &device = DeviceManager::self().findDevice( udi );
     registerBackendObject( device.backendObject() );
 }
 
 Solid::Device::Device( const Device &device )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new DevicePrivate)
 {
     registerBackendObject( device.backendObject() );
 }
 
 Solid::Device::Device( QObject *backendObject )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new DevicePrivate)
 {
     registerBackendObject( backendObject );
 }
 
 Solid::Device::~Device()
 {
-    qDeleteAll( d->ifaces.values() );
+    Q_D(Device);
 
-    delete d;
+    qDeleteAll( d->ifaces.values() );
 }
 
 Solid::Device &Solid::Device::operator=( const Solid::Device &device )
@@ -185,6 +186,8 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
 
 const Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability ) const
 {
+    Q_D(const Device);
+
     Ifaces::Device *device = qobject_cast<Ifaces::Device*>( backendObject() );
 
     if ( device!=0 )
@@ -287,6 +290,8 @@ QString Solid::Device::lockReason() const
 
 void Solid::Device::slotDestroyed( QObject *object )
 {
+    Q_D(Device);
+
     if ( object == backendObject() )
     {
         FrontendObject::slotDestroyed(object);
@@ -316,6 +321,8 @@ void Solid::Device::registerBackendObject( QObject *backendObject )
 
 void Solid::Device::unregisterBackendObject()
 {
+    Q_D(Device);
+
     setBackendObject( 0 );
 
     foreach( Capability *iface, d->ifaces.values() )

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +18,25 @@
 */
 
 #include "opticaldisc.h"
+#include "opticaldisc_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/opticaldisc.h>
 
-namespace Solid
+Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
+    : Volume(*new OpticalDiscPrivate, backendObject)
 {
-    class OpticalDisc::Private
-    {
-    public:
-    };
 }
 
-Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
-    : Volume(backendObject), d(new Private)
+Solid::OpticalDisc::OpticalDisc(OpticalDiscPrivate &dd, QObject *backendObject)
+    : Volume(dd, backendObject)
 {
+
 }
 
 Solid::OpticalDisc::~OpticalDisc()
 {
-    delete d;
+
 }
 
 Solid::OpticalDisc::ContentTypes Solid::OpticalDisc::availableContent() const

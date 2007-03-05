@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +18,25 @@
 */
 
 #include "processor.h"
+#include "processor_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/processor.h>
 
-namespace Solid
+
+Solid::Processor::Processor(QObject *backendObject)
+    : Capability(*new ProcessorPrivate, backendObject)
 {
-    class Processor::Private
-    {
-    public:
-    };
 }
 
-Solid::Processor::Processor( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::Processor::Processor(ProcessorPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
 }
 
 Solid::Processor::~Processor()
 {
-    delete d;
+
 }
 
 int Solid::Processor::number() const

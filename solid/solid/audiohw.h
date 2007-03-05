@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class AudioHwPrivate;
+
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
@@ -39,6 +41,7 @@ namespace Solid
         Q_PROPERTY( QString name READ name )
         Q_PROPERTY( AudioHwTypes deviceType READ deviceType )
         Q_PROPERTY( SoundcardType soundcardType READ soundcardType )
+        Q_DECLARE_PRIVATE(AudioHw)
 
     public:
         /**
@@ -196,9 +199,11 @@ namespace Solid
          */
         SoundcardType soundcardType() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        AudioHw(AudioHwPrivate &dd, QObject *backendObject);
     };
 }
 

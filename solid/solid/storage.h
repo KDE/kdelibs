@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class StoragePrivate;
+
     /**
      * This capability is available on storage devices.
      *
@@ -44,6 +46,7 @@ namespace Solid
         Q_PROPERTY( bool mediaCheckEnabled READ isMediaCheckEnabled )
         Q_PROPERTY( QString vendor READ vendor )
         Q_PROPERTY( QString product READ product )
+        Q_DECLARE_PRIVATE(Storage)
 
     public:
         /**
@@ -167,9 +170,11 @@ namespace Solid
          */
         QString product() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Storage(StoragePrivate &dd, QObject *backendObject);
     };
 }
 

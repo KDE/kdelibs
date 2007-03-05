@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class ProcessorPrivate;
+
     /**
      * This capability is available on processors.
      */
@@ -35,6 +37,7 @@ namespace Solid
         Q_PROPERTY( int number READ number )
         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
         Q_PROPERTY( bool canThrottle READ canThrottle )
+        Q_DECLARE_PRIVATE(Processor)
 
     public:
         /**
@@ -85,9 +88,11 @@ namespace Solid
          */
         bool canThrottle() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Processor(ProcessorPrivate &dd, QObject *backendObject);
     };
 }
 

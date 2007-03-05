@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +27,8 @@
 
 namespace Solid
 {
+    class DisplayPrivate;
+
     /**
      * This capability is available on display devices.
      *
@@ -39,6 +42,7 @@ namespace Solid
         Q_ENUMS( DisplayType )
         Q_PROPERTY( DisplayType type READ type )
         Q_PROPERTY( int lcdBrightness READ lcdBrightness )
+        Q_DECLARE_PRIVATE(Display)
 
     public:
         /**
@@ -92,9 +96,11 @@ namespace Solid
          */
         int lcdBrightness() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Display(DisplayPrivate &dd, QObject *backendObject);
     };
 }
 

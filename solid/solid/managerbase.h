@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,11 +27,12 @@
 
 namespace Solid
 {
-    class FrontendObject;
+    class ManagerBasePrivate;
 
     class SOLID_EXPORT ManagerBase : public QObject
     {
         Q_OBJECT
+        Q_DECLARE_PRIVATE(ManagerBase)
 
     public:
         /**
@@ -53,11 +54,13 @@ namespace Solid
         /**
          * Constructs a new manager, loading the backend from a plugin.
          *
+         * @param dd the private d member
          * @param description the description of the manager (used in error messages)
          * @param serviceName the name of the service type we're looking for
          * @param backendClassName the fully qualified name of the type of the backend
          */
-        ManagerBase( const QString &description, const char *serviceName, const char *backendClassName );
+        ManagerBase( ManagerBasePrivate &dd, const QString &description,
+                     const char *serviceName, const char *backendClassName );
 
         /**
          * Destroys a ManagerBase object.
@@ -85,9 +88,8 @@ namespace Solid
          */
         QObject *loadBackend( const QString &description, const char *serviceName, const char *backendClassName );
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        ManagerBasePrivate *d_ptr;
     };
 
     /**

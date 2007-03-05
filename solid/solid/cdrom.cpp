@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,20 +18,20 @@
 */
 
 #include "cdrom.h"
+#include "cdrom_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/cdrom.h>
 
-namespace Solid
+Solid::Cdrom::Cdrom(QObject *backendObject)
+    : Storage(*new CdromPrivate, backendObject)
 {
-    class Cdrom::Private
-    {
-    public:
-    };
+    connect( backendObject, SIGNAL( ejectPressed() ),
+             this, SIGNAL( ejectPressed() ) );
 }
 
-Solid::Cdrom::Cdrom( QObject *backendObject )
-    : Storage(backendObject), d(new Private)
+Solid::Cdrom::Cdrom(CdromPrivate &dd, QObject *backendObject)
+    : Storage(dd, backendObject)
 {
     connect( backendObject, SIGNAL( ejectPressed() ),
              this, SIGNAL( ejectPressed() ) );
@@ -39,7 +39,7 @@ Solid::Cdrom::Cdrom( QObject *backendObject )
 
 Solid::Cdrom::~Cdrom()
 {
-    delete d;
+
 }
 
 Solid::Cdrom::MediumTypes Solid::Cdrom::supportedMedia() const

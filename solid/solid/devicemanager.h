@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@ namespace Solid
 {
     class Device;
     typedef QList<Device> DeviceList;
+    class DeviceManagerPrivate;
 
     /**
      * This class allow to query the underlying system to obtain information
@@ -46,7 +47,8 @@ namespace Solid
     class SOLID_EXPORT DeviceManager : public ManagerBase
     {
         Q_OBJECT
-        SOLID_SINGLETON( DeviceManager )
+        Q_DECLARE_PRIVATE(DeviceManager)
+        SOLID_SINGLETON(DeviceManager)
 
     public:
         /**
@@ -146,10 +148,6 @@ namespace Solid
         void slotDeviceRemoved( const QString &udi );
         void slotNewCapability( const QString &udi, int capability );
         void slotDestroyed( QObject *object );
-
-    private:
-        class Private;
-        Private * const d;
     };
 }
 

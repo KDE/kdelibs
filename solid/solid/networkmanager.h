@@ -1,6 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,6 +33,7 @@ namespace Solid
     class Network;
     class NetworkInterface;
     typedef QList<NetworkInterface> NetworkInterfaceList;
+    class NetworkManagerPrivate;
 
     /**
      * This class allow to query the underlying system to discover the available
@@ -47,7 +48,8 @@ namespace Solid
     class SOLID_EXPORT NetworkManager : public ManagerBase
     {
         Q_OBJECT
-        SOLID_SINGLETON( NetworkManager )
+        Q_DECLARE_PRIVATE(NetworkManager)
+        SOLID_SINGLETON(NetworkManager)
 
     public:
         /**
@@ -130,11 +132,7 @@ namespace Solid
         void slotNetworkInterfaceAdded( const QString &uni );
         void slotNetworkInterfaceRemoved( const QString &uni );
         void slotDestroyed( QObject *object );
-
-    private:
-        class Private;
-        Private * const d;
-};
+    };
 
 } // Solid
 

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 #include <QPair>
 
 #include "soliddefs_p.h"
+#include "managerbase_p.h"
 #include "device.h"
 #include "ifaces/devicemanager.h"
 #include "ifaces/device.h"
@@ -29,16 +30,18 @@
 
 namespace Solid
 {
-    class DeviceManager::Private
+    class DeviceManagerPrivate : public ManagerBasePrivate
     {
-    public:
-        Private( DeviceManager *manager ) : q( manager ) {}
+        Q_DECLARE_PUBLIC(DeviceManager)
 
-        QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi );
+    public:
+        //DeviceManagerPrivate( DeviceManager *manager ) : q( manager ) {}
+
+        QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi ) const;
         void connectBackend( QObject *newBackend );
 
-        DeviceManager *q;
-        QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
+        //DeviceManager *q;
+        mutable QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
         Device invalidDevice;
 
         QString errorText;
@@ -48,9 +51,11 @@ namespace Solid
 SOLID_SINGLETON_IMPLEMENTATION( Solid::DeviceManager, DeviceManager )
 
 Solid::DeviceManager::DeviceManager()
-    : ManagerBase( "Hardware Discovery", "SolidDeviceManager", "Solid::Ifaces::DeviceManager" ),
-      d( new Private( this ) )
+    : ManagerBase(*new DeviceManagerPrivate, "Hardware Discovery",
+                  "SolidDeviceManager", "Solid::Ifaces::DeviceManager")
 {
+    Q_D(DeviceManager);
+
     if ( managerBackend() != 0 )
     {
         d->connectBackend( managerBackend() );
@@ -59,6 +64,8 @@ Solid::DeviceManager::DeviceManager()
 
 Solid::DeviceManager::~DeviceManager()
 {
+    Q_D(DeviceManager);
+
     typedef QPair<Device*, Ifaces::Device*> DeviceIfacePair;
 
     foreach( const DeviceIfacePair &pair, d->devicesMap.values() )
@@ -68,12 +75,12 @@ Solid::DeviceManager::~DeviceManager()
     }
 
     d->devicesMap.clear();
-
-    delete d;
 }
 
 Solid::DeviceList Solid::DeviceManager::allDevices() const
 {
+    Q_D(const DeviceManager);
+
     DeviceList list;
     Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
 
@@ -96,6 +103,8 @@ Solid::DeviceList Solid::DeviceManager::allDevices() const
 
 bool Solid::DeviceManager::deviceExists( const QString &udi ) const
 {
+    Q_D(const DeviceManager);
+
     Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
 
     if ( backend == 0 ) return false;
@@ -112,6 +121,8 @@ bool Solid::DeviceManager::deviceExists( const QString &udi ) const
 
 const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) const
 {
+    Q_D(const DeviceManager);
+
     Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
 
     if ( backend == 0 ) return d->invalidDevice;
@@ -146,6 +157,8 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &pre
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::Type &capability,
                                                               const QString &parentUdi ) const
 {
+    Q_D(const DeviceManager);
+
     DeviceList list;
 
     Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
@@ -167,6 +180,8 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &predicate,
                                                               const QString &parentUdi ) const
 {
+    Q_D(const DeviceManager);
+
     DeviceList list;
 
     Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
@@ -208,6 +223,8 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
 
 void Solid::DeviceManager::setManagerBackend( QObject *backend )
 {
+    Q_D(DeviceManager);
+
     ManagerBase::setManagerBackend(backend);
     if (backend) {
         d->connectBackend(backend);
@@ -216,6 +233,8 @@ void Solid::DeviceManager::setManagerBackend( QObject *backend )
 
 void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 {
+    Q_D(DeviceManager);
+
     QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
 
     if ( pair.first!= 0 )
@@ -232,6 +251,8 @@ void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 
 void Solid::DeviceManager::slotDeviceRemoved( const QString &udi )
 {
+    Q_D(DeviceManager);
+
     QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
 
     if ( pair.first!= 0 )
@@ -250,6 +271,8 @@ void Solid::DeviceManager::slotNewCapability( const QString &udi, int capability
 
 void Solid::DeviceManager::slotDestroyed( QObject *object )
 {
+    Q_D(DeviceManager);
+
     Ifaces::Device *device = qobject_cast<Ifaces::Device*>( object );
 
     if ( device!=0 )
@@ -260,8 +283,10 @@ void Solid::DeviceManager::slotDestroyed( QObject *object )
     }
 }
 
-QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::findRegisteredDevice( const QString &udi )
+QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findRegisteredDevice( const QString &udi ) const
 {
+    Q_Q(const DeviceManager);
+
     if ( devicesMap.contains( udi ) )
     {
         return devicesMap[udi];
@@ -281,8 +306,8 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::fin
             Device *device = new Device( iface );
             QPair<Device*, Ifaces::Device*> pair( device, iface );
             devicesMap[udi] = pair;
-            connect( iface, SIGNAL( destroyed( QObject* ) ),
-                     q, SLOT( slotDestroyed( QObject* ) ) );
+            QObject::connect( iface, SIGNAL( destroyed( QObject* ) ),
+                              q, SLOT( slotDestroyed( QObject* ) ) );
             return pair;
         }
         else
@@ -292,8 +317,10 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::fin
     }
 }
 
-void Solid::DeviceManager::Private::connectBackend( QObject *newBackend )
+void Solid::DeviceManagerPrivate::connectBackend( QObject *newBackend )
 {
+    Q_Q(DeviceManager);
+
     QObject::connect( newBackend, SIGNAL( deviceAdded( QString ) ),
                       q, SLOT( slotDeviceAdded( QString ) ) );
     QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),

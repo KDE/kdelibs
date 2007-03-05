@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +29,7 @@
 namespace Solid
 {
     class NetworkInterface;
+    class NetworkPrivate;
 
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
@@ -35,6 +37,8 @@ namespace Solid
     class SOLID_EXPORT Network : public FrontendObject
     {
         Q_OBJECT
+        Q_DECLARE_PRIVATE(Network)
+
     public:
         /**
          * Creates a new Network object.
@@ -137,10 +141,18 @@ namespace Solid
 
     protected:
         void registerBackendObject( QObject * );
-    private:
-        class Private;
-        Private * const d;
 
+        /**
+         * @internal
+         */
+        Network(NetworkPrivate &dd, QObject *backendObject);
+
+        /**
+         * @internal
+         */
+        Network(NetworkPrivate &dd, const Network &network);
+
+    private:
         friend class NetworkInterface;
     //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
     };

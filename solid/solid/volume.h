@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +28,8 @@ class KJob;
 
 namespace Solid
 {
+    class VolumePrivate;
+
     /**
      * This capability is available on volume devices.
      *
@@ -46,6 +48,7 @@ namespace Solid
         Q_PROPERTY( QString label READ label )
         Q_PROPERTY( QString uuid READ uuid )
         Q_PROPERTY( qulonglong size READ size )
+        Q_DECLARE_PRIVATE(Volume)
 
     public:
         /**
@@ -187,9 +190,11 @@ namespace Solid
          */
         void mountStateChanged( bool newState );
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Volume(VolumePrivate &dd, QObject *backendObject);
     };
 }
 

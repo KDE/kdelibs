@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 namespace Solid
 {
     class ManagerBase;
+    class FrontendObjectPrivate;
 
     /**
      * Base classes for all the frontend objects in the Solid namespace.
@@ -37,13 +38,15 @@ namespace Solid
     class SOLID_EXPORT FrontendObject : public QObject
     {
         Q_OBJECT
+        Q_DECLARE_PRIVATE(FrontendObject)
+
     public:
         /**
          * Constructs a FrontendObject
          *
          * @param parent the parent of this object
          */
-        FrontendObject( QObject *parent = 0 );
+        explicit FrontendObject( QObject *parent = 0 );
 
         /**
          * Destroys a FrontendObject
@@ -59,6 +62,13 @@ namespace Solid
         bool isValid() const;
 
     protected:
+        /**
+         * @internal
+         */
+        explicit FrontendObject(FrontendObjectPrivate &dd, QObject *parent = 0);
+
+        FrontendObjectPrivate *d_ptr;
+
         /**
          * Retrieves the backend object currently used.
          *
@@ -86,9 +96,6 @@ namespace Solid
         virtual void slotDestroyed( QObject *object );
 
     private:
-        class Private;
-        Private * const d;
-
         friend class ManagerBase;
     };
 }

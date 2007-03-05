@@ -17,38 +17,25 @@
 
 */
 
-#include "camera.h"
-#include "camera_p.h"
+#ifndef SOLID_MANAGERBASE_P_H
+#define SOLID_MANAGERBASE_P_H
 
-#include "soliddefs_p.h"
-#include <solid/ifaces/camera.h>
+#include <QObject>
+#include <QString>
 
-Solid::Camera::Camera(QObject *backendObject)
-    : Capability(*new CameraPrivate, backendObject)
+namespace Solid
 {
+    class ManagerBasePrivate
+    {
+        Q_DECLARE_PUBLIC(ManagerBase)
+
+    public:
+        ManagerBasePrivate() : q_ptr(0), backend(0) {}
+
+        ManagerBase *q_ptr;
+        QObject *backend;
+        QString errorText;
+    };
 }
 
-Solid::Camera::Camera(CameraPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
-}
-
-Solid::Camera::~Camera()
-{
-
-}
-
-
-Solid::Camera::AccessType Solid::Camera::accessMethod() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), Proprietary, accessMethod() );
-}
-
-bool Solid::Camera::isGphotoSupported() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), false, isGphotoSupported() );
-}
-
-#include "camera.moc"
-
+#endif

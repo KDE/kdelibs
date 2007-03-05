@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,20 +19,20 @@
 */
 
 #include "button.h"
+#include "button_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/button.h>
 
-namespace Solid
+Solid::Button::Button( QObject *backendObject )
+    : Capability(*new ButtonPrivate, backendObject)
 {
-    class Button::Private
-    {
-    public:
-    };
+    connect( backendObject, SIGNAL( pressed( int ) ),
+             this, SIGNAL( pressed( int ) ) );
 }
 
-Solid::Button::Button( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::Button::Button(ButtonPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
     connect( backendObject, SIGNAL( pressed( int ) ),
              this, SIGNAL( pressed( int ) ) );
@@ -39,7 +40,7 @@ Solid::Button::Button( QObject *backendObject )
 
 Solid::Button::~Button()
 {
-    delete d;
+
 }
 
 Solid::Button::ButtonType Solid::Button::type() const
@@ -56,6 +57,5 @@ bool Solid::Button::stateValue() const
 {
     return_SOLID_CALL( Ifaces::Button*, backendObject(), false, stateValue() );
 }
-
 
 #include "button.moc"

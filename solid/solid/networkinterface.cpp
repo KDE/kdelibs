@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,6 +25,8 @@
 #include <solid/ifaces/networkinterface.h>
 #include <solid/ifaces/wirelessnetwork.h>
 
+#include "frontendobject_p.h"
+
 #include "soliddefs_p.h"
 #include "networkmanager.h"
 #include "network.h"
@@ -32,47 +35,47 @@
 
 namespace Solid
 {
-    class NetworkInterface::Private
+    class NetworkInterfacePrivate : public FrontendObjectPrivate
     {
     public:
-        QMap<QString, Network*> networkMap;
-        Network invalidNetwork;
+        mutable QMap<QString, Network*> networkMap;
+        mutable Network invalidNetwork;
     };
 }
 
 
 Solid::NetworkInterface::NetworkInterface()
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new NetworkInterfacePrivate)
 {
 }
 
 Solid::NetworkInterface::NetworkInterface( const QString &uni )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new NetworkInterfacePrivate)
 {
     const NetworkInterface &device = NetworkManager::self().findNetworkInterface( uni );
     registerBackendObject( device.backendObject() );
 }
 
 Solid::NetworkInterface::NetworkInterface( QObject *backendObject )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new NetworkInterfacePrivate)
 {
     registerBackendObject( backendObject );
 }
 
 Solid::NetworkInterface::NetworkInterface( const NetworkInterface &device )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new NetworkInterfacePrivate)
 {
     registerBackendObject( device.backendObject() );
 }
 
 Solid::NetworkInterface::~NetworkInterface()
 {
+    Q_D(NetworkInterface);
+
     foreach( QObject *network, d->networkMap )
     {
         delete network;
     }
-
-    delete d;
 }
 
 Solid::NetworkInterface &Solid::NetworkInterface::operator=( const Solid::NetworkInterface & dev )
@@ -124,6 +127,8 @@ Solid::NetworkInterface::Capabilities Solid::NetworkInterface::capabilities() co
 
 Solid::Network * Solid::NetworkInterface::findNetwork( const QString & uni ) const
 {
+    Q_D(const NetworkInterface);
+
     if ( !isValid() ) return 0;
 
     Network *network = findRegisteredNetwork( uni );
@@ -161,6 +166,8 @@ Solid::NetworkList Solid::NetworkInterface::networks() const
 
 void Solid::NetworkInterface::slotDestroyed( QObject *object )
 {
+    Q_D(NetworkInterface);
+
     if ( object == backendObject() )
     {
         FrontendObject::slotDestroyed(object);
@@ -198,6 +205,8 @@ void Solid::NetworkInterface::registerBackendObject( QObject *backendObject )
 
 void Solid::NetworkInterface::unregisterBackendObject()
 {
+    Q_D(NetworkInterface);
+
     setBackendObject( 0 );
 
     foreach( QObject *network, d->networkMap )
@@ -210,6 +219,8 @@ void Solid::NetworkInterface::unregisterBackendObject()
 
 Solid::Network *Solid::NetworkInterface::findRegisteredNetwork( const QString &uni ) const
 {
+    Q_D(const NetworkInterface);
+
     Network *network = 0;
 
     if ( d->networkMap.contains( uni ) )

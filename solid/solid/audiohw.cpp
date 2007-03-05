@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,29 +18,27 @@
 */
 
 #include "audiohw.h"
+#include "audiohw_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/audiohw.h>
 #include <QStringList>
 #include <kdebug.h>
 
-namespace Solid
+Solid::AudioHw::AudioHw( QObject *backendObject )
+    : Capability(*new AudioHwPrivate, backendObject)
 {
-    class AudioHw::Private
-    {
-    public:
-        QStringList driverHandles;
-    };
 }
 
-Solid::AudioHw::AudioHw( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::AudioHw::AudioHw(AudioHwPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
+
 }
 
 Solid::AudioHw::~AudioHw()
 {
-    delete d;
+
 }
 
 
@@ -51,6 +49,8 @@ Solid::AudioHw::AudioDriver Solid::AudioHw::driver() const
 
 QStringList Solid::AudioHw::driverHandles() const
 {
+    Q_D(const AudioHw);
+
     if ( !d->driverHandles.isEmpty() )
     {
         // cached

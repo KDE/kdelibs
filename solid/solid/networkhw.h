@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class NetworkHwPrivate;
+
     /**
      * This capability is available on network interfaces.
      */
@@ -36,6 +38,7 @@ namespace Solid
         Q_PROPERTY( bool wireless READ isWireless )
         Q_PROPERTY( QString hwAddress READ hwAddress )
         Q_PROPERTY( qulonglong macAddress READ macAddress )
+        Q_DECLARE_PRIVATE(NetworkHw)
 
     public:
         /**
@@ -94,9 +97,11 @@ namespace Solid
          */
         qulonglong macAddress() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        NetworkHw(NetworkHwPrivate &dd, QObject *backendObject);
     };
 }
 

@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +19,25 @@
 */
 
 #include "display.h"
+#include "display_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/display.h>
 
-namespace Solid
+Solid::Display::Display( QObject *backendObject )
+    : Capability(*new DisplayPrivate, backendObject)
 {
-    class Display::Private
-    {
-    public:
-    };
 }
 
-Solid::Display::Display( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::Display::Display(DisplayPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
+
 }
 
 Solid::Display::~Display()
 {
-    delete d;
+
 }
 
 Solid::Display::DisplayType Solid::Display::type() const

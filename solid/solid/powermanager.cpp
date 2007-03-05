@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,27 +20,27 @@
 #include "powermanager.h"
 
 #include "soliddefs_p.h"
+#include "managerbase_p.h"
 #include "ifaces/powermanager.h"
 
 namespace Solid
 {
-    class PowerManager::Private
+    class PowerManagerPrivate : public ManagerBasePrivate
     {
+        Q_DECLARE_PUBLIC(PowerManager)
     public:
-        Private( PowerManager *manager ) : q( manager ) {}
-
         void connectBackend( QObject *newBackend );
-
-        PowerManager *q;
     };
 }
 
 SOLID_SINGLETON_IMPLEMENTATION( Solid::PowerManager, PowerManager )
 
 Solid::PowerManager::PowerManager()
-    : ManagerBase( "Power Management", "SolidPowerManager", "Solid::Ifaces::PowerManager" ),
-      d( new Private( this ) )
+    : ManagerBase(*new PowerManagerPrivate, "Power Management",
+                  "SolidPowerManager", "Solid::Ifaces::PowerManager" )
 {
+    Q_D(PowerManager);
+
     if ( managerBackend() != 0 )
     {
         d->connectBackend( managerBackend() );
@@ -49,7 +49,7 @@ Solid::PowerManager::PowerManager()
 
 Solid::PowerManager::~PowerManager()
 {
-    delete d;
+
 }
 
 QStringList Solid::PowerManager::supportedSchemes() const
@@ -124,14 +124,18 @@ bool Solid::PowerManager::setCpuEnabled( int cpuNum, bool enabled )
 
 void Solid::PowerManager::setManagerBackend( QObject *backend )
 {
+    Q_D(PowerManager);
+
     ManagerBase::setManagerBackend(backend);
     if (backend) {
         d->connectBackend(backend);
     }
 }
 
-void Solid::PowerManager::Private::connectBackend( QObject *newBackend )
+void Solid::PowerManagerPrivate::connectBackend( QObject *newBackend )
 {
+    Q_Q(PowerManager);
+
     QObject::connect( newBackend, SIGNAL( schemeChanged( QString ) ),
                       q, SIGNAL( schemeChanged( QString ) ) );
     QObject::connect( newBackend, SIGNAL( acAdapterStateChanged( int ) ),

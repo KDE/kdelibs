@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,20 +18,20 @@
 */
 
 #include "acadapter.h"
+#include "acadapter_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/acadapter.h>
 
-namespace Solid
+Solid::AcAdapter::AcAdapter( QObject *backendObject )
+    : Capability(*new AcAdapterPrivate, backendObject)
 {
-    class AcAdapter::Private
-    {
-    public:
-    };
+    connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
+             this, SIGNAL( plugStateChanged( bool ) ) );
 }
 
-Solid::AcAdapter::AcAdapter( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::AcAdapter::AcAdapter(AcAdapterPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
     connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
              this, SIGNAL( plugStateChanged( bool ) ) );
@@ -39,7 +39,7 @@ Solid::AcAdapter::AcAdapter( QObject *backendObject )
 
 Solid::AcAdapter::~AcAdapter()
 {
-    delete d;
+
 }
 
 bool Solid::AcAdapter::isPlugged() const

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +28,8 @@ class KJob;
 
 namespace Solid
 {
+    class PowerManagerPrivate;
+
     /**
      * This class allow to query the underlying system to obtain information
      * about the hardware available.
@@ -44,6 +46,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS( BatteryState AcAdapterState ButtonType SuspendMethod CpuFreqPolicy )
         Q_FLAGS( SuspendMethods CpuFreqPolicies )
+        Q_DECLARE_PRIVATE(PowerManager)
         SOLID_SINGLETON( PowerManager )
 
     public:
@@ -266,10 +269,6 @@ namespace Solid
 
     protected:
         void setManagerBackend( QObject *backend );
-
-    private:
-        class Private;
-        Private * const d;
     };
 }
 

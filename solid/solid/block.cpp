@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +18,25 @@
 */
 
 #include "block.h"
+#include "block_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/block.h>
 
-namespace Solid
+Solid::Block::Block( QObject *backendObject )
+    : Capability(*new BlockPrivate, backendObject)
 {
-    class Block::Private
-    {
-    public:
-    };
 }
 
-Solid::Block::Block( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::Block::Block(BlockPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
+
 }
 
 Solid::Block::~Block()
 {
-    delete d;
+
 }
 
 int Solid::Block::deviceMajor() const

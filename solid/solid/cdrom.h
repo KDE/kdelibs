@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +28,8 @@
 
 namespace Solid
 {
+    class CdromPrivate;
+
     /**
      * This capability is available on CD-ROM drives.
      *
@@ -42,6 +44,7 @@ namespace Solid
         Q_PROPERTY( int readSpeed READ readSpeed )
         Q_PROPERTY( int writeSpeed READ writeSpeed )
         Q_PROPERTY( QList<int> writeSpeeds READ writeSpeeds )
+        Q_DECLARE_PRIVATE(Cdrom)
 
     public:
         /**
@@ -131,9 +134,11 @@ namespace Solid
          */
         void ejectPressed();
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Cdrom(CdromPrivate &dd, QObject *backendObject);
     };
 }
 

@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,25 +20,26 @@
 
 #include "wirelessnetwork.h"
 
+#include "network_p.h"
 #include "soliddefs_p.h"
 #include <solid/ifaces/wirelessnetwork.h>
 
 namespace Solid
 {
-    class WirelessNetwork::Private
+    class WirelessNetworkPrivate : public NetworkPrivate
     {
     public:
     };
 }
 
 Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
-    : Network(backendObject), d(new Private)
+    : Network(*new WirelessNetworkPrivate, backendObject)
 {
     registerBackendObject( backendObject );
 }
 
 Solid::WirelessNetwork::WirelessNetwork( const WirelessNetwork & network )
-    : Network(network), d(new Private)
+    : Network(*new WirelessNetworkPrivate, network)
 {
     registerBackendObject( network.backendObject() );
 }
@@ -59,7 +61,7 @@ void Solid::WirelessNetwork::registerBackendObject( QObject * backendObject )
 
 Solid::WirelessNetwork::~WirelessNetwork()
 {
-    delete d;
+
 }
 
 bool Solid::WirelessNetwork::isSameAs( const WirelessNetwork & other) const

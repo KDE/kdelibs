@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,23 +33,14 @@
 #include "ifaces/devicemanager.h"
 #include "ifaces/device.h"
 #include "managerbase.h"
+#include "managerbase_p.h"
 
-
-namespace Solid
+Solid::ManagerBase::ManagerBase( ManagerBasePrivate &dd, const QString &description,
+                                 const char *serviceName, const char *backendClassName )
+    : QObject(), d_ptr(&dd)
 {
-    class ManagerBase::Private
-    {
-    public:
-        Private() : backend( 0 ) {}
+    d_ptr->q_ptr = this;
 
-        QObject *backend;
-        QString errorText;
-    };
-}
-
-Solid::ManagerBase::ManagerBase( const QString &description, const char *serviceName, const char *backendClassName )
-    : QObject(), d( new Private )
-{
     QObject *backend = loadBackend( description, serviceName, backendClassName );
 
     if ( backend != 0 )
@@ -60,21 +51,30 @@ Solid::ManagerBase::ManagerBase( const QString &description, const char *service
 
 Solid::ManagerBase::~ManagerBase()
 {
+    Q_D(ManagerBase);
+
     delete d;
+    d_ptr = 0;
 }
 
 const QString &Solid::ManagerBase::errorText() const
 {
+    Q_D(const ManagerBase);
+
     return d->errorText;
 }
 
 QObject *Solid::ManagerBase::managerBackend() const
 {
+    Q_D(const ManagerBase);
+
     return d->backend;
 }
 
 void Solid::ManagerBase::setManagerBackend( QObject *backend )
 {
+    Q_D(ManagerBase);
+
     if ( d->backend )
     {
         disconnect( d->backend );
@@ -87,6 +87,8 @@ void Solid::ManagerBase::setManagerBackend( QObject *backend )
 QObject *Solid::ManagerBase::loadBackend( const QString &description, const char *serviceName,
                                           const char *backendClassName )
 {
+    Q_D(ManagerBase);
+
     QStringList error_msg;
 
     QObject *backend = 0;

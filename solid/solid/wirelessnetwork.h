@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +29,7 @@ namespace Solid
 {
     typedef QString MacAddress;
     typedef QStringList MacAddressList;
+    class WirelessNetworkPrivate;
 
     /**
      * This type of networks is used by wifi network interfaces.
@@ -37,6 +39,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS( OperationMode Capability )
         Q_FLAGS( Capabilities )
+        Q_DECLARE_PRIVATE(WirelessNetwork)
 
     public:
         enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
@@ -195,9 +198,6 @@ namespace Solid
         void authenticationNeeded();
     protected:
         void registerBackendObject( QObject * backendObject );
-    private:
-        class Private;
-        Private * const d;
     };
 
 } //Solid

@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,38 +18,17 @@
 
 */
 
-#include "camera.h"
-#include "camera_p.h"
+#ifndef SOLID_PORTABLEMEDIAPLAYER_P_H
+#define SOLID_PORTABLEMEDIAPLAYER_P_H
 
-#include "soliddefs_p.h"
-#include <solid/ifaces/camera.h>
+#include "capability_p.h"
 
-Solid::Camera::Camera(QObject *backendObject)
-    : Capability(*new CameraPrivate, backendObject)
+namespace Solid
 {
+    class PortableMediaPlayerPrivate : public CapabilityPrivate
+    {
+    public:
+    };
 }
 
-Solid::Camera::Camera(CameraPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
-}
-
-Solid::Camera::~Camera()
-{
-
-}
-
-
-Solid::Camera::AccessType Solid::Camera::accessMethod() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), Proprietary, accessMethod() );
-}
-
-bool Solid::Camera::isGphotoSupported() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), false, isGphotoSupported() );
-}
-
-#include "camera.moc"
-
+#endif

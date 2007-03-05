@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +18,25 @@
 */
 
 #include "storage.h"
+#include "storage_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/storage.h>
 
-namespace Solid
+Solid::Storage::Storage(QObject *backendObject)
+    : Block(*new StoragePrivate, backendObject)
 {
-    class Storage::Private
-    {
-    public:
-    };
 }
 
-Solid::Storage::Storage( QObject *backendObject )
-    : Block(backendObject), d(new Private)
+Solid::Storage::Storage(StoragePrivate &dd, QObject *backendObject)
+    : Block(dd, backendObject)
 {
+
 }
 
 Solid::Storage::~Storage()
 {
-    delete d;
+
 }
 
 Solid::Storage::Bus Solid::Storage::bus() const

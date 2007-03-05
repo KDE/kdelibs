@@ -17,38 +17,17 @@
 
 */
 
-#include "camera.h"
-#include "camera_p.h"
+#ifndef SOLID_PROCESSOR_P_H
+#define SOLID_PROCESSOR_P_H
 
-#include "soliddefs_p.h"
-#include <solid/ifaces/camera.h>
+#include "capability_p.h"
 
-Solid::Camera::Camera(QObject *backendObject)
-    : Capability(*new CameraPrivate, backendObject)
+namespace Solid
 {
+    class ProcessorPrivate : public CapabilityPrivate
+    {
+    public:
+    };
 }
 
-Solid::Camera::Camera(CameraPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
-}
-
-Solid::Camera::~Camera()
-{
-
-}
-
-
-Solid::Camera::AccessType Solid::Camera::accessMethod() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), Proprietary, accessMethod() );
-}
-
-bool Solid::Camera::isGphotoSupported() const
-{
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), false, isGphotoSupported() );
-}
-
-#include "camera.moc"
-
+#endif

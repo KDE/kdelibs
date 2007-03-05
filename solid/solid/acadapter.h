@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class AcAdapterPrivate;
+
     /**
      * This capability is available on A/C adapters.
      */
@@ -33,6 +35,7 @@ namespace Solid
     {
         Q_OBJECT
         Q_PROPERTY( bool plugged READ isPlugged )
+        Q_DECLARE_PRIVATE(AcAdapter)
 
     public:
         /**
@@ -74,9 +77,11 @@ namespace Solid
          */
         void plugStateChanged( bool newState );
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        AcAdapter(AcAdapterPrivate &dd, QObject *backendObject);
     };
 }
 

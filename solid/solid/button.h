@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +27,8 @@
 
 namespace Solid
 {
+    class ButtonPrivate;
+
     /**
      * This capability is available on button devices.
      *
@@ -41,6 +44,7 @@ namespace Solid
         Q_PROPERTY( ButtonType type READ type )
         Q_PROPERTY( bool hasState READ hasState )
         Q_PROPERTY( bool stateValue READ stateValue )
+        Q_DECLARE_PRIVATE(Button)
 
     public:
         /**
@@ -114,9 +118,11 @@ namespace Solid
          */
         void pressed( int type );
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Button(ButtonPrivate &dd, QObject *backendObject);
     };
 }
 

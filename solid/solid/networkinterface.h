@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,6 +26,8 @@
 
 namespace Solid
 {
+    class NetworkInterfacePrivate;
+
     /**
      * Represents a network interface as seen by the networking subsystem.
      *
@@ -36,6 +39,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS( ConnectionState Capability Type )
         Q_FLAGS( Capabilities )
+        Q_DECLARE_PRIVATE(NetworkInterface)
 
     public:
         // == NM ActivationStage
@@ -253,10 +257,7 @@ namespace Solid
         void unregisterBackendObject();
 
         Network *findRegisteredNetwork( const QString &uni ) const;
-
-        class Private;
-        Private * const d;
-};
+    };
 
 } //Solid
 

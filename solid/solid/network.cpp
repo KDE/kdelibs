@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,33 +19,38 @@
 */
 
 #include "network.h"
+#include "network_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/network.h>
 
-namespace Solid
-{
-    class Network::Private
-    {
-    public:
-    };
-}
-
 Solid::Network::Network( QObject *backendObject )
-    : FrontendObject(), d(new Private)
+    : FrontendObject(*new NetworkPrivate)
 {
     registerBackendObject( backendObject );
 }
 
 Solid::Network::Network( const Network &network )
-    : FrontendObject(), d( new Private )
+    : FrontendObject(*new NetworkPrivate)
+{
+    registerBackendObject( network.backendObject() );
+}
+
+Solid::Network::Network(NetworkPrivate &dd, QObject *backendObject)
+    : FrontendObject(dd)
+{
+    registerBackendObject( backendObject );
+}
+
+Solid::Network::Network(NetworkPrivate &dd, const Network &network)
+    : FrontendObject(dd)
 {
     registerBackendObject( network.backendObject() );
 }
 
 Solid::Network::~Network()
 {
-    delete d;
+
 }
 
 QList<KNetwork::KIpAddress> Solid::Network::ipV4Addresses() const

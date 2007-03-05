@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class CameraPrivate;
+
     /**
      * This capability is available on digital camera devices.
      *
@@ -42,6 +44,7 @@ namespace Solid
         Q_ENUMS( AccessType )
         Q_PROPERTY( AccessType accessMethod READ accessMethod )
         Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
+        Q_DECLARE_PRIVATE(Camera)
 
     public:
         /**
@@ -96,9 +99,11 @@ namespace Solid
          */
         bool isGphotoSupported() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        Camera(CameraPrivate &dd, QObject *backendObject);
     };
 }
 

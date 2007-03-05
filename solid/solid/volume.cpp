@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,20 +18,20 @@
 */
 
 #include "volume.h"
+#include "volume_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/volume.h>
 
-namespace Solid
+Solid::Volume::Volume( QObject *backendObject )
+    : Block(*new VolumePrivate, backendObject)
 {
-    class Volume::Private
-    {
-    public:
-    };
+    connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
+             this, SIGNAL( mountStateChanged( bool ) ) );
 }
 
-Solid::Volume::Volume( QObject *backendObject )
-    : Block(backendObject), d(new Private)
+Solid::Volume::Volume(VolumePrivate &dd, QObject *backendObject)
+    : Block(dd, backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
@@ -39,7 +39,7 @@ Solid::Volume::Volume( QObject *backendObject )
 
 Solid::Volume::~Volume()
 {
-    delete d;
+
 }
 
 bool Solid::Volume::isIgnored() const

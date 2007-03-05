@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class DvbHwPrivate;
+
     /**
      * This capability is available on Digital Video Broadcast (DVB) devices.
      *
@@ -42,6 +44,7 @@ namespace Solid
         Q_PROPERTY( int deviceAdapter READ deviceAdapter )
         Q_PROPERTY( DeviceType deviceType READ deviceType )
         Q_PROPERTY( int deviceIndex READ deviceIndex )
+        Q_DECLARE_PRIVATE(DvbHw)
 
     public:
         /**
@@ -126,9 +129,11 @@ namespace Solid
           */
          int deviceIndex() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        DvbHw(DvbHwPrivate &dd, QObject *backendObject);
     };
 }
 

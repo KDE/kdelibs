@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,32 +18,34 @@
 */
 
 #include "battery.h"
+#include "battery_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/battery.h>
 
-namespace Solid
-{
-    class Battery::Private
-    {
-    public:
-    };
-}
-
-Solid::Battery::Battery( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::Battery::Battery(QObject *backendObject)
+    : Capability(*new BatteryPrivate, backendObject)
 {
     connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
              this, SIGNAL( chargePercentChanged( int ) ) );
 
     connect( backendObject, SIGNAL( chargeStateChanged( int ) ),
              this, SIGNAL( chargeStateChanged( int ) ) );
+}
 
+Solid::Battery::Battery(BatteryPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
+{
+    connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
+             this, SIGNAL( chargePercentChanged( int ) ) );
+
+    connect( backendObject, SIGNAL( chargeStateChanged( int ) ),
+             this, SIGNAL( chargeStateChanged( int ) ) );
 }
 
 Solid::Battery::~Battery()
 {
-    delete d;
+
 }
 
 bool Solid::Battery::isPlugged() const

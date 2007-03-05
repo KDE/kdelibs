@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +29,8 @@
 
 namespace Solid
 {
+    class PortableMediaPlayerPrivate;
+
     /**
      * This class implement Portable Media Player capability interface and represent
      * a portable media player attached to the system.
@@ -43,6 +46,7 @@ namespace Solid
         Q_PROPERTY( QStringList outputFormats READ outputFormats )
         Q_PROPERTY( QStringList inputFormats READ inputFormats )
         Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
+        Q_DECLARE_PRIVATE(PortableMediaPlayer)
 
     public:
         /**
@@ -112,9 +116,11 @@ namespace Solid
          */
         QStringList playlistFormats() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        PortableMediaPlayer(PortableMediaPlayerPrivate &dd, QObject *backendObject);
     };
 }
 

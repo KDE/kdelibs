@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +26,8 @@
 
 namespace Solid
 {
+    class OpticalDiscPrivate;
+
     /**
      * This capability is available on optical discs.
      *
@@ -42,6 +44,7 @@ namespace Solid
         Q_PROPERTY( bool blank READ isBlank )
         Q_PROPERTY( bool rewritable READ isRewritable )
         Q_PROPERTY( qulonglong capacity READ capacity )
+        Q_DECLARE_PRIVATE(OpticalDisc)
 
     public:
         /**
@@ -150,9 +153,11 @@ namespace Solid
          */
         qulonglong capacity() const;
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         */
+        OpticalDisc(OpticalDiscPrivate &dd, QObject *backendObject);
     };
 }
 

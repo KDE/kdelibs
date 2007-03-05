@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@ namespace Solid
 {
     class Device;
     class Predicate;
+    class CapabilityPrivate;
 
     /**
      * Base class of all the capabilities.
@@ -43,6 +44,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(Type)
         Q_FLAGS(Types)
+        Q_DECLARE_PRIVATE(Capability)
 
     public:
         /**
@@ -76,13 +78,6 @@ namespace Solid
 
 
         /**
-         * Creates a new Capability object.
-         *
-         * @param backendObject the capability object provided by the backend
-         */
-        explicit Capability( QObject *backendObject );
-
-        /**
          * Destroys a Capability object.
          */
         virtual ~Capability();
@@ -99,10 +94,17 @@ namespace Solid
          */
         static Type stringToType(const QString &type);
 
-    private:
-        class Private;
-        Private * const d;
+    protected:
+        /**
+         * @internal
+         * Creates a new Capability object.
+         *
+         * @param dd the private d member
+         * @param backendObject the capability object provided by the backend
+         */
+        Capability(CapabilityPrivate &dd, QObject *backendObject);
 
+    private:
         friend class Device;
     };
 }

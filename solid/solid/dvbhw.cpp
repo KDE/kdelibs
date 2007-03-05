@@ -18,26 +18,25 @@
 */
 
 #include "dvbhw.h"
+#include "dvbhw_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/dvbhw.h>
 
-namespace Solid
+Solid::DvbHw::DvbHw( QObject *backendObject )
+    : Capability(*new DvbHwPrivate, backendObject)
 {
-    class DvbHw::Private
-    {
-    public:
-    };
 }
 
-Solid::DvbHw::DvbHw( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::DvbHw::DvbHw(DvbHwPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
+
 }
 
 Solid::DvbHw::~DvbHw()
 {
-    delete d;
+
 }
 
 QString Solid::DvbHw::device() const

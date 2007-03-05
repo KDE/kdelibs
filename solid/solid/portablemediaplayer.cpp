@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,26 +19,25 @@
 */
 
 #include "portablemediaplayer.h"
+#include "portablemediaplayer_p.h"
 
 #include "soliddefs_p.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
-namespace Solid
+Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
+    : Capability(*new PortableMediaPlayerPrivate, backendObject)
 {
-    class PortableMediaPlayer::Private
-    {
-    public:
-    };
 }
 
-Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
-    : Capability(backendObject), d(new Private)
+Solid::PortableMediaPlayer::PortableMediaPlayer(PortableMediaPlayerPrivate &dd, QObject *backendObject)
+    : Capability(dd, backendObject)
 {
+
 }
 
 Solid::PortableMediaPlayer::~PortableMediaPlayer()
 {
-    delete d;
+
 }
 
 Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const

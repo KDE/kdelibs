@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,6 +33,7 @@
 namespace Solid
 {
     class DeviceManager;
+    class DevicePrivate;
 
     /**
      * This class allows applications to deal with devices available in the
@@ -54,6 +55,8 @@ namespace Solid
     class SOLID_EXPORT Device : public FrontendObject
     {
         Q_OBJECT
+        Q_DECLARE_PRIVATE(Device)
+
     public:
         /**
          * This enum type defines the type of change that can occur to a Device
@@ -326,9 +329,6 @@ namespace Solid
     private:
         void registerBackendObject( QObject *backendObject );
         void unregisterBackendObject();
-
-        class Private;
-        Private * const d;
     };
 
     typedef QList<Device> DeviceList;

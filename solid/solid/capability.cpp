@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,28 +18,23 @@
 */
 
 #include "capability.h"
+#include "capability_p.h"
 
 #include <solid/ifaces/capability.h>
 
 #include <QMetaEnum>
 
-namespace Solid
-{
-    class Capability::Private
-    {
-    public:
-    };
-}
 
-Solid::Capability::Capability( QObject *backendObject )
-    : FrontendObject(), d(new Private)
+Solid::Capability::Capability(CapabilityPrivate &dd, QObject *backendObject)
+    : FrontendObject(dd)
 {
     setBackendObject( backendObject );
 }
 
+
 Solid::Capability::~Capability()
 {
-    delete d;
+
 }
 
 QString Solid::Capability::typeToString(Type type)
