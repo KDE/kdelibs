@@ -10,7 +10,7 @@ QT4_AUTOMOC(${ThreadWeaverGui_LIB_SRCS})
 
 include_directories( ../Weaver/ )
 
-add_library(ThreadWeaverGui SHARED ${ThreadWeaverGui_LIB_SRCS})
+kde4_add_library(ThreadWeaverGui SHARED ${ThreadWeaverGui_LIB_SRCS})
 target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION 0.6.0 SOVERSION 0)
 install(TARGETS ThreadWeaverGui DESTINATION ${LIB_INSTALL_DIR})
