@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE project
 
-   Copyright (C) 2006 Fredrik Höglund <fredrik@kde.org>
+   Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,8 +22,11 @@
 #ifndef __KFILEITEMDELEGATE_H
 #define __KFILEITEMDELEGATE_H
 
-#include <QItemDelegate>
+#include <QAbstractItemDelegate>
 #include <kio/global.h>
+
+
+class QAbstractItemView;
 
 
 /**
@@ -56,7 +59,7 @@
  * listview->setItemDelegate(delegate);
  * @endcode
  */
-class KIO_EXPORT KFileItemDelegate : public QItemDelegate
+class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 
@@ -130,7 +133,7 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
          * If the model provides a valid Qt::FontRole and/or Qt::AlignmentRole for the item,
          * those will be used instead of the ones specified in the style options.
          *
-         * This function is reimplemented from @ref QItemDelegate.
+         * This function is reimplemented from @ref QAbstractItemDelegate.
          *
          * @param option  The style options that should be used when painting the item.
          * @param index   The index to the item for which to return the size hint.
@@ -153,13 +156,43 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
          * @li Qt::ForegroundRole  The text color for the display role.
          * @li Qt::BackgroundRole  The background color for the item.
          *
-         * This function is reimplemented from @ref QItemDelegate.
+         * This function is reimplemented from @ref QAbstractItemDelegate.
          *
          * @param painter The painter with which to draw the item.
          * @param option  The style options that should be used when painting the item.
          * @param index   The index to the item that should be painted.
          */
         virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem & option, const QModelIndex &index);
+
+
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+
+
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+
+
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,const QModelIndex &index) const;
 
 
         /**
@@ -174,6 +207,13 @@ class KIO_EXPORT KFileItemDelegate : public QItemDelegate
          * Returns the additional information that should be shown below item labels in icon views.
          */
         AdditionalInformation additionalInformation() const;
+
+
+    public Q_SLOTS:
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        bool helpEvent(QHelpEvent * event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 
     protected:

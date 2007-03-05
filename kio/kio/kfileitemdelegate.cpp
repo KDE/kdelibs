@@ -568,7 +568,7 @@ bool KFileItemDelegate::Private::alternateBackground(const QStyleOptionViewItem 
 
 
 KFileItemDelegate::KFileItemDelegate(QObject *parent)
-    : QItemDelegate(parent), d(new Private(this))
+    : QAbstractItemDelegate(parent), d(new Private(this))
 {
     int focusHMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
     int focusVMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameVMargin);
@@ -905,5 +905,61 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     painter->restore();
 }
+
+
+QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    Q_UNUSED(parent)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
+    return NULL;
+}
+
+
+bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem & option, const QModelIndex &index)
+{
+    Q_UNUSED(event)
+    Q_UNUSED(model)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
+    return false;
+}
+
+
+void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    Q_UNUSED(editor)
+    Q_UNUSED(index)
+}
+
+
+void KFileItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    Q_UNUSED(editor)
+    Q_UNUSED(model)
+    Q_UNUSED(index)
+}
+
+
+void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,const QModelIndex &index) const
+{
+    Q_UNUSED(editor)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+}
+
+
+bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    Q_UNUSED(event)
+    Q_UNUSED(view)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
+    return false;
+}
+
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
