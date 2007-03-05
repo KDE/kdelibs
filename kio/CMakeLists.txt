@@ -354,6 +354,7 @@ install( FILES
   kio/karchive.h
   kio/kfilefilter.h
   kio/kfilemetainfo.h
+  kio/kfilewriteplugin.h
   kio/kmimetyperesolver.h
   kio/k3mimetyperesolver.h
   kio/kdbusservicestarter.h
