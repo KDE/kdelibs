@@ -161,7 +161,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 65 "grammar.y"
+#line 67 "grammar.y"
 typedef union YYSTYPE {
   int                 ival;
   double              dval;
@@ -189,10 +189,9 @@ typedef union YYSTYPE {
   PropertyNode       *pnode;
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
-  PackageIdentNode     *pkgi;
 } YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 196 "grammar.tab.h"
+#line 195 "grammar.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

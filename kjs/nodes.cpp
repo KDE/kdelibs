@@ -2488,12 +2488,6 @@ ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
 {
 }
 
-JSValue* PackageIdentNode::evaluate(ExecState*)
-{
-    // should never get here
-    return 0;
-}
-
 JSValue* PackageNameNode::evaluate(ExecState*)
 {
     // should never get here

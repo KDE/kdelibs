@@ -1097,37 +1097,30 @@ namespace KJS {
     ProgramNode(SourceElementsNode *s);
   };
 
-  class PackageIdentNode : public Node {
-  public:
-    PackageIdentNode(const Identifier &i) : idents(0), id(i) { }
-    PackageIdentNode(PackageIdentNode *in,
-                     const Identifier &i) : idents(in), id(i) { }
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-  private:
-    RefPtr<PackageIdentNode> idents;
-    Identifier id;
-  };
-
   class PackageNameNode : public Node {
   public:
-    PackageNameNode(const UString &s) : str(s), idents(0) { }
-    PackageNameNode(PackageIdentNode *id) : idents(id) {}
+    PackageNameNode(const Identifier &i) : names(0), id(i) { }
+    PackageNameNode(PackageNameNode *n,
+                    const Identifier &i) : names(n), id(i) { }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
-    UString str;
-    RefPtr<PackageIdentNode> idents;
+    RefPtr<PackageNameNode> names;
+    Identifier id;
   };
 
   class ImportStatement : public StatementNode {
   public:
-    ImportStatement(PackageNameNode *n) : name(n) {}
+    ImportStatement(PackageNameNode *n) : name(n), wld(false) {}
+    void enableWildcard() { wld = true; }
+    void setAlias(const Identifier &a) { al = a; }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void processVarDecls(ExecState*);
   private:
     RefPtr<PackageNameNode> name;
+    Identifier al;
+    bool wld;
   };
 
 } // namespace

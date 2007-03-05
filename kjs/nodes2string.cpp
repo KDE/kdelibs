@@ -722,22 +722,20 @@ void SourceElementsNode::streamTo(SourceStream &s) const
     s << n->node;
 }
 
-void PackageIdentNode::streamTo(SourceStream &s) const
-{
-    if (idents)
-        s << idents << ".";
-    s << id;
-}
-
 void PackageNameNode::streamTo(SourceStream &s) const
 {
-    if (idents)
-        s << idents;
-    else
-        s << "\"" << str << "\"";
+    if (names)
+        s << names << ".";
+    s << id;
 }
 
 void ImportStatement::streamTo(SourceStream &s) const
 {
-    s << SourceStream::Endl << "import " << name << ";";
+    s << SourceStream::Endl << "import ";
+    if (!al.isEmpty())
+	s << al << " = ";
+    s << name;
+    if (wld)
+	s << ".*";
+    s << ";";
 }

@@ -59,6 +59,8 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier &ge
 static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args);
 static Node *makeTypeOfNode(Node *expr);
 static Node *makeDeleteNode(Node *expr);
+static StatementNode *makeImportNode(PackageNameNode *n,
+				     bool wildcard, const Identifier &a);
 
 %}
 
@@ -89,7 +91,6 @@ static Node *makeDeleteNode(Node *expr);
   PropertyNode       *pnode;
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
-  PackageIdentNode     *pkgi;
 }
 
 %start Program
@@ -186,7 +187,6 @@ static Node *makeDeleteNode(Node *expr);
 %type <pnode> Property
 %type <plist> PropertyList
 %type <pkgn>  PackageName
-%type <pkgi>  PackageIdentifiers
 %%
 
 Literal:
@@ -813,19 +813,24 @@ DebuggerStatement:
   | DEBUGGER error                         { $$ = new EmptyStatementNode(); DBG($$, @1, @1); AUTO_SEMICOLON; }
 ;
 
-PackageIdentifiers:
-    IDENT                               { $$ = new PackageIdentNode(*$1); }
-  | PackageIdentifiers '.' IDENT        { $$ = new PackageIdentNode($1, *$3); }
-;
-
 PackageName:
-    STRING                                 { $$ = new PackageNameNode(*$1); }
-  | PackageIdentifiers                     { $$ = new PackageNameNode($1); }
+    IDENT                               { $$ = new PackageNameNode(*$1); }
+  | PackageName '.' IDENT               { $$ = new PackageNameNode($1, *$3); }
 ;
 
 ImportStatement:
-    IMPORT PackageName ';'                 { $$ = new ImportStatement($2); DBG($$, @1, @3); }
-  | IMPORT PackageName error               { $$ = new ImportStatement($2); DBG($$, @1, @2); AUTO_SEMICOLON; }
+    IMPORT PackageName '.' '*' ';'      { $$ = makeImportNode($2, true, 0);
+                                          DBG($$, @1, @5); }
+  | IMPORT PackageName '.' '*' error    { $$ = makeImportNode($2, true, 0);
+                                          DBG($$, @1, @5); AUTO_SEMICOLON; }
+  | IMPORT PackageName ';'              { $$ = makeImportNode($2, false, 0);
+                                          DBG($$, @1, @3); }
+  | IMPORT PackageName error            { $$ = makeImportNode($2, false, 0);
+                                          DBG($$, @1, @3); AUTO_SEMICOLON; }
+  | IMPORT IDENT '=' PackageName ';'    { $$ = makeImportNode($4, false, *$2);
+                                          DBG($$, @1, @5); }
+  | IMPORT IDENT '=' PackageName error  { $$ = makeImportNode($4, false, *$2);
+                                          DBG($$, @1, @5); AUTO_SEMICOLON; }
 ;
 
 FunctionDeclaration:
@@ -1006,6 +1011,17 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
                               new FuncExprNode(Identifier::null(), body, params), type);
 
     return true;
+}
+
+static StatementNode *makeImportNode(PackageNameNode *n,
+				     bool wildcard, const Identifier &a)
+{
+    ImportStatement *stat = new ImportStatement(n);
+    if (wildcard)
+	stat->enableWildcard();
+    stat->setAlias(a);
+
+    return stat;
 }
 
 /* called by yyparse on error */
