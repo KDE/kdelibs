@@ -157,7 +157,7 @@ public:
    * @return The value for this key, or @p aDefault.
    */
   template <typename T>
-      KDE_DEPRECATED inline T readEntry( const char* pKey, const T& aDefault) const
+      inline KDE_DEPRECATED T readEntry( const char* pKey, const T& aDefault) const
   {
       return mGroup.readEntry(pKey,aDefault);
   }
