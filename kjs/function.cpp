@@ -974,10 +974,11 @@ UString escapeStringForPrettyPrinting(const UString& s)
                 escapedString.append(c);
             else {
                 char hexValue[7];
+                const char *fmt = c < 256 ? "\\x%02X" : "\\u%04X";
 #if PLATFORM(WIN_OS)
-                _snprintf(hexValue, 7, "\\u%04x", c);
+                _snprintf(hexValue, 7, fmt, c);
 #else
-                snprintf(hexValue, 7, "\\u%04x", c);
+                snprintf(hexValue, 7, fmt, c);
 #endif
                 escapedString += hexValue;
             }
