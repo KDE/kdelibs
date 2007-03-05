@@ -26,7 +26,11 @@
 #include <kio/global.h>
 
 
+class QAbstractItemModel;
 class QAbstractItemView;
+class QHelpEvent;
+class QModelIndex;
+class QPainter;
 
 
 /**
