@@ -37,13 +37,13 @@
 #include <qtextedit.h>
 #include <qwidget.h>
 #include <QStackedWidget>
-#include <QTextDocument>
 #include <QDockWidget>
+#include <QTextDocument>
 
 #include <kstandardaction.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-
+#include <kdeversion.h>
 
 #include "kacceleratormanager_private.h"
 #include <kstandardaction_p.h>
@@ -111,6 +111,7 @@ private:
   static void manageWidget(QWidget *widget, Item *item);
   static void manageMenuBar(QMenuBar *mbar, Item *item);
   static void manageTabBar(QTabBar *bar, Item *item);
+  static void manageDockWidget(QDockWidget *dock, Item *item);
 
   static void calculateAccelerators(Item *item, QString &used);
 
@@ -212,6 +213,13 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     {
         cnt++;
 
+        QDockWidget *dock = qobject_cast<QDockWidget*>(it->m_widget);
+        if (dock)
+        {
+            if (checkChange(contents[cnt]))
+                dock->setWindowTitle(contents[cnt].accelerated());
+            continue;
+        }
         QTabBar *tabBar = qobject_cast<QTabBar*>(it->m_widget);
         if (tabBar)
         {
@@ -292,6 +300,18 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       // return;
   }
 
+  QDockWidget *dock = qobject_cast<QDockWidget*>( w );
+  if ( dock )
+  {
+      //QWidgetStackAccelManager::manage( wds );
+#if QT_VERSION < KDE_MAKE_VERSION(4,3,0)
+      return;
+#else
+      manageDockWidget(dock, item);
+#endif
+  }
+
+
   QMenu *popupMenu = qobject_cast<QMenu*>(w);
   if (popupMenu)
   {
@@ -314,11 +334,9 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  if (qobject_cast<QComboBox*>(w) ||
-      qobject_cast<QLineEdit*>(w) ||
+  if (qobject_cast<QComboBox*>(w) || qobject_cast<QLineEdit*>(w) ||
       w->inherits("Q3TextEdit") ||
       qobject_cast<QTextEdit*>(w) ||
-      qobject_cast<QDockWidget*>(w) ||
       qobject_cast<QAbstractSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
@@ -395,6 +413,19 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
     it->m_content = KAccelString(content);
   }
 }
+
+void KAcceleratorManagerPrivate::manageDockWidget(QDockWidget *dock, Item *item)
+{
+    QString content = dock->windowTitle();
+    if (content.isEmpty())
+        return;
+
+    Item *it = new Item;
+    item->addChild(it);
+    it->m_widget = dock;
+    it->m_content = KAccelString(content);
+}
+
 
 void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 {
