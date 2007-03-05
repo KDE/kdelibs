@@ -65,47 +65,21 @@
       <arg name="msg" type="s" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
-    <method name="copying">
+    <method name="setDescription">
       <arg name="id" type="i" direction="in"/>
-      <arg name="from" type="s" direction="in"/>
-      <arg name="to" type="s" direction="in"/>
+      <arg name="description" type="s" direction="in"/>
       <arg name="res" type="b" direction="out"/>
     </method>
-    <method name="moving">
+    <method name="setDescriptionFirstField">
       <arg name="id" type="i" direction="in"/>
-      <arg name="from" type="s" direction="in"/>
-      <arg name="to" type="s" direction="in"/>
+      <arg name="name" type="s" direction="in"/>
+      <arg name="value" type="s" direction="in"/>
       <arg name="res" type="b" direction="out"/>
     </method>
-    <method name="deleting">
+    <method name="setDescriptionSecondField">
       <arg name="id" type="i" direction="in"/>
-      <arg name="url" type="s" direction="in"/>
-      <arg name="res" type="b" direction="out"/>
-    </method>
-    <method name="transferring">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="url" type="s" direction="in"/>
-      <arg name="res" type="b" direction="out"/>
-    </method>
-    <method name="creatingDir">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="url" type="s" direction="in"/>
-      <arg name="res" type="b" direction="out"/>
-    </method>
-    <method name="stating">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="url" type="s" direction="in"/>
-      <arg name="res" type="b" direction="out"/>
-    </method>
-    <method name="mounting">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="dev" type="s" direction="in"/>
-      <arg name="point" type="s" direction="in"/>
-      <arg name="res" type="b" direction="out"/>
-    </method>
-    <method name="unmounting">
-      <arg name="id" type="i" direction="in"/>
-      <arg name="point" type="s" direction="in"/>
+      <arg name="name" type="s" direction="in"/>
+      <arg name="value" type="s" direction="in"/>
       <arg name="res" type="b" direction="out"/>
     </method>
     <method name="setJobVisible" >

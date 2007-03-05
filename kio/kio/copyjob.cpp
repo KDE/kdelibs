@@ -88,6 +88,10 @@ CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool a
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0),d(new CopyJobPrivate)
 {
+    // AWFUL HACK... We really shouldn't try to set the delegate inside a constructor
+    // That'll break in subclasses if it introspects. (ervin)
+    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
+
     d->m_globalDest = dest;
     d->m_globalDestinationState = destinationState;
 
@@ -295,41 +299,38 @@ void CopyJob::slotReport()
     if ( isSuspended() )
         return;
     // If showProgressInfo was set, progressId() is > 0.
-    JobUiDelegate * delegate = ui();
     switch (state) {
         case STATE_COPYING_FILES:
             emit processedFiles( this, m_processedFiles );
-            if (delegate) delegate->processedFiles(m_processedFiles);
             if (d->m_bURLDirty)
             {
                 // Only emit urls when they changed. This saves time, and fixes #66281
                 d->m_bURLDirty = false;
                 if (m_mode==Move)
                 {
-                    if (delegate) delegate->moving(m_currentSrcURL, m_currentDestURL);
+                    emitMoving(m_currentSrcURL, m_currentDestURL);
                     emit moving( this, m_currentSrcURL, m_currentDestURL);
                 }
                 else if (m_mode==Link)
                 {
-                    if (delegate) delegate->copying( m_currentSrcURL, m_currentDestURL ); // we don't have a delegate->linking
+                    emitCopying( m_currentSrcURL, m_currentDestURL ); // we don't have a delegate->linking
                     emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
                 }
                 else
                 {
-                    if (delegate) delegate->copying( m_currentSrcURL, m_currentDestURL );
+                    emitCopying( m_currentSrcURL, m_currentDestURL );
                     emit copying( this, m_currentSrcURL, m_currentDestURL );
                 }
             }
             break;
 
         case STATE_CREATING_DIRS:
-            if (delegate) delegate->processedDirs( m_processedDirs );
             emit processedDirs( this, m_processedDirs );
             if (d->m_bURLDirty)
             {
                 d->m_bURLDirty = false;
                 emit creatingDir( this, m_currentDestURL );
-                if (delegate) delegate->creatingDir( m_currentDestURL );
+                emitCreatingDir( m_currentDestURL );
             }
             break;
 
@@ -338,7 +339,7 @@ void CopyJob::slotReport()
             if (d->m_bURLDirty)
             {
                 d->m_bURLDirty = false;
-                if (delegate) delegate->copying( m_currentSrcURL, m_currentDestURL );
+                emitCopying( m_currentSrcURL, m_currentDestURL );
             }
             emit totalSize( this, m_totalSize );
             emit totalFiles( this, files.count() );
@@ -874,7 +875,6 @@ void CopyJob::createNextDir()
     else // we have finished creating dirs
     {
         emit processedDirs( this, m_processedDirs ); // make sure final number appears
-        if (ui()) ui()->processedDirs( m_processedDirs );
 
         state = STATE_COPYING_FILES;
         m_processedFiles++; // Ralf wants it to start at 1, not 0

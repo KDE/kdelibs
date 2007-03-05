@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KIO_JOBUI_H
-#define KIO_JOBUI_H
+#ifndef KIO_JOBUIDELEGATE_H
+#define KIO_JOBUIDELEGATE_H
 
 #include <kjobuidelegate.h>
 #include <kio/skipdialog.h>
@@ -73,7 +73,7 @@ public:
 
     /**
      * Updates the last user action timestamp to the given time.
-     * See KApplication::updateUserTimestamp() .
+     * See KApplication::updateUserTimestamp().
      */
     void updateUserTimestamp( unsigned long time );
 
@@ -125,27 +125,18 @@ public:
                                       bool multi,
                                       const QString & error_text);
 
-    void processedFiles(unsigned long files);
-    void processedDirs(unsigned long dirs);
-    void totalFiles(unsigned long files);
-    void totalDirs(unsigned long dirs);
-
-    void moving(const KUrl &src, const KUrl &dest);
-    void copying(const KUrl &src, const KUrl &dest);
-    void creatingDir(const KUrl &dir);
-    void deleting(const KUrl &url);
-    void stating(const KUrl &url);
-    void transferring(const KUrl &url);
-    void mounting(const QString &dev, const QString &point);
-    void unmounting(const QString &point);
-
 private Q_SLOTS:
     void slotPercent( KJob *job, unsigned long percent );
     void slotInfoMessage( KJob *job, const QString &msg );
+    void slotDescription( KJob *job, const QString &title,
+                          const QPair<QString, QString> &field1,
+                          const QPair<QString, QString> &field2 );
     void slotTotalSize( KJob *job, qulonglong totalSize );
     void slotProcessedSize( KJob *job, qulonglong size );
     void slotSpeed( KJob *job, unsigned long speed );
+    void slotProcessedFiles(KIO::Job *job, unsigned long files);
     void slotTotalFiles(KJob *job, unsigned long files);
+    void slotProcessedDirs(KIO::Job *job, unsigned long dirs);
     void slotTotalDirs(KJob *job, unsigned long dirs);
 
 protected:

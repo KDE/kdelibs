@@ -48,25 +48,16 @@ DeleteJob::DeleteJob( const KUrl::List& src, bool showProgressInfo )
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
 {
-  if ( ui() ) {
+    // AWFUL HACK... We really shouldn't try to set the delegate inside a constructor
+    // That'll break in subclasses if it introspects. (ervin)
+    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
 
-     // See slotReport
-     /*connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-      m_observer, SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+    m_reportTimer=new QTimer(this);
+    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+    //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
+    m_reportTimer->start( 200 );
 
-      connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-      m_observer, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-
-      connect( this, SIGNAL( deleting( KIO::Job*, const KUrl& ) ),
-      m_observer, SLOT( slotDeleting( KIO::Job*, const KUrl& ) ) );*/
-
-     m_reportTimer=new QTimer(this);
-     connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
-     //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
-     m_reportTimer->start( 200 );
-  }
-
-  QTimer::singleShot(0, this, SLOT(slotStart()));
+    QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
 void DeleteJob::slotStart()
@@ -82,10 +73,8 @@ void DeleteJob::slotReport()
    if (progressId()==0)
       return;
 
-   JobUiDelegate * delegate = ui();
-
    emit deleting( this, m_currentURL );
-   delegate->deleting(m_currentURL);
+   emitDeleting(m_currentURL);
 
    switch( state ) {
         case STATE_STATING:
@@ -96,11 +85,9 @@ void DeleteJob::slotReport()
             break;
         case STATE_DELETING_DIRS:
             emit processedDirs( this, m_processedDirs );
-            delegate->processedDirs(m_processedDirs);
             emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             break;
         case STATE_DELETING_FILES:
-            delegate->processedFiles(m_processedFiles);
             emit processedFiles( this, m_processedFiles );
             emitPercent( m_processedFiles, m_totalFilesDirs );
             break;

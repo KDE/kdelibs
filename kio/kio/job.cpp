@@ -162,6 +162,57 @@ void Job::emitSpeed( unsigned long bytes_per_second )
   m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
 }
 
+void Job::emitMoving(const KUrl &src, const KUrl &dest)
+{
+    emit description(this, i18n("Moving"),
+                     qMakePair(i18n("Source"), src.prettyUrl()),
+                     qMakePair(i18n("Destination"), dest.prettyUrl()));
+}
+
+void Job::emitCopying(const KUrl &src, const KUrl &dest)
+{
+    emit description(this, i18n("Copying"),
+                     qMakePair(i18n("Source"), src.prettyUrl()),
+                     qMakePair(i18n("Destination"), dest.prettyUrl()));
+}
+
+void Job::emitCreatingDir(const KUrl &dir)
+{
+    emit description(this, i18n("Creating directory"),
+                     qMakePair(i18n("Directory"), dir.prettyUrl()));
+}
+
+void Job::emitDeleting(const KUrl &url)
+{
+    emit description(this, i18n("Deleting"),
+                     qMakePair(i18n("File"), url.prettyUrl()));
+}
+
+void Job::emitStating(const KUrl &url)
+{
+    emit description(this, i18n("Stating"),
+                     qMakePair(i18n("File"), url.prettyUrl()));
+}
+
+void Job::emitTransferring(const KUrl &url)
+{
+    emit description(this, i18n("Transferring"),
+                     qMakePair(i18n("Source"), url.prettyUrl()));
+}
+
+void Job::emitMounting(const QString &dev, const QString &point)
+{
+    emit description(this, i18n("Mounting"),
+                     qMakePair(i18n("Device"), dev),
+                     qMakePair(i18n("Mountpoint"), point));
+}
+
+void Job::emitUnmounting(const QString &point)
+{
+    emit description(this, i18n("Unmounting"),
+                     qMakePair(i18n("Mountpoint"), point));
+}
+
 bool Job::doKill()
 {
   kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << endl;
@@ -407,7 +458,7 @@ void SimpleJob::start(Slave *slave)
     }
 #ifdef __GNUC__
 #warning " signal needProgressId doesn't exist and slotNeedProgressId doesn't exist. Remove it ?"
-#endif    
+#endif
 #if 0
     connect( slave, SIGNAL( needProgressId() ),
              SLOT( slotNeedProgressId() ) );
@@ -661,7 +712,7 @@ SimpleJob *KIO::mount( bool ro, const QByteArray& fstype, const QString& dev, co
              << QString::fromLatin1(fstype) << dev << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
-         job->ui()->mounting( dev, point );
+         job->emitMounting( dev, point );
     return job;
 }
 
@@ -670,7 +721,7 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
     KIO_ARGS << int(2) << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
-         job->ui()->unmounting( point );
+         job->emitUnmounting( point );
     return job;
 }
 
@@ -763,7 +814,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, bool s
     job->setSide( sideIsSource );
     job->setDetails( details );
     if ( showProgressInfo )
-      job->ui()->stating( url );
+      job->emitStating( url );
     return job;
 }
 
@@ -788,8 +839,7 @@ TransferJob::TransferJob( const KUrl& url, int command,
     m_internalSuspended = false;
     m_errorPage = false;
     m_subJob = 0L;
-    if ( ui() )
-        ui()->transferring( url );
+    emitTransferring( url );
 }
 
 // Slave sends data
@@ -1390,7 +1440,7 @@ MimetypeJob *KIO::mimetype(const KUrl& url, bool showProgressInfo )
     KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
     if ( showProgressInfo )
-      job->ui()->stating( url );
+      job->emitStating( url );
     return job;
 }
 
@@ -1438,10 +1488,10 @@ FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
       m_totalSize(0),d(new FileCopyJobPrivate)
 {
-   if (ui() && !move)
-      ui()->copying( src, dest );
-   else if (ui() && move)
-      ui()->moving( src, dest );
+   if (!move)
+      emitCopying( src, dest );
+   else
+      emitMoving( src, dest );
 
     //kDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;

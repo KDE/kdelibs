@@ -25,11 +25,13 @@
 #include <kmessagebox.h>
 #include <kjob.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <ktoolinvocation.h>
 
 #include "kio/copyjob.h"
+#include "kio/deletejob.h"
 #include "kio/scheduler.h"
 
 #include "observeradaptor_p.h"
@@ -108,12 +110,24 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  this, SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
         connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
                  this, SLOT( slotSpeed( KJob*, unsigned long ) ) );
-	if (dynamic_cast<KIO::CopyJob*>(job)) {
+        connect( job, SIGNAL( description( KJob*, const QString&,
+                                           const QPair<QString,QString>&,
+                                           const QPair<QString,QString>& ) ),
+                 this, SLOT( slotDescription( KJob*, const QString&,
+                                              const QPair<QString,QString>&,
+                                              const QPair<QString,QString>& ) ) );
+
+        if (dynamic_cast<KIO::CopyJob*>(job) || dynamic_cast<KIO::DeleteJob*>(job)) {
+            connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+                     this, SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
             connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
-                 this, SLOT( totalFiles( KJob*, unsigned long ) ) );
+                     this, SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
+            connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+                     this, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
             connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
-                 this, SLOT( totalDirs( KJob*, unsigned long ) ) );
-	}
+                     this, SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
+        }
+
         connect( job, SIGNAL( finished( KJob*, int ) ),
                  this, SLOT( slotFinished( KJob*, int ) ) );
     }
@@ -198,102 +212,61 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
     return res;
 }
 
-void KIO::JobUiDelegate::processedFiles(unsigned long files)
+void KIO::JobUiDelegate::slotPercent( KJob *job, unsigned long percent )
 {
-    delegateProxy->uiserver().processedFiles(job()->progressId(), files);
+    delegateProxy->uiserver().percent(job->progressId(), percent);
 }
 
-void KIO::JobUiDelegate::processedDirs(unsigned long dirs)
+void KIO::JobUiDelegate::slotInfoMessage( KJob *job, const QString &msg )
 {
-    delegateProxy->uiserver().processedDirs(job()->progressId(), dirs);
+    delegateProxy->uiserver().infoMessage(job->progressId(), msg);
 }
 
-void KIO::JobUiDelegate::totalFiles(unsigned long files)
+void KIO::JobUiDelegate::slotDescription( KJob *job, const QString &title,
+                                          const QPair<QString, QString> &field1,
+                                          const QPair<QString, QString> &field2 )
 {
-    delegateProxy->uiserver().totalFiles(job()->progressId(), files);
+    delegateProxy->uiserver().setDescription(job->progressId(), title);
+    delegateProxy->uiserver().setDescriptionFirstField(job->progressId(), field1.first, field1.second);
+    delegateProxy->uiserver().setDescriptionSecondField(job->progressId(), field2.first, field2.second);
 }
 
-void KIO::JobUiDelegate::totalDirs(unsigned long dirs)
+void KIO::JobUiDelegate::slotTotalSize( KJob *job, qulonglong totalSize )
 {
-    delegateProxy->uiserver().totalDirs(job()->progressId(), dirs);
+    delegateProxy->uiserver().totalSize(job->progressId(), totalSize);
 }
 
-void KIO::JobUiDelegate::moving(const KUrl &src, const KUrl &dest)
+void KIO::JobUiDelegate::slotProcessedSize( KJob *job, qulonglong size )
 {
-    delegateProxy->uiserver().moving(job()->progressId(), src.url(), dest.url());
+    delegateProxy->uiserver().processedSize(job->progressId(), size);
 }
 
-void KIO::JobUiDelegate::copying(const KUrl &src, const KUrl &dest)
-{
-    delegateProxy->uiserver().copying(job()->progressId(), src.url(), dest.url());
-}
-
-void KIO::JobUiDelegate::creatingDir(const KUrl &dir)
-{
-    delegateProxy->uiserver().creatingDir(job()->progressId(), dir.url());
-}
-
-void KIO::JobUiDelegate::deleting(const KUrl &url)
-{
-    delegateProxy->uiserver().deleting(job()->progressId(), url.url());
-}
-
-void KIO::JobUiDelegate::stating(const KUrl &url)
-{
-    delegateProxy->uiserver().stating(job()->progressId(), url.url());
-}
-
-void KIO::JobUiDelegate::transferring(const KUrl &url)
-{
-    delegateProxy->uiserver().transferring(job()->progressId(), url.url());
-}
-
-void KIO::JobUiDelegate::mounting(const QString &dev, const QString &point)
-{
-    delegateProxy->uiserver().mounting(job()->progressId(), dev, point);
-}
-
-void KIO::JobUiDelegate::unmounting(const QString &point)
-{
-    delegateProxy->uiserver().unmounting(job()->progressId(), point);
-}
-
-void KIO::JobUiDelegate::slotPercent( KJob */*job*/, unsigned long percent )
-{
-    delegateProxy->uiserver().percent(job()->progressId(), percent);
-}
-
-void KIO::JobUiDelegate::slotInfoMessage( KJob */*job*/, const QString &msg )
-{
-    delegateProxy->uiserver().infoMessage(job()->progressId(), msg);
-}
-
-void KIO::JobUiDelegate::slotTotalSize( KJob */*job*/, qulonglong totalSize )
-{
-    delegateProxy->uiserver().totalSize(job()->progressId(), totalSize);
-}
-
-void KIO::JobUiDelegate::slotProcessedSize( KJob */*job*/, qulonglong size )
-{
-    delegateProxy->uiserver().processedSize(job()->progressId(), size);
-}
-
-void KIO::JobUiDelegate::slotSpeed( KJob */*job*/, unsigned long speed )
+void KIO::JobUiDelegate::slotSpeed( KJob *job, unsigned long speed )
 {
     if (speed)
-        delegateProxy->uiserver().speed(job()->progressId(), KIO::convertSize(speed) + QString("/s"));
+        delegateProxy->uiserver().speed(job->progressId(), KIO::convertSize(speed) + QString("/s"));
     else
-        delegateProxy->uiserver().speed(job()->progressId(), QString());
+        delegateProxy->uiserver().speed(job->progressId(), QString());
 }
 
-void KIO::JobUiDelegate::slotTotalFiles(KJob */*job*/, unsigned long files)
+void KIO::JobUiDelegate::slotProcessedFiles(KIO::Job *job, unsigned long files)
 {
-    totalFiles(files);
+    delegateProxy->uiserver().processedFiles(job->progressId(), files);
 }
 
-void KIO::JobUiDelegate::slotTotalDirs(KJob */*job*/, unsigned long dirs)
+void KIO::JobUiDelegate::slotTotalFiles(KJob *job, unsigned long files)
 {
-    totalDirs(dirs);
+    delegateProxy->uiserver().totalFiles(job->progressId(), files);
+}
+
+void KIO::JobUiDelegate::slotProcessedDirs(KIO::Job *job, unsigned long dirs)
+{
+    delegateProxy->uiserver().processedDirs(job->progressId(), dirs);
+}
+
+void KIO::JobUiDelegate::slotTotalDirs(KJob *job, unsigned long dirs)
+{
+    delegateProxy->uiserver().totalDirs(job->progressId(), dirs);
 }
 
 

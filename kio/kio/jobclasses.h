@@ -226,6 +226,15 @@ public:
          */
         QString queryMetaData(const QString &key);
 
+        void emitMoving(const KUrl &src, const KUrl &dest);
+        void emitCopying(const KUrl &src, const KUrl &dest);
+        void emitCreatingDir(const KUrl &dir);
+        void emitDeleting(const KUrl &url);
+        void emitStating(const KUrl &url);
+        void emitTransferring(const KUrl &url);
+        void emitMounting(const QString &dev, const QString &point);
+        void emitUnmounting(const QString &point);
+
     Q_SIGNALS:
         /**
          * @deprecated. Don't use !
