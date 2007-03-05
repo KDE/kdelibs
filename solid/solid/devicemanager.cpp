@@ -35,12 +35,14 @@ namespace Solid
         Q_DECLARE_PUBLIC(DeviceManager)
 
     public:
-        //DeviceManagerPrivate( DeviceManager *manager ) : q( manager ) {}
-
         QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi ) const;
         void connectBackend( QObject *newBackend );
 
-        //DeviceManager *q;
+        void _k_deviceAdded(const QString &udi);
+        void _k_deviceRemoved(const QString &udi);
+        void _k_newCapability(const QString &udi, int capability);
+        void _k_destroyed(QObject *object);
+
         mutable QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
         Device invalidDevice;
 
@@ -231,11 +233,11 @@ void Solid::DeviceManager::setManagerBackend( QObject *backend )
     }
 }
 
-void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
+void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 {
-    Q_D(DeviceManager);
+    Q_Q(DeviceManager);
 
-    QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
+    QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
 
     if ( pair.first!= 0 )
     {
@@ -246,14 +248,14 @@ void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
         delete pair.second;
     }
 
-    emit deviceAdded( udi );
+    emit q->deviceAdded(udi);
 }
 
-void Solid::DeviceManager::slotDeviceRemoved( const QString &udi )
+void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 {
-    Q_D(DeviceManager);
+    Q_Q(DeviceManager);
 
-    QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
+    QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
 
     if ( pair.first!= 0 )
     {
@@ -261,24 +263,24 @@ void Solid::DeviceManager::slotDeviceRemoved( const QString &udi )
         delete pair.second;
     }
 
-    emit deviceRemoved( udi );
+    emit q->deviceRemoved(udi);
 }
 
-void Solid::DeviceManager::slotNewCapability( const QString &udi, int capability )
+void Solid::DeviceManagerPrivate::_k_newCapability(const QString &udi, int capability)
 {
-    emit newCapability( udi, capability );
+    Q_Q(DeviceManager);
+
+    emit q->newCapability(udi, capability);
 }
 
-void Solid::DeviceManager::slotDestroyed( QObject *object )
+void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
 {
-    Q_D(DeviceManager);
-
     Ifaces::Device *device = qobject_cast<Ifaces::Device*>( object );
 
     if ( device!=0 )
     {
         QString udi = device->udi();
-        QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
+        QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
         delete pair.first;
     }
 }
@@ -307,7 +309,7 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findR
             QPair<Device*, Ifaces::Device*> pair( device, iface );
             devicesMap[udi] = pair;
             QObject::connect( iface, SIGNAL( destroyed( QObject* ) ),
-                              q, SLOT( slotDestroyed( QObject* ) ) );
+                              q, SLOT( _k_destroyed( QObject* ) ) );
             return pair;
         }
         else
@@ -322,11 +324,11 @@ void Solid::DeviceManagerPrivate::connectBackend( QObject *newBackend )
     Q_Q(DeviceManager);
 
     QObject::connect( newBackend, SIGNAL( deviceAdded( QString ) ),
-                      q, SLOT( slotDeviceAdded( QString ) ) );
+                      q, SLOT( _k_deviceAdded( QString ) ) );
     QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),
-                      q, SLOT( slotDeviceRemoved( QString ) ) );
+                      q, SLOT( _k_deviceRemoved( QString ) ) );
     QObject::connect( newBackend, SIGNAL( newCapability( QString, int ) ),
-                      q, SLOT( slotNewCapability( QString, int ) ) );
+                      q, SLOT( _k_newCapability( QString, int ) ) );
 }
 
 #include "devicemanager.moc"

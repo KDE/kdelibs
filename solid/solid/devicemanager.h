@@ -143,11 +143,11 @@ namespace Solid
     protected:
         void setManagerBackend( QObject *backend );
 
-    private Q_SLOTS:
-        void slotDeviceAdded( const QString &udi );
-        void slotDeviceRemoved( const QString &udi );
-        void slotNewCapability( const QString &udi, int capability );
-        void slotDestroyed( QObject *object );
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_deviceAdded(const QString&))
+        Q_PRIVATE_SLOT(d_func(), void _k_deviceRemoved(const QString&))
+        Q_PRIVATE_SLOT(d_func(), void _k_newCapability(const QString&, int))
+        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
     };
 }
 

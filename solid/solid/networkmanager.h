@@ -128,10 +128,10 @@ namespace Solid
     protected:
         void setManagerBackend( QObject *backend );
 
-    private Q_SLOTS:
-        void slotNetworkInterfaceAdded( const QString &uni );
-        void slotNetworkInterfaceRemoved( const QString &uni );
-        void slotDestroyed( QObject *object );
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_networkInterfaceAdded(const QString&))
+        Q_PRIVATE_SLOT(d_func(), void _k_networkInterfaceRemoved(const QString&))
+        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
     };
 
 } // Solid

@@ -40,6 +40,10 @@ namespace Solid
         QPair<NetworkInterface*, Ifaces::NetworkInterface*> findRegisteredNetworkInterface( const QString &uni ) const;
         void connectBackend( QObject *newBackend );
 
+        void _k_networkInterfaceAdded(const QString &uni);
+        void _k_networkInterfaceRemoved(const QString &uni);
+        void _k_destroyed(QObject *object);
+
         mutable QMap<QString, QPair<NetworkInterface*, Ifaces::NetworkInterface*> > networkInterfaceMap;
         NetworkInterface invalidDevice;
         QString errorText;
@@ -169,11 +173,11 @@ void Solid::NetworkManager::setManagerBackend( QObject *backend )
     }
 }
 
-void Solid::NetworkManager::slotNetworkInterfaceAdded( const QString &uni )
+void Solid::NetworkManagerPrivate::_k_networkInterfaceAdded(const QString &uni)
 {
-    Q_D(NetworkManager);
+    Q_Q(NetworkManager);
 
-    QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = d->networkInterfaceMap.take( uni );
+    QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = networkInterfaceMap.take( uni );
 
     if ( pair.first!= 0 )
     {
@@ -184,14 +188,14 @@ void Solid::NetworkManager::slotNetworkInterfaceAdded( const QString &uni )
         delete pair.second;
     }
 
-    emit networkInterfaceAdded( uni );
+    emit q->networkInterfaceAdded(uni);
 }
 
-void Solid::NetworkManager::slotNetworkInterfaceRemoved( const QString &uni )
+void Solid::NetworkManagerPrivate::_k_networkInterfaceRemoved(const QString &uni)
 {
-    Q_D(NetworkManager);
+    Q_Q(NetworkManager);
 
-    QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = d->networkInterfaceMap.take( uni );
+    QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = networkInterfaceMap.take( uni );
 
     if ( pair.first!= 0 )
     {
@@ -199,19 +203,17 @@ void Solid::NetworkManager::slotNetworkInterfaceRemoved( const QString &uni )
         delete pair.second;
     }
 
-    emit networkInterfaceRemoved( uni );
+    emit q->networkInterfaceRemoved(uni);
 }
 
-void Solid::NetworkManager::slotDestroyed( QObject *object )
+void Solid::NetworkManagerPrivate::_k_destroyed(QObject *object)
 {
-    Q_D(NetworkManager);
-
     Ifaces::NetworkInterface *device = qobject_cast<Ifaces::NetworkInterface*>( object );
 
     if ( device!=0 )
     {
         QString uni = device->uni();
-        QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = d->networkInterfaceMap.take( uni );
+        QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair = networkInterfaceMap.take( uni );
         delete pair.first;
     }
 }
@@ -223,9 +225,9 @@ void Solid::NetworkManagerPrivate::connectBackend( QObject *newBackend )
     Q_Q(NetworkManager);
 
     QObject::connect( newBackend, SIGNAL( networkInterfaceAdded( const QString & ) ),
-                      q, SLOT( slotNetworkInterfaceAdded( const QString & ) ) );
+                      q, SLOT( _k_networkInterfaceAdded( const QString & ) ) );
     QObject::connect( newBackend, SIGNAL( networkInterfaceRemoved( const QString & ) ),
-                      q, SLOT( slotNetworkInterfaceRemoved( const QString & ) ) );
+                      q, SLOT( _k_knetworkInterfaceRemoved( const QString & ) ) );
 }
 
 QPair<Solid::NetworkInterface*, Solid::Ifaces::NetworkInterface*> Solid::NetworkManagerPrivate::findRegisteredNetworkInterface( const QString &uni ) const
@@ -251,7 +253,7 @@ QPair<Solid::NetworkInterface*, Solid::Ifaces::NetworkInterface*> Solid::Network
             NetworkInterface *device = new NetworkInterface( iface );
             QPair<NetworkInterface*, Ifaces::NetworkInterface*> pair( device, iface );
             QObject::connect( iface, SIGNAL( destroyed( QObject* ) ),
-                              q, SLOT( slotDestroyed( QObject* ) ) );
+                              q, SLOT( _k_destroyed( QObject* ) ) );
             networkInterfaceMap[uni] = pair;
             return pair;
         }
