@@ -28,6 +28,7 @@
 #include <klistwidget.h>
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
+#include <kcompletion.h>
 
 #include "kinputdialog.h"
 
@@ -299,12 +300,19 @@ KInputDialog::~KInputDialog()
 QString KInputDialog::getText( const QString &caption,
     const QString &label, const QString &value, bool *ok, QWidget *parent,
     QValidator *validator, const QString &mask,
-    const QString &whatsThis )
+    const QString &whatsThis,const QStringList &completionList )
 {
   KInputDialog dlg( caption, label, value, parent, validator, mask );
 
   if( !whatsThis.isEmpty() )
     dlg.lineEdit()->setWhatsThis(whatsThis );
+
+  if (!completionList.isEmpty())
+  {
+    KCompletion *comp=dlg.lineEdit()->completionObject();
+    for(QStringList::const_iterator it=completionList.constBegin();it!=completionList.constEnd();++it)
+      comp->addItem(*it);
+  }
 
   bool _ok = ( dlg.exec() == Accepted );
 

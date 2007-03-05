@@ -106,13 +106,15 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param mask      Mask associated with the line edit. See the
      *                  documentation for @ref QLineEdit about masks
      * @param whatsThis a QWhatsThis text for the input widget.
+     * @param completionList a list of items which should be used for input completion
      * @return String user entered if Ok was pressed, else a null string
      */
     static QString getText( const QString &caption, const QString &label,
         const QString &value=QString(), bool *ok=0, QWidget *parent=0,
         QValidator *validator=0,
         const QString &mask=QString(),
-	const QString& whatsThis=QString()  );
+	const QString& whatsThis=QString(),
+        const QStringList &completionList=QStringList()  );
 
     /**
      * Static convenience function to get a multiline string from the user.

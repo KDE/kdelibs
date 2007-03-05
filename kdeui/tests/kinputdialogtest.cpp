@@ -18,6 +18,7 @@
 int main( int argc, char *argv[] )
 {
   QApplication app( argc, argv );
+//  app.setApplicationName("kinputdialogtest"); //since there is no kapp usage, set the application name directly
   KAboutData aboutData( "kinputdialogtest", "kinputdialogtest", "1.0" );
   KComponentData i( &aboutData );
 
