@@ -23,6 +23,7 @@
 #define KJOB_H
 
 #include <QtCore/QObject>
+#include <QtCore/QPair>
 #include <kdelibs_export.h>
 
 class KJobUiDelegate;
@@ -314,9 +315,25 @@ Q_SIGNALS:
      */
     void result( KJob *job );
 
+    /**
+     * Emitted to display general description of this job. A description has
+     * a title and two optional fields which can be used to complete the
+     * description.
+     *
+     * Examples of titles are "Copying", "Creating resource", etc.
+     * The fields of the description can be "Source" with an URL, and,
+     * "Destination" with an URL for a "Copying" description.
+     * @param job the job that emitted this signal
+     * @param description the general description of the job
+     * @param field1 first field (localized name and value)
+     * @param field2 second field (localized name and value)
+     */
+    void description(KJob *job, const QString &title,
+                     const QPair<QString, QString> &field1 = qMakePair(QString(), QString()),
+                     const QPair<QString, QString> &field2 = qMakePair(QString(), QString()));
 
     /**
-     * Emitted to display information about this job.
+     * Emitted to display state information about this job.
      * Examples of message are "Resolving host", "Connecting to host...", etc.
      *
      * @param job the job that emitted this signal
