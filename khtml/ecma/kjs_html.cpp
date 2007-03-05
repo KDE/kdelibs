@@ -1913,10 +1913,12 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
     case FrameContentWindow:   {
         KHTMLPart* part = frameElement.contentPart();
-        if (part)
-            return Window::retrieveWindow(part);
-        else
-            return Undefined();
+        if (part) {
+          Window *w = Window::retrieveWindow(part);
+          if (w)
+            return w;
+        }
+        return Undefined();
       }
     // IE only
     case FrameWidth:
@@ -1936,10 +1938,12 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
     case IFrameContentWindow:       {
         KHTMLPart* part = iFrame.contentPart();
-        if (part)
-            return Window::retrieveWindow(part);
-        else
-            return Undefined();
+        if (part) {
+          Window *w = Window::retrieveWindow(part);
+          if (w)
+            return w;
+        }
+        return Undefined();
     }
     }
     break;
