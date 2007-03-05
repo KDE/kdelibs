@@ -193,7 +193,7 @@ public:
     */
   static void setDefaultToolBar(const char *toolbarName);
 
-  KDE_DEPRECATED static void setDefaultToolbar(const char *toolbarName)
+  static KDE_DEPRECATED void setDefaultToolbar(const char *toolbarName)
   { setDefaultToolBar(toolbarName); }
   
 protected Q_SLOTS:
