@@ -1474,8 +1474,11 @@ void KLineEdit::clear()
 
 void KLineEdit::setTextWorkaround( const QString& text )
 {
-    setText( text );
-    end( false ); // force cursor at end
+    if (!text.isNull())
+    {
+        setText( text );
+        end( false ); // force cursor at end
+    }
 }
 
 QString KLineEdit::originalText() const
