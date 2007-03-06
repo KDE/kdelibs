@@ -6,4 +6,6 @@ X-KDE-Library=solid_fakenet
 InitialPreference=10
 Icon=system
 Name=Fake Net
+Name[x-test]=xxFake Netxx
 Comment=Fake Network Management
+Comment[x-test]=xxFake Network Managementxx

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Metalink Download
+Comment[x-test]=xxMetalink Downloadxx
 MimeType=application/metalink+xml
 Icon=html
 Type=MimeType

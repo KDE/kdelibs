@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=SolidDeviceManager
 
 Comment=Hardware Discovery Backend
+Comment[x-test]=xxHardware Discovery Backendxx
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

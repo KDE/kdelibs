@@ -6,4 +6,6 @@ X-KDE-Library=solid_fakehw
 InitialPreference=10
 Icon=system
 Name=FakeHw
+Name[x-test]=xxFakeHwxx
 Comment=Fake Hardware discovery
+Comment[x-test]=xxFake Hardware discoveryxx

@@ -3,3 +3,4 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=DBUS/Text-to-Speech
 Comment=Text-to-Speech Service with a D-Bus interface
+Comment[x-test]=xxText-to-Speech Service with a D-Bus interfacexx

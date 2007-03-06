@@ -6,6 +6,7 @@ Icon=plasmoid
 Patterns=*.plasma;*.PLASMA;
 X-KDE-PatternsAccuracy=90
 Comment=Plasmoid
+Comment[x-test]=xxPlasmoidxx
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.plasma

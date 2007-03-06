@@ -11,8 +11,11 @@ X-KDE-FactoryName=kcm_solid
 X-KDE-ParentApp=kcontrol
 
 Name=Solid
+Name[x-test]=xxSolidxx
 
 Comment=Hardware Integration Configuration
+Comment[x-test]=xxHardware Integration Configurationxx
 
 Keywords=Solid,Hardware,Power,Network,Discovery,Management
+Keywords[x-test]=xxSolid,Hardware,Power,Network,Discovery,Managementxx
 

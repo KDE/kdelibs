@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=SolidNetworkManager
 
 Comment=Network Management Backend
+Comment[x-test]=xxNetwork Management Backendxx
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

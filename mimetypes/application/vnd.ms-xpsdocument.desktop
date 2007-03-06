@@ -5,3 +5,4 @@ MimeType=application/vnd.ms-xpsdocument
 Patterns=*.xps;*.XPS
 Icon=wordprocessing
 Comment=Microsoft XML Paper Specification Document
+Comment[x-test]=xxMicrosoft XML Paper Specification Documentxx

@@ -6,6 +6,7 @@ Icon=krita_kra
 Patterns=*.odr;
 X-KDE-AutoEmbed=false
 Comment=OpenRaster Document
+Comment[x-test]=xxOpenRaster Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.odr
