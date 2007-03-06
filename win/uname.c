@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (C) 2003-2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2003-2007 Jaroslaw Staniek <js@iidea.pl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,6 +22,12 @@
 #include <sys/utsname.h>
 #include <stdio.h>
 
+typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
+
+#ifndef SM_SERVERR2
+# define SM_SERVERR2 89
+#endif
+
 int kde_gethostname(char *__name, size_t __len);
 
 /**
@@ -34,32 +40,49 @@ int kde_gethostname(char *__name, size_t __len);
  </code>
  it will print something like: 
  <code>
-  Microsoft Windows, 5.0 (2000), Dec 16 2004, i686, MYHOSTNAME
+  Microsoft Windows, 5.0 (2000 Professional), Dec 16 2004, i686, MYHOSTNAME
  </code>
 
  Note that utsname.version is just a compile time of kdewin32 library (__DATE__).
 */
 KDEWIN32_EXPORT int uname(struct utsname *name)
 {
-	OSVERSIONINFO versioninfo;
+	OSVERSIONINFOEX versioninfo;
 	SYSTEM_INFO sysinfo;
+	PGNSI pGNSI;
 	unsigned int proctype;
 	char valid_processor_level;
 	char *ostype = 0;
+	char *osproduct = 0;
 	char tmpnodename[MAX_COMPUTERNAME_LENGTH+2];
-	int tmpnodenamelen = MAX_COMPUTERNAME_LENGTH+1;
+	size_t tmpnodenamelen = MAX_COMPUTERNAME_LENGTH+1;
+	BOOL osVersionInfoEx;
 
 	if (!name)
 		return -1;
 
-	/* Request simple version info first. */
-	versioninfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-	GetVersionEx ((LPOSVERSIONINFO)(&versioninfo));
+	ZeroMemory(&sysinfo, sizeof(SYSTEM_INFO));
+	ZeroMemory(&versioninfo, sizeof(OSVERSIONINFOEX));
+
+	/* Try calling GetVersionEx using the OSVERSIONINFOEX, 
+	 if that fails, try using the OSVERSIONINFO. */
+	versioninfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if ( !(osVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &versioninfo)) ) {
+		versioninfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+		if (! GetVersionEx ( (OSVERSIONINFO *) &versioninfo) ) 
+			return -1;
+	}
 
 	valid_processor_level = versioninfo.dwPlatformId == VER_PLATFORM_WIN32_NT 
 		|| (versioninfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS && versioninfo.dwMinorVersion >= 10 /*>= win98*/);
 
-	GetSystemInfo (&sysinfo);
+	/* Use GetNativeSystemInfo if supported or GetSystemInfo otherwise */
+	pGNSI = (PGNSI) GetProcAddress(
+		GetModuleHandle(TEXT("kernel32.dll")), "GetNativeSystemInfo");
+	if (NULL != pGNSI)
+		pGNSI(&sysinfo);
+	else
+		GetSystemInfo(&sysinfo);
 
 	/* CPU type */
 	switch (sysinfo.wProcessorArchitecture) {
@@ -110,10 +133,32 @@ KDEWIN32_EXPORT int uname(struct utsname *name)
 			case 1:
 				ostype = "XP";
 				break;
-			default:
-				ostype = "2003";
+			case 2:
+				if( GetSystemMetrics(SM_SERVERR2) )
+					ostype = "Server 2003 \"R2\"";
+				else if( versioninfo.wProductType == VER_NT_WORKSTATION
+				         && sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+					ostype = "XP Professional x64 Edition";
+				else
+					ostype = "Server 2003";
 				break;
 			}
+			break;
+		case 6:
+			switch (versioninfo.dwMinorVersion) {
+			case 0:
+				switch (versioninfo.wProductType) {
+				case VER_NT_WORKSTATION:
+					ostype = "Vista";
+					break;
+				default:
+					ostype = "Server \"Longhorn\"";
+					break;
+				}
+			default:
+				break;
+			}
+			break;
 		default:
 			break;
 		}
@@ -137,6 +182,66 @@ KDEWIN32_EXPORT int uname(struct utsname *name)
 		break;
 	}
 
+	/* Test for specific product on Windows NT 4.0 SP6 and later */
+	if (osVersionInfoEx) {
+		/* Workstation type */
+		if ( versioninfo.wProductType == VER_NT_WORKSTATION
+		     && sysinfo.wProcessorArchitecture!=PROCESSOR_ARCHITECTURE_AMD64)
+		{
+			if( versioninfo.dwMajorVersion == 4 )
+				osproduct = "Workstation 4.0";
+			else if( versioninfo.wSuiteMask & VER_SUITE_PERSONAL )
+				osproduct = "Home Edition";
+			else
+				osproduct = "Professional";
+		}
+		/* Server type */
+		else if ( versioninfo.wProductType == VER_NT_SERVER
+		          || versioninfo.wProductType == VER_NT_DOMAIN_CONTROLLER )
+		{
+			if (versioninfo.dwMajorVersion == 5 && versioninfo.dwMinorVersion == 2) {
+				if ( sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64 ) {
+					if( versioninfo.wSuiteMask & VER_SUITE_DATACENTER )
+						osproduct = "Datacenter Edition for Itanium-based Systems";
+					else if( versioninfo.wSuiteMask & VER_SUITE_ENTERPRISE )
+						osproduct = "Enterprise Edition for Itanium-based Systems";
+				}
+				else if ( sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 ) {
+					if ( versioninfo.wSuiteMask & VER_SUITE_DATACENTER )
+						osproduct = "Datacenter x64 Edition";
+					else if ( versioninfo.wSuiteMask & VER_SUITE_ENTERPRISE )
+						osproduct = "Enterprise x64 Edition";
+					else
+						osproduct = "Standard x64 Edition";
+				}
+				else {
+					if ( versioninfo.wSuiteMask & VER_SUITE_DATACENTER )
+						osproduct = "Datacenter Edition";
+					else if ( versioninfo.wSuiteMask & VER_SUITE_ENTERPRISE )
+						osproduct = "Enterprise Edition";
+					else if ( versioninfo.wSuiteMask & VER_SUITE_BLADE )
+						osproduct = "Web Edition";
+					else
+						osproduct = "Standard Edition";
+				}
+			}
+			else if ( versioninfo.dwMajorVersion == 5 && versioninfo.dwMinorVersion == 0) {
+				if ( versioninfo.wSuiteMask & VER_SUITE_DATACENTER )
+					osproduct = "Datacenter Server";
+				else if ( versioninfo.wSuiteMask & VER_SUITE_ENTERPRISE )
+					osproduct = "Advanced Server";
+				else
+					osproduct = "Server";
+			}
+			else { /* NT 4.0 */
+				if ( versioninfo.wSuiteMask & VER_SUITE_ENTERPRISE )
+					osproduct = "Server 4.0, Enterprise Edition";
+				else
+					osproduct = "Server 4.0";
+			}
+		} /* \server type */
+	} /* \product */
+
 	if (0==kde_gethostname(tmpnodename, tmpnodenamelen))
 		strncpy(name->nodename, tmpnodename, 19);
 	else
@@ -144,10 +249,15 @@ KDEWIN32_EXPORT int uname(struct utsname *name)
 
 	strncpy(name->version, __DATE__, 19); /** @todo ok? */
 
-	if (ostype)
-		sprintf(name->release, "%d.%d (%s)", versioninfo.dwMajorVersion, versioninfo.dwMinorVersion, ostype);
+	if (osproduct)
+		sprintf(name->release, "%d.%d (%s %s)", versioninfo.dwMajorVersion, 
+			versioninfo.dwMinorVersion, ostype, osproduct);
+	else if (ostype)
+		sprintf(name->release, "%d.%d (%s)", versioninfo.dwMajorVersion, 
+			versioninfo.dwMinorVersion, ostype);
 	else
-		sprintf(name->release, "%d.%d", versioninfo.dwMajorVersion, versioninfo.dwMinorVersion);
+		sprintf(name->release, "%d.%d", versioninfo.dwMajorVersion, 
+			versioninfo.dwMinorVersion);
 
 	return 0;
 }
