@@ -1720,6 +1720,12 @@ Comment[zh_TW]=KDE 正在結束
 default_presentation=1
 default_sound=KDE_Logout_3.ogg
 
+[cancellogout]
+Name=Logout canceled
+Comment=KDE logout was canceled
+default_presentation=16
+default_sound=
+
 [printerror]
 Name=Print error
 Name[af]=Druk fout
