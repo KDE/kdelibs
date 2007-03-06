@@ -195,6 +195,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         krossdebug( QString("ActionCollection::readXml tagName=\"%1\"").arg(element.tagName()) );
     #endif
 
+    blockSignals(true); // block updated() signals and emit it only once if everything is done
     bool ok = true;
     QDomNodeList list = element.childNodes();
     const int size = list.size();
@@ -246,6 +247,8 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         }
         //else if( ! fromXml(elem) ) ok = false;
     }
+
+    blockSignals(false); // unblock signals
     emit updated();
     return ok;
 }

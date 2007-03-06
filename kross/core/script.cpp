@@ -39,9 +39,11 @@ namespace Kross {
 }
 
 Script::Script(Interpreter* interpreter, Action* action)
-    : ErrorInterface()
+    : QObject()
+    , ErrorInterface()
     , d( new Private() )
 {
+    //setObjectName( action->objectName() );
     d->interpreter = interpreter;
     d->action = action;
 }
@@ -61,8 +63,4 @@ Action* Script::action() const
     return d->action;
 }
 
-void Script::virtual_hook(int id, void* data)
-{
-    Q_UNUSED(id);
-    Q_UNUSED(data);
-}
+#include "script.moc"

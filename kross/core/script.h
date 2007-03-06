@@ -23,6 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#include <QObject>
 
 #include "errorinterface.h"
 
@@ -40,8 +41,9 @@ namespace Kross {
      * that implements the \a Script functionality for the
      * defined \a Interpreter .
      */
-    class KROSSCORE_EXPORT Script : public ErrorInterface
+    class KROSSCORE_EXPORT Script : public QObject, public ErrorInterface
     {
+            Q_OBJECT
         public:
 
             /**
@@ -87,9 +89,6 @@ namespace Kross {
              * \param args The optional list of arguments.
              */
             virtual QVariant callFunction(const QString& name, const QVariantList& args = QVariantList()) = 0;
-
-            /// \internal hook to keep easier binary compatibility.
-            virtual void virtual_hook(int id, void* data);
 
         private:
             /// \internal d-pointer class.

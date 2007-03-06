@@ -80,7 +80,7 @@ namespace Kross {
     //#define KROSS_ACTIONCOLLECTION_DEBUG
 
     // The version number of Kross.
-    #define KROSS_VERSION 2
+    #define KROSS_VERSION 3
 
     // The export macro for interpreter plugins.
     #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \

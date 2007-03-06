@@ -199,7 +199,7 @@ namespace Kross {
             QLineEdit* iconedit;
             QComboBox* interpreteredit;
             KUrlRequester* fileedit;
-            QCheckBox* enabledcheckbox;
+            //QCheckBox* enabledcheckbox;
 
             explicit Private(Action* a) : type(ActionType), action(a) { Q_ASSERT(a); }
             explicit Private(ActionCollection* c) : type(CollectionType), collection(c) { Q_ASSERT(c); }
@@ -327,10 +327,10 @@ void ScriptManagerEditor::initGui()
         d->fileedit = 0;
     }
 
-    d->enabledcheckbox = new QCheckBox(this);
-    d->enabledcheckbox->setText( i18n("Enabled") );
-    d->enabledcheckbox->setChecked( d->isEnabled() );
-    mainlayout->addWidget(d->enabledcheckbox);
+    //d->enabledcheckbox = new QCheckBox(this);
+    //d->enabledcheckbox->setText( i18n("Enabled") );
+    //d->enabledcheckbox->setChecked( d->isEnabled() );
+    //mainlayout->addWidget(d->enabledcheckbox);
 
     mainlayout->addStretch(1);
 }
@@ -350,13 +350,13 @@ void ScriptManagerEditor::commit()
             d->action->setIconName( d->iconedit->text() );
             d->action->setInterpreter( d->interpreteredit->currentText() );
             d->action->setFile( d->fileedit->url().path() );
-            d->action->setEnabled( d->enabledcheckbox->isChecked() );
+            //d->action->setEnabled( d->enabledcheckbox->isChecked() );
         } break;
         case Private::CollectionType: {
             d->collection->setText( d->textedit->text() );
             d->collection->setDescription( d->commentedit->text() );
             d->collection->setIconName( d->iconedit->text() );
-            d->collection->setEnabled( d->enabledcheckbox->isChecked() );
+            //d->collection->setEnabled( d->enabledcheckbox->isChecked() );
         } break;
         default: break;
     }

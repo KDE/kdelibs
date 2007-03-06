@@ -261,26 +261,38 @@ QWidget* FormModule::activeWindow()
     return QApplication::activeWindow();
 }
 
-QString FormModule::showMessageBox(const QString& dialogtype, const QString& caption, const QString& message)
+QString FormModule::showMessageBox(const QString& dialogtype, const QString& caption, const QString& message, const QString& details)
 {
     KMessageBox::DialogType type;
-    if(dialogtype == "QuestionYesNo") type = KMessageBox::QuestionYesNo;
+    if(dialogtype == "Error") {
+        if( ! details.isNull() ) {
+            KMessageBox::detailedError(0, message, details, caption);
+            return QString();
+        }
+        type = KMessageBox::Error;
+    }
+    else if(dialogtype == "Sorry") {
+        if( ! details.isNull() ) {
+            KMessageBox::detailedSorry(0, message, details, caption);
+            return QString();
+        }
+        type = KMessageBox::Sorry;
+    }
+    else if(dialogtype == "QuestionYesNo") type = KMessageBox::QuestionYesNo;
     else if(dialogtype == "WarningYesNo") type = KMessageBox::WarningYesNo;
     else if(dialogtype == "WarningContinueCancel") type = KMessageBox::WarningContinueCancel;
     else if(dialogtype == "WarningYesNoCancel") type = KMessageBox::WarningYesNoCancel;
-    else if(dialogtype == "Sorry") type = KMessageBox::Sorry;
-    else if(dialogtype == "Error") type = KMessageBox::Error;
     else if(dialogtype == "QuestionYesNoCancel") type = KMessageBox::QuestionYesNoCancel;
     else /*if(dialogtype == "Information")*/ type = KMessageBox::Information;
-
     switch( KMessageBox::messageBox(0, type, message, caption) ) {
         case KMessageBox::Ok: return "Ok";
         case KMessageBox::Cancel: return "Cancel";
         case KMessageBox::Yes: return "Yes";
         case KMessageBox::No: return "No";
         case KMessageBox::Continue: return "Continue";
-        default: return QString();
+        default: break;
     }
+    return QString();
 }
 
 QWidget* FormModule::showProgressDialog(const QString& caption, const QString& labelText)
