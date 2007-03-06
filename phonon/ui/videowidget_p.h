@@ -116,7 +116,7 @@ bool FullScreenVideoWidget::event( QEvent* e )
         return ret;
     else 
     {
-        QCoreApplication::instance()->notify( parent(), e );
+        QCoreApplication::sendEvent( parent(), e );
         return true;
     }
 }
