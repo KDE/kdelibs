@@ -25,6 +25,7 @@
 #include <QHBoxLayout>
 #include <QAction>
 #include <QChildEvent>
+#include <QCoreApplication>
 #include <QPalette>
 #include <QCloseEvent>
 #include <QTimer>
@@ -40,6 +41,7 @@ class FullScreenVideoWidget : public QWidget
 		void childEvent( QChildEvent* e );
 		void closeEvent( QCloseEvent* e );
         void mouseMoveEvent(QMouseEvent *);
+        bool event( QEvent* e );
     private Q_SLOTS:
         void cursorTimeout();
     private:
@@ -105,6 +107,18 @@ void FullScreenVideoWidget::closeEvent( QCloseEvent* e )
 	e->ignore();
 	VideoWidget* vw = qobject_cast<VideoWidget*>( parent() );
 	vw->exitFullScreen();
+}
+
+bool FullScreenVideoWidget::event( QEvent* e )
+{
+    bool ret = QWidget::event( e );
+    if( e->isAccepted() )
+        return ret;
+    else 
+    {
+        QCoreApplication::instance()->notify( parent(), e );
+        return true;
+    }
 }
 
 class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
