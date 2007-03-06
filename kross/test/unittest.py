@@ -49,6 +49,7 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qbytearray_qbytearray(" \0\n\r\t\s\0 test ") == " \0\n\r\t\s\0 test " )
 
 	def testString(self):
+		self.assert_( self.object1.func_qstring_qstring(None) == None )
 		self.assert_( self.object1.func_qstring_qstring("") == "" )
 		self.assert_( self.object1.func_qstring_qstring(" ") == " " )
 		self.assert_( self.object1.func_qstring_qstring(" Another \n\r Test!   $%&\" ") == " Another \n\r Test!   $%&\" " )
