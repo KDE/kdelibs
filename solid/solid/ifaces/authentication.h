@@ -33,7 +33,7 @@ namespace Ifaces
     /**
      * Base class for wireless authentication schemes.  No need to instantiate this
      */
-    class Authentication
+    class SOLIDIFACES_EXPORT Authentication
     {
     public:
         typedef QMap<QString, QString> SecretMap;
@@ -59,7 +59,7 @@ namespace Ifaces
     /**
      * This Authentication is a null authentication.  Used for open networks
      */
-    class AuthenticationNone : public Authentication
+    class SOLIDIFACES_EXPORT AuthenticationNone : public Authentication
     {
     public:
         AuthenticationNone();
@@ -70,7 +70,7 @@ namespace Ifaces
      * WEP (Wired Equivalent Privacy) Authentication.
      * Better than prayer for protecting your data, but not much.
      */
-    class AuthenticationWep : public Authentication
+    class SOLIDIFACES_EXPORT AuthenticationWep : public Authentication
     {
     public:
         /**
@@ -128,7 +128,7 @@ namespace Ifaces
      * AuthenticationWpa contains functionality shared by both Personal and Enterprise
      * authentication flavors
      */
-    class AuthenticationWpa : public Authentication
+    class SOLIDIFACES_EXPORT AuthenticationWpa : public Authentication
     {
     public:
         /**
@@ -140,6 +140,11 @@ namespace Ifaces
          * WPA Versions
          */
         enum WpaVersion { Wpa1, Wpa2 };
+
+        /**
+         * WPA key management schemes
+         */
+        enum WpaKeyManagement { WpaPsk, Wpa8021x };
 
         AuthenticationWpa();
         virtual ~AuthenticationWpa();
@@ -160,7 +165,17 @@ namespace Ifaces
         /**
          * Get the WPA version
          */
-         WpaVersion version() const;
+        WpaVersion version() const;
+
+        /**
+         * Set the key management scheme
+         */
+        void setKeyManagement( WpaKeyManagement );
+
+        /**
+         * Get the key management scheme
+         */
+        WpaKeyManagement keyManagement() const;
 
     private:
         class Private;
@@ -170,7 +185,7 @@ namespace Ifaces
     /**
      * WPA Personal authentication.
      */
-    class AuthenticationWpaPersonal : public AuthenticationWpa
+    class SOLIDIFACES_EXPORT AuthenticationWpaPersonal : public AuthenticationWpa
     {
     public:
         AuthenticationWpaPersonal();
@@ -180,14 +195,13 @@ namespace Ifaces
     /**
      * WPA Enterprise
      */
-    class AuthenticationWpaEnterprise : public AuthenticationWpa
+    class SOLIDIFACES_EXPORT AuthenticationWpaEnterprise : public AuthenticationWpa
     {
     public:
         /**
          * Subtypes of Enterprise Authentication Protocol
          */
-        enum EapMethod { EapPeap, EapTls, EapTtls };
-
+        enum EapMethod { EapPeap, EapTls, EapTtls, EapMd5, EapMsChap, EapOtp, EapGtc };
         AuthenticationWpaEnterprise();
         virtual ~AuthenticationWpaEnterprise();
 

@@ -43,6 +43,7 @@ namespace Ifaces
     public:
         WpaProtocol protocol;
         WpaVersion version;
+        WpaKeyManagement mgmt;
     };
 
     class AuthenticationWpaEnterprise::Private
@@ -177,7 +178,15 @@ Solid::Ifaces::AuthenticationWpa::WpaVersion Solid::Ifaces::AuthenticationWpa::v
     return d->version;
 }
 
+void Solid::Ifaces::AuthenticationWpa::setKeyManagement( WpaKeyManagement mgmt )
+{
+    d->mgmt = mgmt;
+}
 
+Solid::Ifaces::AuthenticationWpa::WpaKeyManagement Solid::Ifaces::AuthenticationWpa::keyManagement() const
+{
+    return d->mgmt;
+}
 
 /******************************************************************************/
 

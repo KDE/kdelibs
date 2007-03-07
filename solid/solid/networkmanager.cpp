@@ -227,7 +227,7 @@ void Solid::NetworkManagerPrivate::connectBackend( QObject *newBackend )
     QObject::connect( newBackend, SIGNAL( networkInterfaceAdded( const QString & ) ),
                       q, SLOT( _k_networkInterfaceAdded( const QString & ) ) );
     QObject::connect( newBackend, SIGNAL( networkInterfaceRemoved( const QString & ) ),
-                      q, SLOT( _k_knetworkInterfaceRemoved( const QString & ) ) );
+                      q, SLOT( _k_networkInterfaceRemoved( const QString & ) ) );
 }
 
 QPair<Solid::NetworkInterface*, Solid::Ifaces::NetworkInterface*> Solid::NetworkManagerPrivate::findRegisteredNetworkInterface( const QString &uni ) const
