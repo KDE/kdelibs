@@ -147,7 +147,7 @@ namespace {	// Private.
 		}
 		else {
 			// Enable alpha.
-			img.convertToFormat(QImage::Format_ARGB32);
+			img = img.convertToFormat(QImage::Format_ARGB32);
 
 			// Ignore the other channels.
 			channel_num = 4;

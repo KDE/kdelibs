@@ -812,7 +812,7 @@ static bool LoadTexture( QDataStream & s, const DDSHeader & header, QImage & img
 
     // Enable alpha buffer for transparent or DDS images.
     if( HasAlpha( header ) || type >= DDS_DXT1 ) {
-        img.convertToFormat( QImage::Format_ARGB32 );
+        img = img.convertToFormat( QImage::Format_ARGB32 );
     }
 
     TextureLoader loader = GetTextureLoader( type );
@@ -883,7 +883,7 @@ static bool LoadCubeMap( QDataStream & s, const DDSHeader & header, QImage & img
 
     // Enable alpha buffer for transparent or DDS images.
     if( HasAlpha( header ) || type >= DDS_DXT1 ) {
-        img.convertToFormat( QImage::Format_ARGB32 );
+        img = img.convertToFormat( QImage::Format_ARGB32 );
     }
 
     // Select texture loader.

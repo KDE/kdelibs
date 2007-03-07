@@ -3626,7 +3626,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
     unsigned int *s=0, *q;
 
     if(src.depth() < 32)
-        src.convertToFormat(QImage::Format_RGB32);
+        src = src.convertToFormat(QImage::Format_RGB32);
     QImage dest(src);
     dest.detach();
 

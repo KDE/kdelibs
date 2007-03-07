@@ -314,7 +314,7 @@ static void writeLine( QDataStream &s, QByteArray &buf )
 
 static void writeImage1( QImage &img, QDataStream &s, PCXHEADER &header )
 {
-  img.convertToFormat( QImage::Format_Mono );
+  img = img.convertToFormat( QImage::Format_Mono );
 
   header.Bpp = 1;
   header.NPlanes = 1;

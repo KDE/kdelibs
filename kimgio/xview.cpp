@@ -140,20 +140,19 @@ bool XVHandler::write(const QImage &image)
     f.write( str, strlen( str ) );
 
 
+    QImage tmpImage( image );
     if ( image.depth() == 1 )
-    {
-        image.convertToFormat( QImage::Format_Indexed8, Qt::AutoColor );
-    }
+        tmpImage = image.convertToFormat( QImage::Format_Indexed8, Qt::AutoColor );
 
     uchar* buffer = new uchar[ w ];
 
     for ( int py = 0; py < h; py++ )
     {
-        const uchar *data = image.scanLine( py );
+        const uchar *data = tmpImage.scanLine( py );
         for ( int px = 0; px < w; px++ )
         {
             int r, g, b;
-            if ( image.depth() == 32 )
+            if ( tmpImage.depth() == 32 )
             {
                 const QRgb *data32 = (QRgb*) data;
                 r = qRed( *data32 ) >> 5;
@@ -163,7 +162,7 @@ bool XVHandler::write(const QImage &image)
             }
             else
             {
-                QRgb color = image.color( *data );
+                QRgb color = tmpImage.color( *data );
                 r = qRed( color ) >> 5;
                 g = qGreen( color ) >> 5;
                 b = qBlue( color ) >> 6;

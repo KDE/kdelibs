@@ -211,7 +211,7 @@ bool SGIImage::readImage(QImage& img)
     img = QImage( m_xsize, m_ysize, QImage::Format_RGB32 );
 
     if (m_zsize == 2 || m_zsize == 4)
-        img.convertToFormat(QImage::Format_ARGB32);
+        img = img.convertToFormat(QImage::Format_ARGB32);
     else if (m_zsize > 4)
         kDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
 
