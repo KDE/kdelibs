@@ -85,6 +85,9 @@ class KPageView::Private
     void cleanupPages();
     QList<QWidget*> collectPages( const QModelIndex &parent = QModelIndex() );
     FaceType detectAutoFace() const;
+    void modelChanged();
+    void dataChanged( const QModelIndex&, const QModelIndex& );
+    void pageSelected( const QModelIndex&, const QModelIndex& );
 };
 
 void KPageView::Private::rebuildGui()
@@ -215,6 +218,90 @@ KPageView::FaceType KPageView::Private::detectAutoFace() const
   return KPageView::Plain;
 }
 
+void KPageView::Private::modelChanged()
+{
+  if ( !model )
+    return;
+
+  /**
+   * If the face type is Auto, we rebuild the GUI whenever the layout
+   * of the model changes.
+   *
+   * We have to decouple the method call here, since the view which
+   * called use is deleted.
+   */
+  if ( faceType == Auto )
+    QTimer::singleShot( 0, parent, SLOT( rebuildGui() ) );
+
+  /**
+   * Set the stack to the minimum size of the largest widget.
+   */
+  QSize size = stack->size();
+  QList<QWidget*> widgets = collectPages();
+  for ( int i = 0; i < widgets.count(); ++i ) {
+    const QWidget *widget = widgets[ i ];
+    if ( widget )
+      size = size.expandedTo( widget->minimumSizeHint() );
+  }
+  stack->setMinimumSize( size );
+
+  updateSelection();
+}
+
+void KPageView::Private::pageSelected( const QModelIndex &index, const QModelIndex &previous )
+{
+  if ( !model )
+    return;
+
+  if ( !index.isValid() )
+    return;
+
+  QWidget *widget = qvariant_cast<QWidget*>( model->data( index, KPageModel::WidgetRole ) );
+  if ( widget ) {
+    if ( stack->indexOf( widget ) == -1 ) { // not included yet
+      stack->addWidget( widget );
+    }
+
+    stack->setCurrentWidget( widget );
+  } else {
+    //d->stack->setCurrentWidget( d->emptyWidget );
+  }
+
+  QString header = model->data( index, KPageModel::HeaderRole ).toString();
+  if ( header.isEmpty() ) {
+    header = model->data( index, Qt::DisplayRole ).toString();
+  }
+  headerLabel->setText( header );
+
+  const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
+  headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
+
+  emit parent->currentPageChanged( index, previous );
+}
+
+void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
+{
+  /**
+   * When data has changed we update the header and icon for the currently selected
+   * page.
+   */
+  if ( !view )
+    return;
+
+  QModelIndex index = view->selectionModel()->currentIndex();
+  if ( !index.isValid() )
+    return;
+
+  QString header = model->data( index, KPageModel::HeaderRole ).toString();
+  if ( header.isEmpty() ) {
+    header = model->data( index, Qt::DisplayRole ).toString();
+  }
+  headerLabel->setText( header );
+
+  const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
+  headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
+}
+
 /**
  * KPageView Implementation
  */
@@ -261,12 +348,16 @@ void KPageView::setModel( KPageModel *model )
   // clean up old model
   if ( d->model ) {
     disconnect( d->model, SIGNAL( layoutChanged() ), this, SLOT( modelChanged() ) );
+    disconnect( d->model, SIGNAL( dataChanged( const QModelIndex&, const QModelIndex& ) ),
+                this, SLOT( dataChanged( const QModelIndex&, const QModelIndex& ) ) );
   }
 
   d->model = model;
 
   if ( d->model ) {
     connect( d->model, SIGNAL( layoutChanged() ), this, SLOT( modelChanged() ) );
+    connect( d->model, SIGNAL( dataChanged( const QModelIndex&, const QModelIndex& ) ),
+             this, SLOT( dataChanged( const QModelIndex&, const QModelIndex& ) ) );
 
     // set new model in navigation view
     if ( d->view )
@@ -321,67 +412,6 @@ QAbstractItemDelegate* KPageView::itemDelegate() const
     return d->view->itemDelegate();
   else
     return 0;
-}
-
-void KPageView::pageSelected( const QModelIndex &index, const QModelIndex &previous )
-{
-  if ( !d->model )
-    return;
-
-  if ( !index.isValid() )
-    return;
-
-  QWidget *widget = qvariant_cast<QWidget*>( d->model->data( index, KPageModel::WidgetRole ) );
-  if ( widget ) {
-    if ( d->stack->indexOf( widget ) == -1 ) { // not included yet
-      d->stack->addWidget( widget );
-    }
-
-    d->stack->setCurrentWidget( widget );
-  } else {
-    //d->stack->setCurrentWidget( d->emptyWidget );
-  }
-
-  QString header = d->model->data( index, KPageModel::HeaderRole ).toString();
-  if ( header.isEmpty() ) {
-    header = d->model->data( index, Qt::DisplayRole ).toString();
-  }
-  d->headerLabel->setText( header );
-
-  const QIcon icon = d->model->data( index, Qt::DecorationRole ).value<QIcon>();
-  d->headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
-
-  emit currentPageChanged( index, previous );
-}
-
-void KPageView::modelChanged()
-{
-  if ( !d->model )
-    return;
-
-  /**
-   * If the face type is Auto, we rebuild the GUI whenever the layout
-   * of the model changes.
-   *
-   * We have to decouple the method call here, since the view which
-   * called use is deleted.
-   */
-  if ( d->faceType == Auto )
-    QTimer::singleShot( 0, this, SLOT( rebuildGui() ) );
-
-  /**
-   * Set the stack to the minimum size of the largest widget.
-   */
-  QSize size = d->stack->size();
-  QList<QWidget*> widgets = d->collectPages();
-  for ( int i = 0; i < widgets.count(); ++i ) {
-    const QWidget *widget = widgets[ i ];
-    if ( widget )
-      size = size.expandedTo( widget->minimumSizeHint() );
-  }
-  d->stack->setMinimumSize( size );
-
-  d->updateSelection();
 }
 
 

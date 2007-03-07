@@ -148,10 +148,6 @@ class KDEUI_EXPORT KPageView : public QWidget
      */
     void currentPageChanged( const QModelIndex &current, const QModelIndex &previous );
 
-  private Q_SLOTS:
-    void pageSelected( const QModelIndex&, const QModelIndex& );
-    void modelChanged();
-
   protected:
     /**
      * Returns the navigation view, depending on the current
@@ -184,6 +180,10 @@ class KDEUI_EXPORT KPageView : public QWidget
     Private* const d;
 
     Q_PRIVATE_SLOT( d, void rebuildGui() )
+    Q_PRIVATE_SLOT( d, void pageSelected( const QModelIndex&, const QModelIndex& ) )
+    Q_PRIVATE_SLOT( d, void modelChanged() )
+    Q_PRIVATE_SLOT( d, void dataChanged( const QModelIndex&, const QModelIndex& ) )
+
 };
 
 #endif
