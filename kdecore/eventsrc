@@ -1722,7 +1722,15 @@ default_sound=KDE_Logout_3.ogg
 
 [cancellogout]
 Name=Logout canceled
+Name[it]=Uscita annullata
+Name[pt]=Encerramento cancelado
+Name[pt_BR]=Encerramento cancelado
+Name[sk]=Odhlásenie zrušené
 Comment=KDE logout was canceled
+Comment[it]=L'uscita da KDE è stata annullata
+Comment[pt]=O encerramento da sessão do KDE foi cancelado
+Comment[pt_BR]=O encerramento da sessão do KDE foi cancelado
+Comment[sk]=Odhlásenie z KDE bolo zrušené
 default_presentation=16
 default_sound=
 
