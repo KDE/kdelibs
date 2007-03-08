@@ -655,8 +655,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 void KConfigINIBackEnd::sync(bool bMerge)
 {
     // write-sync is only necessary if there are dirty entries
-    if (!pConfig->isDirty())
+    if (!pConfig->isDirty()) {
         return;
+    }
 
     bool bEntriesLeft = true;
 
@@ -769,8 +770,9 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
             continue; // Skip
 
         // Skip default values and group headers.
-        if ((key.bDefault) || key.mKey.isEmpty())
+        if ((key.bDefault) || key.mKey.isEmpty()) {
             continue; // Skip
+        }
 
         const KEntry &currentEntry = *aIt;
 
@@ -788,18 +790,15 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
         }
 
 
-        if (hasDefault)
-        {
+        if ( hasDefault ) {
             // Entry had a default value
-            if ((currentEntry.mValue == (*aTestIt).mValue) &&
-                (currentEntry.bDeleted == (*aTestIt).bDeleted))
+            if ( (currentEntry.mValue == (*aTestIt).mValue) &&
+                 (currentEntry.bDeleted == (*aTestIt).bDeleted) ) {
                 continue; // Same as default, don't write.
-        }
-        else
-        {
+            }
+        } else if ( currentEntry.bDeleted ) {
             // Entry had no default value.
-            if (currentEntry.bDeleted)
-                continue; // Don't write deleted entries if there is no default.
+            continue; // Don't write deleted entries if there is no default.
         }
 
         if (!defaultGroup && (currentGroup != key.mGroup)) {
@@ -820,12 +819,9 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
             fputc(']', pStream);
         }
 
-        if (currentEntry.bDeleted)
-        {
+        if (currentEntry.bDeleted) {
             fputs("[$d]\n", pStream); // Deleted
-        }
-        else
-        {
+        } else {
             if (currentEntry.bImmutable || currentEntry.bExpand)
             {
                 fputc('[', pStream);
@@ -988,6 +984,15 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
         {
             // File is empty and doesn't have special permissions: delete it.
             pConfigFile->abort();
+
+            if ( fileMode != -1 ) {
+                // also remove the old file in case it existed. this can happen
+                // when we delete all then entries in an existing config file
+                // if we don't do this, then deletions and revertToDefault's
+                // will mysteriously fail
+                QFile::remove( filename );
+            }
+
         }
         else
         {
