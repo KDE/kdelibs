@@ -152,6 +152,7 @@
 4655        okular (libgs::Interpreter)
 4656        okular (libgs::InternalDocument)
 4656        okular (libgs::GVGenerator)
+4658        okular (XpsGenerator)
 
 # kdenetwork
 5001        kget
