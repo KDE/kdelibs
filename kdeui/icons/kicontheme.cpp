@@ -93,7 +93,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     // files are used..
 
     if (!appName.isEmpty() &&
-       ( name == "crystalsvg" || name== "hicolor" || name == "locolor" ) )
+       ( name == defaultThemeName() || name== "hicolor" || name == "locolor" ) )
     {
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
 	for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
@@ -145,9 +145,13 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readEntry("DisplayDepth", 32);
     mInherits = cfg.readEntry("Inherits", QStringList());
-    if ( name != "crystalsvg" )
-      for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it )
-         if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";
+    if ( name != defaultThemeName() ) {
+      for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it ) {
+         if ( *it == "default" || *it == "hicolor" ) {
+             *it = defaultThemeName();
+         }
+      }
+    }
 
     d->hidden = cfg.readEntry("Hidden", false);
     d->example = cfg.readPathEntry("Example");
@@ -441,7 +445,7 @@ QString KIconTheme::current()
     themeStaticDeleter.setObject(_theme, new QString);
 
     KConfigGroup cg(KGlobal::config(), "Icons");
-    *_theme = cg.readEntry("Theme",defaultThemeName());
+    *_theme = cg.readEntry("Theme", defaultThemeName());
     if ( *_theme == QLatin1String("hicolor") ) *_theme = defaultThemeName();
 /*    if (_theme->isEmpty())
     {
@@ -503,7 +507,7 @@ void KIconTheme::reconfigure()
 // static
 QString KIconTheme::defaultThemeName()
 {
-    return QLatin1String("crystalsvg");
+    return QLatin1String("oxygen");
 }
 
 void KIconTheme::assignIconsToContextMenu( ContextMenus type,
