@@ -157,7 +157,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->example = cfg.readPathEntry("Example");
     d->screenshot = cfg.readPathEntry("ScreenShot");
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
-    d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
+    d->lockOverlay = cfg.readEntry("LockOverlay", "system-lock-screen");
     d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
     d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
@@ -521,12 +521,12 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[UndoAct]->setIcon( KIcon("undo") );
-            actions[RedoAct]->setIcon( KIcon("redo") );
-            actions[CutAct]->setIcon( KIcon("editcut") );
-            actions[CopyAct]->setIcon( KIcon("editcopy") );
-            actions[PasteAct]->setIcon( KIcon("editpaste") );
-            actions[ClearAct]->setIcon( KIcon("editclear") );
+            actions[UndoAct]->setIcon( KIcon("edit-undo") );
+            actions[RedoAct]->setIcon( KIcon("edit-redo") );
+            actions[CutAct]->setIcon( KIcon("edit-cut") );
+            actions[CopyAct]->setIcon( KIcon("edit-copy") );
+            actions[PasteAct]->setIcon( KIcon("edit-paste") );
+            actions[ClearAct]->setIcon( KIcon("edit-clear") );
             break;
 
         case ReadOnlyText:
@@ -534,7 +534,7 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[0]->setIcon( KIcon("editcopy") );
+            actions[0]->setIcon( KIcon("edit-copy") );
             break;
     }
 }

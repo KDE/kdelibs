@@ -102,18 +102,18 @@ QString standardItem( StandardItem ui_enum )
 
 KGuiItem ok()
 {
-  return KGuiItem( i18n( "&OK" ), "button_ok" );
+  return KGuiItem( i18n( "&OK" ), "dialog-ok" );
 }
 
 
 KGuiItem cancel()
 {
-  return KGuiItem( i18n( "&Cancel" ), "button_cancel" );
+  return KGuiItem( i18n( "&Cancel" ), "dialog-cancel" );
 }
 
 KGuiItem yes()
 {
-  return KGuiItem( i18n( "&Yes" ), "button_ok", i18n( "Yes" ) );
+  return KGuiItem( i18n( "&Yes" ), "dialog-ok", i18n( "Yes" ) );
 }
 
 KGuiItem no()
@@ -130,7 +130,7 @@ KGuiItem discard()
 
 KGuiItem save()
 {
-  return KGuiItem( i18n( "&Save" ), "filesave", i18n( "Save data" ) );
+  return KGuiItem( i18n( "&Save" ), "document-save", i18n( "Save data" ) );
 }
 
 KGuiItem dontSave()
@@ -141,13 +141,13 @@ KGuiItem dontSave()
 
 KGuiItem saveAs()
 {
-  return KGuiItem( i18n( "Save &As..." ), "filesaveas",
+  return KGuiItem( i18n( "Save &As..." ), "document-save-as",
                    i18n( "Save file with another name" ) );
 }
 
 KGuiItem apply()
 {
-  return KGuiItem( i18n( "&Apply" ), "apply", i18n( "Apply changes" ),
+  return KGuiItem( i18n( "&Apply" ), "dialog-apply", i18n( "Apply changes" ),
                    i18n( "When clicking <b>Apply</b>, the settings will be "
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
@@ -171,13 +171,13 @@ KGuiItem clear()
 
 KGuiItem help()
 {
-  return KGuiItem( i18nc( "show help", "&Help" ), "help",
+  return KGuiItem( i18nc( "show help", "&Help" ), "help-contents",
                    i18n( "Show help" ) );
 }
 
 KGuiItem close()
 {
-  return KGuiItem( i18n( "&Close" ), "fileclose",
+  return KGuiItem( i18n( "&Close" ), "window-close",
                    i18n( "Close the current window or document" ) );
 }
 
@@ -190,7 +190,7 @@ KGuiItem defaults()
 KGuiItem back( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
-                 ? "forward" : "back";
+                 ? "go-next" : "go-previous";
   return KGuiItem( i18nc( "go back", "&Back" ), icon,
                    i18n( "Go back one step" ) );
 }
@@ -198,7 +198,7 @@ KGuiItem back( BidiMode useBidi )
 KGuiItem forward( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
-                 ? "back" : "forward";
+                 ? "go-previous" : "go-next";
   return KGuiItem( i18nc( "go forward", "&Forward" ), icon,
                    i18n( "Go forward one step" ) );
 }
@@ -210,7 +210,7 @@ QPair<KGuiItem, KGuiItem> backAndForward()
 
 KGuiItem print()
 {
-  return KGuiItem( i18n( "&Print..." ), "fileprint",
+  return KGuiItem( i18n( "&Print..." ), "document-print",
                    i18n( "Opens the print dialog to print "
                          "the current document" ) );
 }
@@ -223,25 +223,25 @@ KGuiItem cont()
 
 KGuiItem del()
 {
-  return KGuiItem( i18n( "&Delete" ), "editdelete",
+  return KGuiItem( i18n( "&Delete" ), "edit-delete",
                    i18n( "Delete item(s)" ) );
 }
 
 KGuiItem open()
 {
-  return KGuiItem( i18n( "&Open..." ), "fileopen",
+  return KGuiItem( i18n( "&Open..." ), "document-open",
                    i18n( "Open file" ) );
 }
 
 KGuiItem quit()
 {
-  return KGuiItem( i18n( "&Quit" ), "exit",
+  return KGuiItem( i18n( "&Quit" ), "application-exit",
                    i18n( "Quit application" ) );
 }
 
 KGuiItem reset()
 {
-  return KGuiItem( i18n( "&Reset" ), "undo",
+  return KGuiItem( i18n( "&Reset" ), "edit-undo",
                   i18n( "Reset configuration" ) );
 }
 
@@ -257,22 +257,22 @@ KGuiItem configure()
 
 KGuiItem find()
 {
-  return KGuiItem(i18n("&Find"), "find");
+  return KGuiItem(i18n("&Find"), "edit-find");
 }
 
 KGuiItem stop()
 {
-  return KGuiItem(i18n("Stop"), "stop");
+  return KGuiItem(i18n("Stop"), "process-stop");
 }
 
 KGuiItem add()
 {
-  return KGuiItem(i18n("Add"), "add");
+  return KGuiItem(i18n("Add"), "list-add");
 }
 
 KGuiItem remove()
 {
-  return KGuiItem(i18n("Remove"), "remove");
+  return KGuiItem(i18n("Remove"), "list-remove");
 }
 
 KGuiItem test()

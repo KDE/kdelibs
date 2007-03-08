@@ -294,7 +294,7 @@ int KCommandHistory::redoLimit() const
 }
 
 KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory )
-    : KToolBarPopupAction( KIcon( type == Undo ? "undo" : "redo" ),
+    : KToolBarPopupAction( KIcon( type == Undo ? "edit-undo" : "edit-redo" ),
                            QString(), // text is set in clear() on start
                            actionCollection),
       m_type( type ),

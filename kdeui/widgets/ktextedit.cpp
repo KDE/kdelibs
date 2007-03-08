@@ -311,7 +311,7 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   if( !isReadOnly() )
   {
       popup->addSeparator();
-      d->spellCheckAction = popup->addAction( KIcon( "spellcheck" ), i18n( "Check Spelling..." ) );
+      d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ) );
 
       if ( document()->isEmpty() )
           d->spellCheckAction->setEnabled( false );

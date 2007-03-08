@@ -336,7 +336,7 @@ KMenu *KToolBar::Private::contextMenu()
       unlockedMovable = false;
 
     delete contextLockAction;
-    contextLockAction = new KToggleAction( KIcon( "lock" ), i18n( "Lock Toolbars" ), parent );
+    contextLockAction = new KToggleAction( KIcon( "system-lock-screen" ), i18n( "Lock Toolbars" ), parent );
     context->addAction( contextLockAction );
     contextLockAction->setChecked( parent->toolBarsLocked() );
     contextLockAction->setCheckedState( KGuiItem( i18n( "Unlock Toolbars" ), KIcon( "unlock" ) ) );

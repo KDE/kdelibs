@@ -45,13 +45,13 @@ public:
 };
 
 KToggleFullScreenAction::KToggleFullScreenAction( QObject *parent )
-  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
+  : KToggleAction( KIcon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
 }
 
 KToggleFullScreenAction::KToggleFullScreenAction( QWidget *window, QObject *parent )
-  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
+  : KToggleAction( KIcon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
     setWindow( window );
@@ -77,10 +77,10 @@ void KToggleFullScreenAction::slotToggled( bool checked )
 {
   if ( checked ) {
     setText( i18n( "Exit F&ull Screen Mode" ) );
-    setIcon( KIcon( "window_nofullscreen" ) );
+    setIcon( KIcon( "view-restore" ) );
   } else {
     setText( i18n( "F&ull Screen Mode" ) );
-    setIcon( KIcon( "window_fullscreen" ) );
+    setIcon( KIcon( "view-fullscreen" ) );
   }
 
   KToggleAction::slotToggled( checked );

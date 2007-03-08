@@ -100,7 +100,7 @@ namespace Kross {
              * used to display a short title for the page.
              * \param header The longer header title text used for display purposes.
              * \param iconname The name of the icon which the page have. This could
-             * be for example "about_kde", "fileopen", "configure" or any other
+             * be for example "about_kde", "document-open", "configure" or any other
              * iconname known by KDE.
              * \return the new QWidget page instance.
              */
@@ -148,7 +148,7 @@ namespace Kross {
      * forms = Kross.module("forms")
      * dialog = forms.createDialog("My Dialog")
      * dialog.setButtons("Ok|Cancel")
-     * page = dialog.addPage("Welcome","Welcome Page","fileopen")
+     * page = dialog.addPage("Welcome","Welcome Page","document-open")
      * label = self.forms.createWidget("QLabel", page)
      * label.text = "Hello World Label"
      * if self.dialog.exec_loop():

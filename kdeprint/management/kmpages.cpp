@@ -49,7 +49,7 @@ void KMPages::initialize()
 	// Info page
 	KMInfoPage	*infopage = new KMInfoPage(this );
         infopage->setObjectName("InfoPage");
-	addTab(infopage, SmallIcon("help"), i18n("Information"));
+	addTab(infopage, SmallIcon("help-contents"), i18n("Information"));
 	m_pages.append(infopage);
 
 	// Job page
@@ -67,7 +67,7 @@ void KMPages::initialize()
 	// Instance page
 	KMInstancePage	*instpage = new KMInstancePage(this );
         instpage->setObjectName( "Instance");
-	addTab(instpage, SmallIcon("fileprint"), i18n("Instances"));
+	addTab(instpage, SmallIcon("document-print"), i18n("Instances"));
 	m_pages.append(instpage);
 
 	// initialize pages

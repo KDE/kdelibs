@@ -135,7 +135,7 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 	else
 	{
 		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
-		return (KMessageBox::warningContinueCancel(parent, msg, QString(), KGuiItem(i18n("Print"),"fileprint")) == KMessageBox::Continue);
+		return (KMessageBox::warningContinueCancel(parent, msg, QString(), KGuiItem(i18n("Print"),"document-print")) == KMessageBox::Continue);
 	}
 }
 
@@ -159,19 +159,19 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
     KAction *action = 0;
     action = new KAction(i18n("Print"), this);
 	d->actions_->addAction( "continue_print", action );
-    action->setIcon( KIcon( "fileprint" ) );
+    action->setIcon( KIcon( "document-print" ) );
     action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
     action = new KAction(i18n("Print"), this);
 	d->actions_->addAction( "continue_print", action );
-    action->setIcon( KIcon( "fileprint" ) );
+    action->setIcon( KIcon( "document-print" ) );
     action->setShortcut( QKeySequence(Qt::Key_Return) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
 
     action = new KAction(i18n("Cancel"), this);
 	d->actions_->addAction( "stop_print", action );
-    action->setIcon( KIcon( "stop" ) );
+    action->setIcon( KIcon( "process-stop" ) );
     action->setShortcut( QKeySequence(Qt::Key_Escape) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT(reject()) );
 	}
@@ -333,7 +333,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else if (!previewOnly)
 	{
-		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"fileprint"), KStandardGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
+		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"document-print"), KStandardGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
 	}
 	else
 		return false;

@@ -461,7 +461,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       {
         QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
         if ( iconPath.isEmpty() )
-          icon = SmallIcon("find");
+          icon = SmallIcon("edit-find");
         else
           icon = QPixmap( iconPath );
         name = service->name();
@@ -500,7 +500,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
           {
             QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
             if ( iconPath.isEmpty() )
-              icon = SmallIcon("find");
+              icon = SmallIcon("edit-find");
             else
               icon = QPixmap( iconPath );
             name = service->name();
@@ -519,7 +519,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       if ( selectedText.contains("://") && KUrl(selectedText).isValid() ) {
          KAction *action = new KAction( i18n( "Open '%1'" ,  selectedText ), this );
          actionCollection()->addAction( "openSelection", action );
-         action->setIcon( KIcon( "window_new" ) );
+         action->setIcon( KIcon( "window-new" ) );
          connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( openSelection() ) );
       }
   }
@@ -559,7 +559,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     {
       KAction *action = new KAction( i18n( "Open in New &Window" ), this );
       actionCollection()->addAction( "frameinwindow", action );
-      action->setIcon( KIcon( "window_new" ) );
+      action->setIcon( KIcon( "window-new" ) );
       connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotFrameInWindow() ) );
 
       action = new KAction( i18n( "Open in &This Window" ), this );
@@ -568,7 +568,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       action = new KAction( i18n( "Open in &New Tab" ), this );
       actionCollection()->addAction( "frameintab", action );
-      action->setIcon( KIcon( "tab_new" ) );
+      action->setIcon( KIcon( "tab-new" ) );
       connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotFrameInTab() ) );
 
       action = new KAction( i18n( "Reload Frame" ), this );
@@ -596,7 +596,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       // But leave this here, so that it's easy to read it.
       action = new KAction( i18n( "Print Frame..." ), this );
       actionCollection()->addAction( "printFrame", action );
-      action->setIcon( KIcon( "frameprint" ) );
+      action->setIcon( KIcon( "print-frame" ) );
       connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( print() ) );
       action = new KAction( i18n( "Save &Frame As..." ), this );
       actionCollection()->addAction( "saveFrame", action );

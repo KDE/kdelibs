@@ -183,19 +183,19 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 	m_play = new QToolButton( frame1 );
     m_play->setIconSize(QSize(32, 32));
 	m_play->setText( "play" );
-    m_play->setIcon(KIcon("player_play"));
+    m_play->setIcon(KIcon("media-playback-start"));
 	vlayout->addWidget( m_play );
 
 	m_pause = new QToolButton( frame1 );
     m_pause->setIconSize(QSize(32, 32));
 	m_pause->setText( "pause" );
-    m_pause->setIcon(KIcon("player_pause"));
+    m_pause->setIcon(KIcon("media-playback-pause"));
 	vlayout->addWidget( m_pause );
 
 	m_stop = new QToolButton( frame1 );
     m_stop->setIconSize(QSize(32, 32));
 	m_stop->setText( "stop" );
-    m_stop->setIcon(KIcon("player_stop"));
+    m_stop->setIcon(KIcon("media-playback-stop"));
 	vlayout->addWidget( m_stop );
 
 	QFrame *frame2 = new QFrame( frame0 );

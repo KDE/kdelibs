@@ -50,7 +50,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
 	m_postscript->setCursor(KCursor::handCursor());
 	m_raw->setCursor(KCursor::handCursor());
-	m_other = new KPushButton(KGuiItem(i18n("&Other..."), "fileopen"), this);
+	m_other = new KPushButton(KGuiItem(i18n("&Other..."), "document-open"), this);
 	QLabel	*l1 = new QLabel(i18n("&Manufacturer:"), this);
 	QLabel	*l2 = new QLabel(i18n("Mo&del:"), this);
 	l1->setBuddy(m_manu);

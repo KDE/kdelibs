@@ -53,7 +53,7 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    a = new KAction( KIcon( "viewmag-" ), "decfont", part );
+    a = new KAction( KIcon( "zoom-out" ), "decfont", part );
     part->actionCollection()->addAction( "decFontSizes", a );
     a = new KAction( KIcon( "unlock" ), "sec", part );
     part->actionCollection()->addAction( "security", a );

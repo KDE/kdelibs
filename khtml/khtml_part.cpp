@@ -290,7 +290,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
   connect( d->m_paStopAnimations, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
 
-  d->m_paSetEncoding = new KActionMenu( KIcon("charset"), i18n( "Set &Encoding" ), this );
+  d->m_paSetEncoding = new KActionMenu( KIcon("character-set"), i18n( "Set &Encoding" ), this );
   actionCollection()->addAction( "setEncoding", d->m_paSetEncoding );
   d->m_paSetEncoding->setDelayed( false );
 
@@ -382,7 +382,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( d->m_paUseStylesheet, SIGNAL( triggered( bool ) ), this, SLOT( slotUseStylesheet() ) );
 
   if ( prof == BrowserViewGUI ) {
-      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "viewmag+", i18n( "Enlarge Font" ), this );
+      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "zoom-in", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncZoomFast() ));
@@ -390,7 +390,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
 
-      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "viewmag-", i18n( "Shrink Font" ), this );
+      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "zoom-out", i18n( "Shrink Font" ), this );
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecZoomFast() ));
@@ -438,7 +438,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
-  d->m_paPrintFrame->setIcon( KIcon( "frameprint" ) );
+  d->m_paPrintFrame->setIcon( KIcon( "print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
   d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<p>"
 					 "Some pages have several frames. To print only a single frame, click "
@@ -1131,7 +1131,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_jsedlg->setURL(m_url.prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
       d->m_jsedlg->_clear->setIcon(KIcon("locationbar_erase"));
-      d->m_jsedlg->_close->setIcon(KIcon("fileclose"));
+      d->m_jsedlg->_close->setIcon(KIcon("window-close"));
     }
   }
   return d->m_jsedlg;
@@ -1399,7 +1399,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
   else if ( !d->m_paLoadImages ) {
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
     actionCollection()->addAction( "loadImages", d->m_paLoadImages );
-    d->m_paLoadImages->setIcon( KIcon( "images_display" ) );
+    d->m_paLoadImages->setIcon( KIcon( "images-display" ) );
     connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
   }
 

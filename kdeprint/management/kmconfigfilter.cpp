@@ -41,7 +41,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 {
 	setPageName(i18n("Filter"));
 	setPageHeader(i18n("Printer Filtering Settings"));
-	setPagePixmap("filter");
+	setPagePixmap("search-filter");
 
 	QGroupBox	*box = new QGroupBox(i18n("Printer Filter"), this);
 	box->setLayout( new QVBoxLayout );
@@ -51,9 +51,9 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 	m_list2 = new KListWidget(box);
 	m_list2->setSelectionMode(KListWidget::ExtendedSelection);
 	m_add = new QToolButton( box );
-	m_add->setIcon(QApplication::isRightToLeft() ? KIcon( "back" ) : KIcon( "forward" ));
+	m_add->setIcon(QApplication::isRightToLeft() ? KIcon( "go-previous" ) : KIcon( "go-next" ));
 	m_remove = new QToolButton( box );
-	m_remove->setIcon(QApplication::isRightToLeft() ? KIcon( "forward" ) : KIcon( "back" ));
+	m_remove->setIcon(QApplication::isRightToLeft() ? KIcon( "go-next" ) : KIcon( "go-previous" ));
 	m_locationre = new QLineEdit(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("The printer filtering allows you to view only a specific set of "

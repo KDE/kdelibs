@@ -98,7 +98,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 				parent = new Q3ListViewItem( root, lastparent, cl );
 				parent->setOpen( true );
 				if ( cl == "network" )
-					parent->setPixmap( 0, SmallIcon( "network" ) );
+					parent->setPixmap( 0, SmallIcon( "network-wired" ) );
 				else if ( cl == "direct" )
 					parent->setPixmap( 0, SmallIcon( "kdeprint_computer" ) );
 				else if ( cl == "serial" )

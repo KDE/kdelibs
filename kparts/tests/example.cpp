@@ -57,7 +57,7 @@ Shell::Shell()
     KAction * paQuit = new KAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(KIcon("exit"));
+    paQuit->setIcon(KIcon("application-exit"));
 
 //  (void)new KAction( "Yet another menu item", coll, "shell_yami" );
 //  (void)new KAction( "Yet another submenu item", coll, "shell_yasmi" );

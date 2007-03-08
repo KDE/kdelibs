@@ -69,7 +69,7 @@ void KUrlComboBox::init( Mode mode )
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
-    opendirIcon = KIcon(QLatin1String("folder_open"));
+    opendirIcon = KIcon(QLatin1String("folder-open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }

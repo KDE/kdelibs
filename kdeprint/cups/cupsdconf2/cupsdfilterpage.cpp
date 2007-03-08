@@ -34,7 +34,7 @@ CupsdFilterPage::CupsdFilterPage(QWidget *parent)
 {
 	setPageLabel(i18n("Filter"));
 	setHeader(i18n("Filter Settings"));
-	setPixmap("filter");
+	setPixmap("search-filter");
 
 	user_ = new QLineEdit(this);
 	group_ = new QLineEdit(this);

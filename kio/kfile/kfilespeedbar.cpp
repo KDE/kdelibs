@@ -58,7 +58,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent )
 
         u.setPath( QDir::homePath() );
         item = insertItem( u, i18n("Home Folder"), false,
-                               "folder_home" );
+                               "user-home" );
         item->setToolTip( i18n("Your personal home folder for your files and settings") );
 
 #ifdef __GNUC__

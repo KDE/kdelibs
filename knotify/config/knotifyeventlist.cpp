@@ -55,7 +55,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		if(key == "Sound" )
 			icon = SmallIcon("sound");
 		else if(key == "Popup" )
-			icon = SmallIcon("info");
+			icon = SmallIcon("document-properties");
 		else if(key == "Execute" )
 			icon = SmallIcon("exec");
 		else if(key == "Taskbar" )
@@ -187,7 +187,7 @@ void KNotifyEventListItem::update()
 
 	QPixmap pexec = SmallIcon("exec");
 	QPixmap pstderr = SmallIcon("terminal");
-	QPixmap pmessage = SmallIcon("info");
+	QPixmap pmessage = SmallIcon("document-properties");
 	QPixmap plogfile = SmallIcon("log");
 	QPixmap psound = SmallIcon("sound");
 	QPixmap ptaskbar = SmallIcon("kicker");

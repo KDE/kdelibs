@@ -1078,7 +1078,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   // The color picker button
   //
   QPushButton* button = new QPushButton( page );
-  button->setIcon( KIcon("colorpicker"));
+  button->setIcon( KIcon("color-picker"));
   int commonHeight = addButton->sizeHint().height();
   button->setMinimumHeight( commonHeight );
   kDebug() << commonHeight << endl;

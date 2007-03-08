@@ -158,7 +158,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     glay->addWidget( tmpLabel, row, 1 );
     tmpLabel->setWhatsThis(qwtstr );
 
-    setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
+    setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail-send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ,  d->m_aboutData->bugAddress() ) ) );
 
   }

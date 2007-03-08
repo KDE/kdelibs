@@ -288,12 +288,12 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	m_printerlabel->setBuddy(d->m_printers);
 	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties"), "edit"), m_pbox);
 	d->m_properties->setWhatsThis(whatsThisPrintJobProperties);
-	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions"), "kdeprint_configmgr"), main);
+	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions"), "kdepring-configmgr"), main);
 	d->m_options->setWhatsThis(whatsThisSystemOptions);
-	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
+	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint-defaultsoft"), m_pbox);
 	d->m_default->setWhatsThis(whatsThisSetDefaultPrinter);
 	d->m_filter = new QPushButton(m_pbox);
-	d->m_filter->setIcon(KIcon("filter"));
+	d->m_filter->setIcon(KIcon("search-filter"));
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_filter->setCheckable(true);
 	d->m_filter->setDown(KMManager::self()->isFilterEnabled());
@@ -304,7 +304,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_wizard->setToolTip(i18n("Add printer..."));
 	d->m_wizard->setWhatsThis(whatsThisAddPrinterWizard);
-	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), main);
+	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "document-print"), main);
         d->m_ok->setWhatsThis(whatsThisPrintButton);
 	d->m_ok->setDefault(true);
 	d->m_ok->setEnabled( false );
@@ -891,7 +891,7 @@ void KPrintDialog::expandDialog(bool on)
 			if (d->b_systemEnabled)
 				d->m_plugin->show();
 		}
-		d->m_extbtn->setIcon(KIcon("up"));
+		d->m_extbtn->setIcon(KIcon("go-up"));
 		d->m_extbtn->setText(i18n("&Options <<"));
 		d->m_reduced = false;
 	}
@@ -903,7 +903,7 @@ void KPrintDialog::expandDialog(bool on)
 			if (d->b_systemEnabled)
 				d->m_plugin->hide();
 		}
-		d->m_extbtn->setIcon(KIcon("down"));
+		d->m_extbtn->setIcon(KIcon("go-down"));
 		d->m_extbtn->setText(i18n("&Options >>"));
 		d->m_reduced = true;
 	}

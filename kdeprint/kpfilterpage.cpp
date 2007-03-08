@@ -131,22 +131,22 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 
 	m_add = new QToolButton(this);
 	  m_add->setWhatsThis(whatsThisAddFilterButton);
-	m_add->setIcon(KIcon("filter"));
+	m_add->setIcon(KIcon("search-filter"));
 	m_add->setToolTip(i18n("Add filter"));
 
 	m_remove = new QToolButton(this);
 	  m_remove->setWhatsThis(whatsThisRemoveFilterButton);
-	m_remove->setIcon(KIcon("remove"));
+	m_remove->setIcon(KIcon("list-remove"));
 	m_remove->setToolTip(i18n("Remove filter"));
 
 	m_up = new QToolButton(this);
 	  m_up->setWhatsThis(whatsThisMoveFilterUpButton);
-	m_up->setIcon(KIcon("up"));
+	m_up->setIcon(KIcon("go-up"));
 	m_up->setToolTip(i18n("Move filter up"));
 
 	m_down = new QToolButton(this);
 	  m_down->setWhatsThis(whatsThisMoveFilterDownButton);
-	m_down->setIcon(KIcon("down"));
+	m_down->setIcon(KIcon("go-down"));
 	m_down->setToolTip(i18n("Move filter down"));
 
 	m_configure = new QToolButton(this);
@@ -221,7 +221,7 @@ void KPFilterPage::slotAddClicked()
     QStringList data;
     data << cmd->description() << cmd->name();
 		QTreeWidgetItem	*item = new QTreeWidgetItem(data);
-		item->setIcon(0, SmallIcon("filter"));
+		item->setIcon(0, SmallIcon("search-filter"));
     m_view->insertTopLevelItem(pos, item);
 		checkFilterChain();
 	}
@@ -251,7 +251,7 @@ void KPFilterPage::slotUpClicked()
       QStringList data;
       data << item->text(0) << item->text(1);
       QTreeWidgetItem	*clone = new QTreeWidgetItem(data);
-      clone->setIcon(0, SmallIcon("filter"));
+      clone->setIcon(0, SmallIcon("search-filter"));
       m_view->insertTopLevelItem(index, clone);
       delete item;
       m_view->setItemSelected(clone, true);
@@ -270,7 +270,7 @@ void KPFilterPage::slotDownClicked()
       QStringList data;
       data << item->text(0) << item->text(1);
       QTreeWidgetItem	*clone = new QTreeWidgetItem(data);
-      clone->setIcon(0, SmallIcon("filter"));
+      clone->setIcon(0, SmallIcon("search-filter"));
       m_view->insertTopLevelItem(index+1, clone);
       delete item;
       m_view->setItemSelected(clone, true);
@@ -376,7 +376,7 @@ void KPFilterPage::checkFilterChain()
   for (int i = 0; i < m_view->topLevelItemCount(); ++i )
 	{
     QTreeWidgetItem *item = m_view->topLevelItem(i);
-		item->setIcon(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
+		item->setIcon(0, (ok ? SmallIcon("search-filter") : SmallIcon("filterstop")));
 		KXmlCommand	*f1 = m_activefilters.value(item->text(1), 0);
 		if (f1 && i < (m_view->topLevelItemCount() - 1))
 		{

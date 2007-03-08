@@ -46,7 +46,7 @@ KMPropBackend::KMPropBackend(QWidget *parent)
 	main_->addWidget(m_type,0,1);
 	main_->addWidget(m_uri,1,1);
 
-	m_pixmap = "connect_established";
+	m_pixmap = "connection-established";
 	m_title = i18n("Interface");
 	m_header = i18n("Interface Settings");
 }

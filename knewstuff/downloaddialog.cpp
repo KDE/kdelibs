@@ -211,7 +211,7 @@ void DownloadDialog::addProvider(Provider *p)
       ret = true;
     }
   }
-  if(!ret) pix = KIconLoader::global()->loadIcon("knewstuff", K3Icon::Panel);
+  if(!ret) pix = KIconLoader::global()->loadIcon("get-hot-new-stuff", K3Icon::Panel);
 
   frame = new QFrame( this );
   m_item = addPage(frame, p->name());

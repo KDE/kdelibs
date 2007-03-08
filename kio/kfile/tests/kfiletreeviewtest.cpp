@@ -69,7 +69,7 @@ void testFrame::showPath( const KUrl &url )
    /* try a user icon */
    KIconLoader *loader = KIconLoader::global();
    QPixmap pix = loader->loadIcon( "contents2", K3Icon::Small );
-   QPixmap pixOpen = loader->loadIcon( "contents", K3Icon::Small );
+   QPixmap pixOpen = loader->loadIcon( "help-contents", K3Icon::Small );
 
    KFileTreeBranch *nb = treeView->addBranch( url, fname, pix );
 

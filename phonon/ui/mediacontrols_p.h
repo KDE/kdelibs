@@ -46,18 +46,18 @@ class MediaControlsPrivate
             media(0)
         {
             playButton.setIconSize(QSize(32, 32));
-            playButton.setIcon(KIcon("player_play"));
+            playButton.setIcon(KIcon("media-playback-start"));
             playButton.setToolTip(i18n("start playback"));
             playButton.setAutoRaise(true);
 
             pauseButton.setIconSize(QSize(32, 32));
-            pauseButton.setIcon(KIcon("player_pause"));
+            pauseButton.setIcon(KIcon("media-playback-pause"));
             pauseButton.setToolTip(i18n("pause playback"));
             pauseButton.hide();
             pauseButton.setAutoRaise(true);
 
             stopButton.setIconSize(QSize(32, 32));
-            stopButton.setIcon(KIcon("player_stop"));
+            stopButton.setIcon(KIcon("media-playback-stop"));
             stopButton.setToolTip(i18n("stop playback"));
             stopButton.setAutoRaise(true);
 

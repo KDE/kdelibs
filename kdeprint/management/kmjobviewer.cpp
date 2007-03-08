@@ -143,7 +143,7 @@ void KMJobViewer::updateCaption()
 	if (!m_standalone)
 		return;
 
-	QString	pixname("fileprint");
+	QString	pixname("document-print");
 	if (!m_prname.isEmpty())
 	{
 		setCaption(i18n("Print Jobs for %1", m_prname));
@@ -259,26 +259,26 @@ void KMJobViewer::initActions()
 	// job actions
 	KAction	*hact = new KAction(i18n("&Hold"), this);
 	actionCollection()->addAction( "job_hold", hact );
-	hact->setIcon( KIcon( "stop" ) );
+	hact->setIcon( KIcon( "process-stop" ) );
 	connect( hact, SIGNAL( triggered( bool ) ), this,SLOT(slotHold()) );
 
 	KAction	*ract = new KAction(i18n("&Resume"), this);
 	actionCollection()->addAction( "job_resume", ract );
-	ract->setIcon( KIcon( "run" ) );
+	ract->setIcon( KIcon( "system-run" ) );
 	connect( ract, SIGNAL( triggered( bool ) ), this,SLOT(slotResume()) );
 
 	KAction	*dact = new KAction(i18n("Remo&ve"), this);
 	actionCollection()->addAction( "job_remove", dact );
-	dact->setIcon( KIcon( "edittrash" ) );
+	dact->setIcon( KIcon( "edit-trash" ) );
 	dact->setShortcut( QKeySequence(Qt::Key_Delete) );
 	connect( dact, SIGNAL( triggered( bool ) ), this,SLOT(slotRemove()) );
 
 	KAction *sact = new KAction(i18n("Res&tart"), this);
 	actionCollection()->addAction( "job_restart", sact );
-	sact->setIcon( KIcon( "redo" ) );
+	sact->setIcon( KIcon( "edit-redo" ) );
 	connect( sact, SIGNAL( triggered( bool ) ), this, SLOT(slotRestart()) );
 
-	KActionMenu *mact = new KActionMenu(KIcon("fileprint"), i18n("&Move to Printer"), this);
+	KActionMenu *mact = new KActionMenu(KIcon("document-print"), i18n("&Move to Printer"), this);
 	actionCollection()->addAction( "job_move", mact );
 	mact->setDelayed(false);
 	connect(mact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotMove(QAction*)));
@@ -357,7 +357,7 @@ void KMJobViewer::initActions()
 		// refresh action
 		KAction *action = new KAction(i18n("Refresh"), this );
 		actionCollection()->addAction( "refresh", action );
-		action->setIcon( KIcon( "reload" ) );
+		action->setIcon( KIcon( "view-refresh" ) );
 		connect( action, SIGNAL( triggered( bool ) ), this, SLOT(slotRefresh() ) );
 
 		// create status bar
@@ -384,7 +384,7 @@ void KMJobViewer::buildPrinterMenu(QMenu *menu, bool use_all, bool use_specials)
 	int	i(0);
 	if (use_all)
 	{
-		QAction *action = menu->addAction(QIcon(SmallIcon("fileprint")), i18n("All Printers"));
+		QAction *action = menu->addAction(QIcon(SmallIcon("document-print")), i18n("All Printers"));
 		action->setData(i++);
 		menu->addSeparator();
 	}

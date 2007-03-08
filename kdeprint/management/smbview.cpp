@@ -223,7 +223,7 @@ void SmbView::processGroups()
 			continue;
 		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).trimmed());
 		item->setExpandable(true);
-		item->setPixmap(0,SmallIcon("network"));
+		item->setPixmap(0,SmallIcon("network-wired"));
 	}
 }
 

@@ -789,10 +789,10 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,       SLOT(slotToolBarSelected(const QString&)));
 
 //  QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
-//  new_toolbar->setPixmap(BarIcon("filenew", K3Icon::SizeSmall));
+//  new_toolbar->setPixmap(BarIcon("document-new", K3Icon::SizeSmall));
 //  new_toolbar->setEnabled(false); // disabled until implemented
 //  QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
-//  del_toolbar->setPixmap(BarIcon("editdelete", K3Icon::SizeSmall));
+//  del_toolbar->setPixmap(BarIcon("edit-delete", K3Icon::SizeSmall));
 //  del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions
@@ -843,23 +843,23 @@ void KEditToolBarWidgetPrivate::setupLayout()
   // The buttons in the middle
 
   m_upAction     = new QToolButton(m_widget);
-  m_upAction->setIcon( KIcon("up") );
+  m_upAction->setIcon( KIcon("go-up") );
   m_upAction->setEnabled(false);
   m_upAction->setAutoRepeat(true);
   QObject::connect(m_upAction, SIGNAL(clicked()), m_widget, SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(m_widget);
-  m_insertAction->setIcon( KIcon(QApplication::isRightToLeft() ? "back" : "forward") );
+  m_insertAction->setIcon( KIcon(QApplication::isRightToLeft() ? "go-previous" : "go-next") );
   m_insertAction->setEnabled(false);
   QObject::connect(m_insertAction, SIGNAL(clicked()), m_widget, SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(m_widget);
-  m_removeAction->setIcon( KIcon(QApplication::isRightToLeft() ? "forward" : "back") );
+  m_removeAction->setIcon( KIcon(QApplication::isRightToLeft() ? "go-next" : "go-previous") );
   m_removeAction->setEnabled(false);
   QObject::connect(m_removeAction, SIGNAL(clicked()), m_widget, SLOT(slotRemoveButton()));
 
   m_downAction   = new QToolButton(m_widget);
-  m_downAction->setIcon( KIcon("down") );
+  m_downAction->setIcon( KIcon("go-down") );
   m_downAction->setEnabled(false);
   m_downAction->setAutoRepeat(true);
   QObject::connect(m_downAction, SIGNAL(clicked()), m_widget, SLOT(slotDownButton()));

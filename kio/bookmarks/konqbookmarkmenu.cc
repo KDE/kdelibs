@@ -65,12 +65,12 @@ void KonqBookmarkContextMenu::contextMenu(QPoint pos, QString highlightedAddress
   {
     if(bookmark.isGroup())
     {
-      m_contextMenu->addAction(SmallIcon("tab_new"), i18n( "Open Folder in Tabs" ), this, SLOT( openFolderinTabs() ) );
+      m_contextMenu->addAction(SmallIcon("tab-new"), i18n( "Open Folder in Tabs" ), this, SLOT( openFolderinTabs() ) );
     }
     else
     {
-      m_contextMenu->addAction( SmallIcon("window_new"), i18n( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
-      m_contextMenu->addAction( SmallIcon("tab_new"), i18n( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
+      m_contextMenu->addAction( SmallIcon("window-new"), i18n( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
+      m_contextMenu->addAction( SmallIcon("tab-new"), i18n( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
     }
   }
 

@@ -1016,7 +1016,7 @@ QMenu* KLineEdit::createStandardContextMenu()
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = popup->addMenu( KIcon("completion"), i18n("Text Completion") );
+        QMenu *subMenu = popup->addMenu( KIcon("text-completion"), i18n("Text Completion") );
         connect( subMenu, SIGNAL( triggered ( QAction* ) ),
                  this, SLOT( completionMenuActivated( QAction* ) ) );
 

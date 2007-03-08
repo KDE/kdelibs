@@ -239,14 +239,14 @@ void KBookmarkActionContextMenu::contextMenu(QPoint pos, QString highlightedAddr
 void KBookmarkActionContextMenu::addBookmark()
 {
   if( m_pOwner && m_pOwner->addBookmarkEntry() )
-    m_contextMenu->addAction( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
+    m_contextMenu->addAction( SmallIcon("bookmark-new"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
 }
 
 void KBookmarkActionContextMenu::addFolderActions()
 {
   m_contextMenu->addAction( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
   m_contextMenu->addSeparator();
-  m_contextMenu->addAction( SmallIcon("editdelete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
+  m_contextMenu->addAction( SmallIcon("edit-delete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
   m_contextMenu->addSeparator();
 }
 
@@ -260,7 +260,7 @@ void KBookmarkActionContextMenu::addBookmarkActions()
 {
   m_contextMenu->addAction( i18n( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
   m_contextMenu->addSeparator();
-  m_contextMenu->addAction( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
+  m_contextMenu->addAction( SmallIcon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
   m_contextMenu->addSeparator();
 }
 
@@ -439,7 +439,7 @@ void KBookmarkMenu::addAddBookmarksList()
 
   KAction * paAddBookmarksList = new KAction( title, this );
   m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, paAddBookmarksList );
-  paAddBookmarksList->setIcon( KIcon( "bookmarks_list_add" ) );
+  paAddBookmarksList->setIcon( KIcon( "bookmark-new-list" ) );
   paAddBookmarksList->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
   connect( paAddBookmarksList, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
 
@@ -456,7 +456,7 @@ void KBookmarkMenu::addAddBookmark()
 
   KAction * paAddBookmarks = new KAction( title, this );
   m_actionCollection->addAction( m_bIsRoot ? "add_bookmark" : 0, paAddBookmarks );
-  paAddBookmarks->setIcon( KIcon( "bookmark_add" ) );
+  paAddBookmarks->setIcon( KIcon( "bookmark-new" ) );
   paAddBookmarks->setShortcut( m_bIsRoot ? KStandardShortcut::addBookmark() : KShortcut() );
   paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
   connect( paAddBookmarks, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmark() ) );
@@ -487,7 +487,7 @@ void KBookmarkMenu::addNewFolder()
 
   KAction * paNewFolder = new KAction( title, this );
   m_actionCollection->addAction( "dummyname", paNewFolder );
-  paNewFolder->setIcon( KIcon( "folder_new" ) );
+  paNewFolder->setIcon( KIcon( "folder-new" ) );
   paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
   connect( paNewFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
 
@@ -713,7 +713,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 
   if ( editType == InsertionMode ) {
     setButtons( User1 | Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18n( "&Add" ), "bookmark_add") );
+    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18n( "&Add" ), "bookmark-new") );
   } else {
     setButtons( Ok | Cancel );
     setButtonGuiItem( KDialog::Ok, KGuiItem(i18n( "&Update" )) );
@@ -721,7 +721,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 
   setDefaultButton( KDialog::Ok );
   if (editType == InsertionMode) {
-    setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder_new") );
+    setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder-new") );
   }
 
   bool folder = url.isNull();

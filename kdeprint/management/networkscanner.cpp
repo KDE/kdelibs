@@ -109,7 +109,7 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	d->bar = new QProgressBar( this );
 	d->bar->setRange( 0, 256 );
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
-	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
+	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "zoom-original" ), this );
 	d->timer = new QTimer( this );
 	d->socket = new KBufferedSocket( QString(), QString(), this );
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
@@ -146,7 +146,7 @@ void NetworkScanner::start()
 	d->printers.clear();
 	emit scanStarted();
 	d->settings->setEnabled( false );
-	d->scan->setGuiItem( KGuiItem( i18n( "&Abort" ), "stop" ) );
+	d->scan->setGuiItem( KGuiItem( i18n( "&Abort" ), "process-stop" ) );
 	d->currentaddress = -1;
 	d->scanning = true;
 	next();
@@ -161,7 +161,7 @@ void NetworkScanner::slotScanClicked()
 					i18n( "You are about to scan a subnet (%1.*) that does not "
 						  "correspond to the current subnet of this computer (%2.*). Do you want "
 						  "to scan the specified subnet anyway?" ,  d->prefixaddress ,  d->localPrefix() ),
-					QString(), KGuiItem( i18n( "&Scan" ), "viewmag" ), "askForScan" ) == KMessageBox::Continue )
+					QString(), KGuiItem( i18n( "&Scan" ), "zoom-original" ), "askForScan" ) == KMessageBox::Continue )
 			start();
 	}
 	else
@@ -177,7 +177,7 @@ void NetworkScanner::finish()
 		return;
 
 	d->settings->setEnabled( true );
-	d->scan->setGuiItem( KGuiItem( i18n( "Sc&an" ), "viewmag" ) );
+	d->scan->setGuiItem( KGuiItem( i18n( "Sc&an" ), "zoom-original" ) );
 	d->bar->reset();
 	d->scanning = false;
 	emit scanFinished();

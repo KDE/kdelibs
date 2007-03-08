@@ -34,7 +34,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 {
 	setPageName(i18n("Preview"));
 	setPageHeader(i18n("Preview Settings"));
-	setPagePixmap("filefind");
+	setPagePixmap("file-find");
 
 	QGroupBox *box = new QGroupBox(i18n("Preview Program"), this);
 	box->setLayout( new QVBoxLayout );

@@ -86,14 +86,14 @@ void KMInstancePage::addButton(const QString& txt, const QString& pixmap, const 
 
 void KMInstancePage::initActions()
 {
-	addButton(i18n("New..."), "filenew", SLOT(slotNew()));
-	addButton(i18n("Copy..."), "editcopy", SLOT(slotCopy()));
-	addButton(i18n("Remove"), "edittrash", SLOT(slotRemove()));
+	addButton(i18n("New..."), "document-new", SLOT(slotNew()));
+	addButton(i18n("Copy..."), "edit-copy", SLOT(slotCopy()));
+	addButton(i18n("Remove"), "edit-trash", SLOT(slotRemove()));
 	m_buttons.append(0);
 	addButton(i18n("Set as Default"), "exec", SLOT(slotDefault()));
 	addButton(i18n("Settings"), "configure", SLOT(slotSettings()));
 	m_buttons.append(0);
-	addButton(i18n("Test..."), "fileprint", SLOT(slotTest()));
+	addButton(i18n("Test..."), "document-print", SLOT(slotTest()));
 }
 
 void KMInstancePage::setPrinter(KMPrinter *p)
@@ -113,9 +113,9 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		{
       KMPrinter *printer(it.next());
 			QStringList	pair = printer->name().split('/', QString::SkipEmptyParts);
-			
+
             QListWidgetItem* item = new QListWidgetItem();
-            item->setIcon(SmallIcon((printer->isSoftDefault() ? "exec" : "fileprint")));
+            item->setIcon(SmallIcon((printer->isSoftDefault() ? "exec" : "document-print")));
             item->setText(pair.count() > 1 ? pair[1] : i18n("(Default)"));
             m_view->addItem(item);
 		}

@@ -72,13 +72,13 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       case Back:
         sLabel = i18nc( "go back", "&Back");
         if ( QApplication::isRightToLeft() )
-          iconName = "forward";
+          iconName = "go-next";
         break;
 
       case Forward:
         sLabel = i18nc( "go forward", "&Forward" );
         if ( QApplication::isRightToLeft() )
-          iconName = "back";
+          iconName = "go-previous";
         break;
 
       case Home:
@@ -109,10 +109,10 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
 
     if ( QApplication::isRightToLeft() ) {
       if ( id == Prior )
-        iconName = "next";
+        iconName = "find-next";
 
       if ( id == Next )
-        iconName = "previous";
+        iconName = "find-previous";
     }
 
     QIcon icon = iconName.isEmpty() ? KIcon() : KIcon(iconName);
@@ -449,7 +449,7 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
 {
   KToggleAction *ret = new KToggleAction(i18n( "Show &Menubar" ), parent);
   ret->setObjectName(name(ShowMenubar));
-  ret->setIcon( KIcon( "showmenu" ) );
+  ret->setIcon( KIcon( "show-menu" ) );
 
   if ( recvr && slot )
     QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );

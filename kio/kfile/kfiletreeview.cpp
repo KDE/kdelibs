@@ -77,7 +77,7 @@ KFileTreeView::KFileTreeView( QWidget *parent )
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 
-    m_openFolderPixmap = DesktopIcon( "folder_open",K3Icon::SizeSmall,K3Icon::ActiveState );
+    m_openFolderPixmap = DesktopIcon( "folder-open",K3Icon::SizeSmall,K3Icon::ActiveState );
 }
 
 KFileTreeView::~KFileTreeView()

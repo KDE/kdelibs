@@ -87,7 +87,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 		Q3ListViewItem	*root = new Q3ListViewItem(m_view, entry->name), *item = 0;
 		root->setSelectable(false);
 		root->setOpen(true);
-		root->setPixmap(0, SmallIcon("fileprint"));
+		root->setPixmap(0, SmallIcon("document-print"));
 		for (QMap<QString,Field>::ConstIterator it=m_fields.begin(); it!=m_fields.end(); ++it)
 			item = new Q3ListViewItem(root, item, (*it).toString(), it.key());
 	}

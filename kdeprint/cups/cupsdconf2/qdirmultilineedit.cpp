@@ -33,10 +33,10 @@ QDirMultiLineEdit::QDirMultiLineEdit(QWidget *parent)
 	connect(m_view, SIGNAL(itemSelectionChanged()), SLOT(slotSelected()));
 
 	m_add = new QPushButton(this);
-	m_add->setIcon(SmallIcon("folder_new"));
+	m_add->setIcon(SmallIcon("folder-new"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddClicked()));
 	m_remove = new QPushButton(this);
-	m_remove->setIcon(SmallIcon("editdelete"));
+	m_remove->setIcon(SmallIcon("edit-delete"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveClicked()));
 	m_remove->setEnabled(false);
 

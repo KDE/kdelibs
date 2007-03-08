@@ -36,7 +36,7 @@ IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
   setModal( true );
   setCaption( i18n("IPP Report") );
   setButtons( Close | User1 );
-  setButtonGuiItem( User1, KGuiItem(i18n("&Print"), "fileprint" ) );
+  setButtonGuiItem( User1, KGuiItem(i18n("&Print"), "document-print" ) );
   setDefaultButton( Close );
   showButtonSeparator( false );
 
@@ -45,7 +45,7 @@ IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
 	setMainWidget(m_edit);
 	resize(540, 500);
 	setFocusProxy(m_edit);
-	setButtonGuiItem(User1, KGuiItem(i18n("&Print"),"fileprint"));
+	setButtonGuiItem(User1, KGuiItem(i18n("&Print"),"document-print"));
 	connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
 

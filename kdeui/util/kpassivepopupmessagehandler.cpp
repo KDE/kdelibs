@@ -42,15 +42,15 @@ void KPassivePopupMessageHandler::showPassivePopup(KMessage::MessageType message
     {
         case KMessage::Information:
         default:
-            iconName = QLatin1String("messagebox_info");
+            iconName = QLatin1String("dialog-information");
             break;
         case KMessage::Sorry:
         case KMessage::Warning:
-            iconName = QLatin1String("messagebox_warning");
+            iconName = QLatin1String("dialog-warning");
             break;
         case KMessage::Error:
         case KMessage::Fatal:
-            iconName = QLatin1String("messagebox_critical");
+            iconName = QLatin1String("dialog-error");
             break;
     }
 

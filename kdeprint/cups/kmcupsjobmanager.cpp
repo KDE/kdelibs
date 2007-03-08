@@ -289,10 +289,10 @@ QList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
 	list <<  (act = new PluginAction(0, i18n("&Job IPP Report"), "kdeprint_report", 0, this));
 	coll->addAction( "plugin_ipp", act );
 	act->setActionGroup(KMFactory::self()->manager()->pluginGroup());
-	list << (act = new PluginAction(1, i18n("&Increase Priority"), "up", 0, this));
+	list << (act = new PluginAction(1, i18n("&Increase Priority"), "go-up", 0, this));
 	coll->addAction( "plugin_prioup", act );
 	act->setActionGroup(KMFactory::self()->manager()->pluginGroup());
-	list << (act = new PluginAction(2, i18n("&Decrease Priority"), "down", 0, this));
+	list << (act = new PluginAction(2, i18n("&Decrease Priority"), "go-down", 0, this));
 	coll->addAction( "plugin_priodown", act );
 	act->setActionGroup(KMFactory::self()->manager()->pluginGroup());
 	list << (act = new PluginAction(3, i18n("&Edit Attributes..."), "edit", 0, this));

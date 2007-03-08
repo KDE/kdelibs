@@ -46,7 +46,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	connect(m_cmd, SIGNAL(activated(int)), SLOT(slotCommandSelected(int)));
 	QPushButton	*m_add = new KPushButton(this);
 	QPushButton	*m_edit = new KPushButton(this);
-	m_add->setIcon(SmallIcon("filenew"));
+	m_add->setIcon(SmallIcon("document-new"));
 	m_edit->setIcon(SmallIcon("configure"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddCommand()));
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
@@ -54,7 +54,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	m_edit->setToolTip( i18n("Edit command"));
 	m_shortinfo = new QLabel(this);
 	m_helpbtn = new KPushButton( this );
-	m_helpbtn->setIcon( KIcon( "help" ) );
+	m_helpbtn->setIcon( KIcon( "help-contents" ) );
 	connect( m_helpbtn, SIGNAL( clicked() ), SLOT( slotHelpCommand() ) );
 	m_helpbtn->setToolTip( i18n( "Information" ) );
         m_helpbtn->setEnabled( false );
@@ -70,7 +70,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	if (canBeNull)
 	{
 		m_line = new QLineEdit(this);
-		m_browse = new KPushButton(KGuiItem(i18n("&Browse..."), "fileopen"), this);
+		m_browse = new KPushButton(KGuiItem(i18n("&Browse..."), "document-open"), this);
 		m_usefilter = new QCheckBox(i18n("Use co&mmand:"), this);
 		connect(m_browse, SIGNAL(clicked()), SLOT(slotBrowse()));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_line, SLOT(setDisabled(bool)));

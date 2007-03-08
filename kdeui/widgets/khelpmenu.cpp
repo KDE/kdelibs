@@ -141,14 +141,14 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      d->mHandBookAction = d->mMenu->addAction( KIcon("contents"),
+      d->mHandBookAction = d->mMenu->addAction( KIcon("help-contents"),
                      i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStandardShortcut::shortcut(KStandardShortcut::Help).primary());
       need_separator = true;
     }
 
     if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-      d->mWhatsThisAction = d->mMenu->addAction( KIcon("contexthelp"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
+      d->mWhatsThisAction = d->mMenu->addAction( KIcon("help-whatsthis"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
       need_separator = true;
     }
 

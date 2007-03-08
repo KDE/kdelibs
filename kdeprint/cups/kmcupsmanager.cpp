@@ -807,13 +807,13 @@ void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
 	KAction	*act = new KAction(i18n("&Export Driver..."), this);
 	coll->addAction( "plugin_export_driver", act );
-	act->setIcon( KIcon( "kdeprint_uploadsmb" ) );
+	act->setIcon( KIcon( "kdeprint-uploadsmb" ) );
 	act->setActionGroup(pluginGroup());
 	connect( act, SIGNAL( triggered( bool ) ), this, SLOT(exportDriver()) );
 
 	act = new KAction(i18n("&Printer IPP Report"), this);
 	coll->addAction( "plugin_printer_ipp_report", act );
-	act->setIcon( KIcon( "kdeprint_report" ) );
+	act->setIcon( KIcon( "kdeprint-report" ) );
 	act->setActionGroup(pluginGroup());
 	connect( act, SIGNAL( triggered( bool ) ), this, SLOT(printerIppReport()) );
 }

@@ -79,10 +79,10 @@ KActionSelector::KActionSelector( QWidget *parent )
   d = new KActionSelectorPrivate(this);
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
-  d->addIcon = QApplication::isRightToLeft()? "back" : "forward";
-  d->removeIcon = QApplication::isRightToLeft()? "forward" : "back";
-  d->upIcon = "up";
-  d->downIcon = "down";
+  d->addIcon = QApplication::isRightToLeft()? "go-previous" : "go-next";
+  d->removeIcon = QApplication::isRightToLeft()? "go-next" : "go-previous";
+  d->upIcon = "go-up";
+  d->downIcon = "go-down";
   d->availableInsertionPolicy = Sorted;
   d->selectedInsertionPolicy = BelowCurrent;
   d->showUpDownButtons = true;

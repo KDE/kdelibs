@@ -40,8 +40,8 @@ KMWSmb::KMWSmb(QWidget *parent)
 	m_view = new SmbView(this );
         m_view->setObjectName("SmbView");
 	m_loginlabel = new QLabel( this );
-	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "viewmag"), this);
-	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "stop"), this);
+	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "zoom-original"), this);
+	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "process-stop"), this);
 	m_abort->setEnabled(false);
 	QLabel		*m_worklabel = new QLabel(i18n("Workgroup:"), this);
 	QLabel		*m_serverlabel = new QLabel(i18n("Server:"), this);

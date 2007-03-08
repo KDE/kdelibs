@@ -55,7 +55,7 @@ Button::Button(QWidget* parent, const char* name)
 
 void Button::init()
 {
-    setIcon(KIcon("knewstuff"));
+    setIcon(KIcon("get-hot-new-stuff"));
     connect(this, SIGNAL(clicked()), SLOT(showDialog()));
 }
 

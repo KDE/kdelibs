@@ -52,7 +52,7 @@ KMPropGeneral::KMPropGeneral(QWidget *parent)
 	main_->addWidget(m_location,1,1);
 	main_->addWidget(m_description,2,1);
 
-	m_pixmap = "contents";
+	m_pixmap = "help-contents";
 	m_title = i18n("General");
 	m_header = i18n("General Settings");
 }

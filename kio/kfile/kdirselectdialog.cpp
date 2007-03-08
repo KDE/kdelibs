@@ -99,7 +99,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 {
     setCaption( i18n("Select Folder") );
     setButtons( Ok | Cancel | User1 );
-    setButtonGuiItem( User1, KGuiItem( i18n("New Folder..."), "folder_new" ) );
+    setButtonGuiItem( User1, KGuiItem( i18n("New Folder..."), "folder-new" ) );
     showButtonSeparator(false);
     setDefaultButton(Ok);
     d->branch = 0L;
@@ -138,7 +138,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     m_contextMenu = new QMenu( this );
     KAction* newFolder = new KAction( i18n("New Folder..."), this);
     d->actions->addAction(newFolder->objectName(), newFolder);
-    newFolder->setIcon( KIcon( "folder_new" ) );
+    newFolder->setIcon( KIcon( "folder-new" ) );
     connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotMkdir() ) );
     m_contextMenu->addAction( newFolder );
     m_contextMenu->addSeparator();

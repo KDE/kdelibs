@@ -30,7 +30,7 @@ QDirLineEdit::QDirLineEdit(bool file, QWidget *parent)
 {
 	edit_ = new QLineEdit(this);
 	button_ = new KPushButton(this);
-	button_->setIcon(SmallIcon("fileopen"));
+	button_->setIcon(SmallIcon("document-open"));
 	connect(button_,SIGNAL(clicked()),SLOT(buttonClicked()));
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this);

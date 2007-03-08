@@ -53,7 +53,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent)
 	QLabel	*l2 = new QLabel(i18n("<b>Model:</b>"), this);
 	QLabel	*l3 = new QLabel(i18n("<b>Description:</b>"), this);
 
-	m_test = new KPushButton(KGuiItem(i18n("&Test"), "kdeprint_testprinter"), this);
+	m_test = new KPushButton(KGuiItem(i18n("&Test"), "kdeprint-testprinter"), this);
 	m_settings = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
 
 	QLabel	*l0 = new QLabel(this);

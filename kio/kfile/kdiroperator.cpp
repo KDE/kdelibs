@@ -529,14 +529,14 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
                 i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" ,
                   files.first() ),
                                                       i18n("Trash File"),
-                                                      KGuiItem(i18nc("to trash", "&Trash"),"edittrash"), "AskForTrash" );
+                                                      KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"), "AskForTrash" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18np("translators: not called for n == 1", "Do you really want to trash these %1 items?", items.count() ),
                                                     files,
                                                     i18n("Trash Files"),
-                                                    KGuiItem(i18nc("to trash", "&Trash"),"edittrash"), "AskForTrash" );
+                                                    KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"), "AskForTrash" );
         doIt = (ret == KMessageBox::Continue);
     }
 
@@ -1281,18 +1281,18 @@ void KDirOperator::setupActions()
 
     mkdirAction = new KAction( i18n("New Folder..."), this );
     myActionCollection->addAction( "mkdir", mkdirAction );
-    mkdirAction->setIcon( KIcon( QLatin1String("folder_new") ) );
+    mkdirAction->setIcon( KIcon( QLatin1String("folder-new") ) );
     connect( mkdirAction, SIGNAL( triggered( bool ) ), this, SLOT( mkdir() ) );
 
     KAction* trash = new KAction( i18n( "Move to Trash" ), this );
     myActionCollection->addAction( "trash", trash );
-    trash->setIcon( KIcon( "edittrash" ) );
+    trash->setIcon( KIcon( "edit-trash" ) );
     trash->setShortcuts( KShortcut(Qt::Key_Delete) );
     connect( trash, SIGNAL( triggered(bool) ), SLOT( trashSelected() ) );
 
     KAction* action = new KAction( i18n( "Delete" ), this );
     myActionCollection->addAction( "delete", action );
-    action->setIcon( KIcon( "editdelete" ) );
+    action->setIcon( KIcon( "edit-delete" ) );
     action->setShortcuts( KShortcut(Qt::SHIFT+Qt::Key_Delete) );
     connect( action, SIGNAL( triggered( bool ) ), this, SLOT( deleteSelected() ) );
 
@@ -1336,12 +1336,12 @@ void KDirOperator::setupActions()
 
     shortAction = new KAction(i18n("Short View"), this );
     myActionCollection->addAction( "short view",  shortAction );
-    shortAction->setIcon( KIcon( QLatin1String("view_multicolumn") ) );
+    shortAction->setIcon( KIcon( QLatin1String("fileview-multicolumn") ) );
     connect( shortAction, SIGNAL( activated() ), SLOT( slotSimpleView() ));
 
     detailedAction = new KAction( i18n("Detailed View"), this );
     myActionCollection->addAction( "detailed view", detailedAction );
-    detailedAction->setIcon( KIcon( QLatin1String("view_detailed") ) );
+    detailedAction->setIcon( KIcon( QLatin1String("fileview-detailed") ) );
     connect( detailedAction, SIGNAL( activated() ), SLOT( slotDetailedView() ));
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), this );
@@ -1354,7 +1354,7 @@ void KDirOperator::setupActions()
 
     KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), this );
     myActionCollection->addAction( "preview", previewAction );
-    previewAction->setIcon( KIcon( "thumbnail" ) );
+    previewAction->setIcon( KIcon( "thumbnail-show" ) );
     previewAction->setCheckedState(KGuiItem(i18n("Hide Preview")));
     connect( previewAction, SIGNAL( toggled( bool )),
              SLOT( togglePreview( bool )));

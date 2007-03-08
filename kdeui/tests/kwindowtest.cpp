@@ -107,12 +107,12 @@ testWindow::testWindow (QWidget *parent)
 
 
     // First four  buttons
-    fileNewAction = new KAction(KIcon("filenew"), "Create.. (toggles upper button)", this);
+    fileNewAction = new KAction(KIcon("document-new"), "Create.. (toggles upper button)", this);
     actionCollection()->addAction("filenew", fileNewAction);
     fileNewAction->setCheckable(true);
     connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
 
-    KAction* fileOpenAction = new KAction(KIcon("fileopen"), "Open", this);
+    KAction* fileOpenAction = new KAction(KIcon("document-open"), "Open", this);
     actionCollection()->addAction("fileopen", fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
@@ -121,7 +121,7 @@ testWindow::testWindow (QWidget *parent)
     fileFloppyAction->setDelayed(true);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
-    KAction* filePrintAction = new KAction(KIcon("fileprint"), "Print (enables/disables open)", this);
+    KAction* filePrintAction = new KAction(KIcon("document-print"), "Print (enables/disables open)", this);
     actionCollection()->addAction("fileprint", filePrintAction);
     connect(filePrintAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
@@ -141,17 +141,17 @@ testWindow::testWindow (QWidget *parent)
 //    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
-    exitAction = new KAction(KIcon( "exit" ), "Exit", this);
+    exitAction = new KAction(KIcon( "application-exit" ), "Exit", this);
     actionCollection()->addAction("exit", exitAction);
     connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT( quit() ));
 
     // Another toolbar
 
-    KAction* fileNewAction2 = new KAction(KIcon( "filenew" ), "Create new file2 (Toggle)", this);
+    KAction* fileNewAction2 = new KAction(KIcon( "document-new" ), "Create new file2 (Toggle)", this);
     actionCollection()->addAction("filenew2", fileNewAction2);
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
-    KAction* fileOpenAction2 = new KAction(KIcon( "fileopen" ), "Open (starts progres in sb)", this);
+    KAction* fileOpenAction2 = new KAction(KIcon( "document-open" ), "Open (starts progres in sb)", this);
     actionCollection()->addAction("fileopen2", fileOpenAction2);
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
@@ -160,7 +160,7 @@ testWindow::testWindow (QWidget *parent)
     actionCollection()->addAction("filefloppy2", fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
-    KAction* filePrintAction2 = new KAction(KIcon( "fileprint" ), "Print (pops menu)", this);
+    KAction* filePrintAction2 = new KAction(KIcon( "document-print" ), "Print (pops menu)", this);
     actionCollection()->addAction("fileprint2", filePrintAction2);
     filePrintAction2->setMenu(itemsMenu);
 
@@ -169,11 +169,11 @@ testWindow::testWindow (QWidget *parent)
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
 
-    KToggleAction *radioButton1 = new KToggleAction(KIcon( "filenew" ), "Radiobutton1", this);
+    KToggleAction *radioButton1 = new KToggleAction(KIcon( "document-new" ), "Radiobutton1", this);
     actionCollection()->addAction("radioButton1", radioButton1);
     radioButton1->setActionGroup(radioGroup);
 
-    KToggleAction *radioButton2 = new KToggleAction(KIcon( "fileopen" ), "Radiobutton2", this);
+    KToggleAction *radioButton2 = new KToggleAction(KIcon( "document-open" ), "Radiobutton2", this);
     actionCollection()->addAction("radioButton2", radioButton2);
     radioButton2->setActionGroup(radioGroup);
 
@@ -181,7 +181,7 @@ testWindow::testWindow (QWidget *parent)
     actionCollection()->addAction("radioButton3", radioButton3);
     radioButton3->setActionGroup(radioGroup);
 
-    KToggleAction *radioButton4 = new KToggleAction(KIcon( "fileprint" ), "Radiobutton4", this);
+    KToggleAction *radioButton4 = new KToggleAction(KIcon( "document-print" ), "Radiobutton4", this);
     actionCollection()->addAction("radioButton4", radioButton4);
     radioButton4->setActionGroup(radioGroup);
 

@@ -101,12 +101,12 @@ ScriptManagerPropertiesEditor::ScriptManagerPropertiesEditor(Action* action, QWi
     btnwidget->setLayout(btnlayout);
     layout->addWidget(btnwidget);
 
-    KPushButton* addbtn = new KPushButton(KIcon("add"), i18n("Add"), btnwidget);
+    KPushButton* addbtn = new KPushButton(KIcon("list-add"), i18n("Add"), btnwidget);
     addbtn->setToolTip( i18n("Add new property") );
     btnlayout->addWidget(addbtn);
     connect(addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
 
-    d->rmbtn = new KPushButton(KIcon("remove"), i18n("Remove"), btnwidget);
+    d->rmbtn = new KPushButton(KIcon("list-remove"), i18n("Remove"), btnwidget);
     d->rmbtn->setToolTip( i18n("Remove selected property") );
     btnlayout->addWidget(d->rmbtn);
     connect(d->rmbtn, SIGNAL(clicked()), this, SLOT(slotRemove()) );

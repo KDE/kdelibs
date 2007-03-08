@@ -61,13 +61,13 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         return QPixmap();
         break;
     case QMessageBox::Information:
-        icon_name = "messagebox_info";
+        icon_name = "dialog-information";
         break;
     case QMessageBox::Warning:
-        icon_name = "messagebox_warning";
+        icon_name = "dialog-warning";
         break;
     case QMessageBox::Critical:
-        icon_name = "messagebox_critical";
+        icon_name = "dialog-error";
         break;
     default:
         break;

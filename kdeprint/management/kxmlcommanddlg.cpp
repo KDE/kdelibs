@@ -88,17 +88,17 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_view->header()->hide();
 	m_view->setSorting(-1);
 	m_apply = new QToolButton(this);
-	m_apply->setIcon( QApplication::isRightToLeft()? KIcon( "forward" ) : KIcon("back"));
+	m_apply->setIcon( QApplication::isRightToLeft()? KIcon( "go-next" ) : KIcon("go-previous"));
 	m_addgrp = new QToolButton(this);
 	m_addgrp->setIcon(KIcon("folder"));
 	m_addopt = new QToolButton(this);
 	m_addopt->setIcon(KIcon("document"));
 	m_delopt = new QToolButton(this);
-	m_delopt->setIcon(KIcon("editdelete"));
+	m_delopt->setIcon(KIcon("edit-delete"));
 	m_up = new QToolButton(this);
-	m_up->setIcon(KIcon("up"));
+	m_up->setIcon(KIcon("go-up"));
 	m_down = new QToolButton(this);
-	m_down->setIcon(KIcon("down"));
+	m_down->setIcon(KIcon("go-down"));
 	m_dummy = new QWidget(this);
 	m_desc = new QLineEdit(m_dummy);
 	m_name = new QLineEdit(m_dummy);
@@ -144,9 +144,9 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_values->setSorting(-1);
 	m_values->setMaximumHeight(110);
 	m_addval = new QToolButton(w2);
-	m_addval->setIcon(KIcon("editcopy"));
+	m_addval->setIcon(KIcon("edit-copy"));
 	m_delval = new QToolButton(w2);
-	m_delval->setIcon(KIcon("editdelete"));
+	m_delval->setIcon(KIcon("edit-delete"));
 	m_addval->setToolTip(i18n("Add value"));
 	m_delval->setToolTip(i18n("Delete value"));
 
@@ -393,7 +393,7 @@ void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 	Q3ListViewItem	*root = new Q3ListViewItem(m_view, xmlcmd->name(), xmlcmd->name());
 	DrMain	*driver = xmlcmd->driver();
 
-	root->setPixmap(0, SmallIcon("fileprint"));
+	root->setPixmap(0, SmallIcon("document-print"));
 	root->setOpen(true);
 	if (driver)
 	{
@@ -888,17 +888,17 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_requirements->addColumn("");
 	m_requirements->header()->hide();
 	m_addreq = new QToolButton(m_gb2);
-	m_addreq->setIcon(KIcon("filenew"));
+	m_addreq->setIcon(KIcon("document-new"));
 	m_removereq = new QToolButton(m_gb2);
-	m_removereq->setIcon(KIcon("editdelete"));
+	m_removereq->setIcon(KIcon("edit-delete"));
 	QPushButton	*m_edit = new KPushButton(KGuiItem(i18n("&Edit Command..."), "edit"), topmain);
 	m_mimetype = new QComboBox(dummy);
 	m_availablemime = new KListWidget(m_gb1);
 	m_selectedmime = new KListWidget(m_gb1);
 	m_addmime = new QToolButton(m_gb1);
-	m_addmime->setIcon(QApplication::isRightToLeft()? KIcon("forward") : KIcon("back"));
+	m_addmime->setIcon(QApplication::isRightToLeft()? KIcon("go-next") : KIcon("go-previous"));
 	m_removemime = new QToolButton(m_gb1);
-	m_removemime->setIcon(QApplication::isRightToLeft()? KIcon("back" ) : KIcon("forward"));
+	m_removemime->setIcon(QApplication::isRightToLeft()? KIcon("go-previous" ) : KIcon("go-next"));
 	m_gb2->setMinimumWidth(380);
 	m_gb1->setMinimumHeight(180);
 	m_requirements->setMaximumHeight(80);

@@ -77,7 +77,7 @@ TestKHTML::TestKHTML()
     connect(m_goButton, SIGNAL(clicked()), this, SLOT(openUrl()));
 
     m_reloadButton = new QToolButton;
-    m_reloadButton->setIcon(KIcon("reload"));
+    m_reloadButton->setIcon(KIcon("view-refresh"));
     connect(m_reloadButton, SIGNAL(clicked()), this, SLOT(reload()));
 
     QHBoxLayout *topLayout = new QHBoxLayout;
@@ -166,7 +166,7 @@ void TestKHTML::setupActions()
     m_part->actionCollection()->addAction( "quit", quitAction );
     connect( quitAction, SIGNAL( triggered( bool ) ), kapp, SLOT( quit() ) );
 
-    KAction *action = new KAction(KIcon("reload"), "Reload", this );
+    KAction *action = new KAction(KIcon("view-refresh"), "Reload", this );
     m_part->actionCollection()->addAction( "reload", action );
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
@@ -176,7 +176,7 @@ void TestKHTML::setupActions()
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
 
-    KToggleAction *ta = new KToggleAction( KIcon("editclear"), "Navigable", this );
+    KToggleAction *ta = new KToggleAction( KIcon("edit-clear"), "Navigable", this );
     actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isCaretMode());

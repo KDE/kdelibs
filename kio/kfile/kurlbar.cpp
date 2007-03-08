@@ -696,11 +696,11 @@ void KUrlBar::slotContextMenuRequested( const QPoint& pos )
         popup->addSeparator();
     }
 
-    QAction* AddItem = popup->addAction(KIcon("filenew"), i18n("&Add Entry..."));
+    QAction* AddItem = popup->addAction(KIcon("document-new"), i18n("&Add Entry..."));
 
     QAction* RemoveItem = 0L;
     if (item != 0L && item->isPersistent())
-        RemoveItem = popup->addAction( KIcon("editdelete"), i18n("&Remove Entry"));
+        RemoveItem = popup->addAction( KIcon("edit-delete"), i18n("&Remove Entry"));
 
     QAction* result = popup->exec( m_listBox->mapToGlobal(pos) );
     if (result == IconSize) {

@@ -116,7 +116,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
   setFaceType( List );
   setCaption(i18n("CUPS Server Configuration"));
   setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KGuiItem(i18n("Short Help"), "help") );
+  setButtonGuiItem( User1, KGuiItem(i18n("Short Help"), "help-contents") );
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );

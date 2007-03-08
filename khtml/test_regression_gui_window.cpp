@@ -1096,10 +1096,10 @@ void TestRegressionWindow::treeWidgetContextMenuRequested(const QPoint &pos)
 		// Build & show popup menu...
 		QMenu menu(m_ui.treeWidget);
 
-		menu.addAction(SmallIcon("player_play"), i18n("Run test..."), this, SLOT(runSingleTest()));
+		menu.addAction(SmallIcon("media-playback-start"), i18n("Run test..."), this, SLOT(runSingleTest()));
 		menu.addSeparator();
-		menu.addAction(SmallIcon("add"), i18n("Add to ignores..."), this, SLOT(addToIgnores()));
-		menu.addAction(SmallIcon("button_cancel"), i18n("Remove from ignores..."), this, SLOT(removeFromIgnores()));
+		menu.addAction(SmallIcon("list-add"), i18n("Add to ignores..."), this, SLOT(addToIgnores()));
+		menu.addAction(SmallIcon("dialog-cancel"), i18n("Remove from ignores..."), this, SLOT(removeFromIgnores()));
 
 		if(!menu.exec(m_ui.treeWidget->mapToGlobal(pos)))
 			m_activeTreeItem = 0; // Needs reset...

@@ -44,7 +44,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
     setObjectName( "ConfigTimer" );
 	setPageName(i18n("General"));
 	setPageHeader(i18n("General Settings"));
-	setPagePixmap("fileprint");
+	setPagePixmap("document-print");
 
 	QGroupBox	*m_timerbox = new QGroupBox(i18n("Refresh Interval"), this);
 	m_timerbox->setLayout( new QVBoxLayout );
@@ -62,7 +62,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_defaulttestpage->setObjectName(QLatin1String("TestPageCheck"));
 	m_testpage = new KUrlRequester(m_testpagebox);
 	m_testpage->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
-	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
+	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "file-find"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),this,SLOT(setEnabledPreviewButton(bool)));
 	connect(m_preview,SIGNAL(clicked()),SLOT(slotTestPagePreview()));

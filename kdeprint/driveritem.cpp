@@ -27,7 +27,7 @@
 DriverItem::DriverItem(QTreeWidget *parent, DrBase *item)
 : QTreeWidgetItem(parent), m_item(item), m_conflict(false)
 {
-	setIcon(0,SmallIcon("fileprint"));
+	setIcon(0,SmallIcon("document-print"));
 	updateText();
 }
 

@@ -25,11 +25,11 @@ Shell::Shell()
     KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "ghostviewtest_shell.rc" );
 
-    KAction * paOpen = new KAction( KIcon("fileopen"), "&Open file", this );
+    KAction * paOpen = new KAction( KIcon("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    KAction * paQuit = new KAction( KIcon("exit"), "&Quit", this );
+    KAction * paQuit = new KAction( KIcon("application-exit"), "&Quit", this );
     actionCollection()->addAction( "file_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 

@@ -49,7 +49,7 @@ VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
 void VideoWidgetPrivate::init()
 {
     Q_Q(VideoWidget);
-    fullScreenAction = new QAction(SmallIcon("window_fullscreen"), i18n("F&ull Screen Mode"), q);
+    fullScreenAction = new QAction(SmallIcon("view-fullscreen"), i18n("F&ull Screen Mode"), q);
     fullScreenAction->setShortcut(Qt::Key_F);
     fullScreenAction->setCheckable(true);
     fullScreenAction->setChecked(false);

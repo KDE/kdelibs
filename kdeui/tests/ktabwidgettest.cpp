@@ -141,7 +141,7 @@ void Test::toggleLeftButton(bool state)
     if (!mLeftWidget) {
       mLeftWidget = new QToolButton( mWidget );
       connect( mLeftWidget, SIGNAL( clicked() ), SLOT( addTab() ) );
-      mLeftWidget->setIcon( SmallIcon( "tab_new" ) );
+      mLeftWidget->setIcon( SmallIcon( "tab-new" ) );
       mLeftWidget->setText("New");
       mLeftWidget->setToolTip("New");
       mLeftWidget->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -161,11 +161,11 @@ void Test::toggleLeftPopup(bool state)
   if (state) {
     if (!mLeftPopup) {
       mLeftPopup = new QMenu(this);
-      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Empty Tab");
-      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Empty Tab After First");
+      mLeftPopup->addAction(SmallIcon( "tab-new" ), "Empty Tab");
+      mLeftPopup->addAction(SmallIcon( "tab-new" ), "Empty Tab After First");
       mLeftPopup->addSeparator();
-      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Button Tab");
-      mLeftPopup->addAction(SmallIcon( "tab_new" ), "Label Tab");
+      mLeftPopup->addAction(SmallIcon( "tab-new" ), "Button Tab");
+      mLeftPopup->addAction(SmallIcon( "tab-new" ), "Label Tab");
       connect(mLeftPopup, SIGNAL(triggered(QAction*)), SLOT(leftPopupActivated(QAction*)));
     }
     mLeftWidget->setMenu(mLeftPopup);
@@ -194,7 +194,7 @@ if (state) {
     if ( !mRightWidget) {
       mRightWidget = new QToolButton( mWidget );
       QObject::connect( mRightWidget, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
-      mRightWidget->setIcon( SmallIcon( "tab_remove" ) );
+      mRightWidget->setIcon( SmallIcon( "tab-remove" ) );
       mRightWidget->setText("Close");
       mRightWidget->setToolTip("Close");
       mRightWidget->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -214,10 +214,10 @@ void Test::toggleRightPopup(bool state)
   if (state) {
     if (!mRightPopup) {
       mRightPopup = new QMenu(this);
-      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Current Tab");
+      mRightPopup->addAction(SmallIcon( "tab-remove" ), "Current Tab");
       mRightPopup->addSeparator();
-      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Most Left Tab");
-      mRightPopup->addAction(SmallIcon( "tab_remove" ), "Most Right Tab");
+      mRightPopup->addAction(SmallIcon( "tab-remove" ), "Most Left Tab");
+      mRightPopup->addAction(SmallIcon( "tab-remove" ), "Most Right Tab");
       connect(mRightPopup, SIGNAL(triggered(QAction*)), SLOT(rightPopupActivated(QAction*)));
     }
     mRightWidget->setMenu(mRightPopup);
@@ -308,8 +308,8 @@ void Test::tabbarContextMenu(const QPoint &p)
       delete mTabbarContextPopup;
 
   mTabbarContextPopup = new QMenu(this);
-  mTabbarContextPopup->addAction(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button");
-  mTabbarContextPopup->addAction(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button");
+  mTabbarContextPopup->addAction(SmallIcon( "tab-new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button");
+  mTabbarContextPopup->addAction(SmallIcon( "tab-remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button");
   mTabbarContextPopup->addSeparator();
   mTabbarContextPopup->addAction(mWidget->tabPosition()==QTabWidget::North ? "Put Tabbar to Bottom" : "Put Tabbar to Top");
   connect(mTabbarContextPopup, SIGNAL(triggered(QAction*)), SLOT(tabbarContextMenuActivated(QAction*)));

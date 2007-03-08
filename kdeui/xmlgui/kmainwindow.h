@@ -644,7 +644,7 @@ public Q_SLOTS:
      *
      * \code
      * KIconLoader &loader = *KGlobal::iconLoader();
-     * QPixmap pixmap = loader.loadIcon( "help" );
+     * QPixmap pixmap = loader.loadIcon( "help-contents" );
      * toolBar(0)->insertButton( pixmap, 0, SIGNAL(clicked()),
      *   this, SLOT(appHelpActivated()), true, i18n("Help") );
      * \endcode

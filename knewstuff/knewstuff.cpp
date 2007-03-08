@@ -40,7 +40,7 @@ KAction* KNS::standardAction(const QString& what,
 {
   KAction *action = new KAction( i18n("Download New %1", what), parent );
   parent->addAction(name, action);
-  action->setIcon( KIcon( "knewstuff" ) );
+  action->setIcon( KIcon( "get-hot-new-stuff" ) );
   QObject::connect( action, SIGNAL( triggered( bool ) ), recvr, slot );
 
   return action;

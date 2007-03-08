@@ -30,9 +30,9 @@ EditList::EditList(QWidget *parent)
 	: QWidget(parent)
 {
 	list_ = new KListWidget(this);
-	addbtn_ = new KPushButton(KGuiItem(i18n("Add..."), "filenew"), this);
+	addbtn_ = new KPushButton(KGuiItem(i18n("Add..."), "document-new"), this);
 	editbtn_ = new KPushButton(KGuiItem(i18n("Edit..."), "edit"), this);
-	delbtn_ = new KPushButton(KGuiItem(i18n("Delete"), "editdelete"), this);
+	delbtn_ = new KPushButton(KGuiItem(i18n("Delete"), "edit-delete"), this);
 	defbtn_ = new KPushButton(KGuiItem(i18n("Default List"), "history"), this);
 
 	QGridLayout *m1 = new QGridLayout(this);

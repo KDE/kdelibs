@@ -90,8 +90,8 @@ void DefaultProgress::init()
 #ifdef Q_WS_X11 //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
   // Set a useful icon for this window!
   KWin::setIcons( winId(),
-          KIconLoader::global()->loadIcon( "filesave", K3Icon::NoGroup, 32 ),
-          KIconLoader::global()->loadIcon( "filesave", K3Icon::NoGroup, 16 ) );
+          KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 32 ),
+          KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 16 ) );
 #endif
 
   QVBoxLayout *topLayout = new QVBoxLayout( this);

@@ -36,7 +36,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent)
 {
 	setPageLabel(i18n("Network"));
 	setHeader(i18n("Network Settings"));
-	setPixmap("network");
+	setPixmap("network-wired");
 
 	keepalive_ = new QCheckBox(i18n("Keep alive"), this);
 	keepalivetimeout_ = new KIntNumInput(this);

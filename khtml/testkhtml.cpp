@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     e.setAttribute( "name", "print" );
     toolBar.insertBefore( e, toolBar.firstChild() );
 
-    KAction *action = new KAction(KIcon("reload"),  "Reload", doc );
+    KAction *action = new KAction(KIcon("view-refresh"),  "Reload", doc );
     doc->actionCollection()->addAction( "reload", action );
     QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT( reload() ));
     action->setShortcut(Qt::Key_F5);
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     doc->actionCollection()->addAction( "print", kprint );
     QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT( print() ));
     kprint->setEnabled(true);
-    KToggleAction *ta = new KToggleAction( KIcon("editclear"), "Navigable", doc );
+    KToggleAction *ta = new KToggleAction( KIcon("edit-clear"), "Navigable", doc );
     doc->actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isCaretMode());

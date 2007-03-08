@@ -56,7 +56,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     hb->addWidget( autoPreview );
     connect( autoPreview, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
-    previewButton = new KPushButton( KIcon("thumbnail"), i18n("&Preview"), this );
+    previewButton = new KPushButton( KIcon("thumbnail-show"), i18n("&Preview"), this );
     hb->addWidget( previewButton );
     connect( previewButton, SIGNAL(clicked()), SLOT(showPreview()) );
 
@@ -161,7 +161,7 @@ void KImageFilePreview::slotFailed( const KFileItem* item )
     if ( item->isDir() )
         imageLabel->clear();
     else if ( item->url() == currentURL ) // should always be the case
-        imageLabel->setPixmap( SmallIcon( "file_broken", K3Icon::SizeLarge,
+        imageLabel->setPixmap( SmallIcon( "file-broken", K3Icon::SizeLarge,
                                           K3Icon::DisabledState ));
 }
 

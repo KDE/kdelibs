@@ -138,13 +138,13 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     btnwidget->setLayout(btnlayout);
     mainlayout->addWidget(btnwidget);
 
-    d->runbtn = new KPushButton(KIcon("player_play"), i18n("Run"), btnwidget);
+    d->runbtn = new KPushButton(KIcon("media-playback-start"), i18n("Run"), btnwidget);
     d->runbtn->setToolTip( i18n("Execute the selected script.") );
     d->runbtn->setEnabled(false);
     btnlayout->addWidget(d->runbtn);
     connect(d->runbtn, SIGNAL(clicked()), this, SLOT(slotRun()) );
 
-    d->stopbtn = new KPushButton(KIcon("player_stop"), i18n("Stop"), btnwidget);
+    d->stopbtn = new KPushButton(KIcon("media-playback-stop"), i18n("Stop"), btnwidget);
     d->stopbtn->setToolTip( i18n("Stop execution of the selected script.") );
     d->stopbtn->setEnabled(false);
     btnlayout->addWidget(d->stopbtn);
@@ -160,13 +160,13 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     btnlayout->addWidget(d->editbtn);
     connect(d->editbtn, SIGNAL(clicked()), this, SLOT(slotEdit()) );
 
-    d->addbtn = new KPushButton(KIcon("add"), i18n("Add..."), btnwidget);
+    d->addbtn = new KPushButton(KIcon("list-add"), i18n("Add..."), btnwidget);
     d->addbtn->setToolTip( i18n("Add a new script.") );
     btnlayout->addWidget(d->addbtn);
     //d->addbtn->setEnabled(false);
     connect(d->addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
 
-    d->removebtn = new KPushButton(KIcon("remove"), i18n("Remove"), btnwidget);
+    d->removebtn = new KPushButton(KIcon("list-remove"), i18n("Remove"), btnwidget);
     d->removebtn->setToolTip( i18n("Remove selected script.") );
     btnlayout->addWidget(d->removebtn);
     d->removebtn->setEnabled(false);
@@ -177,7 +177,7 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     hr2->setFrameStyle(QFrame::HLine | QFrame::Sunken);
     btnlayout->addWidget(hr2, 0);
 
-    d->newstuffbtn = new KPushButton(KIcon("knewstuff"), i18n("Get New Scripts"), btnwidget);
+    d->newstuffbtn = new KPushButton(KIcon("get-hot-new-stuff"), i18n("Get New Scripts"), btnwidget);
     d->newstuffbtn->setToolTip( i18n("Get new scripts from the internet.") );
     btnlayout->addWidget(d->newstuffbtn);
     d->newstuffbtn->setEnabled(false);
