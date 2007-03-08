@@ -36,6 +36,7 @@ include_directories(
 
 set(kmetadata_LIB_SRCS
   variant.cpp
+  datetime.cpp
   resource.cpp
   resourcedata.cpp
   resourcemanager.cpp
@@ -62,6 +63,7 @@ set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )
 install(FILES
   variant.h
+  datetime.h
   resource.h
   resourcemanager.h
   ontology.h

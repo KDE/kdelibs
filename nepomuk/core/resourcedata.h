@@ -50,13 +50,15 @@ namespace Nepomuk {
 	  return m_ref;
 	}
 
-	enum Flags {
+	enum Flag {
+	  NoFlag = 0x0,
 	  Loaded = 0x1,   /*< The property has been loaded from the store and not been modified yet */
 	  Modified = 0x2, /*< The resource or property has locally been modified */
 	  Deleted = 0x4,  /*< The resource has actually been deleted in a sync operation */
 	  Removed = 0x8,  /*< The resource or property has been scheduled for removal */
 	  Syncing = 0x10  /*< The resource is currently being synced */
 	};
+	Q_DECLARE_FLAGS(Flags, Flag)
 
 	/**
 	 * Until the resource has not been synced or even loaded the actual URI is not known.
@@ -191,7 +193,7 @@ namespace Nepomuk {
 	 *
 	 * \sa determinePropertyUris
 	 */
-	QList<RDF::Statement> allStatements( int flags ) const;
+	QList<RDF::Statement> allStatements( Flags flagsSet, Flags flagsNotSet = 0 ) const;
 
 	/**
 	 * \return A list of all statements that have to be added to the store in a sync. This does not
@@ -234,7 +236,7 @@ namespace Nepomuk {
       private:
 	bool loadProperty( const QString& name, const Variant& val );
 
-	typedef QHash<QString, QPair<Variant, int> > PropertiesMap;
+	typedef QHash<QString, QPair<Variant, Flags> > PropertiesMap;
   
 	/**
 	 * map of all properties including a flag field
@@ -249,7 +251,7 @@ namespace Nepomuk {
 	QString m_uri;
 	QString m_type;
 
-	int m_flags;
+	Flags m_flags;
 
 	int m_ref;
 	bool m_initialized;
@@ -281,5 +283,7 @@ namespace Nepomuk {
       };
   }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Nepomuk::KMetaData::ResourceData::Flags)
 
 #endif

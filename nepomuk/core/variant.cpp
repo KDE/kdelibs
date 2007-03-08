@@ -14,6 +14,7 @@
 
 #include "variant.h"
 #include "resource.h"
+#include "datetime.h"
 
 #include <kdebug.h>
 
@@ -713,11 +714,11 @@ QString Nepomuk::KMetaData::Variant::toString() const
     return QString::number( toDouble(), 'e', 10 );
   // FIXME: use the correct data and time encoding of XML Schema
   else if( isDate() )
-    return toDate().toString( Qt::ISODate );
+    return DateTime::toString( toDate() );
   else if( isTime() )
-    return toTime().toString( Qt::ISODate );
+    return DateTime::toString( toTime() );
   else if( isDateTime() )
-    return toDateTime().toString( Qt::ISODate );
+    return DateTime::toString( toDateTime() );
   else if( isUrl() )
     return toUrl().toString();
   else if( isResource() ) {
@@ -948,11 +949,11 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Variant::fromString( const QStri
   case QVariant::String:
     return Variant( value );
   case QVariant::Date:
-    return Variant( QDate::fromString( value, Qt::ISODate /*, FIXME:proper time format */ ) );
+    return Variant( DateTime::fromDateString( value ) );
   case QVariant::Time:
-    return Variant( QTime::fromString( value, Qt::ISODate /*, FIXME:proper time format */ ) );
+    return Variant( DateTime::fromTimeString( value ) );
   case QVariant::DateTime:
-    return Variant( QDateTime::fromString( value, Qt::ISODate /*, FIXME: proper datetime format */ ) );
+    return Variant( DateTime::fromDateTimeString( value ) );
   case QVariant::Url:
     return Variant( QUrl( value ) );    
   default:

@@ -24,6 +24,12 @@
 namespace Nepomuk {
   namespace KMetaData {
     /**
+     * Set a custom default repository to use. It is not recommended to use this
+     * method in production code. It should only be used for testing purposes.
+     */
+    KMETADATA_EXPORT void setDefaultRepository( const QString& s );
+
+    /**
      * Used internally by Resource.
      * \return The URI of the RDF graph meta data is stored in.
      */

@@ -37,7 +37,7 @@ QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceDa
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QString& type_ )
   : m_kickoffUriOrId( uriOrId ),
     m_type( type_ ),
-    m_flags(0),
+    m_flags(NoFlag),
     m_ref(0),
     m_initialized( false ),
     m_proxyData(0)
@@ -150,10 +150,10 @@ void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Ne
   m_modificationMutex.lock();
 
   // reset the deleted flag
-  m_flags = 0;
+  m_flags = NoFlag;
 
   // mark the value as modified
-  m_properties[uri] = qMakePair<Variant, int>( value, ResourceData::Modified );
+  m_properties[uri] = qMakePair<Variant, Flags>( value, ResourceData::Modified );
 
   m_modificationMutex.unlock();
 }
@@ -194,7 +194,7 @@ void Nepomuk::KMetaData::ResourceData::revive()
 
   m_modificationMutex.lock();
 
-  m_flags = 0;
+  m_flags = NoFlag;
 
   m_modificationMutex.unlock();
 }
@@ -224,7 +224,7 @@ bool Nepomuk::KMetaData::ResourceData::removed() const
   if( m_proxyData )
     return m_proxyData->removed();
 
-  return (m_flags & Removed|Deleted);
+  return (m_flags & (Removed|Deleted));
 }
 
 
@@ -244,7 +244,7 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
 	      rr.contains( KMetaData::defaultGraph(), 
 			   Statement( Node(), 
 				      Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
-				      Node(kickoffUriOrId(), NodeLiteral) ) ) );
+				      KMetaData::valueToRDFNode(kickoffUriOrId()) ) ) );
 
     //
     // We have a URI -> just check for that
@@ -313,7 +313,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
       QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(), 
 					       Statement( Node(), 
 							  Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
-							  Node(kickoffUriOrId(), NodeLiteral) ) );
+							  KMetaData::valueToRDFNode(kickoffUriOrId()) ) );
 
       if( !sl.isEmpty() ) {
 	//
@@ -413,7 +413,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
     m_modificationMutex.lock();
 
     m_properties.clear();
-    m_flags = 0;
+    m_flags = NoFlag;
 
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
@@ -440,7 +440,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
 	  }
 	}
 	else {
-	  if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object.value ) ) ) {
+	  if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object ) ) ) {
 	    m_modificationMutex.unlock();
 	    return false;
 	  }
@@ -461,7 +461,7 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
 {
   PropertiesMap::iterator oldProp = m_properties.find( name );
   if( oldProp == m_properties.end() ) {
-    m_properties.insert( name, qMakePair<Variant, int>( val, Loaded ) );
+    m_properties.insert( name, qMakePair<Variant, Flags>( val, Loaded ) );
   }
   else if( val.type() != oldProp.value().first.simpleType() ) {
     ResourceManager::instance()->notifyError( m_uri, ERROR_INVALID_TYPE );
@@ -596,10 +596,10 @@ bool Nepomuk::KMetaData::ResourceData::save()
 }
 
 
-QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( int flags ) const
+QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( Flags flags, Flags flagsNot ) const
 {
   if( m_proxyData )
-    return m_proxyData->allStatements( flags );
+    return m_proxyData->allStatements( flags, flagsNot );
 
   kDebug(300004) << "(ResourceData::allStatements) for resource " << uri() << endl;
 
@@ -610,7 +610,8 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
   for( PropertiesMap::const_iterator it = m_properties.constBegin();
        it != m_properties.constEnd(); ++it ) {
 
-    if( it.value().second & flags ) {
+    if( it.value().second & flags &&
+	!(it.value().second & flagsNot) ) {
 
       kDebug(300004) << "(ResourceData::allStatements) selecting property " << it.key() << endl;
 
@@ -650,6 +651,10 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
     }
   }
 
+  kDebug(300004) << "(ResourceData::allStatements) selected statements: " << endl;
+  foreach( Statement s, statements )
+    kDebug(300004) << "   " << s << endl;
+
   return statements;
 }
 
@@ -659,12 +664,17 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
   if( m_proxyData )
     return m_proxyData->allStatementsToAdd();
 
-  QList<Statement> statements = allStatements( Modified|Loaded );
+  if( removed() ) {
+    kDebug(300004) << k_funcinfo << " resource " << uri() << " is removed." << endl;
+    return QList<Statement>();
+  }
+
+  QList<Statement> statements = allStatements( Modified|Loaded, Removed|Deleted );
 
   // always save the type
   // ====================
   statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
-
+  
   return statements;
 }
 

@@ -24,6 +24,7 @@
 static const QString s_xmlSchemaNs = "http://www.w3.org/2001/XMLSchema#";
 static QHash<QString, int> s_xmlSchemaTypes;
 static QHash<int, QString> s_variantSchemaTypeHash;
+static QString s_customRep;
 
 static void initXmlSchemaTypes()
 {
@@ -72,10 +73,19 @@ static QString getLocaleLang()
 }
 
 
+void Nepomuk::KMetaData::setDefaultRepository( const QString& s )
+{
+  s_customRep = s;
+}
+
+
 QString Nepomuk::KMetaData::defaultGraph()
 {
   static QString s = "main";
-  return s;
+  if( s_customRep.isEmpty() )
+    return s;
+  else
+    return s_customRep;
 }
 
 
@@ -88,9 +98,13 @@ QString Nepomuk::KMetaData::typePredicate()
 
 Nepomuk::RDF::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData::Variant& v )
 {
+  initXmlSchemaTypes();
+
+  Q_ASSERT( s_variantSchemaTypeHash.contains( v.simpleType() ) );
+
   Nepomuk::RDF::Node node;
   node.type = Nepomuk::RDF::NodeLiteral;
-  node.language = getLocaleLang();
+  //  node.language = getLocaleLang();
   node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
   node.value = v.toString();
   return node;
@@ -99,6 +113,10 @@ Nepomuk::RDF::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData:
 
 QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaData::Variant& v )
 {
+  initXmlSchemaTypes();
+
+  Q_ASSERT( s_variantSchemaTypeHash.contains( v.simpleType() ) );
+
   QList<Nepomuk::RDF::Node> nl;
 
   if( v.isList() ) {
@@ -106,7 +124,7 @@ QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::K
     for( QStringList::const_iterator it = vl.begin(); it != vl.end(); ++it ) {
       Nepomuk::RDF::Node node;
       node.type = Nepomuk::RDF::NodeLiteral;
-      node.language = getLocaleLang();
+      //      node.language = getLocaleLang();
       node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
       node.value = *it;
       nl.append( node );
@@ -124,7 +142,7 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Nepomuk
 {
   initXmlSchemaTypes();
 
-  QString dataType = node.dataTypeUri.mid( node.dataTypeUri.indexOf(QRegExp("[\\#\\:]")) + 1 );
+  QString dataType = node.dataTypeUri.mid( node.dataTypeUri.lastIndexOf(QRegExp("[\\#\\:]")) + 1 );
   int variantType = QVariant::String;
 
   if( s_xmlSchemaTypes.contains( dataType ) )
@@ -133,6 +151,7 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Nepomuk
     kDebug(300004) << "Unknown literal data type: " << dataType
 		   << " (URI: " << node.dataTypeUri << ")" << endl;
 
+  kDebug(300004) << k_funcinfo << " value: " << node.value << " with type " << QMetaType::typeName( variantType ) << endl;
   return Variant::fromString( node.value, variantType );
 }
 

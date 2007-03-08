@@ -240,11 +240,12 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
 	 rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
 
-      if( rdIt.value()->type() == type )
+      if( rdIt.value()->type() == type ) {
 	l.append( Resource( rdIt.key() ) );
+      }
     }
 
-    kDebug(300004) << "(ResourceManager::allResourcesOfType) added local resources: " << l.count() << endl;
+    kDebug(300004) << k_funcinfo << " added local resources: " << l.count() << endl;
 
     // check remote data
     RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
@@ -259,7 +260,7 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 	l.append( res );
     }
 
-    kDebug(300004) << "(ResourceManager::allResourcesOfType) added remote resources: " << l.count() << endl;
+    kDebug(300004) << k_funcinfo << " added remote resources: " << l.count() << endl;
   }
 
   return l;
