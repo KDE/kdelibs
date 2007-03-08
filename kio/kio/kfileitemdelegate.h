@@ -283,6 +283,7 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
     private:
         class Private;
         Private * const d; /// @internal
+        Q_DISABLE_COPY(KFileItemDelegate)
 };
 
 #endif // __KFILEITEMDELEGATE_H
