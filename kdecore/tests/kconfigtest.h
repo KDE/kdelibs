@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testEnums();
     void testInvalid();
     void testDelete();
+    void testRevertAllEntries();
     void initTestCase();
     void cleanupTestCase();
 

@@ -166,6 +166,28 @@ void KConfigTest::revertEntries()
   sc.sync();
 }
 
+void KConfigTest::testRevertAllEntries()
+{
+    // this tests the case were we revert (delete) all entries in a file,
+    // leaving a blank file
+    {
+        KConfig sc( "konfigtest2" );
+        KConfigGroup cg( &sc, "Hello" );
+        cg.writeEntry( "Test", "Correct" );
+    }
+
+    {
+        KConfig sc( "konfigtest2" );
+        KConfigGroup cg( &sc, "Hello" );
+        QCOMPARE( cg.readEntry( "Test", "Default" ), QString("Correct") );
+        cg.revertToDefault( "Test" );
+    }
+
+    KConfig sc( "konfigtest2" );
+    KConfigGroup cg( &sc, "Hello" );
+    QCOMPARE( cg.readEntry( "Test", "Default" ), QString("Default") );
+}
+
 void KConfigTest::testSimple()
 {
 //  kDebug() << k_funcinfo << endl;
