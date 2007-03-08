@@ -537,7 +537,7 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
 
     // Lighten the background color on hover, if we have one, and use a lighter version
     // of the highlight color otherwise.
-    if (option.state & QStyle::State_MouseOver)
+    if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
     {
         if (bg.style() == Qt::SolidPattern)
             bg = QBrush(bg.color().light());
@@ -693,7 +693,7 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
         }
 
         // Apply the configured hover effect
-        if (option.state & QStyle::State_MouseOver)
+        if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
         {
             KIconEffect *effect = KIconLoader::global()->iconEffect();
 
