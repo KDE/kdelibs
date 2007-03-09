@@ -5,6 +5,7 @@ MimeType=application/mbox
 Patterns=
 Comment=MBOX Mail Folder
 Comment[be]=Паштовая скрыня MBOX
+Comment[bg]=Пощенска директория MBOX
 Comment[br]=Renkell postel MBOX
 Comment[ca]=Carpeta de correu MBOX
 Comment[cs]=Složka pošty MBOX

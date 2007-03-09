@@ -7,6 +7,7 @@ Patterns=*.rgb;*.RGB;*.rgba;*.RGBA;*.bw;*.BW;*.sgi;*.SGI
 Comment=SGI Image (RGB)
 Comment[af]=SGI Beeld (RGB)
 Comment[be]=Відарыс SGI (RGB)
+Comment[bg]=Изображение SGI (RGB)
 Comment[br]=Skeudenn SGI (RGB)
 Comment[ca]=Imatge SGI (RGB)
 Comment[cs]=Obrázek ve formátu GIF (RGB)

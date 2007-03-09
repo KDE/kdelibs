@@ -7,6 +7,7 @@ Patterns=*.dds;*.DDS;
 Comment=DirectDraw Surface
 Comment[af]=DirectDraw Oppervlakte
 Comment[be]=Паверхня DirectDraw
+Comment[bg]=Област с директно изчертаване
 Comment[ca]=Superfície DirectDraw
 Comment[da]=Overflade til direkte tegning
 Comment[de]=DirectDraw-Oberfläche

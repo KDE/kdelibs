@@ -8,6 +8,7 @@ Patterns=*.HEX;*.hex;
 Comment=Intel® Hexadecimal Object File Format
 Comment[af]=Intel® Heksadesimale Voorwerp Lêer Formaat
 Comment[be]=Аб'ектавы шаснаццатковы файл Intel
+Comment[bg]=Шестнадесетичен обектен файлов формат на Intel®
 Comment[ca]=Format de fitxer objecte hexadecimal Intel®
 Comment[cs]=Objektový soubor Intel® Hexadecimal
 Comment[da]=Intel® Hexadecimal objektfil-format

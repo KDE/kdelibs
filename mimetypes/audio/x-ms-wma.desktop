@@ -7,6 +7,7 @@ Patterns=*.wma;*.WMA
 Comment=Windows Media Audio
 Comment[af]=Windows Media Klank
 Comment[be]=Гукавы файл Windows Media
+Comment[bg]=Аудио файл Windows Media
 Comment[br]=Klevet Windows Media
 Comment[cs]=Zvuk Windows Media
 Comment[da]=Windows media lyd

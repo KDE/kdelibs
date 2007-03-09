@@ -7,6 +7,7 @@ Patterns=*.qt;*.mov;*.moov;*.qtvr;*.QT;*.MOV;*.MOOV;*.MooV;*.QTVR;
 Comment=Quicktime Video
 Comment[ar]=ملف مرئي Quicktime
 Comment[be]=Відэафайл Quicktime
+Comment[bg]=Видео файл Quicktime
 Comment[br]=Video Quicktime
 Comment[ca]=Vídeo Quicktime
 Comment[cs]=Video ve formátu Quicktime

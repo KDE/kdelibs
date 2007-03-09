@@ -5,6 +5,7 @@ MimeType=multipart/mixed;multipart/x-mixed-replace
 Name=Embeddable Component for multipart/mixed
 Name[af]=Inlegbare Komponent vir multideel/gemeng
 Name[be]=Унутраны кампанент для multipart/mixed
+Name[bg]=Компонент за вграждане за преглед на съобщения multipart/mixed
 Name[ca]=Component encastable per a multipart/mescla
 Name[cs]=Pohltitelné komponenty pro 'multipart/mixed'
 Name[da]=Indlejrbar komponent for multipart/mixed

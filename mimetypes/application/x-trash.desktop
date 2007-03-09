@@ -7,6 +7,7 @@ Patterns=*~;*%;*.bak;*.old;*.sik;
 Comment=Backup File
 Comment[af]=Rugsteun Lêer
 Comment[ar]=ملف محفوظ احتياطيا
+Comment[bg]=Резервно копие на файл
 Comment[br]=Restr Saveteiñ
 Comment[ca]=Fitxer còpia de seguretat
 Comment[cs]=Záložní soubor

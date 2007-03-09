@@ -7,6 +7,7 @@ Patterns=*.pgp;*.gpg;*.asc
 Comment=OpenPGP Key Bundle
 Comment[af]=OpenPGP Sleutel Bundel
 Comment[be]=Звязак ключоў OpenPGP
+Comment[bg]=Пакет с ключове за OpenPGP
 Comment[br]=Dastumad alc'hwezioù OpenPGP
 Comment[ca]=Paquet de claus OpenPGP
 Comment[cs]=Svazek OpenPGP klíčů

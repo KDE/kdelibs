@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=audio/x-pn-realaudio-plugin
 Icon=sound
 Comment=RealAudio Plugin File
+Comment[bg]=Приставка за RealAudio
 Comment[ca]=Fitxer endollable de RealAudio
 Comment[da]=RealAudio plugin-fil
 Comment[de]=RealAudio-Modul-Datei
