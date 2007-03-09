@@ -26,6 +26,9 @@
 <!ENTITY traducteurYvesBrenner        '<othercredit role="translator"><firstname>Yves</firstname><surname>Brenner</surname><affiliation><address><email>ybrenner@chez.com</email></address> </affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYvesBrenner         '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Brenner</surname><affiliation><address><email>ybrenner@chez.com</email></address> </affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurPierreBuard        '<othercredit role="translator"><firstname>Pierre</firstname><surname>Buard</surname><affiliation><address><email>pierre.buard@gmail.com</email></address> </affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurPierreBuard         '<othercredit role="reviewer"><firstname>Pierre</firstname><surname>Buard</surname><affiliation><address><email>pierre.buard@gmail.com</email></address> </affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurDanielCartron      '<othercredit role="translator"> <firstname>Daniel</firstname> <surname>Cartron</surname> <affiliation><address><email>d.cartron@senat.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurDanielCartron       '<othercredit role="reviewer"> <firstname>Daniel</firstname> <surname>Cartron</surname> <affiliation><address><email>d.cartron@senat.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -202,6 +205,7 @@
 <!ENTITY YvesBrenner       'Yves Brenner <email>ybrenner@chez.com</email>'>
 <!ENTITY AdrienBoillot     'Adrien Boillot <email>bec.bunsen@laposte.net</email>'>
 <!ENTITY DanielBourrion    'DanielBourrion <email>daniel.bourrion@free.fr</email>'>
+<!ENTITY PierreBuard       'Pierre Buard <email>pierre.buard@gmail.com</email>'>
 <!ENTITY DanielCartron     'Daniel Cartron <email>d.cartron@senat.fr</email>'>
 <!ENTITY GillesCaulier     'Gilles Caulier <email>caulier.gilles@free.fr</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
