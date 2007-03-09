@@ -585,6 +585,7 @@ void KTreeWidgetSearchLineWidget::createWidgets()
 
   QHBoxLayout* layout = new QHBoxLayout( this );
   layout->setSpacing( 5 );
+  layout->setMargin( 0 );
   layout->addWidget( label );
   layout->addWidget( d->searchLine );
 }
