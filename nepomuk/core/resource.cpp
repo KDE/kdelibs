@@ -78,14 +78,14 @@ const QString& Nepomuk::KMetaData::Resource::type() const
 }
 
 
-QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
-{
-  // TODO: do not hardcode the hasIdentifier URI here!
-  QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
-  if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
-    il.append( m_data->kickoffUriOrId() );
-  return il;
-}
+// QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
+// {
+//   // TODO: do not hardcode the hasIdentifier URI here!
+//   QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
+//   if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
+//     il.append( m_data->kickoffUriOrId() );
+//   return il;
+// }
 
 
 QString Nepomuk::KMetaData::Resource::className() const
@@ -218,3 +218,6 @@ QString Nepomuk::KMetaData::errorString( int code )
     return i18n("Unknown error");
   }
 }
+
+
+METHODS

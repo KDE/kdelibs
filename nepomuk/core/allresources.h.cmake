@@ -12,4 +12,5 @@
  * See the file "COPYING" for the exact licensing terms.
  */
 
-${ALLRESOURCES_INCLUDES}
+${NAO_INCLUDES}
+${NIE_INCLUDES}

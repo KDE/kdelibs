@@ -2,47 +2,49 @@ project(libkmetadata)
 
 #find_package(KNep REQUIRED)
 
+include(KMetaDataMacros)
 
-execute_process(
-  COMMAND ${RCGEN} --listheaders --prefix ${libkmetadata_BINARY_DIR}/ ${kmetadata_SOURCE_DIR}/ontology.rdf
-  OUTPUT_VARIABLE ALLRESOURCES_HEADERS
+KMETADATA_GENERATE_FROM_ONTOLOGY(
+  ${kmetadata_SOURCE_DIR}/nao.nrl
+  ${libkmetadata_BINARY_DIR}
+  NAO_HEADERS
+  NAO_SOURCES
+  NAO_INCLUDES
+  ${libkmetadata_SOURCE_DIR}/resource.h
+  ${libkmetadata_SOURCE_DIR}/resource.cpp
 )
 
-execute_process(
-  COMMAND ${RCGEN} --listsources --prefix ${libkmetadata_BINARY_DIR}/ ${kmetadata_SOURCE_DIR}/ontology.rdf
-  OUTPUT_VARIABLE ALLRESOURCES_SOURCES
+KMETADATA_GENERATE_FROM_ONTOLOGY(
+  ${kmetadata_SOURCE_DIR}/ontologies/nie.nrl
+  ${libkmetadata_BINARY_DIR}
+  NIE_HEADERS
+  NIE_SOURCES
+  NIE_INCLUDES
 )
 
-execute_process(
-  COMMAND ${RCGEN} --listincludes ${kmetadata_SOURCE_DIR}/ontology.rdf
-  OUTPUT_VARIABLE ALLRESOURCES_INCLUDES
-)
-
+# uses NAO_INCLUDES to generate a file that allows including all generated resources
 configure_file(allresources.h.cmake ${libkmetadata_BINARY_DIR}/allresources.h)
 
-execute_process(
-  COMMAND ${RCGEN} --writeall ${libkmetadata_BINARY_DIR}/ ${kmetadata_SOURCE_DIR}/ontology.rdf
-)
-
 include_directories(
+  ${kmetadata_BINARY_DIR}
   ${kmetadata_SOURCE_DIR}
   ${libkmetadata_SOURCE_DIR}
-  ${kmetadata_BINARY_DIR}
+  ${nepomuk_backbone_SOURCE_DIR}
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${KNEP_INCLUDE_DIR}
-  ${nepomuk_backbone_SOURCE_DIR}
 )
 
 set(kmetadata_LIB_SRCS
   variant.cpp
   datetime.cpp
-  resource.cpp
+#  resource.cpp
   resourcedata.cpp
   resourcemanager.cpp
   ontology.cpp
   tools.cpp
-  ${ALLRESOURCES_SOURCES}
+  ${NAO_SOURCES}
+  ${NIE_SOURCES}
 )
 
 kde4_automoc(${kmetadata_LIB_SRCS})
@@ -64,13 +66,14 @@ install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )
 install(FILES
   variant.h
   datetime.h
-  resource.h
+#  resource.h
   resourcemanager.h
   ontology.h
   kmetadata.h
   tools.h
   kmetadata_export.h
   ${libkmetadata_BINARY_DIR}/allresources.h
-  ${ALLRESOURCES_HEADERS}
+  ${NAO_HEADERS}
+  ${NIE_HEADERS}
   DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
 )

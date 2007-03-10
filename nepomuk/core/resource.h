@@ -26,6 +26,8 @@ namespace Nepomuk {
     class ResourceData;
     class Variant;
 
+OTHERCLASSES
+
     enum ErrorCode {
       ERROR_SUCCESS = 0,
       ERROR_COMMUNICATION, /**< A commication error, i.e. libKNepCLient connection failure */
@@ -127,11 +129,6 @@ namespace Nepomuk {
 	 * \sa name()
 	 */
 	const QString& type() const;
-
-	/**
-	 * Each resource may have multiple identifiers. For more information see the constructor and uri()
-	 */
-	QStringList getIdentifiers() const;
 
 	/**
 	 * The name of the class this Resource represents an object of.
@@ -286,6 +283,8 @@ namespace Nepomuk {
 	 * mainly intended for testing and debugging purposes.
 	 */
 	bool operator==( const Resource& ) const;
+
+METHODS
 	
       private:
 	ResourceData* m_data;

@@ -13,10 +13,11 @@
  */
 
 #include "resourcemanager.h"
-#include "resource.h"
 #include "resourcedata.h"
 #include "ontology.h"
 #include "tools.h"
+
+#include <kmetadata/resource.h>
 
 #include <knep/knep.h>
 #include <knep/services/rdfrepository.h>

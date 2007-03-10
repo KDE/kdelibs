@@ -20,10 +20,8 @@
 
 const QString Nepomuk::KMetaData::Ontology::RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const QString Nepomuk::KMetaData::Ontology::RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
-
-// FIXME: insert final NRL namespace
-const QString Nepomuk::KMetaData::Ontology::NRL_NAMESPACE = "http://semanticdesktop.org/ontology/nrl-yyyymmdd#";
-
+const QString Nepomuk::KMetaData::Ontology::NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
+const QString Nepomuk::KMetaData::Ontology::NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
 
 
 class Nepomuk::KMetaData::Ontology::Private
@@ -40,8 +38,7 @@ public:
 
 QString Nepomuk::KMetaData::Ontology::defaultNamespace() const
 {
-  // FIXME: replace with the real thing later on
-  return NKDE_NAMESPACE;
+  return NAO_NAMESPACE;
 }
 
 

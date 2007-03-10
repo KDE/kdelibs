@@ -67,6 +67,15 @@ class ResourceClass
 
   ResourceClass* parent;
 
+  QList<ResourceClass*> allParents;
+
+  /**
+   * \return true if this class should be generated.
+   * normally this always returns true except for the base class
+   * Resource.
+   */
+  bool generateClass() const;
+
   QString name( bool withNamespace = false ) const;
   QString uri;
   QString comment;
@@ -83,7 +92,13 @@ class ResourceClass
   QString allResourcesDeclaration( bool withNamespace = false ) const;
   QString allResourcesDefinition() const;
 
+  QString pseudoInheritanceDeclaration( ResourceClass* rc, bool withNamespace ) const;
+  QString pseudoInheritanceDefinition( ResourceClass* rc ) const;
+
   bool write( const QString& folder ) const;
+
+  QString headerTemplateFilePath;
+  QString sourceTemplateFilePath;
 
   static ResourceClass* s_defaultResource;
 };

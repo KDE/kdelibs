@@ -33,6 +33,9 @@ using namespace Nepomuk::RDF;
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
 QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_kickoffData;
 
+// FIXME: we need a way to sync this URI with the ontology
+static const QString s_identifierUri( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" );
+
 
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QString& type_ )
   : m_kickoffUriOrId( uriOrId ),
@@ -243,7 +246,7 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
       return( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ||
 	      rr.contains( KMetaData::defaultGraph(), 
 			   Statement( Node(), 
-				      Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
+				      Node(s_identifierUri), 
 				      KMetaData::valueToRDFNode(kickoffUriOrId()) ) ) );
 
     //
@@ -312,7 +315,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
       //
       QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(), 
 					       Statement( Node(), 
-							  Node("http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier"), 
+							  Node(s_identifierUri), 
 							  KMetaData::valueToRDFNode(kickoffUriOrId()) ) );
 
       if( !sl.isEmpty() ) {
@@ -335,9 +338,9 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
       // store the kickoffUriOrId as an identifier
       //
       // FIXME: do not use the URI of hasIdentifier here but use some method like Resource::addIdentifier
-      QStringList ids = getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
+      QStringList ids = getProperty( s_identifierUri ).toStringList();
       ids += kickoffUriOrId();
-      setProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier", ids );
+      setProperty( s_identifierUri, ids );
 
       // FIXME: We probably should already store the URI now since otherwise ResourceManager::generateUniqueUri could in
       // theorie create the same URI again!

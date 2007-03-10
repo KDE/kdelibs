@@ -102,6 +102,7 @@ namespace Nepomuk {
 	static const QString RDF_NAMESPACE;
 	static const QString RDFS_NAMESPACE;
 	static const QString NRL_NAMESPACE;
+	static const QString NAO_NAMESPACE;
 
       private:
 	class Private;

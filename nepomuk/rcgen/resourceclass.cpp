@@ -15,6 +15,10 @@
 #include "resourceclass.h"
 #include "resourcetemplate.h"
 
+#include <QFile>
+#include <QTextStream>
+
+
 // dummy resource for low level resource inheritance
 ResourceClass* ResourceClass::s_defaultResource = new ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" );
 
@@ -81,11 +85,12 @@ Property::Property( const QString& uri_,
 QString Property::name() const
 {
   //
-  // many predicates are named "hasSomething"
+  // many predicates are named "hasSomething" or "altFoo"
   // we remove the "has" becasue setHasSomething sounds weird
   //
   QString n = uri.section( QRegExp( "[#:]" ), -1 );
-  if( n.toLower().startsWith( "has" ) )
+  if( n.toLower().startsWith( "has" ) ||
+      n.toLower().startsWith( "alt" ) )
     return n.mid( 3 );
   else
     return n;
@@ -95,7 +100,7 @@ QString Property::name() const
 QString Property::typeString( bool simple, bool withNamespace ) const
 {
   QString t;
-  if( type.contains( "xs:" ) ) {
+  if( type.contains( "XMLSchema" ) ) {
     // XML Schema types
     // FIXME: move this map somewhere else
     QHash<QString, QString> xmlSchemaTypes;
@@ -116,7 +121,8 @@ QString Property::typeString( bool simple, bool withNamespace ) const
     xmlSchemaTypes.insert( "double", "double" );
     xmlSchemaTypes.insert( "boolean", "bool" );
     xmlSchemaTypes.insert( "dateTime", "QDateTime" );
-    t = xmlSchemaTypes[type.mid(type.indexOf( "xs:" ) + 3 )];
+    xmlSchemaTypes.insert( "string", "QString" );
+    t = xmlSchemaTypes[type.mid(type.lastIndexOf( "#" ) + 1 )];
   }
   else if( type.endsWith( "#Literal" ) ) {
     t = "QString";
@@ -140,7 +146,7 @@ QString Property::typeString( bool simple, bool withNamespace ) const
 
 bool Property::hasSimpleType() const
 {
-  return ( type.contains( "xs:" ) || type.endsWith( "#Literal" ) );
+  return ( type.contains( "XMLSchema" ) || type.endsWith( "#Literal" ) );
 }
 
 
@@ -311,7 +317,7 @@ QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) con
 		  "   if( resources.isEmpty() )\n"
 		  "      return %2();\n"
 		  "   else\n"
-		  "      return %2( resources.getFirst().uri() );\n"
+		  "      return %2( resources.first().uri() );\n"
 		  "}\n" )
       .arg( uri )
       .arg( domain->name() );
@@ -381,9 +387,37 @@ QString ResourceClass::allResourcesDefinition() const
 }
 
 
+QString ResourceClass::pseudoInheritanceDeclaration( ResourceClass* rc, bool withNamespace ) const
+{
+  return QString( "%1 %2to%3() const" )
+    .arg( rc->name( withNamespace ) )
+    .arg( withNamespace ? name( true ) + "::" : QString() )
+    .arg( rc->name( false ) );
+}
+
+
+QString ResourceClass::pseudoInheritanceDefinition( ResourceClass* rc ) const
+{
+  return QString( "%1\n"
+		  "{\n"
+		  "   return %2( *this );\n"
+		  "}\n" )
+    .arg( pseudoInheritanceDeclaration( rc, true ) )
+    .arg( rc->name( true ) );
+}
+
+
 bool ResourceClass::writeHeader( QTextStream& stream ) const
 {
   QString s = headerTemplate;
+  if( QFile::exists( headerTemplateFilePath ) ) {
+    QFile f( headerTemplateFilePath );
+    if( !f.open( QIODevice::ReadOnly ) ) {
+      qDebug() << "Failed to open " << headerTemplateFilePath;
+      return false;
+    }
+    s = QTextStream( &f ).readAll();
+  }
   s.replace( "RESOURCECOMMENT", writeComment( comment, 0 ) );
   s.replace( "RESOURCENAMEUPPER", name().toUpper() );
   s.replace( "RESOURCENAME", name() );
@@ -436,9 +470,28 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
     ms << "   " << p->reversePropertyGetterDeclaration( this ) << ";" << endl;    
     ms << endl;
 
-    includes.insert( p->domain->name() );
+    if( !p->hasSimpleType() )
+      includes.insert( p->domain->name() );
   }
 
+
+  //
+  // KMetaData does not support multiple inheritance
+  // So we have to use a workaround instead
+  //
+  if( allParents.count() > 1 ) {
+    foreach( ResourceClass* rc, allParents ) {
+      // ignore the one we derived from
+      if( rc != parent ) {
+	ms << writeComment( QString("KMetaData does not support multiple inheritance. Thus, to access "
+				    "properties from all parent classes helper methods like this are "
+				    "introduced. The object returned represents the exact same resource."), 3 ) << endl
+	   << "   " << pseudoInheritanceDeclaration( rc, false ) << ";" << endl << endl;
+	
+	includes.insert( rc->name() );
+      }
+    }
+  }
 
   ms << writeComment( QString("Retrieve a list of all available %1 resources. "
 			      "This list consists of all resource of type %1 that are stored "
@@ -465,6 +518,14 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
 bool ResourceClass::writeSource( QTextStream& stream ) const
 {
   QString s = sourceTemplate;
+  if( QFile::exists( sourceTemplateFilePath ) ) {
+    QFile f( sourceTemplateFilePath );
+    if( !f.open( QIODevice::ReadOnly ) ) {
+      qDebug() << "Failed to open " << sourceTemplateFilePath;
+      return false;
+    }
+    s = QTextStream( &f ).readAll();
+  }
   s.replace( "RESOURCENAMELOWER", name().toLower() );
   s.replace( "RESOURCENAME", name() );
   s.replace( "RESOURCETYPEURI", uri );
@@ -500,6 +561,19 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
     ms << p->reversePropertyGetterDefinition( this ) << endl;
   }
 
+  //
+  // KMetaData does not support multiple inheritance
+  // So we have to use a workaround instead
+  //
+  if( allParents.count() > 1 ) {
+    foreach( ResourceClass* rc, allParents ) {
+      // ignore the one we derived from
+      if( rc != parent ) {
+	ms << pseudoInheritanceDefinition( rc ) << endl;
+      }
+    }
+  }
+
   ms << allResourcesDefinition() << endl;
 
   s.replace( "METHODS", methods );
@@ -530,4 +604,12 @@ bool ResourceClass::write( const QString& folder ) const
     return false;
 
   return true;
+}
+
+
+bool ResourceClass::generateClass() const
+{
+  // little hack to let Resource be generated from NAO
+  return ( name() != "Resource" ||
+	   !properties.isEmpty() );
 }

@@ -21,7 +21,7 @@ static int usage()
 {
   QTextStream( stderr, QIODevice::WriteOnly )
     << "Usage:" << endl
-    << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall <sourcefolder> <ontologyfile>" << endl
+    << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] <sourcefolder> <ontologyfile>" << endl
     << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes <ontologyfile>" << endl
     << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--prefix <listprefix>] <ontologyfile>" << endl
     << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--prefix <listprefix>] <ontologyfile>" << endl;
@@ -37,6 +37,7 @@ int main( int argc, char** argv )
 
   bool writeAll = false, listHeader = false, listSource = false, listIncludes = false;
   QString ontoFile, targetDir, prefix;
+  QStringList templates;
 
   QStringList args = app.arguments();
   if( args.count() < 2 )
@@ -44,10 +45,18 @@ int main( int argc, char** argv )
   
   if( args[1] == "--writeall" ) {
     writeAll = true;
-    if( args.count() != 4 )
+    if( args.count() < 4 )
       return usage();
-    targetDir = args.at(2);
-    ontoFile = args.at(3);
+    int pos = 2;
+    if( args[2] == "--templates" ) {
+      ++pos;
+      while( pos < args.count() - 2 )
+	templates += args[pos++];
+    }
+    if( args.count() != pos+2 )
+      return usage();
+    targetDir = args.at(pos);
+    ontoFile = args.at(pos+1);
   }
   else if( args[1] == "--listincludes" ) {
     listIncludes = true;
@@ -99,6 +108,10 @@ int main( int argc, char** argv )
   }
 
   if( writeAll ) {
+    if( !prsr.assignTemplates( templates ) ) {
+      return usage();
+    }
+
     qDebug() << "Writing sources to " << targetDir << endl;
     if( !prsr.writeSources( targetDir ) ) {
       qDebug() << "Writing sources to " << targetDir << " failed." << endl;

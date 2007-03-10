@@ -69,6 +69,28 @@ OntologyParser::~OntologyParser()
 }
 
 
+bool OntologyParser::assignTemplates( const QStringList& templates )
+{
+  // FIXME: do an actual class name mapping by parsing the class
+  foreach( QString tf, templates ) {
+    QString filename = tf.section( '/', -1 );
+    for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
+	 it != d->resources.end(); ++it ) {
+      if( filename == it.value().headerName() ) {
+	qDebug() << "Using header template file " << tf << " for class " << it.value().name();
+	it.value().headerTemplateFilePath = tf;
+      }
+      else if( filename == it.value().sourceName() ) {
+	qDebug() << "Using source template file " << tf << " for class " << it.value().name();
+	it.value().sourceTemplateFilePath = tf;
+      }
+    }
+  }
+
+  return true;
+}
+
+
 bool OntologyParser::parse( const QString& filename )
 {
   qDebug() << "(OntologyParser) Parsing " << filename << endl;
@@ -98,6 +120,7 @@ bool OntologyParser::parse( const QString& filename )
     if( s.predicate().uri().toString().endsWith( "#subClassOf" ) ) {
       ResourceClass& rc = d->getResource( s.subject().uri().toString() );
       rc.parent = &d->getResource( s.object().uri().toString() );
+      rc.allParents.append( &d->getResource( s.object().uri().toString() ) );
     }
     else if( s.predicate().uri().toString().endsWith( "#type" ) ) {
       if( s.object().uri().toString().endsWith( "#Class" ) )
@@ -165,7 +188,7 @@ bool OntologyParser::writeSources( const QString& dir )
 
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it ) {
-    if( (*it).name() != "Resource" )
+    if( (*it).generateClass() )
       success &= (*it).write( dir + '/' );
   }
 
@@ -178,7 +201,7 @@ QStringList OntologyParser::listHeader()
   QStringList l;
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it )
-    if( (*it).name() != "Resource" )
+    if( (*it).generateClass() )
       l.append( (*it).headerName() );
   return l;
 }
@@ -189,7 +212,7 @@ QStringList OntologyParser::listSources()
   QStringList l;
   for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
        it != d->resources.constEnd(); ++it )
-    if( (*it).name() != "Resource" )
+    if( (*it).generateClass() )
       l.append( (*it).sourceName() );
   return l;
 }
