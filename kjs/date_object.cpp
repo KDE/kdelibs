@@ -411,7 +411,7 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
   // make the necessary transformations if necessary
   static bool time_tIsSigned = isTime_tSigned();
   static double time_tMin = (time_tIsSigned ? - (double)(1ULL << (8 * sizeof(time_t) - 1)) : 0);
-  static double time_tMax = (time_tIsSigned ? (1ULL << 8 * sizeof(time_t) - 1) - 1 : 2 * (double)(1ULL << 8 * sizeof(time_t) - 1) - 1);
+  static double time_tMax = (time_tIsSigned ? (1ULL << (8 * sizeof(time_t) - 1)) - 1 : 2 * (double)(1ULL << (8 * sizeof(time_t) - 1)) - 1);
   int realYearOffset = 0;
   double milliOffset = 0.0;
   double secs = floor(milli / msPerSecond);
