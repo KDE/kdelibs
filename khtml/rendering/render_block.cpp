@@ -1585,11 +1585,8 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
 void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
 {
     if (m_positionedObjects) {
-        //kDebug( 6040 ) << renderName() << " " << this << "::layoutPositionedObjects() start" << endl;
-        RenderObject* r;
-        QMutableListIterator<RenderObject*> it(*m_positionedObjects);
-        while (it.hasNext()) {
-            r = it.next();
+        for (int i=0; i < m_positionedObjects->size(); i++) { // size() can grow during loop
+            RenderObject * const r = m_positionedObjects->at(i);
             if (r->markedForRepaint()) {
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
