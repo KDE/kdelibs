@@ -121,7 +121,7 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          *
          * @param parent The parent object for the delegate.
          */
-        KFileItemDelegate(QObject *parent = 0);
+        explicit KFileItemDelegate(QObject *parent = 0);
 
 
         /**
