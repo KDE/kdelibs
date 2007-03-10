@@ -1036,7 +1036,7 @@ KCmdLineArgs::usage(const char *id)
      if (!showAll) break;
    }
 
-   exit(254);
+   exit(0);
 }
 
 //
