@@ -26,6 +26,8 @@ namespace Nepomuk {
     class ResourceData;
     class Variant;
 
+OTHERCLASSES
+
     enum ErrorCode {
       ERROR_SUCCESS = 0,
       ERROR_COMMUNICATION, /**< A commication error, i.e. libKNepCLient connection failure */
@@ -282,6 +284,7 @@ namespace Nepomuk {
 	 */
 	bool operator==( const Resource& ) const;
 
+METHODS
       private:
 	ResourceData* m_data;
 
