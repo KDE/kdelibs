@@ -26,7 +26,7 @@ if (COMPILE_WITH_QT4_ONLY)
 	)
 
 	# build the kdeeduplot library
-	add_library(kdeeduplot SHARED ${kdeeduplot_LIB_SRCS})
+	kde4_add_library(kdeeduplot SHARED ${kdeeduplot_LIB_SRCS})
 	
 	# link Qt4 libraries so that users of the kdeeduplot lib do
 	# not have to worry about these dependencies
