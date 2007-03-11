@@ -1730,6 +1730,7 @@ Name[nds]=Afmellen afbraken
 Name[pt]=Encerramento cancelado
 Name[pt_BR]=Encerramento cancelado
 Name[sk]=Odhlásenie zrušené
+Name[sv]=Utloggning avbruten
 Comment=KDE logout was canceled
 Comment[da]=log af fra KDE blev annulleret
 Comment[el]=Η αποσύνδεση από το KDE ακυρώθηκε
@@ -1739,6 +1740,7 @@ Comment[nds]=Afmellen vun KDE wöör afbraken
 Comment[pt]=O encerramento da sessão do KDE foi cancelado
 Comment[pt_BR]=O encerramento da sessão do KDE foi cancelado
 Comment[sk]=Odhlásenie z KDE bolo zrušené
+Comment[sv]=Utloggning från KDE avbröts
 default_presentation=16
 default_sound=
 
