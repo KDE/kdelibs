@@ -456,13 +456,6 @@ void SimpleJob::start(Slave *slave)
         connect( m_slave, SIGNAL( speed( unsigned long ) ),
                  SLOT( slotSpeed( unsigned long ) ) );
     }
-#ifdef __GNUC__
-#warning " signal needProgressId doesn't exist and slotNeedProgressId doesn't exist. Remove it ?"
-#endif
-#if 0
-    connect( slave, SIGNAL( needProgressId() ),
-             SLOT( slotNeedProgressId() ) );
-#endif
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
