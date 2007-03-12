@@ -34,7 +34,7 @@ void Package::loadSymbol(ExecState*, JSObject*, const Identifier&)
 {
 }
 
-void Package::loadAllSymbols(ExecState* exec, JSObject* obj)
+void Package::loadAllSymbols(ExecState*, JSObject*)
 {
 }
 
