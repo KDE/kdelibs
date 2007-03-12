@@ -71,7 +71,7 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
 
 void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
 {
-    kDebug(7033) << "*** item "  << m_item.key()
+    kDebug(7033) << "*** item "  << m_item.name()
                   << " is a " << value().typeName() << endl;
 
     if (m_item.isEditable() && !(mode & ReadOnly))
@@ -90,7 +90,7 @@ void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
                 static_cast<QLabel*>(m_widget)->setPixmap(m_value.value<QPixmap>());
                 break;
             default:
-                m_widget = new QLabel(item.string(true), this);
+                m_widget = new QLabel(item.name(), this);
                 m_widget->setObjectName(QLatin1String("info label"));
         }
 
@@ -176,7 +176,7 @@ QWidget* KFileMetaInfoWidget::makeWidget()
             w = makeStringWidget();
     }
 
-    kDebug(7033) << "*** item " << m_item.key()
+    kDebug(7033) << "*** item " << m_item.name()
                  << "is a " << m_item.value().typeName() << endl;
     if (m_validator)
         kDebug(7033) << " and validator is a "
@@ -219,7 +219,7 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
     }
 
     // make sure that an uint cannot be set to a value < 0
-    if (m_item.type() == QVariant::UInt)
+    if (m_item.properties().type() == QVariant::UInt)
         sb->setMinimum(qMax(sb->minimum(), 0));
 
     connect(sb, SIGNAL(valueChanged(int)), this, SLOT(slotChanged(int)));
@@ -263,7 +263,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         return b;
     }
 
-    if ( m_item.attributes() & KFileMimeTypeInfo::MultiLine ) {
+    if ( m_item.properties().attributes() & PredicateProperties::MultiLine ) {
         KTextEdit *edit = new KTextEdit( this );
         edit->setAcceptRichText(false);
         edit->setPlainText( m_item.value().toString() );
