@@ -907,7 +907,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 #endif
            ;
 
-    if (info.isValid() && !info.isEmpty() )
+    if (info.isValid())
     {
         tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
         QStringList keys = info.preferredKeys();
@@ -919,8 +919,8 @@ QString KFileItem::getToolTipText(int maxcount) const
             KFileMetaInfoItem item = info.item( *it );
             if ( item.isValid() )
             {
-                QString s = item.string();
-                if ( ( item.attributes() & KFileMimeTypeInfo::SqueezeText )
+                QString s = item.value().toString();
+                if ( ( item.properties().attributes() & PredicateProperties::SqueezeText )
                      && s.length() > 50) {
                     s.truncate(47);
                     s.append("...");
@@ -929,7 +929,7 @@ QString KFileItem::getToolTipText(int maxcount) const
                 {
                     count++;
                     tip += start +
-                           Qt::escape( item.translatedKey() ) + ':' +
+                           Qt::escape( item.name() ) + ':' +
                            mid +
                            Qt::escape( s ) +
                            end;
@@ -1032,7 +1032,7 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
     if ( autoget && !d->m_metaInfo.isValid() &&
          KGlobalSettings::showFilePreview(url) )
     {
-        d->m_metaInfo = KFileMetaInfo( url, mimetype() );
+        d->m_metaInfo = KFileMetaInfo( url);//, mimetype() );
     }
 
     return d->m_metaInfo;
