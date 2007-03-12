@@ -62,8 +62,8 @@ KAboutData* NotepadPart::createAboutData()
 
 bool NotepadPart::openFile()
 {
-  kDebug() << "NotepadPart: opening " << m_file << endl;
-  QFile f(m_file);
+  kDebug() << "NotepadPart: opening " << localFilePath() << endl;
+  QFile f(localFilePath());
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
@@ -73,7 +73,7 @@ bool NotepadPart::openFile()
   }
   m_edit->setPlainText(s);
 
-  emit setStatusBarText( m_url.prettyUrl() );
+  emit setStatusBarText( url().prettyUrl() );
 
   return true;
 }
@@ -82,7 +82,7 @@ bool NotepadPart::saveFile()
 {
   if ( !isReadWrite() )
     return false;
-  QFile f(m_file);
+  QFile f(localFilePath());
   QString s;
   if ( f.open(QIODevice::WriteOnly) ) {
     QTextStream t( &f );
