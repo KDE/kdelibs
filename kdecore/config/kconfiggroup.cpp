@@ -127,11 +127,6 @@ bool KConfigGroup::exists() const
   return d->mMaster->hasGroup( d->mGroup );
 }
 
-bool KConfigGroup::groupIsImmutable() const
-{
-  return d->mMaster->groupIsImmutable( d->mGroup );
-}
-
 void KConfigGroup::setDirty(bool _bDirty)
 {
   d->mMaster->setDirty(_bDirty);
@@ -1106,10 +1101,5 @@ bool KConfigGroup::hasKey(const char *pKey) const
 
 bool KConfigGroup::isImmutable() const
 {
-  if (d->mMaster->getConfigState() != KConfigBase::ReadWrite)
-     return true;
-
-  KEntryKey groupKey(d->mGroup, 0);
-  KEntry entry = lookupData(groupKey);
-  return entry.bImmutable;
+  return d->mMaster->groupIsImmutable( d->mGroup );
 }

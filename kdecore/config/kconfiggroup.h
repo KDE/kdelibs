@@ -71,13 +71,6 @@ public:
     void deleteGroup(WriteConfigFlags pFlags=Normal);
 
     /**
-     * Checks whether it is possible to change this group.
-     * @return whether changes may be made to this group in this configuration
-     * file.
-     */
-    bool groupIsImmutable() const;
-
-    /**
      * Returns a map (tree) of entries for all entries in this group.
      *
      * Only the actual entry string is returned, none of the
