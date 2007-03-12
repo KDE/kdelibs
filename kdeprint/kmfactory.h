@@ -41,6 +41,7 @@ class KLibFactory;
 class KConfig;
 class KPReloadObject;
 
+/// KDEPrint factory for [something]
 class KDEPRINT_EXPORT KMFactory : public QObject
 {
 	Q_OBJECT

@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
+ *  Copyright (C) 2007 Thomas Zander <zander@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -1159,3 +1160,65 @@ int KPrinter::resolution() const
 
 void KPrinter::setUsePrinterResolution( bool on )
 { d->m_useprinterres = on; }
+
+
+void KPrinter::setOutputFormat(QPrinter::OutputFormat format)
+{
+    d->m_printer->setOutputFormat(format);
+}
+
+QPrinter::OutputFormat KPrinter::outputFormat () const
+{
+    return d->m_printer->outputFormat();
+}
+
+void KPrinter::setPaperSource(QPrinter::PaperSource papersource)
+{
+    d->m_printer->setPaperSource(papersource);
+}
+
+QPrinter::PaperSource KPrinter::paperSource () const
+{
+    return d->m_printer->paperSource();
+}
+
+QList< int > KPrinter::supportedResolutions() const
+{
+    return d->m_printer->supportedResolutions();
+}
+
+void KPrinter::setFontEmbeddingEnabled(bool enable)
+{
+    d->m_printer->setFontEmbeddingEnabled(enable);
+}
+
+bool KPrinter::fontEmbeddingEnabled() const
+{
+    return d->m_printer->fontEmbeddingEnabled();
+}
+
+void KPrinter::setDoubleSidedPrinting(bool enable)
+{
+    d->m_printer->setDoubleSidedPrinting(enable);
+}
+
+bool KPrinter::doubleSidedPrinting() const
+{
+    return d->m_printer->doubleSidedPrinting();
+}
+
+QRect KPrinter::paperRect() const
+{
+    return d->m_printer->paperRect();
+}
+
+QRect KPrinter::pageRect () const
+{
+    return d->m_printer->pageRect();
+}
+
+QPrinter::PrinterState KPrinter::printerState () const
+{
+    return d->m_printer->printerState();
+}
+

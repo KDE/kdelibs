@@ -1,7 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
- *
+ *  Copyright (C) 2007 Thomas Zander <zander@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -87,8 +87,6 @@ class DrPageSize;
  */
 class KDEPRINT_EXPORT KPrinter : public QPaintDevice, public KPReloadObject
 {
-//friend class KPrinterWrapper;
-friend class KPrinterImpl;
 public:
 	// Print global settings (set via static functions)
 	/**
@@ -99,7 +97,7 @@ public:
 	 *
 	 * @see addStandardPage(), removeStandardPage()
 	 */
-	enum StandardPageType { CopiesPage = 0x01, FilesPage = 0x02, Custom = 0x10 };
+	enum StandardPageType { CopiesPage = 0x01, FilesPage = 0x02, CustomPage = 0x10 };
 	/**
 	 * Defines whether the application can perform page selection itself or not.
 	 * Some print systems (like CUPS) can do page selection, in this case the
@@ -196,7 +194,8 @@ public:
 		Folio = QPrinter::Folio,
 		Ledger = QPrinter::Ledger,
 		Tabloid = QPrinter::Tabloid,
-		NPageSize = QPrinter::NPageSize
+		NPageSize = QPrinter::NPageSize,
+        CustomSize = QPrinter::Custom
 	};
 
 	// constructors / destructor
@@ -317,7 +316,7 @@ public:
 	/**
 	 * See QPrinter::setMinMax().
 	 */
-	void setMinMax(int, int);
+    void setMinMax(int min, int max);
 	/**
 	 * Returns the first page to be printed.
          * @deprecated Applications
@@ -326,7 +325,7 @@ public:
 	 *
 	 * @see pageList()
 	 */
-	KDE_DEPRECATED int fromPage() const;
+    int fromPage() const KDE_DEPRECATED;
 	/**
 	 * Returns the last page to be printed.
          * @deprecated Applications
@@ -462,22 +461,22 @@ public:
 	 * @see setRealPageSize
 	 * @obsolete
 	 */
-	QSize realPageSize() const;
+	QSize realPageSize() const KDE_DEPRECATED;
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	void setRealPageSize( QSize p );
+	void setRealPageSize( QSize p ) KDE_DEPRECATED;
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	void setRealDrawableArea( const QRect& r );
+	void setRealDrawableArea( const QRect& r ) KDE_DEPRECATED;
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	QRect realDrawableArea() const;
+	QRect realDrawableArea() const KDE_DEPRECATED;
 
 	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
 	void setMargins( uint top, uint left, uint bottom, uint right );
@@ -747,6 +746,36 @@ public:
 	 */
 	QString docDirectory() const;
 
+    /// wrapped method from QPrinter
+    void setOutputFormat(QPrinter::OutputFormat format);
+    /// wrapped method from QPrinter
+    QPrinter::OutputFormat outputFormat () const;
+
+    /// wrapped method from QPrinter
+    void setPaperSource(QPrinter::PaperSource papersource);
+    /// wrapped method from QPrinter
+    QPrinter::PaperSource paperSource () const;
+
+    /// wrapped method from QPrinter
+    QList< int > supportedResolutions() const;
+
+    /// wrapped method from QPrinter
+    void setFontEmbeddingEnabled(bool enable);
+    /// wrapped method from QPrinter
+    bool fontEmbeddingEnabled() const;
+
+    /// wrapped method from QPrinter
+    void setDoubleSidedPrinting(bool enable);
+    /// wrapped method from QPrinter
+    bool doubleSidedPrinting() const;
+
+    /// wrapped method from QPrinter
+    QRect paperRect() const;
+    /// wrapped method from QPrinter
+    QRect pageRect () const;
+    /// wrapped method from QPrinter
+    QPrinter::PrinterState printerState () const;
+
 protected:
 	virtual int devType() const;
 	virtual QPaintEngine * paintEngine () const;
@@ -765,6 +794,7 @@ protected:
 private:
 	KPrinterPrivate* const d;
 	friend class KPrinterEngine;
+    friend class KPrinterImpl;
 };
 
 //**************************************************************************************
@@ -777,6 +807,6 @@ KDEPRINT_EXPORT const char* pageSizeToPageName(KPrinter::PageSize s);
  * DO NOT USE, WILL BE REMOVED.
  * @obsolete
  */
-QSize rangeToSize( const QString& );
+QSize rangeToSize( const QString& ) KDE_DEPRECATED;
 
 #endif
