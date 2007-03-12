@@ -296,8 +296,8 @@ namespace KIO {
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
 
-        // DBUS (TODO: adaptor, or Qt-4.2 ExportSignals)
-        void reparseSlaveConfiguration(const QString &);
+        // DBUS
+        Q_SCRIPTABLE void reparseSlaveConfiguration(const QString &);
 
     protected:
         void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);

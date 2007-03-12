@@ -128,12 +128,10 @@ Scheduler::Scheduler()
     const QString dbusPath = "/KIO/Scheduler";
     const QString dbusInterface = "org.kde.KIO.Scheduler";
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerObject("/KIO/Scheduler", this, QDBusConnection::ExportScriptableSlots);
+    dbus.registerObject( "/KIO/Scheduler", this, QDBusConnection::ExportScriptableSlots |
+                                                 QDBusConnection::ExportScriptableSignals );
     dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
                  this, SLOT(slotReparseSlaveConfiguration(QString)));
-#ifdef __GNUC__
-#warning TODO adaptor, or wait for ExportSignals with Qt-4.2
-#endif
 
     slaveTimer.setObjectName( "Scheduler::slaveTimer" );
     slaveTimer.setSingleShot( true );
