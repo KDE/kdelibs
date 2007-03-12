@@ -117,15 +117,15 @@ void KFileMetaPropsPlugin::createLayout()
         return;
 
     // now get a list of groups
-    KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
-    QStringList groupList = d->m_info.preferredGroups();
+    //KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
+    KFileMetaInfoGroupList groupList = d->m_info.preferredGroups();
 
-    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
+/*    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
     if (!mtinfo)
     {
         kDebug(7034) << "no mimetype info there\n";
         return;
-    }
+    }*/
 
     // let the dialog create the page frame
     QFrame* topframe = new QFrame();
@@ -144,30 +144,24 @@ void KFileMetaPropsPlugin::createLayout()
     QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
 
-    for (QStringList::Iterator git=groupList.begin();
-            git!=groupList.end(); ++git)
-    {
-        kDebug(7033) << *git << endl;
+    foreach (const KFileMetaInfoGroup& group, groupList) {
+        //kDebug(7033) << *git << endl;
 
-        QStringList itemList = d->m_info.group(*git).preferredKeys();
+        KFileMetaInfoItemList itemList = group.items();
         if (itemList.isEmpty())
             continue;
 
-        QGroupBox *groupBox = new QGroupBox(
-            Qt::escape(mtinfo->groupInfo(*git)->translatedName()),
+        QGroupBox *groupBox = new QGroupBox( Qt::escape(group.name()),
             d->m_frame);
         QGridLayout *grouplayout = new QGridLayout(groupBox);
         grouplayout->activate();
 
         toplayout->addWidget(groupBox);
 
-        QLinkedList<KFileMetaInfoItem> readItems;
-        QLinkedList<KFileMetaInfoItem> editItems;
+        KFileMetaInfoItemList readItems;
+        KFileMetaInfoItemList editItems;
 
-        for (QStringList::Iterator iit = itemList.begin();
-                iit!=itemList.end(); ++iit)
-        {
-            KFileMetaInfoItem item = d->m_info[*git][*iit];
+        foreach (const KFileMetaInfoItem& item, itemList) {
             if ( !item.isValid() ) continue;
 
             bool editable = file_info.isWritable() && item.isEditable();
@@ -181,15 +175,14 @@ void KFileMetaPropsPlugin::createLayout()
         KFileMetaInfoWidget* w = 0L;
         int row = 0;
         // then first add the editable items to the layout
-        for (QLinkedList<KFileMetaInfoItem>::Iterator iit= editItems.begin();
-                iit!=editItems.end(); ++iit)
-        {
-            QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
+        foreach (const KFileMetaInfoItem& item, editItems) {
+            QLabel* l = new QLabel(item.name() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
             l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
-            QValidator* val = mtinfo->createValidator(*git, (*iit).key());
-            if (!val) kDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
-            w = new KFileMetaInfoWidget(*iit, val, groupBox);
+            QValidator* val = item.properties().createValidator();
+            if (!val) kDebug(7033) << "didn't get a validator for "
+                << item.name() << endl;
+            w = new KFileMetaInfoWidget(item, val, groupBox);
             grouplayout->addWidget(w, row, 1);
             d->m_editWidgets.append( w );
             connect(w, SIGNAL(valueChanged(const QVariant&)), this, SIGNAL(changed()));
@@ -197,13 +190,11 @@ void KFileMetaPropsPlugin::createLayout()
         }
 
         // and then the read only items
-        for (QLinkedList<KFileMetaInfoItem>::Iterator iit= readItems.begin();
-                iit!=readItems.end(); ++iit)
-        {
-            QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
+        foreach (const KFileMetaInfoItem& item, readItems) {
+            QLabel* l = new QLabel(item.name() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
             l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
-            w = new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox);
+            w = new KFileMetaInfoWidget(item, KFileMetaInfoWidget::ReadOnly, 0L, groupBox);
             grouplayout->addWidget(w, row, 1);
             ++row;
         }
@@ -276,7 +267,7 @@ void KFileMetaPropsPlugin::applyChanges()
   Q3PtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
   KFileMetaInfoWidget* w;
   for (; (w = it.current()); ++it) w->apply();
-  d->m_info.applyChanges(properties->kurl().path());
+  d->m_info.applyChanges();
 }
 
 #include "kmetaprops.moc"
