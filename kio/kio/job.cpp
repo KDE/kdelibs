@@ -563,15 +563,17 @@ void SimpleJob::slotTotalSize( KIO::filesize_t size )
     if (size > m_totalSize)
     {
         m_totalSize = size;
-        emit totalSize( this, size );
+        emit totalAmount( this, KJob::Bytes, size );
+        emit totalSize(this, size);
     }
 }
 
 void SimpleJob::slotProcessedSize( KIO::filesize_t size )
 {
     //kDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size) << endl;
-    setProcessedSize(size);
-    emit processedSize( this, size );
+    setProcessedAmount(KJob::Bytes, size);
+    emit processedAmount(this, KJob::Bytes, size);
+    emit processedSize(this, size);
     if ( size > m_totalSize ) {
         slotTotalSize(size); // safety
     }
@@ -949,9 +951,10 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
        m_slave->send( MSG_DATA, dataForSlave );
        if (extraFlags() & EF_TransferJobDataSent)
        {
-           KIO::filesize_t size = processedSize()+dataForSlave.size();
-           setProcessedSize(size);
-           emit processedSize( this, size );
+           KIO::filesize_t size = processedAmount(KJob::Bytes)+dataForSlave.size();
+           setProcessedAmount(KJob::Bytes, size);
+           emit processedAmount(this, KJob::Bytes, size);
+           emit processedSize(this, size);
            if ( size > m_totalSize ) {
                slotTotalSize(size); // safety
            }
@@ -1608,8 +1611,9 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 
 void FileCopyJob::slotProcessedSize( KJob *, qulonglong size )
 {
-    setProcessedSize(size);
-    emit processedSize( this, size );
+    setProcessedAmount(KJob::Bytes, size);
+    emit processedAmount(this, KJob::Bytes, size);
+    emit processedSize(this, size);
     if ( size > m_totalSize ) {
         slotTotalSize( this, size ); // safety
     }
@@ -1621,7 +1625,8 @@ void FileCopyJob::slotTotalSize( KJob*, qulonglong size )
     if (size > m_totalSize)
     {
         m_totalSize = size;
-        emit totalSize( this, m_totalSize );
+        emit totalAmount(this, KJob::Bytes, m_totalSize);
+        emit totalSize(this, size);
     }
 }
 

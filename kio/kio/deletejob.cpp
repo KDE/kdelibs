@@ -79,16 +79,17 @@ void DeleteJob::slotReport()
    switch( state ) {
         case STATE_STATING:
         case STATE_LISTING:
-            emit totalSize( this, m_totalSize );
-            emit totalFiles( this, files.count() );
-            emit totalDirs( this, dirs.count() );
+            emit totalAmount(this, KJob::Bytes, m_totalSize);
+            emit totalSize(this, m_totalSize);
+            emit totalAmount(this, KJob::Files, files.count());
+            emit totalAmount(this, KJob::Directories, dirs.count());
             break;
         case STATE_DELETING_DIRS:
-            emit processedDirs( this, m_processedDirs );
+            emit processedAmount(this, KJob::Directories, m_processedDirs);
             emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             break;
         case STATE_DELETING_FILES:
-            emit processedFiles( this, m_processedFiles );
+            emit processedAmount(this, KJob::Files, m_processedFiles);
             emitPercent( m_processedFiles, m_totalFilesDirs );
             break;
    }
@@ -270,11 +271,12 @@ void DeleteJob::slotProcessedSize( KJob*, qulonglong data_size )
    // is not in Job.
 
    m_fileProcessedSize = data_size;
-   setProcessedSize(m_processedSize + m_fileProcessedSize);
+   setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 
    //kDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
 
-   emit processedSize( this, m_processedSize + m_fileProcessedSize );
+   emit processedAmount(this, KJob::Bytes, m_processedSize + m_fileProcessedSize);
+   emit processedSize(this, m_processedSize + m_fileProcessedSize);
 
    // calculate percents
    unsigned long ipercent = percent();
@@ -385,7 +387,7 @@ void DeleteJob::slotResult( KJob *job )
         removeSubjob( job );
         assert( !hasSubjobs() );
         m_processedDirs++;
-        //emit processedDirs( this, m_processedDirs );
+        //emit processedAmount( this, KJob::Directories, m_processedDirs );
         //if (!m_shred)
         //emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
 
