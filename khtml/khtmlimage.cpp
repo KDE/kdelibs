@@ -129,7 +129,7 @@ bool KHTMLImage::openUrl( const KUrl &url )
 
     disposeImage();
 
-    m_url = url;
+    setUrl(url);
 
     emit started( 0 );
 
@@ -142,7 +142,7 @@ bool KHTMLImage::openUrl( const KUrl &url )
     m_xOffset = args.xOffset;
     m_yOffset = args.yOffset;
 
-    m_khtml->begin( m_url );
+    m_khtml->begin( this->url() );
     m_khtml->setAutoloadImages( true );
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
@@ -152,11 +152,11 @@ bool KHTMLImage::openUrl( const KUrl &url )
         impl->docLoader()->setCachePolicy( KIO::CC_Reload );
 
     khtml::DocLoader *dl = impl->docLoader();
-    m_image = dl->requestImage( m_url.url() );
+    m_image = dl->requestImage( this->url().url() );
     if ( m_image )
         m_image->ref( this );
 
-    m_khtml->write( html.arg( m_url.url() ) );
+    m_khtml->write( html.arg( this->url().url() ) );
     m_khtml->end();
 
     /*

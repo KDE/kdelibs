@@ -155,7 +155,7 @@ void KMultiPart::startHeader()
 
 bool KMultiPart::openUrl( const KUrl &url )
 {
-    m_url = url;
+    setUrl(url);
     m_lineParser->reset();
     startHeader();
 

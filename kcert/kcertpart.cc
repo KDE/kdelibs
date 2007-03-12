@@ -465,7 +465,7 @@ bool KCertPart::openFile() {
 	return false;
 #else
 
-	if (QFileInfo(m_file).size() == 0) {
+	if (QFileInfo(localFilePath()).size() == 0) {
 		KMessageBox::sorry(_frame, i18n("Certificate file is empty."), i18n("Certificate Import"));
 		return false;
 	}
@@ -473,7 +473,7 @@ bool KCertPart::openFile() {
 	QString whatType = d->browserExtension->urlArgs().serviceType;
 //whatType = KMimeType::findByURL(m_url,0,true)->name();
 	if (whatType.isEmpty())
-        	whatType = KMimeType::findByPath(m_file, 0, true)->name();
+		whatType = KMimeType::findByPath(localFilePath(), 0, true)->name();
 
 /*
   QString blah = "file: " + m_file
@@ -491,7 +491,7 @@ bool KCertPart::openFile() {
 //		 x-pkcs12 loading
 /////////////////////////////////////////////////////////////////////////////
 		if (whatType == "application/x-pkcs12") {
-			_p12 = KSSLPKCS12::loadCertFile(m_file);
+			_p12 = KSSLPKCS12::loadCertFile(localFilePath());
 
 			while (!_p12) {
 				// try prompting for a password.
@@ -501,7 +501,7 @@ bool KCertPart::openFile() {
 				if( !dlg.exec() )
 					break;
 
-				_p12 = KSSLPKCS12::loadCertFile(m_file, dlg.password());
+				_p12 = KSSLPKCS12::loadCertFile(localFilePath(), dlg.password());
 
 				if (!_p12) {
 					int rc = KMessageBox::warningContinueCancel(_frame, i18n("The certificate file could not be loaded. Try a different password?"), i18n("Certificate Import"),KGuiItem(i18n("Try Different")));
@@ -523,12 +523,12 @@ bool KCertPart::openFile() {
 			FILE *fp;
 			bool isPEM = false;
 
-			_ca_filenameLabel->setText(m_file);
+			_ca_filenameLabel->setText(localFilePath());
 
 			/////////////  UGLY HACK TO GET AROUND OPENSSL PROBLEMS ///////////
 				if (whatType == "application/x-x509-ca-cert") {
 					// Check if it is PEM or not
-					QFile qf(m_file);
+					QFile qf(localFilePath());
 					qf.open(QIODevice::ReadOnly);
 					QByteArray theFile = qf.readAll();
 					qf.close();
@@ -537,7 +537,7 @@ bool KCertPart::openFile() {
 					isPEM = theFile.contains(signature);
 				}
 
-				fp = fopen(m_file.toLocal8Bit(), "r");
+				fp = fopen(localFilePath().toLocal8Bit(), "r");
 				if (!fp) {
 					KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
 					return false;
@@ -578,7 +578,7 @@ bool KCertPart::openFile() {
 					return false;
 				}
 
-				_ca_filenameLabel->setText(m_file);
+				_ca_filenameLabel->setText(localFilePath());
 				for (int i = 0; i < sk_X509_INFO_num(sx5i); i++) {
 					X509_INFO* x5i = sk_X509_INFO_value(sx5i, i);
 					if (x5i->x_pkey && x5i->x509) {	  // a personal cert (like PKCS12)
@@ -616,7 +616,7 @@ bool KCertPart::openFile() {
 
 void KCertPart::displayPKCS12() {
 	KSSLCertificate *xc = _p12->getCertificate();
-	_p12_filenameLabel->setText(m_file);
+	_p12_filenameLabel->setText(localFilePath());
 	displayPKCS12Cert(xc);
 	_p12_certState->setText(KSSLCertificate::verifyText(_p12->validate()));
 

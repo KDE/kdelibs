@@ -593,7 +593,7 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
-  m_url = url;
+  setUrl(url);
 
   d->m_restoreScrollPosition = true;
   disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
@@ -684,10 +684,10 @@ bool KHTMLPart::openUrl( const KUrl &url )
   if ( url.hasRef() && !isFrameSet )
   {
     bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
-    if (noReloadForced && urlcmp( url.url(), m_url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ))
+    if (noReloadForced && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ))
     {
         kDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
-        m_url = url;
+        setUrl(url);
         emit started( 0L );
 
         if ( !gotoAnchor( url.encodedHtmlRef()) )
@@ -720,14 +720,14 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
-  m_url = url;
-  if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
-     m_url.path().isEmpty()) {
-    m_url.setPath("/");
-    emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
+  setUrl(url);
+  if(this->url().protocol().startsWith( "http" ) && !this->url().host().isEmpty() &&
+     this->url().path().isEmpty()) {
+    this->url().setPath("/");
+    emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
   }
   // copy to m_workingURL after fixing m_url above
-  d->m_workingURL = m_url;
+  d->m_workingURL = this->url();
 
   args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
@@ -747,14 +747,14 @@ bool KHTMLPart::openUrl( const KUrl &url )
   else
      d->m_cachePolicy = KProtocolManager::cacheControl();
 
-  if ( args.doPost() && (m_url.protocol().startsWith("http")) )
+  if ( args.doPost() && (this->url().protocol().startsWith("http")) )
   {
-      d->m_job = KIO::http_post( m_url, args.postData, false );
+      d->m_job = KIO::http_post( this->url(), args.postData, false );
       d->m_job->addMetaData("content-type", args.contentType() );
   }
   else
   {
-      d->m_job = KIO::get( m_url, false, false );
+      d->m_job = KIO::get( this->url(), false, false );
       d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
   }
 
@@ -847,8 +847,8 @@ bool KHTMLPart::closeUrl()
   if ( !d->m_workingURL.isEmpty() )
   {
     // Aborted before starting to render
-    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << m_url.prettyUrl() << endl;
-    emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
+    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << this->url().prettyUrl() << endl;
+    emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
   }
 
   d->m_workingURL = KUrl();
@@ -908,7 +908,7 @@ DOM::Document KHTMLPart::document() const
 QString KHTMLPart::documentSource() const
 {
   QString sourceStr;
-  if ( !( m_url.isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
+  if ( !( url().isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
   {
      QByteArray sourceArray;
      QDataStream dataStream( &sourceArray, QIODevice::WriteOnly );
@@ -919,7 +919,7 @@ QString KHTMLPart::documentSource() const
   } else
   {
     QString tmpFile;
-    if( KIO::NetAccess::download( m_url, tmpFile, NULL ) )
+    if( KIO::NetAccess::download( url(), tmpFile, NULL ) )
     {
       QFile f( tmpFile );
       if ( f.open( QIODevice::ReadOnly ) )
@@ -1128,7 +1128,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   }
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
-    d->m_jsedlg->setURL(m_url.prettyUrl());
+    d->m_jsedlg->setURL(url().prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
       d->m_jsedlg->_clear->setIcon(KIcon("locationbar_erase"));
       d->m_jsedlg->_close->setIcon(KIcon("window-close"));
@@ -1660,7 +1660,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (!language.isEmpty())
         d->m_doc->setContentLanguage(language);
 
-    if ( !m_url.isLocalFile() ) {
+    if ( !url().isLocalFile() ) {
         // Support for http last-modified
         d->m_lastModified = d->m_job->queryMetaData("modified");
     } else
@@ -1743,7 +1743,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   // make the working url the current url, so that reload works and
   // emit the progress signals to advance one step in the history
   // (so that 'back' works)
-  m_url = reqUrl; // same as d->m_workingURL
+  setUrl(reqUrl); // same as d->m_workingURL
   d->m_workingURL = KUrl();
   emit started( 0 );
   emit completed();
@@ -1864,8 +1864,8 @@ void KHTMLPart::slotFinished( KJob * job )
   if (d->m_frame && d->m_frame->m_jscript)
     d->m_frame->m_jscript->dataReceived();
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && m_url.protocol().toLower().startsWith("http"))
-      KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().protocol().toLower().startsWith("http"))
+      KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KUrl();
 
@@ -1918,7 +1918,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   KUrl ref(url);
   d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
 
-  m_url = url;
+  setUrl(url);
 
   bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
   KMimeType::Ptr mime = KMimeType::mimeType( args.serviceType );
@@ -1936,7 +1936,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 #endif
 
   d->m_doc->ref();
-  d->m_doc->setURL( m_url.url() );
+  d->m_doc->setURL( this->url().url() );
   if (!d->m_doc->attached())
     d->m_doc->attach( );
   d->m_doc->setBaseURL( KUrl() );
@@ -2428,7 +2428,7 @@ void KHTMLPart::slotRedirect()
     return;
   }
   KParts::URLArgs args;
-  KUrl cUrl( m_url );
+  KUrl cUrl( url() );
   KUrl url( u );
 
   // handle windows opened by JS
@@ -2442,7 +2442,7 @@ void KHTMLPart::slotRedirect()
     return;
   }
 
-  if ( urlcmp( u, m_url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) )
+  if ( urlcmp( u, this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) )
   {
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
@@ -2478,13 +2478,13 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     d->m_encoding = name;
     d->m_haveEncoding = override;
 
-    if( !m_url.isEmpty() ) {
+    if( !url().isEmpty() ) {
         // reload document
         closeUrl();
-        KUrl url = m_url;
-        m_url = 0;
+        KUrl oldUrl = url();
+        setUrl(KUrl());
         d->m_restored = true;
-        openUrl(url);
+        openUrl(oldUrl);
         d->m_restored = false;
     }
 
@@ -4002,11 +4002,11 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
     if (urlcmp(cURL.url(), curUrl.url(), KUrl::CompareWithoutFragment) )
                // don't ignore trailing '/' diff, IE does, even if FFox doesn't
     {
-      m_url = cURL;
+      setUrl(cURL);
       emit d->m_extension->openUrlNotify();
-      if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-        gotoAnchor( m_url.htmlRef() );
-      emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
+      if ( !gotoAnchor( this->url().encodedHtmlRef()) )
+        gotoAnchor( this->url().htmlRef() );
+      emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
       return false; // we jumped, but we didn't open a URL
     }
   }
@@ -4021,9 +4021,9 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
 
 void KHTMLPart::slotViewDocumentSource()
 {
-  KUrl url(m_url);
+  KUrl currentUrl(this->url());
   bool isTempFile = false;
-  if (!(url.isLocalFile()) && KHTMLPageCache::self()->isComplete(d->m_cacheId))
+  if (!(currentUrl.isLocalFile()) && KHTMLPageCache::self()->isComplete(d->m_cacheId))
   {
      KTemporaryFile sourceFile;
      sourceFile.setSuffix(defaultExtension());
@@ -4032,13 +4032,13 @@ void KHTMLPart::slotViewDocumentSource()
      {
         QDataStream stream ( &sourceFile );
         KHTMLPageCache::self()->saveData(d->m_cacheId, &stream);
-        url = KUrl();
-        url.setPath(sourceFile.fileName());
+        currentUrl = KUrl();
+        currentUrl.setPath(sourceFile.fileName());
         isTempFile = true;
      }
   }
 
-  (void) KRun::runUrl( url, QLatin1String("text/plain"), view(), isTempFile );
+  (void) KRun::runUrl( currentUrl, QLatin1String("text/plain"), view(), isTempFile );
 }
 
 void KHTMLPart::slotViewPageInfo()
@@ -4139,7 +4139,7 @@ KUrl KHTMLPart::backgroundURL() const
 
   QString relURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
-  return KUrl( m_url, relURL );
+  return KUrl( url(), relURL );
 }
 
 void KHTMLPart::slotSaveBackground()
@@ -4151,7 +4151,7 @@ void KHTMLPart::slotSaveBackground()
 
 void KHTMLPart::slotSaveDocument()
 {
-  KUrl srcURL( m_url );
+  KUrl srcURL( url() );
 
   if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
     srcURL.setFileName( "index" + defaultExtension() );
@@ -4203,7 +4203,7 @@ void KHTMLPart::slotSecurity()
 
        kid->setup(x,
                   d->m_ssl_peer_ip,
-                  m_url.url(),
+                  url().url(),
                   d->m_ssl_cipher,
                   d->m_ssl_cipher_desc,
                   d->m_ssl_cipher_version,
@@ -4640,7 +4640,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       if (!url.url().startsWith("about:")) {
         p->write(url.path());
       } else {
-	p->m_url = url;
+	p->setUrl(url);
         // we need a body element. testcase: <iframe id="a"></iframe><script>alert(a.document.body);</script>
         p->write("<HTML><TITLE></TITLE><BODY></BODY></HTML>");
       }
@@ -5102,7 +5102,7 @@ void KHTMLPart::slotChildDocCreated()
     {
       DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
       if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
-        //kDebug(6050) << "KHTMLPart::slotChildDocCreated: url: " << htmlFrame->m_url.url() << endl;
+        //kDebug(6050) << "KHTMLPart::slotChildDocCreated: url: " << htmlFrame->url().url() << endl;
         static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain );
     }
   }
@@ -5203,7 +5203,7 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 
   if (htmlDocument().isNull()) {
 #ifdef DEBUG_FINDFRAME
-    kDebug(6050) << "KHTMLPart::checkFrameAccess: Empty part " << this << " URL = " << m_url << endl;
+    kDebug(6050) << "KHTMLPart::checkFrameAccess: Empty part " << this << " URL = " << url() << endl;
 #endif
     return false; // we are empty?
   }
@@ -5234,7 +5234,7 @@ KHTMLPart *
 KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame )
 {
 #ifdef DEBUG_FINDFRAME
-  kDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << m_url << " name = " << name() << " findFrameParent( " << f << " )" << endl;
+  kDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << url() << " name = " << name() << " findFrameParent( " << f << " )" << endl;
 #endif
   // Check access
   KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
@@ -5378,10 +5378,10 @@ void KHTMLPart::saveState( QDataStream &stream )
 #ifndef NDEBUG
   QString indent= QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
-  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << m_url.url() << endl;
+  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url().url() << endl;
 #endif
 
-  stream << m_url << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
+  stream << url() << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
          << (qint32) d->m_view->contentsWidth() << (qint32) d->m_view->contentsHeight() << (qint32) d->m_view->marginWidth() << (qint32) d->m_view->marginHeight();
 
   // save link cursor position
@@ -5519,7 +5519,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_bLoadEventEmitted = false;
 
 //   kDebug( 6050 ) << "restoreState() docState.count() = " << docState.count() << endl;
-//   kDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
+//   kDebug( 6050 ) << "m_url " << url().url() << " <-> " << u.url() << endl;
 //   kDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
   if (d->m_cacheId == old_cacheId)
@@ -5576,7 +5576,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     d->m_view->resizeContents( wContents,  hContents);
     d->m_view->setContentsPos( xOffset, yOffset );
 
-    m_url = u;
+    setUrl(u);
   }
   else
   {
@@ -5840,7 +5840,7 @@ QString KHTMLPart::pageReferrer() const
       QString protocol = referrerURL.protocol();
 
       if ((protocol == "http") ||
-         ((protocol == "https") && (m_url.protocol() == "https")))
+         ((protocol == "https") && (url().protocol() == "https")))
       {
           referrerURL.setRef(QString());
           referrerURL.setUser(QString());
@@ -5855,11 +5855,11 @@ QString KHTMLPart::pageReferrer() const
 
 QString KHTMLPart::lastModified() const
 {
-  if ( d->m_lastModified.isEmpty() && m_url.isLocalFile() ) {
+  if ( d->m_lastModified.isEmpty() && url().isLocalFile() ) {
     // Local file: set last-modified from the file's mtime.
     // Done on demand to save time when this isn't needed - but can lead
     // to slightly wrong results if updating the file on disk w/o reloading.
-    QDateTime lastModif = QFileInfo( m_url.path() ).lastModified();
+    QDateTime lastModif = QFileInfo( url().path() ).lastModified();
     d->m_lastModified = lastModif.toString( Qt::LocalDate );
   }
   //kDebug(6050) << "KHTMLPart::lastModified: " << d->m_lastModified << endl;
@@ -5891,10 +5891,10 @@ void KHTMLPart::reparseConfiguration()
 
   d->m_bOpenMiddleClick = settings->isOpenMiddleClickEnabled();
   d->m_bBackRightClick = settings->isBackRightClickEnabled();
-  d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
+  d->m_bJScriptEnabled = settings->isJavaScriptEnabled(url().host());
   setDebugScript( settings->isJavaScriptDebugEnabled() );
-  d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
-  d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
+  d->m_bJavaEnabled = settings->isJavaEnabled(url().host());
+  d->m_bPluginsEnabled = settings->isPluginsEnabled(url().host());
   d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
 
   delete d->m_settings;
@@ -6962,7 +6962,7 @@ DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString na
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( m_url.url(), name, code, node );
+  return proxy->createHTMLEventHandler( url().url(), name, code, node );
 }
 
 KHTMLPart *KHTMLPart::opener()
@@ -7120,11 +7120,11 @@ void KHTMLPart::restoreScrollPosition()
 {
   KParts::URLArgs args = d->m_extension->urlArgs();
 
-  if ( m_url.hasRef() && !d->m_restoreScrollPosition && !args.reload) {
+  if ( url().hasRef() && !d->m_restoreScrollPosition && !args.reload) {
     if ( !d->m_doc || !d->m_doc->parsing() )
       disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-    if ( !gotoAnchor(m_url.encodedHtmlRef()) )
-      gotoAnchor(m_url.htmlRef());
+    if ( !gotoAnchor(url().encodedHtmlRef()) )
+      gotoAnchor(url().htmlRef());
     return;
   }
 

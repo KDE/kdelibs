@@ -37,6 +37,7 @@ namespace KParts
 
   // Defined in impl
   class StatusBarItem;
+  class StatusBarExtensionPrivate;
 
 
   /**
@@ -109,12 +110,8 @@ namespace KParts
       virtual bool eventFilter( QObject *watched, QEvent* ev );
 
     private:
-
-     QList<StatusBarItem> m_statusBarItems; // Our statusbar items
-     mutable KStatusBar* m_statusBar;
-
      // for future extensions
-     class StatusBarExtensionPrivate;
+     friend class StatusBarExtensionPrivate;
      StatusBarExtensionPrivate* const d;
   };
 

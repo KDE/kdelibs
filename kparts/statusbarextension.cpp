@@ -35,6 +35,18 @@ using namespace KParts;
 // Helper Classes
 ///////////////////////////////////////////////////////////////////
 
+class KParts::StatusBarExtensionPrivate
+{
+public:
+  StatusBarExtensionPrivate(StatusBarExtension *q): q(q),
+                                                    m_statusBar(0) {}
+
+  StatusBarExtension *q;
+  QList<StatusBarItem> m_statusBarItems; // Our statusbar items
+  KStatusBar* m_statusBar;
+};
+
+
 class KParts::StatusBarItem {
   public:
     StatusBarItem() // for QValueList
@@ -78,13 +90,14 @@ class KParts::StatusBarItem {
 
 
 StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent)
-  : QObject(parent), m_statusBar(0), d(0)
+  : QObject(parent), d(new StatusBarExtensionPrivate(this))
 {
   parent->installEventFilter(this);
 }
 
 StatusBarExtension::~StatusBarExtension()
 {
+  delete d;
 }
 
 
@@ -118,14 +131,14 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
   if ( gae->activated() )
   {
-    QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
-    for ( ; it != m_statusBarItems.end() ; ++it )
+    QList<StatusBarItem>::iterator it = d->m_statusBarItems.begin();
+    for ( ; it != d->m_statusBarItems.end() ; ++it )
       (*it).ensureItemShown( sb );
   }
   else
   {
-    QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
-    for ( ; it != m_statusBarItems.end() ; ++it )
+    QList<StatusBarItem>::iterator it = d->m_statusBarItems.begin();
+    for ( ; it != d->m_statusBarItems.end() ; ++it )
       (*it).ensureItemHidden( sb );
   }
 
@@ -135,24 +148,24 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
 KStatusBar * StatusBarExtension::statusBar() const
 {
-  if ( !m_statusBar )  {
+  if ( !d->m_statusBar )  {
     QWidget* w = static_cast<KParts::ReadOnlyPart*>(parent())->widget();
     KMainWindow* mw = dynamic_cast<KMainWindow *>( w->topLevelWidget() );
     if ( mw )
-      m_statusBar = mw->statusBar();
+      d->m_statusBar = mw->statusBar();
   }
-  return m_statusBar;
+  return d->m_statusBar;
 }
 
 void StatusBarExtension::setStatusBar( KStatusBar* status )
 {
-  m_statusBar = status;
+  d->m_statusBar = status;
 }
 
 void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
 {
-  m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
-  StatusBarItem& it = m_statusBarItems.last();
+  d->m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
+  StatusBarItem& it = d->m_statusBarItems.last();
   KStatusBar * sb = statusBar();
   Q_ASSERT(sb);
   if (sb)
@@ -162,16 +175,16 @@ void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool p
 void StatusBarExtension::removeStatusBarItem( QWidget * widget )
 {
   KStatusBar * sb = statusBar();
-  QList<StatusBarItem>::iterator it = m_statusBarItems.begin();
-  for ( ; it != m_statusBarItems.end() ; ++it )
+  QList<StatusBarItem>::iterator it = d->m_statusBarItems.begin();
+  for ( ; it != d->m_statusBarItems.end() ; ++it )
     if ( (*it).widget() == widget )
     {
       if ( sb )
         (*it).ensureItemHidden( sb );
-      m_statusBarItems.erase( it );
+      d->m_statusBarItems.erase( it );
       break;
     }
-  if ( it == m_statusBarItems.end() )
+  if ( it == d->m_statusBarItems.end() )
     kWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget << endl;
 }
 

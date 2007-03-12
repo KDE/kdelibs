@@ -27,6 +27,11 @@
 #include <qcoreevent.h>
 #include <kxmlguiclient.h>
 
+#define KPARTS_DECLARE_PRIVATE(Class) \
+    inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(PartBase::d_ptr); } \
+    inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(PartBase::d_ptr); } \
+    friend class Class##Private;
+
 class KIconLoader;
 class KComponentData;
 class QWidget;
@@ -59,7 +64,8 @@ class PartBasePrivate;
  */
 class KPARTS_EXPORT PartBase : virtual public KXMLGUIClient
 {
-    friend class PartBasePrivate;
+    KPARTS_DECLARE_PRIVATE(PartBase)
+
 public:
 
   /**
@@ -164,9 +170,13 @@ protected:
    */
   void setPluginInterfaceVersion( int version );
 
+protected:
+  PartBase(PartBasePrivate &dd);
+
+  PartBasePrivate *d_ptr;
+
 private:
-  PartBasePrivate* const d;
-  QObject *m_obj;
+  Q_DISABLE_COPY(PartBase)
 };
 
 /**
@@ -197,6 +207,8 @@ private:
 class KPARTS_EXPORT Part : public QObject, public PartBase
 {
     Q_OBJECT
+
+    KPARTS_DECLARE_PRIVATE(Part)
 
 public:
 
@@ -283,7 +295,6 @@ Q_SIGNALS:
     void setStatusBarText( const QString & text );
 
 protected:
-
     /**
      * Set the main widget.
      *
@@ -327,15 +338,18 @@ protected:
 
 Q_SIGNALS:
     void leaveModality();
-private Q_SLOTS:
+
+protected Q_SLOTS:
+    /**
+     * @internal
+     */
     void slotWidgetDestroyed();
 
-private:
-    QPointer<QWidget> m_widget;
+protected:
+    Part(PartPrivate &dd, QObject *parent);
 
-    PartManager * m_manager;
-
-    PartPrivate* const d;
+private:    
+    Q_DISABLE_COPY(Part)
 };
 
 class ReadWritePart;
@@ -365,8 +379,11 @@ class BrowserExtension;
 class KPARTS_EXPORT ReadOnlyPart : public Part
 {
   Q_OBJECT
-  friend class ReadWritePart;
+
   Q_PROPERTY( KUrl url READ url )
+
+  KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
+
 public:
   /**
    * Constructor
@@ -415,7 +432,7 @@ public:
    *
    *  @return The current URL.
    */
-  KUrl url() const { return m_url; }
+  KUrl url() const;
 
   /**
    * Called when closing the current url (e.g. document), for instance
@@ -515,13 +532,10 @@ Q_SIGNALS:
    */
   void canceled( const QString &errMsg );
 
-protected Q_SLOTS:
-  void slotJobFinished( KJob * job );
-
 protected:
   /**
    * If the part uses the standard implementation of openUrl(),
-   * it must reimplement this, to open @p m_file.
+   * it must reimplement this, to open the local file.
    * Otherwise simply define it to { return false; }
    */
   virtual bool openFile() = 0;
@@ -544,21 +558,37 @@ protected:
   virtual void guiActivateEvent( GUIActivateEvent *event );
 
   /**
-   * Remote (or local) url - the one displayed to the user.
+   * @internal
    */
-  KUrl m_url;
+  KDE_DEPRECATED bool isLocalFileTemporary() const;
+
   /**
-   * Local file - the only one the part implementation should deal with.
+   * @internal
    */
-  QString m_file;
+  KDE_DEPRECATED void setLocalFileTemporary( bool temp );
+
   /**
-   * If @p true, @p m_file is a temporary file that needs to be deleted later.
+   * Sets the url associated with this part.
    */
-  bool m_bTemp;
+  void setUrl(const KUrl &url);
+
+  /**
+   * Returns the local file path associated with this part.
+   */
+  QString localFilePath() const;
+
+  /**
+   * Sets the local file path associated with this part.
+   */
+  void setLocalFilePath( const QString &localFilePath );
 
 private:
-  ReadOnlyPartPrivate* const d;
+  Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
+
+  Q_DISABLE_COPY(ReadOnlyPart)
 };
+
+class ReadWritePartPrivate;
 
 /**
  * Base class for an "editor" part.
@@ -578,6 +608,9 @@ private:
 class KPARTS_EXPORT ReadWritePart : public ReadOnlyPart
 {
   Q_OBJECT
+
+  KPARTS_DECLARE_PRIVATE(ReadWritePart)
+
 public:
   /**
    * Constructor
@@ -597,7 +630,7 @@ public:
   /**
    * @return true if the part is in read-write mode
    */
-  bool isReadWrite() const { return m_bReadWrite; }
+  bool isReadWrite() const;
 
   /**
    * Changes the behavior of this part to readonly or readwrite.
@@ -608,7 +641,7 @@ public:
   /**
    * @return true if the document has been modified.
    */
-  bool isModified() const { return m_bModified; }
+  bool isModified() const;
 
   /**
    * If the document has been modified, ask the user to save changes.
@@ -687,7 +720,7 @@ public Q_SLOTS:
 protected:
   /**
    * Save to a local file.
-   * You need to implement it, to save to @p m_file.
+   * You need to implement it, to save to the local file.
    * The framework takes care of re-uploading afterwards.
    *
    * @return true on success, false on failure.
@@ -701,28 +734,22 @@ protected:
   /**
    * Save the file.
    *
-   * Uploads the file, if @p m_url is remote.
+   * Uploads the file, if @p url is remote.
    * This will emit started(), and either completed() or canceled(),
    * in case you want to provide feedback.
    * @return true on success, false on failure.
    */
   virtual bool saveToUrl();
 
-protected Q_SLOTS:
-  /**
-   * @internal
-   */
-  void slotUploadFinished( KJob * job );
-
 private:
-  void prepareSaving();
+  Q_PRIVATE_SLOT(d_func(), void _k_slotUploadFinished( KJob * job ))
 
-private:
-  bool m_bModified;
-  bool m_bReadWrite;
-  bool m_bClosing;
+  Q_DISABLE_COPY(ReadWritePart)
 };
 
 } // namespace
+
+
+#undef KPARTS_DECLARE_PRIVATE
 
 #endif
