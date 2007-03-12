@@ -155,8 +155,8 @@ KFileMetaInfo::Private::initWriters(QIODevice& /*file*/) {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
     for (i = items.begin(); i != items.end(); ++i) {
-        i.value().p->writer =
-            KFileWriterProvider::self()->plugin(i.key(), kurl, mimetypes);
+        i.value().setWriter(
+            KFileWriterProvider::self()->plugin(i.key(), kurl, mimetypes));
     }
 }
 

@@ -37,6 +37,10 @@ KFileMetaInfoItem::KFileMetaInfoItem(const PredicateProperties& pp,
 }
 KFileMetaInfoItem::~KFileMetaInfoItem() {
 }
+void
+KFileMetaInfoItem::setWriter(KFileWritePlugin* w) {
+    p->writer = w;
+}
 const KFileMetaInfoItem&
 KFileMetaInfoItem::operator=(const KFileMetaInfoItem& item) {
     p = item.p;

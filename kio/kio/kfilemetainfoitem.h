@@ -53,6 +53,8 @@ private:
     class Private;
     QSharedDataPointer<Private> p;
 
+    void setWriter(KFileWritePlugin* w);
+
     KFileMetaInfoItem(const PredicateProperties& p,
         const QVariant& v, KFileWritePlugin* w, bool e);
 };
