@@ -35,7 +35,7 @@ FakeAuthenticationValidator::~FakeAuthenticationValidator()
 {
 }
 
-bool FakeAuthenticationValidator::validate( const Solid::Ifaces::Authentication * )
+bool FakeAuthenticationValidator::validate( const Solid::Authentication * )
 {
     return true;
 }

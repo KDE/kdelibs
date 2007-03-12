@@ -29,6 +29,10 @@
 #include <solid/ifaces/wirelessnetwork.h>
 #include "fakenetwork.h"
 
+namespace Solid {
+    class Authentication;
+}
+
 using namespace Solid::Ifaces;
 /**
  * Fakes a wireless network.
@@ -70,11 +74,11 @@ public:
      */
     MacAddressList bssList() const;
 
-    Authentication *authentication() const;
+    Solid::Authentication *authentication() const;
     /**
      * set the authentication currently in use on this network
      */
-    void setAuthentication( Authentication * );
+    void setAuthentication( Solid::Authentication * );
 Q_SIGNALS:
     void signalStrengthChanged( int );
     void bitrateChanged( int );
@@ -85,7 +89,7 @@ Q_SIGNALS:
         */
     void authenticationNeeded();
 private:
-    Authentication * mAuthentication;
+    Solid::Authentication * mAuthentication;
 };
 
 #endif

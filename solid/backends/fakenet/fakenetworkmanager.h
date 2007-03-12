@@ -35,6 +35,10 @@ class FakeAuthenticationValidator;
 class QDomElement;
 //class FakeNetworkInterface;
 
+namespace Solid {
+    class Authentication;
+}
+
 class KDE_EXPORT FakeNetworkManager : public Solid::Ifaces::NetworkManager
 {
 Q_OBJECT
@@ -73,7 +77,7 @@ Q_OBJECT
     public:
         FakeAuthenticationValidator( QObject * parent );
         virtual ~FakeAuthenticationValidator();
-        bool validate( const Solid::Ifaces::Authentication * );
+        bool validate( const Solid::Authentication * );
 };
 
 #endif

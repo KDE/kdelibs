@@ -121,12 +121,12 @@ MacAddressList FakeWirelessNetwork::bssList() const
     return mPropertyMap[ "bsslist" ].toStringList();
 }
 
-Authentication *FakeWirelessNetwork::authentication() const
+Solid::Authentication *FakeWirelessNetwork::authentication() const
 {
     return mAuthentication;
 }
 
-void FakeWirelessNetwork::setAuthentication( Authentication *authentication )
+void FakeWirelessNetwork::setAuthentication( Solid::Authentication *authentication )
 {
     mAuthentication = authentication;
 }
