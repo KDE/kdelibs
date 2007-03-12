@@ -97,8 +97,10 @@ void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& 
 {
     ui.setupUi( q->mainWidget() );
 
-    //ui.comment->setVisible( false );
     ui.errorMessage->setVisible( false );
+    ui.errorMessage->setFrameShape( QFrame::StyledPanel );
+    ui.errorMessage->setFrameShadow( QFrame::Plain );
+    ui.errorMessage->setBackgroundRole( QPalette::Base );
 
     // Row 4: Username field
     if ( flags & KPasswordDialog::ShowUsernameLine ) {
