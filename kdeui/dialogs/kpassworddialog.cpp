@@ -32,6 +32,7 @@
 #include <khbox.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
+#include <kinformationlabel.h>
 
 #include "ui_kpassworddialog.h"
 
@@ -86,8 +87,6 @@ KPasswordDialog::KPasswordDialog( QWidget* parent ,
     d->init ( flags );
 }
 
-
-
 KPasswordDialog::~KPasswordDialog()
 {
     delete d;
@@ -96,11 +95,6 @@ KPasswordDialog::~KPasswordDialog()
 void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& flags )
 {
     ui.setupUi( q->mainWidget() );
-
-    ui.errorMessage->setVisible( false );
-    ui.errorMessage->setFrameShape( QFrame::StyledPanel );
-    ui.errorMessage->setFrameShadow( QFrame::Plain );
-    ui.errorMessage->setBackgroundRole( QPalette::Base );
 
     // Row 4: Username field
     if ( flags & KPasswordDialog::ShowUsernameLine ) {
@@ -199,7 +193,6 @@ void KPasswordDialog::addCommentLine( const QString& label,
 
 void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType type )
 {
-    d->ui.errorMessage->setVisible( true );
     d->ui.errorMessage->setText( message );
     mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
 
@@ -300,7 +293,7 @@ void KPasswordDialog::KPasswordDialogPrivate::activated( const QString& userName
 
 void KPasswordDialog::accept()
 {
-    d->ui.errorMessage->setVisible( false );
+    d->ui.errorMessage->setText( QString() );
 
     // reset the font in case we had an error previously
     d->ui.passwordLabel->setFont( font() );
