@@ -249,8 +249,9 @@ public:
    * @param pFilename The full path to the current file of your
    * document.
    * @return A new filename for auto-saving.
+   * @deprecated use KTemporaryFile, KSaveFile or KAutoSaveFile instead
    */
-  static QString tempSaveName( const QString& pFilename );
+  static KDE_DEPRECATED QString tempSaveName( const QString& pFilename );
 
   /**
    * Check whether  an auto-save file exists for the document you want to
