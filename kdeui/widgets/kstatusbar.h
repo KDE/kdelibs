@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 Mark Donohoe (donohoe@kde.org)
    Copyright (C) 1997, 1998 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+   Copyright (C) 2007 Aron Boström (aron.bostrom@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,41 +23,12 @@
 #define KSTATUSBAR_H
 
 #include <QtGui/QStatusBar>
-#include <QtCore/QHash>
-#include <QtGui/QLabel>
 
 #include <kdelibs_export.h>
 
-class KStatusBar;
-
-/**
- *  Internal label class for use in KStatusBar
- *  @internal
- */
-class KDEUI_EXPORT KStatusBarLabel : public QLabel
-{
-  Q_OBJECT
-
-public:
-
-
-  KStatusBarLabel( const QString& text, int _id, KStatusBar* parent = 0 );
-  ~KStatusBarLabel () {}
-
-protected:
-
-  void mousePressEvent (QMouseEvent* _event);
-  void mouseReleaseEvent (QMouseEvent* _event);
-
-private:
-
-  int id;
-
-Q_SIGNALS:
-
-  void itemPressed (int id);
-  void itemReleased (int id);
-};
+class QObject;
+class QEvent;
+class KStatusBarPrivate;
 
 /**
  *  @short %KDE statusbar widget
@@ -209,10 +181,11 @@ Q_SIGNALS:
    */
   void released( int );
 
+protected:
+  bool eventFilter(QObject* object, QEvent *event);
+
 private:
-  QHash<int, KStatusBarLabel*> items;
-  class Private;
-  Private * d;
+  KStatusBarPrivate* const d;
 };
 
 #endif // KSTATUSBAR_H

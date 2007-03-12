@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Mark Donohoe (donohoe@kde.org)
               (C) 1997,1998, 2000 Sven Radej (radej@kde.org)
+              (C) 2007 Aron Boström (aron.bostrom@gmail.com)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,152 +19,158 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QtCore/QHash>
+#include <QtCore/QEvent>
+#include <QtGui/QLabel>
+
 #include <kdebug.h>
 #include <kstatusbar.h>
 #include <ksharedconfig.h>
 #include <kglobal.h>
+#include <ksqueezedtextlabel.h>
 
-#include <qframe.h>
 #include <kconfiggroup.h>
 
-KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
-                                 KStatusBar *parent) :
-  QLabel( parent )
+
+class KStatusBarPrivate
 {
-  id = _id;
+public:
+    int id(QObject* object)
+    {
+        QHash<int, QLabel*>::const_iterator it = items.constBegin();
+        QHash<int, QLabel*>::const_iterator end = items.constEnd();
+        while ( it != end ) {
+            if ( object == it.value() ) {
+                return it.key();
+            }
 
-  setText( text );
+            ++it;
+        }
+        kDebug() << "Danger: Unable to find originating event object in object list. This shouldn't happen!" << endl;
+        return -1;
+    }
 
-  // umm... Mosfet? Can you help here?
+    QHash<int, QLabel*> items;
+};
 
-  // Warning: QStatusBar draws shaded rectangle around every item - which
-  // IMHO is stupid.
-  // So NoFrame|Plain is the best you get. the problem is that only in case of
-  // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
-  setLineWidth( 0 );
-  setFrameStyle( QFrame::NoFrame );
-
-  setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
-
-  connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
-  connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));
-}
-
-void KStatusBarLabel::mousePressEvent (QMouseEvent *)
+bool KStatusBar::eventFilter(QObject* object, QEvent* event)
 {
-  emit itemPressed (id);
-}
-
-void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
-{
-  emit itemReleased (id);
+    if ( event->type() == QEvent::MouseButtonPress ) {
+        emit pressed( d->id( object ) );
+        return true;
+    }
+    else if ( event->type() == QEvent::MouseButtonRelease ) {
+        emit released( d->id( object ) );
+        return true;
+    }
+    return false;
 }
 
 KStatusBar::KStatusBar( QWidget *parent )
-  : QStatusBar( parent )
+  : QStatusBar( parent ),
+    d(new KStatusBarPrivate)
 {
     // make the size grip stuff configurable
     // ...but off by default (sven)
     KSharedConfig::Ptr config = KGlobal::config();
-
-  KConfigGroup group( config, QLatin1String("StatusBar style") );
-  bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);
-  setSizeGripEnabled(grip_enabled);
+    KConfigGroup group( config, QLatin1String("StatusBar style") );
+    bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);
+    setSizeGripEnabled(grip_enabled);
 }
 
 KStatusBar::~KStatusBar ()
 {
+  delete d;
 }
 
 void KStatusBar::insertItem( const QString& text, int id, int stretch)
 {
-  if (items[id])
-    kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+    if ( d->items[id] ) {
+        kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+    }
 
-  KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
-  l->setFixedHeight(fontMetrics().height()+2);
-  items.insert(id, l);
-  addWidget (l, stretch);
-  l->show();
+    KSqueezedTextLabel *l = new KSqueezedTextLabel( text, this );
+    l->installEventFilter( this );
+    l->setFixedHeight( fontMetrics().height() + 2 );
+    l->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
+    d->items.insert( id, l );
+    addPermanentWidget( l, stretch );
+    l->show();
 }
 
 void KStatusBar::insertPermanentItem( const QString& text, int id, int stretch)
 {
-  if (items[id])
-    kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+    if (d->items[id]) {
+        kDebug() << "KStatusBar::insertPermanentItem: item id " << id << " already exists." << endl;
+    }
 
-  KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
-  l->setFixedHeight(fontMetrics().height()+2);
-  items.insert(id, l);
-  addPermanentWidget (l, stretch);
-  l->show();
+    QLabel *l = new QLabel( text, this );
+    l->installEventFilter( this );
+    l->setFixedHeight( fontMetrics().height() + 2 );
+    l->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
+    d->items.insert( id, l );
+    addPermanentWidget( l, stretch );
+    l->show();
 }
 
 void KStatusBar::removeItem (int id)
 {
-  KStatusBarLabel *l = items[id];
-  if (l)
-  {
-    removeWidget (l);
-    items.remove(id);
-    delete l;
-  }
-  else
-    kDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
+    if ( d->items.contains( id ) ) {
+        QLabel *label = d->items[id];
+        removeWidget( label );
+        d->items.remove( id );
+        delete label;
+    } else {
+        kDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
+    }
 }
 
 bool KStatusBar::hasItem( int id ) const
 {
-  KStatusBarLabel *l = items[id];
-  if (l)
-    return true;
-  else
-    return false;
+    return d->items.contains(id);
 }
 
 void KStatusBar::changeItem( const QString& text, int id )
 {
-  KStatusBarLabel *l = items[id];
-  if (l)
-  {
-    l->setText(text);
-    if(l->minimumWidth () != l->maximumWidth ())
-    {
-      reformat();
+    QLabel *label = d->items[id];
+    KSqueezedTextLabel *squeezed = qobject_cast<KSqueezedTextLabel*>( label );
+
+    if ( squeezed ) {
+        squeezed->setText( text );
+    } else if ( label ) {
+        label->setText( text );
+        if ( label->minimumWidth () != label->maximumWidth () ) {
+            reformat();
+        }
+    } else {
+        kDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
     }
-  }
-  else
-    kDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
 }
 
 void KStatusBar::setItemAlignment (int id, Qt::Alignment alignment)
 {
-  KStatusBarLabel *l = items[id];
-  if (l)
-  {
-    l->setAlignment(alignment);
-  }
-  else
-    kDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
+    QLabel *label = qobject_cast<QLabel*>( d->items[id] );
+    if ( label ) {
+        label->setAlignment( alignment );
+    } else {
+        kDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
+    }
 }
 
 void KStatusBar::setItemFixed(int id, int w)
 {
-  KStatusBarLabel *l = items[id];
-  if (l)
-  {
-    if (w==-1)
-      w=fontMetrics().boundingRect(l->text()).width()+3;
+    QLabel *label = qobject_cast<QLabel*>(d->items[id]);
+    if ( label ) {
+        if ( w == -1 ) {
+            w = fontMetrics().boundingRect(label->text()).width()+3;
+        }
 
-    l->setFixedWidth(w);
-  }
-  else
-    kDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
+        label->setFixedWidth(w);
+    } else {
+        kDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
+    }
 }
 
 #include "kstatusbar.moc"
-
-//Eh!!!
-//Eh what ? :)
 
