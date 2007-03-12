@@ -41,9 +41,9 @@ Part1::~Part1()
 
 bool Part1::openFile()
 {
-    kDebug() << "Part1: opening " << QFile::encodeName(m_file) << endl;
+    kDebug() << "Part1: opening " << QFile::encodeName(localFilePath()) << endl;
     // Hehe this is from a tutorial I did some time ago :)
-    QFile f(m_file);
+    QFile f(localFilePath());
     QString s;
     if ( f.open(QIODevice::ReadOnly) ) {
         QTextStream t( &f );
@@ -55,7 +55,7 @@ bool Part1::openFile()
         return false;
     m_edit->setPlainText(s);
 
-    emit setStatusBarText( m_url.prettyUrl() );
+    emit setStatusBarText( url().prettyUrl() );
 
     return true;
 }
