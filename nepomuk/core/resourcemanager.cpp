@@ -85,6 +85,7 @@ KStaticDeleter<Nepomuk::KMetaData::ResourceManager> s_resourceManagerDeleter;
 
 // FIXME: make the singleton deletion thread-safe so autosyncing will be forced when shutting
 //        down the application
+//        Maybe connect to QCoreApplication::aboutToQuit?
 Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instance()
 {
   static ResourceManager* s_instance = 0;
@@ -107,10 +108,10 @@ int Nepomuk::KMetaData::ResourceManager::init()
     return -1;
   }
 
-  if( !serviceRegistry()->discoverResourceIdService() ) {
-    kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
-    return -1;
-  }
+//   if( !serviceRegistry()->discoverResourceIdService() ) {
+//     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
+//     return -1;
+//   }
 
   return 0;
 }
