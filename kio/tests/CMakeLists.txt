@@ -214,17 +214,6 @@ target_link_libraries(kionetrctest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
-set(metatest_SRCS metatest.cpp)
-
-kde4_automoc(${metatest_SRCS})
-
-kde4_add_executable(metatest NOGUI RUN_UNINSTALLED ${metatest_SRCS})
-
-target_link_libraries(metatest ${KDE4_KIO_LIBS})
-
-
-########### next target ###############
-
 set(kmimefromext_SRCS kmimefromext.cpp)
 
 kde4_automoc(${kmimefromext_SRCS})
