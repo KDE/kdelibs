@@ -101,6 +101,13 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch)
     l->show();
 }
 
+void KStatusBar::insertFixedItem( const QString& text, int id )
+{
+    insertItem( text, id, 0 );
+    setItemFixed( id );
+}
+
+
 void KStatusBar::insertPermanentItem( const QString& text, int id, int stretch)
 {
     if (d->items[id]) {
@@ -114,6 +121,12 @@ void KStatusBar::insertPermanentItem( const QString& text, int id, int stretch)
     d->items.insert( id, l );
     addPermanentWidget( l, stretch );
     l->show();
+}
+
+void KStatusBar::insertPermanentFixedItem( const QString& text, int id )
+{
+    insertPermanentItem( text, id, 0 );
+    setItemFixed( id );
 }
 
 void KStatusBar::removeItem (int id)
@@ -131,6 +144,15 @@ void KStatusBar::removeItem (int id)
 bool KStatusBar::hasItem( int id ) const
 {
     return d->items.contains(id);
+}
+
+QString KStatusBar::itemText( int id ) const
+{
+    if ( !hasItem( id ) ) {
+        return QString();
+    }
+
+    return d->items[id]->text();
 }
 
 void KStatusBar::changeItem( const QString& text, int id )

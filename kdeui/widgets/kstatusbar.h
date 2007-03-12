@@ -108,8 +108,7 @@ public:
    *  @param text The label's text string
    *  @param id id of item
    */
-  inline void insertFixedItem(const QString& text, int id)
-               { insertItem(text, id, 0); setItemFixed(id); }
+  void insertFixedItem(const QString& text, int id);
 
   /**
    *  Inserts a fixed width permanent text label into status bar. The width
@@ -119,8 +118,7 @@ public:
    *  @param text The label's text string
    *  @param id id of item
    */
-  inline void insertPermanentFixedItem(const QString& text, int id)
-               { insertPermanentItem(text, id, 0); setItemFixed(id); }
+  void insertPermanentFixedItem(const QString& text, int id);
 
   /**
    *  Removes an item.
@@ -136,6 +134,11 @@ public:
    *  @param id id of the item
    */
   bool hasItem( int id ) const;
+
+  /**
+   * The text of an item, if it exists.
+   */
+  QString itemText( int id ) const;
 
   /**
    * Changes the text in a status bar field.
