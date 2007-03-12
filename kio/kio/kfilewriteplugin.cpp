@@ -22,7 +22,7 @@
 #include "kmimetypetrader.h"
 #include <QHash>
 
-K_GLOBAL_STATIC(KFileWriterProvider, staticKFileWriterProvider);
+K_GLOBAL_STATIC(KFileWriterProvider, staticKFileWriterProvider)
 
 KFileWriterProvider*
 KFileWriterProvider::self() {
