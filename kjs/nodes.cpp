@@ -35,6 +35,7 @@
 #include "function_object.h"
 #include "lexer.h"
 #include "operations.h"
+#include "package.h"
 #include "PropertyNameArray.h"
 #include <kxmlcore/HashSet.h>
 #include <kxmlcore/HashCountedSet.h>
@@ -2490,8 +2491,75 @@ ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
 
 JSValue* PackageNameNode::evaluate(ExecState*)
 {
-    // should never get here
+    // should never get here.
     return 0;
+}
+
+Completion PackageNameNode::loadSymbol(ExecState* exec)
+{
+    Package* basePackage;
+    JSObject* baseObject;
+    if (names) {
+	PackageObject *pobj = names->resolvePackage(exec);
+	if (pobj == 0)
+	    return Completion(Normal);
+	basePackage = pobj->package();
+	baseObject = pobj;
+    } else {
+	Interpreter* ip = exec->lexicalInterpreter();
+	basePackage = ip->globalPackage();
+	baseObject = ip->globalObject();
+    }
+
+    basePackage->loadSymbol(exec, baseObject, id);
+
+    return Completion(Normal);
+}
+
+PackageObject* PackageNameNode::resolvePackage(ExecState* exec)
+{
+    JSObject* baseObject;
+    Package* basePackage;
+    PackageObject* res = 0;
+    if (names) {
+	PackageObject* basePackageObject = names->resolvePackage(exec);
+	if (basePackageObject == 0)
+	    return 0;
+	baseObject = basePackageObject;
+	basePackage = basePackageObject->package();
+    } else {
+	// first identifier is looked up in global object
+	Interpreter* ip = exec->lexicalInterpreter();
+	baseObject = ip->globalObject();
+	basePackage = ip->globalPackage();
+    }
+
+    // Let's see whether the package was already resolved previously.
+    JSValue* v = baseObject->get(exec, id);
+    if (v && !v->isUndefined()) {
+	if (!v->isObject()) {
+	    // Symbol conflict
+	    throwError(exec, GeneralError, "Invalid type of package %s", id);
+	    return 0;
+	}
+	res = static_cast<PackageObject*>(v);
+    } else {
+	UString err;
+	Package *newBase = basePackage->loadSubPackage(id, &err);
+	if (newBase == 0) {
+	    JSValue *ex;
+	    if (err.isEmpty()) {
+		throwError(exec, GeneralError, "Package not found");
+	    } else {
+		throwError(exec, GeneralError, err.ascii());
+	    }
+	    return 0;
+	}
+	res = new PackageObject(newBase);
+	baseObject->put(exec, id, res);
+    }
+
+    return res;
 }
 
 Completion ImportStatement::execute(ExecState*)
@@ -2499,6 +2567,15 @@ Completion ImportStatement::execute(ExecState*)
     return Completion(Normal);
 }
 
-void ImportStatement::processVarDecls(ExecState *)
+void ImportStatement::processVarDecls(ExecState* exec)
 {
+    // error out if package support is not activated
+    Package* glob = exec->lexicalInterpreter()->globalPackage();
+    if (!glob) {
+	throwError(exec, GeneralError,
+		   "Package support disabled. Import failed.");
+	return;
+    }
+
+    name->loadSymbol(exec);
 }

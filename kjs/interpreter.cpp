@@ -412,6 +412,16 @@ ExecState* Interpreter::globalExec()
   return &m_globalExec;
 }
 
+void Interpreter::setGlobalPackage(Package* p)
+{
+    globPkg = p;
+}
+
+Package* Interpreter::globalPackage()
+{
+    return globPkg;
+}
+
 Completion Interpreter::checkSyntax(const UString& sourceURL, int startingLineNumber, const UString& code)
 {
     return checkSyntax(sourceURL, startingLineNumber, code.data(), code.size());

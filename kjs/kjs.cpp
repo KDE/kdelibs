@@ -23,6 +23,7 @@
 #include "JSLock.h"
 #include "interpreter.h"
 #include "object.h"
+#include "package.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -203,6 +204,9 @@ static ExitCode parseArgs(int argc, char** argv)
                 new TestFunctionImp(TestFunctionImp::Print, 1));
     global->put(gexec, "quit",
                 new TestFunctionImp(TestFunctionImp::Quit, 0));
+
+    // enable package support
+    interp->setGlobalPackage(new StandardGlobalPackage());
 
     const char *script = 0, *command = 0;
     int ai = 1;

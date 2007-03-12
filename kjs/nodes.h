@@ -37,6 +37,7 @@ namespace KJS {
   class RegExp;
   class SourceElementsNode;
   class SourceStream;
+  class PackageObject;
 
   enum Operator { OpEqual,
 		  OpEqEq,
@@ -1104,6 +1105,10 @@ namespace KJS {
                     const Identifier &i) : names(n), id(i) { }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
+    
+    Completion loadSymbol(ExecState* exec);
+    PackageObject* resolvePackage(ExecState* exec);
+
   private:
     RefPtr<PackageNameNode> names;
     Identifier id;

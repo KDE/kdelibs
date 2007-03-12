@@ -37,10 +37,13 @@ namespace KJS {
   class SavedBuiltins;
   class ScopeChain;
   class TimeoutChecker;
+  class Package;
   
+#if PLATFORM(MAC)
   namespace Bindings {
     class RootObject;
   }
+#endif
 
   /**
    * Interpreter objects can be used to evaluate ECMAScript code. Each
@@ -55,7 +58,7 @@ namespace KJS {
     /**
      * Creates a new interpreter. The supplied object will be used as the global
      * object for all scripts executed with this interpreter. During
-     * constuction, all the standard properties such as "Object" and "Number"
+     * construction, all the standard properties such as "Object" and "Number"
      * will be added to the global object.
      *
      * Note: You should not use the same global object for multiple
@@ -94,6 +97,26 @@ namespace KJS {
      * @return The interpreter global execution state object
      */
     virtual ExecState *globalExec();
+
+    /**
+     * Sets the package instance that will be used to resolve the
+     * first level of identifiers of import statements.
+     *
+     * If no package is set which will make any "import" script
+     * statement fail with an error. This is the default in e.g.  a
+     * Web browser where package imports should be disabled for
+     * security reasons.
+     */
+    void setGlobalPackage(Package* p);
+
+    /**
+     * Returns the package that was installed to handle top level
+     * package requests. Returns 0, the default, when no package was
+     * set.
+     *
+     * @return The global package
+     */
+    Package* globalPackage();
 
     /**
      * Parses the supplied ECMAScript code and checks for syntax errors.
@@ -281,7 +304,7 @@ namespace KJS {
     /**
      * Determine if the value is a global object (for any interpreter).  This may
      * be difficult to determine for multiple uses of JSC in a process that are
-     * logically independent of each other.  In the case of WebCore, this method
+     * logically independent of each other.  In the case of a Web browser, this method
      * is used to determine if an object is the Window object so we can perform
      * security checks.
      */
@@ -358,7 +381,7 @@ private:
     Interpreter(const Interpreter&);
     
     /**
-     * This constructor is not implemented, in order to prevent assignment of
+     * This operator is not implemented, in order to prevent assignment of
      * Interpreter objects. You should always pass around pointers to an
      * interpreter instance instead.
      */
@@ -368,6 +391,7 @@ private:
     
     ExecState m_globalExec;
     JSObject* m_globalObject;
+    Package *globPkg;
 
     const Identifier *m_argumentsPropertyName;
     const Identifier *m_specialPrototypePropertyName;

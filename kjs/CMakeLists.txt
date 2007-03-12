@@ -82,6 +82,7 @@ set(kjs_LIB_SRCS
    list.cpp
    object.cpp
    interpreter.cpp
+   package.cpp
    property_map.cpp
    property_slot.cpp
    nodes2string.cpp
@@ -163,6 +164,7 @@ install( FILES
     lookup.h
     object.h
     operations.h
+    package.h
     property_map.h
     property_slot.h
     protect.h
