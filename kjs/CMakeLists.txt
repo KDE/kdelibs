@@ -106,9 +106,9 @@ endif (NOT DEFINED QT_ONLY)
 kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(UNIX)
-   target_link_libraries(${KJSLIBNAME}  ${KDE4_KDECORE_LIBS} m )
+   target_link_libraries(${KJSLIBNAME}  ${QT_QTCORE_LIBRARY} m )
 else(UNIX)
-   target_link_libraries(${KJSLIBNAME}  ${KDE4_KDECORE_LIBS})
+   target_link_libraries(${KJSLIBNAME}  ${QT_QTCORE_LIBRARY})
 endif(UNIX)
 
 if(PCRE_FOUND)
@@ -136,7 +136,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
 
-   target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} ${KJSLIBNAME})
+   target_link_libraries(testkjs_static  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME})
 
    ########### testkjs ###############
 
@@ -144,7 +144,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
 
-   target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} ${KJSLIBNAME} )
+   target_link_libraries(testkjs  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} )
 
 endif(KDE4_BUILD_TESTS)
 
