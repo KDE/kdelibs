@@ -25,7 +25,7 @@
 
 namespace jstreams {
     class StreamIndexer;
-};
+}
 
 class KFileWriterProvider {
 private:
