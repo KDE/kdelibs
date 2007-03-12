@@ -12,7 +12,7 @@ set(krossmoduleforms_PART_SRCS formfile.cpp form.cpp)
 kde4_automoc(${krossmoduleforms_PART_SRCS})
 kde4_add_plugin(krossmoduleforms ${krossmoduleforms_PART_SRCS})
 
-target_link_libraries(krossmoduleforms ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KDE4_KDECORE_LIBS} krosscore)
+target_link_libraries(krossmoduleforms ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KDE4_KDECORE_LIBS} kparts krosscore)
 install(TARGETS krossmoduleforms DESTINATION ${PLUGIN_INSTALL_DIR})
 
 ############################################

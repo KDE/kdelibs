@@ -88,7 +88,7 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
 
     // try to read the main ActionCollection.
     QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
-    Manager::self().actionCollection()->readXmlResource("data", partname + "/scripts/*.rc");
+    Manager::self().actionCollection()->readXmlResources("data", partname + "/scripts/*.rc");
 }
 
 GUIClient::~GUIClient()

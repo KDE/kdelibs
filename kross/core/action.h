@@ -201,6 +201,12 @@ namespace Kross {
             QString name() const;
 
             /**
+             * \return the version number this Action has.
+             * Per default 0 is returned.
+             */
+            int version() const;
+
+            /**
              * \return the optional description for this Action.
              */
             QString description() const;

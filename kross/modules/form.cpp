@@ -48,6 +48,8 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
+#include <klibloader.h>
+#include <kparts/part.h>
 //#include <kio/netaccess.h>
 //#include <klocale.h>
 //#include <kmimetype.h>
@@ -376,6 +378,26 @@ QWidget* FormModule::createFileWidget(QWidget* parent, const QString& startDirOr
     if( parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
+}
+
+QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& url)
+{
+    //name e.g. "libkghostview"
+    KLibFactory* factory = KLibLoader::self()->factory( name.toLatin1() );
+    if( ! factory ) {
+        kWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name) << endl;
+        return 0;
+    }
+    KParts::ReadOnlyPart* part = factory->create< KParts::ReadOnlyPart >( parent );
+    if( ! part ) {
+        kWarning() << QString("Kross::FormModule::loadPart: Library \"%1\" is not a KPart").arg(name) << endl;
+        return 0;
+    }
+    if( url.isValid() )
+        part->openUrl(url);
+    if( parent && parent->layout() && part->widget() )
+        parent->layout()->addWidget( part->widget() );
+    return part;
 }
 
 #include "form.moc"

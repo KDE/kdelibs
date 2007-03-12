@@ -181,7 +181,22 @@ namespace Kross {
              * \return true if reading was complete successful (as in there
              * where no errors) else false is returned.
              */
-            bool readXmlResource(const QByteArray& resource = "data", const QString& filer = QString());
+            bool readXmlResources(const QByteArray& resource = "data", const QString& filer = QString());
+
+            /**
+             * Read the XML file \p filename from the resource-type defined
+             * with \p resource .
+             *
+             * For example the \a GUIClient class uses this method to
+             * restore the main \a Manager::actionCollection() collection.
+             *
+             * \param resource The type of resource to locate directories for.
+             * \param filename The XML file that should be read. Could be
+             * something like e.g. "scripts/myscriptsconfig.rc"
+             * \return true if reading was complete successful (as in there
+             * where no errors) else false is returned.
+             */
+            bool readXmlResource(const QByteArray& resource = "data", const QString& filename = "scripting.rc");
 
             /**
              * \return a QDomElement that represents the child \a Action

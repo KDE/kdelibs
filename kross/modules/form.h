@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QWidget>
+#include <QUrl>
 
 #include <kpagedialog.h>
 
@@ -281,6 +282,14 @@ namespace Kross {
              * \return the new \a FormFileWidget instance or NULL.
              */
             QWidget* createFileWidget(QWidget* parent, const QString& startDirOrVariable = QString());
+
+            /**
+             * Load and return a KPart component.
+             * \param parent The parent QWidget the KPart's widget will be child of.
+             * \param name The name of the KPart library like e.g. "libkhtmlpart".
+             * \param url Optional Url that should be opened on load.
+             */
+            QObject* loadPart(QWidget* parent, const QString& name, const QUrl& url = QUrl());
 
         private:
             /// \internal d-pointer class.

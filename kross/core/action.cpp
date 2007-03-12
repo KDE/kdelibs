@@ -49,6 +49,12 @@ namespace Kross {
             Script* script;
 
             /**
+            * The version number this \a Action has. Those version number got
+            * used internaly to deal with different releases of scripts.
+            */
+            int version;
+
+            /**
             * The optional description to provide some more details about the
             * Action to the user.
             */
@@ -100,7 +106,7 @@ namespace Kross {
             */
             QHash< QString, QString > propertyvalues;
 
-            Private() : script(0) {}
+            Private() : script(0), version(0) {}
     };
 
 }
@@ -163,6 +169,8 @@ void Action::fromDomElement(const QDomElement& element)
         }
     }
 
+    d->version = QVariant( element.attribute("version",QString(d->version)) ).toInt();
+
     setText( element.attribute("text") );
     setDescription( element.attribute("comment") );
     setInterpreter( element.attribute("interpreter") );
@@ -171,6 +179,10 @@ void Action::fromDomElement(const QDomElement& element)
     if( icon.isEmpty() && ! d->scriptfile.isNull() )
         icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
     setIconName( icon );
+
+    const QString code = element.attribute("code");
+    if( ! code.isNull() )
+        setCode(code);
 
     d->propertynames.clear();
     d->propertyvalues.clear();
@@ -198,17 +210,37 @@ QDomElement Action::toDomElement() const
     QDomDocument doc;
     QDomElement e = doc.createElement("script");
     e.setAttribute("name", objectName());
-    e.setAttribute("text", text());
-    e.setAttribute("comment", description());
-    e.setAttribute("icon", iconName());
-    e.setAttribute("interpreter", interpreter());
-    e.setAttribute("file", file());
+    if( d->version > 0 )
+        e.setAttribute("version", QString(d->version));
+    if( ! text().isNull() )
+        e.setAttribute("text", text());
+    if( ! description().isNull() )
+        e.setAttribute("comment", description());
+    if( ! iconName().isNull() )
+        e.setAttribute("icon", iconName());
+    if( ! interpreter().isNull() )
+        e.setAttribute("interpreter", interpreter());
+
+    if( ! file().isNull() ) {
+        e.setAttribute("file", file());
+    }
+    /*
+    else if( ! code().isNull() ) {
+        e.setAttribute("code", code());
+    }
+    */
+
     return e;
 }
 
 QString Action::name() const
 {
     return objectName();
+}
+
+int Action::version() const
+{
+    return d->version;
 }
 
 QString Action::description() const

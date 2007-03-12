@@ -291,7 +291,7 @@ bool ActionCollection::readXmlFile(const QString& file)
     return ok;
 }
 
-bool ActionCollection::readXmlResource(const QByteArray& resource, const QString& filer)
+bool ActionCollection::readXmlResources(const QByteArray& resource, const QString& filer)
 {
     //filer = KApplication::kApplication()->objectName() + "/scripts/*.rc";
     QStringList files = KGlobal::dirs()->findAllResources(resource, filer);
@@ -301,6 +301,13 @@ bool ActionCollection::readXmlResource(const QByteArray& resource, const QString
         if( ! readXmlFile(s) )
             ok = false;
     return ok;
+}
+
+bool ActionCollection::readXmlResource(const QByteArray& resource, const QString& filename)
+{
+    QString file = KGlobal::dirs()->findResource(resource, filename);
+    if( file.isEmpty() ) return false;
+    return readXmlFile(file);
 }
 
 /*********************************************************************
