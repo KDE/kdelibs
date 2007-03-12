@@ -4,10 +4,7 @@
 #include <qpixmap.h>
 #include <qobject.h>
 
-namespace KIO
-{
-    class Job;
-};
+class KJob;
 
 class QAsyncPixmap : public QObject, public QPixmap
 {
@@ -19,7 +16,7 @@ class QAsyncPixmap : public QObject, public QPixmap
         void signalLoaded(QPixmap *pix);
 
     private slots:
-        void slotDownload(KIO::Job *job);
+        void slotDownload(KJob *job);
 
     private:
         QString m_dest;

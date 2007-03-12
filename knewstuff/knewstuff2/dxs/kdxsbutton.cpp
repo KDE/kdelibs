@@ -14,14 +14,15 @@
 
 #include <qlayout.h>
 #include <qdom.h>
+#include <qtoolbutton.h>
 
+#include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcursor.h>
 
-#include <ktoolbarbutton.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -34,73 +35,77 @@ KDXSButton::KDXSButton(QWidget *parent)
 {
 	m_entry = 0;
 
-	setBackgroundColor(QColor(255, 255, 255));
+	// FIXME KDE4PORT
+	//setBackgroundColor(QColor(255, 255, 255));
 
-	KIconLoader *il = KGlobal::iconLoader();
+	m_p = new KMenu(this);
+	action_install = m_p->addAction(SmallIcon("knewstuff"),
+		i18n("Deinstall"));
+	action_comments = m_p->addAction(SmallIcon("leftjust"),
+		i18n("Comments"));
+	action_changes = m_p->addAction(SmallIcon("leftjust"),
+		i18n("Changelog"));
 
-	m_p = new KPopupMenu(this);
-	m_p->insertItem(il->loadIcon("knewstuff", KIcon::Small),
-		i18n("Deinstall"), install);
-	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
-		i18n("Comments"), comments);
-	m_p->insertItem(il->loadIcon("leftjust", KIcon::Small),
-		i18n("Changelog"), changes);
+	m_history = new KMenu(this);
+	m_history->setIcon(SmallIcon("kmultiple"));
+	m_history->setTitle(i18n("Switch version"));
 
-	m_history = new KPopupMenu(this);
+	// FIXME KDE4PORT
+	//m_history->insertItem(i18n("(Search...)"), historyinactive);
+	//m_history->setItemEnabled(historyinactive, false);
 
-	m_history->insertItem(i18n("(Search...)"), historyinactive);
-	m_history->setItemEnabled(historyinactive, false);
+	action_historysub = m_p->addMenu(m_history);
 
-	m_p->insertItem(il->loadIcon("kmultiple", KIcon::Small),
-		i18n("Switch version"), m_history, historysub);
+	m_p->addSeparator();
+	action_info = m_p->addAction(SmallIcon("info"),
+		i18n("Provider information"));
 
-	m_p->insertSeparator();
-	m_p->insertItem(il->loadIcon("info", KIcon::Small),
-		i18n("Provider information"), info);
+	m_contact = new KMenu(this);
+	m_contact->setIcon(SmallIcon("mail_new"));
+	m_contact->setTitle(i18n("Contact author"));
 
-	m_contact = new KPopupMenu(this);
+	KMenu *pcollab = new KMenu(this);
+	pcollab->setIcon(SmallIcon("gear"));
+	pcollab->setTitle(i18n("Collaboration"));
 
-	KPopupMenu *pcollab = new KPopupMenu(this);
-	pcollab->insertItem(il->loadIcon("wizard", KIcon::Small),
-		i18n("Add Rating"), collabrating);
-	pcollab->insertItem(il->loadIcon("add", KIcon::Small),
-		i18n("Add Comment"), collabcomment);
-	pcollab->insertItem(il->loadIcon("translate", KIcon::Small),
-		i18n("Translate"), collabtranslation);
-	pcollab->insertItem(il->loadIcon("bookmark_add", KIcon::Small),
-		i18n("Subscribe"), collabsubscribe);
-	pcollab->insertItem(il->loadIcon("remove", KIcon::Small),
-		i18n("Report bad entry"), collabremoval);
-	pcollab->insertItem(il->loadIcon("mail_new", KIcon::Small),
-		i18n("Contact author"), m_contact, contactsub);
+	action_collabrating = pcollab->addAction(SmallIcon("wizard"),
+		i18n("Add Rating"));
+	action_collabcomment = pcollab->addAction(SmallIcon("add"),
+		i18n("Add Comment"));
+	action_collabtranslation = pcollab->addAction(SmallIcon("translate"),
+		i18n("Translate"));
+	action_collabsubscribe = pcollab->addAction(SmallIcon("bookmark_add"),
+		i18n("Subscribe"));
+	action_collabremoval = pcollab->addAction(SmallIcon("remove"),
+		i18n("Report bad entry"));
+	pcollab->addMenu(m_contact);
 
-	m_p->insertSeparator();
-	m_p->insertItem(il->loadIcon("gear", KIcon::Small),
-		i18n("Collaboration"), pcollab, collaboratesub);
+	m_p->addSeparator();
+	action_collaboratesub = m_p->addMenu(pcollab);
 
         connect(this, SIGNAL(clicked()), SLOT(slotClicked()));
 
-	connect(m_p, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	connect(m_p, SIGNAL(triggered(QAction*)), SLOT(slotTriggered(QAction*)));
 
-	connect(m_contact, SIGNAL(activated(int)), SLOT(slotActivated(int)));
-	connect(pcollab, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	connect(m_contact, SIGNAL(triggered(QAction*)), SLOT(slotTriggered(QAction*)));
+	connect(pcollab, SIGNAL(triggered(QAction*)), SLOT(slotTriggered(QAction*)));
 
 	connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
 	connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
 
 	m_dxs = new KNS::Dxs();
 	//m_dxs->setEndpoint("http://localhost:8080/cgi-bin/run.sh");
-	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs.pl");
+	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs");
 
 	connect(m_dxs,
 		SIGNAL(signalInfo(QString, QString, QString)),
 		SLOT(slotInfo(QString, QString, QString)));
 	connect(m_dxs,
-		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
-		SLOT(slotCategories(QValueList<KNS::Category*>)));
+		SIGNAL(signalCategories(QList<KNS::Category*>)),
+		SLOT(slotCategories(QList<KNS::Category*>)));
 	connect(m_dxs,
-		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
-		SLOT(slotEntries(QValueList<KNS::Entry*>)));
+		SIGNAL(signalEntries(QList<KNS::Entry*>)),
+		SLOT(slotEntries(QList<KNS::Entry*>)));
 	connect(m_dxs,
 		SIGNAL(signalComments(QStringList)),
 		SLOT(slotComments(QStringList)));
@@ -129,13 +134,14 @@ KDXSButton::KDXSButton(QWidget *parent)
 		SIGNAL(signalError()),
 		SLOT(slotError()));
 
-	QPixmap pix = il->loadIcon("knewstuff", KIcon::Small);
-	setIconSet(pix);
-        setTextLabel(i18n("Install"), false);
-        setUsesTextLabel(true);
-        setUsesBigPixmap(false);
-        setTextPosition(QToolButton::BesideIcon);
-	setPopup(m_p);
+	QPixmap pix = SmallIcon("knewstuff");
+	setIcon(pix);
+        setText(i18n("Install"));
+	// FIXME KDE4PORT
+        //setUsesTextLabel(true);
+        //setUsesBigPixmap(false);
+        //setTextPosition(QToolButton::BesideIcon);
+	setMenu(m_p);
 	show();
 }
 
@@ -148,14 +154,13 @@ void KDXSButton::setEntry(Entry *e)
 //	m_dxs->setEntry(e);
 	m_entry = e;
 
-	KIconLoader *il = KGlobal::iconLoader();
-
 // XXX ???
 // extend Entry class to contain author contact information
-	m_contact->insertItem(il->loadIcon("mail_send", KIcon::Small),
-		i18n("Send Mail"), contactbymail);
-	m_contact->insertItem(il->loadIcon("idea", KIcon::Small),
-		i18n("Contact on Jabber"), contactbyjabber);
+
+	action_contactbymail = m_contact->addAction(SmallIcon("mail_send"),
+		i18n("Send Mail"));
+	action_contactbyjabber = m_contact->addAction(SmallIcon("idea"),
+		i18n("Contact on Jabber"));
 }
 
 void KDXSButton::slotInfo(QString provider, QString server, QString version)
@@ -165,25 +170,25 @@ void KDXSButton::slotInfo(QString provider, QString server, QString version)
 	infostring += "\n" + i18n("Version: %1").arg(version);
 
 	KMessageBox::information(this,
-		i18n(infostring),
+		infostring,
 		i18n("Provider information"));
 }
 
-void KDXSButton::slotCategories(QValueList<KNS::Category*> categories)
+void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 {
-	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
+	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
-		kdDebug() << "Category: " << category->name().representation() << endl;
+		kDebug() << "Category: " << category->name().representation() << endl;
 	}
 }
 
-void KDXSButton::slotEntries(QValueList<KNS::Entry*> entries)
+void KDXSButton::slotEntries(QList<KNS::Entry*> entries)
 {
-	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
+	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
-		kdDebug() << "Entry: " << entry->name().representation() << endl;
+		kDebug() << "Entry: " << entry->name().representation() << endl;
 	}
 }
 
@@ -193,7 +198,7 @@ void KDXSButton::slotComments(QStringList comments)
 
 	for(QStringList::Iterator it = comments.begin(); it != comments.end(); it++)
 	{
-		kdDebug() << "Comment: " << (*it) << endl;
+		kDebug() << "Comment: " << (*it) << endl;
 		commentsdlg.addComment("foo", (*it));
 	}
 
@@ -208,7 +213,7 @@ void KDXSButton::slotChanges(QStringList changes)
 
 	for(QStringList::Iterator it = changes.begin(); it != changes.end(); it++)
 	{
-		kdDebug() << "Changelog: " << (*it) << endl;
+		kDebug() << "Changelog: " << (*it) << endl;
 		changesdlg.addChangelog("v???", (*it));
 	}
 
@@ -219,24 +224,24 @@ void KDXSButton::slotChanges(QStringList changes)
 
 void KDXSButton::slotHistory(QStringList entries)
 {
-	KIconLoader *il = KGlobal::iconLoader();
-
 	m_history->clear();
 
 	int i = 0;
 	for(QStringList::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
-		kdDebug() << (*it) << endl;
+		kDebug() << (*it) << endl;
 
-		m_history->insertItem(il->loadIcon("history", KIcon::Small),
-			i18n((*it)), historyslots + i);
+		// FIXME KDE4PORT
+		//m_history->insertItem(SmallIcon("history"),
+		//	i18n((*it)), historyslots + i);
 		i++;
 	}
 
 	if(entries.size() == 0)
 	{
-		m_history->insertItem(i18n("(No history found)"), historydisabled);
-		m_history->setItemEnabled(historydisabled, false);
+		// FIXME KDE4PORT
+		//m_history->insertItem(i18n("(No history found)"), historydisabled);
+		//m_history->setItemEnabled(historydisabled, false);
 	}
 
 	m_history->setCursor(Qt::ArrowCursor);
@@ -328,28 +333,28 @@ void KDXSButton::slotVersionsActivated(int id)
 	// and now???
 }
 
-void KDXSButton::slotActivated(int id)
+void KDXSButton::slotTriggered(QAction *action)
 {
 	int ret;
 
-	if(id == info)
+	if(action == action_info)
 	{
 		m_dxs->call_info();
 	}
-	if(id == comments)
+	if(action == action_comments)
 	{
 		m_dxs->call_comments(0);
 	}
-	if(id == changes)
+	if(action == action_changes)
 	{
 		m_dxs->call_changes(2);
 	}
-	if(id == contactbymail)
+	if(action == action_contactbymail)
 	{
 		QString address = "spillner@kde.org";
-		kapp->invokeMailer(address, i18n("KNewStuff contributions"), "");
+		KToolInvocation::invokeMailer(address, i18n("KNewStuff contributions"), "");
 	}
-	if(id == contactbyjabber)
+	if(action == action_contactbyjabber)
 	{
 		QString address = "josef@jabber.org";
 		KProcess proc;
@@ -358,7 +363,7 @@ void KDXSButton::slotActivated(int id)
 		proc << address;
 		proc.start(KProcess::DontCare);
 	}
-	if(id == collabtranslation)
+	if(action == action_collabtranslation)
 	{
 		if(!authenticate())
 			return;
@@ -373,22 +378,22 @@ void KDXSButton::slotActivated(int id)
 			//}
 		}
 	}
-	if(id == collabremoval)
+	if(action == action_collabremoval)
 	{
 		if(authenticate())
 			m_dxs->call_removal(0);
 	}
-	if(id == collabsubscribe)
+	if(action == action_collabsubscribe)
 	{
 		if(authenticate())
 			m_dxs->call_subscription(0, true);
 	}
-	if((id == deinstall) || (id == install))
+	if((action == action_deinstall) || (action == action_install))
 	{
 		NewStuffDialog *d = new NewStuffDialog(this);
 		d->show();
 	}
-	if(id == collabcomment)
+	if(action == action_collabcomment)
 	{
 		if(!authenticate())
 			return;
@@ -403,7 +408,7 @@ void KDXSButton::slotActivated(int id)
 			}
 		}
 	}
-	if(id == collabrating)
+	if(action == action_collabrating)
 	{
 		if(!authenticate())
 			return;
@@ -422,13 +427,13 @@ void KDXSButton::slotActivated(int id)
 
 void KDXSButton::slotVersionsHighlighted(int id)
 {
-	kdDebug() << "highlighted!" << endl;
+	kDebug() << "highlighted!" << endl;
 
 	if(id == historyinactive)
 	{
 		//m_history->setItemEnabled(historyinactive, true);
 		m_history->setCursor(KCursor::workingCursor());
-		kdDebug() << "hourglass!" << endl;
+		kDebug() << "hourglass!" << endl;
 
 		m_dxs->call_history(0);
 		// .....
@@ -437,12 +442,12 @@ void KDXSButton::slotVersionsHighlighted(int id)
 
 void KDXSButton::slotClicked()
 {
-	slotActivated(install);
+	slotTriggered(action_install);
 }
 
 bool KDXSButton::authenticate()
 {
-	if((m_username) && (m_password)) return true;
+	if((!m_username.isEmpty()) && (!m_password.isEmpty())) return true;
 
 	return true; // FIXME: hack during development only
 

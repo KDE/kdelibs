@@ -1,11 +1,11 @@
 #ifndef KDXS_CHANGES_H
 #define KDXS_CHANGES_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KHTMLPart;
 
-class KDXSChanges : public KDialogBase
+class KDXSChanges : public KDialog
 {
 Q_OBJECT
 public:

@@ -1,13 +1,13 @@
 #ifndef KDXSVIEW_H
 #define KDXSVIEW_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <knewstuff2/providerloader.h>
 
 class QComboBox;
 
-class KDXSView : public KDialogBase
+class KDXSView : public KDialog
 {
 Q_OBJECT
 public:

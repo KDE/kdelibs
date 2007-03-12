@@ -33,8 +33,8 @@ public:
 
 signals:
 	void signalInfo(QString provider, QString server, QString version);
-	void signalCategories(QValueList<KNS::Category*> categories);
-	void signalEntries(QValueList<KNS::Entry*> entries);
+	void signalCategories(QList<KNS::Category*> categories);
+	void signalEntries(QList<KNS::Entry*> entries);
 	void signalComments(QStringList comments);
 	void signalChanges(QStringList comments);
 	void signalHistory(QStringList entries);

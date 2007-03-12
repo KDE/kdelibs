@@ -31,7 +31,7 @@ namespace KNS {
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class Category
+class KDE_EXPORT Category
 {
   public:
     /**

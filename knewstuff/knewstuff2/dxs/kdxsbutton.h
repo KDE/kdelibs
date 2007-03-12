@@ -12,7 +12,8 @@ namespace KNS
 	class Category;
 };
 
-class KPopupMenu;
+class KMenu;
+class QAction;
 
 class KDXSButton : public QToolButton
 {
@@ -24,14 +25,14 @@ public:
         void setEntry(KNS::Entry *e);
 
 public slots:
-	void slotActivated(int id);
+	void slotTriggered(QAction *action);
 	void slotVersionsActivated(int id);
 	void slotVersionsHighlighted(int id);
         void slotClicked();
 
 	void slotInfo(QString provider, QString server, QString version);
-	void slotCategories(QValueList<KNS::Category*> categories);
-	void slotEntries(QValueList<KNS::Entry*> entries);
+	void slotCategories(QList<KNS::Category*> categories);
+	void slotEntries(QList<KNS::Entry*> entries);
 	void slotComments(QStringList comments);
 	void slotHistory(QStringList entries);
 	void slotChanges(QStringList entries);
@@ -46,7 +47,8 @@ public slots:
 private:
 	bool authenticate();
 
-	enum Items
+	// FIXME KDE4PORT item actions
+	/*QAction *Items
 	{
 		install,
 		deinstall,
@@ -66,7 +68,26 @@ private:
 		contactsub,
 		contactbymail,
 		contactbyjabber
-	};
+	};*/
+
+	QAction *action_install;
+	QAction *action_deinstall;
+	QAction *action_comments;
+	QAction *action_changes;
+	QAction *action_info;
+
+	QAction *action_historysub;
+
+	QAction *action_collabrating;
+	QAction *action_collabcomment;
+	QAction *action_collaboratesub;
+	QAction *action_collabsubscribe;
+	QAction *action_collabremoval;
+	QAction *action_collabtranslation;
+
+	QAction *action_contactsub;
+	QAction *action_contactbymail;
+	QAction *action_contactbyjabber;
 
 	enum States
 	{
@@ -76,7 +97,7 @@ private:
 	};
 
 	KNS::Dxs *m_dxs;
-	KPopupMenu *m_p, *m_history, *m_contact;
+	KMenu *m_p, *m_history, *m_contact;
 	KNS::Entry *m_entry;
 
 	QString m_username;

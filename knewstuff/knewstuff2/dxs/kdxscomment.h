@@ -1,18 +1,18 @@
 #ifndef KDXS_COMMENT_H
 #define KDXS_COMMENT_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
-class QMultiLineEdit;
+class QTextEdit;
 
-class KDXSComment : public KDialogBase
+class KDXSComment : public KDialog
 {
 Q_OBJECT
 public:
 	KDXSComment(QWidget *parent);
 	QString comment();
 private:
-	QMultiLineEdit *m_textbox;
+	QTextEdit *m_textbox;
 };
 
 #endif

@@ -160,7 +160,7 @@ void Dxs::slotError()
 
 void Dxs::slotResult(QDomNode node)
 {
-	kdDebug() << "LOCALNAME: " << m_soap->localname(node) << endl;
+	kDebug() << "LOCALNAME: " << m_soap->localname(node) << endl;
 
 	bool success = true;
 	if(m_soap->localname(node) == "Fault")
@@ -180,11 +180,11 @@ void Dxs::slotResult(QDomNode node)
 	}
 	else if(m_soap->localname(node) == "GHNSCategoriesResponse")
 	{
-		QValueList<KNS::Category*> categories;
+		QList<KNS::Category*> categories;
 
 		QDomNode array = node.firstChild();
 		QDomNodeList catlist = array.toElement().elementsByTagName("categories");
-		for(unsigned int i = 0; i < catlist.count(); i++)
+		for(int i = 0; i < catlist.count(); i++)
 		{
 			//categories << catlist.item(i).toElement().text();
 
@@ -208,11 +208,11 @@ void Dxs::slotResult(QDomNode node)
 	}
 	else if(m_soap->localname(node) == "GHNSListResponse")
 	{
-		QValueList<KNS::Entry*> entries;
+		QList<KNS::Entry*> entries;
 
 		QDomNode array = node.firstChild();
 		QDomNodeList entrylist = array.toElement().elementsByTagName("entry");
-		for(unsigned int i = 0; i < entrylist.count(); i++)
+		for(int i = 0; i < entrylist.count(); i++)
 		{
 			//entries << entrylist.item(i).toElement().text();
 
@@ -249,7 +249,7 @@ void Dxs::slotResult(QDomNode node)
 
 			entries << entry;
 
-			kdDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name() << endl;
+			kDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name() << endl;
 		}
 
 		emit signalEntries(entries);
@@ -260,7 +260,7 @@ void Dxs::slotResult(QDomNode node)
 
 		QDomNode array = node.firstChild();
 		QDomNodeList comlist = array.toElement().elementsByTagName("comments");
-		for(unsigned int i = 0; i < comlist.count(); i++)
+		for(int i = 0; i < comlist.count(); i++)
 		{
 			comments << comlist.item(i).toElement().text();
 		}
@@ -273,13 +273,13 @@ void Dxs::slotResult(QDomNode node)
 
 		QDomNode array = node.firstChild();
 		QDomNodeList changelist = array.toElement().elementsByTagName("entry");
-		for(unsigned int i = 0; i < changelist.count(); i++)
+		for(int i = 0; i < changelist.count(); i++)
 		{
 			QDomNode node = changelist.item(i);
 
 			QString version = m_soap->xpath(node, "/version");
 			QString changelog = m_soap->xpath(node, "/changelog");
-			kdDebug() << "CHANGELOG: " << version << " " << changelog << endl;
+			kDebug() << "CHANGELOG: " << version << " " << changelog << endl;
 
 			changes << changelog;
 		}
@@ -293,7 +293,7 @@ void Dxs::slotResult(QDomNode node)
 
 		QDomNode array = node.firstChild();
 		QDomNodeList entrylist = array.toElement().elementsByTagName("entry");
-		for(unsigned int i = 0; i < entrylist.count(); i++)
+		for(int i = 0; i < entrylist.count(); i++)
 		{
 			entries << entrylist.item(i).toElement().text();
 		}

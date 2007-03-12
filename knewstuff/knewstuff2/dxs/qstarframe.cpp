@@ -23,8 +23,8 @@ void QStarFrame::slotRating(int rating)
 
 void QStarFrame::drawstars()
 {
-	QString starpath = locate("data", "kpdf/pics/ghns_star.png");
-	QString graystarpath = locate("data", "kpdf/pics/ghns_star_gray.png");
+	QString starpath = KStandardDirs::locate("data", "kpdf/pics/ghns_star.png");
+	QString graystarpath = KStandardDirs::locate("data", "kpdf/pics/ghns_star_gray.png");
 
 	QPixmap star(starpath);
 	QPixmap graystar(graystarpath);

@@ -20,6 +20,5 @@ int main(int argc, char **argv)
 	KApplication app;
 
 	KDXSView view;
-	app.setMainWidget(&view);
 	return view.exec();
 }

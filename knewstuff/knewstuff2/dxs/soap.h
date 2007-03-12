@@ -6,12 +6,13 @@
 namespace KIO
 {
 	class Job;
-};
+}
+class KJob;
 
 class QDomDocument;
 class QDomNode;
 class QDomElement;
-class QSocket;
+class QTcpSocket;
 class QCString;
 
 namespace KNS
@@ -42,7 +43,7 @@ signals:
 
 private slots:
 	void slotData(KIO::Job *job, const QByteArray& data);
-	void slotResult(KIO::Job *job);
+	void slotResult(KJob *job);
 	void slotSocket();
 	void slotSocketError(int error);
 
@@ -53,7 +54,7 @@ private:
 
 	QString m_data;
 	Model m_model;
-	QSocket *m_socket;
+	QTcpSocket *m_socket;
 	QByteArray m_buffer;
 	bool m_inprogress;
 };

@@ -1,13 +1,13 @@
 #ifndef KDXS_RATING_H
 #define KDXS_RATING_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QSlider;
 class QLabel;
 class QStarFrame;
 
-class KDXSRating : public KDialogBase
+class KDXSRating : public KDialog
 {
 Q_OBJECT
 public:

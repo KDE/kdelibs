@@ -12,9 +12,11 @@
 #include <qcursor.h>
 
 KDXSComments::KDXSComments(QWidget *parent)
-: KDialogBase(parent, "comments", true, i18n("User comments"),
-	KDialogBase::Close, KDialogBase::Close, true)
+: KDialog(parent)
 {
+	setCaption(i18n("User comments"));
+	setButtons(KDialog::Close);
+
 	QVBoxLayout *vbox;
 
 	QWidget *root = new QWidget(this);
@@ -31,8 +33,8 @@ KDXSComments::KDXSComments(QWidget *parent)
 	m_part->write("<html>"),
 	m_part->write("<body>");
 
-	vbox = new QVBoxLayout(root, spacingHint());
-	vbox->add(m_part->view());
+	vbox = new QVBoxLayout(root);
+	vbox->addWidget(m_part->view());
 
 	connect(m_part, SIGNAL(onURL(const QString&)), SLOT(slotURL(const QString&)));
 }
@@ -41,7 +43,7 @@ void KDXSComments::slotURL(const QString& url)
 {
 	if(!url.isEmpty())
 	{
-qDebug("SHOW %s!", url.utf8().data());
+qDebug("SHOW %s!", qPrintable(url));
 		//QNowToolTip *t = new QNowToolTip(this);
 		//QToolTip::add(m_part->view(), url);
 		//t->display(m_part->view()->geometry(), url);

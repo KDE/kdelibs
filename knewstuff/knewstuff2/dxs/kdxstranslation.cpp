@@ -10,15 +10,17 @@
 #include <klocale.h>
 
 KDXSTranslation::KDXSTranslation(QWidget *parent)
-: KDialogBase(parent, "translation", true, i18n("Translate this entry"),
-	KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
+: KDialog(parent)
 {
+	setCaption(i18n("Translate this entry"));
+	setButtons(KDialog::Ok | KDialog::Cancel);
+
 	QWidget *root = new QWidget(this);
 	setMainWidget(root);
 
 	m_name = new QLineEdit(root);
 	m_description = new QTextEdit(root);
-	m_payload = new KURLRequester(root);
+	m_payload = new KUrlRequester(root);
 
 	QLineEdit *oname = new QLineEdit(root);
 	QTextEdit *odescription = new QTextEdit(root);
@@ -28,19 +30,19 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
 	QLabel *lpayload = new QLabel(i18n("Payload"), root);
 
 	QComboBox *languagebox = new QComboBox(root);
-	languagebox->insertItem("English");
-	languagebox->insertItem("German");
+	languagebox->addItem("English");
+	languagebox->addItem("German");
 
 	oname->setEnabled(false);
 	odescription->setEnabled(false);
 
-	QVBoxLayout *vbox = new QVBoxLayout(root, 0, spacingHint());
+	QVBoxLayout *vbox = new QVBoxLayout(root);
 
-	QHBoxLayout *hbox = new QHBoxLayout(vbox, spacingHint());
+	QHBoxLayout *hbox = new QHBoxLayout();
 	hbox->addStretch(1);
-	hbox->add(languagebox);
+	hbox->addWidget(languagebox);
 
-	QGridLayout *grid = new QGridLayout(vbox);
+	QGridLayout *grid = new QGridLayout();
 	grid->setSpacing(spacingHint());
 	grid->addWidget(lname, 0, 0);
 	grid->addWidget(oname, 0, 1);
@@ -50,6 +52,9 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
 	grid->addWidget(m_description, 1, 2);
 	grid->addWidget(lpayload, 2, 0);
 	grid->addWidget(m_payload, 2, 2);
+
+	vbox->addLayout(hbox);
+	vbox->addLayout(grid);
 }
 
 #include "kdxstranslation.moc"

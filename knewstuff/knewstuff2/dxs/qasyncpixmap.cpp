@@ -3,6 +3,7 @@
 #include <kio/job.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
+#include <krandom.h>
 #include <kdebug.h>
 
 #include <qfile.h>
@@ -12,15 +13,15 @@ QAsyncPixmap::QAsyncPixmap(QString url)
 {
     // XXX ???
     //KTempFile
-    m_dest = KGlobal::dirs()->saveLocation("tmp") + KApplication::randomString(10) + ".png";
+    m_dest = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".png";
 
     KIO::FileCopyJob *job = KIO::file_copy(url, m_dest, -1, true, false, false);
-    connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotDownload(KIO::Job*)));
+    connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
 }
 
-void QAsyncPixmap::slotDownload(KIO::Job *job)
+void QAsyncPixmap::slotDownload(KJob *job)
 {
-    kdDebug() << "DOWNLOAD" << endl;
+    kDebug() << "DOWNLOAD" << endl;
     if(job->error())
     {
         // XXX ???
@@ -28,8 +29,8 @@ void QAsyncPixmap::slotDownload(KIO::Job *job)
     }
     bool ret = load(m_dest);
 //    QFile::remove(m_dest);
-    kdDebug() << "DOWNLOADed to " << m_dest << endl;
-    kdDebug() << "ret = " << ret << endl;
+    kDebug() << "DOWNLOADed to " << m_dest << endl;
+    kDebug() << "ret = " << ret << endl;
 
     emit signalLoaded(this);
 }

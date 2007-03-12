@@ -10,9 +10,11 @@
 #include <kstandarddirs.h>
 
 KDXSRating::KDXSRating(QWidget *parent)
-: KDialogBase(parent, "comment", true, i18n("Rate this entry"),
-	KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
+: KDialog(parent)
 {
+	setCaption(i18n("Rate this entry"));
+	setButtons(KDialog::Ok | KDialog::Cancel);
+
 	QVBoxLayout *vbox;
 	QHBoxLayout *hbox;
 
@@ -20,10 +22,10 @@ KDXSRating::KDXSRating(QWidget *parent)
 	setMainWidget(root);
 
 	m_slider = new QSlider(root);
-	m_slider->setOrientation(QSlider::Horizontal);
-	m_slider->setTickmarks(QSlider::Below);
-	m_slider->setMinValue(0);
-	m_slider->setMaxValue(100);
+	m_slider->setOrientation(Qt::Horizontal);
+	m_slider->setTickPosition(QSlider::TicksBelow);
+	m_slider->setMinimum(0);
+	m_slider->setMaximum(100);
 
 	m_starrating = new QStarFrame(root);
 	m_starrating->setMinimumWidth(100);
@@ -31,11 +33,12 @@ KDXSRating::KDXSRating(QWidget *parent)
 	m_rating = new QLabel(QString("0/100"), root);
 	m_rating->setFixedWidth(100);
 
-	vbox = new QVBoxLayout(root, spacingHint());
-	hbox = new QHBoxLayout(vbox);
-	hbox->add(m_rating);
-	hbox->add(m_starrating);
-	vbox->add(m_slider);
+	vbox = new QVBoxLayout(root);
+	hbox = new QHBoxLayout();
+	hbox->addWidget(m_rating);
+	hbox->addWidget(m_starrating);
+	vbox->addLayout(hbox);
+	vbox->addWidget(m_slider);
 
 	connect(m_slider, SIGNAL(valueChanged(int)),
 		m_starrating, SLOT(slotRating(int)));

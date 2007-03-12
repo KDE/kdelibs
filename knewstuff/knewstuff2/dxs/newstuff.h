@@ -17,9 +17,9 @@
 #include "dxs.h"
 
 using namespace KNS;
-namespace KIO { class Job; }
 
 class AvailableItem;
+class KJob;
 
 class NewStuffDialog : public QDialog
 {
@@ -60,24 +60,24 @@ class NewStuffDialog : public QDialog
         void slotSortingSelected( int sortType );
         // providersList loading
         void slotLoadProvidersList();
-        void slotProvidersListInfoData( KIO::Job *, const QByteArray & );
-        void slotProvidersListResult( KIO::Job * );
+        void slotProvidersListInfoData( KJob *, const QByteArray & );
+        void slotProvidersListResult( KJob * );
         // provider loading
         void slotLoadProvider( int provider = 0 );
-        void slotProviderInfoData( KIO::Job *, const QByteArray & );
-        void slotProviderInfoResult( KIO::Job * );
+        void slotProviderInfoData( KJob *, const QByteArray & );
+        void slotProviderInfoResult( KJob * );
 	// DXS
         void slotLoadProvidersListDXS();
         void slotLoadProviderDXS(int index);
-	void slotCategories(QValueList<KNS::Category*> categories);
-	void slotEntries(QValueList<KNS::Entry*> entries);
+	void slotCategories(QList<KNS::Category*> categories);
+	void slotEntries(QList<KNS::Entry*> entries);
 	void slotFault();
 	void slotError();
         // file downloading
         void slotDownloadItem( AvailableItem * );
-        void slotItemMessage( KIO::Job *, const QString & );
-        void slotItemPercentage( KIO::Job *, unsigned long );
-        void slotItemResult( KIO::Job * );
+        void slotItemMessage( KJob *, const QString & );
+        void slotItemPercentage( KJob *, unsigned long );
+        void slotItemResult( KJob * );
 };
 
 #endif

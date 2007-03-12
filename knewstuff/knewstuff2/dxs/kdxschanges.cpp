@@ -8,9 +8,11 @@
 #include <qapplication.h>
 
 KDXSChanges::KDXSChanges(QWidget *parent)
-: KDialogBase(parent, "changes", true, i18n("Changelog"),
-	KDialogBase::Close, KDialogBase::Close, true)
+: KDialog(parent)
 {
+	setCaption(i18n("Changelog"));
+	setButtons(KDialog::Close);
+
 	QVBoxLayout *vbox;
 
 	QWidget *root = new QWidget(this);
@@ -27,8 +29,8 @@ KDXSChanges::KDXSChanges(QWidget *parent)
 	m_part->write("<html>"),
 	m_part->write("<body>");
 
-	vbox = new QVBoxLayout(root, spacingHint());
-	vbox->add(m_part->view());
+	vbox = new QVBoxLayout(root);
+	vbox->addWidget(m_part->view());
 }
 
 void KDXSChanges::addChangelog(QString version, QString log)

@@ -1,13 +1,13 @@
 #ifndef KDXS_TRANSLATION_H
 #define KDXS_TRANSLATION_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QLineEdit;
 class QTextEdit;
-class KURLRequester;
+class KUrlRequester;
 
-class KDXSTranslation : public KDialogBase
+class KDXSTranslation : public KDialog
 {
 Q_OBJECT
 public:
@@ -15,7 +15,7 @@ public:
 private:
 	QLineEdit *m_name;
 	QTextEdit *m_description;
-	KURLRequester *m_payload;
+	KUrlRequester *m_payload;
 };
 
 #endif

@@ -1,28 +1,30 @@
 #include "kdxscomment.h"
 
 #include <qlayout.h>
-#include <qmultilineedit.h>
+#include <qtextedit.h>
 
 #include <klocale.h>
 
 KDXSComment::KDXSComment(QWidget *parent)
-: KDialogBase(parent, "comment", true, i18n("Leave a comment"),
-	KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
+: KDialog(parent)
 {
+	setCaption(i18n("Leave a comment"));
+	setButtons(KDialog::Ok | KDialog::Cancel);
+
 	QVBoxLayout *vbox;
 
 	QWidget *root = new QWidget(this);
 	setMainWidget(root);
 
-	m_textbox = new QMultiLineEdit(root);
+	m_textbox = new QTextEdit(root);
 
-	vbox = new QVBoxLayout(root, spacingHint());
-	vbox->add(m_textbox);
+	vbox = new QVBoxLayout(root);
+	vbox->addWidget(m_textbox);
 }
 
 QString KDXSComment::comment()
 {
-	return m_textbox->text();
+	return m_textbox->toPlainText();
 }
 
 #include "kdxscomment.moc"

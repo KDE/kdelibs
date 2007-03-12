@@ -12,18 +12,16 @@
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qlayout.h>
-#include <qhbox.h>
-#include <qvbox.h>
 #include <qpixmap.h>
 #include <qfont.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
-#include <qmemarray.h>
+#include <qvector.h>
 #include <qrect.h>
 #include <qpainter.h>
-#include <qscrollview.h>
+#include <qscrollarea.h>
 #include <qapplication.h>
 #include <kapplication.h>
 #include <kglobalsettings.h>
@@ -37,6 +35,7 @@
 #include <khtmlview.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
+#include <ktoolinvocation.h>
 
 #include <knewstuff2/provider.h>
 #include <knewstuff2/providerhandler.h>
@@ -68,16 +67,16 @@ class ExtendImageWidget : public QWidget
 {
     public:
         ExtendImageWidget( const QPixmap & pix, QWidget * parent )
-            : QWidget( parent, "", WNoAutoErase ), m_pixmap( pix )
+            : QWidget( parent/*, WNoAutoErase*/ ), m_pixmap( pix ) // FIXME KDE4PORT
         {
             // adjust size hint
             setFixedWidth( pix.width() );
             setMinimumHeight( pix.height() );
             // paint all own pixels
-            setBackgroundMode( Qt::NoBackground );
+            //setBackgroundMode( Qt::NoBackground ); // FIXME KDE4PORT
             // create the tile image from last line of pixmap
-            m_tile.resize( pix.width(), 1 );
-            copyBlt( &m_tile, 0,0, &pix, 0,pix.height()-2, pix.width(),1 );
+            //m_tile.resize( pix.width(), 1 ); // FIXME KDE4PORT
+            //copyBlt( &m_tile, 0,0, &pix, 0,pix.height()-2, pix.width(),1 ); // FIXME KDE4PORT
         }
 
         // internal paint function
@@ -90,8 +89,8 @@ class ExtendImageWidget : public QWidget
             QPainter p( this );
             p.drawPixmap( pixmapRect.topLeft(), m_pixmap, pixmapRect );
             // paint the tiled bottom part
-            QMemArray<QRect> rects = paintRegion.subtract( pixmapRect ).rects();
-            for ( unsigned int i = 0; i < rects.count(); i++ )
+            QVector<QRect> rects = paintRegion.subtract( pixmapRect ).rects();
+            for ( int i = 0; i < rects.count(); i++ )
             {
                 const QRect & tileRect = rects[ i ];
                 p.drawTiledPixmap( tileRect, m_tile, QPoint(tileRect.left(), 0) );
@@ -108,7 +107,7 @@ class ExtendImageWidget : public QWidget
 class AvailableItem : public Entry
 {
     public:
-        typedef QValueList< AvailableItem * > List;
+        typedef QList< AvailableItem * > List;
         enum State { Normal = 0, Installing = 1, Uninstalling = 2 };
 
 	/// BEGIN DXS
@@ -136,16 +135,16 @@ class AvailableItem : public Entry
         {
             QString remoteUrl = payload().representation();
             QString fileName = remoteUrl.section( '/', -1, -1 );
-            QString extension = fileName.lower().section( '.', -1, -1 );
+            QString extension = fileName.toLower().section( '.', -1, -1 );
             QString typeString = type();
             // place books on the desktop
             if ( typeString == "kpdf/book" )
                 m_destinationFile = KGlobalSettings::desktopPath() + "/" + fileName;
             // place kpdf data on the local share/apps/kpdf/stuff
             else if ( typeString == "kpdf/tool" )
-                m_destinationFile = locateLocal( "data", "kpdf/stuff/" + fileName );
+                m_destinationFile = KStandardDirs::locateLocal( "data", "kpdf/stuff/" + fileName );
             // warn about unrecognized type
-            else kdDebug() << "NewStuffDialog: AvailableItem: unrecognized provider name: '"
+            else kDebug() << "NewStuffDialog: AvailableItem: unrecognized provider name: '"
                 << typeString << "'." << endl;
         }
 
@@ -199,7 +198,7 @@ class ItemsViewPart : public KHTMLPart
 {
     public:
         ItemsViewPart( QWidget * parentWidget )
-            : KHTMLPart( parentWidget, "newStuffHTMLViewPart" )
+            : KHTMLPart( parentWidget )
         {
             // customize functionality
             setJScriptEnabled( true );
@@ -328,8 +327,8 @@ class ItemsViewPart : public KHTMLPart
         {
             QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
             QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
-            QString starIconPath = locate( "data", "kpdf/pics/ghns_star.png" );
-            QString starBgIconPath = locate( "data", "kpdf/pics/ghns_star_gray.png" );
+            QString starIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star.png" );
+            QString starBgIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star_gray.png" );
 
             // default elements style
             QString style;
@@ -359,14 +358,14 @@ class ItemsViewPart : public KHTMLPart
         // handle clicks on page links/buttons
         void urlSelected( const QString & link, int, int, const QString &, KParts::URLArgs )
         {
-            KURL url( link );
+            KUrl url( link );
             QString urlProtocol = url.protocol();
             QString urlPath = url.path();
 
             if ( urlProtocol == "mailto" )
             {
                 // clicked over a mail address
-                kapp->invokeMailer( url );
+                KToolInvocation::invokeMailer( url );
             }
             else if ( urlProtocol == "item" )
             {
@@ -375,7 +374,7 @@ class ItemsViewPart : public KHTMLPart
                 unsigned long itemPointer = urlPath.toULong( &ok );
                 if ( !ok )
                 {
-                    kdWarning() << "ItemsView: error converting item pointer." << endl;
+                    kWarning() << "ItemsView: error converting item pointer." << endl;
                     return;
                 }
 
@@ -383,7 +382,7 @@ class ItemsViewPart : public KHTMLPart
                 AvailableItem * item = (AvailableItem *)itemPointer;
                 if ( item != m_item )
                 {
-                    kdWarning() << "ItemsView: error retrieving item pointer." << endl;
+                    kWarning() << "ItemsView: error retrieving item pointer." << endl;
                     return;
                 }
 
@@ -402,12 +401,12 @@ class ItemsViewPart : public KHTMLPart
 
 
 /** GUI/CORE: HTML Widget to operate on AvailableItem::List */
-class ItemsView : public QScrollView
+class ItemsView : public QScrollArea
 {
     //Q_OBJECT
     public:
         ItemsView( NewStuffDialog * newStuffDialog, QWidget * parentWidget )
-            : QScrollView( parentWidget, "newStuffHTMLView" ),
+            : QScrollArea( parentWidget ),
             m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
         {
         }
@@ -441,16 +440,16 @@ class ItemsView : public QScrollView
         // generate the HTML contents to be displayed by the class itself
         void buildContents()
         {
-            setResizePolicy(QScrollView::AutoOneFit);
+            //setResizePolicy(QScrollArea::AutoOneFit); // FIXME KDE4PORT
 
             if(m_root)
             {
-                removeChild(m_root);
+                m_root = takeWidget();
                 delete m_root;
             }
 
-            m_root = new QWidget(viewport());
-            addChild(m_root);
+            m_root = new QWidget(widget());
+            setWidget(m_root);
             QVBoxLayout *layout = new QVBoxLayout(m_root);
 
             AvailableItem::List::iterator it = m_items.begin(), iEnd = m_items.end();
@@ -462,9 +461,9 @@ class ItemsView : public QScrollView
                 QWidget *nav = new QWidget(itemview);
                 ItemsViewPart *part = new ItemsViewPart(itemview);
                 QHBoxLayout *l = new QHBoxLayout(itemview);
-                l->add(nav);
-                l->add(part->view());
-                layout->add(itemview);
+                l->addWidget(nav);
+                l->addWidget(part->view());
+                layout->addWidget(itemview);
 
                 QAsyncFrame *f = new QAsyncFrame(nav);
 // XXX ???
@@ -475,10 +474,10 @@ class ItemsView : public QScrollView
                 connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
                 KDXSButton *p = new KDXSButton(nav);
                 p->setEntry(item);
-                QVBoxLayout *l2 = new QVBoxLayout(nav, 5);
-                l2->add(f);
+                QVBoxLayout *l2 = new QVBoxLayout(nav);
+                l2->addWidget(f);
                 l2->addStretch(1);
-                l2->add(p);
+                l2->addWidget(p);
 
                 part->setItem(item);
             }
@@ -510,7 +509,7 @@ class ItemsView : public QScrollView
 /* internal storage structures to be used by NewStuffDialog */
 struct ProvidersListJobInfo // -> Provider(s)
 {
-    KIO::Job * job;
+    KJob * job;
     QString receivedData;
 };
 struct ProviderJobInfo      // -> AvailableItem(s)
@@ -525,11 +524,11 @@ struct NewStuffDialogPrivate
 {
     // Jobs (1 for fetching the list, unlimited for providers / items)
     ProvidersListJobInfo providersListJob;
-    QMap< KIO::Job *, ProviderJobInfo > providerJobs;
-    QMap< KIO::Job *, ItemTransferInfo > transferJobs;
+    QMap< KJob *, ProviderJobInfo > providerJobs;
+    QMap< KJob *, ItemTransferInfo > transferJobs;
 
     // Contents
-    QValueList< Provider * > providers;
+    QList< Provider * > providers;
 
     // gui related vars
     QWidget * parentWidget;
@@ -545,7 +544,7 @@ struct NewStuffDialogPrivate
 };
 
 NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
-    : QDialog( parentWidget, "kpdfNewStuff" ), d( new NewStuffDialogPrivate )
+    : QDialog( parentWidget ), d( new NewStuffDialogPrivate )
 {
     // initialize the private classes
     d->providersListJob.job = 0;
@@ -561,32 +560,36 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
              this, SLOT( slotNetworkTimeout() ) );
 
     // popuplate dialog with stuff
-    QBoxLayout * horLay = new QHBoxLayout( this, 11 );
+    QBoxLayout * horLay = new QHBoxLayout( this/*, 11*/ ); // FIXME KDE4PORT
 
     // create left picture widget (if picture found)
-    QPixmap p( locate( "data", "kpdf/pics/ghns.png" ) );
+    QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
     if ( !p.isNull() )
        horLay->addWidget( new ExtendImageWidget( p, this ) );
 
     // create right 'main' widget
-    QVBox * rightLayouter = new QVBox( this );
+    QWidget * rightLayouterWidget = new QWidget( this );
+    QVBoxLayout * rightLayouter = new QVBoxLayout();
+    rightLayouterWidget->setLayout( rightLayouter );
     rightLayouter->setSpacing( 6 );
-    horLay->addWidget( rightLayouter );
+    horLay->addWidget( rightLayouterWidget );
 
       // create upper label
-      QLabel * mainLabel = new QLabel( i18n("All you ever wanted, in one click!"), rightLayouter);
+      QLabel * mainLabel = new QLabel( i18n("All you ever wanted, in one click!") );
       QFont mainFont = mainLabel->font();
       mainFont.setBold( true );
       mainLabel->setFont( mainFont );
 
       // create the control panel
-      QFrame * panelFrame = new QFrame( rightLayouter );
+      QFrame * panelFrame = new QFrame();
       panelFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Raised );
-      QGridLayout * panelLayout = new QGridLayout( panelFrame, 2, 4, 11, 6 );
+      //QGridLayout * panelLayout = new QGridLayout( panelFrame, 2, 4, 11, 6 );
+      //2, 4, 11, 6 ); // FIXME KDE4PORT
+      QGridLayout * panelLayout = new QGridLayout( panelFrame);
         // add widgets to the control panel
-        QLabel * label1 = new QLabel( i18n("Show:"), panelFrame );
+        QLabel * label1 = new QLabel( i18n("Show:")/*, panelFrame*/ );
         panelLayout->addWidget( label1, 0, 0 );
-        d->typeCombo = new QComboBox( false, panelFrame );
+        d->typeCombo = new QComboBox( false/*, panelFrame*/ );
         panelLayout->addWidget( d->typeCombo, 0, 1 );
         d->typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
         d->typeCombo->setMinimumWidth( 150 );
@@ -594,38 +597,48 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
         connect( d->typeCombo, SIGNAL( activated(int) ),
                  this, SLOT( slotLoadProviderDXS(int) ) );
 
-        QLabel * label2 = new QLabel( i18n("Order by:"), panelFrame );
+        QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
         panelLayout->addWidget( label2, 0, 2 );
-        d->sortCombo = new QComboBox( false, panelFrame );
+        d->sortCombo = new QComboBox( false/*, panelFrame*/ );
         panelLayout->addWidget( d->sortCombo, 0, 3 );
         d->sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
         d->sortCombo->setMinimumWidth( 100 );
         d->sortCombo->setEnabled( false );
-        d->sortCombo->insertItem( SmallIcon( "fonts" ), i18n("Name") );
-        d->sortCombo->insertItem( SmallIcon( "knewstuff" ), i18n("Rating") );
-        d->sortCombo->insertItem( SmallIcon( "favorites" ), i18n("Downloads") );
+        d->sortCombo->addItem( SmallIcon( "fonts" ), i18n("Name") );
+        d->sortCombo->addItem( SmallIcon( "knewstuff" ), i18n("Rating") );
+        d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Downloads") );
         connect( d->sortCombo, SIGNAL( activated(int) ),
                  this, SLOT( slotSortingSelected(int) ) );
 
         QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );
         panelLayout->addWidget( label3, 1, 0 );
         d->searchLine = new QLineEdit( panelFrame );
-        panelLayout->addMultiCellWidget( d->searchLine, 1, 1, 1, 3 );
+        panelLayout->addWidget( d->searchLine, 1, 1, 1, 3 );
         d->searchLine->setEnabled( false );
 
       // create the ItemsView used to display available items
-      d->itemsView = new ItemsView( this, rightLayouter );
+      d->itemsView = new ItemsView( this, this ); // FIXME KDE4PORT
+
+    rightLayouter->addWidget(mainLabel);
+    rightLayouter->addWidget(panelFrame);
+    rightLayouter->addWidget(d->itemsView);
 
       // create bottom buttons
-      QHBox * bottomLine = new QHBox( rightLayouter );
+      QHBoxLayout * bottomLine = new QHBoxLayout();
+      // FIXME KDE4PORT
+      //QWidget * bottomLineWidget = new QWidget();
+      //bottomLineWidget->setLayout( bottomLine );
+      rightLayouter->addLayout(bottomLine);
         // create info label
-        d->messageLabel = new QLabel( bottomLine );
+        d->messageLabel = new QLabel();
         d->messageLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Raised );
         d->messageLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
         // close button
-        QPushButton * closeButton = new QPushButton( i18n("Close"), bottomLine );
+        QPushButton * closeButton = new QPushButton( i18n("Close") );
         //closeButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum )
         connect( closeButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
+      bottomLine->addWidget(d->messageLabel);
+      bottomLine->addWidget(closeButton);
 
     // start with a nice size
     resize( 700, 400 );
@@ -638,20 +651,20 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
 
 NewStuffDialog::~NewStuffDialog()
 {
-    // cancel pending KIO::Job(s) (don't like to leave orphaned threads alone)
+    // cancel pending KJob(s) (don't like to leave orphaned threads alone)
     if ( d->providersListJob.job )
         d->providersListJob.job->kill();
 
-    QMap< KIO::Job *, ProviderJobInfo >::iterator pIt = d->providerJobs.begin(), pEnd = d->providerJobs.end();
+    QMap< KJob *, ProviderJobInfo >::iterator pIt = d->providerJobs.begin(), pEnd = d->providerJobs.end();
     for ( ; pIt != pEnd; ++pIt )
         pIt.key()->kill();
 
-    QMap< KIO::Job *, ItemTransferInfo >::iterator tIt = d->transferJobs.begin(), tEnd = d->transferJobs.end();
+    QMap< KJob *, ItemTransferInfo >::iterator tIt = d->transferJobs.begin(), tEnd = d->transferJobs.end();
     for ( ; tIt != tEnd; ++tIt )
         tIt.key()->kill();
 
     // delete all Provider descriptors
-    QValueList< Provider * >::iterator it = d->providers.begin(), iEnd = d->providers.end();
+    QList< Provider * >::iterator it = d->providers.begin(), iEnd = d->providers.end();
     for ( ; it != iEnd; ++it )
         delete *it;
     d->providers.clear();
@@ -670,12 +683,14 @@ void NewStuffDialog::displayMessage( const QString & msg, MessageType type, int 
     switch ( type )
     {
         case Info:
-            d->messageLabel->setPaletteForegroundColor( palette().active().highlightedText() );
-            d->messageLabel->setPaletteBackgroundColor( palette().active().highlight() );
+	    // FIXME KDE4PORT
+            //d->messageLabel->setPaletteForegroundColor( palette().active().highlightedText() );
+            //d->messageLabel->setPaletteBackgroundColor( palette().active().highlight() );
             break;
         case Error:
-            d->messageLabel->setPaletteForegroundColor( Qt::white );
-            d->messageLabel->setPaletteBackgroundColor( Qt::red );
+	    // FIXME KDE4PORT
+            //d->messageLabel->setPaletteForegroundColor( Qt::white );
+            //d->messageLabel->setPaletteBackgroundColor( Qt::red );
             break;
         default:
             slotResetMessageColors();
@@ -686,7 +701,7 @@ void NewStuffDialog::displayMessage( const QString & msg, MessageType type, int 
     d->messageLabel->setText( msg );
 
     // single shot the resetColors timer (and create it if null)
-    d->messageTimer->start( timeOutMs, true );
+    d->messageTimer->start( timeOutMs );
 }
 
 void NewStuffDialog::installItem( AvailableItem * item )
@@ -725,8 +740,9 @@ void NewStuffDialog::removeItem( AvailableItem * item )
 
 void NewStuffDialog::slotResetMessageColors() // SLOT
 {
-    d->messageLabel->setPaletteForegroundColor( palette().active().text() );
-    d->messageLabel->setPaletteBackgroundColor( palette().active().background() );
+    // FIXME KDE4PORT
+    //d->messageLabel->setPaletteForegroundColor( palette().active().text() );
+    //d->messageLabel->setPaletteBackgroundColor( palette().active().background() );
 }
 
 void NewStuffDialog::slotNetworkTimeout() // SLOT
@@ -747,11 +763,11 @@ void NewStuffDialog::setEngine(Dxs *engine)
 	m_dxs = engine;
 
 	connect(m_dxs,
-		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
-		SLOT(slotCategories(QValueList<KNS::Category*>)));
+		SIGNAL(signalCategories(QList<KNS::Category*>)),
+		SLOT(slotCategories(QList<KNS::Category*>)));
 	connect(m_dxs,
-		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
-		SLOT(slotEntries(QValueList<KNS::Entry*>)));
+		SIGNAL(signalEntries(QList<KNS::Entry*>)),
+		SLOT(slotEntries(QList<KNS::Entry*>)));
 	connect(m_dxs,
 		SIGNAL(signalError()),
 		SLOT(slotError()));
@@ -774,17 +790,17 @@ void NewStuffDialog::slotLoadProvidersListDXS()
 {
 }
 
-void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)
+void NewStuffDialog::slotCategories(QList<KNS::Category*> categories)
 {
 	m_categorymap.clear();
 
-	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
+	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
-		kdDebug() << "Category: " << category->name().representation() << endl;
+		kDebug() << "Category: " << category->name().representation() << endl;
 		QPixmap icon = DesktopIcon(category->icon().url(), 16);
 		// FIXME: use icon from remote URLs (see non-DXS providers as well)
-		d->typeCombo->insertItem(icon, category->name().representation());
+		d->typeCombo->addItem(icon, category->name().representation());
 		m_categorymap[category->name().representation()] = category->id();
 		// FIXME: better use global id, since names are not guaranteed
 		//        to be unique
@@ -793,14 +809,14 @@ void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)
 	d->typeCombo->setEnabled(true);
 }
 
-void NewStuffDialog::slotEntries(QValueList<KNS::Entry*> entries)
+void NewStuffDialog::slotEntries(QList<KNS::Entry*> entries)
 {
 	AvailableItem::List itemList;
 
-	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
+	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
-		kdDebug() << "Entry: " << entry->name().representation() << endl;
+		kDebug() << "Entry: " << entry->name().representation() << endl;
 		itemList.append(new AvailableItem(entry));
 	}
 
@@ -817,40 +833,39 @@ void NewStuffDialog::slotLoadProvidersList()
     if ( d->providersListJob.job )
         d->providersListJob.job->kill();
 
-    KConfig *conf = kapp->config();
-    conf->setGroup("KNewStuff");
-    QString providersurl = conf->readEntry("ProvidersUrl");
+    KConfig *conf = KGlobal::config().data();
+    KConfigGroup group = conf->group("KNewStuff");
+    QString providersurl = group.readEntry("ProvidersUrl");
 
     // create a job that will feed providersList data
-    KIO::TransferJob * job = KIO::get( KURL( providersurl ), false /*refetch*/, false /*progress*/ );
-    connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-             this, SLOT( slotProvidersListInfoData( KIO::Job *, const QByteArray & ) ) );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotProvidersListResult( KIO::Job * ) ) );
+    KIO::TransferJob * job = KIO::get( KUrl( providersurl ), false /*refetch*/, false /*progress*/ );
+    connect( job, SIGNAL( data( KJob *, const QByteArray & ) ),
+             this, SLOT( slotProvidersListInfoData( KJob *, const QByteArray & ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotProvidersListResult( KJob * ) ) );
 
     // create a job description and data holder
     d->providersListJob.job = job;
     d->providersListJob.receivedData = "";
 
     // start the 'network watchdog timer'
-    d->networkTimer->start( 10*1000, true /*single shot*/ );
+    d->networkTimer->start( 10*1000 );
 
     // inform the user
     displayMessage( i18n("Loading providers list...") );
 }
 
-void NewStuffDialog::slotProvidersListInfoData( KIO::Job * job, const QByteArray & data )
+void NewStuffDialog::slotProvidersListInfoData( KJob * job, const QByteArray & data )
 {
     // safety checks
     if ( job != d->providersListJob.job || data.isEmpty() )
         return;
 
     // append the data buffer to the 'receivedData' string
-    QCString str( data, data.size() + 1 );
-    d->providersListJob.receivedData.append( QString::fromUtf8( str ) );
+    d->providersListJob.receivedData.append( QString::fromUtf8( data ) );
 }
 
-void NewStuffDialog::slotProvidersListResult( KIO::Job * job )
+void NewStuffDialog::slotProvidersListResult( KJob * job )
 {
     // discard contents from older jobs
     if ( d->providersListJob.job != job )
@@ -881,7 +896,7 @@ void NewStuffDialog::slotProvidersListResult( KIO::Job * job )
     }
 
     // clear the current list of providers
-    QValueList< Provider * >::iterator it = d->providers.begin(), iEnd = d->providers.end();
+    QList< Provider * >::iterator it = d->providers.begin(), iEnd = d->providers.end();
     for ( ; it != iEnd; ++it )
         delete *it;
     d->providers.clear();
@@ -915,14 +930,14 @@ void NewStuffDialog::slotProvidersListResult( KIO::Job * job )
         const Provider * provider =  *it;
         // provider icon: using local KIconLoader, not loading from remote url
         QPixmap icon = DesktopIcon( provider->icon().url(), 16 );
-        QString name = provider->name();
+        QString name = provider->name().representation();
         // insert provider in combo
-        d->typeCombo->insertItem( icon, name );
+        d->typeCombo->addItem( icon, name );
     }
 
     // automatically load the first provider
     d->typeCombo->setEnabled( true );
-    d->typeCombo->setCurrentItem( 0 );
+    d->typeCombo->setCurrentIndex( 0 );
     QTimer::singleShot( 500, this, SLOT( slotLoadProvider() ) );
 }
 //END ProvidersList Loading
@@ -940,37 +955,36 @@ void NewStuffDialog::slotLoadProvider( int pNumber )
     // create a job that will feed provider data
     const Provider * provider = d->providers[ pNumber ];
     KIO::TransferJob * job = KIO::get( provider->downloadUrl(), false /*refetch*/, false /*progress*/ );
-    connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-             this, SLOT( slotProviderInfoData( KIO::Job *, const QByteArray & ) ) );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotProviderInfoResult( KIO::Job * ) ) );
+    connect( job, SIGNAL( data( KJob *, const QByteArray & ) ),
+             this, SLOT( slotProviderInfoData( KJob *, const QByteArray & ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotProviderInfoResult( KJob * ) ) );
 
     // create a job description and data holder
     ProviderJobInfo info;
     d->providerJobs[ job ] = info;
 
     // inform the user
-    displayMessage( i18n("Loading %1...").arg( provider->name() ) );
+    displayMessage( i18n("Loading %1...").arg( provider->name().representation() ) );
 
     // start the 'network watchdog timer'
-    d->networkTimer->start( 30*1000, true /*single shot*/ );
+    d->networkTimer->start( 30*1000 );
 
     // block any possible recourring calls while we're running
     d->typeCombo->setEnabled( false );
 }
 
-void NewStuffDialog::slotProviderInfoData( KIO::Job * job, const QByteArray & data )
+void NewStuffDialog::slotProviderInfoData( KJob * job, const QByteArray & data )
 {
     // safety checks
     if ( data.isEmpty() || !d->providerJobs.contains( job ) )
         return;
 
     // append the data buffer to the 'receivedData' string
-    QCString str( data, data.size() + 1 );
-    d->providerJobs[ job ].receivedData.append( QString::fromUtf8( str ) );
+    d->providerJobs[ job ].receivedData.append( QString::fromUtf8( data ) );
 }
 
-void NewStuffDialog::slotProviderInfoResult( KIO::Job * job )
+void NewStuffDialog::slotProviderInfoResult( KJob * job )
 {
     // stop network watchdog
     d->networkTimer->stop();
@@ -1031,12 +1045,12 @@ void NewStuffDialog::slotDownloadItem( AvailableItem * item )
     // create a job that will download the file
     KIO::FileCopyJob * job = KIO::file_copy( item->url(), item->destinationPath(),
         -1 /*perms*/, true /*overwrite*/, false /*resume*/, false /*showProgressInfo*/ );
-    connect( job, SIGNAL( infoMessage( KIO::Job *, const QString & ) ),
-             this, SLOT( slotItemMessage( KIO::Job *, const QString & ) ) );
-    connect( job, SIGNAL( percent ( KIO::Job *, unsigned long ) ),
-             this, SLOT( slotItemPercentage( KIO::Job *, unsigned long ) ) );
-    connect( job, SIGNAL( result( KIO::Job * ) ),
-             this, SLOT( slotItemResult( KIO::Job * ) ) );
+    connect( job, SIGNAL( infoMessage( KJob *, const QString & ) ),
+             this, SLOT( slotItemMessage( KJob *, const QString & ) ) );
+    connect( job, SIGNAL( percent ( KJob *, unsigned long ) ),
+             this, SLOT( slotItemPercentage( KJob *, unsigned long ) ) );
+    connect( job, SIGNAL( result( KJob * ) ),
+             this, SLOT( slotItemResult( KJob * ) ) );
 
     // create a job description and data holder
     ItemTransferInfo info;
@@ -1052,7 +1066,7 @@ void NewStuffDialog::slotDownloadItem( AvailableItem * item )
     displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ) );
 }
 
-void NewStuffDialog::slotItemMessage( KIO::Job * job, const QString & message )
+void NewStuffDialog::slotItemMessage( KJob * job, const QString & message )
 {
     // safety check
     if ( !d->transferJobs.contains( job ) )
@@ -1060,11 +1074,11 @@ void NewStuffDialog::slotItemMessage( KIO::Job * job, const QString & message )
 
     // update item state
     AvailableItem * item = d->transferJobs[ job ].item;
-    kdDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'." << endl;
+    kDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'." << endl;
     d->itemsView->updateItem( item );
 }
 
-void NewStuffDialog::slotItemPercentage( KIO::Job * job, unsigned long percent )
+void NewStuffDialog::slotItemPercentage( KJob * job, unsigned long percent )
 {
     // safety check
     if ( !d->transferJobs.contains( job ) )
@@ -1076,7 +1090,7 @@ void NewStuffDialog::slotItemPercentage( KIO::Job * job, unsigned long percent )
     d->itemsView->updateItem( item );
 }
 
-void NewStuffDialog::slotItemResult( KIO::Job * job )
+void NewStuffDialog::slotItemResult( KJob * job )
 {
     // safety check
     if ( !d->transferJobs.contains( job ) )

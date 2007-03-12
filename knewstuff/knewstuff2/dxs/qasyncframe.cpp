@@ -9,7 +9,9 @@ QAsyncFrame::QAsyncFrame(QWidget *parent)
 
 void QAsyncFrame::slotLoaded(QPixmap *pix)
 {
-    setBackgroundPixmap(*pix);
+    QPalette palette;
+    palette.setBrush(backgroundRole(), QBrush(*pix));
+    setPalette(palette);
 }
 
 #include "qasyncframe.moc"

@@ -1,11 +1,11 @@
 #ifndef KDXS_COMMENTS_H
 #define KDXS_COMMENTS_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KHTMLPart;
 
-class KDXSComments : public KDialogBase
+class KDXSComments : public KDialog
 {
 Q_OBJECT
 public:
