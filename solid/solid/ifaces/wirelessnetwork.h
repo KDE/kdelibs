@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006,2007 Will Stephenson <wstephenson@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -35,8 +35,6 @@ namespace Solid
 {
 namespace Ifaces
 {
-    class Authentication;
-
     /**
      * This type of networks is used by wifi network interfaces.
      */
@@ -129,7 +127,7 @@ namespace Ifaces
          *
          * @return the current authentication object, or 0 if none is used for now
          */
-        virtual Authentication *authentication() const = 0;
+        virtual Solid::Authentication *authentication() const = 0;
 
         /**
          * Sets the authentication object to with this network.
