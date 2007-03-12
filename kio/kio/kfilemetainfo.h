@@ -75,9 +75,10 @@ s
       Everything    = 0xffff ///< read everything, even if it might take a while
 
     };
+    Q_DECLARE_FLAGS(WhatFlags, What)
 
     KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
-        What w = Everything);
+        WhatFlags w = Everything);
     KFileMetaInfo(const KUrl& url);
     KFileMetaInfo();
     KFileMetaInfo(const KFileMetaInfo&);
@@ -104,5 +105,8 @@ s
 private:
     QSharedDataPointer<KFileMetaInfoPrivate> p;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KFileMetaInfo::WhatFlags)
+
 
 #endif

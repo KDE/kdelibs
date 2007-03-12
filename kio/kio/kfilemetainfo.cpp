@@ -161,7 +161,7 @@ KFileMetaInfoPrivate::initWriters(QIODevice& /*file*/) {
 }
 
 KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
-        KFileMetaInfo::What /*w*/) :p(new KFileMetaInfoPrivate()) {
+        KFileMetaInfo::WhatFlags /*w*/) :p(new KFileMetaInfoPrivate()) {
     QFileInfo fileinfo(path);
     QFile file(path);
     file.open(QIODevice::ReadOnly);
