@@ -65,10 +65,12 @@ class KJobUiDelegate;
 class KDECORE_EXPORT KJob : public QObject
 {
     Q_OBJECT
-    Q_ENUMS( KillVerbosity Capability )
+    Q_ENUMS( KillVerbosity Capability Unit )
     Q_FLAGS( Capabilities )
 
 public:
+    enum Unit { Bytes, Files, Directories };
+
     enum Capability { NoCapabilities = 0x0000,
                       Killable       = 0x0001,
                       Suspendable    = 0x0002 };
@@ -260,18 +262,20 @@ public:
 
 
     /**
-     * Returns the processed size for this job.
+     * Returns the processed amount of a given unit for this job.
      *
+     * @param unit the unit of the requested amount
      * @return the processed size
      */
-    qulonglong processedSize() const;
+    qulonglong processedAmount(Unit unit) const;
 
     /**
-     * Returns the total size for this job.
+     * Returns the total amount of a given unit for this job.
      *
+     * @param unit the unit of the requested amount
      * @return the total size
      */
-    qulonglong totalSize() const;
+    qulonglong totalAmount(Unit unit) const;
 
     /**
      * Returns the overall progress of this job.
@@ -353,21 +357,44 @@ Q_SIGNALS:
 
 
     /**
+     * Emitted when we know the amount the job will have to process. The unit of this
+     * amount is sent too. It can be emitted several times if the job manages several
+     * different units.
+     *
+     * @param job the job that emitted this signal
+     * @param unit the unit of the total amount
+     * @param amount the total amount
+     */
+    void totalAmount(KJob *job, KJob::Unit unit, qulonglong amount);
+
+    /**
+     * Regularly emitted to show the progress of this job by giving the current amount.
+     * The unit of this amount is sent too. It can be emitted several times if the job
+     * manages several different units.
+     *
+     * @param job the job that emitted this signal
+     * @param unit the unit of the processed amount
+     * @param amount the processed amount
+     */
+    void processedAmount(KJob *job, KJob::Unit unit, qulonglong amount);
+
+    /**
      * Emitted when we know the size of this job (data size in bytes for transfers,
-     * number of entries for listings).
+     * number of entries for listings, etc).
+     *
      * @param job the job that emitted this signal
      * @param size the total size
      */
-    void totalSize( KJob *job, qulonglong size );
+    void totalSize(KJob *job, qulonglong size);
 
     /**
      * Regularly emitted to show the progress of this job
-     * (current data size in bytes for transfers, entries listed).
+     * (current data size in bytes for transfers, entries listed, etc.).
      *
      * @param job the job that emitted this signal
      * @param size the processed size
      */
-    void processedSize( KJob *job, qulonglong size );
+    void processedSize(KJob *job, qulonglong size);
 
     /**
      * Progress signal showing the overall progress of the job
@@ -400,20 +427,24 @@ protected:
 
 
     /**
-     * Sets the processed size. The processedSize() and percent() signals
-     * are emitted if the values changed.
+     * Sets the processed size. The processedAmount() and percent() signals
+     * are emitted if the values changed. The percent() signal is emitted
+     * only for the progress unit.
      *
-     * @param size the new processed size
+     * @param unit the unit of the new processed amount
+     * @param amount the new processed amount
      */
-    void setProcessedSize( qulonglong size );
+    void setProcessedAmount(Unit unit, qulonglong amount);
 
     /**
      * Sets the total size. The totalSize() and percent() signals
-     * are emitted if the values changed.
+     * are emitted if the values changed. The percent() signal is emitted
+     * only for the progress unit.
      *
-     * @param size the new total size
+     * @param unit the unit of the new total amount
+     * @param amount the new total amount
      */
-    void setTotalSize( qulonglong size );
+    void setTotalAmount(Unit unit, qulonglong amount);
 
     /**
      * Sets the overall progress of the job. The percent() signal
@@ -439,11 +470,11 @@ protected:
      * Emits the percent signal if bigger than previous value,
      * after calculating it from the parameters.
      *
-     * @param processedSize the processed size
-     * @param totalSize the total size
+     * @param processedAmount the processed amount
+     * @param totalAmount the total amount
      * @see percent()
      */
-    void emitPercent( qulonglong processedSize, qulonglong totalSize );
+    void emitPercent( qulonglong processedAmount, qulonglong totalAmount );
 
 private:
     class Private;

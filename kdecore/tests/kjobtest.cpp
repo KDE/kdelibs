@@ -81,8 +81,8 @@ void KJobTest::testProgressTracking()
     qRegisterMetaType<KJob*>("KJob*");
     qRegisterMetaType<qulonglong>("qulonglong");
 
-    QSignalSpy processed_spy( job, SIGNAL( processedSize( KJob*, qulonglong ) ) );
-    QSignalSpy total_spy( job, SIGNAL( totalSize( KJob*, qulonglong ) ) );
+    QSignalSpy processed_spy( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ) );
+    QSignalSpy total_spy( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ) );
     QSignalSpy percent_spy( job, SIGNAL( percent( KJob*, unsigned long ) ) );
 
 
@@ -94,7 +94,7 @@ void KJobTest::testProgressTracking()
 
     QCOMPARE( processed_spy.size(), 1 );
     QCOMPARE( processed_spy.at( 0 ).at( 0 ).value<KJob*>(), job );
-    QCOMPARE( processed_spy.at( 0 ).at( 1 ).value<qulonglong>(), ( qulonglong )1 );
+    QCOMPARE( processed_spy.at( 0 ).at( 2 ).value<qulonglong>(), ( qulonglong )1 );
     QCOMPARE( total_spy.size(), 0 );
     QCOMPARE( percent_spy.size(), 1 );
     QCOMPARE( percent_spy.at( 0 ).at( 0 ).value<KJob*>(), job );
@@ -109,7 +109,7 @@ void KJobTest::testProgressTracking()
     QCOMPARE( processed_spy.size(), 1 );
     QCOMPARE( total_spy.size(), 1 );
     QCOMPARE( total_spy.at( 0 ).at( 0 ).value<KJob*>(), job );
-    QCOMPARE( total_spy.at( 0 ).at( 1 ).value<qulonglong>(), ( qulonglong )10 );
+    QCOMPARE( total_spy.at( 0 ).at( 2 ).value<qulonglong>(), ( qulonglong )10 );
     QCOMPARE( percent_spy.size(), 2 );
     QCOMPARE( percent_spy.at( 1 ).at( 0 ).value<KJob*>(), job );
     QCOMPARE( percent_spy.at( 1 ).at( 1 ).value<unsigned long>(), ( unsigned long )10 );
@@ -134,7 +134,7 @@ void KJobTest::testProgressTracking()
 
     QCOMPARE( processed_spy.size(), 2 );
     QCOMPARE( processed_spy.at( 1 ).at( 0 ).value<KJob*>(), job );
-    QCOMPARE( processed_spy.at( 1 ).at( 1 ).value<qulonglong>(), ( qulonglong )3 );
+    QCOMPARE( processed_spy.at( 1 ).at( 2 ).value<qulonglong>(), ( qulonglong )3 );
     QCOMPARE( total_spy.size(), 1 );
     QCOMPARE( percent_spy.size(), 4 );
     QCOMPARE( percent_spy.at( 3 ).at( 0 ).value<KJob*>(), job );
@@ -158,7 +158,7 @@ void KJobTest::testProgressTracking()
 
     QCOMPARE( processed_spy.size(), 3 );
     QCOMPARE( processed_spy.at( 2 ).at( 0 ).value<KJob*>(), job );
-    QCOMPARE( processed_spy.at( 2 ).at( 1 ).value<qulonglong>(), ( qulonglong )0 );
+    QCOMPARE( processed_spy.at( 2 ).at( 2 ).value<qulonglong>(), ( qulonglong )0 );
     QCOMPARE( total_spy.size(), 1 );
     QCOMPARE( percent_spy.size(), 5 );
     QCOMPARE( percent_spy.at( 4 ).at( 0 ).value<KJob*>(), job );
@@ -174,7 +174,7 @@ void KJobTest::testProgressTracking()
 
     QCOMPARE( processed_spy.size(), 4 );
     QCOMPARE( processed_spy.at( 3 ).at( 0 ).value<KJob*>(), job );
-    QCOMPARE( processed_spy.at( 3 ).at( 1 ).value<qulonglong>(), ( qulonglong )15 );
+    QCOMPARE( processed_spy.at( 3 ).at( 2 ).value<qulonglong>(), ( qulonglong )15 );
     QCOMPARE( total_spy.size(), 1 );
     QCOMPARE( percent_spy.size(), 6 );
     QCOMPARE( percent_spy.at( 5 ).at( 0 ).value<KJob*>(), job );
@@ -329,12 +329,12 @@ void TestJob::setErrorText( const QString &errorText )
 
 void TestJob::setProcessedSize( qulonglong size )
 {
-    KJob::setProcessedSize( size );
+    KJob::setProcessedAmount( KJob::Bytes, size );
 }
 
 void TestJob::setTotalSize( qulonglong size )
 {
-    KJob::setTotalSize( size );
+    KJob::setTotalAmount( KJob::Bytes, size );
 }
 
 void TestJob::setPercent( unsigned long percentage )

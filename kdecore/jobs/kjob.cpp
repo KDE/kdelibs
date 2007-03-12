@@ -25,20 +25,22 @@
 
 #include <kglobal.h>
 #include <QEventLoop>
+#include <QMap>
 
 class KJob::Private
 {
 public:
     Private() : uiDelegate( 0 ), progressId( 0 ), error( KJob::NoError ),
-                processedSize( 0 ), totalSize( 0 ), percentage( 0 ),
+                progressUnit(KJob::Bytes), percentage( 0 ),
                 suspended( false ), capabilities( KJob::NoCapabilities ) {}
 
     KJobUiDelegate *uiDelegate;
     int progressId;
     int error;
     QString errorText;
-    qulonglong processedSize;
-    qulonglong totalSize;
+    KJob::Unit progressUnit;
+    QMap<KJob::Unit, qulonglong> processedAmount;
+    QMap<KJob::Unit, qulonglong> totalAmount;
     unsigned long percentage;
     bool suspended;
     KJob::Capabilities capabilities;
@@ -189,14 +191,14 @@ int KJob::progressId() const
     return d->progressId;
 }
 
-qulonglong KJob::processedSize() const
+qulonglong KJob::processedAmount(Unit unit) const
 {
-    return d->processedSize;
+    return d->processedAmount[unit];
 }
 
-qulonglong KJob::totalSize() const
+qulonglong KJob::totalAmount(Unit unit) const
 {
-    return d->totalSize;
+    return d->totalAmount[unit];
 }
 
 unsigned long KJob::percent() const
@@ -214,29 +216,35 @@ void KJob::setErrorText( const QString &errorText )
     d->errorText = errorText;
 }
 
-void KJob::setProcessedSize( qulonglong size )
+void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 {
-    bool should_emit = ( d->processedSize != size );
+    bool should_emit = (d->processedAmount[unit] != amount);
 
-    d->processedSize = size;
+    d->processedAmount[unit] = amount;
 
     if ( should_emit )
     {
-        emit processedSize( this, size );
-        emitPercent( d->processedSize, d->totalSize );
+        emit processedAmount(this, unit, amount);
+        if (unit==d->progressUnit) {
+            emit processedSize(this, amount);
+            emitPercent(d->processedAmount[unit], d->totalAmount[unit]);
+        }
     }
 }
 
-void KJob::setTotalSize( qulonglong size )
+void KJob::setTotalAmount(Unit unit, qulonglong amount)
 {
-    bool should_emit = ( d->totalSize != size );
+    bool should_emit = (d->totalAmount[unit] != amount);
 
-    d->totalSize = size;
+    d->totalAmount[unit] = amount;
 
     if ( should_emit )
     {
-        emit totalSize( this, size );
-        emitPercent( d->processedSize, d->totalSize );
+        emit totalAmount(this, unit, amount);
+        if (unit==d->progressUnit) {
+            emit totalSize(this, amount);
+            emitPercent(d->processedAmount[unit], d->totalAmount[unit]);
+        }
     }
 }
 
@@ -262,18 +270,18 @@ void KJob::emitResult()
     deleteLater();
 }
 
-void KJob::emitPercent( qulonglong processedSize, qulonglong totalSize )
+void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
 {
     // calculate percents
     unsigned long ipercentage = d->percentage;
 
-    if ( totalSize == 0 )
+    if (totalAmount == 0)
     {
         d->percentage = 100;
     }
     else
     {
-        d->percentage = (unsigned long)(( (float)(processedSize) / (float)(totalSize) ) * 100.0);
+        d->percentage = (unsigned long)(( (float)(processedAmount) / (float)(totalAmount) ) * 100.0);
     }
 
     if ( d->percentage != ipercentage || d->percentage == 100 /* for those buggy total sizes that grow */ )
