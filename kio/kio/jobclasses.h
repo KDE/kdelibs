@@ -479,7 +479,6 @@ public:
         KUrl m_url;
         KUrl m_subUrl;
         int m_command;
-        KIO::filesize_t m_totalSize;
     protected:
 	/*
 	 * Allow jobs that inherit SimpleJob and are aware
@@ -1172,7 +1171,6 @@ public:
         SimpleJob *m_copyJob;
         TransferJob *m_getJob;
         TransferJob *m_putJob;
-        KIO::filesize_t m_totalSize;
     private:
 	class FileCopyJobPrivate;
 	FileCopyJobPrivate* d;

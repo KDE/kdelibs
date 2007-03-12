@@ -346,7 +346,7 @@ MetaData Job::outgoingMetaData() const
 SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
-    m_url(url), m_command(command), m_totalSize(0)
+    m_url(url), m_command(command)
 {
     if (!m_url.isValid())
     {
@@ -560,11 +560,9 @@ void SimpleJob::slotConnected()
 
 void SimpleJob::slotTotalSize( KIO::filesize_t size )
 {
-    if (size > m_totalSize)
+    if (size > totalAmount(KJob::Bytes))
     {
-        m_totalSize = size;
-        emit totalAmount( this, KJob::Bytes, size );
-        emit totalSize(this, size);
+        setTotalAmount(KJob::Bytes, size);
     }
 }
 
@@ -572,12 +570,9 @@ void SimpleJob::slotProcessedSize( KIO::filesize_t size )
 {
     //kDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size) << endl;
     setProcessedAmount(KJob::Bytes, size);
-    emit processedAmount(this, KJob::Bytes, size);
-    emit processedSize(this, size);
-    if ( size > m_totalSize ) {
+    if ( size > totalAmount(KJob::Bytes) ) {
         slotTotalSize(size); // safety
     }
-    emitPercent( size, m_totalSize );
 }
 
 void SimpleJob::slotSpeed( unsigned long speed )
@@ -953,12 +948,9 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
        {
            KIO::filesize_t size = processedAmount(KJob::Bytes)+dataForSlave.size();
            setProcessedAmount(KJob::Bytes, size);
-           emit processedAmount(this, KJob::Bytes, size);
-           emit processedSize(this, size);
-           if ( size > m_totalSize ) {
+           if ( size > totalAmount(KJob::Bytes) ) {
                slotTotalSize(size); // safety
            }
-           emitPercent( size, m_totalSize );
        }
     }
 
@@ -1482,7 +1474,7 @@ FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
                           bool move, bool overwrite, bool resume, bool showProgressInfo)
     : Job(showProgressInfo), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
-      m_totalSize(0),d(new FileCopyJobPrivate)
+      d(new FileCopyJobPrivate)
 {
    if (!move)
       emitCopying( src, dest );
@@ -1564,7 +1556,7 @@ void FileCopyJob::setSourceSize( KIO::filesize_t size )
 {
     d->m_sourceSize = size;
     if (size != (KIO::filesize_t) -1)
-       m_totalSize = size;
+        setTotalAmount(KJob::Bytes, size);
 }
 
 void FileCopyJob::setModificationTime( const QDateTime& mtime )
@@ -1612,21 +1604,16 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 void FileCopyJob::slotProcessedSize( KJob *, qulonglong size )
 {
     setProcessedAmount(KJob::Bytes, size);
-    emit processedAmount(this, KJob::Bytes, size);
-    emit processedSize(this, size);
-    if ( size > m_totalSize ) {
+    if ( size > totalAmount(KJob::Bytes) ) {
         slotTotalSize( this, size ); // safety
     }
-    emitPercent( size, m_totalSize );
 }
 
 void FileCopyJob::slotTotalSize( KJob*, qulonglong size )
 {
-    if (size > m_totalSize)
+    if (size > totalAmount(KJob::Bytes))
     {
-        m_totalSize = size;
-        emit totalAmount(this, KJob::Bytes, m_totalSize);
-        emit totalSize(this, size);
+        setTotalAmount(KJob::Bytes, size);
     }
 }
 
@@ -1635,7 +1622,6 @@ void FileCopyJob::slotPercent( KJob*, unsigned long pct )
     if ( pct > percent() )
     {
         setPercent( pct );
-        emit percent( this, percent() );
     }
 }
 

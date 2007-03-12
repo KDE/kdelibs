@@ -79,17 +79,16 @@ void DeleteJob::slotReport()
    switch( state ) {
         case STATE_STATING:
         case STATE_LISTING:
-            emit totalAmount(this, KJob::Bytes, m_totalSize);
-            emit totalSize(this, m_totalSize);
-            emit totalAmount(this, KJob::Files, files.count());
-            emit totalAmount(this, KJob::Directories, dirs.count());
+            setTotalAmount(KJob::Bytes, m_totalSize);
+            setTotalAmount(KJob::Files, files.count());
+            setTotalAmount(KJob::Directories, dirs.count());
             break;
         case STATE_DELETING_DIRS:
-            emit processedAmount(this, KJob::Directories, m_processedDirs);
+            setProcessedAmount(KJob::Directories, m_processedDirs);
             emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             break;
         case STATE_DELETING_FILES:
-            emit processedAmount(this, KJob::Files, m_processedFiles);
+            setProcessedAmount(KJob::Files, m_processedFiles);
             emitPercent( m_processedFiles, m_totalFilesDirs );
             break;
    }
@@ -275,23 +274,13 @@ void DeleteJob::slotProcessedSize( KJob*, qulonglong data_size )
 
    //kDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
 
-   emit processedAmount(this, KJob::Bytes, m_processedSize + m_fileProcessedSize);
-   emit processedSize(this, m_processedSize + m_fileProcessedSize);
+   setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 
    // calculate percents
-   unsigned long ipercent = percent();
-
    if ( m_totalSize == 0 )
       setPercent( 100 );
    else
       setPercent( (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0) );
-
-   if ( percent() > ipercent )
-   {
-      emit percent( this, percent() );
-      //kDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
-   }
-
 }
 
 void DeleteJob::slotResult( KJob *job )

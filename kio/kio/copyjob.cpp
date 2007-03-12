@@ -301,7 +301,7 @@ void CopyJob::slotReport()
     // If showProgressInfo was set, progressId() is > 0.
     switch (state) {
         case STATE_COPYING_FILES:
-            emit processedAmount( this, KJob::Files, m_processedFiles );
+            setProcessedAmount( KJob::Files, m_processedFiles );
             if (d->m_bURLDirty)
             {
                 // Only emit urls when they changed. This saves time, and fixes #66281
@@ -325,7 +325,7 @@ void CopyJob::slotReport()
             break;
 
         case STATE_CREATING_DIRS:
-            emit processedAmount( this, KJob::Directories, m_processedDirs );
+            setProcessedAmount( KJob::Directories, m_processedDirs );
             if (d->m_bURLDirty)
             {
                 d->m_bURLDirty = false;
@@ -341,10 +341,9 @@ void CopyJob::slotReport()
                 d->m_bURLDirty = false;
                 emitCopying( m_currentSrcURL, m_currentDestURL );
             }
-            emit totalAmount(this, KJob::Bytes, m_totalSize);
-            emit totalSize(this, m_totalSize);
-            emit totalAmount(this, KJob::Files, files.count());
-            emit totalAmount(this, KJob::Directories, dirs.count());
+            setTotalAmount(KJob::Bytes, m_totalSize);
+            setTotalAmount(KJob::Files, files.count());
+            setTotalAmount(KJob::Directories, dirs.count());
             break;
 
         default:
@@ -875,7 +874,7 @@ void CopyJob::createNextDir()
     }
     else // we have finished creating dirs
     {
-        emit processedAmount( this, KJob::Directories, m_processedDirs ); // make sure final number appears
+        setProcessedAmount( KJob::Directories, m_processedDirs ); // make sure final number appears
 
         state = STATE_COPYING_FILES;
         m_processedFiles++; // Ralf wants it to start at 1, not 0
@@ -1353,13 +1352,10 @@ void CopyJob::slotProcessedSize( KJob*, qulonglong data_size )
   {
     m_totalSize = m_processedSize + m_fileProcessedSize;
     //kDebug(7007) << "Adjusting m_totalSize to " << m_totalSize << endl;
-    emit totalAmount(this, KJob::Bytes, m_totalSize); // safety
-    emit totalSize(this, m_totalSize);
+    setTotalAmount(KJob::Bytes, m_totalSize); // safety
   }
   //kDebug(7007) << "emit processedSize " << (unsigned long) (m_processedSize + m_fileProcessedSize) << endl;
-  emit processedAmount(this, KJob::Bytes, m_processedSize + m_fileProcessedSize);
-  emit processedSize(this, m_processedSize + m_fileProcessedSize);
-  emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
+  setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 }
 
 void CopyJob::slotTotalSize( KJob*, qulonglong size )
@@ -1373,8 +1369,7 @@ void CopyJob::slotTotalSize( KJob*, qulonglong size )
   {
     //kDebug(7007) << "slotTotalSize: updating totalsize to " << size << endl;
     m_totalSize = size;
-    emit totalAmount(this, KJob::Bytes, size);
-    emit totalSize(this, size);
+    setTotalAmount(KJob::Bytes, size);
   }
 }
 
