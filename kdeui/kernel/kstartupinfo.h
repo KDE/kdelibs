@@ -308,6 +308,11 @@ class KDEUI_EXPORT KStartupInfo
 	 * @internal
 	 */
         class Data;
+        
+	/**
+          * @internal
+	 */
+        class Private;
     Q_SIGNALS:
 	/**
 	 * Emitted when a new startup notification is created (i.e. a new application is
@@ -343,7 +348,6 @@ class KDEUI_EXPORT KStartupInfo
         Q_PRIVATE_SLOT(d, void window_added( WId w ))
         Q_PRIVATE_SLOT(d, void slot_window_added( WId w ))
 
-        class Private;
         Private* const d;
 
         Q_DISABLE_COPY(KStartupInfo)
@@ -416,6 +420,7 @@ class KDEUI_EXPORT KStartupInfoId
         explicit KStartupInfoId( const QString& txt );
         QString to_text() const;
         friend class KStartupInfo;
+        friend class KStartupInfo::Private;
         struct Private;
         Private *const d;
     };
@@ -626,6 +631,7 @@ class KDEUI_EXPORT KStartupInfoData
         void remove_pid( pid_t pid );
         friend class KStartupInfo;
         friend class KStartupInfo::Data;
+        friend class KStartupInfo::Private;
         struct Private;
         Private *const d;
     };
