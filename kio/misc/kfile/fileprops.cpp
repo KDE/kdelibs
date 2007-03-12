@@ -164,9 +164,8 @@ QString FileProps::createKeyValue( const KFileMetaInfoGroup& g,
     KFileMetaInfoItem item = g.item( key );
 
     QString result("%1");
-    result = result.arg( (item.isValid() ? item.translatedKey() : key) + ':',
-                         -MAX_SPACE );
-    result.append( beatifyValue( item.string() ) );
+    result = result.arg(item.name() + ':', -MAX_SPACE );
+    result.append( beatifyValue( item.value().toString() ) );
 
     QString group("%1");
     group = group.arg( g.translatedName() + ':', -MAX_SPACE );
@@ -281,7 +280,7 @@ static void printSupportedMimeTypes()
 }
 
 // Caller needs to delete the items in the list after use!
-static KFileItemList fileItemList( const KCmdLineArgs *args )
+/*static KFileItemList fileItemList( const KCmdLineArgs *args )
 {
     KFileItemList items;
     for ( int i = 0; i < args->count(); i++ )
@@ -289,15 +288,15 @@ static KFileItemList fileItemList( const KCmdLineArgs *args )
                                       KFileItem::Unknown,
                                       args->url( i ) ));
     return items;
-}
+}*/
 
-static void showPropertiesDialog( const KCmdLineArgs *args )
+/*static void showPropertiesDialog( const KCmdLineArgs *args )
 {
     const KFileItemList items = fileItemList( args );
     KPropertiesDialog::showDialog( items, 0, true );
     qDeleteAll( items );
-}
-
+}*/
+/*
 static void printMimeTypes( const KCmdLineArgs *args )
 {
     for ( int i = 0; i < args->count(); i++ )
@@ -307,7 +306,7 @@ static void printMimeTypes( const KCmdLineArgs *args )
         kDebug() << args->arg(i) << ": " << mt->comment().toLocal8Bit() << " ("
              << mt->name().toLocal8Bit() << ")" << endl;
     }
-}
+}*/
 
 static void printList( const QStringList& list )
 {
@@ -329,7 +328,8 @@ static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
     for ( ; (props = it.current()); ++it )
     {
         QString file = props->fileName() + ' ';
-        QString fileString = line.replace( 3, file.length(), file );
+        QString fileString = line;
+        fileString.replace( 3, file.length(), file );
         kDebug() << QFile::encodeName( fileString ) << endl;
 
         if ( args->isSet( "listsupported" ) )
@@ -439,7 +439,7 @@ int main( int argc, char **argv )
 
     if ( args->isSet( "dialog" ) )
     {
-        showPropertiesDialog( args );
+        //showPropertiesDialog( args );
         return true;
     }
 
@@ -452,8 +452,8 @@ int main( int argc, char **argv )
 
     for ( int i = 0; i < files; i++ )
     {
-        if ( args->isSet( "mimetype" ) )
-            printMimeTypes( args );
+        //if ( args->isSet( "mimetype" ) )
+            //printMimeTypes( args );
 
         FileProps *props = new FileProps( args->url(i).path(), groupsToUse );
         if ( props->isValid() )

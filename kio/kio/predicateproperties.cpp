@@ -1,0 +1,113 @@
+/* This file is part of the KDE libraries
+
+   Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License (LGPL) as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+#include "kfilemetainfo_private.h"
+#include "kglobal.h"
+#include <strigi/streamindexer.h>
+#include <strigi/indexerconfiguration.h>
+#include <QDebug>
+using namespace jstreams;
+
+// PredicateProperties
+
+class PredicateProperties::Private : public QSharedData {
+public:
+    static const QString nullString;
+    static const PredicateProperties nullPP;
+    PredicateProperties parent;
+    QString key;
+    QString name;
+    QVariant::Type type;
+    uint attributes;
+};
+const QString PredicateProperties::Private::nullString = QString::null;
+const PredicateProperties PredicateProperties::Private::nullPP;
+
+PredicateProperties::PredicateProperties(const QString& predicate) {
+    if (!predicate.isEmpty()) {
+        p = new Private();
+        p->key = predicate;
+    }
+}
+PredicateProperties::PredicateProperties(const PredicateProperties& pp)
+        :p(pp.p) {
+}
+PredicateProperties::~PredicateProperties() {
+}
+const PredicateProperties&
+PredicateProperties::operator=(const PredicateProperties& pp) {
+    p = pp.p;
+    return pp;
+}
+const QString&
+PredicateProperties::name() const {
+    if (p == 0) return Private::nullString;
+    return (p->name.isEmpty()) ?p->key :p->name;
+}
+uint
+PredicateProperties::attributes() const {
+    return (p) ?p->attributes :0;
+}
+QVariant::Type
+PredicateProperties::type() const {
+    return (p) ?p->type :QVariant::Invalid;
+}
+QValidator*
+PredicateProperties::createValidator() const {
+    return 0;
+}
+const PredicateProperties&
+PredicateProperties::parent() const {
+    return (p) ?p->parent :Private::nullPP;
+}
+bool
+PredicateProperties::isValid() const {
+    return p;
+}
+
+/// PredicatePropertyProvider
+
+K_GLOBAL_STATIC(PredicatePropertyProvider, staticPredicatePropertyProvider);
+
+PredicatePropertyProvider*
+PredicatePropertyProvider::self() {
+    return staticPredicatePropertyProvider;
+}
+PredicateProperties
+PredicatePropertyProvider::getPredicateProperties(const QString& key) {
+    PredicateProperties p(key);
+    return p;
+}
+
+class PredicatePropertyProvider::Private {
+public:
+    IndexerConfiguration config;
+    StreamIndexer indexer;
+    Private() :indexer(config) {}
+};
+PredicatePropertyProvider::PredicatePropertyProvider() {
+    p = new PredicatePropertyProvider::Private();
+}
+PredicatePropertyProvider::~PredicatePropertyProvider() {
+    delete p;
+}
+StreamIndexer&
+PredicatePropertyProvider::indexer() {
+    return p->indexer;
+}

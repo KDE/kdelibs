@@ -25,6 +25,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/kde3support/kdeui/ #for k3wizard
    ${KDE4_KDEUI_INCLUDES}
    ${ZLIB_INCLUDE_DIR}
+   ${STRIGI_INCLUDE_DIR}
 )
 
 macro_bool_to_01(FAM_FOUND HAVE_FAM)
@@ -77,6 +78,9 @@ set(kiocore_STAT_SRCS
   kio/karchive.cpp
   kio/kfilefilter.cpp
   kio/kfilemetainfo.cpp
+  kio/kfilemetainfoitem.cpp
+  kio/predicateproperties.cpp
+  kio/kfilewriteplugin.cpp
   kio/kdbusservicestarter.cpp
   kio/dataslave.cpp
   kio/dataprotocol.cpp
@@ -246,7 +250,7 @@ kde4_automoc(${kio_LIB_PRIVATE_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} )
+target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${STREAMINDEXER_LIBRARY})
 
 if (UNIX)
    target_link_libraries(kio kdesu)
@@ -354,6 +358,8 @@ install( FILES
   kio/karchive.h
   kio/kfilefilter.h
   kio/kfilemetainfo.h
+  kio/kfilemetainfoitem.h
+  kio/predicateproperties.h
   kio/kfilewriteplugin.h
   kio/kmimetyperesolver.h
   kio/k3mimetyperesolver.h
