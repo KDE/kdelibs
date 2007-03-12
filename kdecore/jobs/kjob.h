@@ -285,6 +285,9 @@ public:
     unsigned long percent() const;
 
 Q_SIGNALS:
+#ifndef Q_MOC_RUN
+private: // don't tell moc, but those signals are in fact private
+#endif
     /**
      * Emitted when the job is finished, in any case. It is used to notify
      * observers that the job is terminated and that progress can be hidden.
@@ -319,6 +322,7 @@ Q_SIGNALS:
      */
     void result( KJob *job );
 
+Q_SIGNALS:
     /**
      * Emitted to display general description of this job. A description has
      * a title and two optional fields which can be used to complete the
@@ -356,6 +360,10 @@ Q_SIGNALS:
     void warning( KJob *job, const QString &plain, const QString &rich = QString() );
 
 
+Q_SIGNALS:
+#ifndef Q_MOC_RUN
+private: // don't tell moc, but those signals are in fact private
+#endif
     /**
      * Emitted when we know the amount the job will have to process. The unit of this
      * amount is sent too. It can be emitted several times if the job manages several
