@@ -27,7 +27,8 @@ class QVariant;
 class KUrl;
 
 class KIO_EXPORT KFileWritePlugin : public QObject {
-friend class KFileWriterProvider;
+    Q_OBJECT
+    friend class KFileWriterProvider;
 public:
     virtual ~KFileWritePlugin() {}
     virtual bool write(const KUrl& file, const QVariant& data) = 0;
