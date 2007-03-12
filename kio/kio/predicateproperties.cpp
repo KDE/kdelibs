@@ -83,7 +83,7 @@ PredicateProperties::isValid() const {
 
 /// PredicatePropertyProvider
 
-K_GLOBAL_STATIC(PredicatePropertyProvider, staticPredicatePropertyProvider);
+K_GLOBAL_STATIC(PredicatePropertyProvider, staticPredicatePropertyProvider)
 
 PredicatePropertyProvider*
 PredicatePropertyProvider::self() {
