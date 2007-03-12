@@ -25,12 +25,12 @@ using namespace KJS;
 
 const ClassInfo PackageObject::info = { "Package", 0, 0, 0 };
 
-Package* Package::loadSubPackage(const Identifier& n, UString* err)
+Package* Package::loadSubPackage(const Identifier&, UString* /*err*/)
 {
     return 0;
 }
 
-void Package::loadSymbol(ExecState* exec, JSObject* obj, const Identifier& n)
+void Package::loadSymbol(ExecState*, JSObject*, const Identifier&)
 {
 }
 

@@ -2547,7 +2547,6 @@ PackageObject* PackageNameNode::resolvePackage(ExecState* exec)
 	UString err;
 	Package *newBase = basePackage->loadSubPackage(id, &err);
 	if (newBase == 0) {
-	    JSValue *ex;
 	    if (err.isEmpty()) {
 		throwError(exec, GeneralError, "Package not found");
 	    } else {
