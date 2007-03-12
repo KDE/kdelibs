@@ -20,7 +20,8 @@
 
 #include "ksessionmanager.h"
 
-KSessionManager::KSessionManager()
+KSessionManager::KSessionManager():
+     d(0)
 {
     sessionClients().removeAll( this );
     sessionClients().append( this );

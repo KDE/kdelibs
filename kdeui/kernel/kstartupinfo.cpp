@@ -93,6 +93,37 @@ class KStartupInfo::Data
 class KStartupInfo::Private
     {
     public:
+        // private slots
+        void startups_cleanup();
+        void startups_cleanup_no_age();
+        void got_message( const QString& msg );
+        void window_added( WId w );
+        void slot_window_added( WId w );
+
+        void init( int flags );
+        void got_startup_info( const QString& msg_P, bool update_only_P );
+        void got_remove_startup_info( const QString& msg_P );
+        void new_startup_info_internal( const KStartupInfoId& id_P,
+            Data& data_P, bool update_only_P );
+        void remove_startup_info_internal( const KStartupInfoId& id_P );
+        void remove_startup_pids( const KStartupInfoId& id, const KStartupInfoData& data );
+        void remove_startup_pids( const KStartupInfoData& data );
+        startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data );
+        bool find_id( const QByteArray& id_P, KStartupInfoId* id_O,
+            KStartupInfoData* data_O );
+        bool find_pid( pid_t pid_P, const QByteArray& hostname, KStartupInfoId* id_O,
+            KStartupInfoData* data_O );
+        bool find_wclass( QByteArray res_name_P, QByteArray res_class_P,
+            KStartupInfoId* id_O, KStartupInfoData* data_O );
+        static QByteArray get_window_hostname( WId w_P );
+        void startups_cleanup_internal( bool age_P );
+        void clean_all_noncompliant();
+        static QString check_required_startup_fields( const QString& msg,
+            const KStartupInfoData& data, int screen );
+
+
+        KStartupInfo *q;
+        unsigned int timeout;
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
 	// contains silenced ASN's only if !AnnounceSilencedChanges
         QMap< KStartupInfoId, KStartupInfo::Data > silent_startups;
@@ -104,58 +135,55 @@ class KStartupInfo::Private
 #endif
 	QTimer* cleanup;
 	int flags;
-	Private( int flags_P )
-    	    :
+
+	Private( int flags_P, KStartupInfo *q )
+    	    : q( q ),
+            timeout( 60 ),
 #ifdef Q_WS_X11
 	    msgs( NET_STARTUP_MSG, NULL, false ),
 #endif
-	      flags( flags_P ) {}
+	      flags( flags_P )
+        {
+#ifdef Q_WS_X11
+            // d == NULL means "disabled"
+            if( !KApplication::kApplication())
+                return;
+            if( !QX11Info::display())
+                return;
+            
+            if( !( flags & DisableKWinModule )) {
+                wm_module = new KWinModule( q );
+                QObject::connect( wm_module, SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( wm_module, SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
+            }
+            else
+                wm_module = NULL;
+            QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
+            cleanup = new QTimer( q );
+            QObject::connect( cleanup, SIGNAL( timeout()), q, SLOT( startups_cleanup()));
+#endif            
+        }
     };
 
 KStartupInfo::KStartupInfo( int flags_P, QObject* parent_P )
     : QObject( parent_P ),
-        timeout( 60 ), d( NULL )
+      d(new Private(flags_P, this))
     {
-    init( flags_P );
     }
 
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P )
     : QObject( parent_P ),
-        timeout( 60 ), d( NULL )
+      d(new Private(clean_on_cantdetect_P ? CleanOnCantDetect : 0, this))
     {
-    init( clean_on_cantdetect_P ? CleanOnCantDetect : 0 );
     }
 
-void KStartupInfo::init( int flags_P )
-    {
-#ifdef Q_WS_X11
-    // d == NULL means "disabled"
-    if( !KApplication::kApplication())
-        return;
-    if( !QX11Info::display())
-        return;
-
-    d = new Private( flags_P );
-    if( !( d->flags & DisableKWinModule ))
-        {
-        d->wm_module = new KWinModule( this );
-        connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( slot_window_added( WId )));
-        connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( slot_window_added( WId )));
-        }
-    else
-        d->wm_module = NULL;
-    connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
-    d->cleanup = new QTimer( this );
-    connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
-#endif
-    }
 
 KStartupInfo::~KStartupInfo()
     {
     delete d;
     }
 
-void KStartupInfo::got_message( const QString& msg_P )
+void KStartupInfo::Private::got_message( const QString& msg_P )
     {
 #ifdef Q_WS_X11
 // TODO do something with SCREEN= ?
@@ -193,22 +221,22 @@ class DelayedWindowEvent
     };
 }
 
-void KStartupInfo::slot_window_added( WId w_P )
+void KStartupInfo::Private::slot_window_added( WId w_P )
     {
-    qApp->postEvent( this, new DelayedWindowEvent( w_P ));
+    qApp->postEvent( q, new DelayedWindowEvent( w_P ));
     }
 
 void KStartupInfo::customEvent( QEvent* e_P )
     {
 #ifdef Q_WS_X11
     if( e_P->type() == DelayedWindowEvent::uniqueType() )
-	window_added( static_cast< DelayedWindowEvent* >( e_P )->w );
+	d->window_added( static_cast< DelayedWindowEvent* >( e_P )->w );
     else
 #endif
 	QObject::customEvent( e_P );
     }
 
-void KStartupInfo::window_added( WId w_P )
+void KStartupInfo::Private::window_added( WId w_P )
     {
     KStartupInfoId id;
     KStartupInfoData data;
@@ -221,13 +249,13 @@ void KStartupInfo::window_added( WId w_P )
         case NoMatch:
           break; // nothing
         case CantDetect:
-            if( d->flags & CleanOnCantDetect )
+            if( flags & CleanOnCantDetect )
                 clean_all_noncompliant();
           break;
         }
     }
 
-void KStartupInfo::got_startup_info( const QString& msg_P, bool update_P )
+void KStartupInfo::Private::got_startup_info( const QString& msg_P, bool update_P )
     {
     KStartupInfoId id( msg_P );
     if( id.none())
@@ -236,53 +264,51 @@ void KStartupInfo::got_startup_info( const QString& msg_P, bool update_P )
     new_startup_info_internal( id, data, update_P );
     }
 
-void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
-    Data& data_P, bool update_P )
+void KStartupInfo::Private::new_startup_info_internal( const KStartupInfoId& id_P,
+                                                       KStartupInfo::Data& data_P, bool update_P )
     {
-    if( d == NULL )
-        return;
     if( id_P.none())
         return;
-    if( d->startups.contains( id_P ))
+    if( startups.contains( id_P ))
         { // already reported, update
-        d->startups[ id_P ].update( data_P );
-        d->startups[ id_P ].age = 0; // CHECKME
+        startups[ id_P ].update( data_P );
+        startups[ id_P ].age = 0; // CHECKME
         kDebug( 172 ) << "updating" << endl;
-	if( d->startups[ id_P ].silent() == Data::Yes
-	    && !( d->flags & AnnounceSilenceChanges ))
+	if( startups[ id_P ].silent() == KStartupInfo::Data::Yes
+	    && !( flags & AnnounceSilenceChanges ))
 	    {
-	    d->silent_startups[ id_P ] = d->startups[ id_P ];
-	    d->startups.remove( id_P );
-	    emit gotRemoveStartup( id_P, d->silent_startups[ id_P ] );
+	    silent_startups[ id_P ] = startups[ id_P ];
+	    startups.remove( id_P );
+	    emit q->gotRemoveStartup( id_P, silent_startups[ id_P ] );
 	    return;
 	    }
-        emit gotStartupChange( id_P, d->startups[ id_P ] );
+        emit q->gotStartupChange( id_P, startups[ id_P ] );
         return;
         }
-    if( d->silent_startups.contains( id_P ))
+    if( silent_startups.contains( id_P ))
         { // already reported, update
-        d->silent_startups[ id_P ].update( data_P );
-        d->silent_startups[ id_P ].age = 0; // CHECKME
+        silent_startups[ id_P ].update( data_P );
+        silent_startups[ id_P ].age = 0; // CHECKME
         kDebug( 172 ) << "updating silenced" << endl;
-	if( d->silent_startups[ id_P ].silent() != Data::Yes )
+	if( silent_startups[ id_P ].silent() != Data::Yes )
 	    {
-	    d->startups[ id_P ] = d->silent_startups[ id_P ];
-	    d->silent_startups.remove( id_P );
-	    emit gotNewStartup( id_P, d->startups[ id_P ] );
+	    startups[ id_P ] = silent_startups[ id_P ];
+	    silent_startups.remove( id_P );
+	    q->emit gotNewStartup( id_P, startups[ id_P ] );
 	    return;
 	    }
-        emit gotStartupChange( id_P, d->silent_startups[ id_P ] );
+        emit q->gotStartupChange( id_P, silent_startups[ id_P ] );
         return;
         }
-    if( d->uninited_startups.contains( id_P ))
+    if( uninited_startups.contains( id_P ))
         {
-        d->uninited_startups[ id_P ].update( data_P );
+        uninited_startups[ id_P ].update( data_P );
         kDebug( 172 ) << "updating uninited" << endl;
         if( !update_P ) // uninited finally got new:
             {
-            d->startups[ id_P ] = d->uninited_startups[ id_P ];
-            d->uninited_startups.remove( id_P );
-            emit gotNewStartup( id_P, d->startups[ id_P ] );
+            startups[ id_P ] = uninited_startups[ id_P ];
+            uninited_startups.remove( id_P );
+            emit q->gotNewStartup( id_P, startups[ id_P ] );
             return;
             }
         // no change announce, it's still uninited
@@ -291,23 +317,23 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
     if( update_P ) // change: without any new: first
         {
         kDebug( 172 ) << "adding uninited" << endl;
-	d->uninited_startups.insert( id_P, data_P );
+	uninited_startups.insert( id_P, data_P );
         }
-    else if( data_P.silent() != Data::Yes || d->flags & AnnounceSilenceChanges )
+    else if( data_P.silent() != Data::Yes || flags & AnnounceSilenceChanges )
 	{
         kDebug( 172 ) << "adding" << endl;
-        d->startups.insert( id_P, data_P );
-	emit gotNewStartup( id_P, data_P );
+        startups.insert( id_P, data_P );
+	emit q->gotNewStartup( id_P, data_P );
 	}
     else // new silenced, and silent shouldn't be announced
 	{
         kDebug( 172 ) << "adding silent" << endl;
-	d->silent_startups.insert( id_P, data_P );
+	silent_startups.insert( id_P, data_P );
 	}
-    d->cleanup->start( 1000 ); // 1 sec
+    cleanup->start( 1000 ); // 1 sec
     }
 
-void KStartupInfo::got_remove_startup_info( const QString& msg_P )
+void KStartupInfo::Private::got_remove_startup_info( const QString& msg_P )
     {
     KStartupInfoId id( msg_P );
     KStartupInfoData data( msg_P );
@@ -322,35 +348,31 @@ void KStartupInfo::got_remove_startup_info( const QString& msg_P )
     remove_startup_info_internal( id );
     }
 
-void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
+void KStartupInfo::Private::remove_startup_info_internal( const KStartupInfoId& id_P )
     {
-    if( d == NULL )
-        return;
-    if( d->startups.contains( id_P ))
+    if( startups.contains( id_P ))
         {
 	kDebug( 172 ) << "removing" << endl;
-	emit gotRemoveStartup( id_P, d->startups[ id_P ]);
-	d->startups.remove( id_P );
+	emit q->gotRemoveStartup( id_P, startups[ id_P ]);
+	startups.remove( id_P );
 	}
-    else if( d->silent_startups.contains( id_P ))
+    else if( silent_startups.contains( id_P ))
 	{
 	kDebug( 172 ) << "removing silent" << endl;
-	d->silent_startups.remove( id_P );
+	silent_startups.remove( id_P );
 	}
-    else if( d->uninited_startups.contains( id_P ))
+    else if( uninited_startups.contains( id_P ))
 	{
 	kDebug( 172 ) << "removing uninited" << endl;
-	d->uninited_startups.remove( id_P );
+	uninited_startups.remove( id_P );
 	}
     return;
     }
 
-void KStartupInfo::remove_startup_pids( const KStartupInfoData& data_P )
+void KStartupInfo::Private::remove_startup_pids( const KStartupInfoData& data_P )
     { // first find the matching info
-    if( d == NULL )
-        return;
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
-         it != d->startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
+         it != startups.end();
          ++it )
         {
         if( ( *it ).hostname() != data_P.hostname())
@@ -362,19 +384,17 @@ void KStartupInfo::remove_startup_pids( const KStartupInfoData& data_P )
         }
     }
 
-void KStartupInfo::remove_startup_pids( const KStartupInfoId& id_P,
+void KStartupInfo::Private::remove_startup_pids( const KStartupInfoId& id_P,
     const KStartupInfoData& data_P )
     {
-    if( d == NULL )
-        return;
     kFatal( data_P.pids().count() == 0, 172 );
     Data* data = NULL;
-    if( d->startups.contains( id_P ))
-	data = &d->startups[ id_P ];
-    else if( d->silent_startups.contains( id_P ))
-	data = &d->silent_startups[ id_P ];
-    else if( d->uninited_startups.contains( id_P ))
-        data = &d->uninited_startups[ id_P ];
+    if( startups.contains( id_P ))
+	data = &startups[ id_P ];
+    else if( silent_startups.contains( id_P ))
+	data = &silent_startups[ id_P ];
+    else if( uninited_startups.contains( id_P ))
+        data = &uninited_startups[ id_P ];
     else
 	return;
     for( QList< pid_t >::ConstIterator it2 = data_P.pids().begin();
@@ -394,7 +414,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
 	QX11Info inf;
-    msg = check_required_startup_fields( msg, data_P, inf.screen());
+    msg = Private::check_required_startup_fields( msg, data_P, inf.screen());
     kDebug( 172 ) << "sending " << msg << endl;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
 #endif
@@ -409,7 +429,7 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
 #ifdef Q_WS_X11
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
-    msg = check_required_startup_fields( msg, data_P, DefaultScreen( disp_P ));
+    msg = Private::check_required_startup_fields( msg, data_P, DefaultScreen( disp_P ));
 #ifdef KSTARTUPINFO_ALL_DEBUG
     kDebug( 172 ) << "sending " << msg << endl;
 #endif
@@ -419,7 +439,7 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
 #endif
     }
 
-QString KStartupInfo::check_required_startup_fields( const QString& msg, const KStartupInfoData& data_P,
+QString KStartupInfo::Private::check_required_startup_fields( const QString& msg, const KStartupInfoData& data_P,
     int screen )
     {
     QString ret = msg;
@@ -610,30 +630,28 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_i
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O,
     KStartupInfoData& data_O )
     {
-    return check_startup_internal( w_P, &id_O, &data_O );
+    return d->check_startup_internal( w_P, &id_O, &data_O );
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O )
     {
-    return check_startup_internal( w_P, &id_O, NULL );
+    return d->check_startup_internal( w_P, &id_O, NULL );
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoData& data_O )
     {
-    return check_startup_internal( w_P, NULL, &data_O );
+    return d->check_startup_internal( w_P, NULL, &data_O );
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P )
     {
-    return check_startup_internal( w_P, NULL, NULL );
+    return d->check_startup_internal( w_P, NULL, NULL );
     }
 
-KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupInfoId* id_O,
+KStartupInfo::startup_t KStartupInfo::Private::check_startup_internal( WId w_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O )
     {
-    if( d == NULL )
-        return NoMatch;
-    if( d->startups.count() == 0 )
+    if( startups.count() == 0 )
         return NoMatch; // no startups
     // Strategy:
     //
@@ -697,34 +715,30 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     return CantDetect;
     }
 
-bool KStartupInfo::find_id( const QByteArray& id_P, KStartupInfoId* id_O,
+bool KStartupInfo::Private::find_id( const QByteArray& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O )
     {
-    if( d == NULL )
-        return false;
     kDebug( 172 ) << "find_id:" << id_P << endl;
     KStartupInfoId id;
     id.initId( id_P );
-    if( d->startups.contains( id ))
+    if( startups.contains( id ))
         {
         if( id_O != NULL )
             *id_O = id;
         if( data_O != NULL )
-            *data_O = d->startups[ id ];
+            *data_O = startups[ id ];
         kDebug( 172 ) << "check_startup_id:match" << endl;
         return true;
         }
     return false;
     }
 
-bool KStartupInfo::find_pid( pid_t pid_P, const QByteArray& hostname_P,
+bool KStartupInfo::Private::find_pid( pid_t pid_P, const QByteArray& hostname_P,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
-    if( d == NULL )
-        return false;
     kDebug( 172 ) << "find_pid:" << pid_P << endl;
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
-         it != d->startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
+         it != startups.end();
          ++it )
         {
         if( ( *it ).is_pid( pid_P ) && ( *it ).hostname() == hostname_P )
@@ -742,16 +756,14 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QByteArray& hostname_P,
     return false;
     }
 
-bool KStartupInfo::find_wclass( QByteArray res_name, QByteArray res_class,
+bool KStartupInfo::Private::find_wclass( QByteArray res_name, QByteArray res_class,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
-    if( d == NULL )
-        return false;
     res_name = res_name.toLower();
     res_class = res_class.toLower();
     kDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
-         it != d->startups.end();
+    for( QMap< KStartupInfoId, Data >::Iterator it = startups.begin();
+         it != startups.end();
          ++it )
         {
         const QByteArray wmclass = ( *it ).findWMClass();
@@ -830,7 +842,7 @@ void KStartupInfo::setWindowStartupId( WId w_P, const QByteArray& id_P )
 #endif
     }
 
-QByteArray KStartupInfo::get_window_hostname( WId w_P )
+QByteArray KStartupInfo::Private::get_window_hostname( WId w_P )
     {
 #ifdef Q_WS_X11
     XTextProperty tp;
@@ -854,35 +866,31 @@ QByteArray KStartupInfo::get_window_hostname( WId w_P )
 
 void KStartupInfo::setTimeout( unsigned int secs_P )
     {
-    timeout = secs_P;
+    d->timeout = secs_P;
  // schedule removing entries that are older than the new timeout
     QTimer::singleShot( 0, this, SLOT( startups_cleanup_no_age()));
     }
 
-void KStartupInfo::startups_cleanup_no_age()
+void KStartupInfo::Private::startups_cleanup_no_age()
     {
     startups_cleanup_internal( false );
     }
 
-void KStartupInfo::startups_cleanup()
+void KStartupInfo::Private::startups_cleanup()
     {
-    if( d == NULL )
-        return;
-    if( d->startups.count() == 0 && d->silent_startups.count() == 0
-        && d->uninited_startups.count() == 0 )
+    if( startups.count() == 0 && silent_startups.count() == 0
+        && uninited_startups.count() == 0 )
         {
-        d->cleanup->stop();
+        cleanup->stop();
         return;
         }
     startups_cleanup_internal( true );
     }
 
-void KStartupInfo::startups_cleanup_internal( bool age_P )
+void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
     {
-    if( d == NULL )
-        return;
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
-         it != d->startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
+         it != startups.end();
          )
         {
         if( age_P )
@@ -900,8 +908,8 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         else
             ++it;
         }
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->silent_startups.begin();
-         it != d->silent_startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = silent_startups.begin();
+         it != silent_startups.end();
          )
         {
         if( age_P )
@@ -919,8 +927,8 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         else
             ++it;
         }
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->uninited_startups.begin();
-         it != d->uninited_startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = uninited_startups.begin();
+         it != uninited_startups.end();
          )
         {
         if( age_P )
@@ -940,12 +948,10 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
         }
     }
 
-void KStartupInfo::clean_all_noncompliant()
+void KStartupInfo::Private::clean_all_noncompliant()
     {
-    if( d == NULL )
-        return;
-    for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
-         it != d->startups.end();
+    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
+         it != startups.end();
          )
         {
         if( ( *it ).WMClass() != "0" )

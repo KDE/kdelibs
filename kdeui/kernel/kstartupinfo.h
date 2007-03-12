@@ -329,42 +329,24 @@ class KDEUI_EXPORT KStartupInfo
 	 * @param data the notification data
 	 */
         void gotRemoveStartup( const KStartupInfoId& id, const KStartupInfoData& data );
+
     protected:
 	/**
 	 *
 	 */
 	virtual void customEvent( QEvent* e_P );
-    private Q_SLOTS:
-        void startups_cleanup();
-        void startups_cleanup_no_age();
-        void got_message( const QString& msg );
-        void window_added( WId w );
-	void slot_window_added( WId w );
+
     private:
-        void init( int flags );
-        friend class KStartupInfoPrivate;
-        void got_startup_info( const QString& msg_P, bool update_only_P );
-        void got_remove_startup_info( const QString& msg_P );
-        void new_startup_info_internal( const KStartupInfoId& id_P,
-            Data& data_P, bool update_only_P );
-        void remove_startup_info_internal( const KStartupInfoId& id_P );
-        void remove_startup_pids( const KStartupInfoId& id, const KStartupInfoData& data );
-        void remove_startup_pids( const KStartupInfoData& data );
-        startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data );
-        bool find_id( const QByteArray& id_P, KStartupInfoId* id_O,
-            KStartupInfoData* data_O );
-        bool find_pid( pid_t pid_P, const QByteArray& hostname, KStartupInfoId* id_O,
-            KStartupInfoData* data_O );
-        bool find_wclass( QByteArray res_name_P, QByteArray res_class_P,
-            KStartupInfoId* id_O, KStartupInfoData* data_O );
-        static QByteArray get_window_hostname( WId w_P );
-        void startups_cleanup_internal( bool age_P );
-        void clean_all_noncompliant();
-        static QString check_required_startup_fields( const QString& msg,
-            const KStartupInfoData& data, int screen );
-        unsigned int timeout;
+        Q_PRIVATE_SLOT(d, void startups_cleanup())
+        Q_PRIVATE_SLOT(d, void startups_cleanup_no_age())
+        Q_PRIVATE_SLOT(d, void got_message( const QString& msg ))
+        Q_PRIVATE_SLOT(d, void window_added( WId w ))
+        Q_PRIVATE_SLOT(d, void slot_window_added( WId w ))
+
         class Private;
-        Private* d;
+        Private* const d;
+
+        Q_DISABLE_COPY(KStartupInfo)
     };
 
 /**
