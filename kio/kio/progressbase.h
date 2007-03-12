@@ -150,6 +150,8 @@ public Q_SLOTS:
    */
   virtual void slotClean();
 
+  virtual void slotTotalAmount( KJob* job, KJob::Unit unit, qulonglong total );
+
   // progress slots
   /**
    * Called to set the total size.
@@ -173,6 +175,8 @@ public Q_SLOTS:
   virtual void slotTotalDirs( KJob* job, unsigned long dirs ) {
     Q_UNUSED(job);Q_UNUSED(dirs);}
 
+  virtual void slotProcessedAmount( KJob* job, KJob::Unit unit, qulonglong bytes );
+
   /**
    * Called to set the processed size.
    * @param job the KIO::Job
@@ -185,14 +189,14 @@ public Q_SLOTS:
    * @param job the KIO::Job
    * @param files the number of files
    */
-  virtual void slotProcessedFiles( KIO::Job* job, unsigned long files ) {
+  virtual void slotProcessedFiles( KJob* job, unsigned long files ) {
     Q_UNUSED(job);Q_UNUSED(files);}
   /**
    * Called to set the number of processed directories.
    * @param job the KIO::Job
    * @param dirs the number of directories
    */
-  virtual void slotProcessedDirs( KIO::Job* job, unsigned long dirs ) {
+  virtual void slotProcessedDirs( KJob* job, unsigned long dirs ) {
     Q_UNUSED(job);Q_UNUSED(dirs);}
 
   /**

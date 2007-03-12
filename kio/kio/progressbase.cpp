@@ -39,6 +39,11 @@ ProgressBase::ProgressBase( QWidget *parent )
 void ProgressBase::setJob( KIO::Job *job )
 {
   // first connect all slots
+  connect( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotTotalAmount( KJob*, KJob::Unit, qulonglong ) ) );
+  connect( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotProcessedAmount( KJob*, KJob::Unit, qulonglong ) ) );
+
   connect( job, SIGNAL( percent( KJob*, unsigned long ) ),
 	   SLOT( slotPercent( KJob*, unsigned long ) ) );
 
@@ -57,19 +62,10 @@ void ProgressBase::setJob( KIO::Job *job )
 void ProgressBase::setJob( KIO::CopyJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
-	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
-	   SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
-  connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
-	   SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
-
-  connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
-	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotTotalAmount( KJob*, KJob::Unit, qulonglong ) ) );
+  connect( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotProcessedAmount( KJob*, KJob::Unit, qulonglong ) ) );
 
   connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
 	   SLOT( slotSpeed( KJob*, unsigned long ) ) );
@@ -98,19 +94,10 @@ void ProgressBase::setJob( KIO::CopyJob *job )
 void ProgressBase::setJob( KIO::DeleteJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
-	   SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
-	   SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
-  connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
-	   SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
-
-  connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
-	   SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
-  connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
-  connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotTotalAmount( KJob*, KJob::Unit, qulonglong ) ) );
+  connect( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ),
+	   SLOT( slotProcessedAmount( KJob*, KJob::Unit, qulonglong ) ) );
 
   connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
 	   SLOT( slotSpeed( KJob*, unsigned long ) ) );
@@ -144,6 +131,38 @@ void ProgressBase::closeEvent( QCloseEvent* ) {
       delete this;
     }
   }
+}
+
+void ProgressBase::slotTotalAmount( KJob* job, KJob::Unit unit, qulonglong total )
+{
+    switch (unit)
+    {
+    case KJob::Bytes:
+        slotTotalSize(job, total);
+        break;
+    case KJob::Files:
+        slotTotalFiles(job, total);
+        break;
+    case KJob::Directories:
+        slotTotalDirs(job, total);
+        break;
+    }
+}
+
+void ProgressBase::slotProcessedAmount( KJob* job, KJob::Unit unit, qulonglong amount )
+{
+    switch (unit)
+    {
+    case KJob::Bytes:
+        slotProcessedSize(job, amount);
+        break;
+    case KJob::Files:
+        slotProcessedFiles(job, amount);
+        break;
+    case KJob::Directories:
+        slotProcessedDirs(job, amount);
+        break;
+    }
 }
 
 void ProgressBase::finished() {

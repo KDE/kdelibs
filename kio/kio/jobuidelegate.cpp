@@ -104,10 +104,10 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  this, SLOT( slotPercent( KJob*, unsigned long ) ) );
         connect( job, SIGNAL( infoMessage( KJob*, const QString &, const QString & ) ),
                  this, SLOT( slotInfoMessage( KJob*, const QString & ) ) );
-        connect( job, SIGNAL( totalSize( KJob*, qulonglong ) ),
-                 this, SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-        connect( job, SIGNAL( processedSize( KJob*, qulonglong ) ),
-                 this, SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
+        connect( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ),
+                 this, SLOT( slotTotalAmount( KJob*, KJob::Unit, qulonglong ) ) );
+        connect( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ),
+                 this, SLOT( slotProcessedAmount( KJob*, KJob::Unit, qulonglong ) ) );
         connect( job, SIGNAL( speed( KJob*, unsigned long ) ),
                  this, SLOT( slotSpeed( KJob*, unsigned long ) ) );
         connect( job, SIGNAL( description( KJob*, const QString&,
@@ -116,18 +116,6 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  this, SLOT( slotDescription( KJob*, const QString&,
                                               const QPair<QString,QString>&,
                                               const QPair<QString,QString>& ) ) );
-
-        if (dynamic_cast<KIO::CopyJob*>(job) || dynamic_cast<KIO::DeleteJob*>(job)) {
-            connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-                     this, SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
-            connect( job, SIGNAL( totalFiles( KJob*, unsigned long ) ),
-                     this, SLOT( slotTotalFiles( KJob*, unsigned long ) ) );
-            connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-                     this, SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-            connect( job, SIGNAL( totalDirs( KJob*, unsigned long ) ),
-                     this, SLOT( slotTotalDirs( KJob*, unsigned long ) ) );
-        }
-
         connect( job, SIGNAL( finished( KJob*, int ) ),
                  this, SLOT( slotFinished( KJob*, int ) ) );
     }
@@ -231,14 +219,36 @@ void KIO::JobUiDelegate::slotDescription( KJob *job, const QString &title,
     delegateProxy->uiserver().setDescriptionSecondField(job->progressId(), field2.first, field2.second);
 }
 
-void KIO::JobUiDelegate::slotTotalSize( KJob *job, qulonglong totalSize )
+void KIO::JobUiDelegate::slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong total )
 {
-    delegateProxy->uiserver().totalSize(job->progressId(), totalSize);
+    switch (unit)
+    {
+    case KJob::Bytes:
+        delegateProxy->uiserver().totalSize(job->progressId(), total);
+        break;
+    case KJob::Files:
+        delegateProxy->uiserver().totalFiles(job->progressId(), total);
+        break;
+    case KJob::Directories:
+        delegateProxy->uiserver().totalDirs(job->progressId(), total);
+        break;
+    }
 }
 
-void KIO::JobUiDelegate::slotProcessedSize( KJob *job, qulonglong size )
+void KIO::JobUiDelegate::slotProcessedAmount( KJob *job, KJob::Unit unit, qulonglong amount )
 {
-    delegateProxy->uiserver().processedSize(job->progressId(), size);
+    switch (unit)
+    {
+    case KJob::Bytes:
+        delegateProxy->uiserver().processedSize(job->progressId(), amount);
+        break;
+    case KJob::Files:
+        delegateProxy->uiserver().processedFiles(job->progressId(), amount);
+        break;
+    case KJob::Directories:
+        delegateProxy->uiserver().processedDirs(job->progressId(), amount);
+        break;
+    }
 }
 
 void KIO::JobUiDelegate::slotSpeed( KJob *job, unsigned long speed )
@@ -247,26 +257,6 @@ void KIO::JobUiDelegate::slotSpeed( KJob *job, unsigned long speed )
         delegateProxy->uiserver().speed(job->progressId(), KIO::convertSize(speed) + QString("/s"));
     else
         delegateProxy->uiserver().speed(job->progressId(), QString());
-}
-
-void KIO::JobUiDelegate::slotProcessedFiles(KIO::Job *job, unsigned long files)
-{
-    delegateProxy->uiserver().processedFiles(job->progressId(), files);
-}
-
-void KIO::JobUiDelegate::slotTotalFiles(KJob *job, unsigned long files)
-{
-    delegateProxy->uiserver().totalFiles(job->progressId(), files);
-}
-
-void KIO::JobUiDelegate::slotProcessedDirs(KIO::Job *job, unsigned long dirs)
-{
-    delegateProxy->uiserver().processedDirs(job->progressId(), dirs);
-}
-
-void KIO::JobUiDelegate::slotTotalDirs(KJob *job, unsigned long dirs)
-{
-    delegateProxy->uiserver().totalDirs(job->progressId(), dirs);
 }
 
 

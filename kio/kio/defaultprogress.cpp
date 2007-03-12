@@ -297,7 +297,7 @@ void DefaultProgress::slotProcessedSize( KJob*, qulonglong bytes ) {
 }
 
 
-void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
+void DefaultProgress::slotProcessedDirs( KJob*, unsigned long dirs )
 {
   if ( m_iProcessedDirs == dirs )
     return;
@@ -311,7 +311,7 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
 }
 
 
-void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
+void DefaultProgress::slotProcessedFiles( KJob*, unsigned long files )
 {
   if ( m_iProcessedFiles == files )
     return;

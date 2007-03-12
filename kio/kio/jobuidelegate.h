@@ -131,13 +131,9 @@ private Q_SLOTS:
     void slotDescription( KJob *job, const QString &title,
                           const QPair<QString, QString> &field1,
                           const QPair<QString, QString> &field2 );
-    void slotTotalSize( KJob *job, qulonglong totalSize );
-    void slotProcessedSize( KJob *job, qulonglong size );
+    void slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong total );
+    void slotProcessedAmount( KJob *job, KJob::Unit unit, qulonglong amount );
     void slotSpeed( KJob *job, unsigned long speed );
-    void slotProcessedFiles(KIO::Job *job, unsigned long files);
-    void slotTotalFiles(KJob *job, unsigned long files);
-    void slotProcessedDirs(KIO::Job *job, unsigned long dirs);
-    void slotTotalDirs(KJob *job, unsigned long dirs);
 
 protected:
      virtual void connectJob( KJob *job );
