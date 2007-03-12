@@ -264,3 +264,8 @@ IncludeFile=kbuttongroup.h
 ToolTip=Group of radio buttons with index selection.
 IsContainer=true
 Group=Container (KDE)
+
+[KInformationLabel]
+IncludeFile=kinformationlabel.h
+ToolTip=A specialized label to display informative message
+Group=Display (KDE)

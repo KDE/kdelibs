@@ -148,6 +148,7 @@ set(kdeui_LIB_SRCS
  widgets/khbox.cpp
  widgets/khelpmenu.cpp
  widgets/kkeybutton.cpp
+ widgets/kinformationlabel.cpp
  widgets/kled.cpp
  widgets/klineedit.cpp
  widgets/kmenu.cpp
@@ -339,6 +340,7 @@ install( FILES
  widgets/khbox.h
  widgets/khelpmenu.h
  widgets/kkeybutton.h
+ widgets/kinformationlabel.h
  widgets/kled.h
  widgets/klineedit.h
  widgets/kmenu.h

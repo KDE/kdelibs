@@ -216,6 +216,18 @@ target_link_libraries(kdesattest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
+set(kinformationlabeltest_SRCS
+kinformationlabeltest.cpp
+)
+
+kde4_automoc(${kinformationlabeltest_SRCS})
+
+kde4_add_executable(kinformationlabeltest NOGUI RUN_UNINSTALLED ${kinformationlabeltest_SRCS})
+
+target_link_libraries(kinformationlabeltest ${KDE4_KDEUI_LIBS})
+
+########### next target ###############
+
 set(kledtest_SRCS
 kledtest.cpp
 )
