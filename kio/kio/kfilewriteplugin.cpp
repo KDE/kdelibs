@@ -63,3 +63,5 @@ KFileWriterProvider::plugin(const QString& key, const KUrl& /*url*/,
     return w;
 }
 
+#include "kfilewriteplugin.moc"
+
