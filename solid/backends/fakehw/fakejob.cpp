@@ -40,7 +40,7 @@ FakeJob::~FakeJob()
 
 void FakeJob::start()
 {
-    setTotalSize( m_stepsTotal );
+    setTotalAmount( KJob::Bytes, m_stepsTotal );
 
     m_timer.start( 250 );
 }
@@ -67,7 +67,7 @@ void FakeJob::slotTimeout()
     }
 
     m_stepsCount+=m_stepsIncrement;
-    setProcessedSize( m_stepsCount );
+    setProcessedAmount( KJob::Bytes, m_stepsCount );
 
     if ( m_stepsCount >= m_stepsTotal )
     {
