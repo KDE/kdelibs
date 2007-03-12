@@ -208,6 +208,7 @@ set( kdeui_UI
    dialogs/kshortcutdialog_simple.ui
    dialogs/kshortcutdialog_advanced.ui
    dialogs/kpassworddialog.ui
+   dialogs/knewpassworddialog.ui
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )

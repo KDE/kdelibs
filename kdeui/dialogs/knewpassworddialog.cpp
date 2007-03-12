@@ -3,6 +3,7 @@
    Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
    Copyright (C) 2004,2005 Andrew Coles <andrew_coles@yahoo.co.uk>
+   Copyright (C) 2007 Michaël Larouche <larouche@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,112 +19,56 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+#include "knewpassworddialog.h"
 
-
-#include <QApplication>
-#include <QLabel>
-#include <QLayout>
-#include <QProgressBar>
-#include <QRegExp>
-#include <QSize>
-#include <QString>
-#include <QWidget>
+#include <QtGui/QApplication>
+#include <QtGui/QProgressBar>
+#include <QtCore/QRegExp>
+#include <QtCore/QSize>
+#include <QtCore/QString>
 
 #include <kapplication.h>
 #include <kglobal.h>
-#include <khbox.h>
-#include <kiconloader.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <klineedit.h>
+#include <kinformationlabel.h>
 
-#include "knewpassworddialog.h"
-
+#include "ui_knewpassworddialog.h"
 
 class KNewPasswordDialog::KNewPasswordDialogPrivate
 {
-    public:
-        KNewPasswordDialogPrivate( KNewPasswordDialog *parent )
-           : m_parent( parent ),
-             minimumPasswordLength(0),  passwordStrengthWarningLevel(1),  reasonablePasswordLength(8)  {}
+public:
+    KNewPasswordDialogPrivate( KNewPasswordDialog *parent )
+        : q( parent ),
+         minimumPasswordLength(0), passwordStrengthWarningLevel(1),reasonablePasswordLength(8)
+    {}
 
-        void init();
-        void slotTextChanged();
+    void init();
+    void _k_textChanged();
 
-        KNewPasswordDialog *m_parent;
+    KNewPasswordDialog *q;
 
-        int minimumPasswordLength;
-        int passwordStrengthWarningLevel;
-        int reasonablePasswordLength;
+    int minimumPasswordLength;
+    int passwordStrengthWarningLevel;
+    int reasonablePasswordLength;
 
-        QLabel *promptLabel;
-        QLabel *iconLabel;
-        KLineEdit *pEdit, *pEdit2;
-        QProgressBar* strengthBar;
-        QLabel *matchLabel;
-        QString pass;
+    QString pass;
+
+    Ui::KNewPasswordDialog ui;
 };
 
 
 void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 {
-    m_parent->setButtons( Ok|Cancel );
-    m_parent->showButtonSeparator( true );
-    m_parent->setDefaultButton( Ok );
+    q->setButtons( Ok | Cancel );
+    q->showButtonSeparator( true );
+    q->setDefaultButton( Ok );
 
-    QWidget *pMain = m_parent->mainWidget();
-    QGridLayout *layout = new QGridLayout(pMain);
-    layout->setMargin(0);
-    layout->setSpacing(0);
+    ui.setupUi( q->mainWidget() );
 
-    // Row 1: pixmap + prompt
-    iconLabel = new QLabel(pMain);
-    iconLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    layout->addWidget(iconLabel, 0, 0, Qt::AlignCenter);
-
-    const QPixmap pix( KIconLoader::global()->loadIcon( "password", K3Icon::NoGroup, K3Icon::SizeHuge, 0, 0, true));
-    iconLabel->setPixmap(pix);
-    promptLabel = new QLabel(pMain);
-    promptLabel->setAlignment(Qt::AlignVCenter);
-    promptLabel->setWordWrap(true);
-//    promptLabel->setText( i18n("Enter a password") );
-    layout->addWidget(promptLabel, 0, 2);
-    //layout->setRowStretch(1, 12);
-
-    // Row 2: Password editor #1
-    QLabel *lbl = new QLabel(pMain);
-    lbl->setText(i18n("&Password:"));
-    layout->addWidget(lbl, 2, 0);
-
-
-    pEdit = new KLineEdit(pMain);
-    pEdit->setPasswordMode(true);
-    layout->addWidget(pEdit, 2, 2);
-    lbl->setBuddy(pEdit);
-
-
-    // Row 3: Password editor #2 
-    lbl = new QLabel(pMain);
-    lbl->setText(i18n("&Verify:"));
-    layout->addWidget(lbl, 4, 0);
-
-    pEdit2 = new KLineEdit(pMain);
-    pEdit2->setPasswordMode(true);
-    layout->addWidget(pEdit2, 4, 2);
-    lbl->setBuddy(pEdit);
-
-    // Row 4: Password strength meter
-    //layout->setRowStretch(10, 12);
-
-    KHBox* const strengthBox = new KHBox(pMain);
-    strengthBox->setSpacing(10);
-    layout->addWidget(strengthBox, 6, 0, 1, 3);
-    QLabel* const passStrengthLabel = new QLabel(strengthBox);
-    //passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-    passStrengthLabel->setText(i18n("Password strength meter:"));
-    strengthBar = new QProgressBar(strengthBox);
-    strengthBar->setRange(0, 100);
-    strengthBar->setTextVisible(false);
+    ui.labelIcon->setPixmap( KIcon("password").pixmap(96, 96) );
 
     const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
             "of the password you have entered.  To improve the strength of "
@@ -131,43 +76,41 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
             " - using a longer password;\n"
             " - using a mixture of upper- and lower-case letters;\n"
             " - using numbers or symbols, such as #, as well as letters."));
-    passStrengthLabel->setWhatsThis(strengthBarWhatsThis);
-    strengthBar->setWhatsThis(strengthBarWhatsThis);
+    ui.labelStrengthMeter->setWhatsThis(strengthBarWhatsThis);
+    ui.strengthBar->setWhatsThis(strengthBarWhatsThis);
 
-    // Row 5: Label saying whether the passwords match
-    layout->setRowStretch(12, 12);
+    connect( ui.linePassword, SIGNAL(textChanged(const QString&)), q, SLOT(_k_textChanged()) );
+    connect( ui.lineVerifyPassword, SIGNAL(textChanged(const QString&)), q, SLOT(_k_textChanged()) );
 
-    matchLabel = new QLabel(pMain);
-    matchLabel->setWordWrap(true);
-    layout->addWidget(matchLabel, 8, 0, 1, 3);
-    matchLabel->setText(i18n("Passwords do not match"));
-
-    connect( pEdit, SIGNAL(textChanged(const QString&)), m_parent, SLOT(slotTextChanged()) );
-    connect( pEdit2, SIGNAL(textChanged(const QString&)), m_parent, SLOT(slotTextChanged()) );
-
-    slotTextChanged();
+    _k_textChanged();
 }
 
 
-void KNewPasswordDialog::KNewPasswordDialogPrivate::slotTextChanged()
+void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
 {
-    const bool match = pEdit->text() == pEdit2->text();
+    const bool match = ui.linePassword->text() == ui.lineVerifyPassword->text();
 
-    const int minPasswordLength = m_parent->minimumPasswordLength();
+    const int minPasswordLength = q->minimumPasswordLength();
 
-    if ( pEdit->text().length() < minPasswordLength) {
-        m_parent->enableButtonOk(false);
+    ui.labelMatch->setIconType( KInformationLabel::Custom );
+
+    if ( ui.linePassword->text().length() < minPasswordLength) {
+        q->enableButtonOk(false);
     } else {
-        m_parent->enableButtonOk( match );
+        q->enableButtonOk( match );
     }
 
-    if ( match && !m_parent->allowEmptyPasswords() && pEdit->text().isEmpty()) {
-        matchLabel->setText( i18n("Password is empty") );
-    } else {
-        if ( pEdit->text().length() < minPasswordLength ) {
-            matchLabel->setText(i18np("Password must be at least 1 character long", "Password must be at least %1 characters long", minPasswordLength));
+    if ( match && !q->allowEmptyPasswords() && ui.linePassword->text().isEmpty()) {
+        ui.labelMatch->setIcon( KIcon("no") );
+        ui.labelMatch->setText( i18n("Password is empty") );
+    }
+    else {
+        if ( ui.linePassword->text().length() < minPasswordLength ) {
+            ui.labelMatch->setIcon( KIcon("no") );
+            ui.labelMatch->setText(i18np("Password must be at least 1 character long", "Password must be at least %1 characters long", minPasswordLength));
         } else {
-            matchLabel->setText( match? i18n("Passwords match")
+            ui.labelMatch->setIcon( match ? KIcon("ok") : KIcon("no") );
+            ui.labelMatch->setText( match? i18n("Passwords match")
                 :i18n("Passwords do not match") );
         }
     }
@@ -180,20 +123,28 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::slotTextChanged()
 
     const double lengthFactor = reasonablePasswordLength / 8.0;
 
-    int pwlength = (int) ( pEdit->text().length()/ lengthFactor);
-    if (pwlength > 5) pwlength = 5;
+    int pwlength = (int) ( ui.linePassword->text().length()/ lengthFactor);
+    if (pwlength > 5) {
+        pwlength = 5;
+    }
 
     const QRegExp numRxp("[0-9]", Qt::CaseSensitive, QRegExp::RegExp);
-    int numeric = (int) (pEdit->text().count(numRxp) / lengthFactor);
-    if (numeric > 3) numeric = 3;
+    int numeric = (int) (ui.linePassword->text().count(numRxp) / lengthFactor);
+    if (numeric > 3) {
+        numeric = 3;
+    }
 
     const QRegExp symbRxp("\\W", Qt::CaseInsensitive, QRegExp::RegExp);
-    int numsymbols = (int) (pEdit->text().count(symbRxp) / lengthFactor);
-    if (numsymbols > 3) numsymbols = 3;
+    int numsymbols = (int) (ui.linePassword->text().count(symbRxp) / lengthFactor);
+    if (numsymbols > 3) {
+        numsymbols = 3;
+    }
 
     const QRegExp upperRxp("[A-Z]", Qt::CaseSensitive, QRegExp::RegExp);
-    int upper = (int) (pEdit->text().count(upperRxp) / lengthFactor);
-    if (upper > 3) upper = 3;
+    int upper = (int) (ui.linePassword->text().count(upperRxp) / lengthFactor);
+    if (upper > 3) {
+        upper = 3;
+    }
 
     int pwstrength=((pwlength*10)-20) + (numeric*10) + (numsymbols*15) + (upper*10);
 
@@ -204,7 +155,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::slotTextChanged()
     if ( pwstrength > 100 ) {
         pwstrength = 100;
     }
-    strengthBar->setValue(pwstrength);
+    ui.strengthBar->setValue(pwstrength);
 }
 
 /*
@@ -226,41 +177,41 @@ KNewPasswordDialog::~KNewPasswordDialog()
 
 void KNewPasswordDialog::setPrompt(const QString &prompt)
 {
-    d->promptLabel->setText(prompt);
-//    d->promptLabel->setFixedSize(275, d->promptLabel->heightForWidth(275));
+    d->ui.labelPrompt->setText(prompt);
 }
 
 
 QString KNewPasswordDialog::prompt() const
 {
-    return d->promptLabel->text();
+    return d->ui.labelPrompt->text();
 }
 
 
 void KNewPasswordDialog::setPixmap(const QPixmap &pixmap)
 {
-    d->iconLabel->setPixmap(pixmap);
-    d->iconLabel->setFixedSize(d->iconLabel->sizeHint());
+    d->ui.labelIcon->setPixmap(pixmap);
+    d->ui.labelIcon->setFixedSize( d->ui.labelIcon->sizeHint() );
 }
 
 
 QPixmap KNewPasswordDialog::pixmap() const
 {
-    return *d->iconLabel->pixmap();
+    return *d->ui.labelIcon->pixmap();
 }
 
 
 void KNewPasswordDialog::accept()
 {
+    if ( d->ui.linePassword->text() != d->ui.lineVerifyPassword->text() ) {
+        d->ui.labelMatch->setIconType( KInformationLabel::Error );
+        d->ui.labelMatch->setText( i18n("You entered two different "
+                "passwords. Please try again.") );
 
-    if (d->pEdit->text() != d->pEdit2->text()) {
-        KMessageBox::sorry(this, i18n("You entered two different "
-                "passwords. Please try again."));
-        d->pEdit->clear();
-        d->pEdit2->clear();
+        d->ui.linePassword->clear();
+        d->ui.lineVerifyPassword->clear();
         return;
     }
-    if (d->strengthBar && d->strengthBar->value() < d->passwordStrengthWarningLevel) {
+    if (d->ui.strengthBar && d->ui.strengthBar->value() < d->passwordStrengthWarningLevel) {
         int retVal = KMessageBox::warningContinueCancel(this,
                 i18n(   "The password you have entered has a low strength. "
                         "To improve the strength of "
@@ -273,66 +224,84 @@ void KNewPasswordDialog::accept()
                 i18n("Low Password Strength"));
         if (retVal == KMessageBox::Cancel) return;
     }
-    if (!checkPassword(d->pEdit->text())) {
+    if ( !checkPassword(d->ui.linePassword->text()) ) {
         return;
     }
-    d->pass=d->pEdit->text();
+    d->pass = d->ui.linePassword->text();
     emit newPassword( d->pass );
     KDialog::accept();
 }
 
 
-void KNewPasswordDialog::setAllowEmptyPasswords(bool allowed) {
+void KNewPasswordDialog::setAllowEmptyPasswords(bool allowed)
+{
     setMinimumPasswordLength( allowed ? 0 : 1 );
-    d->slotTextChanged();
+    d->_k_textChanged();
 }
 
 
-bool KNewPasswordDialog::allowEmptyPasswords() const {
+bool KNewPasswordDialog::allowEmptyPasswords() const
+{
     return d->minimumPasswordLength == 0;
 }
 
-void KNewPasswordDialog::setMinimumPasswordLength(int minLength) {
+void KNewPasswordDialog::setMinimumPasswordLength(int minLength)
+{
     d->minimumPasswordLength = minLength;
-    d->slotTextChanged();
+    d->_k_textChanged();
 }
 
-int KNewPasswordDialog::minimumPasswordLength() const {
+int KNewPasswordDialog::minimumPasswordLength() const
+{
     return d->minimumPasswordLength;
 }
 
-void KNewPasswordDialog::setMaximumPasswordLength(int maxLength) {
-    d->pEdit->setMaxLength(maxLength);
-    d->pEdit2->setMaxLength(maxLength);
+void KNewPasswordDialog::setMaximumPasswordLength(int maxLength)
+{
+    d->ui.linePassword->setMaxLength(maxLength);
+    d->ui.lineVerifyPassword->setMaxLength(maxLength);
 }
 
-int KNewPasswordDialog::maximumPasswordLength() const {
-    return d->pEdit->maxLength();
+int KNewPasswordDialog::maximumPasswordLength() const
+{
+    return d->ui.linePassword->maxLength();
 }
 
 // reasonable password length code contributed by Steffen Mthing
 
-void KNewPasswordDialog::setReasonablePasswordLength(int reasonableLength) {
+void KNewPasswordDialog::setReasonablePasswordLength(int reasonableLength)
+{
 
-    if (reasonableLength < 1) reasonableLength = 1;
-    if (reasonableLength >= maximumPasswordLength()) reasonableLength = maximumPasswordLength();
+    if (reasonableLength < 1) {
+        reasonableLength = 1;
+    }
+    if (reasonableLength >= maximumPasswordLength()) {
+        reasonableLength = maximumPasswordLength();
+    }
 
     d->reasonablePasswordLength = reasonableLength;
 
 }
 
-int KNewPasswordDialog::reasonablePasswordLength() const {
+int KNewPasswordDialog::reasonablePasswordLength() const
+{
     return d->reasonablePasswordLength;
 }
 
 
-void KNewPasswordDialog::setPasswordStrengthWarningLevel(int warningLevel) {
-    if (warningLevel < 0) warningLevel = 0;
-    if (warningLevel > 99) warningLevel = 99;
+void KNewPasswordDialog::setPasswordStrengthWarningLevel(int warningLevel)
+{
+    if (warningLevel < 0) {
+        warningLevel = 0;
+    }
+    if (warningLevel > 99) {
+        warningLevel = 99;
+    }
     d->passwordStrengthWarningLevel = warningLevel;
 }
 
-int KNewPasswordDialog::passwordStrengthWarningLevel() const {
+int KNewPasswordDialog::passwordStrengthWarningLevel() const
+{
     return d->passwordStrengthWarningLevel;
 }
 
@@ -345,4 +314,7 @@ bool KNewPasswordDialog::checkPassword(const QString &)
 {
     return true;
 }
+
 #include "knewpassworddialog.moc"
+
+// kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;

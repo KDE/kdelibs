@@ -39,7 +39,7 @@ class QWidget;
  * \image html kpassworddialog.png "KDE Password Dialog"
  *
  * \section usage Usage Exemple
- * \subsection assynchronous Assynchronous
+ * \subsection asynchronous Asynchronous
  *
  * \code
  *  KNewPasswordDialog *dlg = new KNewPasswordDialog( parent );
@@ -73,7 +73,7 @@ public:
      *
      * @param parent Passed to lower level constructor.
      */
-    KNewPasswordDialog(QWidget *parent=0);
+    explicit KNewPasswordDialog(QWidget *parent=0);
 
     /**
      * Destructs the password dialog.
@@ -205,8 +205,9 @@ private:
     class KNewPasswordDialogPrivate;
     KNewPasswordDialogPrivate* const d;
 
-    Q_PRIVATE_SLOT( d, void slotTextChanged() )
+    Q_PRIVATE_SLOT( d, void _k_textChanged() )
 };
 
 #endif // KNEWPASSWORDDIALOG_H
 
+// kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;
