@@ -331,13 +331,13 @@
 #9001        kdevelop (grep view)
 #9002        kdevelop (doc tree view)
 #9003        kdevelop (class view)
-#9004        kdevelop (output views)
+9004        kdevelop (output views)
 #9005        kdevelop (class store)
 #9006        kdevelop (cvs interface)
 9007        kdevelop (cpp support)
 #9008        kdevelop (gcc options)
 #9009        kdevelop (astyle)
-#9010        kdevelop (appwizard)
+9010        kdevelop (appwizard)
 #9011        kdevelop (python scripting)
 9012        kdevelop (debugger)
 9013        kdevelop (java support)
@@ -365,6 +365,7 @@
 9035        kdevelop (konsole part)
 #9036        kdevelop (subversion part)
 9037        kdevelop (sublime)
+9038        kdevelop (make builder)
 
 # toys and games
 10000        amor
