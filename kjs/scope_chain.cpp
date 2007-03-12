@@ -24,6 +24,8 @@
 #include "PropertyNameArray.h"
 #include "object.h"
 
+#include <stdio.h>
+
 namespace KJS {
 
 void ScopeChain::push(const ScopeChain &c)

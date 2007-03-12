@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <typeinfo>
 #endif
+#include <stdio.h>
 
 #include "context.h"
 #include "debugger.h"
