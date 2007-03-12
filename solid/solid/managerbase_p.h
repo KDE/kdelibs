@@ -31,6 +31,7 @@ namespace Solid
 
     public:
         ManagerBasePrivate() : q_ptr(0), backend(0) {}
+        virtual ~ManagerBasePrivate() {}
 
         ManagerBase *q_ptr;
         QObject *backend;

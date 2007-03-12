@@ -27,6 +27,7 @@ namespace Solid
     class FrontendObjectPrivate
     {
     public:
+        virtual ~FrontendObjectPrivate() {}
         QObject *backendObject;
     };
 }
