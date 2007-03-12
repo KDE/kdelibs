@@ -1106,10 +1106,12 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     
-    Completion loadSymbol(ExecState* exec);
+    Completion loadSymbol(ExecState* exec, bool wildcard);
     PackageObject* resolvePackage(ExecState* exec);
 
   private:
+    PackageObject* resolvePackage(ExecState* exec,
+				  JSObject* baseObject, Package* basePackage);
     RefPtr<PackageNameNode> names;
     Identifier id;
   };

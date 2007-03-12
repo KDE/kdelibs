@@ -2495,7 +2495,7 @@ JSValue* PackageNameNode::evaluate(ExecState*)
     return 0;
 }
 
-Completion PackageNameNode::loadSymbol(ExecState* exec)
+Completion PackageNameNode::loadSymbol(ExecState* exec, bool wildcard)
 {
     Package* basePackage;
     JSObject* baseObject;
@@ -2511,7 +2511,19 @@ Completion PackageNameNode::loadSymbol(ExecState* exec)
 	baseObject = ip->globalObject();
     }
 
-    basePackage->loadSymbol(exec, baseObject, id);
+    if (wildcard) {
+	// if a .* is specified the last identifier should
+	// denote another package name
+	PackageObject* pobj = resolvePackage(exec, baseObject, basePackage);
+	fprintf(stderr, "wildcard pbj: %p\n", pobj);
+	if (!pobj)
+	    return Completion(Normal);
+	basePackage = pobj->package();
+	baseObject = pobj;
+	basePackage->loadAllSymbols(exec, baseObject);
+    } else {
+	basePackage->loadSymbol(exec, baseObject, id);
+    }
 
     return Completion(Normal);
 }
@@ -2520,7 +2532,6 @@ PackageObject* PackageNameNode::resolvePackage(ExecState* exec)
 {
     JSObject* baseObject;
     Package* basePackage;
-    PackageObject* res = 0;
     if (names) {
 	PackageObject* basePackageObject = names->resolvePackage(exec);
 	if (basePackageObject == 0)
@@ -2533,6 +2544,15 @@ PackageObject* PackageNameNode::resolvePackage(ExecState* exec)
 	baseObject = ip->globalObject();
 	basePackage = ip->globalPackage();
     }
+    
+    return resolvePackage(exec, baseObject, basePackage);
+}
+
+PackageObject* PackageNameNode::resolvePackage(ExecState* exec,
+					       JSObject* baseObject,
+					       Package* basePackage)
+{
+    PackageObject* res = 0;
 
     // Let's see whether the package was already resolved previously.
     JSValue* v = baseObject->get(exec, id);
@@ -2576,5 +2596,5 @@ void ImportStatement::processVarDecls(ExecState* exec)
 	return;
     }
 
-    name->loadSymbol(exec);
+    name->loadSymbol(exec, wld);
 }

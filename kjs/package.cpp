@@ -34,6 +34,10 @@ void Package::loadSymbol(ExecState*, JSObject*, const Identifier&)
 {
 }
 
+void Package::loadAllSymbols(ExecState* exec, JSObject* obj)
+{
+}
+
 StandardGlobalPackage::StandardGlobalPackage()
     : Package(0, 0)
 {

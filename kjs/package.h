@@ -25,13 +25,10 @@
 #include "global.h"
 #include "identifier.h"
 #include "object.h"
-#include <kxmlcore/HashSet.h>
 
 namespace KJS {
 
     class Package;
-
-    typedef KXMLCore::HashSet<UString, Package*> PackageMap;
 
     class KJS_EXPORT Package
     {
@@ -42,18 +39,16 @@ namespace KJS {
 	const Package* parent() const { return prnt; }
 	Package* parent() { return prnt; }
 
-	const PackageMap& loadedSubPackages() const { return subPkgs; }
-
 	Identifier name() const { return nm; }
 
 	virtual Package* loadSubPackage(const Identifier& n,
 					UString* err);
 	virtual void loadSymbol(ExecState* exec, JSObject* obj,
 				const Identifier& n);
+	virtual void loadAllSymbols(ExecState* exec, JSObject* obj);
 
     private:
 	Package* prnt;
-	PackageMap subPkgs;
 	Identifier nm;
     };
 
