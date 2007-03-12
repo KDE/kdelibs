@@ -20,15 +20,16 @@
 #include "kfilemetainfo_private.h"
 #include <QDebug>
 
-const QVariant KFileMetaInfoItem::Private::null;
+const QVariant KFileMetaInfoItemPrivate::null;
 
-KFileMetaInfoItem::KFileMetaInfoItem() :p(new Private()) {
+KFileMetaInfoItem::KFileMetaInfoItem() :p(new KFileMetaInfoItemPrivate()) {
 }
 
 KFileMetaInfoItem::KFileMetaInfoItem(const KFileMetaInfoItem& item) :p(item.p) {
 }
 KFileMetaInfoItem::KFileMetaInfoItem(const PredicateProperties& pp,
-        const QVariant& v, KFileWritePlugin* w, bool e) :p(new Private()) {
+            const QVariant& v, KFileWritePlugin* w, bool e)
+        :p(new KFileMetaInfoItemPrivate()) {
     p->pp = pp;
     p->value = v;
     p->writer = w;
@@ -36,10 +37,6 @@ KFileMetaInfoItem::KFileMetaInfoItem(const PredicateProperties& pp,
     p->modified = false;
 }
 KFileMetaInfoItem::~KFileMetaInfoItem() {
-}
-void
-KFileMetaInfoItem::setWriter(KFileWritePlugin* w) {
-    p->writer = w;
 }
 const KFileMetaInfoItem&
 KFileMetaInfoItem::operator=(const KFileMetaInfoItem& item) {

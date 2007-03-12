@@ -28,8 +28,10 @@ class KFileWritePlugin;
 class QVariant;
 class PredicateProperties;
 
+class KFileMetaInfoItemPrivate;
 class KIO_EXPORT KFileMetaInfoItem {
 friend class KFileMetaInfo;
+friend class KFileMetaInfoPrivate;
 friend class KMetaInfoWriter;
 public:
     KFileMetaInfoItem();
@@ -50,10 +52,7 @@ public:
      **/
     const QString& name() const;
 private:
-    class Private;
-    QSharedDataPointer<Private> p;
-
-    void setWriter(KFileWritePlugin* w);
+    QSharedDataPointer<KFileMetaInfoItemPrivate> p;
 
     KFileMetaInfoItem(const PredicateProperties& p,
         const QVariant& v, KFileWritePlugin* w, bool e);

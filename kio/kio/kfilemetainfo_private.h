@@ -52,7 +52,7 @@ public:
     static PredicateProperties getPredicateProperties(const QString& key);
 };
 
-class KFileMetaInfoItem::Private : public QSharedData {
+class KFileMetaInfoItemPrivate : public QSharedData {
 public:
     static const QVariant null;
     PredicateProperties pp;

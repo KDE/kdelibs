@@ -30,6 +30,7 @@ class KUrl;
 class KFileMetaInfoItem;
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;
 
+class KFileMetaInfoGroupPrivate;
 class KIO_EXPORT KFileMetaInfoGroup {
 public:
     KFileMetaInfoGroup();
@@ -40,12 +41,12 @@ public:
     const QString& name() const;
     const QStringList& keys() const;
 private:
-    class Private;
-    QSharedDataPointer<Private> p;
+    QSharedDataPointer<KFileMetaInfoGroupPrivate> p;
 };
 
 typedef QList<KFileMetaInfoGroup> KFileMetaInfoGroupList;
 
+class KFileMetaInfoPrivate;
 class KIO_EXPORT KFileMetaInfo {
 public:
     /**
@@ -101,8 +102,7 @@ s
     const KUrl& url() const;
 
 private:
-    class Private;
-    QSharedDataPointer<Private> p;
+    QSharedDataPointer<KFileMetaInfoPrivate> p;
 };
 
 #endif

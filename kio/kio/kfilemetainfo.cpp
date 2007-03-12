@@ -32,7 +32,7 @@
 using namespace std;
 using namespace jstreams;
 
-class KFileMetaInfoGroup::Private : public QSharedData {
+class KFileMetaInfoGroupPrivate : public QSharedData {
 public:
     QString name;
 };
@@ -122,7 +122,7 @@ public:
     void deleteEntries(const vector<string>&) {}
     void deleteAllEntries() {}
 };
-class KFileMetaInfo::Private : public QSharedData {
+class KFileMetaInfoPrivate : public QSharedData {
 public:
     QHash<QString, KFileMetaInfoItem> items;
     KUrl kurl;
@@ -133,9 +133,9 @@ public:
 };
 static const KFileMetaInfoItem nullitem;
 
-//const KFileMetaInfoItem KFileMetaInfo::Private::null;
+//const KFileMetaInfoItem KFileMetaInfoPrivate::null;
 void
-KFileMetaInfo::Private::init(QIODevice& stream, const KUrl& url, time_t mtime) {
+KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // get data from Strigi
     kurl = url;
     StreamIndexer& indexer
@@ -151,17 +151,17 @@ KFileMetaInfo::Private::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // TODO: get data from Nepomuk
 }
 void
-KFileMetaInfo::Private::initWriters(QIODevice& /*file*/) {
+KFileMetaInfoPrivate::initWriters(QIODevice& /*file*/) {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
     for (i = items.begin(); i != items.end(); ++i) {
-        i.value().setWriter(
-            KFileWriterProvider::self()->plugin(i.key(), kurl, mimetypes));
+        i.value().p->writer =
+            KFileWriterProvider::self()->plugin(i.key(), kurl, mimetypes);
     }
 }
 
 KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
-        KFileMetaInfo::What /*w*/) :p(new Private()) {
+        KFileMetaInfo::What /*w*/) :p(new KFileMetaInfoPrivate()) {
     QFileInfo fileinfo(path);
     QFile file(path);
     file.open(QIODevice::ReadOnly);
@@ -172,7 +172,7 @@ KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
         p->initWriters(file);
     }
 }
-KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new Private()) {
+KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new KFileMetaInfoPrivate()) {
     QFileInfo fileinfo(url.path());
     QFile file(url.path());
     file.open(QIODevice::ReadOnly);
@@ -181,7 +181,7 @@ KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new Private()) {
         p->initWriters(file);
     }
 }
-KFileMetaInfo::KFileMetaInfo() :p(new Private()) {
+KFileMetaInfo::KFileMetaInfo() :p(new KFileMetaInfoPrivate()) {
 }
 KFileMetaInfo::KFileMetaInfo(const KFileMetaInfo&) {
 }
