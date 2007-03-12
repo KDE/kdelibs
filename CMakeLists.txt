@@ -8,9 +8,7 @@ set(KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribu
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
 
-if(NOT WIN32)
-   find_package(Strigi REQUIRED)
-endif(NOT WIN32)
+find_package(Strigi REQUIRED)
 
 if (APPLE)
    find_package(Carbon REQUIRED)
