@@ -407,9 +407,9 @@ void Action::removeProperty(const QString& name)
 
     KConfig* config = KApplication::kApplication()->sessionConfig();
     const QString groupname = QString("Script %1").arg(objectName());
-    if( config->hasGroup(groupname) ) {
-        config->setGroup(groupname);
-        config->deleteEntry(name);
+    KConfigGroup cg(config, groupname);
+    if( cg.exists() ) {
+        cg.deleteEntry(name);
     }
 
     emit updated();
