@@ -77,6 +77,8 @@ KStatusBar::KStatusBar( QWidget *parent )
     KConfigGroup group( config, QLatin1String("StatusBar style") );
     bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);
     setSizeGripEnabled(grip_enabled);
+
+    setStyleSheet( "::item { border: 0px; }" );
 }
 
 KStatusBar::~KStatusBar ()
