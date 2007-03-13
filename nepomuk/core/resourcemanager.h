@@ -55,16 +55,22 @@ namespace Nepomuk {
 	static ResourceManager* instance();
 
 	/**
-	 * The main purpose of the init method is to check for errors in the initialization.
-	 * There is no real need to call it before using Resource.
-	 * It checks if the NEPOMUK-KDE Registry is running and provides the RDF storage services
-	 * used by libKMetaData.
+	 * Initialize the KMetaData framework. This method will initialize the communication with
+	 * the local Nepomuk-KDE services, ie. the RDF repository.
+	 *
+	 * KMetaData cannot be used before a successful call to init.
 	 *
 	 * \return 0 if all necessary components could be found and -1 otherwise.
 	 *
 	 * FIXME: introduce error codes and human readable translated error messages.
 	 */
 	int init();
+
+	/**
+	 * \return true if init() has been called successfully, ie. the KMetaData system is connected
+	 * to the local RDF repository service and ready to work.
+	 */
+	bool initialized() const;
 
 	/**
 	 * The Ontology instance representing the underlying Nepomuk desktop ontology.

@@ -26,7 +26,8 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
-#include <qthread.h>
+#include <QThread>
+#include <QMutex>
 
 
 using namespace Nepomuk::Services;
@@ -37,7 +38,10 @@ class Nepomuk::KMetaData::ResourceManager::Private : public QThread
 {
 public:
   Private( ResourceManager* manager )
-    : autoSync(true),
+    : initialized(false),
+      autoSync(true),
+      registry(0),
+      ontology(0),
       m_parent(manager) {
   }
 
@@ -45,11 +49,15 @@ public:
     m_parent->syncAll();
   }
 
+  bool initialized;
+
   bool autoSync;
   Nepomuk::Backbone::Registry* registry;
   Nepomuk::KMetaData::Ontology* ontology;
 
   QTimer syncTimer;
+
+  QMutex syncMutex;
 
 private:
   ResourceManager* m_parent;
@@ -60,22 +68,15 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
   : QObject()
 {
   d = new Private( this );
-  d->ontology = new Ontology();
-  d->registry = new Backbone::Registry( this );
-
+  setAutoSync( true );
   connect( &d->syncTimer, SIGNAL(timeout()),
 	   this, SLOT(slotStartAutoSync()) );
-
-  setAutoSync( true );
 }
 
 
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
-  // do one last sync
   d->syncTimer.stop();
-  triggerSync();
-  d->wait();
   delete d->ontology;
   delete d;
 }
@@ -90,30 +91,45 @@ Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instan
 {
   static ResourceManager* s_instance = 0;
   if( !s_instance )
-    s_instance = new ResourceManager();
-  //  s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
+    s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
   return s_instance;
 }
 
 
 int Nepomuk::KMetaData::ResourceManager::init()
 {
-//   if( serviceRegistry()->status() != VALID ) {
-//     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
-//     return -1;
-//  }
+  if( !d->initialized ) {
+    if( !d->ontology )
+      d->ontology = new Ontology();
+    if( !d->registry )
+      d->registry = new Backbone::Registry( this );
+    
+    //   if( serviceRegistry()->status() != VALID ) {
+    //     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
+    //     return -1;
+    //  }
+    
+    if( !serviceRegistry()->discoverRDFRepository() ) {
+      kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
+      return -1;
+    }
+    
+    //   if( !serviceRegistry()->discoverResourceIdService() ) {
+    //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
+    //     return -1;
+    //   }
 
-  if( !serviceRegistry()->discoverRDFRepository() ) {
-    kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
-    return -1;
+    d->initialized = true;
+    d->syncTimer.start(10*1000);
   }
 
-//   if( !serviceRegistry()->discoverResourceIdService() ) {
-//     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
-//     return -1;
-//   }
-
   return 0;
+}
+
+
+bool Nepomuk::KMetaData::ResourceManager::initialized() const
+{
+  return d->initialized;
 }
 
 
@@ -157,6 +173,8 @@ void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
 void Nepomuk::KMetaData::ResourceManager::syncAll()
 {
   kDebug(300004) << k_funcinfo << endl;
+
+  d->syncMutex.lock();
 
   //
   // Gather all information to be synced and add it in one go
@@ -216,6 +234,8 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
     if( !data->modified() && !data->cnt() )
       data->deleteData();
   }
+
+  d->syncMutex.unlock();
 }
 
 
