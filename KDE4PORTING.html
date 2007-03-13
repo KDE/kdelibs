@@ -1554,15 +1554,27 @@ in the drop/paste side.</li>
 </ul>
 
 <h4>KFileMetaInfo</h4>
-<ul>
-    <li>KFileMetaInfo::KiloBytes has been renamed KFileMetaInfo::KibiBytes (1 KiB = 1024 B)</li>
-</ul>
+
+<p>KFileMetaInfo has a new API and a new implementation. The change moves the emphasis away from mimetypes and groups of metadata to individual properties of files. These properties are still called KFileMetaInfoItem. The no longer belong to a group; they belong to the KFileMetaInfo object. The class KFileMetaInfoGroup is only there to group the items. Each KFileMetaInfoItem now has a member called PredicateProperties. This term comes from RDF. It determines the type of the item. This type encompasses the key (a URI), a name in the current locale, a description in the current locale, a type and a QValidator.
+</p>
 
 <h4>KFileOpenWithHandler</h4>
 <ul>
 <li>This class has been removed, it was just a workaround for a dependency problem,
 just remove any instance of it.</li>
 </ul>
+
+<h4>KFilePlugin</h4>
+
+<p>This class has been replaced by <a href="http://techbase.kde.org/Development/Tutorials/Writing_file_analyzers">Strigi analyzers</a> KFileWritePlugin. The Strigi analyzer should be installed in the directory lib/strigi to be picked up. Introspection provided by the factories that are defined in the plugin helps in determining when a particular analyzer will be used.</p>
+
+<p>Strigi analyzer have the advantage that they are faster then KFilePlugins. In addition, having one mechanism for extracting metadata from files saves code and more importantly ensures consistency between the display of metadata and the ablility to search in it. Another advantage is that the way the metadata are described matches well with the methods employed in the semantic desktop, in particular Nepomuk.</p>
+
+<h4>KFileWritePlugin</h4>
+
+<p>The write functionality of the class KFilePlugin is now handled by KFileWritePlugin. A global instance of this class that is attached to a KFileMetaInfoItem can be used to write back changes that were made to a files' metadata.</p>
+
+<p>The mechanism by which these global instances are tied to KFileMetaDataItems is not yet finished. The implementation of will go into kio/kio/kfilemetainfo.cpp.</p>
 
 <h4>KIconButton</h4>
 <ul>
