@@ -267,7 +267,7 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
 	  exec->setException(err);
 	  free(decbuf);
 	  return UString();
-	}        
+	}
 	unsigned long wwww = octets[1] & 0x0F;
 	unsigned long xx = (octets[2] >> 4) & 0x03;
 	unsigned long yyyy = octets[2] & 0x0F;
@@ -515,9 +515,9 @@ Value FunctionImp::get(ExecState *exec, const Identifier &propertyName) const
         ContextImp *context = exec->context().imp();
         while (context) {
 	    if (context->function() == this) {
-		FunctionImp *f = context->callingContext()->function();
-		if (f)
-		    return Value(f);
+		ContextImp *cc = context->callingContext();
+		if (cc && cc->function())
+                    return Value(cc->function());
 		else
 		    return Null();
 	    }
