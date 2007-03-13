@@ -197,6 +197,14 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
 	end
 
+	def testUrl
+		#assert( TestObject1.func_qurl_qurl(nil) == nil )
+		assert( TestObject1.func_qurl_qurl("") == "" )
+		assert( TestObject1.func_qurl_qurl("/home/myuser") == "/home/myuser" )
+		assert( TestObject1.func_qurl_qurl("file:///home/myuser/myfile.txt") == "file:///home/myuser/myfile.txt" )
+		assert( TestObject1.func_qurl_qurl("http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456") == "http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456" )
+	end
+
 	def testStringList
 		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist("") }
 		assert_raises(TypeError) { TestObject1.func_qstringlist_qstringlist(0) }

@@ -1,7 +1,7 @@
 /***************************************************************************
  * main.cpp
  * This file is part of the KDE project
- * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "testobject.h"
-#include "testwindow.h"
 
 // Kross
 #include "../core/action.h"
@@ -37,7 +36,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-#include <ksharedptr.h>
 
 // for std namespace
 #include <string>
@@ -54,7 +52,6 @@ KApplication *app = 0;
 
 static KCmdLineOptions options[] =
 {
-    { "gui", "Start the GUI; otherwise the command line application is used.", 0 },
     { "+file", "Scriptfile", 0 },
 
     //{ "functionname <functioname>", I18N_NOOP("Execute the function in the defined script file."), "" },
@@ -82,26 +79,6 @@ int readFile(const QString& scriptfile, QString& content)
     content = f.readAll();
     f.close();
     return ERROR_OK;
-}
-
-static TestObject* testobj1 = 0;
-static TestObject* testobj2 = 0;
-
-void finishTestEnvironment()
-{
-    delete testobj1; testobj1 = 0;
-    delete testobj2; testobj2 = 0;
-}
-
-void initTestEnvironment()
-{
-    // Create the testobject instances.
-    testobj1 = new TestObject(0, "TestObject1");
-    testobj2 = new TestObject(0, "TestObject2");
-
-    // Publish both testobject instances.
-    Kross::Manager::self().addObject( testobj1 );
-    Kross::Manager::self().addObject( testobj2 );
 }
 
 int runScriptFile(const QString& scriptfile)
@@ -163,7 +140,7 @@ int main(int argc, char **argv)
                      "0.1",
                      "KDE application to test the Kross framework.",
                      KAboutData::License_LGPL,
-                     "(C) 2005 Sebastian Sauer",
+                     "(C) 2005-2007 Sebastian Sauer",
                      "Test the Kross framework!",
                      "http://kross.dipe.org",
                      "kross@dipe.org");
@@ -178,46 +155,27 @@ int main(int argc, char **argv)
     for(int i = 0; i < args->count(); i++)
         scriptfiles.append( QFile::decodeName(args->arg(i)) );
 
-    //testcase
-    if(scriptfiles.count() < 1)
-        scriptfiles.append("testcase.py");
-
     if(scriptfiles.count() < 1) {
         std::cerr << "No scriptfile to execute defined. See --help" << std::endl;
         return ERROR_NOSUCHFILE;
     }
 
-    if( args->isSet("gui") ) {
-        app = new KApplication();
+    // init
+    app = new KApplication(true);
+    TestObject* testobj1 = new TestObject(0, "TestObject1");
+    TestObject* testobj2 = new TestObject(0, "TestObject2");
+    Kross::Manager::self().addObject( testobj1 );
+    Kross::Manager::self().addObject( testobj2 );
 
-        QString interpretername, scriptcode;
-        if(scriptfiles.count() > 0) {
-            result = readFile( scriptfiles[0], scriptcode );
-            if(result == ERROR_OK)
-                interpretername = getInterpreterName( scriptfiles[0] );
-        }
-
-        if(result == ERROR_OK) {
-            initTestEnvironment();
-
-            TestWindow *mainWin = new TestWindow(interpretername, scriptcode);
-            mainWin->show();
-            args->clear();
-            result = app->exec();
-        }
-    }
-    else {
-        app = new KApplication(true);
-        initTestEnvironment();
-
-        foreach(QString file, scriptfiles) {
-            result = runScriptFile(file);
-            if(result != ERROR_OK)
-                break;
-        }
+    foreach(QString file, scriptfiles) {
+        result = runScriptFile(file);
+        if(result != ERROR_OK)
+            break;
     }
 
-    finishTestEnvironment();
+    // finish
+    delete testobj1;
+    delete testobj2;
     delete app;
 
     kDebug() << "DONE!!!" << endl;

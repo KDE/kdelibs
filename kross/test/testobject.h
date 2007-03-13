@@ -25,6 +25,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtCore/QMetaType>
+#include <QtCore/QUrl>
 
 class QSize;
 class QSizeF;
@@ -121,6 +122,7 @@ class TestObject : public QObject
         QPointF func_qpointf_qpointf(const QPointF&);
         QRect func_qrect_qrect(const QRect&);
         QRectF func_qrectf_qrectf(const QRectF&);
+        QUrl func_qurl_qurl(const QUrl&);
 
         QColor func_qcolor_qcolor(const QColor&);
         QFont func_qfont_qfont(const QFont&);

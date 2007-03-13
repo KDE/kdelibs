@@ -123,6 +123,13 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qrectf_qrectf( [-1.0,-2.0,3.0,4.0] ) == [-1.0,-2.0,3.0,4.0] )
 		self.assert_( self.object1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
 
+	def testUrl(self):
+		self.assert_( self.object1.func_qurl_qurl(None) == None )
+		#self.assert_( self.object1.func_qurl_qurl("") == "" )
+		self.assert_( self.object1.func_qurl_qurl("/home/myuser") == "/home/myuser" )
+		self.assert_( self.object1.func_qurl_qurl("file:///home/myuser/myfile.txt") == "file:///home/myuser/myfile.txt" )
+		self.assert_( self.object1.func_qurl_qurl("http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456") == "http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456" )
+
 	#def testColor(self):
 		#import Kross
 		#color = Kross.color()

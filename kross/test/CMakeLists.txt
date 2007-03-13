@@ -4,7 +4,6 @@ include_directories(${KDE4_KIO_INCLUDES})
 
 set(krosstest_SRCS 
    testobject.cpp 
-   testwindow.cpp 
    main.cpp )
 
 kde4_automoc(${krosstest_SRCS})
