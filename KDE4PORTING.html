@@ -1566,13 +1566,13 @@ just remove any instance of it.</li>
 
 <h4>KFilePlugin</h4>
 
-<p>This class has been replaced by <a href="http://techbase.kde.org/Development/Tutorials/Writing_file_analyzers">Strigi analyzers</a> KFileWritePlugin. The Strigi analyzer should be installed in the directory lib/strigi to be picked up. Introspection provided by the factories that are defined in the plugin helps in determining when a particular analyzer will be used.</p>
+<p>This class has been replaced by <a href="http://techbase.kde.org/Development/Tutorials/Writing_file_analyzers">Strigi analyzers</a> and KFileWritePlugin. The Strigi analyzer should be installed in the directory lib/strigi to be picked up. Introspection provided by the factories that are defined in the plugin helps in determining when a particular analyzer will be used.</p>
 
 <p>Strigi analyzer have the advantage that they are faster then KFilePlugins. In addition, having one mechanism for extracting metadata from files saves code and more importantly ensures consistency between the display of metadata and the ablility to search in it. Another advantage is that the way the metadata are described matches well with the methods employed in the semantic desktop, in particular Nepomuk.</p>
 
 <h3>How to convert a KFilePlugin?</h3>
 
-<p>If your KFilePlugin only reads from files, it is easiest. Then you have to write only a Strigi analyzer. Depending on the way you read the data from the file it is best to write either a StreamThroughAnalyzer or a StreamEndAnalyzer. How to make the desicion is explained in the link above. When your analyzer is ready you have to decide where to put it. You can put it in the same place as the KFilePlugin was or, if there are little or no dependencies in your analyzer, you can put it in kdesupport/strigi/src/streamindexer. The latter option has the advantage that you do not have to add the code for loading a plugin.</p>
+<p>If your KFilePlugin only reads from files, it is easiest. Then you have to write only a Strigi analyzer. Depending on the way you read the data from the file it is best to write either a StreamThroughAnalyzer or a StreamEndAnalyzer. How to make the decision is explained in the link above. When your analyzer is ready you have to decide where to put it. You can put it in the same place as the KFilePlugin was or, if there are little or no dependencies in your analyzer, you can put it in kdesupport/strigi/src/streamindexer. The latter option has the advantage that you do not have to add the code for loading a plugin.</p>
 
 <p>When you have write functionality in your plugin, you must implement KFileWritePlugin and place the code for writing the file in there. The details of how to do this are not entirely clear at the moment as is explained in the entry for KFileWritePlugin.</p>
 
