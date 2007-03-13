@@ -72,6 +72,15 @@ namespace Nepomuk {
       return rl;
     }
 
+    template<typename T> KMETADATA_EXPORT QList<Resource> convertResourceList( const QList<T>& l ) {
+      QList<Resource> rl;
+      foreach( T r, l )
+/*       for( QList<T>::const_iterator it = l.constBegin(); */
+/* 	   it != l.constEnd(); ++it ) */
+	  rl.append( Resource( r/**it*/ ) );
+      return rl;
+    }
+
   }
 }
 
