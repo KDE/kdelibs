@@ -61,9 +61,9 @@ public:
     /** \internal */
     virtual int mode() const = 0;
     /** \internal */
-    virtual void terminate() {}
+    virtual void terminate();
     /** \internal */
-    virtual void reset() {}
+    virtual void reset();
     /** \internal */
     virtual bool readHeader() = 0;
     /** \internal */
@@ -113,7 +113,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
-    class KFilterBasePrivate;
+    class Private;
 };
 
 #endif

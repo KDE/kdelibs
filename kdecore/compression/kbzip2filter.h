@@ -36,7 +36,7 @@ public:
     virtual ~KBzip2Filter();
 
     virtual void init( int );
-    virtual int mode() const { return m_mode; }
+    virtual int mode() const;
     virtual void terminate();
     virtual void reset();
     virtual bool readHeader() { return true; } // bzip2 handles it by itself ! Cool !
@@ -48,9 +48,8 @@ public:
     virtual Result uncompress();
     virtual Result compress( bool finish );
 private:
-    class KBzip2FilterPrivate;
-    KBzip2FilterPrivate* const d;
-    int m_mode;
+    class Private;
+    Private* const d;
 };
 
 #endif

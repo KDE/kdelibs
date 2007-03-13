@@ -32,7 +32,7 @@ public:
     virtual ~KGzipFilter();
 
     virtual void init( int mode );
-    virtual int mode() const { return m_mode; }
+    virtual int mode() const;
     virtual void terminate();
     virtual void reset();
     virtual bool readHeader();
@@ -44,13 +44,11 @@ public:
     virtual int  outBufferAvailable() const;
     virtual Result uncompress();
     virtual Result compress( bool finish );
+
 private:
     Result uncompress_noop();
-    int m_mode;
-    ulong m_crc;
-    bool m_headerWritten;
-    class KGzipFilterPrivate;
-    KGzipFilterPrivate* const d;
+    class Private;
+    Private* const d;
 };
 
 #endif

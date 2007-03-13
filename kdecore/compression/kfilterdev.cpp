@@ -26,10 +26,10 @@
 
 #define BUFFER_SIZE 8*1024
 
-class KFilterDev::KFilterDevPrivate
+class KFilterDev::Private
 {
 public:
-    KFilterDevPrivate() : bNeedHeader(true), bSkipHeaders(false),
+    Private() : bNeedHeader(true), bSkipHeaders(false),
                           autoDeleteFilterBase(false), bOpenedUnderlyingDevice(false),
                           bIgnoreData(false){}
     bool bNeedHeader;
@@ -44,7 +44,7 @@ public:
 };
 
 KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
-    : d(new KFilterDevPrivate)
+    : d(new Private)
 {
     assert(_filter);
     d->filter = _filter;

@@ -42,17 +42,22 @@ extern "C" {
 
 // For docu on this, see /usr/doc/bzip2-0.9.5d/bzip2-0.9.5d/manual_3.html
 
-class KBzip2Filter::KBzip2FilterPrivate
+class KBzip2Filter::Private
 {
 public:
+    Private()
+    {
+        memset(&zStream, 0, sizeof(zStream));
+        mode = 0;
+    }
+
     bz_stream zStream;
-    KBzip2FilterPrivate() { memset(&zStream, 0, sizeof(zStream)); }
+    int mode;
 };
 
 KBzip2Filter::KBzip2Filter()
-	:d(new KBzip2FilterPrivate)
+    :d(new Private)
 {
-    m_mode = 0;
 }
 
 
@@ -75,21 +80,26 @@ void KBzip2Filter::init( int mode )
         //kDebug(7118) << "bzDecompressInit returned " << result << endl;
     } else
         kWarning(7118) << "Unsupported mode " << mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
-    m_mode = mode;
+    d->mode = mode;
+}
+
+int KBzip2Filter::mode() const
+{
+    return d->mode;
 }
 
 void KBzip2Filter::terminate()
 {
-    if ( m_mode == QIODevice::ReadOnly )
+    if ( d->mode == QIODevice::ReadOnly )
     {
         int result = bzDecompressEnd(&d->zStream);
         kDebug(7118) << "bzDecompressEnd returned " << result << endl;
-    } else if ( m_mode == QIODevice::WriteOnly )
+    } else if ( d->mode == QIODevice::WriteOnly )
     {
         int result = bzCompressEnd(&d->zStream);
         kDebug(7118) << "bzCompressEnd returned " << result << endl;
     } else
-        kWarning(7118) << "Unsupported mode " << m_mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
+        kWarning(7118) << "Unsupported mode " << d->mode << ". Only QIODevice::ReadOnly and QIODevice::WriteOnly supported" << endl;
 }
 
 
@@ -98,7 +108,7 @@ void KBzip2Filter::reset()
     kDebug(7118) << "KBzip2Filter::reset" << endl;
     // bzip2 doesn't seem to have a reset call...
     terminate();
-    init( m_mode );
+    init( d->mode );
 }
 
 void KBzip2Filter::setOutBuffer( char * data, uint maxlen )

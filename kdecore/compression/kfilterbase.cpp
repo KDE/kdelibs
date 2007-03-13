@@ -87,6 +87,14 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     return 0;
 }
 
+void KFilterBase::terminate()
+{
+}
+
+void KFilterBase::reset()
+{
+}
+
 void KFilterBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
