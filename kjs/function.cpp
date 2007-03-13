@@ -284,9 +284,10 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
         decbuf[decbufLen++] = C;
     }
     else {
-      while (decbufLen+k-start >= decbufAlloc)
+      // copy unencoded sequence
+      while (decbufLen+k-start+1 >= decbufAlloc)
 	decbuf = (UChar*)realloc(decbuf,(decbufAlloc *= 2)*sizeof(UChar));
-      for (int p = start; p < k; p++)
+      for (int p = start; p <= k; p++)
 	decbuf[decbufLen++] = string[p];
     }
   }

@@ -1,3 +1,8 @@
+2007-03-13  Harri Porten  <porten@kde.org>
+
+	* function.cpp (decodeURI): don't drop last character of unescaped
+	(reserved) sequences.
+
 2007-02-24  Harri Porten  <porten@kde.org>
 
 	* regexp.cpp: gracefully handle incomplete \u sequences in regular
