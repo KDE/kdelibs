@@ -15,7 +15,6 @@
  * - kdesu_stub      Header              "ok" | "stop"
  * - display         X11 display         string
  * - display_auth    X11 authentication  "type cookie" pair
- * - ice_auth        ICE authentication  csl of "type cookie" pairs for ICE
  * - command         Command to run      string
  * - path            PATH env. var       string
  * - build_sycoca    Rebuild sycoca?     "yes" | "no"
@@ -66,7 +65,6 @@ struct param_struct params[] =
     { "kdesu_stub", 0L },
     { "display", 0L },
     { "display_auth", 0L },
-    { "ice_auth", 0L },
     { "command", 0L },
     { "path", 0L },
     { "xwindows_only", 0L },
@@ -80,17 +78,14 @@ struct param_struct params[] =
 #define P_HEADER 0
 #define P_DISPLAY 1
 #define P_DISPLAY_AUTH 2
-#define P_DCOPSERVER 3
-#define P_DCOP_AUTH 4
-#define P_ICE_AUTH 5
-#define P_COMMAND 6
-#define P_PATH 7
-#define P_XWIN_ONLY 8
-#define P_USER 9
-#define P_PRIORITY 10
-#define P_SCHEDULER 11
-#define P_APP_STARTUP_ID 12
-#define P_LAST 13
+#define P_COMMAND 3
+#define P_PATH 4
+#define P_XWIN_ONLY 5
+#define P_USER 6
+#define P_PRIORITY 7
+#define P_SCHEDULER 8
+#define P_APP_STARTUP_ID 9
+#define P_LAST 10
 
 /**
  * Safe malloc functions.
@@ -174,7 +169,6 @@ int main()
     char xauthority[200];
 #endif
     char iceauthority[200];
-    char **host, **auth;
     int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
@@ -329,43 +323,6 @@ int main()
 #else
 	xsetenv("DISPLAY", params[P_DISPLAY].value);
 #endif
-    }
-
-
-    /* Handle DCOP */
-
-    if (strcmp(params[P_DCOPSERVER].value, "no")) 
-    {
-	xsetenv("DCOPSERVER", params[P_DCOPSERVER].value);
-	host = xstrsep(params[P_DCOPSERVER].value);
-	auth = xstrsep(params[P_ICE_AUTH].value);
-	if (host[0]) 
-	{
-            int fd;
-	    int	oldumask = umask(077);
-
-            strcpy(iceauthority, "/tmp/iceauth.XXXXXXXXXX");
-            fd = mkstemp(iceauthority);
-	    umask(oldumask);
-            if (fd == -1) {
-                perror("kdesu_stub: mkstemp()");
-                exit(1);
-            } else
-                close(fd);
-	    xsetenv("ICEAUTHORITY", iceauthority);
-
-	    fout = popen("iceauth >/dev/null 2>&1", "w");
-	    if (!fout) {
-		perror("kdesu_stub: popen iceauth");
-		exit(1);
-	    }
-	    for (i=0; host[i]; i++)
-		fprintf(fout, "add ICE \"\" %s %s\n", host[i], auth[i]);
-	    auth = xstrsep(params[P_DCOP_AUTH].value);
-	    for (i=0; host[i]; i++)
-		fprintf(fout, "add DCOP \"\" %s %s\n", host[i], auth[i]);
-	    pclose(fout);
-	}
     }
 
     /* Rebuild the sycoca and start kdeinit? */
