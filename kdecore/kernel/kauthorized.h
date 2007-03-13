@@ -30,17 +30,15 @@ class QStringList;
 /**
 * Extracted from kapplication (3.x). Kiosk authorization framework
 */
-class KDECORE_EXPORT KAuthorized
+namespace KAuthorized
 {
-public:
-
   /**
    * Returns whether a certain action is authorized
    * @param genericAction The name of a generic  action
    * @return true if the action is authorized
    * @todo what are the generic actions?
    */
-  static bool authorize(const QString& genericAction);
+  KDE_EXPORT bool authorize(const QString& genericAction);
 
   /**
    * Returns whether a certain KAction is authorized.
@@ -49,7 +47,7 @@ public:
    * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
-  static bool authorizeKAction(const QString& action);
+  KDE_EXPORT bool authorizeKAction(const QString& action);
 
   /**
    * Returns whether a certain URL related action is authorized.
@@ -63,7 +61,7 @@ public:
    * @param destUrl The object of the action
    * @return true when the action is authorized, false otherwise.
    */
-  static bool authorizeUrlAction(const QString& action, const KUrl& baseUrl, const KUrl& destUrl);
+  KDE_EXPORT bool authorizeUrlAction(const QString& action, const KUrl& baseUrl, const KUrl& destUrl);
 
   /**
    * Allow a certain URL action. This can be useful if your application
@@ -73,7 +71,7 @@ public:
    * @param baseUrl The url where the action originates from
    * @param _destUrl The object of the action
    */
-  static void allowUrlAction(const QString& action, const KUrl& baseUrl, const KUrl&  _destUrl);
+  KDE_EXPORT void allowUrlAction(const QString& action, const KUrl& baseUrl, const KUrl&  _destUrl);
 
   /**
    * Returns whether access to a certain control module is authorized.
@@ -81,7 +79,7 @@ public:
    * @param menuId identifying the control module, e.g. kde-mouse.desktop
    * @return true if access to the module is authorized, false otherwise.
    */
-  static bool authorizeControlModule(const QString& menuId);
+  KDE_EXPORT bool authorizeControlModule(const QString& menuId);
 
   /**
    * Returns whether access to a certain control modules is authorized.
@@ -90,8 +88,8 @@ public:
    * an example of a menu-id is kde-mouse.desktop.
    * @return Those control modules for which access has been authorized.
    */
-  static QStringList authorizeControlModules(const QStringList& menuIds);
+  KDE_EXPORT QStringList authorizeControlModules(const QStringList& menuIds);
 
-};
+}
 
 #endif

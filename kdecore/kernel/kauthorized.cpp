@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
         */
 
-#include "config.h"
 #include "kauthorized.h"
 
 #include <qdir.h>
@@ -37,17 +36,13 @@
 #include <kurl.h>
 #include <kconfiggroup.h>
 
-#ifdef HAVE_PATHS_H
-//#include <paths.h>
-#endif
-
 #include <QMutex>
 #include <QMutexLocker>
 #include <qglobal.h>
+
 #ifdef __GNUC__
 #warning used non public api for now
 #endif
-
 extern bool kde_kiosk_exception;
 
 
