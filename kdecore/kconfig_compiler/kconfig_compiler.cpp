@@ -34,6 +34,7 @@
 
 #include <ostream>
 #include <iostream>
+#include <stdlib.h>
 
 
 static inline std::ostream &operator<<(std::ostream &o, const QString &str)
