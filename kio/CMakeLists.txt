@@ -36,11 +36,9 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
-add_subdirectory( kpasswdserver )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( kfile/tests )
-add_subdirectory( kioexec )
 
 # for the kfile usage in bookmarks
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
