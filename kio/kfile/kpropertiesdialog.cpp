@@ -313,7 +313,6 @@ void KPropertiesDialog::init()
   setButtons( KDialog::Ok | KDialog::Cancel );
   setDefaultButton( KDialog::Ok );
 
-  m_pageList.setAutoDelete( true );
   connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
   connect(this,SIGNAL(cancelClicked()),this,SLOT(slotCancel()));
 
@@ -335,10 +334,7 @@ void KPropertiesDialog::setFileSharingPage(QWidget* page) {
 
 void KPropertiesDialog::setFileNameReadOnly( bool ro )
 {
-    KPropertiesDialogPlugin *it;
-
-    for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
-    {
+    foreach(KPropertiesDialogPlugin *it, m_pageList) {
         KFilePropsPlugin* plugin = dynamic_cast<KFilePropsPlugin*>(it);
         if ( plugin ) {
             plugin->setFileNameReadOnly( ro );
@@ -354,7 +350,7 @@ void KPropertiesDialog::slotStatResult( KJob * )
 KPropertiesDialog::~KPropertiesDialog()
 {
   qDeleteAll( m_items );
-  m_pageList.clear();
+  qDeleteAll( m_pageList );
   delete d;
 }
 
@@ -381,7 +377,7 @@ bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
 
 void KPropertiesDialog::slotOk()
 {
-  KPropertiesDialogPlugin *page;
+  QList<KPropertiesDialogPlugin*>::const_iterator pageListIt;
   d->m_aborted = false;
 
   KFilePropsPlugin * filePropsPlugin = 0L;
@@ -391,26 +387,29 @@ void KPropertiesDialog::slotOk()
   // If any page is dirty, then set the main one (KFilePropsPlugin) as
   // dirty too. This is what makes it possible to save changes to a global
   // desktop file into a local one. In other cases, it doesn't hurt.
-  for ( page = m_pageList.first(); page != 0L; page = m_pageList.next() )
-    if ( page->isDirty() && filePropsPlugin )
+  for ( pageListIt = m_pageList.constBegin(); pageListIt != m_pageList.constEnd(); ++pageListIt ) {
+    if ( (*pageListIt)->isDirty() && filePropsPlugin )
     {
         filePropsPlugin->setDirty();
         break;
     }
+  }
 
   // Apply the changes in the _normal_ order of the tabs now
   // This is because in case of renaming a file, KFilePropsPlugin will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
-  for ( page = m_pageList.first(); page != 0L && !d->m_aborted; page = m_pageList.next() )
-    if ( page->isDirty() )
+  for ( pageListIt = m_pageList.constBegin(); pageListIt != m_pageList.constEnd() && !d->m_aborted; ++pageListIt ) {
+    if ( (*pageListIt)->isDirty() )
     {
-      kDebug( 250 ) << "applying changes for " << page->metaObject()->className() << endl;
-      page->applyChanges();
+      kDebug( 250 ) << "applying changes for " << (*pageListIt)->metaObject()->className() << endl;
+      (*pageListIt)->applyChanges();
       // applyChanges may change d->m_aborted.
     }
-    else
-      kDebug( 250 ) << "skipping page " << page->metaObject()->className() << endl;
+    else {
+      kDebug( 250 ) << "skipping page " << (*pageListIt)->metaObject()->className() << endl;
+    }
+  }
 
   if ( !d->m_aborted && filePropsPlugin )
     filePropsPlugin->postApplyChanges();
@@ -539,12 +538,12 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   assert(!m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
-  for ( Q3PtrListIterator<KPropertiesDialogPlugin> it(m_pageList); it.current(); ++it ) {
-   if ( qobject_cast<KUrlPropsPlugin*>(it.current()) ||
-        qobject_cast<KDesktopPropsPlugin*>(it.current()) )
+  foreach (KPropertiesDialogPlugin *it, m_pageList) {
+   if ( qobject_cast<KUrlPropsPlugin*>(it) ||
+        qobject_cast<KDesktopPropsPlugin*>(it) )
    {
      //kDebug(250) << "Setting page dirty" << endl;
-     it.current()->setDirty();
+     it->setDirty();
      break;
    }
   }
@@ -1612,18 +1611,17 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   QWidget *l;
   QLabel *lbl;
-  Q3GroupBox *gb;
+  QGroupBox *gb;
   QGridLayout *gl;
   QPushButton* pbAdvancedPerm = 0;
 
   /* Group: Access Permissions */
-  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), d->m_frame );
-  gb->layout()->setSpacing(KDialog::spacingHint());
-  gb->layout()->setMargin(KDialog::marginHint());
+  gb = new QGroupBox ( i18n("Access Permissions"), d->m_frame );
   box->addWidget (gb);
 
-  gl = new QGridLayout ();
-  gb->layout()->addItem(gl);
+  gl = new QGridLayout (gb);
+  gl->setSpacing(KDialog::spacingHint());
+  gl->setMargin(KDialog::marginHint());
   gl->setColumnStretch(1, 1);
 
   l = d->explanationLabel = new QLabel( "", gb );
@@ -1687,13 +1685,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
   /**** Group: Ownership ****/
-  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
-  gb->layout()->setSpacing(KDialog::spacingHint());
-  gb->layout()->setMargin(KDialog::marginHint());
+  gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
   box->addWidget (gb);
 
-  gl = new QGridLayout ();
-  gb->layout()->addItem(gl);
+  gl = new QGridLayout (gb);
+  gl->setSpacing(KDialog::spacingHint());
+  gl->setMargin(KDialog::marginHint());
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   /*** Set Owner ***/
@@ -1867,20 +1864,21 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   KDialog dlg( properties );
   dlg.setModal( true );
   dlg.setCaption( i18n("Advanced Permissions") );
-	dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+  dlg.setButtons( KDialog::Ok | KDialog::Cancel );
 
   QLabel *l, *cl[3];
-  Q3GroupBox *gb;
+  QGroupBox *gb;
   QGridLayout *gl;
 
   QWidget *mainw = new QWidget( &dlg );
+  QVBoxLayout *vbox = new QVBoxLayout(mainw);
   // Group: Access Permissions
-  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), mainw );
-  gb->layout()->setSpacing(KDialog::spacingHint());
-  gb->layout()->setMargin(KDialog::marginHint());
+  gb = new QGroupBox ( i18n("Access Permissions"), mainw );
+  vbox->addWidget(gb);
 
-  gl = new QGridLayout ();
-  gb->layout()->addItem(gl);
+  gl = new QGridLayout (gb);
+  gl->setSpacing(KDialog::spacingHint());
+  gl->setMargin(KDialog::marginHint());
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   QVector<QWidget*> theNotSpecials;
@@ -2076,6 +2074,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   if ( d->fileSystemSupportsACLs  ) {
     std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );
     extendedACLs = new KACLEditWidget( mainw );
+    vbox->addWidget(extendedACLs);
     if ( d->extendedACL.isValid() && d->extendedACL.isExtended() )
       extendedACLs->setACL( d->extendedACL );
     else

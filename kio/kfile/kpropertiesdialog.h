@@ -366,7 +366,7 @@ private:
   /**
    * List of all plugins inserted ( first one first )
    */
-  Q3PtrList<KPropertiesDialogPlugin> m_pageList;
+  QList<KPropertiesDialogPlugin*> m_pageList;
 
 private Q_SLOTS:
   void slotStatResult( KJob * ); // No longer used

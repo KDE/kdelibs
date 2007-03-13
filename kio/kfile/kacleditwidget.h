@@ -32,7 +32,7 @@ class KACLListViewItem;
 class KACLListView;
 class QPushButton;
 
-class KACLEditWidget : QWidget
+class KACLEditWidget : public QWidget
 {
   Q_OBJECT
 public:
