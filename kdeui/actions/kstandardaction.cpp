@@ -164,7 +164,8 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       // Open Recent is a special case - provide the selected URL
       QObject::connect(pAction, SIGNAL(urlSelected(const KUrl &)), recvr, slot);
 
-  if (KActionCollection *collection = qobject_cast<KActionCollection *>(parent))
+  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
+  if (pAction && collection)
       collection->addAction(pAction->objectName(), pAction);
 
   return pAction;
