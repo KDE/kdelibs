@@ -807,6 +807,8 @@ void NewStuffDialog::slotCategories(QList<KNS::Category*> categories)
 	}
 
 	d->typeCombo->setEnabled(true);
+
+	slotLoadProviderDXS(0);
 }
 
 void NewStuffDialog::slotEntries(QList<KNS::Entry*> entries)

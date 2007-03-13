@@ -28,7 +28,11 @@ Soap::~Soap()
 
 void Soap::call(QDomElement element, QString endpoint)
 {
-	if(m_inprogress) return;
+	if(m_inprogress)
+	{
+		kWarning() << "Discarding SOAP/CTS call!" << endl;
+		return;
+	}
 
 	if(m_model == canonicaltree)
 	{
@@ -99,7 +103,7 @@ void Soap::call_soap(QDomElement element, QString endpoint)
 	//data.truncate(data.size() - 1); // FIXME KDE4PORT
 
 	kDebug() << "HTTP-POST " << url.prettyUrl() << endl;
-	kDebug() << "HTTP-POST " << data << endl;
+	kDebug() << "HTTP-POST " << s << endl;
 
 	KIO::TransferJob *job;
 	job = KIO::http_post(url, data, false);
@@ -166,8 +170,8 @@ void Soap::slotResult(KJob *job)
 
 		kDebug() << "(signal) Result!" << endl;
 
-		emit signalResult(contentnode);
 		m_inprogress = false;
+		emit signalResult(contentnode);
 	}
 	else
 	{
@@ -184,8 +188,8 @@ void Soap::slotResult(KJob *job)
 		kDebug() << "(signal) Result!" << endl;
 		kDebug() << doc.toString() << endl;
 
-		emit signalResult(root);
 		m_inprogress = false;
+		emit signalResult(root);
 	}
 }
 
@@ -207,11 +211,12 @@ QString Soap::xpath(QDomNode node, QString expr)
 	}
 
 	QDomNode n = node;
-	QStringList explist = expr.split("/");
+	QStringList explist = expr.split("/", QString::SkipEmptyParts);
 	for(QStringList::Iterator it = explist.begin(); it != explist.end(); it++)
 	{
 		QDomElement el = n.toElement();
 		QDomNodeList l = el.elementsByTagName((*it));
+		if(!l.size()) return QString();
 		n = l.item(0);
 	}
 	QString s = n.toElement().text();
@@ -295,7 +300,7 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, QString data)
 			cur.appendChild(elem);
 		}
 
-		QStringList l = e.cap(2).split("\n");
+		QStringList l = e.cap(2).split("\n", QString::SkipEmptyParts);
 		for(QStringList::iterator it = l.begin(); it != l.end(); it++)
 		{
 			kDebug() << "<rec>" << (*it) << endl;
