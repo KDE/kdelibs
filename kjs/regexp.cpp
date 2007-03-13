@@ -343,8 +343,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   const int numMatches = pcre_exec(_regex, NULL, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
 
   //Now go through and patch up the offsetVector
-  for (int c = 0; c < 2 * numMatches; ++c)
-    if (offsetVector[c] != -1)
+  if (utf8Support == Supported)
+    for (int c = 0; c < 2 * numMatches; ++c)
+      if (offsetVector[c] != -1)
         offsetVector[c] = _originalPos[offsetVector[c]];
 
   if (numMatches < 0) {
