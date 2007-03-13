@@ -94,6 +94,7 @@ class TestObject : public QObject
         void signalBool(bool);
         void signalInt(int);
         void signalString(const QString&);
+        void signalObject(QObject* obj);
 
     public Q_SLOTS:
 

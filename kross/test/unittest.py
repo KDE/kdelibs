@@ -220,11 +220,20 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.connect("signalBool(bool)", "func_bool_bool(bool)") )
 		self.assert_( self.object1.connect("signalInt(int)", self.object2, "func_int_int(int)") )
 
-		def callback(s):
+		def callback1(obj):
+			self.assert_(obj.name() == "TestObject2")
+			return "CALLBACK1!"
+		self.assert_( self.object1.connect("signalObject(QObject*)", callback1) )
+		self.object1.signalObject(self.object2)
+
+		def callback2(s):
 			self.assert_(s == " The Argument String ")
-			return "CALLBACK!"
-		self.assert_( self.object1.connect("signalString(const QString&)", callback) )
+			return "CALLBACK2!"
+		self.assert_( self.object1.connect("signalString(const QString&)", callback2) )
 		self.object1.signalString(" The Argument String ")
+
+		self.assert_( self.object1.name() == "TestObject1" )
+		self.assert_( self.object2.name() == "TestObject2" )
 
 	#def testExpectedFailures(self):
 		# to less arguments
