@@ -54,7 +54,7 @@ public:
     QIcon preview() const { return m_preview; }
     void addPreview( const QPixmap& pix ) { m_preview.addPixmap(pix); }
     void setPreview( const QIcon& icn ) { m_preview = icn; }
-    
+
 private:
     KFileItem* m_item;
     KDirModelDirNode* const m_parent;
@@ -282,6 +282,15 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     Q_ASSERT(d->isDir(result.second));
     KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(result.second);
 
+    const QModelIndex index = d->indexForNode(dirNode, result.first); // O(1)
+    const int newItemsCount = items.count();
+    const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
+#ifndef NDEBUG // debugIndex only defined in debug mode
+    kDebug() << k_funcinfo << items.count() << " in " << dir
+             << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
+#endif
+    beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
+
     KFileItemList::const_iterator it = items.begin();
     const KFileItemList::const_iterator end = items.end();
     for ( ; it != end ; ++it ) {
@@ -291,14 +300,6 @@ void KDirModel::slotNewItems( const KFileItemList& items )
         dirNode->m_childNodes.append( node );
     }
 
-    const QModelIndex index = d->indexForNode(dirNode, result.first); // O(1)
-    const int newRowCount = dirNode->m_childNodes.count();
-#ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug() << k_funcinfo << items.count() << " in " << dir
-             << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
-#endif
-    const int newItemsCount = items.count();
-    beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
     endInsertRows();
 }
 
