@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include "ksocketdevice.h"
 #include "ksocketaddress.h"
