@@ -65,7 +65,7 @@
 #include <kauthorized.h>
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
-#include <krfcdate.h>
+#include <kdatetime.h>
 #include "khtml_settings.h"
 #include "khtmlpart_p.h"
 
@@ -1706,7 +1706,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     {
         bool relative = false;
         QString str = content.string().trimmed();
-        time_t expire_date = KRFCDate::parseDate(str);
+        time_t expire_date = KDateTime::fromString(str, KDateTime::RFCDate).toTime_t();
         if (!expire_date)
         {
             expire_date = str.toULong();
