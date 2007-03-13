@@ -48,7 +48,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kservice.h>
-#include <krfcdate.h>
+#include <kdatetime.h>
 #include <kcodecs.h>
 #include <kcomponentdata.h>
 #include <kresolver.h>
@@ -1039,19 +1039,19 @@ long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
 {
   if ( type == "dateTime.tz" )
   {
-    return KRFCDate::parseDateISO8601( input );
+    return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
   }
   else if ( type == "dateTime.rfc1123" )
   {
-    return KRFCDate::parseDate( input );
+    return KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
   }
 
   // format not advertised... try to parse anyway
-  time_t time = KRFCDate::parseDate( input );
+  time_t time = KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
   if ( time != 0 )
     return time;
 
-  return KRFCDate::parseDateISO8601( input );
+  return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
 }
 
 QString HTTPProtocol::davProcessLocks()
@@ -3085,7 +3085,7 @@ try_again:
 
     // Date
     else if (strncasecmp(buf, "Date:", 5) == 0) {
-      dateHeader = KRFCDate::parseDate(trimLead(buf+5));
+      dateHeader = KDateTime::fromString(trimLead(buf+5), KDateTime::RFCDate).toTime_t();
     }
 
     // Cache management
@@ -3095,7 +3095,7 @@ try_again:
 
     // Cache management
     else if (strncasecmp(buf, "Expires:", 8) == 0) {
-      expireDate = KRFCDate::parseDate(trimLead(buf+8));
+      expireDate = KDateTime::fromString(trimLead(buf+8), KDateTime::RFCDate).toTime_t();
       if (!expireDate)
         expireDate = 1; // Already expired
     }
@@ -3418,7 +3418,7 @@ try_again:
   {
     time_t lastModifiedDate = 0;
     if (!m_request.lastModified.isEmpty())
-       lastModifiedDate = KRFCDate::parseDate(m_request.lastModified);
+       lastModifiedDate = KDateTime::fromString(m_request.lastModified, KDateTime::RFCDate).toTime_t();
 
     if (lastModifiedDate)
     {

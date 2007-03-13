@@ -60,7 +60,7 @@
 #include <qregexp.h>
 
 #include <kurl.h>
-#include <krfcdate.h>
+#include <kdatetime.h>
 #include <kconfig.h>
 #include <ksavefile.h>
 #include <kdebug.h>
@@ -797,7 +797,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             else if (cName == "expires")
             {
                 // Parse brain-dead netscape cookie-format
-                lastCookie->mExpireDate = KRFCDate::parseDate(Value);
+                lastCookie->mExpireDate = KDateTime::fromString(Value, KDateTime::RFCDate).toTime_t();
             }
             else if (cName == "path")
             {
