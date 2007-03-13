@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -103,17 +103,17 @@ int Nepomuk::KMetaData::ResourceManager::init()
       d->ontology = new Ontology();
     if( !d->registry )
       d->registry = new Backbone::Registry( this );
-    
+
     //   if( serviceRegistry()->status() != VALID ) {
     //     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
     //     return -1;
     //  }
-    
+
     if( !serviceRegistry()->discoverRDFRepository() ) {
       kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
       return -1;
     }
-    
+
     //   if( !serviceRegistry()->discoverResourceIdService() ) {
     //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
     //     return -1;
@@ -195,34 +195,41 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
        it != ResourceData::s_kickoffData.end(); ++it )
     it.value()->init();
 
+  // sync the stupid way by calling each resource's merge method.
+  // FIXME: do a more performant sync by gathering statements to add and remove
   QList<Statement> statementsToAdd;
   QList<ResourceData*> syncedResources;
   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
        it != ResourceData::s_data.end(); ++it ) {
     syncedResources.append( it.value() );
     it.value()->startSync();
-    it.value()->determinePropertyUris();
-    statementsToAdd += it.value()->allStatementsToAdd();
+    bool success = ( it.value()->determineUri() &&
+                     it.value()->determinePropertyUris() &&
+                     it.value()->merge() &&
+                     it.value()->save() );
+//    statementsToAdd += it.value()->allStatementsToAdd();
+    it.value()->endSync( success );
   }
+
 
   // remove everything about everyone from the store
   // this is the stupid way but ATM the only working one
   // ===================================================
-  for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
-       it != ResourceData::s_data.end(); ++it ) {
-    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
-    if( !rr.success() )
-      kDebug(300004) << "(ResourceManager) failed to remove all statements for resource " << it.value()->uri()
-		     << " (" << rr.lastErrorName() << ")" << endl;
-  }
+//   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
+//        it != ResourceData::s_data.end(); ++it ) {
+//     rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
+//     if( !rr.success() )
+//       kDebug(300004) << "(ResourceManager) failed to remove all statements for resource " << it.value()->uri()
+// 		     << " (" << rr.lastErrorName() << ")" << endl;
+//   }
 
-  rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
+//   rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
 
-  if( !rr.success() )
-    kDebug(300004) << "(ResourceManager) failed to add statements"
-		   << " (" << rr.lastErrorName() << ")" << endl;
+//   if( !rr.success() )
+//     kDebug(300004) << "(ResourceManager) failed to add statements"
+// 		   << " (" << rr.lastErrorName() << ")" << endl;
 
-  bool success = rr.success();
+//   bool success = rr.success();
 
   //
   // Release all the resource datas.
@@ -230,7 +237,7 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
   for( QList<ResourceData*>::iterator it = syncedResources.begin();
        it != syncedResources.end(); ++it ) {
     ResourceData* data = *it;
-    data->endSync( success );
+//    data->endSync( success );
     if( !data->modified() && !data->cnt() )
       data->deleteData();
   }
@@ -271,9 +278,9 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
     // check remote data
     RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(), 
+    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
 							Statement( Node(), KMetaData::typePredicate(), Node(type) ),
-							100 ), 
+							100 ),
 			      &rdfr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
@@ -318,11 +325,11 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     else {
       n = KMetaData::valueToRDFNode( v );
     }
-    
-    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(), 
+
+    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
 							Statement( Node(), Node(uri), n ),
 							100 ), &rdfr );
-    
+
     while( it.hasNext() ) {
       const Statement& s = it.next();
       Resource res( s.subject.value );
@@ -331,7 +338,7 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     }
   }
 
-  return l;    
+  return l;
 }
 
 
@@ -341,7 +348,7 @@ QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
 
   QString s;
   while( 1 ) {
-    s = ontology()->defaultNamespace() + '#' + KRandom::randomString( 20 );
+    s = ontology()->defaultNamespace() + KRandom::randomString( 20 );
     if( !rdfr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ||
 	( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
 	  !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
