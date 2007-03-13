@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -140,7 +140,7 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const
   if( it != m_properties.end() )
     if( !( it.value().second & ResourceData::Removed ) )
       return it.value().first;
-  
+
   return Variant();
 }
 
@@ -244,9 +244,9 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
     //
     if( uri().isEmpty() )
       return( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ||
-	      rr.contains( KMetaData::defaultGraph(), 
-			   Statement( Node(), 
-				      Node(s_identifierUri), 
+	      rr.contains( KMetaData::defaultGraph(),
+			   Statement( Node(),
+				      Node(s_identifierUri),
 				      KMetaData::valueToRDFNode(kickoffUriOrId()) ) ) );
 
     //
@@ -254,7 +254,7 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
     // the resource has to exists either as a subject or as an object (I think subject would be sufficient here)
     //
     else
-      return( rr.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) || 
+      return( rr.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ||
 	      rr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
   }
   else
@@ -313,9 +313,9 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
       //
       // Check if the kickoffUriOrId is a resource identifier
       //
-      QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(), 
-					       Statement( Node(), 
-							  Node(s_identifierUri), 
+      QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(),
+					       Statement( Node(),
+							  Node(s_identifierUri),
 							  KMetaData::valueToRDFNode(kickoffUriOrId()) ) );
 
       if( !sl.isEmpty() ) {
@@ -356,7 +356,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
 	m_proxyData = s_data[uri()];
 	m_proxyData->ref();
 	// merge our local changes
-	m_proxyData->mergeIn( this );	
+	m_proxyData->mergeIn( this );
       }
     }
 
@@ -420,9 +420,9 @@ bool Nepomuk::KMetaData::ResourceData::load()
 
     RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-    StatementListIterator it( rr.queryListStatements( KMetaData::defaultGraph(), 
+    StatementListIterator it( rr.queryListStatements( KMetaData::defaultGraph(),
 						      Statement( uri(), Node(), Node() ),
-						      100 ), 
+						      100 ),
 			      &rr );
     while( it.hasNext() ) {
       const Statement& s = it.next();
@@ -452,7 +452,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
     }
 
     m_modificationMutex.unlock();
-   
+
     return true;
   }
   else
@@ -519,7 +519,7 @@ void Nepomuk::KMetaData::ResourceData::endSync( bool updateFlags )
       // FIXME: should we actually delete properties marked as Removed here?
       if( updateFlags ) {
 	it.value().second &= ~Modified;
-	it.value().second &= Loaded;
+	it.value().second |= Loaded;
       }
     }
   }
@@ -589,7 +589,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
 	 it != m_properties.end(); ++it ) {
       // whatever gets saved is not Modified anymore
       it.value().second &= ~Modified;
-      it.value().second &= Loaded;
+      it.value().second |= Loaded;
     }
   }
 
@@ -644,8 +644,8 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 
       // one-to-one literal
       else {
-	statements.append( Statement( m_uri, 
-				      predicate, 
+	statements.append( Statement( m_uri,
+				      predicate,
 				      KMetaData::valueToRDFNode( val ) ) );
       }
     }
@@ -677,7 +677,7 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
   // always save the type
   // ====================
   statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
-  
+
   return statements;
 }
 
@@ -721,7 +721,7 @@ bool Nepomuk::KMetaData::ResourceData::merge()
 
     return true;
   }
-    
+
   delete currentData;
   return false;
 }
@@ -742,7 +742,7 @@ void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
     //     -> load the new value from other
 
     // 2. the value exists here and has been changed (Problem: since we did not remember the
-    //    original value we don't know if it was changed remotely in the meantime. Is that 
+    //    original value we don't know if it was changed remotely in the meantime. Is that
     //    really a problem? If so could we use timestamps?)
     //    -> keep our value
 
