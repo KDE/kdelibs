@@ -136,7 +136,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
 
-   target_link_libraries(testkjs_static  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME})
+   target_link_libraries(testkjs_static  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
    ########### testkjs ###############
 
@@ -144,7 +144,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
 
-   target_link_libraries(testkjs  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} )
+   target_link_libraries(testkjs  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
 endif(KDE4_BUILD_TESTS)
 
