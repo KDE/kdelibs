@@ -582,6 +582,9 @@ protected:
    */
   void setLocalFilePath( const QString &localFilePath );
 
+protected:
+    ReadOnlyPart(ReadOnlyPartPrivate &dd, QObject *parent);
+
 private:
   Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
 

@@ -417,6 +417,11 @@ ReadOnlyPart::ReadOnlyPart( QObject *parent )
 {
 }
 
+ReadOnlyPart::ReadOnlyPart( ReadOnlyPartPrivate &dd, QObject *parent )
+  : Part( dd, parent )
+{
+}
+
 ReadOnlyPart::~ReadOnlyPart()
 {
   ReadOnlyPart::closeUrl();
@@ -623,7 +628,7 @@ BrowserExtension* ReadOnlyPart::browserExtension() const
 
 
 ReadWritePart::ReadWritePart( QObject *parent )
- : ReadOnlyPart( parent )
+  : ReadOnlyPart( *new ReadWritePartPrivate(this), parent )
 {
 }
 
