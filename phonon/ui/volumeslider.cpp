@@ -126,10 +126,12 @@ void VolumeSliderPrivate::_k_mutedChanged(bool muted)
 void VolumeSliderPrivate::_k_sliderChanged(int value)
 {
     Q_Q(VolumeSlider);
-    if (!output->isMuted()) {
-        q->setToolTip(i18n("Volume: %1%", value));
-    }
+
     if (output) {
+        if (!output->isMuted()) {
+           q->setToolTip(i18n("Volume: %1%", value));
+        }
+
         ignoreVolumeChange = true;
         output->setVolume((static_cast<float>(value)) * 0.01f);
         ignoreVolumeChange = false;
