@@ -87,10 +87,11 @@ void KFileShare::readConfig() // static
     // Create KFileSharePrivate instance
     KFileSharePrivate::self();
     KConfig config(QLatin1String(FILESHARECONF));
+    KConfigGroup group( &config, "<default>" );
 
-    s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
-    s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
-    s_fileShareGroup = config.readEntry("FILESHAREGROUP", "fileshare");
+    s_sharingEnabled = group.readEntry("FILESHARING", "yes") == "yes";
+    s_restricted = group.readEntry("RESTRICT", "yes") == "yes";
+    s_fileShareGroup = group.readEntry("FILESHAREGROUP", "fileshare");
 
 
     if (!s_sharingEnabled)
@@ -107,14 +108,14 @@ void KFileShare::readConfig() // static
             s_authorization = UserNotAllowed;
     }
 
-    if (config.readEntry("SHARINGMODE", "simple") == "simple")
+    if (group.readEntry("SHARINGMODE", "simple") == "simple")
         s_shareMode = Simple;
     else
         s_shareMode = Advanced;
 
 
-    s_sambaEnabled = config.readEntry("SAMBA", "yes") == "yes";
-    s_nfsEnabled = config.readEntry("NFS", "yes") == "yes";
+    s_sambaEnabled = group.readEntry("SAMBA", "yes") == "yes";
+    s_nfsEnabled = group.readEntry("NFS", "yes") == "yes";
 }
 
 KFileShare::ShareMode KFileShare::shareMode() {

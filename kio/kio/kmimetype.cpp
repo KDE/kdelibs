@@ -607,8 +607,9 @@ QString KFolderType::icon( const KUrl& _url ) const
   if ( KStandardDirs::exists( u.path() ) )
   {
     KDesktopFile cfg( u.path() );
-    icon = cfg.readEntry( "Icon" );
-    QString empty_icon = cfg.readEntry( "EmptyIcon" );
+    KConfigGroup group = cfg.desktopGroup();
+    icon = group.readEntry( "Icon" );
+    QString empty_icon = group.readEntry( "EmptyIcon" );
 
     if ( !empty_icon.isEmpty() )
     {

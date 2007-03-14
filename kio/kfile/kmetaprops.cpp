@@ -178,7 +178,7 @@ void KFileMetaPropsPlugin::createLayout()
         foreach (const KFileMetaInfoItem& item, editItems) {
             QLabel* l = new QLabel(item.name() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
-            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop );
             QValidator* val = item.properties().createValidator();
             if (!val) kDebug(7033) << "didn't get a validator for "
                 << item.name() << endl;
@@ -193,7 +193,7 @@ void KFileMetaPropsPlugin::createLayout()
         foreach (const KFileMetaInfoItem& item, readItems) {
             QLabel* l = new QLabel(item.name() + ':', groupBox);
             grouplayout->addWidget(l, row, 0);
-            l->setAlignment( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs );
+            l->setAlignment( Qt::AlignLeft | Qt::AlignTop );
             w = new KFileMetaInfoWidget(item, KFileMetaInfoWidget::ReadOnly, 0L, groupBox);
             grouplayout->addWidget(w, row, 1);
             ++row;
