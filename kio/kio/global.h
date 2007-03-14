@@ -619,12 +619,12 @@ public:
   /**
    * Creates an empty meta data map.
    */
-   MetaData() : QMap<QString, QString>() { };
+   MetaData() : QMap<QString, QString>() { }
   /**
    * Copy constructor.
    */
    MetaData(const QMap<QString, QString>&metaData) :
-     QMap<QString, QString>(metaData) { };
+     QMap<QString, QString>(metaData) { }
 
    /**
     * Adds the given meta data map to this map.

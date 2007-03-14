@@ -317,9 +317,9 @@ public:
   // Dummy
   virtual QString name() const { return QLatin1String("separator"); }
   // Dummy
-  virtual void load( QDataStream& ) { };
+  virtual void load( QDataStream& ) { }
   // Dummy
-  virtual void save( QDataStream& ) { };
+  virtual void save( QDataStream& ) { }
 };
 
 #endif

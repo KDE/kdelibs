@@ -99,7 +99,7 @@ class KMWSessionManager : public KSessionManager
 public:
     KMWSessionManager()
     {
-    };
+    }
     ~KMWSessionManager()
     {
     }

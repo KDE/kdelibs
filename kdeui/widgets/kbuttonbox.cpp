@@ -65,7 +65,7 @@ public:
   unsigned short stretch;
   unsigned short actual_size;
 
-  Item(KPushButton* const _button) : button(_button) {};
+  Item(KPushButton* const _button) : button(_button) {}
 };
 
 template class QList<KButtonBox::Item *>;

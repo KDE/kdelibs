@@ -109,12 +109,12 @@ public:
     /**
      * Returns the filedescriptor of the process.
      */
-    inline int fd() const {return m_Fd;};
+    inline int fd() const {return m_Fd;}
 
     /**
      * Returns the pid of the process.
      */
-    inline int pid() const {return m_Pid;};
+    inline int pid() const {return m_Pid;}
 
 public /* static */:
     /*

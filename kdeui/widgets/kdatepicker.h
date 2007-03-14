@@ -102,7 +102,7 @@ public:
    * @returns the KDateTable widget child of this KDatePicker
    * widget.
    */
-  KDateTable *dateTable() const { return table; };
+  KDateTable *dateTable() const { return table; }
 
   /**
    * Sets the font size of the widgets elements.

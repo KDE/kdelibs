@@ -85,8 +85,8 @@ public:
     struct StrutData
     {
         StrutData( WId window_, const NETStrut& strut_, int desktop_ )
-            : window( window_ ), strut( strut_ ), desktop( desktop_ ) {};
-        StrutData() {}; // for QValueList to be happy
+            : window( window_ ), strut( strut_ ), desktop( desktop_ ) {}
+        StrutData() {} // for QValueList to be happy
         WId window;
         NETStrut strut;
         int desktop;
