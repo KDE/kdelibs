@@ -34,10 +34,7 @@
 #include <qmetaobject.h>
 #include <qmenu.h>
 
-#ifdef Q_WS_X11
 #include <kxerrorhandler.h>
-#endif
-
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -111,9 +108,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
         << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString()
         << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
 
-#ifdef Q_WS_X11
 	KXErrorHandler handler( XGrabErrorHandler );
-#endif
 
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
@@ -143,9 +138,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 
 	bool failed = false;
 	if( grab ) {
-#ifdef Q_WS_X11
 		failed = handler.error( true ); // sync now
-#endif
 		if( failed ) {
 			kDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
