@@ -316,7 +316,7 @@ public:
 	/**
 	 * See QPrinter::setMinMax().
 	 */
-    void setMinMax(int min, int max);
+	void setMinMax(int min, int max);
 	/**
 	 * Returns the first page to be printed.
          * @deprecated Applications
@@ -325,7 +325,7 @@ public:
 	 *
 	 * @see pageList()
 	 */
-    int fromPage() const KDE_DEPRECATED;
+	KDE_DEPRECATED int fromPage() const;
 	/**
 	 * Returns the last page to be printed.
          * @deprecated Applications
@@ -461,22 +461,22 @@ public:
 	 * @see setRealPageSize
 	 * @obsolete
 	 */
-	QSize realPageSize() const KDE_DEPRECATED;
+	KDE_DEPRECATED QSize realPageSize() const;
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	void setRealPageSize( QSize p ) KDE_DEPRECATED;
+	KDE_DEPRECATED void setRealPageSize( QSize p );
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	void setRealDrawableArea( const QRect& r ) KDE_DEPRECATED;
+	KDE_DEPRECATED void setRealDrawableArea( const QRect& r );
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	QRect realDrawableArea() const KDE_DEPRECATED;
+	KDE_DEPRECATED QRect realDrawableArea() const;
 
 	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
 	void setMargins( uint top, uint left, uint bottom, uint right );
@@ -807,6 +807,6 @@ KDEPRINT_EXPORT const char* pageSizeToPageName(KPrinter::PageSize s);
  * DO NOT USE, WILL BE REMOVED.
  * @obsolete
  */
-QSize rangeToSize( const QString& ) KDE_DEPRECATED;
+KDE_DEPRECATED QSize rangeToSize( const QString& );
 
 #endif
