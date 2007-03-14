@@ -75,7 +75,6 @@ static KCmdLineOptions options[] =
         { "o <file>", I18N_NOOP( "Output file" ), 0 },
         { "n <plugin name>", I18N_NOOP( "Name of the plugin class to generate" ), "WidgetsPlugin" },
         { "g <group>", I18N_NOOP( "Default widget group name to display in designer" ), "Custom" },
-        { "p <pixmap dir>", I18N_NOOP( "Embed pixmaps from a source directory" ), 0 },
         KCmdLineLastOption
     };
 
@@ -83,7 +82,7 @@ static QString denamespace ( const QString &str );
 static QString buildCollClass( KConfig &input, const QStringList& classes );
 static QString buildWidgetClass( const QString &name, KConfig &input, const QString &group );
 static QString buildWidgetInclude( const QString &name, KConfig &input );
-static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath );
+static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName );
 
 int main( int argc, char **argv ) {
     new KComponentData( "makekdewidgets" );
@@ -104,16 +103,13 @@ int main( int argc, char **argv ) {
     QString outputFile = args->getOption( "o" );
     QString pluginName = args->getOption( "n" );
     QString group = args->getOption( "g" );
-    QString iconPath = "";
-    if ( args->isSet( "p" ) )
-        iconPath = args->getOption( "p" );
     QString fileName = fi.absoluteFilePath();
 
     if ( args->isSet( "o" ) ) {
         QFile output( outputFile );
         if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );
-            buildFile( ts, group, fileName , pluginName, iconPath );
+            buildFile( ts, group, fileName , pluginName );
             QString mocFile = output.fileName();
             mocFile.replace(".cpp", ".moc");
             ts << QString( "#include <%1>\n" ).arg(mocFile) << endl;
@@ -121,11 +117,11 @@ int main( int argc, char **argv ) {
         output.close();
     } else {
         QTextStream ts( stdout, QIODevice::WriteOnly );
-        buildFile( ts, group, fileName , pluginName, iconPath );
+        buildFile( ts, group, fileName , pluginName );
     }
 }
 
-void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath ) {
+void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName ) {
     KConfig input( fileName, KConfig::NoGlobals );
     KConfigGroup cg(&input, "Global" );
     QHash<QString, QString> MainMap;
