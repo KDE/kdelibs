@@ -36,7 +36,6 @@ class KIconLoader;
 class KComponentData;
 class QWidget;
 class KAction;
-class KActionCollection;
 class QEvent;
 class QPoint;
 struct QUnknownInterface;
