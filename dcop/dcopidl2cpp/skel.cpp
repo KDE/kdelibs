@@ -51,7 +51,7 @@ static int const primes[] =
 
 struct Function
 {
-    Function(){};
+    Function(){}
     Function( const QString& t, const QString& n, const QString&fn, bool h ) 
 	: type( t ), name( n ), fullName( fn ), hidden( h ) {}
     QString type;
