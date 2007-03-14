@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -24,57 +24,57 @@
 
 Nepomuk::KMetaData::Resource::Resource()
 {
-  // invalid data
-  m_data = new ResourceData();
-  m_data->ref();
+    // invalid data
+    m_data = new ResourceData();
+    m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource::Resource& res )
 {
-  m_data = res.m_data;
-  m_data->ref();
+    m_data = res.m_data;
+    m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
 {
-  m_data = ResourceData::data( uri, type );
-  m_data->ref();
+    m_data = ResourceData::data( uri, type );
+    m_data->ref();
 }
 
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-  if( m_data->deref() == 0 &&
-      !ResourceManager::instance()->autoSync() ) {
-    m_data->deleteData();
-  }
+    if( m_data->deref() == 0 &&
+        !ResourceManager::instance()->autoSync() ) {
+        m_data->deleteData();
+    }
 }
 
 
 Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
 {
-  if( m_data != res.m_data ) {
-    m_data->deref();
-    m_data = res.m_data;
-    m_data->ref();
-  }
+    if( m_data != res.m_data ) {
+        m_data->deref();
+        m_data = res.m_data;
+        m_data->ref();
+    }
 
-  return *this;
+    return *this;
 }
 
 
 const QString& Nepomuk::KMetaData::Resource::uri() const
 {
-  return m_data->uri();
+    return m_data->uri();
 }
 
 
 const QString& Nepomuk::KMetaData::Resource::type() const
 {
-  m_data->init();
-  return m_data->type();
+    m_data->init();
+    return m_data->type();
 }
 
 
@@ -90,133 +90,133 @@ const QString& Nepomuk::KMetaData::Resource::type() const
 
 QString Nepomuk::KMetaData::Resource::className() const
 {
-  return type().section( QRegExp( "[#:]" ), -1 );
+    return type().section( QRegExp( "[#:]" ), -1 );
 }
 
 
 int Nepomuk::KMetaData::Resource::sync()
 {
-  m_data->init();
+    m_data->init();
 
-  m_data->startSync();
+    m_data->startSync();
 
-  bool success = ( m_data->determineUri() &&
-		   m_data->determinePropertyUris() &&
-		   m_data->merge() &&
-		   m_data->save() );
+    bool success = ( m_data->determineUri() &&
+                     m_data->determinePropertyUris() &&
+                     m_data->merge() &&
+                     m_data->save() );
 
-  m_data->endSync( success );
+    m_data->endSync( success );
 
-  return ( success ? 0 : -1 );
+    return ( success ? 0 : -1 );
 }
 
 
 QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
 {
-  m_data->init();
-  return m_data->allProperties();
+    m_data->init();
+    return m_data->allProperties();
 }
 
 
 bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
 {
-  m_data->init();
-  return m_data->hasProperty( ensureNamespace( uri ) );
+    m_data->init();
+    return m_data->hasProperty( ensureNamespace( uri ) );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
-  m_data->init();
-  return m_data->getProperty( ensureNamespace( uri ) );
+    m_data->init();
+    return m_data->getProperty( ensureNamespace( uri ) );
 }
 
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
-  //  m_data->init();
-  m_data->setProperty( ensureNamespace( uri ), value );
+    //  m_data->init();
+    m_data->setProperty( ensureNamespace( uri ), value );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
-  m_data->init();
-  m_data->removeProperty( ensureNamespace( uri ) );
+    m_data->init();
+    m_data->removeProperty( ensureNamespace( uri ) );
 }
 
 
 void Nepomuk::KMetaData::Resource::remove()
 {
-  //  m_data->init();
-  m_data->remove();
+    //  m_data->init();
+    m_data->remove();
 }
 
 
 void Nepomuk::KMetaData::Resource::revive()
 {
-  m_data->revive();
+    m_data->revive();
 }
 
 
 bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
 {
-  return !ResourceManager::instance()->allResourcesWithProperty( ensureNamespace( uri ), *this ).isEmpty();
+    return !ResourceManager::instance()->allResourcesWithProperty( ensureNamespace( uri ), *this ).isEmpty();
 }
 
 
 bool Nepomuk::KMetaData::Resource::modified() const
 {
-  return m_data->modified();
+    return m_data->modified();
 }
 
 
 bool Nepomuk::KMetaData::Resource::inSync() const
 {
-  return m_data->inSync();
+    return m_data->inSync();
 }
 
 
 bool Nepomuk::KMetaData::Resource::exists() const
 {
-  return m_data->exists();
+    return m_data->exists();
 }
 
 
 bool Nepomuk::KMetaData::Resource::isValid() const
 {
-  return m_data->isValid();
+    return m_data->isValid();
 }
 
 
 bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
 {
-  if( this == &other )
-    return true;
+    if( this == &other )
+        return true;
 
-  if( this->m_data == other.m_data )
-    return true;
+    if( this->m_data == other.m_data )
+        return true;
 
-  m_data->determineUri();
-  other.m_data->determineUri();
-  return uri() == other.uri();
+    m_data->determineUri();
+    other.m_data->determineUri();
+    return uri() == other.uri();
 
-  //    return( *m_data == *other.m_data );
+    //    return( *m_data == *other.m_data );
 }
 
 
 QString Nepomuk::KMetaData::errorString( int code )
 {
-  switch( code ) {
-  case ERROR_SUCCESS:
-    return i18n("Success");
-  case ERROR_COMMUNICATION:
-    return i18n("Communication error");
-  case ERROR_INVALID_TYPE:
-    return i18n("Invalid type in Database");
-  default:
-    return i18n("Unknown error");
-  }
+    switch( code ) {
+    case ERROR_SUCCESS:
+        return i18n("Success");
+    case ERROR_COMMUNICATION:
+        return i18n("Communication error");
+    case ERROR_INVALID_TYPE:
+        return i18n("Invalid type in Database");
+    default:
+        return i18n("Unknown error");
+    }
 }
 
 

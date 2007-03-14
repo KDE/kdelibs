@@ -21,33 +21,33 @@
 #include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
-  namespace KMetaData {
-    class KMETADATA_EXPORT DateTime
-      {
-      public:
-	/**
-	 * Parse a time string according to format hh:mm:ss.szzzzzz as defined in 
-	 * XML Schema Part 2: Datatypes Second Edition: http://www.w3.org/TR/xmlschema-2
-	 *
-	 * Be aware that QTime has no notion of timezones and the returned value is 
-	 * always in UTC.
-	 */
-	static QTime fromTimeString( const QString& );
-	static QDate fromDateString( const QString& );
-	static QDateTime fromDateTimeString( const QString& );
+    namespace KMetaData {
+	class KMETADATA_EXPORT DateTime
+	    {
+	    public:
+		/**
+		 * Parse a time string according to format hh:mm:ss.szzzzzz as defined in 
+		 * XML Schema Part 2: Datatypes Second Edition: http://www.w3.org/TR/xmlschema-2
+		 *
+		 * Be aware that QTime has no notion of timezones and the returned value is 
+		 * always in UTC.
+		 */
+		static QTime fromTimeString( const QString& );
+		static QDate fromDateString( const QString& );
+		static QDateTime fromDateTimeString( const QString& );
 
-	static QString toString( const QTime& );
-	static QString toString( const QDate& );
-	static QString toString( const QDateTime& );
+		static QString toString( const QTime& );
+		static QString toString( const QDate& );
+		static QString toString( const QDateTime& );
 
-      private:
-	DateTime();
-	~DateTime();
+	    private:
+		DateTime();
+		~DateTime();
 
-	class Private;
-	Private* d;
-      };
-  }
+		class Private;
+		Private* d;
+	    };
+    }
 }
 
 #endif

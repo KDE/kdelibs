@@ -22,85 +22,85 @@ class ResourceClass;
 class Property
 {
  public:
-  Property();
-  Property( const QString& uri,
-	    const QString& type );
+    Property();
+    Property( const QString& uri,
+	      const QString& type );
 
-  /**
-   * The uri of the property
-   */
-  QString uri;
+    /**
+     * The uri of the property
+     */
+    QString uri;
 
-  /**
-   * The scope of the property
-   */
-  QString type;
+    /**
+     * The scope of the property
+     */
+    QString type;
 
-  QString comment;
+    QString comment;
 
-  bool list;
+    bool list;
 
-  ResourceClass* domain;
+    ResourceClass* domain;
 
-  QString name() const;
-  QString typeString( bool simple = false, bool withNamespace = false ) const;
-  QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-  QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-  QString adderDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-  QString reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+    QString name() const;
+    QString typeString( bool simple = false, bool withNamespace = false ) const;
+    QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+    QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+    QString adderDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
+    QString reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
 
-  QString setterDefinition( const ResourceClass* rc ) const;
-  QString getterDefinition( const ResourceClass* rc ) const;
-  QString adderDefinition( const ResourceClass* rc ) const;
-  QString reversePropertyGetterDefinition( const ResourceClass* rc ) const;
+    QString setterDefinition( const ResourceClass* rc ) const;
+    QString getterDefinition( const ResourceClass* rc ) const;
+    QString adderDefinition( const ResourceClass* rc ) const;
+    QString reversePropertyGetterDefinition( const ResourceClass* rc ) const;
 
-  bool hasSimpleType() const;
+    bool hasSimpleType() const;
 };
 
 
 class ResourceClass
 {
  public:
-  ResourceClass();
-  ResourceClass( const QString& uri );
-  ~ResourceClass();
+    ResourceClass();
+    ResourceClass( const QString& uri );
+    ~ResourceClass();
 
-  ResourceClass* parent;
+    ResourceClass* parent;
 
-  QList<ResourceClass*> allParents;
+    QList<ResourceClass*> allParents;
 
-  /**
-   * \return true if this class should be generated.
-   * normally this always returns true except for the base class
-   * Resource.
-   */
-  bool generateClass() const;
+    /**
+     * \return true if this class should be generated.
+     * normally this always returns true except for the base class
+     * Resource.
+     */
+    bool generateClass() const;
 
-  QString name( bool withNamespace = false ) const;
-  QString uri;
-  QString comment;
+    QString name( bool withNamespace = false ) const;
+    QString uri;
+    QString comment;
 
-  QList<const Property*> properties;
-  QList<const Property*> reverseProperties;
+    QList<const Property*> properties;
+    QList<const Property*> reverseProperties;
 
-  QString headerName() const;
-  QString sourceName() const;
+    QString headerName() const;
+    QString sourceName() const;
 
-  bool writeHeader( QTextStream& ) const;
-  bool writeSource( QTextStream& ) const;
+    bool writeHeader( QTextStream& ) const;
+    bool writeSource( QTextStream& ) const;
 
-  QString allResourcesDeclaration( bool withNamespace = false ) const;
-  QString allResourcesDefinition() const;
+    QString allResourcesDeclaration( bool withNamespace = false ) const;
+    QString allResourcesDefinition() const;
 
-  QString pseudoInheritanceDeclaration( ResourceClass* rc, bool withNamespace ) const;
-  QString pseudoInheritanceDefinition( ResourceClass* rc ) const;
+    QString pseudoInheritanceDeclaration( ResourceClass* rc, bool withNamespace ) const;
+    QString pseudoInheritanceDefinition( ResourceClass* rc ) const;
 
-  bool write( const QString& folder ) const;
+    bool write( const QString& folder ) const;
 
-  QString headerTemplateFilePath;
-  QString sourceTemplateFilePath;
+    QString headerTemplateFilePath;
+    QString sourceTemplateFilePath;
 
-  static ResourceClass* s_defaultResource;
+    static ResourceClass* s_defaultResource;
 };
 
 #endif

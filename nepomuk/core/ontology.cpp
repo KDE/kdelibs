@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -27,9 +27,9 @@ const QString Nepomuk::KMetaData::Ontology::NAO_NAMESPACE = "http://semanticdesk
 class Nepomuk::KMetaData::Ontology::Private
 {
 public:
-  QStringList types;
-  QHash<QString, QStringList> properties;
-  QHash<QString, QString> inheritanceGraph;
+    QStringList types;
+    QHash<QString, QStringList> properties;
+    QHash<QString, QString> inheritanceGraph;
 };
 
 
@@ -38,56 +38,56 @@ public:
 
 QString Nepomuk::KMetaData::Ontology::defaultNamespace() const
 {
-  return NAO_NAMESPACE;
+    return NAO_NAMESPACE;
 }
 
 
 QString Nepomuk::KMetaData::Ontology::defaultType() const
 {
-  static QString s = RDFS_NAMESPACE + QString("Resource");
-  return s;
+    static QString s = RDFS_NAMESPACE + QString("Resource");
+    return s;
 }
 
 
 QStringList Nepomuk::KMetaData::Ontology::types() const
 {
-  return d->types;
+    return d->types;
 }
 
 
 QString Nepomuk::KMetaData::Ontology::parentType( const QString& uri )
 {
-  return d->inheritanceGraph[uri];
+    return d->inheritanceGraph[uri];
 }
 
 
 QStringList Nepomuk::KMetaData::Ontology::properties( const QString& type ) const
 {
-  if( type.isEmpty() ) {
-    QStringList l;
-    for( QHash<QString, QStringList>::const_iterator it = d->properties.constBegin();
-	 it != d->properties.constEnd(); ++it )
-      l += it.value();
-    return l;
-  }
-  else
-    return d->properties[type];
+    if( type.isEmpty() ) {
+        QStringList l;
+        for( QHash<QString, QStringList>::const_iterator it = d->properties.constBegin();
+             it != d->properties.constEnd(); ++it )
+            l += it.value();
+        return l;
+    }
+    else
+        return d->properties[type];
 }
 
 
 QString Nepomuk::KMetaData::Ontology::typeName( const QString& type ) const
 {
-  // FIXME: use translated names generated from the ontology
-  return type.section( QRegExp( "[#:]" ), -1 );
+    // FIXME: use translated names generated from the ontology
+    return type.section( QRegExp( "[#:]" ), -1 );
 }
 
 
 QString Nepomuk::KMetaData::Ontology::propertyName( const QString& property ) const
 {
-  // FIXME: use translated names generated from the ontology
-  QString n = property.section( QRegExp( "[#:]" ), -1 );
-  if( n.toLower().startsWith( "has" ) )
-    return n.mid( 3 );
-  else
-    return n;
+    // FIXME: use translated names generated from the ontology
+    QString n = property.section( QRegExp( "[#:]" ), -1 );
+    if( n.toLower().startsWith( "has" ) )
+        return n.mid( 3 );
+    else
+        return n;
 }

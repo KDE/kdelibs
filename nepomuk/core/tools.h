@@ -22,66 +22,66 @@
 #include <knep/rdf/node.h>
 
 namespace Nepomuk {
-  namespace KMetaData {
-    /**
-     * Set a custom default repository to use. It is not recommended to use this
-     * method in production code. It should only be used for testing purposes.
-     */
-    KMETADATA_EXPORT void setDefaultRepository( const QString& s );
+    namespace KMetaData {
+	/**
+	 * Set a custom default repository to use. It is not recommended to use this
+	 * method in production code. It should only be used for testing purposes.
+	 */
+	KMETADATA_EXPORT void setDefaultRepository( const QString& s );
 
-    /**
-     * Used internally by Resource.
-     * \return The URI of the RDF graph meta data is stored in.
-     */
-    // FIXME: this should be called defaultRepository and once we use the OntologyService
-    // it can be removed anyway
-    KMETADATA_EXPORT QString defaultGraph();
+	/**
+	 * Used internally by Resource.
+	 * \return The URI of the RDF graph meta data is stored in.
+	 */
+	// FIXME: this should be called defaultRepository and once we use the OntologyService
+	// it can be removed anyway
+	KMETADATA_EXPORT QString defaultGraph();
 
-    /**
-     * Used internally by Resource.
-     * \return The URI of the predicate used to state the type of a resource.
-     */
-    KMETADATA_NO_EXPORT QString typePredicate();
+	/**
+	 * Used internally by Resource.
+	 * \return The URI of the predicate used to state the type of a resource.
+	 */
+	KMETADATA_NO_EXPORT QString typePredicate();
 
-    /**
-     * Used internally by Resource.
-     * Converts a Variant into a literal value to be used in the RDF store.
-     * Uses the language set in the current KDE session.
-     */
-    KMETADATA_EXPORT QList<RDF::Node> valuesToRDFNodes( const Variant& );
-    KMETADATA_EXPORT RDF::Node valueToRDFNode( const Variant& );
+	/**
+	 * Used internally by Resource.
+	 * Converts a Variant into a literal value to be used in the RDF store.
+	 * Uses the language set in the current KDE session.
+	 */
+	KMETADATA_EXPORT QList<RDF::Node> valuesToRDFNodes( const Variant& );
+	KMETADATA_EXPORT RDF::Node valueToRDFNode( const Variant& );
 
-    /**
-     * Used internally by Resource.
-     * Converts a literal value from the RDF store into a Variant.
-     */
-    KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
+	/**
+	 * Used internally by Resource.
+	 * Converts a literal value from the RDF store into a Variant.
+	 */
+	KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
 
-    /**
-     * If \a uri does not have a namespace, append the default one.
-     *
-     * \sa Ontology::defaultNamespace
-     */
-    KMETADATA_NO_EXPORT QString ensureNamespace( const QString& uri );
+	/**
+	 * If \a uri does not have a namespace, append the default one.
+	 *
+	 * \sa Ontology::defaultNamespace
+	 */
+	KMETADATA_NO_EXPORT QString ensureNamespace( const QString& uri );
 
-    template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
-      QList<T> rl;
-      for( QList<Resource>::const_iterator it = l.constBegin();
-	   it != l.constEnd(); ++it )
-	rl.append( T( *it ) );
-      return rl;
-    }
+	template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
+	    QList<T> rl;
+	    for( QList<Resource>::const_iterator it = l.constBegin();
+		 it != l.constEnd(); ++it )
+		rl.append( T( *it ) );
+	    return rl;
+	}
 
-    template<typename T> KMETADATA_EXPORT QList<Resource> convertResourceList( const QList<T>& l ) {
-      QList<Resource> rl;
-      foreach( T r, l )
+	template<typename T> KMETADATA_EXPORT QList<Resource> convertResourceList( const QList<T>& l ) {
+	    QList<Resource> rl;
+	    foreach( T r, l )
 /*       for( QList<T>::const_iterator it = l.constBegin(); */
 /* 	   it != l.constEnd(); ++it ) */
-	  rl.append( Resource( r/**it*/ ) );
-      return rl;
-    }
+		rl.append( Resource( r/**it*/ ) );
+	    return rl;
+	}
 
-  }
+    }
 }
 
 #endif

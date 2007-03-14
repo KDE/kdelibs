@@ -37,48 +37,48 @@ using namespace Nepomuk::RDF;
 class Nepomuk::KMetaData::ResourceManager::Private : public QThread
 {
 public:
-  Private( ResourceManager* manager )
-    : initialized(false),
-      autoSync(true),
-      registry(0),
-      ontology(0),
-      m_parent(manager) {
-  }
+    Private( ResourceManager* manager )
+        : initialized(false),
+          autoSync(true),
+          registry(0),
+          ontology(0),
+          m_parent(manager) {
+    }
 
-  void run() {
-    m_parent->syncAll();
-  }
+    void run() {
+        m_parent->syncAll();
+    }
 
-  bool initialized;
+    bool initialized;
 
-  bool autoSync;
-  Nepomuk::Backbone::Registry* registry;
-  Nepomuk::KMetaData::Ontology* ontology;
+    bool autoSync;
+    Nepomuk::Backbone::Registry* registry;
+    Nepomuk::KMetaData::Ontology* ontology;
 
-  QTimer syncTimer;
+    QTimer syncTimer;
 
-  QMutex syncMutex;
+    QMutex syncMutex;
 
 private:
-  ResourceManager* m_parent;
+    ResourceManager* m_parent;
 };
 
 
 Nepomuk::KMetaData::ResourceManager::ResourceManager()
-  : QObject()
+    : QObject()
 {
-  d = new Private( this );
-  setAutoSync( true );
-  connect( &d->syncTimer, SIGNAL(timeout()),
-	   this, SLOT(slotStartAutoSync()) );
+    d = new Private( this );
+    setAutoSync( true );
+    connect( &d->syncTimer, SIGNAL(timeout()),
+             this, SLOT(slotStartAutoSync()) );
 }
 
 
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
-  d->syncTimer.stop();
-  delete d->ontology;
-  delete d;
+    d->syncTimer.stop();
+    delete d->ontology;
+    delete d;
 }
 
 
@@ -89,132 +89,132 @@ KStaticDeleter<Nepomuk::KMetaData::ResourceManager> s_resourceManagerDeleter;
 //        Maybe connect to QCoreApplication::aboutToQuit?
 Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instance()
 {
-  static ResourceManager* s_instance = 0;
-  if( !s_instance )
-    s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
-  return s_instance;
+    static ResourceManager* s_instance = 0;
+    if( !s_instance )
+        s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
+    return s_instance;
 }
 
 
 int Nepomuk::KMetaData::ResourceManager::init()
 {
-  if( !d->initialized ) {
-    if( !d->ontology )
-      d->ontology = new Ontology();
-    if( !d->registry )
-      d->registry = new Backbone::Registry( this );
+    if( !d->initialized ) {
+        if( !d->ontology )
+            d->ontology = new Ontology();
+        if( !d->registry )
+            d->registry = new Backbone::Registry( this );
 
-    //   if( serviceRegistry()->status() != VALID ) {
-    //     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
-    //     return -1;
-    //  }
+        //   if( serviceRegistry()->status() != VALID ) {
+        //     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
+        //     return -1;
+        //  }
 
-    if( !serviceRegistry()->discoverRDFRepository() ) {
-      kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
-      return -1;
+        if( !serviceRegistry()->discoverRDFRepository() ) {
+            kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
+            return -1;
+        }
+
+        //   if( !serviceRegistry()->discoverResourceIdService() ) {
+        //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
+        //     return -1;
+        //   }
+
+        d->initialized = true;
+        d->syncTimer.start(10*1000);
     }
 
-    //   if( !serviceRegistry()->discoverResourceIdService() ) {
-    //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
-    //     return -1;
-    //   }
-
-    d->initialized = true;
-    d->syncTimer.start(10*1000);
-  }
-
-  return 0;
+    return 0;
 }
 
 
 bool Nepomuk::KMetaData::ResourceManager::initialized() const
 {
-  return d->initialized;
+    return d->initialized;
 }
 
 
 Nepomuk::KMetaData::Ontology* Nepomuk::KMetaData::ResourceManager::ontology() const
 {
-  return d->ontology;
+    return d->ontology;
 }
 
 
 Nepomuk::Backbone::Registry* Nepomuk::KMetaData::ResourceManager::serviceRegistry() const
 {
-  return d->registry;
+    return d->registry;
 }
 
 
 bool Nepomuk::KMetaData::ResourceManager::autoSync() const
 {
-  return d->autoSync;
+    return d->autoSync;
 }
 
 
 Nepomuk::KMetaData::Resource Nepomuk::KMetaData::ResourceManager::createResourceFromUri( const QString& uri )
 {
-  return Resource( uri, QString() );
+    return Resource( uri, QString() );
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::slotStartAutoSync()
 {
-  if( d->autoSync )
-    triggerSync();
+    if( d->autoSync )
+        triggerSync();
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
 {
-  d->autoSync = enabled;
+    d->autoSync = enabled;
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::syncAll()
 {
-  kDebug(300004) << k_funcinfo << endl;
+    kDebug(300004) << k_funcinfo << endl;
 
-  d->syncMutex.lock();
+    d->syncMutex.lock();
 
-  //
-  // Gather all information to be synced and add it in one go
-  //
-  // FIXME: use some upper bound, i.e. never add more than N statements at once
+    //
+    // Gather all information to be synced and add it in one go
+    //
+    // FIXME: use some upper bound, i.e. never add more than N statements at once
 
-  RDFRepository rr( serviceRegistry()->discoverRDFRepository() );
+    RDFRepository rr( serviceRegistry()->discoverRDFRepository() );
 
-  // make sure our graph exists
-  // ==========================
-  if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
-    rr.createRepository( KMetaData::defaultGraph() );
-  }
+    // make sure our graph exists
+    // ==========================
+    if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
+        rr.createRepository( KMetaData::defaultGraph() );
+    }
 
-  // Get URIs for everyone
-  // =====================
-  for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_kickoffData.begin();
-       it != ResourceData::s_kickoffData.end(); ++it )
-    it.value()->init();
+    // Get URIs for everyone
+    // =====================
+    for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_kickoffData.begin();
+         it != ResourceData::s_kickoffData.end(); ++it )
+        it.value()->init();
 
-  // sync the stupid way by calling each resource's merge method.
-  // FIXME: do a more performant sync by gathering statements to add and remove
-  QList<Statement> statementsToAdd;
-  QList<ResourceData*> syncedResources;
-  for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
-       it != ResourceData::s_data.end(); ++it ) {
-    syncedResources.append( it.value() );
-    it.value()->startSync();
-    bool success = ( it.value()->determineUri() &&
-                     it.value()->determinePropertyUris() &&
-                     it.value()->merge() &&
-                     it.value()->save() );
+    // sync the stupid way by calling each resource's merge method.
+    // FIXME: do a more performant sync by gathering statements to add and remove
+    QList<Statement> statementsToAdd;
+    QList<ResourceData*> syncedResources;
+    for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
+         it != ResourceData::s_data.end(); ++it ) {
+        syncedResources.append( it.value() );
+        it.value()->startSync();
+        bool success = ( it.value()->determineUri() &&
+                         it.value()->determinePropertyUris() &&
+                         it.value()->merge() &&
+                         it.value()->save() );
 //    statementsToAdd += it.value()->allStatementsToAdd();
-    it.value()->endSync( success );
-  }
+        it.value()->endSync( success );
+    }
 
 
-  // remove everything about everyone from the store
-  // this is the stupid way but ATM the only working one
-  // ===================================================
+    // remove everything about everyone from the store
+    // this is the stupid way but ATM the only working one
+    // ===================================================
 //   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
 //        it != ResourceData::s_data.end(); ++it ) {
 //     rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
@@ -231,130 +231,130 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
 
 //   bool success = rr.success();
 
-  //
-  // Release all the resource datas.
-  //
-  for( QList<ResourceData*>::iterator it = syncedResources.begin();
-       it != syncedResources.end(); ++it ) {
-    ResourceData* data = *it;
+    //
+    // Release all the resource datas.
+    //
+    for( QList<ResourceData*>::iterator it = syncedResources.begin();
+         it != syncedResources.end(); ++it ) {
+        ResourceData* data = *it;
 //    data->endSync( success );
-    if( !data->modified() && !data->cnt() )
-      data->deleteData();
-  }
+        if( !data->modified() && !data->cnt() )
+            data->deleteData();
+    }
 
-  d->syncMutex.unlock();
+    d->syncMutex.unlock();
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::triggerSync()
 {
-  if( !d->isRunning() )
-    d->start();
+    if( !d->isRunning() )
+        d->start();
 }
 
 
 void Nepomuk::KMetaData::ResourceManager::notifyError( const QString& uri, int errorCode )
 {
-  kDebug(300004) << "(Nepomuk::KMetaData::ResourceManager) error: " << uri << " " << errorCode << endl;
-  emit error( uri, errorCode );
+    kDebug(300004) << "(Nepomuk::KMetaData::ResourceManager) error: " << uri << " " << errorCode << endl;
+    emit error( uri, errorCode );
 }
 
 
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesOfType( const QString& type ) const
 {
-  QList<Resource> l;
+    QList<Resource> l;
 
-  if( !type.isEmpty() ) {
-    // check local data
-    for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
-	 rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
+    if( !type.isEmpty() ) {
+        // check local data
+        for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
+             rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
 
-      if( rdIt.value()->type() == type ) {
-	l.append( Resource( rdIt.key() ) );
-      }
+            if( rdIt.value()->type() == type ) {
+                l.append( Resource( rdIt.key() ) );
+            }
+        }
+
+        kDebug(300004) << k_funcinfo << " added local resources: " << l.count() << endl;
+
+        // check remote data
+        RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
+        StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
+                                                            Statement( Node(), KMetaData::typePredicate(), Node(type) ),
+                                                            100 ),
+                                  &rdfr );
+        while( it.hasNext() ) {
+            const Statement& s = it.next();
+            Resource res( s.subject.value );
+            if( !l.contains( res ) )
+                l.append( res );
+        }
+
+        kDebug(300004) << k_funcinfo << " added remote resources: " << l.count() << endl;
     }
 
-    kDebug(300004) << k_funcinfo << " added local resources: " << l.count() << endl;
-
-    // check remote data
-    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
-							Statement( Node(), KMetaData::typePredicate(), Node(type) ),
-							100 ),
-			      &rdfr );
-    while( it.hasNext() ) {
-      const Statement& s = it.next();
-      Resource res( s.subject.value );
-      if( !l.contains( res ) )
-	l.append( res );
-    }
-
-    kDebug(300004) << k_funcinfo << " added remote resources: " << l.count() << endl;
-  }
-
-  return l;
+    return l;
 }
 
 
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& _uri, const Variant& v ) const
 {
-  QString uri = ensureNamespace( _uri );
+    QString uri = ensureNamespace( _uri );
 
-  QList<Resource> l;
+    QList<Resource> l;
 
-  if( v.isList() ) {
-    kDebug(300004) << "(ResourceManager::allResourcesWithProperty) list values not supported." << endl;
-  }
-  else {
-    // check local data
-    for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
-	 rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
-
-      if( rdIt.value()->hasProperty( uri ) &&
-	  rdIt.value()->getProperty( uri ) == v )
-	l.append( Resource( rdIt.key() ) );
-    }
-
-    // check remote data
-    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-    Node n;
-    if( v.isResource() ) {
-      n.value = v.toResource().uri();
-      n.type = RDF::NodeResource;
+    if( v.isList() ) {
+        kDebug(300004) << "(ResourceManager::allResourcesWithProperty) list values not supported." << endl;
     }
     else {
-      n = KMetaData::valueToRDFNode( v );
+        // check local data
+        for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
+             rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
+
+            if( rdIt.value()->hasProperty( uri ) &&
+                rdIt.value()->getProperty( uri ) == v )
+                l.append( Resource( rdIt.key() ) );
+        }
+
+        // check remote data
+        RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
+        Node n;
+        if( v.isResource() ) {
+            n.value = v.toResource().uri();
+            n.type = RDF::NodeResource;
+        }
+        else {
+            n = KMetaData::valueToRDFNode( v );
+        }
+
+        StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
+                                                            Statement( Node(), Node(uri), n ),
+                                                            100 ), &rdfr );
+
+        while( it.hasNext() ) {
+            const Statement& s = it.next();
+            Resource res( s.subject.value );
+            if( !l.contains( res ) )
+                l.append( res );
+        }
     }
 
-    StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
-							Statement( Node(), Node(uri), n ),
-							100 ), &rdfr );
-
-    while( it.hasNext() ) {
-      const Statement& s = it.next();
-      Resource res( s.subject.value );
-      if( !l.contains( res ) )
-	l.append( res );
-    }
-  }
-
-  return l;
+    return l;
 }
 
 
 QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
 {
-  RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
+    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
 
-  QString s;
-  while( 1 ) {
-    s = ontology()->defaultNamespace() + KRandom::randomString( 20 );
-    if( !rdfr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ||
-	( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
-	  !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
-	  !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) ) )
-      return s;
-  }
+    QString s;
+    while( 1 ) {
+        s = ontology()->defaultNamespace() + KRandom::randomString( 20 );
+        if( !rdfr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ||
+            ( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
+              !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
+              !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) ) )
+            return s;
+    }
 }
 
 #include "resourcemanager.moc"

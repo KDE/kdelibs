@@ -20,20 +20,20 @@
 class OntologyParser
 {
  public:
-  OntologyParser();
-  ~OntologyParser();
+    OntologyParser();
+    ~OntologyParser();
 
-  bool parse( const QString& filename );
-  bool assignTemplates( const QStringList& templates );
-  bool writeSources( const QString& dir );
-  bool writeOntology( const QString& dir );
+    bool parse( const QString& filename );
+    bool assignTemplates( const QStringList& templates );
+    bool writeSources( const QString& dir );
+    bool writeOntology( const QString& dir );
 
-  QStringList listHeader();
-  QStringList listSources();
+    QStringList listHeader();
+    QStringList listSources();
 
  private:
-  class Private;
-  Private* d;
+    class Private;
+    Private* d;
 };
 
 #endif

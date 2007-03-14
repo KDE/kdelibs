@@ -21,94 +21,94 @@
 #include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
-  namespace KMetaData {
-    /**
-     * \brief This class represents the \ref page_ontology.
-     *
-     * Ontology represents the %Nepomuk desktop ontology and as such can be used
-     * to retrieve information about the types and properties defined in it.
-     *
-     * The most important methods, and thus, most often used ones are
-     *
-     * - Ontology::typeName
-     * - Ontology::propertyName
-     *
-     * which return user-readable names for classes and properties in the ontology.
-     * This allows to create a GUI listing all properties defined for an arbitrary
-     * resource (See \ref examples).
-     */
-    class KMETADATA_EXPORT Ontology
-      {
-      public:
+    namespace KMetaData {
 	/**
-	 * Constructs a new Ontology object.
+	 * \brief This class represents the \ref page_ontology.
 	 *
-	 * Normally there is no need to create an instance of Ontology.
-	 * Use ResourceManager::ontology instead.
-	 */
-	Ontology();
-	~Ontology();
-
-	/**
-	 * The default namespace used in the ontology.
-	 */
-	QString defaultNamespace() const;
-
-	/**
-	 * The default type, i.e. the base type of all classes
-	 * in the ontology.
-	 * \return URI of the default type
-	 */
-	QString defaultType() const;
-
-	/**
-	 * All types defined in the ontology.
-	 * \return A list or type URIs
-	 */
-	QStringList types() const;
-
-	/**
-	 * Each type except for the defaultType has a parent type whose
-	 * properties it inherits.
+	 * Ontology represents the %Nepomuk desktop ontology and as such can be used
+	 * to retrieve information about the types and properties defined in it.
 	 *
-	 * \return The parent type of \a uri.
-	 */
-	QString parentType( const QString& uri );
-
-	/**
-	 * All properties of \a type defined in the ontology.
-	 * \param type If not empty only the properties defined for the specified type
-	 *             will be returned.
-	 * \return A list of property URIs.
-	 */
-	QStringList properties( const QString& type = QString() ) const;
-
-	/**
-	 * \param type The URI of a type defined in \ref page_ontology.
-	 * \return A user-readable name for \a type.
+	 * The most important methods, and thus, most often used ones are
 	 *
-	 * \sa types
-	 */
-	QString typeName( const QString& type ) const;
-
-	/**
-	 * \param property The URI of a property defined in \ref page_ontology.
-	 * \return A user-readable name for \a property.
+	 * - Ontology::typeName
+	 * - Ontology::propertyName
 	 *
-	 * \sa properties
+	 * which return user-readable names for classes and properties in the ontology.
+	 * This allows to create a GUI listing all properties defined for an arbitrary
+	 * resource (See \ref examples).
 	 */
-	QString propertyName( const QString& property ) const;
+	class KMETADATA_EXPORT Ontology
+	    {
+	    public:
+		/**
+		 * Constructs a new Ontology object.
+		 *
+		 * Normally there is no need to create an instance of Ontology.
+		 * Use ResourceManager::ontology instead.
+		 */
+		Ontology();
+		~Ontology();
 
-	static const QString RDF_NAMESPACE;
-	static const QString RDFS_NAMESPACE;
-	static const QString NRL_NAMESPACE;
-	static const QString NAO_NAMESPACE;
+		/**
+		 * The default namespace used in the ontology.
+		 */
+		QString defaultNamespace() const;
 
-      private:
-	class Private;
-	Private* d;
-      };
-  }
+		/**
+		 * The default type, i.e. the base type of all classes
+		 * in the ontology.
+		 * \return URI of the default type
+		 */
+		QString defaultType() const;
+
+		/**
+		 * All types defined in the ontology.
+		 * \return A list or type URIs
+		 */
+		QStringList types() const;
+
+		/**
+		 * Each type except for the defaultType has a parent type whose
+		 * properties it inherits.
+		 *
+		 * \return The parent type of \a uri.
+		 */
+		QString parentType( const QString& uri );
+
+		/**
+		 * All properties of \a type defined in the ontology.
+		 * \param type If not empty only the properties defined for the specified type
+		 *             will be returned.
+		 * \return A list of property URIs.
+		 */
+		QStringList properties( const QString& type = QString() ) const;
+
+		/**
+		 * \param type The URI of a type defined in \ref page_ontology.
+		 * \return A user-readable name for \a type.
+		 *
+		 * \sa types
+		 */
+		QString typeName( const QString& type ) const;
+
+		/**
+		 * \param property The URI of a property defined in \ref page_ontology.
+		 * \return A user-readable name for \a property.
+		 *
+		 * \sa properties
+		 */
+		QString propertyName( const QString& property ) const;
+
+		static const QString RDF_NAMESPACE;
+		static const QString RDFS_NAMESPACE;
+		static const QString NRL_NAMESPACE;
+		static const QString NAO_NAMESPACE;
+
+	    private:
+		class Private;
+		Private* d;
+	    };
+    }
 }
 
 #endif
