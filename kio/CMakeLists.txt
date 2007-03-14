@@ -248,7 +248,7 @@ kde4_automoc(${kio_LIB_PRIVATE_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${STREAMINDEXER_LIBRARY})
+target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${STRIGI_LIBRARIES})
 
 if (UNIX)
    target_link_libraries(kio kdesu)
