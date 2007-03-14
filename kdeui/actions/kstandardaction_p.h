@@ -144,11 +144,11 @@ class AutomaticAction : public KAction
     AutomaticAction(const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
                     QObject *parent);
   public Q_SLOTS:
-    inline void cut() { invokeEditSlot( "cut" ); };
-    inline void copy() { invokeEditSlot( "copy" ); };
-    inline void paste() { invokeEditSlot( "paste" ); };
-    inline void clear() { invokeEditSlot( "clear" ); };
-    inline void selectAll() { invokeEditSlot( "selectAll" ); };
+    inline void cut() { invokeEditSlot( "cut" ); }
+    inline void copy() { invokeEditSlot( "copy" ); }
+    inline void paste() { invokeEditSlot( "paste" ); }
+    inline void clear() { invokeEditSlot( "clear" ); }
+    inline void selectAll() { invokeEditSlot( "selectAll" ); }
 
     void invokeEditSlot( const char *slot )
     {

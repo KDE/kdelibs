@@ -47,11 +47,11 @@ public:
 
   void calculateWeights(int initialWeight);
 
-  const QString &pure() const { return m_pureText; };
+  const QString &pure() const { return m_pureText; }
   QString accelerated() const;
 
-  int accel() const { return m_accel; };
-  void setAccel(int accel) { m_accel = accel; };
+  int accel() const { return m_accel; }
+  void setAccel(int accel) { m_accel = accel; }
 
   int originalAccel() const { return m_orig_accel; }
   QString originalText() const { return m_origText; }

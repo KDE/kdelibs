@@ -84,9 +84,9 @@ class KStartupInfo::Data
     : public KStartupInfoData
     {
     public:
-        Data() : age(0) {}; // just because it's in a QMap
+        Data() : age(0) {} // just because it's in a QMap
         Data( const QString& txt_P )
-            : KStartupInfoData( txt_P ), age( 0 ) {};
+            : KStartupInfoData( txt_P ), age( 0 ) {}
         unsigned int age;
     };
 
@@ -990,7 +990,7 @@ QByteArray KStartupInfo::createNewStartupId()
 
 struct KStartupInfoId::Private
     {
-    Private() : id( "" ) {};
+    Private() : id( "" ) {}
     QByteArray id; // id
     };
 

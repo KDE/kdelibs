@@ -119,7 +119,7 @@ private:
   {
   public:
 
-    Item() : m_widget(0), m_children(0), m_index(-1) {};
+    Item() : m_widget(0), m_children(0), m_index(-1) {}
     ~Item();
 
     void addChild(Item *item);
