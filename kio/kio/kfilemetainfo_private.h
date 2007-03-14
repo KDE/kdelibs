@@ -24,7 +24,7 @@
 #include <QHash>
 
 namespace jstreams {
-    class StreamIndexer;
+    class StreamAnalyzer;
 }
 
 class KFileWriterProvider {
@@ -48,7 +48,7 @@ public:
     PredicatePropertyProvider();
     ~PredicatePropertyProvider();
     static PredicatePropertyProvider* self();
-    jstreams::StreamIndexer& indexer();
+    jstreams::StreamAnalyzer& indexer();
     static PredicateProperties getPredicateProperties(const QString& key);
 };
 

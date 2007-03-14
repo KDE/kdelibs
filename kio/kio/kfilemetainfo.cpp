@@ -21,7 +21,7 @@
 #include "kfilemetainfo_private.h"
 #include <strigi/bufferedstream.h>
 #include <strigi/indexwriter.h>
-#include <strigi/indexable.h>
+#include <strigi/analysisresult.h>
 #include <strigi/fieldtypes.h>
 #include "kurl.h"
 #include <QDebug>
@@ -74,38 +74,38 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
 }
 class KMetaInfoWriter : public IndexWriter {
 public:
-    void startIndexable(Indexable*) {
+    void startAnalysis(AnalysisResult*) {
     }
-    void addText(const Indexable*, const char* s, int32_t n) {
+    void addText(const AnalysisResult*, const char* s, int32_t n) {
         // we do not store text as metainfo
         QString text = QString::fromUtf8(s, n);
         //qDebug() << text;
     }
-    void addField(const Indexable* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             const string& value) {
-        if (idx->getWriterData()) {
+        if (idx->writerData()) {
             QString val = QString::fromUtf8(value.c_str(), value.size());
             addField(idx, fieldname, val);
         }
     }
-    void addField(const Indexable* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
         const unsigned char* data, int32_t size) {
-        if (idx->getWriterData()) {
+        if (idx->writerData()) {
             QByteArray d((const char*)data, size);
             addField(idx, fieldname, QVariant(d));
         }
     }
-    void addField(const Indexable* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             uint32_t value) {
-        if (idx->getWriterData()) {
+        if (idx->writerData()) {
             addField(idx, fieldname, value);
         }
     }
-    void addField(const Indexable* idx,
+    void addField(const AnalysisResult* idx,
             const RegisteredField* fieldname, const QVariant& value) {
         QHash<QString, KFileMetaInfoItem>* info
             = static_cast<QHash<QString, KFileMetaInfoItem>*>(
-            idx->getWriterData());
+            idx->writerData());
         if (info) {
             string name(fieldname->getKey());
             QString key = QString::fromUtf8(name.c_str(), name.size());
@@ -118,7 +118,7 @@ public:
             }
         }
     }
-    void finishIndexable(const Indexable*) {}
+    void finishAnalysis(const AnalysisResult*) {}
     void deleteEntries(const vector<string>&) {}
     void deleteAllEntries() {}
 };
@@ -138,11 +138,11 @@ void
 KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // get data from Strigi
     kurl = url;
-    StreamIndexer& indexer
+    StreamAnalyzer& indexer
         = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream jstream(stream);
-    Indexable idx((const char*)url.url().toUtf8(), mtime, writer,
+    AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer,
         indexer);
 
     idx.setWriterData(&items);

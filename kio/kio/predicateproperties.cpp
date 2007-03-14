@@ -19,8 +19,8 @@
 */
 #include "kfilemetainfo_private.h"
 #include "kglobal.h"
-#include <strigi/streamindexer.h>
-#include <strigi/indexerconfiguration.h>
+#include <strigi/streamanalyzer.h>
+#include <strigi/analyzerconfiguration.h>
 #include <QDebug>
 using namespace jstreams;
 
@@ -97,8 +97,8 @@ PredicatePropertyProvider::getPredicateProperties(const QString& key) {
 
 class PredicatePropertyProvider::Private {
 public:
-    IndexerConfiguration config;
-    StreamIndexer indexer;
+    AnalyzerConfiguration config;
+    StreamAnalyzer indexer;
     Private() :indexer(config) {}
 };
 PredicatePropertyProvider::PredicatePropertyProvider() {
@@ -107,7 +107,7 @@ PredicatePropertyProvider::PredicatePropertyProvider() {
 PredicatePropertyProvider::~PredicatePropertyProvider() {
     delete p;
 }
-StreamIndexer&
+StreamAnalyzer&
 PredicatePropertyProvider::indexer() {
     return p->indexer;
 }
