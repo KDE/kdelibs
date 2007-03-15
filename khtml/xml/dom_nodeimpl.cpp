@@ -977,6 +977,21 @@ long NodeImpl::maxOffset() const
 //  return renderer() ? renderer()->maxOffset() : 1;
 }
 
+DOMStringImpl* NodeImpl::textContent() const
+{
+  QString out;
+  for (NodeImpl *child = firstChild(); child != 0; child = child->nextSibling()) {
+    short type = child->nodeType();
+    if (type != Node::COMMENT_NODE && type != Node::PROCESSING_INSTRUCTION_NODE) {
+      DOMStringImpl* kidText = child->textContent();
+      if (kidText)
+         out += QConstString(kidText->s, kidText->l).string();
+      delete kidText;
+    }
+  }
+  return new DOMStringImpl(out.unicode(), out.length());
+}
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::~NodeBaseImpl()
@@ -1614,6 +1629,22 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
                     return;
             }
         }
+    }
+}
+
+void NodeBaseImpl::setTextContent( const DOMString &text, int& exceptioncode )
+{
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    removeChildren();
+
+    if ( !text.isEmpty() && !text.isNull() ) {
+       TextImpl *t = new TextImpl( docPtr(), text.implementation() );
+       appendChild( t, exceptioncode );
     }
 }
 

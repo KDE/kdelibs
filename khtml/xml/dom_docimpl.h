@@ -219,6 +219,9 @@ public:
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
 
+    virtual DOMStringImpl* textContent() const;
+    virtual void           setTextContent( const DOMString &text, int& exceptioncode );
+
     // Other methods (not part of DOM)
     virtual bool isDocumentNode() const { return true; }
     virtual bool isHTMLDocument() const { return false; }
@@ -732,6 +735,9 @@ public:
     virtual unsigned short nodeType() const;
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep );
+
+    virtual DOMStringImpl* textContent() const;
+    virtual void           setTextContent( const DOMString &text, int& exceptioncode );
 
     // Other methods (not part of DOM)
     void setName(const DOMString& n) { m_qualifiedName = n; }

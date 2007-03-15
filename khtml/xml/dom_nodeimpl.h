@@ -172,6 +172,13 @@ public:
     //                 qualified element name.
     virtual Id id() const { return 0; }
 
+    // These are the DOM 3 Core answer to innerText/setInnerText, and are used
+    // quite a bit since Mozilla doesn't do innerText. They do, however, behave slightly 
+    // differently. The default implementation is for ELEMENT_NODE, ATTRIBUTE_NODE, 
+    // ENTITY_NODE, ENTITY_REFERENCE_NODE, DOCUMENT_FRAGMENT_NODE. 
+    virtual DOMStringImpl* textContent() const;
+    virtual void           setTextContent( const DOMString &text, int& exceptioncode ) = 0;
+
     enum IdType {
         AttributeId,
         ElementId,
@@ -494,6 +501,8 @@ public:
     virtual void removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     virtual bool hasChildNodes (  ) const;
+
+    virtual void setTextContent( const DOMString &text, int& exceptioncode );
 
     // Other methods (not part of DOM)
     void removeChildren();

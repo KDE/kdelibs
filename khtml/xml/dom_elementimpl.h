@@ -83,6 +83,10 @@ public:
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
     virtual NodeImpl *cloneNode ( bool deep );
 
+    virtual DOMStringImpl* textContent() const;
+    virtual void           setTextContent( const DOMString &text, int& exceptioncode );
+
+
     // Other methods (not part of DOM)
     virtual bool isAttributeNode() const { return true; }
     virtual bool childAllowed( NodeImpl *newChild );

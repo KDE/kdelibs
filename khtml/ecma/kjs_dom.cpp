@@ -130,6 +130,8 @@ bool DOMNode::toBoolean(ExecState *) const
   prefix	DOMNode::Prefix		DontDelete
   localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
+# DOM3
+  textContent	DOMNode::TextContent		DontDelete
 # Event handlers
 # IE also has: onactivate, onbefore*, oncontextmenu, oncontrolselect, oncut,
 # ondeactivate, ondrag*, ondrop, onfocusin, onfocusout, onhelp, onmousewheel,
@@ -250,6 +252,8 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     return getString(node.namespaceURI()); // Moz returns null if not set (dom/namespaces.html)
   case Prefix:
     return getString(node.prefix());  // Moz returns null if not set (dom/namespaces.html)
+  case TextContent:
+     return getString(node.textContent()); //DOM3 says return null, but I really should test mozilla..
   case LocalName:
     return getString(node.localName());  // Moz returns null if not set (dom/namespaces.html)
   case OwnerDocument:
@@ -391,6 +395,9 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     break;
   case Prefix:
     node.setPrefix(value.toString(exec).string());
+    break;
+  case TextContent:
+    node.setTextContent(value.toString(exec).string());
     break;
   case OnAbort:
     setListener(exec,DOM::EventImpl::ABORT_EVENT,value);

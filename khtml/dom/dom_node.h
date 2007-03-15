@@ -21,10 +21,14 @@
  * This file includes excerpts from the Document Object Model (DOM)
  * Level 1 Specification (Recommendation)
  * http://www.w3.org/TR/REC-DOM-Level-1/
- * Copyright � World Wide Web Consortium , (Massachusetts Institute of
+ * Copyright  World Wide Web Consortium , (Massachusetts Institute of
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
+ * This file includes excerpts from the Document Object Model (DOM)
+ * Level 3 Core Specification (Recommendation)
+ * http://www.w3.org/TR/DOM-Level-3-Core/
+ * Copyright ©2004 W3C® (MIT, ERCIM, Keio), All Rights Reserved.
  */
 #ifndef _DOM_Node_h_
 #define _DOM_Node_h_
@@ -751,6 +755,34 @@ public:
     bool hasAttributes (  );
 
     /**
+     * Introduced in DOM Level 3
+     *
+     * This attribute returns the text content of this node and its descendants. 
+     * On getting, no serialization is performed, the returned string does not contain any markup.
+     *
+     * @since 3.5.7
+     */
+    DOMString textContent( ) const;
+
+    /**
+     * Introduced in DOM Level 3
+     *
+     * @see textContent
+     *
+     * On setting, any possible children this node may have are removed and, if the new 
+     * string is not empty or null, replaced by a single Text node containing the string this attribute is set to. 
+     * No parsing is performed, the input string is taken as pure textual content.
+     *
+     * @exception DOMException
+     * NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+     * Note: KHTML will also raise this if setContent is called on things
+     * that do not have child nodes.
+     *
+     * @since 3.5.7
+     */
+    void setTextContent(const DOMString &content) const;
+
+    /**
      * Introduced in DOM Level 2
      * This method is from the EventTarget interface
      *
@@ -835,6 +867,8 @@ public:
      * exception.
      */
     bool dispatchEvent(const Event &evt);
+
+
 
     /**
      * @internal

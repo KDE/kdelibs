@@ -763,6 +763,14 @@ unsigned short DocumentImpl::nodeType() const
     return Node::DOCUMENT_NODE;
 }
 
+DOMStringImpl* DocumentImpl::textContent() const
+{
+    return 0;
+}
+
+void DocumentImpl::setTextContent( const DOMString&, int& )
+{}
+
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
     uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
@@ -2854,6 +2862,14 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
     // so we do not support it...
     return 0;
 }
+
+DOMStringImpl* DocumentTypeImpl::textContent() const
+{
+    return 0;
+}
+    
+void DocumentTypeImpl::setTextContent( const DOMString&, int& )
+{}
 
 NamedNodeMapImpl * DocumentTypeImpl::entities() const
 {

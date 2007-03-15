@@ -265,6 +265,16 @@ long CharacterDataImpl::maxOffset() const
   return r->maxOffset();
 }
 
+DOMStringImpl* CharacterDataImpl::textContent() const
+{
+  return new DOMStringImpl(str->s, str->l);
+}
+
+void CharacterDataImpl::setTextContent( const DOMString &str, int& exceptioncode )
+{
+  setData(str, exceptioncode);
+}
+
 // ---------------------------------------------------------------------------
 
 DOMString CommentImpl::nodeName() const

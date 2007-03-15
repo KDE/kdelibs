@@ -432,6 +432,22 @@ QRect Node::getRect()
     return impl->getRect();
 }
 
+DOMString Node::textContent( ) const
+{
+    if(impl) return impl->textContent();
+    return DOMString();
+}
+
+void Node::setTextContent(const DOMString &content) const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    impl->setTextContent( content, exceptioncode );
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+}
+
 //-----------------------------------------------------------------------------
 
 NodeList::NodeList()

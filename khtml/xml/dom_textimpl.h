@@ -60,6 +60,9 @@ public:
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
 
+    virtual DOMStringImpl* textContent() const;
+    virtual void           setTextContent( const DOMString &text, int& exceptioncode );
+
     // Other methods (not part of DOM)
 
     DOMStringImpl *string() const { return str; }

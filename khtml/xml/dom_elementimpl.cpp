@@ -249,6 +249,21 @@ void AttrImpl::setElement(ElementImpl *element)
     m_element = element;
 }
 
+// Strictly speaking, these two methods should not be needed, but
+// we can't fully deal with the mess that are DOM attributes right..
+DOMStringImpl* AttrImpl::textContent() const
+{
+    if (m_value)
+        return new DOMStringImpl(m_value->s, m_value->l);
+    else
+        return 0;
+}
+
+void AttrImpl::setTextContent( const DOMString &text, int& exceptioncode )
+{
+    setValue(text, exceptioncode);
+}
+
 // -------------------------------------------------------------------------
 
 void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
