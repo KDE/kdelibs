@@ -49,7 +49,7 @@ void RenderBody::setStyle(RenderStyle* style)
         style->setPosition(STATIC);
 
     RenderBlock::setStyle(style);
-    element()->getDocument()->setTextColor( style->color() );
+    document()->setTextColor( style->color() );
     scrollbarsStyled = false;
 }
 

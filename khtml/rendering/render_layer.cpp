@@ -262,7 +262,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
         bool needUpdate = (count || !m_region.isNull());
         if (count) {
-            QScrollView* sv = m_object->element()->getDocument()->view();
+            QScrollView* sv = m_object->document()->view();
             m_region = QRect(0,0,sv->contentsWidth(),sv->contentsHeight());
 
             for (uint i = 0; i < count; i++) {
@@ -609,7 +609,7 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
     QScrollBar *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
 
     if (show && !sb) {
-        QScrollView* scrollView = m_object->element()->getDocument()->view();
+        QScrollView* scrollView = m_object->document()->view();
         sb = new QScrollBar(o, scrollView, "__khtml");
         scrollView->addChild(sb, 0, -50000);
 	sb->setBackgroundMode(QWidget::NoBackground);
@@ -683,7 +683,7 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     if (w <= 0 || h <= 0 || (!m_vBar && !m_hBar))
 	return;
 
-    QScrollView* scrollView = m_object->element()->getDocument()->view();
+    QScrollView* scrollView = m_object->document()->view();
 
     tx += bl;
     ty += bt;
@@ -799,7 +799,7 @@ void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
     if (!m_object->element())
        return;
 
-    QScrollView* scrollView = m_object->element()->getDocument()->view();
+    QScrollView* scrollView = m_object->document()->view();
     if (m_hBar) {
 	int x = m_hBar->x();
 	int y = m_hBar->y();
