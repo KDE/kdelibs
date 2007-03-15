@@ -39,7 +39,7 @@ class QueryPrivate : public Responder
 public:
 	QueryPrivate(const QString& type, const QString& domain) : Responder(), m_finished(false),
 	m_domain(domain), m_type(type)
-	{};
+	{}
 	bool m_finished;
 	QString m_domain;
 	QTimer timeout;

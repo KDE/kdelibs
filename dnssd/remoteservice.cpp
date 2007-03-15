@@ -50,7 +50,7 @@ class RemoteServicePrivate : public Responder
 {
 public:
 	RemoteServicePrivate() : Responder(), m_resolved(false)
-	{};
+	{}
 	bool m_resolved;
 };
 
