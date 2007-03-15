@@ -550,6 +550,26 @@ target_link_libraries(kglobalstatictest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRAR
 
 add_test(kdecore-kglobalstatictest ${EXECUTABLE_OUTPUT_PATH}/kglobalstatictest)
 
+########### klocalsockettest  ###############
+
+set(klocalsockettest_SRCS klocalsockettest.cpp )
+
+kde4_automoc(${klocalsockettest_SRCS})
+
+kde4_add_test(klocalsockettest ${klocalsockettest_SRCS})
+
+target_link_libraries(klocalsockettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+########### klocalsocketservertest ###############
+
+set(klocalsocketservertest_SRCS klocalsocketservertest.cpp )
+
+kde4_automoc(${klocalsocketservertest_SRCS})
+
+kde4_add_test(klocalsocketservertest ${klocalsocketservertest_SRCS})
+
+target_link_libraries(klocalsocketservertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
 #######################################
 
 endif(KDE4_BUILD_TESTS)

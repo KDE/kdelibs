@@ -55,7 +55,8 @@ endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kernel/ktoolinvocation_win.cpp 
+      kernel/ktoolinvocation_win.cpp
+      network/klocalsocket_win.cpp
       )
 endif (WIN32)
 
@@ -66,6 +67,7 @@ if (UNIX)
       network/khttpproxysocketdevice.cpp
       network/ksocks.cpp
       network/ksockssocketdevice.cpp
+      network/klocalsocket_unix.cpp
       util/kpty.cpp
       fakes.c )
 endif (UNIX)
@@ -168,6 +170,7 @@ set(kdecore_LIB_SRCS
    network/ksocketbase.cpp
    network/kstreamsocket.cpp
    network/ksocketbuffer.cpp
+   network/klocalsocket.cpp
    network/netsupp.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
@@ -203,7 +206,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )
@@ -308,6 +311,7 @@ install( FILES
    network/ksocks.h
    network/ksockssocketdevice.h
    network/kstreamsocket.h
+   network/klocalsocket.h
    services/kservice.h
    #services/kservicefactory.h: do not install, internal API
    services/kservicetype.h
