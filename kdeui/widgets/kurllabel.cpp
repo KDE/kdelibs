@@ -60,7 +60,7 @@ class KUrlLabel::Private
     void setLinkColor( const QColor& color )
     {
       QPalette palette = parent->palette();
-      palette.setColor( QPalette::Foreground, color );
+      palette.setColor( QPalette::WindowText, color );
       parent->setPalette( palette );
 
       parent->update();
@@ -321,7 +321,7 @@ bool KUrlLabel::event( QEvent *event )
     setPalette( palette );
 
     d->linkColor = KGlobalSettings::linkColor();
-    d->setLinkColor( d->linkColor );
+    d->updateColor();
 
     return true;
   } else
