@@ -49,7 +49,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 			: modules( mods )
 			, tabWidget( 0 )
 			, topLayout( 0 )
-			{};
+			{}
 
 		QStringList modules;
 		QTabWidget *tabWidget;

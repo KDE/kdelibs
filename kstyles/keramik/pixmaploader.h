@@ -222,7 +222,7 @@ namespace Keramik
 		CenteredPainter( int name ) : TilePainter( name ) {
 			colMde[0] = colMde[1] = colMde[2] = colMde[3] =  Fixed;
 			rowMde[0] = rowMde[1] = rowMde[2] = rowMde[3] = Fixed;
-		};
+		}
 		virtual ~CenteredPainter() {}
 
 	protected:
@@ -352,7 +352,7 @@ namespace Keramik
 			colMde[1] = Scaled;
 			rowMde[0]=rowMde[1]=rowMde[2] = Scaled;
 			m_columns = 3;
-		};
+		}
 		virtual ~SpinBoxPainter() {}
 
 	protected:

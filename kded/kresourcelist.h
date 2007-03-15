@@ -34,7 +34,7 @@ struct KSycocaResource
 class KSycocaResourceList : public QLinkedList<KSycocaResource>
 {
 public:
-   KSycocaResourceList() { };
+   KSycocaResourceList() { }
    void add(const QString &resource, const QString &filter)
    {
      KSycocaResource res;

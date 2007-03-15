@@ -218,7 +218,7 @@ public:
   inline KDE_DEPRECATED QPixmap icon() const {
       int size = IconSize(K3Icon::Desktop);
       return windowIcon().pixmap(size,size);
-  };
+  }
 
   /**
    * Returns the mini-icon for the application as a QPixmap.
@@ -228,7 +228,7 @@ public:
   inline KDE_DEPRECATED QPixmap miniIcon() const {
       int size = IconSize(K3Icon::Small);
       return windowIcon().pixmap(size,size);
-  };
+  }
 #endif
 
   /**
@@ -376,7 +376,7 @@ public:
   static inline KDE_DEPRECATED QString geometryArgument() {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
-  };
+  }
 #endif
 
 protected:

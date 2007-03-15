@@ -80,7 +80,7 @@ namespace Solid
          * @return the PortableMediaPlayer capability type
          * @see Solid::Capability::Type
          */
-        static Type capabilityType() { return Capability::PortableMediaPlayer; };
+        static Type capabilityType() { return Capability::PortableMediaPlayer; }
 
         /**
          * Retrieves the type of method that should be used to access this
