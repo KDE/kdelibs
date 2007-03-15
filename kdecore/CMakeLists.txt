@@ -311,7 +311,6 @@ install( FILES
    network/ksocks.h
    network/ksockssocketdevice.h
    network/kstreamsocket.h
-   network/klocalsocket.h
    services/kservice.h
    #services/kservicefactory.h: do not install, internal API
    services/kservicetype.h
