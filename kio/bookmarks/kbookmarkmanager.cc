@@ -366,7 +366,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
                              "This error message will only be shown once. The cause "
                              "of the error needs to be fixed as quickly as possible, "
                              "which is most likely a full hard drive.")
-                        .arg(filename).arg(strerror(file.status()));
+                        .arg(filename).arg(QString::fromLocal8Bit(strerror(file.status())));
         if (qApp->type() != QApplication::Tty)
             KMessageBox::error( 0L, error );
         else
