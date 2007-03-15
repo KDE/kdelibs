@@ -88,3 +88,8 @@ bool
 KFileMetaInfoItem::isEditable() const {
     return true;
 }
+QString
+KFileMetaInfoItem::suffix() const {
+    // ########## TODO implement (vandenoever)
+    return QString();
+}

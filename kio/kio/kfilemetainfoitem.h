@@ -51,6 +51,15 @@ public:
      * Convenience function for properties().name();
      **/
     const QString& name() const;
+
+    /**
+     * This method returns a translated suffix to be displayed after the
+     * value. Think of the kbps in 128kbps
+     *
+     * @return the prefix
+     */
+    QString suffix() const;
+
 private:
     QSharedDataPointer<KFileMetaInfoItemPrivate> p;
 
