@@ -33,15 +33,16 @@ using namespace KXMLGUI;
 
 void ActionList::plug( QWidget *container, int index ) const
 {
-    QAction* before = 0L;
-    if (index && index <= container->actions().count())
-        before = container->actions().at(index - 1);
-    else if (index)
+    QAction* before = 0L; // Insert after end of widget's current actions (default).
+
+    if ((index < 0) || (index > container->actions().count()))
         kWarning() << k_funcinfo << "Index " << index << " is not within range (0 - " << container->actions().count() << endl;
+    else if (index != container->actions().count())
+        before = container->actions().at(index); // Insert before indexed action.
 
     foreach (QAction* action, *this) {
         container->insertAction(before, action);
-        before = action;
+        // before = action; // BUG FIX: do not insert actions in reverse order.
     }
 }
 
