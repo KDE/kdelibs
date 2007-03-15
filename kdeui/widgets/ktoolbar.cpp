@@ -1290,20 +1290,24 @@ void KToolBar::actionEvent( QActionEvent * event )
 {
   if ( event->type() == QEvent::ActionRemoved ) {
     QWidget* widget = widgetForAction( event->action() );
-    widget->removeEventFilter( this );
+    if (widget) {
+        widget->removeEventFilter( this );
 
-    foreach ( QWidget* child, widget->findChildren<QWidget*>() )
-      child->removeEventFilter( this );
+        foreach ( QWidget* child, widget->findChildren<QWidget*>() )
+            child->removeEventFilter( this );
+    }
   }
 
   QToolBar::actionEvent( event );
 
   if ( event->type() == QEvent::ActionAdded ) {
     QWidget* widget = widgetForAction( event->action() );
-    widget->installEventFilter( this );
+    if (widget) {
+        widget->installEventFilter( this );
 
-    foreach ( QWidget* child, widget->findChildren<QWidget*>() )
-      child->installEventFilter( this );
+        foreach ( QWidget* child, widget->findChildren<QWidget*>() )
+            child->installEventFilter( this );
+    }
   }
 
   d->adjustSeparatorVisibility();
