@@ -72,7 +72,7 @@ public:
     DOMStringImpl *split(unsigned int pos);
     DOMStringImpl *copy() const {
         return new DOMStringImpl(s,l);
-    };
+    }
 
 
     DOMStringImpl *substring(unsigned int pos, unsigned int len);

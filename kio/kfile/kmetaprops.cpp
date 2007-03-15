@@ -50,9 +50,9 @@ public:
 	  m_frame->setObjectName("MetaPropsScrollView::m_frame");
       m_frame->setFrameStyle(QFrame::NoFrame);
       addChild(m_frame, 0, 0);
-    };
+    }
 
-    QFrame* frame() {return m_frame;};
+    QFrame* frame() {return m_frame;}
 
 protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
@@ -60,7 +60,7 @@ protected:
       Q3ScrollView::viewportResizeEvent(ev);
       m_frame->resize( qMax(m_frame->sizeHint().width(), ev->size().width()),
                        qMax(m_frame->sizeHint().height(), ev->size().height()));
-    };
+    }
 
 private:
       QFrame* m_frame;

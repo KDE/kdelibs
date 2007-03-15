@@ -90,7 +90,7 @@ public:
 	int type() const			{ return m_type; }
 	void setType(int t)			{ m_type = t; }
 	int pages() const			{ return m_pages; }
-	void setPages(int p)			{ m_pages = p; };
+	void setPages(int p)			{ m_pages = p; }
 	int processedPages() const		{ return m_processedpages; }
 	void setProcessedPages(int p)		{ m_processedpages = p; }
 	int processedSize() const		{ return m_processedsize; }

@@ -298,7 +298,7 @@ void KApplicationTree::cleanupTree()
 class KOpenWithDialogPrivate
 {
 public:
-    KOpenWithDialogPrivate() : saveNewApps(false) { };
+    KOpenWithDialogPrivate() : saveNewApps(false) { }
     bool saveNewApps;
     KService::Ptr curService;
 };

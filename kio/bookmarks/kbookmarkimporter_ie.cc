@@ -128,7 +128,7 @@ QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
 class IEExporter : private KBookmarkGroupTraverser {
 public:
     IEExporter( const QString & );
-    void write( const KBookmarkGroup &grp ) { traverse(grp); };
+    void write( const KBookmarkGroup &grp ) { traverse(grp); }
 private:
     virtual void visit( const KBookmark & );
     virtual void visitEnter( const KBookmarkGroup & );

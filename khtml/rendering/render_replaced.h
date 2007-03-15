@@ -92,7 +92,7 @@ public:
 
     virtual void setStyle(RenderStyle *style);
     virtual void paint( PaintInfo& i, int tx, int ty );
-    virtual bool isWidget() const { return true; };
+    virtual bool isWidget() const { return true; }
 
     virtual bool isFrame() const { return false; }
 

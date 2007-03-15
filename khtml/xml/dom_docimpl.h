@@ -327,7 +327,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) const { return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url(); };
+    QString completeURL(const QString& url) const { return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url(); }
     DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
     void setUserStyleSheet(const QString& sheet);
@@ -387,7 +387,7 @@ public:
                                       int *pExceptioncode = 0);
     DOMString getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const;
 
-    StyleSheetListImpl* styleSheets() { return m_styleSheets; };
+    StyleSheetListImpl* styleSheets() { return m_styleSheets; }
 
     DOMString preferredStylesheetSet() const { return m_preferredStylesheetSet; }
     DOMString selectedStylesheetSet() const;

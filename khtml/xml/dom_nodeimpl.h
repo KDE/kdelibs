@@ -372,8 +372,8 @@ public:
      */
     virtual void close();
 
-    virtual void structureChanged() {};
-    virtual void backwardsStructureChanged() {};
+    virtual void structureChanged() {}
+    virtual void backwardsStructureChanged() {}
 
     void createRendererIfNeeded();
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);

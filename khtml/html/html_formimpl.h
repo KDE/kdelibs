@@ -355,8 +355,8 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual bool isFocusable() const { return true; };
-    virtual bool isTabFocusable() const { return false; };
+    virtual bool isFocusable() const { return true; }
+    virtual bool isTabFocusable() const { return false; }
     NodeImpl* getFormElement();
 
  private:

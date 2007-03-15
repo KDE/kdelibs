@@ -137,7 +137,7 @@ public:
    /**
     * @returns a flag indicating if extended folder pixmaps are displayed or not.
     */
-   bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; };
+   bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; }
 
 public Q_SLOTS:
 

@@ -108,7 +108,7 @@ public:
     virtual long minOffset() const { return 0; }
     virtual long maxOffset() const { return 0; }
 
-    virtual void clearTruncation() {};
+    virtual void clearTruncation() {}
 
     virtual bool canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth);
     virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool&);

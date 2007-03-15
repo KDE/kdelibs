@@ -59,9 +59,9 @@ public:
     void setPort(unsigned short int port);
     void setTimeOut(int timeout);
 
-    bool isConnected(){return connected;};
-    bool isFinished(){return finished;};
-    QString getLastLine(){return lastLine;};
+    bool isConnected(){return connected;}
+    bool isFinished(){return finished;}
+    QString getLastLine(){return lastLine;}
 
     void setSenderAddress(const QString& sender);
     void setRecipientAddress(const QString& recipient);

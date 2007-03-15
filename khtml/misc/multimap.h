@@ -88,7 +88,7 @@ template<class T>
 class KMultiMap {
 public:
     KMultiMap() : dict(257) { dict.setAutoDelete(true); }
-    ~KMultiMap() {};
+    ~KMultiMap() {}
 
     typedef MultiMapPtrList<T> List;
 

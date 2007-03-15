@@ -143,7 +143,7 @@ private:
         m_x = _x;
         m_y = _y;
         m_reversed = false;
-    };
+    }
     friend class RenderText;
 };
 

@@ -118,7 +118,7 @@ QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 class OperaExporter : private KBookmarkGroupTraverser {
 public:
     OperaExporter();
-    QString generate( const KBookmarkGroup &grp ) { traverse(grp); return m_string; };
+    QString generate( const KBookmarkGroup &grp ) { traverse(grp); return m_string; }
 private:
     virtual void visit( const KBookmark & );
     virtual void visitEnter( const KBookmarkGroup & );

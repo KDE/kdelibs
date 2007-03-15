@@ -76,7 +76,7 @@ public:
     * the branch is allocating will become children of that object.
     * @param r the KFileTreeViewItem to become the root item.
     */
-   virtual void 	setRoot( KFileTreeViewItem *r ){ m_root = r; };
+   virtual void 	setRoot( KFileTreeViewItem *r ){ m_root = r; }
 
    /**
     * @returns the root item.
@@ -91,7 +91,7 @@ public:
    /**
     * sets the name of the branch.
     */
-   virtual void         setName( const QString n ) { m_name = n; };
+   virtual void         setName( const QString n ) { m_name = n; }
 
    /*
     * returns the current root item pixmap set in the constructor. The root

@@ -57,7 +57,7 @@ class KPrinterWrapper : public QPrinter
 {
 public:
 	KPrinterWrapper(PrinterMode mode = ScreenResolution)
-	: QPrinter(mode) {};
+	: QPrinter(mode) {}
 
 	int metric(PaintDeviceMetric m) const { return QPrinter::metric(m); }
 	void setMargins( uint top, uint left, uint bottom, uint right );

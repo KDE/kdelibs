@@ -514,7 +514,7 @@ namespace khtml
         static void preloadScript(const QString &url, const QString &script_data);
 
 	static void setSize( int bytes );
-	static int size() { return maxSize; };
+	static int size() { return maxSize; }
 	static void statistics();
 	KHTML_EXPORT static void flush(bool force=false);
 

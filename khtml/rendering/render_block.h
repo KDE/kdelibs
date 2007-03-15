@@ -108,7 +108,7 @@ public:
     void removePositionedObject(RenderObject *o);
 
     // Called to lay out the legend for a fieldset.
-    virtual RenderObject* layoutLegend(bool /*relayoutChildren*/) { return 0; };
+    virtual RenderObject* layoutLegend(bool /*relayoutChildren*/) { return 0; }
 
     // the implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end, BidiState &bidi );
@@ -316,10 +316,10 @@ protected:
         // ### to do better "page-break-after/before: avoid" this struct
         // should keep a pagebreakAvoid block and gather children in it
     public:
-        PageBreakInfo(int pageBottom) : m_pageBottom(pageBottom), m_forcePageBreak(false) {};
+        PageBreakInfo(int pageBottom) : m_pageBottom(pageBottom), m_forcePageBreak(false) {}
         bool forcePageBreak() { return m_forcePageBreak; }
         void setForcePageBreak(bool b) { m_forcePageBreak = b; }
-        int pageBottom() { return m_pageBottom; };
+        int pageBottom() { return m_pageBottom; }
         void setPageBottom(int bottom) { m_pageBottom = bottom; }
     };
 

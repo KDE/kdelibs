@@ -530,8 +530,8 @@ protected:
 class ScrollBarWidget: public QScrollBar, public KHTMLWidget
 {
 public:
-    ScrollBarWidget( QWidget * parent = 0 ): QScrollBar(parent) { m_kwp->setIsRedirected( true ); };
-    ScrollBarWidget( Qt::Orientation orientation, QWidget * parent = 0 ): QScrollBar(orientation, parent) { m_kwp->setIsRedirected( true ); };
+    ScrollBarWidget( QWidget * parent = 0 ): QScrollBar(parent) { m_kwp->setIsRedirected( true ); }
+    ScrollBarWidget( Qt::Orientation orientation, QWidget * parent = 0 ): QScrollBar(orientation, parent) { m_kwp->setIsRedirected( true ); }
 };
 
 } //namespace

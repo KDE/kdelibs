@@ -78,7 +78,7 @@ public:
 
     virtual ~HTMLGenericElementImpl();
 
-    virtual Id id() const { return _id; };
+    virtual Id id() const { return _id; }
 
 protected:
     ushort _id;

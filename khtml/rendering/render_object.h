@@ -318,7 +318,7 @@ public:
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
     DOM::NodeImpl* node() const { return m_node; }
     
-    virtual bool handleEvent(const DOM::EventImpl&) { return false; };
+    virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
    /**
      * returns the object containing this one. can be different from parent for
@@ -482,8 +482,8 @@ public:
     virtual bool canClear(RenderObject * /*child*/, PageBreakLevel level)
     { if (parent()) return parent()->canClear(this, level); else return false; }
 
-    void setAfterPageBreak(bool b = true)  { m_afterPageBreak = b; };
-    void setBeforePageBreak(bool b = true) { m_beforePageBreak = b; };
+    void setAfterPageBreak(bool b = true)  { m_afterPageBreak = b; }
+    void setBeforePageBreak(bool b = true) { m_beforePageBreak = b; }
     virtual bool afterPageBreak() const  { return m_afterPageBreak; }
     virtual bool beforePageBreak() const { return m_beforePageBreak; }
 
@@ -692,7 +692,7 @@ public:
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
 
     // Special objects are objects that are neither really inline nor blocklevel
-    bool isFloatingOrPositioned() const { return (isFloating() || isPositioned()); };
+    bool isFloatingOrPositioned() const { return (isFloating() || isPositioned()); }
     virtual bool hasOverhangingFloats() const { return false; }
     virtual bool hasFloats() const { return false; }
     virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
