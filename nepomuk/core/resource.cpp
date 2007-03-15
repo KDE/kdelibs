@@ -21,6 +21,9 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+// FIXME: let the code generator do this
+#include <kmetadata/tag.h>
+
 
 Nepomuk::KMetaData::Resource::Resource()
 {
