@@ -207,6 +207,12 @@ void HTMLAnchorElement::focus(  )
         impl->getDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
+void HTMLAnchorElement::click( )
+{
+    if(impl) ((HTMLAnchorElement *)impl)->click();
+}
+
+
 // --------------------------------------------------------------------------
 
 HTMLBRElement::HTMLBRElement() : HTMLElement()
