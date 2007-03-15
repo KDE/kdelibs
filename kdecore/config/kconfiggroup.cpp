@@ -26,15 +26,15 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
-#include <qcolor.h>
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qfont.h>
 #include <qpoint.h>
 #include <qrect.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+
+#include "kconfiggroup_p.h"
 
 class KConfigGroup::Private
 {
@@ -43,6 +43,23 @@ public:
   KSharedConfig::Ptr mMasterShared;
   QByteArray mGroup;
 };
+
+KConfigGroupGui _kde_internal_KConfigGroupGui;
+static inline bool readEntryGui(const KConfigGroup *cg, const char *key, const QVariant &input,
+                                QVariant &output)
+{
+  if (_kde_internal_KConfigGroupGui.readEntryGui)
+    return _kde_internal_KConfigGroupGui.readEntryGui(cg, key, input, output);
+  return false;
+}
+
+static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVariant &input,
+                                 KConfigBase::WriteConfigFlags flags)
+{
+  if (_kde_internal_KConfigGroupGui.writeEntryGui)
+    return _kde_internal_KConfigGroupGui.writeEntryGui(cg, key, input, flags);
+  return false;
+}
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
 {
@@ -345,7 +362,11 @@ QVariant KConfigGroup::readEntry( const char *pKey, const QVariant &aDefault ) c
     .arg(pKey).arg(QVariant::typeToName(aDefault.type()));
   const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
 
-  QVariant tmp = aDefault;
+  QVariant tmp;
+  if (readEntryGui( this, pKey, aDefault, tmp ))
+    return tmp;
+
+  tmp = aDefault;
 
   // if a type handler is added here you must add a QVConversions definition
   // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
@@ -372,63 +393,6 @@ QVariant KConfigGroup::readEntry( const char *pKey, const QVariant &aDefault ) c
             if ( !tmp.convert(aDefault.type()) )
                 tmp = aDefault;
             return tmp;
-      case QVariant::Color: {
-          const QString color = readEntry( pKey, QString() );
-          if ( color.isEmpty()) {
-              return QColor();
-          }
-          else if ( color.at(0) == '#' ) {
-              QColor col;
-              col.setNamedColor(color);
-              return col;
-          }
-          else {
-          const QStringList list = readEntry( pKey, QStringList() );
-          const int count = list.count();
-
-          if (count != 3 && count != 4) {
-              if (count == 1 && list.first() == QLatin1String("invalid"))
-                  return QColor(); // return what was stored
-
-              kcbError() << errString.arg(readEntry(pKey))
-                         << formatError.arg("3' or '4").arg(count)
-                         << endl;
-              return aDefault;
-          }
-
-          int temp[4];
-          // bounds check components
-          for(int i=0; i < count; i++) {
-              bool ok;
-              const int j = temp[i] = list.at(i).toInt(&ok);
-              if (!ok) { // failed to convert to int
-                  kcbError() << errString.arg(readEntry(pKey))
-                             << " (integer conversion failed)"
-                             << endl;
-                  return aDefault;
-              }
-              if (j < 0 || j > 255) {
-                  const char *const components[] = {
-                      "red", "green", "blue", "alpha"
-                  };
-                  const QString boundsError = QLatin1String(" (bounds error: %1 component %2)");
-                  kcbError() << errString.arg(readEntry(pKey))
-                             << boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255")
-                             << endl;
-                  return aDefault;
-              }
-          }
-          QColor color(temp[0], temp[1], temp[2]);
-          if (count == 4)
-              color.setAlpha(temp[3]);
-
-          if ( !color.isValid() ) {
-              kcbError() << errString.arg(readEntry(pKey)) << endl;
-              return aDefault;
-          }
-          return color;
-          }
-      }
       case QVariant::Point: {
           const QList<int> list = readEntry( pKey, QList<int>() );
 
@@ -574,6 +538,13 @@ QVariant KConfigGroup::readEntry( const char *pKey, const QVariant &aDefault ) c
           }
           return date;
       }
+
+      case QVariant::Color:
+        kFatal() << "KConfigGroup::readEntry was passed GUI type '"
+                 << aDefault.typeName()
+                 << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
+                    "Please inform the KDE developers" << endl;
+        break;
 
       default:
           break;
@@ -822,6 +793,9 @@ void KConfigGroup::deleteEntry( const char *pKey, KConfigBase::WriteConfigFlags 
 void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
                                KConfigBase::WriteConfigFlags pFlags )
 {
+  if ( writeEntryGui( this, pKey, prop, pFlags ) )
+    return;                     // GUI type that was handled
+
   // if a type handler is added here you must add a QVConversions definition
   // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
   // writeEntry<T> to convert to QVariant.
@@ -874,29 +848,11 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
         writeEntry( pKey, list, pFlags );
         return;
     }
-    case QVariant::Color: {
-        QList<int> list;
-        const QColor rColor = prop.value<QColor>();
-
-        if (!rColor.isValid()) {
-            writeEntry(pKey, "invalid", pFlags);
-            return;
-        }
-        list.insert(0, rColor.red());
-        list.insert(1, rColor.green());
-        list.insert(2, rColor.blue());
-        if (rColor.alpha() != 255)
-            list.insert(3, rColor.alpha());
-
-        writeEntry( pKey, list, pFlags );
-        return;
-    }
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::Double:
     case QVariant::Bool:
 //    case QVariant::KeySequence:
-    case QVariant::Font:
         writeEntry( pKey, prop.toString(), pFlags );
         return;
     case QVariant::LongLong:
@@ -934,6 +890,14 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
         writeEntry( pKey, list, pFlags );
         return;
     }
+
+    case QVariant::Color:
+    case QVariant::Font:
+        kFatal() << "KConfigGroup::writeEntry was passed GUI type '"
+                 << prop.typeName()
+                 << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
+                    "Please inform the KDE developers" << endl;
+        break;
 
     case QVariant::Pixmap:
     case QVariant::Image:

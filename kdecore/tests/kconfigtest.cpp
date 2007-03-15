@@ -23,7 +23,6 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <QtGui/QFont>
 #include <kconfiggroup.h>
 
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
@@ -48,10 +47,6 @@ QTEST_KDEMAIN( KConfigTest, NoGUI )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
-#define COLORENTRY1 QColor("steelblue")
-#define COLORENTRY2 QColor(235, 235, 100, 125)
-#define COLORENTRY3 QColor(234, 234, 127)
-#define FONTENTRY QFont("Times", 16, QFont::Normal)
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 
@@ -93,11 +88,6 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "sizeEntry", SIZEENTRY );
   cg.writeEntry( "dateTimeEntry", DATETIMEENTRY );
   cg.writeEntry( "dateEntry", DATETIMEENTRY.date() );
-  cg.writeEntry( "colorEntry1", COLORENTRY1 );
-  cg.writeEntry( "colorEntry2", COLORENTRY2 );
-  cg.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
-  cg.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
-  cg.writeEntry( "fontEntry", FONTENTRY );
 
   cg = KConfigGroup(&sc, "ListTypes" );
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
@@ -271,13 +261,6 @@ void KConfigTest::testComplex()
   QCOMPARE( sc3.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
   QCOMPARE( sc3.readEntry( "dateTimeEntry", QDate() ), DATETIMEENTRY.date() );
-  QCOMPARE( QVariant(sc3.readEntry( "colorEntry1", Qt::black )).toString(),
-            QVariant(COLORENTRY1).toString() );
-  QCOMPARE( sc3.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
-  QCOMPARE( sc3.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
-  QCOMPARE( sc3.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
-  QCOMPARE( sc3.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
-  QCOMPARE( sc3.readEntry( "fontEntry", QFont() ), FONTENTRY );
 }
 
 void KConfigTest::testEnums()
@@ -312,7 +295,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( QString("badList"), list);
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
@@ -324,7 +306,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
   QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
@@ -334,7 +315,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
@@ -346,15 +326,10 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( "badList", list );
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
   QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
   QVERIFY( sc3.readEntry( "badList", QDateTime() ) == QDateTime() );
-
-  list[2] = -3;
-  sc3.writeEntry( "badList", list ); sc.sync();
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   // 5 element list
   list[2] = 3;
@@ -362,7 +337,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
@@ -374,7 +348,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( "badList", list);
   sc.sync();
 
-  QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );

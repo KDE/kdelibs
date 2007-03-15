@@ -104,6 +104,7 @@ set(kdeui_LIB_SRCS
  util/kcommand.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
+ util/kconfiggroupgui.cpp
  util/kcrash.cpp
  util/kcursor.cpp
  util/kglobalaccel.cpp
