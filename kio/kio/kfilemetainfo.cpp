@@ -30,7 +30,7 @@
 #include <QStringList>
 
 using namespace std;
-using namespace jstreams;
+using namespace Strigi;
 
 class KFileMetaInfoGroupPrivate : public QSharedData {
 public:
@@ -49,7 +49,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&) {
     return s;
 }
 
-class QIODeviceInputStream : public BufferedInputStream<char> {
+class QIODeviceInputStream : public jstreams::BufferedInputStream<char> {
 private:
     QIODevice& in;
     int32_t fillBuffer(char* start, int32_t space);
@@ -138,15 +138,13 @@ void
 KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // get data from Strigi
     kurl = url;
-    StreamAnalyzer& indexer
-        = PredicatePropertyProvider::self()->indexer();
+    StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
-    QIODeviceInputStream jstream(stream);
-    AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer,
-        indexer);
+    QIODeviceInputStream strigiStream(stream);
+    Strigi::AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer, indexer);
 
     idx.setWriterData(&items);
-    indexer.analyze(idx, &jstream);
+    indexer.analyze(idx, &strigiStream);
 
     // TODO: get data from Nepomuk
 }

@@ -22,7 +22,7 @@
 #include <strigi/streamanalyzer.h>
 #include <strigi/analyzerconfiguration.h>
 #include <QDebug>
-using namespace jstreams;
+using namespace Strigi;
 
 // PredicateProperties
 

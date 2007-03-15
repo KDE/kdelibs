@@ -23,7 +23,7 @@
 #include "kfilemetainfo.h"
 #include <QHash>
 
-namespace jstreams {
+namespace Strigi {
     class StreamAnalyzer;
 }
 
@@ -48,7 +48,7 @@ public:
     PredicatePropertyProvider();
     ~PredicatePropertyProvider();
     static PredicatePropertyProvider* self();
-    jstreams::StreamAnalyzer& indexer();
+    Strigi::StreamAnalyzer& indexer();
     static PredicateProperties getPredicateProperties(const QString& key);
 };
 
