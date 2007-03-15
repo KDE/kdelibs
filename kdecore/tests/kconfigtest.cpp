@@ -275,9 +275,14 @@ void KConfigTest::testEnums()
   QCOMPARE( sc3.readEntry( "flags-bit0" ), QString("bit0"));
   QVERIFY( sc3.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
 
-  QCOMPARE( sc3.readEntry( "flags-bit0-bit1" ), QString("bit1|bit0") );
+  int eid = staticMetaObject.indexOfEnumerator( "Flags" );
+  Q_ASSERT( eid != -1 );
+  QMetaEnum me = staticMetaObject.enumerator( eid );
+  KConfigTest::Flags bitfield = KConfigTest::bit0|KConfigTest::bit1;
+
+  QCOMPARE( sc3.readEntry( "flags-bit0-bit1" ), QString( me.valueToKeys(bitfield) ) );
   QVERIFY( sc3.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
-           (KConfigTest::bit0|KConfigTest::bit1) );
+           bitfield );
 }
 
 void KConfigTest::testInvalid()
