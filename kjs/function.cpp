@@ -82,7 +82,7 @@ UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
 	  Object err = Error::create(exec,URIError);
 	  exec->setException(err);
 	  free(encbuf);
-	  return UString();
+	  return UString("");
 	}
 
 	unsigned short Cnext = UChar(string[++k]).uc;
@@ -91,7 +91,7 @@ UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
 	  Object err = Error::create(exec,URIError);
 	  exec->setException(err);
 	  free(encbuf);
-	  return UString();
+	  return UString("");
 	}
 
 	unsigned short zzzzzz = Cnext & 0x3F;
@@ -110,7 +110,7 @@ UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
 	Object err = Error::create(exec,URIError);
 	exec->setException(err);
 	free(encbuf);
-	return UString();
+	return UString("");
       }
       else {
 	// 0x0800 - 0xD7FF or 0xE000 - 0xFFFF
@@ -186,7 +186,7 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
       Object err = Error::create(exec,URIError);
       exec->setException(err);
       free(decbuf);
-      return UString();
+      return UString("");
     }
 
     unsigned short B;
@@ -194,7 +194,7 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
       Object err = Error::create(exec,URIError);
       exec->setException(err);
       free(decbuf);
-      return UString();
+      return UString("");
     }
 
     k += 2;
@@ -216,14 +216,14 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
 	Object err = Error::create(exec,URIError);
 	exec->setException(err);
 	free(decbuf);
-	return UString();
+	return UString("");
       }
 
       if (k+3*(n-1) >= string.size()) {
 	Object err = Error::create(exec,URIError);
 	exec->setException(err);
 	free(decbuf);
-	return UString();
+	return UString("");
       }
 
       unsigned short octets[4];
@@ -236,7 +236,7 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
 	  Object err = Error::create(exec,URIError);
 	  exec->setException(err);
 	  free(decbuf);
-	  return UString();
+	  return UString("");
 	}
 
 	k += 2;
@@ -266,7 +266,7 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
           Object err = Error::create(exec,URIError);
 	  exec->setException(err);
 	  free(decbuf);
-	  return UString();
+	  return UString("");
 	}
 	unsigned long wwww = octets[1] & 0x0F;
 	unsigned long xx = (octets[2] >> 4) & 0x03;
