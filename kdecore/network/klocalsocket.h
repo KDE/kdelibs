@@ -133,7 +133,7 @@ protected Q_SLOTS:
     void disconnectFromHostImplementation();
 
 private:
-    Q_DISABLE_COPY(KLocalSocket);
+    Q_DISABLE_COPY(KLocalSocket)
     friend class KLocalSocketPrivate;
     KLocalSocketPrivate * const d;
 };
