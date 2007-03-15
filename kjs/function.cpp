@@ -626,7 +626,7 @@ static JSValue *encode(ExecState *exec, const List &args, const char *do_not_esc
   return jsString(r);
 }
 
-static JSValue *decode(ExecState *exec, const List &args, const char *do_not_unescape, bool strict)
+static JSValue *decode(ExecState *exec, const List &args, const char *do_not_unescape)
 {
   UString s = "", str = args[0]->toString(exec);
   int k = 0, len = str.size();
@@ -668,19 +668,9 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
           }
         }
       }
-      if (charLen == 0) {
-        if (strict)
+      if (charLen == 0)
           return throwError(exec, URIError);
-        // The only case where we don't use "strict" mode is the "unescape" function.
-        // For that, it's good to support the wonky "%u" syntax for compatibility with WinIE.
-        if (k <= len - 6 && p[1] == 'u'
-            && isxdigit(p[2].uc) && isxdigit(p[3].uc)
-            && isxdigit(p[4].uc) && isxdigit(p[5].uc)) {
-	  charLen = 6;
-	  u = Lexer::convertUnicode(p[2].uc, p[3].uc, p[4].uc, p[5].uc);
-        }
-      }
-      if (charLen && (u.uc == 0 || u.uc >= 128 || !strchr(do_not_unescape, u.low()))) {
+      if (u.uc == 0 || u.uc >= 128 || !strchr(do_not_unescape, u.low())) {
         c = u;
         k += charLen - 1;
       }
@@ -886,10 +876,10 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
     break;
   }
   case DecodeURI:
-    res = decode(exec, args, do_not_unescape_when_decoding_URI, true);
+    res = decode(exec, args, do_not_unescape_when_decoding_URI);
     break;
   case DecodeURIComponent:
-    res = decode(exec, args, "", true);
+    res = decode(exec, args, "");
     break;
   case EncodeURI:
     res = encode(exec, args, do_not_escape_when_encoding_URI);
