@@ -528,7 +528,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
         return QVariant(val);
     }
     default:
-        kDebug() << k_funcinfo << "using KServiceReadProperty for " << _name << endl;
+        kDebug(7012) << k_funcinfo << "using KServiceReadProperty for " << _name << endl;
         // All others
         KServiceReadProperty ksrp(_name, it->toString().toUtf8());
         return ksrp.readEntry(_name, QVariant(t));
