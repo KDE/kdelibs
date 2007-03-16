@@ -254,7 +254,7 @@ QColor KGlobalSettings::activeTextColor()
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "activeForeground", Qt::white );
+    return g.readEntry( "activeForeground", QColor(Qt::white) );
 #endif
 }
 
@@ -275,7 +275,7 @@ QColor KGlobalSettings::buttonBackground()
 QColor KGlobalSettings::buttonTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "buttonForeground", Qt::black );
+    return g.readEntry( "buttonForeground", QColor(Qt::black) );
 }
 
 // IMPORTANT:
@@ -284,7 +284,7 @@ QColor KGlobalSettings::buttonTextColor()
 QColor KGlobalSettings::baseColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "windowBackground", Qt::white );
+    return g.readEntry( "windowBackground", QColor(Qt::white) );
 }
 
 // IMPORTANT:
@@ -293,7 +293,7 @@ QColor KGlobalSettings::baseColor()
 QColor KGlobalSettings::textColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "windowForeground", Qt::black );
+    return g.readEntry( "windowForeground", QColor(Qt::black) );
 }
 
 // IMPORTANT:
@@ -302,7 +302,7 @@ QColor KGlobalSettings::textColor()
 QColor KGlobalSettings::highlightedTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "selectForeground", Qt::white );
+    return g.readEntry( "selectForeground", QColor(Qt::white) );
 }
 
 // IMPORTANT:
@@ -917,13 +917,13 @@ QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup &config, 
     QColor kde34VisitedLink( 82, 24, 139 );
 
     QColor background = config.readEntry( "background", kde34Background );
-    QColor foreground = config.readEntry( "foreground", Qt::black );
+    QColor foreground = config.readEntry( "foreground", QColor(Qt::black) );
     QColor button = config.readEntry( "buttonBackground", kde34Button );
-    QColor buttonText = config.readEntry( "buttonForeground", Qt::black );
+    QColor buttonText = config.readEntry( "buttonForeground", QColor(Qt::black) );
     QColor highlight = config.readEntry( "selectBackground", kde34Blue );
-    QColor highlightedText = config.readEntry( "selectForeground", Qt::white );
-    QColor base = config.readEntry( "windowBackground", Qt::white );
-    QColor baseText = config.readEntry( "windowForeground", Qt::black );
+    QColor highlightedText = config.readEntry( "selectForeground", QColor(Qt::white) );
+    QColor base = config.readEntry( "windowBackground", QColor(Qt::white) );
+    QColor baseText = config.readEntry( "windowForeground", QColor(Qt::black) );
     QColor link = config.readEntry( "linkColor", kde34Link );
     QColor visitedLink = config.readEntry( "visitedLinkColor", kde34VisitedLink );
 

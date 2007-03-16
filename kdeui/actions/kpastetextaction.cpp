@@ -89,9 +89,10 @@ void KPasteTextAction::menuAboutToShow()
     if (list.isEmpty())
         list << clipboardText;
     bool found = false;
+    const QFontMetrics fm = m_popup->fontMetrics();
     foreach (const QString& string, list)
     {
-      QString text = KStringHandler::cEmSqueeze(string.simplified(), m_popup->fontMetrics(), 20);
+      QString text = fm.elidedText(string.simplified(), Qt::ElideMiddle, fm.maxWidth() * 20);
       text.replace("&", "&&");
       QAction* action = m_popup->addAction(text);
       if (!found && string == clipboardText)

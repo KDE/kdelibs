@@ -72,7 +72,7 @@ void KConfigTest::testComplex()
   KConfig sc2( "kconfigtest" );
   KConfigGroup sc3(&sc2, "ComplexTypes");
 
-  QCOMPARE( QVariant(sc3.readEntry( "colorEntry1", Qt::black )).toString(),
+  QCOMPARE( QVariant(sc3.readEntry( "colorEntry1", QColor(Qt::black) )).toString(),
             QVariant(COLORENTRY1).toString() );
   QCOMPARE( sc3.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
   QCOMPARE( sc3.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
