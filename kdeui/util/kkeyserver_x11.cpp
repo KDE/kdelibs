@@ -34,7 +34,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-#ifdef Q_WS_X11
 #include <QX11Info>
 # define XK_MISCELLANY
 # define XK_XKB_KEYS
@@ -43,18 +42,7 @@
 # include <X11/Xutil.h>
 # include <X11/keysymdef.h>
 # define X11_ONLY(arg) arg, //allows to omit an argument
-#else
-# include <kckey.h>
-# define X11_ONLY(arg)
-# define XK_ISO_Left_Tab Qt::Key_Backtab
-# define XK_BackSpace Qt::Key_Backspace
-# define XK_Sys_Req Qt::Key_SysReq
-# define XK_Caps_Lock Qt::Key_CapsLock
-# define XK_Num_Lock Qt::Key_NumLock
-# define XK_Scroll_Lock Qt::Key_ScrollLock
-# define XK_Prior Qt::Key_PageUp
-# define XK_Next Qt::Key_PageDown
-#endif
+
 
 namespace KKeyServer
 {
@@ -75,9 +63,7 @@ struct Mod
 struct ModInfo
 {
 	int modQt;
-#ifdef Q_WS_X11
 	int modX;
-#endif
 };
 
 struct SymVariation
@@ -134,9 +120,6 @@ static const SymName g_rgSymNames[] = {
 #endif
 	{ 0, 0 }
 };
-
-#ifdef Q_WS_X11
-// TODO: Add Mac key names list: Key_Backspace => "Delete", Key_Delete => "Del"
 
 // These are the X equivalents to the Qt keycodes 0x1000 - 0x1026
 static const TransKey g_rgQtToSymX[] =
@@ -300,7 +283,6 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_LaunchE,    XF86XK_LaunchC },
 	{ Qt::Key_LaunchF,    XF86XK_LaunchD },
 };
-#endif //Q_WS_X11
 
 //---------------------------------------------------------------------
 // Debugging
@@ -308,14 +290,12 @@ static const TransKey g_rgQtToSymX[] =
 #ifndef NDEBUG 
 inline void checkDisplay()
 {
-#ifdef Q_WS_X11
 	// Some non-GUI apps might try to use us.
 	if ( !QX11Info::display() ) {
 		kError() << "QX11Info::display() returns 0.  I'm probably going to crash now." << endl;
 		kError() << "If this is a KApplication initialized without GUI stuff, change it to be "
 	                "initialized with GUI stuff." << endl;
 	}
-#endif // Q_WS_X11
 }
 #else // NDEBUG
 # define checkDisplay()
@@ -324,8 +304,8 @@ inline void checkDisplay()
 //---------------------------------------------------------------------
 // Initialization
 //---------------------------------------------------------------------
+
 static bool g_bInitializedMods;
-#ifdef Q_WS_X11
 static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask;
 
 bool initializeMods()
@@ -386,14 +366,11 @@ bool initializeMods()
 	return true;
 }
 
-#endif //Q_WS_X11
-
 
 //---------------------------------------------------------------------
 // Public functions
 //---------------------------------------------------------------------
 
-#ifdef Q_WS_X11
 
 uint modXShift()      { return ShiftMask; }
 uint modXCtrl()       { return ControlMask; }
@@ -407,28 +384,11 @@ uint modXModeSwitch() { if( !g_bInitializedMods ) { initializeMods(); } return g
 
 bool keyboardHasMetaKey() { return modXMeta() != 0; }
 
-#else
-
-/* FIXME: why is this stuff still all tied to X11 interfaces?  Is it used anywhere other than the
-X11-specific portions of kglobalaccel? */
-
-uint modXShift() { return 0; }
-uint modXCtrl() { return 0; }
-uint modXAlt() { return 0; }
-uint modXMeta() { return 0; }
-
-uint modXNumLock() { return 0; }
-uint modXLock() { return 0; }
-uint modXScrollLock() { return 0; }
-uint modXModeSwitch() { return 0; }
-
-#endif //Q_WS_X11
 
 uint getModsRequired(uint sym)
 {
 	uint mod = 0;
 
-#ifdef Q_WS_X11
 	// FIXME: This might not be true on all keyboard layouts!
 	if( sym == XK_Sys_Req ) return Qt::ALT;
 	if( sym == XK_Break ) return Qt::CTRL;
@@ -453,7 +413,6 @@ uint getModsRequired(uint sym)
 		else if( sym == XKeycodeToKeysym( QX11Info::display(), code, 3 ) )
 			mod = Qt::SHIFT | MODE_SWITCH;
 	}
-#endif
 	return mod;
 }
 
@@ -473,7 +432,6 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 		return false;
 	}
 
-#ifdef Q_WS_X11
 	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
 	// Specifically, it returns the code for SysReq instead of Print
 	// Only do this for the default Xorg layout, other keycode mappings
@@ -486,7 +444,6 @@ bool keyQtToCodeX( int keyQt, int& keyCode )
 		keyCode = 114;
 	else
 		keyCode = XKeysymToKeycode( QX11Info::display(), sym );
-#endif
 
 	return true;
 }
@@ -500,13 +457,7 @@ bool keyQtToSymX( int keyQt, int& keySym )
 		return true;
 	}
 
-#ifdef Q_WS_WIN
-	keySym = symQt;
-	return true;
-#elif defined(Q_WS_MAC)
-	keySym = symQt;
-	return true;
-#elif defined(Q_WS_X11)
+
 	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ ) {
 		if( g_rgQtToSymX[i].keySymQt == symQt ) {
 			keySym = g_rgQtToSymX[i].keySymX;
@@ -519,7 +470,6 @@ bool keyQtToSymX( int keyQt, int& keySym )
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
 		kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
-#endif
 }
 
 bool symXToKeyQt( uint keySym, int& keyQt )
@@ -531,10 +481,7 @@ bool symXToKeyQt( uint keySym, int& keyQt )
 		else
 			keyQt = keySym;
 	}
-#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
-	else if( keySym < 0x3000 )
-		keyQt = keySym;
-#elif defined(Q_WS_X11)
+
 	else if( keySym < 0x3000 )
 		keyQt = keySym;
 
@@ -545,7 +492,6 @@ bool symXToKeyQt( uint keySym, int& keyQt )
 				break;
 			}
 	}
-#endif
 	
 	return (keyQt != Qt::Key_unknown);
 }
@@ -555,7 +501,6 @@ bool symXToKeyQt( uint keySym, int& keyQt )
 
 bool keyQtToModX( int modQt, uint & modX )
 {
-#ifdef Q_WS_X11
 	if( !g_bInitializedMods )
 		initializeMods();
 
@@ -566,13 +511,11 @@ bool keyQtToModX( int modQt, uint & modX )
 			continue;
 		}
 	}
-#endif
 	return true;
 }
 
 bool modXToQt( uint modX, int& modQt )
 {
-#ifdef Q_WS_X11
 	if( !g_bInitializedMods )
 		initializeMods();
 
@@ -583,32 +526,9 @@ bool modXToQt( uint modX, int& modQt )
 			continue;
 		}
 	}
-#endif
 	return true;
 }
 
-#ifdef Q_WS_WIN
-//wrapped
-bool modXToModQt( uint modX, int& modQt )
-{
-	return modToModQt( modX, modQt );
-}
-
-KDEUI_EXPORT int qtButtonStateToMod( Qt::KeyboardModifiers s )
-{
-	int modQt = 0;
-	if (s & Qt::ShiftModifier) modQt |= KKey::SHIFT;
-	if (s & Qt::ControlModifier) modQt |= KKey::CTRL;
-	if (s & Qt::AltModifier) modQt |= KKey::ALT;
-	return modQt;
-}
-
-bool keyboardHasWinKey() { 
-//! TODO
-  return true;
-}
-
-#elif defined(Q_WS_X11)
 
 bool codeXToSym( uchar codeX, uint modX, uint& sym )
 {
@@ -626,14 +546,14 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	sym = (uint) keySym;
 	return true;
 }
-#endif //!Q_WS_WIN
+
 
 uint accelModMaskX()
 {
 	return modXShift() | modXCtrl() | modXAlt() | modXMeta();
 }
 
-#ifdef Q_WS_X11
+
 bool xEventToQt( XEvent* e, int& keyQt )
 {
 	uchar keyCodeX = e->xkey.keycode;
@@ -675,6 +595,6 @@ bool xEventToQt( XEvent* e, int& keyQt )
 	keyQt = keyCodeQt | keyModQt;
 	return true;
 }
-#endif
+
 
 } // end of namespace KKeyServer block
