@@ -33,7 +33,6 @@ public:
     ~tst_KLocalSocket();
 
 private Q_SLOTS:
-#ifdef Q_OS_UNIX
     void initTestCase();
     void connection_data();
     void connection();
@@ -43,7 +42,6 @@ private Q_SLOTS:
     void writing();
 
     void state();
-#endif
 };
 
 #endif

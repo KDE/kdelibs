@@ -36,7 +36,6 @@ tst_KLocalSocketServer::~tst_KLocalSocketServer()
     QFile::remove(afile);
 }
 
-#ifdef Q_OS_UNIX
 class TimedConnection: public QThread
 {
 public:
@@ -279,8 +278,5 @@ void tst_KLocalSocketServer::abstractUnixSocket()
 }
 
 QTEST_MAIN(tst_KLocalSocketServer)
-#else  // !Q_OS_UNIX
-QTEST_NOOP_MAIN
-#endif
 
 #include "klocalsocketservertest.moc"

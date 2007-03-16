@@ -30,7 +30,6 @@ public:
     ~tst_KLocalSocketServer();
 
 private Q_SLOTS:
-#ifdef Q_OS_UNIX
     void cleanup();
 
     void listen_data();
@@ -46,7 +45,6 @@ private Q_SLOTS:
 
     void abstractUnixSocket_data();
     void abstractUnixSocket();
-#endif
 };
 
 #endif

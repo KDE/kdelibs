@@ -38,7 +38,6 @@ tst_KLocalSocket::~tst_KLocalSocket()
     QFile::remove(QFile::decodeName(socketpath));
 }
 
-#ifdef Q_OS_UNIX
 #include <unistd.h>
 
 class TimedTest: public QThread
@@ -226,8 +225,5 @@ void tst_KLocalSocket::state()
 }
 
 QTEST_MAIN(tst_KLocalSocket)
-#else  // !Q_OS_UNIX
-QTEST_NOOP_MAIN
-#endif
 
 #include "klocalsockettest.moc"
