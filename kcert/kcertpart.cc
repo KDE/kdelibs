@@ -39,7 +39,6 @@
 #include <qtabwidget.h>
 #include <kseparator.h>
 #include <k3listview.h>
-#include <kio/kmimemagic.h>
 #include <QTextEdit>
 #include <qregexp.h>
 #include <kcombobox.h>

@@ -58,7 +58,6 @@ extern "C" {
 #include "slave.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
-#include "kmimemagic.h"
 #include "kprotocolinfo.h"
 #include "kprotocolmanager.h"
 #include "filejob.h"

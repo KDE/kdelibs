@@ -33,7 +33,6 @@
 
 #include "kmimetypetrader.h"
 #include "kmimetype.h"
-#include "kmimemagic.h"
 #include "kio/job.h"
 #include "kio/jobuidelegate.h"
 #include "kio/global.h"
