@@ -192,10 +192,12 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     *
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, fontMetrics.maxWidth() * maxlen) instead
      */
-    static QString lEmSqueeze( const QString & name,
-                               const QFontMetrics& fontMetrics,
-                               int maxlen = 30 );
+    static KDE_DEPRECATED QString lEmSqueeze( const QString & name,
+                                              const QFontMetrics& fontMetrics,
+                                              int maxlen = 30 );
 
     /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -204,7 +206,8 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @deprecated Use QFontMetrics::elidedText instead.
+     *
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, maxPixels) instead
      */
     static KDE_DEPRECATED QString lPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
@@ -226,10 +229,12 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     *
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, fontMetrics.maxWidth() * maxlen) instead
      */
-    static QString cEmSqueeze( const QString & name,
-                               const QFontMetrics& fontMetrics,
-                               int maxlen = 30 );
+    static KDE_DEPRECATED QString cEmSqueeze( const QString & name,
+                                              const QFontMetrics& fontMetrics,
+                                              int maxlen = 30 );
 
     /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -238,7 +243,7 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @deprecated Use QFontMetrics::elidedText instead.
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, maxPixels) instead.
      */
     static KDE_DEPRECATED QString cPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
@@ -260,8 +265,10 @@ public:
      * @param maxlen is the maximum length in ems the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     *
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, fontMetrics.maxWidth() * maxlen) instead
      */
-    static QString rEmSqueeze( const QString & name,
+    static KDE_DEPRECATED QString rEmSqueeze( const QString & name,
                                const QFontMetrics& fontMetrics,
                                int maxlen = 30 );
 
@@ -272,7 +279,7 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
-     * @deprecated Use QFontMetrics::elidedText instead.
+     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, maxPixels) instead.
      */
     static KDE_DEPRECATED QString rPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
