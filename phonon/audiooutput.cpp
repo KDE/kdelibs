@@ -75,7 +75,7 @@ void AudioOutput::setVolume(float volume)
     K_D(AudioOutput);
     d->volume = volume;
     if (iface() && !d->muted) {
-        INTERFACE_CALL(setVolume, (volume));
+        INTERFACE_CALL(setVolume(volume));
     } else {
         emit volumeChanged(volume);
     }
@@ -87,7 +87,7 @@ float AudioOutput::volume() const
     if(d->muted || !d->backendObject) {
         return d->volume;
     }
-    return INTERFACE_CALL(volume, ());
+    return INTERFACE_CALL(volume());
 }
 
 static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
@@ -114,9 +114,9 @@ void AudioOutput::setMuted(bool mute)
     if (d->muted != mute) {
         if (mute) {
             d->muted = mute;
-            INTERFACE_CALL(setVolume, (0.0));
+            INTERFACE_CALL(setVolume(0.0));
         } else {
-            INTERFACE_CALL(setVolume, (d->volume));
+            INTERFACE_CALL(setVolume(d->volume));
             d->muted = mute;
         }
         emit mutedChanged(mute);
@@ -134,7 +134,7 @@ AudioOutputDevice AudioOutput::outputDevice() const
 	K_D( const AudioOutput );
 	int index;
 	if( d->backendObject )
-        index = INTERFACE_CALL(outputDevice, ());
+        index = INTERFACE_CALL(outputDevice());
 	else
 		index = d->outputDeviceIndex;
 	return AudioOutputDevice::fromIndex( index );
@@ -151,7 +151,7 @@ bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
         d->outputDeviceIndex = newAudioOutputDevice.index();
     }
     if (iface()) {
-        return INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex));
+        return INTERFACE_CALL(setOutputDevice(d->outputDeviceIndex));
     }
     return true;
 }
@@ -159,7 +159,7 @@ bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
 bool AudioOutputPrivate::aboutToDeleteIface()
 {
     if (backendObject) {
-        volume = pINTERFACE_CALL(volume, ());
+        volume = pINTERFACE_CALL(volume());
     }
     return AbstractAudioOutputPrivate::aboutToDeleteIface();
 }
@@ -174,16 +174,16 @@ void AudioOutput::setupIface()
     connect(d->backendObject, SIGNAL(audioDeviceFailed()), SLOT(_k_audioDeviceFailed()));
 
 	// set up attributes
-    INTERFACE_CALL(setVolume, (d->volume));
+    INTERFACE_CALL(setVolume(d->volume));
 
     // if the output device is not available and the device was not explicitely set
-    if (!INTERFACE_CALL(setOutputDevice, (d->outputDeviceIndex)) && !d->outputDeviceOverridden) {
+    if (!INTERFACE_CALL(setOutputDevice(d->outputDeviceIndex)) && !d->outputDeviceOverridden) {
         // fall back in the preference list of output devices
         QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(d->category);
         if (d->outputDeviceIndex == deviceList.takeFirst()) { // removing the first device so that
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
-                if (INTERFACE_CALL(setOutputDevice, (devIndex))) {
+                if (INTERFACE_CALL(setOutputDevice(devIndex))) {
                     d->handleAutomaticDeviceChange(devIndex, AudioOutputPrivate::FallbackChange);
                     break; // found one that works
                 }
@@ -206,7 +206,7 @@ void AudioOutputPrivate::_k_revertFallback()
         return;
     }
     outputDeviceIndex = deviceBeforeFallback;
-    pINTERFACE_CALL(setOutputDevice, (outputDeviceIndex));
+    pINTERFACE_CALL(setOutputDevice(outputDeviceIndex));
     Q_Q(AudioOutput);
     emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
 }
@@ -220,7 +220,7 @@ void AudioOutputPrivate::_k_audioDeviceFailed()
     foreach (int devIndex, deviceList) {
         // if it's the same device as the one that failed, ignore it
         if (outputDeviceIndex != devIndex) {
-            if (pINTERFACE_CALL(setOutputDevice, (devIndex))) {
+            if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
                 handleAutomaticDeviceChange(devIndex, FallbackChange);
                 break; // found one that works
             }
@@ -237,7 +237,7 @@ void AudioOutputPrivate::deviceListChanged()
         if (outputDeviceIndex == devIndex) {
             break; // we've reached the currently used device, nothing to change
         }
-        if (pINTERFACE_CALL(setOutputDevice, (devIndex))) {
+        if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
             handleAutomaticDeviceChange(devIndex, HigherPreferenceChange);
             break; // found one with higher preference that works
         }

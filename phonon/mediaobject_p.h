@@ -23,15 +23,15 @@
 #include "mediaobject.h"
 #include "abstractmediaproducer_p.h"
 #include <kurl.h>
-#include <kio/jobclasses.h>
-#include <kio/filejob.h>
-#include <kio/job.h>
 #include <QTimer>
 
 namespace Phonon
 {
+class KioFallback;
+
 class MediaObjectPrivate : public AbstractMediaProducerPrivate
 {
+    friend class KioFallback;
 	K_DECLARE_PUBLIC( MediaObject )
 	protected:
 		virtual bool aboutToDeleteIface();
@@ -39,41 +39,16 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 	protected:
 		MediaObjectPrivate()
 			: aboutToFinishTime( 0 ),
-			kiojob( 0 ),
-			reading( false ),
-			seeking( false ),
-			endOfDataSent( false )
+            kiofallback(0)
 		{
-		}
-
-		~MediaObjectPrivate()
-		{
-			if( kiojob )
-			{
-				kiojob->kill();
-				kiojob = 0;
-			}
 		}
 
 		void setupKioStreaming();
-		void _k_setupKioJob();
-		void _k_bytestreamNeedData();
-		void _k_bytestreamEnoughData();
-		void _k_bytestreamData( KIO::Job*, const QByteArray& );
-		void _k_bytestreamResult( KJob* );
-		void _k_bytestreamTotalSize( KJob*, qulonglong );
-		void _k_cleanupByteStream();
-		void _k_bytestreamSeekStream(qint64);
-		void _k_bytestreamFileJobOpen(KIO::Job*);
-		void _k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t);
 		void _k_stateChanged( Phonon::State, Phonon::State );
 
 		KUrl url;
 		qint32 aboutToFinishTime;
-		KIO::SimpleJob *kiojob;
-		bool reading;
-		bool seeking;
-		bool endOfDataSent;
+        KioFallback *kiofallback;
 };
 }
 

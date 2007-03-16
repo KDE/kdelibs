@@ -107,11 +107,11 @@ QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_AR
 #define pBACKEND_CALL2( methodName, varType1, var1, varType2, var2 ) \
 QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
 
-#define INTERFACE_CALL(function, arg) \
-qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->function arg
+#define INTERFACE_CALL(function) \
+qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->function
 
-#define pINTERFACE_CALL(function, arg) \
-qobject_cast<PHONON_INTERFACENAME*>(backendObject)->function arg
+#define pINTERFACE_CALL(function) \
+qobject_cast<PHONON_INTERFACENAME*>(backendObject)->function
 
 #define PHONON_GETTER( rettype, name, retdefault ) \
 rettype PHONON_CLASSNAME::name() const \

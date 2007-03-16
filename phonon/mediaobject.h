@@ -49,6 +49,7 @@ namespace Phonon
 	class PHONONCORE_EXPORT MediaObject : public AbstractMediaProducer
 	{
 		friend class MediaQueue;
+        friend class KioFallback;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( MediaObject )
 		PHONON_HEIR( MediaObject )
@@ -151,16 +152,6 @@ namespace Phonon
 			MediaObject( Phonon::MediaObjectPrivate& dd, QObject* parent );
 
 		private:
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamNeedData() )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamEnoughData() )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamData( KIO::Job*, const QByteArray& ) )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamResult( KJob* ) )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamTotalSize( KJob*, qulonglong ) )
-			Q_PRIVATE_SLOT( k_func(), void _k_cleanupByteStream() )
-			Q_PRIVATE_SLOT( k_func(), void _k_setupKioJob() )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamSeekStream(qint64) )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamFileJobOpen(KIO::Job*) )
-			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamSeekDone(KIO::Job*, KIO::filesize_t) )
 			Q_PRIVATE_SLOT( k_func(), void _k_stateChanged( Phonon::State, Phonon::State ) )
 	};
 } //namespace Phonon

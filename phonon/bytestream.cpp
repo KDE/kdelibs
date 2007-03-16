@@ -68,7 +68,7 @@ void ByteStream::endOfData()
 {
 	K_D( ByteStream );
 	if( iface() )
-        INTERFACE_CALL(endOfData, ());
+        INTERFACE_CALL(endOfData());
 }
 
 bool ByteStreamPrivate::aboutToDeleteIface()

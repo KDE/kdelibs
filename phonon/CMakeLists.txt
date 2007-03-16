@@ -54,6 +54,7 @@ set(phononcore_LIB_SRCS
 	backendcapabilities.cpp
 	globalconfig.cpp
 	factory.cpp
+	kiofallback.cpp
 	)
 
 kde4_automoc(${phononcore_LIB_SRCS})
