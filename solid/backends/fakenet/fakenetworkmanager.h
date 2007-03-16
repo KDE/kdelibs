@@ -74,6 +74,7 @@ Q_INTERFACES( Solid::Ifaces::NetworkManager )
 class FakeAuthenticationValidator : public QObject, public Solid::Ifaces::AuthenticationValidator
 {
 Q_OBJECT
+Q_INTERFACES( Solid::Ifaces::AuthenticationValidator )
     public:
         FakeAuthenticationValidator( QObject * parent );
         virtual ~FakeAuthenticationValidator();

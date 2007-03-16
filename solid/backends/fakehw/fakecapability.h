@@ -27,6 +27,7 @@
 class FakeCapability : public QObject, virtual public Solid::Ifaces::Capability
 {
     Q_OBJECT
+    Q_INTERFACES( Solid::Ifaces::Capability )
 public:
     explicit FakeCapability( FakeDevice *device );
     ~FakeCapability();
