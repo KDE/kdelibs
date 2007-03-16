@@ -23,12 +23,13 @@
 
 #include "klocalsocket_p.h"
 
-void KLocalSocketPrivate::connectToPath(const QString &, QAbstractSocket::OpenMode)
+void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::LocalSocketType aType,
+                                        QAbstractSocket::OpenMode openMode)
 {
     emitError(QAbstractSocket::UnsupportedSocketOperationError, "Operation not supported");
 }
 
-bool KLocalSocketServerPrivate::listen(const QString &)
+bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalSocketType aType)
 {
     emitError(QAbstractSocket::UnsupportedSocketOperationError, "Operation not supported");
     return false;
@@ -45,6 +46,6 @@ bool KLocalSocketServerPrivate::waitForNewConnection(int, bool *)
     return false;
 }
 
-void KLocalSocketServer::_k_newConnectionActivity()
+void KLocalSocketServerPrivate::_k_newConnectionActivity()
 {
 }
