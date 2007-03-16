@@ -899,8 +899,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      msg << QStringList();
      QDBusConnection::sessionBus().send(msg);
 #ifdef Q_WS_X11
-     QDBusInterface("org.kde.ksplash", "/KSplash")
-         .call(QDBus::NoBlock, "upAndRunning", QString("kded"));
      XEvent e;
      e.xclient.type = ClientMessage;
      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
