@@ -878,7 +878,28 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckUpdates)
         (void) new KUpdateD; // Watch for updates
 
+#ifdef Q_WS_X11
+     XEvent e;
+     e.xclient.type = ClientMessage;
+     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = QX11Info::display();
+     e.xclient.window = QX11Info::appRootWindow();
+     e.xclient.format = 8;
+     strcpy( e.xclient.data.b, "kded" );
+     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
+
      runKonfUpdate(); // Run it once.
+
+#ifdef Q_WS_X11
+     e.xclient.type = ClientMessage;
+     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = QX11Info::display();
+     e.xclient.window = QX11Info::appRootWindow();
+     e.xclient.format = 8;
+     strcpy( e.xclient.data.b, "confupdate" );
+     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
 
      if (bCheckHostname)
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
@@ -898,16 +919,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
      msg << QStringList();
      QDBusConnection::sessionBus().send(msg);
-#ifdef Q_WS_X11
-     XEvent e;
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "kded" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
      int result = k.exec(); // keep running
 
      delete kded;
