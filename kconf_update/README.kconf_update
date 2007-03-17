@@ -51,8 +51,8 @@ Commas (,) are used to seperate fields and may not occur as part
 of any field and all of the keywords are case-sensitive, i.e. you
 cannot say "key" instead of "Key" for example.
 
-For the rest the file is parsed from top to bottom. Each line can contain
-one entry. The following entries are recognized:
+For the rest the file is parsed and executed sequentially from top to bottom.
+Each line can contain one entry. The following entries are recognized:
 
 
 Id=<id>
@@ -106,7 +106,7 @@ Since KDE 3.3 it is also possible to have a Script without specifying
 <oldfile> or <newfile>. In that case the script is run but it will not be
 fed any input and its output will simply be discarded.
 
-ScriptsArguments=<arguments>
+ScriptArguments=<arguments>
 
 If specified, the arguments will be passed to <script>.
 IMPORTANT: It has to be specified before Script=.
@@ -126,13 +126,13 @@ to remove obsolete entries or to force a revert to default values.
 
 Options=<option1>, <option2>, ....
 
-With this entry you can specify options that apply to the next 
+With this entry you can specify options that apply to the next "Script",
 "Key" or "AllKeys" entry (only to the first!). Possible options are:
 
 - "copy" Copy the configuration item instead of moving it. This means that 
          the configuration item will not be deleted from <oldfile>/<oldgroup>.
 
-- "overwrite" Normally, a configuration item is not moved if a item with the
+- "overwrite" Normally, a configuration item is not moved if an item with the
          new name already exists. When this option is specified the old 
          configuration item will overwrite any existing item.
 
