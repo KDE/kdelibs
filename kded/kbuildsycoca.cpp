@@ -415,8 +415,10 @@ void KBuildSycoca::createMenuAttribute( KServiceGroup::Ptr entry )
 }
 
 
-void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMenu *menu)
+void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFolderMenu::SubMenu *menu)
 {
+  QString caption = caption_;
+  QString name = name_;
   foreach (VFolderMenu::SubMenu *subMenu, menu->subMenus)
   {
      QString subName = name+subMenu->name+'/';
