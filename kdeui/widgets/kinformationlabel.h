@@ -25,27 +25,27 @@
 
 class QMouseEvent;
 /**
- * @brief A specialized label to display informative message
+ * @brief A specialized label to display an informative message with an icon
  *
- * KInformationLabel is used to display informative message only when needed.
+ * KInformationLabel is used to display an informative message only when needed.
  * This is useful to display a warning or error message in a dialog to notify
  * the user of a problem without using a modal dialog like a message box.
  *
  * @section Behavior
- * KInformationLabel has a special behavior. When first instancied,
- * It is not visible to the user untill a message is affected to it.
+ * KInformationLabel has a special behavior. When first instantiated,
+ * it is not visible to the user until a message text is set.
  *
  * After the message being shown, the user can click on the label to hide
- * it. Also, you can set a autohide timeout using the timeout property.
- * By default, no timeout is specified so the label is shown untill the
- * user click on it.
+ * it. Also, you can set a autohide timeout using the autoHideTimeout property.
+ * By default, no timeout is specified, so the label is shown until the
+ * user clicks on it.
  *
  * To hide the widget using code, just set an empty text.
  *
  * @section Usage
  * KInformationLabel is available as a widget in Qt Designer. Usage is very
- * simple, you just need to set a text to the label. 4 types of messages can
- * be set to the label, an informative message, an error message, a warning
+ * simple: you just need to set a text. Four types of messages can
+ * be set: an informative message, an error message, a warning
  * message and a custom message with a custom icon. See the example below:
  * @code
 KInformationLabel *label = new KInformationLabel(parent);
@@ -54,7 +54,7 @@ label->setText("Sample Error Message");
  * @endcode
  *
  * To set a custom message and icon, you need to set the icon property
- * using setIcon() and iconType property to Custom using setIconType
+ * using setIcon() and the iconType property to Custom using setIconType
  * @code
 KInformationLabel *label = new KInformationLabel(parent);
 label->setIconType(KInformation::Custom);
@@ -120,21 +120,21 @@ public:
     KInformationLabel::Icon iconType() const;
 
     /**
-     * @brief Get the current icon name.
+     * @brief Get the current icon name
      * @return current icon name
      */
     QIcon icon() const;
 
     /**
-     * @brief Get the current timeout value in miliseconds
-     * @return timeout value in msecs.
+     * @brief Get the current timeout value in milliseconds
+     * @return timeout value in msecs
      */
     int autoHideTimeout() const;
 
     /**
-     * @brief Set an icon type to the label
+     * @brief Set an icon type for the label
      *
-     * When icon type is set to Custom, it use the current
+     * When icon type is set to Custom, it uses the current
      * icon name to update the pixmap in the label.
      * @param iconType current icon type. See Icon enum
      */
@@ -144,20 +144,20 @@ public:
      * @brief Set an icon for Custom icon type
      *
      * When the label is in Custom mode, it also
-     * update the current pixmap.
+     * updates the current pixmap.
      * @param icon a QIcon or a KIcon
      */
     void setIcon(const QIcon &icon);
 
 public Q_SLOTS:
     /**
-     * @brief Set a message to the label
+     * @brief Set a message for the label
      *
-     * When calling this method, the widget get visible.
+     * Calling this method with a non-empty text makes the widget visible.
      *
-     * If the text is empty, the widget hide itself.
+     * If the text is empty, the widget hides itself.
      *
-     * @param text text to show. use an empty string to hide the widget
+     * @param text text to show. Use an empty string to hide the widget
      */
     void setText(const QString &text);
 
