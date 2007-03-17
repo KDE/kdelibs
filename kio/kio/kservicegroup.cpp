@@ -312,6 +312,7 @@ static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, boo
 KServiceGroup::List
 KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName)
 {
+    KServiceGroup::Ptr grp;
     KServiceGroup* group = this;
 
     // If the entries haven't been loaded yet, we have to reload ourselves
@@ -320,9 +321,9 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
 
     if (!m_bDeep) {
 
-        group =
-            KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true).data();
+        grp = KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
 
+        group = grp.data();
         if (0 == group) // No guarantee that we still exist!
             return List();
     }
@@ -338,7 +339,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
     {
         KSycocaEntry::Ptr p = (*it);
-	bool noDisplay = p->isType(KST_KServiceGroup) ?
+        bool noDisplay = p->isType(KST_KServiceGroup) ?
                                    static_cast<KServiceGroup *>(p.data())->noDisplay() :
                                    static_cast<KService *>(p.data())->noDisplay();
         if (excludeNoDisplay && noDisplay)
