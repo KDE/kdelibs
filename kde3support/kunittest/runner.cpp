@@ -67,7 +67,7 @@ namespace KUnitTest
         for ( int i = 0; i < modules.count(); ++i )
         {
             QString module = modules[i];
-            kDebug() << "Module: " << dir.absolutePath() + "/" + module << endl;
+            kDebug() << "Module: " << dir.absolutePath() + '/' + module << endl;
 
             if ( reQuery.indexIn(module) != -1 )
             {

@@ -68,10 +68,10 @@ K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *pa
   QString appPageText = aboutData->shortDescription() + '\n';
 
   if (!aboutData->otherText().isEmpty())
-    appPageText += "\n" + aboutData->otherText()+'\n';
+    appPageText += '\n' + aboutData->otherText() + '\n';
 
   if (!aboutData->copyrightStatement().isEmpty())
-    appPageText += "\n" + aboutData->copyrightStatement()+'\n';
+    appPageText += '\n' + aboutData->copyrightStatement() + '\n';
 
   K3AboutContainer *appPage = addContainerPage( i18n("&About"));
 
