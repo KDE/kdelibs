@@ -64,7 +64,7 @@ class KPKCS12Item : public K3ListViewItem {
 class KCertPart : public KParts::ReadWritePart {
 Q_OBJECT
 public:
-  KCertPart(QWidget *parentWidget,
+  explicit KCertPart(QWidget *parentWidget,
             QObject *parent = 0L,
 	    const QStringList &args = QStringList() );
   virtual ~KCertPart();
@@ -130,5 +130,6 @@ private:
 
 
 #endif
+
 
 

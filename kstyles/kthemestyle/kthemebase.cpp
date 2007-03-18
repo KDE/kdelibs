@@ -1154,7 +1154,7 @@ void KThemeBase::applyMiscResourceGroup( QSettings *config )
 #endif
 }
 
-static int readNumEntry( Prop& prop, QString setting, int def )
+static int readNumEntry( Prop& prop, const QString &setting, int def )
 {
     bool ok;
     QString s_val = prop[ setting ];
@@ -1164,7 +1164,7 @@ static int readNumEntry( Prop& prop, QString setting, int def )
     return def;
 }
 
-static QColor readColorEntry( Prop& prop, QString setting, const QColor& def )
+static QColor readColorEntry( Prop& prop, const QString &setting, const QColor& def )
 {
     QString s_val = prop[ setting ];
     if ( !s_val.isEmpty() )
