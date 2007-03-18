@@ -62,7 +62,7 @@ void AutoStart::setPhaseDone()
    m_phasedone = true;
 }
 
-static QString extractName(QString path)
+static QString extractName(QString path) // krazy:exclude=passbyvalue
 {
   int i = path.lastIndexOf('/');
   if (i >= 0)

@@ -1682,7 +1682,7 @@ int main(int argc, char **argv, char **envp)
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
-   // which seems to be buggy and always use KGlobal instead of the maching KComponentData)
+   // which seems to be buggy and always use KGlobal instead of the matching KComponentData)
    Q_ASSERT(!KGlobal::hasMainComponent());
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
@@ -1795,4 +1795,5 @@ int main(int argc, char **argv, char **envp)
 
    return 0;
 }
+
 

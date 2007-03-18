@@ -199,7 +199,7 @@ int handle_request(klauncher_header request_header, char *request_data)
       fprintf(stderr,"return pid\n");
     }
     else {
-      char *error = "error occured";
+      char *error = "error occurred";
       response_header.cmd = LAUNCHER_ERROR;
       response_header.arg_length = strlen(error)+1;
       strcpy(response_data,error);

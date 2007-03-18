@@ -50,7 +50,7 @@ int verbose=0;
 QList<QProcess*> startedProcesses;
 
 // internal launch function
-int launch(QString cmd) 
+int launch(const QString &cmd) 
 {
     QProcess *proc = new QProcess();
     proc->start(cmd);
@@ -59,22 +59,22 @@ int launch(QString cmd)
     _PROCESS_INFORMATION* _pid = proc->pid();
     int pid = _pid ? _pid->dwProcessId : 0;
     if (verbose) {
-        fprintf(stderr,"%s",proc->readAllStandardError().data());
-        fprintf(stderr,"%s",proc->readAllStandardOutput().data());
+        fprintf(stderr,"%s",proc->readAllStandardError().constData());
+        fprintf(stderr,"%s",proc->readAllStandardOutput().constData());
     }
     if (pid) {
        if (verbose)
-           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", cmd.toAscii().data(),(long) pid);
+           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", qPrintable(cmd),(long) pid);
     }
     else {
        if (verbose)
-           fprintf(stderr, "kdeinit4: could not launch %s, exiting",cmd.toAscii().data());
+           fprintf(stderr, "kdeinit4: could not launch %s, exiting",qPrintable(cmd));
     }
     return pid;
 }
 
 /// check dbus registration
-bool checkIfRegisteredInDBus(QString name, int _timeout=10)
+bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
 {
     int timeout = _timeout * 5;
     while(timeout) {
@@ -85,11 +85,11 @@ bool checkIfRegisteredInDBus(QString name, int _timeout=10)
     }
 		if (!timeout) {
 			if (verbose)
-			    fprintf(stderr,"not registered %s in dbus after %d secs\n",name.toAscii().data(),_timeout);
+			    fprintf(stderr,"not registered %s in dbus after %d secs\n",qPrintable(name),_timeout);
 			return false;
 		}
 		if (verbose)
-		    fprintf(stderr,"%s is registered in dbus\n",name.toAscii().data());
+		    fprintf(stderr,"%s is registered in dbus\n",qPrintable(name));
     return true;
 }
 
@@ -108,8 +108,8 @@ class ProcessList {
     public: 
        ProcessList() {initProcessList(); }
        ~ProcessList();
-       ProcessListEntry *hasProcessInList(QString name);
-       bool terminateProcess(QString name);
+       ProcessListEntry *hasProcessInList(const QString &name);
+       bool terminateProcess(const QString &name);
        void dumpList();
     private:
        void initProcessList(); 
@@ -126,7 +126,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
 
     HANDLE hProcess = OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
                                    PROCESS_VM_READ | PROCESS_TERMINATE,
-                                   FALSE, processID );
+                                   false, processID );
 
     // Get the process name.
 
@@ -196,31 +196,31 @@ void ProcessList::dumpList()
 /** 
  return process list entry of given name
 */ 
-ProcessListEntry *ProcessList::hasProcessInList(QString name)
+ProcessListEntry *ProcessList::hasProcessInList(const QString &name)
 {
     ProcessListEntry *ple;
     foreach(ple,processList) {
         if (ple->name == name || ple->name == name + ".exe") {
             if (verbose)
-                fprintf(stderr,"found %s with pid=%d\n",ple->name.toAscii().data(),ple->pid);
+                fprintf(stderr,"found %s with pid=%d\n",qPrintable(ple->name),ple->pid);
             return ple;
         }
     }
     return NULL;
 }
 
-bool ProcessList::terminateProcess(QString name)
+bool ProcessList::terminateProcess(const QString &name)
 {
     ProcessListEntry *p = hasProcessInList(name);
     if (p) {
         int ret = TerminateProcess(p->handle,0) ? true : false;
         if (verbose)
-            fprintf(stderr,"process %s terminated %d %d\n",name.toAscii().data(),ret,GetLastError());
+            fprintf(stderr,"process %s terminated %d %d\n",qPrintable(name),ret,GetLastError());
         return ret;
     }
     else {
        if (verbose)
-           fprintf(stderr,"process %s not found\n",name.toAscii().data());
+           fprintf(stderr,"process %s not found\n",qPrintable(name));
        return false;
     }
 }    
@@ -228,27 +228,26 @@ bool ProcessList::terminateProcess(QString name)
 
 int main(int argc, char **argv, char **envp)
 {
-    int i;
     pid_t pid;
-    int launch_dbus = 1;
-    int launch_klauncher = 1;
-    int launch_kded = 1;
-    int suicide = 0;
-    int terminate_kde = 0;    
+    bool launch_dbus = true;
+    bool launch_klauncher = true;
+    bool launch_kded = true;
+    bool suicide = false;
+//    bool terminate_kde = false;       // unused atm
 
     ProcessList processList;
 
     /** Save arguments first... **/
     char **safe_argv = (char **) malloc( sizeof(char *) * argc);
-    for(i = 0; i < argc; i++)
+    for(int i = 0; i < argc; i++)
     {
         safe_argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
         if (strcmp(safe_argv[i], "--no-dbus") == 0)
-            launch_dbus = 0;
+            launch_dbus = false;
         if (strcmp(safe_argv[i], "--no-klauncher") == 0)
-            launch_klauncher = 0;
+            launch_klauncher = false;
         if (strcmp(safe_argv[i], "--no-kded") == 0)
-            launch_kded = 0;
+            launch_kded = false;
         if (strcmp(safe_argv[i], "--suicide") == 0)
             suicide = true;
 //        if (strcmp(safe_argv[i], "--exit") == 0)
@@ -324,7 +323,7 @@ int main(int argc, char **argv, char **envp)
     }
 
     /** Free arguments **/
-    for(i = 0; i < argc; i++)
+    for(int i = 0; i < argc; i++)
     {
           free(safe_argv[i]);
     }
@@ -346,4 +345,3 @@ int main(int argc, char **argv, char **envp)
     }
     return 0;
 }
-
