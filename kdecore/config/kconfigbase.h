@@ -928,8 +928,7 @@ public:
   /**
    * Deletes a configuration entry group
    *
-   * If the group is not empty and Recursive is not set, nothing gets
-   * deleted and false is returned.
+   * If the group is not empty and Recursive is not set, nothing gets deleted
    * If this group is the current group and it is deleted, the
    * current group is undefined and should be set with setGroup()
    * before the next operation on the configuration object.
