@@ -120,9 +120,9 @@ class KPluginInfoLVI
     : public QTreeWidgetItem
 {
 public:
-    KPluginInfoLVI(QString itemTitle, QTreeWidget *parent);
+    KPluginInfoLVI(const QString &itemTitle, QTreeWidget *parent);
     KPluginInfoLVI(KPluginInfo *pluginInfo, QTreeWidgetItem *parent);
-    KPluginInfoLVI(QString itemTitle, QTreeWidgetItem *parent,
+    KPluginInfoLVI(const QString &itemTitle, QTreeWidgetItem *parent,
                    KPluginInfo *pluginInfo = 0);
     ~KPluginInfoLVI();
 

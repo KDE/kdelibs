@@ -114,7 +114,7 @@ class KUTILS_EXPORT KCModuleLoader
      * @internal
      */
     static KCModule* reportError( ErrorReporting report, const QString & text,
-        QString details, QWidget * parent );
+        const QString &details, QWidget * parent );
 
   private:
 
@@ -122,7 +122,7 @@ class KUTILS_EXPORT KCModuleLoader
      * Internal loader called by the public loaders.
      * @internal
      */
-    static KCModule* load( const KCModuleInfo& mod, QByteArray libprefix,
+    static KCModule* load( const KCModuleInfo& mod, const QByteArray &libprefix,
         ErrorReporting report, QWidget* parent, const QStringList& );
 
 };

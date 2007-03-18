@@ -59,7 +59,7 @@ class KCMError : public KCModule
 
 
 
-KCModule* KCModuleLoader::load(const KCModuleInfo &mod, QByteArray libprefix,
+KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QByteArray &libprefix,
     ErrorReporting report, QWidget * parent, const QStringList& args )
 {
   // get the library loader instance
@@ -191,8 +191,9 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
 }
 
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
-        QString details, QWidget * parent )
+        const QString &details_, QWidget * parent )
 {
+  QString details = details_;
   if( details.isNull() )
     details = i18n("<qt><p>The diagnostics is:<br>%1"
         "<p>Possible reasons:</p><ul><li>An error occurred during your last "

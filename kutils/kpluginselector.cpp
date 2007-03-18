@@ -44,7 +44,7 @@
 #include "kcmoduleproxy.h"
 #include <kconfiggroup.h>
 
-KPluginInfoLVI::KPluginInfoLVI(QString itemTitle, QTreeWidget *parent)
+KPluginInfoLVI::KPluginInfoLVI(const QString &itemTitle, QTreeWidget *parent)
     : QTreeWidgetItem(parent, QStringList(itemTitle))
     , m_pluginInfo(0)
     , m_cfgGroup(0)
@@ -73,7 +73,7 @@ KPluginInfoLVI::KPluginInfoLVI(KPluginInfo *pluginInfo, QTreeWidgetItem *parent)
     setToolTip(0, toolTip);
 }
 
-KPluginInfoLVI::KPluginInfoLVI(QString itemTitle, QTreeWidgetItem *parent,
+KPluginInfoLVI::KPluginInfoLVI(const QString &itemTitle, QTreeWidgetItem *parent,
                                KPluginInfo *pluginInfo)
     : QTreeWidgetItem(parent, QStringList(itemTitle))
     , m_pluginInfo(pluginInfo)
