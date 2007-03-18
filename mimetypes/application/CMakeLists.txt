@@ -119,6 +119,7 @@ install( FILES
 	x-kde-wallet.desktop
 	x-kformula.desktop
 	x-kivio.desktop
+	x-kns.desktop
 	x-kontour.desktop  
 	x-kpovmodeler.desktop
 	x-kpresenter.desktop
