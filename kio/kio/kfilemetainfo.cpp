@@ -89,7 +89,7 @@ public:
         }
     }
     void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
-        const unsigned char* data, int32_t size) {
+        const unsigned char* data, uint32_t size) {
         if (idx->writerData()) {
             QByteArray d((const char*)data, size);
             addField(idx, fieldname, QVariant(d));
@@ -97,6 +97,18 @@ public:
     }
     void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             uint32_t value) {
+        if (idx->writerData()) {
+            addField(idx, fieldname, value);
+        }
+    }
+    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+            int32_t value) {
+        if (idx->writerData()) {
+            addField(idx, fieldname, value);
+        }
+    }
+    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+            double value) {
         if (idx->writerData()) {
             addField(idx, fieldname, value);
         }
@@ -141,7 +153,7 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
-    Strigi::AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer, indexer);
+    AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer, indexer);
 
     idx.setWriterData(&items);
     indexer.analyze(idx, &strigiStream);
