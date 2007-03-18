@@ -13,6 +13,9 @@ namespace KNS
 
 class QListWidget;
 class QTabWidget;
+class KNSButton;
+class FeedWidget;
+class QFrame;
 
 class KNewStuff2Download : public QWidget
 {
@@ -30,12 +33,30 @@ public slots:
 	void slotPayloadLoaded(KUrl payload);
 	void slotPayloadFailed();
 	void slotInstall();
+protected slots:
+        void resizeEvent(QResizeEvent *event);
+        void buttonToggled(bool checked);
 private:
+        enum CategoryFlag {
+            Recent = 0x1,
+            Wanted = 0x2,
+            Estimated = 0x4
+        };
+        Q_DECLARE_FLAGS(Category, CategoryFlag);
+
+        void switchCategory(KNewStuff2Download::Category category);
+
+        FeedWidget *m_feedtab;
+        KNewStuff2Download::Category m_checkedButton;
 	KNS::Engine *m_engine;
 	QListWidget *m_providerlist;
 	QTabWidget *m_feeds;
 	QWidget *m_activefeed;
 	KNS::Entry *m_activeentry;
+        QFrame *frame;
+        KNSButton *recentButton;
+        KNSButton *estimatedButton;
+        KNSButton *wantedButton;
 };
 
 #endif
