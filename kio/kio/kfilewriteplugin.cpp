@@ -19,8 +19,15 @@
 */
 #include "kfilemetainfo_private.h"
 #include "kglobal.h"
-#include "kmimetypetrader.h"
+#include "kservicetypetrader.h"
 #include <QHash>
+#include <QDebug>
+
+KFileWritePlugin::KFileWritePlugin(QObject* parent, const QStringList& args)
+        :QObject(parent) {
+}
+KFileWritePlugin::~KFileWritePlugin() {
+}
 
 K_GLOBAL_STATIC(KFileWriterProvider, staticKFileWriterProvider)
 
@@ -35,11 +42,12 @@ KFileWriterProvider::~KFileWriterProvider() {
 }
 
 KFileWritePlugin*
-KFileWriterProvider::loadPlugin(const QString& /*mimetype*/, const QString& key) {
-    const QString constraint = QString::fromLatin1(
-         "'%1' in MetaDataKeys" ).arg(key);
-    KService::List offers;// = KMimeTypeTrader::self()->query(mimetype,
-        //"KFileWritePlugin", constraint);
+KFileWriterProvider::loadPlugin(const QString& key) {
+    qDebug() << "loading writer for key " << key;
+    const QString constraint = QString::fromLatin1("'%1' in MetaDataKeys")
+        .arg(key);
+    KService::List offers = KServiceTypeTrader::self()->query(
+        "KFileWrite", constraint);
     if (offers.isEmpty()) {
         return 0;
     }
@@ -50,17 +58,6 @@ KFileWriterProvider::loadPlugin(const QString& /*mimetype*/, const QString& key)
     KFileWritePlugin* plugin
         = KService::createInstance<KFileWritePlugin>(service);
     return plugin;
-}
-
-KFileWritePlugin*
-KFileWriterProvider::plugin(const QString& key, const KUrl& /*url*/,
-        const QStringList& mimetypes) {
-    KFileWritePlugin* w = 0;
-    foreach (const QString& mt, mimetypes) {
-        w = loadPlugin(mt, key);
-        if (w) break;
-    }
-    return w;
 }
 
 #include "kfilewriteplugin.moc"

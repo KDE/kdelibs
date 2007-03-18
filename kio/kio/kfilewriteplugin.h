@@ -21,17 +21,20 @@
 #define KFILEWRITEPLUGIN_H
 
 #include "kdelibs_export.h"
-#include <QObject>
+#include <QVariant>
+#include <QIODevice>
 
-class QVariant;
 class KUrl;
 
 class KIO_EXPORT KFileWritePlugin : public QObject {
     Q_OBJECT
     friend class KFileWriterProvider;
 public:
-    virtual ~KFileWritePlugin() {}
-    virtual bool write(const KUrl& file, const QVariant& data) = 0;
+    KFileWritePlugin(QObject *parent, const QStringList& args);
+    virtual ~KFileWritePlugin();
+    virtual bool canWrite(QIODevice& file, const QString& key) = 0;
+    virtual bool write(QIODevice& file, const QVariantMap& data) = 0;
+
 };
 
 #endif

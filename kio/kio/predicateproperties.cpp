@@ -23,8 +23,7 @@
 #include <strigi/analyzerconfiguration.h>
 #include <QDebug>
 using namespace Strigi;
-
-// PredicateProperties
+using namespace std;
 
 class PredicateProperties::Private : public QSharedData {
 public:

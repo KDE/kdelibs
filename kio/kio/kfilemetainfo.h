@@ -27,7 +27,6 @@
 #include <QStringList>
 class KUrl;
 
-class KFileMetaInfoItem;
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;
 
 class KFileMetaInfoGroupPrivate;
@@ -47,11 +46,19 @@ private:
 typedef QList<KFileMetaInfoGroup> KFileMetaInfoGroupList;
 
 class KFileMetaInfoPrivate;
+/**
+ * KFileMetaInfo provides metadata extracted from a file or other resource.
+ *
+ * When instantiating an instance of this class, the metadata related to it
+ * will be retrieved and stored in the instance. The data can be inspected
+ * through KFileMetaDataItem objects.
+ **/
 class KIO_EXPORT KFileMetaInfo {
 public:
     /**
      * This is used to specify what a KFileMetaInfo object should read, so
      * you can specify if you want to read "expensive" items or not.
+     * @deprecated
      */
     enum What
     {
@@ -77,6 +84,9 @@ s
     };
     Q_DECLARE_FLAGS(WhatFlags, What)
 
+    /**
+     * @param path 
+     **/
     KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
         WhatFlags w = Everything);
     KFileMetaInfo(const KUrl& url);

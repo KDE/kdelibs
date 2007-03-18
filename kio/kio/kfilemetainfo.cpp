@@ -98,19 +98,19 @@ public:
     void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             uint32_t value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, value);
+            addField(idx, fieldname, QVariant(value));
         }
     }
     void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             int32_t value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, value);
+            addField(idx, fieldname, QVariant(value));
         }
     }
     void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
             double value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, value);
+            addField(idx, fieldname, QVariant(value));
         }
     }
     void addField(const AnalysisResult* idx,
@@ -153,7 +153,8 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
-    AnalysisResult idx((const char*)url.url().toUtf8(), mtime, writer, indexer);
+    qDebug() << "'" << url.url().toUtf8().data() << "'";
+    AnalysisResult idx(url.url().toUtf8().data(), mtime, writer, indexer);
 
     idx.setWriterData(&items);
     indexer.analyze(idx, &strigiStream);
@@ -161,12 +162,16 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // TODO: get data from Nepomuk
 }
 void
-KFileMetaInfoPrivate::initWriters(QIODevice& /*file*/) {
+KFileMetaInfoPrivate::initWriters(QIODevice& file) {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
     for (i = items.begin(); i != items.end(); ++i) {
-        i.value().p->writer =
-            KFileWriterProvider::self()->plugin(i.key(), kurl, mimetypes);
+        KFileWritePlugin *w = 
+            KFileWriterProvider::self()->loadPlugin(i.key());
+        i.value().p->writer = w;
+        if (w) {
+            w->canWrite(file, i.key());
+        }
     }
 }
 
@@ -217,8 +222,10 @@ KFileMetaInfo::applyChanges() {
     // call the writers on the data they can write
     bool ok = true;
     QHash<KFileWritePlugin*, QVariantMap>::const_iterator j;
+    QFile file(p->kurl.path());
+    file.open(QIODevice::ReadOnly);
     for (j = data.begin(); j != data.end(); ++j) {
-        ok &= j.key()->write(p->kurl, j.value());
+        ok &= j.key()->write(file, j.value());
     }
     return ok;
 }

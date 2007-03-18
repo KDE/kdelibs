@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=KFileWrite
+
+Comment=KFileWrite plugin
+
+[PropertyDef::MetaDataKeys]
+Type=QStringList
+

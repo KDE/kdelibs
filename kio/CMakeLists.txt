@@ -285,7 +285,8 @@ install( FILES
  kscan.desktop
  kurifilterplugin.desktop
  renamedialogplugin.desktop
- kfile/kpropertiesdialogplugin.desktop  
+ kfile/kpropertiesdialogplugin.desktop
+ kio/kfilewrite.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )

@@ -29,12 +29,9 @@ namespace Strigi {
 
 class KFileWriterProvider {
 private:
-    KFileWritePlugin* loadPlugin(const QString& mimetype,
-        const QString& key);
     QHash<QString, QHash<QString, KFileWritePlugin*> > loadedWriters;
 public:
-    KFileWritePlugin* plugin(const QString& key, const KUrl& url,
-        const QStringList& mimetypes);
+    KFileWritePlugin* loadPlugin(const QString& key);
     QHash<QString, KFileWritePlugin*> plugins;
     ~KFileWriterProvider();
     static KFileWriterProvider* self();
