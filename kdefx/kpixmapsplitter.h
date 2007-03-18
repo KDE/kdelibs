@@ -27,7 +27,6 @@
 
 #include <kdelibs_export.h>
 
-class KPixmapSplitterPrivate;
 /**
  * @short A class to split a pixmap into several items.
  *
@@ -70,7 +69,7 @@ public:
     /**
      * @returns the pixmap that has been set via setPixmap().
      */
-    const QPixmap& pixmap() const { return m_pixmap; }
+    const QPixmap& pixmap() const;
 
     /**
      * Sets the size of the items you want to get out of the given pixmap.
@@ -83,7 +82,7 @@ public:
      * @returns the set size of the items (coordinates) you want to get
      * out of the given pixmap.
      */
-    QSize itemSize() const { return m_itemSize; }
+    const QSize &itemSize() const;
 
     /**
      * If there is space between rows in the given pixmap, you have to specify
@@ -110,17 +109,9 @@ public:
     QRect coordinates( const QChar& ch );
 
 private:
-    QPixmap m_pixmap;
-    QSize m_itemSize;
-
-    int m_vSpacing;
-    int m_hSpacing;
-
-    int m_numCols;
-    int m_numRows;
-
-    bool m_dirty;
-    KPixmapSplitterPrivate* d;
+    Q_DISABLE_COPY(KPixmapSplitter)
+    class KPixmapSplitterPrivate;
+    KPixmapSplitterPrivate* const d;
 };
 
 #endif // KPIXMAPSPLITTER_H

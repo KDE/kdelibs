@@ -19,73 +19,104 @@
 
 #include "kpixmapsplitter.h"
 
+class KPixmapSplitter::KPixmapSplitterPrivate
+{
+public:
+    QPixmap pixmap;
+    QSize itemSize;
+
+    int vSpacing;
+    int hSpacing;
+
+    int numCols;
+    int numRows;
+
+    bool dirty;
+
+    KPixmapSplitterPrivate()
+     : itemSize( 4, 7 ),
+       vSpacing( 0 ),
+       hSpacing( 0 ),
+       numCols( 0 ),
+       numRows( 0 ),
+       dirty( false )
+    {
+    }
+};
+
 KPixmapSplitter::KPixmapSplitter()
-    : m_itemSize( 4, 7 ),
-      m_vSpacing( 0 ),
-      m_hSpacing( 0 ),
-      m_numCols( 0 ),
-      m_numRows( 0 ),
-      m_dirty( false )
+ : d(new KPixmapSplitterPrivate)
 {
 }
 
 KPixmapSplitter::~KPixmapSplitter()
 {
+    delete d;
 }
 
 void KPixmapSplitter::setPixmap( const QPixmap& pixmap )
 {
-    m_pixmap = pixmap;
-    m_dirty = true;
+    d->pixmap = pixmap;
+    d->dirty = true;
+}
+
+const QPixmap &KPixmapSplitter::pixmap() const
+{
+    return d->pixmap;
 }
 
 void KPixmapSplitter::setItemSize( const QSize& size )
 {
-    if ( size != m_itemSize ) {
-	m_itemSize = size;
-	m_dirty = true;
+    if ( size != d->itemSize ) {
+	d->itemSize = size;
+	d->dirty = true;
     }
+}
+
+const QSize &KPixmapSplitter::itemSize() const
+{
+    return d->itemSize;
 }
 
 void KPixmapSplitter::setVSpacing( int spacing )
 {
-    if ( spacing != m_vSpacing ) {
-	m_vSpacing = spacing;
-	m_dirty = true;
+    if ( spacing != d->vSpacing ) {
+	d->vSpacing = spacing;
+	d->dirty = true;
     }
 }
 
 void KPixmapSplitter::setHSpacing( int spacing )
 {
-    if ( spacing != m_hSpacing ) {
-	m_hSpacing = spacing;
-	m_dirty = true;
+    if ( spacing != d->hSpacing ) {
+	d->hSpacing = spacing;
+	d->dirty = true;
     }
 }
 
 
 QRect KPixmapSplitter::coordinates( int pos )
 {
-    if ( pos < 0 || m_pixmap.isNull() )
+    if ( pos < 0 || d->pixmap.isNull() )
 	return QRect();
 
-    if ( m_dirty ) {
-	m_numCols = m_pixmap.width() / ( m_itemSize.width() + m_hSpacing );
-	m_numRows = m_pixmap.height() / ( m_itemSize.height() + m_vSpacing );
-	m_dirty = false;
+    if ( d->dirty ) {
+	d->numCols = d->pixmap.width() / ( d->itemSize.width() + d->hSpacing );
+	d->numRows = d->pixmap.height() / ( d->itemSize.height() + d->vSpacing );
+	d->dirty = false;
 	// qDebug("cols: %i, rows: %i (pixmap: %i, %i)", m_numCols, m_numRows, m_pixmap.width(), m_pixmap.height());
     }
 
-    if ( m_numCols == 0 || m_numRows == 0 )
+    if ( d->numCols == 0 || d->numRows == 0 )
 	return QRect();
 
-    int row = pos / m_numCols;
-    int col = pos - (row * m_numCols);
+    int row = pos / d->numCols;
+    int col = pos - (row * d->numCols);
 
-    return QRect( col * (m_itemSize.width() + m_hSpacing),
-		  row * (m_itemSize.height() + m_vSpacing),
-		  m_itemSize.width(),
-		  m_itemSize.height() );
+    return QRect( col * (d->itemSize.width() + d->hSpacing),
+		  row * (d->itemSize.height() + d->vSpacing),
+		  d->itemSize.width(),
+		  d->itemSize.height() );
 }
 
 QRect KPixmapSplitter::coordinates( const QChar& ch )
