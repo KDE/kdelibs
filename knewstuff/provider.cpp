@@ -68,7 +68,7 @@ static ProviderPrivate *d_prov(const Provider *p)
   return ret;
 }
 
-KUrl Provider::downloadUrlVariant( QString variant ) const
+KUrl Provider::downloadUrlVariant( const QString &variant ) const
 {
   if((variant == "latest") && (d_prov(this)->mDownloadUrlLatest.isValid()))
     return d_prov(this)->mDownloadUrlLatest;

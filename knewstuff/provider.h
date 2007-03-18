@@ -93,7 +93,7 @@ class KNEWSTUFF_EXPORT Provider
      *
      * @return download specific URL
      */
-    KUrl downloadUrlVariant( QString variant ) const;
+    KUrl downloadUrlVariant( const QString &variant ) const;
 
     /**
      * Sets the upload URL.
