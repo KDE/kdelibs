@@ -46,9 +46,8 @@ class KMessageHandler;
  * Some KMessageHandler are already done such as KMessageBoxMessageHandler and KPassivePopupMessageHandler.
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDECORE_EXPORT KMessage
+namespace KMessage
 {
-public:
     enum MessageType
     {
         /**
@@ -86,19 +85,15 @@ public:
      * @param text Long message to be displayed.
      * @param caption Caption to be used. This is optional.
      */ 
-    static void message(KMessage::MessageType messageType, const QString &text, const QString &caption = QString());
+    KDECORE_EXPORT void message(KMessage::MessageType messageType, const QString &text, const QString &caption = QString());
 
     /**
      * @brief Set the current KMessageHandler
      * Note that this method take ownership of the KMessageHandler.
      * @param handler Instance of a real KMessageHandler.
      */
-    static void setMessageHandler(KMessageHandler *handler);
-
-private:
-    KMessage();
-    Q_DISABLE_COPY(KMessage)
-};
+    KDECORE_EXPORT void setMessageHandler(KMessageHandler *handler);
+}
 
 /**
  * @brief Abstract class for KMessage handler.
