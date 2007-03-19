@@ -21,7 +21,7 @@
 #define SOLID_IFACES_NETWORKMANAGER
 
 #include <QObject>
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 namespace Solid
 {

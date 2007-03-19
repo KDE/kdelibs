@@ -24,7 +24,7 @@
 #include <QtCore/QObject>
 #include <QtGui/QWidget>
 
-#include <kdelibs_export.h>
+#include <kparts/kparts_export.h>
 
 class KComponentData;
 

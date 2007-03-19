@@ -20,7 +20,7 @@
 #ifndef SOLID_IFACES_BATTERY_H
 #define SOLID_IFACES_BATTERY_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/battery.h>
 #include <solid/ifaces/capability.h>

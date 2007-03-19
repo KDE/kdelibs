@@ -25,7 +25,7 @@
 #include <QString>
 #include <QMap>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 #include <solid/device.h>

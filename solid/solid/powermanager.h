@@ -20,7 +20,7 @@
 #ifndef SOLID_POWERMANAGER_H
 #define SOLID_POWERMANAGER_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/managerbase.h>
 

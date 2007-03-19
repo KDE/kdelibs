@@ -20,7 +20,7 @@
 #ifndef SOLID_DVBHW_H
 #define SOLID_DVBHW_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 

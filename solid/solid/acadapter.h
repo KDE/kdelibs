@@ -20,7 +20,7 @@
 #ifndef SOLID_ACADAPTER_H
 #define SOLID_ACADAPTER_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 

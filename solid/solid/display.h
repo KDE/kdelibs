@@ -21,7 +21,7 @@
 #ifndef SOLID_DISPLAY_H
 #define SOLID_DISPLAY_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 

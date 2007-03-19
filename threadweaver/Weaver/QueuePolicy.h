@@ -29,7 +29,7 @@
 #ifndef QUEUEPOLICY_H
 #define QUEUEPOLICY_H
 
-#include <kdelibs_export.h>
+#include <threadweaver/threadweaver_export.h>
 
 namespace ThreadWeaver {
 

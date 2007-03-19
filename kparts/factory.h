@@ -22,6 +22,8 @@
 
 #include <klibloader.h>
 
+#include <kparts/kparts_export.h>
+
 class QByteArray;
 class QWidget;
 

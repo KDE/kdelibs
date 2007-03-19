@@ -20,7 +20,7 @@
 #ifndef SOLID_IFACES_NETWORK_H
 #define SOLID_IFACES_NETWORK_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <QObject>
 #include <QList>

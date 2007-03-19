@@ -20,7 +20,7 @@
 #ifndef SOLID_IFACES_VOLUME_H
 #define SOLID_IFACES_VOLUME_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/ifaces/block.h>
 #include <solid/volume.h>

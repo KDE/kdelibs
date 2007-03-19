@@ -24,7 +24,7 @@
 #include <QMap>
 #include <QString>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 namespace Solid
 {

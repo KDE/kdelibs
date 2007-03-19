@@ -22,7 +22,7 @@
 
 #include <QList>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/ifaces/storage.h>
 #include <solid/cdrom.h>

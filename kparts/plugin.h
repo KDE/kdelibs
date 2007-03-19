@@ -25,6 +25,8 @@
 #include <kaction.h>
 #include <kxmlguiclient.h>
 
+#include <kparts/kparts_export.h>
+
 class KComponentData;
 
 namespace KParts

@@ -9,3 +9,4 @@ NameSpace=DNSSD
 SetUserTexts=false
 Singleton=true
 Visibility=KDNSSD_EXPORT
+IncludeFiles=dnssd/dnssd_export.h

@@ -31,7 +31,7 @@
 
 #include <QString>
 
-#include <kdelibs_export.h>
+#include <threadweaver/threadweaver_export.h>
 
 namespace ThreadWeaver {
 

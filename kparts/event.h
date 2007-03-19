@@ -22,7 +22,7 @@
 
 #include <qevent.h>
 
-#include <kdelibs_export.h>
+#include <kparts/kparts_export.h>
 
 class QWidget;
 

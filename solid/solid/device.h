@@ -25,7 +25,7 @@
 #include <QMap>
 #include <QList>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/frontendobject.h>
 #include <solid/capability.h>

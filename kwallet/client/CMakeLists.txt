@@ -27,5 +27,5 @@ install(TARGETS kwalletclient  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES kwallet.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES kwallet_export.h kwallet.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 

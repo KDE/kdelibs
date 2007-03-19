@@ -20,7 +20,7 @@
 #ifndef SOLID_CAMERA_H
 #define SOLID_CAMERA_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 

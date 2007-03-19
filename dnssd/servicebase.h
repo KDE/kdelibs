@@ -24,7 +24,7 @@
 #include <qmap.h>
 #include <QString>
 #include <ksharedptr.h>
-#include <kdelibs_export.h>
+#include <dnssd/dnssd_export.h>
 
 class QDataStream;
 namespace DNSSD

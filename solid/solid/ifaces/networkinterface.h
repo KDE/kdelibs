@@ -21,7 +21,7 @@
 #define SOLID_IFACES_NETWORKINTERFACE_H
 
 #include <QList>
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/networkinterface.h>
 

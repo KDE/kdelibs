@@ -29,7 +29,7 @@
 #include <QtCore/QObject>
 #include <qwindowdefs.h>
 
-#include <kdelibs_export.h>
+#include <kwallet_export.h>
 
 class OrgKdeKWalletInterface;
 

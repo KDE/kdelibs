@@ -4,7 +4,7 @@
 #include <QtCore/QObject>
 #include <qvariant.h>
 
-#include <kdelibs_export.h>
+#include <kparts/kparts_export.h>
 
 namespace KParts
 {

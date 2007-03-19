@@ -27,6 +27,8 @@
 #include <qcoreevent.h>
 #include <kxmlguiclient.h>
 
+#include <kparts/kparts_export.h>
+
 #define KPARTS_DECLARE_PRIVATE(Class) \
     inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(PartBase::d_ptr); } \
     inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(PartBase::d_ptr); } \

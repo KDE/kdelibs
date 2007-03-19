@@ -111,14 +111,6 @@
 # endif
 #endif
 
-#ifndef KPARTS_EXPORT
-# ifdef MAKE_KPARTS_LIB
-#  define KPARTS_EXPORT KDE_EXPORT
-# else
-#  define KPARTS_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KTEXTEDITOR_EXPORT
 # ifdef MAKE_KTEXTEDITOR_LIB
 #  define KTEXTEDITOR_EXPORT KDE_EXPORT
@@ -231,14 +223,6 @@
 # endif
 #endif
 
-#ifndef KICE_EXPORT
-# ifdef MAKE_KICE_LIB
-#  define KICE_EXPORT KDE_EXPORT
-# else
-#  define KICE_EXPORT KDE_IMPORT
-# endif 
-#endif 
-
 #ifndef KJS_EXPORT
 # ifdef MAKE_KJS_LIB
 #  define KJS_EXPORT KDE_EXPORT
@@ -254,30 +238,6 @@
 #  define KJSEMBED_EXPORT KDE_IMPORT
 # endif 
 #endif 
-
-#ifndef KWALLETCLIENT_EXPORT
-# ifdef MAKE_KWALLETCLIENT_LIB
-#  define KWALLETCLIENT_EXPORT KDE_EXPORT
-# else
-#  define KWALLETCLIENT_EXPORT KDE_IMPORT
-# endif 
-#endif 
-
-#ifndef KWALLETBACKEND_EXPORT
-# ifdef MAKE_KWALLETBACKEND_LIB
-#  define KWALLETBACKEND_EXPORT KDE_EXPORT
-# else
-#  define KWALLETBACKEND_EXPORT KDE_IMPORT
-# endif 
-#endif 
-
-#ifndef KDNSSD_EXPORT
-# ifdef MAKE_KDNSSD_LIB
-#  define KDNSSD_EXPORT KDE_EXPORT
-# else
-#  define KDNSSD_EXPORT KDE_IMPORT
-# endif
-#endif
 
 #ifndef KDED_EXPORT
 # ifdef MAKE_KDED_LIB
@@ -407,22 +367,6 @@
 # endif
 #endif
 
-#ifndef SOLID_EXPORT
-# ifdef MAKE_SOLID_LIB
-#  define SOLID_EXPORT KDE_EXPORT
-# else
-#  define SOLID_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef SOLIDIFACES_EXPORT
-# ifdef MAKE_SOLIDIFACES_LIB
-#  define SOLIDIFACES_EXPORT KDE_EXPORT
-# else
-#  define SOLIDIFACES_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KNOTIFYCONFIG_EXPORT
 # ifdef MAKE_KNOTIFYCONFIG_LIB
 #  define KNOTIFYCONFIG_EXPORT KDE_EXPORT
@@ -436,14 +380,6 @@
 #  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 # else
 #  define KIOSLAVE_FILE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef THREADWEAVER_EXPORT
-# ifdef MAKE_THREADWEAVER_LIB
-#  define THREADWEAVER_EXPORT KDE_EXPORT
-# else
-#  define THREADWEAVER_EXPORT KDE_IMPORT
 # endif
 #endif
 

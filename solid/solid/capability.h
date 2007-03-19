@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QFlags>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/frontendobject.h>
 

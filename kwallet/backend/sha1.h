@@ -22,7 +22,7 @@
 #ifndef __sha1__ko__h
 #define __sha1__ko__h
 
-#include <kdelibs_export.h>
+#include <kwallet_export.h>
 
 /* @internal
  */

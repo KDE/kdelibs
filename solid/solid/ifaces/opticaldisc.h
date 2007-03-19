@@ -20,7 +20,7 @@
 #ifndef SOLID_IFACES_OPTICALDISC_H
 #define SOLID_IFACES_OPTICALDISC_H
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/ifaces/volume.h>
 #include <solid/opticaldisc.h>

@@ -33,7 +33,7 @@
 #endif
 
 #include "blockcipher.h"
-#include <kdelibs_export.h>
+#include <kwallet_export.h>
 
 /* @internal
  */

@@ -23,7 +23,7 @@
 #include <QVariant>
 #include <QSet>
 
-#include <kdelibs_export.h>
+#include <solid/solid_export.h>
 
 #include <solid/capability.h>
 

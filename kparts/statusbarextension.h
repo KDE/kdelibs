@@ -23,7 +23,7 @@
 
 #include <QtGui/QWidget>
 
-#include <kdelibs_export.h>
+#include <kparts/kparts_export.h>
 #include <QList>
 
 class KStatusBar;
