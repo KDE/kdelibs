@@ -110,7 +110,6 @@ set(kiocore_STAT_SRCS
   kio/defaultprogress.cpp
   kio/statusbarprogress.cpp
   kio/kdirnotify.cpp
-  kio/observeradaptor.cpp
   kio/kemailsettings.cpp
   kio/renamedialog.cpp
   kio/renamedialogplugin.cpp
@@ -125,8 +124,6 @@ set(kiocore_STAT_SRCS
   kio/klimitediodevice.cpp
 )
 
-
-qt4_add_dbus_interface( kiocore_STAT_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/kio/org.kde.KIO.UIServer.xml kio/uiserveriface )
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/kio/kautomount.cpp)
@@ -413,5 +410,3 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
-install(FILES kio/org.kde.KIO.UIServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
-install(FILES kio/org.kde.KIO.Observer.xml DESTINATION ${DBUS_INTERFACES_DIR})

@@ -27,6 +27,7 @@
 
 #include <kwidgetjobtracker.h>
 #include <kstatusbarjobtracker.h>
+#include <kuiserverjobtracker.h>
 
 KTestJob::KTestJob(int numberOfDirs)
     : KJob(), m_numberOfDirs(numberOfDirs), m_currentSpeed(1000), m_state(Stopped)
@@ -160,6 +161,9 @@ int main(int argc, char **argv)
 
     KStatusBarJobTracker *tracker2 = new KStatusBarJobTracker(main, true);
     tracker2->registerJob(testJob);
+
+    KUiServerJobTracker *tracker3 = new KUiServerJobTracker(main);
+    tracker3->registerJob(testJob);
 
     testJob->start();
 

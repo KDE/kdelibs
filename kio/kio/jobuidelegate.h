@@ -30,7 +30,6 @@ class KJob;
 namespace KIO
 {
 class Job;
-class JobUiDelegatePrivate;
 
 /**
  * A UI delegate tuned to be used with KIO Jobs.
@@ -125,16 +124,6 @@ public:
                                       bool multi,
                                       const QString & error_text);
 
-private Q_SLOTS:
-    void slotPercent( KJob *job, unsigned long percent );
-    void slotInfoMessage( KJob *job, const QString &msg );
-    void slotDescription( KJob *job, const QString &title,
-                          const QPair<QString, QString> &field1,
-                          const QPair<QString, QString> &field2 );
-    void slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong total );
-    void slotProcessedAmount( KJob *job, KJob::Unit unit, qulonglong amount );
-    void slotSpeed( KJob *job, unsigned long speed );
-
 protected:
      virtual void connectJob( KJob *job );
 
@@ -143,7 +132,8 @@ protected Q_SLOTS:
     void slotWarning( KJob *job, const QString &errorText );
 
 private:
-    JobUiDelegatePrivate * const d;
+    class Private;
+    Private * const d;
 };
 }
 

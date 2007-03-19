@@ -22,6 +22,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_SOURCE_DIR}/liveui
+ ${CMAKE_CURRENT_BINARY_DIR}/jobs
 )
 
 add_subdirectory( about )
@@ -86,6 +87,7 @@ set(kdeui_LIB_SRCS
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
+ jobs/kuiserverjobtracker.cpp
  kernel/kapplication.cpp
  kernel/kclipboard.cpp
  kernel/kuniqueapplication.cpp
@@ -217,6 +219,9 @@ set( kdeui_UI
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml jobs/uiserverinterface )
+qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy jobs/uiservercallbacks )
+
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
@@ -286,6 +291,7 @@ install( FILES
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
+ jobs/kuiserverjobtracker.h
  kernel/kapplication.h
  kernel/kuniqueapplication.h
  kernel/ksessionmanager.h
@@ -386,5 +392,7 @@ install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
 install( FILES dialogs/40.colors dialogs/Web.colors dialogs/Royal.colors dialogs/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
+install(FILES jobs/org.kde.UiServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
+install(FILES jobs/org.kde.UiServerCallbacks.xml DESTINATION ${DBUS_INTERFACES_DIR})
 
 

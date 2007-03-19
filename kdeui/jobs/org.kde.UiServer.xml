@@ -1,7 +1,7 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
-  <interface name="org.kde.KIO.UIServer">
+  <interface name="org.kde.UiServer">
     <method name="newJob">
       <arg name="appServiceName" type="s" direction="in"/>
       <arg name="capabilities" type="i" direction="in"/>

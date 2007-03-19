@@ -1,6 +1,6 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
-  <interface name="org.kde.KIO.Observer">
+  <interface name="org.kde.UiServerCallbacks">
     <method name="slotActionPerformed">
       <arg name="actionId" type="i" direction="in"/>
       <arg name="jobId" type="i" direction="in"/>
