@@ -36,16 +36,17 @@ set(kbuildsycoca_KDEINIT_SRCS
 
 kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 
-kde4_add_kdeinit_executable( kbuildsycoca NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+# We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde3 one.
+kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDECORE_LIBS} kio )
 
-install(TARGETS kdeinit_kbuildsycoca  DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS kdeinit_kbuildsycoca4  DESTINATION ${LIB_INSTALL_DIR} )
 # ## test. but ideally we don't want the .so installed
-set_target_properties(kdeinit_kbuildsycoca PROPERTIES SOVERSION 4)
+set_target_properties(kdeinit_kbuildsycoca4 PROPERTIES SOVERSION 4)
 
-target_link_libraries( kbuildsycoca kdeinit_kbuildsycoca )
-install(TARGETS kbuildsycoca DESTINATION ${BIN_INSTALL_DIR} )
+target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
+install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 

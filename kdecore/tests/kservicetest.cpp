@@ -42,7 +42,7 @@ void KServiceTest::initTestCase()
 
     if ( !KSycoca::isAvailable() ) {
         // Create ksycoca in ~/.kde-unit-test
-        QProcess::execute( KStandardDirs::findExe("kbuildsycoca"), QStringList() << "--noincremental" );
+        QProcess::execute( KStandardDirs::findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
     }
 }
 

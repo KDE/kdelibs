@@ -40,7 +40,10 @@ class KSycocaFactoryList;
  * Sycoca file name, used internally (by kbuildsycoca)
  */
 #define KSYCOCA_FILENAME "ksycoca4"
-
+/**
+ * Executable name of the kbuildsycoca program
+ */
+#define KBUILDSYCOCA_EXENAME "kbuildsycoca4"
 
 /**
  * @internal

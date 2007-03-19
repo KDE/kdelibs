@@ -36,7 +36,7 @@ void KMimeTypeTest::initTestCase()
 {
     if ( !KSycoca::isAvailable() ) {
         // Create ksycoca in ~/.kde-unit-test
-        QProcess::execute( KGlobal::dirs()->findExe("kbuildsycoca"), QStringList() << "--noincremental" );
+        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
     }
 }
 

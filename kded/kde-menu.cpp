@@ -22,16 +22,17 @@
 #include <QtCore/QFile>
 #include <QtDBus/QtDBus>
 
-#include "kaboutdata.h"
-#include "kapplication.h"
-#include "kcmdlineargs.h"
-#include "kglobal.h"
-#include "klocale.h"
-#include "kservice.h"
-#include "kservicegroup.h"
-#include "kstandarddirs.h"
-#include "ktoolinvocation.h"
+#include <kaboutdata.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kservice.h>
+#include <kservicegroup.h>
+#include <kstandarddirs.h>
+#include <ktoolinvocation.h>
 #include "klauncher_iface.h"
+#include <ksycoca.h>
 
 static KCmdLineOptions options[] = {
    { "utf8", I18N_NOOP("Output data in UTF-8 instead of local encoding"), 0 },
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
       QStringList args;
       args.append("--incremental");
       args.append("--checkstamps");
-      QString command = KStandardDirs::findExe("kbuildsycoca");
+      QString command = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
       QDBusMessage reply = KToolInvocation::klauncher()->call("kdeinit_exec_wait", command, args, QStringList(), QString());
       if (reply.type() != QDBusMessage::ReplyMessage)
       {

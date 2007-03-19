@@ -474,7 +474,7 @@ void KSycoca::flagError()
       Private::_self->d->readError = true;
       if (Private::_self->d->autoRebuild) {
           // Rebuild the damned thing.
-          if (QProcess::execute(KStandardDirs::findExe("kbuildsycoca")) != 0)
+          if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
               qWarning("ERROR: Running KSycoca failed.");
       }
    }

@@ -50,8 +50,8 @@ private:
 void KMimeFileParserTest::initTestCase()
 {
     if ( !KSycoca::isAvailable() ) {
-        // Create ksycoca in ~/.kde-unit-test
-        QProcess::execute( KGlobal::dirs()->findExe("kbuildsycoca"), QStringList() << "--noincremental" );
+        // Create ksycoca4 in ~/.kde-unit-test
+        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
     }
     // Create factory on the heap and don't delete it.
     // It registers to KSycoca, which deletes it at end of program execution.
