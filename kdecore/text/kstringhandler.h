@@ -22,7 +22,6 @@
 #include "kdelibs_export.h"
 
 class QChar;
-class QFontMetrics;
 class QRegExp;
 class QString;
 class QStringList;
@@ -183,35 +182,6 @@ namespace KStringHandler
      */
     KDECORE_EXPORT QString lsqueeze( const QString & str, int maxlen = 40 );
 
-    /** Substitute characters at the beginning of a string by "...". Similar to
-     * method above, except that it truncates based on pixel width rather than
-     * the number of characters
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum length in ems the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     *
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, fontMetrics.maxWidth() * maxlen) instead
-     */
-    KDECORE_EXPORT QString lEmSqueeze( const QString & name,
-                                       const QFontMetrics& fontMetrics,
-                                       int maxlen = 30 );
-
-    /** Substitute characters at the beginning of a string by "...". Similar to
-     * method above, except that maxlen is the width in pixels to truncate to
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxPixels is the maximum pixel length the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     *
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, maxPixels) instead
-     */
-    KDECORE_EXPORT_DEPRECATED QString lPixelSqueeze( const QString & name,
-                                                     const QFontMetrics& fontMetrics,
-                                                     int maxPixels );
-
     /** Substitute characters at the middle of a string by "...".
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
@@ -220,34 +190,6 @@ namespace KStringHandler
      */
     KDECORE_EXPORT QString csqueeze( const QString & str, int maxlen = 40 );
 
-    /** Substitute characters in the middle of a string by "...". Similar to
-     * method above, except that it truncates based on pixel width rather than
-     * the number of characters
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum length in ems the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     *
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, fontMetrics.maxWidth() * maxlen) instead
-     */
-    KDECORE_EXPORT_DEPRECATED QString cEmSqueeze( const QString & name,
-                                                  const QFontMetrics& fontMetrics,
-                                                  int maxlen = 30 );
-
-    /** Substitute characters in the middle of a string by "...". Similar to
-     * method above, except that maxlen is the width in pixels to truncate to
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxPixels is the maximum pixel length the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, maxPixels) instead.
-     */
-    KDECORE_EXPORT_DEPRECATED QString cPixelSqueeze( const QString & name,
-                                                     const QFontMetrics& fontMetrics,
-                                                     int maxPixels );
-
     /** Substitute characters at the end of a string by "...".
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
@@ -255,34 +197,6 @@ namespace KStringHandler
      * @return the modified string
      */
     KDECORE_EXPORT QString rsqueeze( const QString & str, int maxlen = 40 );
-
-    /** Substitute characters at the end of a string by "...". Similar to
-     * method above, except that it truncates based on pixel width rather than
-     * the number of characters
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxlen is the maximum length in ems the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     *
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, fontMetrics.maxWidth() * maxlen) instead
-     */
-    KDECORE_EXPORT_DEPRECATED QString rEmSqueeze( const QString & name,
-                                                  const QFontMetrics& fontMetrics,
-                                                  int maxlen = 30 );
-
-    /** Substitute characters at the end of a string by "...". Similar to
-     * method above, except that maxlen is the width in pixels to truncate to
-     * @param name is the string to modify
-     * @param fontMetrics is the font metrics to use to calculate character sizes
-     * @param maxPixels is the maximum pixel length the modified string will have
-     * If the original string is shorter than "maxlen", it is returned verbatim
-     * @return the modified string
-     * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, maxPixels) instead.
-     */
-    KDECORE_EXPORT_DEPRECATED QString rPixelSqueeze( const QString & name,
-                                                     const QFontMetrics& fontMetrics,
-                                                     int maxPixels );
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static

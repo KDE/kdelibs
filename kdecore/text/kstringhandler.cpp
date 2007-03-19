@@ -22,7 +22,6 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
-#include <qfontmetrics.h>
 #include <qregexp.h>            // for the word ranges
 #include <qstring.h>
 #include <qstringlist.h>
@@ -286,36 +285,6 @@ QString KStringHandler::rsqueeze( const QString & str, int maxlen )
     return QString(str.left(part) + "...");
   }
   else return str;
-}
-
-QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& fontMetrics, int maxlen)
-{
-  return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
-}
-
-QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxPixels)
-{
-  return fontMetrics.elidedText(name, Qt::ElideLeft, maxPixels);
-}
-
-QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxlen)
-{
-  return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
-}
-
-QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, int width)
-{
-  return fm.elidedText(s, Qt::ElideMiddle, width);
-}
-
-QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxlen)
-{
-  return rPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
-}
-
-QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxPixels)
-{
-  return fontMetrics.elidedText(name, Qt::ElideRight, maxPixels);
 }
 
 QStringList KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
