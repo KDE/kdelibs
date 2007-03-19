@@ -19,9 +19,7 @@
 */
 
 #include <config.h>
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #ifdef HAVE_SYS_BITYPES_H
 #include <sys/bitypes.h> /* For uintXX_t on Tru64 */
 #endif
@@ -31,6 +29,7 @@
 
 #include "sha1.h"
 #include <string.h>
+#include <qglobal.h>
 
 // FIXME: this can be optimized to one instruction on most cpus.
 #define rol(x,y) ((x << y) | (x >> (32-y)))
