@@ -39,6 +39,7 @@ add_subdirectory( kssl )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( kfile/tests )
+add_subdirectory( kio/dummyanalyzers )
 
 # for the kfile usage in bookmarks
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
