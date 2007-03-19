@@ -161,7 +161,7 @@ static QString kfsstnd_defaultlibexecdir()
     KStandardDirsSingleton* s = KStandardDirsSingleton::self();
     if (!s->defaultlibexecdir.isEmpty())
         return s->defaultlibexecdir;
-    s->defaultlibexecdir = kfsstnd_defaultprefix() + QLatin1String("/lib" KDELIBSUFF "/kde4/libexec/");
+    s->defaultlibexecdir = kfsstnd_defaultprefix() + QLatin1String("/lib" KDELIBSUFF "/kde4/libexec");
     //if (s->defaultlibexecdir.isEmpty())
     //   kWarning() << "KStandardDirs::kfsstnd_defaultlibexecdir(): default libexec KDE dir not found!" << endl;
     return s->defaultlibexecdir;
