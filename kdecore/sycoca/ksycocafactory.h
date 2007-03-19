@@ -64,7 +64,7 @@ public:
      * Construct an entry from a config file.
      * To be implemented in the real factories.
      */
-    virtual KSycocaEntry *createEntry(const QString &file, const char *resource) = 0;
+    virtual KSycocaEntry *createEntry(const QString &file, const char *resource) const = 0;
 
     /**
      * Add an entry
@@ -80,12 +80,12 @@ public:
     /**
      * Read an entry from the database
      */
-    virtual KSycocaEntry *createEntry(int offset)=0;
+    virtual KSycocaEntry *createEntry(int offset) const = 0;
 
     /**
      * Get a list of all entries from the database.
      */
-    virtual KSycocaEntry::List allEntries();
+    virtual KSycocaEntry::List allEntries() const;
 
     /**
      * Saves all entries it maintains as well as index files

@@ -64,19 +64,19 @@ public:
    * Returns list of all known protocols.
    * @return a list of all protocols
    */
-  QStringList protocols();
-protected:
+  QStringList protocols() const;
 
+protected:
   /**
    * @internal Not used.
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *)
+  virtual KSycocaEntry *createEntry(const QString &, const char *) const
     { return 0; }
 
   /**
    * @internal
    */
-  virtual KProtocolInfo *createEntry(int offset);
+  virtual KProtocolInfo *createEntry(int offset) const;
 
 protected:
   static KProtocolInfoFactory *_self;

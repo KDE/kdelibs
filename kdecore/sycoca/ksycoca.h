@@ -178,26 +178,20 @@ Q_SIGNALS:
     */
    void databaseChanged();
 
-protected: // used by KBuildSycoca
-   KSycocaFactoryList *m_lstFactories;
-   QDataStream *m_str;
+protected:
+    KSycocaFactoryList* factories();
+
+    // @internal used by kbuildsycoca
+    QDataStream *m_str;
 
 private:
-   bool checkVersion(bool abortOnError=true);
-   bool openDatabase(bool openDummyIfNotFound=true);
-   void closeDatabase();
-   bool bNoDatabase;
-   size_t m_sycoca_size;
-   const char *m_sycoca_mmap;
-   quint32 m_timeStamp;
+    bool checkVersion(bool abortOnError=true);
+    bool openDatabase(bool openDummyIfNotFound=true);
+    void closeDatabase();
 
-public:
-   /// @internal use only
-   static KSycoca *_self;
-
-private:
-   class Private;
-   Private *const d;
+    Q_DISABLE_COPY(KSycoca)
+    class Private;
+    Private * d;
 };
 
 #endif

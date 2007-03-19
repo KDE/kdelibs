@@ -48,9 +48,9 @@ public:
   /**
    * Construct a KMimeType from a config file.
    */
-  virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
+  virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
 
-  virtual KMimeType * createEntry( int ) { assert(0); return 0L; }
+  virtual KMimeType * createEntry( int ) const { assert(0); return 0L; }
 
   /**
    * Add entry

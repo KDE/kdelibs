@@ -56,7 +56,7 @@ KServiceTypeFactory::KServiceTypeFactory()
 KServiceTypeFactory::~KServiceTypeFactory()
 {
   _self = 0;
-  KServiceTypeProfile::clear();
+  KServiceTypeProfile::clearCache();
 }
 
 KServiceTypeFactory * KServiceTypeFactory::self()
@@ -109,7 +109,7 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
    return result;
 }
 
-KServiceType * KServiceTypeFactory::createEntry(int offset)
+KServiceType * KServiceTypeFactory::createEntry(int offset) const
 {
    KServiceType *newEntry = 0;
    KSycocaType type;

@@ -56,7 +56,7 @@ public:
    *                 default
    */
   KServiceOffer( const KService::Ptr& _service,
-		 int _pref, bool _default );
+                 int _pref, bool _default );
 
   /**
    * Creates a new KServiceOffer.
@@ -65,46 +65,57 @@ public:
    */
   KServiceOffer( const KService::Ptr& _service, int _pref );
 
+  ~KServiceOffer();
+
   /**
    * A service is bigger that the other when it can be default
    * (and the other is not) and its preference value it higher.
    */
   bool operator< ( const KServiceOffer& ) const;
+
+  /**
+   * Assignment operator
+   */
+  KServiceOffer& operator=( const KServiceOffer& other );
+
   /**
    * Is it allowed to use this service for default actions
    * (e.g. Left Click in a file manager, or KRun in general).
    * @return true if the service is a allowed as default
    */
-  bool allowAsDefault() const { return m_bAllowAsDefault; }
+  bool allowAsDefault() const;
+
   /**
    * The bigger this number is, the better is this service.
    * @return the preference number (negative numbers will be
    *         returned by invalid service offers)
    */
-  int preference() const { return m_iPreference; }
+  int preference() const;
+
   /**
    * The bigger this number is, the better is this service.
    * Set the preference number
    * @internal - only for KMimeTypeTrader
    */
-  void setPreference( int p ) { m_iPreference = p; }
+  void setPreference( int p );
+
   /**
    * The service which this offer is about.
    * @return the service this offer is about, can be 0
    *         in valid offers or when not set
    */
-  KService::Ptr service() const { return m_pService; }
+  KService::Ptr service() const;
+
   /**
    * Check whether the entry is valid. A service is valid if
    * its preference value is positive.
    * @return true if the service offer is valid
    */
-  bool isValid() const { return m_iPreference >= 0; }
+  bool isValid() const;
 
 private:
-  int m_iPreference;
-  bool m_bAllowAsDefault;
-  KService::Ptr m_pService;
+    class Private;
+    Private* d;
 };
 
 /**

@@ -395,6 +395,7 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
     return false;
 }
 
+//TODO: make this a KConfigBackend instead
 class KServiceReadProperty : public KConfigBase
 {
 public:
@@ -421,7 +422,7 @@ public:
 
    template <typename T>
       T readEntry( const QString& pKey, const T& aDefault) const
-   { return mGroup.readEntry(pKey.toUtf8().constData(), aDefault); }
+   { return internalGroup().readEntry(pKey.toUtf8().constData(), aDefault); }
 
 protected:
    QString key;

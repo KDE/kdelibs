@@ -48,7 +48,7 @@ namespace KServiceTypeProfile
     /**
      * Clear all cached information
      */
-    KDECORE_EXPORT void clear(); // TODO: rename to clearCache()
+    KDECORE_EXPORT void clearCache();
 
     /**
      * Write the complete profile for a given servicetype.
@@ -59,8 +59,8 @@ namespace KServiceTypeProfile
      * but which should be disabled, i.e. trader queries will not return them.
      */
     KDECORE_EXPORT void writeServiceTypeProfile( const QString& serviceType,
-                                                        const KService::List& services,
-                                                        const KService::List& disabledServices = KService::List() );
+                                                 const KService::List& services,
+                                                 const KService::List& disabledServices = KService::List() );
 
 
     /**
@@ -70,7 +70,7 @@ namespace KServiceTypeProfile
      * Do not use this for mimetypes.
      * @param serviceType The name of the servicetype.
      */
-    KDECORE_EXPORT void deleteServiceTypeProfile( const QString& serviceType);
+    KDECORE_EXPORT void deleteServiceTypeProfile( const QString& serviceType );
 
     /**
      * This method activates a special mode of KServiceTypeProfile, in which all/all

@@ -53,7 +53,7 @@ public:
   /**
    * Not meant to be called at this level
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *)
+  virtual KSycocaEntry *createEntry(const QString &, const char *) const
     { assert(0); return 0; }
 
   /**
@@ -79,7 +79,7 @@ public:
   static KServiceTypeFactory * self();
 
 protected:
-  virtual KServiceType *createEntry(int offset);
+  virtual KServiceType *createEntry(int offset) const;
 
   // protected for KBuildServiceTypeFactory
   QMap<QString,int> m_propertyTypeDict;

@@ -39,9 +39,9 @@ public:
   /**
    * Create new entry.
    */
-  virtual KServiceGroup * createEntry(const QString &, const char *);
+  virtual KServiceGroup * createEntry(const QString &, const char *) const;
 
-  virtual KServiceGroup * createEntry(int) { assert(0); return 0L; }
+  virtual KServiceGroup * createEntry(int) const { assert(0); return 0L; }
 
   /**
    * Adds the entry @p newEntry to the menu @p menuName

@@ -46,9 +46,9 @@ public:
   /**
    * Construct a KServiceType from a config file.
    */
-  virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
+  virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
 
-  virtual KServiceType * createEntry( int ) { assert(0); return 0L; }
+  virtual KServiceType * createEntry( int ) const { assert(0); return 0L; }
 
   /**
    * Add entry

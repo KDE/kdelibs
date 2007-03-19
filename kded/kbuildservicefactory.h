@@ -52,9 +52,9 @@ public:
     /**
      * Construct a KService from a config file.
      */
-    virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
+    virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
 
-    virtual KService * createEntry( int ) { assert(0); return 0; }
+    virtual KService * createEntry( int ) const { assert(0); return 0; }
 
     /**
      * Add a new entry.

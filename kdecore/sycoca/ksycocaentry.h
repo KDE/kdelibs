@@ -36,7 +36,7 @@ class QStringList;
  * the common functionality for servicetypes and services.
  *
  * @internal
- * @see http://developer.kde.org/documentation/library/kdeqt/kde3arch/ksycoca.html
+ * @see http://techbase.kde.org/Development/Architecture/KDE3/System_Configuration_Cache
  */
 class KDECORE_EXPORT KSycocaEntry : public KShared
 {

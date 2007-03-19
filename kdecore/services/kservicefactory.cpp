@@ -175,7 +175,7 @@ KService::Ptr KServiceFactory::findServiceByMenuId(const QString &_menuId)
     return newService;
 }
 
-KService* KServiceFactory::createEntry(int offset)
+KService* KServiceFactory::createEntry(int offset) const
 {
     KService * newEntry = 0L;
     KSycocaType type;

@@ -255,8 +255,8 @@ bool KBuildSycoca::build()
   // Convert for each factory the entryList to a Dict.
   int i = 0;
   // For each factory
-  for (KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
-       factory != m_lstFactories->end();
+  for (KSycocaFactoryList::Iterator factory = factories()->begin();
+       factory != factories()->end();
        ++factory)
   {
      KBSEntryDict *entryDict = new KBSEntryDict;
@@ -279,8 +279,8 @@ bool KBuildSycoca::build()
 
   QStringList allResources; // we could use QSet<QString> - does order matter?
   // For each factory
-  for (KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
-       factory != m_lstFactories->end();
+  for (KSycocaFactoryList::Iterator factory = factories()->begin();
+       factory != factories()->end();
        ++factory)
   {
     // For each resource the factory deals with
@@ -320,8 +320,8 @@ bool KBuildSycoca::build()
      // For each factory
      KBSEntryDictList::const_iterator ed_it = entryDictList.begin();
      const KBSEntryDictList::const_iterator ed_end = entryDictList.end();
-     KSycocaFactoryList::const_iterator it = m_lstFactories->begin();
-     const KSycocaFactoryList::const_iterator end = m_lstFactories->end();
+     KSycocaFactoryList::const_iterator it = factories()->begin();
+     const KSycocaFactoryList::const_iterator end = factories()->end();
      for ( ; it != end; ++it, ++ed_it )
      {
         g_factory = (*it);
@@ -565,8 +565,8 @@ void KBuildSycoca::save()
    KSycocaFactory * servicetypeFactory = 0;
    KBuildMimeTypeFactory * mimeTypeFactory = 0;
    KBuildServiceFactory * serviceFactory = 0;
-   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
-       factory != m_lstFactories->end();
+   for(KSycocaFactoryList::Iterator factory = factories()->begin();
+       factory != factories()->end();
        ++factory)
    {
       qint32 aId;
@@ -596,8 +596,8 @@ void KBuildSycoca::save()
    serviceFactory->populateServiceTypes();
 
    // Write factory data....
-   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
-       factory != m_lstFactories->end();
+   for(KSycocaFactoryList::Iterator factory = factories()->begin();
+       factory != factories()->end();
        ++factory)
    {
       (*factory)->save(*m_str);
@@ -611,8 +611,8 @@ void KBuildSycoca::save()
    m_str->device()->seek(0);
 
    (*m_str) << (qint32) KSycoca::version();
-   for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
-       factory != m_lstFactories->end(); ++factory)
+   for(KSycocaFactoryList::Iterator factory = factories()->begin();
+       factory != factories()->end(); ++factory)
    {
       qint32 aId;
       qint32 aOffset;

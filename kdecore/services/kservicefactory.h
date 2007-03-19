@@ -49,7 +49,7 @@ public:
     /**
      * Construct a KService from a config file.
      */
-    virtual KSycocaEntry *createEntry(const QString &, const char *)
+    virtual KSycocaEntry *createEntry(const QString &, const char *) const
     { assert(0); return 0; }
 
     /**
@@ -103,7 +103,7 @@ public:
     static KServiceFactory * self();
 
 protected:
-    virtual KService * createEntry(int offset);
+    virtual KService * createEntry(int offset) const;
 
     // All those variables are used by KBuildServiceFactory too
     int m_offerListOffset;

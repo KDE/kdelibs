@@ -152,7 +152,7 @@ static void initStatic()
 }
 
 //static
-void KServiceTypeProfile::clear()
+void KServiceTypeProfile::clearCache()
 {
     serviceTypeProfilesDeleter.destructObject();
     mimeTypeProfilesDeleter.destructObject();
@@ -353,7 +353,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
     configFile.sync();
 
     // Drop the whole cache...
-    clear();
+    clearCache();
 }
 
 void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)

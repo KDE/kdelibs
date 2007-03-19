@@ -27,7 +27,6 @@
 
 class QString;
 class QDataStream;
-class KSycocaDictStringList;
 
 /**
  * @internal
@@ -116,11 +115,9 @@ private:
    quint32 hashKey( const QString &) const;
 
 private:
-   KSycocaDictStringList *d;
-   QDataStream *mStr;
-   qint32 mOffset;
-   quint32 mHashTableSize;
-   QList<qint32> mHashList;
+    Q_DISABLE_COPY(KSycocaDict)
+    class Private;
+    Private* d;
 };
 
 #endif

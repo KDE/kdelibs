@@ -167,7 +167,7 @@ KSycocaFactory::removeEntry(const QString& entryName)
     m_sycocaDict->remove( entryName ); // O(N)
 }
 
-KSycocaEntry::List KSycocaFactory::allEntries()
+KSycocaEntry::List KSycocaFactory::allEntries() const
 {
     KSycocaEntry::List list;
     if (!m_str) return list;

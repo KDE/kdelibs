@@ -40,7 +40,7 @@ KProtocolInfoFactory::~KProtocolInfoFactory()
 
 
 KProtocolInfo*
-KProtocolInfoFactory::createEntry(int offset)
+KProtocolInfoFactory::createEntry(int offset) const
 {
    KProtocolInfo *info = 0;
    KSycocaType type;
@@ -62,7 +62,7 @@ KProtocolInfoFactory::createEntry(int offset)
 }
 
 
-QStringList KProtocolInfoFactory::protocols()
+QStringList KProtocolInfoFactory::protocols() const
 {
   QStringList res;
 

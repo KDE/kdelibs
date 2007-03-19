@@ -81,7 +81,7 @@ KSycocaEntry::List KBuildMimeTypeFactory::allEntries()
     return lst;
 }
 
-KSycocaEntry * KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
+KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource) const
 {
     // file=text/plain.xml  ->  name=plain.xml dirName=text
     const int pos = file.lastIndexOf('/');

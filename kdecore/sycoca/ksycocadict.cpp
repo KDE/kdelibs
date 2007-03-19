@@ -47,29 +47,54 @@ public:
    }
 };
 
+class KSycocaDict::Private
+{
+public:
+    Private()
+        : stringlist( 0 ),
+          stream( 0 ),
+          offset( 0 )
+    {
+    }
+
+    ~Private()
+    {
+        delete stringlist;
+    }
+
+    KSycocaDictStringList *stringlist;
+    QDataStream *stream;
+    qint32 offset;
+    quint32 hashTableSize;
+    QList<qint32> hashList;
+};
+
 KSycocaDict::KSycocaDict()
-  : d(0), mStr(0), mOffset(0)
+  : d( new Private )
 {
 }
 
 KSycocaDict::KSycocaDict(QDataStream *str, int offset)
-  : d(0), mStr(str), mOffset(offset)
+  : d( new Private )
 {
+   d->stream = str;
+   d->offset = offset;
+
    quint32 test1, test2;
    str->device()->seek(offset);
    (*str) >> test1 >> test2;
    if ((test1 > 0x000fffff) || (test2 > 1024))
    {
        KSycoca::flagError();
-       mHashTableSize = 0;
-       mOffset = 0;
+       d->hashTableSize = 0;
+       d->offset = 0;
        return;
    }
 
    str->device()->seek(offset);
-   (*str) >> mHashTableSize;
-   (*str) >> mHashList;
-   mOffset = str->device()->pos(); // Start of hashtable
+   (*str) >> d->hashTableSize;
+   (*str) >> d->hashList;
+   d->offset = str->device()->pos(); // Start of hashtable
 }
 
 KSycocaDict::~KSycocaDict()
@@ -82,25 +107,25 @@ KSycocaDict::add(const QString &key, const KSycocaEntry::Ptr& payload)
 {
    if (key.isEmpty()) return; // Not allowed (should never happen)
    if (!payload) return; // Not allowed!
-   if (!d)
+   if (!d->stringlist)
    {
-       d = new KSycocaDictStringList;
+       d->stringlist = new KSycocaDictStringList;
    }
 
    string_entry *entry = new string_entry(key, payload);
-   d->append(entry);
+   d->stringlist->append(entry);
 }
 
 void
 KSycocaDict::remove(const QString &key)
 {
-   if (!d)
+   if ( !d || !d->stringlist )
       return;
 
-   for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it) {
+   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it) {
       string_entry* entry = *it;
       if (entry->keyStr == key) {
-         d->removeAll(entry);
+         d->stringlist->removeAll(entry);
          delete entry;
          break;
       }
@@ -112,25 +137,25 @@ KSycocaDict::find_string(const QString &key ) const
 {
    //kDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key) << endl;
 
-   if (!mStr || !mOffset)
+   if ( !d->stream || !d->offset )
    {
       kError() << "No ksycoca4 database available!" << endl;
       return 0;
    }
 
-   if (mHashTableSize == 0)
+   if (d->hashTableSize == 0)
       return 0; // Unlikely to find anything :-]
 
    // Read hash-table data
-   uint hash = hashKey(key) % mHashTableSize;
+   uint hash = hashKey(key) % d->hashTableSize;
    //kDebug(7011) << QString("hash is %1").arg(hash) << endl;
 
-   uint off = mOffset+sizeof(qint32)*hash;
+   uint off = d->offset+sizeof(qint32)*hash;
    //kDebug(7011) << QString("off is %1").arg(off,8,16) << endl;
-   mStr->device()->seek( off );
+   d->stream->device()->seek( off );
 
    qint32 offset;
-   (*mStr) >> offset;
+   (*d->stream) >> offset;
 
    //kDebug(7011) << QString("offset is %1").arg(offset,8,16) << endl;
    if (offset == 0)
@@ -142,15 +167,15 @@ KSycocaDict::find_string(const QString &key ) const
    // Lookup duplicate list.
    offset = -offset;
 
-   mStr->device()->seek(offset);
+   d->stream->device()->seek(offset);
    //kDebug(7011) << QString("Looking up duplicate list at %1").arg(offset,8,16) << endl;
 
    while(true)
    {
-       (*mStr) >> offset;
+       (*d->stream) >> offset;
        if (offset == 0) break;
        QString dupkey;
-       (*mStr) >> dupkey;
+       (*d->stream) >> dupkey;
        //kDebug(7011) << QString(">> %1 %2").arg(offset,8,16).arg(dupkey) << endl;
        if (dupkey == key) return offset;
    }
@@ -162,9 +187,9 @@ KSycocaDict::find_string(const QString &key ) const
 uint
 KSycocaDict::count()
 {
-   if (!d) return 0;
+   if ( !d || !d->stringlist ) return 0;
 
-   return d->count();
+   return d->stringlist->count();
 }
 
 void
@@ -180,9 +205,9 @@ KSycocaDict::hashKey( const QString &key) const
    int l = key.length();
    register uint h = 0;
 
-   for(int i = 0; i < mHashList.count(); i++)
+   for(int i = 0; i < d->hashList.count(); i++)
    {
-      int pos = mHashList[i];
+      int pos = d->hashList[i];
       if (pos < 0)
       {
          pos = -pos-1;
@@ -202,7 +227,7 @@ KSycocaDict::hashKey( const QString &key) const
 //
 // Calculate the diversity of the strings at position 'pos'
 static int
-calcDiversity(KSycocaDictStringList *d, int pos, int sz)
+calcDiversity(KSycocaDictStringList *stringlist, int pos, int sz)
 {
    if (pos == 0) return 0;
    QBitArray matrix(sz);
@@ -211,7 +236,7 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
    if (pos < 0)
    {
       pos = -pos-1;
-      for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
       {
         string_entry* entry = *it;
 	register int l = entry->length;
@@ -225,7 +250,7 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
    else
    {
       pos = pos-1;
-      for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
       {
          string_entry* entry = *it;
          if (pos < entry->length)
@@ -245,13 +270,13 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
 //
 // Add the diversity of the strings at position 'pos'
 static void
-addDiversity(KSycocaDictStringList *d, int pos)
+addDiversity(KSycocaDictStringList *stringlist, int pos)
 {
    if (pos == 0) return;
    if (pos < 0)
    {
       pos = -pos-1;
-      for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
       {
          string_entry* entry = *it;
          register int l = entry->length;
@@ -262,7 +287,7 @@ addDiversity(KSycocaDictStringList *d, int pos)
    else
    {
       pos = pos - 1;
-      for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+      for(KSycocaDictStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
       {
          string_entry* entry = *it;
          if (pos < entry->length)
@@ -277,14 +302,14 @@ KSycocaDict::save(QDataStream &str)
 {
    if (count() == 0)
    {
-      mHashTableSize = 0;
-      mHashList.clear();
-      str << mHashTableSize;
-      str << mHashList;
+      d->hashTableSize = 0;
+      d->hashList.clear();
+      str << d->hashTableSize;
+      str << d->hashList;
       return;
    }
 
-   mOffset = str.device()->pos();
+   d->offset = str.device()->pos();
 
    //kDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count()) << endl;
 
@@ -292,7 +317,7 @@ KSycocaDict::save(QDataStream &str)
 
    int maxLength = 0;
    //kDebug(7011) << "Finding maximum string length" << endl;
-   for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
    {
       string_entry* entry = *it;
       entry->hash = 0;
@@ -304,7 +329,7 @@ KSycocaDict::save(QDataStream &str)
 
    // use "almost prime" number for sz (to calculate diversity) and later
    // for the table size of big tables
-   // int sz = d->count()*5-1;
+   // int sz = d->stringlist->count()*5-1;
    register unsigned int sz = count()*4 + 1;
    while(!(((sz % 3) && (sz % 5) && (sz % 7) && (sz % 11) && (sz % 13))))
       sz+=2;
@@ -313,7 +338,7 @@ KSycocaDict::save(QDataStream &str)
    int maxPos = 0;
    int lastDiv = 0;
 
-   mHashList.clear();
+   d->hashList.clear();
 
    // try to limit diversity scan by "predicting" positions
    // with high diversity
@@ -333,7 +358,7 @@ KSycocaDict::save(QDataStream &str)
          if (oldvec[pos+maxLength]<mindiv)
          { oldvec[pos+maxLength]=0; continue; }
 
-         int diversity = calcDiversity(d, pos, sz);
+         int diversity = calcDiversity(d->stringlist, pos, sz);
          if (diversity > maxDiv)
          {
             maxDiv = diversity;
@@ -350,17 +375,17 @@ KSycocaDict::save(QDataStream &str)
          break;
       // qWarning("Max Div = %d at pos %d", maxDiv, maxPos);
       lastDiv = maxDiv;
-      addDiversity(d, maxPos);
-      mHashList.append(maxPos);
+      addDiversity(d->stringlist, maxPos);
+      d->hashList.append(maxPos);
    }
 
    delete [] oldvec;
 
-   for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
       (*it)->hash = hashKey((*it)->keyStr);
 // fprintf(stderr, "Calculating minimum table size..\n");
 
-   mHashTableSize = sz;
+   d->hashTableSize = sz;
 
    struct hashtable_entry {
       string_entry *entry;
@@ -378,7 +403,7 @@ KSycocaDict::save(QDataStream &str)
    }
 
    //kDebug(7011) << "Filling hashtable..." << endl;
-   for(KSycocaDictStringList::Iterator it = d->begin(); it != d->end(); ++it)
+   for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
    {
       string_entry* entry = *it;
       int hash = entry->hash % sz;
@@ -398,20 +423,20 @@ KSycocaDict::save(QDataStream &str)
       }
    }
 
-   str << mHashTableSize;
-   str << mHashList;
+   str << d->hashTableSize;
+   str << d->hashList;
 
-   mOffset = str.device()->pos(); // mOffset points to start of hashTable
-   //kDebug(7011) << QString("Start of Hash Table, offset = %1").arg(mOffset,8,16) << endl;
+   d->offset = str.device()->pos(); // d->offset points to start of hashTable
+   //kDebug(7011) << QString("Start of Hash Table, offset = %1").arg(d->offset,8,16) << endl;
 
    // Write the hashtable + the duplicates twice.
    // The duplicates are after the normal hashtable, but the offset of each
    // duplicate entry is written into the normal hashtable.
    for(int pass = 1; pass <= 2; pass++)
    {
-      str.device()->seek(mOffset);
+      str.device()->seek(d->offset);
       //kDebug(7011) << QString("Writing hash table (pass #%1)").arg(pass) << endl;
-      for(uint i=0; i < mHashTableSize; i++)
+      for(uint i=0; i < d->hashTableSize; i++)
       {
          qint32 tmpid;
          if (!hashTable[i].entry)
@@ -426,7 +451,7 @@ KSycocaDict::save(QDataStream &str)
       //kDebug(7011) << QString("End of Hash Table, offset = %1").arg(str.device()->at(),8,16) << endl;
 
       //kDebug(7011) << QString("Writing duplicate lists (pass #%1)").arg(pass) << endl;
-      for(uint i=0; i < mHashTableSize; i++)
+      for(uint i=0; i < d->hashTableSize; i++)
       {
          QList<string_entry*> *dups = hashTable[i].duplicates;
          if (dups)
@@ -452,7 +477,7 @@ KSycocaDict::save(QDataStream &str)
    }
 
    //kDebug(7011) << "Cleaning up hash table." << endl;
-   for(uint i=0; i < mHashTableSize; i++)
+   for(uint i=0; i < d->hashTableSize; i++)
    {
       delete hashTable[i].duplicates;
    }

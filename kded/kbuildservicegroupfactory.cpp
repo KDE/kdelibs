@@ -48,7 +48,7 @@ KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
 }
 
 KServiceGroup *
-KBuildServiceGroupFactory::createEntry( const QString&, const char * )
+KBuildServiceGroupFactory::createEntry( const QString&, const char * ) const
 {
   // Unused
   kWarning("!!!! KBuildServiceGroupFactory::createEntry called!");

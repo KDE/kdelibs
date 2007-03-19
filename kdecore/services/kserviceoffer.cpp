@@ -19,41 +19,102 @@
 
 #include "kserviceoffer.h"
 
-KServiceOffer::KServiceOffer()
+class KServiceOffer::Private
 {
-  m_iPreference = -1;
+public:
+    Private()
+        : iPreference( -1 ),
+          bAllowAsDefault( false ),
+          pService( 0 )
+    {
+    }
+
+    int iPreference;
+    bool bAllowAsDefault;
+    KService::Ptr pService;
+};
+
+KServiceOffer::KServiceOffer()
+    : d( new Private )
+{
 }
 
 KServiceOffer::KServiceOffer( const KServiceOffer& _o )
+    : d( new Private )
 {
-  m_pService = _o.m_pService;
-  m_iPreference = _o.m_iPreference;
-  m_bAllowAsDefault = _o.m_bAllowAsDefault;
+    d->pService = _o.d->pService;
+    d->iPreference = _o.d->iPreference;
+    d->bAllowAsDefault = _o.d->bAllowAsDefault;
 }
 
 KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref, bool _default )
+    : d( new Private )
 {
-  m_pService = _service;
-  m_iPreference = _pref;
-  m_bAllowAsDefault = _default;
+    d->pService = _service;
+    d->iPreference = _pref;
+    d->bAllowAsDefault = _default;
 }
 
 KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref )
+    : d( new Private )
 {
-  m_pService = _service;
-  m_iPreference = _pref;
-  m_bAllowAsDefault = _service->allowAsDefault();
+    d->pService = _service;
+    d->iPreference = _pref;
+    d->bAllowAsDefault = _service->allowAsDefault();
+}
+
+KServiceOffer::~KServiceOffer()
+{
+    delete d;
+}
+
+KServiceOffer& KServiceOffer::operator=( const KServiceOffer& rhs )
+{
+    if ( this == &rhs ) {
+        return *this;
+    }
+
+    d->pService = rhs.d->pService;
+    d->iPreference = rhs.d->iPreference;
+    d->bAllowAsDefault = rhs.d->bAllowAsDefault;
+    return *this;
 }
 
 bool KServiceOffer::operator< ( const KServiceOffer& _o ) const
 {
   // Put offers allowed as default FIRST.
-  if ( _o.m_bAllowAsDefault && !m_bAllowAsDefault )
+  if ( _o.d->bAllowAsDefault && !d->bAllowAsDefault )
     return false; // _o is default and not 'this'.
-  if ( !_o.m_bAllowAsDefault && m_bAllowAsDefault )
+  if ( !_o.d->bAllowAsDefault && d->bAllowAsDefault )
     return true; // 'this' is default but not _o.
  // Both offers are allowed or not allowed as default
  // -> use preferences to sort them
  // The bigger the better, but we want the better FIRST
-  return _o.m_iPreference < m_iPreference;
+  return _o.d->iPreference < d->iPreference;
 }
+
+bool KServiceOffer::allowAsDefault() const
+{
+    return d->bAllowAsDefault;
+}
+
+int KServiceOffer::preference() const
+{
+    return d->iPreference;
+}
+
+void KServiceOffer::setPreference( int p )
+{
+    d->iPreference = p;
+}
+
+KService::Ptr KServiceOffer::service() const
+{
+    return d->pService;
+}
+
+bool KServiceOffer::isValid() const
+{
+    return d->iPreference >= 0;
+}
+

@@ -57,7 +57,7 @@ KServiceType::Ptr KBuildServiceTypeFactory::findServiceTypeByName(const QString 
 }
 
 
-KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
+KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource) const
 {
     QString name = file;
     int pos = name.lastIndexOf('/');

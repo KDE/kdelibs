@@ -47,8 +47,8 @@ public:
    */
   virtual void save(QDataStream &str);
 
-  KSycocaEntry * createEntry(const QString &, const char *) { return 0; }
-  KSycocaEntry * createEntry(int) { return 0; }
+  KSycocaEntry * createEntry(const QString &, const char *) const { return 0; }
+  KSycocaEntry * createEntry(int) const { return 0; }
 
   void addCTime(const QString &path, quint32 ctime);
 

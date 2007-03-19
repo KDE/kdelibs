@@ -192,6 +192,13 @@ private:
      * @internal
      */
     KServiceTypeTrader();
+
+    // dissalow copy ctor and assignment operator
+    KServiceTypeTrader( const KServiceTypeTrader& other );
+    KServiceTypeTrader& operator=( const KServiceTypeTrader& rhs );
+
+    class Private;
+    Private* d;
 };
 
 #endif
