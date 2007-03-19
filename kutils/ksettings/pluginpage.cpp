@@ -41,9 +41,10 @@ class PluginPage::PluginPagePrivate
 };
 
 PluginPage::PluginPage( QWidget * parent, const char * name, const QStringList & args )
-    : KCModule( parent, name, args )
+    : KCModule( KGlobal::mainComponent(), parent, args )
     , d( new PluginPagePrivate )
 {
+    setObjectName(name);
 //    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
