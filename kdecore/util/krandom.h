@@ -28,22 +28,21 @@
 /**
  * @short Helper class to create random data
  *
- * This class provides static methods which generate random data.
+ * This namespace provides methods which generate random data.
  */
-class KDECORE_EXPORT KRandom {
-public:
-  /**
-   * Generates a uniform random number.
-   * @return A truly unpredictable number in the range [0, RAND_MAX)
-   */
-  static int random();
+namespace KRandom {
+    /**
+     * Generates a uniform random number.
+     * @return A truly unpredictable number in the range [0, RAND_MAX)
+     */
+    KDECORE_EXPORT int random();
 
-  /**
-   * Generates a random string.  It operates in the range [A-Za-z0-9]
-   * @param length Generate a string of this length.
-   * @return the random string
-   */
-  static QString randomString(int length);
+    /**
+     * Generates a random string.  It operates in the range [A-Za-z0-9]
+     * @param length Generate a string of this length.
+     * @return the random string
+     */
+    KDECORE_EXPORT QString randomString(int length);
 };
 
 
