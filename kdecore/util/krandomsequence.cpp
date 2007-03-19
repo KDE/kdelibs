@@ -56,14 +56,18 @@ KRandomSequence::~KRandomSequence()
 
 KRandomSequence::KRandomSequence(const KRandomSequence &a) : d(new Private)
 {
-  *d = *a.d;
+    if ( this != &a ) {
+        *d = *a.d;
+    }
 }
 
 KRandomSequence &
 KRandomSequence::operator=(const KRandomSequence &a)
 {
-  *d = *a.d;
-  return *this;
+    if ( this != &a ) {
+        *d = *a.d;
+    }
+    return *this;
 }
 
 
