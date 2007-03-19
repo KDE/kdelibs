@@ -82,6 +82,7 @@ set(kdeui_LIB_SRCS
  itemviews/k3iconviewsearchline.cpp
  itemviews/k3listview.cpp
  itemviews/klistwidget.cpp
+ itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
@@ -282,6 +283,7 @@ install( FILES
  itemviews/k3listview.h
  itemviews/k3listviewlineedit.h
  itemviews/klistwidget.h
+ itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h

@@ -13,7 +13,7 @@
 
 #include "kicondialog.h"
 #include <kbuttongroup.h>
-#include <k3iconviewsearchline.h>
+#include <klistwidgetsearchline.h>
 #include <assert.h>
 
 #include <kapplication.h>
@@ -21,20 +21,17 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <k3iconview.h>
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
 
 #include <qlayout.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3sortedlist.h>
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtimer.h>
-#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
@@ -84,15 +81,19 @@ public:
  */
 
 KIconCanvas::KIconCanvas(QWidget *parent)
-    : K3IconView(parent),d(new KIconCanvasPrivate)
+    : KListWidget(parent),d(new KIconCanvasPrivate)
 {
+    setViewMode(IconMode);
+    setUniformItemSizes(true);
+    setMovement(Static);
+    setIconSize(QSize(60, 60));
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
-    connect(this, SIGNAL(currentChanged(Q3IconViewItem *)),
-	    SLOT(slotCurrentChanged(Q3IconViewItem *)));
-    setGridX(80);
-    setWordWrapIconText(false);
-    setShowToolTips(true);
+    connect(this, SIGNAL( currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+	    SLOT(slotCurrentChanged(QListWidgetItem *)));
+    setGridSize(QSize(80,80));
+#warning how to port setShowToolTips?
+    // setShowToolTips(true);
 }
 
 KIconCanvas::~KIconCanvas()
@@ -175,10 +176,8 @@ void KIconCanvas::slotLoadFiles()
 	}
 	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
-	Q3IconViewItem *item = new Q3IconViewItem(this, fi.baseName(), pm);
-	item->setKey(*it);
-	item->setDragEnabled(false);
-	item->setDropEnabled(false);
+	QListWidgetItem *item = new QListWidgetItem(pm, fi.baseName(), this);
+	item->setData(Qt::UserRole, *it);
     }
 
     // enable updates since we have to draw the whole view now
@@ -194,7 +193,7 @@ QString KIconCanvas::getCurrent() const
 {
     if (!currentItem())
 	return QString();
-    return currentItem()->key();
+    return currentItem()->data(Qt::UserRole).toString();
 }
 
 void KIconCanvas::stopLoading()
@@ -202,7 +201,7 @@ void KIconCanvas::stopLoading()
     d->m_bLoading = false;
 }
 
-void KIconCanvas::slotCurrentChanged(Q3IconViewItem *item)
+void KIconCanvas::slotCurrentChanged(QListWidgetItem *item)
 {
     emit nameChanged((item != 0L) ? item->text() : QString());
 }
@@ -220,7 +219,7 @@ class KIconDialog::KIconDialogPrivate
     bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
     QString custom;
     QString customLocation;
-    K3IconViewSearchLine *searchLine;
+    KListWidgetSearchLine *searchLine;
 };
 
 /*
@@ -300,7 +299,7 @@ void KIconDialog::init()
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
     searchLayout->addWidget(searchLabel);
 
-    d->searchLine = new K3IconViewSearchLine(main);
+    d->searchLine = new KListWidgetSearchLine(main);
     searchLayout->addWidget(d->searchLine);
     searchLabel->setBuddy(d->searchLine);
 
@@ -310,11 +309,10 @@ void KIconDialog::init()
 
 
     mpCanvas = new KIconCanvas(main);
-    connect(mpCanvas, SIGNAL(executed(Q3IconViewItem *)), SLOT(slotAcceptIcons()));
-    connect(mpCanvas, SIGNAL(returnPressed(Q3IconViewItem *)), SLOT(slotAcceptIcons()));
+    connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
-    d->searchLine->setIconView(mpCanvas);
+    d->searchLine->setListWidget(mpCanvas);
 
     mpProgress = new QProgressBar(main);
     top->addWidget(mpProgress);
@@ -401,17 +399,18 @@ void KIconDialog::showIcons()
     else
 	filelist=mFileList;
 
-    Q3SortedList <IconPath>iconlist;
-    iconlist.setAutoDelete(true);
+    QList<IconPath> iconlist;
     QStringList::Iterator it;
-    for( it = filelist.begin(); it != filelist.end(); ++it )
-       iconlist.append(new IconPath(*it));
+    foreach (const QString &it, filelist) {
+       iconlist.append(IconPath(it));
+    }
 
-    iconlist.sort();
+    qSort(iconlist);
     filelist.clear();
 
-    for ( IconPath *ip=iconlist.first(); ip != 0; ip=iconlist.next() )
-       filelist.append(*ip);
+    foreach (const IconPath &ip, iconlist) {
+       filelist.append(ip);
+    }
 
     d->searchLine->clear();
     mpCanvas->loadFiles(filelist);
@@ -677,6 +676,7 @@ bool KIconButton::strictIconSize() const
 
 void KIconButton::setIconSize( int size )
 {
+    QPushButton::setIconSize(QSize(size, size));
     d->iconSize = size;
 }
 

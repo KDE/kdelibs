@@ -20,7 +20,7 @@
 
 #include <kicontheme.h>
 #include <kdialog.h>
-#include <k3iconview.h>
+#include <klistwidget.h>
 
 class QComboBox;
 class QTimer;
@@ -32,7 +32,7 @@ class KIconLoader;
 /**
  * Icon canvas for KIconDialog.
  */
-class KIO_EXPORT KIconCanvas: public K3IconView
+class KIO_EXPORT KIconCanvas: public KListWidget
 {
     Q_OBJECT
 
@@ -65,7 +65,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotLoadFiles();
-    void slotCurrentChanged(Q3IconViewItem *item);
+    void slotCurrentChanged(QListWidgetItem *item);
 
 private:
     QStringList mFiles;
