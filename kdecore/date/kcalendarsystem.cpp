@@ -27,9 +27,42 @@
 #include "kglobal.h"
 #include "klocale.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
+#include <QDateTime>
+#include <QString>
 
+#include "kcalendarsystemgregorian.h"
+#include "kcalendarsystemhijri.h"
+#include "kcalendarsystemhebrew.h"
+#include "kcalendarsystemjalali.h"
+
+KCalendarSystem *KCalendarSystem::create( const QString &calType,
+                                          const KLocale * locale )
+{
+  if ( calType == "hebrew" )
+    return new KCalendarSystemHebrew(locale);
+  if ( calType == "hijri" )
+    return new KCalendarSystemHijri(locale);
+  if ( calType == "gregorian" )
+    return new KCalendarSystemGregorian(locale);
+  if ( calType == "jalali" )
+    return new KCalendarSystemJalali(locale);
+
+  kDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
+
+  // ### HPB: Should it really be a default here?
+  return new KCalendarSystemGregorian(locale);
+}
+
+QStringList KCalendarSystem::calendarSystems()
+{
+   QStringList lst;
+   lst.append("hebrew");
+   lst.append("hijri");
+   lst.append("gregorian");
+   lst.append("jalali");
+
+   return lst;
+}
 
 class KCalendarSystemPrivate
 {

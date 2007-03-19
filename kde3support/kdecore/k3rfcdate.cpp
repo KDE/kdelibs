@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#include "krfcdate.h"
+#include "k3rfcdate.h"
 
 #include <sys/param.h>
 #include <ctype.h>
@@ -94,7 +94,7 @@ static const struct {
 };
 
 time_t
-KRFCDate::parseDate(const QString &_date)
+K3RFCDate::parseDate(const QString &_date)
 {
      if (_date.isEmpty())
          return 0;
@@ -340,7 +340,7 @@ KRFCDate::parseDate(const QString &_date)
 }
 
 time_t
-KRFCDate::parseDateISO8601( const QString& input_ )
+K3RFCDate::parseDateISO8601( const QString& input_ )
 {
   if (input_.isEmpty())
     return 0;
@@ -453,7 +453,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 }
 
 
-int KRFCDate::localUTCOffset()
+int K3RFCDate::localUTCOffset()
 {
   time_t timeNow = time((time_t*) 0);
 
@@ -479,7 +479,7 @@ static const char month_names[][4] = {
 };
 
 
-QByteArray KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
+QByteArray K3RFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
 {
     utcTime += utcOffset * 60;
     tm *tM = gmtime(&utcTime);

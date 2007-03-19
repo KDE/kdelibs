@@ -62,4 +62,16 @@ if(KDE4_BUILD_TESTS)
 
    target_link_libraries(kaboutdialogtest ${KDE4_KDEUI_LIBS} kde3support)
 
+########### next target ###############
+
+set(krfcdatetest_SRCS krfcdatetest.cpp )
+
+kde4_automoc(${krfcdatetest_SRCS})
+
+kde4_add_executable(krfcdatetest NOGUI RUN_UNINSTALLED ${krfcdatetest_SRCS})
+
+target_link_libraries(krfcdatetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kde3support)
+
+add_test(kdecore-krfcdatetest ${EXECUTABLE_OUTPUT_PATH}/krfcdatetest)
+
 endif(KDE4_BUILD_TESTS)

@@ -1,6 +1,5 @@
 #include "qtest_kde.h"
 
-#include "kcalendarsystemfactory.h"
 #include "kcalendarsystem.h"
 #include "kglobal.h"
 
@@ -12,7 +11,7 @@ QTEST_KDEMAIN(KCalendarTest, NoGUI)
 
 void KCalendarTest::listTypes()
 {
-    QStringList lst = KCalendarSystemFactory::calendarSystems();
+    QStringList lst = KCalendarSystem::calendarSystems();
     QVERIFY( lst.contains("hijri") );
     QVERIFY( lst.contains("jalali") );
     QVERIFY( lst.contains("hebrew") );

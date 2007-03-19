@@ -27,13 +27,13 @@ class QString;
 class QByteArray;
 
 /**
- * The KRFCDate class contains functions related to the parsing of dates.
+ * The K3RFCDate class contains functions related to the parsing of dates.
  *
  * @deprecated this class is made obsolete by KDateTime
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT_DEPRECATED KRFCDate
+class KDE3SUPPORT_EXPORT K3RFCDate
 {
 public:
    /**

@@ -23,13 +23,12 @@
 
 #include "kdelibs_export.h"
 
+#include <QStringList>
 
 class KCalendarSystemPrivate;
 class KLocale;
 
 class QDate;
-class QString;
-
 
 /**
  * CalendarSystem abstract class, default derived kde gregorian class and
@@ -45,6 +44,26 @@ class KDECORE_EXPORT KCalendarSystem
 public:
 
   enum DispalyForm {LongForm, ShortForm};
+
+  /**
+   * Gets specific calendar type number of days in previous month for a
+   * given date
+   *
+   * @param calType string identification of the specific calendar type
+   * to be constructed
+   * @param locale Locale used for translations. Use the global locale when
+   * 0 is specified.
+   * @return a KCalendarSystem object
+   */
+  static KCalendarSystem *create ( const QString & calType = QLatin1String( "gregorian" ),
+                                   const KLocale * locale = 0 );
+
+  /**
+   * Gets list of names of supported calendar systems
+   *
+   * @return A QStringList object
+   */
+  static QStringList calendarSystems();
 
   /**
    * Constructor of abstract calendar class. This will be called by the derived classes.

@@ -21,10 +21,11 @@ add_definitions(-DKDE3_SUPPORT)
 ########### next target ###############
 
 set(kde3support_LIB_SRCS
-  kdecore/k3urldrag.cpp
-  kdecore/k3multipledrag.cpp
-  kdecore/k3tempfile.cpp
   kdecore/k3mimesourcefactory.cpp
+  kdecore/k3multipledrag.cpp
+  kdecore/k3rfcdate.cpp
+  kdecore/k3tempfile.cpp
+  kdecore/k3urldrag.cpp
   #kdeui/qxembed.cpp
   kdeui/k3aboutapplication.cpp
   kdeui/k3aboutdialog.cpp
@@ -65,11 +66,12 @@ install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
-  kdecore/k3urldrag.h
+  kdecore/k3mimesourcefactory.h
   kdecore/k3multipledrag.h
+  kdecore/k3rfcdate.h
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
-  kdecore/k3mimesourcefactory.h
+  kdecore/k3urldrag.h
   kdecore/ksimpleconfig.h
   kdecore/ktrader.h
   kdeui/k3aboutapplication.h

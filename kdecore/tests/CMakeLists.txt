@@ -190,18 +190,6 @@ add_test(kdecore-ksortablelisttest ${EXECUTABLE_OUTPUT_PATH}/ksortablelisttest)
 
 ########### next target ###############
 
-set(krfcdatetest_SRCS krfcdatetest.cpp )
-
-kde4_automoc(${krfcdatetest_SRCS})
-
-kde4_add_executable(krfcdatetest NOGUI RUN_UNINSTALLED ${krfcdatetest_SRCS})
-
-target_link_libraries(krfcdatetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kdecore-krfcdatetest ${EXECUTABLE_OUTPUT_PATH}/krfcdatetest)
-
-########### next target ###############
-
 set(kprociotest_SRCS kprociotest.cpp )
 
 kde4_automoc(${kprociotest_SRCS})
