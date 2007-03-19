@@ -41,8 +41,15 @@ void KServiceTest::initTestCase()
         QFile::remove( profilerc );
 
     if ( !KSycoca::isAvailable() ) {
-        // Create ksycoca in ~/.kde-unit-test
+        // Create ksycoca4 in ~/.kde-unit-test
         QProcess::execute( KStandardDirs::findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
+
+        // Process the DBUS signal from kbuildsycoca
+        QEventLoop eventLoop;
+        QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &eventLoop, SLOT(quit()));
+        eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
+
+        QVERIFY( KSycoca::isAvailable() );
     }
 }
 
