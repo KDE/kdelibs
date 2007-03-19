@@ -18,7 +18,7 @@
 #include <QtCore/QStringList>
 #include <QList>
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 class PTY;
 

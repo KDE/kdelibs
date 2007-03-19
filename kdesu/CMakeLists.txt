@@ -38,7 +38,7 @@ install(TARGETS kdesu_stub DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES  defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h stub.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu )
+install( FILES kdesu_export.h defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h stub.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu )
 
 
 

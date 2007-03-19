@@ -13,7 +13,7 @@
 
 #include "stub.h"
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 /**
  * Executes a remote command, using ssh.
@@ -22,8 +22,9 @@
 class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
-    SshProcess(const QByteArray &host = QByteArray(), const QByteArray &user = QByteArray(),
-               const QByteArray &command = QByteArray());
+    explicit SshProcess(const QByteArray &host = QByteArray(),
+                        const QByteArray &user = QByteArray(),
+                        const QByteArray &command = QByteArray());
     ~SshProcess();
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };

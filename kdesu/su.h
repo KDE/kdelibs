@@ -11,7 +11,7 @@
 #ifndef __SU_h_Included__
 #define __SU_h_Included__
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 #include "stub.h"
 
@@ -22,7 +22,7 @@
 class KDESU_EXPORT SuProcess: public StubProcess
 {
 public:
-    SuProcess(const QByteArray &user=0, const QByteArray &command=0);
+    explicit SuProcess(const QByteArray &user=0, const QByteArray &command=0);
     ~SuProcess();
 
     enum Errors { SuNotFound=1, SuNotAllowed, SuIncorrectPassword };

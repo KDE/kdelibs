@@ -13,7 +13,7 @@
 
 #include <QtCore/QByteArray>
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 /**
  * Utility class to access the authentication tokens needed to run a KDE

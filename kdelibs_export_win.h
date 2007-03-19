@@ -151,14 +151,6 @@
 # endif
 #endif
 
-#ifndef KDESU_EXPORT
-# ifdef MAKE_KDESU_LIB
-#  define KDESU_EXPORT KDE_EXPORT
-# else
-#  define KDESU_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KSTYLE_EXPORT
 # ifdef MAKE_KSTYLE_LIB
 #  define KSTYLE_EXPORT KDE_EXPORT

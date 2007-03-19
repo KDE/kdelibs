@@ -17,7 +17,7 @@
 #include "process.h"
 #include "kcookie.h"
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 /**
  * Chat with kdesu_stub.

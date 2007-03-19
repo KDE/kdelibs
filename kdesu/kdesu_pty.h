@@ -19,7 +19,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <kdesu/kdesu_export.h>
 
 class KDESU_EXPORT PTY {
 
