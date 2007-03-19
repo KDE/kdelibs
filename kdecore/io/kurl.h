@@ -144,6 +144,12 @@ public:
       QStringList toStringList() const;
 
       /**
+       * Converts this KUrl::List to a QVariant, this allows to use KUrl::List
+       * in QVariant() constructor
+       */
+      inline operator QVariant() const { return qVariantFromValue(*this); }
+
+      /**
        * Adds URLs data into the given QMimeData.
        *
        * By default, populateMimeData also exports the URLs as plain text, for e.g. dropping
@@ -754,6 +760,12 @@ public:
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
+   * Converts this KUrl to a QVariant, this allows to use KUrl
+   * in QVariant() constructor
+   */
+  inline operator QVariant() const { return qVariantFromValue(*this); }
+
+  /**
    * The same as equals(), just with a less obvious name.
    * Compares this url with @p u.
    * @param u the URL to compare this one with.
@@ -985,6 +997,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EqualsOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::DirectoryOptions)
 
 Q_DECLARE_METATYPE(KUrl)
+Q_DECLARE_METATYPE(KUrl::List)
 
 /**
  * \relates KUrl

@@ -425,6 +425,13 @@ public:
         return d != other.d;
     }
 
+
+    /**
+     * Converts this KFileItem to a QVariant, this allows to use KFileItem
+     * in QVariant() constructor
+     */
+    inline operator QVariant() const { return qVariantFromValue(*this); }
+
     /**
      * This allows to associate some "extra" data to a KFileItem. As one
      * KFileItem can be used by several objects (often views) which all need
@@ -557,6 +564,8 @@ private:
     KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
     KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 };
+
+Q_DECLARE_METATYPE(KFileItem)
 
 /**
  * List of KFileItems

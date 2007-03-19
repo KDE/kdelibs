@@ -168,7 +168,6 @@ private:
     KDirModelPrivate *const d;
 };
 
-Q_DECLARE_METATYPE(KFileItem)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDirModel::DropsAllowed)
 
 #endif /* KDIRMODEL_H */
