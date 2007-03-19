@@ -80,14 +80,14 @@ namespace KJS {
     public:
         Plugins(ExecState *exec, bool pluginsEnabled)
           : PluginBase(exec, pluginsEnabled),
-            m_pluginsEnabled(pluginsEnabled) {};
+            m_pluginsEnabled(pluginsEnabled) {}
 
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         ValueImp *getValueProperty(ExecState *exec, int token) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
         static ValueImp *pluginByName( ExecState* exec, const QString& name );
-        bool pluginsEnabled() const { return m_pluginsEnabled; };
+        bool pluginsEnabled() const { return m_pluginsEnabled; }
     private:
         static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
@@ -99,13 +99,13 @@ namespace KJS {
     public:
         MimeTypes(ExecState *exec, bool pluginsEnabled)
           : PluginBase(exec, pluginsEnabled),
-            m_pluginsEnabled(pluginsEnabled) {};
+            m_pluginsEnabled(pluginsEnabled) {}
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
         ValueImp *getValueProperty(ExecState *exec, int token) const;
         static ValueImp *mimeTypeByName( ExecState* exec, const QString& name );
-        bool pluginsEnabled() const { return m_pluginsEnabled; };
+        bool pluginsEnabled() const { return m_pluginsEnabled; }
     private:
         static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
@@ -117,7 +117,7 @@ namespace KJS {
     public:
         Plugin( ExecState *exec, PluginBase::PluginInfo *info )
           : PluginBase( exec, true )
-        { m_info = info; };
+        { m_info = info; }
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
@@ -135,7 +135,7 @@ namespace KJS {
     public:
         MimeType( ExecState *exec, PluginBase::MimeClassInfo *info )
           : PluginBase( exec, true )
-        { m_info = info; };
+        { m_info = info; }
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;

@@ -10,7 +10,7 @@ class Dummy : public QObject
 {
   Q_OBJECT
 public:
-  Dummy( KHTMLPart *part ) : QObject( part ) { m_part = part; };
+  Dummy( KHTMLPart *part ) : QObject( part ) { m_part = part; }
 
 private Q_SLOTS:
   void slotOpenURL( const KUrl &url, const KParts::URLArgs &args )

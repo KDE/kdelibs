@@ -98,7 +98,7 @@ class RenderGlyph : public RenderBox
 {
 public:
     RenderGlyph(DOM::NodeImpl* node, EListStyleType type);
-    virtual ~RenderGlyph() {};
+    virtual ~RenderGlyph() {}
 
     virtual const char *renderName() const { return "RenderGlyph"; }
 

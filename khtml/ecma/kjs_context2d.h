@@ -125,7 +125,7 @@ private:
         float blue;
         float alpha;
 
-        ColorStop(float s, float r, float g, float b, float a) : stop(s), red(r), green(g), blue(b), alpha(a) {};
+        ColorStop(float s, float r, float g, float b, float a) : stop(s), red(r), green(g), blue(b), alpha(a) {}
     };
 
   class Gradient : public DOMObject {
