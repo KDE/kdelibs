@@ -770,7 +770,7 @@ public:
 
   LiveConnectExtension( KParts::ReadOnlyPart *parent );
 
-  virtual ~LiveConnectExtension() {}
+  virtual ~LiveConnectExtension();
   /**
    * get a field value from objid, return true on success
    */
@@ -790,10 +790,17 @@ public:
 
   static LiveConnectExtension *childObject( QObject *obj );
 Q_SIGNALS:
+#ifndef Q_MOC_RUN
+public:  // yes, those signals are public; don't tell moc :)
+#endif
   /**
    * notify a event from the part of object objid
    */
   void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
+
+private:
+  class LiveConnectExtensionPrivate;
+  LiveConnectExtensionPrivate *d;
 };
 
 }

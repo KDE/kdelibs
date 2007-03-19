@@ -685,7 +685,10 @@ BrowserHostExtension::findFrameParent(KParts::ReadOnlyPart *callingPart, const Q
     return 0;
 }
 
-LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent ) : QObject( parent) {}
+LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent )
+ : QObject( parent ), d( NULL ) {}
+
+LiveConnectExtension::~LiveConnectExtension() {}
 
 bool LiveConnectExtension::get( const unsigned long, const QString &, Type &, unsigned long &, QString & ) {
     return false;
