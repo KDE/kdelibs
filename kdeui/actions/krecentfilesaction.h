@@ -153,7 +153,7 @@ public:
 
 Q_SIGNALS:
   /**
-   *  This signal gets emited when the user selects an URL.
+   *  This signal gets emitted when the user selects an URL.
    *
    *  @param url The URL thats the user selected.
    */

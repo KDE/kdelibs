@@ -158,7 +158,7 @@ protected:
   /// the widest month string in pixels:
   QSize maxMonthRect;
 protected Q_SLOTS:
-  void dateChangedSlot(QDate);
+  void dateChangedSlot(const QDate&);
   void tableClickedSlot();
   void monthForwardClicked();
   void monthBackwardClicked();

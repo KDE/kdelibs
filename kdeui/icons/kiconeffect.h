@@ -90,7 +90,7 @@ public:
      * @param state The icon's state, see K3Icon::States
      * @return An image with the effect applied.
      */
-    QImage apply(QImage src, int group, int state) const;
+    QImage apply(const QImage &src, int group, int state) const;
 
     /**
      * Applies an effect to an image.
@@ -101,9 +101,8 @@ public:
      * @param trans Add Transparency if trans = true.
      * @return An image with the effect applied.
      */
-    // KDE4: make them references
-    QImage apply(QImage src, int effect, float value, const QColor &rgb, bool trans) const;
-    QImage apply(QImage src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
+    QImage apply(const QImage &src, int effect, float value, const QColor &rgb, bool trans) const;
+    QImage apply(const QImage &src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
 
     /**
      * Applies an effect to a pixmap.
@@ -112,7 +111,7 @@ public:
      * @param state The icon's state, see K3Icon::States
      * @return A pixmap with the effect applied.
      */
-    QPixmap apply(QPixmap src, int group, int state) const;
+    QPixmap apply(const QPixmap &src, int group, int state) const;
 
     /**
      * Applies an effect to a pixmap.
@@ -123,15 +122,15 @@ public:
      * @param trans Add Transparency if trans = true.
      * @return A pixmap with the effect applied.
      */
-    QPixmap apply(QPixmap src, int effect, float value, const QColor &rgb, bool trans) const;
-    QPixmap apply(QPixmap src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
+    QPixmap apply(const QPixmap &src, int effect, float value, const QColor &rgb, bool trans) const;
+    QPixmap apply(const QPixmap &src, int effect, float value, const QColor &rgb, const QColor &rgb2, bool trans) const;
 
     /**
      * Returns an image twice as large, consisting of 2x2 pixels.
      * @param src the image.
      * @return the scaled image.
      */
-    QImage doublePixels(QImage src) const;
+    QImage doublePixels(const QImage &src) const;
 
     /**
      * Provides visual feedback to show activation of an icon on a widget.

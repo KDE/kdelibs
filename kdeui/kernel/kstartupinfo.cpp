@@ -113,7 +113,7 @@ class KStartupInfo::Private
             KStartupInfoData* data_O );
         bool find_pid( pid_t pid_P, const QByteArray& hostname, KStartupInfoId* id_O,
             KStartupInfoData* data_O );
-        bool find_wclass( QByteArray res_name_P, QByteArray res_class_P,
+        bool find_wclass( const QByteArray &res_name_P, const QByteArray &res_class_P,
             KStartupInfoId* id_O, KStartupInfoData* data_O );
         static QByteArray get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
@@ -756,11 +756,11 @@ bool KStartupInfo::Private::find_pid( pid_t pid_P, const QByteArray& hostname_P,
     return false;
     }
 
-bool KStartupInfo::Private::find_wclass( QByteArray res_name, QByteArray res_class,
+bool KStartupInfo::Private::find_wclass( const QByteArray &_res_name, const QByteArray &_res_class,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
-    res_name = res_name.toLower();
-    res_class = res_class.toLower();
+    QByteArray res_name = _res_name.toLower();
+    QByteArray res_class = _res_class.toLower();
     kDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
     for( QMap< KStartupInfoId, Data >::Iterator it = startups.begin();
          it != startups.end();

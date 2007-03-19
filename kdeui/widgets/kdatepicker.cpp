@@ -181,7 +181,7 @@ void KDatePicker::init( const QDate &dt )
       monthBackward->setIcon(KIcon(QLatin1String("arrow-left")));
   }
 
-  connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
+  connect(table, SIGNAL(dateChanged(const QDate&)), SLOT(dateChangedSlot(const QDate&)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
   connect(monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
   connect(monthBackward, SIGNAL(clicked()), SLOT(monthBackwardClicked()));
@@ -239,7 +239,7 @@ KDatePicker::resizeEvent(QResizeEvent* e)
 }
 
 void
-KDatePicker::dateChangedSlot(QDate date)
+KDatePicker::dateChangedSlot(const QDate &date)
 {
     kDebug(298) << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
 

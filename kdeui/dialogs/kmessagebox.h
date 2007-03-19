@@ -1092,7 +1092,7 @@ public:
      * @note   The @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialog *dialog, QIcon icon,
+    static int createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),

@@ -138,7 +138,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                       ask, checkboxReturn, options, details, icon);
 }
 
-int KMessageBox::createKMessageBox(KDialog *dialog, QIcon icon,
+int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)

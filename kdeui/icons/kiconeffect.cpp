@@ -163,7 +163,7 @@ QString KIconEffect::fingerprint(int group, int state) const
     return cached;
 }
 
-QImage KIconEffect::apply(QImage image, int group, int state) const
+QImage KIconEffect::apply(const QImage &image, int group, int state) const
 {
     if (state >= K3Icon::LastState)
     {
@@ -179,13 +179,14 @@ QImage KIconEffect::apply(QImage image, int group, int state) const
 	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &col, bool trans) const
+QImage KIconEffect::apply(const QImage &image, int effect, float value, const QColor &col, bool trans) const
 {
     return apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &col, const QColor &col2, bool trans) const
+QImage KIconEffect::apply(const QImage &img, int effect, float value, const QColor &col, const QColor &col2, bool trans) const
 {
+    QImage image = img;
     if (effect >= LastEffect )
     {
 	kDebug(265) << "Illegal icon effect: " << effect << "\n";
@@ -220,7 +221,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value, const QColor &c
     return image;
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
+QPixmap KIconEffect::apply(const QPixmap &pixmap, int group, int state) const
 {
     if (state >= K3Icon::LastState)
     {
@@ -236,13 +237,13 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
+QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
 	const QColor &col, bool trans) const
 {
     return apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
+QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
 	const QColor &col, const QColor &col2, bool trans) const
 {
     QPixmap result;
@@ -560,7 +561,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
     pix.setMask(mask);
 }
 
-QImage KIconEffect::doublePixels(QImage src) const
+QImage KIconEffect::doublePixels(const QImage &src) const
 {
     int w = src.width();
     int h = src.height();
@@ -592,7 +593,8 @@ QImage KIconEffect::doublePixels(QImage src) const
 	for (x=0; x<src.numColors(); x++)
 	    dst.setColor(x, src.color(x));
 
-	unsigned char *l1, *l2;
+	const unsigned char *l1;
+	unsigned char *l2;
 	for (y=0; y<h; y++)
 	{
 	    l1 = src.scanLine(y);
