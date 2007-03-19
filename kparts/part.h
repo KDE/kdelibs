@@ -20,9 +20,8 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <QtCore/QString>
 #include <qdom.h>
-#include <qpointer.h>
+#include <QtCore/QPointer>
 #include <kurl.h>
 #include <qcoreevent.h>
 #include <kxmlguiclient.h>
@@ -349,7 +348,7 @@ protected Q_SLOTS:
 protected:
     Part(PartPrivate &dd, QObject *parent);
 
-private:    
+private:
     Q_DISABLE_COPY(Part)
 };
 
@@ -379,218 +378,218 @@ class BrowserExtension;
  */
 class KPARTS_EXPORT ReadOnlyPart : public Part
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  Q_PROPERTY( KUrl url READ url )
+    Q_PROPERTY( KUrl url READ url )
 
-  KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
+        KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
 
-public:
-  /**
-   * Constructor
-   * See also Part for the setXXX methods to call.
-   */
-  ReadOnlyPart( QObject *parent = 0 );
+        public:
+    /**
+     * Constructor
+     * See also Part for the setXXX methods to call.
+     */
+    ReadOnlyPart( QObject *parent = 0 );
 
-  /**
-   * Destructor
-   */
-  virtual ~ReadOnlyPart();
+    /**
+     * Destructor
+     */
+    virtual ~ReadOnlyPart();
 
-  /**
-   * Call this to turn off the progress info dialog used by
-   * the internal KIO job. Use this if you provide another way
-   * of displaying progress info (e.g. a statusbar), using the
-   * signals emitted by this class, and/or those emitted by
-   * the Job given by started.
-   */
-  void setProgressInfoEnabled( bool show );
+    /**
+     * Call this to turn off the progress info dialog used by
+     * the internal KIO job. Use this if you provide another way
+     * of displaying progress info (e.g. a statusbar), using the
+     * signals emitted by this class, and/or those emitted by
+     * the Job given by started.
+     */
+    void setProgressInfoEnabled( bool show );
 
-  /**
-   * Returns whether the part shows the progress info dialog used by internal
-   * KIO job.
-   */
-  bool isProgressInfoEnabled() const;
+    /**
+     * Returns whether the part shows the progress info dialog used by internal
+     * KIO job.
+     */
+    bool isProgressInfoEnabled() const;
 
 #ifndef KDE_NO_COMPAT
-  void showProgressInfo( bool show );
+    void showProgressInfo( bool show );
 #endif
 
 public Q_SLOTS:
-  /**
-   * Only reimplement openUrl if you don't want the network transparency support
-   * to download from the url into a temporary file (when the url isn't local).
-   * Otherwise, reimplement openFile() only .
-   *
-   * If you reimplement it, don't forget to set the caption, usually with
-   * emit setWindowCaption( url.prettyUrl() );
-   */
-  virtual bool openUrl( const KUrl &url );
+    /**
+     * Only reimplement openUrl if you don't want the network transparency support
+     * to download from the url into a temporary file (when the url isn't local).
+     * Otherwise, reimplement openFile() only .
+     *
+     * If you reimplement it, don't forget to set the caption, usually with
+     * emit setWindowCaption( url.prettyUrl() );
+     */
+    virtual bool openUrl( const KUrl &url );
 
 public:
-  /**
-   *  Returns the URL currently opened in this part.
-   *
-   *  @return The current URL.
-   */
-  KUrl url() const;
+    /**
+     *  Returns the URL currently opened in this part.
+     *
+     *  @return The current URL.
+     */
+    KUrl url() const;
 
-  /**
-   * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that openUrl() calls it
-   * automatically in this case).
-   * If the current URL is not fully loaded yet, aborts loading.
-   * Deletes the temporary file used when the url is remote.
-   * @return always true, but the return value exists for reimplementations
-   */
-  virtual bool closeUrl();
+    /**
+     * Called when closing the current url (e.g. document), for instance
+     * when switching to another url (note that openUrl() calls it
+     * automatically in this case).
+     * If the current URL is not fully loaded yet, aborts loading.
+     * Deletes the temporary file used when the url is remote.
+     * @return always true, but the return value exists for reimplementations
+     */
+    virtual bool closeUrl();
 
-  /**
-   * This convenience method returns the browserExtension for this part,
-   * or 0 if there isn't any.
-   */
-  BrowserExtension* browserExtension() const;
+    /**
+     * This convenience method returns the browserExtension for this part,
+     * or 0 if there isn't any.
+     */
+    BrowserExtension* browserExtension() const;
 
 public:
-  /**
-   * Initiate sending data to this part.
-   * This is an alternative to openUrl, which allows the user of the part
-   * to load the data itself, and send it progressively to the part.
-   *
-   * @param mimeType the type of data that is going to be sent to this part.
-   * @param url the URL representing this data. Although not directly used,
-   * every ReadOnlyPart has a URL (see url()), so this simply sets it.
-   * @return true if the part supports progressive loading and accepts data, false otherwise.
-   */
-  bool openStream( const QString& mimeType, const KUrl& url );
+    /**
+     * Initiate sending data to this part.
+     * This is an alternative to openUrl, which allows the user of the part
+     * to load the data itself, and send it progressively to the part.
+     *
+     * @param mimeType the type of data that is going to be sent to this part.
+     * @param url the URL representing this data. Although not directly used,
+     * every ReadOnlyPart has a URL (see url()), so this simply sets it.
+     * @return true if the part supports progressive loading and accepts data, false otherwise.
+     */
+    bool openStream( const QString& mimeType, const KUrl& url );
 
-  /**
-   * Send some data to the part. openStream must have been called previously,
-   * and must have returned true.
-   * @return true if the data was accepted by the part. If false is returned,
-   * the application should stop sending data, and doesn't have to call closeStream.
-   */
-  bool writeStream( const QByteArray& data );
+    /**
+     * Send some data to the part. openStream must have been called previously,
+     * and must have returned true.
+     * @return true if the data was accepted by the part. If false is returned,
+     * the application should stop sending data, and doesn't have to call closeStream.
+     */
+    bool writeStream( const QByteArray& data );
 
-  /**
-   * Terminate the sending of data to the part.
-   * With some data types (text, html...) closeStream might never actually be called,
-   * in the case of continuous streams, for instance plain text or HTML data.
-   */
-  bool closeStream();
+    /**
+     * Terminate the sending of data to the part.
+     * With some data types (text, html...) closeStream might never actually be called,
+     * in the case of continuous streams, for instance plain text or HTML data.
+     */
+    bool closeStream();
 
 private: // Makes no sense for inherited classes to call those. But make it protected there.
 
-  /**
-   * Called by openStream to initiate sending of data.
-   * Parts which implement progress loading should check the @p mimeType
-   * parameter, and return true if they can accept a data stream of that type.
-   */
-  virtual bool doOpenStream( const QString& /*mimeType*/ ) { return false; }
-  /**
-   * Receive some data from the hosting application.
-   * In this method the part should attempt to display the data progressively.
-   * With some data types (text, html...) closeStream might never actually be called,
-   * in the case of continuous streams. This can't happen with e.g. images.
-   */
-  virtual bool doWriteStream( const QByteArray& /*data*/ ) { return false; }
-  /**
-   * This is called by closeStream(), to indicate that all the data has been sent.
-   * Parts should ensure that all of the data is displayed at this point.
-   * @return whether the data could be displayed correctly.
-   */
-  virtual bool doCloseStream() { return false; }
+    /**
+     * Called by openStream to initiate sending of data.
+     * Parts which implement progress loading should check the @p mimeType
+     * parameter, and return true if they can accept a data stream of that type.
+     */
+    virtual bool doOpenStream( const QString& /*mimeType*/ ) { return false; }
+    /**
+     * Receive some data from the hosting application.
+     * In this method the part should attempt to display the data progressively.
+     * With some data types (text, html...) closeStream might never actually be called,
+     * in the case of continuous streams. This can't happen with e.g. images.
+     */
+    virtual bool doWriteStream( const QByteArray& /*data*/ ) { return false; }
+    /**
+     * This is called by closeStream(), to indicate that all the data has been sent.
+     * Parts should ensure that all of the data is displayed at this point.
+     * @return whether the data could be displayed correctly.
+     */
+    virtual bool doCloseStream() { return false; }
 
 Q_SIGNALS:
-  /**
-   * The part emits this when starting data.
-   * If using a KIO::Job, it sets the job in the signal, so that
-   * progress information can be shown. Otherwise, job is 0.
-   **/
-  void started( KIO::Job * );
+    /**
+     * The part emits this when starting data.
+     * If using a KIO::Job, it sets the job in the signal, so that
+     * progress information can be shown. Otherwise, job is 0.
+     **/
+    void started( KIO::Job * );
 
-  /**
-   * Emit this when you have completed loading data.
-   * Hosting apps will want to know when the process of loading the data
-   * is finished, so that they can access the data when everything is loaded.
-   **/
-  void completed();
+    /**
+     * Emit this when you have completed loading data.
+     * Hosting apps will want to know when the process of loading the data
+     * is finished, so that they can access the data when everything is loaded.
+     **/
+    void completed();
 
-  /**
-   * Same as the above signal except it indicates whether there is
-   * a pending action to be executed on a delay timer. An example of
-   * this is the meta-refresh tags on web pages used to reload/redirect
-   * after a certain period of time. This signal is useful if you want
-   * to give the user the ability to cancel such pending actions.
-   *
-   * @p pendingAction true if a pending action exists, false otherwise.
-   */
-  void completed( bool pendingAction );
+    /**
+     * Same as the above signal except it indicates whether there is
+     * a pending action to be executed on a delay timer. An example of
+     * this is the meta-refresh tags on web pages used to reload/redirect
+     * after a certain period of time. This signal is useful if you want
+     * to give the user the ability to cancel such pending actions.
+     *
+     * @p pendingAction true if a pending action exists, false otherwise.
+     */
+    void completed( bool pendingAction );
 
-  /**
-   * Emit this if loading is canceled by the user or by an error.
-   * @param errMsg the error message, empty if the user canceled the loading voluntarily.
-   */
-  void canceled( const QString &errMsg );
+    /**
+     * Emit this if loading is canceled by the user or by an error.
+     * @param errMsg the error message, empty if the user canceled the loading voluntarily.
+     */
+    void canceled( const QString &errMsg );
 
 protected:
-  /**
-   * If the part uses the standard implementation of openUrl(),
-   * it must reimplement this, to open the local file.
-   * Otherwise simply define it to { return false; }
-   */
-  virtual bool openFile() = 0;
+    /**
+     * If the part uses the standard implementation of openUrl(),
+     * it must reimplement this, to open the local file.
+     * Otherwise simply define it to { return false; }
+     */
+    virtual bool openFile() = 0;
 
-  /**
-   * @internal
-   */
-  void abortLoad();
+    /**
+     * @internal
+     */
+    void abortLoad();
 
-  /**
-   * Reimplemented from Part, so that the window caption is set to
-   * the current url (decoded) when the part is activated
-   * This is the usual behavior in 99% of the apps
-   * Reimplement if you don't like it - test for event->activated() !
-   *
-   * Technical note : this is done with GUIActivateEvent and not with
-   * PartActivateEvent because it's handled by the mainwindow
-   * (which gets the even after the PartActivateEvent events have been sent)
-   */
-  virtual void guiActivateEvent( GUIActivateEvent *event );
+    /**
+     * Reimplemented from Part, so that the window caption is set to
+     * the current url (decoded) when the part is activated
+     * This is the usual behavior in 99% of the apps
+     * Reimplement if you don't like it - test for event->activated() !
+     *
+     * Technical note : this is done with GUIActivateEvent and not with
+     * PartActivateEvent because it's handled by the mainwindow
+     * (which gets the even after the PartActivateEvent events have been sent)
+     */
+    virtual void guiActivateEvent( GUIActivateEvent *event );
 
-  /**
-   * @internal
-   */
-  KDE_DEPRECATED bool isLocalFileTemporary() const;
+    /**
+     * @internal
+     */
+    KDE_DEPRECATED bool isLocalFileTemporary() const;
 
-  /**
-   * @internal
-   */
-  KDE_DEPRECATED void setLocalFileTemporary( bool temp );
+    /**
+     * @internal
+     */
+    KDE_DEPRECATED void setLocalFileTemporary( bool temp );
 
-  /**
-   * Sets the url associated with this part.
-   */
-  void setUrl(const KUrl &url);
+    /**
+     * Sets the url associated with this part.
+     */
+    void setUrl(const KUrl &url);
 
-  /**
-   * Returns the local file path associated with this part.
-   */
-  QString localFilePath() const;
+    /**
+     * Returns the local file path associated with this part.
+     */
+    QString localFilePath() const;
 
-  /**
-   * Sets the local file path associated with this part.
-   */
-  void setLocalFilePath( const QString &localFilePath );
+    /**
+     * Sets the local file path associated with this part.
+     */
+    void setLocalFilePath( const QString &localFilePath );
 
 protected:
     ReadOnlyPart(ReadOnlyPartPrivate &dd, QObject *parent);
 
 private:
-  Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
+    Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
 
-  Q_DISABLE_COPY(ReadOnlyPart)
-};
+        Q_DISABLE_COPY(ReadOnlyPart)
+        };
 
 class ReadWritePartPrivate;
 
@@ -611,144 +610,144 @@ class ReadWritePartPrivate;
  */
 class KPARTS_EXPORT ReadWritePart : public ReadOnlyPart
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  KPARTS_DECLARE_PRIVATE(ReadWritePart)
+    KPARTS_DECLARE_PRIVATE(ReadWritePart)
 
-public:
-  /**
-   * Constructor
-   * See parent constructor for instructions.
-   */
-  ReadWritePart( QObject *parent = 0 );
-  /**
-   * Destructor
-   * Applications using a ReadWritePart should make sure, before
-   * destroying it, to call closeUrl().
-   * In KMainWindow::queryClose(), for instance, they should allow
-   * closing only if the return value of closeUrl() was true.
-   * This allows to cancel.
-   */
-  virtual ~ReadWritePart();
+        public:
+    /**
+     * Constructor
+     * See parent constructor for instructions.
+     */
+    ReadWritePart( QObject *parent = 0 );
+    /**
+     * Destructor
+     * Applications using a ReadWritePart should make sure, before
+     * destroying it, to call closeUrl().
+     * In KMainWindow::queryClose(), for instance, they should allow
+     * closing only if the return value of closeUrl() was true.
+     * This allows to cancel.
+     */
+    virtual ~ReadWritePart();
 
-  /**
-   * @return true if the part is in read-write mode
-   */
-  bool isReadWrite() const;
+    /**
+     * @return true if the part is in read-write mode
+     */
+    bool isReadWrite() const;
 
-  /**
-   * Changes the behavior of this part to readonly or readwrite.
-   * @param readwrite set to true to enable readwrite mode
-   */
-  virtual void setReadWrite ( bool readwrite = true );
+    /**
+     * Changes the behavior of this part to readonly or readwrite.
+     * @param readwrite set to true to enable readwrite mode
+     */
+    virtual void setReadWrite ( bool readwrite = true );
 
-  /**
-   * @return true if the document has been modified.
-   */
-  bool isModified() const;
+    /**
+     * @return true if the document has been modified.
+     */
+    bool isModified() const;
 
-  /**
-   * If the document has been modified, ask the user to save changes.
-   * This method is meant to be called from KMainWindow::queryClose().
-   * It will also be called from closeUrl().
-   *
-   * @return true if closeUrl() can be called without the user losing
-   * important data, false if the user chooses to cancel.
-   */
-  virtual bool queryClose();
+    /**
+     * If the document has been modified, ask the user to save changes.
+     * This method is meant to be called from KMainWindow::queryClose().
+     * It will also be called from closeUrl().
+     *
+     * @return true if closeUrl() can be called without the user losing
+     * important data, false if the user chooses to cancel.
+     */
+    virtual bool queryClose();
 
-  /**
-   * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that openUrl() calls it
-   * automatically in this case).
-   *
-   * If the current URL is not fully loaded yet, aborts loading.
-   *
-   * If isModified(), queryClose() will be called.
-   *
-   * @return false on cancel
-   */
-  virtual bool closeUrl();
+    /**
+     * Called when closing the current url (e.g. document), for instance
+     * when switching to another url (note that openUrl() calls it
+     * automatically in this case).
+     *
+     * If the current URL is not fully loaded yet, aborts loading.
+     *
+     * If isModified(), queryClose() will be called.
+     *
+     * @return false on cancel
+     */
+    virtual bool closeUrl();
 
-  /**
-   * Call this method instead of the above if you need control if
-   * the save prompt is shown. For example, if you call queryClose()
-   * from KMainWindow::queryClose(), you would not want to prompt
-   * again when closing the url.
-   *
-   * Equivalent to promptToSave ? closeUrl() : ReadOnlyPart::closeUrl()
-   */
-  virtual bool closeUrl( bool promptToSave );
+    /**
+     * Call this method instead of the above if you need control if
+     * the save prompt is shown. For example, if you call queryClose()
+     * from KMainWindow::queryClose(), you would not want to prompt
+     * again when closing the url.
+     *
+     * Equivalent to promptToSave ? closeUrl() : ReadOnlyPart::closeUrl()
+     */
+    virtual bool closeUrl( bool promptToSave );
 
-  /**
-   * Save the file to a new location.
-   *
-   * Calls save(), no need to reimplement
-   */
-  virtual bool saveAs( const KUrl &url );
+    /**
+     * Save the file to a new location.
+     *
+     * Calls save(), no need to reimplement
+     */
+    virtual bool saveAs( const KUrl &url );
 
-  /**
-   *  Sets the modified flag of the part.
-   */
-  virtual void setModified( bool modified );
+    /**
+     *  Sets the modified flag of the part.
+     */
+    virtual void setModified( bool modified );
 
 Q_SIGNALS:
-   /**
-    * set handled to true, if you don't want the default handling
-    * set abortClosing to true, if you handled the request,
-    * but for any reason don't  want to allow closing the document
-    */
-   void sigQueryClose(bool *handled, bool* abortClosing);
+    /**
+     * set handled to true, if you don't want the default handling
+     * set abortClosing to true, if you handled the request,
+     * but for any reason don't  want to allow closing the document
+     */
+    void sigQueryClose(bool *handled, bool* abortClosing);
 
 public Q_SLOTS:
-  /**
-   * Call setModified() whenever the contents get modified.
-   * This is a slot for convenience, so that you can connect it
-   * to a signal, like textChanged().
-   */
-  virtual void setModified();
+    /**
+     * Call setModified() whenever the contents get modified.
+     * This is a slot for convenience, so that you can connect it
+     * to a signal, like textChanged().
+     */
+    virtual void setModified();
 
-  /**
-   * Save the file in the location from which it was opened.
-   * You can connect this to the "save" action.
-   * Calls saveFile() and saveToUrl(), no need to reimplement.
-   */
-  virtual bool save();
+    /**
+     * Save the file in the location from which it was opened.
+     * You can connect this to the "save" action.
+     * Calls saveFile() and saveToUrl(), no need to reimplement.
+     */
+    virtual bool save();
 
-  /**
-   * Waits for any pending upload job to finish and returns whether the
-   * last save() action was successful.
-   */
-  bool waitSaveComplete();
+    /**
+     * Waits for any pending upload job to finish and returns whether the
+     * last save() action was successful.
+     */
+    bool waitSaveComplete();
 
 protected:
-  /**
-   * Save to a local file.
-   * You need to implement it, to save to the local file.
-   * The framework takes care of re-uploading afterwards.
-   *
-   * @return true on success, false on failure.
-   * On failure the function should inform the user about the
-   * problem with an appropriate message box. Standard error
-   * messages can be constructed using KIO::buildErrorString()
-   * in combination with the error codes defined in kio/global.h
-   */
-  virtual bool saveFile() = 0;
+    /**
+     * Save to a local file.
+     * You need to implement it, to save to the local file.
+     * The framework takes care of re-uploading afterwards.
+     *
+     * @return true on success, false on failure.
+     * On failure the function should inform the user about the
+     * problem with an appropriate message box. Standard error
+     * messages can be constructed using KIO::buildErrorString()
+     * in combination with the error codes defined in kio/global.h
+     */
+    virtual bool saveFile() = 0;
 
-  /**
-   * Save the file.
-   *
-   * Uploads the file, if @p url is remote.
-   * This will emit started(), and either completed() or canceled(),
-   * in case you want to provide feedback.
-   * @return true on success, false on failure.
-   */
-  virtual bool saveToUrl();
+    /**
+     * Save the file.
+     *
+     * Uploads the file, if @p url is remote.
+     * This will emit started(), and either completed() or canceled(),
+     * in case you want to provide feedback.
+     * @return true on success, false on failure.
+     */
+    virtual bool saveToUrl();
 
 private:
-  Q_PRIVATE_SLOT(d_func(), void _k_slotUploadFinished( KJob * job ))
+    Q_PRIVATE_SLOT(d_func(), void _k_slotUploadFinished( KJob * job ))
 
-  Q_DISABLE_COPY(ReadWritePart)
+    Q_DISABLE_COPY(ReadWritePart)
 };
 
 } // namespace

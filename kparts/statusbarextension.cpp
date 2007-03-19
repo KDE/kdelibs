@@ -102,24 +102,26 @@ StatusBarExtension::~StatusBarExtension()
 
 StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 {
-    if ( !obj || obj->children().isEmpty() )
-        return 0L;
+    if ( !obj )
+        return 0;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
     const QObjectList &children = obj->children();
     QObjectList::ConstIterator it = children.begin();
-    for (; it != children.end(); ++it )
-        if ( (*it)->inherits( "KParts::StatusBarExtension" ) )
-            return static_cast<KParts::StatusBarExtension *>( *it );
+    for (; it != children.end(); ++it ) {
+        KParts::StatusBarExtension* ext = ::qobject_cast<KParts::StatusBarExtension *>( *it );
+        if ( ext )
+            return ext;
+    }
 
-    return 0L;
+    return 0;
 }
 
 bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 {
   if ( !GUIActivateEvent::test( ev ) ||
-      !watched->inherits("KParts::ReadOnlyPart")  )
+       !::qobject_cast<KParts::ReadOnlyPart *>(watched)  )
       return QObject::eventFilter(watched, ev);
 
   KStatusBar * sb = statusBar();

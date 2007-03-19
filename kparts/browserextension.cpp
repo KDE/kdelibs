@@ -668,20 +668,24 @@ bool BrowserHostExtension::openUrlInFrame( const KUrl &, const KParts::URLArgs &
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
     if ( !obj )
-        return 0L;
+        return 0;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    foreach ( QObject * child, obj->children() )
-        if ( child->inherits( "KParts::BrowserHostExtension" ) )
-            return static_cast<KParts::BrowserHostExtension *>( child );
+    foreach ( QObject * child, obj->children() ) {
+        KParts::BrowserHostExtension* ext = qobject_cast<KParts::BrowserHostExtension *>(child);
+        if (ext)
+            return ext;
+    }
 
-    return 0L;
+    return 0;
 }
 
 BrowserHostExtension *
 BrowserHostExtension::findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame)
 {
+    Q_UNUSED(callingPart);
+    Q_UNUSED(frame);
     return 0;
 }
 
@@ -695,11 +699,11 @@ bool LiveConnectExtension::get( const unsigned long, const QString &, Type &, un
 }
 
 bool LiveConnectExtension::put( const unsigned long, const QString &, const QString & ) {
-      return false;
+    return false;
 }
 
 bool LiveConnectExtension::call( const unsigned long, const QString &, const QStringList &, Type &, unsigned long &, QString & ) {
-      return false;
+    return false;
 }
 
 void LiveConnectExtension::unregister( const unsigned long ) {}
@@ -707,15 +711,16 @@ void LiveConnectExtension::unregister( const unsigned long ) {}
 LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
 {
     if ( !obj )
-        return 0L;
+        return 0;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    foreach ( QObject * child, obj->children() )
-        if ( child->inherits( "KParts::LiveConnectExtension" ) )
-            return static_cast<KParts::LiveConnectExtension *>( child );
-
-    return 0L;
+    foreach ( QObject * child, obj->children() ) {
+        KParts::LiveConnectExtension* ext = qobject_cast<KParts::LiveConnectExtension *>( child );
+        if (ext)
+            return ext;
+    }
+    return 0;
 }
 
 #include "browserextension.moc"
