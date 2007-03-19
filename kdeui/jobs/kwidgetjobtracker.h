@@ -1,0 +1,78 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+
+#ifndef KWIDGETJOBTRACKER_H
+#define KWIDGETJOBTRACKER_H
+
+#include <kabstractwidgetjobtracker.h>
+
+/**
+ * The base class for widget base job trackers.
+ */
+class KDEUI_EXPORT KWidgetJobTracker : public KAbstractWidgetJobTracker
+{
+    Q_OBJECT
+
+public:
+    /**
+     * Creates a new KWidgetJobTracker
+     *
+     * @param parent the parent of this object and of the widget displaying the job progresses
+     */
+    KWidgetJobTracker(QWidget *parent = 0);
+
+    /**
+     * Destroys a KWidgetJobTracker
+     */
+    virtual ~KWidgetJobTracker();
+
+    /**
+     * The widget associated to this tracker.
+     *
+     * @return the widget displaying the job progresses
+     */
+    virtual QWidget *widget();
+
+    bool keepOpen() const;
+
+protected Q_SLOTS:
+    virtual void infoMessage(KJob *job, const QString &plain, const QString &rich);
+    virtual void description(KJob *job, const QString &title,
+                             const QPair<QString, QString> &field1,
+                             const QPair<QString, QString> &field2);
+    virtual void totalAmount(KJob *job, KJob::Unit unit, qulonglong amount);
+    virtual void processedAmount(KJob *job, KJob::Unit unit, qulonglong amount);
+    virtual void percent(KJob *job, unsigned long percent);
+    virtual void speed(KJob *job, unsigned long value);
+    virtual void slotClean();
+
+    //TODO: Misses canResume()
+
+private:
+    Q_PRIVATE_SLOT(d, void _k_keepOpenToggled(bool))
+    Q_PRIVATE_SLOT(d, void _k_openFile())
+    Q_PRIVATE_SLOT(d, void _k_openLocation())
+    Q_PRIVATE_SLOT(d, void _k_pauseResumeClicked())
+
+    class Private;
+    Private *const d;
+};
+
+#endif

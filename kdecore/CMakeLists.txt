@@ -133,6 +133,7 @@ set(kdecore_LIB_SRCS
    jobs/kcompositejob.cpp
    jobs/kjob.cpp
    jobs/kjobuidelegate.cpp
+   jobs/kjobtrackerinterface.cpp
    kernel/kauthorized.cpp
    kernel/kautostart.cpp
    kernel/kaboutdata.cpp
@@ -285,6 +286,7 @@ install( FILES
    jobs/kcompositejob.h
    jobs/kjob.h
    jobs/kjobuidelegate.h
+   jobs/kjobtrackerinterface.h
    kernel/kaboutdata.h
    kernel/kauthorized.h
    kernel/kautostart.h

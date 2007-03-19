@@ -13,6 +13,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
+ ${CMAKE_CURRENT_SOURCE_DIR}/jobs
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -82,6 +83,9 @@ set(kdeui_LIB_SRCS
  itemviews/k3listview.cpp
  itemviews/klistwidget.cpp
  itemviews/ktreewidgetsearchline.cpp
+ jobs/kabstractwidgetjobtracker.cpp
+ jobs/kwidgetjobtracker.cpp
+ jobs/kstatusbarjobtracker.cpp
  kernel/kapplication.cpp
  kernel/kclipboard.cpp
  kernel/kuniqueapplication.cpp
@@ -279,6 +283,9 @@ install( FILES
  itemviews/k3listviewlineedit.h
  itemviews/klistwidget.h
  itemviews/ktreewidgetsearchline.h
+ jobs/kabstractwidgetjobtracker.h
+ jobs/kwidgetjobtracker.h
+ jobs/kstatusbarjobtracker.h
  kernel/kapplication.h
  kernel/kuniqueapplication.h
  kernel/ksessionmanager.h

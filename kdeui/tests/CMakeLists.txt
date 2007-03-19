@@ -973,6 +973,16 @@ target_link_libraries(kconfigguitest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${
 
 add_test(kdeui-kconfigguitest ${EXECUTABLE_OUTPUT_PATH}/kconfigguitest)
 
+########### next target ###############
+
+set(kjobtrackerstest_SRCS kjobtrackerstest.cpp)
+
+kde4_automoc(${kjobtrackerstest_SRCS})
+
+kde4_add_executable(kjobtrackerstest NOGUI RUN_UNINSTALLED ${kjobtrackerstest_SRCS})
+
+target_link_libraries(kjobtrackerstest ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
+
 ########### End of tests ###############
 
 endif(KDE4_BUILD_TESTS)
