@@ -36,6 +36,7 @@
 #include <kpushbutton.h>
 #include <kstandardguiitem.h>
 
+#include <config.h>
 #include "k3sconfig.h"
 #include <kconfiggroup.h>
 
@@ -526,11 +527,11 @@ void K3SpellConfig::getAvailDictsAspell () {
 
   // dictionary path
   // FIXME: use "aspell dump config" to find out the dict-dir
-  QFileInfo dir ("/usr/lib/aspell");
+  QFileInfo dir ("/usr/lib" KDELIBSUFF "/aspell");
   if (!dir.exists() || !dir.isDir())
-    dir.setFile ("/usr/lib/aspell-0.60");
+    dir.setFile ("/usr/lib" KDELIBSUFF "/aspell-0.60");
   if (!dir.exists() || !dir.isDir())
-    dir.setFile ("/usr/local/lib/aspell");
+    dir.setFile ("/usr/local/lib" KDELIBSUFF "/aspell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/aspell");
   if (!dir.exists() || !dir.isDir())
@@ -682,11 +683,11 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
 
       // dictionary path
       // FIXME: use "aspell dump config" to find out the dict-dir
-      QFileInfo dir ("/usr/lib/aspell");
+      QFileInfo dir ("/usr/lib" KDELIBSUFF "/aspell");
       if (!dir.exists() || !dir.isDir())
-        dir.setFile ("/usr/lib/aspell-0.60");
+        dir.setFile ("/usr/lib" KDELIBSUFF "/aspell-0.60");
       if (!dir.exists() || !dir.isDir())
-        dir.setFile ("/usr/local/lib/aspell");
+        dir.setFile ("/usr/local/lib" KDELIBSUFF "/aspell");
       if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/share/aspell");
       if (!dir.exists() || !dir.isDir())
