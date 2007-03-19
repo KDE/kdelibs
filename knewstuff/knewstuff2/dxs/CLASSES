@@ -1,4 +1,5 @@
 Engine (merge with 'knewstuff2'?):
+ dxsengine - DXS-enabled KNS engine
  dxs - high-level message input/output handler
  soap - low-level SOAP and cDXS protocol handler
 
@@ -11,7 +12,7 @@ User interface:
  kdxstranslation - dialog to submit a translation
  newstuff - new KHTML-based download dialog by Enrico Ros, fairly modified
 
-Qt extensions:
+Qt extensions (part of user interface):
  qasyncpixmap - qpixmap wrapper w/ support for asynchronous loading
  qasyncframe - qframe wrapper with qasyncpixmap background
  qstarframe - qframe with star pixmaps, to display a slider value

@@ -25,7 +25,7 @@ Dxs::~Dxs()
 {
 }
 
-void Dxs::setEndpoint(QString endpoint)
+void Dxs::setEndpoint(KUrl endpoint)
 {
 	m_endpoint = endpoint;
 }
@@ -36,14 +36,14 @@ void Dxs::call_info()
 	QDomElement info = doc.createElement("ns:GHNSInfo");
 	//QDomText t = doc.createTextNode("text");
 	//check.appendChild(t);
-	m_soap->call(info, m_endpoint);
+	m_soap->call(info, m_endpoint.url());
 }
 
 void Dxs::call_categories()
 {
 	QDomDocument doc;
 	QDomElement info = doc.createElement("ns:GHNSCategories");
-	m_soap->call(info, m_endpoint);
+	m_soap->call(info, m_endpoint.url());
 }
 
 void Dxs::call_entries(QString category, QString feed)
@@ -61,7 +61,7 @@ void Dxs::call_entries(QString category, QString feed)
 		efeed.appendChild(t2);
 		entries.appendChild(efeed);
 	}
-	m_soap->call(entries, m_endpoint);
+	m_soap->call(entries, m_endpoint.url());
 }
 
 void Dxs::call_comments(int id)
@@ -72,7 +72,7 @@ void Dxs::call_comments(int id)
 	QDomText t = doc.createTextNode(QString::number(id));
 	eid.appendChild(t);
 	comments.appendChild(eid);
-	m_soap->call(comments, m_endpoint);
+	m_soap->call(comments, m_endpoint.url());
 }
 
 void Dxs::call_changes(int id)
@@ -83,7 +83,7 @@ void Dxs::call_changes(int id)
 	QDomText t = doc.createTextNode(QString::number(id));
 	eid.appendChild(t);
 	changes.appendChild(eid);
-	m_soap->call(changes, m_endpoint);
+	m_soap->call(changes, m_endpoint.url());
 }
 
 void Dxs::call_history(int id)
@@ -94,7 +94,7 @@ void Dxs::call_history(int id)
 	QDomText t = doc.createTextNode(QString::number(id));
 	eid.appendChild(t);
 	history.appendChild(eid);
-	m_soap->call(history, m_endpoint);
+	m_soap->call(history, m_endpoint.url());
 }
 
 void Dxs::call_removal(int id)
@@ -105,7 +105,7 @@ void Dxs::call_removal(int id)
 	QDomText t = doc.createTextNode(QString::number(id));
 	eid.appendChild(t);
 	removal.appendChild(eid);
-	m_soap->call(removal, m_endpoint);
+	m_soap->call(removal, m_endpoint.url());
 }
 
 void Dxs::call_subscription(int id, bool subscribe)
@@ -120,7 +120,7 @@ void Dxs::call_subscription(int id, bool subscribe)
 	QDomText t2 = doc.createTextNode((subscribe ? "true" : "false"));
 	esubscribe.appendChild(t2);
 	subscription.appendChild(esubscribe);
-	m_soap->call(subscription, m_endpoint);
+	m_soap->call(subscription, m_endpoint.url());
 }
 
 void Dxs::call_comment(int id, QString comment)
@@ -135,7 +135,7 @@ void Dxs::call_comment(int id, QString comment)
 	QDomText tcomment = doc.createTextNode(comment);
 	ecommenttext.appendChild(tcomment);
 	ecomment.appendChild(ecommenttext);
-	m_soap->call(ecomment, m_endpoint);
+	m_soap->call(ecomment, m_endpoint.url());
 }
 
 void Dxs::call_rating(int id, int rating)
@@ -150,7 +150,7 @@ void Dxs::call_rating(int id, int rating)
 	QDomText trating = doc.createTextNode(QString::number(rating));
 	eratingtext.appendChild(trating);
 	erating.appendChild(eratingtext);
-	m_soap->call(erating, m_endpoint);
+	m_soap->call(erating, m_endpoint.url());
 }
 
 void Dxs::slotError()
@@ -172,9 +172,9 @@ void Dxs::slotResult(QDomNode node)
 
 	if(m_soap->localname(node) == "GHNSInfoResponse")
 	{
-		QString provider = m_soap->xpath(node, "/SOAP-ENC:Array/provider");
-		QString server = m_soap->xpath(node, "/SOAP-ENC:Array/server");
-		QString version = m_soap->xpath(node, "/SOAP-ENC:Array/version");
+		QString provider = m_soap->xpath(node, "/provider");
+		QString server = m_soap->xpath(node, "/server");
+		QString version = m_soap->xpath(node, "/version");
 
 		emit signalInfo(provider, server, version);
 	}
@@ -182,15 +182,12 @@ void Dxs::slotResult(QDomNode node)
 	{
 		QList<KNS::Category*> categories;
 
-		QDomNode array = node.firstChild();
-		QDomNodeList catlist = array.toElement().elementsByTagName("categories");
+		QList<QDomNode> catlist = m_soap->directChildNodes(node, "category");
 		for(int i = 0; i < catlist.count(); i++)
 		{
-			//categories << catlist.item(i).toElement().text();
-
 			KNS::Category *category = new KNS::Category();
 
-			QDomNode node = catlist.item(i).toElement();
+			QDomNode node = catlist.at(i).toElement();
 			QString categoryname = m_soap->xpath(node, "/category");
 			QString icon = m_soap->xpath(node, "/icon");
 			QString name = m_soap->xpath(node, "/name");
@@ -210,42 +207,13 @@ void Dxs::slotResult(QDomNode node)
 	{
 		QList<KNS::Entry*> entries;
 
-		QDomNode array = node.firstChild();
-		QDomNodeList entrylist = array.toElement().elementsByTagName("entry");
+		QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
 		for(int i = 0; i < entrylist.count(); i++)
 		{
-			//entries << entrylist.item(i).toElement().text();
-
-			QDomElement element = entrylist.item(i).toElement();
+			QDomElement element = entrylist.at(i).toElement();
 			element.setTagName("stuff");
 			KNS::EntryHandler handler(element);
 			KNS::Entry *entry = handler.entryptr();
-
-//			QString name = m_soap->xpath(node, "/name");
-//			QString author = m_soap->xpath(node, "/author");
-//			QString version = m_soap->xpath(node, "/version");
-//			QString release = m_soap->xpath(node, "/release");
-//			QString releasedate = m_soap->xpath(node, "/releasedate");
-//			QString rating = m_soap->xpath(node, "/ratings");
-//			QString downloads = m_soap->xpath(node, "/downloads");
-//			QString category = m_soap->xpath(node, "/category");
-//			QString licence = m_soap->xpath(node, "/licence");
-//			QString preview = m_soap->xpath(node, "/preview");
-//			QString payload = m_soap->xpath(node, "/payload");
-//			QString summary = m_soap->xpath(node, "/summary");
-
-//			entry->setName(name);
-//			entry->setAuthor(author); // missing: author's email?
-//			entry->setVersion(version);
-//			entry->setRelease(QString(version).toInt());
-//			entry->setReleaseDate(QDate::fromString(releasedate, Qt::ISODate));
-//			entry->setRating(QString(rating).toInt());
-//			entry->setDownloads(QString(downloads).toInt());
-//			entry->setType(category); // migrate to category
-//			entry->setLicence(licence);
-//			entry->setPreview(preview);
-//			entry->setPayload(payload);
-//			entry->setSummary(summary);
 
 			entries << entry;
 
@@ -258,11 +226,10 @@ void Dxs::slotResult(QDomNode node)
 	{
 		QStringList comments;
 
-		QDomNode array = node.firstChild();
-		QDomNodeList comlist = array.toElement().elementsByTagName("comments");
+		QList<QDomNode> comlist = m_soap->directChildNodes(node, "comments");
 		for(int i = 0; i < comlist.count(); i++)
 		{
-			comments << comlist.item(i).toElement().text();
+			comments << comlist.at(i).toElement().text();
 		}
 
 		emit signalComments(comments);
@@ -271,11 +238,10 @@ void Dxs::slotResult(QDomNode node)
 	{
 		QStringList changes;
 
-		QDomNode array = node.firstChild();
-		QDomNodeList changelist = array.toElement().elementsByTagName("entry");
+		QList<QDomNode> changelist = m_soap->directChildNodes(node, "entry");
 		for(int i = 0; i < changelist.count(); i++)
 		{
-			QDomNode node = changelist.item(i);
+			QDomNode node = changelist.at(i);
 
 			QString version = m_soap->xpath(node, "/version");
 			QString changelog = m_soap->xpath(node, "/changelog");
@@ -291,37 +257,28 @@ void Dxs::slotResult(QDomNode node)
 	{
 		QStringList entries;
 
-		QDomNode array = node.firstChild();
-		QDomNodeList entrylist = array.toElement().elementsByTagName("entry");
+		QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
 		for(int i = 0; i < entrylist.count(); i++)
 		{
-			entries << entrylist.item(i).toElement().text();
+			entries << entrylist.at(i).toElement().text();
 		}
 
 		emit signalHistory(entries);
 	}
 	else if(m_soap->localname(node) == "GHNSRemovalResponse")
 	{
-		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
-
 		emit signalRemoval(success);
 	}
 	else if(m_soap->localname(node) == "GHNSSubscriptionResponse")
 	{
-		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
-
 		emit signalSubscription(success);
 	}
 	else if(m_soap->localname(node) == "GHNSCommentResponse")
 	{
-		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
-
 		emit signalComment(success);
 	}
 	else if(m_soap->localname(node) == "GHNSRatingResponse")
 	{
-		//QString status = m_soap->xpath(node, "/SOAP-ENC:Array/???");
-
 		emit signalRating(success);
 	}
 }

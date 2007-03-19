@@ -94,8 +94,7 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
 
 	m_dxs = new KNS::Dxs();
-	//m_dxs->setEndpoint("http://localhost:8080/cgi-bin/run.sh");
-	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs");
+	m_dxs->setEndpoint(KUrl("http://localhost/cgi-bin/hotstuff-dxs"));
 
 	connect(m_dxs,
 		SIGNAL(signalInfo(QString, QString, QString)),

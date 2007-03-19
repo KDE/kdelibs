@@ -1,5 +1,5 @@
 [KNewStuff2]
-#ProvidersUrl = http://new.kstuff.org/hotstuff/demo/provider.xml
+#ProvidersUrl = http://new.kstuff.org/provider-kdeedu.xml
 ProvidersUrl = http://localhost/provider.xml
 LocalRegistryDir = /tmp/knewstuff2.metafiles
 

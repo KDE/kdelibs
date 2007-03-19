@@ -1,7 +1,8 @@
-#ifndef KNEWSTUFF_SOAP_H
-#define KNEWSTUFF_SOAP_H
+#ifndef KNEWSTUFF2_DXS_SOAP_H
+#define KNEWSTUFF2_DXS_SOAP_H
 
 #include <qobject.h>
+#include <qabstractsocket.h>
 
 namespace KIO
 {
@@ -11,6 +12,7 @@ class KJob;
 
 class QDomDocument;
 class QDomNode;
+class QDomNodeList;
 class QDomElement;
 class QTcpSocket;
 class QCString;
@@ -36,6 +38,7 @@ public:
 	void call(QDomElement element, QString endpoint);
 	QString localname(QDomNode node);
 	QString xpath(QDomNode node, QString expr);
+	QList<QDomNode> directChildNodes(QDomNode node, QString name);
 
 signals:
 	void signalResult(QDomNode node);
@@ -45,7 +48,7 @@ private slots:
 	void slotData(KIO::Job *job, const QByteArray& data);
 	void slotResult(KJob *job);
 	void slotSocket();
-	void slotSocketError(int error);
+	void slotSocketError(QAbstractSocket::SocketError error);
 
 private:
 	void call_soap(QDomElement element, QString endpoint);

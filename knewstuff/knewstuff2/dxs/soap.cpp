@@ -16,8 +16,8 @@ using namespace KNS;
 Soap::Soap()
 : QObject()
 {
-	//m_model = canonicaltree;
-	m_model = soap;
+	m_model = canonicaltree;
+	//m_model = soap;
 	m_socket = NULL;
 	m_inprogress = false;
 }
@@ -69,7 +69,6 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 	kDebug() << "<CanonicalTree>" << s << endl;
 
 	QByteArray data = s.toUtf8();
-	//data.truncate(data.size() - 1); // FIXME KDE4PORT
 
 	kDebug() << "Call(socket)!" << endl;
 
@@ -78,8 +77,12 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 
 	m_socket->write(data, data.size());
 
-	connect(m_socket, SIGNAL(readyRead()), SLOT(slotSocket()));
-	connect(m_socket, SIGNAL(error(int)), SLOT(slotSocketError(int)));
+	connect(m_socket,
+		SIGNAL(readyRead()),
+		SLOT(slotSocket()));
+	connect(m_socket,
+		SIGNAL(error(QAbstractSocket::SocketError)),
+		SLOT(slotSocketError(QAbstractSocket::SocketError)));
 
 	m_buffer = QByteArray();
 }
@@ -98,9 +101,7 @@ void Soap::call_soap(QDomElement element, QString endpoint)
 	body.appendChild(element);
 
 	QString s = doc.toString();
-
 	QByteArray data = s.toUtf8();
-	//data.truncate(data.size() - 1); // FIXME KDE4PORT
 
 	kDebug() << "HTTP-POST " << url.prettyUrl() << endl;
 	kDebug() << "HTTP-POST " << s << endl;
@@ -181,6 +182,7 @@ void Soap::slotResult(KJob *job)
 		//m_data = QString("GHNSRemovalResponse(ok(true)\nauthorative(true))");
 		kDebug() << m_data << endl;
 
+		m_data = m_data.simplified();
 		doc = buildtree(doc, doc.documentElement(), m_data);
 
 		QDomElement root = doc.documentElement();
@@ -200,15 +202,31 @@ QString Soap::localname(QDomNode node)
 	return s;
 }
 
+QList<QDomNode> Soap::directChildNodes(QDomNode node, QString name)
+{
+	QList<QDomNode> list;
+	QDomNode n = node.firstChild();
+	while(!n.isNull())
+	{
+		if((n.isElement()) && (n.toElement().tagName() == name))
+		{
+			list.append(n);
+		}
+
+		n = n.nextSibling();
+	}
+	return list;
+}
+
 QString Soap::xpath(QDomNode node, QString expr)
 {
-	if(m_model == canonicaltree)
-	{
-		//QString provider = m_soap->xpath(node, "/SOAP-ENC:Array/provider");
-		expr = expr.section("/", 2);
-		// FIXME: Array handling for Canonical Tree Structures?
-		kDebug() << "EXPR " << expr << endl;
-	}
+//	if(m_model == canonicaltree)
+//	{
+//		//QString provider = m_soap->xpath(node, "/SOAP-ENC:Array/provider");
+//		expr = expr.section("/", 2);
+//		// FIXME: Array handling for Canonical Tree Structures?
+//		kDebug() << "EXPR " << expr << endl;
+//	}
 
 	QDomNode n = node;
 	QStringList explist = expr.split("/", QString::SkipEmptyParts);
@@ -228,13 +246,13 @@ void Soap::setModel(Model m)
 	m_model = m;
 }
 
-void Soap::slotSocketError(int error)
+void Soap::slotSocketError(QAbstractSocket::SocketError error)
 {
 	Q_UNUSED(error);
 
 	kDebug() << "socket: error" << endl;
 
-//	delete m_socket;
+	delete m_socket;
 	m_socket = NULL;
 
 	m_inprogress = false;
@@ -264,58 +282,67 @@ void Soap::slotSocket()
 
 QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, QString data)
 {
-	kDebug() << "MATCH " << data << endl;
+	int start = -1, end = -1;
+	int offset = 0;
+	int stack = 0;
+	bool quoted = false;
 
-	//QRegExp e("(\\S+)\\(((?:.*\\n?)+)\\)");
-	//QRegExp e("^(\\S+)\\((.*)\\)$"); // FIXME: Qt regexp bug?
-	//QRegExp e("^([^(]+)\\((.*)\\)$");
-	//QRegExp e("^([^(]+)(?:\\((.*)\\))?\n*$");
-	//QRegExp e("^([^\(]+(?!\()[^\\\(])(?:\\((.*)[^\\]\\))?\n*$");
-	//QRegExp e("^([^\\(]+[^\\\\\\(])(?:\\((.*[^\\\\])\\))?\n*$");
-	//QRegExp e("^((?:\\\\\\(|[^\\(])+)(?:\\(((?:\\\\\\)|\\\\\\(|.)*)\\))?\n*$");
-	QRegExp e("^((?:\\\\\\(|[^\\(])+)(?:\\(((?:\\\\\\)|.)*)\\))?\n*$");
-	e.exactMatch(data);
-	//kDebug() << "Captures: " << e.numCaptures() << endl;
-	kDebug() << "Captures: " << e.numCaptures() << endl;
-	//for(int i = 0; i < e.numCaptures(); i++)
-	//{
-	//	kDebug() << "Cap(" << i + 1 << "): " << e.cap(i + 1) << endl;
-	//}
-
-	// FIXME: another Qt regexp bug?
-	//if(e.numCaptures() == 2)
-//kDebug() << "cap1:" << e.cap(1) << endl;
-	if(data.contains(QRegExp("[^\\\\]\\(")))
+	if(data.indexOf('(') == -1)
 	{
-//kDebug() << "contains-parentheses" << endl;
-		QDomElement elem;
-		if(cur.isNull())
-		{
-			elem = doc.createElement("ns:" + e.cap(1));
-			doc.appendChild(elem);
-		}
-		else
-		{
-			elem = doc.createElement(e.cap(1));
-			cur.appendChild(elem);
-		}
-
-		QStringList l = e.cap(2).split("\n", QString::SkipEmptyParts);
-		for(QStringList::iterator it = l.begin(); it != l.end(); it++)
-		{
-			kDebug() << "<rec>" << (*it) << endl;
-			buildtree(doc, elem, (*it));
-		}
-	}
-	else //if(e.numCaptures() == 1)
-	{
-		QString text = e.cap(1);
-		//text = text.replace(QRegExp("\\\\(?:[^\\\\]|$)"), "");
-		text = text.replace(QRegExp("\\\\\\("), "(");
-		text = text.replace(QRegExp("\\\\\\)"), ")");
-		QDomText t = doc.createTextNode(text);
+		QDomText t = doc.createTextNode(data);
 		cur.appendChild(t);
-		//cur.setNodeValue(e.cap(1));
+		return doc;
+	}
+
+	for(int i = 0; i < data.length(); i++)
+	{
+		const QChar c = data.at(i);
+		if(quoted)
+		{
+			quoted = false;
+			continue;
+		}
+		if(c == '\\')
+		{
+			quoted = true;
+		}
+		else if(c == '(')
+		{
+			stack++;
+			if(start == -1) start = i;
+		}
+		else if(c == ')')
+		{
+			stack--;
+			if((stack == 0) && (end == -1))
+			{
+				end = i;
+				//kDebug() << "START-END: " << start << "," << end << endl;
+				QString expression = data.mid(offset, start - offset);
+				QString sub = data.mid(start + 1, end - start - 1);
+				expression = expression.trimmed();
+				//kDebug() << "EXPR-MAIN " << expression << endl;
+				//kDebug() << "EXPR-SUB " << sub << endl;
+
+				QDomElement elem;
+				if(cur.isNull())
+				{
+					elem = doc.createElement("ns:" + expression);
+					doc.appendChild(elem);
+				}
+				else
+				{
+					elem = doc.createElement(expression);
+					cur.appendChild(elem);
+				}
+
+				buildtree(doc, elem, sub);
+
+				offset = end + 1;
+				start = -1;
+				end = -1;
+			}
+		}
 	}
 
 	return doc;

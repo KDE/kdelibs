@@ -1,7 +1,9 @@
-#ifndef KNEWSTUFF_DXS_H
-#define KNEWSTUFF_DXS_H
+#ifndef KNEWSTUFF2_DXS_DXS_H
+#define KNEWSTUFF2_DXS_DXS_H
 
 #include <qobject.h>
+
+#include <kurl.h>
 
 class QDomNode;
 
@@ -12,13 +14,13 @@ class Soap;
 class Entry;
 class Category;
 
-class Dxs : public QObject
+class KDE_EXPORT Dxs : public QObject
 {
 Q_OBJECT
 public:
 	Dxs();
 	~Dxs();
-	void setEndpoint(QString endpoint);
+	void setEndpoint(KUrl endpoint);
 
 	void call_info();
 	void call_categories();
@@ -51,7 +53,7 @@ private slots:
 
 private:
 	Soap *m_soap;
-	QString m_endpoint;
+	KUrl m_endpoint;
 };
 
 }

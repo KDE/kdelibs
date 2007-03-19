@@ -22,11 +22,7 @@ KDXSView::KDXSView(QWidget *parent)
 	setMainWidget(root);
 
 	QPushButton *button = new QPushButton(i18n("Get Hot New Stuff!"), root);
-
-	/* // FIXME KDE4PORT
-	KIconLoader *il = KGlobal::iconLoader();
-	QPixmap pix = il->loadIcon("knewstuff", KIcon::Small);
-	button->setIconSet(pix);*/
+	button->setIcon(SmallIcon("knewstuff"));
 
 	QLabel *dxslabel = new QLabel(i18n(
 		"Please select the <b>Get Hot New Stuff</b> "
@@ -35,11 +31,9 @@ KDXSView::KDXSView(QWidget *parent)
 
 	m_url = new QComboBox(root);
 	m_url->setEditable(true);
-	// FIXME: first two are DXS urls, only third is GHNS providers file
-	m_url->addItem("http://localhost/cgi-bin/hotstuff-dxs");
-	m_url->addItem("http://new.kstuff.org/cgi-bin/hotstuff-dxs");
+	m_url->addItem("http://localhost/provider.xml");
+	m_url->addItem("http://new.kstuff.org/provider-kdeedu.xml");
 	m_url->addItem("http://download.kde.org/khotnewstuff/wallpaper-providers.xml");
-	//m_url->addItem("http://download.kde.org/khotnewstuff/wallpaper/wallpaper.xml");
 
 	m_type = new QComboBox(root);
 	m_type->addItem(i18n("Automatic choice"), access_auto);
@@ -47,7 +41,7 @@ KDXSView::KDXSView(QWidget *parent)
 	m_type->addItem(i18n("Web service interaction (DXS)"), access_webservice);
 
 	QLabel *typelabel = new QLabel(i18n("GHNS access method"), root);
-	QLabel *urllabel = new QLabel(i18n("URL of GHNS repository"), root);
+	QLabel *urllabel = new QLabel(i18n("URL of GHNS provider"), root);
 
 	QHBoxLayout *top_layout = new QHBoxLayout(root);
 	top_layout->addStretch(1);
@@ -69,7 +63,10 @@ KDXSView::KDXSView(QWidget *parent)
 	show();
 	root->setMinimumSize(root->size());
 	//disableResize(); // FIXME KDE4PORT
+}
 
+void KDXSView::slotRun()
+{
 	ProviderLoader *pl = new ProviderLoader(/*this*/);
 	connect(pl,
 		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
@@ -77,21 +74,43 @@ KDXSView::KDXSView(QWidget *parent)
 	connect(pl,
 		SIGNAL(signalProvidersFailed()),
 		SLOT(slotProvidersFailed()));
-	pl->load("desktop/wallpaper");
+	pl->load(m_url->currentText());
 }
 
-void KDXSView::slotRun()
+void KDXSView::slotProvidersLoaded(KNS::Provider::List *providers)
 {
+	kDebug() << "(providers loaded)" << endl;
+
 	if(m_type->currentIndex() != access_webservice)
 	{
 		QMessageBox::warning(this,
-			i18n("GHNS access"),
+			i18n("KDXSView"),
 			i18n("The access method is not supported yet (only DXS is!)"));
+		return;
+		// FIXME: remove this restriction after GHNS/DXS merge
+		// FIXME: unless we want to keep this a DXS-only test program
+	}
+
+	KUrl endpoint;
+	for(Provider::List::Iterator it = providers->begin(); it != providers->end(); it++)
+	{
+		Provider *provider = (*it);
+		if(provider->webService().isValid())
+		{
+			endpoint = provider->webService();
+		}
+	}
+
+	if(!endpoint.isValid())
+	{
+		QMessageBox::critical(this,
+			i18n("KDXSView"),
+			i18n("No provider offered DXS access."));
 		return;
 	}
 
 	Dxs *dxs = new Dxs();
-	dxs->setEndpoint(m_url->currentText());
+	dxs->setEndpoint(endpoint);
 	//dxs->setMethod(m_type->currentItem());
 
 	NewStuffDialog *d = new NewStuffDialog(this);
@@ -102,14 +121,11 @@ void KDXSView::slotRun()
 	dxs->call_categories();
 }
 
-void KDXSView::slotProvidersLoaded(KNS::Provider::List*)
-{
-	kDebug() << "(loaded)" << endl;
-}
-
 void KDXSView::slotProvidersFailed()
 {
-	kDebug() << "(failed)" << endl;
+	QMessageBox::critical(this,
+		i18n("KDXSView"),
+		i18n("It was not possible to load the providers URL."));
 }
 
 #include "kdxsview.moc"

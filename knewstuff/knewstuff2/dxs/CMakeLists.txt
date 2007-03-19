@@ -14,8 +14,6 @@ set(kdxspreview_SRCS
   kdxscomments.cpp
   kdxschanges.cpp
   kdxstranslation.cpp
-  soap.cpp
-  dxs.cpp
   newstuff.cpp
   qasyncpixmap.cpp
   qasyncframe.cpp
@@ -23,12 +21,26 @@ set(kdxspreview_SRCS
   qnowtooltip.cpp
 )
 
-#add_definitions(-DKNSSRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\")
 set(CMAKE_SKIP_RPATH TRUE)
 
 kde4_automoc(${kdxspreview_SRCS})
 kde4_add_executable(kdxspreview ${kdxspreview_SRCS})
 
-target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} ${KDE4_KHTML_LIBS} kio knewstuff2)
+target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} ${KDE4_KHTML_LIBS} kio knewstuff2 kdxs)
 install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
+
+##########################
+
+set(kdxs_SRCS
+  soap.cpp
+  dxs.cpp
+  dxsengine.cpp
+)
+
+#set(CMAKE_SKIP_RPATH TRUE)
+
+kde4_automoc(${kdxs_SRCS})
+kde4_add_library(kdxs SHARED ${kdxs_SRCS})
+
+target_link_libraries(kdxs ${KDE4_KDECORE_LIBS} kio knewstuff2 ${QT_QTNETWORK_LIBRARY})
 

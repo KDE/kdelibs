@@ -113,11 +113,16 @@ the provider supports DXS. Such interaction includes:
 Library structure (under review)
 ================================
 
-knewstuff/knewstuff2/core - conventional ghns
-knewstuff/knewstuff2/dxs  - dxs
-knewstuff/knewstuff2      - engine, ui
+knewstuff/knewstuff2/core - conventional ghns + engine
+knewstuff/knewstuff2/dxs  - dxs + dxsengine
+knewstuff/knewstuff2/ui   - dialogs
+knewstuff/knewstuff2      - thin convenience wrapper
 knewstuff/tests           - test applications
+knewstuff/data            - icons and other data
+knewstuff/doc             - documentation
 
 Note: should engine encapsulate both ghns and dxs stuff?
 There could also be a CoreEngine (in line with the trendy core-ui split).
+* There's now an Engine and a DxsEngine so this issue is obsolete.
+* But we could still rename Engine to CoreEngine for consistency :-)
 

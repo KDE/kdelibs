@@ -1,0 +1,9 @@
+DXSEngine
+ - inherits from Engine
+ - provides additional stuff
+ - relies on traditional GHNS for providers file
+ - uses DXS instead of GHNS for stuff file
+ - uses DXS for everything else
+
+=> needs a lot more stuff to be "protected"!
+
