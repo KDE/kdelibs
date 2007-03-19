@@ -331,7 +331,7 @@ QString Plasmagik::generateMetadata()
     desktopFile.writeEntry("Website", d->ui.plasmoidName->text());
     desktopFile.writeEntry("License", d->ui.plasmoidName->text());
     desktopFile.writeEntry("FirstFile", d->ui.plasmoidName->text());
-    desktopFile.writeEntry("ApplicationName", d->appName);
+    desktopFile.writeEntry("ApplicationName", d->m_appName);
 
     QString code;
 
