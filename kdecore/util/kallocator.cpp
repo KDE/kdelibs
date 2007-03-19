@@ -46,32 +46,62 @@ class KZoneAllocator::MemBlock
     MemBlock *newer;
 };
 
-KZoneAllocator::KZoneAllocator(unsigned long _blockSize)
-: currentBlock(0), blockSize(1), blockOffset(0), log2(0), num_blocks(0), 
-  hashList(0), hashSize(0), hashDirty(true),d(0)
+class KZoneAllocator::Private
 {
-  while (blockSize < _blockSize)
-    blockSize <<= 1, log2++;
-  /* Make sure, that a block is allocated at the first time allocate()
-     is called (even with a 0 size).  */
-  blockOffset = blockSize + 1;
+public:
+    Private()
+        : currentBlock(0), blockSize(1),
+          blockOffset(0), log2(0), num_blocks(0),
+          hashList(0), hashSize(0), hashDirty(true)
+    {
+    }
+
+    /** One block is 'current' to satisfy requests. @internal */
+    MemBlock *currentBlock; 
+    /** Store block size from constructor. @internal */
+    unsigned long blockSize; 
+    /** Store offset into current block; size-offset is free. @internal */
+    unsigned long blockOffset;
+    /** base-2 log of the block size. @internal */
+    unsigned int log2;
+    /** Count total number of allocated blocks. @internal */
+    unsigned int num_blocks;
+    /** Collection of lists of blocks, for lookups. @internal */
+    MemList **hashList;
+    /** Count of hashes. @internal */
+    unsigned int hashSize;
+    /** Flag the hashes as in need of reorganization. @internal */
+    bool hashDirty;
+};
+
+KZoneAllocator::KZoneAllocator(unsigned long _blockSize)
+    : d( new Private )
+{
+    while (d->blockSize < _blockSize) {
+        d->blockSize <<= 1;
+        d->log2++;
+    }
+
+    /* Make sure, that a block is allocated at the first time allocate()
+       is called (even with a 0 size).  */
+    d->blockOffset = d->blockSize + 1;
 }
 
 KZoneAllocator::~KZoneAllocator()
 {
   unsigned int count = 0;
-  if (hashList) {
-    /* No need to maintain the different lists in hashList[] anymore.
+  if (d->hashList) {
+    /* No need to maintain the different lists in d->hashList[] anymore.
        I.e. no need to use delBlock().  */
-    for (unsigned int i = 0; i < hashSize; i++)
-      delete hashList[i];
-    delete [] hashList;
-    hashList = 0;
+    for (unsigned int i = 0; i < d->hashSize; i++)
+      delete d->hashList[i];
+    delete [] d->hashList;
+    d->hashList = 0;
   }
   MemBlock *next;
-  for (; currentBlock; currentBlock = next) {
-    next = currentBlock->older;
-    delete currentBlock;
+  for (; d->currentBlock; d->currentBlock = next) {
+    next = d->currentBlock->older;
+    delete d->currentBlock;
     count++;
   }
 #ifndef NDEBUG // as this is called quite late in the app, we don't care
@@ -83,15 +113,15 @@ KZoneAllocator::~KZoneAllocator()
 
 void KZoneAllocator::insertHash(MemBlock *b)
 {
-  unsigned long adr = ((unsigned long)b->begin) & (~(blockSize - 1));
-  unsigned long end = ((unsigned long)b->begin) + blockSize;
+  unsigned long adr = ((unsigned long)b->begin) & (~(d->blockSize - 1));
+  unsigned long end = ((unsigned long)b->begin) + d->blockSize;
   while (adr < end) {
-    unsigned long key = adr >> log2;
-    key = key & (hashSize - 1);
-    if (!hashList[key])
-      hashList[key] = new QList<MemBlock *>;
-    hashList[key]->append(b);
-    adr += blockSize;
+    unsigned long key = adr >> d->log2;
+    key = key & (d->hashSize - 1);
+    if (!d->hashList[key])
+      d->hashList[key] = new QList<MemBlock *>;
+    d->hashList[key]->append(b);
+    adr += d->blockSize;
   }
 }
 
@@ -103,42 +133,42 @@ void KZoneAllocator::insertHash(MemBlock *b)
 void KZoneAllocator::addBlock(MemBlock *b)
 {
   b->newer = 0;
-  b->older = currentBlock;
-  if (currentBlock)
+  b->older = d->currentBlock;
+  if (d->currentBlock)
     b->older->newer = b;
-  currentBlock = b;
-  num_blocks++;
-  /* If we either have no hashList at all, or since it's last construction
+  d->currentBlock = b;
+  d->num_blocks++;
+  /* If we either have no d->hashList at all, or since it's last construction
      there are now many more blocks we reconstruct the list.  But don't
      make it larger than a certain maximum.  */
-  if (hashList && ((num_blocks / 4) > hashSize && hashSize < 64*1024))
-    hashDirty = true;
+  if (d->hashList && ((d->num_blocks / 4) > d->hashSize && d->hashSize < 64*1024))
+    d->hashDirty = true;
   /* Only insert this block into the hashlists, if we aren't going to
      reconstruct them anyway.  */
-  if (hashList && !hashDirty)
+  if (d->hashList && !d->hashDirty)
     insertHash (b);
 }
 
 /** Reinitialize hash list. @internal */
 void KZoneAllocator::initHash()
 {
-  if (hashList) {
-    for (unsigned int i = 0; i < hashSize; i++)
-      delete hashList[i];
-    delete [] hashList;
-    hashList = 0;
+  if (d->hashList) {
+    for (unsigned int i = 0; i < d->hashSize; i++)
+      delete d->hashList[i];
+    delete [] d->hashList;
+    d->hashList = 0;
   }
-  hashSize = 1;
-  while (hashSize < num_blocks)
-    hashSize <<= 1;
-  if (hashSize < 1024)
-    hashSize = 1024;
-  if (hashSize > 64*1024)
-    hashSize = 64*1024;
-  hashList = new QList<MemBlock *> *[hashSize];
-  memset (hashList, 0, sizeof(QList<MemBlock*> *) * hashSize);
-  hashDirty = false;
-  for (MemBlock *b = currentBlock; b; b = b->older)
+  d->hashSize = 1;
+  while (d->hashSize < d->num_blocks)
+    d->hashSize <<= 1;
+  if (d->hashSize < 1024)
+    d->hashSize = 1024;
+  if (d->hashSize > 64*1024)
+    d->hashSize = 64*1024;
+  d->hashList = new QList<MemBlock *> *[d->hashSize];
+  memset (d->hashList, 0, sizeof(QList<MemBlock*> *) * d->hashSize);
+  d->hashDirty = false;
+  for (MemBlock *b = d->currentBlock; b; b = b->older)
     insertHash(b);
 }
 
@@ -150,14 +180,14 @@ void KZoneAllocator::delBlock(MemBlock *b)
 {
   /* Update also the hashlists if we aren't going to reconstruct them
      soon.  */
-  if (hashList && !hashDirty) {
-    unsigned long adr = ((unsigned long)b->begin) & (~(blockSize - 1));
-    unsigned long end = ((unsigned long)b->begin) + blockSize;
+  if (d->hashList && !d->hashDirty) {
+    unsigned long adr = ((unsigned long)b->begin) & (~(d->blockSize - 1));
+    unsigned long end = ((unsigned long)b->begin) + d->blockSize;
     while (adr < end) {
-      unsigned long key = adr >> log2;
-      key = key & (hashSize - 1);
-      if (hashList[key]) {
-	QList<MemBlock *> *list = hashList[key];
+      unsigned long key = adr >> d->log2;
+      key = key & (d->hashSize - 1);
+      if (d->hashList[key]) {
+	QList<MemBlock *> *list = d->hashList[key];
 	QList<MemBlock *>::Iterator it = list->begin();
 	QList<MemBlock *>::Iterator endit = list->end();
 	for (; it != endit; ++it)
@@ -166,19 +196,19 @@ void KZoneAllocator::delBlock(MemBlock *b)
 	    break;
 	  }
       }
-      adr += blockSize;
+      adr += d->blockSize;
     }
   }
   if (b->older)
     b->older->newer = b->newer;
   if (b->newer)
     b->newer->older = b->older;
-  if (b == currentBlock) {
-    currentBlock = 0;
-    blockOffset = blockSize;
+  if (b == d->currentBlock) {
+    d->currentBlock = 0;
+    d->blockOffset = d->blockSize;
   }
   delete b;
-  num_blocks--;
+  d->num_blocks--;
 }
 
 void *
@@ -188,30 +218,30 @@ KZoneAllocator::allocate(size_t _size)
    const size_t alignment = sizeof(void *) - 1;
    _size = (_size + alignment) & ~alignment;   
 
-   if ((unsigned long) _size + blockOffset > blockSize)
+   if ((unsigned long) _size + d->blockOffset > d->blockSize)
    {
-      if (_size > blockSize) {
-	qDebug("KZoneAllocator: allocating more than %lu bytes", blockSize);
+      if (_size > d->blockSize) {
+	qDebug("KZoneAllocator: allocating more than %lu bytes", d->blockSize);
 	return 0;
       }
-      addBlock(new MemBlock(blockSize));
-      blockOffset = 0;
-      //qDebug ("Allocating block #%d (%x)\n", num_blocks, currentBlock->begin);
+      addBlock(new MemBlock(d->blockSize));
+      d->blockOffset = 0;
+      //qDebug ("Allocating block #%d (%x)\n", d->num_blocks, d->currentBlock->begin);
    }
-   void *result = (void *)(currentBlock->begin+blockOffset);
-   currentBlock->ref++;
-   blockOffset += _size;
+   void *result = (void *)(d->currentBlock->begin+d->blockOffset);
+   d->currentBlock->ref++;
+   d->blockOffset += _size;
    return result;
 }
 
 void
 KZoneAllocator::deallocate(void *ptr)
 {
-  if (hashDirty)
+  if (d->hashDirty)
     initHash();
 
-  unsigned long key = (((unsigned long)ptr) >> log2) & (hashSize - 1);
-  QList<MemBlock *> *list = hashList[key];
+  unsigned long key = (((unsigned long)ptr) >> d->log2) & (d->hashSize - 1);
+  QList<MemBlock *> *list = d->hashList[key];
   if (!list) {
     /* Can happen with certain usage pattern of intermixed free_since()
        and deallocate().  */
@@ -224,10 +254,10 @@ KZoneAllocator::deallocate(void *ptr)
     MemBlock *cur = *it;
     if (cur->is_in(ptr)) {
       if (!--cur->ref) {
-	if (cur != currentBlock)
+	if (cur != d->currentBlock)
 	  delBlock (cur);
 	else
-	  blockOffset = 0;
+	  d->blockOffset = 0;
       }
       return;
     }
@@ -240,22 +270,22 @@ KZoneAllocator::deallocate(void *ptr)
 void
 KZoneAllocator::free_since(void *ptr)
 {
-  /* If we have a hashList and it's not yet dirty, see, if we will dirty
+  /* If we have a d->hashList and it's not yet dirty, see, if we will dirty
      it by removing too many blocks.  This will make the below delBlock()s
      faster.  */
-  if (hashList && !hashDirty)
+  if (d->hashList && !d->hashDirty)
     {
       const MemBlock *b;
       unsigned int removed = 0;
-      for (b = currentBlock; b; b = b->older, removed++)
+      for (b = d->currentBlock; b; b = b->older, removed++)
 	if (b->is_in (ptr))
 	  break;
-      if (hashSize >= 4 * (num_blocks - removed))
-        hashDirty = true;
+      if (d->hashSize >= 4 * (d->num_blocks - removed))
+        d->hashDirty = true;
     }
-  while (currentBlock && !currentBlock->is_in(ptr)) {
-    currentBlock = currentBlock->older;
-    delBlock (currentBlock->newer);
+  while (d->currentBlock && !d->currentBlock->is_in(ptr)) {
+    d->currentBlock = d->currentBlock->older;
+    delBlock (d->currentBlock->newer);
   }
-  blockOffset = ((char*)ptr) - currentBlock->begin;
+  d->blockOffset = ((char*)ptr) - d->currentBlock->begin;
 }
