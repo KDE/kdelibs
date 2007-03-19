@@ -110,7 +110,7 @@ KServiceGroup::Ptr KServiceGroupFactory::findBaseGroup(const QString &_baseGroup
    return newGroup;
 }
 
-KServiceGroup* KServiceGroupFactory::createGroup(int offset, bool deep)
+KServiceGroup* KServiceGroupFactory::createGroup(int offset, bool deep) const
 {
    KServiceGroup * newEntry = 0L;
    KSycocaType type;
@@ -134,7 +134,7 @@ KServiceGroup* KServiceGroupFactory::createGroup(int offset, bool deep)
    return newEntry;
 }
 
-KServiceGroup* KServiceGroupFactory::createEntry(int offset)
+KServiceGroup* KServiceGroupFactory::createEntry(int offset) const
 {
    return createGroup(offset, true);
 }

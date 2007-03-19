@@ -46,7 +46,7 @@ public:
   /**
    * Construct a KServiceGroup from a config file.
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *)
+  virtual KSycocaEntry *createEntry(const QString &, const char *) const
     { assert(0); return 0; }
 
   /**
@@ -64,8 +64,8 @@ public:
    */
   static KServiceGroupFactory * self();
 protected:
-  KServiceGroup* createGroup(int offset, bool deep);
-  KServiceGroup* createEntry(int offset);
+  KServiceGroup* createGroup(int offset, bool deep) const;
+  KServiceGroup* createEntry(int offset) const;
   KSycocaDict *m_baseGroupDict;
   int m_baseGroupDictOffset;
 

@@ -22,7 +22,7 @@
 #include "kdedesktopmimetype.h"
 #include <ksycoca.h>
 #include <ksycocadict.h>
-#include <kstringhandler.h>
+#include <kshell.h>
 
 ////
 
@@ -99,7 +99,7 @@ bool KMimeTypeFactory::checkMimeTypes()
    return !isEmpty();
 }
 
-KMimeType * KMimeTypeFactory::createEntry(int offset)
+KMimeType * KMimeTypeFactory::createEntry(int offset) const
 {
    KMimeType *newEntry = 0;
    KSycocaType type;
@@ -217,7 +217,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromPattern( const QString &_filename, QStr
 
     for ( ; it != end; ++it, ++it_offset )
     {
-        if ( KStringHandler::matchFileName( _filename, *it ) )
+        if ( KShell::matchFileName( _filename, *it ) )
         {
             if ( !matchingOffset || !(*it).endsWith( "*" ) ) // *.html wins over Makefile.*
             {

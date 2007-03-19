@@ -58,7 +58,7 @@ public:
     /**
      * Not meant to be called at this level
      */
-    virtual KSycocaEntry *createEntry(const QString &, const char *)
+    virtual KSycocaEntry *createEntry(const QString &, const char *) const
     { assert(0); return 0; }
 
     /**
@@ -121,7 +121,7 @@ public:
     QList<KMimeMagicRule> parseMagicFile(QIODevice* file, const QString& fileName) const;
 
 protected:
-    virtual KMimeType *createEntry(int offset);
+    virtual KMimeType *createEntry(int offset) const;
 
 protected: // accessed by KBuildMimeTypeFactory
     /// @internal
