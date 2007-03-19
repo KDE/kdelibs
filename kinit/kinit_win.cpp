@@ -306,7 +306,7 @@ int main(int argc, char **argv, char **envp)
 			        exit(1);
     }
 
-    for(i = 1; i < argc; i++)
+    for(int i = 1; i < argc; i++)
     {
         if (safe_argv[i][0] == '+')
         {
