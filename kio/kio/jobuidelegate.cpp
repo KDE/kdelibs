@@ -196,17 +196,17 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
     return res;
 }
 
-void KIO::JobUiDelegate::slotPercent( KJob *job, unsigned long percent )
+void KIO::JobUiDelegate::slotPercent( KJob *, unsigned long percent )
 {
     delegateProxy->uiserver().percent(d->progressId, percent);
 }
 
-void KIO::JobUiDelegate::slotInfoMessage( KJob *job, const QString &msg )
+void KIO::JobUiDelegate::slotInfoMessage( KJob *, const QString &msg )
 {
     delegateProxy->uiserver().infoMessage(d->progressId, msg);
 }
 
-void KIO::JobUiDelegate::slotDescription( KJob *job, const QString &title,
+void KIO::JobUiDelegate::slotDescription( KJob *, const QString &title,
                                           const QPair<QString, QString> &field1,
                                           const QPair<QString, QString> &field2 )
 {
@@ -215,7 +215,7 @@ void KIO::JobUiDelegate::slotDescription( KJob *job, const QString &title,
     delegateProxy->uiserver().setDescriptionSecondField(d->progressId, field2.first, field2.second);
 }
 
-void KIO::JobUiDelegate::slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong total )
+void KIO::JobUiDelegate::slotTotalAmount( KJob *, KJob::Unit unit, qulonglong total )
 {
     switch (unit)
     {
@@ -231,7 +231,7 @@ void KIO::JobUiDelegate::slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong
     }
 }
 
-void KIO::JobUiDelegate::slotProcessedAmount( KJob *job, KJob::Unit unit, qulonglong amount )
+void KIO::JobUiDelegate::slotProcessedAmount( KJob *, KJob::Unit unit, qulonglong amount )
 {
     switch (unit)
     {
@@ -247,7 +247,7 @@ void KIO::JobUiDelegate::slotProcessedAmount( KJob *job, KJob::Unit unit, qulong
     }
 }
 
-void KIO::JobUiDelegate::slotSpeed( KJob *job, unsigned long speed )
+void KIO::JobUiDelegate::slotSpeed( KJob *, unsigned long speed )
 {
     if (speed)
         delegateProxy->uiserver().speed(d->progressId, KIO::convertSize(speed) + QString("/s"));
