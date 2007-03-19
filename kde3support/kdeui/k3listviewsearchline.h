@@ -36,7 +36,7 @@ class QToolButton;
  * appropriate K3ListViews should be needed.
  */
 
-class KDEUI_EXPORT K3ListViewSearchLine : public KLineEdit
+class KDE3SUPPORT_EXPORT K3ListViewSearchLine : public KLineEdit
 {
     Q_OBJECT
 
@@ -288,7 +288,7 @@ private:
  * Creates a widget featuring a K3ListViewSearchLine, a label with the text
  * "Search" and a button to clear the search.
  */
-class KDEUI_EXPORT K3ListViewSearchLineWidget : public KHBox
+class KDE3SUPPORT_EXPORT K3ListViewSearchLineWidget : public KHBox
 {
     Q_OBJECT
 
