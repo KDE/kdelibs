@@ -42,9 +42,9 @@ KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if (
-                    (*it)->backEnd->fileName() == fileName &&
-                    (*it)->backEnd->useKDEGlobals == useKDEGlobals &&
-                    (*it)->backEnd->resType == resType &&
+                    (*it)->backEnd()->fileName() == fileName &&
+                    (*it)->backEnd()->useKDEGlobals == useKDEGlobals &&
+                    (*it)->backEnd()->resType == resType &&
                     (*it)->componentData() == componentData
                ) {
                 return KSharedConfigPtr(*it);
@@ -134,12 +134,3 @@ const KConfigGroup KSharedConfig::group(const QString& groupName) const
     return KConfigGroup( KSharedConfigPtr(const_cast<KSharedConfig*>(this)), groupName);
 }
 
-QString KConfig::group() const
-{
-    return KConfigBase::mGroup.group();
-}
-
-QString KSharedConfig::group() const
-{
-    return KConfigBase::mGroup.group();
-}

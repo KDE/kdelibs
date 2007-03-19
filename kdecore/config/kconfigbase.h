@@ -147,7 +147,7 @@ public:
    * @param aDefault A default value returned if the key was not found.
    * @return The value for this key. Can be QString() if aDefault is null.
    */
-   KDE_DEPRECATED QString readEntry(const char *pKey, const char *aDefault = 0 ) const;
+  KDE_DEPRECATED QString readEntry(const char *pKey, const char *aDefault = 0 ) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -157,13 +157,8 @@ public:
    * @return The value for this key, or @p aDefault.
    */
   template <typename T>
-      inline KDE_DEPRECATED T readEntry( const char* pKey, const T& aDefault) const
-  {
-      return mGroup.readEntry(pKey,aDefault);
-  }
-
-  template <typename T>
-      inline T readEntry_int( const char* pKey, const T& aDefault) const;
+      KDE_DEPRECATED T readEntry( const char* pKey, const T& aDefault) const
+  { return internalGroup().readEntry(pKey, aDefault); }
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
@@ -171,8 +166,13 @@ public:
    */
   template <typename T>
       KDE_DEPRECATED T readEntry( const QString& pKey, const T& aDefault) const
-    { return mGroup.readEntry(pKey.toUtf8().constData(), aDefault); }
+    { return internalGroup().readEntry(pKey.toUtf8().constData(), aDefault); }
 
+  //TODO: these two are here temporarily for porting, remove before KDE4
+  KDE_DEPRECATED QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const;
+  KDE_DEPRECATED QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const;
+
+#ifdef KDE3_SUPPORT
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
    *
@@ -183,13 +183,8 @@ public:
    * Reads the color of an entry specified by @p pKey in the current group.
    *
    */
-  QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const;
+  KDE_DEPRECATED QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const;
 
-  // these two are here temporarily for porting, remove before KDE4
-  KDE_DEPRECATED QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const;
-  KDE_DEPRECATED QVariant readPropertyEntry( const char *pKey, const QVariant& aDefault) const;
-
-#ifdef KDE3_SUPPORT
   /**
    * Reads a list of strings.
    *
@@ -200,8 +195,7 @@ public:
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
-  KDE_DEPRECATED int readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const
-    { return readListEntry( pKey.toUtf8().constData(), list, sep); }
+  KDE_DEPRECATED int readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const;
 
   /**
    * Reads a list of strings.
@@ -761,16 +755,17 @@ public:
    */
   template <typename T>
       KDE_DEPRECATED void writeEntry( const char* pKey, const T& value,
-                   WriteConfigFlags pFlags = Normal )
-  { mGroup.writeEntry(pKey, value, pFlags); }
+                                      WriteConfigFlags pFlags = Normal )
+    { internalGroup().writeEntry( pKey, value, pFlags ); }
+
 
   /**
    * @copydoc writeEntry( const char*, const QString&, WriteConfigFlags )
    */
   template <typename T>
       KDE_DEPRECATED void writeEntry( const QString & pKey, const T& value,
-                   WriteConfigFlags pFlags = Normal )
-  { mGroup.writeEntry(pKey, value, pFlags); }
+                                      WriteConfigFlags pFlags = Normal )
+    { internalGroup().writeEntry( pKey, value, pFlags ); }
 
 #ifdef KDE3_SUPPORT
   /**
@@ -791,7 +786,8 @@ public:
    * @see  writeEntry()
    */
   KDE_DEPRECATED void writeEntry( const QString& pKey, const Q3StrList &value,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false )
+                                  char sep = ',', bool bPersistent = true,
+                                  bool bGlobal = false, bool bNLS = false )
     { writeEntry(pKey.toUtf8().constData(), value, sep, bPersistent, bGlobal, bNLS); }
 
   /**
@@ -812,7 +808,8 @@ public:
    * @see  writeEntry()
    */
   KDE_DEPRECATED void writeEntry( const char *pKey, const Q3StrList &value,
-		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+                                  char sep = ',', bool bPersistent = true,
+                                  bool bGlobal = false, bool bNLS = false );
 #endif
 
   /**
@@ -945,14 +942,20 @@ public:
    *
    * @param _bExpand Tf true, dollar expansion is turned on.
    */
-  void setDollarExpansion( bool _bExpand = true ) { bExpand = _bExpand; }
+  void setDollarExpansion( bool _bExpand );
 
   /**
    * Returns whether dollar expansion is on or off.  It is initially OFF.
    *
    * @return true if dollar expansion is on.
    */
-  bool isDollarExpansion() const { return bExpand; }
+  bool isDollarExpansion() const;
+
+  /**
+   * Returns whether the locale has been set.
+   * @return true if the locale has been initialized
+   */
+  bool localeInitialized() const;
 
   /**
    * Mark the config object as "clean," i.e. don't write dirty entries
@@ -989,7 +992,7 @@ public:
    * Checks whether the config file has any dirty (modified) entries.
    * @return true if the config file has any dirty (modified) entries.
    */
-  bool isDirty() const { return bDirty; }
+  bool isDirty() const;
 
   /**
    * Checks whether the key has an entry in the currently active group.
@@ -1145,7 +1148,18 @@ protected:
    *
    * @param _bDirty How to mark the object's dirty status
    */
-  virtual void setDirty(bool _bDirty = true) { bDirty = _bDirty; }
+  void setDirty( bool _bDirty );
+
+  /**
+   * Sets the backend to use with this config object.
+   * Ownership of the backend is taken over by the config object.
+   */
+  void setBackEnd( KConfigBackEnd* backEnd );
+
+  /**
+   * Returns the backend associated with this config object
+   */
+  KConfigBackEnd* backEnd() const;
 
   /**
    * Parses all configuration files for a configuration object.
@@ -1217,13 +1231,6 @@ protected:
    */
   virtual KEntry lookupData(const KEntryKey &_key) const = 0;
 
-  virtual bool internalHasGroup(const QByteArray &group) const = 0;
-
-  /**
-   * A back end for loading/saving to disk in a particular format.
-   */
-  KConfigBackEnd *backEnd;
-
 public:
   /**
    * Overloaded public methods:
@@ -1235,29 +1242,21 @@ public:
   bool hasGroup(const QByteArray &_pGroup) const;
   bool hasGroup(const char *_pGroup) const;
 
-  /**
-   * The locale to retrieve keys under if possible, i.e en_US or fr.  */
-  QByteArray aLocaleString;
-
-  /**
-   * Indicates whether there are any dirty entries in the config object
-   * that need to be written back to disk. */
-  bool bDirty;
-
-  bool bLocaleInitialized;
-  mutable bool bExpand;     // whether dollar expansion is used
-  KComponentData *mComponentData;
-
-  /**
-   * The currently selected group. */
-  KConfigGroup mGroup;
-
 protected:
+  /**
+   * @internal
+   */
+  virtual bool internalHasGroup(const QByteArray &group) const = 0;
+  KConfigGroup& internalGroup( ) const;
+
   /** Virtual hook, used to add new "virtual" functions while maintaining
       binary compatibility. Unused in this class.
   */
   virtual void virtual_hook( int id, void* data );
+
 private:
+  void internalSetGroup( const QByteArray &_group );
+
   class Private;
   Private *d;
 };

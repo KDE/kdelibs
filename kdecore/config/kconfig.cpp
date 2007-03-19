@@ -42,14 +42,36 @@
 #include <qtimer.h>
 #include <qfileinfo.h>
 
+class KConfig::Private
+{
+public:
+    Private()
+        : groupImmutable( false ),
+          fileImmutable( false ),
+          forceGlobal( false )
+    {
+    }
+
+    bool groupImmutable : 1; // Current group is immutable.
+    bool fileImmutable  : 1; // Current file is immutable.
+    bool forceGlobal    : 1; // Apply everything to kdeglobals.
+
+    /**
+     * Contains all key,value entries, as well as some "special"
+     * keys which indicate the start of a group of entries.
+     *
+     * These special keys will have the .key portion of their KEntryKey
+     * set to QString().
+     */
+    KEntryMap entryMap;
+};
+
 KConfig::KConfig(const KComponentData &componentData,
                  const QString &_fileName,
                  OpenFlags flags,
                  const char *resType)
     : KConfigBase(componentData),
-      bGroupImmutable(false),
-      bFileImmutable(false),
-      bForceGlobal(false)
+      d( new Private )
 {
     QString fileName = _fileName;
     if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
@@ -64,7 +86,7 @@ KConfig::KConfig(const KComponentData &componentData,
                                                          flags & IncludeGlobals );
 
     // set the object's back end pointer to this new backend
-    backEnd = aBackEnd;
+    setBackEnd( aBackEnd );
 
     // read initial information off disk
     reparseConfiguration();
@@ -85,9 +107,7 @@ KConfig::KConfig(const KComponentData &componentData,
 KConfig::KConfig( const QString& _fileName,
                   OpenFlags flags )
   : KConfigBase(),
-    bGroupImmutable(false),
-    bFileImmutable(false),
-    bForceGlobal(false)
+    d( new Private )
 {
     QString fileName = _fileName;
     if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
@@ -102,7 +122,7 @@ KConfig::KConfig( const QString& _fileName,
                                                          flags & IncludeGlobals );
 
     // set the object's back end pointer to this new backend
-    backEnd = aBackEnd;
+    setBackEnd( aBackEnd );
 
     // read initial information off disk
     reparseConfiguration();
@@ -124,9 +144,7 @@ KConfig::KConfig( const char* resType,
                   const QString& _fileName,
                   OpenFlags flags )
   : KConfigBase(),
-    bGroupImmutable(false),
-    bFileImmutable(false),
-    bForceGlobal(false)
+    d( new Private )
 {
     QString fileName = _fileName;
     if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
@@ -141,7 +159,7 @@ KConfig::KConfig( const char* resType,
                                                          flags & IncludeGlobals );
 
     // set the object's back end pointer to this new backend
-    backEnd = aBackEnd;
+    setBackEnd( aBackEnd );
 
     // read initial information off disk
     reparseConfiguration();
@@ -160,29 +178,31 @@ KConfig::KConfig( const char* resType,
 }
 
 KConfig::KConfig(KConfigBackEnd *aBackEnd)
-    : bGroupImmutable(false),
-      bFileImmutable(false),
-      bForceGlobal(false)
+    : d( new Private )
 {
-  backEnd = aBackEnd;
-  reparseConfiguration();
+    setBackEnd( aBackEnd );
+    reparseConfiguration();
 }
 
 KConfig::~KConfig()
 {
   sync();
-
-  delete backEnd;
 }
 
 QStringList KConfig::extraConfigFiles() const
-{ return backEnd->extraConfigFiles(); }
+{
+    return backEnd()->extraConfigFiles();
+}
 
 void KConfig::setExtraConfigFiles(const QStringList &files)
-{ backEnd->setExtraConfigFiles(files); }
+{
+    backEnd()->setExtraConfigFiles( files );
+}
 
 void KConfig::removeAllExtraConfigFiles()
-{ backEnd->removeAllExtraConfigFiles(); }
+{
+    backEnd()->removeAllExtraConfigFiles();
+}
 
 void KConfig::rollback(bool bDeep)
 {
@@ -192,8 +212,8 @@ void KConfig::rollback(bool bDeep)
         return; // object's bDeep flag is set in KConfigBase method
 
     // clear any dirty flags that entries might have set
-    for (KEntryMapIterator aIt = aEntryMap.begin();
-         aIt != aEntryMap.end(); ++aIt)
+    for (KEntryMapIterator aIt = d->entryMap.begin();
+         aIt != d->entryMap.end(); ++aIt)
         (*aIt).bDirty = false;
 }
 
@@ -201,8 +221,8 @@ QStringList KConfig::groupList() const
 {
     QStringList retList;
 
-    KEntryMapConstIterator aIt = aEntryMap.begin();
-    KEntryMapConstIterator aEnd = aEntryMap.end();
+    KEntryMapConstIterator aIt = d->entryMap.begin();
+    KEntryMapConstIterator aEnd = d->entryMap.end();
     for (; aIt != aEnd; ++aIt)
     {
         while(aIt.key().mKey.isEmpty())
@@ -237,11 +257,11 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
     KEntryKey groupKey( pGroup_utf, 0 );
     QMap<QString, QString> tmpMap;
 
-    KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
-    if (aIt == aEntryMap.end())
+    KEntryMapConstIterator aIt = d->entryMap.find(groupKey);
+    if (aIt == d->entryMap.end())
         return tmpMap;
     ++aIt; // advance past special group entry marker
-    for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
+    for (; aIt != d->entryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
     {
         // Leave the default values out && leave deleted entries out
         if (!aIt.key().bDefault && !(*aIt).bDeleted)
@@ -256,21 +276,21 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 void KConfig::reparseConfiguration()
 {
     // Don't lose pending changes
-    if ( backEnd && bDirty ) {
-        backEnd->sync();
+    if ( backEnd() && isDirty() ) {
+        backEnd()->sync();
     }
 
-    aEntryMap.clear();
+    d->entryMap.clear();
 
     // add the "default group" marker to the map
     KEntryKey groupKey("<default>", 0);
-    aEntryMap.insert(groupKey, KEntry());
+    d->entryMap.insert(groupKey, KEntry());
 
-    bFileImmutable = false;
+    d->fileImmutable = false;
     parseConfigFiles();
 
     //TODO: when backends can tell us if they are isWritable(), port this line
-    //bFileImmutable = bReadOnly;
+    //d->fileImmutable = bReadOnly;
 }
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
@@ -281,9 +301,9 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
     KEntryKey aKey(pGroup_utf, 0);
     KEntryMap tmpEntryMap;
 
-    aIt = aEntryMap.find(aKey);
+    aIt = d->entryMap.find(aKey);
     //Copy any matching nodes.
-    for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
+    for (; aIt != d->entryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
     {
         tmpEntryMap.insert(aIt.key(), *aIt);
     }
@@ -291,9 +311,14 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
     return tmpEntryMap;
 }
 
+KEntryMap KConfig::internalEntryMap() const
+{
+    return d->entryMap;
+}
+
 void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
 {
-    if (bFileImmutable && !_key.bDefault)
+    if (d->fileImmutable && !_key.bDefault)
         return;
 
     // check to see if the special group key is present,
@@ -301,21 +326,21 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
     if (_checkGroup)
     {
         KEntryKey groupKey( _key.mGroup, 0);
-        KEntry &entry = aEntryMap[groupKey];
-        bGroupImmutable = entry.bImmutable;
+        KEntry &entry = d->entryMap[groupKey];
+        d->groupImmutable = entry.bImmutable;
     }
-    if (bGroupImmutable && !_key.bDefault)
+    if (d->groupImmutable && !_key.bDefault)
         return;
 
     // now either add or replace the data
-    KEntry &entry = aEntryMap[_key];
+    KEntry &entry = d->entryMap[_key];
     bool immutable = entry.bImmutable;
     if (immutable && !_key.bDefault)
         return;
 
     entry = _data;
     entry.bImmutable |= immutable;
-    entry.bGlobal |= bForceGlobal; // force to kdeglobals
+    entry.bGlobal |= d->forceGlobal; // force to kdeglobals
 
     if (_key.bDefault)
     {
@@ -323,14 +348,14 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
         // add it as normal value as well.
         KEntryKey key(_key);
         key.bDefault = false;
-        aEntryMap[key] = _data;
+        d->entryMap[key] = _data;
     }
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-    KEntryMapConstIterator aIt = aEntryMap.find(_key);
-    if (aIt != aEntryMap.end())
+    KEntryMapConstIterator aIt = d->entryMap.find(_key);
+    if (aIt != d->entryMap.end())
     {
         if (!aIt->bDeleted)
             return *aIt;
@@ -343,8 +368,8 @@ bool KConfig::internalHasGroup(const QByteArray &_group) const
 {
     KEntryKey groupKey( _group, 0);
 
-    KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
-    KEntryMapConstIterator aEnd = aEntryMap.end();
+    KEntryMapConstIterator aIt = d->entryMap.find(groupKey);
+    KEntryMapConstIterator aEnd = d->entryMap.end();
 
     if (aIt == aEnd)
         return false;
@@ -362,12 +387,22 @@ bool KConfig::internalHasGroup(const QByteArray &_group) const
 
 void KConfig::setFileWriteMode(int mode)
 {
-    backEnd->setFileWriteMode(mode);
+    backEnd()->setFileWriteMode(mode);
+}
+
+void KConfig::setForceGlobal( bool force )
+{
+    d->forceGlobal = force;
+}
+
+bool KConfig::forceGlobal() const 
+{
+    return d->forceGlobal;
 }
 
 KLockFile::Ptr KConfig::lockFile(bool bGlobal)
 {
-    KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
+    KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd());
     if (!aBackEnd) return KLockFile::Ptr();
     return aBackEnd->lockFile(bGlobal);
 }
@@ -391,9 +426,9 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
     if (!config) {
         config = new KConfig(QString(), KConfig::NoGlobals);
     }
-    config->backEnd->changeFileName(file, "config", false);
-    config->bFileImmutable = false;
-    config->backEnd->mConfigState = ReadWrite;
+    config->backEnd()->changeFileName(file, "config", false);
+    config->d->fileImmutable = false;
+    config->backEnd()->mConfigState = ReadWrite;
 
     QStringList groups = groupList();
     for(QStringList::ConstIterator it = groups.begin();
@@ -409,6 +444,11 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 
     }
     return config;
+}
+
+QString KConfig::group() const
+{
+    return internalGroup().group();
 }
 
 KConfigGroup KConfig::group( const char *arr)

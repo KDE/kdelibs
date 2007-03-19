@@ -62,7 +62,6 @@ public:
 
     ~KSharedConfig();
 
-    QString group() const;
     KConfigGroup group(const QByteArray &groupName);
     const KConfigGroup group(const QByteArray &groupName) const;
     KConfigGroup group(const char* groupName);

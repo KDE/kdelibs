@@ -35,34 +35,57 @@
 #include "kmountpoint.h"
 
 
-class KDesktopFile::Private {
+class KDesktopFile::Private
+{
+    public:
+        Private()
+            : group( 0 )
+        {
+        }
+
+        ~Private()
+        {
+            delete group;
+        }
+
+        KConfigGroup* group;
 };
 
 KDesktopFile::KDesktopFile( const char * resType, const QString &fileName)
-  : KConfig(QString(), KConfig::NoGlobals), d(0)
+  : KConfig(QString(), KConfig::NoGlobals),
+    d( new Private )
 {
-  // KConfigBackEnd will try to locate the filename that is provided
-  // based on the resource type specified, _only_ if the filename
-  // is not an absolute path.
-  backEnd->changeFileName(fileName, resType, false);
-  reparseConfiguration();
-  setGroup("Desktop Entry");
+    // KConfigBackEnd will try to locate the filename that is provided
+    // based on the resource type specified, _only_ if the filename
+    // is not an absolute path.
+    backEnd()->changeFileName( fileName, resType, false );
+    reparseConfiguration();
+    d->group = new KConfigGroup( this, "Desktop Entry" );
+
+    // we still need to set the group for backwards compat when people call
+    // readEntry directly =/
+    setGroup( "Desktop Entry" );
 }
 
 KDesktopFile::KDesktopFile( const QString &fileName)
-  : KConfig(QString(), KConfig::NoGlobals), d(0)
+  : KConfig(QString(), KConfig::NoGlobals),
+    d( new Private )
 {
-  // KConfigBackEnd will try to locate the filename that is provided
-  // based on the resource type specified, _only_ if the filename
-  // is not an absolute path.
-  backEnd->changeFileName(fileName, "apps", false);
-  reparseConfiguration();
-  setGroup("Desktop Entry");
+    // KConfigBackEnd will try to locate the filename that is provided
+    // based on the resource type specified, _only_ if the filename
+    // is not an absolute path.
+    backEnd()->changeFileName( fileName, "apps", false );
+    reparseConfiguration();
+    d->group = new KConfigGroup( this, "Desktop Entry" );
+
+    // we still need to set the group for backwards compat when people call
+    // readEntry directly =/
+    setGroup( "Desktop Entry" );
 }
 
 KDesktopFile::~KDesktopFile()
 {
-  delete d;
+    delete d;
 }
 
 QString KDesktopFile::locateLocal(const QString &path)
@@ -150,37 +173,37 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 
 QString KDesktopFile::readType() const
 {
-  return readEntry("Type");
+  return d->group->readEntry("Type");
 }
 
 QString KDesktopFile::readIcon() const
 {
-  return readEntry("Icon");
+  return d->group->readEntry("Icon");
 }
 
 QString KDesktopFile::readName() const
 {
-  return readEntry("Name");
+  return d->group->readEntry("Name");
 }
 
 QString KDesktopFile::readComment() const
 {
-  return readEntry("Comment");
+  return d->group->readEntry("Comment");
 }
 
 QString KDesktopFile::readGenericName() const
 {
-  return readEntry("GenericName");
+  return d->group->readEntry("GenericName");
 }
 
 QString KDesktopFile::readPath() const
 {
-  return readPathEntry("Path");
+  return d->group->readPathEntry("Path");
 }
 
 QString KDesktopFile::readDevice() const
 {
-  return readEntry("Dev");
+  return d->group->readEntry("Dev");
 }
 
 QString KDesktopFile::readUrl() const
@@ -202,7 +225,7 @@ QString KDesktopFile::readUrl() const
         }
         return QString();
     } else {
-	QString url = readPathEntry("URL");
+        QString url = d->group->readPathEntry("URL");
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
@@ -216,12 +239,13 @@ QString KDesktopFile::readUrl() const
 
 QStringList KDesktopFile::readActions() const
 {
-    return readEntry("Actions", QStringList(), ';');
+    return d->group->readEntry("Actions", QStringList(), ';');
 }
 
 void KDesktopFile::setActionGroup(const QString &group)
 {
-    setGroup(QLatin1String("Desktop Action ") + group);
+    delete d->group;
+    d->group = new KConfigGroup( this, QLatin1String("Desktop Action ") + group );
 }
 
 KConfigGroup KDesktopFile::actionGroup(const QString &groupName) const
@@ -237,28 +261,28 @@ bool KDesktopFile::hasActionGroup(const QString &group) const
 
 bool KDesktopFile::hasLinkType() const
 {
-  return readEntry("Type") == QLatin1String("Link");
+  return d->group->readEntry("Type") == QLatin1String("Link");
 }
 
 bool KDesktopFile::hasApplicationType() const
 {
-  return readEntry("Type") == QLatin1String("Application");
+  return d->group->readEntry("Type") == QLatin1String("Application");
 }
 
 bool KDesktopFile::hasMimeTypeType() const
 {
-  return readEntry("Type") == QLatin1String("MimeType");
+  return d->group->readEntry("Type") == QLatin1String("MimeType");
 }
 
 bool KDesktopFile::hasDeviceType() const
 {
-  return readEntry("Type") == QLatin1String("FSDevice");
+  return d->group->readEntry("Type") == QLatin1String("FSDevice");
 }
 
 bool KDesktopFile::tryExec() const
 {
   // Test for TryExec and "X-KDE-AuthorizeAction"
-  QString te = readPathEntry("TryExec");
+  QString te = d->group->readPathEntry("TryExec");
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
@@ -285,7 +309,7 @@ bool KDesktopFile::tryExec() const
         return false;
     }
   }
-  QStringList list = readEntry("X-KDE-AuthorizeAction", QStringList());
+  QStringList list = d->group->readEntry("X-KDE-AuthorizeAction", QStringList());
   if (!list.isEmpty())
   {
      for(QStringList::ConstIterator it = list.begin();
@@ -298,10 +322,10 @@ bool KDesktopFile::tryExec() const
   }
 
   // See also KService::username()
-  bool su = readEntry("X-KDE-SubstituteUID", false);
+  bool su = d->group->readEntry("X-KDE-SubstituteUID", false);
   if (su)
   {
-      QString user = readEntry("X-KDE-Username");
+      QString user = d->group->readEntry("X-KDE-Username");
       if (user.isEmpty())
         user = ::getenv("ADMIN_ACCOUNT");
       if (user.isEmpty())
@@ -317,18 +341,22 @@ bool KDesktopFile::tryExec() const
  * @return the filename as passed to the constructor.
  */
 QString
-KDesktopFile::fileName() const { return backEnd->fileName(); }
+KDesktopFile::fileName() const {
+    return backEnd()->fileName();
+}
 
 /**
  * @return the resource type as passed to the constructor.
  */
-QString
-KDesktopFile::resource() const { return backEnd->resource(); }
+QString KDesktopFile::resource() const
+{
+    return backEnd()->resource();
+}
 
 QStringList
 KDesktopFile::sortOrder() const
 {
-  return readEntry("SortOrder", QStringList());
+  return d->group->readEntry("SortOrder", QStringList());
 }
 
 void KDesktopFile::virtual_hook( int id, void* data )
@@ -336,25 +364,27 @@ void KDesktopFile::virtual_hook( int id, void* data )
 
 QString KDesktopFile::readDocPath() const
 {
-  if(hasKey( "DocPath" ))
-    return readPathEntry( "DocPath" );
-  return readPathEntry( "X-DocPath" );
+    if ( hasKey( "DocPath" ) ) {
+        return d->group->readPathEntry( "DocPath" );
+    }
+
+    return d->group->readPathEntry( "X-DocPath" );
 }
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const
 {
   KDesktopFile *config = new KDesktopFile(QString());
   KConfig::copyTo(file, config);
-  config->setGroup("Desktop Entry");
   return config;
 }
 
 KConfigGroup KDesktopFile::desktopGroup()
 {
-   return KConfigGroup(this, "Desktop Entry");
+   return KConfigGroup( this, "Desktop Entry" );
 }
 
 const KConfigGroup KDesktopFile::desktopGroup() const
 {
-   return KConfigGroup(const_cast<KDesktopFile*>(this), "Desktop Entry");
+    return KConfigGroup(const_cast<KDesktopFile*>(this), "Desktop Entry");
 }
+

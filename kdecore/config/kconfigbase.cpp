@@ -45,78 +45,122 @@
 class KConfigBase::Private
 {
 public:
-     Private() : readDefaults(false) { };
+     Private( KComponentData* _componentData, KConfigBase* base )
+         : backEnd(0),
+           readDefaults( false ),
+           bDirty( false ),
+           bLocaleInitialized( false ),
+           bExpand( false ),
+           componentData( _componentData ),
+           group( base, QString() )
+     {
+     }
+
+     ~Private()
+     {
+         delete backEnd;
+         backEnd = 0;
+
+         delete componentData;
+         componentData = 0;
+     }
+
+     /**
+      * A back end for loading/saving to disk in a particular format.
+      */
+     KConfigBackEnd *backEnd;
 
      bool readDefaults;
+
+     /**
+      * The locale to retrieve keys under if possible, i.e en_US or fr.  */
+     QByteArray aLocaleString;
+
+     /**
+      * Indicates whether there are any dirty entries in the config object
+      * that need to be written back to disk. */
+     bool bDirty;
+     bool bLocaleInitialized;
+     bool bExpand;     // whether dollar expansion is used
+     KComponentData *componentData;
+
+     /**
+      * The currently selected group. */
+     KConfigGroup group;
 };
 
 KConfigBase::KConfigBase()
-  : backEnd(0L), bDirty(false), bLocaleInitialized(false),
-    bExpand(false),
-    mComponentData(new KComponentData(KGlobal::mainComponent())),
-    mGroup(this, QString()), d(0)
+  : d( new Private( new KComponentData(KGlobal::mainComponent()) , this ) )
 {
 }
 
 KConfigBase::KConfigBase(const KComponentData &componentData)
-    : backEnd(0L),
-    bDirty(false),
-    bLocaleInitialized(false),
-    bExpand(false),
-    mComponentData(new KComponentData(componentData)),
-    mGroup(this, QString()), d(0)
+    : d( new Private( new KComponentData( componentData ) , this ) )
 {
 }
 
 KConfigBase::~KConfigBase()
 {
-    delete mComponentData;
-    mComponentData = 0;
     delete d;
 }
 
 const KComponentData &KConfigBase::componentData() const
 {
-    return *mComponentData;
+    return *d->componentData;
 }
 
 void KConfigBase::setLocale()
 {
-  bLocaleInitialized = true;
+    d->bLocaleInitialized = true;
 
-  if (KGlobal::locale())
-    aLocaleString = KGlobal::locale()->language().toUtf8();
-  else
-    aLocaleString = KLocale::defaultLanguage().toUtf8();
-  if (backEnd)
-     backEnd->setLocaleString(aLocaleString);
+    if ( KGlobal::locale() ) {
+        d->aLocaleString = KGlobal::locale()->language().toUtf8();
+    } else {
+        d->aLocaleString = KLocale::defaultLanguage().toUtf8();
+    }
+
+    if ( d->backEnd ) {
+        d->backEnd->setLocaleString( d->aLocaleString );
+    }
 }
 
 QString KConfigBase::locale() const
 {
-  return QString::fromUtf8(aLocaleString);
+  return QString::fromUtf8( d->aLocaleString );
 }
 
 void KConfigBase::setGroup( const QString& _group )
 {
-  setGroup( _group.toUtf8() );
+    internalSetGroup( _group.toUtf8() );
 }
 
-void KConfigBase::setGroup( const char *pGroup )
+void KConfigBase::setGroup( const char *_group )
 {
-   setGroup(QByteArray(pGroup));
+    internalSetGroup( QByteArray(_group) );
 }
 
 void KConfigBase::setGroup( const QByteArray &_group )
 {
-  if ( _group.isEmpty() )
-    mGroup = KConfigGroup(this, "<default>");
-  else
-    mGroup = KConfigGroup(this, _group);
+    internalSetGroup( _group );
 }
 
-QString KConfigBase::group() const {
-  return mGroup.group();
+void KConfigBase::internalSetGroup( const QByteArray &_group )
+{
+    if ( _group.isEmpty() ) {
+        d->group = KConfigGroup(this, "<default>");
+    } else {
+        d->group = KConfigGroup(this, _group);
+    }
+}
+
+KConfigGroup& KConfigBase::internalGroup( ) const
+{
+    return d->group;
+}
+
+QString KConfigBase::group() const
+{
+    return d->group.group();
 }
 
 bool KConfigBase::hasKey(const QString &key) const
@@ -126,17 +170,17 @@ bool KConfigBase::hasKey(const QString &key) const
 
 bool KConfigBase::hasKey(const char *pKey) const
 {
-  return mGroup.hasKey(pKey);
+    return d->group.hasKey(pKey);
 }
 
 bool KConfigBase::hasGroup(const QString &_group) const
 {
-  return internalHasGroup( _group.toUtf8());
+    return internalHasGroup( _group.toUtf8());
 }
 
 bool KConfigBase::hasGroup(const char *_pGroup) const
 {
-  return internalHasGroup( QByteArray(_pGroup));
+    return internalHasGroup( QByteArray(_pGroup) );
 }
 
 bool KConfigBase::hasGroup(const QByteArray &_pGroup) const
@@ -161,31 +205,35 @@ bool KConfigBase::groupIsImmutable(const QString& _group) const
 
 bool KConfigBase::entryIsImmutable(const QString &key) const
 {
-  return mGroup.entryIsImmutable(key);
+  return d->group.entryIsImmutable(key);
 }
 
 
 QString KConfigBase::readEntryUntranslated( const QString& pKey,
                                 const QString& aDefault ) const
 {
-   return mGroup.readEntryUntranslated(pKey.toUtf8().constData(), aDefault);
+    return d->group.readEntryUntranslated(pKey.toUtf8().constData(), aDefault);
 }
 
 
 QString KConfigBase::readEntryUntranslated( const char *pKey,
                                 const QString& aDefault ) const
 {
-  return mGroup.readEntryUntranslated(pKey, aDefault);
+    return d->group.readEntryUntranslated(pKey, aDefault);
 }
-
 
 QString KConfigBase::readEntry( const char *pKey, const char *aDefault ) const
 {
-  return mGroup.readEntry(pKey, aDefault);
+    return d->group.readEntry(pKey, aDefault);
 }
 
 #ifdef KDE3_SUPPORT
 #include <q3strlist.h>
+int KConfigBase::readListEntry( const QString& pKey, Q3StrList &list, char sep = ',' ) const
+{
+    return readListEntry( pKey.toUtf8().constData(), list, sep);
+}
+
 int KConfigBase::readListEntry( const char *pKey,
                                 Q3StrList &list, char sep ) const
 {
@@ -228,92 +276,100 @@ int KConfigBase::readListEntry( const char *pKey,
 
 QStringList KConfigBase::readEntry(const char* pKey, const QStringList& aDefault, char sep) const
 {
-  return mGroup.readEntry(pKey, aDefault, sep);
+  return d->group.readEntry(pKey, aDefault, sep);
 }
 
 QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault ) const
 {
-  return mGroup.readPathEntry(pKey.toUtf8().constData(), pDefault);
+  return d->group.readPathEntry(pKey.toUtf8().constData(), pDefault);
 }
 
 QString KConfigBase::readPathEntry( const char *pKey, const QString& pDefault ) const
 {
-  return mGroup.readPathEntry(pKey, pDefault);
+  return d->group.readPathEntry(pKey, pDefault);
 }
 
 QStringList KConfigBase::readPathListEntry( const QString& pKey, char sep ) const
 {
-  return mGroup.readPathListEntry(pKey.toUtf8().constData(), sep);
+  return d->group.readPathListEntry(pKey.toUtf8().constData(), sep);
 }
 
 QStringList KConfigBase::readPathListEntry( const char *pKey, char sep ) const
 {
-  return mGroup.readPathListEntry(pKey, sep);
+  return d->group.readPathListEntry(pKey, sep);
 }
 
 
 QFont KConfigBase::readFontEntry( const QString& pKey, const QFont* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QFont()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QFont()));
 }
 
 QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QFont()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QFont()));
 }
 
 QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QRect()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QRect()));
 }
 
 QRect KConfigBase::readRectEntry( const char *pKey, const QRect* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QRect()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QRect()));
 }
 
 QPoint KConfigBase::readPointEntry( const QString& pKey,
                                     const QPoint* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QPoint()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QPoint()));
 }
 
 QPoint KConfigBase::readPointEntry( const char *pKey,
                                     const QPoint* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QPoint()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QPoint()));
 }
 
 QSize KConfigBase::readSizeEntry( const QString& pKey,
                                   const QSize* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QSize()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QSize()));
 }
 
 QSize KConfigBase::readSizeEntry( const char *pKey,
                                   const QSize* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QSize()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QSize()));
 }
 
 QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
                                           const QDateTime* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
 }
 
 QDateTime KConfigBase::readDateTimeEntry( const char *pKey,
                                           const QDateTime* pDefault ) const
 {
-  return mGroup.readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
+  return d->group.readEntry(pKey, (pDefault? *pDefault: QDateTime::currentDateTime()));
 }
 
 void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
                                   WriteConfigFlags pFlags )
 {
-   mGroup.writePathEntry(pKey.toUtf8().constData(), path, pFlags);
+   d->group.writePathEntry(pKey.toUtf8().constData(), path, pFlags);
 }
 
+#ifdef KDE3_SUPPORT
+void KConfigBase::writeEntry( const QString& pKey, const Q3StrList &value,
+                              char sep,  bool bPersistent,
+                              bool bGlobal, bool bNLS )
+{
+    writeEntry(pKey.toUtf8().constData(), value, sep, bPersistent, bGlobal, bNLS);
+}
+#endif
 
 static bool cleanHomeDirPath( QString &path, const QString &homeDir )
 {
@@ -379,13 +435,13 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   WriteConfigFlags pFlags)
 {
-   mGroup.writeEntry(pKey, translatePath(path), pFlags);
+   d->group.writeEntry(pKey, translatePath(path), pFlags);
 }
 
 void KConfigBase::writePathEntry( const QString& pKey, const QStringList &list,
                                   char sep , WriteConfigFlags pFlags )
 {
-  mGroup.writePathEntry(pKey.toUtf8().constData(), list, sep, pFlags);
+  d->group.writePathEntry(pKey.toUtf8().constData(), list, sep, pFlags);
 }
 
 void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
@@ -393,7 +449,7 @@ void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
 {
   if( list.isEmpty() )
     {
-      mGroup.writeEntry( pKey, QString::fromLatin1(""), pFlags );
+      d->group.writeEntry( pKey, QString::fromLatin1(""), pFlags );
       return;
     }
   QStringList new_list;
@@ -403,17 +459,17 @@ void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
       QString value = *it;
       new_list.append( translatePath(value) );
     }
-  mGroup.writeEntry( pKey, new_list, sep, pFlags );
+  d->group.writeEntry( pKey, new_list, sep, pFlags );
 }
 
 void KConfigBase::deleteEntry( const QString& pKey, WriteConfigFlags pFlags)
 {
-   mGroup.deleteEntry(pKey.toUtf8().constData(), pFlags);
+   d->group.deleteEntry(pKey.toUtf8().constData(), pFlags);
 }
 
 void KConfigBase::deleteEntry( const char *pKey, WriteConfigFlags pFlags)
 {
-  mGroup.deleteEntry(pKey, pFlags);
+  d->group.deleteEntry(pKey, pFlags);
 }
 
 void KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
@@ -439,6 +495,21 @@ void KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
   }
   if (dirty)
      setDirty(true);
+}
+
+void KConfigBase::setDollarExpansion( bool _bExpand )
+{
+    d->bExpand = _bExpand;
+}
+
+bool KConfigBase::isDollarExpansion() const
+{
+    return d->bExpand;
+}
+
+bool KConfigBase::localeInitialized() const
+{
+    return d->bLocaleInitialized;
 }
 
 #ifdef KDE3_SUPPORT
@@ -483,68 +554,83 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
 void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
                                char sep , WriteConfigFlags pFlags )
 {
-  mGroup.writeEntry(pKey, list, sep, pFlags);
+    d->group.writeEntry(pKey, list, sep, pFlags);
 }
 
 void KConfigBase::parseConfigFiles()
 {
-  if (!bLocaleInitialized && KGlobal::hasLocale()) {
-    setLocale();
-  }
-  if (backEnd)
-  {
-     backEnd->parseConfigFiles();
-  }
+    if (!d->bLocaleInitialized && KGlobal::hasLocale()) {
+        setLocale();
+    }
+    if (d->backEnd)
+    {
+        d->backEnd->parseConfigFiles();
+    }
 }
 
 void KConfigBase::sync()
 {
-    if (backEnd) {
-        backEnd->sync();
+    if (d->backEnd) {
+        d->backEnd->sync();
     }
 
-    if (bDirty) {
+    if (d->bDirty) {
         rollback();
     }
 }
 
+bool KConfigBase::isDirty() const
+{
+    return d->bDirty;
+}
+
+void KConfigBase::setDirty(bool _bDirty)
+{
+    d->bDirty = _bDirty;
+}
+
+void KConfigBase::setBackEnd( KConfigBackEnd* backEnd )
+{
+    d->backEnd = backEnd;
+}
+
+KConfigBackEnd* KConfigBase::backEnd() const
+{
+    return d->backEnd;
+}
+
+
 KConfigBase::ConfigState KConfigBase::getConfigState() const {
-    if (backEnd) {
-       return backEnd->getConfigState();
+    if ( d->backEnd ) {
+       return d->backEnd->getConfigState();
     }
     return ReadOnly;
 }
 
 void KConfigBase::rollback( bool /*bDeep = true*/ )
 {
-  bDirty = false;
+    d->bDirty = false;
 }
 
 
 void KConfigBase::setReadDefaults(bool b)
 {
-  if (!d)
-  {
-     if (!b) return;
-     d = new Private;
-  }
-
-  d->readDefaults = b;
+    d->readDefaults = b;
 }
 
 bool KConfigBase::readDefaults() const
 {
-  return (d && d->readDefaults);
+    return d->readDefaults;
 }
 
 void KConfigBase::revertToDefault(const QString &key)
 {
-  mGroup.revertToDefault(key);
+    d->group.revertToDefault(key);
 }
 
 bool KConfigBase::hasDefault(const QString &key) const
 {
-  return mGroup.hasDefault(key);
+    return d->group.hasDefault(key);
 }
 
 void KConfigBase::virtual_hook( int, void* )
@@ -552,68 +638,72 @@ void KConfigBase::virtual_hook( int, void* )
 
 bool KConfigBase::checkConfigFilesWritable(bool warnUser)
 {
-  if (backEnd)
-    return backEnd->checkConfigFilesWritable(warnUser);
-  else
-    return false;
+    if (d->backEnd) {
+        return d->backEnd->checkConfigFilesWritable(warnUser);
+    } else {
+        return false;
+    }
 }
 
+#ifdef KDE3_SUPPORT
 QColor KConfigBase::readEntry(const char* pKey, Qt::GlobalColor aDefault) const
-{ return mGroup.readEntry(pKey, QColor(aDefault)); }
+{ return d->group.readEntry(pKey, QColor(aDefault)); }
 QColor KConfigBase::readEntry(const QString &pKey, Qt::GlobalColor aDefault) const
-{ return mGroup.readEntry(pKey.toLatin1().data(), QColor(aDefault)); }
+{ return d->group.readEntry(pKey.toLatin1().data(), QColor(aDefault)); }
+#endif
+
 QVariant KConfigBase::readPropertyEntry( const QString& pKey, const QVariant& aDefault) const
-{ return mGroup.readEntry(pKey, aDefault); }
+{ return d->group.readEntry(pKey, aDefault); }
 QVariant KConfigBase::readPropertyEntry( const char *pKey, const QVariant& aDefault) const
-{ return mGroup.readEntry(pKey, aDefault); }
+{ return d->group.readEntry(pKey, aDefault); }
 QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
-{ return mGroup.readEntry(pKey, QStringList(), sep); }
+{ return d->group.readEntry(pKey, QStringList(), sep); }
 QStringList KConfigBase::readListEntry( const char* pKey,
                                         const QStringList& aDefault,
                                         char sep) const
-{ return mGroup.readEntry(pKey, aDefault, sep); }
+{ return d->group.readEntry(pKey, aDefault, sep); }
 QStringList KConfigBase::readEntry(const QString& pKey, const QStringList& aDefault,
                                    char sep) const
-{ return mGroup.readEntry(pKey.toUtf8().constData(), aDefault, sep); }
+{ return d->group.readEntry(pKey.toUtf8().constData(), aDefault, sep); }
 QList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
-{ return mGroup.readEntry( pKey, QList<int>() ); }
+{ return d->group.readEntry( pKey, QList<int>() ); }
 QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
-{ return mGroup.readEntry(pKey, QStringList(), sep); }
+{ return d->group.readEntry(pKey, QStringList(), sep); }
 QList<int> KConfigBase::readIntListEntry( const char *pKey ) const
-{ return mGroup.readEntry( pKey, QList<int>() ); }
+{ return d->group.readEntry( pKey, QList<int>() ); }
 int KConfigBase::readNumEntry( const QString& pKey, int nDefault ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 int KConfigBase::readNumEntry( const char *pKey, int nDefault ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 unsigned int KConfigBase::readUnsignedNumEntry( const QString& pKey, unsigned int nDefault ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 unsigned int KConfigBase::readUnsignedNumEntry( const char *pKey, unsigned int nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 long KConfigBase::readLongNumEntry( const QString& pKey, long nDefault  ) const
-{ return mGroup.readEntry(pKey, static_cast<int>(nDefault)); }
+{ return d->group.readEntry(pKey, static_cast<int>(nDefault)); }
 long KConfigBase::readLongNumEntry( const char *pKey, long nDefault  ) const
-{ return mGroup.readEntry(pKey, static_cast<int>(nDefault)); }
+{ return d->group.readEntry(pKey, static_cast<int>(nDefault)); }
 unsigned long KConfigBase::readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault  ) const
-{ return mGroup.readEntry(pKey, static_cast<unsigned int>(nDefault)); }
+{ return d->group.readEntry(pKey, static_cast<unsigned int>(nDefault)); }
 unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault  ) const
-{ return mGroup.readEntry(pKey, static_cast<unsigned int>(nDefault)); }
+{ return d->group.readEntry(pKey, static_cast<unsigned int>(nDefault)); }
 qint64 KConfigBase::readNum64Entry( const QString& pKey, qint64 nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 qint64 KConfigBase::readNum64Entry( const char *pKey, qint64 nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 quint64 KConfigBase::readUnsignedNum64Entry( const QString& pKey, quint64 nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 quint64 KConfigBase::readUnsignedNum64Entry( const char *pKey, quint64 nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 double KConfigBase::readDoubleNumEntry( const QString& pKey, double nDefault ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 double KConfigBase::readDoubleNumEntry( const char *pKey, double nDefault  ) const
-{ return mGroup.readEntry( pKey, nDefault ); }
+{ return d->group.readEntry( pKey, nDefault ); }
 bool KConfigBase::readBoolEntry( const QString& pKey, bool bDefault ) const
-{ return mGroup.readEntry( pKey, bDefault ); }
+{ return d->group.readEntry( pKey, bDefault ); }
 bool KConfigBase::readBoolEntry( const char *pKey, bool bDefault ) const
-{ return mGroup.readEntry( pKey, bDefault ); }
+{ return d->group.readEntry( pKey, bDefault ); }
 QColor KConfigBase::readColorEntry( const QString& pKey, const QColor* pDefault ) const
-{ return mGroup.readEntry(pKey, (pDefault? *pDefault: QColor())); }
+{ return d->group.readEntry(pKey, (pDefault? *pDefault: QColor())); }
 QColor KConfigBase::readColorEntry( const char *pKey, const QColor* pDefault  ) const
-{ return mGroup.readEntry(pKey, (pDefault? *pDefault: QColor())); }
+{ return d->group.readEntry(pKey, (pDefault? *pDefault: QColor())); }

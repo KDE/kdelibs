@@ -39,9 +39,9 @@
 class KConfigGroup::Private
 {
 public:
-  KConfigBase *mMaster;
-  KSharedConfig::Ptr mMasterShared;
-  QByteArray mGroup;
+  KConfigBase *master;
+  KSharedConfig::Ptr masterShared;
+  QByteArray group;
 };
 
 KConfigGroupGui _kde_internal_KConfigGroupGui;
@@ -63,48 +63,48 @@ static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVaria
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
 {
-    init(master);
-    d->mGroup = _group.toUtf8();
+    init( master );
+    changeGroup( _group.toUtf8( ) );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
 {
-    init(master);
-    d->mGroup = _group;
+    init( master );
+    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
 {
-    init(master);
-    d->mGroup = _group;
+    init( master );
+    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QString &_group)
 {
-    init(master.data());
-    d->mGroup = _group.toUtf8();
-    d->mMasterShared = master;
+    init( master.data() );
+    changeGroup( _group.toUtf8() );
+    d->masterShared = master;
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QByteArray &_group)
 {
-    init(master.data());
-    d->mGroup = _group;
-    d->mMasterShared = master;
+    init( master.data() );
+    changeGroup( _group );
+    d->masterShared = master;
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const char * _group)
 {
-    init(master.data());
-    d->mGroup = _group;
-    d->mMasterShared = master;
+    init( master.data() );
+    changeGroup( _group );
+    d->masterShared = master;
 }
 
 void KConfigGroup::init(KConfigBase *master)
 {
   d = new Private();
-  d->mMaster = master;
-  d->mMasterShared = 0;
+  d->master = master;
+  d->masterShared = 0;
 }
 
 KConfigGroup &KConfigGroup::operator=(const KConfigGroup &rhs)
@@ -126,52 +126,56 @@ KConfigGroup::~KConfigGroup()
 
 void KConfigGroup::deleteGroup(KConfigBase::WriteConfigFlags pFlags)
 {
-  d->mMaster->deleteGroup(d->mGroup, pFlags);
+  d->master->deleteGroup(d->group, pFlags);
 }
 
 void KConfigGroup::changeGroup(char const* group)
 {
-   d->mGroup = group;
+    if ( !group || !qstrcmp( group, "") ) {
+        d->group = "<default>";
+    } else {
+        d->group = group;
+    }
 }
 
 QString KConfigGroup::group() const
 {
-  return d->mGroup;
+    return d->group;
 }
 
 bool KConfigGroup::exists() const
 {
-  return d->mMaster->hasGroup( d->mGroup );
+    return d->master->hasGroup( d->group );
 }
 
 void KConfigGroup::setDirty(bool _bDirty)
 {
-  d->mMaster->setDirty(_bDirty);
+    d->master->setDirty( _bDirty );
 }
 
 void KConfigGroup::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
 {
-  d->mMaster->putData(_key, _data, _checkGroup);
+  d->master->putData(_key, _data, _checkGroup);
 }
 
 KEntry KConfigGroup::lookupData(const KEntryKey &_key) const
 {
-  return d->mMaster->lookupData(_key);
+  return d->master->lookupData(_key);
 }
 
 void KConfigGroup::sync()
 {
-  d->mMaster->sync();
+  d->master->sync();
 }
 
 QMap<QString, QString> KConfigGroup::entryMap() const
 {
-  return d->mMaster->entryMap(d->mGroup);
+  return d->master->entryMap(d->group);
 }
 
 KConfigBase* KConfigGroup::config() const
 {
-  return d->mMaster;
+  return d->master;
 }
 
 void KConfigGroup::virtual_hook( int , void*  )
@@ -179,11 +183,11 @@ void KConfigGroup::virtual_hook( int , void*  )
 
 bool KConfigGroup::entryIsImmutable(const QString &key) const
 {
-  if ( d->mMaster->getConfigState() != KConfigBase::ReadWrite ) {
+  if ( d->master->getConfigState() != KConfigBase::ReadWrite ) {
      return true;
   }
 
-  KEntryKey entryKey(d->mGroup, 0);
+  KEntryKey entryKey(d->group, 0);
   KEntry aEntryData = lookupData(entryKey); // Group
   if (aEntryData.bImmutable)
     return true;
@@ -229,9 +233,9 @@ QString KConfigGroup::readEntry( const char *pKey,
   // because calling locale() will create a locale object if it
   // doesn't exist, which requires KConfig, which will create a infinite
   // loop, and nobody likes those.
-  if (!d->mMaster->bLocaleInitialized && KGlobal::hasLocale()) {
+  if ( !d->master->localeInitialized() && KGlobal::hasLocale() ) {
     // get around const'ness.
-    KConfigBase *that = const_cast<KConfigBase *>(d->mMaster);
+    KConfigBase *that = const_cast<KConfigBase *>(d->master);
     that->setLocale();
   }
 
@@ -241,9 +245,9 @@ QString KConfigGroup::readEntry( const char *pKey,
   // construct a localized version of the key
   // try the localized key first
   KEntry aEntryData;
-  KEntryKey entryKey(d->mGroup, 0);
+  KEntryKey entryKey(d->group, 0);
   entryKey.c_key = pKey;
-  entryKey.bDefault = d->mMaster->readDefaults();
+  entryKey.bDefault = d->master->readDefaults();
   entryKey.bLocal = true;
   aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
@@ -267,7 +271,7 @@ QString KConfigGroup::readEntry( const char *pKey,
   }
 
   // only do dollar expansion if so desired
-  if( expand || d->mMaster->isDollarExpansion() )
+  if( expand || d->master->isDollarExpansion() )
     {
       // check for environment variables and make necessary translations
       int nDollarPos = aValue.indexOf( '$' );
@@ -284,7 +288,7 @@ QString KConfigGroup::readEntry( const char *pKey,
 
           QString result;
           QByteArray oldpath = qgetenv( "PATH" );
-          QByteArray newpath = QFile::encodeName( d->mMaster->componentData().dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+          QByteArray newpath = QFile::encodeName( d->master->componentData().dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
           if( !newpath.isEmpty() && !oldpath.isEmpty() )
                   newpath += KPATH_SEPARATOR;
           newpath += oldpath;
@@ -343,8 +347,8 @@ QString KConfigGroup::readEntry( const char *pKey,
 QByteArray KConfigGroup::readEntryUtf8( const char *pKey) const
 {
   // We don't try the localized key
-  KEntryKey entryKey(d->mGroup, 0);
-  entryKey.bDefault = d->mMaster->readDefaults();
+  KEntryKey entryKey(d->group, 0);
+  entryKey.bDefault = d->master->readDefaults();
   entryKey.c_key = pKey;
   KEntry aEntryData = lookupData(entryKey);
   if (aEntryData.bExpand)
@@ -613,10 +617,10 @@ QString KConfigGroup::readPathEntry( const QString& pKey, const QString& pDefaul
 
 QString KConfigGroup::readPathEntry( const char *pKey, const QString& pDefault ) const
 {
-  const bool bExpandSave = d->mMaster->isDollarExpansion();
-  d->mMaster->setDollarExpansion(true);
+  const bool bExpandSave = d->master->isDollarExpansion();
+  d->master->setDollarExpansion(true);
   QString aValue = readEntry( pKey, pDefault );
-  d->mMaster->setDollarExpansion(bExpandSave);
+  d->master->setDollarExpansion(bExpandSave);
   return aValue;
 }
 
@@ -627,44 +631,47 @@ QStringList KConfigGroup::readPathListEntry( const QString& pKey, char sep ) con
 
 QStringList KConfigGroup::readPathListEntry( const char *pKey, char sep ) const
 {
-  const bool bExpandSave = d->mMaster->isDollarExpansion();
-  d->mMaster->setDollarExpansion(true);
+  const bool bExpandSave = d->master->isDollarExpansion();
+  d->master->setDollarExpansion(true);
   const QStringList aValue = readEntry( pKey, QStringList(), sep );
-  d->mMaster->setDollarExpansion(bExpandSave);
+  d->master->setDollarExpansion(bExpandSave);
   return aValue;
 }
 
 void KConfigGroup::writeEntry( const char *pKey, const QString& value,
                                KConfigBase::WriteConfigFlags pFlags )
 {
-  // the KConfig object is dirty now
-  // set this before any IO takes place so that if any derivative
-  // classes do caching, they won't try and flush the cache out
-  // from under us before we read. A race condition is still
-  // possible but minimized.
-  if( pFlags & KConfigBase::Persistent )
-    setDirty(true);
+    // the KConfig object is dirty now
+    // set this before any IO takes place so that if any derivative
+    // classes do caching, they won't try and flush the cache out
+    // from under us before we read. A race condition is still
+    // possible but minimized.
+    if( pFlags & KConfigBase::Persistent ) {
+        setDirty(true);
+    }
 
-  if (!d->mMaster->bLocaleInitialized && KGlobal::locale())
-    d->mMaster->setLocale();
+    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
+        d->master->setLocale();
+    }
 
-  KEntryKey entryKey(d->mGroup, pKey);
-  entryKey.bLocal = pFlags & KConfigBase::NLS;
+    KEntryKey entryKey(d->group, pKey);
+    entryKey.bLocal = pFlags & KConfigBase::NLS;
 
-  KEntry aEntryData;
-  aEntryData.mValue = value.toUtf8();  // set new value
-  aEntryData.bGlobal = pFlags & KConfigBase::Global;
-  aEntryData.bNLS = pFlags & KConfigBase::NLS;
+    KEntry aEntryData;
+    aEntryData.mValue = value.toUtf8();  // set new value
+    aEntryData.bGlobal = pFlags & KConfigBase::Global;
+    aEntryData.bNLS = pFlags & KConfigBase::NLS;
 
-  if (pFlags & KConfigBase::Persistent)
-    aEntryData.bDirty = true;
+    if (pFlags & KConfigBase::Persistent) {
+        aEntryData.bDirty = true;
+    }
 
-  // rewrite the new value
-  putData(entryKey, aEntryData, true);
+    // rewrite the new value
+    putData(entryKey, aEntryData, true);
 }
 
 void KConfigGroup::writePathEntry( const QString& pKey, const QString & path,
-                                   KConfigBase::WriteConfigFlags pFlags )
+        KConfigBase::WriteConfigFlags pFlags )
 {
    writePathEntry(pKey.toUtf8().constData(), path, pFlags);
 }
@@ -768,26 +775,27 @@ void KConfigGroup::deleteEntry( const QString& pKey, KConfigBase::WriteConfigFla
 
 void KConfigGroup::deleteEntry( const char *pKey, KConfigBase::WriteConfigFlags pFlags)
 {
-  // the KConfig object is dirty now
-  // set this before any IO takes place so that if any derivative
-  // classes do caching, they won't try and flush the cache out
-  // from under us before we read. A race condition is still
-  // possible but minimized.
-  setDirty(true);
+    // the KConfig object is dirty now
+    // set this before any IO takes place so that if any derivative
+    // classes do caching, they won't try and flush the cache out
+    // from under us before we read. A race condition is still
+    // possible but minimized.
+    setDirty(true);
 
-  if (!d->mMaster->bLocaleInitialized && KGlobal::locale())
-    d->mMaster->setLocale();
+    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
+        d->master->setLocale();
+    }
 
-  KEntryKey entryKey(d->mGroup, pKey);
-  KEntry aEntryData;
+    KEntryKey entryKey(d->group, pKey);
+    KEntry aEntryData;
 
-  aEntryData.bGlobal = pFlags & KConfigBase::Global;
-  aEntryData.bNLS = pFlags & KConfigBase::NLS;
-  aEntryData.bDirty = true;
-  aEntryData.bDeleted = true;
+    aEntryData.bGlobal = pFlags & KConfigBase::Global;
+    aEntryData.bNLS = pFlags & KConfigBase::NLS;
+    aEntryData.bDirty = true;
+    aEntryData.bDeleted = true;
 
-  // rewrite the new value
-  putData(entryKey, aEntryData, true);
+    // rewrite the new value
+    putData( entryKey, aEntryData, true );
 }
 
 void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
@@ -991,10 +999,10 @@ void KConfigGroup::revertToDefault(const QString &key)
 {
   setDirty(true);
 
-  KEntryKey aEntryKey(d->mGroup, key.toUtf8());
+  KEntryKey aEntryKey(d->group, key.toUtf8());
   aEntryKey.bDefault = true;
 
-  if (!d->mMaster->locale().isNull()) {
+  if (!d->master->locale().isNull()) {
     // try the localized key first
     aEntryKey.bLocal = true;
     KEntry entry = lookupData(aEntryKey);
@@ -1016,10 +1024,10 @@ void KConfigGroup::revertToDefault(const QString &key)
 
 bool KConfigGroup::hasDefault(const QString &key) const
 {
-  KEntryKey aEntryKey(d->mGroup, key.toUtf8());
+  KEntryKey aEntryKey(d->group, key.toUtf8());
   aEntryKey.bDefault = true;
 
-  if (!d->mMaster->locale().isNull()) {
+  if (!d->master->locale().isNull()) {
     // try the localized key first
     aEntryKey.bLocal = true;
     KEntry entry = lookupData(aEntryKey);
@@ -1044,11 +1052,11 @@ bool KConfigGroup::hasKey(const QString &key) const
 
 bool KConfigGroup::hasKey(const char *pKey) const
 {
-  KEntryKey aEntryKey(d->mGroup, 0);
+  KEntryKey aEntryKey(d->group, 0);
   aEntryKey.c_key = pKey;
-  aEntryKey.bDefault = d->mMaster->readDefaults();
+  aEntryKey.bDefault = d->master->readDefaults();
 
-  if (!d->mMaster->locale().isNull()) {
+  if (!d->master->locale().isNull()) {
     // try the localized key first
     aEntryKey.bLocal = true;
     KEntry entry = lookupData(aEntryKey);
@@ -1065,5 +1073,5 @@ bool KConfigGroup::hasKey(const char *pKey) const
 
 bool KConfigGroup::isImmutable() const
 {
-  return d->mMaster->groupIsImmutable( d->mGroup );
+  return d->master->groupIsImmutable( d->group );
 }

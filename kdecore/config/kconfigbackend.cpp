@@ -68,12 +68,15 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
     mfileName = _fileName;
     resType = _resType;
     useKDEGlobals = _useKDEGlobals;
-    if (mfileName.isEmpty())
+    if (mfileName.isEmpty()) {
         mLocalFileName.clear();
-    else if (!QDir::isRelativePath(mfileName))
-        mLocalFileName = mfileName;
-    else
+    }
+    else if (QDir::isRelativePath(mfileName)) {
         mLocalFileName = pConfig->componentData().dirs()->saveLocation(resType) + mfileName;
+    }
+    else {
+        mLocalFileName = mfileName;
+    }
 
     if (useKDEGlobals)
         mGlobalFileName = pConfig->componentData().dirs()->saveLocation("config") +

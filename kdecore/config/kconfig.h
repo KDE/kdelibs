@@ -176,14 +176,14 @@ public:
    * @param force true to force writing in kdeglobals
    * @see forceGlobal
    */
-  void setForceGlobal( bool force ) { bForceGlobal = force; }
+  void setForceGlobal( bool force );
 
   /**
    * Returns true if all entries are being written into kdeglobals.
    * @return true if all entries are being written into kdeglobals
    * @see setForceGlobal
    */
-  bool forceGlobal() const { return bForceGlobal; }
+  bool forceGlobal() const;
 
   /**
    * Checks whether the config file contains the update @p id
@@ -232,7 +232,44 @@ public:
   const KConfigGroup group( const QByteArray &arr) const;
 
 protected:
+  /**
+   * Inserts a (key, value) pair into the internal storage mechanism of
+   * the configuration object.
+   *
+   * @param _key The key to insert.  It contains information both on
+   *        the group of the key and the key itself. If the key already
+   *        exists, the old value will be replaced.
+   * @param _data the KEntry that is to be stored.
+   * @param _checkGroup When false, assume that the group already exists.
+   */
+  virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup=true);
 
+  /**
+   * Looks up an entry in the config object's internal structure.
+   *
+   * @param _key The key to look up  It contains information both on
+   *        the group of the key and the entry's key itself.
+   * @return the KEntry value (data) found for the key.  KEntry.aValue
+   * will be the null string if nothing was located.
+   */
+  virtual KEntry lookupData(const KEntryKey &_key) const;
+
+private:
+  KConfig( const QString& fileName, bool fal);
+
+  /**
+   * @internal
+   * copy-construction and assignment are not allowed
+   */
+  KConfig( const KConfig& );
+
+  /**
+   * @internal
+   * copy-construction and assignment are not allowed
+   */
+  KConfig& operator= ( const KConfig& rConfig );
+
+protected:
   /**
    * Returns true if the specified group is known.
    *
@@ -262,59 +299,8 @@ protected:
    *
    * @return The map of the entries in the group.
    */
-   virtual KEntryMap internalEntryMap() const { return aEntryMap; }
+  virtual KEntryMap internalEntryMap() const;
 
-  /**
-   * Inserts a (key, value) pair into the internal storage mechanism of
-   * the configuration object.
-   *
-   * @param _key The key to insert.  It contains information both on
-   *        the group of the key and the key itself. If the key already
-   *        exists, the old value will be replaced.
-   * @param _data the KEntry that is to be stored.
-   * @param _checkGroup When false, assume that the group already exists.
-   */
-  virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup=true);
-
-  /**
-   * Looks up an entry in the config object's internal structure.
-   *
-   * @param _key The key to look up  It contains information both on
-   *        the group of the key and the entry's key itself.
-   * @return the KEntry value (data) found for the key.  KEntry.aValue
-   * will be the null string if nothing was located.
-   */
-  virtual KEntry lookupData(const KEntryKey &_key) const;
-
-  /**
-   * Contains all key,value entries, as well as some "special"
-   * keys which indicate the start of a group of entries.
-   *
-   * These special keys will have the .key portion of their KEntryKey
-   * set to QString().
-   */
-  KEntryMap aEntryMap;
-
-private:
-  KConfig( const QString& fileName, bool fal);
-
-  /**
-   * @internal
-   * copy-construction and assignment are not allowed
-   */
-  KConfig( const KConfig& );
-
-  /**
-   * @internal
-   * copy-construction and assignment are not allowed
-   */
-  KConfig& operator= ( const KConfig& rConfig );
-
-private:
-  bool bGroupImmutable : 1; // Current group is immutable.
-  bool bFileImmutable  : 1; // Current file is immutable.
-  bool bForceGlobal    : 1; // Apply everything to kdeglobals.
-protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining
       binary compatibility. Unused in this class.
   */
